@@ -1,0 +1,175 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1689942139877098}
+  m_IsPrefabAsset: 1
+--- !u!1 &1689942139877098
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4414408918145892}
+  - component: {fileID: 82468331832524910}
+  - component: {fileID: 114214214821123992}
+  m_Layer: 0
+  m_Name: Foot Sound
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4414408918145892
+Transform:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1689942139877098}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &82468331832524910
+AudioSource:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1689942139877098}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 24319308, guid: ba5a630d0442d66419d62c78f3a2fdaf,
+    type: 2}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &114214214821123992
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1689942139877098}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2957286d35d96e746a3130baf2d522b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  grassSounds:
+  - {fileID: 8300000, guid: e806479615dec52498227ba99990e09a, type: 3}
+  - {fileID: 8300000, guid: 1dc94d1f243c8b34da56316441a46328, type: 3}
+  - {fileID: 8300000, guid: b69c16fee6314dd429b71edb78e10e88, type: 3}
+  - {fileID: 8300000, guid: 516b653958279c24aa1e588665224c74, type: 3}
+  - {fileID: 8300000, guid: a64eca849e89eb743824db59b7a36bd9, type: 3}
+  stoneSounds:
+  - {fileID: 8300000, guid: b8370f5a157843446b345831e5f2a601, type: 3}
+  - {fileID: 8300000, guid: e4358cfbc4c80f740896e521477659f7, type: 3}
+  - {fileID: 8300000, guid: c437f1fbcab251849bcfa385bfb505b0, type: 3}
+  - {fileID: 8300000, guid: f9a3be585a2ee0343a51bba959edacd7, type: 3}
+  - {fileID: 8300000, guid: 2ac1ead8f7fc70d4c8f7d42e76c8bc57, type: 3}
+  woodSounds:
+  - {fileID: 8300000, guid: 31532c55febc5d441a9704df98e56666, type: 3}
+  - {fileID: 8300000, guid: 9dd5a67d2578bc7459b8bcbb3e8f418e, type: 3}
+  - {fileID: 8300000, guid: 9161866d46e2d0d4b97f364dd3083f17, type: 3}
+  - {fileID: 8300000, guid: 2b9d6cebe3ded3f45ab660f9ff18257d, type: 3}
+  - {fileID: 8300000, guid: cdfd0254edbf5c241a80b44f996e09d3, type: 3}
+  waterSounds:
+  - {fileID: 8300000, guid: 5d4329ca898e70041b2dfe4a734b304c, type: 3}
+  - {fileID: 8300000, guid: f6bcd43f8dfb4524aa9f9ad8d7dc1638, type: 3}
+  - {fileID: 8300000, guid: 035a56d99b5519f418ebc6e30b073dd5, type: 3}
+  - {fileID: 8300000, guid: 44b94e90ae00f874fa5c46d23a1e5455, type: 3}
+  - {fileID: 8300000, guid: edc8a8c1f737ebb4daaff2df8d6fa1c3, type: 3}
+  audioSource: {fileID: 82468331832524910}

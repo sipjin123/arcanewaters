@@ -1,0 +1,598 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Security.Cryptography;
+using System.Text.RegularExpressions;
+using Cinemachine;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using Mirror;
+using UnityEngine.Tilemaps;
+using UnityEngine.UI;
+using System.Linq;
+
+public class Util : MonoBehaviour {
+   public static NetEntity getPlayer () {
+      if (NetworkClient.connection != null) {
+         NetworkIdentity playerController = NetworkClient.connection.playerController;
+         if (playerController != null && playerController.gameObject != null) {
+            NetEntity entity = playerController.gameObject.GetComponent<NetEntity>();
+
+            if (entity != null) {
+               return entity;
+            }
+         }
+      }
+
+      return null;
+   }
+
+   public static int getMyUserId () {
+      if (NetworkClient.connection != null) {
+         NetworkIdentity controller = NetworkClient.connection.playerController;
+         if (controller != null && controller.gameObject != null) {
+            NetEntity entity = controller.gameObject.GetComponent<NetEntity>();
+
+            if (entity != null) {
+               return entity.userId;
+            }
+         }
+      }
+
+      return -1;
+   }
+
+   public static bool isEmpty (String str) {
+      return (str == null || str.Equals(""));
+   }
+
+   public static Vector3 getMousePos () {
+      Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+      worldPos.z = 0f;
+      return worldPos;
+   }
+
+   public static void setXY (Transform transform, Vector3 newPosition) {
+      Vector3 vector = transform.position;
+      vector.x = newPosition.x;
+      vector.y = newPosition.y;
+      transform.position = vector;
+   }
+
+   public static void setZ (Transform transform, float newZ) {
+      Vector3 vector = transform.position;
+      vector.z = newZ;
+      transform.position = vector;
+   }
+
+   public static void setLocalX (Transform transform, float newX) {
+      transform.localPosition = new Vector3(
+          newX,
+          transform.localPosition.y,
+          transform.localPosition.z
+      );
+   }
+
+   public static void setLocalY (Transform transform, float newY) {
+      transform.localPosition = new Vector3(
+          transform.localPosition.x,
+          newY,
+          transform.localPosition.z
+      );
+   }
+
+   public static void setLocalXY (Transform transform, Vector3 newPosition) {
+      Vector3 vector = transform.localPosition;
+      vector.x = newPosition.x;
+      vector.y = newPosition.y;
+      transform.localPosition = vector;
+   }
+
+   public static float angle (Vector2 vector) {
+      float angle = Vector2.Angle(Vector2.up, vector);
+
+      if (vector.x < 0) {
+         angle = 360f - angle;
+      }
+
+      return angle;
+   }
+
+   public static float angle (Vector2 vec1, Vector2 vec2) {
+      float angle = Vector2.Angle(vec2, vec1);
+
+      if (vec1.x < 0) {
+         angle = 360f - angle;
+      }
+
+      return angle;
+   }
+
+   public static Direction getFacing (float angle) {
+      if (angle <= 30 || angle >= 330) {
+         return Direction.North;
+      } else if (angle >= 30 && angle <= 150) {
+         return Direction.East;
+      } else if (angle >= 150 && angle <= 210) {
+         return Direction.South;
+      } else if (angle >= 210 && angle <= 330) {
+         return Direction.West;
+      }
+
+      // Default
+      return Direction.East;
+   }
+
+   public static float getAngle (Direction facing) {
+      switch (facing) {
+         case Direction.North:
+            return 0;
+         case Direction.NorthEast:
+            return 45f;
+         case Direction.East:
+            return 90f;
+         case Direction.SouthEast:
+            return 135f;
+         case Direction.South:
+            return 180f;
+         case Direction.SouthWest:
+            return 225f;
+         case Direction.West:
+            return 270f;
+         case Direction.NorthWest:
+            return 315f;
+      }
+
+      return 0f;
+   }
+
+   public static Direction getFacingWithDiagonals (float angle) {
+      if (angle <= 22.5 || angle >= 337.5) {
+         return Direction.North;
+      } else if (angle >= 22.5 && angle <= 67.5) {
+         return Direction.NorthEast;
+      } else if (angle >= 67.5 && angle <= 112.5) {
+         return Direction.East;
+      } else if (angle >= 112.5 && angle <= 157.5) {
+         return Direction.SouthEast;
+      } else if (angle >= 157.5 && angle <= 202.5) {
+         return Direction.South;
+      } else if (angle >= 202.5 && angle <= 257.5) {
+         return Direction.SouthWest;
+      } else if (angle >= 257.5 && angle <= 292.5) {
+         return Direction.West;
+      } else if (angle >= 292.5 && angle <= 337.5) {
+         return Direction.NorthWest;
+      }
+
+      // Default
+      return Direction.East;
+   }
+
+   public static T clamp<T> (T value, T min, T max)
+          where T : System.IComparable<T> {
+      T result = value;
+      if (value.CompareTo(max) > 0)
+         result = max;
+      if (value.CompareTo(min) < 0)
+         result = min;
+      return result;
+   }
+
+   public static void setScale (Transform transform, float newScale) {
+      transform.localScale = new Vector3(newScale, newScale, transform.localScale.z);
+   }
+
+   public static void setAlpha (SpriteRenderer spriteRenderer, float alpha) {
+      Color color = spriteRenderer.color;
+      alpha = Mathf.Clamp(alpha, 0f, 1f);
+      spriteRenderer.color = new Color(color.r, color.g, color.b, alpha);
+   }
+
+   public static void setAlpha (Text text, float alpha) {
+      if (text == null) {
+         return;
+      }
+
+      Color color = text.color;
+      text.color = new Color(color.r, color.g, color.b, alpha);
+   }
+
+   public static void setAlpha (Image image, float alpha) {
+      Color color = image.color;
+      image.color = new Color(color.r, color.g, color.b, alpha);
+   }
+
+   public static void setAlpha (Material material, float alpha) {
+      Color color = material.GetColor("_Color");
+      material.SetColor("_Color", new Color(color.r, color.g, color.b, alpha));
+   }
+
+   public static void setMaterialBlockAlpha (SpriteRenderer renderer, float newAlpha) {
+      MaterialPropertyBlock block = new MaterialPropertyBlock();
+
+      // Assign our new alpha value
+      Color color = Color.white;
+      color.a = newAlpha;
+      block.SetColor("_Color", color);
+
+      // Apply the edited values to the renderer
+      renderer.SetPropertyBlock(block);
+   }
+
+   public static void setMaterialBlockTexture (SpriteRenderer renderer, Texture2D newTexture) {
+      MaterialPropertyBlock block = new MaterialPropertyBlock();
+      block.SetTexture("_MainTex", newTexture);
+      renderer.SetPropertyBlock(block);
+   }
+
+   public static float getSinOfAngle (float angleInDegrees) {
+      float sinOfAngle = Mathf.Sin((angleInDegrees * Mathf.PI) / 180);
+
+      return sinOfAngle;
+   }
+
+   public static bool hasLandTile (Vector3 pos) {
+      if (Global.player == null) {
+         return false;
+      }
+
+      Area area = AreaManager.self.getArea(Global.player.areaType);
+      Grid grid = area.GetComponentInChildren<Grid>();
+
+      foreach (Tilemap tilemap in area.GetComponentsInChildren<Tilemap>()) {
+         if (tilemap.name.StartsWith("Land")) {
+            Vector3Int cellPos = grid.WorldToCell(pos);
+            TileBase tile = tilemap.GetTile(cellPos);
+
+            if (tile != null) {
+               return true;
+            }
+         }
+      }
+
+      return false;
+   }
+
+   public static Color getColor (int r, int g, int b) {
+      return new Color((float) r / 255f, (float) g / 255f, (float) b / 255f);
+   }
+
+   public static Color getColor (int r, int g, int b, int a) {
+      return new Color((float) r / 255f, (float) g / 255f, (float) b / 255f, (float) a / 255f);
+   }
+
+   public static bool isSelected (InputField inputField) {
+      return (EventSystem.current.currentSelectedGameObject == inputField.gameObject);
+   }
+
+   public static void select (InputField inputField) {
+      EventSystem.current.SetSelectedGameObject(inputField.gameObject);
+      inputField.ActivateInputField();
+   }
+
+   public static void clickButton (Button button) {
+      ExecuteEvents.Execute(button.gameObject, null, ExecuteEvents.submitHandler);
+   }
+
+   public static bool isServerBuild () {
+      bool isServerBuild = false;
+
+      #if IS_SERVER_BUILD
+      isServerBuild = true;
+      #endif
+
+      return isServerBuild;
+   }
+
+   public static void SetVisibility (GameObject go, bool vis) {
+      foreach (var r in go.GetComponents<Renderer>()) {
+         r.enabled = vis;
+      }
+      for (int i = 0; i < go.transform.childCount; i++) {
+         var t = go.transform.GetChild(i);
+         SetVisibility(t.gameObject, vis);
+      }
+   }
+
+   public static string stripHTML (string source) {
+      return Regex.Replace(source, @"<[^>]+>|&nbsp;", "");
+   }
+
+   public static bool isServerNonHost () {
+      return (NetworkServer.active && !MyNetworkManager.isHost);
+   }
+
+   public static bool isPlayer (int userId) {
+      if (Global.player != null && Global.player.userId > 0 && Global.player.userId == userId) {
+         return true;
+      }
+
+      return false;
+   }
+
+   public static string getAppName () {
+      Process p = Process.GetCurrentProcess();
+
+      if (p != null && !p.HasExited) {
+         return p.ProcessName;
+      }
+
+      return "Unknown";
+   }
+
+   public static float getBellCurveFloat (float mean, float stdDev, float min, float max) {
+      // Add 3 randomly generated floats together, each one between -1 and 1
+      float sum = UnityEngine.Random.Range(-1f, 1f) +
+          UnityEngine.Random.Range(-1f, 1f) +
+          UnityEngine.Random.Range(-1f, 1f);
+
+      // Create our uniform random number using the specified mean and standard deviation
+      float bellCurveRandom = (sum * stdDev) + mean;
+
+      // Limit it to the specified min and max
+      bellCurveRandom = Mathf.Clamp(bellCurveRandom, min, max);
+
+      return bellCurveRandom;
+   }
+
+   public static int getBellCurveInt (float mean, float stdDev, float min, float max) {
+      return (int) getBellCurveFloat(mean, stdDev, min, max);
+   }
+
+   public static Vector2 randFromCenter (float centerX, float centerY, float randomRadius) {
+      return new Vector2(
+         centerX + UnityEngine.Random.Range(-randomRadius, randomRadius),
+         centerY + UnityEngine.Random.Range(-randomRadius, randomRadius)
+      );
+   }
+
+   public static Vector3 pixelSnap (Vector3 pos) {
+      float ppu = 100f * 2f;
+
+      // Round the pixel value
+      float nextX = Mathf.Round(ppu * pos.x);
+      float nextY = Mathf.Round(ppu * pos.y);
+      return new Vector3(
+          nextX / ppu,
+          nextY / ppu,
+          pos.z
+      );
+   }
+
+   public static Vector3 RandomPointInBounds (Bounds bounds) {
+      return new Vector3(
+          UnityEngine.Random.Range(bounds.min.x, bounds.max.x),
+          UnityEngine.Random.Range(bounds.min.y, bounds.max.y),
+          UnityEngine.Random.Range(bounds.min.z, bounds.max.z)
+      );
+   }
+
+   public static void activateVirtualCamera (CinemachineVirtualCamera virtualCamera) {
+      // Make sure all other cameras are deactivated
+      foreach (CinemachineVirtualCamera virtualCam in FindObjectsOfType<CinemachineVirtualCamera>()) {
+         virtualCam.VirtualCameraGameObject.SetActive(false);
+      }
+
+      // And now we can activate
+      virtualCamera.VirtualCameraGameObject.SetActive(true);
+   }
+
+   public static void tryToRunInServerBackground (Action action) {
+      #if IS_SERVER_BUILD
+
+      // If Unity is shutting down, we can't create new background threads
+      if (ClientManager.isApplicationQuitting) {
+         action();
+         return;
+      }
+
+      // Otherwise, go ahead and run it in the background
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         action();
+      });
+
+      #endif
+   }
+
+   public static string removeNumbers (string input) {
+      return Regex.Replace(input, @"[\d-]", string.Empty);
+   }
+
+   public static float TruncateTo100ths (float f) {
+      return (float) Math.Truncate(f * 100) / 100;
+   }
+
+   public static float Truncate (float value, int digits=2) {
+      string formatString = "0.";
+
+      for (int i = 0; i < digits; i++) {
+         formatString += "#";
+      }
+
+      return float.Parse(value.ToString(formatString));
+   }
+
+   public static bool isServer () {
+      return MyNetworkManager.wasServerStarted;
+   }
+
+   public static void enableCanvasGroup (CanvasGroup canvasGroup) {
+      canvasGroup.alpha = 1f;
+      canvasGroup.interactable = true;
+      canvasGroup.blocksRaycasts = true;
+   }
+
+   public static void disableCanvasGroup (CanvasGroup canvasGroup) {
+      canvasGroup.alpha = 0f;
+      canvasGroup.interactable = false;
+      canvasGroup.blocksRaycasts = false;
+   }
+
+   public static string createSalt (string UserName) {
+      #if IS_SERVER_BUILD
+         Rfc2898DeriveBytes hasher = new Rfc2898DeriveBytes(UserName.ToLower(),
+            System.Text.Encoding.Default.GetBytes("saltmZ8HxZEL7PTsalt"), 1000);
+         return System.Convert.ToBase64String(hasher.GetBytes(25));
+      #else
+         return "";
+      #endif
+   }
+
+   public static string hashPassword (string Salt, string Password) {
+      #if IS_SERVER_BUILD
+         Rfc2898DeriveBytes Hasher = new Rfc2898DeriveBytes(Password,
+                  System.Text.Encoding.Default.GetBytes(Salt), 1000);
+         return System.Convert.ToBase64String(Hasher.GetBytes(25));
+      #else
+         return "";
+      #endif
+   }
+
+   public static string UppercaseFirst (string s) {
+      // Check for empty string
+      if (string.IsNullOrEmpty(s)) {
+         return string.Empty;
+      }
+      // Return char and concat substring
+      return char.ToUpper(s[0]) + s.Substring(1);
+   }
+
+   public static string[] serialize<T> (List<T> list) {
+      List<string> stringList = new List<string>();
+
+      foreach (T t in list) {
+         stringList.Add(JsonUtility.ToJson(t));
+      }
+
+      return stringList.ToArray();
+   }
+
+   public static List<T> unserialize<T> (string[] stringArray) {
+      List<T> list = new List<T>();
+
+      foreach (string str in stringArray) {
+         list.Add(JsonUtility.FromJson<T>(str));
+      }
+
+      return list;
+   }
+
+   public static Texture2D textureFromSprite (Sprite sprite) {
+      if (sprite.rect.width != sprite.texture.width) {
+         Texture2D newText = new Texture2D((int) sprite.rect.width, (int) sprite.rect.height);
+         Color[] newColors = sprite.texture.GetPixels((int) sprite.textureRect.x,
+                                                      (int) sprite.textureRect.y,
+                                                      (int) sprite.textureRect.width,
+                                                      (int) sprite.textureRect.height);
+         newText.SetPixels(newColors);
+         newText.Apply();
+         return newText;
+      } else
+         return sprite.texture;
+   }
+
+   public static T randomEnum<T> () {
+      T[] values = (T[]) Enum.GetValues(typeof(T));
+      return values[r.Next(0, values.Length)];
+   }
+
+   public static List<T> getAllEnumValues<T> () {
+      return new List<T>(Enum.GetValues(typeof(T)).Cast<T>());
+   }
+
+   public static bool isButtonClick () {
+      // The chat scroll bar is kind of special since it's a click-and-hold
+      if (ChatPanel.self.isScrolling()) {
+         return true;
+      }
+
+      return GUIUtility.hotControl != 0 || EventSystem.current.IsPointerOverGameObject();
+   }
+
+   public static int roundToPrettyNumber (int num) {
+      // We handle it differently based on how big it is
+      if (num <= 10) {
+         return num;
+      } else if (num <= 100) {
+         return num - (num % 2);
+      } else if (num <= 1000) {
+         return num - (num % 10);
+      } else {
+         int numDigits = Mathf.Abs(num).ToString().Length;
+
+         return num - (num % (int) Mathf.Pow(10, numDigits - 3));
+      }
+   }
+
+   public static float netTime () {
+      return TimeManager.self.getSyncedTime();
+   }
+
+   public static int getCommandLineInt (string key) {
+      foreach (string arg in Environment.GetCommandLineArgs()) {
+         if (arg.Contains(key)) {
+            string[] split = arg.Split('=');
+
+            return int.Parse(split[1]);
+         }
+      }
+
+      return 0;
+   }
+
+   public static bool isAutoStarting () {
+      if (CommandCodes.get(CommandCodes.Type.AUTO_HOST) || CommandCodes.get(CommandCodes.Type.AUTO_TEST) || Global.startAutoHost) {
+         return true;
+      }
+
+      return false;
+   }
+
+   public static bool isAutoTesting () {
+      return CommandCodes.get(CommandCodes.Type.AUTO_TEST);
+   }
+
+   public static string getFrameNumber (Sprite sprite) {
+      int length = sprite.name.Length;
+
+      // We'll get the frame number as a string to keep this function efficient enough to call in LateUpdate()
+      return sprite.name.Substring(length - 2);
+   }
+
+   // Truncates the specified float value to the requested number of digits
+   public static float TruncateRounded (float value, int digits=2) {
+      double mult = Math.Pow(10.0, digits);
+      double result = Math.Truncate(mult * value) / mult;
+      return (float) result;
+   }
+
+   // Returns -1 when to the left, 1 to the right, and 0 for forward/backward
+   public static float AngleDirection (Vector3 fwd, Vector3 targetDir, Vector3 up) {
+      Vector3 perp = Vector3.Cross(fwd, targetDir);
+      float dir = Vector3.Dot(perp, up);
+
+      if (dir > 0.0f) {
+         return 1.0f;
+      } else if (dir < 0.0f) {
+         return -1.0f;
+      } else {
+         return 0.0f;
+      }
+   }
+
+   // Returns the angle between the two vectors, in the range 0 to 360
+   public static float AngleBetween (Vector3 fwd, Vector3 targetDir) {
+      float angle = Vector3.Angle(fwd, targetDir);
+
+      if (AngleDirection(fwd, targetDir, Vector3.forward) == -1) {
+         return 360 - angle;
+      } else {
+         return angle;
+      }
+   }
+
+   // A Random instance we can use for generating random numbers
+   private static System.Random r = new System.Random();
+}
