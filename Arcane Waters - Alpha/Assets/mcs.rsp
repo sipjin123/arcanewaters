@@ -1,0 +1,2 @@
+-define:IS_SERVER_BUILD
+-nowarn:0618
