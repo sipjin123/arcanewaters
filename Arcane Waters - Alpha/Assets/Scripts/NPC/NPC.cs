@@ -193,8 +193,9 @@ public class NPC : MonoBehaviour {
       _body.AddForce(direction.normalized * moveSpeed);
    }
 
-   public void clientClickedMe () {
-      if (Global.player == null || _clickableBox == null || Global.isInBattle()) {
+   public void clientClickedMe ()
+    {
+        if (Global.player == null || _clickableBox == null || Global.isInBattle()) {
          return;
       }
 
@@ -207,10 +208,12 @@ public class NPC : MonoBehaviour {
       // If this is a Shop NPC, then show the appropriate panel
       if (_shopTrigger != null) {
          PanelManager.self.pushIfNotShowing(_shopTrigger.panelType);
-      } else {
-         // Send a request to the server to get the clickable text options
-         Global.player.rpc.Cmd_GetClickableRows(this.npcId);
-      }
+        } else {
+            // Send a request to the server to get the clickable text options
+            Global.player.rpc.Cmd_GetClickableRows(this.npcId);
+            tradeGossip = "Interested in having this Blueprint?";
+            PanelManager.self.get(Panel.Type.NPC_Panel).GetComponent<NPCPanel>().SetMessage(tradeGossip);
+        }
    }
 
    protected int getId () {
@@ -400,8 +403,9 @@ public class NPC : MonoBehaviour {
          possibleOffers.Add(offer);
       }
 
-      // Set our gossip
-      tradeGossip = getTradeGossip(possibleOffers);
+        // Set our gossip
+        tradeGossip = getTradeGossip(possibleOffers);
+        
    }
 
    protected string getTradeGossip (List<CropOffer> offers) {
