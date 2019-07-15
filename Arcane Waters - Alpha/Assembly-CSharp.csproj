@@ -305,6 +305,10 @@
     <Compile Include="Assets\Scripts\Body\Class.cs" />
     <Compile Include="Assets\Scripts\Body\Faction.cs" />
     <Compile Include="Assets\Scripts\Body\Specialty.cs" />
+    <Compile Include="Assets\Scripts\BurlDevTestScripts\CombinationData.cs" />
+    <Compile Include="Assets\Scripts\BurlDevTestScripts\CombinationDataList.cs" />
+    <Compile Include="Assets\Scripts\BurlDevTestScripts\DebugButtons.cs" />
+    <Compile Include="Assets\Scripts\BurlDevTestScripts\GenerateScriptableObjects.cs" />
     <Compile Include="Assets\Scripts\Camera\BaseCamera.cs" />
     <Compile Include="Assets\Scripts\Camera\BattleCamera.cs" />
     <Compile Include="Assets\Scripts\Camera\BrightnessFX.cs" />
@@ -398,6 +402,9 @@
     <Compile Include="Assets\Scripts\GUI\ClickableTab.cs" />
     <Compile Include="Assets\Scripts\GUI\ClickableText.cs" />
     <Compile Include="Assets\Scripts\GUI\ConfirmScreen.cs" />
+    <Compile Include="Assets\Scripts\GUI\Crafting\CraftingMaterialRow.cs" />
+    <Compile Include="Assets\Scripts\GUI\Crafting\CraftingPanel.cs" />
+    <Compile Include="Assets\Scripts\GUI\Crafting\CraftingRow.cs" />
     <Compile Include="Assets\Scripts\GUI\Flagship\FlagshipPanel.cs" />
     <Compile Include="Assets\Scripts\GUI\Flagship\FlagshipRow.cs" />
     <Compile Include="Assets\Scripts\GUI\FPSPanel.cs" />
@@ -419,6 +426,7 @@
     <Compile Include="Assets\Scripts\GUI\Panel.cs" />
     <Compile Include="Assets\Scripts\GUI\PanelManager.cs" />
     <Compile Include="Assets\Scripts\GUI\PingPanel.cs" />
+    <Compile Include="Assets\Scripts\GUI\RewardScreen.cs" />
     <Compile Include="Assets\Scripts\GUI\RollingTextFade.cs" />
     <Compile Include="Assets\Scripts\GUI\ShipBars.cs" />
     <Compile Include="Assets\Scripts\GUI\ShipDamageText.cs" />
@@ -446,10 +454,12 @@
     <Compile Include="Assets\Scripts\Instance\InstanceManager.cs" />
     <Compile Include="Assets\Scripts\Inventory\Armor.cs" />
     <Compile Include="Assets\Scripts\Inventory\ArmorManager.cs" />
+    <Compile Include="Assets\Scripts\Inventory\CraftingIngredients.cs" />
     <Compile Include="Assets\Scripts\Inventory\EquipmentManager.cs" />
     <Compile Include="Assets\Scripts\Inventory\EquippableItem.cs" />
     <Compile Include="Assets\Scripts\Inventory\Item.cs" />
     <Compile Include="Assets\Scripts\Inventory\Rarity.cs" />
+    <Compile Include="Assets\Scripts\Inventory\RecipeItem.cs" />
     <Compile Include="Assets\Scripts\Inventory\UsableItem.cs" />
     <Compile Include="Assets\Scripts\Inventory\Weapon.cs" />
     <Compile Include="Assets\Scripts\Inventory\WeaponManager.cs" />
