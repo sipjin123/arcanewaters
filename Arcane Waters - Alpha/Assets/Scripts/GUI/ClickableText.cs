@@ -10,7 +10,7 @@ public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointer
    #region Public Variables
 
    // The different types of clickable text options
-   public enum Type {  None = 0, TradeGossip = 1 }
+   public enum Type {  None = 0, TradeGossip = 1, TradeBluePrint = 2 }
 
    // The Type of clickable text option this is
    public Type textType;
@@ -35,7 +35,9 @@ public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointer
       switch (this.textType) {
          case Type.TradeGossip:
             return "Have you heard about any <color=green>crops</color> that are currently in high demand?";
-      }
+            case Type.TradeBluePrint:
+                return "Would you like <color=green>crops</color> to have a blueprint?";
+        }
 
       return "";
    }

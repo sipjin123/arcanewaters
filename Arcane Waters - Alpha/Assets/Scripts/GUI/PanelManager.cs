@@ -16,6 +16,7 @@ public class PanelManager : MonoBehaviour {
    // Screens which are separate from the panel stack
    public ConfirmScreen confirmScreen;
    public NoticeScreen noticeScreen;
+   public RewardScreen rewardScreen;
    public TradeConfirmScreen tradeConfirmScreen;
 
    // Self
@@ -42,9 +43,15 @@ public class PanelManager : MonoBehaviour {
       // showModalPanel(Panel.Type.Login);
    }
 
-   private void Update () {
-      // Let us easily close panels with the Escape key
-      if (Input.GetKeyUp(KeyCode.Escape)) {
+   private void Update ()
+    {
+        if (Input.GetKeyUp(KeyCode.Y))
+        {
+            DebugCustom.Print("Call craft panel");
+            get(Panel.Type.Craft).show();
+        }
+        // Let us easily close panels with the Escape key
+            if (Input.GetKeyUp(KeyCode.Escape)) {
          if (confirmScreen.canvasGroup.alpha > 0f) {
             confirmScreen.hide();
          } else if (noticeScreen.canvasGroup.alpha > 0f) {
@@ -97,9 +104,9 @@ public class PanelManager : MonoBehaviour {
       // Add the panel type to the top of our stack
       _stack.Push(panelType);
       return showPanel(panelType);
-   }
+    }
 
-   public void pushIfNotShowing (Panel.Type panelType) {
+    public void pushIfNotShowing (Panel.Type panelType) {
       // If it's already showing, we're done
       if (get(panelType).isShowing()) {
          return;

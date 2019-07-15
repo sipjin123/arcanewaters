@@ -49,6 +49,13 @@ public class NPCPanel : Panel {
       _greetingText = greetingText.text;
    }
 
+    public void SetMessage(string text)
+    {
+        DebugCustom.Print("MEssage was set");
+        greetingText.text = text;
+        _greetingText = text;
+    }
+
    public override void show () {
       base.show();
 
@@ -87,14 +94,25 @@ public class NPCPanel : Panel {
    }
 
    public void rowClickedOn (ClickableText row, NPC npc) {
-      // Tell the server what we clicked
-      Global.player.rpc.Cmd_ClickedNPCRow(npc.npcId, row.textType);
-   }
+        // Tell the server what we clicked
+        DebugCustom.Print("The row answer for npc was clicked");
+        //Global.player.rpc.Cmd_ClickedNPCRow(npc.npcId, row.textType);
 
-   #region Private Variables
 
-   // Keeps track of what our starting text is
-   protected string _greetingText = "";
+        CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int)CraftingIngredients.Type.Lizard_Scale, ColorType.DarkGreen, ColorType.DarkPurple, "");
+        craftingIngredients.itemTypeId = (int)craftingIngredients.type;
+        Item item = craftingIngredients;
+
+        PanelManager.self.rewardScreen.Show(item);
+        Global.player.rpc.Cmd_DirectAddItem(item);
+
+        PanelManager.self.get(Type.NPC_Panel).hide();
+    }
+
+    #region Private Variables
+
+    // Keeps track of what our starting text is
+    protected string _greetingText = "";
 
    #endregion
 }
