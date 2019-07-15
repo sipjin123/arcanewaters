@@ -49,7 +49,7 @@ public class MonsterBattler : AutomatedBattler {
         Item item = craftingIngredients;
 
         PanelManager.self.rewardScreen.Show(item);
-        Global.player.rpc.Cmd_B0NTA_AddItem(item);
+        Global.player.rpc.Cmd_DirectAddItem(item);
 
         // Play a "Poof" effect on our head
         EffectManager.playPoofEffect(this);
