@@ -42,8 +42,17 @@ public class MonsterBattler : AutomatedBattler {
       // Wait a little bit for it to finish
       yield return new WaitForSeconds(.25f);
 
-      // Play a "Poof" effect on our head
-      EffectManager.playPoofEffect(this);
+        DebugCustom.Print("Monster Died");
+
+        CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int)CraftingIngredients.Type.Lizard_Scale, ColorType.DarkGreen, ColorType.DarkPurple, "");
+        craftingIngredients.itemTypeId = (int)craftingIngredients.type;
+        Item item = craftingIngredients;
+
+        PanelManager.self.rewardScreen.Show(item);
+        Global.player.rpc.Cmd_B0NTA_AddItem(item);
+
+        // Play a "Poof" effect on our head
+        EffectManager.playPoofEffect(this);
    }
 
    public override void handleEndOfBattle (Battle.TeamType winningTeam) {
