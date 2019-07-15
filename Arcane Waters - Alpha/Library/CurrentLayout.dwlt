@@ -113,7 +113,7 @@ MonoBehaviour:
   m_MinSize: {x: 713, y: 494}
   m_MaxSize: {x: 18008, y: 14044}
   vertical: 1
-  controlID: 76
+  controlID: 148
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -139,7 +139,7 @@ MonoBehaviour:
   m_MinSize: {x: 713, y: 494}
   m_MaxSize: {x: 18008, y: 14044}
   vertical: 0
-  controlID: 77
+  controlID: 149
 --- !u!114 &7
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -164,7 +164,7 @@ MonoBehaviour:
   m_MinSize: {x: 232, y: 494}
   m_MaxSize: {x: 10002, y: 14044}
   vertical: 1
-  controlID: 100
+  controlID: 104
 --- !u!114 &8
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -241,7 +241,7 @@ MonoBehaviour:
   m_MinSize: {x: 204, y: 344}
   m_MaxSize: {x: 4004, y: 8044}
   vertical: 1
-  controlID: 78
+  controlID: 150
 --- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -441,21 +441,20 @@ MonoBehaviour:
     m_SceneHandles: 
     m_ShowAllHits: 0
     m_SearchArea: 1
-    m_Folders:
-    - Assets/Animations
+    m_Folders: []
   m_ViewMode: 0
   m_StartGridSize: 64
   m_LastFolders: []
   m_LastFoldersGridSize: -1
-  m_LastProjectPath: D:\Projects\UnityEngineProjects\ArcaneWatersFullProject\Arcane
-    Waters - Alpha
+  m_LastProjectPath: D:\Projects\UnityEngineProjects\ArcaneWatersRepo\Arcane Waters
+    - Alpha
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 982c0000
     m_LastClickedID: 11416
-    m_ExpandedIDs: 00000000903a000058480000f24a00009a4b0000dc4b0000b85c00000cac0000b2bc00004ac000006ce100009c6c0100
+    m_ExpandedIDs: 00000000903a000060480000fa4a0000a24b0000e44b0000c45c000024ac0000cabc000066c0000094e10000d06c0100
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -483,7 +482,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: ffffffff00000000903a000058480000f24a00009a4b0000dc4b0000b85c00000cac0000b2bc00004ac000006ce100009c6c0100
+    m_ExpandedIDs: ffffffff00000000903a000060480000fa4a0000a24b0000e44b0000c45c000024ac0000cabc000066c0000094e10000d06c0100
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -567,7 +566,7 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: e0900000
+      m_SelectedIDs: 
       m_LastClickedID: 0
       m_ExpandedIDs: 8cfbffff
       m_RenameOverlay:
