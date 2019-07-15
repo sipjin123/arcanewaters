@@ -9,7 +9,7 @@ public class Item {
    #region Public Variables
 
    // The category of item this is
-   public enum Category { None = 0, Weapon = 1, Armor = 2, Helm = 3, Potion = 4, Usable = 5 }
+   public enum Category { None = 0, Weapon = 1, Armor = 2, Helm = 3, Potion = 4, Usable = 5 , CraftingIngredients  = 6}
 
    // The category of item this is
    public Category category;
@@ -56,7 +56,9 @@ public class Item {
             return new Weapon(this.id, this.itemTypeId, color1, color2, data, count);
          case Category.Usable:
             return new UsableItem(this.id, category, this.itemTypeId, count, color1, color2, data);
-         default:
+        case Category.CraftingIngredients:
+                return new CraftingIngredients(this.id, this.itemTypeId, color1, color2, data, count);
+            default:
             D.warning("Unknown item category: " + category);
             return null;
       }
