@@ -90,21 +90,103 @@ public class NPCPanel : Panel {
 
          // Set the type
          row.textType = option;
-      }
-   }
 
-   public void rowClickedOn (ClickableText row, NPC npc) {
+        row.gameObject.SetActive(false);
+      }
+    }
+
+    public void receiveItemsFromServer(UserObjects userObjects, int pageNumber, int gold, int gems, int totalItemCount, int equippedArmorId, int equippedWeaponId, Item[] itemArray)
+    {
+        foreach (Transform child in clickableRowContainer.transform)
+        {
+            child.gameObject.SetActive(true);
+        }
+        
+        DebugCustom.Print("I am an npc panel and I receive items: " );
+        List<Item> itemList = new List<Item>();
+        foreach (Item item in itemArray)
+        {
+            if (item.category == Item.Category.CraftingIngredients)
+            {
+                var findItem = itemList.Find(_ => _.category == Item.Category.CraftingIngredients &&
+                ((CraftingIngredients.Type)_.itemTypeId == (CraftingIngredients.Type)item.itemTypeId));
+                if (findItem != null)
+                {
+                    int index = itemList.IndexOf(findItem);
+                    itemList[index].count++;
+                    DebugCustom.Print("Stacking");
+                }
+                else
+                {
+                    itemList.Add(item.getCastItem());
+                }
+            }
+            else
+            {
+                itemList.Add(item.getCastItem());
+            }
+        }
+
+        if (npc.dialogeTypes[0] == ClickableText.Type.TradeDeliveryComplete)
+        {
+            var getDeliveryList = npc.npcData.npcQuestList[0].deliveryQuests[0].deliveryList;
+            DebugCustom.Print("Comparing : "+ (CraftingIngredients.Type)getDeliveryList[0].itemToDeliver.itemTypeId);
+
+            var findingItemList = itemList.Find(_ => (CraftingIngredients.Type)_.itemTypeId == (CraftingIngredients.Type)getDeliveryList[0].itemToDeliver.itemTypeId);
+            if (findingItemList != null)
+            {
+
+                if (findingItemList.count >= getDeliveryList[0].quantity)
+                {
+                    DebugCustom.Print("[QUANTITY] Current is : " + findingItemList.count+ "  Requred: " +getDeliveryList[0].quantity);
+                    DebugCustom.Print("Found a requiremet");
+                }
+            }
+        }
+
+    }
+
+    public void rowClickedOn (ClickableText row, NPC npc) {
         // Tell the server what we clicked
         DebugCustom.Print("The row answer for npc was clicked");
         //Global.player.rpc.Cmd_ClickedNPCRow(npc.npcId, row.textType);
 
+        DebugCustom.Print("my text type is : "+row.textType);
+        switch(row.textType)
+        {
+            case ClickableText.Type.TradeBluePrint:
 
-        CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int)CraftingIngredients.Type.Lizard_Scale, ColorType.DarkGreen, ColorType.DarkPurple, "");
-        craftingIngredients.itemTypeId = (int)craftingIngredients.type;
-        Item item = craftingIngredients;
+                break;
+            case ClickableText.Type.TradeDeliveryInit:
+                NPCQuestData questData = npc.npcData.npcQuestList[0];
+                QuestManager.self.RegisterQuest(questData);
 
-        PanelManager.self.rewardScreen.Show(item);
-        Global.player.rpc.Cmd_DirectAddItem(item);
+                npc.UnlockDialogue(questData,true);
+                break;
+            case ClickableText.Type.TradeDeliveryComplete:
+
+
+                NPCQuestData questData1 = npc.npcData.npcQuestList[0];
+
+                DeliverData deliverList = questData1.deliveryQuests[0].deliveryList[0];
+
+                Debug.LogError("I wanna deliver : " + deliverList.itemToDeliver.getName() + " " + deliverList.quantity);
+
+                QuestManager.self.ClearQuest(questData1);
+
+                CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int)CraftingIngredients.Type.Lizard_Scale, ColorType.DarkGreen, ColorType.DarkPurple, "");
+                craftingIngredients.itemTypeId = (int)craftingIngredients.type;
+                Item item = craftingIngredients;
+
+                PanelManager.self.rewardScreen.Show(item);
+                Global.player.rpc.Cmd_DirectAddItem(item);
+
+                npc.NoDialogues();
+                break;
+            case ClickableText.Type.TradeGossip:
+
+                break;
+        }
 
         PanelManager.self.get(Type.NPC_Panel).hide();
     }

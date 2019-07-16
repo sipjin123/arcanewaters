@@ -167,6 +167,7 @@ public class RPCManager : NetworkBehaviour {
       NPC npc = NPCManager.self.getNPC(npcId);
         // Show the panel with the specified options
         NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
+        PanelManager.self.selectedPanel = Panel.Type.NPC_Panel;
       panel.npc = npc;
       panel.setClickableRows(options.ToList());
       PanelManager.self.pushIfNotShowing(panel.type);
@@ -840,12 +841,16 @@ public class RPCManager : NetworkBehaviour {
 
    [Command]
    public void Cmd_GetClickableRows (int npcId) {
+
+        /*
       List<ClickableText.Type> list = new List<ClickableText.Type>();
-      list.Add(ClickableText.Type.TradeGossip);
-        list.Add(ClickableText.Type.TradeBluePrint);
+      list.Add(ClickableText.Type.TradeGossip);*/
+
 
         // Look up the NPC
         NPC npc = NPCManager.self.getNPC(npcId);
+
+        var list = npc.dialogeTypes;
 
       // If the player is too far, don't let them
       if (Vector2.Distance(_player.transform.position, npc.transform.position) > 2.0f) {
@@ -855,9 +860,9 @@ public class RPCManager : NetworkBehaviour {
 
       // Send the options to the player
       Target_ReceiveClickableNPCRows(_player.connectionToClient, list.ToArray(), npcId);
-   }
+    }
 
-   [Command]
+    [Command]
    public void Cmd_ClickedNPCRow (int npcId, ClickableText.Type optionType) {
       NPC npc = NPCManager.self.getNPC(npcId);
       // Figure out the response we should send back
