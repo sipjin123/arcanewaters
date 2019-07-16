@@ -20,6 +20,9 @@ public class NPC : MonoBehaviour {
       Stripes = 21, Vest = 22, Dog = 23, Lizard = 24,
    }
 
+   public NPCData npcData;
+   public List<ClickableText.Type> dialogeTypes = new List<ClickableText.Type>();
+
    // The Type of NPC this is
    public Type npcType;
 
@@ -67,7 +70,23 @@ public class NPC : MonoBehaviour {
       this.areaType = area.areaType;
    }
 
-   void Start () {
+    public void NoDialogues()
+    {
+        dialogeTypes = new List<ClickableText.Type>();
+        dialogeTypes.Add(ClickableText.Type.None);
+    }
+    public void UnlockDialogue(NPCQuestData data,bool ifClear)
+    {
+        if (ifClear)
+            dialogeTypes.Clear();
+        dialogeTypes.Add(data.UnlockableDialogue);
+    }
+
+    void Start () {
+
+        if (npcData) 
+        dialogeTypes.Add(npcData.defaultDialogue) ;
+
       // Look up components
       _body = GetComponent<Rigidbody2D>();
       _startPosition = this.transform.position;
@@ -210,8 +229,16 @@ public class NPC : MonoBehaviour {
          PanelManager.self.pushIfNotShowing(_shopTrigger.panelType);
         } else {
             // Send a request to the server to get the clickable text options
+            //Global.player.rpc.Cmd_GetClickableRows(this.npcId);
+
             Global.player.rpc.Cmd_GetClickableRows(this.npcId);
-            tradeGossip = "Interested in having this Blueprint?";
+            Global.player.rpc.Cmd_RequestItemsFromServer(1, 15);
+            if (dialogeTypes[0] == ClickableText.Type.TradeDeliveryComplete)
+            {
+            }
+            else
+            {
+            }
             PanelManager.self.get(Panel.Type.NPC_Panel).GetComponent<NPCPanel>().SetMessage(tradeGossip);
         }
    }
