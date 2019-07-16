@@ -233,26 +233,40 @@ public class ClientMessageManager : MonoBehaviour {
    }
 
    public static void On_Inventory (NetworkConnection conn, InventoryMessage msg) {
-      // Make sure the inventory panel is showing
-      InventoryPanel panel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
 
-      if (!panel.isShowing()) {
-         PanelManager.self.pushPanel(Panel.Type.Inventory);
-      }
+        // Make sure the inventory panel is showing
+        InventoryPanel panel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
+        CraftingPanel craftPanel = (CraftingPanel)PanelManager.self.get(Panel.Type.Craft);
 
-      // Update the Inventory Panel with the items we received from the server
-      panel.receiveItemsFromServer(msg.userObjects, msg.pageNumber, msg.gold, msg.gems, msg.totalItemCount, msg.equippedArmorId, msg.equippedWeaponId, msg.itemArray);
-   }
+        if(PanelManager.self.selectedPanel == Panel.Type.Inventory)
+        {
+            if (!panel.isShowing())
+            {
+                PanelManager.self.pushPanel(Panel.Type.Inventory);
+                // Update the Inventory Panel with the items we received from the server
+            }
+            panel.receiveItemsFromServer(msg.userObjects, msg.pageNumber, msg.gold, msg.gems, msg.totalItemCount, msg.equippedArmorId, msg.equippedWeaponId, msg.itemArray);
+        }
+        else if (PanelManager.self.selectedPanel == Panel.Type.Craft)
+        {
+            if (!craftPanel.isShowing())
+            {
+                PanelManager.self.pushPanel(Panel.Type.Craft);
+            }
+            craftPanel.receiveItemsFromServer(msg.userObjects, msg.pageNumber, msg.gold, msg.gems, msg.totalItemCount, msg.equippedArmorId, msg.equippedWeaponId, msg.itemArray);
+        }
+    }
 
-   public static void On_Store (NetworkConnection conn, StoreMessage msg) {
+    public static void On_Store (NetworkConnection conn, StoreMessage msg) {
       // Show the Store panel after updating the gems on hand
       StoreScreen store = (StoreScreen) PanelManager.self.get(Panel.Type.Store);
       store.showPanel(msg.userObjects, msg.goldOnHand, msg.gemsOnHand);
    }
 
    public static void On_Equip (NetworkConnection conn, EquipMessage msg) {
-      // Get a reference to the Inventory Panel
-      InventoryPanel panel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
+        // Get a reference to the Inventory Panel
+
+        InventoryPanel panel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
 
       // Update the Inventory Panel with the new equipped item IDs
       panel.setEquippedIds(msg.newArmorId, msg.newWeaponId);

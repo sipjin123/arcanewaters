@@ -19,6 +19,8 @@ public class PanelManager : MonoBehaviour {
    public RewardScreen rewardScreen;
    public TradeConfirmScreen tradeConfirmScreen;
 
+   public Panel.Type selectedPanel;
+
    // Self
    public static PanelManager self;
 
@@ -45,13 +47,8 @@ public class PanelManager : MonoBehaviour {
 
    private void Update ()
     {
-        if (Input.GetKeyUp(KeyCode.Y))
-        {
-            DebugCustom.Print("Call craft panel");
-            get(Panel.Type.Craft).show();
-        }
         // Let us easily close panels with the Escape key
-            if (Input.GetKeyUp(KeyCode.Escape)) {
+        if (Input.GetKeyUp(KeyCode.Escape)) {
          if (confirmScreen.canvasGroup.alpha > 0f) {
             confirmScreen.hide();
          } else if (noticeScreen.canvasGroup.alpha > 0f) {
@@ -85,8 +82,10 @@ public class PanelManager : MonoBehaviour {
          BottomBar.self.toggleOptionsPanel();
       } else if (Input.GetKeyUp(KeyCode.M)) {
          BottomBar.self.toggleMapPanel();
+      } else if (Input.GetKeyUp(KeyCode.Y)) {
+         BottomBar.self.toggleCraftingPanel();
       }
-   }
+    }
 
    public Panel currentPanel () {
       Panel.Type panelType = _stack.Peek();

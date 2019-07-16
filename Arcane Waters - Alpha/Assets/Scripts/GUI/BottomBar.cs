@@ -28,7 +28,9 @@ public class BottomBar : MonoBehaviour {
    }
 
    public void toggleInventoryPanel () {
-      InventoryPanel panel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
+
+        PanelManager.self.selectedPanel = Panel.Type.Inventory;
+        InventoryPanel panel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
 
       // If the panel is not showing, send a request to the server to get our items
       if (!panel.isShowing()) {
@@ -36,9 +38,21 @@ public class BottomBar : MonoBehaviour {
       } else {
          PanelManager.self.togglePanel(Panel.Type.Inventory);
       }
-   }
+    }
 
-   public void toggleMapPanel () {
+    public void toggleCraftingPanel()
+    {
+        PanelManager.self.selectedPanel = Panel.Type.Craft;
+        CraftingPanel panel = (CraftingPanel)PanelManager.self.get(Panel.Type.Craft);
+
+        // If the panel is not showing, send a request to the server to get our items
+        if (!panel.isShowing())
+        {
+            panel.requestInventoryFromServer(1);
+        }
+    }
+
+    public void toggleMapPanel () {
       OverworldScreen panel = (OverworldScreen) PanelManager.self.get(Panel.Type.Overworld);
 
       // If the panel is not showing, send a request to the server to get our exploration data
