@@ -60,6 +60,8 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
 --- !u!1 &1006036618367604
 GameObject:
   m_ObjectHideFlags: 0
@@ -3515,6 +3517,8 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
 --- !u!1 &1024358275081446
 GameObject:
   m_ObjectHideFlags: 0
@@ -3767,6 +3771,8 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
 --- !u!1 &1040719881828584
 GameObject:
   m_ObjectHideFlags: 0
@@ -3906,6 +3912,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 476489752f4f4a147a522b0823efee26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  npcData: {fileID: 0}
   npcType: 2
   faction: 1
   specialty: 9
@@ -4116,6 +4123,8 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
 --- !u!1 &1051284148218380
 GameObject:
   m_ObjectHideFlags: 0
@@ -11266,6 +11275,8 @@ TilemapCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 1
   m_Offset: {x: 0, y: 0}
+  m_MaximumTileChangeCount: 1000
+  m_ExtrusionFactor: 0.00001
 --- !u!1 &1164385247561904
 GameObject:
   m_ObjectHideFlags: 0
@@ -11508,6 +11519,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 476489752f4f4a147a522b0823efee26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  npcData: {fileID: 0}
   npcType: 5
   faction: 1
   specialty: 9
@@ -12125,6 +12137,8 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
 --- !u!1 &1205610216267682
 GameObject:
   m_ObjectHideFlags: 0
@@ -12908,6 +12922,8 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
 --- !u!1 &1232922901651896
 GameObject:
   m_ObjectHideFlags: 0
@@ -15695,6 +15711,8 @@ TilemapCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 1
   m_Offset: {x: 0, y: 0}
+  m_MaximumTileChangeCount: 1000
+  m_ExtrusionFactor: 0.00001
 --- !u!1 &1254739740825918
 GameObject:
   m_ObjectHideFlags: 0
@@ -25196,6 +25214,8 @@ TilemapCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 1
   m_Offset: {x: 0, y: 0}
+  m_MaximumTileChangeCount: 1000
+  m_ExtrusionFactor: 0.00001
 --- !u!1 &1327066335147690
 GameObject:
   m_ObjectHideFlags: 0
@@ -25335,6 +25355,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 476489752f4f4a147a522b0823efee26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  npcData: {fileID: 0}
   npcType: 6
   faction: 1
   specialty: 9
@@ -25545,6 +25566,8 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
 --- !u!1 &1344521760254254
 GameObject:
   m_ObjectHideFlags: 0
@@ -26120,6 +26143,8 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
 --- !u!1 &1378513625864064
 GameObject:
   m_ObjectHideFlags: 0
@@ -26180,6 +26205,8 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
 --- !u!1 &1380660035879264
 GameObject:
   m_ObjectHideFlags: 0
@@ -29830,6 +29857,7 @@ CompositeCollider2D:
   m_CompositePaths:
     m_Paths: []
   m_VertexDistance: 0.0005
+  m_OffsetDistance: 0.000005
 --- !u!1 &1451046012745338
 GameObject:
   m_ObjectHideFlags: 0
@@ -32142,6 +32170,8 @@ TilemapCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 1
   m_Offset: {x: 0, y: 0}
+  m_MaximumTileChangeCount: 1000
+  m_ExtrusionFactor: 0.00001
 --- !u!1 &1523351073827396
 GameObject:
   m_ObjectHideFlags: 0
@@ -32435,6 +32465,8 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
 --- !u!1 &1534387441732066
 GameObject:
   m_ObjectHideFlags: 0
@@ -70247,6 +70279,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 476489752f4f4a147a522b0823efee26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  npcData: {fileID: 0}
   npcType: 3
   faction: 1
   specialty: 9
@@ -70506,6 +70539,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 476489752f4f4a147a522b0823efee26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  npcData: {fileID: 0}
   npcType: 1
   faction: 1
   specialty: 9
@@ -78691,6 +78725,8 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
 --- !u!1 &1605645619845964
 GameObject:
   m_ObjectHideFlags: 0
@@ -80305,6 +80341,8 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
 --- !u!1 &1682413991462944
 GameObject:
   m_ObjectHideFlags: 0
@@ -80444,6 +80482,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 476489752f4f4a147a522b0823efee26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  npcData: {fileID: 0}
   npcType: 2
   faction: 1
   specialty: 9
@@ -81009,6 +81048,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 476489752f4f4a147a522b0823efee26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  npcData: {fileID: 0}
   npcType: 1
   faction: 1
   specialty: 9
@@ -81541,6 +81581,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0238d3a47487136468c7bb31c718f5cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  quakeEffect: {fileID: 0}
 --- !u!1 &1726873460617558
 GameObject:
   m_ObjectHideFlags: 0
@@ -81974,6 +82015,8 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
 --- !u!1 &1738215416819434
 GameObject:
   m_ObjectHideFlags: 0
@@ -82113,6 +82156,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 476489752f4f4a147a522b0823efee26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  npcData: {fileID: 0}
   npcType: 3
   faction: 1
   specialty: 9
@@ -84044,6 +84088,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 476489752f4f4a147a522b0823efee26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  npcData: {fileID: 0}
   npcType: 5
   faction: 1
   specialty: 9
@@ -88773,6 +88818,8 @@ TilemapCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 1
   m_Offset: {x: 0, y: 0}
+  m_MaximumTileChangeCount: 1000
+  m_ExtrusionFactor: 0.00001
 --- !u!1 &1789795878635192
 GameObject:
   m_ObjectHideFlags: 0
@@ -88942,6 +88989,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 476489752f4f4a147a522b0823efee26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  npcData: {fileID: 0}
   npcType: 2
   faction: 1
   specialty: 9
@@ -89671,6 +89719,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 476489752f4f4a147a522b0823efee26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  npcData: {fileID: 0}
   npcType: 3
   faction: 1
   specialty: 9
@@ -89885,6 +89934,8 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
 --- !u!1 &1822004676636592
 GameObject:
   m_ObjectHideFlags: 0
@@ -91094,6 +91145,8 @@ TilemapCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 1
   m_Offset: {x: 0, y: 0}
+  m_MaximumTileChangeCount: 1000
+  m_ExtrusionFactor: 0.00001
 --- !u!1 &1859116224283830
 GameObject:
   m_ObjectHideFlags: 0
@@ -91233,6 +91286,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 476489752f4f4a147a522b0823efee26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  npcData: {fileID: 0}
   npcType: 7
   faction: 1
   specialty: 9
@@ -91964,6 +92018,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 476489752f4f4a147a522b0823efee26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  npcData: {fileID: 0}
   npcType: 5
   faction: 1
   specialty: 9
@@ -92462,6 +92517,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 476489752f4f4a147a522b0823efee26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  npcData: {fileID: 0}
   npcType: 7
   faction: 1
   specialty: 9
@@ -99374,6 +99430,8 @@ TilemapCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 1
   m_Offset: {x: 0, y: 0}
+  m_MaximumTileChangeCount: 1000
+  m_ExtrusionFactor: 0.00001
 --- !u!1 &1935208013293974
 GameObject:
   m_ObjectHideFlags: 0
@@ -101285,6 +101343,85 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.5, y: 0.18165207}
   m_EdgeRadius: 0
+--- !u!1 &6332263829529544108
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1544574063279043586}
+  - component: {fileID: 105515206604192930}
+  m_Layer: 0
+  m_Name: New Sprite
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1544574063279043586
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6332263829529544108}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.343, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 3467369224683556712}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &105515206604192930
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6332263829529544108}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_Sprite: {fileID: 21300014, guid: 20ff096e9514dc44ab496f2e5dc1f8fb, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 0.16, y: 0.16}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
 --- !u!1 &7055157394675584017
 GameObject:
   m_ObjectHideFlags: 0
@@ -101524,6 +101661,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 476489752f4f4a147a522b0823efee26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  npcData: {fileID: 0}
   npcType: 0
   faction: 1
   specialty: 9
@@ -101620,11 +101758,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+    - target: {fileID: 114912060166489536, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: npcData
+      value: 
+      objectReference: {fileID: 11400000, guid: 77cc5d2c9ad51684c8603e930eb1aca6,
+        type: 2}
+    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: newTexture
       value: 
-      objectReference: {fileID: 2800000, guid: ab036c0c30bdf8f4da8fcce42092df2e, type: 3}
+      objectReference: {fileID: 2800000, guid: 2fd3408a8dcee1a42bb37908c10227da, type: 3}
     - target: {fileID: 224054833768133422, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -101670,11 +101814,11 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: newTexture
       value: 
-      objectReference: {fileID: 2800000, guid: 2fd3408a8dcee1a42bb37908c10227da, type: 3}
+      objectReference: {fileID: 2800000, guid: ab036c0c30bdf8f4da8fcce42092df2e, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f8f35b9f6cbe1fb4d88c39af030bddd4, type: 3}
 --- !u!4 &227393963755072160 stripped
@@ -101738,11 +101882,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+    - target: {fileID: 114912060166489536, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: npcData
+      value: 
+      objectReference: {fileID: 11400000, guid: 77cc5d2c9ad51684c8603e930eb1aca6,
+        type: 2}
+    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: newTexture
       value: 
-      objectReference: {fileID: 2800000, guid: 3a2eeef537e872646a6bee31b125edf1, type: 3}
+      objectReference: {fileID: 2800000, guid: 96971288906b8374c915b82e38e55080, type: 3}
     - target: {fileID: 224054833768133422, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -101788,11 +101938,11 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: newTexture
       value: 
-      objectReference: {fileID: 2800000, guid: 96971288906b8374c915b82e38e55080, type: 3}
+      objectReference: {fileID: 2800000, guid: 3a2eeef537e872646a6bee31b125edf1, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f8f35b9f6cbe1fb4d88c39af030bddd4, type: 3}
 --- !u!4 &765795572932938870 stripped
@@ -101856,11 +102006,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+    - target: {fileID: 114912060166489536, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: npcData
+      value: 
+      objectReference: {fileID: 11400000, guid: 77cc5d2c9ad51684c8603e930eb1aca6,
+        type: 2}
+    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: newTexture
       value: 
-      objectReference: {fileID: 2800000, guid: 2e0d1b3bae10b2142bd319de292c461a, type: 3}
+      objectReference: {fileID: 2800000, guid: 38a71abc4e883f544af2d0ef470af9d2, type: 3}
     - target: {fileID: 224054833768133422, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -101906,11 +102062,11 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: newTexture
       value: 
-      objectReference: {fileID: 2800000, guid: 38a71abc4e883f544af2d0ef470af9d2, type: 3}
+      objectReference: {fileID: 2800000, guid: 2e0d1b3bae10b2142bd319de292c461a, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f8f35b9f6cbe1fb4d88c39af030bddd4, type: 3}
 --- !u!4 &1082010977986087184 stripped
@@ -101974,7 +102130,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+    - target: {fileID: 114912060166489536, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: npcData
+      value: 
+      objectReference: {fileID: 11400000, guid: 77cc5d2c9ad51684c8603e930eb1aca6,
+        type: 2}
+    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: newTexture
       value: 
@@ -102024,7 +102186,7 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: newTexture
       value: 
@@ -102092,11 +102254,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+    - target: {fileID: 114912060166489536, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: npcData
+      value: 
+      objectReference: {fileID: 11400000, guid: 77cc5d2c9ad51684c8603e930eb1aca6,
+        type: 2}
+    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: newTexture
       value: 
-      objectReference: {fileID: 2800000, guid: 5931702be6b7d1446be06eb55727621a, type: 3}
+      objectReference: {fileID: 2800000, guid: ab036c0c30bdf8f4da8fcce42092df2e, type: 3}
     - target: {fileID: 224054833768133422, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -102142,11 +102310,11 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: newTexture
       value: 
-      objectReference: {fileID: 2800000, guid: ab036c0c30bdf8f4da8fcce42092df2e, type: 3}
+      objectReference: {fileID: 2800000, guid: 5931702be6b7d1446be06eb55727621a, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f8f35b9f6cbe1fb4d88c39af030bddd4, type: 3}
 --- !u!4 &1965831406545423347 stripped
@@ -102285,11 +102453,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+    - target: {fileID: 114912060166489536, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: npcData
+      value: 
+      objectReference: {fileID: 11400000, guid: 77cc5d2c9ad51684c8603e930eb1aca6,
+        type: 2}
+    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: newTexture
       value: 
-      objectReference: {fileID: 2800000, guid: 7397b65e65f9e1b46a7f4ec1b0bf4fe7, type: 3}
+      objectReference: {fileID: 2800000, guid: 3a2eeef537e872646a6bee31b125edf1, type: 3}
     - target: {fileID: 224054833768133422, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -102335,11 +102509,11 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: newTexture
       value: 
-      objectReference: {fileID: 2800000, guid: 3a2eeef537e872646a6bee31b125edf1, type: 3}
+      objectReference: {fileID: 2800000, guid: 7397b65e65f9e1b46a7f4ec1b0bf4fe7, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f8f35b9f6cbe1fb4d88c39af030bddd4, type: 3}
 --- !u!4 &2986421847771637003 stripped
@@ -102403,7 +102577,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+    - target: {fileID: 114912060166489536, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: npcData
+      value: 
+      objectReference: {fileID: 11400000, guid: d71a7828a40f3184bb8a23b2e88d2ea2,
+        type: 2}
+    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: newTexture
       value: 
@@ -102453,7 +102633,7 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: newTexture
       value: 
@@ -102521,7 +102701,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+    - target: {fileID: 114912060166489536, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: npcData
+      value: 
+      objectReference: {fileID: 11400000, guid: 77cc5d2c9ad51684c8603e930eb1aca6,
+        type: 2}
+    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: newTexture
       value: 
@@ -102571,7 +102757,7 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: newTexture
       value: 
@@ -102639,11 +102825,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+    - target: {fileID: 114912060166489536, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: npcData
+      value: 
+      objectReference: {fileID: 11400000, guid: 77cc5d2c9ad51684c8603e930eb1aca6,
+        type: 2}
+    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: newTexture
       value: 
-      objectReference: {fileID: 2800000, guid: 38a71abc4e883f544af2d0ef470af9d2, type: 3}
+      objectReference: {fileID: 2800000, guid: 2e0d1b3bae10b2142bd319de292c461a, type: 3}
     - target: {fileID: 224054833768133422, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -102689,11 +102881,11 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: newTexture
       value: 
-      objectReference: {fileID: 2800000, guid: 2e0d1b3bae10b2142bd319de292c461a, type: 3}
+      objectReference: {fileID: 2800000, guid: 38a71abc4e883f544af2d0ef470af9d2, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f8f35b9f6cbe1fb4d88c39af030bddd4, type: 3}
 --- !u!4 &5170892227498886192 stripped
@@ -102757,7 +102949,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+    - target: {fileID: 114912060166489536, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: npcData
+      value: 
+      objectReference: {fileID: 11400000, guid: 77cc5d2c9ad51684c8603e930eb1aca6,
+        type: 2}
+    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: newTexture
       value: 
@@ -102807,7 +103005,7 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: newTexture
       value: 
@@ -102875,7 +103073,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+    - target: {fileID: 114912060166489536, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: npcData
+      value: 
+      objectReference: {fileID: 11400000, guid: 77cc5d2c9ad51684c8603e930eb1aca6,
+        type: 2}
+    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: newTexture
       value: 
@@ -102925,7 +103129,7 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: newTexture
       value: 
@@ -102993,6 +103197,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114912060166489536, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: npcData
+      value: 
+      objectReference: {fileID: 11400000, guid: 77cc5d2c9ad51684c8603e930eb1aca6,
+        type: 2}
+    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: newTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: 6f1b3c7c7b4a5864591d983eba46eb98, type: 3}
     - target: {fileID: 224054833768133422, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -103038,11 +103253,6 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
-        type: 3}
-      propertyPath: newTexture
-      value: 
-      objectReference: {fileID: 2800000, guid: 6f1b3c7c7b4a5864591d983eba46eb98, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f8f35b9f6cbe1fb4d88c39af030bddd4, type: 3}
 --- !u!4 &7301478221506784832 stripped
@@ -103106,11 +103316,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+    - target: {fileID: 114912060166489536, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: npcData
+      value: 
+      objectReference: {fileID: 11400000, guid: 77cc5d2c9ad51684c8603e930eb1aca6,
+        type: 2}
+    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: newTexture
       value: 
-      objectReference: {fileID: 2800000, guid: 96971288906b8374c915b82e38e55080, type: 3}
+      objectReference: {fileID: 2800000, guid: 5931702be6b7d1446be06eb55727621a, type: 3}
     - target: {fileID: 224054833768133422, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -103156,11 +103372,11 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: newTexture
       value: 
-      objectReference: {fileID: 2800000, guid: 5931702be6b7d1446be06eb55727621a, type: 3}
+      objectReference: {fileID: 2800000, guid: 96971288906b8374c915b82e38e55080, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f8f35b9f6cbe1fb4d88c39af030bddd4, type: 3}
 --- !u!4 &7827664444325390226 stripped
