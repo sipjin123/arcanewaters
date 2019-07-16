@@ -200,6 +200,7 @@ public class ClientMessageManager : MonoBehaviour {
    }
 
    public static void On_CharacterList (NetworkConnection conn, CharacterListMessage msg) {
+        DebugCustom.Print("On character List");
       // Activate the Character screen camera
       Util.activateVirtualCamera(CharacterScreen.self.virtualCam);
 
@@ -235,11 +236,10 @@ public class ClientMessageManager : MonoBehaviour {
    public static void On_Inventory (NetworkConnection conn, InventoryMessage msg) {
 
         // Make sure the inventory panel is showing
-        InventoryPanel panel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
-        CraftingPanel craftPanel = (CraftingPanel)PanelManager.self.get(Panel.Type.Craft);
 
-        if(PanelManager.self.selectedPanel == Panel.Type.Inventory)
+        if (PanelManager.self.selectedPanel == Panel.Type.Inventory)
         {
+            InventoryPanel panel = (InventoryPanel)PanelManager.self.get(Panel.Type.Inventory);
             if (!panel.isShowing())
             {
                 PanelManager.self.pushPanel(Panel.Type.Inventory);
@@ -249,11 +249,21 @@ public class ClientMessageManager : MonoBehaviour {
         }
         else if (PanelManager.self.selectedPanel == Panel.Type.Craft)
         {
+            CraftingPanel craftPanel = (CraftingPanel)PanelManager.self.get(Panel.Type.Craft);
             if (!craftPanel.isShowing())
             {
                 PanelManager.self.pushPanel(Panel.Type.Craft);
             }
             craftPanel.receiveItemsFromServer(msg.userObjects, msg.pageNumber, msg.gold, msg.gems, msg.totalItemCount, msg.equippedArmorId, msg.equippedWeaponId, msg.itemArray);
+        }
+        else if (PanelManager.self.selectedPanel == Panel.Type.NPC_Panel)
+        {
+            NPCPanel npcPanel = (NPCPanel)PanelManager.self.get(Panel.Type.NPC_Panel);
+            if (!npcPanel.isShowing())
+            {
+                PanelManager.self.pushPanel(Panel.Type.NPC_Panel);
+            }
+            npcPanel.receiveItemsFromServer(msg.userObjects, msg.pageNumber, msg.gold, msg.gems, msg.totalItemCount, msg.equippedArmorId, msg.equippedWeaponId, msg.itemArray);
         }
     }
 

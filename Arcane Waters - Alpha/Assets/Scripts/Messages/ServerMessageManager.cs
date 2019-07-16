@@ -14,12 +14,15 @@ public class ServerMessageManager : MonoBehaviour {
       int selectedUserId = logInUserMessage.selectedUserId;
 
       // Make sure they have the required game version
+      //BONTA DOTN FORGET TO FIX
+      /*
       if (logInUserMessage.clientGameVersion < Global.GAME_VERSION) {
+            DebugCustom.Print("I am refusing to login");
          string msg = string.Format("Refusing login for {0}, client version {1}", logInUserMessage.accountName, logInUserMessage.clientGameVersion);
          D.debug(msg);
          sendError(ErrorMessage.Type.ClientOutdated, conn.connectionId);
          return;
-      }
+      }*/
 
       // Grab the user info from the database for the relevant account ID
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
