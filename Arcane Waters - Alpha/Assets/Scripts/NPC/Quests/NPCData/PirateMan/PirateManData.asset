@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf353752274a4f04cb52028462f8963f, type: 3}
   m_Name: PirateManData
   m_EditorClassIdentifier: 
-  dialogueTypeList: 00000000
   defaultDialogue: 3
   npcQuestList:
   - {fileID: 11400000, guid: 53db2c70a0766594c8646c83e4d81395, type: 2}

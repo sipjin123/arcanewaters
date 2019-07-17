@@ -10,15 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: afc63c889e0d893478827c9a2c1ebd9d, type: 3}
-  m_Name: DeliverLizards
+  m_Name: DeliverLizards_4
   m_EditorClassIdentifier: 
-  deliveryList:
-  - itemToDeliver:
-      category: 6
-      id: 0
-      itemTypeId: 1
-      color1: 0
-      color2: 0
-      data: 
-      count: 0
-    quantity: 5
+  itemToDeliver:
+    category: 6
+    id: 0
+    itemTypeId: 1
+    color1: 0
+    color2: 0
+    data: 
+    count: 1
+  quantity: 4
