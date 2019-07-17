@@ -236,6 +236,8 @@ public class ClientMessageManager : MonoBehaviour {
 
       // Make sure the inventory panel is showing
 
+      InventoryCacheManager.self.receiveItemsFromServer(msg.userObjects, msg.pageNumber, msg.gold, msg.gems, msg.totalItemCount, msg.equippedArmorId, msg.equippedWeaponId, msg.itemArray);
+
       if (PanelManager.self.selectedPanel == Panel.Type.Inventory) {
          InventoryPanel panel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
          if (!panel.isShowing()) {
@@ -249,13 +251,7 @@ public class ClientMessageManager : MonoBehaviour {
             PanelManager.self.pushPanel(Panel.Type.Craft);
          }
          craftPanel.receiveItemsFromServer(msg.userObjects, msg.pageNumber, msg.gold, msg.gems, msg.totalItemCount, msg.equippedArmorId, msg.equippedWeaponId, msg.itemArray);
-      } else if (PanelManager.self.selectedPanel == Panel.Type.NPC_Panel) {
-         NPCPanel npcPanel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
-         if (!npcPanel.isShowing()) {
-            PanelManager.self.pushPanel(Panel.Type.NPC_Panel);
-         }
-         npcPanel.receiveItemsFromServer(msg.userObjects, msg.pageNumber, msg.gold, msg.gems, msg.totalItemCount, msg.equippedArmorId, msg.equippedWeaponId, msg.itemArray);
-      }
+      } 
    }
 
    public static void On_Store (NetworkConnection conn, StoreMessage msg) {

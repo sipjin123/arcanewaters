@@ -14,6 +14,9 @@ public class RPCManager : NetworkBehaviour {
 
    void Start () {
       _player = GetComponent<NetEntity>();
+
+      // Initialized Inventory Cache
+      InventoryCacheManager.self.FetchInventory();
    }
 
    [ClientRpc]
@@ -849,8 +852,7 @@ public class RPCManager : NetworkBehaviour {
       // Look up the NPC
       NPC npc = NPCManager.self.getNPC(npcId);
 
-      var list = npc.dialogeTypes;
-
+      var list = npc.currentAnswerDialogue;
       // If the player is too far, don't let them
       if (Vector2.Distance(_player.transform.position, npc.transform.position) > 2.0f) {
          D.warning("Player trying to interact with NPC from too far away!");
