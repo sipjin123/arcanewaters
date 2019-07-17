@@ -534,7 +534,16 @@
     <Compile Include="Assets\Scripts\NPC\BotManager.cs" />
     <Compile Include="Assets\Scripts\NPC\BotSpot.cs" />
     <Compile Include="Assets\Scripts\NPC\NPC.cs" />
+    <Compile Include="Assets\Scripts\NPC\NPCFriendshipManager.cs" />
     <Compile Include="Assets\Scripts\NPC\NPCManager.cs" />
+    <Compile Include="Assets\Scripts\NPC\QuestManager.cs" />
+    <Compile Include="Assets\Scripts\NPC\Quests\DeliverDataClass.cs" />
+    <Compile Include="Assets\Scripts\NPC\Quests\DeliverQuest.cs" />
+    <Compile Include="Assets\Scripts\NPC\Quests\HuntQuest.cs" />
+    <Compile Include="Assets\Scripts\NPC\Quests\InteractQuest.cs" />
+    <Compile Include="Assets\Scripts\NPC\Quests\NPCData.cs" />
+    <Compile Include="Assets\Scripts\NPC\Quests\NPCQuestData.cs" />
+    <Compile Include="Assets\Scripts\NPC\QuestTemplate.cs" />
     <Compile Include="Assets\Scripts\NPC\ShopTrigger.cs" />
     <Compile Include="Assets\Scripts\NPC\Tip.cs" />
     <Compile Include="Assets\Scripts\NPC\TipManager.cs" />
