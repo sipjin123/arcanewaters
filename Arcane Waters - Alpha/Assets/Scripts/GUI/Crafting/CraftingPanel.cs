@@ -17,26 +17,17 @@ public class CraftingPanel : Panel, IPointerClickHandler
    public Text goldText;
    public Text gemsText;
 
-   [SerializeField]
-   private Image resultImage;
+   public Image resultImage;
 
-   [SerializeField]
-   private CraftingMaterialRow craftingMetrialRow;
+   public CraftingMaterialRow craftingMetrialRow;
 
-   private CraftingMaterialRow currCraftingMaterialRow;
-   private CraftingRow currCraftingRow;
+   public List<CraftingRow> craftingRowList;
 
-   [SerializeField]
-   private List<CraftingRow> craftingRowList;
+   public Transform listParent;
 
-   [SerializeField]
-   private Transform listParent;
+   public Button craftButton, useButton, removeButton, clearButton;
 
-   [SerializeField]
-   private Button craftButton, useButton, removeButton, clearButton;
-
-   [SerializeField]
-   private Item craftableItem;
+   public Item craftableItem;
    #endregion
 
    public override void Start () {
@@ -62,27 +53,27 @@ public class CraftingPanel : Panel, IPointerClickHandler
    }
 
    private void ClickMaterialRow (CraftingMaterialRow currItem) {
-      if (currCraftingMaterialRow != null) {
-         if (currCraftingMaterialRow != currItem)
-            currCraftingMaterialRow.DeselectItem();
+      if (_currCraftingMaterialRow != null) {
+         if (_currCraftingMaterialRow != currItem)
+            _currCraftingMaterialRow.DeselectItem();
       }
       currItem.SelectItem();
-      currCraftingMaterialRow = currItem;
+      _currCraftingMaterialRow = currItem;
    }
    private void ClickCraftRow (CraftingRow currItem) {
       if (currItem == null) {
          return;
       }
-      if (currCraftingRow != null) {
-         if (currCraftingRow == currItem) {
+      if (_currCraftingRow != null) {
+         if (_currCraftingRow == currItem) {
             return;
          } else {
-            currCraftingRow.UnselectItem();
+            _currCraftingRow.UnselectItem();
          }
       }
 
-      currCraftingRow = currItem;
-      currCraftingRow.SelectItem();
+      _currCraftingRow = currItem;
+      _currCraftingRow.SelectItem();
    }
 
    private void Purge () {
@@ -101,37 +92,37 @@ public class CraftingPanel : Panel, IPointerClickHandler
       }
    }
    private void SelectItem () {
-      if (currCraftingMaterialRow == null)
+      if (_currCraftingMaterialRow == null)
          return;
 
       bool hasInjected = false;
       for (int i = 0; i < craftingRowList.Count; i++) {
          if (!craftingRowList[i].hasData) {
             hasInjected = true;
-            craftingRowList[i].InjectItem(currCraftingMaterialRow.ItemData);
+            craftingRowList[i].InjectItem(_currCraftingMaterialRow.ItemData);
             break;
          }
       }
       if (hasInjected == false) {
-         craftingRowList[0].InjectItem(currCraftingMaterialRow.ItemData);
+         craftingRowList[0].InjectItem(_currCraftingMaterialRow.ItemData);
       }
 
-      if (currCraftingRow)
-         currCraftingRow.UnselectItem();
-      currCraftingRow = null;
-      if (currCraftingMaterialRow)
-         currCraftingMaterialRow.DeselectItem();
-      currCraftingMaterialRow = null;
+      if (_currCraftingRow)
+         _currCraftingRow.UnselectItem();
+      _currCraftingRow = null;
+      if (_currCraftingMaterialRow)
+         _currCraftingMaterialRow.DeselectItem();
+      _currCraftingMaterialRow = null;
 
       ComputeCombinations();
    }
    private void RemoveItem () {
-      if (currCraftingRow == null)
+      if (_currCraftingRow == null)
          return;
-      currCraftingRow.UnselectItem();
-      currCraftingRow.PurgeData();
+      _currCraftingRow.UnselectItem();
+      _currCraftingRow.PurgeData();
       ComputeCombinations();
-      currCraftingRow = null;
+      _currCraftingRow = null;
    }
 
    void ComputeCombinations () {
@@ -207,4 +198,9 @@ public class CraftingPanel : Panel, IPointerClickHandler
    public void OnPointerClick (PointerEventData eventData) {
 
    }
+
+   #region Private Variables
+   private CraftingMaterialRow _currCraftingMaterialRow;
+   private CraftingRow _currCraftingRow;
+   #endregion
 }
