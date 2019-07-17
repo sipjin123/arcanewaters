@@ -5,11 +5,12 @@ using UnityEngine.UI;
 using System;
 
 [Serializable]
-public class Item {
+public class Item
+{
    #region Public Variables
 
    // The category of item this is
-   public enum Category { None = 0, Weapon = 1, Armor = 2, Helm = 3, Potion = 4, Usable = 5 , CraftingIngredients  = 6}
+   public enum Category { None = 0, Weapon = 1, Armor = 2, Helm = 3, Potion = 4, Usable = 5, CraftingIngredients = 6 }
 
    // The category of item this is
    public Category category;
@@ -56,9 +57,9 @@ public class Item {
             return new Weapon(this.id, this.itemTypeId, color1, color2, data, count);
          case Category.Usable:
             return new UsableItem(this.id, category, this.itemTypeId, count, color1, color2, data);
-        case Category.CraftingIngredients:
-                return new CraftingIngredients(this.id, this.itemTypeId, color1, color2, data, count);
-            default:
+         case Category.CraftingIngredients:
+            return new CraftingIngredients(this.id, this.itemTypeId, color1, color2, data, count);
+         default:
             D.warning("Unknown item category: " + category);
             return null;
       }
@@ -121,7 +122,7 @@ public class Item {
          // Get the left and right side of the equal
          string key = kvp.Split('=')[0];
          string value = kvp.Split('=')[1];
-         
+
          if ("price".Equals(key)) {
             return System.Convert.ToInt32(value);
          }
@@ -133,7 +134,7 @@ public class Item {
    public static int getBaseSellPrice (Category category, int itemTypeId) {
       // Armor prices
       if (category == Category.Armor) {
-         switch ((Armor.Type)itemTypeId) {
+         switch ((Armor.Type) itemTypeId) {
             case Armor.Type.Casual:
                return 1000;
             default:
