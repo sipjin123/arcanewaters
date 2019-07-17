@@ -30,32 +30,12 @@ public class MaterialManager : MonoBehaviour {
       defineBodyMaterials();
       defineArmorMaterials();
       defineWeaponMaterials();
-      defineCraftingIngredientMaterials();
+
       // Ship materials
       defineShipMaterials();
    }
 
-    public void defineCraftingIngredientMaterials()
-    {
-        foreach (Gender.Type gender in Gender.getTypes())
-        {
-            ColorKey lizard_scale = new ColorKey(gender, CraftingIngredients.Type.Lizard_Scale);
-            _materials[lizard_scale] = material_G_B;
-
-            ColorKey lizard_claw = new ColorKey(gender, CraftingIngredients.Type.Lizard_Claw);
-            _materials[lizard_claw] = material_G_R;
-
-            ColorKey ore = new ColorKey(gender, CraftingIngredients.Type.Ore);
-            _materials[ore] = material_G_R;
-
-            ColorKey lumber = new ColorKey(gender, CraftingIngredients.Type.Lumber);
-            _materials[lumber] = material_G_R;
-
-            ColorKey flint = new ColorKey(gender, CraftingIngredients.Type.Flint);
-            _materials[flint] = material_G_R;
-        }
-    }
-    public void defineBodyMaterials () {
+   public void defineBodyMaterials () {
       foreach (Gender.Type gender in Gender.getTypes()) {
          // Eyes
          ColorKey eyes = new ColorKey(gender, Layer.Eyes);

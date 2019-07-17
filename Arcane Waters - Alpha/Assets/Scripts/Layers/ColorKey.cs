@@ -32,14 +32,9 @@ public class ColorKey {
    public ColorKey (Gender.Type gender, Weapon.Type weaponType) {
       this.prefix = gender + "";
       this.suffix = weaponType + "";
-    }
-    public ColorKey(Gender.Type gender, CraftingIngredients.Type ingredientType)
-    {
-        this.prefix = gender + "";
-        this.suffix = ingredientType + "";
-    }
+   }
 
-    public ColorKey (Ship.Type shipType, Layer layerType) {
+   public ColorKey (Ship.Type shipType, Layer layerType) {
       this.prefix = shipType + "";
       this.suffix = layerType + "";
    }
