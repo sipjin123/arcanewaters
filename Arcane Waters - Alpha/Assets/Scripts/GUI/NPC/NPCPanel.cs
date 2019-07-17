@@ -5,8 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using TMPro;
 
-public class NPCPanel : Panel
-{
+public class NPCPanel : Panel {
    #region Public Variables
 
    // The NPC associated with this panel

@@ -6,8 +6,7 @@ using Mirror;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
 
-public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler
-{
+public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler {
    #region Public Variables
 
    // The different types of clickable text options
@@ -91,6 +90,6 @@ public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointer
 
    // Our initial font color
    protected Color _initialFontColor;
-
+      
    #endregion
 }

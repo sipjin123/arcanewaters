@@ -4,8 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class PanelManager : MonoBehaviour
-{
+public class PanelManager : MonoBehaviour {
    #region Public Variables
 
    // The stack of panels we want to manage (generally optional panels that can be discarded at any time)

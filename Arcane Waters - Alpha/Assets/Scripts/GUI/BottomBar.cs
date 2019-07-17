@@ -4,8 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class BottomBar : MonoBehaviour
-{
+public class BottomBar : MonoBehaviour {
    #region Public Variables
 
    // Self

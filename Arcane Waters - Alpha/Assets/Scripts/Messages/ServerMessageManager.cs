@@ -4,8 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class ServerMessageManager : MonoBehaviour
-{
+public class ServerMessageManager : MonoBehaviour {
    #region Public Variables
 
    #endregion
@@ -13,6 +12,14 @@ public class ServerMessageManager : MonoBehaviour
    [ServerOnly]
    public static void On_LogInUserMessage (NetworkConnection conn, LogInUserMessage logInUserMessage) {
       int selectedUserId = logInUserMessage.selectedUserId;
+
+      // Make sure they have the required game version
+      if (logInUserMessage.clientGameVersion < Global.GAME_VERSION) {
+         string msg = string.Format("Refusing login for {0}, client version {1}", logInUserMessage.accountName, logInUserMessage.clientGameVersion);
+         D.debug(msg);
+         sendError(ErrorMessage.Type.ClientOutdated, conn.connectionId);
+         return;
+      }
 
       // Grab the user info from the database for the relevant account ID
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {

@@ -7,8 +7,7 @@ using System.Linq;
 using Crosstales.BWF.Manager;
 using System;
 
-public class RPCManager : NetworkBehaviour
-{
+public class RPCManager : NetworkBehaviour {
    #region Public Variables
 
    #endregion
@@ -166,6 +165,7 @@ public class RPCManager : NetworkBehaviour
    public void Target_ReceiveClickableNPCRows (NetworkConnection connection, ClickableText.Type[] options, int npcId) {
       // Look up the NPC
       NPC npc = NPCManager.self.getNPC(npcId);
+
       // Show the panel with the specified options
       NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
       PanelManager.self.selectedPanel = Panel.Type.NPC_Panel;
@@ -846,7 +846,6 @@ public class RPCManager : NetworkBehaviour
     List<ClickableText.Type> list = new List<ClickableText.Type>();
     list.Add(ClickableText.Type.TradeGossip);*/
 
-
       // Look up the NPC
       NPC npc = NPCManager.self.getNPC(npcId);
 
@@ -865,6 +864,7 @@ public class RPCManager : NetworkBehaviour
    [Command]
    public void Cmd_ClickedNPCRow (int npcId, ClickableText.Type optionType) {
       NPC npc = NPCManager.self.getNPC(npcId);
+
       // Figure out the response we should send back
       string response = npc.tradeGossip;
 

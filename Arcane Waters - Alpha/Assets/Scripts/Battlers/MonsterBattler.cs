@@ -13,7 +13,6 @@ public class MonsterBattler : AutomatedBattler
    // Our colors
    [SyncVar]
    public ColorType bodyColor1;
-
    [SyncVar]
    public ColorType bodyColor2;
 
@@ -69,5 +68,5 @@ public class MonsterBattler : AutomatedBattler
    // Our Sprite Layer objects
    protected BodyLayer _enemyLayer;
 
-   #endregion Private Variables
+   #endregion
 }

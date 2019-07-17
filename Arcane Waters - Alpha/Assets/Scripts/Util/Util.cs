@@ -370,7 +370,6 @@ public class Util : MonoBehaviour {
    }
 
    public static void activateVirtualCamera (CinemachineVirtualCamera virtualCamera) {
-
       // Make sure all other cameras are deactivated
       foreach (CinemachineVirtualCamera virtualCam in FindObjectsOfType<CinemachineVirtualCamera>()) {
          virtualCam.VirtualCameraGameObject.SetActive(false);

@@ -5,17 +5,14 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
 
-public class NPC : MonoBehaviour
-{
+public class NPC : MonoBehaviour {
    #region Public Variables
 
    // How close we have to be in order to talk to the NPC
    public static float TALK_DISTANCE = .65f;
 
    // The Types of different NPCs
-   public enum Type
-   {
-      None = 0,
+   public enum Type { None = 0,
       Blackbeard = 1, Blacksmith = 2, Fatty = 3, Feather = 4, Fisherman = 5,
       Gardener = 6, Glasses = 7, Gramps = 8, Hammer = 9, Headband = 10,
       ItemShop = 11, Mapper = 12, Monocle = 13, Parrot = 14, Patch = 15,
@@ -209,7 +206,7 @@ public class NPC : MonoBehaviour
       }
 
       // Figure out the direction of our movement
-      Vector2 direction = moveTarget - (Vector2) this.transform.position;
+      Vector2 direction = moveTarget - (Vector2)this.transform.position;
       _body.AddForce(direction.normalized * moveSpeed);
    }
 
@@ -229,8 +226,6 @@ public class NPC : MonoBehaviour
          PanelManager.self.pushIfNotShowing(_shopTrigger.panelType);
       } else {
          // Send a request to the server to get the clickable text options
-         //Global.player.rpc.Cmd_GetClickableRows(this.npcId);
-
          Global.player.rpc.Cmd_GetClickableRows(this.npcId);
          Global.player.rpc.Cmd_RequestItemsFromServer(1, 15);
          if (dialogeTypes[0] == ClickableText.Type.TradeDeliveryComplete) {
@@ -383,7 +378,7 @@ public class NPC : MonoBehaviour
       if (swapper != null) {
          spriteName = swapper.newTexture.name;
       }
-
+      
       string[] split = spriteName.Split('_');
       spriteName = split[0];
       Type npcType = (Type) System.Enum.Parse(typeof(Type), spriteName, true);
@@ -429,7 +424,6 @@ public class NPC : MonoBehaviour
 
       // Set our gossip
       tradeGossip = getTradeGossip(possibleOffers);
-
    }
 
    protected string getTradeGossip (List<CropOffer> offers) {

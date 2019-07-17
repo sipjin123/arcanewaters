@@ -5,8 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using Cinemachine;
 
-public class ClientMessageManager : MonoBehaviour
-{
+public class ClientMessageManager : MonoBehaviour {
    #region Public Variables
 
    #endregion
@@ -267,7 +266,6 @@ public class ClientMessageManager : MonoBehaviour
 
    public static void On_Equip (NetworkConnection conn, EquipMessage msg) {
       // Get a reference to the Inventory Panel
-
       InventoryPanel panel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
 
       // Update the Inventory Panel with the new equipped item IDs
