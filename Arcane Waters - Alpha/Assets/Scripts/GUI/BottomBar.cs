@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class BottomBar : MonoBehaviour {
+public class BottomBar : MonoBehaviour
+{
    #region Public Variables
 
    // Self
@@ -29,8 +30,8 @@ public class BottomBar : MonoBehaviour {
 
    public void toggleInventoryPanel () {
 
-        PanelManager.self.selectedPanel = Panel.Type.Inventory;
-        InventoryPanel panel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
+      PanelManager.self.selectedPanel = Panel.Type.Inventory;
+      InventoryPanel panel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
 
       // If the panel is not showing, send a request to the server to get our items
       if (!panel.isShowing()) {
@@ -38,21 +39,19 @@ public class BottomBar : MonoBehaviour {
       } else {
          PanelManager.self.togglePanel(Panel.Type.Inventory);
       }
-    }
+   }
 
-    public void toggleCraftingPanel()
-    {
-        PanelManager.self.selectedPanel = Panel.Type.Craft;
-        CraftingPanel panel = (CraftingPanel)PanelManager.self.get(Panel.Type.Craft);
+   public void toggleCraftingPanel () {
+      PanelManager.self.selectedPanel = Panel.Type.Craft;
+      CraftingPanel panel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);
 
-        // If the panel is not showing, send a request to the server to get our items
-        if (!panel.isShowing())
-        {
-            panel.requestInventoryFromServer(1);
-        }
-    }
+      // If the panel is not showing, send a request to the server to get our items
+      if (!panel.isShowing()) {
+         panel.requestInventoryFromServer(1);
+      }
+   }
 
-    public void toggleMapPanel () {
+   public void toggleMapPanel () {
       OverworldScreen panel = (OverworldScreen) PanelManager.self.get(Panel.Type.Overworld);
 
       // If the panel is not showing, send a request to the server to get our exploration data

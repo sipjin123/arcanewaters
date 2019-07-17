@@ -1,44 +1,33 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine.UI;
-using Mirror;
 
-public class CraftingMaterialRow : MonoBehaviour {
-    #region Public Variables
+public class CraftingMaterialRow : MonoBehaviour
+{
+   #region Public Variables
 
-    #endregion
+   public Image icon;
+   public Text itemName;
 
-    #region Private Variables
+   public Item itemData;
+   public Item ItemData { get { return itemData; } }
 
-    #endregion
+   public Image selectionIndicator;
+   public Button button;
+   public Button Button { get { return button; } }
 
-    [SerializeField]
-    private Image icon;
-    [SerializeField]
-    private Text itemName;
+   #endregion Public Variables
 
-    [SerializeField]
-    private Item itemData;
-    public Item ItemData { get { return itemData; } }
+   public void InitData (Item item) {
+      itemData = item;
+      itemName.text = item.getName();
+      icon.sprite = ImageManager.getSprite(item.getIconPath());
+   }
 
-    [SerializeField]
-    private Image selectionIndicator;
-    [SerializeField]
-    private Button button;
-    public Button Button { get { return button; } }
-    public void InitData(Item item)
-    {
-        itemData = item;
-        itemName.text = item.getName();
-        icon.sprite = ImageManager.getSprite(item.getIconPath());
-    }
-    public void SelectItem()
-    {
-        selectionIndicator.enabled = true;
-    }
-    public void DeselectItem()
-    {
-        selectionIndicator.enabled = false;
-    }
+   public void SelectItem () {
+      selectionIndicator.enabled = true;
+   }
+
+   public void DeselectItem () {
+      selectionIndicator.enabled = false;
+   }
 }

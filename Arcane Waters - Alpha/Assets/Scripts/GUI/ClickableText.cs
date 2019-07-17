@@ -6,11 +6,12 @@ using Mirror;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
 
-public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler {
+public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler
+{
    #region Public Variables
 
    // The different types of clickable text options
-   public enum Type {  None = 0, TradeGossip = 1, TradeBluePrint = 2 , TradeDeliveryInit = 3, TradeDeliveryComplete = 4 }
+   public enum Type { None = 0, TradeGossip = 1, TradeBluePrint = 2, TradeDeliveryInit = 3, TradeDeliveryComplete = 4 }
 
    // The Type of clickable text option this is
    public Type textType;
@@ -35,15 +36,15 @@ public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointer
       switch (this.textType) {
          case Type.TradeGossip:
             return "Have you heard about any <color=green>crops</color> that are currently in high demand?";
-            case Type.TradeBluePrint:
-                return "Would you like <color=green>crops</color> to have a blueprint?";
-            case Type.TradeDeliveryInit:
-                return "Would you bring me <color=green>(insert)</color> to have a blueprint?";
-            case Type.TradeDeliveryComplete:
-                return "Oh yey you completed it!";
-            case Type.None:
-                return "I got nothing for you today!";
-        }
+         case Type.TradeBluePrint:
+            return "Would you like <color=green>crops</color> to have a blueprint?";
+         case Type.TradeDeliveryInit:
+            return "Would you bring me <color=green>(insert)</color> to have a blueprint?";
+         case Type.TradeDeliveryComplete:
+            return "Oh yey you completed it!";
+         case Type.None:
+            return "I got nothing for you today!";
+      }
 
       return "";
    }
@@ -90,6 +91,6 @@ public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointer
 
    // Our initial font color
    protected Color _initialFontColor;
-      
+
    #endregion
 }

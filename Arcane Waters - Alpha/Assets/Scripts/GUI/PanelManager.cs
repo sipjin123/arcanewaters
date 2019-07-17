@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class PanelManager : MonoBehaviour {
+public class PanelManager : MonoBehaviour
+{
    #region Public Variables
 
    // The stack of panels we want to manage (generally optional panels that can be discarded at any time)
@@ -45,10 +46,9 @@ public class PanelManager : MonoBehaviour {
       // showModalPanel(Panel.Type.Login);
    }
 
-   private void Update ()
-    {
-        // Let us easily close panels with the Escape key
-        if (Input.GetKeyUp(KeyCode.Escape)) {
+   private void Update () {
+      // Let us easily close panels with the Escape key
+      if (Input.GetKeyUp(KeyCode.Escape)) {
          if (confirmScreen.canvasGroup.alpha > 0f) {
             confirmScreen.hide();
          } else if (noticeScreen.canvasGroup.alpha > 0f) {
@@ -85,7 +85,7 @@ public class PanelManager : MonoBehaviour {
       } else if (Input.GetKeyUp(KeyCode.Y)) {
          BottomBar.self.toggleCraftingPanel();
       }
-    }
+   }
 
    public Panel currentPanel () {
       Panel.Type panelType = _stack.Peek();
@@ -103,9 +103,9 @@ public class PanelManager : MonoBehaviour {
       // Add the panel type to the top of our stack
       _stack.Push(panelType);
       return showPanel(panelType);
-    }
+   }
 
-    public void pushIfNotShowing (Panel.Type panelType) {
+   public void pushIfNotShowing (Panel.Type panelType) {
       // If it's already showing, we're done
       if (get(panelType).isShowing()) {
          return;

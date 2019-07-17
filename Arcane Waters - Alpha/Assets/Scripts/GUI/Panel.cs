@@ -5,11 +5,13 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
 
-public class Panel : MonoBehaviour {
+public class Panel : MonoBehaviour
+{
    #region Public Variables
 
    // The type of Panel this is
-   public enum Type {
+   public enum Type
+   {
       Login = 1, CharSelect = 2, CharCreate = 3, Options = 4, BuySellCargo = 5,
       Starved = 6, Inventory = 7, Sound = 8, Ship = 9, Shipyard = 10,
       ItemShop = 11, CharPreview = 12, WorldMap = 13, Store = 14, Merchant = 15,
@@ -76,7 +78,7 @@ public class Panel : MonoBehaviour {
       }
    }
 
-   protected IEnumerator CO_Show() {
+   protected IEnumerator CO_Show () {
       // Wait 1 frame
       yield return null;
 
