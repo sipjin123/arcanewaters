@@ -300,7 +300,19 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       // Recreate the item list as the proper subclasses, now that they've been through the serialization process
       List<Item> itemList = new List<Item>();
       foreach (Item item in itemArray) {
-         itemList.Add(item.getCastItem());
+
+         if (item.category == Item.Category.CraftingIngredients) {
+            var findItem = itemList.Find(_ => _.category == Item.Category.CraftingIngredients &&
+            ((CraftingIngredients.Type) _.itemTypeId == (CraftingIngredients.Type) item.itemTypeId));
+            if (findItem != null) {
+               int index = itemList.IndexOf(findItem);
+               itemList[index].count++;
+            } else {
+               itemList.Add(item.getCastItem());
+            }
+         } else {
+            itemList.Add(item.getCastItem());
+         }
       }
 
       // Add the new items that we received
