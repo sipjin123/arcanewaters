@@ -21,7 +21,7 @@ public class NPC : MonoBehaviour {
    }
 
    public NPCData npcData;
-   public List<ClickableText.Type> dialogeTypes = new List<ClickableText.Type>();
+   public List<ClickableText.Type> currentAnswerDialogue = new List<ClickableText.Type>();
 
    // The Type of NPC this is
    public Type npcType;
@@ -70,20 +70,7 @@ public class NPC : MonoBehaviour {
       this.areaType = area.areaType;
    }
 
-   public void NoDialogues () {
-      dialogeTypes = new List<ClickableText.Type>();
-      dialogeTypes.Add(ClickableText.Type.None);
-   }
-   public void UnlockDialogue (NPCQuestData data, bool ifClear) {
-      if (ifClear)
-         dialogeTypes.Clear();
-      dialogeTypes.Add(data.UnlockableDialogue);
-   }
-
    void Start () {
-
-      if (npcData)
-         dialogeTypes.Add(npcData.defaultDialogue);
 
       // Look up components
       _body = GetComponent<Rigidbody2D>();
@@ -225,13 +212,51 @@ public class NPC : MonoBehaviour {
       if (_shopTrigger != null) {
          PanelManager.self.pushIfNotShowing(_shopTrigger.panelType);
       } else {
+
+         NPCQuestData currentQuest = npcData.npcQuestList[0];
+         if (currentQuest.questType == QuestType.Deliver) {
+            for (int i = 0; i < currentQuest.deliveryQuestList.Count; i++) {
+               DeliveryQuestPair currentDeliverQuest = currentQuest.deliveryQuestList[0];
+               switch (currentDeliverQuest.questState) {
+                  case QuestState.None:
+                     PanelManager.self.get(Panel.Type.NPC_Panel).GetComponent<NPCPanel>().SetMessage(currentQuest.initQuestMessage);
+                     currentDeliverQuest.questState = QuestState.Initialized;
+                     break;
+                  case QuestState.Initialized:
+                     PanelManager.self.get(Panel.Type.NPC_Panel).GetComponent<NPCPanel>().SetMessage(currentDeliverQuest.introDialogue);
+                     currentAnswerDialogue.Clear();
+                     currentAnswerDialogue.Add(currentDeliverQuest.introAnswer);
+                     currentDeliverQuest.questState = QuestState.Pending;
+                     break;
+                  case QuestState.Pending:
+                     currentAnswerDialogue.Clear();
+
+                     var itemList = InventoryCacheManager.self.itemList;
+                     var deliveryQuest = currentDeliverQuest.DeliveryQuest;
+
+                     var findingItemList = itemList.Find(_ => (CraftingIngredients.Type) _.itemTypeId == (CraftingIngredients.Type) deliveryQuest.itemToDeliver.itemTypeId);
+                     if (findingItemList != null) {
+                        if (findingItemList.count >= deliveryQuest.quantity) {
+                           PanelManager.self.get(Panel.Type.NPC_Panel).GetComponent<NPCPanel>().SetMessage(currentDeliverQuest.unlockableDialogue);
+                           currentAnswerDialogue.Add(currentDeliverQuest.successAnswer);
+                           break;
+                        }
+                     }
+                     PanelManager.self.get(Panel.Type.NPC_Panel).GetComponent<NPCPanel>().SetMessage(currentDeliverQuest.introDialogue);
+                     currentAnswerDialogue.Add(currentDeliverQuest.failAnswer);
+                     break;
+                  case QuestState.Completed:
+                     PanelManager.self.get(Panel.Type.NPC_Panel).GetComponent<NPCPanel>().SetMessage(currentQuest.questCompletedMessage);
+                     currentAnswerDialogue.Clear();
+                     currentAnswerDialogue.Add(ClickableText.Type.None);
+                     break;
+               }
+
+            }
+         }
+
          // Send a request to the server to get the clickable text options
          Global.player.rpc.Cmd_GetClickableRows(this.npcId);
-         Global.player.rpc.Cmd_RequestItemsFromServer(1, 15);
-         if (dialogeTypes[0] == ClickableText.Type.TradeDeliveryComplete) {
-         } else {
-         }
-         PanelManager.self.get(Panel.Type.NPC_Panel).GetComponent<NPCPanel>().SetMessage(tradeGossip);
       }
    }
 
