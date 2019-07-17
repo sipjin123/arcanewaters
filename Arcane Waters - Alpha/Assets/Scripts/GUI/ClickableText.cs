@@ -10,7 +10,7 @@ public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointer
    #region Public Variables
 
    // The different types of clickable text options
-   public enum Type { None = 0, TradeGossip = 1, TradeBluePrint = 2, TradeDeliveryInit = 3, TradeDeliveryComplete = 4 }
+   public enum Type { None = 0, TradeGossip = 1, TradeBluePrint = 2, TradeDeliveryInit = 3, TradeDeliveryComplete = 4 , QuestAccept = 5, TradeDeliverySuccess = 6, TradeDeliveryFail = 7}
 
    // The Type of clickable text option this is
    public Type textType;
@@ -20,7 +20,7 @@ public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointer
 
    #endregion
 
-   private void Start () {
+   public void InitData(int rowNumber) {
       // Look up components
       _text = GetComponent<Text>();
 
@@ -28,38 +28,29 @@ public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointer
       _initialFontColor = _text.color;
 
       // Fill in our text
-      _text.text = getRowNumber() + ". " + getMessageForType();
+      _text.text = rowNumber + ". " + getMessageForType();
    }
+
 
    protected string getMessageForType () {
       switch (this.textType) {
          case Type.TradeGossip:
             return "Have you heard about any <color=green>crops</color> that are currently in high demand?";
          case Type.TradeBluePrint:
-            return "Would you like <color=green>crops</color> to have a blueprint?";
+            return "May I have a blueprint?";
          case Type.TradeDeliveryInit:
-            return "Would you bring me <color=green>(insert)</color> to have a blueprint?";
+            return "I will bring you these items";
          case Type.TradeDeliveryComplete:
-            return "Oh yey you completed it!";
+            return "Here you go!";
          case Type.None:
-            return "I got nothing for you today!";
+            return "Have a good day then";
+         case Type.TradeDeliverySuccess:
+            return "I got all your goods";
+         case Type.TradeDeliveryFail:
+            return "I still dont have enough";
       }
 
       return "";
-   }
-
-   protected int getRowNumber () {
-      int num = 0;
-
-      foreach (Transform child in this.transform.parent) {
-         if (child == this.transform) {
-            return num;
-         }
-
-         num++;
-      }
-
-      return num;
    }
 
    public void OnPointerEnter (PointerEventData eventData) {
