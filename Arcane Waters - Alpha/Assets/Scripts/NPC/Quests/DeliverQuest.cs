@@ -1,18 +1,11 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
-using Mirror;
-using System;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class DeliverQuest : ScriptableObject
 {
+   #region Public Variables
 
-    public List<DeliverData> deliveryList;
-}
-[Serializable]
-public class DeliverData
-{
-    public Item itemToDeliver;
-    public int quantity;
+   public List<DeliverDataClass> deliveryList;
+
+   #endregion Public Variables
 }

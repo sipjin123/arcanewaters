@@ -5,14 +5,17 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
 
-public class NPC : MonoBehaviour {
+public class NPC : MonoBehaviour
+{
    #region Public Variables
 
    // How close we have to be in order to talk to the NPC
    public static float TALK_DISTANCE = .65f;
 
    // The Types of different NPCs
-   public enum Type { None = 0,
+   public enum Type
+   {
+      None = 0,
       Blackbeard = 1, Blacksmith = 2, Fatty = 3, Feather = 4, Fisherman = 5,
       Gardener = 6, Glasses = 7, Gramps = 8, Hammer = 9, Headband = 10,
       ItemShop = 11, Mapper = 12, Monocle = 13, Parrot = 14, Patch = 15,
@@ -70,22 +73,20 @@ public class NPC : MonoBehaviour {
       this.areaType = area.areaType;
    }
 
-    public void NoDialogues()
-    {
-        dialogeTypes = new List<ClickableText.Type>();
-        dialogeTypes.Add(ClickableText.Type.None);
-    }
-    public void UnlockDialogue(NPCQuestData data,bool ifClear)
-    {
-        if (ifClear)
-            dialogeTypes.Clear();
-        dialogeTypes.Add(data.UnlockableDialogue);
-    }
+   public void NoDialogues () {
+      dialogeTypes = new List<ClickableText.Type>();
+      dialogeTypes.Add(ClickableText.Type.None);
+   }
+   public void UnlockDialogue (NPCQuestData data, bool ifClear) {
+      if (ifClear)
+         dialogeTypes.Clear();
+      dialogeTypes.Add(data.UnlockableDialogue);
+   }
 
-    void Start () {
+   void Start () {
 
-        if (npcData) 
-        dialogeTypes.Add(npcData.defaultDialogue) ;
+      if (npcData)
+         dialogeTypes.Add(npcData.defaultDialogue);
 
       // Look up components
       _body = GetComponent<Rigidbody2D>();
@@ -208,13 +209,12 @@ public class NPC : MonoBehaviour {
       }
 
       // Figure out the direction of our movement
-      Vector2 direction = moveTarget - (Vector2)this.transform.position;
+      Vector2 direction = moveTarget - (Vector2) this.transform.position;
       _body.AddForce(direction.normalized * moveSpeed);
    }
 
-   public void clientClickedMe ()
-    {
-        if (Global.player == null || _clickableBox == null || Global.isInBattle()) {
+   public void clientClickedMe () {
+      if (Global.player == null || _clickableBox == null || Global.isInBattle()) {
          return;
       }
 
@@ -227,20 +227,17 @@ public class NPC : MonoBehaviour {
       // If this is a Shop NPC, then show the appropriate panel
       if (_shopTrigger != null) {
          PanelManager.self.pushIfNotShowing(_shopTrigger.panelType);
-        } else {
-            // Send a request to the server to get the clickable text options
-            //Global.player.rpc.Cmd_GetClickableRows(this.npcId);
+      } else {
+         // Send a request to the server to get the clickable text options
+         //Global.player.rpc.Cmd_GetClickableRows(this.npcId);
 
-            Global.player.rpc.Cmd_GetClickableRows(this.npcId);
-            Global.player.rpc.Cmd_RequestItemsFromServer(1, 15);
-            if (dialogeTypes[0] == ClickableText.Type.TradeDeliveryComplete)
-            {
-            }
-            else
-            {
-            }
-            PanelManager.self.get(Panel.Type.NPC_Panel).GetComponent<NPCPanel>().SetMessage(tradeGossip);
-        }
+         Global.player.rpc.Cmd_GetClickableRows(this.npcId);
+         Global.player.rpc.Cmd_RequestItemsFromServer(1, 15);
+         if (dialogeTypes[0] == ClickableText.Type.TradeDeliveryComplete) {
+         } else {
+         }
+         PanelManager.self.get(Panel.Type.NPC_Panel).GetComponent<NPCPanel>().SetMessage(tradeGossip);
+      }
    }
 
    protected int getId () {
@@ -386,7 +383,7 @@ public class NPC : MonoBehaviour {
       if (swapper != null) {
          spriteName = swapper.newTexture.name;
       }
-      
+
       string[] split = spriteName.Split('_');
       spriteName = split[0];
       Type npcType = (Type) System.Enum.Parse(typeof(Type), spriteName, true);
@@ -430,9 +427,9 @@ public class NPC : MonoBehaviour {
          possibleOffers.Add(offer);
       }
 
-        // Set our gossip
-        tradeGossip = getTradeGossip(possibleOffers);
-        
+      // Set our gossip
+      tradeGossip = getTradeGossip(possibleOffers);
+
    }
 
    protected string getTradeGossip (List<CropOffer> offers) {

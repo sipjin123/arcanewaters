@@ -1,12 +1,11 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
-using Mirror;
-using System;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class HuntQuest : ScriptableObject
 {
-    public List<MonsterBattler> enemyTargets;
+   #region Public Variables
 
+   public List<MonsterBattler> enemyTargets;
+
+   #endregion Public Variables
 }
