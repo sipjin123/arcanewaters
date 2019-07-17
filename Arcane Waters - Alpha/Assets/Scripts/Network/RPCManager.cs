@@ -7,7 +7,8 @@ using System.Linq;
 using Crosstales.BWF.Manager;
 using System;
 
-public class RPCManager : NetworkBehaviour {
+public class RPCManager : NetworkBehaviour
+{
    #region Public Variables
 
    #endregion
@@ -165,9 +166,9 @@ public class RPCManager : NetworkBehaviour {
    public void Target_ReceiveClickableNPCRows (NetworkConnection connection, ClickableText.Type[] options, int npcId) {
       // Look up the NPC
       NPC npc = NPCManager.self.getNPC(npcId);
-        // Show the panel with the specified options
-        NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
-        PanelManager.self.selectedPanel = Panel.Type.NPC_Panel;
+      // Show the panel with the specified options
+      NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
+      PanelManager.self.selectedPanel = Panel.Type.NPC_Panel;
       panel.npc = npc;
       panel.setClickableRows(options.ToList());
       PanelManager.self.pushIfNotShowing(panel.type);
@@ -175,7 +176,7 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_ReceiveNPCMessage (NetworkConnection connection, string response) {
-        // Set the new text message
+      // Set the new text message
       NPCPanel.self.greetingText.text = response;
 
       // Make the NPC start talking
@@ -284,8 +285,8 @@ public class RPCManager : NetworkBehaviour {
 
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-             InventoryMessage inventoryMessage = new InventoryMessage(_player.netId, userObjects,
-                pageNumber, userInfo.gold, userInfo.gems, totalItemCount, userInfo.armorId, userInfo.weaponId, items.ToArray());
+            InventoryMessage inventoryMessage = new InventoryMessage(_player.netId, userObjects,
+               pageNumber, userInfo.gold, userInfo.gems, totalItemCount, userInfo.armorId, userInfo.weaponId, items.ToArray());
             NetworkServer.SendToClientOfPlayer(_player.netIdent, inventoryMessage);
          });
       });
@@ -794,14 +795,13 @@ public class RPCManager : NetworkBehaviour {
       GuildManager.self.acceptInviteOnServer(_player, invite);
    }
 
-    [Command]
-    public void Cmd_DirectAddItem(Item item)
-    {
-        // Add it to their inventory
-        UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            item = DB_Main.createNewItem(_player.userId, item);
-        });
-    }
+   [Command]
+   public void Cmd_DirectAddItem (Item item) {
+      // Add it to their inventory
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         item = DB_Main.createNewItem(_player.userId, item);
+      });
+   }
    [Command]
    public void Cmd_OpenChest (int chestId) {
       TreasureChest chest = TreasureManager.self.getChest(chestId);
@@ -842,15 +842,15 @@ public class RPCManager : NetworkBehaviour {
    [Command]
    public void Cmd_GetClickableRows (int npcId) {
 
-        /*
-      List<ClickableText.Type> list = new List<ClickableText.Type>();
-      list.Add(ClickableText.Type.TradeGossip);*/
+      /*
+    List<ClickableText.Type> list = new List<ClickableText.Type>();
+    list.Add(ClickableText.Type.TradeGossip);*/
 
 
-        // Look up the NPC
-        NPC npc = NPCManager.self.getNPC(npcId);
+      // Look up the NPC
+      NPC npc = NPCManager.self.getNPC(npcId);
 
-        var list = npc.dialogeTypes;
+      var list = npc.dialogeTypes;
 
       // If the player is too far, don't let them
       if (Vector2.Distance(_player.transform.position, npc.transform.position) > 2.0f) {
@@ -860,9 +860,9 @@ public class RPCManager : NetworkBehaviour {
 
       // Send the options to the player
       Target_ReceiveClickableNPCRows(_player.connectionToClient, list.ToArray(), npcId);
-    }
+   }
 
-    [Command]
+   [Command]
    public void Cmd_ClickedNPCRow (int npcId, ClickableText.Type optionType) {
       NPC npc = NPCManager.self.getNPC(npcId);
       // Figure out the response we should send back
