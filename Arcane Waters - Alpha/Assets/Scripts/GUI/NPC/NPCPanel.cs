@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
-using Mirror;
 using TMPro;
 
 public class NPCPanel : Panel {
@@ -78,6 +76,7 @@ public class NPCPanel : Panel {
       // Clear out any old stuff
       clickableRowContainer.DestroyChildren();
 
+      // Sets the index of the dialogue
       int index = 1;
       // Create a clickable text row for each option in the list
       foreach (ClickableText.Type option in options) {
@@ -85,43 +84,37 @@ public class NPCPanel : Panel {
          row.transform.SetParent(clickableRowContainer.transform);
          // Set the type
          row.textType = option;
-         row.InitData(index);
+         row.initData(index);
          index++;
 
          // Set up the click function
          row.clickedEvent.AddListener(() => rowClickedOn(row, this.npc));
-
       }
    }
 
    public void rowClickedOn (ClickableText row, NPC npc) {
       // Tell the server what we clicked
-      //Global.player.rpc.Cmd_ClickedNPCRow(npc.npcId, row.textType);
+      Global.player.rpc.Cmd_ClickedNPCRow(npc.npcId, row.textType);
 
       switch (row.textType) {
-         case ClickableText.Type.TradeBluePrint:
-
-            break;
          case ClickableText.Type.TradeDeliveryInit:
+            // Initialized the quest
             NPCQuestData questData = npc.npcData.npcQuestList[0];
-            QuestManager.self.RegisterQuest(questData);
-
+            QuestManager.self.registerQuest(questData);
             break;
          case ClickableText.Type.TradeDeliverySuccess:
-            //Edit Quest List
             NPCQuestData questData1 = npc.npcData.npcQuestList[0];
-            QuestManager.self.ClearQuest(questData1);
+            QuestManager.self.clearQuest(questData1);
 
-            //Delete Item from Invetory
-            var rawList = InventoryCacheManager.self.rawItemList;
-            var questPair = npc.npcData.npcQuestList[0].deliveryQuestList[0].DeliveryQuest;
+            List<Item> rawList = InventoryCacheManager.self.rawItemList;
+            DeliverQuest questPair = npc.npcData.npcQuestList[0].deliveryQuestList[0].deliveryQuest;
             int countToDelete = questPair.quantity;
 
+            // Deletes items from the inventory equivalent to the Deliver Quest requirements
             int deleteCounter = 0;
             for (int i = 0; i < rawList.Count; i++) {
                if (rawList[i].category == questPair.itemToDeliver.category) {
                   if (deleteCounter >= countToDelete) {
-
                      break;
                   }
                   if (rawList[i].itemTypeId == questPair.itemToDeliver.itemTypeId) {
@@ -141,11 +134,7 @@ public class NPCPanel : Panel {
 
             npc.npcData.npcQuestList[0].deliveryQuestList[0].questState = QuestState.Completed;
             break;
-         case ClickableText.Type.TradeDeliveryFail:
-
-            break;
       }
-
       PanelManager.self.popPanel();
    }
 

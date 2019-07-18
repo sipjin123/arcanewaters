@@ -20,7 +20,10 @@ public class NPC : MonoBehaviour {
       Stripes = 21, Vest = 22, Dog = 23, Lizard = 24,
    }
 
+   // Holds the scriptable object npc data
    public NPCData npcData;
+
+   // Holds the current player answers depending on quest state
    public List<ClickableText.Type> currentAnswerDialogue = new List<ClickableText.Type>();
 
    // The Type of NPC this is
@@ -71,7 +74,6 @@ public class NPC : MonoBehaviour {
    }
 
    void Start () {
-
       // Look up components
       _body = GetComponent<Rigidbody2D>();
       _startPosition = this.transform.position;
@@ -212,37 +214,43 @@ public class NPC : MonoBehaviour {
       if (_shopTrigger != null) {
          PanelManager.self.pushIfNotShowing(_shopTrigger.panelType);
       } else {
-
          NPCQuestData currentQuest = npcData.npcQuestList[0];
+         // Checks if the active quest is a Delivery Quest
          if (currentQuest.questType == QuestType.Deliver) {
             for (int i = 0; i < currentQuest.deliveryQuestList.Count; i++) {
                DeliveryQuestPair currentDeliverQuest = currentQuest.deliveryQuestList[0];
                switch (currentDeliverQuest.questState) {
                   case QuestState.None:
+                     // Initialized the Quest
                      PanelManager.self.get(Panel.Type.NPC_Panel).GetComponent<NPCPanel>().SetMessage(currentQuest.initQuestMessage);
                      currentDeliverQuest.questState = QuestState.Initialized;
                      break;
                   case QuestState.Initialized:
+                     // Accepts the Quest and set Quest state into Pending
                      PanelManager.self.get(Panel.Type.NPC_Panel).GetComponent<NPCPanel>().SetMessage(currentDeliverQuest.introDialogue);
                      currentAnswerDialogue.Clear();
                      currentAnswerDialogue.Add(currentDeliverQuest.introAnswer);
                      currentDeliverQuest.questState = QuestState.Pending;
                      break;
                   case QuestState.Pending:
+                     // Check if Quest requirements are met
                      currentAnswerDialogue.Clear();
 
+                     // Sets the NPC to ask if requirements are met
+                     PanelManager.self.get(Panel.Type.NPC_Panel).GetComponent<NPCPanel>().SetMessage(currentDeliverQuest.introDialogue);
+
                      List<Item> itemList = InventoryCacheManager.self.itemList;
-                     DeliverQuest deliveryQuest = currentDeliverQuest.DeliveryQuest;
+                     DeliverQuest deliveryQuest = currentDeliverQuest.deliveryQuest;
 
                      Item findingItemList = itemList.Find(_ => (CraftingIngredients.Type) _.itemTypeId == (CraftingIngredients.Type) deliveryQuest.itemToDeliver.itemTypeId);
                      if (findingItemList != null) {
                         if (findingItemList.count >= deliveryQuest.quantity) {
-                           PanelManager.self.get(Panel.Type.NPC_Panel).GetComponent<NPCPanel>().SetMessage(currentDeliverQuest.unlockableDialogue);
+                           // Sets the player to a positive response if Requirements are met
                            currentAnswerDialogue.Add(currentDeliverQuest.successAnswer);
                            break;
                         }
                      }
-                     PanelManager.self.get(Panel.Type.NPC_Panel).GetComponent<NPCPanel>().SetMessage(currentDeliverQuest.introDialogue);
+                     // Sets the player to a negative response if Requirements are met
                      currentAnswerDialogue.Add(currentDeliverQuest.failAnswer);
                      break;
                   case QuestState.Completed:
@@ -251,7 +259,6 @@ public class NPC : MonoBehaviour {
                      currentAnswerDialogue.Add(ClickableText.Type.None);
                      break;
                }
-
             }
          }
 
