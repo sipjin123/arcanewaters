@@ -13,8 +13,11 @@ public class DebugButtons : MonoBehaviour
             CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Ore, ColorType.DarkGreen, ColorType.DarkPurple, "");
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;
             Item item = craftingIngredients;
+            
+            RewardScreen craftPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
+            craftPanel.setItemData(item);
+            PanelManager.self.pushPanel(Panel.Type.Reward);
 
-            PanelManager.self.rewardScreen.Show(item);
             Global.player.rpc.Cmd_DirectAddItem(item);
          }
          if (Input.GetKeyDown(KeyCode.P)) {
@@ -22,7 +25,10 @@ public class DebugButtons : MonoBehaviour
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;
             Item item = craftingIngredients;
 
-            PanelManager.self.rewardScreen.Show(item);
+            RewardScreen craftPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
+            craftPanel.setItemData(item);
+            PanelManager.self.pushPanel(Panel.Type.Reward);
+
             Global.player.rpc.Cmd_DirectAddItem(item);
          }
          if (Input.GetKeyDown(KeyCode.Alpha5)) {
@@ -30,7 +36,10 @@ public class DebugButtons : MonoBehaviour
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;
             Item item = craftingIngredients;
 
-            PanelManager.self.rewardScreen.Show(item);
+            RewardScreen craftPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
+            craftPanel.setItemData(item);
+            PanelManager.self.pushPanel(Panel.Type.Reward);
+
             Global.player.rpc.Cmd_DirectAddItem(item);
          }
       }
