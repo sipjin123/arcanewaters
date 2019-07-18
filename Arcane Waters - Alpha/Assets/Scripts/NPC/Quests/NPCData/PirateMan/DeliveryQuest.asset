@@ -14,13 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   questType: 2
   deliveryQuestList:
-  - questState: 0
+  - questState: 3
     introAnswer: 3
     successAnswer: 6
     failAnswer: 7
     unlockableDialogue: You completed it! Thanks lad here ya go!
     introDialogue: Can ya get me 5 lizard skins?
-    DeliveryQuest: {fileID: 11400000, guid: f804acba695fb5c428eec0e67e1e9ef4, type: 2}
+    deliveryQuest: {fileID: 11400000, guid: f804acba695fb5c428eec0e67e1e9ef4, type: 2}
   huntQuestList: []
   initQuestMessage: Hey Can ya Do me a Favor?
   questCompletedMessage: I got nothin for ya

@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-
+#if UNITY_EDITOR
 public class DebugButtons : MonoBehaviour
 {
    private void Update () {
@@ -36,7 +36,7 @@ public class DebugButtons : MonoBehaviour
       }
    }
 }
-
+#endif
 public static class DebugCustom
 {
    public static string B = "[B0NTA] :: ";

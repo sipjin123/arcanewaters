@@ -3,5 +3,5 @@ using UnityEngine;
 
 public class CombinationDataList : ScriptableObject
 {
-    public List<CombinationData> ComboDataList;
+    public List<CombinationData> comboDataList;
 }
