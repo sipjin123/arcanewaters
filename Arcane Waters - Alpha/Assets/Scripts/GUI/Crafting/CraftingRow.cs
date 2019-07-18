@@ -1,44 +1,47 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine.UI;
-using Mirror;
 
 public class CraftingRow : MonoBehaviour
 {
    #region Public Variables
+   // Cached Item Data
    public Item item;
-
    public Button button;
 
-   public Image icon, selectionIcon;
+   // Icon of the current item
+   public Image icon;
+   // Highlight indicator if item is selected
+   public Image selectionIcon;
 
+   // Name of the item
    public Text nameText;
 
+   // Flag to check if this template is empty
    public bool hasData;
 
+   // Sprite to be setup when there is no data
    public Sprite emptySprite;
    #endregion
 
-   public void InjectItem (Item itemvar) {
+   public void injectItem (Item itemvar) {
       hasData = true;
       item = itemvar;
       nameText.text = item.getName();
       icon.sprite = ImageManager.getSprite(item.getIconPath());
    }
-   public void PurgeData () {
+
+   public void purgeData () {
       hasData = false;
       item = null;
       nameText.text = "";
       icon.sprite = emptySprite;
    }
 
-   public void SelectItem () {
+   public void selectItem () {
       selectionIcon.enabled = true;
    }
 
-   public void UnselectItem () {
+   public void unselectItem () {
       selectionIcon.enabled = false;
    }
-
 }

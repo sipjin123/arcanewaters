@@ -4,30 +4,29 @@ using UnityEngine.UI;
 public class CraftingMaterialRow : MonoBehaviour
 {
    #region Public Variables
-
+   // The icon of the material
    public Image icon;
+   // The name of the material
    public Text itemName;
-
+   // The cached data of the item
    public Item itemData;
-   public Item ItemData { get { return itemData; } }
-
+   // An image to indicate the highlighted item
    public Image selectionIndicator;
+   // To send notification that this item was selected
    public Button button;
-   public Button Button { get { return button; } }
-
    #endregion Public Variables
 
-   public void InitData (Item item) {
+   public void initData (Item item) {
       itemData = item;
       itemName.text = item.getName();
       icon.sprite = ImageManager.getSprite(item.getIconPath());
    }
 
-   public void SelectItem () {
+   public void selectItem () {
       selectionIndicator.enabled = true;
    }
 
-   public void DeselectItem () {
+   public void deselectItem () {
       selectionIndicator.enabled = false;
    }
 }

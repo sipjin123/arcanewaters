@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2310abf14d999343ac78e98ce23bd2c, type: 3}
   m_Name: CombinationDataList
   m_EditorClassIdentifier: 
-  ComboDataList:
+  comboDataList:
   - {fileID: 11400000, guid: 3cbc3df221c53ea46856013f2f323724, type: 2}
   - {fileID: 11400000, guid: 9bd71f493c888ba4082b32003ad3b6ac, type: 2}
