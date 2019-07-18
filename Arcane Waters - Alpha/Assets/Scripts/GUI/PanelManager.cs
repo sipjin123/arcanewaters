@@ -16,7 +16,6 @@ public class PanelManager : MonoBehaviour {
    // Screens which are separate from the panel stack
    public ConfirmScreen confirmScreen;
    public NoticeScreen noticeScreen;
-   public RewardScreen rewardScreen;
    public TradeConfirmScreen tradeConfirmScreen;
 
    // Helps Determine which active panel requires inventory data (crafting/inventory)

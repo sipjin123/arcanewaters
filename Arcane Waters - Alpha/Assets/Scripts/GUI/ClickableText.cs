@@ -9,7 +9,7 @@ public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointer
    #region Public Variables
 
    // The different types of clickable text options
-   public enum Type { None = 0, TradeGossip = 1, TradeBluePrint = 2, TradeDeliveryInit = 3, TradeDeliveryComplete = 4 , QuestAccept = 5, TradeDeliverySuccess = 6, TradeDeliveryFail = 7}
+   public enum Type { None = 0, TradeGossip = 1, TradeBluePrint = 2, TradeDeliveryInit = 3, TradeDeliveryComplete = 4 , QuestAccept = 5, TradeDeliverySuccess = 6, TradeDeliveryFail = 7, AcceptReward =8}
 
    // The Type of clickable text option this is
    public Type textType;
@@ -38,14 +38,18 @@ public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointer
             return "May I have a blueprint?";
          case Type.TradeDeliveryInit:
             return "I will bring you these items";
+         case Type.QuestAccept:
+            return "Sure what do you want?";
          case Type.TradeDeliveryComplete:
-            return "Here you go!";
+            return "Thank you sir";
          case Type.None:
             return "Have a good day then";
          case Type.TradeDeliverySuccess:
             return "I got all your goods";
          case Type.TradeDeliveryFail:
             return "I still dont have enough";
+         case Type.AcceptReward:
+            return "Thankyou very much!"; 
       }
 
       return "";
