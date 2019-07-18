@@ -16,7 +16,7 @@ public class RPCManager : NetworkBehaviour {
       _player = GetComponent<NetEntity>();
 
       // Initialized Inventory Cache
-      InventoryCacheManager.self.FetchInventory();
+      InventoryCacheManager.self.fetchInventory();
    }
 
    [ClientRpc]

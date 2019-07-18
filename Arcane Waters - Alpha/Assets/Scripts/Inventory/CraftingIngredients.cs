@@ -18,9 +18,6 @@ public class CraftingIngredients : RecipeItem
       None = 0, Lizard_Scale = 1, Lizard_Claw = 2, Ore = 3, Lumber = 4, Flint = 5,
    }
 
-   // The CraftingIngredients Class
-   public enum Class { Any = 0, Melee = 1, Ranged = 2, Magic = 3 }
-
    // The type
    public Type type;
 
@@ -47,14 +44,6 @@ public class CraftingIngredients : RecipeItem
          if (!kvp.Contains("=")) {
             continue;
          }
-
-         // Get the left and right side of the equal
-         /*string key = kvp.Split('=')[0];
-         string value = kvp.Split('=')[1];
-
-         if ("color1".Equals(key)) {
-            this.color1 = (ColorType) Convert.ToInt32(value);
-         }*/
       }
    }
 
@@ -149,69 +138,8 @@ public class CraftingIngredients : RecipeItem
       }
    }
 
-   public virtual float getDamage (Ability.Element element) {
-      // Placeholder
-      return 10f;
-   }
-
-   public static int getBaseDamage (Type craftingIngredientType) {
-      switch (craftingIngredientType) {
-         default:
-            return 10;
-      }
-   }
-
-   public static float getDamageModifier (Rarity.Type rarity) {
-      float randomModifier = Util.getBellCurveFloat(1.0f, .1f, .90f, 1.10f);
-
-      switch (rarity) {
-         case Rarity.Type.Uncommon:
-            return randomModifier * 1.2f;
-
-         case Rarity.Type.Rare:
-            return randomModifier * 1.5f;
-
-         case Rarity.Type.Epic:
-            return randomModifier * 1.5f;
-
-         case Rarity.Type.Legendary:
-            return randomModifier * 3f; ;
-         default:
-            return randomModifier;
-      }
-   }
-
-   public static Class getClass (CraftingIngredients.Type type) {
-      switch (type) {
-         default:
-            return Class.Melee;
-      }
-   }
-
    public static CraftingIngredients getEmpty () {
       return new CraftingIngredients(0, CraftingIngredients.Type.None, ColorType.None, ColorType.None);
-   }
-
-   public static CraftingIngredients generateRandom (int itemId, Type craftingIngredients) {
-      // Decide what the rarity should be
-      Rarity.Type rarity = Rarity.getRandom();
-
-      // Alter the damage based on the rarity
-      float baseDamage = getBaseDamage((Type) craftingIngredients);
-      int damage = (int) (baseDamage * getDamageModifier(rarity));
-
-      // Alter the price based on the rarity
-      int price = (int) (getBaseSellPrice(Category.CraftingIngredients, (int) craftingIngredients) * Rarity.getItemShopPriceModifier(rarity));
-
-      // Let's use nice numbers
-      damage = Util.roundToPrettyNumber(damage);
-      price = Util.roundToPrettyNumber(price);
-
-      string data = string.Format("damage={0}, rarity={1}, price={2}", damage, (int) rarity, price);
-      int stockCount = Rarity.getRandomItemStockCount(rarity);
-      CraftingIngredients craftingIngredients2 = new CraftingIngredients(itemId, (int) craftingIngredients, ColorType.Black, ColorType.White, data, stockCount);
-
-      return craftingIngredients2;
    }
 
    public override bool canBeTrashed () {
