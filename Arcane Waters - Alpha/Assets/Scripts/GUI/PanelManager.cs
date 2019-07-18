@@ -19,6 +19,7 @@ public class PanelManager : MonoBehaviour {
    public RewardScreen rewardScreen;
    public TradeConfirmScreen tradeConfirmScreen;
 
+   // Helps Determine which active panel requires inventory data (crafting/inventory)
    public Panel.Type selectedPanel;
 
    // Self
@@ -139,7 +140,6 @@ public class PanelManager : MonoBehaviour {
             return true;
          }
       }
-
       return false;
    }
 
@@ -181,7 +181,6 @@ public class PanelManager : MonoBehaviour {
             return panel;
          }
       }
-
       return null;
    }
 
