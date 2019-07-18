@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
-using Mirror;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
 
@@ -20,7 +19,7 @@ public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointer
 
    #endregion
 
-   public void InitData(int rowNumber) {
+   public void initData(int rowNumber) {
       // Look up components
       _text = GetComponent<Text>();
 
@@ -30,7 +29,6 @@ public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointer
       // Fill in our text
       _text.text = rowNumber + ". " + getMessageForType();
    }
-
 
    protected string getMessageForType () {
       switch (this.textType) {

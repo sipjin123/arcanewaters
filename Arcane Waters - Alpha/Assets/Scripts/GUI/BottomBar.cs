@@ -1,8 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
-using Mirror;
 
 public class BottomBar : MonoBehaviour {
    #region Public Variables
@@ -28,13 +24,12 @@ public class BottomBar : MonoBehaviour {
    }
 
    public void toggleInventoryPanel () {
-
       PanelManager.self.selectedPanel = Panel.Type.Inventory;
       InventoryPanel panel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
 
       // If the panel is not showing, send a request to the server to get our items
       if (!panel.isShowing()) {
-         panel.requestInventoryFromServer(1);
+         panel.requestInventoryFromServer(-1);
       } else {
          PanelManager.self.togglePanel(Panel.Type.Inventory);
       }
@@ -46,7 +41,7 @@ public class BottomBar : MonoBehaviour {
 
       // If the panel is not showing, send a request to the server to get our items
       if (!panel.isShowing()) {
-         panel.requestInventoryFromServer(1);
+         panel.requestInventoryFromServer(-1);
       }
    }
 
