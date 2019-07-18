@@ -844,15 +844,10 @@ public class RPCManager : NetworkBehaviour {
 
    [Command]
    public void Cmd_GetClickableRows (int npcId) {
-
-      /*
-    List<ClickableText.Type> list = new List<ClickableText.Type>();
-    list.Add(ClickableText.Type.TradeGossip);*/
-
       // Look up the NPC
       NPC npc = NPCManager.self.getNPC(npcId);
 
-      var list = npc.currentAnswerDialogue;
+      List<ClickableText.Type> list = npc.currentAnswerDialogue;
       // If the player is too far, don't let them
       if (Vector2.Distance(_player.transform.position, npc.transform.position) > 2.0f) {
          D.warning("Player trying to interact with NPC from too far away!");

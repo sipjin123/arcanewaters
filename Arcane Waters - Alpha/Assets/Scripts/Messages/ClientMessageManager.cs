@@ -233,23 +233,24 @@ public class ClientMessageManager : MonoBehaviour {
    }
 
    public static void On_Inventory (NetworkConnection conn, InventoryMessage msg) {
-
-      // Make sure the inventory panel is showing
-
+      // Stores inventory data in cache for future reference
       InventoryCacheManager.self.receiveItemsFromServer(msg.userObjects, msg.pageNumber, msg.gold, msg.gems, msg.totalItemCount, msg.equippedArmorId, msg.equippedWeaponId, msg.itemArray);
 
       if (PanelManager.self.selectedPanel == Panel.Type.Inventory) {
          InventoryPanel panel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
          if (!panel.isShowing()) {
+            // Make sure the inventory panel is showing
             PanelManager.self.pushPanel(Panel.Type.Inventory);
-            // Update the Inventory Panel with the items we received from the server
          }
+         // Update the Inventory Panel with the items we received from the server
          panel.receiveItemsFromServer(msg.userObjects, msg.pageNumber, msg.gold, msg.gems, msg.totalItemCount, msg.equippedArmorId, msg.equippedWeaponId, msg.itemArray);
       } else if (PanelManager.self.selectedPanel == Panel.Type.Craft) {
          CraftingPanel craftPanel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);
          if (!craftPanel.isShowing()) {
+            // Make sure the inventory panel is showing
             PanelManager.self.pushPanel(Panel.Type.Craft);
          }
+         // Update the Crafting Panel with the items we received from the server
          craftPanel.receiveItemsFromServer(msg.userObjects, msg.pageNumber, msg.gold, msg.gems, msg.totalItemCount, msg.equippedArmorId, msg.equippedWeaponId, msg.itemArray);
       } 
    }
