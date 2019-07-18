@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   questType: 2
   deliveryQuestList:
-  - questDialogueList:
+  - questState: 5
+    questDialogueList:
     - questState: 0
       npcDialogue: Hey Can ya Do me a Favor?
       checkCondition: 0
@@ -44,9 +45,12 @@ MonoBehaviour:
       checkCondition: 0
       playerReply: 4
       playerNegativeReply: 0
-      nextState: 0
-    questState: 2
+      nextState: 5
+    - questState: 5
+      npcDialogue: I got nothin lad
+      checkCondition: 0
+      playerReply: 0
+      playerNegativeReply: 0
+      nextState: 5
     deliveryQuest: {fileID: 11400000, guid: f804acba695fb5c428eec0e67e1e9ef4, type: 2}
   huntQuestList: []
-  questCompletedMessage: I got nothin for ya
-  initQuestAnswer: 5
