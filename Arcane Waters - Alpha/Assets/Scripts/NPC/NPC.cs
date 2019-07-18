@@ -231,10 +231,10 @@ public class NPC : MonoBehaviour {
                   case QuestState.Pending:
                      currentAnswerDialogue.Clear();
 
-                     var itemList = InventoryCacheManager.self.itemList;
-                     var deliveryQuest = currentDeliverQuest.DeliveryQuest;
+                     List<Item> itemList = InventoryCacheManager.self.itemList;
+                     DeliverQuest deliveryQuest = currentDeliverQuest.DeliveryQuest;
 
-                     var findingItemList = itemList.Find(_ => (CraftingIngredients.Type) _.itemTypeId == (CraftingIngredients.Type) deliveryQuest.itemToDeliver.itemTypeId);
+                     Item findingItemList = itemList.Find(_ => (CraftingIngredients.Type) _.itemTypeId == (CraftingIngredients.Type) deliveryQuest.itemToDeliver.itemTypeId);
                      if (findingItemList != null) {
                         if (findingItemList.count >= deliveryQuest.quantity) {
                            PanelManager.self.get(Panel.Type.NPC_Panel).GetComponent<NPCPanel>().SetMessage(currentDeliverQuest.unlockableDialogue);
