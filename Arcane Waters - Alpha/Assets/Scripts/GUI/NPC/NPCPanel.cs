@@ -90,52 +90,79 @@ public class NPCPanel : Panel {
          // Set up the click function
          row.clickedEvent.AddListener(() => rowClickedOn(row, this.npc));
       }
-   }
+   }     
 
    public void rowClickedOn (ClickableText row, NPC npc) {
+      NPCQuestData currentQuest = npc.npcData.npcQuestList[0];
+      QuestState currentQuestState = currentQuest.deliveryQuestList[0].questState;
+      QuestDialogue currentDialogue = currentQuest.deliveryQuestList[0].questDialogueList.Find(_ => _.questState == currentQuestState);
+
+      if(row.textType == ClickableText.Type.TradeDeliveryFail) {
+         // Change reply of NPC
+         string reply = "go on and get my stuff then";
+         npc.npcReply = reply;
+         SetMessage(reply);
+      }
+      else if(row.textType == ClickableText.Type.TradeDeliveryComplete) {
+         // Reduce player inventory equivalent to quest requirements
+         DeductInventoryItems();
+
+         // CloseNPCPanel and Call Reward Panel
+         PanelManager.self.popPanel();
+         RewardPlayer();
+
+         // Update quest State
+         npc.npcData.npcQuestList[0].deliveryQuestList[0].questState = currentDialogue.nextState;
+
+         // Setup dialogue of player
+         npc.currentAnswerDialogue.Clear();
+         npc.currentAnswerDialogue.Add(ClickableText.Type.None);
+
+         // Setup dialogue of NPC
+         string reply = "I Got nothing go away";
+         npc.npcReply = reply;
+         SetMessage(reply);
+      }
+      else {
+         npc.npcData.npcQuestList[0].deliveryQuestList[0].questState = currentDialogue.nextState;
+         npc.CheckQuest();
+      }
       // Tell the server what we clicked
       Global.player.rpc.Cmd_ClickedNPCRow(npc.npcId, row.textType);
+   }
 
-      switch (row.textType) {
-         case ClickableText.Type.TradeDeliveryInit:
-            // Initialized the quest
-            NPCQuestData questData = npc.npcData.npcQuestList[0];
-            QuestManager.self.registerQuest(questData);
-            break;
-         case ClickableText.Type.TradeDeliverySuccess:
-            NPCQuestData questData1 = npc.npcData.npcQuestList[0];
-            QuestManager.self.clearQuest(questData1);
+   private void DeductInventoryItems() {
+      List<Item> rawList = InventoryCacheManager.self.rawItemList;
+      DeliverQuest deliverQuest = npc.npcData.npcQuestList[0].deliveryQuestList[0].deliveryQuest;
+      int countToDelete = deliverQuest.quantity;
 
-            List<Item> rawList = InventoryCacheManager.self.rawItemList;
-            DeliverQuest questPair = npc.npcData.npcQuestList[0].deliveryQuestList[0].deliveryQuest;
-            int countToDelete = questPair.quantity;
-
-            // Deletes items from the inventory equivalent to the Deliver Quest requirements
-            int deleteCounter = 0;
-            for (int i = 0; i < rawList.Count; i++) {
-               if (rawList[i].category == questPair.itemToDeliver.category) {
-                  if (deleteCounter >= countToDelete) {
-                     break;
-                  }
-                  if (rawList[i].itemTypeId == questPair.itemToDeliver.itemTypeId) {
-                     deleteCounter++;
-                     Global.player.rpc.Cmd_DeleteItem(rawList[i].id);
-                  }
-               }
+      // Deletes items from the inventory equivalent to the Deliver Quest requirements
+      int deleteCounter = 0;
+      for (int i = 0; i < rawList.Count; i++) {
+         if (rawList[i].category == deliverQuest.itemToDeliver.category) {
+            if (deleteCounter >= countToDelete) {
+               break;
             }
-
-            //Add Reward Item
-            CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Ore, ColorType.DarkGreen, ColorType.DarkPurple, "");
-            craftingIngredients.itemTypeId = (int) craftingIngredients.type;
-            Item item = craftingIngredients;
-
-            PanelManager.self.rewardScreen.Show(item);
-            Global.player.rpc.Cmd_DirectAddItem(item);
-
-            npc.npcData.npcQuestList[0].deliveryQuestList[0].questState = QuestState.Completed;
-            break;
+            if (rawList[i].itemTypeId == deliverQuest.itemToDeliver.itemTypeId) {
+               deleteCounter++;
+               Global.player.rpc.Cmd_DeleteItem(rawList[i].id);
+            }
+         }
       }
-      PanelManager.self.popPanel();
+   }
+
+   private void RewardPlayer() {
+      CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Ore, ColorType.DarkGreen, ColorType.DarkPurple, "");
+      craftingIngredients.itemTypeId = (int) craftingIngredients.type;
+      Item item = craftingIngredients;
+
+      // Calls Reward Screen
+      RewardScreen craftPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
+      craftPanel.setItemData(item);
+      PanelManager.self.pushPanel(Panel.Type.Reward);
+
+      // Tells DB to add item
+      Global.player.rpc.Cmd_DirectAddItem(item);
    }
 
    #region Private Variables
