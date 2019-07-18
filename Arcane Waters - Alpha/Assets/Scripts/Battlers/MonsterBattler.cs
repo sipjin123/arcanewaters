@@ -45,7 +45,10 @@ public class MonsterBattler : AutomatedBattler
       craftingIngredients.itemTypeId = (int) craftingIngredients.type;
       Item item = craftingIngredients;
 
-      PanelManager.self.rewardScreen.Show(item);
+      RewardScreen craftPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
+      craftPanel.setItemData(item);
+      PanelManager.self.pushPanel(Panel.Type.Reward);
+
       Global.player.rpc.Cmd_DirectAddItem(item);
 
       // Play a "Poof" effect on our head

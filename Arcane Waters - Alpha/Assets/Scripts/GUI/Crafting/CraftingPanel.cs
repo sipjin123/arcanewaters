@@ -93,7 +93,10 @@ public class CraftingPanel : Panel, IPointerClickHandler
    private void craft () {
       if (craftableItem != null) {
          Item item = craftableItem;
-         PanelManager.self.rewardScreen.Show(item);
+         RewardScreen craftPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
+         craftPanel.setItemData(item);
+         PanelManager.self.pushPanel(Panel.Type.Reward);
+
          Global.player.rpc.Cmd_DirectAddItem(item);
          PanelManager.self.get(Type.Craft).hide();
          craftableItem = null;
@@ -181,7 +184,6 @@ public class CraftingPanel : Panel, IPointerClickHandler
       }
       listParent.gameObject.DestroyChildren();
       List<Item> itemList = new List<Item>();
-
       foreach (Item item in itemArray) {
          itemList.Add(item.getCastItem());
       }
