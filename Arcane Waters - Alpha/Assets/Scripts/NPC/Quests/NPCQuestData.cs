@@ -14,14 +14,6 @@ public class NPCQuestData : ScriptableObject
    // List of all hunting quests
    public List<HuntQuestPair> huntQuestList;
 
-   // NPC Initial message before any quests is taken
-   public string initQuestMessage;
-   // NPC Message if there are no available quests
-   public string questCompletedMessage;
-
-   // Player reply to accepting quest
-   public ClickableText.Type initQuestAnswer;
-
    #endregion
 }
 
@@ -41,28 +33,29 @@ public class QuestInfo
    // State of quest if its complete or pending
    public QuestState questState;
 
-   // Player response accepting the quest
-   public ClickableText.Type introAnswer;
+   // NPC and Player Dialogue Sequence
+   public List<QuestDialogue> questDialogueList;
+}
 
-   // Player response if quest requirements are met
-   public ClickableText.Type successAnswer;
-
-   // Player response if quest requirements are not met
-   public ClickableText.Type failAnswer;
-
-   // NPC response after quest completion
-   public string unlockableDialogue;
-
-   // NPC Quest details
-   public string introDialogue;
+[Serializable]
+public class QuestDialogue
+{
+   public QuestState questState;
+   public string npcDialogue;
+   public bool checkCondition;
+   public ClickableText.Type playerReply;
+   public ClickableText.Type playerNegativeReply;
+   public QuestState nextState;
 }
 
 public enum QuestState
 {
-   None,
+   Ready,
    Initialized,
    Pending,
-   Completed
+   Claim,
+   Completed,
+   None
 }
 
 public enum QuestType
