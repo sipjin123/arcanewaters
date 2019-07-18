@@ -171,7 +171,6 @@ public class RPCManager : NetworkBehaviour {
 
       // Show the panel with the specified options
       NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
-      PanelManager.self.selectedPanel = Panel.Type.NPC_Panel;
       panel.npc = npc;
       panel.setClickableRows(options.ToList());
       PanelManager.self.pushIfNotShowing(panel.type);
@@ -863,7 +862,8 @@ public class RPCManager : NetworkBehaviour {
       NPC npc = NPCManager.self.getNPC(npcId);
 
       // Figure out the response we should send back
-      string response = npc.tradeGossip;
+      //string response = npc.tradeGossip;
+      string response = npc.npcReply;
 
       // Send the response to the player
       Target_ReceiveNPCMessage(_player.connectionToClient, response);

@@ -65,6 +65,9 @@ public class NPC : MonoBehaviour {
    // Our name text
    public Text nameText;
 
+   // Stores the reply of the NPC
+   public string npcReply;
+
    #endregion
 
    private void Awake () {
@@ -199,6 +202,46 @@ public class NPC : MonoBehaviour {
       _body.AddForce(direction.normalized * moveSpeed);
    }
 
+   public void CheckQuest() {
+      NPCQuestData currentQuest = npcData.npcQuestList[0];
+      // Checks if the active quest is a Delivery Quest
+      if (currentQuest.questType == QuestType.Deliver) {
+         for (int i = 0; i < currentQuest.deliveryQuestList.Count; i++) {
+            DeliveryQuestPair currentDeliverQuest = currentQuest.deliveryQuestList[0];
+
+            QuestState currentQuestState = currentDeliverQuest.questState;
+            QuestDialogue currentDialogue = currentDeliverQuest.questDialogueList.Find(_ => _.questState == currentQuestState);
+
+            // Sets npc response
+            npcReply = currentDialogue.npcDialogue;
+            PanelManager.self.get(Panel.Type.NPC_Panel).GetComponent<NPCPanel>().SetMessage(npcReply);
+            currentAnswerDialogue.Clear();
+
+            if(currentDialogue.checkCondition) {
+               List<Item> itemList = InventoryCacheManager.self.itemList;
+               DeliverQuest deliveryQuest = currentDeliverQuest.deliveryQuest;
+
+               Item findingItemList = itemList.Find(_ => (CraftingIngredients.Type) _.itemTypeId == (CraftingIngredients.Type) deliveryQuest.itemToDeliver.itemTypeId);
+               if (findingItemList != null) {
+                  if (findingItemList.count >= deliveryQuest.quantity) {
+                     // Sets the player to a positive response if Requirements are met
+                     currentAnswerDialogue.Add(currentDialogue.playerReply);
+                     break;
+                  }
+               }
+               // Sets the player to a negative response if Requirements are met
+               currentAnswerDialogue.Add(currentDialogue.playerNegativeReply);
+               Global.player.rpc.Cmd_GetClickableRows(this.npcId);
+               return;
+            }
+            // Sets the player to a positive response if Requirements are met
+            currentAnswerDialogue.Add(currentDialogue.playerReply);
+         }
+      }
+      // Send a request to the server to get the clickable text options
+      Global.player.rpc.Cmd_GetClickableRows(this.npcId);
+   }
+
    public void clientClickedMe () {
       if (Global.player == null || _clickableBox == null || Global.isInBattle()) {
          return;
@@ -214,56 +257,7 @@ public class NPC : MonoBehaviour {
       if (_shopTrigger != null) {
          PanelManager.self.pushIfNotShowing(_shopTrigger.panelType);
       } else {
-         NPCQuestData currentQuest = npcData.npcQuestList[0];
-         // Checks if the active quest is a Delivery Quest
-         if (currentQuest.questType == QuestType.Deliver) {
-            for (int i = 0; i < currentQuest.deliveryQuestList.Count; i++) {
-               DeliveryQuestPair currentDeliverQuest = currentQuest.deliveryQuestList[0];
-               switch (currentDeliverQuest.questState) {
-                  case QuestState.None:
-                     // Initialized the Quest
-                     PanelManager.self.get(Panel.Type.NPC_Panel).GetComponent<NPCPanel>().SetMessage(currentQuest.initQuestMessage);
-                     currentDeliverQuest.questState = QuestState.Initialized;
-                     break;
-                  case QuestState.Initialized:
-                     // Accepts the Quest and set Quest state into Pending
-                     PanelManager.self.get(Panel.Type.NPC_Panel).GetComponent<NPCPanel>().SetMessage(currentDeliverQuest.introDialogue);
-                     currentAnswerDialogue.Clear();
-                     currentAnswerDialogue.Add(currentDeliverQuest.introAnswer);
-                     currentDeliverQuest.questState = QuestState.Pending;
-                     break;
-                  case QuestState.Pending:
-                     // Check if Quest requirements are met
-                     currentAnswerDialogue.Clear();
-
-                     // Sets the NPC to ask if requirements are met
-                     PanelManager.self.get(Panel.Type.NPC_Panel).GetComponent<NPCPanel>().SetMessage(currentDeliverQuest.introDialogue);
-
-                     List<Item> itemList = InventoryCacheManager.self.itemList;
-                     DeliverQuest deliveryQuest = currentDeliverQuest.deliveryQuest;
-
-                     Item findingItemList = itemList.Find(_ => (CraftingIngredients.Type) _.itemTypeId == (CraftingIngredients.Type) deliveryQuest.itemToDeliver.itemTypeId);
-                     if (findingItemList != null) {
-                        if (findingItemList.count >= deliveryQuest.quantity) {
-                           // Sets the player to a positive response if Requirements are met
-                           currentAnswerDialogue.Add(currentDeliverQuest.successAnswer);
-                           break;
-                        }
-                     }
-                     // Sets the player to a negative response if Requirements are met
-                     currentAnswerDialogue.Add(currentDeliverQuest.failAnswer);
-                     break;
-                  case QuestState.Completed:
-                     PanelManager.self.get(Panel.Type.NPC_Panel).GetComponent<NPCPanel>().SetMessage(currentQuest.questCompletedMessage);
-                     currentAnswerDialogue.Clear();
-                     currentAnswerDialogue.Add(ClickableText.Type.None);
-                     break;
-               }
-            }
-         }
-
-         // Send a request to the server to get the clickable text options
-         Global.player.rpc.Cmd_GetClickableRows(this.npcId);
+         CheckQuest();
       }
    }
 
