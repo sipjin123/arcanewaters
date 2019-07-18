@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
-using Mirror;
 using UnityEngine.EventSystems;
 
 public class InventoryPanel : Panel, IPointerClickHandler {
@@ -111,7 +109,6 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       if (pageNumber >= 0) {
          _pageNumber = pageNumber;
       }
-
       // Get the latest info from the server to show in our character stack
       Global.player.rpc.Cmd_RequestItemsFromServer(_pageNumber, ITEMS_PER_PAGE);
    }
@@ -178,9 +175,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
             row.colorBox2.enabled = false;
             row.equippedIcon.enabled = false;
          }
-         
       }
-
       // Store them for later reference
       _itemList = itemList;
    }
@@ -193,7 +188,6 @@ public class InventoryPanel : Panel, IPointerClickHandler {
          // Check if it's currently equipped or not
          int itemIdToSend = isEquipped(selectedItemId) ? 0 : selectedItemId;
          Global.player.rpc.Cmd_RequestSetWeaponId(itemIdToSend);
-
       } else if (selectedItem is Armor) {
          // Check if it's currently equipped or not
          int itemIdToSend = isEquipped(selectedItemId) ? 0 : selectedItemId;
@@ -300,9 +294,8 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       // Recreate the item list as the proper subclasses, now that they've been through the serialization process
       List<Item> itemList = new List<Item>();
       foreach (Item item in itemArray) {
-
          if (item.category == Item.Category.CraftingIngredients) {
-            var findItem = itemList.Find(_ => _.category == Item.Category.CraftingIngredients &&
+            Item findItem = itemList.Find(_ => _.category == Item.Category.CraftingIngredients &&
             ((CraftingIngredients.Type) _.itemTypeId == (CraftingIngredients.Type) item.itemTypeId));
             if (findItem != null) {
                int index = itemList.IndexOf(findItem);
