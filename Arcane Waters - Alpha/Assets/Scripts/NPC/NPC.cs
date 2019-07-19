@@ -202,7 +202,7 @@ public class NPC : MonoBehaviour {
       _body.AddForce(direction.normalized * moveSpeed);
    }
 
-   public void CheckQuest() {
+   public void checkQuest() {
       NPCQuestData currentQuest = npcData.npcQuestList[0];
       // Checks if the active quest is a Delivery Quest
       if (currentQuest.questType == QuestType.Deliver) {
@@ -257,7 +257,7 @@ public class NPC : MonoBehaviour {
       if (_shopTrigger != null) {
          PanelManager.self.pushIfNotShowing(_shopTrigger.panelType);
       } else {
-         CheckQuest();
+         checkQuest();
       }
    }
 
