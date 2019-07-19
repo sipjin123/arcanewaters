@@ -104,11 +104,11 @@ public class CraftingPanel : Panel, IPointerClickHandler
    }
 
    private void selectItem () {
+      bool hasInjected = false;
+
       if (_currCraftingMaterialRow == null) {
          return;
       }
-
-      bool hasInjected = false;
 
       for (int i = 0; i < craftingRowList.Count; i++) {
          if (!craftingRowList[i].hasData) {
@@ -177,12 +177,15 @@ public class CraftingPanel : Panel, IPointerClickHandler
    }
 
    public void receiveItemsFromServer (UserObjects userObjects, int pageNumber, int gold, int gems, int totalItemCount, int equippedArmorId, int equippedWeaponId, Item[] itemArray) {
+      // Clears listeners for existing templates
       if (listParent.childCount > 0) {
          foreach (Transform child in listParent) {
             child.GetComponent<CraftingMaterialRow>().button.onClick.RemoveAllListeners();
          }
       }
       listParent.gameObject.DestroyChildren();
+
+      // Adds crafting materials to view panel
       List<Item> itemList = new List<Item>();
       foreach (Item item in itemArray) {
          itemList.Add(item.getCastItem());
@@ -190,11 +193,12 @@ public class CraftingPanel : Panel, IPointerClickHandler
 
       for (int i = 0; i < itemList.Count; i++) {
          Item itemData = itemList[i].getCastItem();
-
          if (itemData.category == Item.Category.CraftingIngredients) {
+            // Generate UI of the crafting ingredients
             GameObject prefab = Instantiate(craftingMetrialRow.gameObject, listParent);
             CraftingMaterialRow materialRow = prefab.GetComponent<CraftingMaterialRow>();
 
+            // Setting up the data of the crafting ingredient template
             int ingredient = itemData.itemTypeId;
             CraftingIngredients craftingIngredients = new CraftingIngredients(0, ingredient, ColorType.DarkGreen, ColorType.DarkPurple, "");
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;

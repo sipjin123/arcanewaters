@@ -90,20 +90,19 @@ public class NPCPanel : Panel {
          // Set up the click function
          row.clickedEvent.AddListener(() => rowClickedOn(row, this.npc));
       }
-   }     
+   }
 
    public void rowClickedOn (ClickableText row, NPC npc) {
       NPCQuestData currentQuest = npc.npcData.npcQuestList[0];
       QuestState currentQuestState = currentQuest.deliveryQuestList[0].questState;
       QuestDialogue currentDialogue = currentQuest.deliveryQuestList[0].questDialogueList.Find(_ => _.questState == currentQuestState);
 
-      if(row.textType == ClickableText.Type.TradeDeliveryFail) {
+      if (row.textType == ClickableText.Type.TradeDeliveryFail) {
          // Change reply of NPC
          string reply = "go on and get my stuff then";
          npc.npcReply = reply;
          SetMessage(reply);
-      }
-      else if(row.textType == ClickableText.Type.TradeDeliveryComplete) {
+      } else if (row.textType == ClickableText.Type.TradeDeliveryComplete) {
          // Reduce player inventory equivalent to quest requirements
          DeductInventoryItems();
 
@@ -122,16 +121,15 @@ public class NPCPanel : Panel {
          string reply = "I Got nothing go away";
          npc.npcReply = reply;
          SetMessage(reply);
-      }
-      else {
+      } else {
          npc.npcData.npcQuestList[0].deliveryQuestList[0].questState = currentDialogue.nextState;
-         npc.CheckQuest();
+         npc.checkQuest();
       }
       // Tell the server what we clicked
       Global.player.rpc.Cmd_ClickedNPCRow(npc.npcId, row.textType);
    }
 
-   private void DeductInventoryItems() {
+   private void DeductInventoryItems () {
       List<Item> rawList = InventoryCacheManager.self.rawItemList;
       DeliverQuest deliverQuest = npc.npcData.npcQuestList[0].deliveryQuestList[0].deliveryQuest;
       int countToDelete = deliverQuest.quantity;
@@ -151,7 +149,7 @@ public class NPCPanel : Panel {
       }
    }
 
-   private void RewardPlayer() {
+   private void RewardPlayer () {
       CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Ore, ColorType.DarkGreen, ColorType.DarkPurple, "");
       craftingIngredients.itemTypeId = (int) craftingIngredients.type;
       Item item = craftingIngredients;
