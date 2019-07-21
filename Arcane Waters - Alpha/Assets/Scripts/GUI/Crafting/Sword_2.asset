@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f6d4ff9e4c4868049b4506b93daa3080, type: 3}
-  m_Name: LizardSword
+  m_Name: Sword_2
   m_EditorClassIdentifier: 
   resultItem:
     category: 1
@@ -23,21 +23,14 @@ MonoBehaviour:
   combinationRequirements:
   - category: 6
     id: 0
-    itemTypeId: 1
+    itemTypeId: 4
     color1: 0
     color2: 0
     data: 
-    count: 1
+    count: 2
   - category: 6
     id: 0
     itemTypeId: 3
-    color1: 0
-    color2: 0
-    data: 
-    count: 1
-  - category: 6
-    id: 0
-    itemTypeId: 4
     color1: 0
     color2: 0
     data: 

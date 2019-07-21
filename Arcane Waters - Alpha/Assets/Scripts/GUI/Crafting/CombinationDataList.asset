@@ -15,3 +15,5 @@ MonoBehaviour:
   comboDataList:
   - {fileID: 11400000, guid: 3cbc3df221c53ea46856013f2f323724, type: 2}
   - {fileID: 11400000, guid: 9bd71f493c888ba4082b32003ad3b6ac, type: 2}
+  - {fileID: 11400000, guid: 879e0a858800a064088ec66228ef69a7, type: 2}
+  - {fileID: 11400000, guid: d53a15946f1c86640866284ed49705e6, type: 2}
