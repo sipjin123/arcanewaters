@@ -6,14 +6,19 @@ using UnityEngine.EventSystems;
 public class CraftingPanel : Panel, IPointerClickHandler
 {
    #region Public Variables
+
    // List of items that can be crafted
    public CombinationDataList combinationDataList;
+
    // The name of the item to be crafted 
    public Text resultItemText;
+
    // The name of the item above the description to be crafted
    public Text itemTitleText;
+
    // The details of the item to b crafted
    public Text itemInfoText;
+
    // The cost of crafting the item
    public Text goldText;
    public Text gemsText;
@@ -27,6 +32,9 @@ public class CraftingPanel : Panel, IPointerClickHandler
    // The crafting slots
    public List<CraftingRow> craftingRowList;
 
+   // List of Ingredients for Crafting
+   public List<Item> ingredientList;
+
    // The holder of the current items that can be usef for crafting
    public Transform listParent;
 
@@ -34,6 +42,7 @@ public class CraftingPanel : Panel, IPointerClickHandler
 
    // Caches the item that can be crafted
    public Item craftableItem;
+
    #endregion
 
    public override void Start () {
@@ -42,7 +51,8 @@ public class CraftingPanel : Panel, IPointerClickHandler
       for (int i = 0; i < craftingRowList.Count; i++) {
          CraftingRow rowData = craftingRowList[i];
          craftingRowList[i].button.onClick.AddListener(() => {
-            clickCraftRow(rowData);
+            //clickCraftRow(rowData);
+            Debug.LogError("Do nothing for now");
          });
       }
 
@@ -65,6 +75,34 @@ public class CraftingPanel : Panel, IPointerClickHandler
       }
       currItem.selectItem();
       _currCraftingMaterialRow = currItem;
+
+      var id = currItem.itemData.itemTypeId;
+      var itemCombo = combinationDataList.comboDataList.Find(_ => _.resultItem.itemTypeId == id);
+      if (itemCombo == null) {
+         Debug.LogError("Item does not exist");
+      } else {
+         for(int i = 0; i < craftingRowList.Count; i++) {
+            craftingRowList[i].purgeData();
+         }
+
+         for (int i = 0; i < itemCombo.combinationRequirements.Count; i++) {
+            var requirement = itemCombo.combinationRequirements[i];
+            var myIngredient = ingredientList.Find(_ => _.itemTypeId == requirement.itemTypeId);
+
+            int ingredientCount = 0;
+            if (myIngredient != null) {
+               Debug.LogError("Do i have this? :: " + myIngredient.getName() + " : " + myIngredient.count);
+               ingredientCount = myIngredient.count;
+            } else
+               Debug.LogError("WE dont have this yet");
+
+            bool passedRequirement = false;
+            if (ingredientCount >= requirement.count)
+               passedRequirement = true;
+            craftingRowList[i].injectItem(requirement.getCastItem(), ingredientCount, requirement.count, passedRequirement);
+            //Debug.LogError("Item combo needed is : " + itemCombo.combinationRequirements[i].getCastItem().getName());
+         }
+      }
    }
 
    private void clickCraftRow (CraftingRow currItem) {
@@ -113,13 +151,13 @@ public class CraftingPanel : Panel, IPointerClickHandler
       for (int i = 0; i < craftingRowList.Count; i++) {
          if (!craftingRowList[i].hasData) {
             hasInjected = true;
-            craftingRowList[i].injectItem(_currCraftingMaterialRow.itemData);
+            //craftingRowList[i].injectItem(_currCraftingMaterialRow.itemData);
             break;
          }
       }
 
       if (hasInjected == false) {
-         craftingRowList[0].injectItem(_currCraftingMaterialRow.itemData);
+         //craftingRowList[0].injectItem(_currCraftingMaterialRow.itemData);
       }
 
       if (_currCraftingRow) {
@@ -186,6 +224,7 @@ public class CraftingPanel : Panel, IPointerClickHandler
       listParent.gameObject.DestroyChildren();
 
       // Adds crafting materials to view panel
+      ingredientList = new List<Item>();
       List<Item> itemList = new List<Item>();
       foreach (Item item in itemArray) {
          itemList.Add(item.getCastItem());
@@ -193,22 +232,34 @@ public class CraftingPanel : Panel, IPointerClickHandler
 
       for (int i = 0; i < itemList.Count; i++) {
          Item itemData = itemList[i].getCastItem();
-         if (itemData.category == Item.Category.CraftingIngredients) {
+         if (itemData.category == Item.Category.Blueprint) {
             // Generate UI of the crafting ingredients
             GameObject prefab = Instantiate(craftingMetrialRow.gameObject, listParent);
             CraftingMaterialRow materialRow = prefab.GetComponent<CraftingMaterialRow>();
 
             // Setting up the data of the crafting ingredient template
             int ingredient = itemData.itemTypeId;
-            CraftingIngredients craftingIngredients = new CraftingIngredients(0, ingredient, ColorType.DarkGreen, ColorType.DarkPurple, "");
-            craftingIngredients.itemTypeId = (int) craftingIngredients.type;
-            Item item = craftingIngredients;
+            Blueprint blueprint = new Blueprint(0, ingredient, ColorType.DarkGreen, ColorType.DarkPurple, "");
+            blueprint.itemTypeId = (int) blueprint.type;
+            Item item = blueprint;
 
             materialRow.button.onClick.AddListener(() => {
                clickMaterialRow(materialRow);
             });
             materialRow.initData(item);
             prefab.SetActive(true);
+         }
+         if(itemData.category == Item.Category.CraftingIngredients) {
+            Item currItem = ingredientList.Find(_ => _.itemTypeId == itemData.itemTypeId);
+            if (currItem == null) {
+               itemData.count = 1;
+               ingredientList.Add(itemData);
+               Debug.LogError("Adding ingredient ");
+            }
+            else {
+               currItem.count++;
+               Debug.LogError("ADding coutn of : " + currItem.count);
+            }
          }
       }
    }

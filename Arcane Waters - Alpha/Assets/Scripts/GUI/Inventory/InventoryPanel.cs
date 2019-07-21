@@ -35,6 +35,8 @@ public class InventoryPanel : Panel, IPointerClickHandler {
    public Sprite weaponIcon;
    public Sprite itemIcon;
    public Sprite foodIcon;
+   public Sprite ingredientIcon;
+   public Sprite blueprintIcon;
 
    // The prefab we use for creating item rows
    public ItemRow itemRowPrefab;
@@ -148,6 +150,10 @@ public class InventoryPanel : Panel, IPointerClickHandler {
             row.itemIcon.sprite = foodIcon;
          } else if (item.category == Item.Category.Usable) {
             row.itemIcon.sprite = itemIcon;
+         } else if (item.category == Item.Category.Blueprint) {
+            row.itemIcon.sprite = blueprintIcon;
+         } else if (item.category == Item.Category.CraftingIngredients) {
+            row.itemIcon.sprite = ingredientIcon;
          } else {
             row.itemIcon.sprite = itemIcon;
          }
