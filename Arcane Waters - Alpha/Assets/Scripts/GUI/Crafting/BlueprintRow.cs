@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class CraftingMaterialRow : MonoBehaviour
+public class BlueprintRow : MonoBehaviour
 {
    #region Public Variables
 
