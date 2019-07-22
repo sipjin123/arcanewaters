@@ -22,6 +22,7 @@ public class DeliveryQuestPair : QuestInfo
 {
    public DeliverQuest deliveryQuest;
 }
+
 [Serializable]
 public class HuntQuestPair : QuestInfo
 {
@@ -50,12 +51,12 @@ public class QuestDialogue
 
 public enum QuestState
 {
-   Ready,
-   Initialized,
-   Pending,
-   Claim,
-   Completed,
-   None
+   None = 0,
+   Ready = 1,
+   Initialized = 2,
+   Pending = 3,
+   Claim = 4,
+   Completed = 5,
 }
 
 public enum QuestType

@@ -45,8 +45,8 @@ public class MonsterBattler : AutomatedBattler
       craftingIngredients.itemTypeId = (int) craftingIngredients.type;
       Item item = craftingIngredients;
 
-      RewardScreen craftPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
-      craftPanel.setItemData(item);
+      RewardScreen rewardPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
+      rewardPanel.setItemData(item);
       PanelManager.self.pushPanel(Panel.Type.Reward);
 
       Global.player.rpc.Cmd_DirectAddItem(item);

@@ -139,6 +139,7 @@ public class PanelManager : MonoBehaviour {
             return true;
          }
       }
+
       return false;
    }
 
@@ -180,6 +181,7 @@ public class PanelManager : MonoBehaviour {
             return panel;
          }
       }
+
       return null;
    }
 
