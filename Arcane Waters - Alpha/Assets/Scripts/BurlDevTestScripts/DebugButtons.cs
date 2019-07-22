@@ -4,8 +4,8 @@ public class DebugButtons : MonoBehaviour
 {
    private void processItem(Item item) {
 
-      RewardScreen craftPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
-      craftPanel.setItemData(item);
+      RewardScreen rewardPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
+      rewardPanel.setItemData(item);
       PanelManager.self.pushPanel(Panel.Type.Reward);
 
       Global.player.rpc.Cmd_DirectAddItem(item);
@@ -66,6 +66,7 @@ public class DebugButtons : MonoBehaviour
    }
 }
 #endif
+
 public static class DebugCustom
 {
    public static string B = "[B0NTA] :: ";

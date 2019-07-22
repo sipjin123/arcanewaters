@@ -13,7 +13,7 @@ public class NPCFriendshipManager : MonoBehaviour
       self = this;
    }
 
-   public float loadRelationship (float npcID) {
+   public int loadRelationship (int npcID) {
       return PlayerPrefs.GetInt("NPC_ID_" + npcID);
    }
 

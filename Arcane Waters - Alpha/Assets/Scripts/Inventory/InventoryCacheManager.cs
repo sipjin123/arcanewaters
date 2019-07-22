@@ -8,14 +8,12 @@ public class InventoryCacheManager : MonoBehaviour
    // Itemlist with stacking
    public List<Item> itemList;
 
-   // Itemlist with separated items (no stack)
-   public List<Item> rawItemList;
-
    // Self reference
    public static InventoryCacheManager self;
 
    // If inventory has been cached
    public bool hasInitialized;
+
    #endregion
 
    private void Awake () {
@@ -29,11 +27,9 @@ public class InventoryCacheManager : MonoBehaviour
    public void receiveItemsFromServer (UserObjects userObjects, int pageNumber, int gold, int gems, int totalItemCount, int equippedArmorId, int equippedWeaponId, Item[] itemArray) {
       hasInitialized = true;
       itemList = new List<Item>();
-      rawItemList = new List<Item>();
 
       foreach (Item item in itemArray) {
          // Add non stacking Inventory to list
-         rawItemList.Add(item.getCastItem());
          if (item.category == Item.Category.CraftingIngredients) {
             Item findItem = itemList.Find(_ => _.category == Item.Category.CraftingIngredients &&
             ((CraftingIngredients.Type) _.itemTypeId == (CraftingIngredients.Type) item.itemTypeId));
