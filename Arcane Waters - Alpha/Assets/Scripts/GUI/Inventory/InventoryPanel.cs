@@ -154,7 +154,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
          } else if (item.category == Item.Category.Blueprint) {
             row.itemIcon.sprite = blueprintIcon;
          } else if (item.category == Item.Category.CraftingIngredients) {
-            row.itemIcon.sprite = ingredientIcon;
+            row.itemIcon.sprite = ImageManager.getSprite("Icons/CraftingIngredients/" + ((CraftingIngredients.Type) item.itemTypeId));
          } else {
             row.itemIcon.sprite = itemIcon;
          }

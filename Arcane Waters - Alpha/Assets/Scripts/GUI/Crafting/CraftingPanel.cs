@@ -10,8 +10,8 @@ public class CraftingPanel : Panel, IPointerClickHandler
    // List of items that can be crafted
    public CombinationDataList combinationDataList;
 
-   // The name of the item to be crafted 
-   public Text resultItemText;
+   // The name of player
+   public Text playerNameText;
 
    // The name of the item above the description to be crafted
    public Text itemTitleText;
@@ -23,11 +23,11 @@ public class CraftingPanel : Panel, IPointerClickHandler
    public Text goldText;
    public Text gemsText;
 
-   // The Icon of the item to be crafted
-   public Image resultImage;
+   // An empty placeholder
+   public Sprite emptyImage;
 
    // The Templates for the raw materials used for crafting
-   public CraftingMaterialRow craftingMetrialRow;
+   public BlueprintRow blueprintRow;
 
    // The crafting slots
    public List<CraftingRow> craftingRowList;
@@ -38,28 +38,31 @@ public class CraftingPanel : Panel, IPointerClickHandler
    // The holder of the current items that can be usef for crafting
    public Transform listParent;
 
-   public Button craftButton, useButton, removeButton, clearButton;
+   // Primary buttons
+   public Button craftButton, clearButton;
+
+   // Disable Button Object for crafting
+   public GameObject craftDisabled;
 
    // Caches the item that can be crafted
    public Item craftableItem;
+
+   // Our character stack
+   public CharacterStack characterStack;
 
    #endregion
 
    public override void Start () {
       base.Start();
 
-      for (int i = 0; i < craftingRowList.Count; i++) {
-         CraftingRow rowData = craftingRowList[i];
-         craftingRowList[i].button.onClick.AddListener(() => {
-            //clickCraftRow(rowData);
-            Debug.LogError("Do nothing for now");
-         });
-      }
-
       clearButton.onClick.AddListener(() => { purge(); });
-      useButton.onClick.AddListener(() => { selectItem(); });
-      removeButton.onClick.AddListener(() => { removeItem(); });
       craftButton.onClick.AddListener(() => { craft(); });
+   }
+
+   private void OnEnable () {
+      for (int i = 0; i < craftingRowList.Count; i++) {
+         craftingRowList[i].purgeData();
+      }
    }
 
    public void requestInventoryFromServer (int pageNumber) {
@@ -67,158 +70,113 @@ public class CraftingPanel : Panel, IPointerClickHandler
       Global.player.rpc.Cmd_RequestItemsFromServer(pageNumber, 15);
    }
 
-   private void clickMaterialRow (CraftingMaterialRow currItem) {
-      if (_currCraftingMaterialRow != null) {
-         if (_currCraftingMaterialRow != currItem) {
-            _currCraftingMaterialRow.deselectItem();
+   private void clickMaterialRow (BlueprintRow currBlueprintRow) {
+      // Un selects previous selected blueprint
+      if (_currBlueprintRow != null) {
+         if (_currBlueprintRow != currBlueprintRow) {
+            _currBlueprintRow.deselectItem();
          }
       }
-      currItem.selectItem();
-      _currCraftingMaterialRow = currItem;
+      // Enables Selection Frame
+      currBlueprintRow.selectItem();
+      _currBlueprintRow = currBlueprintRow;
 
-      var id = currItem.itemData.itemTypeId;
-      var itemCombo = combinationDataList.comboDataList.Find(_ => _.resultItem.itemTypeId == id);
+      int id = currBlueprintRow.itemData.getCastItem().itemTypeId;
+      CombinationData itemCombo = combinationDataList.comboDataList.Find(_ => _.blueprintTypeID == id);
+      _craftingIngredientList = itemCombo.combinationRequirements;
+
+      int requirementCount = itemCombo.combinationRequirements.Count;
+      int passedRequirementCount = 0;
+
       if (itemCombo == null) {
-         Debug.LogError("Item does not exist");
+         D.error("Item does not exist");
       } else {
+         // Clears previous requirement list
          for(int i = 0; i < craftingRowList.Count; i++) {
             craftingRowList[i].purgeData();
          }
 
-         for (int i = 0; i < itemCombo.combinationRequirements.Count; i++) {
-            var requirement = itemCombo.combinationRequirements[i];
-            var myIngredient = ingredientList.Find(_ => _.itemTypeId == requirement.itemTypeId);
-
+         // Checks individual materials if complete
+         for (int i = 0; i < requirementCount; i++) {
+            Item requirement = itemCombo.combinationRequirements[i];
+            Item myIngredient = ingredientList.Find(_ => _.itemTypeId == requirement.itemTypeId);
             int ingredientCount = 0;
+
             if (myIngredient != null) {
-               Debug.LogError("Do i have this? :: " + myIngredient.getName() + " : " + myIngredient.count);
                ingredientCount = myIngredient.count;
-            } else
-               Debug.LogError("WE dont have this yet");
-
+            } else {
+               D.error("Not enough quantity");
+            }
             bool passedRequirement = false;
-            if (ingredientCount >= requirement.count)
+
+            if (ingredientCount >= requirement.count) {
                passedRequirement = true;
+               passedRequirementCount++;
+            }
+            craftableItem = itemCombo.resultItem.getCastItem();
             craftingRowList[i].injectItem(requirement.getCastItem(), ingredientCount, requirement.count, passedRequirement);
-            //Debug.LogError("Item combo needed is : " + itemCombo.combinationRequirements[i].getCastItem().getName());
          }
-      }
-   }
 
-   private void clickCraftRow (CraftingRow currItem) {
-      if (currItem == null) {
-         return;
-      }
-
-      if (_currCraftingRow != null) {
-         if (_currCraftingRow == currItem) {
-            return;
-         } else {
-            _currCraftingRow.unselectItem();
+         // Enables/Disables Craft Button if valid requirements
+         if(passedRequirementCount >= requirementCount) {
+            craftButton.gameObject.SetActive(true);
+            craftDisabled.SetActive(false);
          }
+         else {
+            craftButton.gameObject.SetActive(false);
+            craftDisabled.SetActive(true);
+         }
+
+         // Updates the Icon and description of the item
+         previewItem();
+         characterStack.updateWeapon(_userObjects.userInfo.gender, (Weapon.Type) craftableItem.itemTypeId, ColorType.Black, ColorType.Blue);
       }
-      _currCraftingRow = currItem;
-      _currCraftingRow.selectItem();
    }
 
    private void purge () {
-      computeCombinations();
+      previewItem();
       for (int i = 0; i < craftingRowList.Count; i++) {
          craftingRowList[i].purgeData();
+      }
+   }
+
+   private void deductInventoryItems () {
+      int ingredientCount = _craftingIngredientList.Count;
+      for (int i = 0; i < ingredientCount; i++) {
+         for (int q = 0; q < ingredientList[i].count; q++) {
+            Global.player.rpc.Cmd_DeleteItem(ingredientList[i].id);
+         }
       }
    }
 
    private void craft () {
       if (craftableItem != null) {
          Item item = craftableItem;
-         RewardScreen craftPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
-         craftPanel.setItemData(item);
+         RewardScreen rewardPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
+         rewardPanel.setItemData(item);
          PanelManager.self.pushPanel(Panel.Type.Reward);
 
          Global.player.rpc.Cmd_DirectAddItem(item);
          PanelManager.self.get(Type.Craft).hide();
          craftableItem = null;
+         deductInventoryItems();
       }
    }
 
-   private void selectItem () {
-      bool hasInjected = false;
-
-      if (_currCraftingMaterialRow == null) {
-         return;
-      }
-
-      for (int i = 0; i < craftingRowList.Count; i++) {
-         if (!craftingRowList[i].hasData) {
-            hasInjected = true;
-            //craftingRowList[i].injectItem(_currCraftingMaterialRow.itemData);
-            break;
-         }
-      }
-
-      if (hasInjected == false) {
-         //craftingRowList[0].injectItem(_currCraftingMaterialRow.itemData);
-      }
-
-      if (_currCraftingRow) {
-         _currCraftingRow.unselectItem();
-      }
-      _currCraftingRow = null;
-
-      if (_currCraftingMaterialRow) {
-         _currCraftingMaterialRow.deselectItem();
-      }
-      _currCraftingMaterialRow = null;
-
-      computeCombinations();
-   }
-
-   private void removeItem () {
-      if (_currCraftingRow == null) {
-         return;
-      }
-      _currCraftingRow.unselectItem();
-      _currCraftingRow.purgeData();
-      computeCombinations();
-      _currCraftingRow = null;
-   }
-
-   private void computeCombinations () {
-      int counter = 0;
-      List<Item> rawIngredients = new List<Item>();
-
-      for (int i = 0; i < craftingRowList.Count; i++) {
-         if (craftingRowList[i].hasData) {
-            counter++;
-            rawIngredients.Add(craftingRowList[i].item);
-         }
-      }
-
+   private void previewItem () {
       itemTitleText.text = "";
       itemInfoText.text = "";
-      resultImage.sprite = null;
-      resultItemText.text = "";
 
-      if (counter == 3) {
-         List<CombinationData> dataList = combinationDataList.comboDataList;
-         for (int i = 0; i < dataList.Count; i++) {
-            if (dataList[i].checkIfRequirementsPass(rawIngredients)) {
-               resultImage.sprite = ImageManager.getSprite(dataList[i].resultItem.getCastItem().getIconPath());
-               craftableItem = dataList[i].resultItem.getCastItem();
-               itemInfoText.text = craftableItem.getDescription();
-               itemTitleText.text = craftableItem.getName();
-               resultItemText.text = craftableItem.getName();
-               break;
-            }
-         }
-      }
+      List<CombinationData> dataList = combinationDataList.comboDataList;
+      itemInfoText.text = craftableItem.getDescription();
+      itemTitleText.text = craftableItem.getName();
    }
 
    public void receiveItemsFromServer (UserObjects userObjects, int pageNumber, int gold, int gems, int totalItemCount, int equippedArmorId, int equippedWeaponId, Item[] itemArray) {
       // Clears listeners for existing templates
       if (listParent.childCount > 0) {
          foreach (Transform child in listParent) {
-            child.GetComponent<CraftingMaterialRow>().button.onClick.RemoveAllListeners();
+            child.GetComponent<BlueprintRow>().button.onClick.RemoveAllListeners();
          }
       }
       listParent.gameObject.DestroyChildren();
@@ -232,36 +190,42 @@ public class CraftingPanel : Panel, IPointerClickHandler
 
       for (int i = 0; i < itemList.Count; i++) {
          Item itemData = itemList[i].getCastItem();
-         if (itemData.category == Item.Category.Blueprint) {
-            // Generate UI of the crafting ingredients
-            GameObject prefab = Instantiate(craftingMetrialRow.gameObject, listParent);
-            CraftingMaterialRow materialRow = prefab.GetComponent<CraftingMaterialRow>();
 
-            // Setting up the data of the crafting ingredient template
+         // Handles all the blueprints that can be crafted
+         if (itemData.category == Item.Category.Blueprint) {
+            GameObject prefab = Instantiate(this.blueprintRow.gameObject, listParent);
+            BlueprintRow blueprintRow = prefab.GetComponent<BlueprintRow>();
+
+            // Setting up the data of the blueprint template
             int ingredient = itemData.itemTypeId;
             Blueprint blueprint = new Blueprint(0, ingredient, ColorType.DarkGreen, ColorType.DarkPurple, "");
             blueprint.itemTypeId = (int) blueprint.type;
             Item item = blueprint;
 
-            materialRow.button.onClick.AddListener(() => {
-               clickMaterialRow(materialRow);
+            blueprintRow.button.onClick.AddListener(() => {
+               clickMaterialRow(blueprintRow);
             });
-            materialRow.initData(item);
+            blueprintRow.initData(item);
             prefab.SetActive(true);
          }
+
+         // Stores all ingredients for crafting
          if(itemData.category == Item.Category.CraftingIngredients) {
             Item currItem = ingredientList.Find(_ => _.itemTypeId == itemData.itemTypeId);
             if (currItem == null) {
                itemData.count = 1;
                ingredientList.Add(itemData);
-               Debug.LogError("Adding ingredient ");
             }
             else {
                currItem.count++;
-               Debug.LogError("ADding coutn of : " + currItem.count);
             }
          }
       }
+
+      // Updates player data preview
+      playerNameText.text = Global.player.entityName;
+      _userObjects = userObjects;
+      characterStack.updateLayers(userObjects);
    }
 
    public void OnPointerClick (PointerEventData eventData) {
@@ -269,7 +233,18 @@ public class CraftingPanel : Panel, IPointerClickHandler
    }
 
    #region Private Variables
-   private CraftingMaterialRow _currCraftingMaterialRow;
+
+   // Cached Material To Craft
+   private BlueprintRow _currBlueprintRow;
+
+   // Cached Recipe
    private CraftingRow _currCraftingRow;
+
+   // The last set of User Objects that we received
+   protected UserObjects _userObjects;
+
+   // Caches ingredients that are needed for crafting
+   private List<Item> _craftingIngredientList;
+
    #endregion
 }
