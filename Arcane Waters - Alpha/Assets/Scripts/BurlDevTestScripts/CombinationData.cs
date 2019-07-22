@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class CombinationData : ScriptableObject
 {
+   public int blueprintTypeID;
    public Item resultItem;
    public List<Item> combinationRequirements;
 

@@ -42,7 +42,7 @@ public class CraftingRow : MonoBehaviour
 
       nameText.text = item.getName();
       quantityText.text = quantity.ToString();
-      requirementText.text = playerIngredientQuantity + " / " + quantity;
+      requirementText.text = playerIngredientQuantity + "/" + quantity;
 
       requirementText.enabled = !isEnough;
       checkIcon.enabled = isEnough;
