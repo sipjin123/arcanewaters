@@ -111,6 +111,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       if (pageNumber >= 0) {
          _pageNumber = pageNumber;
       }
+
       // Get the latest info from the server to show in our character stack
       Global.player.rpc.Cmd_RequestItemsFromServer(_pageNumber, ITEMS_PER_PAGE);
    }
@@ -182,6 +183,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
             row.equippedIcon.enabled = false;
          }
       }
+
       // Store them for later reference
       _itemList = itemList;
    }

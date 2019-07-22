@@ -78,10 +78,12 @@ public class NPCPanel : Panel {
 
       // Sets the index of the dialogue
       int index = 1;
+
       // Create a clickable text row for each option in the list
       foreach (ClickableText.Type option in options) {
          ClickableText row = Instantiate(clickableRowPrefab);
          row.transform.SetParent(clickableRowContainer.transform);
+
          // Set the type
          row.textType = option;
          row.initData(index);
@@ -104,11 +106,11 @@ public class NPCPanel : Panel {
          SetMessage(reply);
       } else if (row.textType == ClickableText.Type.TradeDeliveryComplete) {
          // Reduce player inventory equivalent to quest requirements
-         DeductInventoryItems();
+         deductInventoryItems();
 
          // CloseNPCPanel and Call Reward Panel
          PanelManager.self.popPanel();
-         RewardPlayer();
+         rewardPlayer();
 
          // Update quest State
          npc.npcData.npcQuestList[0].deliveryQuestList[0].questState = currentDialogue.nextState;
@@ -129,7 +131,7 @@ public class NPCPanel : Panel {
       Global.player.rpc.Cmd_ClickedNPCRow(npc.npcId, row.textType);
    }
 
-   private void DeductInventoryItems () {
+   private void deductInventoryItems () {
       List<Item> rawList = InventoryCacheManager.self.rawItemList;
       DeliverQuest deliverQuest = npc.npcData.npcQuestList[0].deliveryQuestList[0].deliveryQuest;
       int countToDelete = deliverQuest.quantity;
@@ -149,7 +151,7 @@ public class NPCPanel : Panel {
       }
    }
 
-   private void RewardPlayer () {
+   private void rewardPlayer () {
       CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Ore, ColorType.DarkGreen, ColorType.DarkPurple, "");
       craftingIngredients.itemTypeId = (int) craftingIngredients.type;
       Item item = craftingIngredients;
