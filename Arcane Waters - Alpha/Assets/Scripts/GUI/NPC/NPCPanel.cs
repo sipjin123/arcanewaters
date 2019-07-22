@@ -132,7 +132,7 @@ public class NPCPanel : Panel {
    }
 
    private void deductInventoryItems () {
-      List<Item> rawList = InventoryCacheManager.self.rawItemList;
+      List<Item> rawList = InventoryCacheManager.self.itemList;
       DeliverQuest deliverQuest = npc.npcData.npcQuestList[0].deliveryQuestList[0].deliveryQuest;
       int countToDelete = deliverQuest.quantity;
 

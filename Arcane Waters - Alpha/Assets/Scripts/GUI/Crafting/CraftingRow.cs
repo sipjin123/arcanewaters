@@ -38,10 +38,10 @@ public class CraftingRow : MonoBehaviour
    public void injectItem (Item itemvar, int playerIngredientQuantity ,int quantity, bool isEnough) {
       hasData = true;
       item = itemvar;
-      nameText.text = item.getName();
-      quantityText.text = quantity.ToString();
       icon.sprite = ImageManager.getSprite(item.getIconPath());
 
+      nameText.text = item.getName();
+      quantityText.text = quantity.ToString();
       requirementText.text = playerIngredientQuantity + " / " + quantity;
 
       requirementText.enabled = !isEnough;
@@ -49,11 +49,14 @@ public class CraftingRow : MonoBehaviour
    }
 
    public void purgeData () {
-      quantityText.text = "";
       hasData = false;
       item = null;
-      nameText.text = "";
       icon.sprite = emptySprite;
+
+      quantityText.text = "";
+      nameText.text = "";
+      requirementText.text = "";
+
       requirementText.enabled = false;
       checkIcon.enabled = false;
    }
