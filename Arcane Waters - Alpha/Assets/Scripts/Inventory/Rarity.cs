@@ -66,7 +66,7 @@ public class Rarity : MonoBehaviour {
          case Type.Epic:
             return Util.getBellCurveFloat(3.0f, 1.0f, 2f, 20f);
          case Type.Legendary:
-            return Util.getBellCurveFloat(5.0f, 3.0f, 10f, 30f);
+            return Util.getBellCurveFloat(5.0f, 3.0f, 3f, 30f);
          default:
             return Util.getBellCurveFloat(1.0f, .1f, .50f, 1.50f);
       }

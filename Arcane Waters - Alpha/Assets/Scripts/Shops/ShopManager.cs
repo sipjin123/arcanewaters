@@ -12,6 +12,9 @@ public class ShopManager : MonoBehaviour {
    // Self
    public static ShopManager self;
 
+   // The last time the crops were regenerated
+   public DateTime lastCropRegenTime;
+
    #endregion
 
    private void Awake () {
@@ -22,7 +25,7 @@ public class ShopManager : MonoBehaviour {
       // Routinely change out the items
       InvokeRepeating("randomlyGenerateItems", 0f, TimeSpan.FromHours(1).Seconds);
       InvokeRepeating("randomlyGenerateShips", 0f, TimeSpan.FromHours(1).Seconds);
-      InvokeRepeating("randomlyGenerateCropOffers", 0f, TimeSpan.FromHours(1).Seconds);
+      InvokeRepeating("randomlyGenerateCropOffers", 0f, TimeSpan.FromHours(CropOffer.REGEN_INTERVAL).Seconds);
    }
 
    public Item getItem (int itemId) {
@@ -124,10 +127,13 @@ public class ShopManager : MonoBehaviour {
    }
 
    protected void randomlyGenerateCropOffers () {
-      // If we've already generated something previously, we might not generate anything more this time
-      if (_offers.Count > 0 && UnityEngine.Random.Range(0f, 1f) <= .75f) {
-         return;
-      }
+      //// If we've already generated something previously, we might not generate anything more this time
+      //if (_offers.Count > 0 && UnityEngine.Random.Range(0f, 1f) <= .75f) {
+      //   return;
+      //}
+
+      // Saves the current time
+      lastCropRegenTime = DateTime.UtcNow;
 
       // Generate offers for each of the areas
       foreach (Area.Type areaType in Enum.GetValues(typeof(Area.Type))) {
@@ -147,7 +153,7 @@ public class ShopManager : MonoBehaviour {
             Rarity.Type rarity = Rarity.getRandom();
 
             Crop.Type cropType = cropList[i];
-            int stockCount = Util.getBellCurveInt(1000, 100, 100, 10000);
+            int stockCount = Util.getBellCurveInt(1000, 100, 100, CropOffer.MAX_STOCK);
             stockCount = Util.roundToPrettyNumber(stockCount);
             int pricePerUnit = (int) (CropManager.getBasePrice(cropType) * Rarity.getCropSellPriceModifier(rarity));
             pricePerUnit = Util.roundToPrettyNumber(pricePerUnit);
