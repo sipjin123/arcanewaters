@@ -35,7 +35,7 @@ public class CraftingPanel : Panel, IPointerClickHandler
    // List of Ingredients for Crafting
    public List<Item> ingredientList;
 
-   // The holder of the current items that can be usef for crafting
+   // The holder of the current items that can be used for crafting
    public Transform listParent;
 
    // Primary buttons

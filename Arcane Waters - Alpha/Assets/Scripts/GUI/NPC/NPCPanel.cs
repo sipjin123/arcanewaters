@@ -132,20 +132,20 @@ public class NPCPanel : Panel {
    }
 
    private void deductInventoryItems () {
-      List<Item> rawList = InventoryCacheManager.self.itemList;
+      List<Item> ingredientList = InventoryCacheManager.self.itemList;
       DeliverQuest deliverQuest = npc.npcData.npcQuestList[0].deliveryQuestList[0].deliveryQuest;
       int countToDelete = deliverQuest.quantity;
 
       // Deletes items from the inventory equivalent to the Deliver Quest requirements
       int deleteCounter = 0;
-      for (int i = 0; i < rawList.Count; i++) {
-         if (rawList[i].category == deliverQuest.itemToDeliver.category) {
+      for (int i = 0; i < ingredientList.Count; i++) {
+         if (ingredientList[i].category == deliverQuest.itemToDeliver.category) {
             if (deleteCounter >= countToDelete) {
                break;
             }
-            if (rawList[i].itemTypeId == deliverQuest.itemToDeliver.itemTypeId) {
+            if (ingredientList[i].itemTypeId == deliverQuest.itemToDeliver.itemTypeId) {
                deleteCounter++;
-               Global.player.rpc.Cmd_DeleteItem(rawList[i].id);
+               Global.player.rpc.Cmd_DeleteItem(ingredientList[i].id);
             }
          }
       }

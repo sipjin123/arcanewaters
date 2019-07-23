@@ -3,7 +3,6 @@
 public class DebugButtons : MonoBehaviour
 {
    private void processItem(Item item) {
-
       RewardScreen rewardPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
       rewardPanel.setItemData(item);
       PanelManager.self.pushPanel(Panel.Type.Reward);
@@ -12,7 +11,6 @@ public class DebugButtons : MonoBehaviour
    }
 
    private void Update () {
-
       if (Input.GetKeyDown(KeyCode.Alpha8)) {
          var itemToDelete = InventoryCacheManager.self.itemList.Find(_ => _.category == Item.Category.CraftingIngredients && (CraftingIngredients.Type) _.itemTypeId == CraftingIngredients.Type.Lizard_Scale);
          Global.player.rpc.Cmd_DeleteItem(itemToDelete.id);
@@ -23,26 +21,22 @@ public class DebugButtons : MonoBehaviour
          }
 
          if (Input.GetKeyDown(KeyCode.Alpha1)) {
-            Debug.LogError("REward me a blueprint");
             Blueprint craftingIngredients = new Blueprint(0, (int) Blueprint.Type.Sword_1, ColorType.DarkGreen, ColorType.DarkPurple, "");
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;
             processItem(craftingIngredients);
          }
          if (Input.GetKeyDown(KeyCode.Alpha2)) {
-            Debug.LogError("REward me a blueprint");
             Blueprint craftingIngredients = new Blueprint(0, (int) Blueprint.Type.Sword_2, ColorType.DarkGreen, ColorType.DarkPurple, "");
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;
             processItem(craftingIngredients);
          }
          if (Input.GetKeyDown(KeyCode.Alpha3)) {
-            Debug.LogError("REward me a blueprint");
             Blueprint craftingIngredients = new Blueprint(0, (int) Blueprint.Type.Sword_3, ColorType.DarkGreen, ColorType.DarkPurple, "");
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;
             processItem(craftingIngredients);
          }
          if (Input.GetKeyDown(KeyCode.Alpha4)) {
-            Debug.LogError("REward me a blueprint");
-            Blueprint craftingIngredients = new Blueprint(0, (int) Blueprint.Type.Lizard_Sword, ColorType.DarkGreen, ColorType.DarkPurple, "");
+            Blueprint craftingIngredients = new Blueprint(0, (int) Blueprint.Type.Sword_4, ColorType.DarkGreen, ColorType.DarkPurple, "");
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;
             processItem(craftingIngredients);
          }
