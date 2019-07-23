@@ -15,7 +15,7 @@ public class Blueprint : RecipeItem
    // The Type
    public enum Type
    {
-      None = 0, Sword_1 = 1, Sword_2 = 2, Sword_3 = 3, Lizard_Sword = 4,
+      None = 0, Sword_1 = 1, Sword_2 = 2, Sword_3 = 3, Sword_4 = 4,
    }
 
    // The type
@@ -83,22 +83,7 @@ public class Blueprint : RecipeItem
    }
 
    public override string getDescription () {
-      switch (type) {
-         case Type.Sword_1:
-            return "A well-made claw.";
-
-         case Type.Sword_2:
-            return "A powerful Scale.";
-
-         case Type.Sword_3:
-            return "A Flint.";
-
-         case Type.Lizard_Sword:
-            return "A Lumber.";
-
-         default:
-            return "";
-      }
+      return getItemData(type).getDescription();
    }
 
    public override string getTooltip () {
@@ -114,22 +99,28 @@ public class Blueprint : RecipeItem
    }
 
    public static string getName (Blueprint.Type recipeType) {
-      switch (recipeType) {
-         case Type.Sword_1:
-            return "Common Sword";
+      return getItemData(recipeType).getName();
+   }
 
-         case Type.Sword_2:
-            return "Rare Sword";
+   private static Item getItemData (Blueprint.Type recipeType) {
+      string recipepString = recipeType.ToString();
+      Category itemCategory = Category.Weapon;
+      Weapon.Type weaponType = Weapon.Type.None;
 
-         case Type.Sword_3:
-            return "Epic Sword";
-
-         case Type.Lizard_Sword:
-            return "Lizard Sword";
-
-         default:
-            return "";
+      foreach (var item in Enum.GetValues(typeof(Weapon.Type))) {
+         string weaponString = item.ToString();
+         if (recipepString == weaponString) {
+            weaponType = (Weapon.Type) item;
+         }
       }
+      Weapon newWeapon = new Weapon {
+         category = itemCategory,
+         type = weaponType,
+         itemTypeId = (int) weaponType,
+         id = 0,
+         count = 1,
+      };
+      return newWeapon;
    }
 
    public static Blueprint getEmpty () {
