@@ -3,9 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System;
 
 public class CropOffer {
    #region Public Variables
+
+   // The maximum stock amount (demand)
+   public static int MAX_STOCK = 10000;
+
+   // The offer regeneration interval, common to all offers - in hours
+   public static int REGEN_INTERVAL = 24;
 
    // The ID for this offer
    public int id;
@@ -24,7 +31,7 @@ public class CropOffer {
 
    // The rarity of this offer
    public Rarity.Type rarity;
-      
+
    #endregion
 
    public CropOffer () { }

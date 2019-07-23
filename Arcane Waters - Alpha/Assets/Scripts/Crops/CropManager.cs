@@ -289,6 +289,9 @@ public class CropManager : NetworkBehaviour {
                continue;
             }
 
+            // Sell only up to the available amount in the offer
+            amountToSell = amountToSell < offer.amount ? amountToSell : offer.amount;
+
             int goldForThisCrop = offer.pricePerUnit * amountToSell;
 
             // Add the gold to the database
@@ -437,6 +440,9 @@ public class CropManager : NetworkBehaviour {
       if (TutorialManager.currentStep == Step.SellCrops) {
          Global.player.Cmd_CompletedTutorialStep(TutorialManager.currentStep);
       }
+
+      // Updates the offers in the merchant panel
+      Global.player.rpc.Cmd_GetOffersForArea();
    }
 
    protected static int getWaterIntervalSeconds (Crop.Type cropType, int highestCompletedTutorialStep) {
