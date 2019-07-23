@@ -20,6 +20,21 @@ public class Global {
    // Gets set to true while we're redirecting a player to a new server
    public static bool isRedirecting = false;
 
+   // Gets set to true while we're login in and selecting a character using the fast_login.txt config
+   public static bool isFastLogin = false;
+
+   // The character spot (not the id) that will be auto-selected with fast-login
+   public static int fastLoginCharacterSpotIndex = -1;
+
+   // The account used for the fast login
+   public static string fastLoginAccountName;
+
+   // The password used for the fast login
+   public static string fastLoginAccountPassword;
+
+   // Gets set to true when the fast login should start in host mode
+   public static bool isFastLoginHostMode = false;
+
    // The ID of the currently selected user for our account
    public static int currentlySelectedUserId = 0;
 

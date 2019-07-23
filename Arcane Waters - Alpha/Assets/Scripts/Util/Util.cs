@@ -11,6 +11,7 @@ using Mirror;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using System.Linq;
+using System.IO;
 
 public class Util : MonoBehaviour {
    public static NetEntity getPlayer () {
@@ -552,6 +553,56 @@ public class Util : MonoBehaviour {
 
    public static bool isAutoTesting () {
       return CommandCodes.get(CommandCodes.Type.AUTO_TEST);
+   }
+
+   public static void readFastLoginFile () {
+      // If the file doesn't exist or there is an error, fast login is disabled
+      Global.isFastLogin = false;
+
+      string path = Path.Combine(Application.dataPath, "fast_login.txt");
+
+      // Read the fast_login file and populate the associated global variables
+      StreamReader reader = null;
+      try {
+         FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+         reader = new StreamReader(fs, System.Text.Encoding.GetEncoding("UTF-8"));
+         string line;
+
+         // Host or client mode
+         line = reader.ReadLine();
+         if (line != null) {
+            if (string.Equals("host", line)) {
+               Global.isFastLoginHostMode = true;
+            } else {
+               Global.isFastLoginHostMode = false;
+            }
+         }
+
+         // Account name
+         line = reader.ReadLine();
+         if (line != null) {
+            Global.fastLoginAccountName = line;
+
+            // Account password
+            line = reader.ReadLine();
+            if (line != null) {
+               Global.fastLoginAccountPassword = line;
+
+               // Character id - not mandatory
+               line = reader.ReadLine();
+               if (line != null) {
+                  Global.fastLoginCharacterSpotIndex = Int32.Parse(line);
+               }
+
+               Global.isFastLogin = true;
+            }
+         }
+      } catch (Exception) {
+      } finally {
+         if (reader != null) {
+            reader.Close();
+         }
+      }
    }
 
    public static string getFrameNumber (Sprite sprite) {
