@@ -14,6 +14,9 @@ public class TradeConfirmScreen : MonoBehaviour
    // The Crop Type we're dealing with
    public Crop.Type cropType;
 
+   // The maximum amount of crops that can be sold
+   public int maxAmount;
+
    // Our various components that we need references to
    public Text text;
    public Text cancelButtonText;
@@ -73,6 +76,9 @@ public class TradeConfirmScreen : MonoBehaviour
 
    public void sliderChanged () {
       int cropCount = CargoBoxManager.self.getCargoCount(this.cropType);
+
+      // Allow to sell up to the maximum of the offer
+      cropCount = cropCount < maxAmount ? cropCount : maxAmount;
 
       // Update the text associated with the slider
       sliderText.text = (int) (slider.value * cropCount) + "";

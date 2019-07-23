@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.Events;
 using TMPro;
+using System;
 
 public class MerchantScreen : Panel {
    #region Public Variables
@@ -17,6 +18,13 @@ public class MerchantScreen : Panel {
 
    // The text we want to type out
    public TextMeshProUGUI greetingText;
+
+   // The timer
+   public Image timerImage;
+
+   // The timer sprites
+   public Sprite[] timerSprites;
+   public Sprite timerEmptySprite;
 
    // Self
    public static MerchantScreen self;
@@ -44,18 +52,30 @@ public class MerchantScreen : Panel {
 
    public void sellButtonPressed (int offerId) {
       CropOffer offer = getOffer(offerId);
-      TradeConfirmScreen confirmScreen = PanelManager.self.tradeConfirmScreen;
 
-      // Update the Trade Confirm Screen
-      confirmScreen.cropType = offer.cropType;
+      // Calculate the time left until the offers regenerate
+      float timeLeftUntilRegeneration = (CropOffer.REGEN_INTERVAL * 3600)
+         - (float) (DateTime.UtcNow - _lastCropRegenTime).TotalSeconds;
+      
+      // Check if the offer has expired or if everything has been sold
+      if (timeLeftUntilRegeneration <= 0 || offer == null || offer.amount <= 0) {
+         // Show an error pannel
+         PanelManager.self.noticeScreen.show("This offer has expired.");
+      } else {
+         TradeConfirmScreen confirmScreen = PanelManager.self.tradeConfirmScreen;
 
-      // Associate a new function with the confirmation button
-      confirmScreen.confirmButton.onClick.RemoveAllListeners();
-      confirmScreen.confirmButton.onClick.AddListener(() => sellButtonConfirmed(offerId));
+         // Update the Trade Confirm Screen
+         confirmScreen.cropType = offer.cropType;
+         confirmScreen.maxAmount = offer.amount;
 
-      // Show a confirmation panel
-      string cropName = System.Enum.GetName(typeof(Crop.Type), offer.cropType);
-      confirmScreen.show("How many " + cropName + " do you want to sell?");
+         // Associate a new function with the confirmation button
+         confirmScreen.confirmButton.onClick.RemoveAllListeners();
+         confirmScreen.confirmButton.onClick.AddListener(() => sellButtonConfirmed(offerId));
+
+         // Show a confirmation panel
+         string cropName = System.Enum.GetName(typeof(Crop.Type), offer.cropType);
+         confirmScreen.show("How many " + cropName + " do you want to sell?");
+      }
    }
 
    protected void sellButtonConfirmed (int offerId) {
@@ -68,7 +88,7 @@ public class MerchantScreen : Panel {
       Global.player.rpc.Cmd_SellCrops(offerId, amountToSell);
    }
 
-   public void updatePanelWithOffers (int gold, List<CropOffer> offers) {
+   public void updatePanelWithOffers (int gold, List<CropOffer> offers, long lastCropRegenTime) {
       // Keep track of these offers for later reference
       _offers = offers;
 
@@ -80,6 +100,20 @@ public class MerchantScreen : Panel {
          MerchantCropRow row = Instantiate(cropRowPrefab, cropRowsContainer.transform, false);
          row.transform.SetParent(cropRowsContainer.transform, false);
          row.setRowForCrop(offer);
+      }
+
+      // Determine the time left until the offers expire
+      _lastCropRegenTime = DateTime.FromBinary(lastCropRegenTime);
+      float timeLeftUntilRegeneration = (CropOffer.REGEN_INTERVAL * 3600)
+         - (float) (DateTime.UtcNow - _lastCropRegenTime).TotalSeconds;
+
+      // Determine the timer sprite
+      if (timeLeftUntilRegeneration > 0) {
+         int spriteIndex = Mathf.FloorToInt(
+            timeLeftUntilRegeneration / ((CropOffer.REGEN_INTERVAL * 3600) / timerSprites.Length));
+         timerImage.sprite = timerSprites[spriteIndex];
+      } else {
+         timerImage.sprite = timerEmptySprite;
       }
    }
 
@@ -100,6 +134,9 @@ public class MerchantScreen : Panel {
 
    // Keeps track of what our starting text is
    protected string _greetingText = "";
+
+   // Keeps track of the time at which the offers were generated
+   protected DateTime _lastCropRegenTime = DateTime.UtcNow;
 
    #endregion
 }
