@@ -21,7 +21,7 @@ public class InventoryCacheManager : MonoBehaviour
    }
 
    public void fetchInventory () {
-      Global.player.rpc.Cmd_RequestItemsFromServer(-1, 15);
+      Global.player.rpc.Cmd_RequestItemsFromServer(1, 15);
    }
 
    public void receiveItemsFromServer (UserObjects userObjects, int pageNumber, int gold, int gems, int totalItemCount, int equippedArmorId, int equippedWeaponId, Item[] itemArray) {

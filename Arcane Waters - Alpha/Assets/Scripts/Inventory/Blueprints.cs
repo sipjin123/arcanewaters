@@ -15,7 +15,7 @@ public class Blueprint : RecipeItem
    // The Type
    public enum Type
    {
-      None = 0, Sword_1 = 1, Sword_2 = 2, Sword_3 = 3, Sword_4 = 4,
+      None = 0, Sword_1 = 1, Sword_2 = 2, Sword_3 = 3, Sword_4 = 4, Sword_5 = 5,
    }
 
    // The type
