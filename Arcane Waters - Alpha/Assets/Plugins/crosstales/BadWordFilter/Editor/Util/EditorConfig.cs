@@ -11,13 +11,13 @@ namespace Crosstales.BWF.EditorUtil
         #region Variables
 
         /// <summary>Enable or disable update-checks for the asset.</summary>
-        public static bool UPDATE_CHECK = EditorConstants.DEFAULT_UPDATE_CHECK;
+        public static bool UPDATE_CHECK = false;
 
         /// <summary>Enable or disable reminder-checks for the asset.</summary>
-        public static bool REMINDER_CHECK = EditorConstants.DEFAULT_REMINDER_CHECK;
+        public static bool REMINDER_CHECK = false;
 
         /// <summary>Enable or disable anonymous tracing data.</summary>
-        public static bool TRACER = EditorConstants.DEFAULT_TRACER;
+        public static bool TRACER = false;
 
         /// <summary>Automatically load and add the prefabs to the scene.</summary>
         public static bool PREFAB_AUTOLOAD = EditorConstants.DEFAULT_PREFAB_AUTOLOAD;

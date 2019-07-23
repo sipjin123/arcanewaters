@@ -61,6 +61,10 @@ public class EditorUtil : EditorWindow {
 
       // Sort by image name
       imageManager.imageDataList = imageManager.imageDataList.OrderBy(o => o.imageName).ToList();
+
+      // Save the changes in the scene
+      AssetDatabase.SaveAssets();
+      AssetDatabase.Refresh();
    }
    
    [MenuItem("Util/Set Image Read Write")]
