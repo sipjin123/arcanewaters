@@ -94,6 +94,17 @@ public class TitleScreen : MonoBehaviour {
       MyNetworkManager.self.StartClient();
    }
 
+   public void startWithFastLogin () {
+      accountInputField.text = Global.fastLoginAccountName;
+      passwordInputField.text = Global.fastLoginAccountPassword;
+
+      if (Global.isFastLoginHostMode) {
+         MyNetworkManager.self.StartHost();
+      } else {
+         MyNetworkManager.self.StartClient();
+      }
+   }
+
    public bool isShowing () {
       if (_canvasGroup == null) {
          return false;

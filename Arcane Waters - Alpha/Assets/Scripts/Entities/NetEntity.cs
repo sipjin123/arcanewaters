@@ -168,6 +168,9 @@ public class NetEntity : NetworkBehaviour {
          // Now that we have a player, we know that the redirection process is complete
          Global.isRedirecting = false;
 
+         // The fast login is completed
+         Global.isFastLogin = false;
+
          // Set the music according to our Area
          SoundManager.setBackgroundMusic(this.areaType);
 

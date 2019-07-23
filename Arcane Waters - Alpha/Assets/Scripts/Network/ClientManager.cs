@@ -51,6 +51,14 @@ public class ClientManager : MonoBehaviour {
          int testerNumber = Util.getCommandLineInt(CommandCodes.Type.AUTO_TEST+"");
          TitleScreen.self.startClient(testerNumber);
       }
+
+      // Try to start with fast login only if no command codes were used
+      if (!MyNetworkManager.self.isNetworkActive) {
+         Util.readFastLoginFile();
+         if (Global.isFastLogin) {
+            TitleScreen.self.startWithFastLogin();
+         }
+      }
    }
 
    void OnApplicationQuit () {

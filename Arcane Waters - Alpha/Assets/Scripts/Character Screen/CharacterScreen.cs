@@ -83,6 +83,8 @@ public class CharacterScreen : MonoBehaviour {
       // Sometimes we just want to auto-select a character when debugging
       if (Util.isAutoStarting()) {
          _spots[1].selectButtonWasPressed();
+      } else if (Global.isFastLogin && Global.fastLoginCharacterSpotIndex != -1) {
+         _spots[Global.fastLoginCharacterSpotIndex].selectButtonWasPressed();
       }
    }
 
