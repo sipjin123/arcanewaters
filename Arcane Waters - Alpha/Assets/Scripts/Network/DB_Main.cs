@@ -15,13 +15,41 @@ public class DB_Main : DB_MainStub {
 
    #region NPC Relation Feature
 
-   public static NPCRelationInfo getNPCRelationInfo (int userId) {
+   public static void createNPCRelation (NPCRelationInfo npcInfo) {
+      Debug.LogError("Creating an npc");
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM arcane.npc_relationship WHERE npc_id=@usrId", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO npc_relationship (npc_id, user_id, npc_name, npc_relation_level,npc_quest_chapter, npc_quest_progress) " +
+            "VALUES (@npc_id, @user_id, @npc_name, @npc_relation_level, @npc_quest_chapter, @npc_quest_progress);", conn)) {
+
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@npc_id", npcInfo.npcID);
+            cmd.Parameters.AddWithValue("@user_id", npcInfo.userID);
+            cmd.Parameters.AddWithValue("@npc_name", npcInfo.npcName);
+            cmd.Parameters.AddWithValue("@npc_relation_level", npcInfo.npcRelationLevel);
+            cmd.Parameters.AddWithValue("@npc_quest_chapter", npcInfo.npcQuestChapter);
+            cmd.Parameters.AddWithValue("@npc_quest_progress", npcInfo.npcQuestProgress);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         Debug.LogError("Error createing: "+e.ToString());
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static NPCRelationInfo getNPCRelationInfo (int userId, int npcId) {
+      Debug.LogError("My use id is : " + userId);
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM arcane.npc_relationship WHERE npc_id=@npcId AND user_id=@userId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@npcId", npcId);
+            cmd.Parameters.AddWithValue("@userId", userId);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -34,8 +62,27 @@ public class DB_Main : DB_MainStub {
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
-      NPCRelationInfo npcRelpInfo = new NPCRelationInfo(0, "", 0, 0, 0);
+      NPCRelationInfo npcRelpInfo = new NPCRelationInfo(0, 0, "", 0, 0, 0);
       return npcRelpInfo;
+   }
+    
+   public static void updateNPCRelation (int npcID, int relationLevel) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "UPDATE npc_relationship SET npc_relation_level=@npc_relation_level WHERE npc_id=@npc_id;", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@npc_id", npcID);
+            cmd.Parameters.AddWithValue("@npc_relation_level", relationLevel);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
    }
 
    public static void updateNPCProgress(int npcID, int questProgress) {
@@ -53,6 +100,7 @@ public class DB_Main : DB_MainStub {
             cmd.ExecuteNonQuery();
          }
       } catch (Exception e) {
+         Debug.LogError("Error updating");
          D.error("MySQL Error: " + e.ToString());
       }
    }

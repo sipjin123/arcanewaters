@@ -5,8 +5,11 @@ using UnityEngine.UI;
 using Mirror;
 using MySql.Data.MySqlClient;
 
-public class NPCRelationInfo : MonoBehaviour {
+public class NPCRelationInfo {
    #region Public Variables
+
+   // User ID
+   public int userID;
 
    // NPD ID
    public int npcID;
@@ -28,6 +31,7 @@ public class NPCRelationInfo : MonoBehaviour {
 #if IS_SERVER_BUILD
 
    public NPCRelationInfo (MySqlDataReader dataReader) {
+      this.userID = DataUtil.getInt(dataReader, "user_id");
       this.npcID = DataUtil.getInt(dataReader, "npc_id");
       this.npcName = DataUtil.getString(dataReader, "npc_name");
       this.npcRelationLevel = DataUtil.getInt(dataReader, "npc_relation_level");
@@ -37,7 +41,8 @@ public class NPCRelationInfo : MonoBehaviour {
 
 #endif
 
-   public NPCRelationInfo (int npcID, string npcName,int npcRelationLevel, int npcQuestChapter, int npcQuestProgress) {
+   public NPCRelationInfo (int userID, int npcID, string npcName,int npcRelationLevel, int npcQuestChapter, int npcQuestProgress) {
+      this.userID = userID;
       this.npcID = npcID;
       this.npcName = npcName;
       this.npcRelationLevel = npcRelationLevel;
