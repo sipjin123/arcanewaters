@@ -56,6 +56,9 @@ public class NPC : MonoBehaviour {
    // The unique id assigned to this npc
    public int npcId;
 
+   // The level of relationship to the npc
+   public int npcRelationLevel;
+
    // The area that this NPC is in
    public Area.Type areaType;
 
@@ -220,8 +223,9 @@ public class NPC : MonoBehaviour {
             if(currentDialogue.checkCondition) {
                List<Item> itemList = InventoryCacheManager.self.itemList;
                DeliverQuest deliveryQuest = currentDeliverQuest.deliveryQuest;
+               Item findingItemList = itemList.Find(_ => (CraftingIngredients.Type) _.itemTypeId == (CraftingIngredients.Type) deliveryQuest.itemToDeliver.itemTypeId
+               && _.category == Item.Category.CraftingIngredients);
 
-               Item findingItemList = itemList.Find(_ => (CraftingIngredients.Type) _.itemTypeId == (CraftingIngredients.Type) deliveryQuest.itemToDeliver.itemTypeId);
                if (findingItemList != null) {
                   if (findingItemList.count >= deliveryQuest.quantity) {
                      // Sets the player to a positive response if Requirements are met
@@ -229,11 +233,13 @@ public class NPC : MonoBehaviour {
                      break;
                   }
                }
+
                // Sets the player to a negative response if Requirements are met
                currentAnswerDialogue.Add(currentDialogue.playerNegativeReply);
                Global.player.rpc.Cmd_GetClickableRows(this.npcId);
                return;
             }
+
             // Sets the player to a positive response if Requirements are met
             currentAnswerDialogue.Add(currentDialogue.playerReply);
          }
@@ -258,8 +264,7 @@ public class NPC : MonoBehaviour {
          PanelManager.self.pushIfNotShowing(_shopTrigger.panelType);
       } else {
          // Send a request to the server to get the clickable text options
-         Global.player.rpc.Cmd_GetClickableRows(this.npcId);
-         Global.player.rpc.Cmd_GetNPCRelation(this.npcId);
+         Global.player.rpc.Cmd_GetNPCRelation(this.npcId, this.npcName);
       }
    }
 

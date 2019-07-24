@@ -78,8 +78,9 @@ public class NPCPanel : Panel {
       }
    }
    
-   public void ReceiveDataFromServer(int friendshipLevel, int npcQuestChapter, int npcQuestProgress) {
+   public void receiveNPCDataFromServer(int friendshipLevel, int npcQuestChapter, int npcQuestProgress) {
       friendshipText.text = friendshipLevel.ToString();
+      npc.npcRelationLevel = friendshipLevel;
       npc.npcData.npcQuestList[0].deliveryQuestList[0].questState = (QuestState) npcQuestProgress;
       npc.checkQuest();
 
@@ -141,6 +142,9 @@ public class NPCPanel : Panel {
          string reply = "I Got nothing go away";
          npc.npcReply = reply;
          SetMessage(reply);
+
+         int updatedRelationship = (npc.npcRelationLevel + 20);
+         Global.player.rpc.Cmd_UpdateNPCRelation(npc.npcId, updatedRelationship);
       } else {
          Global.player.rpc.Cmd_UpdateNPCQuestProgress(npc.npcId, (int) currentDialogue.nextState);
          npc.npcData.npcQuestList[0].deliveryQuestList[0].questState = currentDialogue.nextState;
