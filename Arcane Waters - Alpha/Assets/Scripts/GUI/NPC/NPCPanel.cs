@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine.UI;
 using TMPro;
+using Mirror;
 
 public class NPCPanel : Panel {
    #region Public Variables
@@ -36,6 +37,9 @@ public class NPCPanel : Panel {
    // Self
    public static NPCPanel self;
 
+   // Loader Indicators
+   public List<GameObject> loadingIndicators;
+
    #endregion
 
    public override void Awake () {
@@ -60,9 +64,6 @@ public class NPCPanel : Panel {
       specialtyIcon.sprite = Specialty.getIcon(npc.specialty);
       nameText.text = npc.npcName;
 
-      // Show what our friendship rating is with this NPC
-      friendshipText.text = "100";
-
       // Update the head image based on the type of NPC this is
       string path = "Faces/" + npc.GetComponent<SpriteSwap>().newTexture.name;
       Texture2D newTexture = ImageManager.getTexture(path);
@@ -70,6 +71,22 @@ public class NPCPanel : Panel {
 
       // Start typing out our intro text
       AutoTyper.SlowlyRevealText(greetingText, _greetingText);
+
+      // Toggle loading indicators
+      for(int i = 0; i<loadingIndicators.Count; i++) {
+         loadingIndicators[i].SetActive(true);
+      }
+   }
+   
+   public void ReceiveDataFromServer(int friendshipLevel, int npcQuestChapter, int npcQuestProgress) {
+      friendshipText.text = friendshipLevel.ToString();
+      npc.npcData.npcQuestList[0].deliveryQuestList[0].questState = (QuestState) npcQuestProgress;
+      npc.checkQuest();
+
+      // Toggle loading indicators
+      for (int i = 0; i < loadingIndicators.Count; i++) {
+         loadingIndicators[i].SetActive(false);
+      }
    }
 
    public void setClickableRows (List<ClickableText.Type> options) {
@@ -114,6 +131,7 @@ public class NPCPanel : Panel {
 
          // Update quest State
          npc.npcData.npcQuestList[0].deliveryQuestList[0].questState = currentDialogue.nextState;
+         Global.player.rpc.Cmd_UpdateNPCQuestProgress(npc.npcId, (int) currentDialogue.nextState);
 
          // Setup dialogue of player
          npc.currentAnswerDialogue.Clear();
@@ -124,6 +142,7 @@ public class NPCPanel : Panel {
          npc.npcReply = reply;
          SetMessage(reply);
       } else {
+         Global.player.rpc.Cmd_UpdateNPCQuestProgress(npc.npcId, (int) currentDialogue.nextState);
          npc.npcData.npcQuestList[0].deliveryQuestList[0].questState = currentDialogue.nextState;
          npc.checkQuest();
       }

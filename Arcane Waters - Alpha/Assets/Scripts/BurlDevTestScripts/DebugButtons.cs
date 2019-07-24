@@ -11,15 +11,22 @@ public class DebugButtons : MonoBehaviour
    }
 
    private void Update () {
-      if (Input.GetKeyDown(KeyCode.Alpha8)) {
-         var itemToDelete = InventoryCacheManager.self.itemList.Find(_ => _.category == Item.Category.CraftingIngredients && (CraftingIngredients.Type) _.itemTypeId == CraftingIngredients.Type.Lizard_Scale);
-         Global.player.rpc.Cmd_DeleteItem(itemToDelete.id);
+      if (Input.GetKeyDown(KeyCode.Alpha9)) {
+         //var itemToDelete = InventoryCacheManager.self.itemList.Find(_ => _.category == Item.Category.CraftingIngredients && (CraftingIngredients.Type) _.itemTypeId == CraftingIngredients.Type.Lizard_Scale);
+         //Global.player.rpc.Cmd_DeleteItem(itemToDelete.id);
       }
       if (Input.GetKey(KeyCode.Q)) {
-         if(Input.GetKeyDown(KeyCode.Alpha1)) {
-
+         if(Input.GetKeyDown(KeyCode.Alpha5)) {
+            DB_Main.getNPCRelationInfo(2);
          }
-
+         if (Input.GetKeyDown(KeyCode.Alpha7)) {
+            Debug.LogError("Requesting from server as -1");
+            Global.player.rpc.Cmd_RequestItemsFromServer(-1, 15);
+         }
+         if (Input.GetKeyDown(KeyCode.Alpha8)) {
+            Debug.LogError("Requesting from server as 1");
+            Global.player.rpc.Cmd_RequestItemsFromServer(1, 15);
+         }
          if (Input.GetKeyDown(KeyCode.Alpha1)) {
             Blueprint craftingIngredients = new Blueprint(0, (int) Blueprint.Type.Sword_1, ColorType.DarkGreen, ColorType.DarkPurple, "");
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;
@@ -51,7 +58,7 @@ public class DebugButtons : MonoBehaviour
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;
             processItem(craftingIngredients);
          }
-         if (Input.GetKeyDown(KeyCode.Alpha5)) {
+         if (Input.GetKeyDown(KeyCode.Alpha6)) {
             CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Lizard_Scale, ColorType.DarkGreen, ColorType.DarkPurple, "");
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;
             processItem(craftingIngredients);
