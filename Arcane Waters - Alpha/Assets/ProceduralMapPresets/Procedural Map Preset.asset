@@ -1,0 +1,146 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cedb88bfd16c92a4e8649af2b59d9a7f, type: 3}
+  m_Name: Procedural Map Preset
+  m_EditorClassIdentifier: 
+  mapPath: Assets/Prefabs/Maps/
+  MapPrefixName: 'Sea '
+  MapName: Map
+  MapSuffixName: ' Forest'
+  mapSize: {x: 64, y: 64}
+  noiseScale: 10.6
+  octaves: 8
+  persistance: 0.5
+  lacunarity: 2
+  seed: 0
+  offset: {x: 0, y: 0}
+  usePresetLayerHeight: 1
+  layers:
+  - name: Water (Deep)
+    height: 1
+    useCollider: 0
+    tile: {fileID: 11400000, guid: b33b3b925fb775e4f9e2cf13d911b068, type: 2}
+    useBorderOnDiferentLayer: 0
+    BorderLayerName: 
+    borders: []
+  - name: Water (Edge)
+    height: 0.696
+    useCollider: 0
+    tile: {fileID: 11400000, guid: 83b600197b77d0e41bee8c54165f2496, type: 2}
+    useBorderOnDiferentLayer: 1
+    BorderLayerName: 1
+    borders:
+    - borderType: 0
+      BorderTile: {fileID: 11400000, guid: 370160a48e5d27d4285085c3cbb32b48, type: 2}
+    - borderType: 1
+      BorderTile: {fileID: 11400000, guid: f1132f258a80e18459cd30346d4f9e52, type: 2}
+    - borderType: 2
+      BorderTile: {fileID: 11400000, guid: ad4b449da2b11b0409074684507abaf8, type: 2}
+    - borderType: 3
+      BorderTile: {fileID: 11400000, guid: 7b80cc1af05adb94c92cfcbf5b6f2524, type: 2}
+    - borderType: 4
+      BorderTile: {fileID: 11400000, guid: 051dbf8b160077248b1430f106aee344, type: 2}
+    - borderType: 5
+      BorderTile: {fileID: 11400000, guid: db8e388d19bee6348936a09637ede25f, type: 2}
+    - borderType: 6
+      BorderTile: {fileID: 11400000, guid: 3ced503223b603f4d87a15d4043c520d, type: 2}
+    - borderType: 7
+      BorderTile: {fileID: 11400000, guid: b6bac0d0d6944644f818b8c4e12ea533, type: 2}
+    - borderType: 8
+      BorderTile: {fileID: 11400000, guid: 892c3da70d13370409c138f38229bc6e, type: 2}
+    - borderType: 9
+      BorderTile: {fileID: 11400000, guid: e9d09146b7d52e5429c6e24d06f32bae, type: 2}
+    - borderType: 10
+      BorderTile: {fileID: 11400000, guid: e086eddd10af6b44d98c9ef37bdf11d3, type: 2}
+    - borderType: 11
+      BorderTile: {fileID: 11400000, guid: c85540f4e0c522f4fb219dc7f0468eb6, type: 2}
+    - borderType: 12
+      BorderTile: {fileID: 11400000, guid: 1d5e55cf1adbd1546a6c3008a452e26f, type: 2}
+    - borderType: 13
+      BorderTile: {fileID: 11400000, guid: 7e0b341978f14084e9fab8ea213342e3, type: 2}
+    - borderType: 14
+      BorderTile: {fileID: 11400000, guid: e791f34c82b1e144b8ac2e0adb09e637, type: 2}
+  - name: Land (1)
+    height: 0.507
+    useCollider: 1
+    tile: {fileID: 11400000, guid: 9a13b83306690b543a9f7b8c3b3ef4c6, type: 2}
+    useBorderOnDiferentLayer: 0
+    BorderLayerName: 
+    borders:
+    - borderType: 0
+      BorderTile: {fileID: 11400000, guid: 5c6c1c88c32549d48ae08bec6369af84, type: 2}
+    - borderType: 11
+      BorderTile: {fileID: 11400000, guid: 25403b992330d044f936f71c85ebd1be, type: 2}
+    - borderType: 14
+      BorderTile: {fileID: 11400000, guid: ae12b79746f5e0c48b59494185599930, type: 2}
+    - borderType: 12
+      BorderTile: {fileID: 11400000, guid: 400006472717a604d8bd60083cc648ca, type: 2}
+    - borderType: 13
+      BorderTile: {fileID: 11400000, guid: 7e4e45f3795d64f4f8ab61f0f9bcadee, type: 2}
+    - borderType: 1
+      BorderTile: {fileID: 11400000, guid: 30d2158f06c94584eb83c17ad152f8b7, type: 2}
+    - borderType: 2
+      BorderTile: {fileID: 11400000, guid: 37250780aa8963349885ecc07f13fb8e, type: 2}
+    - borderType: 3
+      BorderTile: {fileID: 11400000, guid: e5f2c36d421b0a446ae33aa1efd049b9, type: 2}
+    - borderType: 4
+      BorderTile: {fileID: 11400000, guid: 064173cb9a8286c4a8298f18c2c4e530, type: 2}
+    - borderType: 5
+      BorderTile: {fileID: 11400000, guid: d355e0526314bff458e80aea8c14fc43, type: 2}
+    - borderType: 6
+      BorderTile: {fileID: 11400000, guid: 31b89f5450c8c4e439bf0b0debaadbf8, type: 2}
+    - borderType: 7
+      BorderTile: {fileID: 11400000, guid: ebedaa3642ef889499ceca727d3cedc6, type: 2}
+    - borderType: 8
+      BorderTile: {fileID: 11400000, guid: 7879ba9b2d3abe44791d180a8001e536, type: 2}
+    - borderType: 9
+      BorderTile: {fileID: 11400000, guid: b0898bf4770d6a144973c7530bf24eb9, type: 2}
+    - borderType: 10
+      BorderTile: {fileID: 11400000, guid: 79d51c36e2230d74b8a8bbadcc4e84d5, type: 2}
+  - name: Land (2)
+    height: 0.343
+    useCollider: 1
+    tile: {fileID: 11400000, guid: b78c6e6b299a13f49aacc0b5c196a345, type: 2}
+    useBorderOnDiferentLayer: 0
+    BorderLayerName: 
+    borders:
+    - borderType: 0
+      BorderTile: {fileID: 11400000, guid: cb545d52b2829e44d8c3bd8ea1c980a3, type: 2}
+    - borderType: 11
+      BorderTile: {fileID: 11400000, guid: c4aff14ec0c793e4897b306bedf6b831, type: 2}
+    - borderType: 14
+      BorderTile: {fileID: 11400000, guid: be67ffea3f2da3445bf61a22a516ff55, type: 2}
+    - borderType: 12
+      BorderTile: {fileID: 11400000, guid: 90dde0ae65384ae4bb794a06945a44aa, type: 2}
+    - borderType: 13
+      BorderTile: {fileID: 11400000, guid: 8df361c02af99a145b49e24ea95abb2a, type: 2}
+    - borderType: 1
+      BorderTile: {fileID: 11400000, guid: 10493333e5d672346b5a098226e49d47, type: 2}
+    - borderType: 2
+      BorderTile: {fileID: 11400000, guid: d0900ecbfb470504da97c84be80be461, type: 2}
+    - borderType: 3
+      BorderTile: {fileID: 11400000, guid: 9743a7b56c57f894e987a42e5b5951ff, type: 2}
+    - borderType: 4
+      BorderTile: {fileID: 11400000, guid: fccc24b12a902d341a2f27d5db119955, type: 2}
+    - borderType: 5
+      BorderTile: {fileID: 11400000, guid: 3556a68f8c6177348a5f44e3fff4627c, type: 2}
+    - borderType: 6
+      BorderTile: {fileID: 11400000, guid: ef24c233a4f149748a7c54e466feb7ee, type: 2}
+    - borderType: 7
+      BorderTile: {fileID: 11400000, guid: 69ee532bd5fb3304b9c6a47f38fc8340, type: 2}
+    - borderType: 8
+      BorderTile: {fileID: 11400000, guid: 2f173c7aeffbb5048a666f73c046f15a, type: 2}
+    - borderType: 9
+      BorderTile: {fileID: 11400000, guid: 9794423118ff035418b5ee44f638fa39, type: 2}
+    - borderType: 10
+      BorderTile: {fileID: 11400000, guid: 8baf71e525baaf14197143387bd7017f, type: 2}
+  objectLayers: []
