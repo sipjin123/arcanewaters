@@ -17,7 +17,7 @@ public class DebugButtons : MonoBehaviour
       }
       if (Input.GetKey(KeyCode.Q)) {
          if(Input.GetKeyDown(KeyCode.Alpha5)) {
-            DB_Main.getNPCRelationInfo(2);
+            DB_Main.getNPCRelationInfo(Global.player.userId,2);
          }
          if (Input.GetKeyDown(KeyCode.Alpha7)) {
             Debug.LogError("Requesting from server as -1");
