@@ -617,6 +617,16 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
+   public void Cmd_UpdateNPCQuestProgress(int npcID, int questProgress) {
+      updateNPCQuestProgress(npcID,questProgress);
+   }
+
+   [Command]
+   public void Cmd_GetNPCRelation(int npcID) {
+      requestNPCRelationData(npcID);
+   }
+
+   [Command]
    public void Cmd_BuyItem (int shopItemId) {
       Item newItem = null;
       Item shopItem = ShopManager.self.getItem(shopItemId);
@@ -985,6 +995,32 @@ public class RPCManager : NetworkBehaviour {
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             _player.rpc.Target_ReceiveShipyard(_player.connectionToClient, gold, Util.serialize(list));
+         });
+      });
+   }
+
+   [Server]
+   public void updateNPCQuestProgress(int npcID, int questProgress) {
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Update the setting in the database
+         DB_Main.updateNPCProgress(npcID, questProgress);
+      });
+   }
+
+   [Server]
+   public void requestNPCRelationData (int npcID) {
+      // Get the crops for this player from the database
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         NPCRelationInfo npcRelation = DB_Main.getNPCRelationInfo(npcID);
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
+            PanelManager.self.pushIfNotShowing(panel.type);
+
+            // Send data to panel
+            panel.ReceiveDataFromServer(npcRelation.npcRelationLevel, npcRelation.npcQuestChapter, npcRelation.npcQuestProgress);
          });
       });
    }

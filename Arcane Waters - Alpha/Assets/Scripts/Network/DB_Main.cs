@@ -13,6 +13,52 @@ public class DB_Main : DB_MainStub {
 
    #endregion
 
+   #region NPC Relation Feature
+
+   public static NPCRelationInfo getNPCRelationInfo (int userId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM arcane.npc_relationship WHERE npc_id=@usrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  NPCRelationInfo npcRelationInfo = new NPCRelationInfo(dataReader);
+                  return npcRelationInfo;
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      NPCRelationInfo npcRelpInfo = new NPCRelationInfo(0, "", 0, 0, 0);
+      return npcRelpInfo;
+   }
+
+   public static void updateNPCProgress(int npcID, int questProgress) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "UPDATE npc_relationship SET npc_quest_progress=@npc_quest_progress WHERE npc_id=@npc_id;", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@npc_id", npcID);
+            cmd.Parameters.AddWithValue("@npc_quest_progress", questProgress);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   #endregion
+
    public static new List<CropInfo> getCropInfo (int userId) {
       List<CropInfo> cropList = new List<CropInfo>();
 

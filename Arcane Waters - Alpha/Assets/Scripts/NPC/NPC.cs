@@ -257,7 +257,9 @@ public class NPC : MonoBehaviour {
       if (_shopTrigger != null) {
          PanelManager.self.pushIfNotShowing(_shopTrigger.panelType);
       } else {
-         checkQuest();
+         // Send a request to the server to get the clickable text options
+         Global.player.rpc.Cmd_GetClickableRows(this.npcId);
+         Global.player.rpc.Cmd_GetNPCRelation(this.npcId);
       }
    }
 
