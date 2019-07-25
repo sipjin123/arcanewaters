@@ -93,6 +93,14 @@ public class QuestRow
    public int questProgress;
 }
 
+public class QuestInfoData
+{
+   public List<QuestInfo> questList;
+   public int index;
+   public QuestType questType;
+}
+
+
 public enum QuestState
 {
    None = 0,
