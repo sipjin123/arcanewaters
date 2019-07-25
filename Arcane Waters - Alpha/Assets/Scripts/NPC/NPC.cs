@@ -202,45 +202,39 @@ public class NPC : MonoBehaviour {
       _body.AddForce(direction.normalized * moveSpeed);
    }
 
-   public void checkQuest() {
-      NPCQuestData currentQuest = npcData.npcQuestList[0];
-      // Checks if the active quest is a Delivery Quest
-      if (currentQuest.questType == QuestType.Deliver) {
-         for (int i = 0; i < currentQuest.deliveryQuestList.Count; i++) {
-            DeliveryQuestPair currentDeliverQuest = currentQuest.deliveryQuestList[0];
+   public void checkQuest(DeliveryQuestPair deliveryQuestPair) {
+      QuestState currentQuestState = deliveryQuestPair.questState;
+      QuestDialogue currentDialogue = deliveryQuestPair.dialogueData.questDialogueList.Find(_ => _.questState == currentQuestState);
 
-            QuestState currentQuestState = currentDeliverQuest.questState;
-            QuestDialogue currentDialogue = currentDeliverQuest.questDialogueList.Find(_ => _.questState == currentQuestState);
+      // Sets npc response
+      npcReply = currentDialogue.npcDialogue;
+      PanelManager.self.get(Panel.Type.NPC_Panel).GetComponent<NPCPanel>().SetMessage(npcReply);
+      currentAnswerDialogue.Clear();
 
-            // Sets npc response
-            npcReply = currentDialogue.npcDialogue;
-            PanelManager.self.get(Panel.Type.NPC_Panel).GetComponent<NPCPanel>().SetMessage(npcReply);
-            currentAnswerDialogue.Clear();
+      if(currentDialogue.checkCondition) {
+         List<Item> itemList = InventoryCacheManager.self.itemList;
+         DeliverQuest deliveryQuest = deliveryQuestPair.deliveryQuest;
+         Item findingItemList = itemList.Find(_ => (CraftingIngredients.Type) _.itemTypeId == (CraftingIngredients.Type) deliveryQuest.itemToDeliver.itemTypeId
+         && _.category == Item.Category.CraftingIngredients);
 
-            if(currentDialogue.checkCondition) {
-               List<Item> itemList = InventoryCacheManager.self.itemList;
-               DeliverQuest deliveryQuest = currentDeliverQuest.deliveryQuest;
-               Item findingItemList = itemList.Find(_ => (CraftingIngredients.Type) _.itemTypeId == (CraftingIngredients.Type) deliveryQuest.itemToDeliver.itemTypeId
-               && _.category == Item.Category.CraftingIngredients);
-
-               if (findingItemList != null) {
-                  if (findingItemList.count >= deliveryQuest.quantity) {
-                     // Sets the player to a positive response if Requirements are met
-                     currentAnswerDialogue.Add(currentDialogue.playerReply);
-                     break;
-                  }
-               }
-
-               // Sets the player to a negative response if Requirements are met
-               currentAnswerDialogue.Add(currentDialogue.playerNegativeReply);
+         if (findingItemList != null) {
+            if (findingItemList.count >= deliveryQuest.quantity) {
+               // Sets the player to a positive response if Requirements are met
+               currentAnswerDialogue.Add(currentDialogue.playerReply);
                Global.player.rpc.Cmd_GetClickableRows(this.npcId);
                return;
             }
-
-            // Sets the player to a positive response if Requirements are met
-            currentAnswerDialogue.Add(currentDialogue.playerReply);
+         } else {
+            // Sets the player to a negative response if Requirements are met
+            currentAnswerDialogue.Add(currentDialogue.playerNegativeReply);
+            Global.player.rpc.Cmd_GetClickableRows(this.npcId);
+            return;
          }
       }
+
+      // Sets the player to a positive response if Requirements are met
+      currentAnswerDialogue.Add(currentDialogue.playerReply);
+     
       // Send a request to the server to get the clickable text options
       Global.player.rpc.Cmd_GetClickableRows(this.npcId);
    }
