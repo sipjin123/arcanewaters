@@ -16,20 +16,23 @@ public class DB_Main : DB_MainStub {
    #region NPC Relation Feature
 
    public static new void createNPCRelation (NPCRelationInfo npcInfo) {
+      int questTypeIndex = (int) ((QuestType) Enum.Parse(typeof(QuestType), npcInfo.npcQuestType, true));
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO npc_relationship (npc_id, user_id, npc_name, npc_relation_level,npc_quest_chapter, npc_quest_progress) " +
-            "VALUES (@npc_id, @user_id, @npc_name, @npc_relation_level, @npc_quest_chapter, @npc_quest_progress);", conn)) {
+            "INSERT INTO npc_relationship (relation_id, npc_id, user_id, npc_name, npc_relation_level,npc_quest_index, npc_quest_progress, npc_quest_type) " +
+            "VALUES (@relation_id, @npc_id, @user_id, @npc_name, @npc_relation_level, @npc_quest_index, @npc_quest_progress , @npc_quest_type);", conn)) {
 
             conn.Open();
             cmd.Prepare();
+            cmd.Parameters.AddWithValue("@relation_id", npcInfo.npcID + npcInfo.userID + questTypeIndex + npcInfo.npcQuestIndex);
             cmd.Parameters.AddWithValue("@npc_id", npcInfo.npcID);
             cmd.Parameters.AddWithValue("@user_id", npcInfo.userID);
             cmd.Parameters.AddWithValue("@npc_name", npcInfo.npcName);
             cmd.Parameters.AddWithValue("@npc_relation_level", npcInfo.npcRelationLevel);
-            cmd.Parameters.AddWithValue("@npc_quest_chapter", npcInfo.npcQuestChapter);
+            cmd.Parameters.AddWithValue("@npc_quest_index", npcInfo.npcQuestIndex);
             cmd.Parameters.AddWithValue("@npc_quest_progress", npcInfo.npcQuestProgress);
+            cmd.Parameters.AddWithValue("@npc_quest_type", npcInfo.npcQuestType);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -39,28 +42,31 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static new NPCRelationInfo getNPCRelationInfo (int userId, int npcId) {
+   public static new List<NPCRelationInfo> getNPCRelationInfo (int user_id, int npc_id) {
+      List<NPCRelationInfo> npcRelationList = new List<NPCRelationInfo>();
+
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM arcane.npc_relationship WHERE npc_id=@npcId AND user_id=@userId", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM arcane.npc_relationship WHERE npc_id=@npc_id AND user_id=@user_id", conn)) {
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@npcId", npcId);
-            cmd.Parameters.AddWithValue("@userId", userId);
+            cmd.Parameters.AddWithValue("@user_id", user_id);
+            cmd.Parameters.AddWithValue("@npc_id", npc_id);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  NPCRelationInfo npcRelationInfo = new NPCRelationInfo(dataReader);
-                  return npcRelationInfo;
+                  NPCRelationInfo info = new NPCRelationInfo(dataReader);
+                  Debug.LogError("Added info : " + info.npcQuestType + " " + info.npcQuestIndex);
+                  npcRelationList.Add(info);
                }
             }
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
-      NPCRelationInfo npcRelpInfo = new NPCRelationInfo(0, 0, "", 0, 0, 0);
-      return npcRelpInfo;
+
+      return npcRelationList;
    }
     
    public static new void updateNPCRelation (int userId, int npcID, int relationLevel) {
@@ -83,16 +89,18 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static new void updateNPCProgress (int userId, int npcID, int questProgress) {
+   public static new void updateNPCProgress (int userId, int npcID, int questProgress, int questIndex, string questType) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "UPDATE npc_relationship SET npc_quest_progress=@npc_quest_progress WHERE npc_id=@npc_id AND user_id=@userId;", conn)) {
+            "UPDATE npc_relationship SET npc_quest_progress=@npc_quest_progress WHERE npc_id=@npc_id AND user_id=@userId AND npc_quest_index=@npc_quest_index AND npc_quest_type=@npc_quest_type;", conn)) {
 
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@userId", userId);
             cmd.Parameters.AddWithValue("@npc_id", npcID);
+            cmd.Parameters.AddWithValue("@npc_quest_index", questIndex);
+            cmd.Parameters.AddWithValue("@npc_quest_type", questType);
             cmd.Parameters.AddWithValue("@npc_quest_progress", questProgress);
 
             // Execute the command

@@ -17,11 +17,14 @@ public class NPCRelationInfo {
    // NPC Name
    public string npcName;
 
+   // NPC Type of Quest
+   public string npcQuestType;
+
    // Friendship level 0 - 100
    public int npcRelationLevel;
 
    // Quest state iteration
-   public int npcQuestChapter;
+   public int npcQuestIndex;
 
    // Quest state such as Init Pending and Complete
    public int npcQuestProgress;
@@ -35,18 +38,20 @@ public class NPCRelationInfo {
       this.npcID = DataUtil.getInt(dataReader, "npc_id");
       this.npcName = DataUtil.getString(dataReader, "npc_name");
       this.npcRelationLevel = DataUtil.getInt(dataReader, "npc_relation_level");
-      this.npcQuestChapter = DataUtil.getInt(dataReader, "npc_quest_chapter");
+      this.npcQuestIndex = DataUtil.getInt(dataReader, "npc_quest_index");
       this.npcQuestProgress = DataUtil.getInt(dataReader, "npc_quest_progress");
+      this.npcQuestType = DataUtil.getString(dataReader, "npc_quest_type");
    }
 
 #endif
 
-   public NPCRelationInfo (int userID, int npcID, string npcName,int npcRelationLevel, int npcQuestChapter, int npcQuestProgress) {
+   public NPCRelationInfo (int userID, int npcID, string npcName, string npcQuestType,int npcRelationLevel, int npcQuestIndex, int npcQuestProgress) {
       this.userID = userID;
       this.npcID = npcID;
       this.npcName = npcName;
       this.npcRelationLevel = npcRelationLevel;
-      this.npcQuestChapter = npcQuestChapter;
+      this.npcQuestIndex = npcQuestIndex;
       this.npcQuestProgress = npcQuestProgress;
+      this.npcQuestType = npcQuestType;
    }
 }
