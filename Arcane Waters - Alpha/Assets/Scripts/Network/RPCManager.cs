@@ -45,21 +45,20 @@ public class RPCManager : NetworkBehaviour {
    [TargetRpc]
    public void Target_GetNPCInfo (NetworkConnection connection, int npcID, int userID, int npcLevel, int npcChapter, int npcProgress) {
       NPC npc = NPCManager.self.getNPC(npcID);
-      NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
-      panel.npc = npc;
-      PanelManager.self.pushIfNotShowing(panel.type);
+      NPCPanel npcPanel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
+      npcPanel.npc = npc;
 
       List<ClickableText.Type> list = npc.currentAnswerDialogue;
-      panel.setClickableRows(list.ToList());
+      npcPanel.setClickableRows(list);
 
       // Send data to panel
-      panel.receiveNPCDataFromServer(npcLevel, npcChapter, npcProgress);
+      npcPanel.receiveNPCDataFromServer(npcLevel, npcChapter, npcProgress);
    }
 
    [TargetRpc]
    public void Target_UpdateNPCRelation (NetworkConnection connection, int npcID, int npcRelation) {
-      NPC npc = NPCManager.self.getNPC(npcID);
-      npc.npcRelationLevel = npcRelation;
+      NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
+      panel.receiveNPCRelationDataFromServer(npcRelation);
    }
 
    [TargetRpc]
@@ -196,12 +195,13 @@ public class RPCManager : NetworkBehaviour {
       NPC npc = NPCManager.self.getNPC(npcId);
 
       // Show the panel with the specified options
-      NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
-      if(panel == null) {
-         PanelManager.self.pushIfNotShowing(panel.type);
+      NPCPanel npcPanel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
+      npcPanel.npc = npc;
+      npcPanel.setClickableRows(options.ToList());
+
+      if (PanelManager.self.selectedPanel != Panel.Type.NPC_Panel) {
+         PanelManager.self.pushIfNotShowing(npcPanel.type);
       }
-      panel.npc = npc;
-      panel.setClickableRows(options.ToList());
    }
 
    [TargetRpc]
@@ -651,7 +651,7 @@ public class RPCManager : NetworkBehaviour {
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Update the setting in the database
-         DB_Main.updateNPCRelation(npcID, relationLevel);
+         DB_Main.updateNPCRelation(_player.userId, npcID, relationLevel);
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -665,7 +665,7 @@ public class RPCManager : NetworkBehaviour {
       //B0nta
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         NPCRelationInfo npcRelation = new NPCRelationInfo(Global.player.userId, npcID, npcName, 0, 1, 0);
+         NPCRelationInfo npcRelation = new NPCRelationInfo(_player.userId, npcID, npcName, 0, 1, 0);
          DB_Main.createNPCRelation(npcRelation);
 
          // Back to the Unity thread
@@ -680,7 +680,7 @@ public class RPCManager : NetworkBehaviour {
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Update the setting in the database
-         DB_Main.updateNPCProgress(npcID, questProgress);
+         DB_Main.updateNPCProgress(_player.userId, npcID, questProgress);
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -692,12 +692,12 @@ public class RPCManager : NetworkBehaviour {
    [Command]
    public void Cmd_GetNPCRelation(int npcID, string npcName) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         NPCRelationInfo npcRelation = DB_Main.getNPCRelationInfo(Global.player.userId, npcID);
+         NPCRelationInfo npcRelation = DB_Main.getNPCRelationInfo(_player.userId, npcID);
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             if (npcRelation.userID == 0) {
-               D.error("NPC Relation does not exist, Adding...");
+               D.log("NPC Relation does not exist, Adding...");
                Cmd_CreateNPCRelation(npcID, npcName);
                return;
             }
@@ -895,6 +895,7 @@ public class RPCManager : NetworkBehaviour {
          item = DB_Main.createNewItem(_player.userId, item);
       });
    }
+
    [Command]
    public void Cmd_OpenChest (int chestId) {
       TreasureChest chest = TreasureManager.self.getChest(chestId);
@@ -930,17 +931,6 @@ public class RPCManager : NetworkBehaviour {
 
       // Send it to the specific player that opened it
       Target_OpenChest(_player.connectionToClient, item, chest.id);
-   }
-
-   [Command]
-   public void Cmd_ProcessNPCRelation(int npcId, int friendshipLevel, int questChapter, int questProgress) {
-      NPC npc = NPCManager.self.getNPC(npcId);
-      NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
-      panel.npc = npc;
-      PanelManager.self.pushIfNotShowing(panel.type);
-
-      // Send data to panel
-      panel.receiveNPCDataFromServer(friendshipLevel,questChapter,questProgress);
    }
 
    [Command]
