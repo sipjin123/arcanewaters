@@ -56,9 +56,6 @@ public class NPC : MonoBehaviour {
    // The unique id assigned to this npc
    public int npcId;
 
-   // The level of relationship to the npc
-   public int npcRelationLevel;
-
    // The area that this NPC is in
    public Area.Type areaType;
 

@@ -22,7 +22,9 @@ public class InventoryCacheManager : MonoBehaviour
 
    public void fetchInventory () {
       if (!hasInitialized) {
-         Global.player.rpc.Cmd_RequestItemsFromServer(1, 15);
+         if (Global.player != null) {
+            Global.player.rpc.Cmd_RequestItemsFromServer(1, 15);
+         }
       }
    }
 

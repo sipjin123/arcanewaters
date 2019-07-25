@@ -80,7 +80,6 @@ public class NPCPanel : Panel {
    
    public void receiveNPCDataFromServer(int friendshipLevel, int npcQuestChapter, int npcQuestProgress) {
       friendshipText.text = friendshipLevel.ToString();
-      npc.npcRelationLevel = friendshipLevel;
       npc.npcData.npcQuestList[0].deliveryQuestList[0].questState = (QuestState) npcQuestProgress;
       npc.checkQuest();
 
@@ -88,6 +87,10 @@ public class NPCPanel : Panel {
       for (int i = 0; i < loadingIndicators.Count; i++) {
          loadingIndicators[i].SetActive(false);
       }
+   }
+
+   public void receiveNPCRelationDataFromServer(int friendshipLevel) {
+      friendshipText.text = friendshipText.ToString();
    }
 
    public void setClickableRows (List<ClickableText.Type> options) {
@@ -143,7 +146,7 @@ public class NPCPanel : Panel {
          npc.npcReply = reply;
          SetMessage(reply);
 
-         int updatedRelationship = (npc.npcRelationLevel + 20);
+         int updatedRelationship = (int.Parse(friendshipText.text) + 20);
          Global.player.rpc.Cmd_UpdateNPCRelation(npc.npcId, updatedRelationship);
       } else {
          Global.player.rpc.Cmd_UpdateNPCQuestProgress(npc.npcId, (int) currentDialogue.nextState);
