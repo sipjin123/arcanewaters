@@ -86,6 +86,13 @@ public class QuestDialogue
    public QuestState nextState;
 }
 
+public class QuestRow
+{
+   public string questType;
+   public int questIndex;
+   public int questProgress;
+}
+
 public enum QuestState
 {
    None = 0,

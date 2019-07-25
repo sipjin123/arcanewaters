@@ -9,7 +9,8 @@ public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointer
    #region Public Variables
 
    // The different types of clickable text options
-   public enum Type { None = 0, TradeGossip = 1, TradeBluePrint = 2, TradeDeliveryInit = 3, TradeDeliveryComplete = 4 , QuestAccept = 5, TradeDeliverySuccess = 6, TradeDeliveryFail = 7, AcceptReward =8}
+   public enum Type { None = 0, TradeGossip = 1, TradeBluePrint = 2, TradeDeliveryInit = 3, TradeDeliveryComplete = 4 , QuestAccept = 5, TradeDeliverySuccess = 6, TradeDeliveryFail = 7, AcceptReward =8,
+   HuntInit = 9, HuntComplete = 10, HuntSuccess = 11, HuntFail = 12}
 
    // The Type of clickable text option this is
    public Type textType;
@@ -18,6 +19,11 @@ public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointer
    public UnityEvent clickedEvent = new UnityEvent();
 
    #endregion
+
+   public void SetColor(Color color) {
+      _text = GetComponent<Text>();
+      _text.color = color;
+   }
 
    public void initData(int rowNumber) {
       // Look up components
@@ -28,6 +34,17 @@ public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointer
 
       // Fill in our text
       _text.text = rowNumber + ". " + getMessageForType();
+   }
+
+   public void customText(string msg, int rowNumber) {
+      // Look up components
+      _text = GetComponent<Text>();
+
+      // Note our initial settings
+      _initialFontColor = _text.color;
+
+      // Fill in our text
+      _text.text = rowNumber + ". " + msg;
    }
 
    protected string getMessageForType () {
@@ -49,8 +66,16 @@ public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointer
          case Type.TradeDeliveryFail:
             return "I still dont have enough";
          case Type.AcceptReward:
-            return "Thankyou very much!"; 
-      }
+            return "Thankyou very much!";
+         case Type.HuntInit:
+            return "Let the hunt begin!";
+         case Type.HuntComplete:
+            return "It was not easy!";
+         case Type.HuntSuccess:
+            return "Target eliminated!";
+         case Type.HuntFail:
+            return "I havent killed it yet!";
+   }
 
       return "";
    }
