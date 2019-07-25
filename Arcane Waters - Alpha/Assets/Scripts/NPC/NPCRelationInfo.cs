@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using MySql.Data.MySqlClient;
+using System;
 
 public class NPCRelationInfo {
    #region Public Variables
@@ -18,7 +19,7 @@ public class NPCRelationInfo {
    public string npcName;
 
    // NPC Type of Quest
-   public string npcQuestType;
+   public QuestType npcQuestType;
 
    // Friendship level 0 - 100
    public int npcRelationLevel;
@@ -40,7 +41,7 @@ public class NPCRelationInfo {
       this.npcRelationLevel = DataUtil.getInt(dataReader, "npc_relation_level");
       this.npcQuestIndex = DataUtil.getInt(dataReader, "npc_quest_index");
       this.npcQuestProgress = DataUtil.getInt(dataReader, "npc_quest_progress");
-      this.npcQuestType = DataUtil.getString(dataReader, "npc_quest_type");
+      this.npcQuestType = (QuestType) Enum.Parse(typeof(QuestType), DataUtil.getString(dataReader, "npc_quest_type"), true);
    }
 
 #endif
@@ -52,6 +53,6 @@ public class NPCRelationInfo {
       this.npcRelationLevel = npcRelationLevel;
       this.npcQuestIndex = npcQuestIndex;
       this.npcQuestProgress = npcQuestProgress;
-      this.npcQuestType = npcQuestType;
+      this.npcQuestType = (QuestType) Enum.Parse(typeof(QuestType), npcQuestType, true);
    }
 }

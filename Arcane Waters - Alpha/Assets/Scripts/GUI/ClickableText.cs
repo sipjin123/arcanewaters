@@ -21,7 +21,10 @@ public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointer
    #endregion
 
    public void SetColor(Color color) {
+      // Look up components
       _text = GetComponent<Text>();
+      
+      // Color update
       _text.color = color;
    }
 

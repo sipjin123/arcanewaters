@@ -8,9 +8,11 @@ public class NPCQuestData : ScriptableObject
 
    // List of all delivery quests
    public List<DeliveryQuestPair> deliveryQuestList;
+
    // List of all hunting quests
    public List<HuntQuestPair> huntQuestList;
 
+   // Retrieves all the quests
    public List<QuestInfo> getAllQuests()
    {
       List<QuestInfo> allQuests = new List<QuestInfo>();
@@ -24,6 +26,7 @@ public class NPCQuestData : ScriptableObject
       return allQuests;
    }
 
+   // Retrieves all the quest specified
    public List<QuestInfo> getAllQuestSpecific(QuestType questtype) {
       List<QuestInfo> allQuests = new List<QuestInfo>();
 
@@ -78,28 +81,36 @@ public class QuestInfo
 [Serializable]
 public class QuestDialogue
 {
+   // Current progress state of the quest
    public QuestState questState;
-   public string npcDialogue;
-   public bool checkCondition;
-   public ClickableText.Type playerReply;
-   public ClickableText.Type playerNegativeReply;
-   public QuestState nextState;
-}
 
-public class QuestRow
-{
-   public string questType;
-   public int questIndex;
-   public int questProgress;
+   // Dialogue for the npc 
+   public string npcDialogue;
+
+   // Checks if player can have positive or negative reply
+   public bool checkCondition;
+
+   // Reply if conditions are met for quest
+   public ClickableText.Type playerReply;
+
+   // Reply if conditions are not met for quest
+   public ClickableText.Type playerNegativeReply;
+
+   // Next state for quest progression
+   public QuestState nextState;
 }
 
 public class QuestInfoData
 {
+   // List of quest per quest type
    public List<QuestInfo> questList;
+
+   // Represents the rank of the quest in the list
    public int index;
+
+   // Represents the type of quest
    public QuestType questType;
 }
-
 
 public enum QuestState
 {
@@ -109,8 +120,6 @@ public enum QuestState
    Pending = 3,
    Claim = 4,
    Completed = 5,
-   Done = 6,
-   NoQuest = 7
 }
 
 public enum QuestType
