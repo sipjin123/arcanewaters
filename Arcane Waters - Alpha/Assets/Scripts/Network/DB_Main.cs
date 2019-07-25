@@ -16,7 +16,7 @@ public class DB_Main : DB_MainStub {
    #region NPC Relation Feature
 
    public static new void createNPCRelation (NPCRelationInfo npcInfo) {
-      int questTypeIndex = (int) ((QuestType) Enum.Parse(typeof(QuestType), npcInfo.npcQuestType, true));
+      int questTypeIndex = (int) npcInfo.npcQuestType;
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
@@ -32,7 +32,7 @@ public class DB_Main : DB_MainStub {
             cmd.Parameters.AddWithValue("@npc_relation_level", npcInfo.npcRelationLevel);
             cmd.Parameters.AddWithValue("@npc_quest_index", npcInfo.npcQuestIndex);
             cmd.Parameters.AddWithValue("@npc_quest_progress", npcInfo.npcQuestProgress);
-            cmd.Parameters.AddWithValue("@npc_quest_type", npcInfo.npcQuestType);
+            cmd.Parameters.AddWithValue("@npc_quest_type", npcInfo.npcQuestType.ToString());
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -57,7 +57,6 @@ public class DB_Main : DB_MainStub {
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
                   NPCRelationInfo info = new NPCRelationInfo(dataReader);
-                  Debug.LogError("Added info : " + info.npcQuestType + " " + info.npcQuestIndex);
                   npcRelationList.Add(info);
                }
             }

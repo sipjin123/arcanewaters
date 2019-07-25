@@ -710,7 +710,7 @@ public class RPCManager : NetworkBehaviour {
                Target_GetNPCInfo(_player.connectionToClient, npcRelation.npcID, npcRelation.userID, questType, npcRelation.npcRelationLevel, npcRelation.npcQuestIndex, npcRelation.npcQuestProgress);
                indexCount++;
                if (indexCount >= indexMax) {
-                  Cmd_DispatchComplete(npcRelation.npcID,npcRelation.npcRelationLevel);
+                  Cmd_DispatchComplete(npcRelation.npcID, npcRelation.npcRelationLevel);
                }
             });
          }
@@ -719,11 +719,7 @@ public class RPCManager : NetworkBehaviour {
 
    [Command]
    public void Cmd_DispatchComplete(int npcID, int relpId) {
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_NPCPanelComplete(_player.connectionToClient, relpId, npcID);
-         });
-      });
+      Target_NPCPanelComplete(_player.connectionToClient, relpId, npcID);
    }
 
    [Command]
@@ -744,31 +740,31 @@ public class RPCManager : NetworkBehaviour {
    public void Cmd_GetNPCRelation(int npcID, string npcName) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List< NPCRelationInfo> npcRelationList = DB_Main.getNPCRelationInfo(_player.userId, npcID);
-         //NPCRelationInfo npcRelation = DB_Main.getNPCRelationInfo(_player.userId, npcID);
-
-         if (npcRelationList.Count == 0) {
-            // Back to the Unity thread
-            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+         
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (npcRelationList.Count == 0) {
+               // Send command to create data for non existent npc
                Cmd_CreateNPCRelation(npcID, npcName);
                return;
-            });
-         } else {
-            for (int i = 0; i < npcRelationList.Count; i++) {
-               NPCRelationInfo npcRelation = npcRelationList[i];
+            } else {
+               // Fetches the info of the npc
+               for (int i = 0; i < npcRelationList.Count; i++) {
+                  NPCRelationInfo npcRelation = npcRelationList[i];
 
-               // Back to the Unity thread
-               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  // Creates the npc incase it did not exist
                   if (npcRelation.userID == 0) {
                      D.log("NPC Relation does not exist, Adding...");
                      Cmd_CreateNPCRelation(npcID, npcName);
                      return;
                   }
-                  int questType = (int) ((QuestType) Enum.Parse(typeof(QuestType), npcRelation.npcQuestType, true));
+                  int questType = (int) npcRelation.npcQuestType;
                   Target_GetNPCInfo(_player.connectionToClient, npcRelation.npcID, npcRelation.userID, questType, npcRelation.npcRelationLevel, npcRelation.npcQuestIndex, npcRelation.npcQuestProgress);
-               });
+               }
+
+               // Gives notification that the quest data is complete and can now popup npc panel
+               Cmd_DispatchComplete(npcRelationList[0].npcID, npcRelationList[0].npcRelationLevel);
             }
-            Cmd_DispatchComplete(npcRelationList[0].npcID, npcRelationList[0].npcRelationLevel);
-         }
+         });
       });
    }
 
