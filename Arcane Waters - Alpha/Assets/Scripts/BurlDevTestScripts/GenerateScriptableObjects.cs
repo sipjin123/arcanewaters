@@ -55,6 +55,12 @@ public class GenerateScriptableObjects : MonoBehaviour
       InteractQuest asset = ScriptableObject.CreateInstance<InteractQuest>();
       Process(asset);
    }
+
+   [MenuItem("Assets/Create/Create QuestDialogueData Object")]
+   public static void Create_QuestDialogueData () {
+      QuestDialogueData asset = ScriptableObject.CreateInstance<QuestDialogueData>();
+      Process(asset);
+   }
 }
 
 #endif

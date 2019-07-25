@@ -6,13 +6,41 @@ public class NPCQuestData : ScriptableObject
 {
    #region Public Variables
 
-   // Indicates the type of quest
-   public QuestType questType;
-
    // List of all delivery quests
    public List<DeliveryQuestPair> deliveryQuestList;
    // List of all hunting quests
    public List<HuntQuestPair> huntQuestList;
+
+   public List<QuestInfo> getAllQuests()
+   {
+      List<QuestInfo> allQuests = new List<QuestInfo>();
+      for(int i = 0; i < deliveryQuestList.Count; i++) {
+         allQuests.Add(deliveryQuestList[i]);
+      }
+      for (int i = 0; i < huntQuestList.Count; i++) {
+         allQuests.Add(huntQuestList[i]);
+      }
+
+      return allQuests;
+   }
+
+   public List<QuestInfo> getAllQuestSpecific(QuestType questtype) {
+      List<QuestInfo> allQuests = new List<QuestInfo>();
+
+      switch(questtype) {
+         case QuestType.Deliver:
+            for (int i = 0; i < deliveryQuestList.Count; i++) {
+               allQuests.Add(deliveryQuestList[i]);
+            }
+            break;
+         case QuestType.Hunt:
+            for (int i = 0; i < huntQuestList.Count; i++) {
+               allQuests.Add(huntQuestList[i]);
+            }
+            break;
+      }
+      return allQuests;
+   }
 
    #endregion
 }
@@ -31,11 +59,20 @@ public class HuntQuestPair : QuestInfo
 
 public class QuestInfo
 {
+   // Title of the quest
+   public string questTitle;
+
+   // Indicates the type of quest
+   public QuestType questType;
+
    // State of quest if its complete or pending
    public QuestState questState;
 
+   // The level of relationship that unlocks this dialogue
+   public int relationRequirement;
+
    // NPC and Player Dialogue Sequence
-   public List<QuestDialogue> questDialogueList;
+   public QuestDialogueData dialogueData;
 }
 
 [Serializable]
@@ -57,11 +94,14 @@ public enum QuestState
    Pending = 3,
    Claim = 4,
    Completed = 5,
+   Done = 6,
+   NoQuest = 7
 }
 
 public enum QuestType
 {
-   Hunt,
-   Slay,
-   Deliver,
+   None = 0,
+   Hunt = 1,
+   Slay = 2,
+   Deliver = 3,
 }

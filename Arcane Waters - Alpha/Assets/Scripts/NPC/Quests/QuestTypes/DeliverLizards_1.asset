@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: afc63c889e0d893478827c9a2c1ebd9d, type: 3}
-  m_Name: DeliverLizards_4
+  m_Name: DeliverLizards_1
   m_EditorClassIdentifier: 
   itemToDeliver:
     category: 6
