@@ -53,7 +53,7 @@ public class DebugButtons : MonoBehaviour
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;
             processItem(craftingIngredients);
          }
-         if (Input.GetKeyDown(KeyCode.P)) {
+         if (Input.GetKeyDown(KeyCode.Alpha7)) {
             CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Lumber, ColorType.DarkGreen, ColorType.DarkPurple, "");
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;
             processItem(craftingIngredients);
