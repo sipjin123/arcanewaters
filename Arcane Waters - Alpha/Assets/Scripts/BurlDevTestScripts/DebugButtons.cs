@@ -19,7 +19,7 @@ public class DebugButtons : MonoBehaviour
          if(Input.GetKeyDown(KeyCode.Alpha5)) {
             DB_Main.getNPCRelationInfo(Global.player.userId,2);
          }
-         if (Input.GetKeyDown(KeyCode.Alpha7)) {
+         if (Input.GetKeyDown(KeyCode.Alpha9)) {
             Debug.LogError("Requesting from server as -1");
             Global.player.rpc.Cmd_RequestItemsFromServer(-1, 15);
          }
