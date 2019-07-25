@@ -48,6 +48,5 @@ public class NPCRelationInfo {
       this.npcRelationLevel = npcRelationLevel;
       this.npcQuestChapter = npcQuestChapter;
       this.npcQuestProgress = npcQuestProgress;
-      D.error("This character does not exist");
    }
 }
