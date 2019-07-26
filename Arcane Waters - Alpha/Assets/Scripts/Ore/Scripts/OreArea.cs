@@ -5,32 +5,35 @@ using UnityEngine.UI;
 using Mirror;
 
 public class OreArea : MonoBehaviour {
-
    #region Public Variables
 
+   // List of posible spawn positions
    public List<Transform> _spawnPointList;
 
+   // List of the ores in the location
    public List<GameObject> _oreList;
 
    #endregion
 
    public List<Vector2> getPotentialSpawnPoints(int number) {
+      // Ensures the ores to be spawned is less than the spawn points
       number = Mathf.Clamp(number, 0, _spawnPointList.Count);
-
       List<Vector2> spawnPointHolder = new List<Vector2>();
+
+      // Copies the location of each spawn point in the list
       for(int i = 0; i < _spawnPointList.Count;i++) {
          spawnPointHolder.Add(_spawnPointList[i].localPosition);
       }
 
       List<Vector2> returnSpawnList = new List<Vector2>();
 
+      // Seeks random spawn point until number requirement is met
       while (returnSpawnList.Count < number) {
          int randomIndex = Random.Range(0, spawnPointHolder.Count);
-         Vector2 tempSpawn = spawnPointHolder[randomIndex];
+         Vector2 coordToAdd = spawnPointHolder[randomIndex];
 
-         returnSpawnList.Add(tempSpawn);
-         spawnPointHolder.Remove(tempSpawn);
-         Debug.LogError("Addint position of : " + tempSpawn);
+         returnSpawnList.Add(coordToAdd);
+         spawnPointHolder.Remove(coordToAdd);
       }
 
       return returnSpawnList;

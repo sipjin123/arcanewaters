@@ -7,14 +7,30 @@ using MySql.Data.MySqlClient;
 using System;
 
 public class OreInfo {
+   #region Public Variables
 
+   // Database ID
    public int oreID;
+
+   // Display Name
    public string oreName;
+    
+   // Type of ore, Iron, Gold, etc
    public OreType oreType;
+
+   // Location where the ore is spawned
    public Area.Type areaType;
+
+   // Coordinates where the ore is spawned
    public Vector2 position;
+  
+   // If ore should be revealed
    public bool isEnabled;
+
+   // Index id of the ore
    public int oreIndex;
+
+   #endregion
 
    public OreInfo () { }
 
