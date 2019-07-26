@@ -74,7 +74,7 @@ public class RPCManager : NetworkBehaviour {
    [TargetRpc]
    public void Target_UpdateNPCQuestProgress (NetworkConnection connection, int npcID, int questProgress, int questIndex, string questType) {
       NPC npc = NPCManager.self.getNPC(npcID);
-
+  
       QuestType typeOfQuest = (QuestType) Enum.Parse(typeof(QuestType), questType, true);
       switch (typeOfQuest) {
          case QuestType.Deliver:
@@ -88,10 +88,6 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_ReceiveItems (NetworkConnection connection, int gold, string[] itemArray) {
-      Debug.LogError("=========== RECEIVING ITEMS :: ");
-      for (int i = 0; i < itemArray.Length; i++) {
-         Debug.LogError(i + " : " + itemArray[i]);
-      }
       AdventureShopScreen.self.updatePanelWithItems(gold, Item.unserializeAndCast(itemArray));
    }
 
@@ -670,7 +666,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_UpdateNPCRelation (int npcID, int relationLevel) {
+   public void Cmd_UpdateNPCRelation(int npcID, int relationLevel) {
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Update the setting in the database
@@ -684,7 +680,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_CreateNPCRelation (int npcID, string npcName) {
+   public void Cmd_CreateNPCRelation(int npcID, string npcName) {
       NPC npc = NPCManager.self.getNPC(npcID);
       List<QuestInfo> questList = npc.npcData.npcQuestList[0].getAllQuests();
       int deliverIndex = 0;
@@ -722,12 +718,12 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_DispatchComplete (int npcID, int relpId) {
+   public void Cmd_DispatchComplete(int npcID, int relpId) {
       Target_NPCPanelComplete(_player.connectionToClient, relpId, npcID);
    }
 
    [Command]
-   public void Cmd_UpdateNPCQuestProgress (int npcID, int questProgress, int questIndex, string questType) {
+   public void Cmd_UpdateNPCQuestProgress(int npcID, int questProgress, int questIndex, string questType) {
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Update the setting in the database
@@ -741,7 +737,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_GetNPCRelation (int npcID, string npcName) {
+   public void Cmd_GetNPCRelation(int npcID, string npcName) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<NPCRelationInfo> npcRelationList = DB_Main.getNPCRelationInfo(_player.userId, npcID);
 
