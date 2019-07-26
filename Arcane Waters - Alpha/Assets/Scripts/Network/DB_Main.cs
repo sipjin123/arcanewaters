@@ -11,6 +11,11 @@ using MySql.Data.MySqlClient;
 public class DB_Main : DB_MainStub {
    #region Public Variables
 
+   public static string RemoteServer
+   {
+      get { return _remoteServer; }
+   }
+
    #endregion
 
    #region NPC Relation Feature
@@ -1788,6 +1793,10 @@ public class DB_Main : DB_MainStub {
       }
    }
 
+   public static void setServer(string server) {
+      _connectionString = buildConnectionString(server);
+   }
+
    protected static Armor getArmor (MySqlDataReader dataReader) {
       int itemId = DataUtil.getInt(dataReader, "armorId");
       int itemTypeId = DataUtil.getInt(dataReader, "armorType");
@@ -1811,6 +1820,11 @@ public class DB_Main : DB_MainStub {
    private static MySqlConnection getConnection () {
       // In order to support threaded DB calls, each function needs its own Connection
       return new MySqlConnection(_connectionString);
+   }
+
+   public static string buildConnectionString (string server) {
+      return "SERVER=" + server + ";" + "DATABASE=" +
+          _database + ";" + "UID=" + _uid + ";" + "PASSWORD=" + _password + ";";
    }
 
    /*
@@ -2959,12 +2973,11 @@ public class DB_Main : DB_MainStub {
    #region Private Variables
 
    // Database connection settings
-   private static string _server = "52.72.202.104"; // 52.72.202.104
+   private static string _remoteServer = "52.72.202.104"; // 52.72.202.104 // "127.0.0.1";//
    private static string _database = "arcane";
    private static string _uid = "test_user";
    private static string _password = "test_password";
-   private static string _connectionString = "SERVER=" + _server + ";" + "DATABASE=" +
-          _database + ";" + "UID=" + _uid + ";" + "PASSWORD=" + _password + ";";
+   private static string _connectionString = buildConnectionString(_remoteServer);
 
    #endregion
 }

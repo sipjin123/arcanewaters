@@ -592,6 +592,12 @@ public class Util : MonoBehaviour {
                line = reader.ReadLine();
                if (line != null) {
                   Global.fastLoginCharacterSpotIndex = Int32.Parse(line);
+
+                  // Database server - not mandatory
+                  line = reader.ReadLine();
+                  if (line != null) {
+                     DB_Main.setServer(line);
+                  }
                }
 
                Global.isFastLogin = true;

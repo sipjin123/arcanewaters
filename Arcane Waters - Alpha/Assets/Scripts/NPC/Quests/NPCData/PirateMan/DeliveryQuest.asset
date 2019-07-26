@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96493f331da63db46ac4f1f3a0733ccf, type: 3}
+  m_Name: DeliveryQuest
+  m_EditorClassIdentifier: 
+  questType: 2
+  deliveryQuestList:
+  - questState: 5
+    questDialogueList:
+    - questState: 0
+      npcDialogue: Hey Can ya Do me a Favor?
+      checkCondition: 0
+      playerReply: 5
+      playerNegativeReply: 0
+      nextState: 1
+    - questState: 1
+      npcDialogue: Can ya get me 5 lizard skins?
+      checkCondition: 0
+      playerReply: 3
+      playerNegativeReply: 0
+      nextState: 2
+    - questState: 2
+      npcDialogue: Did you get all my stuff?
+      checkCondition: 1
+      playerReply: 6
+      playerNegativeReply: 7
+      nextState: 3
+    - questState: 3
+      npcDialogue: You got it! Awesome
+      checkCondition: 0
+      playerReply: 8
+      playerNegativeReply: 0
+      nextState: 4
+    - questState: 4
+      npcDialogue: Here you go
+      checkCondition: 0
+      playerReply: 4
+      playerNegativeReply: 0
+      nextState: 5
+    - questState: 5
+      npcDialogue: I got nothin lad
+      checkCondition: 0
+      playerReply: 0
+      playerNegativeReply: 0
+      nextState: 5
+    deliveryQuest: {fileID: 11400000, guid: f804acba695fb5c428eec0e67e1e9ef4, type: 2}
+  huntQuestList: []

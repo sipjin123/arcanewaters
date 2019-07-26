@@ -156,10 +156,13 @@
     <Compile Include="Assets\Photon Unity Networking\UtilityScripts\PhotonPlayer\Editor\PunTeamsInspector.cs" />
     <Compile Include="Assets\Scripts\Editor\EditorMonitor.cs" />
     <Compile Include="Assets\Scripts\Editor\EditorUtil.cs" />
+    <Compile Include="Assets\Scripts\Editor\MapGenerator.cs" />
     <Compile Include="Assets\Scripts\Editor\MaterialInstancer.cs" />
     <Compile Include="Assets\Scripts\Editor\MinimapCreator.cs" />
     <Compile Include="Assets\Scripts\Editor\RandomBrush.cs" />
     <Compile Include="Assets\Scripts\Editor\TestWindow.cs" />
+    <Compile Include="Assets\Scripts\ReorderableInspector\Editor\ReorderableArrayInspector.cs" />
+    <Compile Include="Assets\Scripts\ReorderableInspector\Editor\SerializedPropExtension.cs" />
     <Compile Include="Assets\Smooth Sync\Mirror\Smooth Sync Asset\Editor\SmoothSyncMirrorEditor.cs" />
     <Compile Include="Assets\SpriteOutline\Editor\SpriteOutlineEditor.cs" />
     <Compile Include="Assets\SpriteOutline\Editor\SpriteOutlineImporter.cs" />

@@ -402,7 +402,7 @@
     <Compile Include="Assets\Scripts\GUI\ClickableTab.cs" />
     <Compile Include="Assets\Scripts\GUI\ClickableText.cs" />
     <Compile Include="Assets\Scripts\GUI\ConfirmScreen.cs" />
-    <Compile Include="Assets\Scripts\GUI\Crafting\CraftingMaterialRow.cs" />
+    <Compile Include="Assets\Scripts\GUI\Crafting\BlueprintRow.cs" />
     <Compile Include="Assets\Scripts\GUI\Crafting\CraftingPanel.cs" />
     <Compile Include="Assets\Scripts\GUI\Crafting\CraftingRow.cs" />
     <Compile Include="Assets\Scripts\GUI\Flagship\FlagshipPanel.cs" />
@@ -454,9 +454,11 @@
     <Compile Include="Assets\Scripts\Instance\InstanceManager.cs" />
     <Compile Include="Assets\Scripts\Inventory\Armor.cs" />
     <Compile Include="Assets\Scripts\Inventory\ArmorManager.cs" />
+    <Compile Include="Assets\Scripts\Inventory\Blueprints.cs" />
     <Compile Include="Assets\Scripts\Inventory\CraftingIngredients.cs" />
     <Compile Include="Assets\Scripts\Inventory\EquipmentManager.cs" />
     <Compile Include="Assets\Scripts\Inventory\EquippableItem.cs" />
+    <Compile Include="Assets\Scripts\Inventory\InventoryCacheManager.cs" />
     <Compile Include="Assets\Scripts\Inventory\Item.cs" />
     <Compile Include="Assets\Scripts\Inventory\Rarity.cs" />
     <Compile Include="Assets\Scripts\Inventory\RecipeItem.cs" />
@@ -474,6 +476,9 @@
     <Compile Include="Assets\Scripts\Layers\RecoloredSprite.cs" />
     <Compile Include="Assets\Scripts\Layers\SpriteLayer.cs" />
     <Compile Include="Assets\Scripts\Layers\WeaponLayer.cs" />
+    <Compile Include="Assets\Scripts\Map Generation\Enums.cs" />
+    <Compile Include="Assets\Scripts\Map Generation\MapGeneratorPreset.cs" />
+    <Compile Include="Assets\Scripts\Map Generation\Structs.cs" />
     <Compile Include="Assets\Scripts\Map\Area.cs" />
     <Compile Include="Assets\Scripts\Map\AreaManager.cs" />
     <Compile Include="Assets\Scripts\Map\Biome.cs" />
@@ -536,13 +541,14 @@
     <Compile Include="Assets\Scripts\NPC\NPC.cs" />
     <Compile Include="Assets\Scripts\NPC\NPCFriendshipManager.cs" />
     <Compile Include="Assets\Scripts\NPC\NPCManager.cs" />
+    <Compile Include="Assets\Scripts\NPC\NPCRelationInfo.cs" />
     <Compile Include="Assets\Scripts\NPC\QuestManager.cs" />
-    <Compile Include="Assets\Scripts\NPC\Quests\DeliverDataClass.cs" />
     <Compile Include="Assets\Scripts\NPC\Quests\DeliverQuest.cs" />
     <Compile Include="Assets\Scripts\NPC\Quests\HuntQuest.cs" />
     <Compile Include="Assets\Scripts\NPC\Quests\InteractQuest.cs" />
     <Compile Include="Assets\Scripts\NPC\Quests\NPCData.cs" />
     <Compile Include="Assets\Scripts\NPC\Quests\NPCQuestData.cs" />
+    <Compile Include="Assets\Scripts\NPC\Quests\QuestDialogueData.cs" />
     <Compile Include="Assets\Scripts\NPC\QuestTemplate.cs" />
     <Compile Include="Assets\Scripts\NPC\ShopTrigger.cs" />
     <Compile Include="Assets\Scripts\NPC\Tip.cs" />
@@ -551,6 +557,8 @@
     <Compile Include="Assets\Scripts\Observers\BattlerObserverManager.cs" />
     <Compile Include="Assets\Scripts\Observers\CannonObserverManager.cs" />
     <Compile Include="Assets\Scripts\Observers\PlayerObserverManager.cs" />
+    <Compile Include="Assets\Scripts\ReorderableInspector\EditScriptableAttribute.cs" />
+    <Compile Include="Assets\Scripts\ReorderableInspector\ReorderableAttribute.cs" />
     <Compile Include="Assets\Scripts\Sea\ArrowManager.cs" />
     <Compile Include="Assets\Scripts\Sea\ClickTrigger.cs" />
     <Compile Include="Assets\Scripts\Sea\DirectionArrow.cs" />

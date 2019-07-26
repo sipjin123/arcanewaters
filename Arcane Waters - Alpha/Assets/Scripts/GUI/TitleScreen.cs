@@ -19,6 +19,9 @@ public class TitleScreen : MonoBehaviour {
    // The container for the debug button group
    public GameObject debugButtonGroup;
 
+   // The drop down menu to select the database server - debug only
+   public Dropdown dbServerDropDown;
+
    // The Virtual Camera we use for the Title Screen
    public Cinemachine.CinemachineVirtualCamera virtualCamera;
 
@@ -124,6 +127,14 @@ public class TitleScreen : MonoBehaviour {
          case ErrorMessage.Type.FailedUserOrPass:
             PanelManager.self.noticeScreen.show("Invalid account/password combination.");
             break;
+      }
+   }
+
+   public void refreshDatabaseServer() {
+      if (dbServerDropDown.value == 0) {
+         DB_Main.setServer(DB_Main.RemoteServer);
+      } else {
+         DB_Main.setServer("127.0.0.1");
       }
    }
 

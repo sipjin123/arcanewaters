@@ -45,8 +45,8 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_ReceiveOffers (NetworkConnection connection, int gold, CropOffer[] offerArray) {
-      MerchantScreen.self.updatePanelWithOffers(gold, new List<CropOffer>(offerArray));
+   public void Target_ReceiveOffers (NetworkConnection connection, int gold, CropOffer[] offerArray, long lastCropRegenTime) {
+      MerchantScreen.self.updatePanelWithOffers(gold, new List<CropOffer>(offerArray), lastCropRegenTime);
    }
 
    [TargetRpc]
@@ -597,7 +597,8 @@ public class RPCManager : NetworkBehaviour {
          int gold = DB_Main.getGold(_player.userId);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            _player.rpc.Target_ReceiveOffers(_player.connectionToClient, gold, list.ToArray());
+            _player.rpc.Target_ReceiveOffers(_player.connectionToClient, gold, list.ToArray(),
+               ShopManager.self.lastCropRegenTime.ToBinary());
          });
       });
    }

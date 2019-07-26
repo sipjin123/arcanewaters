@@ -14,6 +14,9 @@ public class RPCManager : NetworkBehaviour {
 
    void Start () {
       _player = GetComponent<NetEntity>();
+
+      // Initialized Inventory Cache
+      InventoryCacheManager.self.fetchInventory();
    }
 
    [ClientRpc]
@@ -796,6 +799,13 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
+   public void Cmd_DirectAddItem (Item item) {
+      // Add it to their inventory
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         item = DB_Main.createNewItem(_player.userId, item);
+      });
+   }
+   [Command]
    public void Cmd_OpenChest (int chestId) {
       TreasureChest chest = TreasureManager.self.getChest(chestId);
 
@@ -834,12 +844,10 @@ public class RPCManager : NetworkBehaviour {
 
    [Command]
    public void Cmd_GetClickableRows (int npcId) {
-      List<ClickableText.Type> list = new List<ClickableText.Type>();
-      list.Add(ClickableText.Type.TradeGossip);
-
       // Look up the NPC
       NPC npc = NPCManager.self.getNPC(npcId);
 
+      List<ClickableText.Type> list = npc.currentAnswerDialogue;
       // If the player is too far, don't let them
       if (Vector2.Distance(_player.transform.position, npc.transform.position) > 2.0f) {
          D.warning("Player trying to interact with NPC from too far away!");
@@ -855,7 +863,8 @@ public class RPCManager : NetworkBehaviour {
       NPC npc = NPCManager.self.getNPC(npcId);
 
       // Figure out the response we should send back
-      string response = npc.tradeGossip;
+      //string response = npc.tradeGossip;
+      string response = npc.npcReply;
 
       // Send the response to the player
       Target_ReceiveNPCMessage(_player.connectionToClient, response);
