@@ -14,19 +14,19 @@ public class DB_MainStub : MonoBehaviour {
       
    }
 
-   public static new void createNPCRelation (NPCRelationInfo npcInfo) {
+   public static void createNPCRelation (NPCRelationInfo npcInfo) {
 
    }
 
-   public static new List<NPCRelationInfo> getNPCRelationInfo (int user_id, int npc_id) {
+   public static List<NPCRelationInfo> getNPCRelationInfo (int user_id, int npc_id) {
       return new List<NPCRelationInfo>();
    }
 
-   public static new void updateNPCRelation (int userId, int npcID, int relationLevel) {
+   public static void updateNPCRelation (int userId, int npcID, int relationLevel) {
 
    }
 
-   public static new void updateNPCProgress (int userId, int npcID, int questProgress, int questIndex, string questType) {
+   public static void updateNPCProgress (int userId, int npcID, int questProgress, int questIndex, string questType) {
 
    }
 

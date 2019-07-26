@@ -117,6 +117,67 @@ public class DB_Main : DB_MainStub {
 
    #endregion
 
+   #region Ore Feature
+
+   public static new void createOreData (OreInfo oreInfo) {
+      Debug.LogError("Createing ore");
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO ore_spawning (ore_id, map_type, ore_type, ore_name, ore_pos_x, ore_pos_y, ore_spawn_time, ore_enabled, ore_index) " +
+            "VALUES (@ore_id, @map_type, @ore_type, @ore_name, @ore_pos_x, @ore_pos_y, UNIX_TIMESTAMP(), @ore_enabled, @ore_index);", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@ore_id", oreInfo.oreID);
+            cmd.Parameters.AddWithValue("@map_type", oreInfo.areaType.ToString());
+            cmd.Parameters.AddWithValue("@ore_type", oreInfo.oreType.ToString());
+            cmd.Parameters.AddWithValue("@ore_name", oreInfo.oreName.ToString());
+            cmd.Parameters.AddWithValue("@ore_pos_x", oreInfo.position.x);
+            cmd.Parameters.AddWithValue("@ore_pos_y", oreInfo.position.y);
+            //cmd.Parameters.AddWithValue("@ore_spawn_time", oreInfo.npcQuestProgress);
+            cmd.Parameters.AddWithValue("@ore_enabled", 1);
+            cmd.Parameters.AddWithValue("@ore_index", oreInfo.oreIndex);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         Debug.LogError("Failed to create an area: "+e.ToString());
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<OreInfo> getOreInfo (int oredIndex, int townID) {
+      string stringID = townID + "" + oredIndex;
+      int ore_id = int.Parse(stringID);
+      List<OreInfo> oreList = new List<OreInfo>();
+      Debug.LogError("Attempting to find ore with id of : " + ore_id);
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM arcane.ore_spawning WHERE map_type=@map_type", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@ore_id", ore_id);
+            cmd.Parameters.AddWithValue("@map_type", ((Area.Type)townID).ToString());
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  OreInfo info = new OreInfo(dataReader);
+                  oreList.Add(info);
+               }
+            }
+         }
+      } catch (Exception e) {
+         Debug.LogError("failed to fetch becasuse : " + e.ToString());
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return oreList;
+   }
+
+   #endregion
+
    public static new List<CropInfo> getCropInfo (int userId) {
       List<CropInfo> cropList = new List<CropInfo>();
 

@@ -15,9 +15,37 @@ public class DebugButtons : MonoBehaviour
          //var itemToDelete = InventoryCacheManager.self.itemList.Find(_ => _.category == Item.Category.CraftingIngredients && (CraftingIngredients.Type) _.itemTypeId == CraftingIngredients.Type.Lizard_Scale);
          //Global.player.rpc.Cmd_DeleteItem(itemToDelete.id);
       }
-      if (Input.GetKey(KeyCode.Q)) {
-         if(Input.GetKeyDown(KeyCode.Alpha5)) {
-            DB_Main.getNPCRelationInfo(Global.player.userId,2);
+
+      if(Input.GetKey(KeyCode.U)) {
+         if (Input.GetKeyDown(KeyCode.Alpha1)) {
+            Global.player.rpc.Cmd_GetOreArea();
+         }
+         if (Input.GetKeyDown(KeyCode.Alpha2)) {
+            Global.player.rpc.Cmd_SetOreArea();
+         }
+
+         if (Input.GetKeyDown(KeyCode.Alpha3)) {
+            var areas = AreaManager.self.getAreas();
+            Debug.LogError("The list of area is : " + areas.Count);
+
+            foreach(Area temp in areas) {
+               Debug.LogError("The area is : " + temp.name + " ORE? : " + Area.hasOre(temp.areaType));
+            }
+         }
+
+         if (Input.GetKeyDown(KeyCode.Alpha4)) {
+            var areas = AreaManager.self.getArea(Area.Type.DesertTown);
+            var oreArea = areas.GetComponent<OreArea>();
+            Debug.LogError("Requestlist");
+            var lister = oreArea.getPotentialSpawnPoints(2);
+
+            Debug.LogError("My list count is : " + lister.Count);
+         }
+
+
+
+         if (Input.GetKeyDown(KeyCode.Alpha5)) {
+            DB_Main.getNPCRelationInfo(Global.player.userId, 2);
          }
          if (Input.GetKeyDown(KeyCode.Alpha9)) {
             Debug.LogError("Requesting from server as -1");
@@ -27,6 +55,9 @@ public class DebugButtons : MonoBehaviour
             Debug.LogError("Requesting from server as 1");
             Global.player.rpc.Cmd_RequestItemsFromServer(1, 15);
          }
+      }
+
+      if (Input.GetKey(KeyCode.Q)) {
          if (Input.GetKeyDown(KeyCode.Alpha1)) {
             Blueprint craftingIngredients = new Blueprint(0, (int) Blueprint.Type.Sword_1, ColorType.DarkGreen, ColorType.DarkPurple, "");
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;
@@ -47,9 +78,8 @@ public class DebugButtons : MonoBehaviour
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;
             processItem(craftingIngredients);
          }
-
-         if (Input.GetKeyDown(KeyCode.O)) {
-            CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Ore, ColorType.DarkGreen, ColorType.DarkPurple, "");
+         if (Input.GetKeyDown(KeyCode.Alpha6)) {
+            CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Lizard_Scale, ColorType.DarkGreen, ColorType.DarkPurple, "");
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;
             processItem(craftingIngredients);
          }
@@ -58,8 +88,8 @@ public class DebugButtons : MonoBehaviour
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;
             processItem(craftingIngredients);
          }
-         if (Input.GetKeyDown(KeyCode.Alpha6)) {
-            CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Lizard_Scale, ColorType.DarkGreen, ColorType.DarkPurple, "");
+         if (Input.GetKeyDown(KeyCode.Alpha8)) {
+            CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Ore, ColorType.DarkGreen, ColorType.DarkPurple, "");
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;
             processItem(craftingIngredients);
          }

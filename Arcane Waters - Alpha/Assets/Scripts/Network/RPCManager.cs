@@ -74,7 +74,7 @@ public class RPCManager : NetworkBehaviour {
    [TargetRpc]
    public void Target_UpdateNPCQuestProgress (NetworkConnection connection, int npcID, int questProgress, int questIndex, string questType) {
       NPC npc = NPCManager.self.getNPC(npcID);
-  
+
       QuestType typeOfQuest = (QuestType) Enum.Parse(typeof(QuestType), questType, true);
       switch (typeOfQuest) {
          case QuestType.Deliver:
@@ -88,6 +88,10 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_ReceiveItems (NetworkConnection connection, int gold, string[] itemArray) {
+      Debug.LogError("=========== RECEIVING ITEMS :: ");
+      for (int i = 0; i < itemArray.Length; i++) {
+         Debug.LogError(i + " : " + itemArray[i]);
+      }
       AdventureShopScreen.self.updatePanelWithItems(gold, Item.unserializeAndCast(itemArray));
    }
 
@@ -666,7 +670,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_UpdateNPCRelation(int npcID, int relationLevel) {
+   public void Cmd_UpdateNPCRelation (int npcID, int relationLevel) {
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Update the setting in the database
@@ -680,7 +684,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_CreateNPCRelation(int npcID, string npcName) {
+   public void Cmd_CreateNPCRelation (int npcID, string npcName) {
       NPC npc = NPCManager.self.getNPC(npcID);
       List<QuestInfo> questList = npc.npcData.npcQuestList[0].getAllQuests();
       int deliverIndex = 0;
@@ -718,12 +722,12 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_DispatchComplete(int npcID, int relpId) {
+   public void Cmd_DispatchComplete (int npcID, int relpId) {
       Target_NPCPanelComplete(_player.connectionToClient, relpId, npcID);
    }
 
    [Command]
-   public void Cmd_UpdateNPCQuestProgress(int npcID, int questProgress, int questIndex, string questType) {
+   public void Cmd_UpdateNPCQuestProgress (int npcID, int questProgress, int questIndex, string questType) {
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Update the setting in the database
@@ -737,10 +741,10 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_GetNPCRelation(int npcID, string npcName) {
+   public void Cmd_GetNPCRelation (int npcID, string npcName) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List< NPCRelationInfo> npcRelationList = DB_Main.getNPCRelationInfo(_player.userId, npcID);
-         
+         List<NPCRelationInfo> npcRelationList = DB_Main.getNPCRelationInfo(_player.userId, npcID);
+
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             if (npcRelationList.Count == 0) {
                // Send command to create data for non existent npc
@@ -1166,6 +1170,61 @@ public class RPCManager : NetworkBehaviour {
          // Back to Unity Thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             _player.rpc.Target_ReceiveNewFlagshipId(_player.connectionToClient, flagshipId);
+         });
+      });
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveSetOreArea (NetworkConnection connection, OreInfo oreInfo) {
+      OreArea ore = AreaManager.self.getArea((Area.Type) oreInfo.areaType).GetComponent<OreArea>();
+      ore._oreList[oreInfo.oreIndex].transform.localPosition = oreInfo.position;
+   }
+
+   [Command]
+   public void Cmd_SetOreArea () {
+      setOreForArea();
+   }
+
+   [Command]
+   public void Cmd_GetOreArea () {
+      getOreForArea();
+   }
+
+   [Server]
+   protected void setOreForArea () {
+      Area areas = AreaManager.self.getArea(Area.Type.DesertTown);
+      OreArea oreArea = areas.GetComponent<OreArea>();
+      int oreSpawnCount = oreArea._oreList.Count;
+
+      List<Vector2> positionList = oreArea.getPotentialSpawnPoints(oreSpawnCount);
+      List<OreInfo> newOreList = new List<OreInfo>();
+      for (int i = 0; i < oreSpawnCount; i++) {
+         string oreID = (int) Area.Type.DesertTown + "" + i;
+         int oreIndex = i;
+         int oreIntID = int.Parse(oreID);
+         OreInfo createedInfo = new OreInfo(oreIntID, "IronOre", OreType.Gold.ToString(), Area.Type.DesertTown.ToString(), positionList[i].x, positionList[i].y, true, oreIndex);
+         newOreList.Add(createedInfo);
+      }
+      UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+         for (int i = 0; i < newOreList.Count; i++) {
+            DB_Main.createOreData(newOreList[i]);
+            _player.rpc.Target_ReceiveSetOreArea(_player.connectionToClient, newOreList[i]);
+         }
+      });
+   }
+
+   [Server]
+   protected void getOreForArea () {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<OreInfo> oreInfo = DB_Main.getOreInfo(0, (int) Area.Type.DesertTown);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (oreInfo.Count == 0) {
+               setOreForArea();
+            } else {
+               for (int i = 0; i < oreInfo.Count; i++) {
+                  _player.rpc.Target_ReceiveSetOreArea(_player.connectionToClient, oreInfo[i]);
+               }
+            }
          });
       });
    }
