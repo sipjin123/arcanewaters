@@ -1194,7 +1194,6 @@ public class RPCManager : NetworkBehaviour {
 
       List<Vector2> positionList = oreArea.getPotentialSpawnPoints(oreSpawnCount);
       List<OreInfo> newOreList = new List<OreInfo>();
-      int newOreListCount = newOreList.Count;
       for (int i = 0; i < oreSpawnCount; i++) {
          string oreID = (int) Area.Type.DesertTown + "" + i;
          int oreIndex = i;
@@ -1203,34 +1202,43 @@ public class RPCManager : NetworkBehaviour {
          newOreList.Add(createdInfo);
       }
 
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Create ore list in the database
+      int newOreListCount = newOreList.Count;
+      UnityThreadHelper.UnityDispatcher.Dispatch(() => {
          for (int i = 0; i < newOreListCount; i++) {
-            DB_Main.createOreData(newOreList[i]);
+            _player.rpc.Target_ReceiveOreInfo(_player.connectionToClient, newOreList[i]);
          }
-
-         // Send to rpc the newly generated ore info
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            for (int i = 0; i < newOreListCount; i++) {
-               _player.rpc.Target_ReceiveOreInfo(_player.connectionToClient, newOreList[i]);
-            }
-         });
       });
    }
 
    [Server]
    protected void getOreForArea () {
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<OreInfo> oreInfo = DB_Main.getOreInfo(0, (int) Area.Type.DesertTown);
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            if (oreInfo.Count == 0) {
-               setOreForArea();
-            } else {
-               for (int i = 0; i < oreInfo.Count; i++) {
-                  _player.rpc.Target_ReceiveOreInfo(_player.connectionToClient, oreInfo[i]);
-               }
-            }
-         });
+      // Data fetch for the ore in a specific area
+      Area areas = AreaManager.self.getArea(Area.Type.DesertTown);
+      OreArea oreArea = areas.GetComponent<OreArea>();
+
+      // Ore info extraction
+      List<GameObject> oreObjectList = oreArea.oreList;
+      List<OreInfo> newOreInfo = new List<OreInfo>();
+
+      // Register the current ore info of the server into a list
+      for(int i = 0; i < oreObjectList.Count;  i++) {
+         OreInfo createdInfo = new OreInfo();
+         createdInfo.position = oreObjectList[i].transform.localPosition;
+         createdInfo.oreIndex = i;
+         createdInfo.isEnabled = true;
+         createdInfo.oreType = OreType.Iron;
+         createdInfo.oreName = OreType.Iron + "_"+i;
+         createdInfo.areaType = Area.Type.DesertTown;
+
+         newOreInfo.Add(createdInfo);
+      }
+
+      int newOreListCount = newOreInfo.Count;
+      // Send to client receivers the server data of the ores
+      UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+         for (int i = 0; i < newOreListCount; i++) {
+            _player.rpc.Target_ReceiveOreInfo(_player.connectionToClient, newOreInfo[i]);
+         }
       });
    }
 
