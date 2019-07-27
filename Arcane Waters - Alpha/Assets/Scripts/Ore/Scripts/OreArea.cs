@@ -8,21 +8,21 @@ public class OreArea : MonoBehaviour {
    #region Public Variables
 
    // List of posible spawn positions
-   public List<Transform> _spawnPointList;
+   public List<Transform> spawnPointList;
 
    // List of the ores in the location
-   public List<GameObject> _oreList;
+   public List<GameObject> oreList;
 
    #endregion
 
    public List<Vector2> getPotentialSpawnPoints(int number) {
       // Ensures the ores to be spawned is less than the spawn points
-      number = Mathf.Clamp(number, 0, _spawnPointList.Count);
+      number = Mathf.Clamp(number, 0, spawnPointList.Count);
       List<Vector2> spawnPointHolder = new List<Vector2>();
 
       // Copies the location of each spawn point in the list
-      for(int i = 0; i < _spawnPointList.Count;i++) {
-         spawnPointHolder.Add(_spawnPointList[i].localPosition);
+      for(int i = 0; i < spawnPointList.Count;i++) {
+         spawnPointHolder.Add(spawnPointList[i].localPosition);
       }
 
       List<Vector2> returnSpawnList = new List<Vector2>();

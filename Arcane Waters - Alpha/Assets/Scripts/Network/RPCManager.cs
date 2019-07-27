@@ -1171,9 +1171,9 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_ReceiveSetOreArea (NetworkConnection connection, OreInfo oreInfo) {
+   public void Target_ReceiveOreInfo (NetworkConnection connection, OreInfo oreInfo) {
       OreArea ore = AreaManager.self.getArea((Area.Type) oreInfo.areaType).GetComponent<OreArea>();
-      ore._oreList[oreInfo.oreIndex].transform.localPosition = oreInfo.position;
+      ore.oreList[oreInfo.oreIndex].transform.localPosition = oreInfo.position;
    }
 
    [Command]
@@ -1190,22 +1190,31 @@ public class RPCManager : NetworkBehaviour {
    protected void setOreForArea () {
       Area areas = AreaManager.self.getArea(Area.Type.DesertTown);
       OreArea oreArea = areas.GetComponent<OreArea>();
-      int oreSpawnCount = oreArea._oreList.Count;
+      int oreSpawnCount = oreArea.oreList.Count;
 
       List<Vector2> positionList = oreArea.getPotentialSpawnPoints(oreSpawnCount);
       List<OreInfo> newOreList = new List<OreInfo>();
+      int newOreListCount = newOreList.Count;
       for (int i = 0; i < oreSpawnCount; i++) {
          string oreID = (int) Area.Type.DesertTown + "" + i;
          int oreIndex = i;
          int oreIntID = int.Parse(oreID);
-         OreInfo createedInfo = new OreInfo(oreIntID, "IronOre", OreType.Gold.ToString(), Area.Type.DesertTown.ToString(), positionList[i].x, positionList[i].y, true, oreIndex);
-         newOreList.Add(createedInfo);
+         OreInfo createdInfo = new OreInfo(oreIntID, "IronOre", OreType.Gold.ToString(), Area.Type.DesertTown.ToString(), positionList[i].x, positionList[i].y, true, oreIndex);
+         newOreList.Add(createdInfo);
       }
-      UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-         for (int i = 0; i < newOreList.Count; i++) {
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Create ore list in the database
+         for (int i = 0; i < newOreListCount; i++) {
             DB_Main.createOreData(newOreList[i]);
-            _player.rpc.Target_ReceiveSetOreArea(_player.connectionToClient, newOreList[i]);
          }
+
+         // Send to rpc the newly generated ore info
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            for (int i = 0; i < newOreListCount; i++) {
+               _player.rpc.Target_ReceiveOreInfo(_player.connectionToClient, newOreList[i]);
+            }
+         });
       });
    }
 
@@ -1218,7 +1227,7 @@ public class RPCManager : NetworkBehaviour {
                setOreForArea();
             } else {
                for (int i = 0; i < oreInfo.Count; i++) {
-                  _player.rpc.Target_ReceiveSetOreArea(_player.connectionToClient, oreInfo[i]);
+                  _player.rpc.Target_ReceiveOreInfo(_player.connectionToClient, oreInfo[i]);
                }
             }
          });

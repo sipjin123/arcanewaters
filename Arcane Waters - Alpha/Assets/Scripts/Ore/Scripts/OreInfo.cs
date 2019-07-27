@@ -3,8 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
-using MySql.Data.MySqlClient;
 using System;
+
+#if IS_SERVER_BUILD
+using MySql.Data.MySqlClient;
+#endif
 
 public class OreInfo {
    #region Public Variables
