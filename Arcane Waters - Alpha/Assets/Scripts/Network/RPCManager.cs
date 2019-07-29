@@ -17,6 +17,14 @@ public class RPCManager : NetworkBehaviour {
 
       // Initialized Inventory Cache
       InventoryCacheManager.self.fetchInventory();
+
+      List<Area> areaList = AreaManager.self.getAreas();
+      int areaCount = areaList.Count;
+      for(int i = 0; i < areaCount; i++) {
+         if(areaList[i].GetComponent<OreArea>() != null) {
+            areaList[i].GetComponent<OreArea>().initOreArea();
+         }
+      }
    }
 
    [ClientRpc]
@@ -1171,75 +1179,95 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_ReceiveOreInfo (NetworkConnection connection, OreInfo oreInfo) {
-      OreArea ore = AreaManager.self.getArea((Area.Type) oreInfo.areaType).GetComponent<OreArea>();
-      ore.oreList[oreInfo.oreIndex].transform.localPosition = oreInfo.position;
+   public void Target_ReceiveOreInfo (NetworkConnection connection, OreInfo oreInfo, int spawnIndex) {
+      OreArea oreArea = AreaManager.self.getArea((Area.Type) oreInfo.areaType).GetComponent<OreArea>();
+      oreArea.oreList[oreInfo.oreIndex].transform.localPosition = oreInfo.position;
+      oreArea.oreList[oreInfo.oreIndex].oreSpawnID = spawnIndex;
+
+      List<Transform> spawnList = oreArea.spawnPointList;
+      int lastIndex = oreArea.oreList[oreInfo.oreIndex].oreData.miningDurabilityIcon.Count - 1;
+      spawnList[spawnIndex].GetComponent<SpriteRenderer>().sprite = null;//oreArea.oreList[oreInfo.oreIndex].oreData.miningDurabilityIcon[lastIndex];
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveMiningInfo(NetworkConnection connection, int oreID, int oreArea) {
+      OreArea area = AreaManager.self.getArea((Area.Type) oreArea).GetComponent<OreArea>();
+      OreObj oreObj = area.oreList.Find(_ => _.GetComponent<OreObj>().oreID == oreID).GetComponent<OreObj>();
+      oreObj.receiveOreUpdate();
    }
 
    [Command]
-   public void Cmd_SetOreArea () {
-      setOreForArea();
+   public void Cmd_SetOreArea (int areaID) {
+      setOreForArea(areaID);
    }
 
    [Command]
-   public void Cmd_GetOreArea () {
-      getOreForArea();
+   public void Cmd_GetOreArea (int areaID) {
+      getOreForArea(areaID);
+   }
+
+   [Command]
+   public void Cmd_UpdateOreMining (int oreID, int oreArea) {
+      Target_ReceiveMiningInfo(_player.connectionToClient, oreID, oreArea);
    }
 
    [Server]
-   protected void setOreForArea () {
-      Area areas = AreaManager.self.getArea(Area.Type.DesertTown);
+   protected void setOreForArea (int areaID) {
+      Area areas = AreaManager.self.getArea((Area.Type) areaID);
       OreArea oreArea = areas.GetComponent<OreArea>();
       int oreSpawnCount = oreArea.oreList.Count;
 
-      List<Vector2> positionList = oreArea.getPotentialSpawnPoints(oreSpawnCount);
+      List<Transform> spawnPoints = oreArea.spawnPointList;
+      List<OreArea.SpawnPointIndex> positionList = oreArea.getPotentialSpawnPoints(oreSpawnCount);
       List<OreInfo> newOreList = new List<OreInfo>();
+      List<int> spawnindex = new List<int>();
+      Area.Type areaType = (Area.Type)areaID;
+
+      // Create new data for each ore
       for (int i = 0; i < oreSpawnCount; i++) {
-         string oreID = (int) Area.Type.DesertTown + "" + i;
+         string oreID = ((int)areaType) + "" + i;
          int oreIndex = i;
          int oreIntID = int.Parse(oreID);
-         OreInfo createdInfo = new OreInfo(oreIntID, "IronOre", OreType.Gold.ToString(), Area.Type.DesertTown.ToString(), positionList[i].x, positionList[i].y, true, oreIndex);
+         OreInfo createdInfo = new OreInfo(oreIntID, "IronOre", (oreArea.oreList[i].oreData.oreType).ToString(), areaType.ToString(), positionList[i].coordinates.x, positionList[i].coordinates.y, true, oreIndex);
          newOreList.Add(createdInfo);
+         spawnindex.Add(positionList[i].index);
       }
 
       int newOreListCount = newOreList.Count;
-      UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-         for (int i = 0; i < newOreListCount; i++) {
-            _player.rpc.Target_ReceiveOreInfo(_player.connectionToClient, newOreList[i]);
-         }
-      });
+      for (int i = 0; i < newOreListCount; i++) {
+         _player.rpc.Target_ReceiveOreInfo(_player.connectionToClient, newOreList[i], spawnindex[i]);
+      }
    }
 
    [Server]
-   protected void getOreForArea () {
+   protected void getOreForArea (int areaID) {
       // Data fetch for the ore in a specific area
-      Area areas = AreaManager.self.getArea(Area.Type.DesertTown);
+      Area areas = AreaManager.self.getArea((Area.Type)areaID);
       OreArea oreArea = areas.GetComponent<OreArea>();
 
       // Ore info extraction
-      List<GameObject> oreObjectList = oreArea.oreList;
+      List<OreObj> oreObjectList = oreArea.oreList;
       List<OreInfo> newOreInfo = new List<OreInfo>();
+      List<int> spawnindex = new List<int>();
 
       // Register the current ore info of the server into a list
-      for(int i = 0; i < oreObjectList.Count;  i++) {
+      for (int i = 0; i < oreObjectList.Count;  i++) {
          OreInfo createdInfo = new OreInfo();
          createdInfo.position = oreObjectList[i].transform.localPosition;
          createdInfo.oreIndex = i;
          createdInfo.isEnabled = true;
-         createdInfo.oreType = OreType.Iron;
-         createdInfo.oreName = OreType.Iron + "_"+i;
-         createdInfo.areaType = Area.Type.DesertTown;
+         createdInfo.oreType = oreObjectList[i].oreData.oreType;
+         createdInfo.oreName = oreObjectList[i].oreData.oreType+ "_"+i;
+         createdInfo.areaType = (Area.Type) areaID;
 
          newOreInfo.Add(createdInfo);
+         spawnindex.Add(oreObjectList[i].oreSpawnID);
       }
 
       int newOreListCount = newOreInfo.Count;
-      // Send to client receivers the server data of the ores
-      UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-         for (int i = 0; i < newOreListCount; i++) {
-            _player.rpc.Target_ReceiveOreInfo(_player.connectionToClient, newOreInfo[i]);
-         }
-      });
+      for (int i = 0; i < newOreListCount; i++) {
+         _player.rpc.Target_ReceiveOreInfo(_player.connectionToClient, newOreInfo[i], spawnindex[i]);
+      }
    }
 
    [Server]
