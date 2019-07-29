@@ -233,7 +233,7 @@ public class NPCPanel : Panel {
    }
 
    private void rewardPlayer () {
-      CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Ore, ColorType.DarkGreen, ColorType.DarkPurple, "");
+      CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Gold_Ore, ColorType.DarkGreen, ColorType.DarkPurple, "");
       craftingIngredients.itemTypeId = (int) craftingIngredients.type;
       Item item = craftingIngredients;
 

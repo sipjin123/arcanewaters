@@ -18,10 +18,10 @@ public class DebugButtons : MonoBehaviour
 
       if(Input.GetKey(KeyCode.U)) {
          if (Input.GetKeyDown(KeyCode.Alpha1)) {
-            Global.player.rpc.Cmd_GetOreArea();
+            Global.player.rpc.Cmd_GetOreArea((int) Area.Type.DesertTown);
          }
          if (Input.GetKeyDown(KeyCode.Alpha2)) {
-            Global.player.rpc.Cmd_SetOreArea();
+            Global.player.rpc.Cmd_SetOreArea((int)Area.Type.DesertTown);
          }
 
          if (Input.GetKeyDown(KeyCode.Alpha3)) {
@@ -89,7 +89,7 @@ public class DebugButtons : MonoBehaviour
             processItem(craftingIngredients);
          }
          if (Input.GetKeyDown(KeyCode.Alpha8)) {
-            CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Ore, ColorType.DarkGreen, ColorType.DarkPurple, "");
+            CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Gold_Ore, ColorType.DarkGreen, ColorType.DarkPurple, "");
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;
             processItem(craftingIngredients);
          }

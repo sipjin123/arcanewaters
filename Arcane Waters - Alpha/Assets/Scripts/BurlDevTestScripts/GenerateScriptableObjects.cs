@@ -61,6 +61,12 @@ public class GenerateScriptableObjects : MonoBehaviour
       QuestDialogueData asset = ScriptableObject.CreateInstance<QuestDialogueData>();
       Process(asset);
    }
+
+   [MenuItem("Assets/Create/Create OreData Object")]
+   public static void Create_OreData () {
+      OreData asset = ScriptableObject.CreateInstance<OreData>();
+      Process(asset);
+   }
 }
 
 #endif
