@@ -15,7 +15,7 @@ public class CraftingIngredients : RecipeItem
    // The Type
    public enum Type
    {
-      None = 0, Lizard_Scale = 1, Lizard_Claw = 2, Ore = 3, Lumber = 4, Flint = 5,
+      None = 0, Lizard_Scale = 1, Lizard_Claw = 2, Gold_Ore = 3, Lumber = 4, Flint = 5, Silver_Ore = 6
    }
 
    // The type
@@ -90,8 +90,11 @@ public class CraftingIngredients : RecipeItem
          case Type.Lizard_Scale:
             return "A powerful Scale.";
 
-         case Type.Ore:
-            return "A shiny ore.";
+         case Type.Gold_Ore:
+            return "A shiny golden ore.";
+
+         case Type.Silver_Ore:
+            return "A shiny silver ore.";
 
          case Type.Flint:
             return "A Flint.";
@@ -124,8 +127,11 @@ public class CraftingIngredients : RecipeItem
          case Type.Lizard_Scale:
             return "Lizard Scale";
 
-         case Type.Ore:
-            return "Ore";
+         case Type.Gold_Ore:
+            return "Gold Ore";
+
+         case Type.Silver_Ore:
+            return "Silver Ore";
 
          case Type.Lumber:
             return "Lumber";
