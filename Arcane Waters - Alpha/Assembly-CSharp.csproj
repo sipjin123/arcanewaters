@@ -557,6 +557,10 @@
     <Compile Include="Assets\Scripts\Observers\BattlerObserverManager.cs" />
     <Compile Include="Assets\Scripts\Observers\CannonObserverManager.cs" />
     <Compile Include="Assets\Scripts\Observers\PlayerObserverManager.cs" />
+    <Compile Include="Assets\Scripts\Ore\Scripts\OreArea.cs" />
+    <Compile Include="Assets\Scripts\Ore\Scripts\OreData.cs" />
+    <Compile Include="Assets\Scripts\Ore\Scripts\OreInfo.cs" />
+    <Compile Include="Assets\Scripts\Ore\Scripts\OreObj.cs" />
     <Compile Include="Assets\Scripts\ReorderableInspector\EditScriptableAttribute.cs" />
     <Compile Include="Assets\Scripts\ReorderableInspector\ReorderableAttribute.cs" />
     <Compile Include="Assets\Scripts\Sea\ArrowManager.cs" />
