@@ -11,29 +11,72 @@ public class OreArea : MonoBehaviour {
    public List<Transform> spawnPointList;
 
    // List of the ores in the location
-   public List<GameObject> oreList;
+   public List<OreObj> oreList;
+
+   // List of data of ores
+   public List<OreData> oreDataList;
+
+   // Cache coordinates and spawn index
+   public class SpawnPointIndex
+   {
+      public Vector2 coordinates;
+      public int index;
+   }
 
    #endregion
 
-   public List<Vector2> getPotentialSpawnPoints(int number) {
+   public void initOreArea() {
+      Area.Type currAreaType = GetComponent<Area>().areaType;
+      for (int i = 0; i < oreList.Count; i++) {
+         OreObj oreObj = oreList[i];
+
+         // Setup ore id
+         string idString = ((int)currAreaType).ToString() + "" + i;
+         int newID = int.Parse(idString);
+
+         // Determines the type of ore to be spawned
+         OreType oreType = OreType.None;
+         int silverOreCap = 6;
+         int oreTypeRandomizer = Random.Range(1, 10);
+         if(oreTypeRandomizer < silverOreCap) {
+            oreType = OreType.Silver;
+         }
+         else {
+            oreType = OreType.Gold;
+         }
+
+         // Setup data for individual ore
+         oreObj.SetOreDAta(newID, currAreaType, oreDataList.Find(_ => _.oreType == oreType));
+      }
+
+      // Server setup / fetching
+#if IS_SERVER_BUILD
+      Global.player.rpc.Cmd_SetOreArea((int) currAreaType);
+#else 
+      Global.player.rpc.Cmd_GetOreArea((int) currAreaType);
+#endif
+   }
+
+   public List<SpawnPointIndex> getPotentialSpawnPoints(int number) {
       // Ensures the ores to be spawned is less than the spawn points
       number = Mathf.Clamp(number, 0, spawnPointList.Count);
-      List<Vector2> spawnPointHolder = new List<Vector2>();
+      List<Vector3> spawnPointHolder = new List<Vector3>();
 
       // Copies the location of each spawn point in the list
       for(int i = 0; i < spawnPointList.Count;i++) {
          spawnPointHolder.Add(spawnPointList[i].localPosition);
       }
 
-      List<Vector2> returnSpawnList = new List<Vector2>();
+      List<SpawnPointIndex> returnSpawnList = new List<SpawnPointIndex>();
 
       // Seeks random spawn point until number requirement is met
       while (returnSpawnList.Count < number) {
          int randomIndex = Random.Range(0, spawnPointHolder.Count);
          Vector2 coordToAdd = spawnPointHolder[randomIndex];
+         Transform locatedIndex = spawnPointList.Find(_ => _.localPosition == spawnPointHolder[randomIndex]);
 
-         returnSpawnList.Add(coordToAdd);
-         spawnPointHolder.Remove(coordToAdd);
+         returnSpawnList.Add(new SpawnPointIndex { coordinates = coordToAdd, index = spawnPointList.IndexOf(locatedIndex) });
+         spawnPointHolder.RemoveAt(randomIndex);
       }
 
       return returnSpawnList;
