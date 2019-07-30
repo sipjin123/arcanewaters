@@ -16,13 +16,19 @@ public class RPCManager : NetworkBehaviour {
       _player = GetComponent<NetEntity>();
 
       // Initialized Inventory Cache
-      InventoryCacheManager.self.fetchInventory();
+      if (_player.netIdent.isLocalPlayer) {
+         InventoryCacheManager.self.fetchInventory();
 
-      List<Area> areaList = AreaManager.self.getAreas();
-      int areaCount = areaList.Count;
-      for(int i = 0; i < areaCount; i++) {
-         if(areaList[i].GetComponent<OreArea>() != null) {
-            areaList[i].GetComponent<OreArea>().initOreArea();
+         //** TEMPORARY SCRIPT LOCATION **
+         // Calls ore info from server 
+         if (!Util.isServer()) {
+            List<Area> areaList = AreaManager.self.getAreas();
+            int areaCount = areaList.Count;
+            for (int i = 0; i < areaCount; i++) {
+               if (areaList[i].GetComponent<OreArea>() != null) {
+                  _player.rpc.Cmd_GetOreArea((int) areaList[i].areaType);
+               }
+            }
          }
       }
    }
@@ -959,11 +965,8 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_DirectAddItem (Item item) {
-      // Add it to their inventory
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         item = DB_Main.createNewItem(_player.userId, item);
-      });
+   public void Cmd_RequestItem (Item item) {
+      Target_ReceiveRewardItems(_player.connectionToClient, item);
    }
 
    [Command]
@@ -1179,24 +1182,35 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
+   public void Target_ReceiveRewardItems (NetworkConnection connection, Item item) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         item = DB_Main.createNewItem(_player.userId, item);
+      });
+   }
+
+   [TargetRpc]
    public void Target_ReceiveOreInfo (NetworkConnection connection, OreInfo oreInfo, int spawnIndex) {
       OreArea oreArea = AreaManager.self.getArea((Area.Type) oreInfo.areaType).GetComponent<OreArea>();
       oreArea.oreList[oreInfo.oreIndex].transform.localPosition = oreInfo.position;
       oreArea.oreList[oreInfo.oreIndex].oreSpawnID = spawnIndex;
 
+      string idString = ((int) oreInfo.areaType).ToString() + "" + oreInfo.oreIndex;
+      int newID = int.Parse(idString);
+      oreArea.oreList[oreInfo.oreIndex].setOreData(newID, oreInfo.areaType, oreArea.oreDataList.Find(_ => _.oreType == oreInfo.oreType));
+
       List<Transform> spawnList = oreArea.spawnPointList;
       int lastIndex = oreArea.oreList[oreInfo.oreIndex].oreData.miningDurabilityIcon.Count - 1;
-      spawnList[spawnIndex].GetComponent<SpriteRenderer>().sprite = null;//oreArea.oreList[oreInfo.oreIndex].oreData.miningDurabilityIcon[lastIndex];
+      spawnList[spawnIndex].GetComponent<SpriteRenderer>().sprite = null;
    }
 
    [TargetRpc]
-   public void Target_ReceiveMiningInfo(NetworkConnection connection, int oreID, int oreArea) {
+   public void Target_GetMiningInfo(NetworkConnection connection, int oreID, int oreArea) {
       OreArea area = AreaManager.self.getArea((Area.Type) oreArea).GetComponent<OreArea>();
       OreObj oreObj = area.oreList.Find(_ => _.GetComponent<OreObj>().oreID == oreID).GetComponent<OreObj>();
       oreObj.receiveOreUpdate();
    }
 
-   [Command]
+   [Server]
    public void Cmd_SetOreArea (int areaID) {
       setOreForArea(areaID);
    }
@@ -1208,11 +1222,12 @@ public class RPCManager : NetworkBehaviour {
 
    [Command]
    public void Cmd_UpdateOreMining (int oreID, int oreArea) {
-      Target_ReceiveMiningInfo(_player.connectionToClient, oreID, oreArea);
+      Target_GetMiningInfo(_player.connectionToClient, oreID, oreArea);
    }
 
    [Server]
    protected void setOreForArea (int areaID) {
+      _player = GetComponent<NetEntity>();
       Area areas = AreaManager.self.getArea((Area.Type) areaID);
       OreArea oreArea = areas.GetComponent<OreArea>();
       int oreSpawnCount = oreArea.oreList.Count;
@@ -1225,10 +1240,12 @@ public class RPCManager : NetworkBehaviour {
 
       // Create new data for each ore
       for (int i = 0; i < oreSpawnCount; i++) {
+         // Data setup for new Ore Info
          string oreID = ((int)areaType) + "" + i;
          int oreIndex = i;
          int oreIntID = int.Parse(oreID);
-         OreInfo createdInfo = new OreInfo(oreIntID, "IronOre", (oreArea.oreList[i].oreData.oreType).ToString(), areaType.ToString(), positionList[i].coordinates.x, positionList[i].coordinates.y, true, oreIndex);
+         string oreTypeString = (oreArea.oreList[i].oreData.oreType).ToString();
+         OreInfo createdInfo = new OreInfo(oreIntID, oreTypeString, oreTypeString, areaType.ToString(), positionList[i].coordinates.x, positionList[i].coordinates.y, true, oreIndex);
          newOreList.Add(createdInfo);
          spawnindex.Add(positionList[i].index);
       }
