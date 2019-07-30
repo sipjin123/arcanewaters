@@ -67,6 +67,13 @@ public class GenerateScriptableObjects : MonoBehaviour
       OreData asset = ScriptableObject.CreateInstance<OreData>();
       Process(asset);
    }
+
+   [MenuItem("Assets/Create/Create EnemyDropsData Object")]
+   public static void Create_EnemyDropsData () {
+      EnemyDropsData asset = ScriptableObject.CreateInstance<EnemyDropsData>();
+      Process(asset);
+   }
+   
 }
 
 #endif
