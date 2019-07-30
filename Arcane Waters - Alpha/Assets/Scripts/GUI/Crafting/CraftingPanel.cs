@@ -152,11 +152,8 @@ public class CraftingPanel : Panel, IPointerClickHandler
    private void craft () {
       if (craftableItem != null) {
          Item item = craftableItem;
-         RewardScreen rewardPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
-         rewardPanel.setItemData(item);
-         PanelManager.self.pushPanel(Panel.Type.Reward);
+         RewardManager.self.requestItem(item);
 
-         Global.player.rpc.Cmd_DirectAddItem(item);
          PanelManager.self.get(Type.Craft).hide();
          craftableItem = null;
          deductInventoryItems();

@@ -233,17 +233,7 @@ public class NPCPanel : Panel {
    }
 
    private void rewardPlayer () {
-      CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Gold_Ore, ColorType.DarkGreen, ColorType.DarkPurple, "");
-      craftingIngredients.itemTypeId = (int) craftingIngredients.type;
-      Item item = craftingIngredients;
-
-      // Calls Reward Screen
-      RewardScreen craftPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
-      craftPanel.setItemData(item);
-      PanelManager.self.pushPanel(Panel.Type.Reward);
-
-      // Tells DB to add item
-      Global.player.rpc.Cmd_DirectAddItem(item);
+      RewardManager.self.requestIngredient(currentDeliveryQuest.rewardType);
    }
 
    private void setQuestClicker (QuestInfoData data) {

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class RewardScreen : Panel
@@ -12,7 +13,7 @@ public class RewardScreen : Panel
    public Button confirmButton;
 
    // The icon of the reward item
-   public Image imageIcon;
+   public List<RewardRow> rewardRows;
 
    #endregion Public Variables
 
@@ -24,7 +25,25 @@ public class RewardScreen : Panel
    }
 
    public void setItemData (Item item) {
-      imageIcon.sprite = ImageManager.getSprite(item.getIconPath());
+      disableAll();
+      rewardRows[0].rewardIcon.sprite = ImageManager.getSprite(item.getIconPath());
+      rewardRows[0].gameObject.SetActive(true);
+      Global.player.rpc.Cmd_RequestItem(item);
+   }
+
+   public void setItemDataGroup (List<Item> itemList) {
+      disableAll();
+      for (int i = 0; i < itemList.Count; i++) {
+         rewardRows[i].gameObject.SetActive(true);
+         rewardRows[i].rewardIcon.sprite = ImageManager.getSprite(itemList[i].getIconPath());
+         Global.player.rpc.Cmd_RequestItem(itemList[i]);
+      }
+   }
+
+   private void disableAll() {
+      for(int i = 0; i < rewardRows.Count; i++) {
+         rewardRows[i].gameObject.SetActive(false);
+      }
    }
 
    public override void show () {

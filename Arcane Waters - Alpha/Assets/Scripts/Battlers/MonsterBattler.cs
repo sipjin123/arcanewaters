@@ -16,6 +16,8 @@ public class MonsterBattler : AutomatedBattler
    [SyncVar]
    public ColorType bodyColor2;
 
+   public EnemyDropsData enemyDropData;
+
    #endregion
 
    public override void Awake () {
@@ -41,15 +43,7 @@ public class MonsterBattler : AutomatedBattler
       // Wait a little bit for it to finish
       yield return new WaitForSeconds(.25f);
 
-      CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Lizard_Scale, ColorType.DarkGreen, ColorType.DarkPurple, "");
-      craftingIngredients.itemTypeId = (int) craftingIngredients.type;
-      Item item = craftingIngredients;
-
-      RewardScreen rewardPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
-      rewardPanel.setItemData(item);
-      PanelManager.self.pushPanel(Panel.Type.Reward);
-
-      Global.player.rpc.Cmd_DirectAddItem(item);
+      RewardManager.self.processLoots(enemyDropData.lootList);
 
       // Play a "Poof" effect on our head
       EffectManager.playPoofEffect(this);
