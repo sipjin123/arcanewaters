@@ -15,7 +15,8 @@ public class CraftingIngredients : RecipeItem
    // The Type
    public enum Type
    {
-      None = 0, Lizard_Scale = 1, Lizard_Claw = 2, Gold_Ore = 3, Lumber = 4, Flint = 5, Silver_Ore = 6
+      None = 0, Lizard_Scale = 1, Lizard_Claw = 2, Gold_Ore = 3, Lumber = 4, Flint = 5, Silver_Ore = 6, Lizard_Tail = 7, Reptile_Bile = 8, Meat = 9,
+      Wooden_Bark = 10, Solid_Oak = 11, Shattered_Trunk = 12, Tree_Root = 13,
    }
 
    // The type
@@ -102,6 +103,27 @@ public class CraftingIngredients : RecipeItem
          case Type.Lumber:
             return "A Lumber.";
 
+         case Type.Lizard_Tail:
+            return "A Lizard_Tail.";
+
+         case Type.Reptile_Bile:
+            return "A Reptile_Bile.";
+
+         case Type.Meat:
+            return "A Meat.";
+
+         case Type.Wooden_Bark:
+            return "A Wooden_Bark.";
+
+         case Type.Solid_Oak:
+            return "A Solid_Oak.";
+
+         case Type.Shattered_Trunk:
+            return "A Shattered_Trunk.";
+
+         case Type.Tree_Root:
+            return "A Tree_Root.";
+
          default:
             return "";
       }
@@ -138,6 +160,27 @@ public class CraftingIngredients : RecipeItem
 
          case Type.Flint:
             return "Flint";
+
+         case Type.Lizard_Tail:
+            return "Lizard Tail.";
+
+         case Type.Reptile_Bile:
+            return "Reptile Bile.";
+
+         case Type.Meat:
+            return "Meat.";
+
+         case Type.Wooden_Bark:
+            return "Wooden Bark.";
+
+         case Type.Solid_Oak:
+            return "Solid Oak.";
+
+         case Type.Shattered_Trunk:
+            return "Shattered Trunk.";
+
+         case Type.Tree_Root:
+            return "Tree Root.";
 
          default:
             return "";
