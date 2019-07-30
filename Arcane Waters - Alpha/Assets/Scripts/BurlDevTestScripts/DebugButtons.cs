@@ -1,16 +1,48 @@
-﻿using UnityEngine;
-#if UNITY_EDITOR
+﻿using System.Collections.Generic;
+using UnityEngine;
+//#if UNITY_EDITOR
 public class DebugButtons : MonoBehaviour
 {
-   private void processItem(Item item) {
-      RewardScreen rewardPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
-      rewardPanel.setItemData(item);
-      PanelManager.self.pushPanel(Panel.Type.Reward);
+   public EnemyDropsData tempDrop;
 
-      Global.player.rpc.Cmd_DirectAddItem(item);
+   private void processItem(Item item) {
+      RewardManager.self.requestItem(item);
    }
 
    private void Update () {
+      if(Input.GetKeyDown(KeyCode.Y)) {
+
+         RewardManager.self.processLoots(tempDrop.lootList);
+         return;
+
+         var newLootlist = tempDrop.requestLootList();
+         Debug.LogError("-------------------- I received this list : " + newLootlist.Count);
+         List<Item> itemList = new List<Item>();
+         for (int i = 0; i < newLootlist.Count; i++) {
+            Debug.LogError(newLootlist[i].lootType);
+
+            CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) newLootlist[i].lootType, ColorType.DarkGreen, ColorType.DarkPurple, "");
+            craftingIngredients.itemTypeId = (int) craftingIngredients.type;
+            Item item = craftingIngredients;
+            itemList.Add(item);
+         }
+
+         //----------------------------------------
+
+         RewardScreen rewardPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
+         rewardPanel.setItemDataGroup(itemList);
+         PanelManager.self.pushPanel(Panel.Type.Reward);
+
+
+      }
+      if(Input.GetKey(KeyCode.K)) {
+         Anim.Type animationType = Anim.Type.Battle_East;
+         /*
+         foreach (SimpleAnimation anim in _anims) {
+            anim.playAnimation(animationType);
+         }*/
+      }
+
       if (Input.GetKeyDown(KeyCode.Alpha9)) {
          //var itemToDelete = InventoryCacheManager.self.itemList.Find(_ => _.category == Item.Category.CraftingIngredients && (CraftingIngredients.Type) _.itemTypeId == CraftingIngredients.Type.Lizard_Scale);
          //Global.player.rpc.Cmd_DeleteItem(itemToDelete.id);
@@ -18,9 +50,20 @@ public class DebugButtons : MonoBehaviour
 
       if(Input.GetKey(KeyCode.U)) {
          if (Input.GetKeyDown(KeyCode.Alpha1)) {
-            Global.player.rpc.Cmd_GetOreArea((int) Area.Type.DesertTown);
+               Debug.LogError("GETING DATA");
+               Global.player.rpc.Cmd_GetOreArea((int) Area.Type.DesertTown);
          }
          if (Input.GetKeyDown(KeyCode.Alpha2)) {
+            Debug.LogError("SETTING DATA");
+
+            List<Area> areaList = AreaManager.self.getAreas();
+            for (int i = 0; i < areaList.Count; i++) {
+               if (areaList[i].GetComponent<OreArea>() != null) {
+                  Debug.LogError("Setting ore area from the serveR :: " + areaList[i].areaType);
+                  areaList[i].GetComponent<OreArea>().initOreArea();
+               }
+            }
+
             Global.player.rpc.Cmd_SetOreArea((int)Area.Type.DesertTown);
          }
 
@@ -96,7 +139,7 @@ public class DebugButtons : MonoBehaviour
       }
    }
 }
-#endif
+//#endif
 
 public static class DebugCustom
 {

@@ -52,6 +52,7 @@ public class NPCQuestData : ScriptableObject
 public class DeliveryQuestPair : QuestInfo
 {
    public DeliverQuest deliveryQuest;
+   public CraftingIngredients.Type rewardType;
 }
 
 [Serializable]
