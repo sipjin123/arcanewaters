@@ -1993,7 +1993,7 @@ MonoBehaviour:
   serverOnly: 0
   localPlayerAuthority: 1
   m_AssetId: 
-  m_SceneId: 775108620
+  m_SceneId: 523345851
 --- !u!114 &6307625844003916164
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2059,6 +2059,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 569f79bb107f88641824d5d35062e0b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tempDrop: {fileID: 11400000, guid: 14b2cf647e92538408f269479e3ea968, type: 2}
 --- !u!1 &1765715922958734
 GameObject:
   m_ObjectHideFlags: 0

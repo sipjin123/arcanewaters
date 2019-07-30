@@ -101768,8 +101768,7 @@ PrefabInstance:
         type: 3}
       propertyPath: oreData
       value: 
-      objectReference: {fileID: 11400000, guid: 2b2c0179980a27c48948851722b34502,
-        type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 2208280197281218952, guid: c9a78c956a8db2c4e9c1a0513f048985,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -101825,15 +101824,20 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2772871146476046396, guid: c9a78c956a8db2c4e9c1a0513f048985,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1648589913824878267, guid: c9a78c956a8db2c4e9c1a0513f048985,
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: -2399776592437656126, guid: 9017e0b2ff47a524b8333b9b1e82b3e3,
+      objectReference: {fileID: 21300000, guid: 9edff8abe89cf8e4abbf3a9c96eae108,
         type: 3}
-    - target: {fileID: 2772871146476046396, guid: c9a78c956a8db2c4e9c1a0513f048985,
+    - target: {fileID: 4716653281519715582, guid: c9a78c956a8db2c4e9c1a0513f048985,
         type: 3}
-      propertyPath: m_LocalPosition.z
+      propertyPath: offsetZ
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3024288889500497647, guid: c9a78c956a8db2c4e9c1a0513f048985,
@@ -101879,11 +101883,6 @@ PrefabInstance:
     - target: {fileID: 3461301914418361882, guid: c9a78c956a8db2c4e9c1a0513f048985,
         type: 3}
       propertyPath: m_WasSpriteAssigned
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4716653281519715582, guid: c9a78c956a8db2c4e9c1a0513f048985,
-        type: 3}
-      propertyPath: offsetZ
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -102768,6 +102767,17 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1648589913824878267, guid: c9a78c956a8db2c4e9c1a0513f048985,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 9edff8abe89cf8e4abbf3a9c96eae108,
+        type: 3}
+    - target: {fileID: 4716653281519715582, guid: c9a78c956a8db2c4e9c1a0513f048985,
+        type: 3}
+      propertyPath: offsetZ
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3024288889500497647, guid: c9a78c956a8db2c4e9c1a0513f048985,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -102811,11 +102821,6 @@ PrefabInstance:
     - target: {fileID: 3461301914418361882, guid: c9a78c956a8db2c4e9c1a0513f048985,
         type: 3}
       propertyPath: m_WasSpriteAssigned
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4716653281519715582, guid: c9a78c956a8db2c4e9c1a0513f048985,
-        type: 3}
-      propertyPath: offsetZ
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -103775,6 +103780,17 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1648589913824878267, guid: c9a78c956a8db2c4e9c1a0513f048985,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 9edff8abe89cf8e4abbf3a9c96eae108,
+        type: 3}
+    - target: {fileID: 4716653281519715582, guid: c9a78c956a8db2c4e9c1a0513f048985,
+        type: 3}
+      propertyPath: offsetZ
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3024288889500497647, guid: c9a78c956a8db2c4e9c1a0513f048985,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -103818,11 +103834,6 @@ PrefabInstance:
     - target: {fileID: 3461301914418361882, guid: c9a78c956a8db2c4e9c1a0513f048985,
         type: 3}
       propertyPath: m_WasSpriteAssigned
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4716653281519715582, guid: c9a78c956a8db2c4e9c1a0513f048985,
-        type: 3}
-      propertyPath: offsetZ
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -104104,12 +104115,11 @@ PrefabInstance:
         type: 3}
       propertyPath: oreData
       value: 
-      objectReference: {fileID: 11400000, guid: 2b2c0179980a27c48948851722b34502,
-        type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 2208280197281218952, guid: c9a78c956a8db2c4e9c1a0513f048985,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 5.179
+      value: 5.179001
       objectReference: {fileID: 0}
     - target: {fileID: 2208280197281218952, guid: c9a78c956a8db2c4e9c1a0513f048985,
         type: 3}
@@ -104161,15 +104171,20 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2772871146476046396, guid: c9a78c956a8db2c4e9c1a0513f048985,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1648589913824878267, guid: c9a78c956a8db2c4e9c1a0513f048985,
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: -2399776592437656126, guid: 9017e0b2ff47a524b8333b9b1e82b3e3,
+      objectReference: {fileID: 21300000, guid: 9edff8abe89cf8e4abbf3a9c96eae108,
         type: 3}
-    - target: {fileID: 2772871146476046396, guid: c9a78c956a8db2c4e9c1a0513f048985,
+    - target: {fileID: 4716653281519715582, guid: c9a78c956a8db2c4e9c1a0513f048985,
         type: 3}
-      propertyPath: m_LocalPosition.z
+      propertyPath: offsetZ
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3024288889500497647, guid: c9a78c956a8db2c4e9c1a0513f048985,
@@ -104215,11 +104230,6 @@ PrefabInstance:
     - target: {fileID: 3461301914418361882, guid: c9a78c956a8db2c4e9c1a0513f048985,
         type: 3}
       propertyPath: m_WasSpriteAssigned
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4716653281519715582, guid: c9a78c956a8db2c4e9c1a0513f048985,
-        type: 3}
-      propertyPath: offsetZ
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
