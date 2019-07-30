@@ -46,15 +46,8 @@ public class OreArea : MonoBehaviour {
          }
 
          // Setup data for individual ore
-         oreObj.SetOreDAta(newID, currAreaType, oreDataList.Find(_ => _.oreType == oreType));
+         oreObj.setOreData(newID, currAreaType, oreDataList.Find(_ => _.oreType == oreType));
       }
-
-      // Server setup / fetching
-#if IS_SERVER_BUILD
-      Global.player.rpc.Cmd_SetOreArea((int) currAreaType);
-#else 
-      Global.player.rpc.Cmd_GetOreArea((int) currAreaType);
-#endif
    }
 
    public List<SpawnPointIndex> getPotentialSpawnPoints(int number) {

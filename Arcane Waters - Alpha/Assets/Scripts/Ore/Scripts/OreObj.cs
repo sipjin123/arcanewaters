@@ -33,21 +33,6 @@ public class OreObj : MonoBehaviour {
 
    #endregion
 
-   public void SetOreDAta(int id, Area.Type area, OreData oreData) {
-      // Initializes ore data setup by the OreArea
-      oreID = id;
-      oreArea = area;
-      this.oreData = oreData;
-
-      // Setup default sprite
-      _spireRender.sprite = oreData.miningDurabilityIcon[0];
-
-      // Life setup of the ore and interaction availability
-      oreLife = 1;
-      _oreMaxLife = oreData.miningDurabilityIcon.Count;
-      isActive = true;
-   }
-
    private void Awake () {
       // Component setup
       _graphicRaycaster = GetComponentInChildren<GraphicRaycaster>();
@@ -69,6 +54,21 @@ public class OreObj : MonoBehaviour {
             clientClickedMe();
          }
       }
+   }
+
+   public void setOreData (int id, Area.Type area, OreData oreData) {
+      // Initializes ore data setup by the OreArea
+      oreID = id;
+      oreArea = area;
+      this.oreData = oreData;
+
+      // Setup default sprite
+      _spireRender.sprite = oreData.miningDurabilityIcon[0];
+
+      // Life setup of the ore and interaction availability
+      oreLife = 1;
+      _oreMaxLife = oreData.miningDurabilityIcon.Count;
+      isActive = true;
    }
 
    public void clientClickedMe () {
@@ -107,7 +107,7 @@ public class OreObj : MonoBehaviour {
       // Disables the ore if life is depleted
       if (oreLife >= _oreMaxLife) {
          _outline.setVisibility(false);
-         StartCoroutine(previewReward());
+         StartCoroutine(CO_previewReward());
          isActive = false;
          return;
       }
@@ -122,15 +122,7 @@ public class OreObj : MonoBehaviour {
    }
 
    public void rewardPlayer( ) {
-      CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) oreData.ingredientReward, ColorType.DarkGreen, ColorType.DarkPurple, "");
-      craftingIngredients.itemTypeId = (int) craftingIngredients.type;
-      Item item = craftingIngredients;
-
-      RewardScreen rewardPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
-      rewardPanel.setItemData(item);
-      PanelManager.self.pushPanel(Panel.Type.Reward);
-
-      Global.player.rpc.Cmd_DirectAddItem(item);
+      RewardManager.self.requestIngredient(oreData.ingredientReward);
    }
 
    protected void handleSpriteOutline () {
@@ -140,7 +132,7 @@ public class OreObj : MonoBehaviour {
       }
    }
 
-   IEnumerator previewReward() {
+   IEnumerator CO_previewReward() {
       yield return new WaitForSeconds(.5f);
       rewardPlayer();
    }
