@@ -66,7 +66,7 @@ public class OreObj : MonoBehaviour {
       _spireRender.sprite = oreData.miningDurabilityIcon[0];
 
       // Life setup of the ore and interaction availability
-      oreLife = 1;
+      oreLife = 0;
       _oreMaxLife = oreData.miningDurabilityIcon.Count;
       isActive = true;
    }
@@ -92,25 +92,26 @@ public class OreObj : MonoBehaviour {
       return (Vector2.Distance(Global.player.transform.position, this.transform.position) < MINING_DISTANCE);
    }
 
-   public void receiveOreUpdate() {
-      miningAnimation.Play("mine");
-
-      // Handles spamming
-      _isMining = false;
-
-      // Iterates the sprite index
-      _spireRender.sprite = oreData.miningDurabilityIcon[oreLife];
-
-      // Reduces interaction count
-      oreLife++;
-
+   public void receiveOreUpdate(int oreLifeUpdate) {
       // Disables the ore if life is depleted
-      if (oreLife >= _oreMaxLife) {
+      if (oreLife >= _oreMaxLife -1) {
          _outline.setVisibility(false);
          StartCoroutine(CO_previewReward());
          isActive = false;
          return;
       }
+
+      // Play animation
+      miningAnimation.Play("mine");
+
+      // Handles spamming
+      _isMining = false;
+
+      // Reduces interaction count
+      oreLife = oreLifeUpdate;
+
+      // Iterates the sprite index
+      _spireRender.sprite = oreData.miningDurabilityIcon[oreLife];
    }
 
    private void updateOreLife() {

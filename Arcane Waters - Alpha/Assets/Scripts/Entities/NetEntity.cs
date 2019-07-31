@@ -68,6 +68,10 @@ public class NetEntity : NetworkBehaviour {
    [HideInInspector]
    public CropManager cropManager;
 
+   // Our Ore Manager for handling ore-specific stuff
+   [HideInInspector]
+   public OreManager oreManager;
+
    // Our Admin Manager for admin related messages
    [HideInInspector]
    public AdminManager admin;
@@ -123,6 +127,7 @@ public class NetEntity : NetworkBehaviour {
       // Look up components
       rpc = GetComponent<RPCManager>();
       cropManager = GetComponent<CropManager>();
+      oreManager = GetComponent<OreManager>();
       admin = GetComponent<AdminManager>();
       netIdent = GetComponent<NetworkIdentity>();
       _body = GetComponent<Rigidbody2D>();
