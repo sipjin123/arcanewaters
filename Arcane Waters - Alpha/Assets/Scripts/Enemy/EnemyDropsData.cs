@@ -23,12 +23,12 @@ public class EnemyDropsData : ScriptableObject {
       List<LootInfo> newLootList = new List<LootInfo>();
       int randomizedLootCount = UnityEngine.Random.Range(minQuantity, maxQuantity);
       int lastIndex = lootList.Count - 1;
-      int maxRange = 10;
+      int maxRange = 100;
 
+      // Handles the chance drops of each loot item
       for(int i = 0; i < lootList.Count; i++) {
          LootInfo lootInfo = lootList[i];
-         int randomFactor = UnityEngine.Random.Range(0, maxRange);
-         Debug.LogError("RandomizedChance: " + randomFactor+" Target was : "+lootInfo.chanceRatio);
+         float randomFactor = UnityEngine.Random.Range(0, maxRange);
          if(randomFactor <= lootInfo.chanceRatio) {
             newLootList.Add(lootInfo);
             if (newLootList.Count >= randomizedLootCount) {
@@ -36,6 +36,8 @@ public class EnemyDropsData : ScriptableObject {
             }
          }
       }
+
+      // Ensures that the item count is atleast 1
       if(newLootList.Count == 0) {
          newLootList.Add(lootList[lastIndex]);
       }
@@ -48,6 +50,6 @@ public class EnemyDropsData : ScriptableObject {
 public class LootInfo
 {
    public CraftingIngredients.Type lootType;
-   [Range(0,10)]
-   public int chanceRatio;
+   [Range(0,100)]
+   public float chanceRatio;
 }

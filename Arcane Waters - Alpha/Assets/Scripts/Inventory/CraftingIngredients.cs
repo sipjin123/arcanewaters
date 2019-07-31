@@ -86,43 +86,43 @@ public class CraftingIngredients : RecipeItem
    public override string getDescription () {
       switch (type) {
          case Type.Lizard_Claw:
-            return "A well-made claw.";
+            return "A well made claw";
 
          case Type.Lizard_Scale:
-            return "A powerful Scale.";
+            return "A powerful Scale";
 
          case Type.Gold_Ore:
-            return "A shiny golden ore.";
+            return "A shiny golden ore";
 
          case Type.Silver_Ore:
-            return "A shiny silver ore.";
+            return "A shiny silver ore";
 
          case Type.Flint:
-            return "A Flint.";
+            return "A Flint";
 
          case Type.Lumber:
-            return "A Lumber.";
+            return "A Lumber";
 
          case Type.Lizard_Tail:
-            return "A Lizard_Tail.";
+            return "A Lizard Tail";
 
          case Type.Reptile_Bile:
-            return "A Reptile_Bile.";
+            return "A Reptile Bile good for binding";
 
          case Type.Meat:
-            return "A Meat.";
+            return "Meat good for eatin";
 
          case Type.Wooden_Bark:
-            return "A Wooden_Bark.";
+            return "A Wooden Bark for weapons";
 
          case Type.Solid_Oak:
-            return "A Solid_Oak.";
+            return "A Solid Oak for ship upgrades";
 
          case Type.Shattered_Trunk:
-            return "A Shattered_Trunk.";
+            return "A Shattered Trunk for crafting";
 
          case Type.Tree_Root:
-            return "A Tree_Root.";
+            return "A Tree Root for binding";
 
          default:
             return "";
@@ -162,25 +162,25 @@ public class CraftingIngredients : RecipeItem
             return "Flint";
 
          case Type.Lizard_Tail:
-            return "Lizard Tail.";
+            return "Lizard Tail";
 
          case Type.Reptile_Bile:
-            return "Reptile Bile.";
+            return "Reptile Bile";
 
          case Type.Meat:
-            return "Meat.";
+            return "Meat";
 
          case Type.Wooden_Bark:
-            return "Wooden Bark.";
+            return "Wooden Bark";
 
          case Type.Solid_Oak:
-            return "Solid Oak.";
+            return "Solid Oak";
 
          case Type.Shattered_Trunk:
-            return "Shattered Trunk.";
+            return "Shattered Trunk";
 
          case Type.Tree_Root:
-            return "Tree Root.";
+            return "Tree Root";
 
          default:
             return "";
