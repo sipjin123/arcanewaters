@@ -193,17 +193,11 @@ public class MyNetworkManager : NetworkManager {
 
             // Send any extra info as targeted RPCs
             player.cropManager.sendSiloInfo();
-            TutorialManager.self.sendTutorialInfo(player, false);
 
-            if (Util.isServer() && player.isLocalPlayer) {
-               List<Area> areaList = AreaManager.self.getAreas();
-               for (int i = 0; i < areaList.Count; i++) {
-                  if (areaList[i].GetComponent<OreArea>() != null) {
-                     areaList[i].GetComponent<OreArea>().initOreArea();
-                     player.rpc.Cmd_SetOreArea((int) areaList[i].areaType);
-                  }
-               }
-            }
+            // Initiating ore information
+            player.oreManager.initializeOreData();
+
+            TutorialManager.self.sendTutorialInfo(player, false);
          });
       });
    }
