@@ -51,7 +51,7 @@ public class DebugButtons : MonoBehaviour
       if(Input.GetKey(KeyCode.U)) {
          if (Input.GetKeyDown(KeyCode.Alpha1)) {
                Debug.LogError("GETING DATA");
-               Global.player.rpc.Cmd_GetOreArea((int) Area.Type.DesertTown);
+               Global.player.oreManager.Cmd_GetOreArea((int) Area.Type.DesertTown);
          }
          if (Input.GetKeyDown(KeyCode.Alpha2)) {
             Debug.LogError("SETTING DATA");
@@ -64,7 +64,7 @@ public class DebugButtons : MonoBehaviour
                }
             }
 
-            Global.player.rpc.Cmd_SetOreArea((int)Area.Type.DesertTown);
+            //Global.player.oreManager.setOreForArea((int)Area.Type.DesertTown);
          }
 
          if (Input.GetKeyDown(KeyCode.Alpha3)) {
