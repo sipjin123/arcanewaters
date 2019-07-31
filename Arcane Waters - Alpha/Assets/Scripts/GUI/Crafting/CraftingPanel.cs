@@ -152,7 +152,7 @@ public class CraftingPanel : Panel, IPointerClickHandler
    private void craft () {
       if (craftableItem != null) {
          Item item = craftableItem;
-         RewardManager.self.requestItem(item);
+         RewardManager.self.showItemInRewardPanel(item);
 
          PanelManager.self.get(Type.Craft).hide();
          craftableItem = null;

@@ -6,13 +6,13 @@ public class DebugButtons : MonoBehaviour
    public EnemyDropsData tempDrop;
 
    private void processItem(Item item) {
-      RewardManager.self.requestItem(item);
+      RewardManager.self.showItemInRewardPanel(item);
    }
 
    private void Update () {
       if(Input.GetKeyDown(KeyCode.Y)) {
 
-         RewardManager.self.processLoots(tempDrop.lootList);
+         RewardManager.self.processLoots(tempDrop.requestLootList());
          return;
 
          var newLootlist = tempDrop.requestLootList();

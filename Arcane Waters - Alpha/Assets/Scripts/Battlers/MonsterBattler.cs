@@ -16,6 +16,7 @@ public class MonsterBattler : AutomatedBattler
    [SyncVar]
    public ColorType bodyColor2;
 
+   // Holds the info of loots and their chances to drop
    public EnemyDropsData enemyDropData;
 
    #endregion
@@ -43,7 +44,7 @@ public class MonsterBattler : AutomatedBattler
       // Wait a little bit for it to finish
       yield return new WaitForSeconds(.25f);
 
-      RewardManager.self.processLoots(enemyDropData.lootList);
+      RewardManager.self.processLoots(enemyDropData.requestLootList());
 
       // Play a "Poof" effect on our head
       EffectManager.playPoofEffect(this);

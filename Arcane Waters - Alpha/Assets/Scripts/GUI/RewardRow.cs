@@ -7,6 +7,7 @@ using Mirror;
 public class RewardRow : MonoBehaviour {
    #region Public Variables
 
+   // Shows the icon of the rewarded item
    public Image rewardIcon;
 
    #endregion
