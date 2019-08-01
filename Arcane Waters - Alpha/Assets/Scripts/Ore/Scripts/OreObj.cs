@@ -73,6 +73,13 @@ public class OreObj : NetworkBehaviour
       _spireRender = GetComponent<SpriteRenderer>();
    }
 
+   private void Start () {
+      if(didUserInteract(Global.player.userId)) {
+         int lastIcon = oreData.miningDurabilityIcon.Count - 1;
+         _spireRender.sprite = oreData.miningDurabilityIcon[lastIcon];
+      }
+   }
+
    private void Update () {
       if (_graphicRaycaster != null) {
          _graphicRaycaster.gameObject.SetActive(!PanelManager.self.hasPanelInStack());
