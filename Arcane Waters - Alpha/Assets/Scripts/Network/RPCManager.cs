@@ -1172,7 +1172,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_ReceiveRewardItems (NetworkConnection connection) {
+   public void Target_UpdateInventory (NetworkConnection connection) {
       InventoryCacheManager.self.fetchInventory();
    }
 
@@ -1259,8 +1259,12 @@ public class RPCManager : NetworkBehaviour {
    public void processRewardItems (Item item) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          item = DB_Main.createNewItem(_player.userId, item);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Tells the user to update their inventory cache to retrieve the updated items
+            Target_UpdateInventory(_player.connectionToClient);
+         });
       });
-      Target_ReceiveRewardItems(_player.connectionToClient);
    }
 
    [Server]
