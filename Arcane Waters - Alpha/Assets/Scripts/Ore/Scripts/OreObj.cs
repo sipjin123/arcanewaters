@@ -51,20 +51,6 @@ public class OreObj : NetworkBehaviour
 
    #endregion
 
-   void onAreaIDChanged (int id) {
-      if (hasParentList == false) {
-         hasParentList = true;
-         Area area = AreaManager.self.getArea((Area.Type) id);
-         OreArea newOreArea = area.GetComponent<OreArea>();
-         newOreArea.oreList.Add(this);
-         transform.SetParent(newOreArea.oreObjHolder);
-      }
-   }
-
-   void onIDChanged (int id) {
-      OreManager.self.registerOreObj(id, this);
-   }
-
    private void Awake () {
       // Component setup
       _graphicRaycaster = GetComponentInChildren<GraphicRaycaster>();
@@ -122,11 +108,7 @@ public class OreObj : NetworkBehaviour
    }
 
    public void clientClickedMe () {
-      if (isActive == false || Global.player == null || _clickableBox == null || Global.isInBattle()) {
-         return;
-      }
-
-      if(didUserInteract(Global.player.userId)) {
+      if (isActive == false || Global.player == null || _clickableBox == null || Global.isInBattle() || didUserInteract(Global.player.userId)) {
          return;
       }
 
@@ -186,6 +168,25 @@ public class OreObj : NetworkBehaviour
          _outline.color = Color.white;
          _outline.setVisibility(MouseManager.self.isHoveringOver(_clickableBox));
       }
+   }
+
+   private void onAreaIDChanged(int id)
+   {
+      // Ensures that ore obj is registered to an ore area
+      if (hasParentList == false)
+      {
+         hasParentList = true;
+         Area area = AreaManager.self.getArea((Area.Type)id);
+         OreArea newOreArea = area.GetComponent<OreArea>();
+         newOreArea.oreList.Add(this);
+         transform.SetParent(newOreArea.oreObjHolder);
+      }
+   }
+
+   private void onIDChanged(int id)
+   {
+      // Registers network object to manager list
+      OreManager.self.registerOreObj(id, this);
    }
 
    IEnumerator CO_previewReward() {
