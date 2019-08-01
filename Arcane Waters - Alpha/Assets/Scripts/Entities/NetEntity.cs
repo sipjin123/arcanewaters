@@ -68,10 +68,6 @@ public class NetEntity : NetworkBehaviour {
    [HideInInspector]
    public CropManager cropManager;
 
-   // Our Ore Manager for handling ore-specific stuff
-   [HideInInspector]
-   public OreManager oreManager;
-
    // Our Admin Manager for admin related messages
    [HideInInspector]
    public AdminManager admin;
@@ -121,13 +117,15 @@ public class NetEntity : NetworkBehaviour {
    // Gets set to true on the server when we're about to execute a warp
    public bool isAboutToWarpOnServer = false;
 
+   // Determines if player is interacting with the world
+   public bool isInteracting;
+
    #endregion
 
    protected virtual void Awake () {
       // Look up components
       rpc = GetComponent<RPCManager>();
       cropManager = GetComponent<CropManager>();
-      oreManager = GetComponent<OreManager>();
       admin = GetComponent<AdminManager>();
       netIdent = GetComponent<NetworkIdentity>();
       _body = GetComponent<Rigidbody2D>();
@@ -288,6 +286,22 @@ public class NetEntity : NetworkBehaviour {
 
    public bool isInBattle () {
       return battleId > 0;
+   }
+
+   public void requestAnimationPlay() {
+      isInteracting = true;
+      foreach (Animator animator in _animators) {
+         animator.SetBool("mining", true);
+      }
+      StartCoroutine(CO_endInteraction());
+   }
+
+   IEnumerator CO_endInteraction() {
+      yield return new WaitForSeconds(.25f);
+      isInteracting = false;
+      foreach (Animator animator in _animators) {
+         animator.SetBool("mining", false);
+      }
    }
 
    public virtual float getMoveSpeed () {

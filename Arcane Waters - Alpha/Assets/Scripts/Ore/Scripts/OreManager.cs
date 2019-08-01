@@ -4,104 +4,77 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class OreManager : NetworkBehaviour
+public class OreManager : MonoBehaviour
 {
+   #region Public Variables
+
+   // Prefab of the network spawn ore
+   public OreObj oreObjPrefab;
+
+   // Self
+   public static OreManager self;
+
+   #endregion
+
    void Awake () {
-      _player = GetComponent<NetEntity>();
+      self = this;
    }
 
-   private void Start () {
-      // Fetches ore info from the server
-      if (_player.isServer == false && _player.isLocalPlayer) {
-         if (AreaManager.self.getArea(_player.areaType).GetComponent<OreArea>() != null) {
-            this.Cmd_GetOreArea((int) _player.areaType);
-         }
+   public void createOreForInstance (Instance instance) {
+      // Look up the Area associated with this intance
+      Area area = AreaManager.self.getArea(instance.areaType);
+      OreArea oreArea = area.GetComponent<OreArea>();
+      oreArea.oreList = new List<OreObj>();
+
+      // Creates an ore network instance before initializing
+      for (int i = 0; i < oreArea.spawnPointList.Count; i++) { 
+         OreObj oreObj = createOreObj(instance, oreArea);
+         oreObj.hasParentList = true;
+         oreObj.areaID = (int) area.areaType;
+         oreArea.oreList.Add(oreObj);
       }
+      oreArea.initOreArea();
    }
 
-   public void initializeOreData() {
-      // Ore setup
-      if (_player.isLocalPlayer && _player.isServer) {
-         List<Area> areaList = AreaManager.self.getAreas();
-         for (int i = 0; i < areaList.Count; i++) {
-            if (areaList[i].GetComponent<OreArea>() != null) {
-               areaList[i].GetComponent<OreArea>().initOreArea();
-               this.initializeIndividualOre((int) areaList[i].areaType);
-            }
-         }
-      }
+   protected OreObj createOreObj (Instance instance, OreArea oreArea) {
+      // Instantiate a new ore object
+      OreObj oreObj = Instantiate(oreObjPrefab, transform.position, Quaternion.identity);
+
+      oreObj.transform.SetParent(oreArea.oreObjHolder);
+
+      // Assign a unique ID
+      oreObj.id = _id++;
+
+      // Note which instance the ore is in
+      oreObj.instanceId = instance.id;
+
+      oreObj.oreArea = oreArea.GetComponent<Area>().areaType;
+
+      // The Instance needs to keep track of all Networked objects inside
+      instance.entities.Add(oreObj);
+
+      // Spawn the network object on the Clients
+      NetworkServer.Spawn(oreObj.gameObject);
+
+      return oreObj;
+   }
+   
+   public OreObj getOreObj(int id) {
+      return _oreObjects[id];
    }
 
-   [Command]
-   public void Cmd_GetOreArea (int areaID) {
-      getOreForArea(areaID);
-   }
-
-   [Server]
-   private void initializeIndividualOre (int areaID) {
-      Area areas = AreaManager.self.getArea((Area.Type) areaID);
-      OreArea oreArea = areas.GetComponent<OreArea>();
-      int oreSpawnCount = oreArea.oreList.Count;
-
-      List<Transform> spawnPoints = oreArea.spawnPointList;
-      List<OreArea.SpawnPointIndex> positionList = oreArea.getPotentialSpawnPoints(oreSpawnCount);
-      List<OreInfo> newOreList = new List<OreInfo>();
-      List<int> spawnindex = new List<int>();
-      Area.Type areaType = (Area.Type) areaID;
-
-      // Create new data for each ore
-      for (int i = 0; i < oreSpawnCount; i++) {
-         // Data setup for new Ore Info
-         string oreID = ((int) areaType) + "" + i;
-         int oreIndex = i;
-         int oreIntID = int.Parse(oreID);
-         string oreTypeString = (oreArea.oreList[i].oreData.oreType).ToString();
-         OreInfo createdInfo = new OreInfo(oreIntID, oreTypeString, oreTypeString, areaType.ToString(), positionList[i].coordinates.x, positionList[i].coordinates.y, true, oreIndex);
-         newOreList.Add(createdInfo);
-         spawnindex.Add(positionList[i].index);
-      }
-
-      int newOreListCount = newOreList.Count;
-      for (int i = 0; i < newOreListCount; i++) {
-         _player.rpc.Target_ReceiveOreInfo(_player.connectionToClient, newOreList[i], spawnindex[i]);
-      }
-   }
-
-   [Server]
-   protected void getOreForArea (int areaID) {
-      // Data fetch for the ore in a specific area
-      Area areas = AreaManager.self.getArea((Area.Type) areaID);
-      OreArea oreArea = areas.GetComponent<OreArea>();
-
-      // Ore info extraction
-      List<OreObj> oreObjectList = oreArea.oreList;
-      List<OreInfo> newOreInfo = new List<OreInfo>();
-      List<int> spawnindex = new List<int>();
-
-      // Register the current ore info of the server into a list
-      for (int i = 0; i < oreObjectList.Count; i++) {
-         OreInfo createdInfo = new OreInfo();
-         createdInfo.position = oreObjectList[i].transform.localPosition;
-         createdInfo.oreIndex = i;
-         createdInfo.isEnabled = true;
-         createdInfo.oreType = oreObjectList[i].oreData.oreType;
-         createdInfo.oreName = oreObjectList[i].oreData.oreType + "_" + i;
-         createdInfo.areaType = (Area.Type) areaID;
-
-         newOreInfo.Add(createdInfo);
-         spawnindex.Add(oreObjectList[i].oreSpawnID);
-      }
-
-      int newOreListCount = newOreInfo.Count;
-      for (int i = 0; i < newOreListCount; i++) {
-         _player.rpc.Target_ReceiveOreInfo(_player.connectionToClient, newOreInfo[i], spawnindex[i]);
-      }
+   public void registerOreObj(int id, OreObj oreObj) {
+      _oreObjects.Add(id, oreObj);
    }
 
    #region Private Variables
 
-   // Our associated Player object
-   protected NetEntity _player;
+   // An ID we use to uniquely identify ore obj
+   protected static int _id = 1;
+
+
+   // Stores the ore obj we've created
+   protected Dictionary<int, OreObj> _oreObjects = new Dictionary<int, OreObj>();
 
    #endregion
 }
