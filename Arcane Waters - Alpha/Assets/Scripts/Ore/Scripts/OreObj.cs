@@ -8,11 +8,11 @@ public class OreObj : NetworkBehaviour
 {
    #region Public Variables
 
-   // The unique ID assigned to this chest
+   // The unique ID assigned to this ore
    [SyncVar(hook = "onAreaIDChanged")]
    public int areaID;
 
-   // The unique ID assigned to this chest
+   // The unique ID assigned to this ore
    [SyncVar(hook = "onIDChanged")]
    public int id;
 
@@ -47,6 +47,7 @@ public class OreObj : NetworkBehaviour
    // The list of user IDs that have opened this chest
    public SyncListInt userIds = new SyncListInt();
 
+   // Determines if the instantiated obj is registered to an ore area
    public bool hasParentList;
 
    #endregion
@@ -86,8 +87,9 @@ public class OreObj : NetworkBehaviour
    }
 
    public bool finishedMining(int oreLife) {
-      if (oreLife >= _oreMaxLife - 1)
+      if (oreLife >= _oreMaxLife - 1) {
          return true;
+      }
       return false;
    }
 
@@ -135,11 +137,11 @@ public class OreObj : NetworkBehaviour
       // Handles spamming
       _isMining = false;
 
-      // Iterates the sprite index
-      _spireRender.sprite = oreData.miningDurabilityIcon[oreLife+1];
-
       // Iterates through the ore life
       oreLife++;
+
+      // Iterates the sprite index
+      _spireRender.sprite = oreData.miningDurabilityIcon[oreLife];
 
       // Disables the ore if life is depleted
       if (oreLife >= _oreMaxLife - 1) {
@@ -170,8 +172,7 @@ public class OreObj : NetworkBehaviour
       }
    }
 
-   private void onAreaIDChanged(int id)
-   {
+   private void onAreaIDChanged(int id) {
       // Ensures that ore obj is registered to an ore area
       if (hasParentList == false)
       {
@@ -183,8 +184,7 @@ public class OreObj : NetworkBehaviour
       }
    }
 
-   private void onIDChanged(int id)
-   {
+   private void onIDChanged(int id) {
       // Registers network object to manager list
       OreManager.self.registerOreObj(id, this);
    }
