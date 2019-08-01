@@ -1177,39 +1177,82 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_ReceiveOreInfo (NetworkConnection connection, OreInfo oreInfo, int spawnIndex) {
+   public void Target_ReceiveOreInfo (NetworkConnection connection, OreInfo oreInfo, int spawnIndex, int id) {
+      //Debug.LogError("RECEIVING NEW ORE POSITION :: "+oreInfo.position.x+" "+oreInfo.position.y);
       OreArea oreArea = AreaManager.self.getArea((Area.Type) oreInfo.areaType).GetComponent<OreArea>();
-      oreArea.oreList[oreInfo.oreIndex].transform.localPosition = oreInfo.position;
-      oreArea.oreList[oreInfo.oreIndex].oreSpawnID = spawnIndex;
+      OreObj oreObject = oreArea.oreList[oreInfo.oreIndex];//OreManager.self.getOreObj(id);//
+
+      if (oreArea.oreList.Count <= 0) {
+         return;
+      }
+      oreObject.transform.localPosition = oreInfo.position;
+      oreObject.oreSpawnID = spawnIndex;
 
       string idString = ((int) oreInfo.areaType).ToString() + "" + oreInfo.oreIndex;
       int newID = int.Parse(idString);
-      oreArea.oreList[oreInfo.oreIndex].setOreData(newID, oreInfo.areaType, oreArea.oreDataList.Find(_ => _.oreType == oreInfo.oreType));
+      oreObject.setOreData(newID, oreInfo.areaType, oreArea.oreDataList.Find(_ => _.oreType == oreInfo.oreType));
 
       List<Transform> spawnList = oreArea.spawnPointList;
-      int lastIndex = oreArea.oreList[oreInfo.oreIndex].oreData.miningDurabilityIcon.Count - 1;
+      int lastIndex = oreObject.oreData.miningDurabilityIcon.Count - 1;
       spawnList[spawnIndex].GetComponent<SpriteRenderer>().sprite = null;
    }
 
    [Command]
-   public void Cmd_UpdateOreMining (int oreID, int oreArea) {
-      processMiningInfo(oreID, oreArea);
+   public void Cmd_UpdateOreMining (int oreID, int life) {
+      processMiningInfo(oreID, life);
    }
 
    [Server]
-   public void processMiningInfo (int oreID, int oreArea) {
-      Area area = AreaManager.self.getArea((Area.Type) oreArea);
-      OreArea newOreArea = area.GetComponent<OreArea>();
-      OreObj oreObj = newOreArea.oreList.Find(_ => _.GetComponent<OreObj>().oreID == oreID).GetComponent<OreObj>();
-      int oreIndex = newOreArea.oreList.IndexOf(oreObj);
+   public void processMiningInfo (int oreID, int life) {
+      OreObj oreObj = OreManager.self.getOreObj(oreID);
 
-      Target_GetMiningInfo(_player.connectionToClient, oreIndex, oreArea, oreObj.oreLife);
+      if (oreObj.finishedMining(life + 1)) {
+         oreObj.userIds.Add(_player.userId);
+      }
+      Target_GetMiningInfo(_player.connectionToClient, oreID);
+   }
+
+   [Server]
+   public void initializeIndividualOre (int areaID) {
+      Area areas = AreaManager.self.getArea((Area.Type) areaID);
+      Area.Type areaType = (Area.Type) areaID;
+      OreArea oreArea = areas.GetComponent<OreArea>();
+      int oreSpawnCount = oreArea.oreList.Count;
+
+      if (oreArea.hasInitialized == false) {
+         oreArea.hasInitialized = true;
+         List<Transform> spawnPoints = oreArea.spawnPointList;
+         List<OreArea.SpawnPointIndex> positionList = oreArea.getPotentialSpawnPoints(oreSpawnCount);
+         List<OreInfo> newOreList = new List<OreInfo>();
+         List<int> spawnindex = new List<int>();
+
+         // Create new data for each ore
+         for (int i = 0; i < oreSpawnCount; i++) {
+            // Data setup for new Ore Info
+            string oreID = ((int) areaType) + "" + i;
+            int oreIndex = i;
+            int oreIntID = int.Parse(oreID);
+            string oreTypeString = (oreArea.oreList[i].oreData.oreType).ToString();
+            OreInfo createdInfo = new OreInfo(oreIntID, oreTypeString, oreTypeString, areaType.ToString(), positionList[i].coordinates.x, positionList[i].coordinates.y, true, oreIndex);
+            newOreList.Add(createdInfo);
+            spawnindex.Add(positionList[i].index);
+         }
+
+         int newOreListCount = newOreList.Count;
+         for (int i = 0; i < newOreListCount; i++) {
+            _player.rpc.Target_ReceiveOreInfo(_player.connectionToClient, newOreList[i], spawnindex[i], oreArea.oreList[i].id);
+         }
+      } else {
+         for (int i = 0; i < oreArea.oreList.Count; i++) {
+            OreInfo createdInfo = new OreInfo(oreArea.oreList[i].oreID, oreArea.oreList[i].oreData.oreType.ToString(), oreArea.oreList[i].oreData.oreType.ToString(), areaType.ToString(), oreArea.oreList[i].transform.localPosition.x, oreArea.oreList[i].transform.localPosition.y, true, i);
+            _player.rpc.Target_ReceiveOreInfo(_player.connectionToClient, createdInfo, oreArea.oreList[i].oreSpawnID, oreArea.oreList[i].id);
+         }
+      }
    }
 
    [TargetRpc]
-   public void Target_GetMiningInfo (NetworkConnection connection, int oreIndex, int oreAreaIndex, int oreLife) {
-      oreLife++;
-      AreaManager.self.getArea((Area.Type) oreAreaIndex).GetComponent<OreArea>().oreList[oreIndex].receiveOreUpdate(oreLife);
+   public void Target_GetMiningInfo (NetworkConnection connection, int oreID) {
+      OreManager.self.getOreObj(oreID).receiveOreUpdate();
    }
 
    [Server]
