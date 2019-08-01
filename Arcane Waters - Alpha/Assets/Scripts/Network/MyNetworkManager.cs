@@ -195,7 +195,7 @@ public class MyNetworkManager : NetworkManager {
             player.cropManager.sendSiloInfo();
 
             // Initiating ore information
-            player.oreManager.initializeOreData();
+            player.rpc.initializeIndividualOre((int) player.areaType);
 
             TutorialManager.self.sendTutorialInfo(player, false);
          });

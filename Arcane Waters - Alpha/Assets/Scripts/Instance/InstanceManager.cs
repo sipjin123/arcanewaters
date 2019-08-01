@@ -60,7 +60,7 @@ public class InstanceManager : MonoBehaviour {
       return null;
    }
 
-   protected Instance createNewInstance(Area.Type areaType) {
+   protected Instance createNewInstance (Area.Type areaType) {
       Instance instance = Instantiate(instancePrefab, this.transform);
       instance.id = _id++;
       instance.areaType = areaType;
@@ -75,6 +75,11 @@ public class InstanceManager : MonoBehaviour {
       // Create any treasure we might want in the instance
       if (areaType == Area.Type.TreasurePine) {
          TreasureManager.self.createTreasureForInstance(instance);
+      }
+
+      // Creates ore instance for maps with ores
+      if(AreaManager.self.getArea(areaType).GetComponent<OreArea>() != null) {
+         OreManager.self.createOreForInstance(instance);
       }
 
       // Create any Enemies that exist in this Instance

@@ -7,6 +7,9 @@ using Mirror;
 public class OreArea : MonoBehaviour {
    #region Public Variables
 
+   // The parent of the spawned ore objects
+   public Transform oreObjHolder;
+
    // List of posible spawn positions
    public List<Transform> spawnPointList;
 
@@ -22,6 +25,9 @@ public class OreArea : MonoBehaviour {
       public Vector2 coordinates;
       public int index;
    }
+
+   // Determines if the server needs to initialize the spawning
+   public bool hasInitialized;
 
    #endregion
 
@@ -45,8 +51,11 @@ public class OreArea : MonoBehaviour {
             oreType = OreType.Gold;
          }
 
+         // Find the type of data
+         OreData oreData = oreDataList.Find(_ => _.oreType == oreType);
+
          // Setup data for individual ore
-         oreObj.setOreData(newID, currAreaType, oreDataList.Find(_ => _.oreType == oreType));
+         oreObj.setOreData(newID, currAreaType, oreData);
       }
    }
 
