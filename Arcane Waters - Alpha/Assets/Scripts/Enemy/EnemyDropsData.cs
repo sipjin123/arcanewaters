@@ -9,7 +9,11 @@ using System.Linq;
 public class EnemyDropsData : ScriptableObject {
    #region Public Variables
 
+   // List of loots with their chance rate
    public List<LootInfo> lootList;
+
+   // If all chances have failed, set this item as the return loot
+   public CraftingIngredients.Type defaultLoot;
 
    [Range(0, 5)]
    public int minQuantity;
@@ -23,7 +27,7 @@ public class EnemyDropsData : ScriptableObject {
       List<LootInfo> newLootList = new List<LootInfo>();
       int randomizedLootCount = UnityEngine.Random.Range(minQuantity, maxQuantity);
       int lastIndex = lootList.Count - 1;
-      int maxRange = 100;
+      float maxRange = 100.00f;
 
       // Handles the chance drops of each loot item
       for(int i = 0; i < lootList.Count; i++) {
@@ -37,9 +41,9 @@ public class EnemyDropsData : ScriptableObject {
          }
       }
 
-      // Ensures that the item count is atleast 1
-      if(newLootList.Count == 0) {
-         newLootList.Add(lootList[lastIndex]);
+      // If there are no item that passed their chance ratio, an optional default value can be set
+      if(newLootList.Count == 0 && defaultLoot != CraftingIngredients.Type.None) {
+         newLootList.Add(new LootInfo { lootType = defaultLoot});
       }
 
       return newLootList;
@@ -50,6 +54,6 @@ public class EnemyDropsData : ScriptableObject {
 public class LootInfo
 {
    public CraftingIngredients.Type lootType;
-   [Range(0,100)]
+   [Range(0.00f,100.00f)]
    public float chanceRatio;
 }

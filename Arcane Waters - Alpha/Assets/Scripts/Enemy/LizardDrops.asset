@@ -14,14 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lootList:
   - lootType: 1
-    chanceRatio: 4
+    chanceRatio: 22.71
   - lootType: 2
     chanceRatio: 4
   - lootType: 8
     chanceRatio: 3
   - lootType: 7
-    chanceRatio: 2
-  - lootType: 9
-    chanceRatio: 5
+    chanceRatio: 0.25
+  defaultLoot: 9
   minQuantity: 1
   maxQuantity: 5
