@@ -4,8 +4,21 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class OreObj : MonoBehaviour {
+public class OreObj : NetworkBehaviour
+{
    #region Public Variables
+
+   // The unique ID assigned to this chest
+   [SyncVar(hook = "onAreaIDChanged")]
+   public int areaID;
+
+   // The unique ID assigned to this chest
+   [SyncVar(hook = "onIDChanged")]
+   public int id;
+
+   // The instance that this chest is in
+   [SyncVar]
+   public int instanceId;
 
    // How close we have to be in order to mine
    public static float MINING_DISTANCE = .45f;
@@ -31,7 +44,26 @@ public class OreObj : MonoBehaviour {
    // The index of the spawn point
    public int oreSpawnID;
 
+   // The list of user IDs that have opened this chest
+   public SyncListInt userIds = new SyncListInt();
+
+   public bool hasParentList;
+
    #endregion
+
+   void onAreaIDChanged (int id) {
+      if (hasParentList == false) {
+         hasParentList = true;
+         Area area = AreaManager.self.getArea((Area.Type) id);
+         OreArea newOreArea = area.GetComponent<OreArea>();
+         newOreArea.oreList.Add(this);
+         transform.SetParent(newOreArea.oreObjHolder);
+      }
+   }
+
+   void onIDChanged (int id) {
+      OreManager.self.registerOreObj(id, this);
+   }
 
    private void Awake () {
       // Component setup
@@ -56,6 +88,16 @@ public class OreObj : MonoBehaviour {
       }
    }
 
+   public bool didUserInteract(int userID) {
+         return userIds.Contains(userID);
+   }
+
+   public bool finishedMining(int oreLife) {
+      if (oreLife >= _oreMaxLife - 1)
+         return true;
+      return false;
+   }
+
    public void setOreData (int id, Area.Type area, OreData oreData) {
       // Initializes ore data setup by the OreArea
       oreID = id;
@@ -64,6 +106,7 @@ public class OreObj : MonoBehaviour {
 
       // Setup default sprite
       _spireRender.sprite = oreData.miningDurabilityIcon[0];
+      _spireRender.enabled = true;
 
       // Life setup of the ore and interaction availability
       oreLife = 0;
@@ -73,6 +116,10 @@ public class OreObj : MonoBehaviour {
 
    public void clientClickedMe () {
       if (isActive == false || Global.player == null || _clickableBox == null || Global.isInBattle()) {
+         return;
+      }
+
+      if(didUserInteract(Global.player.userId)) {
          return;
       }
 
@@ -92,33 +139,34 @@ public class OreObj : MonoBehaviour {
       return (Vector2.Distance(Global.player.transform.position, this.transform.position) < MINING_DISTANCE);
    }
 
-   public void receiveOreUpdate(int oreLifeUpdate) {
-      // Disables the ore if life is depleted
-      if (oreLife >= _oreMaxLife -1) {
-         _outline.setVisibility(false);
-         StartCoroutine(CO_previewReward());
-         isActive = false;
-         return;
-      }
-
+   public void receiveOreUpdate () {
       // Play animation
       miningAnimation.Play("mine");
 
       // Handles spamming
       _isMining = false;
 
-      // Reduces interaction count
-      oreLife = oreLifeUpdate;
-
       // Iterates the sprite index
-      _spireRender.sprite = oreData.miningDurabilityIcon[oreLife];
+      _spireRender.sprite = oreData.miningDurabilityIcon[oreLife+1];
+
+      // Iterates through the ore life
+      oreLife++;
+
+      // Disables the ore if life is depleted
+      if (oreLife >= _oreMaxLife - 1) {
+         _outline.setVisibility(false);
+         StartCoroutine(CO_previewReward());
+         
+         isActive = false;
+      }
    }
 
    private void updateOreLife() {
       if (_isMining == false) {
          // Tell server to update data
          _isMining = true;
-         Global.player.rpc.Cmd_UpdateOreMining(oreID, (int)oreArea);
+         //Global.player.rpc.Cmd_UpdateOreMining(oreID, (int)oreArea);
+         Global.player.rpc.Cmd_UpdateOreMining(id, oreLife);
       }
    }
 
