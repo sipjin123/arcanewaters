@@ -50,8 +50,6 @@ public class DebugButtons : MonoBehaviour
 
       if(Input.GetKey(KeyCode.U)) {
          if (Input.GetKeyDown(KeyCode.Alpha1)) {
-               Debug.LogError("GETING DATA");
-               Global.player.oreManager.Cmd_GetOreArea((int) Area.Type.DesertTown);
          }
          if (Input.GetKeyDown(KeyCode.Alpha2)) {
             Debug.LogError("SETTING DATA");
