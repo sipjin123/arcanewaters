@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 4781134392311502409}
   - component: {fileID: 3040578038071648256}
   - component: {fileID: 4716653281519715582}
+  - component: {fileID: 65921056058032424}
+  - component: {fileID: -5819361145604068013}
   m_Layer: 0
   m_Name: OreMining
   m_TagString: Untagged
@@ -100,12 +102,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44ee10c837a654f4bb0c8478176d2a72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncInterval: 0.1
   oreData: {fileID: 11400000, guid: d354d626f028f314f8ea53fb81091df9, type: 2}
   miningAnimation: {fileID: 5332069486116178444}
   oreLife: 0
   isActive: 1
   oreID: 0
   oreArea: 0
+  oreSpawnID: 0
 --- !u!114 &3040578038071648256
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -152,6 +156,35 @@ MonoBehaviour:
   offsetZ: -0.5
   isActive: 1
   sortPoint: {fileID: 6518078261054491372}
+--- !u!114 &65921056058032424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 229434377172063718}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serverOnly: 0
+  localPlayerAuthority: 0
+  m_AssetId: 
+  m_SceneId: 1281780223
+--- !u!114 &-5819361145604068013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 229434377172063718}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7b30fc1a8890e042ae5319745cb2d13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncInterval: 0.1
 --- !u!1 &889363835305647450
 GameObject:
   m_ObjectHideFlags: 0
