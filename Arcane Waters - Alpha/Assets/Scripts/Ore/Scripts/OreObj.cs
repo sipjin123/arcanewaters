@@ -9,11 +9,11 @@ public class OreObj : NetworkBehaviour
    #region Public Variables
 
    // The unique ID assigned to this ore
-   [SyncVar(hook = "onAreaIDChanged")]
+   [SyncVar]
    public int areaID;
 
    // The unique ID assigned to this ore
-   [SyncVar(hook = "onIDChanged")]
+   [SyncVar]
    public int id;
 
    // The instance that this chest is in
@@ -60,14 +60,29 @@ public class OreObj : NetworkBehaviour
       _spireRender = GetComponent<SpriteRenderer>();
    }
 
-   private void Start () {
-      if(didUserInteract(Global.player.userId)) {
-         int lastIcon = oreData.miningDurabilityIcon.Count - 1;
-         _spireRender.sprite = oreData.miningDurabilityIcon[lastIcon];
-      }
-   }
-
    private void Update () {
+      if(hasParentList == false) {
+         // Manual waiting for Sync vars to setup before registering each ore obj to their respective ore areas
+         if(areaID != 0) {
+            hasParentList = true;
+            Area area = AreaManager.self.getArea((Area.Type) areaID);
+            OreArea newOreArea = area.GetComponent<OreArea>();
+            transform.SetParent(newOreArea.oreObjHolder);
+
+            // Register ore to their respective ore areas
+            newOreArea.registerNetworkOre(this);
+
+            // Registers network object to manager list
+            OreManager.self.registerOreObj(id, this);
+
+            // Disables sprite if mining is complete
+            if (didUserInteract(Global.player.userId)) {
+               int lastIcon = oreData.miningDurabilityIcon.Count - 1;
+               _spireRender.sprite = oreData.miningDurabilityIcon[lastIcon];
+            }
+         }
+      }
+
       if (_graphicRaycaster != null) {
          _graphicRaycaster.gameObject.SetActive(!PanelManager.self.hasPanelInStack());
       }
@@ -156,13 +171,8 @@ public class OreObj : NetworkBehaviour
       if (_isMining == false) {
          // Tell server to update data
          _isMining = true;
-         //Global.player.rpc.Cmd_UpdateOreMining(oreID, (int)oreArea);
          Global.player.rpc.Cmd_UpdateOreMining(id, oreLife);
       }
-   }
-
-   public void rewardPlayer( ) {
-      RewardManager.self.requestIngredient(oreData.ingredientReward);
    }
 
    protected void handleSpriteOutline () {
@@ -172,26 +182,9 @@ public class OreObj : NetworkBehaviour
       }
    }
 
-   private void onAreaIDChanged(int id) {
-      // Ensures that ore obj is registered to an ore area
-      if (hasParentList == false)
-      {
-         hasParentList = true;
-         Area area = AreaManager.self.getArea((Area.Type)id);
-         OreArea newOreArea = area.GetComponent<OreArea>();
-         newOreArea.oreList.Add(this);
-         transform.SetParent(newOreArea.oreObjHolder);
-      }
-   }
-
-   private void onIDChanged(int id) {
-      // Registers network object to manager list
-      OreManager.self.registerOreObj(id, this);
-   }
-
    IEnumerator CO_previewReward() {
       yield return new WaitForSeconds(.5f);
-      rewardPlayer();
+      Global.player.rpc.Cmd_MinedOre(oreData.oreType);
    }
 
    #region Private Variables

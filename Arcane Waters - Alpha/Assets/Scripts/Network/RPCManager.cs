@@ -1290,13 +1290,16 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_ReceiveOreInfo (NetworkConnection connection, OreInfo oreInfo, int spawnIndex, int id) {
-      //Debug.LogError("RECEIVING NEW ORE POSITION :: "+oreInfo.position.x+" "+oreInfo.position.y);
       OreArea oreArea = AreaManager.self.getArea((Area.Type) oreInfo.areaType).GetComponent<OreArea>();
-      OreObj oreObject = oreArea.oreList[oreInfo.oreIndex];//OreManager.self.getOreObj(id);//
 
+      // If network object is not spawned yet, send to cache
       if (oreArea.oreList.Count <= 0) {
+         oreArea.oreTempList.Add(new OreInfoCache { oreInfo = oreInfo, spawnIndex = spawnIndex, id = id });
          return;
       }
+
+      // Processes ore objects if spawned
+      OreObj oreObject = oreObject = oreArea.oreList[oreInfo.oreIndex];
       oreObject.transform.localPosition = oreInfo.position;
       oreObject.oreSpawnID = spawnIndex;
 
