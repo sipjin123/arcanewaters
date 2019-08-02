@@ -7,9 +7,6 @@ public class CraftingPanel : Panel, IPointerClickHandler
 {
    #region Public Variables
 
-   // List of items that can be crafted
-   public CombinationDataList combinationDataList;
-
    // The name of player
    public Text playerNameText;
 
@@ -67,7 +64,7 @@ public class CraftingPanel : Panel, IPointerClickHandler
 
    public void requestInventoryFromServer (int pageNumber) {
       // Get the latest info from the server to show in our character stack
-      Global.player.rpc.Cmd_RequestItemsFromServer(pageNumber, 15);
+      Global.player.rpc.Cmd_RequestItemsFromServer(pageNumber, 35);
    }
 
    private void clickMaterialRow (BlueprintRow currBlueprintRow) {
@@ -82,7 +79,7 @@ public class CraftingPanel : Panel, IPointerClickHandler
       _currBlueprintRow = currBlueprintRow;
 
       int id = currBlueprintRow.itemData.getCastItem().itemTypeId;
-      CombinationData itemCombo = combinationDataList.comboDataList.Find(_ => _.blueprintTypeID == id);
+      CombinationData itemCombo = RewardManager.self.combinationDataList.comboDataList.Find(_ => _.blueprintTypeID == id);
       _craftingIngredientList = itemCombo.combinationRequirements;
 
       int requirementCount = itemCombo.combinationRequirements.Count;
@@ -152,7 +149,9 @@ public class CraftingPanel : Panel, IPointerClickHandler
    private void craft () {
       if (craftableItem != null) {
          Item item = craftableItem;
-         RewardManager.self.showItemInRewardPanel(item);
+
+         // Tells the server the item was crafted
+         Global.player.rpc.Cmd_CraftItem((Blueprint.Type)_currBlueprintRow.itemData.itemTypeId);
 
          PanelManager.self.get(Type.Craft).hide();
          craftableItem = null;
@@ -164,7 +163,7 @@ public class CraftingPanel : Panel, IPointerClickHandler
       itemTitleText.text = "";
       itemInfoText.text = "";
 
-      List<CombinationData> dataList = combinationDataList.comboDataList;
+      List<CombinationData> dataList = RewardManager.self.combinationDataList.comboDataList;
       itemInfoText.text = craftableItem.getDescription();
       itemTitleText.text = craftableItem.getName();
    }
