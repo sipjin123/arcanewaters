@@ -16,6 +16,9 @@ public class OreArea : MonoBehaviour {
    // List of the ores in the location
    public List<OreObj> oreList;
 
+   // List of the ores in the location
+   public List<OreInfoCache> oreTempList = new List<OreInfoCache>();
+
    // List of data of ores
    public List<OreData> oreDataList;
 
@@ -83,4 +86,46 @@ public class OreArea : MonoBehaviour {
 
       return returnSpawnList;
    }
+
+   public void registerNetworkOre(OreObj oreObj) {
+      // Registers newly instantiated ore objects
+      oreList.Add(oreObj);
+      if(oreList.Count >= oreTempList.Count) {
+         processTempData();
+      }
+   }
+
+   private void processTempData() {
+      // Retrieves the cached data and process each ore info per area
+      for(int i = 0; i < oreTempList.Count; i ++) {
+         // Cache data
+         OreInfo oreInfo = oreTempList[i].oreInfo;
+         int spawnIndex = oreTempList[i].spawnIndex;
+         int id = oreTempList[i].id;
+
+         OreObj oreObject = oreObject = oreList[oreInfo.oreIndex];
+         oreObject.transform.localPosition = oreInfo.position;
+         oreObject.oreSpawnID = spawnIndex;
+
+         string idString = ((int) oreInfo.areaType).ToString() + "" + oreInfo.oreIndex;
+         int newID = int.Parse(idString);
+         oreObject.setOreData(newID, oreInfo.areaType, oreDataList.Find(_ => _.oreType == oreInfo.oreType));
+
+         List<Transform> spawnList = spawnPointList;
+         int lastIndex = oreObject.oreData.miningDurabilityIcon.Count - 1;
+         spawnList[spawnIndex].GetComponent<SpriteRenderer>().sprite = null;
+      }
+   }
+}
+
+public class OreInfoCache
+{
+   // The cached info fetched from the server
+   public OreInfo oreInfo;
+
+   // Index position of ore to spawn points
+   public int spawnIndex;
+
+   // Ore ID
+   public int id;
 }
