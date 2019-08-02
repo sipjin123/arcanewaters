@@ -3,18 +3,26 @@ using UnityEngine;
 //#if UNITY_EDITOR
 public class DebugButtons : MonoBehaviour
 {
-   public EnemyDropsData tempDrop;
+   public GenericLootData tempDrop;
 
    private void processItem(Item item) {
-      RewardManager.self.showItemInRewardPanel(item);
+      RewardManager.self.processLoot(item);
    }
 
    private void Update () {
-      if(Input.GetKeyDown(KeyCode.Y)) {
+      if(Input.GetKeyDown(KeyCode.T)) {
+         var temp = tempDrop.requestLootList();
+         List<Item> itemList = new List<Item>();
+         for(int i = 0; i < temp.Count; i++) {
+            CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) temp[i].lootType, ColorType.DarkGreen, ColorType.DarkPurple, "");
+            craftingIngredients.itemTypeId = (int) craftingIngredients.type;
+            Item item = craftingIngredients;
+            itemList.Add(item);
+         }
 
-         RewardManager.self.processLoots(tempDrop.requestLootList());
+         RewardManager.self.processLoots(itemList);
          return;
-
+         /*
          var newLootlist = tempDrop.requestLootList();
          Debug.LogError("-------------------- I received this list : " + newLootlist.Count);
          List<Item> itemList = new List<Item>();
@@ -31,7 +39,7 @@ public class DebugButtons : MonoBehaviour
 
          RewardScreen rewardPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
          rewardPanel.setItemDataGroup(itemList);
-         PanelManager.self.pushPanel(Panel.Type.Reward);
+         PanelManager.self.pushPanel(Panel.Type.Reward);*/
 
 
       }
@@ -119,15 +127,23 @@ public class DebugButtons : MonoBehaviour
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;
             processItem(craftingIngredients);
          }
+         if (Input.GetKeyDown(KeyCode.Alpha5)) {
+            CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Lizard_Claw, ColorType.DarkGreen, ColorType.DarkPurple, "");
+            craftingIngredients.itemTypeId = (int) craftingIngredients.type;
+            //processItem(craftingIngredients);
+            Global.player.rpc.processRewardItems(craftingIngredients);
+         }
          if (Input.GetKeyDown(KeyCode.Alpha6)) {
             CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Lizard_Scale, ColorType.DarkGreen, ColorType.DarkPurple, "");
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;
-            processItem(craftingIngredients);
+            //processItem(craftingIngredients);
+            Global.player.rpc.processRewardItems(craftingIngredients);
          }
          if (Input.GetKeyDown(KeyCode.Alpha7)) {
             CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Lumber, ColorType.DarkGreen, ColorType.DarkPurple, "");
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;
-            processItem(craftingIngredients);
+            //processItem(craftingIngredients);
+            Global.player.rpc.processRewardItems(craftingIngredients);
          }
          if (Input.GetKeyDown(KeyCode.Alpha8)) {
             CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Gold_Ore, ColorType.DarkGreen, ColorType.DarkPurple, "");
