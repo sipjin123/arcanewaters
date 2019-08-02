@@ -955,8 +955,125 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_RequestItem (Item item) {
-      processRewardItems(item);
+   public void Cmd_FinishedQuest(int npcID, int questIndex) {
+      processNPCRewards(npcID, questIndex);
+   }
+
+   [Command]
+   public void Cmd_KilledMonster (Enemy.Type enemyType) {
+      processEnemyRewards(enemyType);
+   }
+
+   [Command]
+   public void Cmd_MinedOre (OreType oreType) {
+      processOreRewards(oreType);
+   }
+
+   [Command]
+   public void Cmd_CraftItem (Blueprint.Type blueprintType) {
+      processCraftingRewards(blueprintType);
+   }
+
+   [Server]
+   public void processNPCRewards(int npcID, int questIndex) {
+      // Retrieves the npc quest data on server side using npc id
+      NPC npc = NPCManager.self.getNPC(npcID);
+      CraftingIngredients questReward = new CraftingIngredients(0, (int) npc.npcData.npcQuestList[0].deliveryQuestList[questIndex].rewardType, ColorType.DarkGreen, ColorType.DarkPurple, "");
+      questReward.itemTypeId = (int) questReward.type;
+      Item item = questReward;
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.createNewItem(_player.userId, item);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Tells the user to update their inventory cache to retrieve the updated items
+            Target_UpdateInventory(_player.connectionToClient);
+            Target_ReceiveItem(_player.connectionToClient, item);
+         });
+      });
+   }
+
+   [Server]
+   public void processOreRewards (OreType oreType) {
+      // Gets loots for ore type
+      OreLootLibrary lootLibrary = RewardManager.self.oreLootList.Find(_ => _.oreType == oreType);
+      List<LootInfo> processedLoots = lootLibrary.dropTypes.requestLootList();
+      processGenericLoots(processedLoots);
+   }
+
+   [Server]
+   public void processEnemyRewards (Enemy.Type enemyType) {
+      // Gets loots for enemy type
+      EnemyLootLibrary lootLibrary = RewardManager.self.enemyLootList.Find(_ => _.enemyType == enemyType);
+      List<LootInfo> processedLoots = lootLibrary.dropTypes.requestLootList();
+      processGenericLoots(processedLoots);
+   }
+
+   [Server]
+   public void processCraftingRewards (Blueprint.Type blueprintType) {
+      // Gets the crafting result using cached scriptable object combo data
+      CombinationData data = RewardManager.self.combinationDataList.comboDataList.Find(_ => _.blueprintTypeID == (int)blueprintType);
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.createNewItem(_player.userId, data.resultItem);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Tells the user to update their inventory cache to retrieve the updated items
+            Target_UpdateInventory(_player.connectionToClient);
+            Target_ReceiveItem(_player.connectionToClient, data.resultItem);
+         });
+      });
+   }
+
+   [Server]
+   public void processGenericLoots(List<LootInfo> processedLoots) {
+      // Item list handling
+      List<Item> newItemList = new List<Item>();
+      int processedLootCount = processedLoots.Count;
+
+      // Generates new list to be passed to client
+      for (int i = 0; i < processedLootCount; i++) {
+         CraftingIngredients createdItem = new CraftingIngredients(0, (int) processedLoots[i].lootType, ColorType.None, ColorType.None, "");
+         createdItem.itemTypeId = (int) processedLoots[i].lootType;
+         newItemList.Add(createdItem.getCastItem());
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         for (int i = 0; i < processedLootCount; i++) {
+            DB_Main.createNewItem(_player.userId, newItemList[i]);
+         }
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Tells the user to update their inventory cache to retrieve the updated items
+            Target_UpdateInventory(_player.connectionToClient);
+            Target_ReceiveItemList(_player.connectionToClient, newItemList.ToArray());
+         });
+      });
+   }
+   
+   [TargetRpc]
+   public void Target_ReceiveItemList(NetworkConnection connection, Item[] itemList) {
+      RewardManager.self.processLoots(itemList.ToList());
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveItem (NetworkConnection connection, Item item) {
+      RewardManager.self.processLoot(item);
+   }
+
+   [TargetRpc]
+   public void Target_UpdateInventory (NetworkConnection connection) {
+      InventoryCacheManager.self.fetchInventory();
+   }
+
+   [Server]
+   public void processRewardItems (Item item) {
+      // Editor debug purposes, direct adding of item to player
+#if UNITY_EDITOR
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         item = DB_Main.createNewItem(_player.userId, item);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Tells the user to update their inventory cache to retrieve the updated items
+            Target_UpdateInventory(_player.connectionToClient);
+         });
+      });
+#endif
    }
 
    [Command]
@@ -1172,11 +1289,6 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_UpdateInventory (NetworkConnection connection) {
-      InventoryCacheManager.self.fetchInventory();
-   }
-
-   [TargetRpc]
    public void Target_ReceiveOreInfo (NetworkConnection connection, OreInfo oreInfo, int spawnIndex, int id) {
       //Debug.LogError("RECEIVING NEW ORE POSITION :: "+oreInfo.position.x+" "+oreInfo.position.y);
       OreArea oreArea = AreaManager.self.getArea((Area.Type) oreInfo.areaType).GetComponent<OreArea>();
@@ -1253,17 +1365,6 @@ public class RPCManager : NetworkBehaviour {
    [TargetRpc]
    public void Target_GetMiningInfo (NetworkConnection connection, int oreID) {
       OreManager.self.getOreObj(oreID).receiveOreUpdate();
-   }
-
-   [Server]
-   public void processRewardItems (Item item) {
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         item = DB_Main.createNewItem(_player.userId, item);
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Tells the user to update their inventory cache to retrieve the updated items
-            Target_UpdateInventory(_player.connectionToClient);
-         });
-      });
    }
 
    [Server]
