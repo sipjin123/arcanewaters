@@ -17,7 +17,7 @@ public class MonsterBattler : AutomatedBattler
    public ColorType bodyColor2;
 
    // Holds the info of loots and their chances to drop
-   public EnemyDropsData enemyDropData;
+   public GenericLootData enemyDropData;
 
    #endregion
 
@@ -44,7 +44,8 @@ public class MonsterBattler : AutomatedBattler
       // Wait a little bit for it to finish
       yield return new WaitForSeconds(.25f);
 
-      RewardManager.self.processLoots(enemyDropData.requestLootList());
+      // Tells the server this enemy died
+      Global.player.rpc.Cmd_KilledMonster(enemyType);
 
       // Play a "Poof" effect on our head
       EffectManager.playPoofEffect(this);

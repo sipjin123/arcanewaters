@@ -70,7 +70,7 @@ public class GenerateScriptableObjects : MonoBehaviour
 
    [MenuItem("Assets/Create/Create EnemyDropsData Object")]
    public static void Create_EnemyDropsData () {
-      EnemyDropsData asset = ScriptableObject.CreateInstance<EnemyDropsData>();
+      GenericLootData asset = ScriptableObject.CreateInstance<GenericLootData>();
       Process(asset);
    }
    

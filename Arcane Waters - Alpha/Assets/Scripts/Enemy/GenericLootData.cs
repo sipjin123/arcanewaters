@@ -6,7 +6,7 @@ using Mirror;
 using System;
 using System.Linq;
 
-public class EnemyDropsData : ScriptableObject {
+public class GenericLootData : ScriptableObject {
    #region Public Variables
 
    // List of loots with their chance rate
