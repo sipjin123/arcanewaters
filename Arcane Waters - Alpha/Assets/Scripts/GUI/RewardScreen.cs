@@ -26,17 +26,18 @@ public class RewardScreen : Panel
 
    public void setItemData (Item item) {
       disableAll();
-      rewardRows[0].rewardIcon.sprite = ImageManager.getSprite(item.getIconPath());
+      rewardRows[0].rewardIcon.sprite = ImageManager.getSprite(item.getCastItem().getIconPath());
       rewardRows[0].gameObject.SetActive(true);
-      Global.player.rpc.Cmd_RequestItem(item);
+      rewardRows[0].rewardName.text = item.getCastItem().getName();
    }
 
    public void setItemDataGroup (List<Item> itemList) {
       disableAll();
       for (int i = 0; i < itemList.Count; i++) {
+         Item currItem = itemList[i].getCastItem();
          rewardRows[i].gameObject.SetActive(true);
-         rewardRows[i].rewardIcon.sprite = ImageManager.getSprite(itemList[i].getIconPath());
-         Global.player.rpc.Cmd_RequestItem(itemList[i]);
+         rewardRows[i].rewardIcon.sprite = ImageManager.getSprite(currItem.getIconPath());
+         rewardRows[i].rewardName.text = currItem.getName();
       }
    }
 

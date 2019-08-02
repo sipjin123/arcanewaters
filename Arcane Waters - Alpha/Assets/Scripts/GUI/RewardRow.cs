@@ -10,6 +10,9 @@ public class RewardRow : MonoBehaviour {
    // Shows the icon of the rewarded item
    public Image rewardIcon;
 
+   // Name of the rewarded item
+   public Text rewardName;
+
    #endregion
 
    #region Private Variables

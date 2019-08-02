@@ -191,7 +191,8 @@ public class NPCPanel : Panel {
 
          // CloseNPCPanel and Call Reward Panel
          PanelManager.self.popPanel();
-         rewardPlayer();
+         Global.player.rpc.Cmd_FinishedQuest(npc.npcId, currentQuestIndex);
+         //RewardManager.self.requestIngredient(currentDeliveryQuest.rewardType);
 
          // Update quest State
          currentDeliveryQuest.questState = currentDialogue.nextState;
@@ -230,10 +231,6 @@ public class NPCPanel : Panel {
             }
          }
       }
-   }
-
-   private void rewardPlayer () {
-      RewardManager.self.requestIngredient(currentDeliveryQuest.rewardType);
    }
 
    private void setQuestClicker (QuestInfoData data) {

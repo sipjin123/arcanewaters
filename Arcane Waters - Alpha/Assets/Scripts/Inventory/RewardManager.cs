@@ -3,12 +3,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System;
 
 public class RewardManager : MonoBehaviour {
    #region Public Variables
 
+   // List of items that can be crafted
+   public CombinationDataList combinationDataList;
+
    // Self reference
    public static RewardManager self;
+
+   // List of drops from ore mining
+   public List<OreLootLibrary> oreLootList;
+
+   // List of drops of enemies
+   public List<EnemyLootLibrary> enemyLootList;
 
    #endregion
 
@@ -16,34 +26,33 @@ public class RewardManager : MonoBehaviour {
       self = this;
    }
 
-   public void processLoots (List<LootInfo> loots) {
-      // Item list extraction
-      List<Item> itemList = new List<Item>();
-      for (int i = 0; i < loots.Count; i++) {
-         CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) loots[i].lootType, ColorType.DarkGreen, ColorType.DarkPurple, "");
-         craftingIngredients.itemTypeId = (int) craftingIngredients.type;
-         Item item = craftingIngredients;
-         itemList.Add(item);
-      }
-
+   public void processLoots (List<Item> loots) {
       // Calls the panel and injects the List of items
       RewardScreen rewardPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
-      rewardPanel.setItemDataGroup(itemList);
+      rewardPanel.setItemDataGroup(loots);
       PanelManager.self.pushPanel(Panel.Type.Reward);
    }
 
-   public void requestIngredient (CraftingIngredients.Type ingredient) {
-      // Ingredient to item conversion
-      CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) ingredient, ColorType.DarkGreen, ColorType.DarkPurple, "");
-      craftingIngredients.itemTypeId = (int) craftingIngredients.type;
-      Item item = craftingIngredients;
-      showItemInRewardPanel(item);
-   }
-
-   public void showItemInRewardPanel (Item item) {
-      // Calls the panel and a single item
+   public void processLoot (Item loot) {
+      // Calls the panel and injects the List of items
       RewardScreen rewardPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
-      rewardPanel.setItemData(item);
+      rewardPanel.setItemData(loot);
       PanelManager.self.pushPanel(Panel.Type.Reward);
    }
+}
+
+[Serializable]
+public class EnemyLootLibrary
+{
+   public Enemy.Type enemyType;
+
+   public GenericLootData dropTypes;
+}
+
+[Serializable]
+public class OreLootLibrary
+{
+   public OreType oreType;
+
+   public GenericLootData dropTypes;
 }
