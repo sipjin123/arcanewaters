@@ -44,9 +44,6 @@ public class MonsterBattler : AutomatedBattler
       // Wait a little bit for it to finish
       yield return new WaitForSeconds(.25f);
 
-      // Tells the server this enemy died
-      Global.player.rpc.Cmd_KilledMonster(enemyType);
-
       // Play a "Poof" effect on our head
       EffectManager.playPoofEffect(this);
    }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-//#if UNITY_EDITOR
+#if IS_SERVER_BUILD
 public class DebugButtons : MonoBehaviour
 {
    public GenericLootData tempDrop;
@@ -153,7 +153,7 @@ public class DebugButtons : MonoBehaviour
       }
    }
 }
-//#endif
+#endif
 
 public static class DebugCustom
 {
