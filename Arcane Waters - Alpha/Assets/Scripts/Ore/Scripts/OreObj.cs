@@ -8,7 +8,7 @@ public class OreObj : NetworkBehaviour
 {
    #region Public Variables
 
-   // The unique ID assigned to this ore
+   // The area id the ore is registered to (needed for server data setup)
    [SyncVar]
    public int areaID;
 
@@ -161,7 +161,7 @@ public class OreObj : NetworkBehaviour
       // Disables the ore if life is depleted
       if (oreLife >= _oreMaxLife - 1) {
          _outline.setVisibility(false);
-         StartCoroutine(CO_previewReward());
+         StartCoroutine(CO_SendMiningRequestToServer());
          
          isActive = false;
       }
@@ -182,7 +182,7 @@ public class OreObj : NetworkBehaviour
       }
    }
 
-   IEnumerator CO_previewReward() {
+   IEnumerator CO_SendMiningRequestToServer() {
       yield return new WaitForSeconds(.5f);
       Global.player.rpc.Cmd_MinedOre(oreData.oreType);
    }

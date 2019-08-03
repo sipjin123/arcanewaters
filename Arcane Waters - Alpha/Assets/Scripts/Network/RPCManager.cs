@@ -985,8 +985,6 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.createNewItem(_player.userId, item);
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Tells the user to update their inventory cache to retrieve the updated items
-            Target_UpdateInventory(_player.connectionToClient);
             Target_ReceiveItem(_player.connectionToClient, item);
          });
       });
@@ -1015,8 +1013,6 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.createNewItem(_player.userId, data.resultItem);
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Tells the user to update their inventory cache to retrieve the updated items
-            Target_UpdateInventory(_player.connectionToClient);
             Target_ReceiveItem(_player.connectionToClient, data.resultItem);
          });
       });
@@ -1040,8 +1036,6 @@ public class RPCManager : NetworkBehaviour {
             DB_Main.createNewItem(_player.userId, newItemList[i]);
          }
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Tells the user to update their inventory cache to retrieve the updated items
-            Target_UpdateInventory(_player.connectionToClient);
             Target_ReceiveItemList(_player.connectionToClient, newItemList.ToArray());
          });
       });
@@ -1050,11 +1044,15 @@ public class RPCManager : NetworkBehaviour {
    [TargetRpc]
    public void Target_ReceiveItemList(NetworkConnection connection, Item[] itemList) {
       RewardManager.self.processLoots(itemList.ToList());
+      // Tells the user to update their inventory cache to retrieve the updated items
+      InventoryCacheManager.self.fetchInventory();
    }
 
    [TargetRpc]
    public void Target_ReceiveItem (NetworkConnection connection, Item item) {
       RewardManager.self.processLoot(item);
+      // Tells the user to update their inventory cache to retrieve the updated items
+      InventoryCacheManager.self.fetchInventory();
    }
 
    [TargetRpc]
