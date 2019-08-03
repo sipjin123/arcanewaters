@@ -392,7 +392,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       }*/
    }
 
-#region Private Variables
+#  region Private Variables
 
    // The most recent list of items we displayed
    protected List<Item> _itemList = new List<Item>();
@@ -415,5 +415,5 @@ public class InventoryPanel : Panel, IPointerClickHandler {
    // The item that was selected in the previous frame
    protected Item _previouslySelectedItem;
 
-#endregion
+   #endregion
 }

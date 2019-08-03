@@ -36178,8 +36178,8 @@ MonoBehaviour:
   - {fileID: 3236333251640225058}
   oreList: []
   oreDataList:
-  - {fileID: 11400000, guid: 2b2c0179980a27c48948851722b34502, type: 2}
   - {fileID: 11400000, guid: d354d626f028f314f8ea53fb81091df9, type: 2}
+  - {fileID: 11400000, guid: 2b2c0179980a27c48948851722b34502, type: 2}
   hasInitialized: 0
 --- !u!1 &1376698964083250
 GameObject:
@@ -100769,11 +100769,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2327397593832272690}
     m_Modifications:
-    - target: {fileID: 4993027017750840190, guid: 8ea9edf2698125546938aa769c3feb92,
-        type: 3}
-      propertyPath: m_Name
-      value: OreSpawn (1)
-      objectReference: {fileID: 0}
     - target: {fileID: 6172143708676913804, guid: 8ea9edf2698125546938aa769c3feb92,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -100829,6 +100824,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4993027017750840190, guid: 8ea9edf2698125546938aa769c3feb92,
+        type: 3}
+      propertyPath: m_Name
+      value: OreSpawn (1)
+      objectReference: {fileID: 0}
     - target: {fileID: 6223742590174142045, guid: 8ea9edf2698125546938aa769c3feb92,
         type: 3}
       propertyPath: m_SortingOrder
@@ -100849,11 +100849,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2327397593832272690}
     m_Modifications:
-    - target: {fileID: 4993027017750840190, guid: 8ea9edf2698125546938aa769c3feb92,
-        type: 3}
-      propertyPath: m_Name
-      value: OreSpawn
-      objectReference: {fileID: 0}
     - target: {fileID: 6172143708676913804, guid: 8ea9edf2698125546938aa769c3feb92,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -100909,6 +100904,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4993027017750840190, guid: 8ea9edf2698125546938aa769c3feb92,
+        type: 3}
+      propertyPath: m_Name
+      value: OreSpawn
+      objectReference: {fileID: 0}
     - target: {fileID: 6223742590174142045, guid: 8ea9edf2698125546938aa769c3feb92,
         type: 3}
       propertyPath: m_SortingOrder
@@ -100929,11 +100929,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2327397593832272690}
     m_Modifications:
-    - target: {fileID: 4993027017750840190, guid: 8ea9edf2698125546938aa769c3feb92,
-        type: 3}
-      propertyPath: m_Name
-      value: OreSpawn (3)
-      objectReference: {fileID: 0}
     - target: {fileID: 6172143708676913804, guid: 8ea9edf2698125546938aa769c3feb92,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -100989,6 +100984,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4993027017750840190, guid: 8ea9edf2698125546938aa769c3feb92,
+        type: 3}
+      propertyPath: m_Name
+      value: OreSpawn (3)
+      objectReference: {fileID: 0}
     - target: {fileID: 6223742590174142045, guid: 8ea9edf2698125546938aa769c3feb92,
         type: 3}
       propertyPath: m_SortingOrder
@@ -101009,11 +101009,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2327397593832272690}
     m_Modifications:
-    - target: {fileID: 4993027017750840190, guid: 8ea9edf2698125546938aa769c3feb92,
-        type: 3}
-      propertyPath: m_Name
-      value: OreSpawn (2)
-      objectReference: {fileID: 0}
     - target: {fileID: 6172143708676913804, guid: 8ea9edf2698125546938aa769c3feb92,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -101068,6 +101063,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4993027017750840190, guid: 8ea9edf2698125546938aa769c3feb92,
+        type: 3}
+      propertyPath: m_Name
+      value: OreSpawn (2)
       objectReference: {fileID: 0}
     - target: {fileID: 6223742590174142045, guid: 8ea9edf2698125546938aa769c3feb92,
         type: 3}
