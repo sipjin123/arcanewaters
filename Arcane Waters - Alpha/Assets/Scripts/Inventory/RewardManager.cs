@@ -14,9 +14,6 @@ public class RewardManager : MonoBehaviour {
    // Self reference
    public static RewardManager self;
 
-   // List of drops from ore mining
-   public List<OreLootLibrary> oreLootList;
-
    // List of drops of enemies
    public List<EnemyLootLibrary> enemyLootList;
 
@@ -45,14 +42,6 @@ public class RewardManager : MonoBehaviour {
 public class EnemyLootLibrary
 {
    public Enemy.Type enemyType;
-
-   public GenericLootData dropTypes;
-}
-
-[Serializable]
-public class OreLootLibrary
-{
-   public OreType oreType;
 
    public GenericLootData dropTypes;
 }

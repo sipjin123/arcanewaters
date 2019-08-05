@@ -302,13 +302,9 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       // Recreate the item list as the proper subclasses, now that they've been through the serialization process
       List<Item> itemList = new List<Item>();
       foreach (Item item in itemArray) {
-#if UNITY_EDITOR
-         itemList.Add(item.getCastItem());
-#else
          if (item.category != Item.Category.CraftingIngredients) {
             itemList.Add(item.getCastItem());
          }
-#endif
       }
 
       // Add the new items that we received
@@ -392,7 +388,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       }*/
    }
 
-#  region Private Variables
+   #region Private Variables
 
    // The most recent list of items we displayed
    protected List<Item> _itemList = new List<Item>();

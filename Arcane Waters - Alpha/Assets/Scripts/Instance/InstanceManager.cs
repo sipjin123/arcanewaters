@@ -77,11 +77,6 @@ public class InstanceManager : MonoBehaviour {
          TreasureManager.self.createTreasureForInstance(instance);
       }
 
-      // Creates ore instance for maps with ores
-      if(AreaManager.self.getArea(areaType).GetComponent<OreArea>() != null) {
-         OreManager.self.createOreForInstance(instance);
-      }
-
       // Create any Enemies that exist in this Instance
       EnemyManager.self.spawnEnemiesOnServerForInstance(instance);
 

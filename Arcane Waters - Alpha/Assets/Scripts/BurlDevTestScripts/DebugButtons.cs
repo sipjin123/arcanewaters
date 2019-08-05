@@ -59,39 +59,11 @@ public class DebugButtons : MonoBehaviour
       if(Input.GetKey(KeyCode.U)) {
          if (Input.GetKeyDown(KeyCode.Alpha1)) {
          }
-         if (Input.GetKeyDown(KeyCode.Alpha2)) {
-            Debug.LogError("SETTING DATA");
-
-            List<Area> areaList = AreaManager.self.getAreas();
-            for (int i = 0; i < areaList.Count; i++) {
-               if (areaList[i].GetComponent<OreArea>() != null) {
-                  Debug.LogError("Setting ore area from the serveR :: " + areaList[i].areaType);
-                  areaList[i].GetComponent<OreArea>().initOreArea();
-               }
-            }
-
-            //Global.player.oreManager.setOreForArea((int)Area.Type.DesertTown);
-         }
 
          if (Input.GetKeyDown(KeyCode.Alpha3)) {
             var areas = AreaManager.self.getAreas();
             Debug.LogError("The list of area is : " + areas.Count);
-
-            foreach(Area temp in areas) {
-               Debug.LogError("The area is : " + temp.name + " ORE? : " + Area.hasOre(temp.areaType));
-            }
          }
-
-         if (Input.GetKeyDown(KeyCode.Alpha4)) {
-            var areas = AreaManager.self.getArea(Area.Type.DesertTown);
-            var oreArea = areas.GetComponent<OreArea>();
-            Debug.LogError("Requestlist");
-            var lister = oreArea.getPotentialSpawnPoints(2);
-
-            Debug.LogError("My list count is : " + lister.Count);
-         }
-
-
 
          if (Input.GetKeyDown(KeyCode.Alpha5)) {
             DB_Main.getNPCRelationInfo(Global.player.userId, 2);

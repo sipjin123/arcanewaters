@@ -45,10 +45,6 @@ public class Area : MonoBehaviour {
       }
    }
 
-   public static bool hasOre (Type areaType) {
-      return AreaManager.self.getArea(areaType).GetComponent<OreArea>() != null;
-   }
-
    public static bool isSea (Type areaType) {
       return (areaType.ToString().StartsWith("Ocean") || areaType.ToString().StartsWith("Sea"));
    }

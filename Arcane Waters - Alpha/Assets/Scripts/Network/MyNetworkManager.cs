@@ -194,9 +194,6 @@ public class MyNetworkManager : NetworkManager {
             // Send any extra info as targeted RPCs
             player.cropManager.sendSiloInfo();
 
-            // Initiating ore information
-            player.rpc.initializeIndividualOre((int) player.areaType);
-
             TutorialManager.self.sendTutorialInfo(player, false);
          });
       });
