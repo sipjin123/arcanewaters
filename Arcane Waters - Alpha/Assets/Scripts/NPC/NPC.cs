@@ -131,6 +131,8 @@ public class NPC : MonoBehaviour {
          // nameText.text = "[" + npcType + "]";
          // setNameColor(nameText, npcType);
       }
+
+      npcData = QuestManager.self.npcDataList[0];
    }
 
    private void Update () {
@@ -221,13 +223,13 @@ public class NPC : MonoBehaviour {
             if (findingItemList.count >= deliveryQuest.quantity) {
                // Sets the player to a positive response if Requirements are met
                currentAnswerDialogue.Add(currentDialogue.playerReply);
-               Global.player.rpc.Cmd_GetClickableRows(this.npcId);
+               Global.player.rpc.Cmd_GetClickableRows(this.npcId, currentAnswerDialogue.ToArray());
                return;
             }
          } else {
             // Sets the player to a negative response if Requirements are met
             currentAnswerDialogue.Add(currentDialogue.playerNegativeReply);
-            Global.player.rpc.Cmd_GetClickableRows(this.npcId);
+            Global.player.rpc.Cmd_GetClickableRows(this.npcId, currentAnswerDialogue.ToArray());
             return;
          }
       }
@@ -236,7 +238,7 @@ public class NPC : MonoBehaviour {
       currentAnswerDialogue.Add(currentDialogue.playerReply);
      
       // Send a request to the server to get the clickable text options
-      Global.player.rpc.Cmd_GetClickableRows(this.npcId);
+      Global.player.rpc.Cmd_GetClickableRows(this.npcId, currentAnswerDialogue.ToArray());
    }
 
    public void clientClickedMe () {

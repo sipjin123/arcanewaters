@@ -28,6 +28,9 @@ public class ItemInfo {
    public ColorType color1;
    public ColorType color2;
 
+   // Quantity of fetched item
+   public int itemCount;
+
    #endregion
 
    public ItemInfo () { }
@@ -39,6 +42,7 @@ public class ItemInfo {
       this.itemCategory = (Item.Category) DataUtil.getInt(dataReader, "itmCategory");
       this.itemType = DataUtil.getInt(dataReader, "itmType");
       this.itemData = DataUtil.getString(dataReader, "itmData");
+      this.itemCount = DataUtil.getInt(dataReader, "itmCount");
 
       // Defaults
       this.color1 = (ColorType) DataUtil.getInt(dataReader, "itmColor1");
@@ -68,6 +72,7 @@ public class ItemInfo {
       this.itemData = itemInfo.itemData;
       this.color1 = itemInfo.color1;
       this.color2 = itemInfo.color2;
+      this.itemCount = itemInfo.itemCount;
    }
 
    public override bool Equals (object rhs) {

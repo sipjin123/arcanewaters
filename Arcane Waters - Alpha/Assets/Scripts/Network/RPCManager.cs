@@ -231,10 +231,7 @@ public class RPCManager : NetworkBehaviour {
    public void Target_ReceiveNPCMessage (NetworkConnection connection, string response) {
       if (NPCPanel.self.isActiveAndEnabled) {
          // Set the new text message
-         NPCPanel.self.greetingText.text = response;
-
-         // Make the NPC start talking
-         AutoTyper.SlowlyRevealText(NPCPanel.self.greetingText, response);
+         NPCPanel.self.SetMessage(response);
       }
    }
 
@@ -955,8 +952,8 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_FinishedQuest(int npcID, int questIndex) {
-      processNPCRewards(npcID, questIndex);
+   public void Cmd_FinishedQuest(int userID, int npcID, int questIndex) {
+      processNPCRewards(userID, npcID, questIndex);
    }
 
    [Command]
@@ -970,9 +967,38 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Server]
-   public void processNPCRewards(int npcID, int questIndex) {
+   public void processNPCRewards(int userID, int npcID, int questIndex) {
       // Retrieves the npc quest data on server side using npc id
       NPC npc = NPCManager.self.getNPC(npcID);
+
+      // Checks the required items if it exists in teh database
+      Item requiredItem = npc.npcData.npcQuestList[0].deliveryQuestList[questIndex].deliveryQuest.itemToDeliver;
+      List<Item> requiredItemList = new List<Item>();
+      requiredItemList.Add(requiredItem);
+      List<Item> databaseItemList = DB_Main.checkInventory(userID, requiredItemList);
+
+      // Determines if npc is near player
+      float distance = Vector2.Distance(npc.transform.position, BodyManager.self.getBody(userID).transform.position);
+     
+      if(distance > NPC.TALK_DISTANCE) {
+         D.log("Too far away from the player!");
+         return;
+      }
+
+      if (databaseItemList.Count <= 0) {
+         D.log("You do not have enough materials!");
+         return;
+      }
+      else {
+         for(int i = 0; i < databaseItemList.Count; i++) {
+            Item itemComparison = requiredItemList.Find(_ => _.category == databaseItemList[i].category && _.itemTypeId == databaseItemList[i].itemTypeId);
+            if(databaseItemList[i].count < itemComparison.count) {
+               D.log("Insufficient Materials");
+               return;
+            }
+         }
+      }
+
       CraftingIngredients questReward = new CraftingIngredients(0, (int) npc.npcData.npcQuestList[0].deliveryQuestList[questIndex].rewardType, ColorType.DarkGreen, ColorType.DarkPurple, "");
       questReward.itemTypeId = (int) questReward.type;
       Item item = questReward;
@@ -1097,19 +1123,17 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_GetClickableRows (int npcId) {
+   public void Cmd_GetClickableRows (int npcId, ClickableText.Type[] array) {
+      List<ClickableText.Type> list = array.ToList();
       // Look up the NPC
       NPC npc = NPCManager.self.getNPC(npcId);
 
-      List<ClickableText.Type> list = npc.currentAnswerDialogue;
       // If the player is too far, don't let them
       if (Vector2.Distance(_player.transform.position, npc.transform.position) > 2.0f) {
          D.warning("Player trying to interact with NPC from too far away!");
          return;
       }
-
-      // Send the options to the player
-      Target_ReceiveClickableNPCRows(_player.connectionToClient, list.ToArray(), npcId);
+      Target_ReceiveClickableNPCRows(_player.connectionToClient, array, npcId);
    }
 
    [Command]

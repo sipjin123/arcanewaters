@@ -117,6 +117,53 @@ public class DB_Main : DB_MainStub {
 
    #endregion
 
+   public static new List<Item> checkInventory (int usrId, List<Item> itemList) {
+      List<Item> newItemList = new List<Item>();
+
+      for (int i = 0; i < itemList.Count; i++) {
+         int itmCategory = (int)itemList[i].category;
+         int itmType = (int) itemList[i].itemTypeId;
+
+         try {
+            using (MySqlConnection conn = getConnection())
+            using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM arcane.items where itmCategory = @itmCategory and itmType = @itmType and usrId = @usrId", conn)) {
+               conn.Open();
+               cmd.Prepare();
+               cmd.Parameters.AddWithValue("@itmCategory", itmCategory);
+               cmd.Parameters.AddWithValue("@itmType", itmType);
+               cmd.Parameters.AddWithValue("@usrId", usrId);
+
+               // Create a data reader and Execute the command
+               using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+                  while (dataReader.Read()) {
+                     int newCategory = DataUtil.getInt(dataReader, "itmCategory");
+                     int newType = DataUtil.getInt(dataReader, "itmType");
+                     int newitemCount = DataUtil.getInt(dataReader, "itmCount");
+
+                     ItemInfo info = new ItemInfo(dataReader);
+                     Item newItem = new Item {
+                        category = (Item.Category) newCategory,
+                        itemTypeId = newType,
+                        count = newitemCount
+                     };
+
+                     Item findItem = newItemList.Find(_ => _.itemTypeId == newType && (int)_.category == newCategory);
+                     if (newItemList.Contains(findItem)) {
+                        int itemIndex = newItemList.IndexOf(findItem);
+                        newItemList[itemIndex].count +=1;
+                     } else {
+                        newItemList.Add(newItem);
+                     }
+                  }
+               }
+            }
+         } catch (Exception e) {
+            D.error("MySQL Error: " + e.ToString());
+         }
+      }
+      return newItemList;
+   }
+
    public static new List<CropInfo> getCropInfo (int userId) {
       List<CropInfo> cropList = new List<CropInfo>();
 
