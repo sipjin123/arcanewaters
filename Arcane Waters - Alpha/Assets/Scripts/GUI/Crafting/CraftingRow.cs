@@ -21,9 +21,6 @@ public class CraftingRow : MonoBehaviour
    // Name of the item
    public Text nameText;
 
-   // Quantity of the item
-   public Text quantityText;
-
    // Quantity of the items the player has to craft the item
    public Text requirementText;
 
@@ -41,7 +38,6 @@ public class CraftingRow : MonoBehaviour
       icon.sprite = ImageManager.getSprite(item.getIconPath());
 
       nameText.text = item.getName();
-      quantityText.text = quantity.ToString();
       requirementText.text = playerIngredientQuantity + "/" + quantity;
 
       requirementText.enabled = !isEnough;
@@ -53,7 +49,6 @@ public class CraftingRow : MonoBehaviour
       item = null;
       icon.sprite = emptySprite;
 
-      quantityText.text = "";
       nameText.text = "";
       requirementText.text = "";
 
