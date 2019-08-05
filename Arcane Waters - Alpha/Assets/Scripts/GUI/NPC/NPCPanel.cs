@@ -191,7 +191,7 @@ public class NPCPanel : Panel {
 
          // CloseNPCPanel and Call Reward Panel
          PanelManager.self.popPanel();
-         Global.player.rpc.Cmd_FinishedQuest(npc.npcId, currentQuestIndex);
+         Global.player.rpc.Cmd_FinishedQuest(Global.player.userId, npc.npcId, currentQuestIndex);
 
          // Update quest State
          currentDeliveryQuest.questState = currentDialogue.nextState;
