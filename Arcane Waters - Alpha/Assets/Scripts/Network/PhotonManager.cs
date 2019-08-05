@@ -60,6 +60,9 @@ public class PhotonManager : Photon.PunBehaviour {
          name += "-Localhost";
       }
 
+      // Make sure multiple devs can launch servers locally without having the names be the same
+      name += "-" + SystemInfo.deviceName;
+
       Debug.Log("Using server room name: " + name);
 
       return name;
