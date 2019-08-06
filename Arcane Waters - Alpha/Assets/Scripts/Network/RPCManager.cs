@@ -952,13 +952,8 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_FinishedQuest(int userID, int npcID, int questIndex) {
-      processNPCRewards(userID, npcID, questIndex);
-   }
-
-   [Command]
-   public void Cmd_KilledMonster (Enemy.Type enemyType) {
-      processEnemyRewards(enemyType);
+   public void Cmd_FinishedQuest (int userID, int npcID, int questIndex) {
+      validateNPCRewards(userID, npcID, questIndex);
    }
 
    [Command]
@@ -967,42 +962,55 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Server]
-   public void processNPCRewards(int userID, int npcID, int questIndex) {
+   public void validateNPCRewards (int userID, int npcID, int questIndex) {
       // Retrieves the npc quest data on server side using npc id
       NPC npc = NPCManager.self.getNPC(npcID);
 
-      // Checks the required items if it exists in teh database
+      // Checks the required items if it exists in the database
       Item requiredItem = npc.npcData.npcQuestList[0].deliveryQuestList[questIndex].deliveryQuest.itemToDeliver;
-      List<Item> requiredItemList = new List<Item>();
-      requiredItemList.Add(requiredItem);
-      List<Item> databaseItemList = DB_Main.checkInventory(userID, requiredItemList);
+      List<CraftingIngredients.Type> requiredItemList = new List<CraftingIngredients.Type>();
+      requiredItemList.Add((CraftingIngredients.Type) requiredItem.itemTypeId );
 
-      // Determines if npc is near player
-      float distance = Vector2.Distance(npc.transform.position, BodyManager.self.getBody(userID).transform.position);
-     
-      if(distance > NPC.TALK_DISTANCE) {
-         D.log("Too far away from the player!");
-         return;
-      }
+      // Fetches the needed items and checks if it is equivalent to the requirement
+      List<Item> databaseItemList = new List<Item>();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         databaseItemList = DB_Main.getRequiredIngredients(userID, requiredItemList);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Determines if npc is near player
+            float distance = Vector2.Distance(npc.transform.position, BodyManager.self.getBody(userID).transform.position);
 
-      if (databaseItemList.Count <= 0) {
-         D.log("You do not have enough materials!");
-         return;
-      }
-      else {
-         for(int i = 0; i < databaseItemList.Count; i++) {
-            Item itemComparison = requiredItemList.Find(_ => _.category == databaseItemList[i].category && _.itemTypeId == databaseItemList[i].itemTypeId);
-            if(databaseItemList[i].count < itemComparison.count) {
-               D.log("Insufficient Materials");
+            if (distance > NPC.TALK_DISTANCE) {
+               D.log("Too far away from the player!");
                return;
             }
-         }
-      }
 
+            if (databaseItemList.Count <= 0) {
+               D.log("You do not have the materials!");
+               return;
+            } else {
+               for (int i = 0; i < databaseItemList.Count; i++) {
+                  if (databaseItemList[i].count < requiredItem.count) {
+                     D.log("Insufficient Materials");
+                     return;
+                  }
+               }
+            }
+            processNPCReward(userID, npcID, questIndex);
+         });
+      });
+   }
+
+   [Server]
+   private void processNPCReward (int userID, int npcID, int questIndex) {
+      // Retrieves the npc quest data on server side using npc id
+      NPC npc = NPCManager.self.getNPC(npcID);
+
+      // Generates the item to be rewarded
       CraftingIngredients questReward = new CraftingIngredients(0, (int) npc.npcData.npcQuestList[0].deliveryQuestList[questIndex].rewardType, ColorType.DarkGreen, ColorType.DarkPurple, "");
       questReward.itemTypeId = (int) questReward.type;
       Item item = questReward;
 
+      // Creates the item in the db and send notification to the player
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.createNewItem(_player.userId, item);
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -1071,18 +1079,6 @@ public class RPCManager : NetworkBehaviour {
    [TargetRpc]
    public void Target_UpdateInventory (NetworkConnection connection) {
       InventoryCacheManager.self.fetchInventory();
-   }
-
-   [Server]
-   public void processRewardItems (Item item) {
-      // Editor debug purposes, direct adding of item to player
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         item = DB_Main.createNewItem(_player.userId, item);
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Tells the user to update their inventory cache to retrieve the updated items
-            Target_UpdateInventory(_player.connectionToClient);
-         });
-      });
    }
 
    [Command]

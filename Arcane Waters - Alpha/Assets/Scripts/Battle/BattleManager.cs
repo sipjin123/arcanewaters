@@ -583,6 +583,18 @@ public class BattleManager : MonoBehaviour {
          }
       }
 
+      // Process monster type reward
+      foreach (Battler battler in defeatedBattlers) {
+         if (battler.isMonster()) {
+            Enemy.Type battlerType = battler.GetComponent<MonsterBattler>().enemyType;
+            foreach (Battler participant in battle.getParticipants()) {
+               if (!participant.isMonster()) {
+                  participant.player.rpc.processEnemyRewards(battlerType);
+               }
+            }
+         }
+      }
+
       // Pass along the request to the Battle Manager to handle shutting everything down
       this.endBattle(battle, teamThatWon);
    }
