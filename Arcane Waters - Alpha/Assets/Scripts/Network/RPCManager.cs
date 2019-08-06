@@ -1008,13 +1008,21 @@ public class RPCManager : NetworkBehaviour {
       // Generates the item to be rewarded
       CraftingIngredients questReward = new CraftingIngredients(0, (int) npc.npcData.npcQuestList[0].deliveryQuestList[questIndex].rewardType, ColorType.DarkGreen, ColorType.DarkPurple, "");
       questReward.itemTypeId = (int) questReward.type;
-      Item item = questReward;
 
-      // Creates the item in the db and send notification to the player
+      // Fetch reward and database items for comparison
+      Item rewardItem = questReward;
+      Item requiredItem = npc.npcData.npcQuestList[0].deliveryQuestList[questIndex].deliveryQuest.itemToDeliver;
+
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.createNewItem(_player.userId, item);
+         // Creates the item in the db 
+         DB_Main.createNewItem(_player.userId, rewardItem);
+
+         // Delete the item type in the database
+         DB_Main.deleteItemType(userID, (int) requiredItem.category, requiredItem.itemTypeId, requiredItem.count);
+
+         // Sends notification to player about the item received
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_ReceiveItem(_player.connectionToClient, item);
+            Target_ReceiveItem(_player.connectionToClient, rewardItem);
          });
       });
    }
@@ -1158,29 +1166,43 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_GetClickableRows (int npcId, ClickableText.Type[] array) {
-      List<ClickableText.Type> list = array.ToList();
-      // Look up the NPC
-      NPC npc = NPCManager.self.getNPC(npcId);
-
-      // If the player is too far, don't let them
-      if (Vector2.Distance(_player.transform.position, npc.transform.position) > 2.0f) {
-         D.warning("Player trying to interact with NPC from too far away!");
-         return;
-      }
-      Target_ReceiveClickableNPCRows(_player.connectionToClient, array, npcId);
+   public void Cmd_GetClickableRows (int npcId, int questType, int questProgress, int questIndex) {
+      processClickableRows(_player.userId, npcId, questType, questProgress, questIndex);
    }
 
-   [Command]
-   public void Cmd_ClickedNPCRow (int npcId, ClickableText.Type optionType) {
+   [Server]
+   public void processClickableRows(int userId, int npcId, int questType, int questProgress, int questIndex) {
+      // Look up the NPC
       NPC npc = NPCManager.self.getNPC(npcId);
+      Item requiredItem = npc.npcData.npcQuestList[0].deliveryQuestList[questIndex].deliveryQuest.itemToDeliver;
+      List<CraftingIngredients.Type> requiredItemList = new List<CraftingIngredients.Type>();
+      requiredItemList.Add((CraftingIngredients.Type) requiredItem.itemTypeId);
 
-      // Figure out the response we should send back
-      //string response = npc.tradeGossip;
-      string response = npc.npcReply;
+      NPCPanel.DialogueData dialogueData = new NPCPanel.DialogueData();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<NPCRelationInfo> npcRelationList = DB_Main.getNPCRelationInfo(_player.userId, npcId);
+         List<Item> databaseItemList = DB_Main.getRequiredIngredients(userId, requiredItemList);
 
-      // Send the response to the player
-      Target_ReceiveNPCMessage(_player.connectionToClient, response);
+         bool hasMaterials = true;
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if ((QuestType) questType == QuestType.Deliver) {
+               if (databaseItemList.Count <= 0) {
+                  D.log("You do not have the materials!");
+                  hasMaterials = false;
+               } else {
+                  for (int i = 0; i < databaseItemList.Count; i++) {
+                     if (databaseItemList[i].count < requiredItem.count) {
+                        D.log("Insufficient Materials");
+                        hasMaterials = false;
+                     }
+                  }
+               }
+               dialogueData = NPCPanel.getDialogueInfo(questProgress, npc.npcData.npcQuestList[0].deliveryQuestList[questIndex], hasMaterials);
+               Target_ReceiveClickableNPCRows(_player.connectionToClient, dialogueData.answerList.ToArray(), npcId);
+               Target_ReceiveNPCMessage(_player.connectionToClient, dialogueData.npcDialogue);
+            }
+         });
+      });
    }
 
    [Command]
