@@ -24,15 +24,8 @@ MonoBehaviour:
   combinationRequirements:
   - category: 6
     id: 0
-    itemTypeId: 5
+    itemTypeId: 1
     color1: 0
     color2: 0
     data: 
-    count: 1
-  - category: 6
-    id: 0
-    itemTypeId: 4
-    color1: 0
-    color2: 0
-    data: 
-    count: 1
+    count: 2
