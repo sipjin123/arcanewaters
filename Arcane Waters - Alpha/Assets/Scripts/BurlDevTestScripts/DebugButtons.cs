@@ -1,12 +1,26 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 #if IS_SERVER_BUILD
-public class DebugButtons : MonoBehaviour
+using Mirror;
+public class DebugButtons : NetworkBehaviour
 {
    public GenericLootData tempDrop;
 
    private void processItem(Item item) {
       RewardManager.self.processLoot(item);
+   }
+
+
+   [Server]
+   public void processRewardItems (Item item) {
+      // Editor debug purposes, direct adding of item to player
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         item = DB_Main.createNewItem(Global.player.userId, item);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Tells the user to update their inventory cache to retrieve the updated items
+            Global.player.rpc.Target_UpdateInventory(Global.player.connectionToClient);
+         });
+      });
    }
 
    private void Update () {
@@ -103,19 +117,19 @@ public class DebugButtons : MonoBehaviour
             CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Lizard_Claw, ColorType.DarkGreen, ColorType.DarkPurple, "");
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;
             //processItem(craftingIngredients);
-            Global.player.rpc.processRewardItems(craftingIngredients);
+            processRewardItems(craftingIngredients);
          }
          if (Input.GetKeyDown(KeyCode.Alpha6)) {
             CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Lizard_Scale, ColorType.DarkGreen, ColorType.DarkPurple, "");
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;
             //processItem(craftingIngredients);
-            Global.player.rpc.processRewardItems(craftingIngredients);
+            processRewardItems(craftingIngredients);
          }
          if (Input.GetKeyDown(KeyCode.Alpha7)) {
             CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Lumber, ColorType.DarkGreen, ColorType.DarkPurple, "");
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;
             //processItem(craftingIngredients);
-            Global.player.rpc.processRewardItems(craftingIngredients);
+            processRewardItems(craftingIngredients);
          }
          if (Input.GetKeyDown(KeyCode.Alpha8)) {
             CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Gold_Ore, ColorType.DarkGreen, ColorType.DarkPurple, "");
@@ -125,6 +139,7 @@ public class DebugButtons : MonoBehaviour
       }
    }
 }
+
 #endif
 
 public static class DebugCustom
