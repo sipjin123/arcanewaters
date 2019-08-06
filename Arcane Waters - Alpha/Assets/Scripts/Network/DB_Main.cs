@@ -117,21 +117,26 @@ public class DB_Main : DB_MainStub {
 
    #endregion
 
-   public static new List<Item> checkInventory (int usrId, List<Item> itemList) {
+   public static new List<Item> getRequiredIngredients (int usrId, List<CraftingIngredients.Type> itemList) {
+      int itmCategory = (int) Item.Category.CraftingIngredients;
       List<Item> newItemList = new List<Item>();
 
+      string itemIds = "";
       for (int i = 0; i < itemList.Count; i++) {
-         int itmCategory = (int)itemList[i].category;
-         int itmType = (int) itemList[i].itemTypeId;
+         int itmType = (int) itemList[i];
+         if (i > 0) {
+            itemIds += " or ";
+         }
+         itemIds += "itmType = " + itmType;
+      }
 
-         try {
+      try {
             using (MySqlConnection conn = getConnection())
-            using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM arcane.items where itmCategory = @itmCategory and itmType = @itmType and usrId = @usrId", conn)) {
+            using (MySqlCommand cmd = new MySqlCommand(string.Format("SELECT * FROM arcane.items where itmCategory = @itmCategory and ({0}) and usrId = @usrId", itemIds), conn)) {
                conn.Open();
                cmd.Prepare();
                cmd.Parameters.AddWithValue("@itmCategory", itmCategory);
-               cmd.Parameters.AddWithValue("@itmType", itmType);
-               cmd.Parameters.AddWithValue("@usrId", usrId);
+               cmd.Parameters.AddWithValue("@usrId", usrId); 
 
                // Create a data reader and Execute the command
                using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -159,7 +164,6 @@ public class DB_Main : DB_MainStub {
             }
          } catch (Exception e) {
             D.error("MySQL Error: " + e.ToString());
-         }
       }
       return newItemList;
    }

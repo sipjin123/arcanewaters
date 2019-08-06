@@ -22,7 +22,7 @@ public class DB_MainStub : MonoBehaviour {
       return new List<NPCRelationInfo>();
    }
 
-   public static List<Item> checkInventory (int usrId, List<Item> itemList) {
+   public static List<Item> getRequiredIngredients (int usrId, List<CraftingIngredients.Type> itemList) {
       return new List<Item>();
    }
 
