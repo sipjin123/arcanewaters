@@ -7,6 +7,12 @@ using Mirror;
 public class NPCPanel : Panel {
    #region Public Variables
 
+   public class DialogueData
+   {
+      public List<ClickableText.Type> answerList;
+      public string npcDialogue;
+   }
+
    // Data cache for current hunting quest
    public HuntQuestPair currentHuntQuest;
 
@@ -88,13 +94,13 @@ public class NPCPanel : Panel {
       AutoTyper.SlowlyRevealText(greetingText, _greetingText);
 
       // Toggle loading indicators
-      for(int i = 0; i<loadingIndicators.Count; i++) {
+      for (int i = 0; i < loadingIndicators.Count; i++) {
          loadingIndicators[i].SetActive(true);
       }
    }
-   
-   public void receiveIndividualNPCQuestData(QuestType questType, int npcQuestIndex, int npcQuestProgress) {
-      switch(questType) {
+
+   public void receiveIndividualNPCQuestData (QuestType questType, int npcQuestIndex, int npcQuestProgress) {
+      switch (questType) {
          case QuestType.Deliver:
             npc.npcData.npcQuestList[0].deliveryQuestList[npcQuestIndex].questState = (QuestState) npcQuestProgress;
             break;
@@ -104,7 +110,7 @@ public class NPCPanel : Panel {
       }
    }
 
-   public void readyNPCPanel(int friendshipLevel) {
+   public void readyNPCPanel (int friendshipLevel) {
       // Displays initial friendship level
       this.friendshipLevel = friendshipLevel;
       friendshipText.text = friendshipLevel.ToString();
@@ -115,13 +121,13 @@ public class NPCPanel : Panel {
       }
    }
 
-   public void receiveNPCRelationDataFromServer(int friendshipLevel) {
+   public void receiveNPCRelationDataFromServer (int friendshipLevel) {
       // Updates friendship level
       this.friendshipLevel = friendshipLevel;
       friendshipText.text = friendshipText.ToString();
    }
 
-   public void setClickableQuestOptions() {
+   public void setClickableQuestOptions () {
       // Clear out any old stuff
       clickableRowContainer.DestroyChildren();
 
@@ -162,7 +168,7 @@ public class NPCPanel : Panel {
       }
    }
 
-   public void questCategoryRowClickedOn(ClickableText row, NPC npc, QuestType questType, int questIndex) {
+   public void questCategoryRowClickedOn (ClickableText row, NPC npc, QuestType questType, int questIndex) {
       currentQuestType = questType;
       currentQuestIndex = questIndex;
       switch (questType) {
@@ -173,7 +179,7 @@ public class NPCPanel : Panel {
             currentDeliveryQuest = npc.npcData.npcQuestList[0].deliveryQuestList[questIndex];
             break;
       }
-      npc.checkQuest(currentDeliveryQuest);
+      checkQuest(currentDeliveryQuest);
    }
 
    public void rowClickedOn (ClickableText row, NPC npc) {
@@ -186,9 +192,6 @@ public class NPCPanel : Panel {
          npc.npcReply = reply;
          SetMessage(reply);
       } else if (row.textType == ClickableText.Type.TradeDeliveryComplete) {
-         // Reduce player inventory equivalent to quest requirements
-         deductInventoryItems();
-
          // CloseNPCPanel and Call Reward Panel
          PanelManager.self.popPanel();
          Global.player.rpc.Cmd_FinishedQuest(Global.player.userId, npc.npcId, currentQuestIndex);
@@ -206,30 +209,45 @@ public class NPCPanel : Panel {
       } else {
          Global.player.rpc.Cmd_UpdateNPCQuestProgress(npc.npcId, (int) currentDialogue.nextState, currentQuestIndex, currentQuestType.ToString());
          currentDeliveryQuest.questState = currentDialogue.nextState;
-         npc.checkQuest(currentDeliveryQuest);
+         checkQuest(currentDeliveryQuest);
       }
-      // Tell the server what we clicked
-      Global.player.rpc.Cmd_ClickedNPCRow(npc.npcId, row.textType);
    }
 
-   private void deductInventoryItems () {
-      List<Item> ingredientList = InventoryCacheManager.self.itemList;
-      DeliverQuest deliverQuest = currentDeliveryQuest.deliveryQuest;
-      int countToDelete = deliverQuest.quantity;
+   public void checkQuest (DeliveryQuestPair deliveryQuestPair) {
+      QuestState currentQuestState = deliveryQuestPair.questState;
+      QuestDialogue currentDialogue = deliveryQuestPair.dialogueData.questDialogueList.Find(_ => _.questState == currentQuestState);
 
-      // Deletes items from the inventory equivalent to the Deliver Quest requirements
-      int deleteCounter = 0;
-      for (int i = 0; i < ingredientList.Count; i++) {
-         if (ingredientList[i].category == deliverQuest.itemToDeliver.category) {
-            if (deleteCounter >= countToDelete) {
-               break;
+      // Sets npc response
+      npc.npcReply = currentDialogue.npcDialogue;
+      SetMessage(npc.npcReply);
+      npc.currentAnswerDialogue.Clear();
+
+      if (currentDialogue.checkCondition) {
+         List<Item> itemList = InventoryCacheManager.self.itemList;
+         DeliverQuest deliveryQuest = deliveryQuestPair.deliveryQuest;
+         Item findingItemList = itemList.Find(_ => (CraftingIngredients.Type) _.itemTypeId == (CraftingIngredients.Type) deliveryQuest.itemToDeliver.itemTypeId
+         && _.category == Item.Category.CraftingIngredients);
+
+         if (findingItemList != null) {
+            if (findingItemList.count >= deliveryQuest.quantity) {
+               // Sets the player to a positive response if Requirements are met
+               npc.currentAnswerDialogue.Add(currentDialogue.playerReply);
+               Global.player.rpc.Cmd_GetClickableRows(npc.npcId, (int) currentQuestType, (int) currentQuestState, currentQuestIndex);
+               return;
             }
-            if (ingredientList[i].itemTypeId == deliverQuest.itemToDeliver.itemTypeId) {
-               deleteCounter++;
-               Global.player.rpc.Cmd_DeleteItem(ingredientList[i].id);
-            }
+         } else {
+            // Sets the player to a negative response if Requirements are met
+            npc.currentAnswerDialogue.Add(currentDialogue.playerNegativeReply);
+            Global.player.rpc.Cmd_GetClickableRows(npc.npcId, (int) currentQuestType, (int) currentQuestState, currentQuestIndex);
+            return;
          }
       }
+
+      // Sets the player to a positive response if Requirements are met
+      npc.currentAnswerDialogue.Add(currentDialogue.playerReply);
+
+      // Send a request to the server to get the clickable text options
+      Global.player.rpc.Cmd_GetClickableRows(this.npc.npcId, (int) currentQuestType, (int) currentQuestState, currentQuestIndex);
    }
 
    private void setQuestClicker (QuestInfoData data) {
@@ -268,6 +286,33 @@ public class NPCPanel : Panel {
       newInfoData.questType = type;
 
       return newInfoData;
+   }
+
+   public static DialogueData getDialogueInfo (int questState, DeliveryQuestPair deliveryQuestPair, bool hasMaterials) {
+      DialogueData newDialogueData = new DialogueData();
+      List<ClickableText.Type> newList = new List<ClickableText.Type>();
+      QuestDialogue currentDialogue = deliveryQuestPair.dialogueData.questDialogueList.Find(_ => (int) _.questState == questState);
+
+      // Determines if the dialogue needs a condition check
+      if (currentDialogue.checkCondition) {
+         List<Item> itemList = InventoryCacheManager.self.itemList;
+         DeliverQuest deliveryQuest = deliveryQuestPair.deliveryQuest;
+
+         if (hasMaterials) {
+            // Sets the player to a positive response if Requirements are met
+            newList.Add(currentDialogue.playerReply);
+         } else {
+            // Sets the player to a negative response if Requirements are met
+            newList.Add(currentDialogue.playerNegativeReply);
+         }
+      } else {
+         // Returns default positive reply
+         newList.Add(currentDialogue.playerReply);
+      }
+
+      newDialogueData.answerList = newList;
+      newDialogueData.npcDialogue = currentDialogue.npcDialogue;
+      return newDialogueData;
    }
 
    #region Private Variables

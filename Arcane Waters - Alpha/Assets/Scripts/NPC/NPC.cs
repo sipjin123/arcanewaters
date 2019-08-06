@@ -204,43 +204,6 @@ public class NPC : MonoBehaviour {
       _body.AddForce(direction.normalized * moveSpeed);
    }
 
-   public void checkQuest(DeliveryQuestPair deliveryQuestPair) {
-      QuestState currentQuestState = deliveryQuestPair.questState;
-      QuestDialogue currentDialogue = deliveryQuestPair.dialogueData.questDialogueList.Find(_ => _.questState == currentQuestState);
-
-      // Sets npc response
-      npcReply = currentDialogue.npcDialogue;
-      PanelManager.self.get(Panel.Type.NPC_Panel).GetComponent<NPCPanel>().SetMessage(npcReply);
-      currentAnswerDialogue.Clear();
-
-      if(currentDialogue.checkCondition) {
-         List<Item> itemList = InventoryCacheManager.self.itemList;
-         DeliverQuest deliveryQuest = deliveryQuestPair.deliveryQuest;
-         Item findingItemList = itemList.Find(_ => (CraftingIngredients.Type) _.itemTypeId == (CraftingIngredients.Type) deliveryQuest.itemToDeliver.itemTypeId
-         && _.category == Item.Category.CraftingIngredients);
-
-         if (findingItemList != null) {
-            if (findingItemList.count >= deliveryQuest.quantity) {
-               // Sets the player to a positive response if Requirements are met
-               currentAnswerDialogue.Add(currentDialogue.playerReply);
-               Global.player.rpc.Cmd_GetClickableRows(this.npcId, currentAnswerDialogue.ToArray());
-               return;
-            }
-         } else {
-            // Sets the player to a negative response if Requirements are met
-            currentAnswerDialogue.Add(currentDialogue.playerNegativeReply);
-            Global.player.rpc.Cmd_GetClickableRows(this.npcId, currentAnswerDialogue.ToArray());
-            return;
-         }
-      }
-
-      // Sets the player to a positive response if Requirements are met
-      currentAnswerDialogue.Add(currentDialogue.playerReply);
-     
-      // Send a request to the server to get the clickable text options
-      Global.player.rpc.Cmd_GetClickableRows(this.npcId, currentAnswerDialogue.ToArray());
-   }
-
    public void clientClickedMe () {
       if (Global.player == null || _clickableBox == null || Global.isInBattle()) {
          return;
