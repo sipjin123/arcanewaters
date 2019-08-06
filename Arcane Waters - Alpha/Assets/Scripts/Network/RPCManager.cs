@@ -957,8 +957,8 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_CraftItem (Blueprint.Type blueprintType) {
-      processCraftingRewards(blueprintType);
+   public void Cmd_CraftItem (int userId, Blueprint.Type blueprintType) {
+      validateCraftingRewards(userId, blueprintType);
    }
 
    [Server]
@@ -1028,11 +1028,50 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Server]
-   public void processCraftingRewards (Blueprint.Type blueprintType) {
-      // Gets the crafting result using cached scriptable object combo data
-      CombinationData data = RewardManager.self.combinationDataList.comboDataList.Find(_ => _.blueprintTypeID == (int)blueprintType);
+   public void validateCraftingRewards (int userId, Blueprint.Type blueprintType) {
+      CombinationData data = RewardManager.self.combinationDataList.comboDataList.Find(_ => _.blueprintTypeID == (int) blueprintType);
+  
+      List<CraftingIngredients.Type> requiredItemList = new List<CraftingIngredients.Type>();
+      for (int i = 0; i < data.combinationRequirements.Count; i++) {
+         requiredItemList.Add((CraftingIngredients.Type) data.combinationRequirements[i].itemTypeId);
+      }
+
+      // Fetches the needed items and checks if it is equivalent to the requirement
+      List<Item> databaseItemList = new List<Item>();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         databaseItemList = DB_Main.getRequiredIngredients(userId, requiredItemList);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (databaseItemList.Count <= 0) {
+               D.log("You do not have the materials!");
+               return;
+            } else {
+               for (int i = 0; i < databaseItemList.Count; i++) {
+                  if (databaseItemList[i].count < data.combinationRequirements[i].count) {
+                     D.log("Insufficient Materials");
+                     return;
+                  }
+               }
+            }
+            processCraftingRewards(userId, blueprintType);
+         });
+      });
+   }
+
+   [Server]
+   private void processCraftingRewards (int userId, Blueprint.Type blueprintType) {
+      // Gets the crafting result using cached scriptable object combo data
+      CombinationData data = RewardManager.self.combinationDataList.comboDataList.Find(_ => _.blueprintTypeID == (int) blueprintType);
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Register the crafted item in the database
          DB_Main.createNewItem(_player.userId, data.resultItem);
+
+         // Delete the item type in the database
+         for (int i = 0; i < data.combinationRequirements.Count; i++) {
+            Item item = data.combinationRequirements[i].getCastItem();
+            DB_Main.deleteItemType(userId, (int)item.category, item.itemTypeId, item.count);
+         }
+
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             Target_ReceiveItem(_player.connectionToClient, data.resultItem);
          });
