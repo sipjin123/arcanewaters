@@ -254,6 +254,9 @@ public class DB_MainStub : MonoBehaviour {
    public static int deleteItem (int userId, int itemId) {
       return 0;
    }
+   public static int deleteItemType (int userId, int itmCategory, int itemTypeId, int count) {
+      return 0;
+   }
 
    public static Stats getStats (int userId) {
       return null;

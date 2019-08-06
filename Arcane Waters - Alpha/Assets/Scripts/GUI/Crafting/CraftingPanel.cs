@@ -137,25 +137,15 @@ public class CraftingPanel : Panel, IPointerClickHandler
       }
    }
 
-   private void deductInventoryItems () {
-      int ingredientCount = _craftingIngredientList.Count;
-      for (int i = 0; i < ingredientCount; i++) {
-         for (int q = 0; q < ingredientList[i].count; q++) {
-            Global.player.rpc.Cmd_DeleteItem(ingredientList[i].id);
-         }
-      }
-   }
-
    private void craft () {
       if (craftableItem != null) {
          Item item = craftableItem;
 
          // Tells the server the item was crafted
-         Global.player.rpc.Cmd_CraftItem((Blueprint.Type)_currBlueprintRow.itemData.itemTypeId);
+         Global.player.rpc.Cmd_CraftItem(Global.player.userId, (Blueprint.Type)_currBlueprintRow.itemData.itemTypeId);
 
          PanelManager.self.get(Type.Craft).hide();
          craftableItem = null;
-         deductInventoryItems();
       }
    }
 

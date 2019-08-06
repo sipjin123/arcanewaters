@@ -1540,6 +1540,29 @@ public class DB_Main : DB_MainStub {
       }
    }
 
+   public static new int deleteItemType (int userId, int itmCategory, int itemTypeId, int count) {
+      int rowsAffected = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM items WHERE itmType=@itmType AND usrId=@usrId AND itmCategory=@itmCategory limit @limit", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@itmType", itemTypeId);
+            cmd.Parameters.AddWithValue("@itmCategory", itmCategory);
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@limit", count);
+
+            // Execute the command
+            rowsAffected = cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return rowsAffected;
+   }
+
    public static new int deleteItem (int userId, int itemId) {
       int rowsAffected = 0;
 
