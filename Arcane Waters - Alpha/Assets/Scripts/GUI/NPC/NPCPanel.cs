@@ -7,9 +7,13 @@ using Mirror;
 public class NPCPanel : Panel {
    #region Public Variables
 
+   // A class utilized by the server side that caches the player and npc response
    public class DialogueData
    {
+      // List of response for the player during npc dialogue
       public List<ClickableText.Type> answerList;
+
+      // The npc quest dialogue 
       public string npcDialogue;
    }
 
@@ -194,7 +198,7 @@ public class NPCPanel : Panel {
       } else if (row.textType == ClickableText.Type.TradeDeliveryComplete) {
          // CloseNPCPanel and Call Reward Panel
          PanelManager.self.popPanel();
-         Global.player.rpc.Cmd_FinishedQuest(Global.player.userId, npc.npcId, currentQuestIndex);
+         Global.player.rpc.Cmd_FinishedQuest(npc.npcId, currentQuestIndex);
 
          // Update quest State
          currentDeliveryQuest.questState = currentDialogue.nextState;

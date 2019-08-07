@@ -952,13 +952,13 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_FinishedQuest (int userID, int npcID, int questIndex) {
-      validateNPCRewards(userID, npcID, questIndex);
+   public void Cmd_FinishedQuest (int npcID, int questIndex) {
+      validateNPCRewards(_player.userId, npcID, questIndex);
    }
 
    [Command]
-   public void Cmd_CraftItem (int userId, Blueprint.Type blueprintType) {
-      validateCraftingRewards(userId, blueprintType);
+   public void Cmd_CraftItem (Blueprint.Type blueprintType) {
+      validateCraftingRewards(_player.userId, blueprintType);
    }
 
    [Server]

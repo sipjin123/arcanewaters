@@ -142,7 +142,7 @@ public class CraftingPanel : Panel, IPointerClickHandler
          Item item = craftableItem;
 
          // Tells the server the item was crafted
-         Global.player.rpc.Cmd_CraftItem(Global.player.userId, (Blueprint.Type)_currBlueprintRow.itemData.itemTypeId);
+         Global.player.rpc.Cmd_CraftItem((Blueprint.Type)_currBlueprintRow.itemData.itemTypeId);
 
          PanelManager.self.get(Type.Craft).hide();
          craftableItem = null;
