@@ -19,18 +19,20 @@ MonoBehaviour:
     relationRequirement: 0
     dialogueData: {fileID: 11400000, guid: 588f79fc1d99c9a4b92dbdd69d529081, type: 2}
     deliveryQuest: {fileID: 11400000, guid: f804acba695fb5c428eec0e67e1e9ef4, type: 2}
-    rewardType: 7
+    rewardType: 8
+    rewardQuantity: 2
   - questTitle: Lumber1
     questType: 3
-    questState: 5
+    questState: 1
     relationRequirement: 20
     dialogueData: {fileID: 11400000, guid: ebcbe5553c696e44f921df6a6cdaca5a, type: 2}
     deliveryQuest: {fileID: 11400000, guid: 28d0195179c254c40949b012d39456f3, type: 2}
     rewardType: 9
+    rewardQuantity: 0
   huntQuestList:
   - questTitle: Kill Lizard
     questType: 1
-    questState: 1
+    questState: 0
     relationRequirement: 40
     dialogueData: {fileID: 11400000, guid: b6c8750429d423c4e99ce2cd4a373c9b, type: 2}
     huntyQuest: {fileID: 11400000, guid: c0575deffce84814d82a727dc4946129, type: 2}
