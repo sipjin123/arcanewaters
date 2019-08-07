@@ -1154,6 +1154,106 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
+   public void Cmd_MineNode (int nodeId) {
+      OreNode oreNode = OreManager.self.getOreNode(nodeId);
+
+      // Make sure we found the Node
+      if (oreNode == null) {
+         D.warning("Ore node not found: " + nodeId);
+         return;
+      }
+
+      // Make sure the user is in the right instance
+      if (_player.instanceId != oreNode.instanceId) {
+         D.warning("Player trying to open ore node from a different instance!");
+         return;
+      }
+
+      // Make sure they didn't already open it
+      if (oreNode.userIds.Contains(_player.userId)) {
+         D.warning("Player already mined this ore node!");
+         return;
+      }
+
+      // Add the user ID to the list
+      oreNode.userIds.Add(_player.userId);
+
+      // Gathers the item rewards from the scriptable object
+      List<LootInfo> lootInfoList = RewardManager.self.oreLootList.Find(_ => _.oreType == oreNode.oreType).dropTypes.requestLootList();
+      List<int> dbQuantityList = new List<int>();
+      List<bool> ifCreateNewList = new List<bool>();
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Gathers the current database quantity
+         for (int i = 0; i < lootInfoList.Count; i++) {
+            int existingRewardQuantity = DB_Main.getIngredientQuantity(_player.userId, (int) lootInfoList[i].lootType, (int) Item.Category.CraftingIngredients);
+            dbQuantityList.Add(existingRewardQuantity);
+         }
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Determines if the item exists in the database
+            for (int i = 0; i < lootInfoList.Count; i++) {
+               bool ifCreateNew = dbQuantityList[i] < 0 ? true : false;
+               ifCreateNewList.Add(ifCreateNew);
+            }
+            processMineReward(_player.userId, lootInfoList, dbQuantityList, ifCreateNewList, oreNode.oreType);
+         });
+      });
+   }
+
+   [Server]
+   private void processMineReward(int userID, List<LootInfo> rewardList, List<int> databaseCountList, List<bool> ifCreateList, OreNode.Type oreType) {
+      // Generate Item List to show in popup after data writing
+      List<Item> itemRewardList = new List<Item>();
+      for(int i = 0; i < rewardList.Count; i++) {
+         Item itemToCreate = new CraftingIngredients(0, rewardList[i].lootType, ColorType.Black, ColorType.Black);
+         itemToCreate.count = rewardList[i].quantity;
+         itemRewardList.Add(itemToCreate);
+      }
+
+      List<Item> newItemCreateList = new List<Item>();
+      List<Item> newItemUpdateList = new List<Item>();
+
+      for (int i = 0; i < rewardList.Count; i++) {
+         if (ifCreateList[i] == true) {
+            // Gather items that need to be created in the db
+            Item itemToCreate = new CraftingIngredients(0, rewardList[i].lootType, ColorType.Black, ColorType.Black);
+            itemToCreate.count = rewardList[i].quantity;
+            newItemCreateList.Add(itemToCreate);
+         } else {
+            // Gather items that just needs to be updated in the db
+            Item itemToUpdate = new CraftingIngredients(0, rewardList[i].lootType, ColorType.Black, ColorType.Black);
+            int addedQuantity = databaseCountList[i] + rewardList[i].quantity;
+            itemToUpdate.count = addedQuantity;
+            newItemUpdateList.Add(itemToUpdate);
+         }
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         if (newItemCreateList.Count > 0) {
+            // Register the crafted item in the database
+            DB_Main.createNewItems(_player.userId, newItemCreateList);
+         }
+         if (newItemUpdateList.Count > 0) {
+            // Updates the item Count in the database
+            DB_Main.updateIngredientQuantities(userID, newItemUpdateList);
+         }
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Calls Reward Popup
+            Target_ReceiveItemList(_player.connectionToClient, itemRewardList.ToArray());
+
+            // Send a notification to the specific player that mined the node
+            Target_MinedOreNode(_player.connectionToClient, oreType, itemRewardList.ToArray());
+         });
+      });
+   }
+
+   [TargetRpc]
+   public void Target_MinedOreNode (NetworkConnection connection, OreNode.Type oreType, Item[] rewardItems) {
+      // TODO: RESERVED FOR ORE SPECIFIC LOGIC
+   }
+
+   [Command]
    public void Cmd_OpenChest (int chestId) {
       TreasureChest chest = TreasureManager.self.getChest(chestId);
 
