@@ -194,17 +194,8 @@ public class CraftingPanel : Panel, IPointerClickHandler
             blueprintRow.initData(item);
             prefab.SetActive(true);
          }
-
-         // Stores all ingredients for crafting
-         if(itemData.category == Item.Category.CraftingIngredients) {
-            Item currItem = ingredientList.Find(_ => _.itemTypeId == itemData.itemTypeId);
-            if (currItem == null) {
-               itemData.count = 1;
-               ingredientList.Add(itemData);
-            }
-            else {
-               currItem.count++;
-            }
+         else if (itemData.category == Item.Category.CraftingIngredients) {
+            ingredientList.Add(itemData);
          }
       }
 
