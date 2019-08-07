@@ -587,7 +587,7 @@ public class BattleManager : MonoBehaviour {
       foreach (Battler battler in defeatedBattlers) {
          if (battler.isMonster()) {
             Enemy.Type battlerType = battler.GetComponent<MonsterBattler>().enemyType;
-            foreach (Battler participant in battle.getParticipants()) {
+            foreach (Battler participant in winningBattlers) {
                if (!participant.isMonster()) {
                   participant.player.rpc.processEnemyRewards(battlerType);
                }
