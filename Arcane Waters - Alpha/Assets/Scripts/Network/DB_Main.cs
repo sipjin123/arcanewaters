@@ -1028,8 +1028,8 @@ public class DB_Main : DB_MainStub {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO items (usrId, itmCategory, itmType, itmColor1, itmColor2, itmData) " +
-            "VALUES(@usrId, @itmCategory, @itmType, @itmColor1, @itmColor2, @itmData) ", conn)) {
+            "INSERT INTO items (usrId, itmCategory, itmType, itmColor1, itmColor2, itmData, itmCount) " +
+            "VALUES(@usrId, @itmCategory, @itmType, @itmColor1, @itmColor2, @itmData, @itmCount) ", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -1039,6 +1039,7 @@ public class DB_Main : DB_MainStub {
             cmd.Parameters.AddWithValue("@itmColor1", (int) baseItem.color1);
             cmd.Parameters.AddWithValue("@itmColor2", (int) baseItem.color2);
             cmd.Parameters.AddWithValue("@itmData", baseItem.data);
+            cmd.Parameters.AddWithValue("@itmCount", baseItem.count);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1309,6 +1310,49 @@ public class DB_Main : DB_MainStub {
       return gems;
    }
 
+   public static new int getIngredientQuantity (int userId, int itmType, int itmCategory) {
+      int itemCount = -1;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM items WHERE usrId=@usrId and itmCategory=@itmCategory and itmType=@itmType", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@itmCategory", itmCategory);
+            cmd.Parameters.AddWithValue("@itmType", itmType);
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  itemCount = dataReader.GetInt32("itmCount");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return itemCount;
+   }
+
+   public static new void updateIngredientQuantity (int userId, int itmType, int itmCategory, int itmCount) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("UPDATE items SET itmCount=@itmCount WHERE usrId=@usrId and itmCategory=@itmCategory and itmType=@itmType", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@itmCategory", itmCategory);
+            cmd.Parameters.AddWithValue("@itmType", itmType);
+            cmd.Parameters.AddWithValue("@itmCount", itmCount);
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
    public static new int getItemCount (int userId) {
       int itemCount = 0;
 
@@ -1538,29 +1582,6 @@ public class DB_Main : DB_MainStub {
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
-   }
-
-   public static new int deleteItemType (int userId, int itmCategory, int itemTypeId, int count) {
-      int rowsAffected = 0;
-
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM items WHERE itmType=@itmType AND usrId=@usrId AND itmCategory=@itmCategory limit @limit", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@itmType", itemTypeId);
-            cmd.Parameters.AddWithValue("@itmCategory", itmCategory);
-            cmd.Parameters.AddWithValue("@usrId", userId);
-            cmd.Parameters.AddWithValue("@limit", count);
-
-            // Execute the command
-            rowsAffected = cmd.ExecuteNonQuery();
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-
-      return rowsAffected;
    }
 
    public static new int deleteItem (int userId, int itemId) {
