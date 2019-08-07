@@ -74,7 +74,11 @@ public class InstanceManager : MonoBehaviour {
 
       // Create any treasure we might want in the instance
       if (areaType == Area.Type.TreasurePine) {
-         TreasureManager.self.createTreasureForInstance(instance);
+         // Create any treasure and ore we might want in the instance
+         if (Area.isTreasureSite(areaType)) {
+            TreasureManager.self.createTreasureForInstance(instance);
+            OreManager.self.createOreNodesForInstance(instance);
+         }
       }
 
       // Create any Enemies that exist in this Instance

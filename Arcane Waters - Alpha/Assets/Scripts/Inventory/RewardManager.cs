@@ -17,6 +17,9 @@ public class RewardManager : MonoBehaviour {
    // List of drops of enemies
    public List<EnemyLootLibrary> enemyLootList;
 
+   // List of drops of ores
+   public List<OreLootLibrary> oreLootList;
+
    #endregion
 
    private void Awake () {
@@ -42,6 +45,14 @@ public class RewardManager : MonoBehaviour {
 public class EnemyLootLibrary
 {
    public Enemy.Type enemyType;
+
+   public GenericLootData dropTypes;
+}
+
+[Serializable]
+public class OreLootLibrary
+{
+   public OreNode.Type oreType;
 
    public GenericLootData dropTypes;
 }
