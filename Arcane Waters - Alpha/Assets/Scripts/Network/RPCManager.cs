@@ -78,7 +78,6 @@ public class RPCManager : NetworkBehaviour {
    [TargetRpc]
    public void Target_UpdateNPCQuestProgress (NetworkConnection connection, int npcID, int questProgress, int questIndex, string questType) {
       NPC npc = NPCManager.self.getNPC(npcID);
-  
       QuestType typeOfQuest = (QuestType) Enum.Parse(typeof(QuestType), questType, true);
       switch (typeOfQuest) {
          case QuestType.Deliver:
@@ -969,7 +968,7 @@ public class RPCManager : NetworkBehaviour {
       // Checks the required items if it exists in the database
       Item requiredItem = npc.npcData.npcQuestList[0].deliveryQuestList[questIndex].deliveryQuest.itemToDeliver;
       List<CraftingIngredients.Type> requiredItemList = new List<CraftingIngredients.Type>();
-      requiredItemList.Add((CraftingIngredients.Type) requiredItem.itemTypeId );
+      requiredItemList.Add((CraftingIngredients.Type) requiredItem.itemTypeId);
 
       // Fetches the needed items and checks if it is equivalent to the requirement
       List<Item> databaseItemList = new List<Item>();
@@ -995,34 +994,36 @@ public class RPCManager : NetworkBehaviour {
                   }
                }
             }
-            processNPCReward(userID, npcID, questIndex);
+            processNPCReward(userID, npcID, questIndex, databaseItemList);
          });
       });
    }
 
    [Server]
-   private void processNPCReward (int userID, int npcID, int questIndex) {
+   private void processNPCReward (int userID, int npcID, int questIndex, List<Item> databaseItems) {
       // Retrieves the npc quest data on server side using npc id
       NPC npc = NPCManager.self.getNPC(npcID);
 
       // Generates the item to be rewarded
+      int rewardQuantity = npc.npcData.npcQuestList[0].deliveryQuestList[questIndex].rewardQuantity;
       CraftingIngredients questReward = new CraftingIngredients(0, (int) npc.npcData.npcQuestList[0].deliveryQuestList[questIndex].rewardType, ColorType.DarkGreen, ColorType.DarkPurple, "");
       questReward.itemTypeId = (int) questReward.type;
+      questReward.count = rewardQuantity;
 
       // Fetch reward and database items for comparison
       Item rewardItem = questReward;
+      List<Item> requiredItems = new List<Item>();
       Item requiredItem = npc.npcData.npcQuestList[0].deliveryQuestList[questIndex].deliveryQuest.itemToDeliver;
+      requiredItems.Add(requiredItem);
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Creates the item in the db 
-         DB_Main.createNewItem(_player.userId, rewardItem);
-
-         // Delete the item type in the database
-         DB_Main.deleteItemType(userID, (int) requiredItem.category, requiredItem.itemTypeId, requiredItem.count);
+         int existingRewardQuantity = DB_Main.getIngredientQuantity(Global.player.userId, rewardItem.itemTypeId, (int) Item.Category.CraftingIngredients);
 
          // Sends notification to player about the item received
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_ReceiveItem(_player.connectionToClient, rewardItem);
+            // Determines if item does not exist in the database
+            bool ifCreateNew = existingRewardQuantity < 0 ? true : false;
+            finalizeRewards(userID, rewardItem, databaseItems, requiredItems, ifCreateNew, existingRewardQuantity);
          });
       });
    }
@@ -1060,28 +1061,52 @@ public class RPCManager : NetworkBehaviour {
                   }
                }
             }
-            processCraftingRewards(userId, blueprintType);
+            processCraftingRewards(userId, blueprintType, databaseItemList, data.combinationRequirements);
          });
       });
    }
 
    [Server]
-   private void processCraftingRewards (int userId, Blueprint.Type blueprintType) {
+   private void processCraftingRewards (int userId, Blueprint.Type blueprintType, List<Item> databaseItems, List<Item> requiredItems) {
       // Gets the crafting result using cached scriptable object combo data
       CombinationData data = RewardManager.self.combinationDataList.comboDataList.Find(_ => _.blueprintTypeID == (int) blueprintType);
+      Item rewardItem = data.resultItem;
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Register the crafted item in the database
-         DB_Main.createNewItem(_player.userId, data.resultItem);
+         // Gets the current quantity of the reward item type from the database
+         int rewardItemCount = DB_Main.getIngredientQuantity(userId, rewardItem.itemTypeId, (int) rewardItem.category);
 
-         // Delete the item type in the database
-         for (int i = 0; i < data.combinationRequirements.Count; i++) {
-            Item item = data.combinationRequirements[i].getCastItem();
-            DB_Main.deleteItemType(userId, (int)item.category, item.itemTypeId, item.count);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Determines if the item exists in the database
+            bool ifCreateNew = rewardItemCount < 0 ? true : false;
+            finalizeRewards(userId, rewardItem, databaseItems, requiredItems, ifCreateNew, rewardItemCount);
+         });
+      });
+   }
+
+   [Server]
+   private void finalizeRewards (int userId, Item rewardItem, List<Item> databaseItems, List<Item> requiredItems, bool ifCreateNew, int existingRewardQuantity) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         if (ifCreateNew) {
+            // Register the crafted item in the database
+            DB_Main.createNewItem(_player.userId, rewardItem);
+         }
+         else {
+            // The added item count for REWARDS
+            int addedQuantity = rewardItem.count + existingRewardQuantity;
+            DB_Main.updateIngredientQuantity(userId, rewardItem.itemTypeId, (int) rewardItem.category, addedQuantity);
+         }
+
+         // Deduct quantity of each required ingredient for the crafted item
+         for(int i = 0; i < requiredItems.Count; i++) {
+            int databaseCount = databaseItems.Find(_ => _.itemTypeId == requiredItems[i].itemTypeId && _.category == requiredItems[i].category).count;
+            int requiredCount = requiredItems[i].count;
+            int deductedQuantity = databaseCount - requiredCount;
+            DB_Main.updateIngredientQuantity(userId, requiredItems[i].itemTypeId, (int) requiredItems[i].category, deductedQuantity);
          }
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_ReceiveItem(_player.connectionToClient, data.resultItem);
+            Target_ReceiveItem(_player.connectionToClient, rewardItem);
          });
       });
    }
