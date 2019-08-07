@@ -976,7 +976,7 @@ public class RPCManager : NetworkBehaviour {
          databaseItemList = DB_Main.getRequiredIngredients(userID, requiredItemList);
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Determines if npc is near player
-            float distance = Vector2.Distance(npc.transform.position, BodyManager.self.getBody(userID).transform.position);
+            float distance = Vector2.Distance(npc.transform.position, _player.transform.position);
 
             if (distance > NPC.TALK_DISTANCE) {
                D.log("Too far away from the player!");
@@ -1017,7 +1017,7 @@ public class RPCManager : NetworkBehaviour {
       requiredItems.Add(requiredItem);
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         int existingRewardQuantity = DB_Main.getIngredientQuantity(Global.player.userId, rewardItem.itemTypeId, (int) Item.Category.CraftingIngredients);
+         int existingRewardQuantity = DB_Main.getIngredientQuantity(userID, rewardItem.itemTypeId, (int) Item.Category.CraftingIngredients);
 
          // Sends notification to player about the item received
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
