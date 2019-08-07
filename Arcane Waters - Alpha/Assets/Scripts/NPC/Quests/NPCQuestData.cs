@@ -53,6 +53,7 @@ public class DeliveryQuestPair : QuestInfo
 {
    public DeliverQuest deliveryQuest;
    public CraftingIngredients.Type rewardType;
+   public int rewardQuantity;
 }
 
 [Serializable]
