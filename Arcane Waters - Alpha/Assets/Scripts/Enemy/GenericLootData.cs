@@ -43,7 +43,7 @@ public class GenericLootData : ScriptableObject {
 
       // If there are no item that passed their chance ratio, an optional default value can be set
       if(newLootList.Count == 0 && defaultLoot != CraftingIngredients.Type.None) {
-         newLootList.Add(new LootInfo { lootType = defaultLoot});
+         newLootList.Add(new LootInfo { lootType = defaultLoot, quantity = 1});
       }
 
       return newLootList;
@@ -53,7 +53,13 @@ public class GenericLootData : ScriptableObject {
 [Serializable]
 public class LootInfo
 {
+   // Type of loot
    public CraftingIngredients.Type lootType;
+
+   // Number of loots
+   public int quantity;
+
+   // Percentage Chance to drop
    [Range(0.00f,100.00f)]
    public float chanceRatio;
 }
