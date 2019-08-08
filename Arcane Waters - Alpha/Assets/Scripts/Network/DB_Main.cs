@@ -144,12 +144,14 @@ public class DB_Main : DB_MainStub {
                      int newCategory = DataUtil.getInt(dataReader, "itmCategory");
                      int newType = DataUtil.getInt(dataReader, "itmType");
                      int newitemCount = DataUtil.getInt(dataReader, "itmCount");
+                     int newItemID = DataUtil.getInt(dataReader, "itmId");
 
-                     ItemInfo info = new ItemInfo(dataReader);
+                  ItemInfo info = new ItemInfo(dataReader);
                      Item newItem = new Item {
                         category = (Item.Category) newCategory,
                         itemTypeId = newType,
-                        count = newitemCount
+                        count = newitemCount,
+                        id = newItemID
                      };
 
                      Item findItem = newItemList.Find(_ => _.itemTypeId == newType && (int)_.category == newCategory);
@@ -1342,7 +1344,7 @@ public class DB_Main : DB_MainStub {
    }
 
    public static new int getIngredientQuantity (int userId, int itmType, int itmCategory) {
-      int itemCount = -1;
+      int itemCount = 0;
 
       try {
          using (MySqlConnection conn = getConnection())
@@ -1355,7 +1357,7 @@ public class DB_Main : DB_MainStub {
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  itemCount = dataReader.GetInt32("itmCount");
+                  itemCount += dataReader.GetInt32("itmCount");
                }
             }
          }
@@ -1366,21 +1368,71 @@ public class DB_Main : DB_MainStub {
       return itemCount;
    }
 
-   public static new void updateIngredientQuantity (int userId, int itmType, int itmCategory, int itmCount) {
+   public static new int getItemID (int userId, int itmCategory, int itmType) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("UPDATE items SET itmCount=@itmCount WHERE usrId=@usrId and itmCategory=@itmCategory and itmType=@itmType", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM items WHERE usrId=@usrId and itmCategory=@itmCategory and itmType=@itmType", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@itmCategory", itmCategory);
             cmd.Parameters.AddWithValue("@itmType", itmType);
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  return dataReader.GetInt32("itmId");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return 0;
+   }
+
+   public static new void updateIngredientQuantity (int userId, int itmId, int itmCount) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("UPDATE items SET itmCount=@itmCount WHERE usrId=@usrId and itmId=@itmId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@itmId", itmId);
             cmd.Parameters.AddWithValue("@itmCount", itmCount);
             // Execute the command
             cmd.ExecuteNonQuery();
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void createOrUpdateItemCount (int userId, int itmId, Item baseItem) {
+      int existingItemCount = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM items WHERE usrId=@usrId and itmId=@itmId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@itmId", itmId);
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  existingItemCount += dataReader.GetInt32("itmCount");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      if(existingItemCount > 0) {
+         updateIngredientQuantity(userId, itmId, existingItemCount + baseItem.count);
+      }
+      else {
+         createNewItem(userId, baseItem);
       }
    }
 

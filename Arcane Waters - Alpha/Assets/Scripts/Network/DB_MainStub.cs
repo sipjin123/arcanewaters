@@ -215,10 +215,19 @@ public class DB_MainStub : MonoBehaviour {
       return 0;
    }
 
+   public static int getItemID (int userId, int itmCategory, int itmType) {
+      return 0;
+   }
+
+   public static void createOrUpdateItemCount (int userId, int itmId, Item baseItem) {
+
+   }
+
    public static int getIngredientQuantity (int userId, int itmType, int itmCategory) {
       return 0;
    }
-   public static void updateIngredientQuantity (int userId, int itmType, int itmCategory, int itmCount) {
+
+   public static void updateIngredientQuantity (int userId, int itmId, int itmCount) { 
 
    }
 
