@@ -223,7 +223,11 @@ public class DB_MainStub : MonoBehaviour {
 
    }
 
-   public static void updateIngredientQuantity (int userId, int itmId, int itmCount) { 
+   public static void updateItemQuantity (int userId, int itmId, int itmCount) { 
+
+   }
+
+   public static void decreaseQuantityOrDeleteItem (int userId, int itmId, int itmCount) {
 
    }
 

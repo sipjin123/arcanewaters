@@ -146,7 +146,7 @@ public class DB_Main : DB_MainStub {
                      int newitemCount = DataUtil.getInt(dataReader, "itmCount");
                      int newItemID = DataUtil.getInt(dataReader, "itmId");
 
-                  ItemInfo info = new ItemInfo(dataReader);
+                     ItemInfo info = new ItemInfo(dataReader);
                      Item newItem = new Item {
                         category = (Item.Category) newCategory,
                         itemTypeId = newType,
@@ -1334,7 +1334,7 @@ public class DB_Main : DB_MainStub {
       return 0;
    }
 
-   public static new void updateIngredientQuantity (int userId, int itmId, int itmCount) {
+   public static new void updateItemQuantity (int userId, int itmId, int itmCount) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("UPDATE items SET itmCount=@itmCount WHERE usrId=@usrId and itmId=@itmId", conn)) {
@@ -1348,6 +1348,14 @@ public class DB_Main : DB_MainStub {
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void decreaseQuantityOrDeleteItem (int userId, int itmId, int itmCount) {
+      if (itmCount <= 0) {
+         deleteItem(userId, itmId);
+      } else {
+         updateItemQuantity(userId, itmId, itmCount);
       }
    }
 
@@ -1373,7 +1381,7 @@ public class DB_Main : DB_MainStub {
       }
 
       if(existingItemCount > 0) {
-         updateIngredientQuantity(userId, itmId, existingItemCount + baseItem.count);
+         updateItemQuantity(userId, itmId, existingItemCount + baseItem.count);
       }
       else {
          createNewItem(userId, baseItem);
@@ -1403,7 +1411,7 @@ public class DB_Main : DB_MainStub {
          }
 
          if (existingItemCount > 0) {
-            updateIngredientQuantity(userId, itemList[i].id, existingItemCount + itemList[i].count);
+            updateItemQuantity(userId, itemList[i].id, existingItemCount + itemList[i].count);
          } else {
             createNewItem(userId, itemList[i]);
          }

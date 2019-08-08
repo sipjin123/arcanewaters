@@ -14,7 +14,7 @@ public class RewardRow : MonoBehaviour {
    public Text rewardName;
 
    // The gameobject indicating the quantity of the item
-   public GameObject quantityNotif;
+   public GameObject quantityContainer;
 
    // The quantity of the item to be rewarded
    public Text quantityText;

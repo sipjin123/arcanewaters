@@ -30,7 +30,7 @@ public class RewardScreen : Panel
       rewardRows[0].gameObject.SetActive(true);
       rewardRows[0].quantityText.text = item.count.ToString();
       rewardRows[0].rewardName.text = item.getCastItem().getName();
-      rewardRows[0].quantityNotif.SetActive(item.count > 1);
+      rewardRows[0].quantityContainer.SetActive(item.count > 1);
    }
 
    public void setItemDataGroup (List<Item> itemList) {
@@ -41,7 +41,7 @@ public class RewardScreen : Panel
          rewardRows[i].rewardIcon.sprite = ImageManager.getSprite(currItem.getIconPath());
          rewardRows[i].quantityText.text = currItem.count.ToString();
          rewardRows[i].rewardName.text = currItem.getName();
-         rewardRows[i].quantityNotif.SetActive(currItem.count > 1);
+         rewardRows[i].quantityContainer.SetActive(currItem.count > 1);
       }
    }
 
