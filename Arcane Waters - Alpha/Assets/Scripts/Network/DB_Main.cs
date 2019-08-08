@@ -1053,37 +1053,6 @@ public class DB_Main : DB_MainStub {
 
       return newItem;
    }
-   public static new List<Item> createNewItems (int userId, List<Item> itemList) {
-      List<Item> newItem = itemList.Clone();
-      for (int i = 0; i < itemList.Count; i++) {
-
-         try {
-            using (MySqlConnection conn = getConnection())
-            using (MySqlCommand cmd = new MySqlCommand(
-               "INSERT INTO items (usrId, itmCategory, itmType, itmColor1, itmColor2, itmData, itmCount) " +
-               "VALUES(@usrId, @itmCategory, @itmType, @itmColor1, @itmColor2, @itmData, @itmCount) ", conn)) {
-
-               conn.Open();
-               cmd.Prepare();
-               cmd.Parameters.AddWithValue("@usrId", userId);
-               cmd.Parameters.AddWithValue("@itmCategory", (int) itemList[i].category);
-               cmd.Parameters.AddWithValue("@itmType", (int) itemList[i].itemTypeId);
-               cmd.Parameters.AddWithValue("@itmColor1", (int) itemList[i].color1);
-               cmd.Parameters.AddWithValue("@itmColor2", (int) itemList[i].color2);
-               cmd.Parameters.AddWithValue("@itmData", itemList[i].data);
-               cmd.Parameters.AddWithValue("@itmCount", itemList[i].count);
-
-               // Execute the command
-               cmd.ExecuteNonQuery();
-               newItem[i].id = (int) cmd.LastInsertedId;
-            }
-         } catch (Exception e) {
-            D.error("MySQL Error: " + e.ToString());
-         }
-
-      }
-      return newItem;
-   }
 
    public static new int insertNewArmor (int userId, Armor.Type armorType, ColorType color1, ColorType color2) {
       int itemId = 0;
@@ -1436,23 +1405,32 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static new void updateIngredientQuantities (int userId, List<Item> itemList) {
-
-      for (int i = 0; i < itemList.Count; i++) {
+   public static new void createOrUpdateItemListCount (int userId, List<Item> itemList) {
+      for(int i = 0; i < itemList.Count; i++) {
+         int existingItemCount = 0;
+      
          try {
             using (MySqlConnection conn = getConnection())
-            using (MySqlCommand cmd = new MySqlCommand("UPDATE items SET itmCount=@itmCount WHERE usrId=@usrId and itmCategory=@itmCategory and itmType=@itmType", conn)) {
+            using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM items WHERE usrId=@usrId and itmId=@itmId", conn)) {
                conn.Open();
                cmd.Prepare();
                cmd.Parameters.AddWithValue("@usrId", userId);
-               cmd.Parameters.AddWithValue("@itmCategory", itemList[i].category);
-               cmd.Parameters.AddWithValue("@itmType", itemList[i].itemTypeId);
-               cmd.Parameters.AddWithValue("@itmCount", itemList[i].count);
-               // Execute the command
-               cmd.ExecuteNonQuery();
+               cmd.Parameters.AddWithValue("@itmId", itemList[i].id);
+               // Create a data reader and Execute the command
+               using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+                  while (dataReader.Read()) {
+                     existingItemCount += dataReader.GetInt32("itmCount");
+                  }
+               }
             }
          } catch (Exception e) {
             D.error("MySQL Error: " + e.ToString());
+         }
+
+         if (existingItemCount > 0) {
+            updateIngredientQuantity(userId, itemList[i].id, existingItemCount + itemList[i].count);
+         } else {
+            createNewItem(userId, itemList[i]);
          }
       }
    }

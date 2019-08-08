@@ -171,10 +171,6 @@ public class DB_MainStub : MonoBehaviour {
       return null;
    }
 
-   public static List<Item> createNewItems (int userId, List<Item> itemList) {
-      return new List<Item>();
-   }
-
    public static int insertNewArmor (int userId, Armor.Type armorType, ColorType color1, ColorType color2) {
       return 0;
    }
@@ -219,6 +215,10 @@ public class DB_MainStub : MonoBehaviour {
       return 0;
    }
 
+   public static void createOrUpdateItemListCount (int userId, List<Item> itemList) {
+
+   }
+
    public static void createOrUpdateItemCount (int userId, int itmId, Item baseItem) {
 
    }
@@ -228,10 +228,6 @@ public class DB_MainStub : MonoBehaviour {
    }
 
    public static void updateIngredientQuantity (int userId, int itmId, int itmCount) { 
-
-   }
-
-   public static void updateIngredientQuantities (int userId, List<Item> itemList) {
 
    }
 
