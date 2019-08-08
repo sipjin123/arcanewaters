@@ -1181,64 +1181,40 @@ public class RPCManager : NetworkBehaviour {
 
       // Gathers the item rewards from the scriptable object
       List<LootInfo> lootInfoList = RewardManager.self.oreLootList.Find(_ => _.oreType == oreNode.oreType).dropTypes.requestLootList();
-      List<int> dbQuantityList = new List<int>();
-      List<bool> ifCreateNewList = new List<bool>();
+
+      // Registers list of ingredient types for data fetching
+      List<CraftingIngredients.Type> itemLoots = new List<CraftingIngredients.Type>();
+      for(int i = 0; i < lootInfoList.Count; i++) {
+         itemLoots.Add(lootInfoList[i].lootType);
+      }
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Gathers the current database quantity
-         for (int i = 0; i < lootInfoList.Count; i++) {
-            int existingRewardQuantity = DB_Main.getIngredientQuantity(_player.userId, (int) lootInfoList[i].lootType, (int) Item.Category.CraftingIngredients);
-            dbQuantityList.Add(existingRewardQuantity);
-         }
-
+         List<Item> databaseList = DB_Main.getRequiredIngredients(_player.userId, itemLoots);
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Determines if the item exists in the database
-            for (int i = 0; i < lootInfoList.Count; i++) {
-               bool ifCreateNew = dbQuantityList[i] <= 0 ? true : false;
-               ifCreateNewList.Add(ifCreateNew);
-            }
-            processMineReward(_player.userId, lootInfoList, dbQuantityList, ifCreateNewList, oreNode.oreType);
+            processMineReward(_player.userId, databaseList, lootInfoList, oreNode.oreType);
          });
       });
    }
 
    [Server]
-   private void processMineReward(int userID, List<LootInfo> rewardList, List<int> databaseCountList, List<bool> ifCreateList, OreNode.Type oreType) {
+   private void processMineReward(int userID, List<Item> databaseItems, List<LootInfo> rewardList, OreNode.Type oreType) {
       // Generate Item List to show in popup after data writing
       List<Item> itemRewardList = new List<Item>();
-      for(int i = 0; i < rewardList.Count; i++) {
+      for (int i = 0; i < rewardList.Count; i++) {
          Item itemToCreate = new CraftingIngredients(0, rewardList[i].lootType, ColorType.Black, ColorType.Black);
+         Item databaseItemType = databaseItems.Find(_ => _.category == Item.Category.CraftingIngredients && _.itemTypeId == (int) rewardList[i].lootType);
+         
+         // Registers the quantity of each item
          itemToCreate.count = rewardList[i].quantity;
+         if (databaseItemType != null)
+            itemToCreate.id = databaseItemType.id;
          itemRewardList.Add(itemToCreate);
       }
 
-      List<Item> newItemCreateList = new List<Item>();
-      List<Item> newItemUpdateList = new List<Item>();
-
-      for (int i = 0; i < rewardList.Count; i++) {
-         if (ifCreateList[i] == true) {
-            // Gather items that need to be created in the db
-            Item itemToCreate = new CraftingIngredients(0, rewardList[i].lootType, ColorType.Black, ColorType.Black);
-            itemToCreate.count = rewardList[i].quantity;
-            newItemCreateList.Add(itemToCreate);
-         } else {
-            // Gather items that just needs to be updated in the db
-            Item itemToUpdate = new CraftingIngredients(0, rewardList[i].lootType, ColorType.Black, ColorType.Black);
-            int addedQuantity = databaseCountList[i] + rewardList[i].quantity;
-            itemToUpdate.count = addedQuantity;
-            newItemUpdateList.Add(itemToUpdate);
-         }
-      }
-
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         if (newItemCreateList.Count > 0) {
-            // Register the crafted item in the database
-            DB_Main.createNewItems(_player.userId, newItemCreateList);
-         }
-         if (newItemUpdateList.Count > 0) {
-            // Updates the item Count in the database
-            DB_Main.updateIngredientQuantities(userID, newItemUpdateList);
-         }
+         // Creates or updates database item
+         DB_Main.createOrUpdateItemListCount(userID, itemRewardList);
+
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Calls Reward Popup
             Target_ReceiveItemList(_player.connectionToClient, itemRewardList.ToArray());
