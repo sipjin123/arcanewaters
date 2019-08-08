@@ -1017,13 +1017,13 @@ public class RPCManager : NetworkBehaviour {
       requiredItems.Add(requiredItem);
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         int existingRewardQuantity = DB_Main.getIngredientQuantity(userID, rewardItem.itemTypeId, (int) Item.Category.CraftingIngredients);
+         // Fetches reward item id
+         int rewardItemID = DB_Main.getItemID(userID, (int) rewardItem.category, rewardItem.itemTypeId);
 
          // Sends notification to player about the item received
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Determines if item does not exist in the database
-            bool ifCreateNew = existingRewardQuantity < 0 ? true : false;
-            finalizeRewards(userID, rewardItem, databaseItems, requiredItems, ifCreateNew, existingRewardQuantity);
+            rewardItem.id = rewardItemID;
+            finalizeRewards(userID, rewardItem, databaseItems, requiredItems);
          });
       });
    }
@@ -1061,6 +1061,7 @@ public class RPCManager : NetworkBehaviour {
                   }
                }
             }
+
             processCraftingRewards(userId, blueprintType, databaseItemList, data.combinationRequirements);
          });
       });
@@ -1073,36 +1074,36 @@ public class RPCManager : NetworkBehaviour {
       Item rewardItem = data.resultItem;
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Gets the current quantity of the reward item type from the database
-         int rewardItemCount = DB_Main.getIngredientQuantity(userId, rewardItem.itemTypeId, (int) rewardItem.category);
+         // Fetches reward item id
+         int rewardItemID = DB_Main.getItemID(userId, (int) rewardItem.category, rewardItem.itemTypeId);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Determines if the item exists in the database
-            bool ifCreateNew = rewardItemCount < 0 ? true : false;
-            finalizeRewards(userId, rewardItem, databaseItems, requiredItems, ifCreateNew, rewardItemCount);
+            rewardItem.id = rewardItemID;
+            finalizeRewards(userId, rewardItem, databaseItems, requiredItems);
          });
       });
    }
 
    [Server]
-   private void finalizeRewards (int userId, Item rewardItem, List<Item> databaseItems, List<Item> requiredItems, bool ifCreateNew, int existingRewardQuantity) {
+   private void finalizeRewards (int userId, Item rewardItem, List<Item> databaseItems, List<Item> requiredItems) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         if (ifCreateNew) {
-            // Register the crafted item in the database
-            DB_Main.createNewItem(_player.userId, rewardItem);
-         }
-         else {
-            // The added item count for REWARDS
-            int addedQuantity = rewardItem.count + existingRewardQuantity;
-            DB_Main.updateIngredientQuantity(userId, rewardItem.itemTypeId, (int) rewardItem.category, addedQuantity);
-         }
+         // Creates or updates item database count
+         DB_Main.createOrUpdateItemCount(userId, rewardItem.id, rewardItem);
 
-         // Deduct quantity of each required ingredient for the crafted item
          for(int i = 0; i < requiredItems.Count; i++) {
             int databaseCount = databaseItems.Find(_ => _.itemTypeId == requiredItems[i].itemTypeId && _.category == requiredItems[i].category).count;
             int requiredCount = requiredItems[i].count;
             int deductedQuantity = databaseCount - requiredCount;
-            DB_Main.updateIngredientQuantity(userId, requiredItems[i].itemTypeId, (int) requiredItems[i].category, deductedQuantity);
+
+            if (deductedQuantity <= 0) {
+               // Delete Item if the count is zero
+               int databaseID = databaseItems.Find(_ => _.itemTypeId == requiredItems[i].itemTypeId && _.category == requiredItems[i].category).id;
+               DB_Main.deleteItem(userId, databaseID);
+            } else {
+               // Deduct quantity of each required ingredient for the crafted item
+               int databaseID = databaseItems.Find(_ => _.itemTypeId == requiredItems[i].itemTypeId && _.category == requiredItems[i].category).id;
+               DB_Main.updateIngredientQuantity(userId, databaseID, deductedQuantity);
+            }
          }
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -1193,7 +1194,7 @@ public class RPCManager : NetworkBehaviour {
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Determines if the item exists in the database
             for (int i = 0; i < lootInfoList.Count; i++) {
-               bool ifCreateNew = dbQuantityList[i] < 0 ? true : false;
+               bool ifCreateNew = dbQuantityList[i] <= 0 ? true : false;
                ifCreateNewList.Add(ifCreateNew);
             }
             processMineReward(_player.userId, lootInfoList, dbQuantityList, ifCreateNewList, oreNode.oreType);
