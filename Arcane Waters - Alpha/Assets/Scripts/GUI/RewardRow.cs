@@ -13,6 +13,12 @@ public class RewardRow : MonoBehaviour {
    // Name of the rewarded item
    public Text rewardName;
 
+   // The gameobject indicating the quantity of the item
+   public GameObject quantityNotif;
+
+   // The quantity of the item to be rewarded
+   public Text quantityText;
+
    #endregion
 
    #region Private Variables
