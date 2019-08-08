@@ -1312,31 +1312,6 @@ public class DB_Main : DB_MainStub {
       return gems;
    }
 
-   public static new int getIngredientQuantity (int userId, int itmType, int itmCategory) {
-      int itemCount = 0;
-
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM items WHERE usrId=@usrId and itmCategory=@itmCategory and itmType=@itmType", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@usrId", userId);
-            cmd.Parameters.AddWithValue("@itmCategory", itmCategory);
-            cmd.Parameters.AddWithValue("@itmType", itmType);
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  itemCount += dataReader.GetInt32("itmCount");
-               }
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-
-      return itemCount;
-   }
-
    public static new int getItemID (int userId, int itmCategory, int itmType) {
       try {
          using (MySqlConnection conn = getConnection())
