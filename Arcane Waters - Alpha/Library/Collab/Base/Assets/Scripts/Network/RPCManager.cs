@@ -14,6 +14,9 @@ public class RPCManager : NetworkBehaviour {
 
    void Start () {
       _player = GetComponent<NetEntity>();
+
+      // Initialized Inventory Cache
+      InventoryCacheManager.self.fetchInventory();
    }
 
    [ClientRpc]
@@ -36,6 +39,50 @@ public class RPCManager : NetworkBehaviour {
       if (_player is ShipEntity) {
          ShipEntity ship = (ShipEntity) _player;
          ship.updateSkin(newSkinType);
+      }
+   }
+
+   [TargetRpc]
+   public void Target_NPCPanelComplete (NetworkConnection connection, int npcLevel, int npcID) {
+      NPC npc = NPCManager.self.getNPC(npcID);
+      NPCPanel npcPanel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
+      npcPanel.npc = npc;
+      PanelManager.self.pushIfNotShowing(npcPanel.type);
+
+      // Send data to panel
+      npcPanel.readyNPCPanel(npcLevel);
+
+      // Call out quest options
+      npcPanel.setClickableQuestOptions();
+   }
+
+   [TargetRpc]
+   public void Target_GetNPCInfo (NetworkConnection connection, int npcID, int userID, int questType, int npcLevel, int npcQuestIndex, int npcProgress) {
+      NPC npc = NPCManager.self.getNPC(npcID);
+      NPCPanel npcPanel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
+      npcPanel.npc = npc;
+
+      npcPanel.receiveIndividualNPCQuestData((QuestType) questType, npcQuestIndex, npcProgress);
+   }
+
+   [TargetRpc]
+   public void Target_UpdateNPCRelation (NetworkConnection connection, int npcID, int npcRelation) {
+      NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
+      panel.receiveNPCRelationDataFromServer(npcRelation);
+   }
+
+   [TargetRpc]
+   public void Target_UpdateNPCQuestProgress (NetworkConnection connection, int npcID, int questProgress, int questIndex, string questType) {
+      NPC npc = NPCManager.self.getNPC(npcID);
+  
+      QuestType typeOfQuest = (QuestType) Enum.Parse(typeof(QuestType), questType, true);
+      switch (typeOfQuest) {
+         case QuestType.Deliver:
+            npc.npcData.npcQuestList[0].deliveryQuestList[questIndex].questState = (QuestState) questProgress;
+            break;
+         case QuestType.Hunt:
+            npc.npcData.npcQuestList[0].huntQuestList[questIndex].questState = (QuestState) questProgress;
+            break;
       }
    }
 
@@ -167,19 +214,24 @@ public class RPCManager : NetworkBehaviour {
       NPC npc = NPCManager.self.getNPC(npcId);
 
       // Show the panel with the specified options
-      NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
-      panel.npc = npc;
-      panel.setClickableRows(options.ToList());
-      PanelManager.self.pushIfNotShowing(panel.type);
+      NPCPanel npcPanel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
+      npcPanel.npc = npc;
+      npcPanel.setClickableRows(options.ToList());
+
+      if (PanelManager.self.selectedPanel != Panel.Type.NPC_Panel) {
+         PanelManager.self.pushIfNotShowing(npcPanel.type);
+      }
    }
 
    [TargetRpc]
    public void Target_ReceiveNPCMessage (NetworkConnection connection, string response) {
-      // Set the new text message
-      NPCPanel.self.greetingText.text = response;
+      if (NPCPanel.self.isActiveAndEnabled) {
+         // Set the new text message
+         NPCPanel.self.greetingText.text = response;
 
-      // Make the NPC start talking
-      AutoTyper.SlowlyRevealText(NPCPanel.self.greetingText, response);
+         // Make the NPC start talking
+         AutoTyper.SlowlyRevealText(NPCPanel.self.greetingText, response);
+      }
    }
 
    [Command]
@@ -614,6 +666,109 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
+   public void Cmd_UpdateNPCRelation(int npcID, int relationLevel) {
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Update the setting in the database
+         DB_Main.updateNPCRelation(_player.userId, npcID, relationLevel);
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_UpdateNPCRelation(_player.connectionToClient, npcID, relationLevel);
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_CreateNPCRelation(int npcID, string npcName) {
+      NPC npc = NPCManager.self.getNPC(npcID);
+      List<QuestInfo> questList = npc.npcData.npcQuestList[0].getAllQuests();
+      int deliverIndex = 0;
+      int huntIndex = 0;
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         int indexCount = 0;
+         int indexMax = questList.Count;
+         foreach (QuestInfo info in questList) {
+            NPCRelationInfo npcRelation = new NPCRelationInfo(_player.userId, npcID, npcName, info.questType.ToString(), 0, 0, 0);
+            switch (info.questType) {
+               case QuestType.Deliver:
+                  npcRelation.npcQuestIndex = deliverIndex;
+                  deliverIndex++;
+                  break;
+               case QuestType.Hunt:
+                  npcRelation.npcQuestIndex = huntIndex;
+                  huntIndex++;
+                  break;
+            }
+            DB_Main.createNPCRelation(npcRelation);
+
+            // Back to the Unity thread
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               int questType = (int) info.questType;
+               Target_GetNPCInfo(_player.connectionToClient, npcRelation.npcID, npcRelation.userID, questType, npcRelation.npcRelationLevel, npcRelation.npcQuestIndex, npcRelation.npcQuestProgress);
+               indexCount++;
+               if (indexCount >= indexMax) {
+                  Cmd_DispatchComplete(npcRelation.npcID, npcRelation.npcRelationLevel);
+               }
+            });
+         }
+      });
+   }
+
+   [Command]
+   public void Cmd_DispatchComplete(int npcID, int relpId) {
+      Target_NPCPanelComplete(_player.connectionToClient, relpId, npcID);
+   }
+
+   [Command]
+   public void Cmd_UpdateNPCQuestProgress(int npcID, int questProgress, int questIndex, string questType) {
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Update the setting in the database
+         DB_Main.updateNPCProgress(_player.userId, npcID, questProgress, questIndex, questType);
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_UpdateNPCQuestProgress(_player.connectionToClient, npcID, questProgress, questIndex, questType);
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_GetNPCRelation(int npcID, string npcName) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List< NPCRelationInfo> npcRelationList = DB_Main.getNPCRelationInfo(_player.userId, npcID);
+         
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (npcRelationList.Count == 0) {
+               // Send command to create data for non existent npc
+               Cmd_CreateNPCRelation(npcID, npcName);
+               return;
+            } else {
+               // Fetches the info of the npc
+               for (int i = 0; i < npcRelationList.Count; i++) {
+                  NPCRelationInfo npcRelation = npcRelationList[i];
+
+                  // Creates the npc incase it did not exist
+                  if (npcRelation.userID == 0) {
+                     D.log("NPC Relation does not exist, Adding...");
+                     Cmd_CreateNPCRelation(npcID, npcName);
+                     return;
+                  }
+                  int questType = (int) npcRelation.npcQuestType;
+                  Target_GetNPCInfo(_player.connectionToClient, npcRelation.npcID, npcRelation.userID, questType, npcRelation.npcRelationLevel, npcRelation.npcQuestIndex, npcRelation.npcQuestProgress);
+               }
+
+               // Gives notification that the quest data is complete and can now popup npc panel
+               Cmd_DispatchComplete(npcRelationList[0].npcID, npcRelationList[0].npcRelationLevel);
+            }
+         });
+      });
+   }
+
+   [Command]
    public void Cmd_BuyItem (int shopItemId) {
       Item newItem = null;
       Item shopItem = ShopManager.self.getItem(shopItemId);
@@ -796,6 +951,14 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
+   public void Cmd_DirectAddItem (Item item) {
+      // Add it to their inventory
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         item = DB_Main.createNewItem(_player.userId, item);
+      });
+   }
+
+   [Command]
    public void Cmd_OpenChest (int chestId) {
       TreasureChest chest = TreasureManager.self.getChest(chestId);
 
@@ -834,12 +997,10 @@ public class RPCManager : NetworkBehaviour {
 
    [Command]
    public void Cmd_GetClickableRows (int npcId) {
-      List<ClickableText.Type> list = new List<ClickableText.Type>();
-      list.Add(ClickableText.Type.TradeGossip);
-
       // Look up the NPC
       NPC npc = NPCManager.self.getNPC(npcId);
 
+      List<ClickableText.Type> list = npc.currentAnswerDialogue;
       // If the player is too far, don't let them
       if (Vector2.Distance(_player.transform.position, npc.transform.position) > 2.0f) {
          D.warning("Player trying to interact with NPC from too far away!");
@@ -855,7 +1016,8 @@ public class RPCManager : NetworkBehaviour {
       NPC npc = NPCManager.self.getNPC(npcId);
 
       // Figure out the response we should send back
-      string response = npc.tradeGossip;
+      //string response = npc.tradeGossip;
+      string response = npc.npcReply;
 
       // Send the response to the player
       Target_ReceiveNPCMessage(_player.connectionToClient, response);

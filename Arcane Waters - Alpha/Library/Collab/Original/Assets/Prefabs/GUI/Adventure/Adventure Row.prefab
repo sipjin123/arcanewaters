@@ -213,7 +213,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 460, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &3115238347382154513
 MonoBehaviour:
@@ -238,6 +238,8 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
 --- !u!114 &3115238347382154518
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -283,6 +285,7 @@ MonoBehaviour:
     color2: 0
     data: 
     count: 1
+  tooltip: {fileID: 4350783758842793057}
 --- !u!1 &3115238347485811331
 GameObject:
   m_ObjectHideFlags: 0
@@ -385,6 +388,7 @@ MonoBehaviour:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -392,11 +396,13 @@ MonoBehaviour:
     m_HighlightedSprite: {fileID: 21300002, guid: e5b78411767b548a29109977d6a44bc8,
       type: 3}
     m_PressedSprite: {fileID: 21300004, guid: e5b78411767b548a29109977d6a44bc8, type: 3}
+    m_SelectedSprite: {fileID: 21300002, guid: e5b78411767b548a29109977d6a44bc8, type: 3}
     m_DisabledSprite: {fileID: 0}
   m_AnimationTriggers:
     m_NormalTrigger: Normal
     m_HighlightedTrigger: Highlighted
     m_PressedTrigger: Pressed
+    m_SelectedTrigger: Highlighted
     m_DisabledTrigger: Disabled
   m_Interactable: 1
   m_TargetGraphic: {fileID: 3115238347485811449}
@@ -451,6 +457,8 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
 --- !u!114 &3115238347485811453
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -811,6 +819,7 @@ GameObject:
   - component: {fileID: 3115238348554752267}
   - component: {fileID: 6895930591281152644}
   - component: {fileID: 5700703646552413144}
+  - component: {fileID: 4350783758842793057}
   m_Layer: 5
   m_Name: Icon
   m_TagString: Untagged
@@ -906,6 +915,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ac3171307ced7240b0660a7df409e41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &4350783758842793057
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3115238348554752265}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d45e50f956068424da261c7239c70d29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltip: 
 --- !u!1 &3115238349117220246
 GameObject:
   m_ObjectHideFlags: 0

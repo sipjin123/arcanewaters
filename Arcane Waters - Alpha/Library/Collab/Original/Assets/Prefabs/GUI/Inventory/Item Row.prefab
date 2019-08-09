@@ -196,6 +196,7 @@ GameObject:
   - component: {fileID: 22269030}
   - component: {fileID: 11434104}
   - component: {fileID: 453774794769464594}
+  - component: {fileID: 5295105630229613147}
   m_Layer: 5
   m_Name: Icon
   m_TagString: Untagged
@@ -271,6 +272,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ac3171307ced7240b0660a7df409e41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5295105630229613147
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 128340}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d45e50f956068424da261c7239c70d29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltip: 
 --- !u!1 &157036
 GameObject:
   m_ObjectHideFlags: 0
@@ -467,6 +481,8 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
 --- !u!222 &22232374
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -545,6 +561,8 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
 --- !u!1 &194114
 GameObject:
   m_ObjectHideFlags: 0
@@ -586,7 +604,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 300, y: 46}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &11465282
 MonoBehaviour:
@@ -607,6 +625,15 @@ MonoBehaviour:
   equippedIcon: {fileID: 11490274}
   itemCount: {fileID: 11424430}
   selectedBackgroundImage: {fileID: 11402794}
+  item:
+    category: 0
+    id: 0
+    itemTypeId: 0
+    color1: 0
+    color2: 0
+    data: 
+    count: 1
+  tooltip: {fileID: 5295105630229613147}
 --- !u!114 &11463208
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -630,6 +657,8 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
 --- !u!114 &11403114
 MonoBehaviour:
   m_ObjectHideFlags: 0

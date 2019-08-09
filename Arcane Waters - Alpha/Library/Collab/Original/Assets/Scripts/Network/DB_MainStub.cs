@@ -227,7 +227,7 @@ public class DB_MainStub : MonoBehaviour {
 
    }
 
-   public static void decreaseQuantityOrDeleteItem (int userId, int itmId, int itmCount) {
+   public static void decreaseQuantityOrDeleteItem (int userId, int itmId, int deductCount) {
 
    }
 
@@ -308,6 +308,18 @@ public class DB_MainStub : MonoBehaviour {
    }
 
    public static List<ShipInfo> getShips (int userId, int page, int shipsPerPage) {
+      return null;
+   }
+
+   public static void addToTradeHistory (int userId, TradeHistoryInfo tradeInfo) {
+
+   }
+
+   public static int getTradeHistoryCount (int userId) {
+      return 0;
+   }
+
+   public static List<TradeHistoryInfo> getTradeHistory (int userId, int page, int tradesPerPage) {
       return null;
    }
 

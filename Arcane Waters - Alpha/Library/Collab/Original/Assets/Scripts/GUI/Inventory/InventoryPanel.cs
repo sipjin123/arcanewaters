@@ -182,6 +182,9 @@ public class InventoryPanel : Panel, IPointerClickHandler {
             row.colorBox2.enabled = false;
             row.equippedIcon.enabled = false;
          }
+
+         // Set the tooltip when hovering the image
+         row.tooltip.text = item.getTooltip();
       }
 
       // Store them for later reference

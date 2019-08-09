@@ -18,6 +18,105 @@ public class DB_Main : DB_MainStub {
 
    #endregion
 
+   #region NPC Relation Feature
+
+   public static new void createNPCRelation (NPCRelationInfo npcInfo) {
+      int questTypeIndex = (int) npcInfo.npcQuestType;
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO npc_relationship (relation_id, npc_id, user_id, npc_name, npc_relation_level,npc_quest_index, npc_quest_progress, npc_quest_type) " +
+            "VALUES (@relation_id, @npc_id, @user_id, @npc_name, @npc_relation_level, @npc_quest_index, @npc_quest_progress , @npc_quest_type);", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@relation_id", npcInfo.npcID + npcInfo.userID + questTypeIndex + npcInfo.npcQuestIndex);
+            cmd.Parameters.AddWithValue("@npc_id", npcInfo.npcID);
+            cmd.Parameters.AddWithValue("@user_id", npcInfo.userID);
+            cmd.Parameters.AddWithValue("@npc_name", npcInfo.npcName);
+            cmd.Parameters.AddWithValue("@npc_relation_level", npcInfo.npcRelationLevel);
+            cmd.Parameters.AddWithValue("@npc_quest_index", npcInfo.npcQuestIndex);
+            cmd.Parameters.AddWithValue("@npc_quest_progress", npcInfo.npcQuestProgress);
+            cmd.Parameters.AddWithValue("@npc_quest_type", npcInfo.npcQuestType.ToString());
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<NPCRelationInfo> getNPCRelationInfo (int user_id, int npc_id) {
+      List<NPCRelationInfo> npcRelationList = new List<NPCRelationInfo>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM arcane.npc_relationship WHERE npc_id=@npc_id AND user_id=@user_id", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@user_id", user_id);
+            cmd.Parameters.AddWithValue("@npc_id", npc_id);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  NPCRelationInfo info = new NPCRelationInfo(dataReader);
+                  npcRelationList.Add(info);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return npcRelationList;
+   }
+    
+   public static new void updateNPCRelation (int userId, int npcID, int relationLevel) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "UPDATE npc_relationship SET npc_relation_level=@npc_relation_level WHERE npc_id=@npc_id AND user_id=@userId;", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@userId", userId);
+            cmd.Parameters.AddWithValue("@npc_id", npcID);
+            cmd.Parameters.AddWithValue("@npc_relation_level", relationLevel);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void updateNPCProgress (int userId, int npcID, int questProgress, int questIndex, string questType) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "UPDATE npc_relationship SET npc_quest_progress=@npc_quest_progress WHERE npc_id=@npc_id AND user_id=@userId AND npc_quest_index=@npc_quest_index AND npc_quest_type=@npc_quest_type;", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@userId", userId);
+            cmd.Parameters.AddWithValue("@npc_id", npcID);
+            cmd.Parameters.AddWithValue("@npc_quest_index", questIndex);
+            cmd.Parameters.AddWithValue("@npc_quest_type", questType);
+            cmd.Parameters.AddWithValue("@npc_quest_progress", questProgress);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   #endregion
+
    public static new List<CropInfo> getCropInfo (int userId) {
       List<CropInfo> cropList = new List<CropInfo>();
 
@@ -1666,6 +1765,86 @@ public class DB_Main : DB_MainStub {
       }
 
       return shipList;
+   }
+
+   public static new void addToTradeHistory (int userId, TradeHistoryInfo tradeInfo) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO trade_history (usrId, shpId, areaId, crgType, amount, unitPrice, totalPrice, unitXP, totalXP, tradeTime) " +
+            "VALUES(@usrId, @shpId, @areaId, @crgType, @amount, @unitPrice, @totalPrice, @unitXP, @totalXP, @tradeTime)", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@shpId", tradeInfo.shipId);
+            cmd.Parameters.AddWithValue("@areaId", (int) tradeInfo.areaType);
+            cmd.Parameters.AddWithValue("@crgType", (int) tradeInfo.cargoType);
+            cmd.Parameters.AddWithValue("@amount", tradeInfo.amount);
+            cmd.Parameters.AddWithValue("@unitPrice", tradeInfo.pricePerUnit);
+            cmd.Parameters.AddWithValue("@totalPrice", tradeInfo.totalPrice);
+            cmd.Parameters.AddWithValue("@unitXP", tradeInfo.xpPerUnit);
+            cmd.Parameters.AddWithValue("@totalXP", tradeInfo.totalXP);
+            cmd.Parameters.AddWithValue("@tradeTime", DateTime.FromBinary(tradeInfo.tradeTime));
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new int getTradeHistoryCount (int userId) {
+      int tradeCount = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT count(*) as tradeCount FROM trade_history WHERE usrId=@usrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  tradeCount = dataReader.GetInt32("tradeCount");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return tradeCount;
+   }
+
+   public static new List<TradeHistoryInfo> getTradeHistory (int userId, int page, int tradesPerPage) {
+      List<TradeHistoryInfo> tradeList = new List<TradeHistoryInfo>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM trade_history JOIN users USING (usrId) WHERE trade_history.usrId=@usrId ORDER BY trade_history.tradeTime DESC LIMIT @start, @perPage", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@start", page * tradesPerPage);
+            cmd.Parameters.AddWithValue("@perPage", tradesPerPage);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  TradeHistoryInfo trade = new TradeHistoryInfo(dataReader);
+                  tradeList.Add(trade);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return tradeList;
    }
 
    public static new void readTest () {

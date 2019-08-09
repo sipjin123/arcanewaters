@@ -11,6 +11,11 @@ using MySql.Data.MySqlClient;
 public class DB_Main : DB_MainStub {
    #region Public Variables
 
+   public static string RemoteServer
+   {
+      get { return _remoteServer; }
+   }
+
    #endregion
 
    #region NPC Relation Feature
@@ -111,6 +116,59 @@ public class DB_Main : DB_MainStub {
    }
 
    #endregion
+
+   public static new List<Item> getRequiredIngredients (int usrId, List<CraftingIngredients.Type> itemList) {
+      int itmCategory = (int) Item.Category.CraftingIngredients;
+      List<Item> newItemList = new List<Item>();
+
+      string itemIds = "";
+      for (int i = 0; i < itemList.Count; i++) {
+         int itmType = (int) itemList[i];
+         if (i > 0) {
+            itemIds += " or ";
+         }
+         itemIds += "itmType = " + itmType;
+      }
+
+      try {
+            using (MySqlConnection conn = getConnection())
+            using (MySqlCommand cmd = new MySqlCommand(string.Format("SELECT * FROM arcane.items where itmCategory = @itmCategory and ({0}) and usrId = @usrId", itemIds), conn)) {
+               conn.Open();
+               cmd.Prepare();
+               cmd.Parameters.AddWithValue("@itmCategory", itmCategory);
+               cmd.Parameters.AddWithValue("@usrId", usrId); 
+
+               // Create a data reader and Execute the command
+               using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+                  while (dataReader.Read()) {
+                     int newCategory = DataUtil.getInt(dataReader, "itmCategory");
+                     int newType = DataUtil.getInt(dataReader, "itmType");
+                     int newitemCount = DataUtil.getInt(dataReader, "itmCount");
+                     int newItemID = DataUtil.getInt(dataReader, "itmId");
+
+                     ItemInfo info = new ItemInfo(dataReader);
+                     Item newItem = new Item {
+                        category = (Item.Category) newCategory,
+                        itemTypeId = newType,
+                        count = newitemCount,
+                        id = newItemID
+                     };
+
+                     Item findItem = newItemList.Find(_ => _.itemTypeId == newType && (int)_.category == newCategory);
+                     if (newItemList.Contains(findItem)) {
+                        int itemIndex = newItemList.IndexOf(findItem);
+                        newItemList[itemIndex].count +=1;
+                     } else {
+                        newItemList.Add(newItem);
+                     }
+                  }
+               }
+            }
+         } catch (Exception e) {
+            D.error("MySQL Error: " + e.ToString());
+      }
+      return newItemList;
+   }
 
    public static new List<CropInfo> getCropInfo (int userId) {
       List<CropInfo> cropList = new List<CropInfo>();
@@ -972,8 +1030,8 @@ public class DB_Main : DB_MainStub {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO items (usrId, itmCategory, itmType, itmColor1, itmColor2, itmData) " +
-            "VALUES(@usrId, @itmCategory, @itmType, @itmColor1, @itmColor2, @itmData) ", conn)) {
+            "INSERT INTO items (usrId, itmCategory, itmType, itmColor1, itmColor2, itmData, itmCount) " +
+            "VALUES(@usrId, @itmCategory, @itmType, @itmColor1, @itmColor2, @itmData, @itmCount) ", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -983,6 +1041,7 @@ public class DB_Main : DB_MainStub {
             cmd.Parameters.AddWithValue("@itmColor1", (int) baseItem.color1);
             cmd.Parameters.AddWithValue("@itmColor2", (int) baseItem.color2);
             cmd.Parameters.AddWithValue("@itmData", baseItem.data);
+            cmd.Parameters.AddWithValue("@itmCount", baseItem.count);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1251,6 +1310,137 @@ public class DB_Main : DB_MainStub {
       }
 
       return gems;
+   }
+
+   public static new int getItemID (int userId, int itmCategory, int itmType) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM items WHERE usrId=@usrId and itmCategory=@itmCategory and itmType=@itmType", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@itmCategory", itmCategory);
+            cmd.Parameters.AddWithValue("@itmType", itmType);
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  return dataReader.GetInt32("itmId");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return 0;
+   }
+
+   public static new void updateItemQuantity (int userId, int itmId, int itmCount) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("UPDATE items SET itmCount=@itmCount WHERE usrId=@usrId and itmId=@itmId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@itmId", itmId);
+            cmd.Parameters.AddWithValue("@itmCount", itmCount);
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void decreaseQuantityOrDeleteItem (int userId, int itmId, int deductCount) {
+      int currentCount = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM items WHERE usrId=@usrId and itmId=@itmId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@itmId", itmId);
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  currentCount = dataReader.GetInt32("itmCount");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      // Computes the item count after reducing the require item count
+      int deductedValue = currentCount - deductCount;
+
+      if (deductedValue <= 0) {
+         // Deletes item from the database if count hits zero
+         deleteItem(userId, itmId);
+      } else {
+         // Updates item count
+         updateItemQuantity(userId, itmId, deductCount);
+      }
+   }
+
+   public static new void createOrUpdateItemCount (int userId, int itmId, Item baseItem) {
+      int existingItemCount = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM items WHERE usrId=@usrId and itmId=@itmId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@itmId", itmId);
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  existingItemCount += dataReader.GetInt32("itmCount");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      if(existingItemCount > 0) {
+         updateItemQuantity(userId, itmId, existingItemCount + baseItem.count);
+      }
+      else {
+         createNewItem(userId, baseItem);
+      }
+   }
+
+   public static new void createOrUpdateItemListCount (int userId, List<Item> itemList) {
+      for(int i = 0; i < itemList.Count; i++) {
+         int existingItemCount = 0;
+      
+         try {
+            using (MySqlConnection conn = getConnection())
+            using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM items WHERE usrId=@usrId and itmId=@itmId", conn)) {
+               conn.Open();
+               cmd.Prepare();
+               cmd.Parameters.AddWithValue("@usrId", userId);
+               cmd.Parameters.AddWithValue("@itmId", itemList[i].id);
+               // Create a data reader and Execute the command
+               using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+                  while (dataReader.Read()) {
+                     existingItemCount += dataReader.GetInt32("itmCount");
+                  }
+               }
+            }
+         } catch (Exception e) {
+            D.error("MySQL Error: " + e.ToString());
+         }
+
+         if (existingItemCount > 0) {
+            updateItemQuantity(userId, itemList[i].id, existingItemCount + itemList[i].count);
+         } else {
+            createNewItem(userId, itemList[i]);
+         }
+      }
    }
 
    public static new int getItemCount (int userId) {
@@ -1762,6 +1952,86 @@ public class DB_Main : DB_MainStub {
       return shipList;
    }
 
+   public static new void addToTradeHistory (int userId, TradeHistoryInfo tradeInfo) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO trade_history (usrId, shpId, areaId, crgType, amount, unitPrice, totalPrice, unitXP, totalXP, tradeTime) " +
+            "VALUES(@usrId, @shpId, @areaId, @crgType, @amount, @unitPrice, @totalPrice, @unitXP, @totalXP, @tradeTime)", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@shpId", tradeInfo.shipId);
+            cmd.Parameters.AddWithValue("@areaId", (int) tradeInfo.areaType);
+            cmd.Parameters.AddWithValue("@crgType", (int) tradeInfo.cargoType);
+            cmd.Parameters.AddWithValue("@amount", tradeInfo.amount);
+            cmd.Parameters.AddWithValue("@unitPrice", tradeInfo.pricePerUnit);
+            cmd.Parameters.AddWithValue("@totalPrice", tradeInfo.totalPrice);
+            cmd.Parameters.AddWithValue("@unitXP", tradeInfo.xpPerUnit);
+            cmd.Parameters.AddWithValue("@totalXP", tradeInfo.totalXP);
+            cmd.Parameters.AddWithValue("@tradeTime", DateTime.FromBinary(tradeInfo.tradeTime));
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new int getTradeHistoryCount (int userId) {
+      int tradeCount = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT count(*) as tradeCount FROM trade_history WHERE usrId=@usrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  tradeCount = dataReader.GetInt32("tradeCount");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return tradeCount;
+   }
+
+   public static new List<TradeHistoryInfo> getTradeHistory (int userId, int page, int tradesPerPage) {
+      List<TradeHistoryInfo> tradeList = new List<TradeHistoryInfo>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM trade_history JOIN users USING (usrId) WHERE trade_history.usrId=@usrId ORDER BY trade_history.tradeTime DESC LIMIT @start, @perPage", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@start", page * tradesPerPage);
+            cmd.Parameters.AddWithValue("@perPage", tradesPerPage);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  TradeHistoryInfo trade = new TradeHistoryInfo(dataReader);
+                  tradeList.Add(trade);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return tradeList;
+   }
+
    public static new void readTest () {
       try {
          using (MySqlConnection conn = getConnection())
@@ -1788,6 +2058,10 @@ public class DB_Main : DB_MainStub {
       }
    }
 
+   public static void setServer(string server) {
+      _connectionString = buildConnectionString(server);
+   }
+
    protected static Armor getArmor (MySqlDataReader dataReader) {
       int itemId = DataUtil.getInt(dataReader, "armorId");
       int itemTypeId = DataUtil.getInt(dataReader, "armorType");
@@ -1811,6 +2085,11 @@ public class DB_Main : DB_MainStub {
    private static MySqlConnection getConnection () {
       // In order to support threaded DB calls, each function needs its own Connection
       return new MySqlConnection(_connectionString);
+   }
+
+   public static string buildConnectionString (string server) {
+      return "SERVER=" + server + ";" + "DATABASE=" +
+          _database + ";" + "UID=" + _uid + ";" + "PASSWORD=" + _password + ";";
    }
 
    /*
@@ -2959,12 +3238,11 @@ public class DB_Main : DB_MainStub {
    #region Private Variables
 
    // Database connection settings
-   private static string _server = "52.72.202.104"; // 52.72.202.104
+   private static string _remoteServer = "52.72.202.104"; // 52.72.202.104 // "127.0.0.1";//
    private static string _database = "arcane";
    private static string _uid = "test_user";
    private static string _password = "test_password";
-   private static string _connectionString = "SERVER=" + _server + ";" + "DATABASE=" +
-          _database + ";" + "UID=" + _uid + ";" + "PASSWORD=" + _password + ";";
+   private static string _connectionString = buildConnectionString(_remoteServer);
 
    #endregion
 }

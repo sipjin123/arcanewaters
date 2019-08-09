@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8238868368491152899}
   - component: {fileID: 1993543980466405170}
   - component: {fileID: 1993543980466405173}
+  - component: {fileID: 7149556821874429214}
   m_Layer: 5
   m_Name: Objective Icon
   m_TagString: Untagged
@@ -59,10 +60,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2283e165b994274eb8ddb1fa6a1ceed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  alwaysVisible: 1
-  tooltip: Tutorial Objective
   target: {fileID: 0}
-  targetPosition: {x: -Infinity, y: -Infinity}
+  tooltip: {fileID: 7149556821874429214}
   tutorialStepType: 0
 --- !u!114 &1993543980466405170
 MonoBehaviour:
@@ -108,3 +107,16 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_EffectDistance: {x: 1, y: -1}
   m_UseGraphicAlpha: 1
+--- !u!114 &7149556821874429214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1993543980466405175}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d45e50f956068424da261c7239c70d29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  text: Tutorial Objective
