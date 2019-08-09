@@ -24,6 +24,9 @@ public class AdventureItemRow : MonoBehaviour {
 
    // The Item associated with this row
    public Item item;
+
+   // The tooltip on the image
+   public Tooltipped tooltip;
       
    #endregion
 
@@ -40,6 +43,9 @@ public class AdventureItemRow : MonoBehaviour {
       // Recolor
       ColorKey colorKey = item.getColorKey();
       iconImage.GetComponent<RecoloredSprite>().recolor(colorKey, item.color1, item.color2);
+
+      // Sets the tooltip when hovering the image
+      tooltip.text = item.getTooltip();
 
       // Associate a new function with the confirmation button
       buyButton.onClick.RemoveAllListeners();

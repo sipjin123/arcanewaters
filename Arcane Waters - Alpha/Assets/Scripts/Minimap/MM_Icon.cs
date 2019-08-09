@@ -11,7 +11,7 @@ public class MM_Icon : ClientMonoBehaviour {
    public GameObject target;
 
    // The tooltip we want for this icon
-   public string tooltip;
+   public Tooltipped tooltip;
 
    #endregion
 
@@ -39,7 +39,7 @@ public class MM_Icon : ClientMonoBehaviour {
    }
 
    public string getTooltip () {
-      return tooltip;
+      return tooltip.text;
    }
 
    #region Private Variables

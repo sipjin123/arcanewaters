@@ -34,13 +34,16 @@ public class TooltipManager : ClientMonoBehaviour {
       Util.setXY(tooltip.transform, pos);
 
       // Check if there's any text to show based on where the mouse currently is
-      tooltip.text.text = getRelevantTooltip();
+      string tooltipText = getRelevantTooltip();
 
       // Decide whether the tooltip should be visible
-      bool shouldTooltipShow = !Util.isEmpty(tooltip.text.text);
+      bool shouldTooltipShow = !Util.isEmpty(tooltipText);
 
       // Toggle visibility
       tooltip.gameObject.SetActive(shouldTooltipShow);
+
+      // Sets the text in the component
+      tooltip.text.SetText(tooltipText);
    }
 
    public string getRelevantTooltip () {
@@ -48,33 +51,21 @@ public class TooltipManager : ClientMonoBehaviour {
       foreach (RaycastResult result in raycastMouse()) {
          // Only inspect results that hit something and are on the top layer
          if (result.isValid && result.index == 0) {
+            // Check if there's a tooltipped gameobject at the mouse position
+            Tooltipped tooltipped = result.gameObject.GetComponent<Tooltipped>();
+
+            // If there is a tooltipped gameObject, returns its tooltip
+            if (tooltipped != null) {
+               return tooltipped.text;
+            }
+
             // Check if there's an image at the mouse position
             Image image = result.gameObject.GetComponent<Image>();
 
             // If there was an image, look up the text that's associated with it
             if (image != null && image.sprite != null) {
-               // Check if it's a shop item
-               AdventureItemRow adventureRow = image.GetComponentInParent<AdventureItemRow>();
-
-               if (adventureRow != null && adventureRow.iconImage == image) {
-                  return adventureRow.item.getTooltip();
-               }
-
-               // Check if it's an inventory item
-               ItemRow itemRow = image.GetComponentInParent<ItemRow>();
-
-               if (itemRow != null && itemRow.itemIcon == image) {
-                  return itemRow.item.getTooltip();
-               }
-
-               // Check if it's a minimap icon
-               MM_Icon mmIcon = image.GetComponent<MM_Icon>();
-
-               if (mmIcon != null) {
-                  return mmIcon.getTooltip();
-               }
-
-               // Otherwise, get a generic tooltip based on the image name
+               
+               // Get a generic tooltip based on the image name
                string tooltip = getTooltip(image.sprite.name, image.gameObject);
 
                // If we found an image that has a tooltip defined, then we're done
@@ -199,11 +190,11 @@ public class TooltipManager : ClientMonoBehaviour {
                "Some items only have a chance of appearing when the total combined luck is high enough!";
 
          case "faction_neutral":
-            return "By remaining <color>neutral</color>, you are safe from attack by other players.  However, there are many benefits that are only available to players who have chosen a faction.";
+            return "By remaining <color=red>neutral</color>, you are safe from attack by other players.  However, there are many benefits that are only available to players who have chosen a faction.";
          case "faction_builders":
             return "The <color=red>builders</color> are focused on the construction of new towns and shops.";
          case "faction_cartographers":
-            return "The <color=red>cartographers</color> are attempted to map out the entire world, which requires long journeys to unexplored territories.";
+            return "The <color=red>cartographers</color> are attempting to map out the entire world, which requires long journeys to unexplored territories.";
          case "faction_merchants":
             return "The <color=red>merchants</color> are interested in making as much profit as quickly as they can.  Their focus is primarily on selling cargo to the highest bidder.";
          case "faction_naturalists":

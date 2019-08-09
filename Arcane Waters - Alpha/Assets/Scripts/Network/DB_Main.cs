@@ -1927,6 +1927,86 @@ public class DB_Main : DB_MainStub {
       return shipList;
    }
 
+   public static new void addToTradeHistory (int userId, TradeHistoryInfo tradeInfo) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO trade_history (usrId, shpId, areaId, crgType, amount, unitPrice, totalPrice, unitXP, totalXP, tradeTime) " +
+            "VALUES(@usrId, @shpId, @areaId, @crgType, @amount, @unitPrice, @totalPrice, @unitXP, @totalXP, @tradeTime)", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@shpId", tradeInfo.shipId);
+            cmd.Parameters.AddWithValue("@areaId", (int) tradeInfo.areaType);
+            cmd.Parameters.AddWithValue("@crgType", (int) tradeInfo.cargoType);
+            cmd.Parameters.AddWithValue("@amount", tradeInfo.amount);
+            cmd.Parameters.AddWithValue("@unitPrice", tradeInfo.pricePerUnit);
+            cmd.Parameters.AddWithValue("@totalPrice", tradeInfo.totalPrice);
+            cmd.Parameters.AddWithValue("@unitXP", tradeInfo.xpPerUnit);
+            cmd.Parameters.AddWithValue("@totalXP", tradeInfo.totalXP);
+            cmd.Parameters.AddWithValue("@tradeTime", DateTime.FromBinary(tradeInfo.tradeTime));
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new int getTradeHistoryCount (int userId) {
+      int tradeCount = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT count(*) as tradeCount FROM trade_history WHERE usrId=@usrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  tradeCount = dataReader.GetInt32("tradeCount");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return tradeCount;
+   }
+
+   public static new List<TradeHistoryInfo> getTradeHistory (int userId, int page, int tradesPerPage) {
+      List<TradeHistoryInfo> tradeList = new List<TradeHistoryInfo>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM trade_history JOIN users USING (usrId) WHERE trade_history.usrId=@usrId ORDER BY trade_history.tradeTime DESC LIMIT @start, @perPage", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@start", page * tradesPerPage);
+            cmd.Parameters.AddWithValue("@perPage", tradesPerPage);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  TradeHistoryInfo trade = new TradeHistoryInfo(dataReader);
+                  tradeList.Add(trade);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return tradeList;
+   }
+
    public static new void readTest () {
       try {
          using (MySqlConnection conn = getConnection())

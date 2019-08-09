@@ -234,6 +234,22 @@ public class RPCManager : NetworkBehaviour {
       }
    }
 
+   [TargetRpc]
+   public void Target_ReceiveTradeHistory (NetworkConnection connection, TradeHistoryInfo[] trades,
+      int pageIndex, int totalTradeCount) {
+      List<TradeHistoryInfo> tradeList = new List<TradeHistoryInfo>(trades);
+
+      // Make sure the panel is showing
+      TradeHistoryPanel panel = (TradeHistoryPanel) PanelManager.self.get(Panel.Type.TradeHistory);
+
+      if (!panel.isShowing()) {
+         PanelManager.self.pushPanel(panel.type);
+      }
+
+      // Pass them along to the Trade History panel
+      panel.updatePanelWithTrades(tradeList, pageIndex, totalTradeCount);
+   }
+
    [Command]
    public void Cmd_BugReport (string subject, string message) {
       // We need a player object
@@ -315,6 +331,35 @@ public class RPCManager : NetworkBehaviour {
 
       // Send this along to the player
       _player.rpc.Target_ReceiveOptionsInfo(_player.connectionToClient, instance.numberInArea, totalInstances);
+   }
+
+   [Command]
+   public void Cmd_RequestTradeHistoryInfoFromServer (int pageIndex, int itemsPerPage) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Enforce a reasonable max here
+      if (itemsPerPage > 200) {
+         D.warning("Requesting too many items per page.");
+         return;
+      }
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+
+         // Gets the number of items
+         int totalTradeCount = DB_Main.getTradeHistoryCount(_player.userId);
+
+         // Get the items from the database
+         List<TradeHistoryInfo> tradeList = DB_Main.getTradeHistory(_player.userId, pageIndex, itemsPerPage);
+
+         // Back to the Unity thread to send the results back to the client
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            _player.rpc.Target_ReceiveTradeHistory(_player.connectionToClient, tradeList.ToArray(), pageIndex, totalTradeCount);
+         });
+      });
    }
 
    [Command]

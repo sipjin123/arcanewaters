@@ -20,6 +20,9 @@ public class ItemRow : MonoBehaviour, IPointerClickHandler {
    // The item associated with this row
    public Item item;
 
+   // The tooltip on the icon
+   public Tooltipped tooltip;
+
    #endregion
 
    public void Update () {

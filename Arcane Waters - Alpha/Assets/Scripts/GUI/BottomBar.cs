@@ -98,6 +98,16 @@ public class BottomBar : MonoBehaviour {
       }
    }
 
+   public void toggleTradeHistoryPanel () {
+      TradeHistoryPanel panel = (TradeHistoryPanel) PanelManager.self.get(Panel.Type.TradeHistory);
+
+      if (!panel.isShowing()) {
+         Global.player.rpc.Cmd_RequestTradeHistoryInfoFromServer(0, TradeHistoryPanel.ROWS_PER_PAGE);
+      } else {
+         PanelManager.self.togglePanel(Panel.Type.TradeHistory);
+      }
+   }
+
    #region Private Variables
 
    #endregion

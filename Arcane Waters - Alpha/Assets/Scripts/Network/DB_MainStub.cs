@@ -311,6 +311,18 @@ public class DB_MainStub : MonoBehaviour {
       return null;
    }
 
+   public static void addToTradeHistory (int userId, TradeHistoryInfo tradeInfo) {
+
+   }
+
+   public static int getTradeHistoryCount (int userId) {
+      return 0;
+   }
+
+   public static List<TradeHistoryInfo> getTradeHistory (int userId, int page, int tradesPerPage) {
+      return null;
+   }
+
    /*
 
    public static void refillSupplies (int userId) {

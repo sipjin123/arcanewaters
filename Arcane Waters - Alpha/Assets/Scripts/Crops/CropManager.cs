@@ -312,6 +312,14 @@ public class CropManager : NetworkBehaviour {
             DB_Main.addJobXP(_player.userId, Jobs.Type.Trader, totalXP);
             Jobs jobs = DB_Main.getJobXP(_player.userId);
             _player.Target_GainedXP(_player.connectionToClient, totalXP, jobs, Jobs.Type.Trader, 0);
+
+            // Find the flagship id
+            int flagshipId = DB_Main.getUserInfo(_player.userId).flagshipId;
+
+            // Add the exchange to the trade history
+            TradeHistoryInfo tradeInfo = new TradeHistoryInfo(_player.userId, flagshipId, AreaManager.self.getArea(_player.areaType).townAreaType,
+               offer.cropType, amountToSell, offer.pricePerUnit, goldForThisCrop, Crop.getXP(offer.cropType), totalXP, DateTime.UtcNow);
+            DB_Main.addToTradeHistory(_player.userId, tradeInfo);
          }
          
          // Send them the new info on what's in their silo

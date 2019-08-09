@@ -19,6 +19,9 @@ public class Area : MonoBehaviour {
    // The type of area this is
    public Type areaType;
 
+   // When the area is a shop, keep also at hand the town's name
+   public Type townAreaType;
+
    // The Camera Bounds associated with this area
    public PolygonCollider2D cameraBounds;
 
@@ -43,6 +46,24 @@ public class Area : MonoBehaviour {
       foreach (TilemapCollider2D collider in _tilemapColliders) {
          _initialStates[collider] = collider.enabled;
       }
+
+      // If the area is a town, lists all the areas that can be accessed from it
+      if (isTown(this.areaType)) {
+         foreach (Warp warp in GetComponentsInChildren<Warp>()) {
+
+            // Finds the destination area for each warp
+            Spawn spawn = SpawnManager.self.getSpawn(warp.spawnTarget);
+            Area destinationArea = spawn.GetComponentInParent<Area>();
+
+            // If the destination area is a shop, set its town as this area
+            if (destinationArea != null && isShop(destinationArea.areaType)) {
+               destinationArea.townAreaType = this.areaType;
+            }
+         }
+      } else {
+         // Otherwise, the town area is the area itself
+         townAreaType = areaType;
+      }
    }
 
    public static bool isSea (Type areaType) {
@@ -59,6 +80,10 @@ public class Area : MonoBehaviour {
 
    public static bool isTreasureSite (Type areaType) {
       return areaType.ToString().Contains("Treasure");
+   }
+
+   public static bool isShop (Type areaType) {
+      return areaType.ToString().Contains("Shop");
    }
 
    public List<Tilemap> getTilemaps () {

@@ -114,7 +114,7 @@ public class Minimap : ClientMonoBehaviour {
             if (spawn.spawnType.ToString().Contains(building)) {
                MM_Icon icon = Instantiate(buildingIconPrefab, this.iconContainer.transform);
                icon.target = spawn.gameObject;
-               icon.tooltip = building;
+               icon.tooltip.text = building;
             }
          }
       }

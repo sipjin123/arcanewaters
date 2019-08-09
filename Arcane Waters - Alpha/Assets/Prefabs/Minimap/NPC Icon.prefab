@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4897854050591889568}
   - component: {fileID: 4897854050591889569}
   - component: {fileID: 4897854050591889574}
+  - component: {fileID: 842649683409304340}
   m_Layer: 5
   m_Name: NPC Icon
   m_TagString: Untagged
@@ -59,9 +60,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c85c7b2d03e809a4ea18bf77cca7910f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  alwaysVisible: 0
-  tooltip: NPC
   target: {fileID: 0}
+  tooltip: {fileID: 842649683409304340}
 --- !u!114 &4897854050591889569
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -106,3 +106,16 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_EffectDistance: {x: 1, y: -1}
   m_UseGraphicAlpha: 1
+--- !u!114 &842649683409304340
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4897854050591889572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d45e50f956068424da261c7239c70d29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  text: NPC
