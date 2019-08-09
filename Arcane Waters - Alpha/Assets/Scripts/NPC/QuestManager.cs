@@ -8,6 +8,7 @@ public class QuestManager : MonoBehaviour
    // Self Reference
    public static QuestManager self;
 
+   // Holds the list of possible npc data
    public List<NPCData> npcDataList;
 
    #endregion

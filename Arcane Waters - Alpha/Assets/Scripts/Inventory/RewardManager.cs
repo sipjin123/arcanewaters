@@ -26,14 +26,14 @@ public class RewardManager : MonoBehaviour {
       self = this;
    }
 
-   public void processLoots (List<Item> loots) {
+   public void showItemsInRewardPanel (List<Item> loots) {
       // Calls the panel and injects the List of items
       RewardScreen rewardPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
       rewardPanel.setItemDataGroup(loots);
       PanelManager.self.pushPanel(Panel.Type.Reward);
    }
 
-   public void processLoot (Item loot) {
+   public void showItemInRewardPanel (Item loot) {
       // Calls the panel and injects the List of items
       RewardScreen rewardPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
       rewardPanel.setItemData(loot);

@@ -23,6 +23,7 @@ public class OreManager : MonoBehaviour
    public void createOreNodesForInstance (Instance instance) {
       // Look up the Area associated with this intance
       Area area = AreaManager.self.getArea(instance.areaType);
+
       // Find all of the possible ore spots in this Area
       foreach (OreSpot spot in area.GetComponentsInChildren<OreSpot>()) {
          // Have a random chance of spawning an ore node there

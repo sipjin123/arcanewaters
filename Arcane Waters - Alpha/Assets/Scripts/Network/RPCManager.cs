@@ -1176,14 +1176,16 @@ public class RPCManager : NetworkBehaviour {
    
    [TargetRpc]
    public void Target_ReceiveItemList(NetworkConnection connection, Item[] itemList) {
-      RewardManager.self.processLoots(itemList.ToList());
+      RewardManager.self.showItemsInRewardPanel(itemList.ToList());
+
       // Tells the user to update their inventory cache to retrieve the updated items
       InventoryCacheManager.self.fetchInventory();
    }
 
    [TargetRpc]
    public void Target_ReceiveItem (NetworkConnection connection, Item item) {
-      RewardManager.self.processLoot(item);
+      RewardManager.self.showItemInRewardPanel(item);
+
       // Tells the user to update their inventory cache to retrieve the updated items
       InventoryCacheManager.self.fetchInventory();
    }
@@ -1245,8 +1247,9 @@ public class RPCManager : NetworkBehaviour {
          
          // Registers the quantity of each item
          itemToCreate.count = rewardList[i].quantity;
-         if (databaseItemType != null)
+         if (databaseItemType != null) {
             itemToCreate.id = databaseItemType.id;
+         }
          itemRewardList.Add(itemToCreate);
       }
 
@@ -1257,16 +1260,8 @@ public class RPCManager : NetworkBehaviour {
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Calls Reward Popup
             Target_ReceiveItemList(_player.connectionToClient, itemRewardList.ToArray());
-
-            // Send a notification to the specific player that mined the node
-            Target_MinedOreNode(_player.connectionToClient, oreType, itemRewardList.ToArray());
          });
       });
-   }
-
-   [TargetRpc]
-   public void Target_MinedOreNode (NetworkConnection connection, OreNode.Type oreType, Item[] rewardItems) {
-      // TODO: RESERVED FOR ORE SPECIFIC LOGIC
    }
 
    [Command]
