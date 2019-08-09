@@ -51,8 +51,13 @@ public class NPCQuestData : ScriptableObject
 [Serializable]
 public class DeliveryQuestPair : QuestInfo
 {
+   // Scriptable object data of the quest
    public DeliverQuest deliveryQuest;
+
+   // Type of reward to receive after completion
    public CraftingIngredients.Type rewardType;
+
+   // Quantity of reward to receive after completion
    public int rewardQuantity;
 }
 

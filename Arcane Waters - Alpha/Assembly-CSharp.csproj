@@ -446,6 +446,8 @@
     <Compile Include="Assets\Scripts\GUI\Store\StoreTab.cs" />
     <Compile Include="Assets\Scripts\GUI\TalkingHead.cs" />
     <Compile Include="Assets\Scripts\GUI\TitleScreen.cs" />
+    <Compile Include="Assets\Scripts\GUI\TradeHistory\TradeHistoryPanel.cs" />
+    <Compile Include="Assets\Scripts\GUI\TradeHistory\TradeHistoryRow.cs" />
     <Compile Include="Assets\Scripts\GUI\Tutorial\TutorialPanel.cs" />
     <Compile Include="Assets\Scripts\GUI\WindPanel.cs" />
     <Compile Include="Assets\Scripts\Guild\GuildInfo.cs" />
@@ -526,6 +528,9 @@
     <Compile Include="Assets\Scripts\Minimap\MM_Icon.cs" />
     <Compile Include="Assets\Scripts\Minimap\MM_PlayerIcon.cs" />
     <Compile Include="Assets\Scripts\Minimap\MM_TutorialIcon.cs" />
+    <Compile Include="Assets\Scripts\Mining\OreManager.cs" />
+    <Compile Include="Assets\Scripts\Mining\OreNode.cs" />
+    <Compile Include="Assets\Scripts\Mining\OreSpot.cs" />
     <Compile Include="Assets\Scripts\Nation\Nation.cs" />
     <Compile Include="Assets\Scripts\Network\ClientManager.cs" />
     <Compile Include="Assets\Scripts\Network\DB_Main.cs" />
@@ -538,6 +543,7 @@
     <Compile Include="Assets\Scripts\Network\Server.cs" />
     <Compile Include="Assets\Scripts\Network\ServerNetwork.cs" />
     <Compile Include="Assets\Scripts\Network\ShipInfo.cs" />
+    <Compile Include="Assets\Scripts\Network\TradeHistoryInfo.cs" />
     <Compile Include="Assets\Scripts\Network\UserInfo.cs" />
     <Compile Include="Assets\Scripts\NPC\BotManager.cs" />
     <Compile Include="Assets\Scripts\NPC\BotSpot.cs" />
@@ -560,11 +566,6 @@
     <Compile Include="Assets\Scripts\Observers\BattlerObserverManager.cs" />
     <Compile Include="Assets\Scripts\Observers\CannonObserverManager.cs" />
     <Compile Include="Assets\Scripts\Observers\PlayerObserverManager.cs" />
-    <Compile Include="Assets\Scripts\Ore\Scripts\OreArea.cs" />
-    <Compile Include="Assets\Scripts\Ore\Scripts\OreData.cs" />
-    <Compile Include="Assets\Scripts\Ore\Scripts\OreInfo.cs" />
-    <Compile Include="Assets\Scripts\Ore\Scripts\OreManager.cs" />
-    <Compile Include="Assets\Scripts\Ore\Scripts\OreObj.cs" />
     <Compile Include="Assets\Scripts\ReorderableInspector\EditScriptableAttribute.cs" />
     <Compile Include="Assets\Scripts\ReorderableInspector\ReorderableAttribute.cs" />
     <Compile Include="Assets\Scripts\Sea\ArrowManager.cs" />
@@ -591,6 +592,7 @@
     <Compile Include="Assets\Scripts\Test\TestClass.cs" />
     <Compile Include="Assets\Scripts\Tooltip\Tooltip.cs" />
     <Compile Include="Assets\Scripts\Tooltip\TooltipManager.cs" />
+    <Compile Include="Assets\Scripts\Tooltip\Tooltipped.cs" />
     <Compile Include="Assets\Scripts\Treasure\TreasureChest.cs" />
     <Compile Include="Assets\Scripts\Treasure\TreasureManager.cs" />
     <Compile Include="Assets\Scripts\Treasure\TreasureSpot.cs" />
