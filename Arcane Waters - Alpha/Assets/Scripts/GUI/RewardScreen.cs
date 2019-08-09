@@ -28,7 +28,7 @@ public class RewardScreen : Panel
       disableAll();
       rewardRows[0].rewardIcon.sprite = ImageManager.getSprite(item.getCastItem().getIconPath());
       rewardRows[0].gameObject.SetActive(true);
-      rewardRows[0].quantityText.text = item.count.ToString();
+      rewardRows[0].setQuantityText(item.count.ToString());
       rewardRows[0].rewardName.text = item.getCastItem().getName();
       rewardRows[0].quantityContainer.SetActive(item.count > 1);
    }
@@ -39,7 +39,7 @@ public class RewardScreen : Panel
          Item currItem = itemList[i].getCastItem();
          rewardRows[i].gameObject.SetActive(true);
          rewardRows[i].rewardIcon.sprite = ImageManager.getSprite(currItem.getIconPath());
-         rewardRows[i].quantityText.text = currItem.count.ToString();
+         rewardRows[i].setQuantityText(currItem.count.ToString());
          rewardRows[i].rewardName.text = currItem.getName();
          rewardRows[i].quantityContainer.SetActive(currItem.count > 1);
       }
