@@ -7,7 +7,7 @@ public class DebugButtons : NetworkBehaviour
    public GenericLootData tempDrop;
 
    private void processItem(Item item) {
-      RewardManager.self.processLoot(item);
+      RewardManager.self.showItemInRewardPanel(item);
    }
 
 
@@ -34,7 +34,7 @@ public class DebugButtons : NetworkBehaviour
             itemList.Add(item);
          }
 
-         RewardManager.self.processLoots(itemList);
+         RewardManager.self.showItemsInRewardPanel(itemList);
          return;
          /*
          var newLootlist = tempDrop.requestLootList();
