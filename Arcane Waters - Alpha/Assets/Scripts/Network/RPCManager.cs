@@ -1136,13 +1136,11 @@ public class RPCManager : NetworkBehaviour {
          DB_Main.createOrUpdateItemCount(userId, rewardItem.id, rewardItem);
 
          for(int i = 0; i < requiredItems.Count; i++) {
-            int databaseCount = databaseItems.Find(_ => _.itemTypeId == requiredItems[i].itemTypeId && _.category == requiredItems[i].category).count;
-            int requiredCount = requiredItems[i].count;
-            int deductedQuantity = databaseCount - requiredCount;
+            int deductCount = requiredItems[i].count;
 
             // Deduct quantity of each required ingredient or delete item if it hits zero count
             int databaseID = databaseItems.Find(_ => _.itemTypeId == requiredItems[i].itemTypeId && _.category == requiredItems[i].category).id;
-            DB_Main.decreaseQuantityOrDeleteItem(userId, databaseID, deductedQuantity);
+            DB_Main.decreaseQuantityOrDeleteItem(userId, databaseID, deductCount);
          }
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {

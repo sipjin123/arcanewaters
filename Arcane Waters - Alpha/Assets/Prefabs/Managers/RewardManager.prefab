@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5768658264708659801
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5768658264708659803}
+  - component: {fileID: 5768658264708659802}
+  m_Layer: 0
+  m_Name: RewardManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5768658264708659803
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5768658264708659801}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5768658264708659802
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5768658264708659801}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306689b0cd3f9a941a24d2894d5084fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  combinationDataList: {fileID: 11400000, guid: 8fa0ce3257cd26341909f05df7d111d4,
+    type: 2}
+  enemyLootList:
+  - enemyType: 205
+    dropTypes: {fileID: 11400000, guid: 14b2cf647e92538408f269479e3ea968, type: 2}
+  - enemyType: 204
+    dropTypes: {fileID: 11400000, guid: dc8469089fcf3b74f839df9d50c08e9c, type: 2}
+  oreLootList:
+  - oreType: 1
+    dropTypes: {fileID: 11400000, guid: d3485a0035cf0d549b22eb1d9295276f, type: 2}
+  - oreType: 2
+    dropTypes: {fileID: 11400000, guid: 415bfc010acd97c42bc9642913d7595c, type: 2}
+  - oreType: 3
+    dropTypes: {fileID: 11400000, guid: e585f939e9233da46b4c4a0eb61bc631, type: 2}

@@ -1351,11 +1351,36 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static new void decreaseQuantityOrDeleteItem (int userId, int itmId, int itmCount) {
-      if (itmCount <= 0) {
+   public static new void decreaseQuantityOrDeleteItem (int userId, int itmId, int deductCount) {
+      int currentCount = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM items WHERE usrId=@usrId and itmId=@itmId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@itmId", itmId);
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  currentCount = dataReader.GetInt32("itmCount");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      // Computes the item count after reducing the require item count
+      int deductedValue = currentCount - deductCount;
+
+      if (deductedValue <= 0) {
+         // Deletes item from the database if count hits zero
          deleteItem(userId, itmId);
       } else {
-         updateItemQuantity(userId, itmId, itmCount);
+         // Updates item count
+         updateItemQuantity(userId, itmId, deductCount);
       }
    }
 

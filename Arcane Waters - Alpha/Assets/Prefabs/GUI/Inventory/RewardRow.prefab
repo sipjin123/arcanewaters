@@ -227,7 +227,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rewardIcon: {fileID: 7480886685720618197}
   rewardName: {fileID: 579884569776078262}
-  quantityNotif: {fileID: 422876320687062792}
+  quantityContainer: {fileID: 422876320687062792}
   quantityText: {fileID: 7434242785125540930}
 --- !u!1 &7480886685404566280
 GameObject:

@@ -227,7 +227,7 @@ public class DB_MainStub : MonoBehaviour {
 
    }
 
-   public static void decreaseQuantityOrDeleteItem (int userId, int itmId, int itmCount) {
+   public static void decreaseQuantityOrDeleteItem (int userId, int itmId, int deductCount) {
 
    }
 
