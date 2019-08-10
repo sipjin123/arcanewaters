@@ -169,6 +169,7 @@ public class NPCPanel : Panel {
 
          // Set up the click function
          row.clickedEvent.AddListener(() => rowClickedOn(row, this.npc));
+         row.gameObject.SetActive(true);
       }
    }
 
@@ -187,6 +188,7 @@ public class NPCPanel : Panel {
    }
 
    public void rowClickedOn (ClickableText row, NPC npc) {
+      row.gameObject.SetActive(false);
       QuestState currentQuestState = currentDeliveryQuest.questState;
       QuestDialogue currentDialogue = currentDeliveryQuest.dialogueData.questDialogueList.Find(_ => _.questState == currentQuestState);
 
@@ -220,10 +222,7 @@ public class NPCPanel : Panel {
    public void checkQuest (DeliveryQuestPair deliveryQuestPair) {
       QuestState currentQuestState = deliveryQuestPair.questState;
       QuestDialogue currentDialogue = deliveryQuestPair.dialogueData.questDialogueList.Find(_ => _.questState == currentQuestState);
-
-      // Sets npc response
-      npc.npcReply = currentDialogue.npcDialogue;
-      SetMessage(npc.npcReply);
+   
       npc.currentAnswerDialogue.Clear();
 
       if (currentDialogue.checkCondition) {
@@ -233,7 +232,7 @@ public class NPCPanel : Panel {
          && _.category == Item.Category.CraftingIngredients);
 
          if (findingItemList != null) {
-            if (findingItemList.count >= deliveryQuest.quantity) {
+            if (findingItemList.count >= deliveryQuest.itemToDeliver.count) {
                // Sets the player to a positive response if Requirements are met
                npc.currentAnswerDialogue.Add(currentDialogue.playerReply);
                Global.player.rpc.Cmd_GetClickableRows(npc.npcId, (int) currentQuestType, (int) currentQuestState, currentQuestIndex);
@@ -316,6 +315,16 @@ public class NPCPanel : Panel {
 
       newDialogueData.answerList = newList;
       newDialogueData.npcDialogue = currentDialogue.npcDialogue;
+
+
+      // Sets npc response
+      string npcReply = newDialogueData.npcDialogue;
+      if (currentDialogue.checkDynamicValue) {
+         npcReply = npcReply.Replace("@type", deliveryQuestPair.deliveryQuest.itemToDeliver.getCastItem().getName().ToString());
+         npcReply = npcReply.Replace("@count", deliveryQuestPair.deliveryQuest.itemToDeliver.count.ToString());
+      }
+      newDialogueData.npcDialogue = npcReply;
+
       return newDialogueData;
    }
 
