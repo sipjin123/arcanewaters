@@ -15,20 +15,46 @@ MonoBehaviour:
   deliveryQuestList:
   - questTitle: LizardScale
     questType: 3
-    questState: 5
+    questState: 1
     relationRequirement: 0
     dialogueData: {fileID: 11400000, guid: 588f79fc1d99c9a4b92dbdd69d529081, type: 2}
     deliveryQuest: {fileID: 11400000, guid: f804acba695fb5c428eec0e67e1e9ef4, type: 2}
-    rewardType: 8
-    rewardQuantity: 2
+    rewardItems:
+    - category: 6
+      id: 0
+      itemTypeId: 2
+      color1: 0
+      color2: 0
+      data: 
+      count: 2
+    - category: 6
+      id: 0
+      itemTypeId: 3
+      color1: 0
+      color2: 0
+      data: 
+      count: 1
   - questTitle: Lumber1
     questType: 3
-    questState: 1
+    questState: 5
     relationRequirement: 20
-    dialogueData: {fileID: 11400000, guid: ebcbe5553c696e44f921df6a6cdaca5a, type: 2}
+    dialogueData: {fileID: 11400000, guid: 588f79fc1d99c9a4b92dbdd69d529081, type: 2}
     deliveryQuest: {fileID: 11400000, guid: 28d0195179c254c40949b012d39456f3, type: 2}
-    rewardType: 9
-    rewardQuantity: 0
+    rewardItems:
+    - category: 6
+      id: 3818
+      itemTypeId: 6
+      color1: 0
+      color2: 0
+      data: 
+      count: 2
+    - category: 6
+      id: 0
+      itemTypeId: 5
+      color1: 0
+      color2: 0
+      data: 
+      count: 1
   huntQuestList:
   - questTitle: Kill Lizard
     questType: 1
