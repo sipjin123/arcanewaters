@@ -32,12 +32,6 @@ public class GenerateScriptableObjects : MonoBehaviour
       Process(asset);
    }
 
-   [MenuItem("Assets/Create/Create NPCData Object")]
-   public static void Create_NPCData () {
-      NPCData asset = ScriptableObject.CreateInstance<NPCData>();
-      Process(asset);
-   }
-
    [MenuItem("Assets/Create/Create HuntQuest Object")]
    public static void Create_HuntQuest () {
       HuntQuest asset = ScriptableObject.CreateInstance<HuntQuest>();
