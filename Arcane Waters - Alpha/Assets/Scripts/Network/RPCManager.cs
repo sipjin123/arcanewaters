@@ -1011,7 +1011,8 @@ public class RPCManager : NetworkBehaviour {
       NPC npc = NPCManager.self.getNPC(npcID);
 
       // Checks the required items if it exists in the database
-      Item requiredItem = npc.npcData.deliveryQuestList[questIndex].deliveryQuest.itemToDeliver;
+      QuestManager.RandomizedQuestSeed randomizedSeed = QuestManager.self.randomizedQuestSeed(npcID);
+      Item requiredItem = new Item { category = Item.Category.CraftingIngredients, itemTypeId = (int)randomizedSeed.requiredItem, count = randomizedSeed.quantity };
       List<CraftingIngredients.Type> requiredItemList = new List<CraftingIngredients.Type>();
       requiredItemList.Add((CraftingIngredients.Type) requiredItem.itemTypeId);
 
@@ -1049,12 +1050,17 @@ public class RPCManager : NetworkBehaviour {
       // Retrieves the npc quest data on server side using npc id
       NPC npc = NPCManager.self.getNPC(npcID);
 
+      // Retrieves the randomized seed data
+      QuestManager.RandomizedQuestSeed randomizedSeed = QuestManager.self.randomizedQuestSeed(npcID);
+
       // Fetch reward and database items for comparison
-      List<Item> rewardItems = npc.npcData.deliveryQuestList[questIndex].rewardItems;
+      List<Item> rewardItems = new List<Item>();
+      rewardItems.Add(randomizedSeed.rewardItem);
 
       List<Item> requiredItems = new List<Item>();
       List<int> rewardItemIDList = new List<int>();
-      Item requiredItem = npc.npcData.deliveryQuestList[questIndex].deliveryQuest.itemToDeliver;
+
+      Item requiredItem = new Item { category = Item.Category.CraftingIngredients, itemTypeId = (int) randomizedSeed.requiredItem, count = randomizedSeed.quantity };
       requiredItems.Add(requiredItem);
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -1302,7 +1308,11 @@ public class RPCManager : NetworkBehaviour {
    public void processClickableRows(int userId, int npcId, int questType, int questProgress, int questIndex) {
       // Look up the NPC
       NPC npc = NPCManager.self.getNPC(npcId);
-      Item requiredItem = npc.npcData.deliveryQuestList[questIndex].deliveryQuest.itemToDeliver;
+
+      // Checks the required items if it exists in the database
+      QuestManager.RandomizedQuestSeed randomizedSeed = QuestManager.self.randomizedQuestSeed(npcId);
+      Item requiredItem = new Item { category = Item.Category.CraftingIngredients, itemTypeId = (int) randomizedSeed.requiredItem, count = randomizedSeed.quantity };
+
       List<CraftingIngredients.Type> requiredItemList = new List<CraftingIngredients.Type>();
       requiredItemList.Add((CraftingIngredients.Type) requiredItem.itemTypeId);
 
@@ -1325,7 +1335,7 @@ public class RPCManager : NetworkBehaviour {
                      }
                   }
                }
-               dialogueData = NPCPanel.getDialogueInfo(questProgress, npc.npcData.deliveryQuestList[questIndex], hasMaterials);
+               dialogueData = NPCPanel.getDialogueInfo(questProgress, npc.npcData.deliveryQuestList[questIndex], hasMaterials, npcId);
                Target_ReceiveClickableNPCRows(_player.connectionToClient, dialogueData.answerList.ToArray(), npcId);
                Target_ReceiveNPCMessage(_player.connectionToClient, dialogueData.npcDialogue);
             }

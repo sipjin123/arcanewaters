@@ -226,13 +226,16 @@ public class NPCPanel : Panel {
       npc.currentAnswerDialogue.Clear();
 
       if (currentDialogue.checkCondition) {
+         // Checks the required items if it exists in the database
+         QuestManager.RandomizedQuestSeed randomizedSeed = QuestManager.self.randomizedQuestSeed(npc.npcId);
+
          List<Item> itemList = InventoryCacheManager.self.itemList;
          DeliverQuest deliveryQuest = deliveryQuestPair.deliveryQuest;
-         Item findingItemList = itemList.Find(_ => (CraftingIngredients.Type) _.itemTypeId == (CraftingIngredients.Type) deliveryQuest.itemToDeliver.itemTypeId
+         Item findingItemList = itemList.Find(_ => (CraftingIngredients.Type) _.itemTypeId == (CraftingIngredients.Type) randomizedSeed.quantity
          && _.category == Item.Category.CraftingIngredients);
 
          if (findingItemList != null) {
-            if (findingItemList.count >= deliveryQuest.itemToDeliver.count) {
+            if (findingItemList.count >= randomizedSeed.quantity) {
                // Sets the player to a positive response if Requirements are met
                npc.currentAnswerDialogue.Add(currentDialogue.playerReply);
                Global.player.rpc.Cmd_GetClickableRows(npc.npcId, (int) currentQuestType, (int) currentQuestState, currentQuestIndex);
@@ -291,7 +294,7 @@ public class NPCPanel : Panel {
       return newInfoData;
    }
 
-   public static DialogueData getDialogueInfo (int questState, DeliveryQuestPair deliveryQuestPair, bool hasMaterials) {
+   public static DialogueData getDialogueInfo (int questState, DeliveryQuestPair deliveryQuestPair, bool hasMaterials, int npcId) {
       DialogueData newDialogueData = new DialogueData();
       List<ClickableText.Type> newList = new List<ClickableText.Type>();
       QuestDialogue currentDialogue = deliveryQuestPair.dialogueData.questDialogueList.Find(_ => (int) _.questState == questState);
@@ -320,8 +323,11 @@ public class NPCPanel : Panel {
       // Sets npc response
       string npcReply = newDialogueData.npcDialogue;
       if (currentDialogue.checkDynamicValue) {
-         npcReply = npcReply.Replace("@type", deliveryQuestPair.deliveryQuest.itemToDeliver.getCastItem().getName().ToString());
-         npcReply = npcReply.Replace("@count", deliveryQuestPair.deliveryQuest.itemToDeliver.count.ToString());
+         QuestManager.RandomizedQuestSeed randomizedSeed = QuestManager.self.randomizedQuestSeed(npcId);
+         Item requiredItem = new Item { category = Item.Category.CraftingIngredients, itemTypeId = (int) randomizedSeed.requiredItem, count = randomizedSeed.quantity };
+
+         npcReply = npcReply.Replace("@type", requiredItem.getCastItem().getName().ToString());
+         npcReply = npcReply.Replace("@count", requiredItem.getCastItem().count.ToString());
       }
       newDialogueData.npcDialogue = npcReply;
 
