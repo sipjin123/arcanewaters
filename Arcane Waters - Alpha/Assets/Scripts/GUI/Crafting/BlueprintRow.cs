@@ -22,10 +22,10 @@ public class BlueprintRow : MonoBehaviour
 
    #endregion Public Variables
 
-   public void initData (Item item) {
+   public void initData (Item item, Sprite newicon) {
       itemData = item;
       itemName.text = item.getName();
-      icon.sprite = ImageManager.getSprite(item.getIconPath());
+      icon.sprite = newicon;
    }
 
    public void selectItem () {

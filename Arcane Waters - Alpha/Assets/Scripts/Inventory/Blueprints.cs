@@ -18,8 +18,16 @@ public class Blueprint : RecipeItem
       None = 0, Sword_1 = 1, Sword_2 = 2, Sword_3 = 3, Sword_4 = 4, Sword_5 = 5,
    }
 
+   // The type of equipment
+   public enum EquipmentType
+   {
+      None = 0, Weapon = 1, Armor = 2,
+   }
+
    // The type
    public Type type;
+
+   public EquipmentType equipmentType;
 
    #endregion Public Variables
 
@@ -125,6 +133,22 @@ public class Blueprint : RecipeItem
 
    public static Blueprint getEmpty () {
       return new Blueprint(0, Blueprint.Type.None, ColorType.None, ColorType.None);
+   }
+
+   public EquipmentType getEquipmentType() {
+      string nameComparison = type.ToString();
+      foreach (Weapon.Type val in Enum.GetValues(typeof(Weapon.Type))) {
+         if(val.ToString() == nameComparison) {
+            return EquipmentType.Weapon;
+         }
+      }
+      foreach (Weapon.Type val in Enum.GetValues(typeof(Armor.Type))) {
+         if (val.ToString() == nameComparison) {
+            return EquipmentType.Armor;
+         }
+      }
+
+      return EquipmentType.None;
    }
 
    public override bool canBeTrashed () {

@@ -7,6 +7,12 @@ public class CraftingPanel : Panel, IPointerClickHandler
 {
    #region Public Variables
 
+   // Image icon of weapons
+   public Sprite weaponBlueprintIcon;
+
+   // Image icon of armors
+   public Sprite armorBlueprintIcon;
+
    // The name of player
    public Text playerNameText;
 
@@ -188,10 +194,18 @@ public class CraftingPanel : Panel, IPointerClickHandler
             blueprint.itemTypeId = (int) blueprint.type;
             Item item = blueprint;
 
+            // Determines what icon to preview in crafting panel
+            Sprite blueprintIcon = emptyImage;
+            if(blueprint.getEquipmentType() == Blueprint.EquipmentType.Weapon) {
+               blueprintIcon = weaponBlueprintIcon;
+            }else if (blueprint.getEquipmentType() == Blueprint.EquipmentType.Armor) {
+               blueprintIcon = armorBlueprintIcon;
+            }
+
             blueprintRow.button.onClick.AddListener(() => {
                clickMaterialRow(blueprintRow);
             });
-            blueprintRow.initData(item);
+            blueprintRow.initData(item, blueprintIcon);
             prefab.SetActive(true);
          }
          else if (itemData.category == Item.Category.CraftingIngredients) {
