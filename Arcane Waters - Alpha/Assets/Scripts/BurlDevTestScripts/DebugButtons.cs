@@ -23,6 +23,8 @@ public class DebugButtons : NetworkBehaviour
       });
    }
 
+   Random.State seedGenerator;
+   int seedGeneratorSeed = 1337;
    private void Update () {
       if(Input.GetKeyDown(KeyCode.T)) {
          var temp = tempDrop.requestLootList();
@@ -35,60 +37,38 @@ public class DebugButtons : NetworkBehaviour
          }
 
          RewardManager.self.showItemsInRewardPanel(itemList);
-         return;
-         /*
-         var newLootlist = tempDrop.requestLootList();
-         Debug.LogError("-------------------- I received this list : " + newLootlist.Count);
-         List<Item> itemList = new List<Item>();
-         for (int i = 0; i < newLootlist.Count; i++) {
-            Debug.LogError(newLootlist[i].lootType);
-
-            CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) newLootlist[i].lootType, ColorType.DarkGreen, ColorType.DarkPurple, "");
-            craftingIngredients.itemTypeId = (int) craftingIngredients.type;
-            Item item = craftingIngredients;
-            itemList.Add(item);
-         }
-
-         //----------------------------------------
-
-         RewardScreen rewardPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
-         rewardPanel.setItemDataGroup(itemList);
-         PanelManager.self.pushPanel(Panel.Type.Reward);*/
-
-
-      }
-      if(Input.GetKey(KeyCode.K)) {
-         Anim.Type animationType = Anim.Type.Battle_East;
-         /*
-         foreach (SimpleAnimation anim in _anims) {
-            anim.playAnimation(animationType);
-         }*/
-      }
-
-      if (Input.GetKeyDown(KeyCode.Alpha9)) {
-         //var itemToDelete = InventoryCacheManager.self.itemList.Find(_ => _.category == Item.Category.CraftingIngredients && (CraftingIngredients.Type) _.itemTypeId == CraftingIngredients.Type.Lizard_Scale);
-         //Global.player.rpc.Cmd_DeleteItem(itemToDelete.id);
       }
 
       if(Input.GetKey(KeyCode.U)) {
-         if (Input.GetKeyDown(KeyCode.Alpha1)) {
+         if (Input.GetKeyDown(KeyCode.Alpha2)) {
+            seedGeneratorSeed = 1137;
          }
-
          if (Input.GetKeyDown(KeyCode.Alpha3)) {
-            var areas = AreaManager.self.getAreas();
-            Debug.LogError("The list of area is : " + areas.Count);
+            seedGeneratorSeed = 1037;
          }
 
-         if (Input.GetKeyDown(KeyCode.Alpha5)) {
-            DB_Main.getNPCRelationInfo(Global.player.userId, 2);
-         }
-         if (Input.GetKeyDown(KeyCode.Alpha9)) {
-            Debug.LogError("Requesting from server as -1");
-            Global.player.rpc.Cmd_RequestItemsFromServer(-1, 15);
-         }
-         if (Input.GetKeyDown(KeyCode.Alpha8)) {
-            Debug.LogError("Requesting from server as 1");
-            Global.player.rpc.Cmd_RequestItemsFromServer(1, 15);
+         if (Input.GetKeyDown(KeyCode.Alpha1)) {
+            bool seedGeneratorInitialized = false;
+            // remember old seed
+            var temp = Random.state;
+ 
+            // initialize generator state if needed
+            if (!seedGeneratorInitialized)
+            {
+                  Random.InitState(seedGeneratorSeed);
+                  seedGenerator = Random.state;
+                  seedGeneratorInitialized = true;
+            }
+ 
+            // set our generator state to the seed generator
+            Random.state = seedGenerator;
+            // generate our new seed
+            var generatedSeed = Random.Range(int.MinValue, int.MaxValue);
+            // remember the new generator state
+            seedGenerator = Random.state;
+            // set the original state back so that normal random generation can continue where it left off
+            Random.state = temp;
+            Debug.LogError("SEED GEB : "+generatedSeed);
          }
       }
 
