@@ -1049,26 +1049,27 @@ public class RPCManager : NetworkBehaviour {
       // Retrieves the npc quest data on server side using npc id
       NPC npc = NPCManager.self.getNPC(npcID);
 
-      // Generates the item to be rewarded
-      int rewardQuantity = npc.npcData.npcQuestList[0].deliveryQuestList[questIndex].rewardQuantity;
-      CraftingIngredients questReward = new CraftingIngredients(0, (int) npc.npcData.npcQuestList[0].deliveryQuestList[questIndex].rewardType, ColorType.DarkGreen, ColorType.DarkPurple, "");
-      questReward.itemTypeId = (int) questReward.type;
-      questReward.count = rewardQuantity;
-
       // Fetch reward and database items for comparison
-      Item rewardItem = questReward;
+      List<Item> rewardItems = npc.npcData.npcQuestList[0].deliveryQuestList[questIndex].rewardItems;
+
       List<Item> requiredItems = new List<Item>();
+      List<int> rewardItemIDList = new List<int>();
       Item requiredItem = npc.npcData.npcQuestList[0].deliveryQuestList[questIndex].deliveryQuest.itemToDeliver;
       requiredItems.Add(requiredItem);
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Fetches reward item id
-         int rewardItemID = DB_Main.getItemID(userID, (int) rewardItem.category, rewardItem.itemTypeId);
+         for(int i = 0; i < rewardItems.Count; i++) {
+            int rewardItemID = DB_Main.getItemID(userID, (int) rewardItems[i].category, rewardItems[i].itemTypeId);
+            rewardItemIDList.Add(rewardItemID);
+         }
 
          // Sends notification to player about the item received
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            rewardItem.id = rewardItemID;
-            finalizeRewards(userID, rewardItem, databaseItems, requiredItems);
+            for (int i = 0; i < rewardItems.Count; i++) {
+               rewardItems[i].id = rewardItemIDList[i];
+            }
+            finalizeRewards(userID, rewardItems, databaseItems, requiredItems);
          });
       });
    }
@@ -1078,7 +1079,19 @@ public class RPCManager : NetworkBehaviour {
       // Gets loots for enemy type
       EnemyLootLibrary lootLibrary = RewardManager.self.enemyLootList.Find(_ => _.enemyType == enemyType);
       List<LootInfo> processedLoots = lootLibrary.dropTypes.requestLootList();
-      processGenericLoots(processedLoots);
+   
+      // Registers list of ingredient types for data fetching
+      List<CraftingIngredients.Type> itemLoots = new List<CraftingIngredients.Type>();
+      for (int i = 0; i < processedLoots.Count; i++) {
+         itemLoots.Add(processedLoots[i].lootType);
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<Item> databaseList = DB_Main.getRequiredIngredients(_player.userId, itemLoots);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            processGroupRewards(_player.userId, databaseList, processedLoots);
+         });
+      });
    }
 
    [Server]
@@ -1117,6 +1130,7 @@ public class RPCManager : NetworkBehaviour {
       // Gets the crafting result using cached scriptable object combo data
       CombinationData data = RewardManager.self.combinationDataList.comboDataList.Find(_ => _.blueprintTypeID == (int) blueprintType);
       Item rewardItem = data.resultItem;
+      List<Item> rewardItemList = new List<Item>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Fetches reward item id
@@ -1124,16 +1138,19 @@ public class RPCManager : NetworkBehaviour {
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             rewardItem.id = rewardItemID;
-            finalizeRewards(userId, rewardItem, databaseItems, requiredItems);
+            rewardItemList.Add(data.resultItem);
+            finalizeRewards(userId, rewardItemList, databaseItems, requiredItems);
          });
       });
    }
 
    [Server]
-   private void finalizeRewards (int userId, Item rewardItem, List<Item> databaseItems, List<Item> requiredItems) {
+   private void finalizeRewards (int userId, List<Item> rewardItem, List<Item> databaseItems, List<Item> requiredItems) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Creates or updates item database count
-         DB_Main.createOrUpdateItemCount(userId, rewardItem.id, rewardItem);
+         for (int i = 0; i < rewardItem.Count; i++) {
+            // Creates or updates item database count
+            DB_Main.createOrUpdateItemCount(userId, rewardItem[i].id, rewardItem[i]);
+         }
 
          for(int i = 0; i < requiredItems.Count; i++) {
             int deductCount = requiredItems[i].count;
@@ -1144,30 +1161,7 @@ public class RPCManager : NetworkBehaviour {
          }
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_ReceiveItem(_player.connectionToClient, rewardItem);
-         });
-      });
-   }
-
-   [Server]
-   public void processGenericLoots(List<LootInfo> processedLoots) {
-      // Item list handling
-      List<Item> newItemList = new List<Item>();
-      int processedLootCount = processedLoots.Count;
-
-      // Generates new list to be passed to client
-      for (int i = 0; i < processedLootCount; i++) {
-         CraftingIngredients createdItem = new CraftingIngredients(0, (int) processedLoots[i].lootType, ColorType.None, ColorType.None, "");
-         createdItem.itemTypeId = (int) processedLoots[i].lootType;
-         newItemList.Add(createdItem.getCastItem());
-      }
-
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         for (int i = 0; i < processedLootCount; i++) {
-            DB_Main.createNewItem(_player.userId, newItemList[i]);
-         }
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_ReceiveItemList(_player.connectionToClient, newItemList.ToArray());
+            Target_ReceiveItemList(_player.connectionToClient, rewardItem.ToArray());
          });
       });
    }
@@ -1230,13 +1224,13 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<Item> databaseList = DB_Main.getRequiredIngredients(_player.userId, itemLoots);
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            processMineReward(_player.userId, databaseList, lootInfoList, oreNode.oreType);
+            processGroupRewards(_player.userId, databaseList, lootInfoList);
          });
       });
    }
 
    [Server]
-   private void processMineReward(int userID, List<Item> databaseItems, List<LootInfo> rewardList, OreNode.Type oreType) {
+   private void processGroupRewards(int userID, List<Item> databaseItems, List<LootInfo> rewardList) {
       // Generate Item List to show in popup after data writing
       List<Item> itemRewardList = new List<Item>();
       for (int i = 0; i < rewardList.Count; i++) {
