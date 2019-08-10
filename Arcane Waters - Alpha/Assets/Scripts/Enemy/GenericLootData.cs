@@ -57,7 +57,7 @@ public class LootInfo
    public CraftingIngredients.Type lootType;
 
    // Number of loots
-   public int quantity;
+   public int quantity = 1;
 
    // Percentage Chance to drop
    [Range(0.00f,100.00f)]

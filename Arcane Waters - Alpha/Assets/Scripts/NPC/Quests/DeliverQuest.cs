@@ -8,8 +8,5 @@ public class DeliverQuest : ScriptableObject
    // Item data to be delivered
    public Item itemToDeliver;
 
-   // Queantity of items to be delivered
-   public int quantity;
-
    #endregion Public Variables
 }

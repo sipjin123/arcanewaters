@@ -55,10 +55,7 @@ public class DeliveryQuestPair : QuestInfo
    public DeliverQuest deliveryQuest;
 
    // Type of reward to receive after completion
-   public CraftingIngredients.Type rewardType;
-
-   // Quantity of reward to receive after completion
-   public int rewardQuantity;
+   public List<Item> rewardItems;
 }
 
 [Serializable]
@@ -96,6 +93,9 @@ public class QuestDialogue
 
    // Checks if player can have positive or negative reply
    public bool checkCondition;
+
+   // Checks if there are strings that need to be replaced
+   public bool checkDynamicValue;
 
    // Reply if conditions are met for quest
    public ClickableText.Type playerReply;
