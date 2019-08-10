@@ -19,6 +19,15 @@ public class SpawnManager : MonoBehaviour {
       self = this;
    }
 
+   public static SpawnManager get () {
+      // Check if we need to look it up
+      if (self == null) {
+         self = FindObjectOfType<SpawnManager>();
+      }
+
+      return self;
+   }
+
    public void store (Spawn.Type spawnType, Spawn spawn) {
       if (_spawns.ContainsKey(spawnType)) {
          D.warning("Storing multiple spawns of the same type: " + spawnType);

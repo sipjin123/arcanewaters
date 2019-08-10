@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1296062981129779092}
   - component: {fileID: 1296062981129779093}
   - component: {fileID: 1296062981129779090}
-  - component: {fileID: -4183875007508466322}
+  - component: {fileID: -7144817864814152922}
   m_Layer: 5
   m_Name: Impassable Icon
   m_TagString: Untagged
@@ -61,7 +61,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  tooltip: {fileID: -4183875007508466322}
+  tooltip: {fileID: -7144817864814152922}
 --- !u!114 &1296062981129779093
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -106,7 +106,7 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_EffectDistance: {x: 1, y: -1}
   m_UseGraphicAlpha: 1
---- !u!114 &
+--- !u!114 &-7144817864814152922
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -118,4 +118,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d45e50f956068424da261c7239c70d29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  text: 
+  text: Impassable

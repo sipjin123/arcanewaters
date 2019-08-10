@@ -31,22 +31,13 @@ public class Area : MonoBehaviour {
    #endregion
 
    private void Start() {
-      StartCoroutine(CO_delayStart());
-   }
-
-   IEnumerator CO_delayStart() {
-      yield return new WaitForSeconds(.5f);
-      delayedStart();
-   }
-
-   private void delayedStart() {
       // Regenerate any tilemap colliders
       foreach (CompositeCollider2D compositeCollider in GetComponentsInChildren<CompositeCollider2D>()) {
          compositeCollider.GenerateGeometry();
       }
 
       // Store all of our Tilemaps
-      _tilemaps = new List<Tilemap>(GetComponentsInChildren<Tilemap>(true)); 
+      _tilemaps = new List<Tilemap>(GetComponentsInChildren<Tilemap>(true));
 
       // Store all of our tilemap colliders
       _tilemapColliders = new List<TilemapCollider2D>(GetComponentsInChildren<TilemapCollider2D>());

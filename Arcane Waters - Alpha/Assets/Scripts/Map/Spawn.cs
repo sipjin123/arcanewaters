@@ -27,7 +27,7 @@ public class Spawn : MonoBehaviour {
 
    #endregion
 
-   void Start () {
+   void Awake () {
       // Note the Area Type that we're in
       _areaType = GetComponentInParent<Area>().areaType;
 
@@ -35,14 +35,12 @@ public class Spawn : MonoBehaviour {
       _spawnBox = GetComponent<BoxCollider2D>();
 
       // Keep track of this spawn
-      SpawnManager.self.store(this.spawnType, this);
+      SpawnManager.get().store(this.spawnType, this);
    }
 
    public Vector3 getSpawnPosition () {
       // Some spawn types specify a box that objects can spawn within
       return (_spawnBox == null) ? this.transform.position : Util.RandomPointInBounds(_spawnBox.bounds);
-
-      
    }
 
    protected Area.Type getAreaType () {

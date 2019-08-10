@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 403342079422600381}
   - component: {fileID: 403342079422600380}
   - component: {fileID: 403342079422600379}
-  - component: {fileID: -5839988871115564841}
+  - component: {fileID: 3927185419609626873}
   m_Layer: 5
   m_Name: Building Icon
   m_TagString: Untagged
@@ -61,7 +61,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  tooltip: {fileID: -5839988871115564841}
+  tooltip: {fileID: 3927185419609626873}
 --- !u!114 &403342079422600380
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -106,7 +106,7 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_EffectDistance: {x: 1, y: -1}
   m_UseGraphicAlpha: 1
---- !u!114 &
+--- !u!114 &3927185419609626873
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
