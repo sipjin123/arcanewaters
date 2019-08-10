@@ -81,10 +81,10 @@ public class RPCManager : NetworkBehaviour {
       QuestType typeOfQuest = (QuestType) Enum.Parse(typeof(QuestType), questType, true);
       switch (typeOfQuest) {
          case QuestType.Deliver:
-            npc.npcData.npcQuestList[0].deliveryQuestList[questIndex].questState = (QuestState) questProgress;
+            npc.npcData.deliveryQuestList[questIndex].questState = (QuestState) questProgress;
             break;
          case QuestType.Hunt:
-            npc.npcData.npcQuestList[0].huntQuestList[questIndex].questState = (QuestState) questProgress;
+            npc.npcData.huntQuestList[questIndex].questState = (QuestState) questProgress;
             break;
       }
    }
@@ -727,7 +727,7 @@ public class RPCManager : NetworkBehaviour {
    [Command]
    public void Cmd_CreateNPCRelation (int npcID, string npcName) {
       NPC npc = NPCManager.self.getNPC(npcID);
-      List<QuestInfo> questList = npc.npcData.npcQuestList[0].getAllQuests();
+      List<QuestInfo> questList = npc.npcData.getAllQuests();
       int deliverIndex = 0;
       int huntIndex = 0;
 
@@ -1011,7 +1011,7 @@ public class RPCManager : NetworkBehaviour {
       NPC npc = NPCManager.self.getNPC(npcID);
 
       // Checks the required items if it exists in the database
-      Item requiredItem = npc.npcData.npcQuestList[0].deliveryQuestList[questIndex].deliveryQuest.itemToDeliver;
+      Item requiredItem = npc.npcData.deliveryQuestList[questIndex].deliveryQuest.itemToDeliver;
       List<CraftingIngredients.Type> requiredItemList = new List<CraftingIngredients.Type>();
       requiredItemList.Add((CraftingIngredients.Type) requiredItem.itemTypeId);
 
@@ -1050,11 +1050,11 @@ public class RPCManager : NetworkBehaviour {
       NPC npc = NPCManager.self.getNPC(npcID);
 
       // Fetch reward and database items for comparison
-      List<Item> rewardItems = npc.npcData.npcQuestList[0].deliveryQuestList[questIndex].rewardItems;
+      List<Item> rewardItems = npc.npcData.deliveryQuestList[questIndex].rewardItems;
 
       List<Item> requiredItems = new List<Item>();
       List<int> rewardItemIDList = new List<int>();
-      Item requiredItem = npc.npcData.npcQuestList[0].deliveryQuestList[questIndex].deliveryQuest.itemToDeliver;
+      Item requiredItem = npc.npcData.deliveryQuestList[questIndex].deliveryQuest.itemToDeliver;
       requiredItems.Add(requiredItem);
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -1302,7 +1302,7 @@ public class RPCManager : NetworkBehaviour {
    public void processClickableRows(int userId, int npcId, int questType, int questProgress, int questIndex) {
       // Look up the NPC
       NPC npc = NPCManager.self.getNPC(npcId);
-      Item requiredItem = npc.npcData.npcQuestList[0].deliveryQuestList[questIndex].deliveryQuest.itemToDeliver;
+      Item requiredItem = npc.npcData.deliveryQuestList[questIndex].deliveryQuest.itemToDeliver;
       List<CraftingIngredients.Type> requiredItemList = new List<CraftingIngredients.Type>();
       requiredItemList.Add((CraftingIngredients.Type) requiredItem.itemTypeId);
 
@@ -1325,7 +1325,7 @@ public class RPCManager : NetworkBehaviour {
                      }
                   }
                }
-               dialogueData = NPCPanel.getDialogueInfo(questProgress, npc.npcData.npcQuestList[0].deliveryQuestList[questIndex], hasMaterials);
+               dialogueData = NPCPanel.getDialogueInfo(questProgress, npc.npcData.deliveryQuestList[questIndex], hasMaterials);
                Target_ReceiveClickableNPCRows(_player.connectionToClient, dialogueData.answerList.ToArray(), npcId);
                Target_ReceiveNPCMessage(_player.connectionToClient, dialogueData.npcDialogue);
             }

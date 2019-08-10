@@ -21,7 +21,7 @@ public class NPC : MonoBehaviour {
    }
 
    // Holds the scriptable object npc data
-   public NPCData npcData;
+   public NPCQuestData npcData;
 
    // Holds the current player answers depending on quest state
    public List<ClickableText.Type> currentAnswerDialogue = new List<ClickableText.Type>();
@@ -132,7 +132,7 @@ public class NPC : MonoBehaviour {
          // setNameColor(nameText, npcType);
       }
 
-      npcData = QuestManager.self.npcDataList[0];
+      npcData = QuestManager.self.deliveryQuestData;
    }
 
    private void Update () {

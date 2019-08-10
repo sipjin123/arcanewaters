@@ -106,10 +106,10 @@ public class NPCPanel : Panel {
    public void receiveIndividualNPCQuestData (QuestType questType, int npcQuestIndex, int npcQuestProgress) {
       switch (questType) {
          case QuestType.Deliver:
-            npc.npcData.npcQuestList[0].deliveryQuestList[npcQuestIndex].questState = (QuestState) npcQuestProgress;
+            npc.npcData.deliveryQuestList[npcQuestIndex].questState = (QuestState) npcQuestProgress;
             break;
          case QuestType.Hunt:
-            npc.npcData.npcQuestList[0].huntQuestList[npcQuestIndex].questState = (QuestState) npcQuestProgress;
+            npc.npcData.huntQuestList[npcQuestIndex].questState = (QuestState) npcQuestProgress;
             break;
       }
    }
@@ -178,10 +178,10 @@ public class NPCPanel : Panel {
       currentQuestIndex = questIndex;
       switch (questType) {
          case QuestType.Hunt:
-            currentHuntQuest = npc.npcData.npcQuestList[0].huntQuestList[questIndex];
+            currentHuntQuest = npc.npcData.huntQuestList[questIndex];
             break;
          case QuestType.Deliver:
-            currentDeliveryQuest = npc.npcData.npcQuestList[0].deliveryQuestList[questIndex];
+            currentDeliveryQuest = npc.npcData.deliveryQuestList[questIndex];
             break;
       }
       checkQuest(currentDeliveryQuest);
@@ -284,7 +284,7 @@ public class NPCPanel : Panel {
 
    private QuestInfoData processQuestInfo (QuestType type) {
       QuestInfoData newInfoData = new QuestInfoData();
-      newInfoData.questList = npc.npcData.npcQuestList[0].getAllQuestSpecific(type);
+      newInfoData.questList = npc.npcData.getAllQuestSpecific(type);
       newInfoData.index = 0;
       newInfoData.questType = type;
 
