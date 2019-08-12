@@ -23,6 +23,21 @@ public class RPCManager : NetworkBehaviour {
       }
    }
 
+   [Command]
+   public void Cmd_InteractAnimation(Anim.Type animType) {
+      processInteractAnimation(animType);
+   }
+
+   [Server]
+   private void processInteractAnimation(Anim.Type animType) {
+      Target_InteractAnimation(_player.connectionToClient, animType);
+   }
+
+   [TargetRpc]
+   public void Target_InteractAnimation (NetworkConnection connection, Anim.Type animType) {
+      _player.requestAnimationPlay(animType);
+   }
+
    [ClientRpc]
    protected void Rpc_UpdateHair (HairLayer.Type newHairType, ColorType newHairColor1, ColorType newHairColor2) {
       if (_player is BodyEntity) {

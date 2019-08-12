@@ -17,6 +17,7 @@ public class Anim : MonoBehaviour {
       Battle_East = 10, Battle_North = 11, Battle_South = 12,
       Block_East = 13,
       Jump_East = 14,
+      Mining = 15
    }
 
    // The different animation groups

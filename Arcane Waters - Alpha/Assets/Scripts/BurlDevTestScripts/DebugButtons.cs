@@ -26,7 +26,15 @@ public class DebugButtons : NetworkBehaviour
    Random.State seedGenerator;
    int seedGeneratorSeed = 1337;
    private void Update () {
-      if(Input.GetKeyDown(KeyCode.T)) {
+      if (Global.player.isLocalPlayer) {
+         if (Input.GetKeyDown(KeyCode.T)) {
+
+            //Global.player.requestAnimationPlay();
+            Global.player.rpc.Cmd_InteractAnimation(Anim.Type.Mining);
+         }
+      }  
+
+      if(Input.GetKeyDown(KeyCode.Tilde)) {
          var temp = tempDrop.requestLootList();
          List<Item> itemList = new List<Item>();
          for(int i = 0; i < temp.Count; i++) {
