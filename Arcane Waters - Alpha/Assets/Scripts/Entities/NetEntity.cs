@@ -6,7 +6,8 @@ using Mirror;
 using Cinemachine;
 using Smooth;
 
-public class NetEntity : NetworkBehaviour {
+public class NetEntity : NetworkBehaviour
+{
    #region Public Variables
 
    // The amount of time that must pass between movement changes
@@ -117,6 +118,9 @@ public class NetEntity : NetworkBehaviour {
    // Gets set to true on the server when we're about to execute a warp
    public bool isAboutToWarpOnServer = false;
 
+   // Determines if the player is animating an interact clip
+   public bool interactingAnimation = false;
+
    #endregion
 
    protected virtual void Awake () {
@@ -146,7 +150,7 @@ public class NetEntity : NetworkBehaviour {
       _autoMove = CommandCodes.get(CommandCodes.Type.AUTO_MOVE);
    }
 
-   protected virtual void Start() {
+   protected virtual void Start () {
       if (this is PlayerBodyEntity || this is PlayerShipEntity) {
          // Create some name text that will follow us around
          SmoothFollow smoothFollow = Instantiate(PrefabsManager.self.nameTextPrefab);
@@ -193,16 +197,18 @@ public class NetEntity : NetworkBehaviour {
          _nameText.text = this.entityName;
       }
 
-      // Pass our angle and rigidbody velocity on to the Animator
-      foreach (Animator animator in _animators) {
-         animator.SetFloat("velocityX", _body.velocity.x);
-         animator.SetFloat("velocityY", _body.velocity.y);
-         animator.SetBool("isMoving", isMoving());
-         animator.SetInteger("facing", (int) this.facing);
-         animator.SetBool("inBattle", isInBattle());
+      if (!interactingAnimation) {
+         // Pass our angle and rigidbody velocity on to the Animator
+         foreach (Animator animator in _animators) {
+            animator.SetFloat("velocityX", _body.velocity.x);
+            animator.SetFloat("velocityY", _body.velocity.y);
+            animator.SetBool("isMoving", isMoving());
+            animator.SetInteger("facing", (int) this.facing);
+            animator.SetBool("inBattle", isInBattle());
 
-         if (this is BodyEntity) {
-            animator.SetInteger("fallDirection", (int) this.fallDirection);
+            if (this is BodyEntity) {
+               animator.SetInteger("fallDirection", (int) this.fallDirection);
+            }
          }
       }
 
@@ -251,7 +257,7 @@ public class NetEntity : NetworkBehaviour {
          handleInstantMoveMode();
       }
    }
-   
+
    protected virtual void OnDestroy () {
       Vector3 pos = this.transform.position;
 
@@ -285,6 +291,34 @@ public class NetEntity : NetworkBehaviour {
       return battleId > 0;
    }
 
+   public void requestAnimationPlay (Anim.Type animType) {
+      if (interactingAnimation) {
+         return;
+      }
+
+      interactingAnimation = true;
+      foreach (Animator animator in _animators) {
+         switch (animType) {
+            case Anim.Type.Mining:
+               animator.SetBool("mining", true);
+               break;
+         }
+      }
+      StartCoroutine(CO_DelayExitAnim(animType));
+   }
+
+   IEnumerator CO_DelayExitAnim(Anim.Type animType) {
+      yield return new WaitForSeconds(.2f);
+      foreach (Animator animator in _animators) {
+         switch (animType) {
+            case Anim.Type.Mining:
+               animator.SetBool("mining", false);
+               break;
+         }
+      }
+      interactingAnimation = false;
+   }
+   
    public virtual float getMoveSpeed () {
       // Figure out our base movement speed
       float baseSpeed = (this is SeaEntity) ? 70f : 135f;
