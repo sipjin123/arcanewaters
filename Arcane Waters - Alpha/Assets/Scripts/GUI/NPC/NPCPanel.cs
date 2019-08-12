@@ -7,6 +7,17 @@ using Mirror;
 public class NPCPanel : Panel {
    #region Public Variables
 
+   public class RandomizedQuestSeed
+   {
+      // The type of item needed for the quest
+      public Item requiredItem;
+      // The count of ingredients needed for the quest
+      public int quantity;
+
+      // The randomized reward item
+      public Item rewardItem;
+   }
+
    // A class utilized by the server side that caches the player and npc response
    public class DialogueData
    {
@@ -227,7 +238,7 @@ public class NPCPanel : Panel {
 
       if (currentDialogue.checkCondition) {
          // Checks the required items if it exists in the database
-         QuestManager.RandomizedQuestSeed randomizedSeed = QuestManager.self.randomizedQuestSeed(npc.npcId);
+         RandomizedQuestSeed randomizedSeed = randomizedQuestSeed(npc.npcId);
 
          List<Item> itemList = InventoryCacheManager.self.itemList;
          DeliverQuest deliveryQuest = deliveryQuestPair.deliveryQuest;
@@ -319,12 +330,11 @@ public class NPCPanel : Panel {
       newDialogueData.answerList = newList;
       newDialogueData.npcDialogue = currentDialogue.npcDialogue;
 
-
       // Sets npc response
       string npcReply = newDialogueData.npcDialogue;
       if (currentDialogue.checkDynamicValue) {
-         QuestManager.RandomizedQuestSeed randomizedSeed = QuestManager.self.randomizedQuestSeed(npcId);
-         Item requiredItem = new Item { category = Item.Category.CraftingIngredients, itemTypeId = (int) randomizedSeed.requiredItem, count = randomizedSeed.quantity };
+         RandomizedQuestSeed randomizedSeed = randomizedQuestSeed(npcId);
+         Item requiredItem = randomizedSeed.requiredItem;
 
          npcReply = npcReply.Replace("@type", requiredItem.getCastItem().getName().ToString());
          npcReply = npcReply.Replace("@count", requiredItem.getCastItem().count.ToString());
@@ -332,6 +342,23 @@ public class NPCPanel : Panel {
       newDialogueData.npcDialogue = npcReply;
 
       return newDialogueData;
+   }
+
+   public static RandomizedQuestSeed randomizedQuestSeed (int seedValue) {
+      Random.InitState(seedValue);
+
+      int itemType = Random.Range(0, QuestManager.self.deliverableItemList.Count);
+      int itemCount = Random.Range(1, 5);
+      int rewardCount = Random.Range(0, QuestManager.self.rewardItemList.Count);
+
+      RandomizedQuestSeed randomizedSeed = new RandomizedQuestSeed {
+         requiredItem = QuestManager.self.deliverableItemList[itemType].getCastItem(),
+         quantity = itemCount,
+         rewardItem = QuestManager.self.rewardItemList[rewardCount].getCastItem()
+      };
+      randomizedSeed.requiredItem.count = itemCount;
+
+      return randomizedSeed;
    }
 
    #region Private Variables
