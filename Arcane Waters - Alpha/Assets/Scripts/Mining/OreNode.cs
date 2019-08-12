@@ -78,6 +78,13 @@ public class OreNode : NetworkBehaviour
       // Increment our current sprite index
       spriteRenderer.sprite = oreSprites[getNextSpriteIndex()];
 
+      if (Global.player.facing == Direction.East || Global.player.facing == Direction.West) {
+         Global.player.rpc.Cmd_InteractAnimation(Anim.Type.Mining);
+      } else {
+         D.warning("Player must face left or right!");
+         return;
+      }
+
       // If we finished mining the node, send a message to the server
       if (spriteRenderer.sprite == oreSprites.Last()) {
          Global.player.rpc.Cmd_MineNode(this.id);
