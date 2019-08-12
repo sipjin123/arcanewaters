@@ -332,13 +332,11 @@ public class NPCPanel : Panel {
 
       // Sets npc response
       string npcReply = newDialogueData.npcDialogue;
-      if (currentDialogue.checkDynamicValue) {
-         RandomizedQuestSeed randomizedSeed = randomizedQuestSeed(npcId);
-         Item requiredItem = randomizedSeed.requiredItem;
+      RandomizedQuestSeed randomizedSeed = randomizedQuestSeed(npcId);
+      Item requiredItem = randomizedSeed.requiredItem;
 
-         npcReply = npcReply.Replace("@type", requiredItem.getCastItem().getName().ToString());
-         npcReply = npcReply.Replace("@count", requiredItem.getCastItem().count.ToString());
-      }
+      npcReply = npcReply.Replace("@type", requiredItem.getCastItem().getName().ToString());
+      npcReply = npcReply.Replace("@count", requiredItem.getCastItem().count.ToString());
       newDialogueData.npcDialogue = npcReply;
 
       return newDialogueData;

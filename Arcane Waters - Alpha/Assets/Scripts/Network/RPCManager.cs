@@ -1011,8 +1011,8 @@ public class RPCManager : NetworkBehaviour {
       NPC npc = NPCManager.self.getNPC(npcID);
 
       // Checks the required items if it exists in the database
-      QuestManager.RandomizedQuestSeed randomizedSeed = QuestManager.self.randomizedQuestSeed(npcID);
-      Item requiredItem = new Item { category = Item.Category.CraftingIngredients, itemTypeId = (int)randomizedSeed.requiredItem, count = randomizedSeed.quantity };
+      NPCPanel.RandomizedQuestSeed randomizedSeed = NPCPanel.randomizedQuestSeed(npcID);
+      Item requiredItem = randomizedSeed.requiredItem;
       List<CraftingIngredients.Type> requiredItemList = new List<CraftingIngredients.Type>();
       requiredItemList.Add((CraftingIngredients.Type) requiredItem.itemTypeId);
 
@@ -1051,7 +1051,7 @@ public class RPCManager : NetworkBehaviour {
       NPC npc = NPCManager.self.getNPC(npcID);
 
       // Retrieves the randomized seed data
-      QuestManager.RandomizedQuestSeed randomizedSeed = QuestManager.self.randomizedQuestSeed(npcID);
+      NPCPanel.RandomizedQuestSeed randomizedSeed = NPCPanel.randomizedQuestSeed(npcID);
 
       // Fetch reward and database items for comparison
       List<Item> rewardItems = new List<Item>();
@@ -1060,7 +1060,7 @@ public class RPCManager : NetworkBehaviour {
       List<Item> requiredItems = new List<Item>();
       List<int> rewardItemIDList = new List<int>();
 
-      Item requiredItem = new Item { category = Item.Category.CraftingIngredients, itemTypeId = (int) randomizedSeed.requiredItem, count = randomizedSeed.quantity };
+      Item requiredItem = randomizedSeed.requiredItem;
       requiredItems.Add(requiredItem);
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -1310,8 +1310,8 @@ public class RPCManager : NetworkBehaviour {
       NPC npc = NPCManager.self.getNPC(npcId);
 
       // Checks the required items if it exists in the database
-      QuestManager.RandomizedQuestSeed randomizedSeed = QuestManager.self.randomizedQuestSeed(npcId);
-      Item requiredItem = new Item { category = Item.Category.CraftingIngredients, itemTypeId = (int) randomizedSeed.requiredItem, count = randomizedSeed.quantity };
+      NPCPanel.RandomizedQuestSeed randomizedSeed = NPCPanel.randomizedQuestSeed(npcId);
+      Item requiredItem = randomizedSeed.requiredItem;
 
       List<CraftingIngredients.Type> requiredItemList = new List<CraftingIngredients.Type>();
       requiredItemList.Add((CraftingIngredients.Type) requiredItem.itemTypeId);

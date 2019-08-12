@@ -94,9 +94,6 @@ public class QuestDialogue
    // Checks if player can have positive or negative reply
    public bool checkCondition;
 
-   // Checks if there are strings that need to be replaced
-   public bool checkDynamicValue;
-
    // Reply if conditions are met for quest
    public ClickableText.Type playerReply;
 
