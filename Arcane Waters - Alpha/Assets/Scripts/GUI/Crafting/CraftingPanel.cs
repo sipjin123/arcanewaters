@@ -196,9 +196,9 @@ public class CraftingPanel : Panel, IPointerClickHandler
 
             // Determines what icon to preview in crafting panel
             Sprite blueprintIcon = emptyImage;
-            if(blueprint.getEquipmentType() == Blueprint.EquipmentType.Weapon) {
+            if(blueprint.getEquipmentType() == Item.Category.Weapon) {
                blueprintIcon = weaponBlueprintIcon;
-            }else if (blueprint.getEquipmentType() == Blueprint.EquipmentType.Armor) {
+            } else if (blueprint.getEquipmentType() == Item.Category.Armor) {
                blueprintIcon = armorBlueprintIcon;
             }
 

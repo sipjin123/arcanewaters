@@ -19,14 +19,10 @@ public class RewardRow : MonoBehaviour {
    // The quantity text of the item to be rewarded
    public Text quantityText;
 
-   // The quantity shadow text of the item to be rewarded
-   public Text quantityTextShadow;
-
    #endregion
 
    public void setQuantityText(string quantity) {
       quantityText.text = quantity.ToString();
-      quantityTextShadow.text = quantity.ToString();
    }
 
    #region Private Variables
