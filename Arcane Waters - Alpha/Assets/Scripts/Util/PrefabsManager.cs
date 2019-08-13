@@ -82,6 +82,9 @@ public class PrefabsManager : MonoBehaviour {
    // A prefab we can use for showing that an object is too far away
    public GameObject tooFarPrefab;
 
+   // A prefab we can use for showing that the requirements are not enough
+   public GameObject insufficientPrefab;
+
    // A prefab we can use to create floating damage numbers from
    public GameObject damageTextPrefab;
 

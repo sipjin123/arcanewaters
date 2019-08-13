@@ -1045,12 +1045,12 @@ public class RPCManager : NetworkBehaviour {
             }
 
             if (databaseItemList.Count <= 0) {
-               D.log("You do not have the materials!");
+               Instantiate(PrefabsManager.self.insufficientPrefab, this.transform.position + new Vector3(0f, .24f), Quaternion.identity);
                return;
             } else {
                for (int i = 0; i < databaseItemList.Count; i++) {
                   if (databaseItemList[i].count < requiredItem.count) {
-                     D.log("Insufficient Materials");
+                     Instantiate(PrefabsManager.self.insufficientPrefab, this.transform.position + new Vector3(0f, .24f), Quaternion.identity);
                      return;
                   }
                }
