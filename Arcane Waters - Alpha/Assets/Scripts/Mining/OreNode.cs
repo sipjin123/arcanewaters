@@ -35,7 +35,7 @@ public class OreNode : NetworkBehaviour
    // The list of user IDs that have mined this node
    public SyncListInt userIds = new SyncListInt();
 
-   // List of arrows that indicate where the place is facing
+   // List of arrows that indicate where the player is facing
    public List<DirectionalArrow> directionalArrow;
 
    #endregion
@@ -157,7 +157,7 @@ public class OreNode : NetworkBehaviour
    }
 
    private void OnTriggerStay2D (Collider2D collision) {
-      if(collision.GetComponent<PlayerObserverManager>() != null) {
+      if (collision.GetComponent<PlayerObserverManager>() != null) {
          if(Global.player == collision.GetComponent<NetEntity>()) {
             Vector2 pos = Global.player.transform.position;
             if (pos.x < transform.position.x) {
@@ -184,14 +184,4 @@ public class OreNode : NetworkBehaviour
    protected ClickableBox _clickableBox;
 
    #endregion
-}
-
-[Serializable]
-public class DirectionalArrow
-{
-   // Which direction the arrow should show
-   public Direction direction;
-
-   // The arrow object
-   public GameObject gameObj;
 }
