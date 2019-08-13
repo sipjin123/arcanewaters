@@ -467,6 +467,14 @@ public class NetEntity : NetworkBehaviour
       }
    }
 
+   public void forceFaceDirection(Direction direction) {
+      this.facing = direction;
+
+      foreach (Animator animator in _animators) {
+         animator.SetInteger("facing", (int) this.facing);
+      }
+   }
+
    protected void handleDelayMoveMode () {
       // Check if enough time has passed for us to change our facing direction
       bool canChangeDirection = (Time.time - _lastFacingChangeTime > getTurnDelay());

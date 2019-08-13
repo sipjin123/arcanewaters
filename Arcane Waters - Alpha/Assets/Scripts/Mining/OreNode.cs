@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System.Linq;
+using System;
 
 public class OreNode : NetworkBehaviour
 {
@@ -33,6 +34,9 @@ public class OreNode : NetworkBehaviour
 
    // The list of user IDs that have mined this node
    public SyncListInt userIds = new SyncListInt();
+
+   // List of arrows that indicate where the place is facing
+   public List<DirectionalArrow> directionalArrow;
 
    #endregion
 
@@ -75,15 +79,26 @@ public class OreNode : NetworkBehaviour
          return;
       }
 
-      // Increment our current sprite index
-      spriteRenderer.sprite = oreSprites[getNextSpriteIndex()];
+      Vector2 pos = Global.player.transform.position;
 
-      if (Global.player.facing == Direction.East || Global.player.facing == Direction.West) {
+      // Force direction if not facing the ore
+      if (Global.player.facing == Direction.North || Global.player.facing == Direction.South) {
+         if (pos.x < transform.position.x) {
+            Global.player.forceFaceDirection(Direction.East);
+         } else {
+            Global.player.forceFaceDirection(Direction.West);
+         }
+      }
+
+      if ((Global.player.facing == Direction.East && pos.x < transform.position.x) || (Global.player.facing == Direction.West && pos.x > transform.position.x)) {
          Global.player.rpc.Cmd_InteractAnimation(Anim.Type.Mining);
       } else {
          D.warning("Player must face left or right!");
          return;
       }
+
+      // Increment our current sprite index
+      spriteRenderer.sprite = oreSprites[getNextSpriteIndex()];
 
       // If we finished mining the node, send a message to the server
       if (spriteRenderer.sprite == oreSprites.Last()) {
@@ -128,6 +143,34 @@ public class OreNode : NetworkBehaviour
       return oreSprites.Length - 1;
    }
 
+   private void setArrowDirection(Direction direction) {
+      disableArrows();
+      directionalArrow.Find(_ => _.direction == direction).gameObj.SetActive(true);
+   }
+
+   private void disableArrows() {
+      for (int i = 0; i < directionalArrow.Count; i++) {
+         directionalArrow[i].gameObj.SetActive(false);
+      }
+   }
+
+   private void OnTriggerStay2D (Collider2D collision) {
+      if(collision.GetComponent<PlayerBodyEntity>() != null) {
+         Vector2 pos = Global.player.transform.position;
+         if(pos.x < transform.position.x) {
+            setArrowDirection(Direction.West);
+         } else {
+            setArrowDirection(Direction.East);
+         }
+      }
+   }
+
+   private void OnTriggerExit2D (Collider2D collision) {
+      if (collision.GetComponent<PlayerBodyEntity>() != null) {
+         disableArrows();
+      }
+   }
+
    #region Private Variables
 
    // Our various components
@@ -135,4 +178,14 @@ public class OreNode : NetworkBehaviour
    protected ClickableBox _clickableBox;
 
    #endregion
+}
+
+[Serializable]
+public class DirectionalArrow
+{
+   // Which direction the arrow should show
+   public Direction direction;
+
+   // The arrow object
+   public GameObject gameObj;
 }
