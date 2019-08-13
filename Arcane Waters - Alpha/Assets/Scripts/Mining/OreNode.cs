@@ -84,9 +84,11 @@ public class OreNode : NetworkBehaviour
       // Force direction if not facing the ore
       if (Global.player.facing == Direction.North || Global.player.facing == Direction.South) {
          if (pos.x < transform.position.x) {
-            Global.player.forceFaceDirection(Direction.East);
+            Global.player.Cmd_ForceFaceDirection(Direction.East);
+            Global.player.facing = Direction.East;
          } else {
-            Global.player.forceFaceDirection(Direction.West);
+            Global.player.Cmd_ForceFaceDirection(Direction.West);
+            Global.player.facing = Direction.West;
          }
       }
 
@@ -155,19 +157,23 @@ public class OreNode : NetworkBehaviour
    }
 
    private void OnTriggerStay2D (Collider2D collision) {
-      if(collision.GetComponent<PlayerBodyEntity>() != null) {
-         Vector2 pos = Global.player.transform.position;
-         if(pos.x < transform.position.x) {
-            setArrowDirection(Direction.West);
-         } else {
-            setArrowDirection(Direction.East);
+      if(collision.GetComponent<PlayerObserverManager>() != null) {
+         if(Global.player == collision.GetComponent<NetEntity>()) {
+            Vector2 pos = Global.player.transform.position;
+            if (pos.x < transform.position.x) {
+               setArrowDirection(Direction.West);
+            } else {
+               setArrowDirection(Direction.East);
+            }
          }
       }
    }
 
    private void OnTriggerExit2D (Collider2D collision) {
-      if (collision.GetComponent<PlayerBodyEntity>() != null) {
-         disableArrows();
+      if (collision.GetComponent<PlayerObserverManager>() != null) {
+         if (Global.player == collision.GetComponent<NetEntity>()) {
+            disableArrows();
+         }
       }
    }
 

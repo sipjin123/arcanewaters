@@ -467,7 +467,13 @@ public class NetEntity : NetworkBehaviour
       }
    }
 
-   public void forceFaceDirection(Direction direction) {
+   [Command]
+   public void Cmd_ForceFaceDirection(Direction direction) {
+      Rpc_ForceLookat(direction);
+   }
+
+   [ClientRpc]
+   public void Rpc_ForceLookat (Direction direction) {
       this.facing = direction;
 
       foreach (Animator animator in _animators) {
