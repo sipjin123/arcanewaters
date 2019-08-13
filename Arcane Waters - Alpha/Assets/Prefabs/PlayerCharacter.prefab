@@ -1677,7 +1677,6 @@ GameObject:
   - component: {fileID: 114615473742750560}
   - component: {fileID: 6307625844003916164}
   - component: {fileID: 6819506050483120763}
-  - component: {fileID: 4967802688117449432}
   m_Layer: 9
   m_Name: PlayerCharacter
   m_TagString: Untagged
@@ -1769,7 +1768,7 @@ MonoBehaviour:
   guildId: 0
   battleId: 0
   isAboutToWarpOnServer: 0
-  isInteracting: 0
+  interactingAnimation: 0
   bodyType: 0
   eyesType: 0
   hairType: 0
@@ -1995,7 +1994,7 @@ MonoBehaviour:
   serverOnly: 0
   localPlayerAuthority: 1
   m_AssetId: 
-  m_SceneId: 578054177
+  m_SceneId: 723588412
 --- !u!114 &6307625844003916164
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2063,27 +2062,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncInterval: 0.1
   tempDrop: {fileID: 11400000, guid: 14b2cf647e92538408f269479e3ea968, type: 2}
---- !u!114 &4967802688117449432
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1631448374051184}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f6f3bf89aa97405989c802ba270f815, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncInterval: 0.1
-  animator:
-  - {fileID: 95023639661687838}
-  - {fileID: 95557389759112952}
-  - {fileID: 95463498748125442}
-  - {fileID: 95898570600801690}
-  - {fileID: 95975136699788740}
-  - {fileID: 95927211109523790}
-  - {fileID: 95100819043064392}
 --- !u!1 &1765715922958734
 GameObject:
   m_ObjectHideFlags: 0

@@ -25,16 +25,11 @@ public class RPCManager : NetworkBehaviour {
 
    [Command]
    public void Cmd_InteractAnimation(Anim.Type animType) {
-      processInteractAnimation(animType);
+      Rpc_InteractAnimation(animType);
    }
 
-   [Server]
-   private void processInteractAnimation(Anim.Type animType) {
-      Target_InteractAnimation(_player.connectionToClient, animType);
-   }
-
-   [TargetRpc]
-   public void Target_InteractAnimation (NetworkConnection connection, Anim.Type animType) {
+   [ClientRpc]
+   public void Rpc_InteractAnimation (Anim.Type animType) {
       _player.requestAnimationPlay(animType);
    }
 
@@ -1026,7 +1021,7 @@ public class RPCManager : NetworkBehaviour {
       NPC npc = NPCManager.self.getNPC(npcID);
 
       // Checks the required items if it exists in the database
-      NPCPanel.RandomizedQuestSeed randomizedSeed = NPCPanel.randomizedQuestSeed(npcID);
+      QuestSeed randomizedSeed = QuestSeed.randomizedQuestSeed(npcID);
       Item requiredItem = randomizedSeed.requiredItem;
       List<CraftingIngredients.Type> requiredItemList = new List<CraftingIngredients.Type>();
       requiredItemList.Add((CraftingIngredients.Type) requiredItem.itemTypeId);
@@ -1066,7 +1061,7 @@ public class RPCManager : NetworkBehaviour {
       NPC npc = NPCManager.self.getNPC(npcID);
 
       // Retrieves the randomized seed data
-      NPCPanel.RandomizedQuestSeed randomizedSeed = NPCPanel.randomizedQuestSeed(npcID);
+      QuestSeed randomizedSeed = QuestSeed.randomizedQuestSeed(npcID);
 
       // Fetch reward and database items for comparison
       List<Item> rewardItems = new List<Item>();
@@ -1325,7 +1320,7 @@ public class RPCManager : NetworkBehaviour {
       NPC npc = NPCManager.self.getNPC(npcId);
 
       // Checks the required items if it exists in the database
-      NPCPanel.RandomizedQuestSeed randomizedSeed = NPCPanel.randomizedQuestSeed(npcId);
+      QuestSeed randomizedSeed = QuestSeed.randomizedQuestSeed(npcId);
       Item requiredItem = randomizedSeed.requiredItem;
 
       List<CraftingIngredients.Type> requiredItemList = new List<CraftingIngredients.Type>();
