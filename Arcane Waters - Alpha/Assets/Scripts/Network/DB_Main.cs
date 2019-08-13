@@ -22,6 +22,7 @@ public class DB_Main : DB_MainStub {
 
    public static new void createNPCRelation (NPCRelationInfo npcInfo) {
       int questTypeIndex = (int) npcInfo.npcQuestType;
+      string newID = npcInfo.npcID.ToString() + npcInfo.userID.ToString() + ((int) npcInfo.npcQuestType).ToString() + npcInfo.npcQuestIndex.ToString();
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
@@ -30,7 +31,7 @@ public class DB_Main : DB_MainStub {
 
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@relation_id", npcInfo.npcID + npcInfo.userID + questTypeIndex + npcInfo.npcQuestIndex);
+            cmd.Parameters.AddWithValue("@relation_id", newID);
             cmd.Parameters.AddWithValue("@npc_id", npcInfo.npcID);
             cmd.Parameters.AddWithValue("@user_id", npcInfo.userID);
             cmd.Parameters.AddWithValue("@npc_name", npcInfo.npcName);
