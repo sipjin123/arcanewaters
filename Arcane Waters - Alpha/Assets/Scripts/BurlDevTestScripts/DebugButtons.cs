@@ -28,6 +28,9 @@ public class DebugButtons : NetworkBehaviour
    private void Update () {
       if (Global.player.isLocalPlayer) {
          if (Input.GetKeyDown(KeyCode.T)) {
+            NPCRelationInfo newinfo = new NPCRelationInfo(Global.player.userId, 555, "TESTER", "Deliver", 0, 1, 1);
+            DB_Main.createNPCRelation(newinfo);
+            return;
 
             //Global.player.requestAnimationPlay();
             Global.player.rpc.Cmd_InteractAnimation(Anim.Type.Mining);

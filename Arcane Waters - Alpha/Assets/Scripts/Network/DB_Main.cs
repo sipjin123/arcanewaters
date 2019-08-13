@@ -21,17 +21,16 @@ public class DB_Main : DB_MainStub {
    #region NPC Relation Feature
 
    public static new void createNPCRelation (NPCRelationInfo npcInfo) {
-      int questTypeIndex = (int) npcInfo.npcQuestType;
-      string newID = npcInfo.npcID.ToString() + npcInfo.userID.ToString() + ((int) npcInfo.npcQuestType).ToString() + npcInfo.npcQuestIndex.ToString();
+      int newID = 0;
+
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO npc_relationship (relation_id, npc_id, user_id, npc_name, npc_relation_level,npc_quest_index, npc_quest_progress, npc_quest_type) " +
-            "VALUES (@relation_id, @npc_id, @user_id, @npc_name, @npc_relation_level, @npc_quest_index, @npc_quest_progress , @npc_quest_type);", conn)) {
+            "INSERT INTO npc_relationship (npc_id, user_id, npc_name, npc_relation_level,npc_quest_index, npc_quest_progress, npc_quest_type) " +
+            "VALUES (@npc_id, @user_id, @npc_name, @npc_relation_level, @npc_quest_index, @npc_quest_progress , @npc_quest_type);", conn)) {
 
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@relation_id", newID);
             cmd.Parameters.AddWithValue("@npc_id", npcInfo.npcID);
             cmd.Parameters.AddWithValue("@user_id", npcInfo.userID);
             cmd.Parameters.AddWithValue("@npc_name", npcInfo.npcName);
@@ -42,6 +41,8 @@ public class DB_Main : DB_MainStub {
 
             // Execute the command
             cmd.ExecuteNonQuery();
+
+            newID = (int) cmd.LastInsertedId;
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
