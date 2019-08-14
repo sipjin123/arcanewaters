@@ -1033,19 +1033,19 @@ public class RPCManager : NetworkBehaviour {
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Determines if npc is near player
             float distance = Vector2.Distance(npc.transform.position, _player.transform.position);
-
+            
             if (distance > NPC.TALK_DISTANCE) {
                D.log("Too far away from the player!");
                return;
             }
 
             if (databaseItemList.Count <= 0) {
-               Instantiate(PrefabsManager.self.insufficientPrefab, this.transform.position + new Vector3(0f, .24f), Quaternion.identity);
+               D.log("QuestReward: Client Items does not match Database!!");
                return;
             } else {
                for (int i = 0; i < databaseItemList.Count; i++) {
                   if (databaseItemList[i].count < requiredItem.count) {
-                     Instantiate(PrefabsManager.self.insufficientPrefab, this.transform.position + new Vector3(0f, .24f), Quaternion.identity);
+                     D.log("QuestReward: Client Items does not match Database!!");
                      return;
                   }
                }
@@ -1053,6 +1053,12 @@ public class RPCManager : NetworkBehaviour {
             processNPCReward(userID, npcID, questIndex, databaseItemList);
          });
       });
+   }
+
+   [TargetRpc]
+   public void Target_callInsufficientNotification (NetworkConnection connection, int npcID) {
+      NPC npc = NPCManager.self.getNPC(npcID);
+      Instantiate(PrefabsManager.self.insufficientPrefab, npc.transform.position + new Vector3(0f, .24f), Quaternion.identity);
    }
 
    [Server]
@@ -1125,12 +1131,12 @@ public class RPCManager : NetworkBehaviour {
          databaseItemList = DB_Main.getRequiredIngredients(userId, requiredItemList);
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             if (databaseItemList.Count <= 0) {
-               D.log("You do not have the materials!");
+               D.log("Crafting: Client does not have the materials!");
                return;
             } else {
                for (int i = 0; i < databaseItemList.Count; i++) {
                   if (databaseItemList[i].count < data.combinationRequirements[i].count) {
-                     D.log("Insufficient Materials");
+                     D.log("Crafting: Client has Insufficient Materials");
                      return;
                   }
                }
@@ -1346,6 +1352,10 @@ public class RPCManager : NetworkBehaviour {
                   }
                }
                dialogueData = NPCPanel.getDialogueInfo(questProgress, npc.npcData.deliveryQuestList[questIndex], hasMaterials, npcId);
+               if(!hasMaterials) {
+                  Target_callInsufficientNotification(_player.connectionToClient, npcId);
+               }
+
                Target_ReceiveClickableNPCRows(_player.connectionToClient, dialogueData.answerList.ToArray(), npcId);
                Target_ReceiveNPCMessage(_player.connectionToClient, dialogueData.npcDialogue);
             }
