@@ -2059,7 +2059,7 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static void setServer(string server) {
+   public static new void setServer(string server) {
       _connectionString = buildConnectionString(server);
    }
 

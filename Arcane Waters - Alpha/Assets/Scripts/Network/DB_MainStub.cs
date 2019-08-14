@@ -323,6 +323,10 @@ public class DB_MainStub : MonoBehaviour {
       return null;
    }
 
+   public static void setServer (string server) {
+      
+   }
+
    /*
 
    public static void refillSupplies (int userId) {

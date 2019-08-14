@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#pragma warning disable
+
+using System.Collections.Generic;
 using UnityEngine;
 #if IS_SERVER_BUILD
 using Mirror;
@@ -141,3 +143,5 @@ public static class DebugCustom
       Debug.LogError(B + wat);
    }
 }
+
+#pragma warning restore

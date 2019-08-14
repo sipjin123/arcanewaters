@@ -131,11 +131,13 @@ public class TitleScreen : MonoBehaviour {
    }
 
    public void refreshDatabaseServer() {
+      #if IS_SERVER_BUILD
       if (dbServerDropDown.value == 0) {
          DB_Main.setServer(DB_Main.RemoteServer);
       } else {
          DB_Main.setServer("127.0.0.1");
       }
+      #endif
    }
 
    #region Private Variables
