@@ -1,7 +1,178 @@
 fileFormatVersion: 2
 guid: afc35c71681f753418147a7603be088d
 TextureImporter:
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      213: -5710345286123915637
+    second: tentacle_a_0
+  - first:
+      213: 3399481715534861285
+    second: tentacle_a_1
+  - first:
+      213: -571922327829996494
+    second: tentacle_a_2
+  - first:
+      213: -4321064057414574542
+    second: tentacle_a_3
+  - first:
+      213: 6565387103395855328
+    second: tentacle_a_4
+  - first:
+      213: 2072313122103608673
+    second: tentacle_a_5
+  - first:
+      213: 7983935810331376285
+    second: tentacle_a_6
+  - first:
+      213: -5354753546971488643
+    second: tentacle_a_7
+  - first:
+      213: 9150923620149456014
+    second: tentacle_a_8
+  - first:
+      213: -6425229576241847369
+    second: tentacle_a_9
+  - first:
+      213: -5787330198206815254
+    second: tentacle_a_10
+  - first:
+      213: 3838214106994782002
+    second: tentacle_a_11
+  - first:
+      213: -5155088057180292535
+    second: tentacle_a_12
+  - first:
+      213: 2672875313541896728
+    second: tentacle_a_13
+  - first:
+      213: 5864566337527099774
+    second: tentacle_a_14
+  - first:
+      213: -942939157552310562
+    second: tentacle_a_15
+  - first:
+      213: -1330274774151176129
+    second: tentacle_a_16
+  - first:
+      213: -7471908651357219783
+    second: tentacle_a_17
+  - first:
+      213: 3583444785936196296
+    second: tentacle_a_18
+  - first:
+      213: -54529182639157906
+    second: tentacle_a_19
+  - first:
+      213: 3357320853102766060
+    second: tentacle_a_20
+  - first:
+      213: -4922894344856884226
+    second: tentacle_a_21
+  - first:
+      213: -5563031251768969690
+    second: tentacle_a_22
+  - first:
+      213: 8478635700188925133
+    second: tentacle_a_23
+  - first:
+      213: 7865048894149501327
+    second: tentacle_a_24
+  - first:
+      213: -5795961852475046884
+    second: tentacle_a_25
+  - first:
+      213: -350662187867802360
+    second: tentacle_a_26
+  - first:
+      213: -1893343863459993911
+    second: tentacle_a_27
+  - first:
+      213: 3179184140095252330
+    second: tentacle_a_28
+  - first:
+      213: 54238814834775122
+    second: tentacle_a_29
+  - first:
+      213: 679177538419804807
+    second: tentacle_a_30
+  - first:
+      213: 5073993710540211637
+    second: tentacle_a_31
+  - first:
+      213: -5945881212489779826
+    second: tentacle_a_32
+  - first:
+      213: 5285695551839057308
+    second: tentacle_a_33
+  - first:
+      213: -1046788872419033457
+    second: tentacle_a_34
+  - first:
+      213: 8370951868080861415
+    second: tentacle_a_35
+  - first:
+      213: 8306840167720840508
+    second: tentacle_a_36
+  - first:
+      213: 910980310972131922
+    second: tentacle_a_37
+  - first:
+      213: 5384599255323240692
+    second: tentacle_a_38
+  - first:
+      213: 7145172827152438289
+    second: tentacle_a_39
+  - first:
+      213: 2535732585725285472
+    second: tentacle_a_40
+  - first:
+      213: 5886973369217957258
+    second: tentacle_a_41
+  - first:
+      213: -6275926579385019420
+    second: tentacle_a_42
+  - first:
+      213: 3614230764085848029
+    second: tentacle_a_43
+  - first:
+      213: -3127954758380622720
+    second: tentacle_a_44
+  - first:
+      213: 1689279138380798205
+    second: tentacle_a_45
+  - first:
+      213: -2075615906707588994
+    second: tentacle_a_46
+  - first:
+      213: 1093174235847296311
+    second: tentacle_a_47
+  - first:
+      213: 5879671344247987462
+    second: tentacle_a_48
+  - first:
+      213: 1426635196802591221
+    second: tentacle_a_49
+  - first:
+      213: 2322030021966744503
+    second: tentacle_a_50
+  - first:
+      213: 2171919652891697109
+    second: tentacle_a_51
+  - first:
+      213: -6724641530515948172
+    second: tentacle_a_52
+  - first:
+      213: -4912150043493803764
+    second: tentacle_a_53
+  - first:
+      213: -5912164557394682765
+    second: tentacle_a_54
+  - first:
+      213: 2969825546387820204
+    second: tentacle_a_55
+  - first:
+      213: -8366289696041240108
+    second: tentacle_a_56
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -20,7 +191,7 @@ TextureImporter:
     externalNormalMap: 0
     heightScale: 0.25
     normalMapFilter: 0
-  isReadable: 0
+  isReadable: 1
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   grayScaleToAlpha: 0
@@ -40,7 +211,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 0
   alignment: 0
@@ -69,9 +240,335 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
+  - serializedVersion: 2
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: tentacle_a_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 427
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8bd98bc67339c1248860bcc65cbcd53d
+      internalID: -5710345286123915637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tentacle_a_1
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 427
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 41f3e2b362a9c85428f9150722562163
+      internalID: 3399481715534861285
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tentacle_a_2
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 427
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f3f955caccef942488fc66b630716ce9
+      internalID: -571922327829996494
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tentacle_a_3
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 427
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed6aef5119edf3e49a8db133f64d4aef
+      internalID: -4321064057414574542
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tentacle_a_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 342
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a74f412f95e648c4c9764356ff846194
+      internalID: 6565387103395855328
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tentacle_a_5
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 342
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e8951abc7e6478d428b8000588ddb45d
+      internalID: 2072313122103608673
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tentacle_a_6
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 342
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5ff2db7158e7dbd40ac6786d03117ea4
+      internalID: 7983935810331376285
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tentacle_a_7
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 342
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9f5733137d3203d418b31ca96654949b
+      internalID: -5354753546971488643
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tentacle_a_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 257
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 724ada40b264a9449b29cd72587b6848
+      internalID: 9150923620149456014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tentacle_a_9
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 172
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b4af0b67b6f63c14899334368072e3d1
+      internalID: -6425229576241847369
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tentacle_a_10
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 172
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 44a51ee596371944b94d30d07d991c63
+      internalID: -5787330198206815254
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tentacle_a_11
+      rect:
+        serializedVersion: 2
+        x: 172
+        y: 172
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a64ca4f42101fff40857f7a081b5baf7
+      internalID: 3838214106994782002
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tentacle_a_12
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 172
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 74c6c10e43481cb479db6f95d9e665f4
+      internalID: -5155088057180292535
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tentacle_a_13
+      rect:
+        serializedVersion: 2
+        x: 341
+        y: 172
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e2b6cad6c206fe342ba920927a593cf1
+      internalID: 2672875313541896728
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tentacle_a_14
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 172
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1d03fa4d9531bce4c84ad98466d2f80e
+      internalID: 5864566337527099774
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []

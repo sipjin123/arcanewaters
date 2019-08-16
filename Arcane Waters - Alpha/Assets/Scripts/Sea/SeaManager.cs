@@ -71,6 +71,11 @@ public class SeaManager : MonoBehaviour {
       if (Input.GetKeyUp(KeyCode.F9) && Global.player is SeaEntity) {
          Global.player.rpc.Cmd_SpawnPirateShip(Util.getMousePos());
       }
+
+      // Allow spawning a horror
+      if (Input.GetKeyUp(KeyCode.F7) && Global.player is SeaEntity) {
+         Global.player.rpc.Cmd_SpawnHorror(Util.getMousePos());
+      }
    }
 
    public SeaEntity getEntity (int userId) {

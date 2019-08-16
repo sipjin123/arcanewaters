@@ -13,6 +13,12 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab we use for creating bot ships
    public BotShipEntity botShipPrefab;
 
+   // The prefab we use for creating tentacle monsters
+   public TentacleEntity tentaclePrefab;
+
+   // The prefab we use for creating horror monster
+   public TerrorEntity horrorPrefab;
+
    // The prefab we use for creating player bodies
    public GameObject playerBodyPrefab;
 
