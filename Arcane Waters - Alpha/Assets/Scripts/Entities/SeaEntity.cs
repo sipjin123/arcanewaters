@@ -229,6 +229,37 @@ public class SeaEntity : NetEntity {
       }
    }
 
+
+   [Command]
+   public void Cmd_MeleeAtSpot (Vector2 spot, Attack.Type attackType) {
+      // We handle the logic in a non-Cmd function so that it can be called directly on the server if needed
+      meleeAtSpot(spot, attackType);
+   }
+
+   [Server]
+   public void meleeAtSpot (Vector2 spot, Attack.Type attackType) {
+      if (isDead() || !hasReloaded()) {
+         return;
+      }
+
+      // If the requested spot is not in the allowed area, reject the request
+      if (!leftAttackBox.OverlapPoint(spot) && !rightAttackBox.OverlapPoint(spot)) {
+         return;
+      }
+
+      // Note the time at which we last successfully attacked
+      _lastAttackTime = Time.time;
+
+      float distance = Vector2.Distance(this.transform.position, spot);
+      float delay = Mathf.Clamp(distance, .5f, 1.5f);
+
+      // Have the server check for collisions after the cannonball reaches the target
+      StartCoroutine(CO_CheckCircleForCollisions(this, delay, spot, attackType));
+
+      // Make note on the clients that the ship just attacked
+      Rpc_NoteAttack();
+   }
+
    [Command]
    public void Cmd_FireAtSpot (Vector2 spot, Attack.Type attackType) {
       // We handle the logic in a non-Cmd function so that it can be called directly on the server if needed
@@ -283,6 +314,8 @@ public class SeaEntity : NetEntity {
                   StatusManager.self.create(Status.Type.Freeze, 2f, entity.userId);
                } else if (attackType == Attack.Type.Air) {
                   StatusManager.self.create(Status.Type.Slow, 3f, entity.userId);
+               } else if (attackType == Attack.Type.Tentacle) {
+                  StatusManager.self.create(Status.Type.Slow, 1f, entity.userId);
                }
 
                break;
