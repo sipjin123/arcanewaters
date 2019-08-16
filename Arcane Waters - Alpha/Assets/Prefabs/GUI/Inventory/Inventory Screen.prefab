@@ -1061,8 +1061,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: popPanel
+      - m_Target: {fileID: 4941236891607430506}
+        m_MethodName: hide
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1344,7 +1344,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 2566300906140501471}
+  - {fileID: 2566300906120475855}
   m_Father: {fileID: 4941236891080424304}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -6338,7 +6338,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d2678e9cb1762ef499232e7cdf420051, type: 3}
---- !u!224 &2566300906140501471 stripped
+--- !u!224 &2566300906120475855 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 22423782, guid: d2678e9cb1762ef499232e7cdf420051,
     type: 3}

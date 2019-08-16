@@ -21,6 +21,7 @@ public class Blueprint : RecipeItem
    // The type
    public Type type;
 
+   // The type of blueprint equipment if Weapon or Armor
    public Item.Category equipmentType;
 
    #endregion Public Variables
@@ -129,10 +130,10 @@ public class Blueprint : RecipeItem
       return new Blueprint(0, Blueprint.Type.None, ColorType.None, ColorType.None);
    }
 
-   public Item.Category getEquipmentType() {
+   public Item.Category getEquipmentType () {
       string nameComparison = type.ToString();
       foreach (Weapon.Type val in Enum.GetValues(typeof(Weapon.Type))) {
-         if(val.ToString() == nameComparison) {
+         if (val.ToString() == nameComparison) {
             return Item.Category.Weapon;
          }
       }
