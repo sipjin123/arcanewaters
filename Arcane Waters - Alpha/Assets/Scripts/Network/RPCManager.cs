@@ -1389,6 +1389,56 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
+   public void Cmd_SpawnTentacle (Vector2 spawnPosition, uint horrorEntityID) {
+      TentacleEntity bot = Instantiate(PrefabsManager.self.tentaclePrefab, spawnPosition, Quaternion.identity);
+      bot.instanceId = _player.instanceId;
+      bot.facing = Util.randomEnum<Direction>();
+      bot.areaType = _player.areaType;
+      bot.npcType = NPC.Type.Blackbeard;
+      bot.faction = NPC.getFaction(bot.npcType);
+      bot.route = null;
+      bot.autoMove = true;
+      bot.nationType = Nation.Type.Pirate;
+      bot.entityName = "Tentacle";
+      bot.playerInstanceID = _player.instanceId;
+
+      Instance instance = InstanceManager.self.getInstance(_player.instanceId);
+      TerrorEntity terror = instance.entities.Find(_ => _.netId == horrorEntityID).GetComponent<TerrorEntity>();
+      bot.terrorEntity = terror;
+
+      instance.entities.Add(bot);
+
+      // Spawn the bot on the Clients
+      NetworkServer.Spawn(bot.gameObject);
+   }
+
+   [Command]
+   public void Cmd_SpawnHorror (Vector2 spawnPosition) {
+      TerrorEntity bot = Instantiate(PrefabsManager.self.horrorPrefab, spawnPosition, Quaternion.identity);
+      bot.instanceId = _player.instanceId;
+      bot.facing = Util.randomEnum<Direction>();
+      bot.areaType = _player.areaType;
+      bot.npcType = NPC.Type.Blackbeard;
+      bot.faction = NPC.getFaction(bot.npcType);
+      bot.route = null;
+      bot.autoMove = true;
+      bot.nationType = Nation.Type.Pirate;
+      bot.entityName = "Horror";
+      bot.tentaclesLeft = 4;
+
+      // Spawn the bot on the Clients
+      NetworkServer.Spawn(bot.gameObject);
+
+      Instance instance = InstanceManager.self.getInstance(_player.instanceId);
+      instance.entities.Add(bot);
+
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(0, -.5f), bot.netId);
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(0, .5f), bot.netId);
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(-.5f, 0), bot.netId);
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(0.5f, 0), bot.netId);
+   }
+
+   [Command]
    public void Cmd_StartNewBattle (uint enemyNetId) {
       // We need a Player Body object to proceed
       if (!(_player is PlayerBodyEntity)) {
