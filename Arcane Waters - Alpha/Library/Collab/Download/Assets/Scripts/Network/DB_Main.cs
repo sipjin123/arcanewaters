@@ -117,6 +117,59 @@ public class DB_Main : DB_MainStub {
 
    #endregion
 
+   public static new List<Item> getRequiredIngredients (int usrId, List<CraftingIngredients.Type> itemList) {
+      int itmCategory = (int) Item.Category.CraftingIngredients;
+      List<Item> newItemList = new List<Item>();
+
+      string itemIds = "";
+      for (int i = 0; i < itemList.Count; i++) {
+         int itmType = (int) itemList[i];
+         if (i > 0) {
+            itemIds += " or ";
+         }
+         itemIds += "itmType = " + itmType;
+      }
+
+      try {
+            using (MySqlConnection conn = getConnection())
+            using (MySqlCommand cmd = new MySqlCommand(string.Format("SELECT * FROM arcane.items where itmCategory = @itmCategory and ({0}) and usrId = @usrId", itemIds), conn)) {
+               conn.Open();
+               cmd.Prepare();
+               cmd.Parameters.AddWithValue("@itmCategory", itmCategory);
+               cmd.Parameters.AddWithValue("@usrId", usrId); 
+
+               // Create a data reader and Execute the command
+               using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+                  while (dataReader.Read()) {
+                     int newCategory = DataUtil.getInt(dataReader, "itmCategory");
+                     int newType = DataUtil.getInt(dataReader, "itmType");
+                     int newitemCount = DataUtil.getInt(dataReader, "itmCount");
+                     int newItemID = DataUtil.getInt(dataReader, "itmId");
+
+                     ItemInfo info = new ItemInfo(dataReader);
+                     Item newItem = new Item {
+                        category = (Item.Category) newCategory,
+                        itemTypeId = newType,
+                        count = newitemCount,
+                        id = newItemID
+                     };
+
+                     Item findItem = newItemList.Find(_ => _.itemTypeId == newType && (int)_.category == newCategory);
+                     if (newItemList.Contains(findItem)) {
+                        int itemIndex = newItemList.IndexOf(findItem);
+                        newItemList[itemIndex].count +=1;
+                     } else {
+                        newItemList.Add(newItem);
+                     }
+                  }
+               }
+            }
+         } catch (Exception e) {
+            D.error("MySQL Error: " + e.ToString());
+      }
+      return newItemList;
+   }
+
    public static new List<CropInfo> getCropInfo (int userId) {
       List<CropInfo> cropList = new List<CropInfo>();
 
@@ -977,8 +1030,8 @@ public class DB_Main : DB_MainStub {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO items (usrId, itmCategory, itmType, itmColor1, itmColor2, itmData) " +
-            "VALUES(@usrId, @itmCategory, @itmType, @itmColor1, @itmColor2, @itmData) ", conn)) {
+            "INSERT INTO items (usrId, itmCategory, itmType, itmColor1, itmColor2, itmData, itmCount) " +
+            "VALUES(@usrId, @itmCategory, @itmType, @itmColor1, @itmColor2, @itmData, @itmCount) ", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -988,6 +1041,7 @@ public class DB_Main : DB_MainStub {
             cmd.Parameters.AddWithValue("@itmColor1", (int) baseItem.color1);
             cmd.Parameters.AddWithValue("@itmColor2", (int) baseItem.color2);
             cmd.Parameters.AddWithValue("@itmData", baseItem.data);
+            cmd.Parameters.AddWithValue("@itmCount", baseItem.count);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1256,6 +1310,137 @@ public class DB_Main : DB_MainStub {
       }
 
       return gems;
+   }
+
+   public static new int getItemID (int userId, int itmCategory, int itmType) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM items WHERE usrId=@usrId and itmCategory=@itmCategory and itmType=@itmType", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@itmCategory", itmCategory);
+            cmd.Parameters.AddWithValue("@itmType", itmType);
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  return dataReader.GetInt32("itmId");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return 0;
+   }
+
+   public static new void updateItemQuantity (int userId, int itmId, int itmCount) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("UPDATE items SET itmCount=@itmCount WHERE usrId=@usrId and itmId=@itmId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@itmId", itmId);
+            cmd.Parameters.AddWithValue("@itmCount", itmCount);
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void decreaseQuantityOrDeleteItem (int userId, int itmId, int deductCount) {
+      int currentCount = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM items WHERE usrId=@usrId and itmId=@itmId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@itmId", itmId);
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  currentCount = dataReader.GetInt32("itmCount");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      // Computes the item count after reducing the require item count
+      int deductedValue = currentCount - deductCount;
+
+      if (deductedValue <= 0) {
+         // Deletes item from the database if count hits zero
+         deleteItem(userId, itmId);
+      } else {
+         // Updates item count
+         updateItemQuantity(userId, itmId, deductCount);
+      }
+   }
+
+   public static new void createOrUpdateItemCount (int userId, int itmId, Item baseItem) {
+      int existingItemCount = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM items WHERE usrId=@usrId and itmId=@itmId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@itmId", itmId);
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  existingItemCount += dataReader.GetInt32("itmCount");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      if(existingItemCount > 0) {
+         updateItemQuantity(userId, itmId, existingItemCount + baseItem.count);
+      }
+      else {
+         createNewItem(userId, baseItem);
+      }
+   }
+
+   public static new void createOrUpdateItemListCount (int userId, List<Item> itemList) {
+      for(int i = 0; i < itemList.Count; i++) {
+         int existingItemCount = 0;
+      
+         try {
+            using (MySqlConnection conn = getConnection())
+            using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM items WHERE usrId=@usrId and itmId=@itmId", conn)) {
+               conn.Open();
+               cmd.Prepare();
+               cmd.Parameters.AddWithValue("@usrId", userId);
+               cmd.Parameters.AddWithValue("@itmId", itemList[i].id);
+               // Create a data reader and Execute the command
+               using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+                  while (dataReader.Read()) {
+                     existingItemCount += dataReader.GetInt32("itmCount");
+                  }
+               }
+            }
+         } catch (Exception e) {
+            D.error("MySQL Error: " + e.ToString());
+         }
+
+         if (existingItemCount > 0) {
+            updateItemQuantity(userId, itemList[i].id, existingItemCount + itemList[i].count);
+         } else {
+            createNewItem(userId, itemList[i]);
+         }
+      }
    }
 
    public static new int getItemCount (int userId) {
@@ -1873,7 +2058,7 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static void setServer(string server) {
+   public static new void setServer(string server) {
       _connectionString = buildConnectionString(server);
    }
 
