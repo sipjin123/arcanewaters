@@ -1400,7 +1400,6 @@ public class RPCManager : NetworkBehaviour {
       bot.autoMove = true;
       bot.nationType = Nation.Type.Pirate;
       bot.entityName = "Tentacle";
-      bot.playerInstanceID = _player.instanceId;
 
       Instance instance = InstanceManager.self.getInstance(_player.instanceId);
       TerrorEntity terror = instance.entities.Find(_ => _.netId == horrorEntityID).GetComponent<TerrorEntity>();
@@ -1420,8 +1419,6 @@ public class RPCManager : NetworkBehaviour {
       bot.areaType = _player.areaType;
       bot.npcType = NPC.Type.Blackbeard;
       bot.faction = NPC.getFaction(bot.npcType);
-      bot.route = null;
-      bot.autoMove = true;
       bot.nationType = Nation.Type.Pirate;
       bot.entityName = "Horror";
       bot.tentaclesLeft = 4;
