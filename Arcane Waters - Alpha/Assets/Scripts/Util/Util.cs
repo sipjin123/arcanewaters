@@ -218,6 +218,9 @@ public class Util : MonoBehaviour {
       color.a = newAlpha;
       block.SetColor("_Color", color);
 
+      // Ensures that the texture is not lost during sprite change while animating
+      block.SetTexture("_MainTex", renderer.sprite.texture);
+
       // Apply the edited values to the renderer
       renderer.SetPropertyBlock(block);
    }

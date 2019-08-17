@@ -183,6 +183,7 @@ public class TentacleEntity : SeaMonsterEntity
       callAnimation(TentacleAnimType.Die);
       horrorEntity.tentaclesLeft -= 1;
       if (horrorEntity.tentaclesLeft <= 0) {
+         horrorEntity.currentHealth = 0;
          horrorEntity.Rpc_CallAnimation(TentacleEntity.TentacleAnimType.Die);
       }
    }
