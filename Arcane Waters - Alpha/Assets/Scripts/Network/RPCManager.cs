@@ -1402,8 +1402,8 @@ public class RPCManager : NetworkBehaviour {
       bot.entityName = "Tentacle";
 
       Instance instance = InstanceManager.self.getInstance(_player.instanceId);
-      TerrorEntity terror = instance.entities.Find(_ => _.netId == horrorEntityID).GetComponent<TerrorEntity>();
-      bot.terrorEntity = terror;
+      HorrorEntity terror = instance.entities.Find(_ => _.netId == horrorEntityID).GetComponent<HorrorEntity>();
+      bot.horrorEntity = terror;
 
       instance.entities.Add(bot);
 
@@ -1413,7 +1413,7 @@ public class RPCManager : NetworkBehaviour {
 
    [Command]
    public void Cmd_SpawnHorror (Vector2 spawnPosition) {
-      TerrorEntity bot = Instantiate(PrefabsManager.self.horrorPrefab, spawnPosition, Quaternion.identity);
+      HorrorEntity bot = Instantiate(PrefabsManager.self.horrorPrefab, spawnPosition, Quaternion.identity);
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
       bot.areaType = _player.areaType;

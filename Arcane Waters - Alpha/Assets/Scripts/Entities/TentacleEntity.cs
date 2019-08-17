@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class TentacleEntity : SeaEntity
+public class TentacleEntity : SeaMonsterEntity
 {
    #region Public Variables
 
@@ -25,22 +25,11 @@ public class TentacleEntity : SeaEntity
    // When set to true, we pick random waypoints
    public bool autoMove = false;
 
-   // Animator
-   public Animator animator;
-
    // Reference to the boss object
-   public TerrorEntity terrorEntity;
+   public HorrorEntity horrorEntity;
 
    // A flag to determine if the object has died
    public bool hasDied = false;
-
-   // Tentacle Animation
-   public enum TentacleAnim
-   {
-      Idle,
-      Attack,
-      Die,
-   }
 
    #endregion
 
@@ -78,12 +67,9 @@ public class TentacleEntity : SeaEntity
 
       // Only the server updates waypoints and movement forces
       if (!isServer || isDead()) {
-         if (hasDied == false) {
-            if (isDead()) {
-               hasDied = true;
-               Cmd_ReduceTentacles();
-               animator.SetTrigger("Dead");
-            }
+         if (hasDied == false && isDead()) {
+            hasDied = true;
+            tentacleDeath();
          }
          return;
       }
@@ -186,37 +172,34 @@ public class TentacleEntity : SeaEntity
          // If the requested spot is not in the allowed area, reject the request
          if (leftAttackBox.OverlapPoint(spot) || rightAttackBox.OverlapPoint(spot)) {
             meleeAtSpot(spot, Attack.Type.Tentacle);
-            Cmd_callAnimation(TentacleAnim.Attack);
+            callAnimation(TentacleAnimType.Attack);
             return;
          }
       }
    }
 
-   [Command]
-   private void Cmd_ReduceTentacles () {
-      reduceTentacles();
+   [Server]
+   public void tentacleDeath () {
+      callAnimation(TentacleAnimType.Die);
+      horrorEntity.tentaclesLeft -= 1;
+      if (horrorEntity.tentaclesLeft <= 0) {
+         horrorEntity.Rpc_CallAnimation(TentacleEntity.TentacleAnimType.Die);
+      }
    }
 
    [Server]
-   private void reduceTentacles () {
-      terrorEntity.reduceTentacle();
-   }
-
-   [Command]
-   public void Cmd_callAnimation (TentacleAnim anim) {
-      Debug.LogError("Command attack");
-      Rpc_callAnimation(anim);
+   public void callAnimation (TentacleAnimType anim) {
+      Rpc_CallAnimation(anim);
    }
 
    [ClientRpc]
-   public void Rpc_callAnimation (TentacleAnim anim) {
-      Debug.LogError("Receive attack");
+   public void Rpc_CallAnimation (TentacleAnimType anim) {
       switch (anim) {
-         case TentacleAnim.Attack:
+         case TentacleAnimType.Attack:
             animator.Play("Attack");
             break;
-         case TentacleAnim.Die:
-            animator.Play("Die");
+         case TentacleAnimType.Die:
+            animator.SetTrigger("Dead");
             break;
       }
    }

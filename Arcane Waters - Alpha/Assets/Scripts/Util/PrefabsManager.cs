@@ -17,7 +17,7 @@ public class PrefabsManager : MonoBehaviour {
    public TentacleEntity tentaclePrefab;
 
    // The prefab we use for creating horror monster
-   public TerrorEntity horrorPrefab;
+   public HorrorEntity horrorPrefab;
 
    // The prefab we use for creating player bodies
    public GameObject playerBodyPrefab;
