@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class TerrorEntity : SeaEntity
+public class HorrorEntity : SeaMonsterEntity
 {
    #region Public Variables
 
@@ -15,13 +15,6 @@ public class TerrorEntity : SeaEntity
    // The Name of the NPC that is sailing this ship
    [SyncVar]
    public string npcName;
-
-   // The total tentacles left before this unit dies
-   [SyncVar]
-   public int tentaclesLeft;
-
-   // Animator
-   public Animator animator;
 
    #endregion
 
@@ -68,22 +61,10 @@ public class TerrorEntity : SeaEntity
       }
    }
 
-   public void reduceTentacle () {
-      tentaclesLeft -= 1;
-      if(tentaclesLeft <= 0) {
-         Cmd_CallAnimation(TentacleEntity.TentacleAnim.Die);
-      }
-   }
-
-   [Command]
-   private void Cmd_CallAnimation (TentacleEntity.TentacleAnim tentacleAnim) {
-      Rpc_CallAnimation(tentacleAnim);
-   }
-
    [ClientRpc]
-   private void Rpc_CallAnimation (TentacleEntity.TentacleAnim tentacleAnim) {
+   public void Rpc_CallAnimation (TentacleAnimType tentacleAnim) {
       switch(tentacleAnim) {
-         case TentacleEntity.TentacleAnim.Die:
+         case TentacleAnimType.Die:
             animator.Play("Die");
             break;
       }
