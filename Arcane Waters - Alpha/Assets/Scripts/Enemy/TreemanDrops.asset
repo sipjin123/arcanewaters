@@ -13,16 +13,21 @@ MonoBehaviour:
   m_Name: TreemanDrops
   m_EditorClassIdentifier: 
   lootList:
-  - lootType: 12
-    chanceRatio: 4
-  - lootType: 10
-    chanceRatio: 4
-  - lootType: 13
-    chanceRatio: 3
-  - lootType: 11
-    chanceRatio: 2
-  - lootType: 4
+  - lootType: 27
+    quantity: 1
+    chanceRatio: 70
+  - lootType: 28
+    quantity: 1
+    chanceRatio: 50
+  - lootType: 29
+    quantity: 1
+    chanceRatio: 10
+  - lootType: 30
+    quantity: 1
     chanceRatio: 5
-  defaultLoot: 0
+  - lootType: 31
+    quantity: 1
+    chanceRatio: 25
+  defaultLoot: 27
   minQuantity: 1
   maxQuantity: 5

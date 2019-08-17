@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: GoldDrops
   m_EditorClassIdentifier: 
   lootList: []
-  defaultLoot: 3
+  defaultLoot: 1
   minQuantity: 1
   maxQuantity: 1
