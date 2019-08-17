@@ -245,7 +245,6 @@ MonoBehaviour:
   rewardName: {fileID: 579884569776078262}
   quantityContainer: {fileID: 422876320687062792}
   quantityText: {fileID: 7434242785125540930}
-  quantityTextShadow: {fileID: 0}
 --- !u!1 &7480886685404566280
 GameObject:
   m_ObjectHideFlags: 0
@@ -357,7 +356,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -20, y: -20}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7480886685720618198
 CanvasRenderer:
