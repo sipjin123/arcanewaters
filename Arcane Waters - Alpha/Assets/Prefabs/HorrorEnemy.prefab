@@ -832,7 +832,7 @@ GameObject:
   - component: {fileID: 3099923231648578131}
   - component: {fileID: 3087981066399650522}
   m_Layer: 8
-  m_Name: TerrorEnemy
+  m_Name: HorrorEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -879,8 +879,8 @@ MonoBehaviour:
   gender: 1
   entityName: 
   nationType: 0
-  currentHealth: 1000
-  maxHealth: 1000
+  currentHealth: 999
+  maxHealth: 999
   XP: 0
   desiredAngle: 0
   netIdent: {fileID: 0}
@@ -912,14 +912,10 @@ MonoBehaviour:
   ripplesContainer: {fileID: 3068654309534386801}
   leftSideTarget: {fileID: 3925569398913537949}
   rightSideTarget: {fileID: 9041534194197744244}
+  tentaclesLeft: 0
+  animator: {fileID: 3288871493769707182}
   npcType: 0
   npcName: 0
-  tentaclesLeft: 0
-  route: {fileID: 0}
-  waypoint: {fileID: 0}
-  maxForceOverride: 0
-  autoMove: 0
-  animator: {fileID: 3288871493769707182}
 --- !u!50 &3035432712456740353
 Rigidbody2D:
   serializedVersion: 4
@@ -1048,7 +1044,7 @@ MonoBehaviour:
   serverOnly: 0
   localPlayerAuthority: 0
   m_AssetId: 
-  m_SceneId: 3561452838
+  m_SceneId: 3535649895
 --- !u!114 &3087981066399650522
 MonoBehaviour:
   m_ObjectHideFlags: 0

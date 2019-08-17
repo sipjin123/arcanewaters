@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4484190077274146}
   - component: {fileID: 212945152816631566}
-  - component: {fileID: 95269474888133974}
-  - component: {fileID: 8823487260299990614}
   - component: {fileID: 3368558657935333873}
+  - component: {fileID: 8823487260299990614}
+  - component: {fileID: 95269474888133974}
   m_Layer: 0
   m_Name: Ship Sprites
   m_TagString: Untagged
@@ -52,7 +52,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 533893d231affbc49b3700d26468661e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -84,25 +84,18 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!95 &95269474888133974
-Animator:
-  serializedVersion: 3
+--- !u!114 &3368558657935333873
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1013934132990528}
   m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 8beb183962e225f41a3f3147d9b611d1, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ac3171307ced7240b0660a7df409e41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &8823487260299990614
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -134,18 +127,25 @@ MonoBehaviour:
   customFrameName: 
   generatesOnStart: 0
   generatesOnValidate: 1
---- !u!114 &3368558657935333873
-MonoBehaviour:
+--- !u!95 &95269474888133974
+Animator:
+  serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1013934132990528}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7ac3171307ced7240b0660a7df409e41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 8beb183962e225f41a3f3147d9b611d1, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &1307228615476472
 GameObject:
   m_ObjectHideFlags: 0
@@ -190,7 +190,9 @@ GameObject:
   - component: {fileID: 114073007438733822}
   - component: {fileID: 58256050713667648}
   - component: {fileID: 114394699576994808}
+  - component: {fileID: 5025622234824572739}
   - component: {fileID: 114653129648744142}
+  - component: {fileID: 190877409254396758}
   - component: {fileID: 114502046227778398}
   - component: {fileID: 20651762200388567}
   m_Layer: 8
@@ -274,14 +276,14 @@ MonoBehaviour:
   ripplesContainer: {fileID: 1658159506029436}
   leftSideTarget: {fileID: 2083341788368610960}
   rightSideTarget: {fileID: 6334897482679909241}
+  tentaclesLeft: 0
+  animator: {fileID: 95269474888133974}
   npcType: 0
   npcName: 0
   route: {fileID: 0}
   waypoint: {fileID: 0}
-  maxForceOverride: 0
   autoMove: 0
-  animator: {fileID: 95269474888133974}
-  terrorEntityID: 0
+  horrorEntity: {fileID: 0}
   hasDied: 0
 --- !u!50 &50644847342071564
 Rigidbody2D:
@@ -348,6 +350,20 @@ MonoBehaviour:
   offsetZ: 0
   isActive: 1
   sortPoint: {fileID: 1307228615476472}
+--- !u!114 &5025622234824572739
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1505246131218474}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 969cb09c2825e8141913358883695236, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wakePrefab: {fileID: 114644343177997418, guid: 908a94f9a4322b44da3ff5c9dfea755c,
+    type: 3}
 --- !u!114 &114653129648744142
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -361,6 +377,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncInterval: 0.1
+--- !u!114 &190877409254396758
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1505246131218474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8a3b99d9c677fa49a035fb8ba74b86d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  particleSpawnInterval: 0.225
+  randomizeSpawnPos: 0
+  randomizeFlipInterval: 0
+  randomizeFrameLength: 0
+  rotateFromVelocity: 1
+  zPos: 100.43
+  minParticleDistance: 0.1
+  particlePrefab: {fileID: 114323767992870796, guid: 7aec9ff5a579b61499dc2a28e586b56f,
+    type: 3}
 --- !u!114 &114502046227778398
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -375,8 +412,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: 
-  m_SceneId: 1661571951
+  m_AssetId: d1663649abf91904f8af5dfaa6cd2747
+  m_SceneId: 0
 --- !u!114 &20651762200388567
 MonoBehaviour:
   m_ObjectHideFlags: 0
