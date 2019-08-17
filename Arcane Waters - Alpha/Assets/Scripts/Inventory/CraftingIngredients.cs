@@ -15,8 +15,12 @@ public class CraftingIngredients : RecipeItem
    // The Type
    public enum Type
    {
-      None = 0, Lizard_Scale = 1, Lizard_Claw = 2, Gold_Ore = 3, Lumber = 4, Flint = 5, Silver_Ore = 6, Lizard_Tail = 7, Reptile_Bile = 8, Meat = 9,
-      Wooden_Bark = 10, Solid_Oak = 11, Shattered_Trunk = 12, Tree_Root = 13,
+      None = 0, Gold_Ore = 1, Silver_Ore = 2, Iron_Ore = 3, Coal = 4, Leather = 5, Wood = 6, Heavy_Cloth = 7, Light_Cloth = 8, Silk = 9, Fur = 10, Onyx = 11,
+      Lizard_Claw = 12, Green_Scale = 13, Molted_Skin = 14, Broken_Fang = 15, Green_Blood_Droplet = 16,
+      Chitin = 17, Mandible = 18, Carapace = 19, Egg_Sac = 20, Bug_Juice = 21,
+      Ectoplasm = 22, Brimstone = 23, Spectral_Ash = 24, Luminous_Powder = 25, Eldritch_Aura = 26,
+      Bark = 27, Thorn = 28, Wood_Louse = 29, Polypore = 30, Sap = 31,
+      Spores = 32, Toadstool_Cap = 33, Fungal_Chunk = 34, Mycelium_Fiber = 35, Grey_Slime = 36
    }
 
    // The type
@@ -85,44 +89,120 @@ public class CraftingIngredients : RecipeItem
 
    public override string getDescription () {
       switch (type) {
+         // Lizard Drops
+         case Type.Green_Scale:
+            return "A Green Scale";
+
          case Type.Lizard_Claw:
-            return "A well made claw";
+            return "A Claw good for crafting";
 
-         case Type.Lizard_Scale:
-            return "A powerful Scale";
+         case Type.Broken_Fang:
+            return "A Strange Fang";
 
-         case Type.Gold_Ore:
-            return "A shiny golden ore";
+         case Type.Green_Blood_Droplet:
+            return "A Rare blood droplet";
+
+         case Type.Molted_Skin:
+            return "Molted Skin ";
+
+         // Wood Guy Drops
+         case Type.Bark:
+            return "Strong bark good for ships";
+
+         case Type.Thorn:
+            return "A Pointy Thorn";
+
+         case Type.Wood_Louse:
+            return "A Wood Louse";
+
+         case Type.Sap:
+            return "Sap good for crafting";
+
+         case Type.Polypore:
+            return "A Polypore";
+
+         // Insect Drops
+         case Type.Chitin:
+            return "Insect Chitin";
+
+         case Type.Mandible:
+            return "Mandible of a giant insect";
+
+         case Type.Carapace:
+            return "Tough carapace good for armor";
+
+         case Type.Egg_Sac:
+            return "an Egg Sac, very rare";
+
+         case Type.Bug_Juice:
+            return "Yummy bug juice";
+
+         // Wisp Drops
+         case Type.Ectoplasm:
+            return "A rare ectoplasm";
+
+         case Type.Brimstone:
+            return "Shiny Brimstone";
+
+         case Type.Spectral_Ash:
+            return "Ash used for healing";
+
+         case Type.Luminous_Powder:
+            return "Powder with magical powers";
+
+         case Type.Eldritch_Aura:
+            return "A very rare essene, good for upgrading";
+
+         // Musroom Drops
+         case Type.Spores:
+            return "Sprores dropped by Mushroom";
+
+         case Type.Toadstool_Cap:
+            return "Cap of toadstool";
+
+         case Type.Fungal_Chunk:
+            return "A Fungal Chunk";
+
+         case Type.Mycelium_Fiber:
+            return "A Mycelium Fiber";
+
+         case Type.Grey_Slime:
+            return "Slimy material";
+
+         // Mineable Loots
+         case Type.Coal:
+            return "Coal good for cooking";
+
+         case Type.Iron_Ore:
+            return "An Iron Ore";
 
          case Type.Silver_Ore:
-            return "A shiny silver ore";
+            return "A Silver Ore";
 
-         case Type.Flint:
-            return "A Flint";
+         case Type.Gold_Ore:
+            return "A Golden Ore";
 
-         case Type.Lumber:
-            return "A Lumber";
+         // General Loots
+         case Type.Fur:
+            return "Some Fur";
 
-         case Type.Lizard_Tail:
-            return "A Lizard Tail";
+         case Type.Heavy_Cloth:
+            return "A Heavy Cloth";
 
-         case Type.Reptile_Bile:
-            return "A Reptile Bile good for binding";
+         case Type.Leather:
+            return "A Leather Cloth";
 
-         case Type.Meat:
-            return "Meat good for eatin";
+         case Type.Light_Cloth:
+            return "A Light Cloth";
 
-         case Type.Wooden_Bark:
-            return "A Wooden Bark for weapons";
+         case Type.Onyx:
+            return "An Onyx Gem";
 
-         case Type.Solid_Oak:
-            return "A Solid Oak for ship upgrades";
+         case Type.Silk:
+            return "A Silk CLoth";
 
-         case Type.Shattered_Trunk:
-            return "A Shattered Trunk for crafting";
-
-         case Type.Tree_Root:
-            return "A Tree Root for binding";
+         case Type.Wood:
+            return "A piece of Wood";
 
          default:
             return "";
@@ -143,44 +223,120 @@ public class CraftingIngredients : RecipeItem
 
    public static string getName (CraftingIngredients.Type recipeType) {
       switch (recipeType) {
+         // Lizard Drops
+         case Type.Green_Scale:
+            return "A Green Scale";
+
          case Type.Lizard_Claw:
             return "Lizard Claw";
 
-         case Type.Lizard_Scale:
-            return "Lizard Scale";
+         case Type.Broken_Fang:
+            return "Broken Fang";
 
-         case Type.Gold_Ore:
-            return "Gold Ore";
+         case Type.Green_Blood_Droplet:
+            return "Green Blood Droplet";
+
+         case Type.Molted_Skin:
+            return "Molted Skin ";
+
+         // Wood Guy Drops
+         case Type.Bark:
+            return "Bark";
+
+         case Type.Thorn:
+            return "Thorn";
+
+         case Type.Wood_Louse:
+            return "Wood Louse";
+
+         case Type.Sap:
+            return "Sap";
+
+         case Type.Polypore:
+            return "Polypore";
+
+         // Insect Drops
+         case Type.Chitin:
+            return "Chitin";
+
+         case Type.Mandible:
+            return "Mandible";
+
+         case Type.Carapace:
+            return "Carapace";
+
+         case Type.Egg_Sac:
+            return "Egg Sac";
+
+         case Type.Bug_Juice:
+            return "Bug Juice";
+
+         // Wisp Drops
+         case Type.Ectoplasm:
+            return "Ectoplasm";
+
+         case Type.Brimstone:
+            return "Brimstone";
+
+         case Type.Spectral_Ash:
+            return "Spectral Ash";
+
+         case Type.Luminous_Powder:
+            return "Glow Powder";
+
+         case Type.Eldritch_Aura:
+            return "Eldritch Aura";
+
+         // Musroom Drops
+         case Type.Spores:
+            return "Sprores";
+
+         case Type.Toadstool_Cap:
+            return "Toadstool Cap";
+
+         case Type.Fungal_Chunk:
+            return "Fungal Chunk";
+
+         case Type.Mycelium_Fiber:
+            return "Mycelium Fiber";
+
+         case Type.Grey_Slime:
+            return "Grey Slime";
+
+         // Mineable Loots
+         case Type.Coal:
+            return "Coal";
+
+         case Type.Iron_Ore:
+            return "Iron Ore";
 
          case Type.Silver_Ore:
             return "Silver Ore";
 
-         case Type.Lumber:
-            return "Lumber";
+         case Type.Gold_Ore:
+            return "Golden Ore";
 
-         case Type.Flint:
-            return "Flint";
+         // General Loots
+         case Type.Fur:
+            return "Fur";
 
-         case Type.Lizard_Tail:
-            return "Lizard Tail";
+         case Type.Heavy_Cloth:
+            return "Heavy Cloth";
 
-         case Type.Reptile_Bile:
-            return "Reptile Bile";
+         case Type.Leather:
+            return "Leather Cloth";
 
-         case Type.Meat:
-            return "Meat";
+         case Type.Light_Cloth:
+            return "Light Cloth";
 
-         case Type.Wooden_Bark:
-            return "Wooden Bark";
+         case Type.Onyx:
+            return "Onyx";
 
-         case Type.Solid_Oak:
-            return "Solid Oak";
+         case Type.Silk:
+            return "Silk CLoth";
 
-         case Type.Shattered_Trunk:
-            return "Shattered Trunk";
-
-         case Type.Tree_Root:
-            return "Tree Root";
+         case Type.Wood:
+            return "Wood";
 
          default:
             return "";
@@ -199,6 +355,6 @@ public class CraftingIngredients : RecipeItem
    }
 
    public override string getIconPath () {
-      return "Icons/CraftingIngredients/" + this.type;
+      return "Icons/CraftingIngredients/ingredient_" + this.type;
    }
 }

@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 #if IS_SERVER_BUILD
 using Mirror;
 public class DebugButtons : NetworkBehaviour
@@ -89,22 +90,22 @@ public class DebugButtons : NetworkBehaviour
          if (Input.GetKeyDown(KeyCode.Alpha1)) {
             Blueprint craftingIngredients = new Blueprint(0, (int) Blueprint.Type.Sword_1, ColorType.DarkGreen, ColorType.DarkPurple, "");
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;
-            processItem(craftingIngredients);
+            processRewardItems(craftingIngredients);
          }
          if (Input.GetKeyDown(KeyCode.Alpha2)) {
             Blueprint craftingIngredients = new Blueprint(0, (int) Blueprint.Type.Sword_2, ColorType.DarkGreen, ColorType.DarkPurple, "");
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;
-            processItem(craftingIngredients);
+            processRewardItems(craftingIngredients);
          }
          if (Input.GetKeyDown(KeyCode.Alpha3)) {
             Blueprint craftingIngredients = new Blueprint(0, (int) Blueprint.Type.Sword_3, ColorType.DarkGreen, ColorType.DarkPurple, "");
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;
-            processItem(craftingIngredients);
+            processRewardItems(craftingIngredients);
          }
          if (Input.GetKeyDown(KeyCode.Alpha4)) {
             Blueprint craftingIngredients = new Blueprint(0, (int) Blueprint.Type.Sword_4, ColorType.DarkGreen, ColorType.DarkPurple, "");
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;
-            processItem(craftingIngredients);
+            processRewardItems(craftingIngredients);
          }
          if (Input.GetKeyDown(KeyCode.Alpha5)) {
             CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Lizard_Claw, ColorType.DarkGreen, ColorType.DarkPurple, "");
@@ -113,13 +114,13 @@ public class DebugButtons : NetworkBehaviour
             processRewardItems(craftingIngredients);
          }
          if (Input.GetKeyDown(KeyCode.Alpha6)) {
-            CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Lizard_Scale, ColorType.DarkGreen, ColorType.DarkPurple, "");
+            CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Green_Scale, ColorType.DarkGreen, ColorType.DarkPurple, "");
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;
             //processItem(craftingIngredients);
             processRewardItems(craftingIngredients);
          }
          if (Input.GetKeyDown(KeyCode.Alpha7)) {
-            CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Lumber, ColorType.DarkGreen, ColorType.DarkPurple, "");
+            CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Bark, ColorType.DarkGreen, ColorType.DarkPurple, "");
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;
             //processItem(craftingIngredients);
             processRewardItems(craftingIngredients);
@@ -127,7 +128,20 @@ public class DebugButtons : NetworkBehaviour
          if (Input.GetKeyDown(KeyCode.Alpha8)) {
             CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Gold_Ore, ColorType.DarkGreen, ColorType.DarkPurple, "");
             craftingIngredients.itemTypeId = (int) craftingIngredients.type;
-            processItem(craftingIngredients);
+            processRewardItems(craftingIngredients);
+         }
+         if (Input.GetKeyDown(KeyCode.Alpha9)) {
+            StartCoroutine(CO_LoopInventory());
+         }
+      }
+      IEnumerator CO_LoopInventory () {
+         // Check All Icons
+         foreach (var item in System.Enum.GetValues(typeof(CraftingIngredients.Type))) {
+            Debug.LogError("CREATING : " + item.ToString());
+            CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) ((CraftingIngredients.Type) System.Enum.Parse(typeof(CraftingIngredients.Type), item.ToString())), ColorType.DarkGreen, ColorType.DarkPurple, "");
+            craftingIngredients.itemTypeId = (int) craftingIngredients.type;
+            processRewardItems(craftingIngredients);
+            yield return new WaitForSeconds(1);
          }
       }
    }
