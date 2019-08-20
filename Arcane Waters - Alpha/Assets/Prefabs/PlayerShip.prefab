@@ -1061,6 +1061,7 @@ MonoBehaviour:
   guildId: 0
   battleId: 0
   isAboutToWarpOnServer: 0
+  interactingAnimation: 0
   damage: 25
   reloadDelay: 1
   leftAttackBox: {fileID: 20272}
@@ -1071,6 +1072,7 @@ MonoBehaviour:
   ripplesContainer: {fileID: 16993}
   leftSideTarget: {fileID: 17463}
   rightSideTarget: {fileID: 17776}
+  invulnerable: 0
   shipType: 100
   skinType: 0
   speed: 100

@@ -188,13 +188,14 @@ GameObject:
   - component: {fileID: 3925063923804190753}
   - component: {fileID: 50644847342071564}
   - component: {fileID: 114073007438733822}
-  - component: {fileID: 58256050713667648}
   - component: {fileID: 114394699576994808}
   - component: {fileID: 5025622234824572739}
   - component: {fileID: 114653129648744142}
   - component: {fileID: 190877409254396758}
   - component: {fileID: 114502046227778398}
   - component: {fileID: 20651762200388567}
+  - component: {fileID: 1500667301808487911}
+  - component: {fileID: 4943982419569893244}
   m_Layer: 8
   m_Name: TentacleEnemy
   m_TagString: Untagged
@@ -268,23 +269,27 @@ MonoBehaviour:
   interactingAnimation: 0
   damage: 25
   reloadDelay: 1
-  leftAttackBox: {fileID: 1268288670249470209}
-  rightAttackBox: {fileID: 1009804729781969570}
+  leftAttackBox: {fileID: 1009804729781969570}
+  rightAttackBox: {fileID: 1268288670249470209}
   attackCirclePrefab: {fileID: 114088976693073942, guid: 275785df734859140a95aa5a0c035e0b,
     type: 3}
   spritesContainer: {fileID: 1013934132990528}
   ripplesContainer: {fileID: 1658159506029436}
   leftSideTarget: {fileID: 2083341788368610960}
   rightSideTarget: {fileID: 6334897482679909241}
-  tentaclesLeft: 0
-  animator: {fileID: 95269474888133974}
+  invulnerable: 0
+  recentAttacker: {fileID: 0}
   npcType: 0
   npcName: 0
   route: {fileID: 0}
   waypoint: {fileID: 0}
-  autoMove: 0
-  horrorEntity: {fileID: 0}
+  autoMove: 1
+  animator: {fileID: 95269474888133974}
   hasDied: 0
+  horrorEntity: {fileID: 0}
+  locationSide: 0
+  locationSideTopBot: 0
+  randomizedTimer: 1
 --- !u!50 &50644847342071564
 Rigidbody2D:
   serializedVersion: 4
@@ -319,22 +324,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncInterval: 0.1
---- !u!58 &58256050713667648
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1505246131218474}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 6200000, guid: e003f31d6cb68d644b5f7179354844c5, type: 2}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.04}
-  serializedVersion: 2
-  m_Radius: 0.025
 --- !u!114 &114394699576994808
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -467,6 +456,48 @@ MonoBehaviour:
   useLocalTransformOnly: 0
   ownerChangeIndicator: 1
   receivedStatesCounter: 0
+--- !u!61 &1500667301808487911
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1505246131218474}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: -0.05}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 0.07, y: 0.07}
+  m_EdgeRadius: 0
+--- !u!58 &4943982419569893244
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1505246131218474}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.1
 --- !u!1 &1658159506029436
 GameObject:
   m_ObjectHideFlags: 0
@@ -863,7 +894,7 @@ GameObject:
   - component: {fileID: 1268288670249470209}
   - component: {fileID: 2771262039136202276}
   m_Layer: 0
-  m_Name: Left Attack Box
+  m_Name: Right Attack Box
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -877,7 +908,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2897873025511182302}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.1, y: 0, z: 0}
+  m_LocalPosition: {x: 0.375, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3365768968601469922}
@@ -911,8 +942,8 @@ PolygonCollider2D:
     - - {x: -0.23, y: -0.1}
       - {x: -0.2, y: 0}
       - {x: -0.23, y: 0.1}
-      - {x: -0.37, y: 0.2}
-      - {x: -0.37, y: -0.2}
+      - {x: -0.37, y: 0.15}
+      - {x: -0.37, y: -0.15}
 --- !u!114 &2771262039136202276
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1892,7 +1923,7 @@ GameObject:
   - component: {fileID: 1009804729781969570}
   - component: {fileID: 4194106273393668986}
   m_Layer: 0
-  m_Name: Right Attack Box
+  m_Name: Left Attack Box
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1906,7 +1937,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8266396295318720647}
   m_LocalRotation: {x: 0, y: 0, z: 1, w: 0}
-  m_LocalPosition: {x: -0.1, y: 0, z: 0}
+  m_LocalPosition: {x: -0.375, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3365768968601469922}
@@ -1940,8 +1971,8 @@ PolygonCollider2D:
     - - {x: -0.23, y: -0.1}
       - {x: -0.2, y: 0}
       - {x: -0.23, y: 0.1}
-      - {x: -0.37, y: 0.2}
-      - {x: -0.37, y: -0.2}
+      - {x: -0.37, y: 0.15}
+      - {x: -0.37, y: -0.15}
 --- !u!114 &4194106273393668986
 MonoBehaviour:
   m_ObjectHideFlags: 0
