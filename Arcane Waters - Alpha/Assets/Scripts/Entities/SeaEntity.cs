@@ -34,6 +34,12 @@ public class SeaEntity : NetEntity {
    public GameObject leftSideTarget;
    public GameObject rightSideTarget;
 
+   // Determines if this monster can be damaged
+   public bool invulnerable;
+
+   // Caches the recent attacker
+   public NetEntity recentAttacker;
+
    #endregion
 
    protected override void Start () {
@@ -149,14 +155,22 @@ public class SeaEntity : NetEntity {
    public void Rpc_ShowExplosion (Vector2 pos, int damage, Attack.Type attackType) {
       _lastDamagedTime = Time.time;
 
-      // Show the explosion
-      if (attackType != Attack.Type.Ice) {
-         Instantiate(PrefabsManager.self.explosionPrefab, pos, Quaternion.identity);
-      }
+      if (attackType == Attack.Type.None) {
+         List<Effect.Type> effectTypes = EffectManager.getEffects(attackType);
+         EffectManager.show(effectTypes, pos);
 
-      // Show the damage text
-      ShipDamageText damageText = Instantiate(PrefabsManager.self.getTextPrefab(attackType), pos, Quaternion.identity);
-      damageText.setDamage(damage);
+         // Play the damage sound
+         SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Hit_1, pos);
+      } else {
+         // Show the explosion
+         if (attackType != Attack.Type.Ice) {
+            Instantiate(PrefabsManager.self.explosionPrefab, pos, Quaternion.identity);
+         }
+
+         // Show the damage text
+         ShipDamageText damageText = Instantiate(PrefabsManager.self.getTextPrefab(attackType), pos, Quaternion.identity);
+         damageText.setDamage(damage);
+      }
 
       // Play the damage sound
       SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Hit_2, pos);
@@ -199,6 +213,7 @@ public class SeaEntity : NetEntity {
 
    public void noteAttacker (NetEntity entity) {
       _attackers.Add(entity);
+      recentAttacker = entity;
    }
 
    public bool hasReloaded () {
@@ -254,7 +269,7 @@ public class SeaEntity : NetEntity {
       float delay = Mathf.Clamp(distance, .5f, 1.5f);
 
       // Have the server check for collisions after the cannonball reaches the target
-      StartCoroutine(CO_CheckCircleForCollisions(this, delay, spot, attackType));
+      StartCoroutine(CO_CheckPlayerCircleForCollisions(this, delay, spot, attackType));
 
       // Make note on the clients that the ship just attacked
       Rpc_NoteAttack();
@@ -293,6 +308,40 @@ public class SeaEntity : NetEntity {
    }
 
    [Server]
+   protected IEnumerator CO_CheckPlayerCircleForCollisions (SeaEntity attacker, float delay, Vector2 circleCenter, Attack.Type attackType) {
+      // Wait until the cannon ball reaches the target
+      yield return new WaitForSeconds(delay);
+
+      // Check for collisions inside the circle
+      foreach (Collider2D hit in getHitColliders(circleCenter)) {
+         if (hit != null) {
+            if(hit.GetComponent<ShipEntity>() != null) { 
+               SeaEntity entity = hit.GetComponent<ShipEntity>();
+
+               // Make sure the target is in our same instance
+               if (entity != null && entity.instanceId == this.instanceId) {
+                  int damage = (int) (this.damage * Attack.getDamageModifier(attackType));
+                  entity.currentHealth -= damage;
+                  entity.Rpc_ShowDamageText(damage, attacker.userId, attackType);
+                  entity.noteAttacker(attacker);
+
+                  // Apply any status effects from the attack
+                  if (attackType == Attack.Type.Ice) {
+                     StatusManager.self.create(Status.Type.Freeze, 2f, entity.userId);
+                  } else if (attackType == Attack.Type.Air) {
+                     StatusManager.self.create(Status.Type.Slow, 3f, entity.userId);
+                  } else if (attackType == Attack.Type.Tentacle) {
+                     StatusManager.self.create(Status.Type.Slow, 1f, entity.userId);
+                  }
+
+                  break;
+               }
+            }
+         }
+      }
+   }
+
+   [Server]
    protected IEnumerator CO_CheckCircleForCollisions (SeaEntity attacker, float delay, Vector2 circleCenter, Attack.Type attackType) {
       // Wait until the cannon ball reaches the target
       yield return new WaitForSeconds(delay);
@@ -304,9 +353,13 @@ public class SeaEntity : NetEntity {
 
             // Make sure the target is in our same instance
             if (entity != null && entity.instanceId == this.instanceId) {
-               int damage = (int) (this.damage * Attack.getDamageModifier(attackType));
-               entity.currentHealth -= damage;
-               entity.Rpc_ShowDamageText(damage, attacker.userId, attackType);
+               if (!entity.invulnerable) {
+                  int damage = (int) (this.damage * Attack.getDamageModifier(attackType));
+                  entity.currentHealth -= damage;
+                  entity.Rpc_ShowDamageText(damage, attacker.userId, attackType);
+               } else {
+                  entity.Rpc_ShowExplosion(entity.transform.position, 0, Attack.Type.None);
+               }
                entity.noteAttacker(attacker);
 
                // Apply any status effects from the attack

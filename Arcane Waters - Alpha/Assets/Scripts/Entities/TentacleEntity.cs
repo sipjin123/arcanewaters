@@ -1,35 +1,25 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
 using Mirror;
+using System.Collections;
 
 public class TentacleEntity : SeaMonsterEntity
 {
    #region Public Variables
-
-   // The Type of NPC that is sailing this ship
-   [SyncVar]
-   public NPC.Type npcType;
-
-   // The Name of the NPC that is sailing this ship
-   [SyncVar]
-   public string npcName;
-
-   // The Route that this Bot should follow
-   public Route route;
-
-   // The current waypoint
-   public Waypoint waypoint;
-
-   // When set to true, we pick random waypoints
-   public bool autoMove = false;
-
+   
    // Reference to the boss object
    public HorrorEntity horrorEntity;
 
-   // A flag to determine if the object has died
-   public bool hasDied = false;
+   // Determines if location is left or right side of the boss monster
+   [SyncVar]
+   public int locationSide;
+
+   // Determines if location is top or bottom side of the boss monster
+   [SyncVar]
+   public int locationSideTopBot;
+
+   // Randomizes behavior before moving
+   public float randomizedTimer = 1;
 
    #endregion
 
@@ -43,8 +33,8 @@ public class TentacleEntity : SeaMonsterEntity
       this.nameText.text = "[" + getNameForFaction() + "]";
       NPC.setNameColor(nameText, npcType);
 
-      // Sometimes we want to generate random waypoints
-      InvokeRepeating("handleAutoMove", 5f, 5f);
+      // Calls functions that randomizes and calls the coroutine that handles movement
+      initializeBehavior();
 
       // Check if we can shoot at any of our attackers
       InvokeRepeating("checkForAttackers", 1f, .5f);
@@ -133,9 +123,15 @@ public class TentacleEntity : SeaMonsterEntity
       }
    }
 
-   protected void handleAutoMove () {
+   [Server]
+   public void initializeBehavior () {
+      randomizedTimer = Random.Range(2.0f, 4.5f);
+      StartCoroutine(CO_HandleAutoMove());
+   }
+
+   public IEnumerator CO_HandleAutoMove () {
       if (!autoMove || !isServer) {
-         return;
+         yield return null;
       }
 
       // Remove our current waypoint
@@ -143,11 +139,64 @@ public class TentacleEntity : SeaMonsterEntity
          Destroy(this.waypoint.gameObject);
       }
 
-      // Pick a new spot around our spawn position
-      Vector2 newSpot = _spawnPos + new Vector2(Random.Range(-.5f, .5f), Random.Range(-.5f, .5f));
+      bool farFromBossMonster = Vector2.Distance(horrorEntity.transform.position, transform.position) > 1.5f;
+      Vector2 newSpot = new Vector2(0, 0);
+      if(recentAttacker != null) {
+         if (farFromBossMonster) {
+            recentAttacker = null;
+         } else {
+            newSpot = recentAttacker.transform.position;
+         }
+      } else {
+         float randomizedX = Random.Range(.1f, .8f);
+         float randomizedY = Random.Range(.15f, .75f);
+
+         randomizedX *= locationSide;
+         randomizedY *= locationSideTopBot;
+
+         // Pick a new spot around our spawn position
+         newSpot = new Vector2(horrorEntity.transform.position.x, horrorEntity.transform.position.y) + new Vector2(randomizedX, randomizedY);
+      }
+
       Waypoint newWaypoint = Instantiate(PrefabsManager.self.waypointPrefab);
       newWaypoint.transform.position = newSpot;
       this.waypoint = newWaypoint;
+
+      yield return new WaitForSeconds(randomizedTimer);
+      initializeBehavior();
+   }
+
+   public void initializeDelayedMovement (Vector2 newPos) {
+      float delayTime = Random.Range(.1f, .7f);
+      handleAutoMove(newPos, delayTime);
+   }
+
+   private IEnumerator handleAutoMove (Vector2 newPos, float delay) {
+      yield return new WaitForSeconds(delay);
+      if (!autoMove || !isServer) {
+         yield return null;
+      }
+
+      // Remove our current waypoint
+      if (this.waypoint != null) {
+         Destroy(this.waypoint.gameObject);
+      }
+ 
+      float randomizedX = Random.Range(.2f, .6f);
+      float randomizedY = Random.Range(.15f, .45f);
+
+      randomizedX *= locationSide;
+      randomizedY *= locationSideTopBot;
+
+      // Pick a new spot around our spawn position
+      //Vector2 newSpot = new Vector2(horrorEntity.transform.position.x + randomizedX, horrorEntity.transform.position.y + randomizedY);
+      Vector2 newSpot = new Vector2(newPos.x + randomizedX, newPos.y + randomizedY);
+
+      Waypoint newWaypoint = Instantiate(PrefabsManager.self.waypointPrefab);
+      newWaypoint.transform.position = newSpot;
+      this.waypoint = newWaypoint;
+
+      StopCoroutine(CO_HandleAutoMove());
    }
 
    protected void checkForAttackers () {
@@ -175,6 +224,16 @@ public class TentacleEntity : SeaMonsterEntity
             callAnimation(TentacleAnimType.Attack);
             return;
          }
+      }
+   }
+
+   private void OnTriggerStay2D (Collider2D collision) {
+      if (collision.GetComponent<PlayerShipEntity>() != null) {
+         NetEntity shipEntity = collision.GetComponent<PlayerShipEntity>();
+         if (!_attackers.Contains(shipEntity)) {
+            _attackers.Add(shipEntity);
+         }
+         recentAttacker = shipEntity;
       }
    }
 

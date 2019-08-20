@@ -18,7 +18,7 @@ public class Attack : MonoBehaviour {
          case Type.Ice:
             return .20f;
          case Type.Tentacle:
-            return .50f;
+            return .10f;
          default:
             return 1.0f;
       }

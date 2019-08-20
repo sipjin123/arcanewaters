@@ -132,7 +132,7 @@ public class CraftingIngredients : RecipeItem
             return "Tough carapace good for armor";
 
          case Type.Egg_Sac:
-            return "an Egg Sac, very rare";
+            return "An Egg Sac, very rare";
 
          case Type.Bug_Juice:
             return "Yummy bug juice";
@@ -151,7 +151,7 @@ public class CraftingIngredients : RecipeItem
             return "Powder with magical powers";
 
          case Type.Eldritch_Aura:
-            return "A very rare essene, good for upgrading";
+            return "A very rare essence, good for upgrading";
 
          // Musroom Drops
          case Type.Spores:

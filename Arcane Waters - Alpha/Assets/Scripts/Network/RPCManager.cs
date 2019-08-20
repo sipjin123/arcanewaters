@@ -1389,7 +1389,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_SpawnTentacle (Vector2 spawnPosition, uint horrorEntityID) {
+   public void Cmd_SpawnTentacle (Vector2 spawnPosition, uint horrorEntityID, int xVal, int yVal) {
       TentacleEntity bot = Instantiate(PrefabsManager.self.tentaclePrefab, spawnPosition, Quaternion.identity);
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
@@ -1400,10 +1400,13 @@ public class RPCManager : NetworkBehaviour {
       bot.autoMove = true;
       bot.nationType = Nation.Type.Pirate;
       bot.entityName = "Tentacle";
+      bot.locationSide = xVal;
+      bot.locationSideTopBot = yVal;
 
       Instance instance = InstanceManager.self.getInstance(_player.instanceId);
-      HorrorEntity terror = instance.entities.Find(_ => _.netId == horrorEntityID).GetComponent<HorrorEntity>();
-      bot.horrorEntity = terror;
+      HorrorEntity horror = instance.entities.Find(_ => _.netId == horrorEntityID).GetComponent<HorrorEntity>();
+      bot.horrorEntity = horror;
+      horror.tentacleList.Add(bot);
 
       instance.entities.Add(bot);
 
@@ -1421,7 +1424,7 @@ public class RPCManager : NetworkBehaviour {
       bot.faction = NPC.getFaction(bot.npcType);
       bot.nationType = Nation.Type.Pirate;
       bot.entityName = "Horror";
-      bot.tentaclesLeft = 4;
+      bot.tentaclesLeft = 8;
 
       // Spawn the bot on the Clients
       NetworkServer.Spawn(bot.gameObject);
@@ -1429,10 +1432,17 @@ public class RPCManager : NetworkBehaviour {
       Instance instance = InstanceManager.self.getInstance(_player.instanceId);
       instance.entities.Add(bot);
 
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(0, -.5f), bot.netId);
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(0, .5f), bot.netId);
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(-.5f, 0), bot.netId);
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(0.5f, 0), bot.netId);
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(.5f, -.5f), bot.netId, 1, -1);
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(-.5f, -.5f), bot.netId, -1, -1);
+
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(.5f, .5f), bot.netId, 1, 1);
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(-.5f, .5f), bot.netId, -1, 1);
+
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(-.75f, 0), bot.netId, -1, 0);
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(.75f, 0), bot.netId, 1, 0);
+
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(0, -.75f), bot.netId, 0, -1);
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(0, .75f), bot.netId, 0, 1);
    }
 
    [Command]
