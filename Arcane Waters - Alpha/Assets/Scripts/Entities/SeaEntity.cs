@@ -208,7 +208,7 @@ public class SeaEntity : NetEntity {
       return _lastAttackTime;
    }
 
-   public void noteAttacker (NetEntity entity) {
+   public virtual void noteAttacker (NetEntity entity) {
       _attackers.Add(entity);
    }
 

@@ -128,10 +128,15 @@ public class TentacleEntity : SeaMonsterEntity
       }
    }
 
+   public override void noteAttacker (NetEntity entity) {
+      base.noteAttacker(entity);
+      horrorEntity.registerAttacker(entity);
+   }
+
    [Server]
    public void initializeBehavior () {
       randomizedTimer = Random.Range(2.0f, 4.5f);
-      StartCoroutine(CO_HandleAutoMove());
+      StartCoroutine("CO_HandleAutoMove");
    }
 
    public IEnumerator CO_HandleAutoMove () {
@@ -149,8 +154,8 @@ public class TentacleEntity : SeaMonsterEntity
 
       randomizedX *= locationSide;
       randomizedY *= locationSideTopBot;
-
-      // Pick a new spot around our spawn position
+      
+      // Pick a new spot around the Horror monster
       Vector2 newSpot = new Vector2(horrorEntity.transform.position.x, horrorEntity.transform.position.y) + new Vector2(randomizedX, randomizedY);
       
       Waypoint newWaypoint = Instantiate(PrefabsManager.self.waypointPrefab);
@@ -162,8 +167,9 @@ public class TentacleEntity : SeaMonsterEntity
    }
 
    public void overriddenMovement (Vector2 newPos) {
-      float delayTime = Random.Range(.1f, .7f);
-      CO_HandleBossMovement(newPos, delayTime);
+      StopCoroutine("CO_HandleAutoMove");
+      float delayTime = .1f;
+      StartCoroutine(CO_HandleBossMovement(newPos, delayTime));
    }
 
    private IEnumerator CO_HandleBossMovement (Vector2 newPos, float delay) {
@@ -190,8 +196,6 @@ public class TentacleEntity : SeaMonsterEntity
       Waypoint newWaypoint = Instantiate(PrefabsManager.self.waypointPrefab);
       newWaypoint.transform.position = newSpot;
       this.waypoint = newWaypoint;
-
-      StopCoroutine(CO_HandleAutoMove());
    }
 
    protected void checkForAttackers () {
@@ -227,6 +231,7 @@ public class TentacleEntity : SeaMonsterEntity
          NetEntity shipEntity = collision.GetComponent<PlayerShipEntity>();
          if (!_attackers.Contains(shipEntity)) {
             _attackers.Add(shipEntity);
+            horrorEntity.registerAttacker(shipEntity);
          }
       }
    }
