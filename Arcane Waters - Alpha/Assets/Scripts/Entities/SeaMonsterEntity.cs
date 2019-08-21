@@ -8,13 +8,13 @@ public class SeaMonsterEntity : SeaEntity
 {
    #region Public Variables
 
-   // The Type of NPC that is sailing this ship
+   // The Type of NPC SeaMonster
    [SyncVar]
    public NPC.Type npcType;
 
-   // The Name of the NPC that is sailing this ship
+   // The Name of the NPC Seamonster
    [SyncVar]
-   public string npcName;
+   public string monsterName;
 
    // The Route that this Bot should follow
    public Route route;
@@ -37,6 +37,8 @@ public class SeaMonsterEntity : SeaEntity
       Idle,
       Attack,
       Die,
+      Move,
+      MoveStop
    }
 
 

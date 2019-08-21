@@ -67,8 +67,8 @@ public class HorrorEntity : SeaMonsterEntity
             index %= waypoints.Count;
             this.waypoint = waypoints[index];
 
-            for (int i = 0; i < tentacleList.Count; i++) {
-               tentacleList[i].initializeBehavior();
+            foreach (TentacleEntity tentacles in tentacleList) {
+               tentacles.initializeBehavior();
             }
          }
       }
@@ -109,8 +109,8 @@ public class HorrorEntity : SeaMonsterEntity
       newWaypoint.transform.position = newSpot;
       this.waypoint = newWaypoint;
 
-      for (int i = 0; i < tentacleList.Count; i++) {
-         tentacleList[i].initializeDelayedMovement(waypoint.transform.position);
+      foreach(TentacleEntity tentacles in tentacleList) {
+         tentacles.overriddenMovement(waypoint.transform.position);
       }
    }
 
