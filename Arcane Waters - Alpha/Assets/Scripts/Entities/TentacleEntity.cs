@@ -11,11 +11,9 @@ public class TentacleEntity : SeaMonsterEntity
    public HorrorEntity horrorEntity;
 
    // Determines if location is left or right side of the boss monster
-   [SyncVar]
    public int locationSide;
 
    // Determines if location is top or bottom side of the boss monster
-   [SyncVar]
    public int locationSideTopBot;
 
    // Randomizes behavior before moving
@@ -62,6 +60,13 @@ public class TentacleEntity : SeaMonsterEntity
             tentacleDeath();
          }
          return;
+      }
+
+      // Updates animation if monster is moving
+      if (_body.velocity.magnitude < .1f) {
+         callAnimation(TentacleAnimType.MoveStop);
+      } else {
+         callAnimation(TentacleAnimType.Move);
       }
 
       // Only change our movement if enough time has passed
@@ -139,25 +144,15 @@ public class TentacleEntity : SeaMonsterEntity
          Destroy(this.waypoint.gameObject);
       }
 
-      bool farFromBossMonster = Vector2.Distance(horrorEntity.transform.position, transform.position) > 1.5f;
-      Vector2 newSpot = new Vector2(0, 0);
-      if(recentAttacker != null) {
-         if (farFromBossMonster) {
-            recentAttacker = null;
-         } else {
-            newSpot = recentAttacker.transform.position;
-         }
-      } else {
-         float randomizedX = Random.Range(.1f, .8f);
-         float randomizedY = Random.Range(.15f, .75f);
+      float randomizedX = Random.Range(.1f, .8f);
+      float randomizedY = Random.Range(.15f, .75f);
 
-         randomizedX *= locationSide;
-         randomizedY *= locationSideTopBot;
+      randomizedX *= locationSide;
+      randomizedY *= locationSideTopBot;
 
-         // Pick a new spot around our spawn position
-         newSpot = new Vector2(horrorEntity.transform.position.x, horrorEntity.transform.position.y) + new Vector2(randomizedX, randomizedY);
-      }
-
+      // Pick a new spot around our spawn position
+      Vector2 newSpot = new Vector2(horrorEntity.transform.position.x, horrorEntity.transform.position.y) + new Vector2(randomizedX, randomizedY);
+      
       Waypoint newWaypoint = Instantiate(PrefabsManager.self.waypointPrefab);
       newWaypoint.transform.position = newSpot;
       this.waypoint = newWaypoint;
@@ -166,13 +161,14 @@ public class TentacleEntity : SeaMonsterEntity
       initializeBehavior();
    }
 
-   public void initializeDelayedMovement (Vector2 newPos) {
+   public void overriddenMovement (Vector2 newPos) {
       float delayTime = Random.Range(.1f, .7f);
-      handleAutoMove(newPos, delayTime);
+      CO_HandleBossMovement(newPos, delayTime);
    }
 
-   private IEnumerator handleAutoMove (Vector2 newPos, float delay) {
+   private IEnumerator CO_HandleBossMovement (Vector2 newPos, float delay) {
       yield return new WaitForSeconds(delay);
+
       if (!autoMove || !isServer) {
          yield return null;
       }
@@ -189,7 +185,6 @@ public class TentacleEntity : SeaMonsterEntity
       randomizedY *= locationSideTopBot;
 
       // Pick a new spot around our spawn position
-      //Vector2 newSpot = new Vector2(horrorEntity.transform.position.x + randomizedX, horrorEntity.transform.position.y + randomizedY);
       Vector2 newSpot = new Vector2(newPos.x + randomizedX, newPos.y + randomizedY);
 
       Waypoint newWaypoint = Instantiate(PrefabsManager.self.waypointPrefab);
@@ -233,7 +228,6 @@ public class TentacleEntity : SeaMonsterEntity
          if (!_attackers.Contains(shipEntity)) {
             _attackers.Add(shipEntity);
          }
-         recentAttacker = shipEntity;
       }
    }
 
@@ -260,6 +254,12 @@ public class TentacleEntity : SeaMonsterEntity
             break;
          case TentacleAnimType.Die:
             animator.SetTrigger("Dead");
+            break;
+         case TentacleAnimType.Move:
+            animator.SetBool("move", true);
+            break;
+         case TentacleAnimType.MoveStop:
+            animator.SetBool("move", false);
             break;
       }
    }
