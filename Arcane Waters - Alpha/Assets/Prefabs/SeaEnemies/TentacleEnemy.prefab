@@ -244,8 +244,8 @@ MonoBehaviour:
   gender: 1
   entityName: 
   nationType: 0
-  currentHealth: 50
-  maxHealth: 50
+  currentHealth: 150
+  maxHealth: 150
   XP: 0
   desiredAngle: 0
   netIdent: {fileID: 0}
@@ -278,9 +278,8 @@ MonoBehaviour:
   leftSideTarget: {fileID: 2083341788368610960}
   rightSideTarget: {fileID: 6334897482679909241}
   invulnerable: 0
-  recentAttacker: {fileID: 0}
   npcType: 0
-  npcName: 0
+  monsterName: 
   route: {fileID: 0}
   waypoint: {fileID: 0}
   autoMove: 1
@@ -401,8 +400,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: d1663649abf91904f8af5dfaa6cd2747
-  m_SceneId: 0
+  m_AssetId: 
+  m_SceneId: 4279447655
 --- !u!114 &20651762200388567
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -650,8 +649,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1470143744152997659}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.000001}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
+  m_LocalPosition: {x: 0.0017, y: 0.0006, z: -0.000001}
+  m_LocalScale: {x: 0.35, y: 0.35, z: 1}
   m_Children: []
   m_Father: {fileID: 4484190077274146}
   m_RootOrder: 0
