@@ -10,6 +10,7 @@ public class HorrorEntity : SeaMonsterEntity
    [SyncVar]
    public int tentaclesLeft;
 
+   // List of tentacle entities
    public List<TentacleEntity> tentacleList;
 
    #endregion
