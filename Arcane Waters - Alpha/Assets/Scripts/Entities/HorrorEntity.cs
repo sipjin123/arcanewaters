@@ -13,6 +13,12 @@ public class HorrorEntity : SeaMonsterEntity
    // List of tentacle entities
    public List<TentacleEntity> tentacleList;
 
+   // Checks nearest target
+   public NetEntity nearestShipTarget;
+
+   // Determines if the monster is approaching a target ship
+   public bool approachShip;
+
    #endregion
 
    protected override void Start () {
@@ -28,8 +34,8 @@ public class HorrorEntity : SeaMonsterEntity
       // Sometimes we want to generate random waypoints
       InvokeRepeating("handleAutoMove", 7f, 7f);
 
-      // Check if we can shoot at any of our attackers
-      InvokeRepeating("checkForAttackers", 1f, .5f);
+      // Check if theres a nearby enemy to go near to
+      InvokeRepeating("checkForHostiles", 2f, 4.5f);
    }
 
    protected override void Update () {
@@ -67,22 +73,32 @@ public class HorrorEntity : SeaMonsterEntity
             index++;
             index %= waypoints.Count;
             this.waypoint = waypoints[index];
-
-            foreach (TentacleEntity tentacles in tentacleList) {
-               tentacles.initializeBehavior();
-            }
          }
       }
 
       // If we don't have a waypoint, we're done
       if (this.waypoint == null || Vector2.Distance(this.transform.position, waypoint.transform.position) < .08f) {
+         if(approachShip) {
+            approachShip = false;
+            foreach (TentacleEntity tentacles in tentacleList) {
+               tentacles.initializeBehavior();
+            }
+         }
+
          return;
       }
 
-      // Move towards our current waypoint
+      // Move towards waypoint
       Vector2 waypointDirection = this.waypoint.transform.position - this.transform.position;
       waypointDirection = waypointDirection.normalized;
       _body.AddForce(waypointDirection.normalized * getMoveSpeed());
+
+      // Checks if the distance of the target ship is too far
+      if (nearestShipTarget != null) {
+         if (Vector2.Distance(_spawnPos, waypoint.transform.position) > territoryRadius) {
+            nearestShipTarget = null;
+         }
+      }
 
       // Update our facing direction
       Direction newFacingDirection = DirectionUtil.getDirectionForVelocity(_body.velocity);
@@ -104,14 +120,51 @@ public class HorrorEntity : SeaMonsterEntity
          Destroy(this.waypoint.gameObject);
       }
 
-      // Pick a new spot around our spawn position
-      Vector2 newSpot = _spawnPos + new Vector2(Random.Range(-.5f, .5f), Random.Range(-.5f, .5f));
+      Vector2 newSpot = new Vector2(0,0); 
+      if (nearestShipTarget != null) {
+         // Go to the spot near the nearest target ship
+         newSpot = new Vector2(nearestShipTarget.transform.position.x, nearestShipTarget.transform.position.y);
+      } else {
+         // Pick a new spot around our spawn position
+         newSpot = _spawnPos + new Vector2(Random.Range(-.5f, .5f), Random.Range(-.5f, .5f));
+         
+      }
+      approachShip = true;
+
       Waypoint newWaypoint = Instantiate(PrefabsManager.self.waypointPrefab);
       newWaypoint.transform.position = newSpot;
       this.waypoint = newWaypoint;
 
       foreach(TentacleEntity tentacles in tentacleList) {
          tentacles.overriddenMovement(waypoint.transform.position);
+      }
+   }
+
+   protected void checkForHostiles () {
+      float closestDistance = 100;
+      NetEntity closesEntity = null;
+
+      // Fetches the nearest ship
+      foreach(NetEntity entity in _attackers) {
+         if(!entity.isDead()) {
+            if(Vector2.Distance(_spawnPos, entity.transform.position) < closestDistance) {
+               closesEntity = entity;
+               closestDistance = Vector2.Distance(_spawnPos, entity.transform.position);
+            }
+         }
+      }
+
+      // Checks if nearest ship is valid to pursue
+      if(closesEntity != null) {
+         if (closestDistance < detectRadius) {
+            nearestShipTarget = closesEntity;
+         }
+      }
+   }
+
+   public void registerAttacker(NetEntity entity) {
+      if(!_attackers.Contains(entity)) {
+         _attackers.Add(entity);
       }
    }
 
@@ -144,6 +197,10 @@ public class HorrorEntity : SeaMonsterEntity
 
    // The position we spawned at
    protected Vector2 _spawnPos;
+
+   private float territoryRadius = 1;
+
+   private float detectRadius = 2;
 
    #endregion
 }

@@ -195,7 +195,6 @@ GameObject:
   - component: {fileID: 114502046227778398}
   - component: {fileID: 20651762200388567}
   - component: {fileID: 1500667301808487911}
-  - component: {fileID: 4943982419569893244}
   m_Layer: 8
   m_Name: TentacleEnemy
   m_TagString: Untagged
@@ -400,8 +399,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: 
-  m_SceneId: 4279447655
+  m_AssetId: d1663649abf91904f8af5dfaa6cd2747
+  m_SceneId: 0
 --- !u!114 &20651762200388567
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -481,22 +480,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.07, y: 0.07}
   m_EdgeRadius: 0
---- !u!58 &4943982419569893244
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1505246131218474}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  serializedVersion: 2
-  m_Radius: 0.1
 --- !u!1 &1658159506029436
 GameObject:
   m_ObjectHideFlags: 0
