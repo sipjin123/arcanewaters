@@ -23,6 +23,16 @@ public class RPCManager : NetworkBehaviour {
       }
    }
 
+   [Command]
+   public void Cmd_InteractAnimation(Anim.Type animType) {
+      Rpc_InteractAnimation(animType);
+   }
+
+   [ClientRpc]
+   public void Rpc_InteractAnimation (Anim.Type animType) {
+      _player.requestAnimationPlay(animType);
+   }
+
    [ClientRpc]
    protected void Rpc_UpdateHair (HairLayer.Type newHairType, ColorType newHairColor1, ColorType newHairColor2) {
       if (_player is BodyEntity) {
@@ -81,10 +91,10 @@ public class RPCManager : NetworkBehaviour {
       QuestType typeOfQuest = (QuestType) Enum.Parse(typeof(QuestType), questType, true);
       switch (typeOfQuest) {
          case QuestType.Deliver:
-            npc.npcData.npcQuestList[0].deliveryQuestList[questIndex].questState = (QuestState) questProgress;
+            npc.npcData.deliveryQuestList[questIndex].questState = (QuestState) questProgress;
             break;
          case QuestType.Hunt:
-            npc.npcData.npcQuestList[0].huntQuestList[questIndex].questState = (QuestState) questProgress;
+            npc.npcData.huntQuestList[questIndex].questState = (QuestState) questProgress;
             break;
       }
    }
@@ -727,7 +737,7 @@ public class RPCManager : NetworkBehaviour {
    [Command]
    public void Cmd_CreateNPCRelation (int npcID, string npcName) {
       NPC npc = NPCManager.self.getNPC(npcID);
-      List<QuestInfo> questList = npc.npcData.npcQuestList[0].getAllQuests();
+      List<QuestInfo> questList = npc.npcData.getAllQuests();
       int deliverIndex = 0;
       int huntIndex = 0;
 
@@ -1011,7 +1021,8 @@ public class RPCManager : NetworkBehaviour {
       NPC npc = NPCManager.self.getNPC(npcID);
 
       // Checks the required items if it exists in the database
-      Item requiredItem = npc.npcData.npcQuestList[0].deliveryQuestList[questIndex].deliveryQuest.itemToDeliver;
+      QuestSeed randomizedSeed = QuestSeed.randomizedQuestSeed(npcID);
+      Item requiredItem = randomizedSeed.requiredItem;
       List<CraftingIngredients.Type> requiredItemList = new List<CraftingIngredients.Type>();
       requiredItemList.Add((CraftingIngredients.Type) requiredItem.itemTypeId);
 
@@ -1022,19 +1033,19 @@ public class RPCManager : NetworkBehaviour {
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Determines if npc is near player
             float distance = Vector2.Distance(npc.transform.position, _player.transform.position);
-
+            
             if (distance > NPC.TALK_DISTANCE) {
                D.log("Too far away from the player!");
                return;
             }
 
             if (databaseItemList.Count <= 0) {
-               D.log("You do not have the materials!");
+               D.log("QuestReward: Client Items does not match Database!!");
                return;
             } else {
                for (int i = 0; i < databaseItemList.Count; i++) {
                   if (databaseItemList[i].count < requiredItem.count) {
-                     D.log("Insufficient Materials");
+                     D.log("QuestReward: Client Items does not match Database!!");
                      return;
                   }
                }
@@ -1044,31 +1055,43 @@ public class RPCManager : NetworkBehaviour {
       });
    }
 
+   [TargetRpc]
+   public void Target_callInsufficientNotification (NetworkConnection connection, int npcID) {
+      NPC npc = NPCManager.self.getNPC(npcID);
+      Instantiate(PrefabsManager.self.insufficientPrefab, npc.transform.position + new Vector3(0f, .24f), Quaternion.identity);
+   }
+
    [Server]
    private void processNPCReward (int userID, int npcID, int questIndex, List<Item> databaseItems) {
       // Retrieves the npc quest data on server side using npc id
       NPC npc = NPCManager.self.getNPC(npcID);
 
-      // Generates the item to be rewarded
-      int rewardQuantity = npc.npcData.npcQuestList[0].deliveryQuestList[questIndex].rewardQuantity;
-      CraftingIngredients questReward = new CraftingIngredients(0, (int) npc.npcData.npcQuestList[0].deliveryQuestList[questIndex].rewardType, ColorType.DarkGreen, ColorType.DarkPurple, "");
-      questReward.itemTypeId = (int) questReward.type;
-      questReward.count = rewardQuantity;
+      // Retrieves the randomized seed data
+      QuestSeed randomizedSeed = QuestSeed.randomizedQuestSeed(npcID);
 
       // Fetch reward and database items for comparison
-      Item rewardItem = questReward;
+      List<Item> rewardItems = new List<Item>();
+      rewardItems.Add(randomizedSeed.rewardItem);
+
       List<Item> requiredItems = new List<Item>();
-      Item requiredItem = npc.npcData.npcQuestList[0].deliveryQuestList[questIndex].deliveryQuest.itemToDeliver;
+      List<int> rewardItemIDList = new List<int>();
+
+      Item requiredItem = randomizedSeed.requiredItem;
       requiredItems.Add(requiredItem);
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Fetches reward item id
-         int rewardItemID = DB_Main.getItemID(userID, (int) rewardItem.category, rewardItem.itemTypeId);
+         for(int i = 0; i < rewardItems.Count; i++) {
+            int rewardItemID = DB_Main.getItemID(userID, (int) rewardItems[i].category, rewardItems[i].itemTypeId);
+            rewardItemIDList.Add(rewardItemID);
+         }
 
          // Sends notification to player about the item received
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            rewardItem.id = rewardItemID;
-            finalizeRewards(userID, rewardItem, databaseItems, requiredItems);
+            for (int i = 0; i < rewardItems.Count; i++) {
+               rewardItems[i].id = rewardItemIDList[i];
+            }
+            finalizeRewards(userID, rewardItems, databaseItems, requiredItems);
          });
       });
    }
@@ -1078,7 +1101,19 @@ public class RPCManager : NetworkBehaviour {
       // Gets loots for enemy type
       EnemyLootLibrary lootLibrary = RewardManager.self.enemyLootList.Find(_ => _.enemyType == enemyType);
       List<LootInfo> processedLoots = lootLibrary.dropTypes.requestLootList();
-      processGenericLoots(processedLoots);
+   
+      // Registers list of ingredient types for data fetching
+      List<CraftingIngredients.Type> itemLoots = new List<CraftingIngredients.Type>();
+      for (int i = 0; i < processedLoots.Count; i++) {
+         itemLoots.Add(processedLoots[i].lootType);
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<Item> databaseList = DB_Main.getRequiredIngredients(_player.userId, itemLoots);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            processGroupRewards(_player.userId, databaseList, processedLoots);
+         });
+      });
    }
 
    [Server]
@@ -1096,12 +1131,12 @@ public class RPCManager : NetworkBehaviour {
          databaseItemList = DB_Main.getRequiredIngredients(userId, requiredItemList);
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             if (databaseItemList.Count <= 0) {
-               D.log("You do not have the materials!");
+               D.log("Crafting: Client does not have the materials!");
                return;
             } else {
                for (int i = 0; i < databaseItemList.Count; i++) {
                   if (databaseItemList[i].count < data.combinationRequirements[i].count) {
-                     D.log("Insufficient Materials");
+                     D.log("Crafting: Client has Insufficient Materials");
                      return;
                   }
                }
@@ -1117,6 +1152,7 @@ public class RPCManager : NetworkBehaviour {
       // Gets the crafting result using cached scriptable object combo data
       CombinationData data = RewardManager.self.combinationDataList.comboDataList.Find(_ => _.blueprintTypeID == (int) blueprintType);
       Item rewardItem = data.resultItem;
+      List<Item> rewardItemList = new List<Item>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Fetches reward item id
@@ -1124,16 +1160,19 @@ public class RPCManager : NetworkBehaviour {
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             rewardItem.id = rewardItemID;
-            finalizeRewards(userId, rewardItem, databaseItems, requiredItems);
+            rewardItemList.Add(data.resultItem);
+            finalizeRewards(userId, rewardItemList, databaseItems, requiredItems);
          });
       });
    }
 
    [Server]
-   private void finalizeRewards (int userId, Item rewardItem, List<Item> databaseItems, List<Item> requiredItems) {
+   private void finalizeRewards (int userId, List<Item> rewardItem, List<Item> databaseItems, List<Item> requiredItems) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Creates or updates item database count
-         DB_Main.createOrUpdateItemCount(userId, rewardItem.id, rewardItem);
+         for (int i = 0; i < rewardItem.Count; i++) {
+            // Creates or updates item database count
+            DB_Main.createOrUpdateItemCount(userId, rewardItem[i].id, rewardItem[i]);
+         }
 
          for(int i = 0; i < requiredItems.Count; i++) {
             int deductCount = requiredItems[i].count;
@@ -1144,30 +1183,7 @@ public class RPCManager : NetworkBehaviour {
          }
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_ReceiveItem(_player.connectionToClient, rewardItem);
-         });
-      });
-   }
-
-   [Server]
-   public void processGenericLoots(List<LootInfo> processedLoots) {
-      // Item list handling
-      List<Item> newItemList = new List<Item>();
-      int processedLootCount = processedLoots.Count;
-
-      // Generates new list to be passed to client
-      for (int i = 0; i < processedLootCount; i++) {
-         CraftingIngredients createdItem = new CraftingIngredients(0, (int) processedLoots[i].lootType, ColorType.None, ColorType.None, "");
-         createdItem.itemTypeId = (int) processedLoots[i].lootType;
-         newItemList.Add(createdItem.getCastItem());
-      }
-
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         for (int i = 0; i < processedLootCount; i++) {
-            DB_Main.createNewItem(_player.userId, newItemList[i]);
-         }
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_ReceiveItemList(_player.connectionToClient, newItemList.ToArray());
+            Target_ReceiveItemList(_player.connectionToClient, rewardItem.ToArray());
          });
       });
    }
@@ -1230,13 +1246,13 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<Item> databaseList = DB_Main.getRequiredIngredients(_player.userId, itemLoots);
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            processMineReward(_player.userId, databaseList, lootInfoList, oreNode.oreType);
+            processGroupRewards(_player.userId, databaseList, lootInfoList);
          });
       });
    }
 
    [Server]
-   private void processMineReward(int userID, List<Item> databaseItems, List<LootInfo> rewardList, OreNode.Type oreType) {
+   private void processGroupRewards(int userID, List<Item> databaseItems, List<LootInfo> rewardList) {
       // Generate Item List to show in popup after data writing
       List<Item> itemRewardList = new List<Item>();
       for (int i = 0; i < rewardList.Count; i++) {
@@ -1308,7 +1324,11 @@ public class RPCManager : NetworkBehaviour {
    public void processClickableRows(int userId, int npcId, int questType, int questProgress, int questIndex) {
       // Look up the NPC
       NPC npc = NPCManager.self.getNPC(npcId);
-      Item requiredItem = npc.npcData.npcQuestList[0].deliveryQuestList[questIndex].deliveryQuest.itemToDeliver;
+
+      // Checks the required items if it exists in the database
+      QuestSeed randomizedSeed = QuestSeed.randomizedQuestSeed(npcId);
+      Item requiredItem = randomizedSeed.requiredItem;
+
       List<CraftingIngredients.Type> requiredItemList = new List<CraftingIngredients.Type>();
       requiredItemList.Add((CraftingIngredients.Type) requiredItem.itemTypeId);
 
@@ -1331,7 +1351,11 @@ public class RPCManager : NetworkBehaviour {
                      }
                   }
                }
-               dialogueData = NPCPanel.getDialogueInfo(questProgress, npc.npcData.npcQuestList[0].deliveryQuestList[questIndex], hasMaterials);
+               dialogueData = NPCPanel.getDialogueInfo(questProgress, npc.npcData.deliveryQuestList[questIndex], hasMaterials, npcId);
+               if(!hasMaterials) {
+                  Target_callInsufficientNotification(_player.connectionToClient, npcId);
+               }
+
                Target_ReceiveClickableNPCRows(_player.connectionToClient, dialogueData.answerList.ToArray(), npcId);
                Target_ReceiveNPCMessage(_player.connectionToClient, dialogueData.npcDialogue);
             }
@@ -1362,6 +1386,63 @@ public class RPCManager : NetworkBehaviour {
 
       // Spawn the bot on the Clients
       NetworkServer.Spawn(bot.gameObject);
+   }
+
+   [Command]
+   public void Cmd_SpawnTentacle (Vector2 spawnPosition, uint horrorEntityID, int xVal, int yVal) {
+      TentacleEntity bot = Instantiate(PrefabsManager.self.tentaclePrefab, spawnPosition, Quaternion.identity);
+      bot.instanceId = _player.instanceId;
+      bot.facing = Util.randomEnum<Direction>();
+      bot.areaType = _player.areaType;
+      bot.npcType = NPC.Type.Tentacle;
+      bot.faction = NPC.getFaction(bot.npcType);
+      bot.route = null;
+      bot.autoMove = true;
+      bot.nationType = Nation.Type.Pirate;
+      bot.entityName = "Tentacle";
+      bot.locationSide = xVal;
+      bot.locationSideTopBot = yVal;
+
+      Instance instance = InstanceManager.self.getInstance(_player.instanceId);
+      HorrorEntity horror = instance.entities.Find(_ => _.netId == horrorEntityID).GetComponent<HorrorEntity>();
+      bot.horrorEntity = horror;
+      horror.tentacleList.Add(bot);
+
+      instance.entities.Add(bot);
+
+      // Spawn the bot on the Clients
+      NetworkServer.Spawn(bot.gameObject);
+   }
+
+   [Command]
+   public void Cmd_SpawnHorror (Vector2 spawnPosition) {
+      HorrorEntity bot = Instantiate(PrefabsManager.self.horrorPrefab, spawnPosition, Quaternion.identity);
+      bot.instanceId = _player.instanceId;
+      bot.facing = Util.randomEnum<Direction>();
+      bot.areaType = _player.areaType;
+      bot.npcType = NPC.Type.Horror;
+      bot.faction = NPC.getFaction(bot.npcType);
+      bot.nationType = Nation.Type.Pirate;
+      bot.entityName = "Horror";
+      bot.tentaclesLeft = 8;
+
+      // Spawn the bot on the Clients
+      NetworkServer.Spawn(bot.gameObject);
+
+      Instance instance = InstanceManager.self.getInstance(_player.instanceId);
+      instance.entities.Add(bot);
+
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(.5f, -.5f), bot.netId, 1, -1);
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(-.5f, -.5f), bot.netId, -1, -1);
+
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(.5f, .5f), bot.netId, 1, 1);
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(-.5f, .5f), bot.netId, -1, 1);
+
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(-.75f, 0), bot.netId, -1, 0);
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(.75f, 0), bot.netId, 1, 0);
+
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(0, -.75f), bot.netId, 0, -1);
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(0, .75f), bot.netId, 0, 1);
    }
 
    [Command]

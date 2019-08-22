@@ -12,11 +12,25 @@ public class RPCManager : NetworkBehaviour {
 
    #endregion
 
-   void Start () {
+   private void Awake () {
       _player = GetComponent<NetEntity>();
+   }
 
+   void Start () {
       // Initialized Inventory Cache
-      InventoryCacheManager.self.fetchInventory();
+      if (_player.netIdent.isLocalPlayer) {
+         InventoryCacheManager.self.fetchInventory();
+      }
+   }
+
+   [Command]
+   public void Cmd_InteractAnimation(Anim.Type animType) {
+      Rpc_InteractAnimation(animType);
+   }
+
+   [ClientRpc]
+   public void Rpc_InteractAnimation (Anim.Type animType) {
+      _player.requestAnimationPlay(animType);
    }
 
    [ClientRpc]
@@ -74,14 +88,13 @@ public class RPCManager : NetworkBehaviour {
    [TargetRpc]
    public void Target_UpdateNPCQuestProgress (NetworkConnection connection, int npcID, int questProgress, int questIndex, string questType) {
       NPC npc = NPCManager.self.getNPC(npcID);
-  
       QuestType typeOfQuest = (QuestType) Enum.Parse(typeof(QuestType), questType, true);
       switch (typeOfQuest) {
          case QuestType.Deliver:
-            npc.npcData.npcQuestList[0].deliveryQuestList[questIndex].questState = (QuestState) questProgress;
+            npc.npcData.deliveryQuestList[questIndex].questState = (QuestState) questProgress;
             break;
          case QuestType.Hunt:
-            npc.npcData.npcQuestList[0].huntQuestList[questIndex].questState = (QuestState) questProgress;
+            npc.npcData.huntQuestList[questIndex].questState = (QuestState) questProgress;
             break;
       }
    }
@@ -227,11 +240,24 @@ public class RPCManager : NetworkBehaviour {
    public void Target_ReceiveNPCMessage (NetworkConnection connection, string response) {
       if (NPCPanel.self.isActiveAndEnabled) {
          // Set the new text message
-         NPCPanel.self.greetingText.text = response;
-
-         // Make the NPC start talking
-         AutoTyper.SlowlyRevealText(NPCPanel.self.greetingText, response);
+         NPCPanel.self.SetMessage(response);
       }
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveTradeHistory (NetworkConnection connection, TradeHistoryInfo[] trades,
+      int pageIndex, int totalTradeCount) {
+      List<TradeHistoryInfo> tradeList = new List<TradeHistoryInfo>(trades);
+
+      // Make sure the panel is showing
+      TradeHistoryPanel panel = (TradeHistoryPanel) PanelManager.self.get(Panel.Type.TradeHistory);
+
+      if (!panel.isShowing()) {
+         PanelManager.self.pushPanel(panel.type);
+      }
+
+      // Pass them along to the Trade History panel
+      panel.updatePanelWithTrades(tradeList, pageIndex, totalTradeCount);
    }
 
    [Command]
@@ -315,6 +341,35 @@ public class RPCManager : NetworkBehaviour {
 
       // Send this along to the player
       _player.rpc.Target_ReceiveOptionsInfo(_player.connectionToClient, instance.numberInArea, totalInstances);
+   }
+
+   [Command]
+   public void Cmd_RequestTradeHistoryInfoFromServer (int pageIndex, int itemsPerPage) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Enforce a reasonable max here
+      if (itemsPerPage > 200) {
+         D.warning("Requesting too many items per page.");
+         return;
+      }
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+
+         // Gets the number of items
+         int totalTradeCount = DB_Main.getTradeHistoryCount(_player.userId);
+
+         // Get the items from the database
+         List<TradeHistoryInfo> tradeList = DB_Main.getTradeHistory(_player.userId, pageIndex, itemsPerPage);
+
+         // Back to the Unity thread to send the results back to the client
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            _player.rpc.Target_ReceiveTradeHistory(_player.connectionToClient, tradeList.ToArray(), pageIndex, totalTradeCount);
+         });
+      });
    }
 
    [Command]
@@ -666,7 +721,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_UpdateNPCRelation(int npcID, int relationLevel) {
+   public void Cmd_UpdateNPCRelation (int npcID, int relationLevel) {
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Update the setting in the database
@@ -680,9 +735,9 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_CreateNPCRelation(int npcID, string npcName) {
+   public void Cmd_CreateNPCRelation (int npcID, string npcName) {
       NPC npc = NPCManager.self.getNPC(npcID);
-      List<QuestInfo> questList = npc.npcData.npcQuestList[0].getAllQuests();
+      List<QuestInfo> questList = npc.npcData.getAllQuests();
       int deliverIndex = 0;
       int huntIndex = 0;
 
@@ -718,12 +773,12 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_DispatchComplete(int npcID, int relpId) {
+   public void Cmd_DispatchComplete (int npcID, int relpId) {
       Target_NPCPanelComplete(_player.connectionToClient, relpId, npcID);
    }
 
    [Command]
-   public void Cmd_UpdateNPCQuestProgress(int npcID, int questProgress, int questIndex, string questType) {
+   public void Cmd_UpdateNPCQuestProgress (int npcID, int questProgress, int questIndex, string questType) {
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Update the setting in the database
@@ -737,10 +792,10 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_GetNPCRelation(int npcID, string npcName) {
+   public void Cmd_GetNPCRelation (int npcID, string npcName) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List< NPCRelationInfo> npcRelationList = DB_Main.getNPCRelationInfo(_player.userId, npcID);
-         
+         List<NPCRelationInfo> npcRelationList = DB_Main.getNPCRelationInfo(_player.userId, npcID);
+
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             if (npcRelationList.Count == 0) {
                // Send command to create data for non existent npc
@@ -951,10 +1006,275 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_DirectAddItem (Item item) {
-      // Add it to their inventory
+   public void Cmd_FinishedQuest (int npcID, int questIndex) {
+      validateNPCRewards(_player.userId, npcID, questIndex);
+   }
+
+   [Command]
+   public void Cmd_CraftItem (Blueprint.Type blueprintType) {
+      validateCraftingRewards(_player.userId, blueprintType);
+   }
+
+   [Server]
+   public void validateNPCRewards (int userID, int npcID, int questIndex) {
+      // Retrieves the npc quest data on server side using npc id
+      NPC npc = NPCManager.self.getNPC(npcID);
+
+      // Checks the required items if it exists in the database
+      QuestSeed randomizedSeed = QuestSeed.randomizedQuestSeed(npcID);
+      Item requiredItem = randomizedSeed.requiredItem;
+      List<CraftingIngredients.Type> requiredItemList = new List<CraftingIngredients.Type>();
+      requiredItemList.Add((CraftingIngredients.Type) requiredItem.itemTypeId);
+
+      // Fetches the needed items and checks if it is equivalent to the requirement
+      List<Item> databaseItemList = new List<Item>();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         item = DB_Main.createNewItem(_player.userId, item);
+         databaseItemList = DB_Main.getRequiredIngredients(userID, requiredItemList);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Determines if npc is near player
+            float distance = Vector2.Distance(npc.transform.position, _player.transform.position);
+            
+            if (distance > NPC.TALK_DISTANCE) {
+               D.log("Too far away from the player!");
+               return;
+            }
+
+            if (databaseItemList.Count <= 0) {
+               D.log("QuestReward: Client Items does not match Database!!");
+               return;
+            } else {
+               for (int i = 0; i < databaseItemList.Count; i++) {
+                  if (databaseItemList[i].count < requiredItem.count) {
+                     D.log("QuestReward: Client Items does not match Database!!");
+                     return;
+                  }
+               }
+            }
+            processNPCReward(userID, npcID, questIndex, databaseItemList);
+         });
+      });
+   }
+
+   [TargetRpc]
+   public void Target_callInsufficientNotification (NetworkConnection connection, int npcID) {
+      NPC npc = NPCManager.self.getNPC(npcID);
+      Instantiate(PrefabsManager.self.insufficientPrefab, npc.transform.position + new Vector3(0f, .24f), Quaternion.identity);
+   }
+
+   [Server]
+   private void processNPCReward (int userID, int npcID, int questIndex, List<Item> databaseItems) {
+      // Retrieves the npc quest data on server side using npc id
+      NPC npc = NPCManager.self.getNPC(npcID);
+
+      // Retrieves the randomized seed data
+      QuestSeed randomizedSeed = QuestSeed.randomizedQuestSeed(npcID);
+
+      // Fetch reward and database items for comparison
+      List<Item> rewardItems = new List<Item>();
+      rewardItems.Add(randomizedSeed.rewardItem);
+
+      List<Item> requiredItems = new List<Item>();
+      List<int> rewardItemIDList = new List<int>();
+
+      Item requiredItem = randomizedSeed.requiredItem;
+      requiredItems.Add(requiredItem);
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Fetches reward item id
+         for(int i = 0; i < rewardItems.Count; i++) {
+            int rewardItemID = DB_Main.getItemID(userID, (int) rewardItems[i].category, rewardItems[i].itemTypeId);
+            rewardItemIDList.Add(rewardItemID);
+         }
+
+         // Sends notification to player about the item received
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            for (int i = 0; i < rewardItems.Count; i++) {
+               rewardItems[i].id = rewardItemIDList[i];
+            }
+            finalizeRewards(userID, rewardItems, databaseItems, requiredItems);
+         });
+      });
+   }
+
+   [Server]
+   public void processEnemyRewards (Enemy.Type enemyType) {
+      // Gets loots for enemy type
+      EnemyLootLibrary lootLibrary = RewardManager.self.enemyLootList.Find(_ => _.enemyType == enemyType);
+      List<LootInfo> processedLoots = lootLibrary.dropTypes.requestLootList();
+   
+      // Registers list of ingredient types for data fetching
+      List<CraftingIngredients.Type> itemLoots = new List<CraftingIngredients.Type>();
+      for (int i = 0; i < processedLoots.Count; i++) {
+         itemLoots.Add(processedLoots[i].lootType);
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<Item> databaseList = DB_Main.getRequiredIngredients(_player.userId, itemLoots);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            processGroupRewards(_player.userId, databaseList, processedLoots);
+         });
+      });
+   }
+
+   [Server]
+   public void validateCraftingRewards (int userId, Blueprint.Type blueprintType) {
+      CombinationData data = RewardManager.self.combinationDataList.comboDataList.Find(_ => _.blueprintTypeID == (int) blueprintType);
+  
+      List<CraftingIngredients.Type> requiredItemList = new List<CraftingIngredients.Type>();
+      for (int i = 0; i < data.combinationRequirements.Count; i++) {
+         requiredItemList.Add((CraftingIngredients.Type) data.combinationRequirements[i].itemTypeId);
+      }
+
+      // Fetches the needed items and checks if it is equivalent to the requirement
+      List<Item> databaseItemList = new List<Item>();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         databaseItemList = DB_Main.getRequiredIngredients(userId, requiredItemList);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (databaseItemList.Count <= 0) {
+               D.log("Crafting: Client does not have the materials!");
+               return;
+            } else {
+               for (int i = 0; i < databaseItemList.Count; i++) {
+                  if (databaseItemList[i].count < data.combinationRequirements[i].count) {
+                     D.log("Crafting: Client has Insufficient Materials");
+                     return;
+                  }
+               }
+            }
+
+            processCraftingRewards(userId, blueprintType, databaseItemList, data.combinationRequirements);
+         });
+      });
+   }
+
+   [Server]
+   private void processCraftingRewards (int userId, Blueprint.Type blueprintType, List<Item> databaseItems, List<Item> requiredItems) {
+      // Gets the crafting result using cached scriptable object combo data
+      CombinationData data = RewardManager.self.combinationDataList.comboDataList.Find(_ => _.blueprintTypeID == (int) blueprintType);
+      Item rewardItem = data.resultItem;
+      List<Item> rewardItemList = new List<Item>();
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Fetches reward item id
+         int rewardItemID = DB_Main.getItemID(userId, (int) rewardItem.category, rewardItem.itemTypeId);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            rewardItem.id = rewardItemID;
+            rewardItemList.Add(data.resultItem);
+            finalizeRewards(userId, rewardItemList, databaseItems, requiredItems);
+         });
+      });
+   }
+
+   [Server]
+   private void finalizeRewards (int userId, List<Item> rewardItem, List<Item> databaseItems, List<Item> requiredItems) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         for (int i = 0; i < rewardItem.Count; i++) {
+            // Creates or updates item database count
+            DB_Main.createOrUpdateItemCount(userId, rewardItem[i].id, rewardItem[i]);
+         }
+
+         for(int i = 0; i < requiredItems.Count; i++) {
+            int deductCount = requiredItems[i].count;
+
+            // Deduct quantity of each required ingredient or delete item if it hits zero count
+            int databaseID = databaseItems.Find(_ => _.itemTypeId == requiredItems[i].itemTypeId && _.category == requiredItems[i].category).id;
+            DB_Main.decreaseQuantityOrDeleteItem(userId, databaseID, deductCount);
+         }
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_ReceiveItemList(_player.connectionToClient, rewardItem.ToArray());
+         });
+      });
+   }
+   
+   [TargetRpc]
+   public void Target_ReceiveItemList(NetworkConnection connection, Item[] itemList) {
+      RewardManager.self.showItemsInRewardPanel(itemList.ToList());
+
+      // Tells the user to update their inventory cache to retrieve the updated items
+      InventoryCacheManager.self.fetchInventory();
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveItem (NetworkConnection connection, Item item) {
+      RewardManager.self.showItemInRewardPanel(item);
+
+      // Tells the user to update their inventory cache to retrieve the updated items
+      InventoryCacheManager.self.fetchInventory();
+   }
+
+   [TargetRpc]
+   public void Target_UpdateInventory (NetworkConnection connection) {
+      InventoryCacheManager.self.fetchInventory();
+   }
+
+   [Command]
+   public void Cmd_MineNode (int nodeId) {
+      OreNode oreNode = OreManager.self.getOreNode(nodeId);
+
+      // Make sure we found the Node
+      if (oreNode == null) {
+         D.warning("Ore node not found: " + nodeId);
+         return;
+      }
+
+      // Make sure the user is in the right instance
+      if (_player.instanceId != oreNode.instanceId) {
+         D.warning("Player trying to open ore node from a different instance!");
+         return;
+      }
+
+      // Make sure they didn't already open it
+      if (oreNode.userIds.Contains(_player.userId)) {
+         D.warning("Player already mined this ore node!");
+         return;
+      }
+
+      // Add the user ID to the list
+      oreNode.userIds.Add(_player.userId);
+
+      // Gathers the item rewards from the scriptable object
+      List<LootInfo> lootInfoList = RewardManager.self.oreLootList.Find(_ => _.oreType == oreNode.oreType).dropTypes.requestLootList();
+
+      // Registers list of ingredient types for data fetching
+      List<CraftingIngredients.Type> itemLoots = new List<CraftingIngredients.Type>();
+      for(int i = 0; i < lootInfoList.Count; i++) {
+         itemLoots.Add(lootInfoList[i].lootType);
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<Item> databaseList = DB_Main.getRequiredIngredients(_player.userId, itemLoots);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            processGroupRewards(_player.userId, databaseList, lootInfoList);
+         });
+      });
+   }
+
+   [Server]
+   private void processGroupRewards(int userID, List<Item> databaseItems, List<LootInfo> rewardList) {
+      // Generate Item List to show in popup after data writing
+      List<Item> itemRewardList = new List<Item>();
+      for (int i = 0; i < rewardList.Count; i++) {
+         Item itemToCreate = new CraftingIngredients(0, rewardList[i].lootType, ColorType.Black, ColorType.Black);
+         Item databaseItemType = databaseItems.Find(_ => _.category == Item.Category.CraftingIngredients && _.itemTypeId == (int) rewardList[i].lootType);
+         
+         // Registers the quantity of each item
+         itemToCreate.count = rewardList[i].quantity;
+         if (databaseItemType != null) {
+            itemToCreate.id = databaseItemType.id;
+         }
+         itemRewardList.Add(itemToCreate);
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Creates or updates database item
+         DB_Main.createOrUpdateItemListCount(userID, itemRewardList);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Calls Reward Popup
+            Target_ReceiveItemList(_player.connectionToClient, itemRewardList.ToArray());
+         });
       });
    }
 
@@ -996,31 +1316,51 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_GetClickableRows (int npcId) {
+   public void Cmd_GetClickableRows (int npcId, int questType, int questProgress, int questIndex) {
+      processClickableRows(_player.userId, npcId, questType, questProgress, questIndex);
+   }
+
+   [Server]
+   public void processClickableRows(int userId, int npcId, int questType, int questProgress, int questIndex) {
       // Look up the NPC
       NPC npc = NPCManager.self.getNPC(npcId);
 
-      List<ClickableText.Type> list = npc.currentAnswerDialogue;
-      // If the player is too far, don't let them
-      if (Vector2.Distance(_player.transform.position, npc.transform.position) > 2.0f) {
-         D.warning("Player trying to interact with NPC from too far away!");
-         return;
-      }
+      // Checks the required items if it exists in the database
+      QuestSeed randomizedSeed = QuestSeed.randomizedQuestSeed(npcId);
+      Item requiredItem = randomizedSeed.requiredItem;
 
-      // Send the options to the player
-      Target_ReceiveClickableNPCRows(_player.connectionToClient, list.ToArray(), npcId);
-   }
+      List<CraftingIngredients.Type> requiredItemList = new List<CraftingIngredients.Type>();
+      requiredItemList.Add((CraftingIngredients.Type) requiredItem.itemTypeId);
 
-   [Command]
-   public void Cmd_ClickedNPCRow (int npcId, ClickableText.Type optionType) {
-      NPC npc = NPCManager.self.getNPC(npcId);
+      NPCPanel.DialogueData dialogueData = new NPCPanel.DialogueData();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<NPCRelationInfo> npcRelationList = DB_Main.getNPCRelationInfo(_player.userId, npcId);
+         List<Item> databaseItemList = DB_Main.getRequiredIngredients(userId, requiredItemList);
 
-      // Figure out the response we should send back
-      //string response = npc.tradeGossip;
-      string response = npc.npcReply;
+         bool hasMaterials = true;
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if ((QuestType) questType == QuestType.Deliver) {
+               if (databaseItemList.Count <= 0) {
+                  D.log("You do not have the materials!");
+                  hasMaterials = false;
+               } else {
+                  for (int i = 0; i < databaseItemList.Count; i++) {
+                     if (databaseItemList[i].count < requiredItem.count) {
+                        D.log("Insufficient Materials");
+                        hasMaterials = false;
+                     }
+                  }
+               }
+               dialogueData = NPCPanel.getDialogueInfo(questProgress, npc.npcData.deliveryQuestList[questIndex], hasMaterials, npcId);
+               if(!hasMaterials) {
+                  Target_callInsufficientNotification(_player.connectionToClient, npcId);
+               }
 
-      // Send the response to the player
-      Target_ReceiveNPCMessage(_player.connectionToClient, response);
+               Target_ReceiveClickableNPCRows(_player.connectionToClient, dialogueData.answerList.ToArray(), npcId);
+               Target_ReceiveNPCMessage(_player.connectionToClient, dialogueData.npcDialogue);
+            }
+         });
+      });
    }
 
    [Command]
