@@ -23,6 +23,9 @@ public class Server : Photon.PunBehaviour {
    // A listing of open area types on this server
    public Area.Type[] openAreas = new Area.Type[0];
 
+   // Keeps track of the random map summaries for this server
+   public MapSummary[] mapSummaries = new MapSummary[Area.getRandomAreaTypes().Count];
+
    #endregion
 
    private void Awake () {
@@ -44,6 +47,11 @@ public class Server : Photon.PunBehaviour {
       ServerNetwork.self.servers.Add(this);
    }
 
+   private void Start () {
+      // Update our map summaries with the latest number of players
+      InvokeRepeating("updateMapSummariesForThisServer", 5f, 5f);
+   }
+
    private void Update () {
       if (view != null && view.isMine) {
          this.ipAddress = MyNetworkManager.self.networkAddress;
@@ -61,6 +69,16 @@ public class Server : Photon.PunBehaviour {
          stream.SendNext(playerCount);
          stream.SendNext(name);
          stream.SendNext(openAreas);
+
+         for (int i = 0; i < this.mapSummaries.Length; i++) {
+            MapSummary summary = this.mapSummaries[i];
+            stream.SendNext(summary.serverAddress);
+            stream.SendNext(summary.serverPort);
+            stream.SendNext(summary.areaType);
+            stream.SendNext(summary.biomeType);
+            stream.SendNext(summary.playersCount);
+            stream.SendNext(summary.maxPlayersCount);
+         }
       } else {
          // Someone else's object, receive data 
          id = (int) stream.ReceiveNext();
@@ -69,6 +87,18 @@ public class Server : Photon.PunBehaviour {
          this.playerCount = (int) stream.ReceiveNext();
          this.name = (string) stream.ReceiveNext();
          this.openAreas = (Area.Type[]) stream.ReceiveNext();
+
+         for (int i = 0; i < this.mapSummaries.Length; i++) {
+            MapSummary summary = new MapSummary();
+            summary.serverAddress = (string) stream.ReceiveNext();
+            summary.serverPort = (int) stream.ReceiveNext();
+            summary.areaType = (Area.Type) stream.ReceiveNext();
+            summary.biomeType = (Biome.Type) stream.ReceiveNext();
+            summary.playersCount = (int) stream.ReceiveNext();
+            summary.maxPlayersCount = (int) stream.ReceiveNext();
+
+            this.mapSummaries[i] = summary;
+         }
       }
    }
 
@@ -81,6 +111,19 @@ public class Server : Photon.PunBehaviour {
 
    void OnDestroy () {
       ServerNetwork.self.removeServer(this);
+   }
+
+   protected void updateMapSummariesForThisServer () {
+      // Let the other servers know about our map summaries
+      if (this.photonView.isMine) {
+         List<MapSummary> mapSummaryList = new List<MapSummary>();
+
+         foreach (Instance instance in RandomMapManager.self.getInstances()) {
+            mapSummaryList.Add(instance.getMapSummary());
+         }
+
+         this.mapSummaries = mapSummaryList.ToArray();
+      }
    }
 
    [PunRPC]

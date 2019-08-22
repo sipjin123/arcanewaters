@@ -13,6 +13,9 @@ public class Instance : Photon.PunBehaviour {
    // The type of Area this Instance is
    public Area.Type areaType;
 
+   // The type of Biome this Instance is
+   public Biome.Type biomeType = Biome.Type.None;
+
    // The list of Entities in this instance
    public List<NetworkBehaviour> entities = new List<NetworkBehaviour>();
 
@@ -21,6 +24,12 @@ public class Instance : Photon.PunBehaviour {
 
    // The number assigned to this instance based on the area type
    public int numberInArea;
+
+   // The server address for this Instance
+   public string serverAddress;
+
+   // The server port for this Instance
+   public int serverPort;
 
    #endregion
 
@@ -67,12 +76,18 @@ public class Instance : Photon.PunBehaviour {
          // We own this object: send the others our data 
          stream.SendNext(id);
          stream.SendNext(areaType);
+         stream.SendNext(biomeType);
          stream.SendNext(entities.Count);
+         stream.SendNext(serverAddress);
+         stream.SendNext(serverPort);
       } else {
          // Someone else owns this object, receive data 
-         id = (int) stream.ReceiveNext();
-         this.name = (string) stream.ReceiveNext();
+         this.id = (int) stream.ReceiveNext();
+         this.areaType = (Area.Type) stream.ReceiveNext();
+         this.biomeType = (Biome.Type) stream.ReceiveNext();
          this.entityCount = (int) stream.ReceiveNext();
+         this.serverAddress = (string) stream.ReceiveNext();
+         this.serverPort = (int) stream.ReceiveNext();
       }
    }
 
@@ -96,6 +111,10 @@ public class Instance : Photon.PunBehaviour {
       return 50;
    }
 
+   public MapSummary getMapSummary () {
+      return new MapSummary(this.serverAddress, this.serverPort, this.areaType, this.biomeType, getPlayerCount(), getMaxPlayers());
+   }
+
    public void removeEntityFromInstance (NetworkBehaviour entity) {
       if (entities.Contains(entity)) {
          this.entities.Remove(entity);
@@ -103,6 +122,11 @@ public class Instance : Photon.PunBehaviour {
    }
 
    protected void checkIfInstanceIsEmpty () {
+      // We don't worry about this for the Randomly generated maps
+      if (Area.isRandom(this.areaType)) {
+         return;
+      }
+
       // If there's no one in the instance right now, increase the  count
       if (getPlayerCount() <= 0) {
          _consecutiveEmptyChecks++;

@@ -25,7 +25,7 @@ public class InstanceManager : MonoBehaviour {
 
       // If there isn't one, we'll have to make it
       if (instance == null) {
-         instance = createNewInstance(areaType);
+         instance = createNewInstance(areaType, Biome.Type.None);
       }
 
       // Set the player's instance ID
@@ -60,11 +60,14 @@ public class InstanceManager : MonoBehaviour {
       return null;
    }
 
-   protected Instance createNewInstance (Area.Type areaType) {
+   public Instance createNewInstance (Area.Type areaType, Biome.Type biomeType) {
       Instance instance = Instantiate(instancePrefab, this.transform);
       instance.id = _id++;
       instance.areaType = areaType;
+      instance.biomeType = biomeType;
       instance.numberInArea = getInstanceCount(areaType) + 1;
+      instance.serverAddress = MyNetworkManager.self.networkAddress;
+      instance.serverPort = MyNetworkManager.self.telepathy.port;
 
       // Keep track of it
       _instances.Add(instance.id, instance);

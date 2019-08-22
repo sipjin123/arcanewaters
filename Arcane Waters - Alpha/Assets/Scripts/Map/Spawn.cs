@@ -15,6 +15,10 @@ public class Spawn : MonoBehaviour {
       TreasurePine = 16, OutsideTreasureSite = 17, ForestMerchantInside = 18, ForestTownMerchantOutside = 19,
       ForestTownWeaponsOutside = 20, ForestWeaponsInside = 21, DesertWeaponsInside = 22, DesertWeaponsOutside = 23,
       ForestShipyardOutside = 24, ForestShipyardInside = 25,
+
+      RandomMap_1 = 1001,
+      RandomMap_2 = 1002,
+      RandomMap_3 = 1003,
    }
 
    // The Type of Spawn this is

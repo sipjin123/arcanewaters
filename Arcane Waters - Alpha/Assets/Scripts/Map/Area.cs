@@ -8,12 +8,18 @@ using UnityEngine.Tilemaps;
 public class Area : MonoBehaviour {
    #region Public Variables
 
+   [System.Serializable]
    // The types of area
    public enum Type { None = 0,
       StartingTown = 1, Farm = 2, Ocean1 = 3, House = 4, TreasurePine = 5,
       DesertTown = 6, SeaBottom = 7, SeaMiddle = 8, SeaTop = 9, MerchantShop_Desert = 10,
       MerchantShop_Forest = 11, AdventureShop_Forest = 12, AdventureShop_Desert = 13,
       Shipyard_Forest = 14,
+
+      // Each server can make up to 3 randomly generated maps
+      SeaRandom_1 = 1001,
+      SeaRandom_2 = 1002,
+      SeaRandom_3 = 1003,
    }
 
    // The type of area this is
@@ -82,12 +88,20 @@ public class Area : MonoBehaviour {
       return areaType.ToString().Contains("Treasure");
    }
 
+   public static bool isRandom (Type areaType) {
+      return getRandomAreaTypes().Contains(areaType);
+   }
+
    public static bool isShop (Type areaType) {
       return areaType.ToString().Contains("Shop");
    }
 
    public List<Tilemap> getTilemaps () {
       return _tilemaps;
+   }
+
+   public static List<Area.Type> getRandomAreaTypes () {
+      return new List<Type>() { Type.SeaRandom_1, Type.SeaRandom_2, Type.SeaRandom_3 };
    }
 
    public static string getName (Type areaType) {

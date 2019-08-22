@@ -706,16 +706,40 @@ public class NetEntity : NetworkBehaviour
       }
    }
 
+   [Command]
+   public void Cmd_SpawnIntoGeneratedMap (MapSummary mapSummary) {
+      // Look up the Spawn object and the server that is associated with this map data
+      Area area = AreaManager.self.getArea(mapSummary.areaType);
+      Spawn spawn = area.GetComponentInChildren<Spawn>();
+      Server server = ServerNetwork.self.getServer(mapSummary.serverAddress, mapSummary.serverPort);
+
+      // Proceed to spawn onto the requested server
+      spawnOnSpecificServer(server, mapSummary.areaType, spawn, Direction.North);
+   }
+
+   [Command]
+   public void Cmd_SpawnInNewMap (Area.Type newArea, Spawn.Type spawnType, Direction newFacingDirection) {
+      Spawn spawn = SpawnManager.self.getSpawn(spawnType);
+
+      spawnInNewMap(newArea, spawn, newFacingDirection);
+   }
+
    [Server]
    public void spawnInNewMap (Area.Type newArea, Spawn spawn, Direction newFacingDirection) {
+      // Check which server we're likely to redirect to
+      Server bestServer = ServerNetwork.self.findBestServerForConnectingPlayer(newArea, this.entityName, this.userId, this.connectionToClient.address);
+
+      // Now that we know the target server, redirect them there
+      spawnOnSpecificServer(bestServer, newArea, spawn, newFacingDirection);
+   }
+
+   [Server]
+   public void spawnOnSpecificServer (Server newServer, Area.Type newArea, Spawn spawn, Direction newFacingDirection) {
       int connectionId = this.connectionToClient.connectionId;
       Vector2 newPosition = spawn.getSpawnPosition();
 
       // Make a note that we're about to proceed with a warp
       this.isAboutToWarpOnServer = true;
-
-      // Check which server we're likely to redirect to
-      Server bestServer = ServerNetwork.self.findBestServerForConnectingPlayer(newArea, this.entityName, this.userId, this.connectionToClient.address);
 
       // Update the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -732,7 +756,7 @@ public class NetEntity : NetworkBehaviour
             NetworkServer.Destroy(this.gameObject);
 
             // Send a Redirect message to the client
-            RedirectMessage redirectMessage = new RedirectMessage(this.netId, bestServer.ipAddress, bestServer.port);
+            RedirectMessage redirectMessage = new RedirectMessage(this.netId, newServer.ipAddress, newServer.port);
             NetworkServer.SendToClient(connectionId, redirectMessage);
          });
       });

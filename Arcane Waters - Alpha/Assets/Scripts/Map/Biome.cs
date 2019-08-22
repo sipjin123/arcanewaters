@@ -31,6 +31,12 @@ public class Biome {
       }
    }
 
+   public static List<Type> getAllTypes () {
+      List<Type> list = Util.getAllEnumValues<Type>();
+      list.Remove(Type.None);
+      return list;
+   }
+
    #region Private Variables
 
    #endregion

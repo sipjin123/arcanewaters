@@ -272,6 +272,13 @@ public class RPCManager : NetworkBehaviour {
       BugReportManager.self.storeBugReportOnServer(_player, subject, message);
    }
 
+   [TargetRpc]
+   public void Target_ReceiveMapSummaries (NetworkConnection connection, MapSummary[] mapSummaryArray) {
+      // Pass this data along to the Random Maps panel to display
+      RandomMapsPanel panel = (RandomMapsPanel) PanelManager.self.get(Panel.Type.RandomMaps);
+      panel.showPanelUsingMapSummaries(mapSummaryArray);
+   }
+
    [Command]
    public void Cmd_SendChat (string message, ChatInfo.Type chatType) {
       // Create a Chat Info for this message
@@ -713,6 +720,19 @@ public class RPCManager : NetworkBehaviour {
    [Command]
    public void Cmd_GetItemsForArea () {
       getItemsForArea();
+   }
+
+   [Command]
+   public void Cmd_GetSummaryOfGeneratedMaps () {
+      // Create a list to store the map data
+      List<MapSummary> list = new List<MapSummary>();
+
+      foreach (MapSummary mapSummary in ServerNetwork.self.getAllMapSummaries()) {
+         list.Add(mapSummary);
+      }
+
+      // Pass the data back to the client
+      Target_ReceiveMapSummaries(_player.connectionToClient, list.ToArray());
    }
 
    [Command]

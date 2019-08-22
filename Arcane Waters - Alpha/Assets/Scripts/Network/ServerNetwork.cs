@@ -105,6 +105,26 @@ public class ServerNetwork : MonoBehaviour {
       PhotonNetwork.player.SetCustomProperties(customProps);
    }
 
+   public Server getServer (string ipAddress, int port) {
+      foreach (Server server in servers) {
+         if (server.ipAddress == ipAddress && server.port == port) {
+            return server;
+         }
+      }
+
+      return null;
+   }
+
+   public List<MapSummary> getAllMapSummaries () {
+      List<MapSummary> mapSummaries = new List<MapSummary>();
+
+      foreach (Server server in servers) {
+         mapSummaries.AddRange(server.mapSummaries);
+      }
+
+      return mapSummaries;
+   }
+
    protected IEnumerator CO_checkPhotonConnection () {
       // If we're not running a server, or already in a Photon room, we're done
       if (!NetworkServer.active || PhotonNetwork.room != null) {
