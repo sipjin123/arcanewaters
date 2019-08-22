@@ -130,13 +130,13 @@ public class TentacleEntity : SeaMonsterEntity
 
    public override void noteAttacker (NetEntity entity) {
       base.noteAttacker(entity);
-      horrorEntity.registerAttacker(entity);
+      horrorEntity.noteAttacker(entity);
    }
 
    [Server]
    public void initializeBehavior () {
       randomizedTimer = Random.Range(2.0f, 4.5f);
-      StartCoroutine("CO_HandleAutoMove");
+      StartCoroutine(CO_HandleAutoMove());
    }
 
    public IEnumerator CO_HandleAutoMove () {
@@ -166,8 +166,8 @@ public class TentacleEntity : SeaMonsterEntity
       initializeBehavior();
    }
 
-   public void overriddenMovement (Vector2 newPos) {
-      StopCoroutine("CO_HandleAutoMove");
+   public void moveToParentDestination (Vector2 newPos) {
+      StopCoroutine(CO_HandleAutoMove());
       float delayTime = .1f;
       StartCoroutine(CO_HandleBossMovement(newPos, delayTime));
    }
@@ -231,7 +231,7 @@ public class TentacleEntity : SeaMonsterEntity
          NetEntity shipEntity = collision.GetComponent<PlayerShipEntity>();
          if (!_attackers.Contains(shipEntity)) {
             _attackers.Add(shipEntity);
-            horrorEntity.registerAttacker(shipEntity);
+            horrorEntity.noteAttacker(shipEntity);
          }
       }
    }

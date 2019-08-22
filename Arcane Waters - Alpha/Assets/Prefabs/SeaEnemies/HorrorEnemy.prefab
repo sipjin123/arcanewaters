@@ -298,7 +298,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8808923397816964448
 RectTransform:
   m_ObjectHideFlags: 0
@@ -313,10 +313,10 @@ RectTransform:
   m_Father: {fileID: 491315126446951479}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 50, y: -23.5}
+  m_SizeDelta: {x: 15, y: 15}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4999542583506803357
 CanvasRenderer:
@@ -333,7 +333,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 696486162788909831}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
@@ -914,7 +914,7 @@ MonoBehaviour:
   rightSideTarget: {fileID: 9041534194197744244}
   invulnerable: 1
   npcType: 0
-  npcName: 0
+  monsterName: 
   route: {fileID: 0}
   waypoint: {fileID: 0}
   autoMove: 1
@@ -922,6 +922,8 @@ MonoBehaviour:
   hasDied: 0
   tentaclesLeft: 0
   tentacleList: []
+  nearestShipTarget: {fileID: 0}
+  approachShip: 0
 --- !u!50 &3035432712456740353
 Rigidbody2D:
   serializedVersion: 4

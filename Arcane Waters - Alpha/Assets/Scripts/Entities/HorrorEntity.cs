@@ -35,7 +35,7 @@ public class HorrorEntity : SeaMonsterEntity
       InvokeRepeating("handleAutoMove", 7f, 7f);
 
       // Check if theres a nearby enemy to go near to
-      InvokeRepeating("checkForHostiles", 2f, 4.5f);
+      InvokeRepeating("checkForHostiles", .5f, 1f);
    }
 
    protected override void Update () {
@@ -95,7 +95,7 @@ public class HorrorEntity : SeaMonsterEntity
 
       // Checks if the distance of the target ship is too far
       if (nearestShipTarget != null) {
-         if (Vector2.Distance(_spawnPos, waypoint.transform.position) > territoryRadius) {
+         if (Vector2.Distance(_spawnPos, waypoint.transform.position) > _territoryRadius) {
             nearestShipTarget = null;
          }
       }
@@ -136,35 +136,29 @@ public class HorrorEntity : SeaMonsterEntity
       this.waypoint = newWaypoint;
 
       foreach(TentacleEntity tentacles in tentacleList) {
-         tentacles.overriddenMovement(waypoint.transform.position);
+         tentacles.moveToParentDestination(waypoint.transform.position);
       }
    }
 
    protected void checkForHostiles () {
       float closestDistance = 100;
-      NetEntity closesEntity = null;
+      NetEntity closestEntity = null;
 
       // Fetches the nearest ship
       foreach(NetEntity entity in _attackers) {
          if(!entity.isDead()) {
             if(Vector2.Distance(_spawnPos, entity.transform.position) < closestDistance) {
-               closesEntity = entity;
+               closestEntity = entity;
                closestDistance = Vector2.Distance(_spawnPos, entity.transform.position);
             }
          }
       }
 
       // Checks if nearest ship is valid to pursue
-      if(closesEntity != null) {
-         if (closestDistance < detectRadius) {
-            nearestShipTarget = closesEntity;
-         }
-      }
-   }
-
-   public void registerAttacker(NetEntity entity) {
-      if(!_attackers.Contains(entity)) {
-         _attackers.Add(entity);
+      if(closestEntity != null) {
+         if (closestDistance < _detectRadius) {
+            nearestShipTarget = closestEntity;
+         } 
       }
    }
 
@@ -198,9 +192,9 @@ public class HorrorEntity : SeaMonsterEntity
    // The position we spawned at
    protected Vector2 _spawnPos;
 
-   private float territoryRadius = 1;
+   private float _territoryRadius = 1;
 
-   private float detectRadius = 2;
+   private float _detectRadius = 2;
 
    #endregion
 }

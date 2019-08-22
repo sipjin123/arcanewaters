@@ -314,10 +314,8 @@ public class SeaEntity : NetEntity {
             SeaEntity entity = hit.GetComponent<SeaEntity>();
 
             if (!enemyHitList.Contains(entity)) {
-               if (targetPlayersOnly) {
-                  if (hit.GetComponent<ShipEntity>() == null) {
-                     continue;
-                  }
+               if (targetPlayersOnly && hit.GetComponent<ShipEntity>() == null) {
+                  continue;
                }
 
                // Make sure the target is in our same instance
