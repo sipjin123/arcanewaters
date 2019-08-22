@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cf0a99098199fe419c4dc2b9b3439b9, type: 3}
+  m_Name: MyWeapon
+  m_EditorClassIdentifier: 
+  itemID: 2
+  abilityName: MyWeapon
+  abilityDescription: WepDesc
+  baseDamage: 55
+  elementType: 3
+  hitAudioClip: {fileID: 0}
+  hitParticle: {fileID: 0}
+  itemIcon: {fileID: 0}
+  classRequirement: 1
+  battleItemType: 2
+  primaryColor: 900
+  secondaryColor: 304
