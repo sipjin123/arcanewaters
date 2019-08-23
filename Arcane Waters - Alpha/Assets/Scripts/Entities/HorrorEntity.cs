@@ -155,7 +155,7 @@ public class HorrorEntity : SeaMonsterEntity
       }
 
       // Checks if nearest ship is valid to pursue
-      if(closestEntity != null && closestDistance < _detectRadius) {
+      if (closestEntity != null && closestDistance < _detectRadius) {
          nearestShipTarget = closestEntity;
       }
    }
@@ -193,7 +193,7 @@ public class HorrorEntity : SeaMonsterEntity
    // The radius that defines how far the monster will chase before it retreats
    private float _territoryRadius = 1;
 
-   // The radius that defines how near the player ships are before this unity chases it
+   // The radius that defines how near the player ships are before this unit chases it
    private float _detectRadius = 2;
 
    #endregion

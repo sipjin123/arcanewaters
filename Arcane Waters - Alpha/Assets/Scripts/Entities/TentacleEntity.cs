@@ -275,7 +275,7 @@ public class TentacleEntity : SeaMonsterEntity
    protected Vector2 _spawnPos;
 
    // Keeps reference to the recent coroutine so that it can be manually stopped
-   Coroutine _movementCoroutine = null;
-
+   private Coroutine _movementCoroutine = null;
+    
    #endregion
 }
