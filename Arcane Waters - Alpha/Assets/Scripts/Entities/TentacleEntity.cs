@@ -136,7 +136,7 @@ public class TentacleEntity : SeaMonsterEntity
    [Server]
    public void initializeBehavior () {
       randomizedTimer = Random.Range(2.0f, 4.5f);
-      StartCoroutine(CO_HandleAutoMove());
+      _movementCoroutine = StartCoroutine (CO_HandleAutoMove());
    }
 
    public IEnumerator CO_HandleAutoMove () {
@@ -149,8 +149,8 @@ public class TentacleEntity : SeaMonsterEntity
          Destroy(this.waypoint.gameObject);
       }
 
-      float randomizedX = Random.Range(.1f, .8f);
-      float randomizedY = Random.Range(.15f, .75f);
+      float randomizedX = (locationSide != 0 && locationSideTopBot != 0) ? Random.Range(.2f, .4f) : Random.Range(.4f, .6f);
+      float randomizedY = (locationSide != 0 && locationSideTopBot != 0) ? Random.Range(.2f, .4f) : Random.Range(.4f, .6f);
 
       randomizedX *= locationSide;
       randomizedY *= locationSideTopBot;
@@ -167,7 +167,7 @@ public class TentacleEntity : SeaMonsterEntity
    }
 
    public void moveToParentDestination (Vector2 newPos) {
-      StopCoroutine(CO_HandleAutoMove());
+      StopCoroutine(_movementCoroutine);
       float delayTime = .1f;
       StartCoroutine(CO_HandleBossMovement(newPos, delayTime));
    }
@@ -273,6 +273,9 @@ public class TentacleEntity : SeaMonsterEntity
 
    // The position we spawned at
    protected Vector2 _spawnPos;
+
+   // Keeps reference to the recent coroutine so that it can be manually stopped
+   Coroutine _movementCoroutine = null;
 
    #endregion
 }
