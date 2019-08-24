@@ -73,7 +73,7 @@ public class SeaManager : MonoBehaviour {
       }
 
       // Allow spawning a horror
-      if (Input.GetKeyUp(KeyCode.F7) && Global.player is SeaEntity) {
+      if (Input.GetKeyUp(KeyCode.F6) && Global.player is SeaEntity) {
          Global.player.rpc.Cmd_SpawnHorror(Util.getMousePos());
       }
    }

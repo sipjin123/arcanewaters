@@ -97,8 +97,15 @@ public class TentacleEntity : SeaMonsterEntity
          return;
       }
 
-      // Move towards our current waypoint
-      Vector2 waypointDirection = this.waypoint.transform.position - this.transform.position;
+      Vector2 waypointDirection = new Vector2(0, 0);
+      if (_followParentEntity == true) {
+         // Move toward Parent Entity
+         waypointDirection = (horrorEntity.transform.position + _cachedCoordinates) - this.transform.position;
+      } else {
+         // Move towards our current waypoint
+         waypointDirection = this.waypoint.transform.position - this.transform.position;
+      }
+
       waypointDirection = waypointDirection.normalized;
       _body.AddForce(waypointDirection.normalized * getMoveSpeed());
 
@@ -135,6 +142,7 @@ public class TentacleEntity : SeaMonsterEntity
 
    [Server]
    public void initializeBehavior () {
+      _followParentEntity = false;
       randomizedTimer = Random.Range(2.0f, 4.5f);
       _movementCoroutine = StartCoroutine (CO_HandleAutoMove());
    }
@@ -149,8 +157,8 @@ public class TentacleEntity : SeaMonsterEntity
          Destroy(this.waypoint.gameObject);
       }
 
-      float randomizedX = (locationSide != 0 && locationSideTopBot != 0) ? Random.Range(.2f, .4f) : Random.Range(.4f, .6f);
-      float randomizedY = (locationSide != 0 && locationSideTopBot != 0) ? Random.Range(.2f, .4f) : Random.Range(.4f, .6f);
+      float randomizedX = (locationSide != 0 && locationSideTopBot != 0) ? Random.Range(.4f, .6f) : Random.Range(.6f, .8f);
+      float randomizedY = (locationSide != 0 && locationSideTopBot != 0) ? Random.Range(.4f, .6f) : Random.Range(.6f, .8f);
 
       randomizedX *= locationSide;
       randomizedY *= locationSideTopBot;
@@ -167,6 +175,7 @@ public class TentacleEntity : SeaMonsterEntity
    }
 
    public void moveToParentDestination (Vector2 newPos) {
+      _followParentEntity = true;
       StopCoroutine(_movementCoroutine);
       float delayTime = .1f;
       StartCoroutine(CO_HandleBossMovement(newPos, delayTime));
@@ -184,17 +193,18 @@ public class TentacleEntity : SeaMonsterEntity
          Destroy(this.waypoint.gameObject);
       }
  
-      float randomizedX = Random.Range(.2f, .6f);
-      float randomizedY = Random.Range(.15f, .45f);
+      float randomizedX = Random.Range(.4f, .8f);
+      float randomizedY = Random.Range(.4f, .8f);
 
       randomizedX *= locationSide;
       randomizedY *= locationSideTopBot;
+      _cachedCoordinates = new Vector2(randomizedX, randomizedY);
 
       // Pick a new spot around our spawn position
-      Vector2 newSpot = new Vector2(newPos.x + randomizedX, newPos.y + randomizedY);
+      Vector2 newLoc = new Vector2(newPos.x + randomizedX, newPos.y + randomizedY);
 
       Waypoint newWaypoint = Instantiate(PrefabsManager.self.waypointPrefab);
-      newWaypoint.transform.position = newSpot;
+      newWaypoint.transform.position = newLoc;
       this.waypoint = newWaypoint;
    }
 
@@ -276,6 +286,12 @@ public class TentacleEntity : SeaMonsterEntity
 
    // Keeps reference to the recent coroutine so that it can be manually stopped
    private Coroutine _movementCoroutine = null;
-    
+
+   // The target location of this unit
+   private Vector3 _cachedCoordinates;
+
+   // Determines if it is time to follow the parent unit
+   private bool _followParentEntity;
+
    #endregion
 }

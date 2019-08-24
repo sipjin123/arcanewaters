@@ -569,7 +569,7 @@ Transform:
   m_GameObject: {fileID: 3067077698770707277}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 5, y: 5, z: 2}
   m_Children:
   - {fileID: 7732763374187823081}
   m_Father: {fileID: 3063151954955012907}
@@ -612,7 +612,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 212abecc3567a6d4aa709c777d65fd61, type: 3}
+  m_Sprite: {fileID: 764851303485985294, guid: d9f8336b2a162354ab8f845c4dbe0498, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -831,6 +831,7 @@ GameObject:
   - component: {fileID: 3101758691426837709}
   - component: {fileID: 3099923231648578131}
   - component: {fileID: 3087981066399650522}
+  - component: {fileID: 1545653044162480898}
   m_Layer: 8
   m_Name: HorrorEnemy
   m_TagString: Untagged
@@ -847,7 +848,7 @@ Transform:
   m_GameObject: {fileID: 3068835648231299367}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 64.092384, y: -58.13542, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3063248981505382679}
   - {fileID: 3070495126663915387}
@@ -971,9 +972,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.04}
+  m_Offset: {x: 0.06, y: 0.19}
   serializedVersion: 2
-  m_Radius: 0.025
+  m_Radius: 0.29
 --- !u!114 &3100026442078739189
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1106,6 +1107,32 @@ MonoBehaviour:
   useLocalTransformOnly: 0
   ownerChangeIndicator: 1
   receivedStatesCounter: 0
+--- !u!61 &1545653044162480898
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3068835648231299367}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: -0.36}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 0.74, y: 0.36}
+  m_EdgeRadius: 0
 --- !u!1 &3069005417357424117
 GameObject:
   m_ObjectHideFlags: 0
@@ -1521,7 +1548,7 @@ GameObject:
   - component: {fileID: 3834188337796907021}
   - component: {fileID: 2242619367286885992}
   - component: {fileID: 1723672566449768002}
-  - component: {fileID: 3592312929441090053}
+  - component: {fileID: 8615596691979347719}
   m_Layer: 0
   m_Name: Canvas - World Space
   m_TagString: Untagged
@@ -1538,7 +1565,7 @@ RectTransform:
   m_GameObject: {fileID: 6313460315620956133}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.005, y: 0.005, z: 0.01}
+  m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
   m_Children:
   - {fileID: 491315126446951479}
   m_Father: {fileID: 3063151954955012907}
@@ -1604,7 +1631,7 @@ CanvasGroup:
   m_Interactable: 0
   m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
---- !u!114 &3592312929441090053
+--- !u!114 &8615596691979347719
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1613,17 +1640,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 6313460315620956133}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 99ab870c871e96d43ad4e253babdf98a, type: 3}
+  m_Script: {fileID: 11500000, guid: a8632c399db88b849ad5cf4081b49a54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   healthBarImage: {fileID: 5897990876045793769}
   reloadBarImage: {fileID: 4885541284101818066}
-  factionIcon: {fileID: 2941200512608988595}
   barsContainer: {fileID: 8490632835984348266}
   targetedIcon: {fileID: 5079987327336811788}
   enemyIcon: {fileID: 1784106067663606673}
   barBackgroundImage: {fileID: 675432092075396755}
   barsBackgroundAlt: {fileID: 21300000, guid: 468e60adbe0887a429437702a2a8d82e, type: 3}
+  isMinion: 0
 --- !u!1 &6353395322999366026
 GameObject:
   m_ObjectHideFlags: 0

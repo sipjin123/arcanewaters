@@ -136,7 +136,9 @@ public class HorrorEntity : SeaMonsterEntity
       this.waypoint = newWaypoint;
 
       foreach(TentacleEntity tentacles in tentacleList) {
-         tentacles.moveToParentDestination(waypoint.transform.position);
+         if (!tentacles.isDead()) {
+            tentacles.moveToParentDestination(waypoint.transform.position);
+         }
       }
    }
 
@@ -146,8 +148,8 @@ public class HorrorEntity : SeaMonsterEntity
 
       // Fetches the nearest ship
       foreach(NetEntity entity in _attackers) {
-         if(!entity.isDead()) {
-            if(Vector2.Distance(_spawnPos, entity.transform.position) < closestDistance) {
+         if (!entity.isDead() && entity != null) {
+            if (Vector2.Distance(_spawnPos, entity.transform.position) < closestDistance) {
                closestEntity = entity;
                closestDistance = Vector2.Distance(_spawnPos, entity.transform.position);
             }
@@ -191,10 +193,10 @@ public class HorrorEntity : SeaMonsterEntity
    protected Vector2 _spawnPos;
 
    // The radius that defines how far the monster will chase before it retreats
-   private float _territoryRadius = 1;
+   private float _territoryRadius = 3.5f;
 
    // The radius that defines how near the player ships are before this unit chases it
-   private float _detectRadius = 2;
+   private float _detectRadius = 3;
 
    #endregion
 }
