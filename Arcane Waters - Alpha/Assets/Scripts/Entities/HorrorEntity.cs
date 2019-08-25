@@ -148,10 +148,12 @@ public class HorrorEntity : SeaMonsterEntity
 
       // Fetches the nearest ship
       foreach(NetEntity entity in _attackers) {
-         if (!entity.isDead() && entity != null) {
-            if (Vector2.Distance(_spawnPos, entity.transform.position) < closestDistance) {
-               closestEntity = entity;
-               closestDistance = Vector2.Distance(_spawnPos, entity.transform.position);
+         if (entity != null) {
+            if (!entity.isDead()) {
+               if (Vector2.Distance(_spawnPos, entity.transform.position) < closestDistance) {
+                  closestEntity = entity;
+                  closestDistance = Vector2.Distance(_spawnPos, entity.transform.position);
+               }
             }
          }
       }

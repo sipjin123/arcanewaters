@@ -19,6 +19,10 @@ public class TentacleEntity : SeaMonsterEntity
    // Randomizes behavior before moving
    public float randomizedTimer = 1;
 
+   // Determines the variety of the tentacle
+   [SyncVar]
+   public int variety = 0;
+
    #endregion
 
    protected override void Start () {
@@ -36,6 +40,8 @@ public class TentacleEntity : SeaMonsterEntity
 
       // Check if we can shoot at any of our attackers
       InvokeRepeating("checkForAttackers", 1f, .5f);
+
+      animator.SetFloat("variety", variety);
    }
 
    protected override void Update () {
@@ -97,19 +103,11 @@ public class TentacleEntity : SeaMonsterEntity
          return;
       }
 
-      Vector2 waypointDirection = new Vector2(0, 0);
-      if (_followParentEntity == true) {
-         // Move toward Parent Entity
-         waypointDirection = (horrorEntity.transform.position + _cachedCoordinates) - this.transform.position;
-      } else {
-         // Move towards our current waypoint
-         waypointDirection = this.waypoint.transform.position - this.transform.position;
-      }
-
+      // Move towards our current waypoint
+      Vector2 waypointDirection = waypointDirection = this.waypoint.transform.position - this.transform.position;
       waypointDirection = waypointDirection.normalized;
       _body.AddForce(waypointDirection.normalized * getMoveSpeed());
 
-      // Update our facing direction
       Direction newFacingDirection = DirectionUtil.getDirectionForVelocity(_body.velocity);
       if (newFacingDirection != this.facing) {
          this.facing = newFacingDirection;
