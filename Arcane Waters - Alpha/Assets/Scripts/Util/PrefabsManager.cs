@@ -19,11 +19,17 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab we use for creating horror monster
    public HorrorEntity horrorPrefab;
 
+   // The prefab we use for creating worm monster
+   public WormEntity wormPrefab;
+
    // The prefab we use for creating player bodies
    public GameObject playerBodyPrefab;
 
    // The Prefab we use for creating cannon smoke
    public GameObject cannonSmokePrefab;
+
+   // The Prefab we use for creating venom projectiles
+   public VenomProjectile venomPrefab;
 
    // The Prefab we use for creating cannon balls
    public CannonBall cannonBallPrefab;
@@ -123,6 +129,13 @@ public class PrefabsManager : MonoBehaviour {
             return cannonBallAirPrefab;
          default:
             return cannonBallPrefab;
+      }
+   }
+
+   public VenomProjectile getVenomPrefab (Attack.Type attackType) {
+      switch (attackType) {
+         default:
+            return venomPrefab;
       }
    }
 

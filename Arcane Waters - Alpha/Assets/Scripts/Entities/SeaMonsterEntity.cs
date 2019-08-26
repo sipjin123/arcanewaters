@@ -36,6 +36,7 @@ public class SeaMonsterEntity : SeaEntity
    {
       Idle,
       Attack,
+      EndAttack,
       Die,
       Move,
       MoveStop

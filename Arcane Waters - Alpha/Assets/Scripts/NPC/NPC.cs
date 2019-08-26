@@ -17,7 +17,7 @@ public class NPC : MonoBehaviour {
       Gardener = 6, Glasses = 7, Gramps = 8, Hammer = 9, Headband = 10,
       ItemShop = 11, Mapper = 12, Monocle = 13, Parrot = 14, Patch = 15,
       Pegleg = 16, Seagull = 17, Shipyard = 18, Shroom = 19, Skullhat = 20,
-      Stripes = 21, Vest = 22, Dog = 23, Lizard = 24, Tentacle = 25, Horror = 26
+      Stripes = 21, Vest = 22, Dog = 23, Lizard = 24, Tentacle = 25, Horror = 26, Worm = 27
    }
 
    // Holds the scriptable object npc data

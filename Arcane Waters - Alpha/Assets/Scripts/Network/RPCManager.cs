@@ -1467,6 +1467,24 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
+   public void Cmd_SpawnWorm (Vector2 spawnPosition) {
+      WormEntity bot = Instantiate(PrefabsManager.self.wormPrefab, spawnPosition, Quaternion.identity);
+      bot.instanceId = _player.instanceId;
+      bot.facing = Util.randomEnum<Direction>();
+      bot.areaType = _player.areaType;
+      bot.npcType = NPC.Type.Worm;
+      bot.faction = NPC.getFaction(bot.npcType);
+      bot.nationType = Nation.Type.Pirate;
+      bot.entityName = "Worm";
+
+      // Spawn the bot on the Clients
+      NetworkServer.Spawn(bot.gameObject);
+
+      Instance instance = InstanceManager.self.getInstance(_player.instanceId);
+      instance.entities.Add(bot);
+   }
+
+   [Command]
    public void Cmd_StartNewBattle (uint enemyNetId) {
       // We need a Player Body object to proceed
       if (!(_player is PlayerBodyEntity)) {
