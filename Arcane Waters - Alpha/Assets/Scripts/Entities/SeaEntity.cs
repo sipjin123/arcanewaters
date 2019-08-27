@@ -117,15 +117,16 @@ public class SeaEntity : NetEntity {
       Vector2 offset = direction.normalized * .1f;
       Instantiate(PrefabsManager.self.cannonSmokePrefab, startPos + offset, Quaternion.identity);
 
-      if (attackType != Attack.Type.Venom) {
-         // Create a cannon ball
-         CannonBall ball = Instantiate(PrefabsManager.self.getCannonBallPrefab(attackType), startPos, Quaternion.identity);
-         ball.creator = this;
-         ball.startPos = startPos;
-         ball.endPos = endPos;
-         ball.startTime = startTime;
-         ball.endTime = endTime;
-      } else {
+      if (attackType == Attack.Type.Boulder) {
+         // Create a boulder
+         BoulderProjectile venom = Instantiate(PrefabsManager.self.getBoulderPrefab(attackType), startPos, Quaternion.identity);
+         venom.creator = this;
+         venom.startPos = startPos;
+         venom.endPos = endPos;
+         venom.startTime = startTime;
+         venom.endTime = endTime;
+         venom.setDirection((Direction) facing);
+      } else if (attackType == Attack.Type.Venom) {
          // Create a venom
          VenomProjectile venom = Instantiate(PrefabsManager.self.getVenomPrefab(attackType), startPos, Quaternion.identity);
          venom.creator = this;
@@ -134,6 +135,14 @@ public class SeaEntity : NetEntity {
          venom.startTime = startTime;
          venom.endTime = endTime;
          venom.setDirection((Direction) facing);
+      } else {
+         // Create a cannon ball
+         CannonBall ball = Instantiate(PrefabsManager.self.getCannonBallPrefab(attackType), startPos, Quaternion.identity);
+         ball.creator = this;
+         ball.startPos = startPos;
+         ball.endPos = endPos;
+         ball.startTime = startTime;
+         ball.endTime = endTime;
       }
 
       // Play an appropriate sound
@@ -315,8 +324,11 @@ public class SeaEntity : NetEntity {
       if (spawnTransformList == null || spawnTransformList.Count < 1) {
          Rpc_CreateAttackCircle(this.transform.position, spot, Time.time, Time.time + delay, attackType);
       } else {
-         spawnTransform = spawnTransformList.Find(_ => _.direction == (Direction) this.facing).spawnTransform;
-         Rpc_CreateAttackCircle(spawnTransform.position, spot, Time.time, Time.time + delay, attackType);
+         //Debug.LogError("facing is : " +(Direction)this.facing);
+         if (this.facing != 0) {
+            spawnTransform = spawnTransformList.Find(_ => _.direction == (Direction) this.facing).spawnTransform;
+            Rpc_CreateAttackCircle(spawnTransform.position, spot, Time.time, Time.time + delay, attackType);
+         }
       }
 
       // Have the server check for collisions after the cannonball reaches the target
@@ -361,6 +373,8 @@ public class SeaEntity : NetEntity {
                   } else if (attackType == Attack.Type.Tentacle) {
                      StatusManager.self.create(Status.Type.Slow, 1f, entity.userId);
                   } else if (attackType == Attack.Type.Venom) {
+                     StatusManager.self.create(Status.Type.Slow, 1f, entity.userId);
+                  } else if (attackType == Attack.Type.Boulder) {
                      StatusManager.self.create(Status.Type.Slow, 1f, entity.userId);
                   }
                   enemyHitList.Add(entity);

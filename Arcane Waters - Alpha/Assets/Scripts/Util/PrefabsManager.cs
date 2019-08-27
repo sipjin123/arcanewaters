@@ -22,6 +22,9 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab we use for creating worm monster
    public WormEntity wormPrefab;
 
+   // The prefab we use for creating giant monster
+   public ReefGiantEntity giantPrefab;
+
    // The prefab we use for creating player bodies
    public GameObject playerBodyPrefab;
 
@@ -31,6 +34,9 @@ public class PrefabsManager : MonoBehaviour {
    // The Prefab we use for creating venom projectiles
    public VenomProjectile venomPrefab;
 
+   // The Prefab we use for creating boulder projectiles
+   public BoulderProjectile boulderPrefab;
+   
    // The Prefab we use for creating cannon balls
    public CannonBall cannonBallPrefab;
 
@@ -136,6 +142,13 @@ public class PrefabsManager : MonoBehaviour {
       switch (attackType) {
          default:
             return venomPrefab;
+      }
+   }
+
+   public BoulderProjectile getBoulderPrefab (Attack.Type attackType) {
+      switch (attackType) {
+         default:
+            return boulderPrefab;
       }
    }
 

@@ -16,6 +16,8 @@ public class WormEntity : SeaMonsterEntity
    // Current target entity
    public NetEntity targetEntity;
 
+   public bool withinProjectileDistance = false;
+
    #endregion
 
    protected override void Start () {
@@ -44,14 +46,19 @@ public class WormEntity : SeaMonsterEntity
       if (Input.GetKeyUp(KeyCode.V)) {
          animator.SetBool("attacking", false);
       }
-      
+
       if (targetEntity != null) {
-         if (isEngaging) {
-            if (Vector2.Distance(targetEntity.transform.position, transform.position) > 2) {
-               targetEntity = null;
-               isEngaging = false;
-               Debug.LogError("Too far. go away");
-            }
+         float distanceGap = Vector2.Distance(targetEntity.transform.position, transform.position);
+         if (distanceGap < 3) {
+            withinProjectileDistance = true;
+         } else {
+            withinProjectileDistance = false;
+         }
+
+         Debug.LogError(isEngaging + " --- " + withinProjectileDistance) ;
+         if (isEngaging && withinProjectileDistance && getVelocity().magnitude < .1f) {
+            this.facing = (Direction) lockToTarget(targetEntity);
+            animator.SetFloat("facingF", (float) this.facing);
          }
       }
 
@@ -106,11 +113,12 @@ public class WormEntity : SeaMonsterEntity
       _body.AddForce(waypointDirection.normalized * getMoveSpeed());
 
       // Update our facing direction
-      Direction newFacingDirection = DirectionUtil.getDirectionForVelocity(_body.velocity);
-      if (newFacingDirection != this.facing) {
-         this.facing = newFacingDirection;
+      if (targetEntity != null) {
+         Direction newFacingDirection = DirectionUtil.getDirectionForVelocity(_body.velocity);
+         if (newFacingDirection != this.facing) {
+            this.facing = newFacingDirection;
+         }
       }
-      animator.SetFloat("facingF", (float)this.facing);
 
       // Make note of the time
       _lastMoveChangeTime = Time.time;
@@ -144,14 +152,24 @@ public class WormEntity : SeaMonsterEntity
 
       if (targetEntity != null) {
          if (isEngaging) {
-            Debug.LogError("Targetting the target");
-            // Pick a new spot around our spawn position
-            Vector2 newSpot1 = targetEntity.transform.position;
-            Waypoint newWaypoint1 = Instantiate(PrefabsManager.self.waypointPrefab);
-            newWaypoint1.transform.position = newSpot1;
-            this.waypoint = newWaypoint1;
-
-            return;
+            float distanceGap = Vector2.Distance(targetEntity.transform.position, transform.position);
+            if (distanceGap > 1 && distanceGap < 3) {       
+               // Pick a new spot around our spawn position
+               Vector2 newSpot1 = targetEntity.transform.position;
+               Waypoint newWaypoint1 = Instantiate(PrefabsManager.self.waypointPrefab);
+               newWaypoint1.transform.position = newSpot1;
+               this.waypoint = newWaypoint1;
+               Debug.LogError("Going near player");
+               return;
+            } else if (distanceGap >= 3) {
+               // Forget about target
+               targetEntity = null; 
+               isEngaging = false;
+            }
+            else {
+               // Keep attacking
+               return;
+            }
          }
       }
 
@@ -166,7 +184,7 @@ public class WormEntity : SeaMonsterEntity
       if (isDead() || !isServer) {
          return;
       }
-
+      
       // If we haven't reloaded, we can't attack
       if (!hasReloaded()) {
          return;
@@ -182,38 +200,82 @@ public class WormEntity : SeaMonsterEntity
          // Check where the attacker currently is
          Vector2 spot = attacker.transform.position;
 
-         if (spot.x > transform.position.x && (facing == Direction.West || facing == Direction.NorthWest || facing == Direction.SouthWest)) {
-            Debug.LogError("Enemy is West, you are East");
-            return;
-         }
-
-         if (spot.x < transform.position.x && (facing == Direction.East || facing == Direction.NorthEast || facing == Direction.SouthEast)) {
-            Debug.LogError("Enemy is East, you are West");
-            return;
-         }
-
-         if (spot.y > transform.position.y && (facing == Direction.South || facing == Direction.SouthEast || facing == Direction.SouthWest)) {
-            Debug.LogError("Enemy is North, you are Sout");
-            return;
-         }
-
-         if (spot.y < transform.position.y && (facing == Direction.North || facing == Direction.NorthEast || facing == Direction.NorthWest)) {
-            Debug.LogError("Enemy is South, you are North");
-            return;
-         }
-
          // If the requested spot is not in the allowed area, reject the request
          if (leftAttackBox.OverlapPoint(spot) || rightAttackBox.OverlapPoint(spot)) {
-            fireAtSpot(spot, Attack.Type.Venom);
-            if (!hasReloaded()) {
-               callAnimation(TentacleAnimType.Attack);
-               _attackCoroutine = StartCoroutine(CO_AttackCooldown());
+            if (getVelocity().magnitude < .1f) {
+               fireAtSpot(spot, Attack.Type.Venom);
+               if (!hasReloaded()) {
+                  callAnimation(TentacleAnimType.Attack);
+                  _attackCoroutine = StartCoroutine(CO_AttackCooldown());
+               }
+
+               targetEntity = attacker;
+               isEngaging = true;
             }
-            targetEntity = attacker;
-            isEngaging = true;
             return;
          }
       }
+   }
+
+   private int lockToTarget (NetEntity attacker) {
+      int horizontalDirection = 0;
+      int verticalDirection = 0;
+
+      float offset = .1f;
+      float distanceGapHorizontal = 0;
+      float distanceGapVertical = 0;
+
+
+      // Check where the attacker currently is
+      Vector2 spot = attacker.transform.position;
+      if (spot.x > transform.position.x + offset) {
+         horizontalDirection = (int)Direction.East;
+      } else if (spot.x < transform.position.x - offset) {
+         horizontalDirection = (int) Direction.West;
+      } else {
+        // Debug.LogError("Neither west or east");
+         horizontalDirection = 0;
+      }
+
+      if (spot.y > transform.position.y + offset) {
+         verticalDirection = (int) Direction.North;
+      } else if (spot.y < transform.position.y - offset) {
+         verticalDirection = (int) Direction.South;
+      } else {
+        // Debug.LogError("Neither north or southh");
+         verticalDirection = 0;
+      }
+
+      int finalDirection = 0;
+      if (horizontalDirection == (int) Direction.East) {
+         if (verticalDirection == (int) Direction.North) {
+            finalDirection = (int) Direction.NorthEast;
+         } else if (verticalDirection == (int) Direction.South) {
+            finalDirection = (int) Direction.SouthEast;
+         }
+
+         if (verticalDirection == 0) {
+            finalDirection = (int) Direction.East;
+         }
+      } else if (horizontalDirection == (int) Direction.West) {
+         if (verticalDirection == (int) Direction.North) {
+            finalDirection = (int) Direction.NorthWest;
+         } else if (verticalDirection == (int) Direction.South) {
+            finalDirection = (int) Direction.SouthWest;
+         }
+
+         if (verticalDirection == 0) {
+            finalDirection = (int) Direction.West;
+         }
+      } else {
+         if (verticalDirection == (int) Direction.North) {
+            finalDirection = (int) Direction.North;
+         } else if (verticalDirection == (int) Direction.South) {
+            finalDirection = (int) Direction.South;
+         }
+      }
+
+      return finalDirection;
    }
 
    IEnumerator CO_AttackCooldown () {
