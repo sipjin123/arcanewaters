@@ -32,7 +32,6 @@ public class TentacleEntity : SeaMonsterEntity
       _spawnPos = this.transform.position;
 
       // Set our name
-      this.nameText.text = "[" + getNameForFaction() + "]";
       NPC.setNameColor(nameText, npcType);
 
       // Calls functions that randomizes and calls the coroutine that handles movement
@@ -69,7 +68,7 @@ public class TentacleEntity : SeaMonsterEntity
       }
 
       // Updates animation if monster is moving
-      if (_body.velocity.magnitude < .1f) {
+      if (_body.velocity.magnitude < .05f) {
          callAnimation(TentacleAnimType.MoveStop);
       } else {
          callAnimation(TentacleAnimType.Move);
@@ -117,22 +116,6 @@ public class TentacleEntity : SeaMonsterEntity
       _lastMoveChangeTime = Time.time;
    }
 
-   protected string getNameForFaction () {
-      switch (this.faction) {
-         case Faction.Type.Pirates:
-            return "Pirate";
-         case Faction.Type.Privateers:
-            return "Privateer";
-         case Faction.Type.Merchants:
-            return "Merchant";
-         case Faction.Type.Cartographers:
-         case Faction.Type.Naturalists:
-            return "Explorer";
-         default:
-            return "Sailor";
-      }
-   }
-
    public override void noteAttacker (NetEntity entity) {
       base.noteAttacker(entity);
       horrorEntity.noteAttacker(entity);
@@ -140,7 +123,6 @@ public class TentacleEntity : SeaMonsterEntity
 
    [Server]
    public void initializeBehavior () {
-      _followParentEntity = false;
       randomizedTimer = Random.Range(2.0f, 4.5f);
       _movementCoroutine = StartCoroutine (CO_HandleAutoMove());
    }
@@ -173,7 +155,6 @@ public class TentacleEntity : SeaMonsterEntity
    }
 
    public void moveToParentDestination (Vector2 newPos) {
-      _followParentEntity = true;
       StopCoroutine(_movementCoroutine);
       float delayTime = .1f;
       StartCoroutine(CO_HandleBossMovement(newPos, delayTime));
@@ -254,29 +235,6 @@ public class TentacleEntity : SeaMonsterEntity
       }
    }
 
-   [Server]
-   public void callAnimation (TentacleAnimType anim) {
-      Rpc_CallAnimation(anim);
-   }
-
-   [ClientRpc]
-   public void Rpc_CallAnimation (TentacleAnimType anim) {
-      switch (anim) {
-         case TentacleAnimType.Attack:
-            animator.Play("Attack");
-            break;
-         case TentacleAnimType.Die:
-            animator.SetTrigger("Dead");
-            break;
-         case TentacleAnimType.Move:
-            animator.SetBool("move", true);
-            break;
-         case TentacleAnimType.MoveStop:
-            animator.SetBool("move", false);
-            break;
-      }
-   }
-
    #region Private Variables
 
    // The position we spawned at
@@ -287,9 +245,6 @@ public class TentacleEntity : SeaMonsterEntity
 
    // The target location of this unit
    private Vector3 _cachedCoordinates;
-
-   // Determines if it is time to follow the parent unit
-   private bool _followParentEntity;
 
    #endregion
 }

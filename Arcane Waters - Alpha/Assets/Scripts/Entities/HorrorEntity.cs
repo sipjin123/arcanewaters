@@ -28,7 +28,6 @@ public class HorrorEntity : SeaMonsterEntity
       _spawnPos = this.transform.position;
 
       // Set our name
-      this.nameText.text = "[" + getNameForFaction() + "]";
       NPC.setNameColor(nameText, npcType);
 
       // Sometimes we want to generate random waypoints
@@ -161,22 +160,6 @@ public class HorrorEntity : SeaMonsterEntity
       // Checks if nearest ship is valid to pursue
       if (closestEntity != null && closestDistance < _detectRadius) {
          nearestShipTarget = closestEntity;
-      }
-   }
-
-   protected string getNameForFaction () {
-      switch (this.faction) {
-         case Faction.Type.Pirates:
-            return "Pirate";
-         case Faction.Type.Privateers:
-            return "Privateer";
-         case Faction.Type.Merchants:
-            return "Merchant";
-         case Faction.Type.Cartographers:
-         case Faction.Type.Naturalists:
-            return "Explorer";
-         default:
-            return "Sailor";
       }
    }
 

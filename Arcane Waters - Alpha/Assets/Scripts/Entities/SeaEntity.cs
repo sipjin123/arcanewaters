@@ -135,6 +135,15 @@ public class SeaEntity : NetEntity {
          venom.startTime = startTime;
          venom.endTime = endTime;
          venom.setDirection((Direction) facing);
+      } else if (attackType == Attack.Type.Shock_Ball) {
+         // Create a shock ball
+         ShockballProjectile venom = Instantiate(PrefabsManager.self.getShockballPrefab(attackType), startPos, Quaternion.identity);
+         venom.creator = this;
+         venom.startPos = startPos;
+         venom.endPos = endPos;
+         venom.startTime = startTime;
+         venom.endTime = endTime;
+         venom.setDirection((Direction) facing);
       } else {
          // Create a cannon ball
          CannonBall ball = Instantiate(PrefabsManager.self.getCannonBallPrefab(attackType), startPos, Quaternion.identity);

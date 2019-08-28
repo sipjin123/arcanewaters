@@ -27,7 +27,6 @@ public class WormEntity : SeaMonsterEntity
       _spawnPos = this.transform.position;
 
       // Set our name
-      this.nameText.text = "[" + getNameForFaction() + "]";
       NPC.setNameColor(nameText, npcType);
 
       // Sometimes we want to generate random waypoints
@@ -40,22 +39,21 @@ public class WormEntity : SeaMonsterEntity
    protected override void Update () {
       base.Update();
 
-      if(Input.GetKeyDown(KeyCode.V)) {
-         animator.SetBool("attacking", true);
-      }
-      if (Input.GetKeyUp(KeyCode.V)) {
-         animator.SetBool("attacking", false);
-      }
-
       if (targetEntity != null) {
          float distanceGap = Vector2.Distance(targetEntity.transform.position, transform.position);
-         if (distanceGap < 3) {
+         if (distanceGap < 2) {
             withinProjectileDistance = true;
          } else {
             withinProjectileDistance = false;
          }
 
-         Debug.LogError(isEngaging + " --- " + withinProjectileDistance) ;
+         if (Vector2.Distance(transform.position, _spawnPos) > _territoryRadius) {
+            targetEntity = null;
+            isEngaging = false;
+            waypoint = null;
+            Debug.LogError("Too far, go back");
+         }
+
          if (isEngaging && withinProjectileDistance && getVelocity().magnitude < .1f) {
             this.facing = (Direction) lockToTarget(targetEntity);
             animator.SetFloat("facingF", (float) this.facing);
@@ -76,6 +74,10 @@ public class WormEntity : SeaMonsterEntity
 
       // Only the server updates waypoints and movement forces
       if (!isServer || isDead()) {
+         if (hasDied == false && isDead()) {
+            hasDied = true;
+            callAnimation(TentacleAnimType.Die);
+         }
          return;
       }
 
@@ -113,31 +115,16 @@ public class WormEntity : SeaMonsterEntity
       _body.AddForce(waypointDirection.normalized * getMoveSpeed());
 
       // Update our facing direction
-      if (targetEntity != null) {
+      if (!isEngaging || (isEngaging && !withinProjectileDistance)) {
          Direction newFacingDirection = DirectionUtil.getDirectionForVelocity(_body.velocity);
          if (newFacingDirection != this.facing) {
             this.facing = newFacingDirection;
+            animator.SetFloat("facingF", (float) this.facing);
          }
       }
 
       // Make note of the time
       _lastMoveChangeTime = Time.time;
-   }
-
-   protected string getNameForFaction () {
-      switch (this.faction) {
-         case Faction.Type.Pirates:
-            return "Pirate";
-         case Faction.Type.Privateers:
-            return "Privateer";
-         case Faction.Type.Merchants:
-            return "Merchant";
-         case Faction.Type.Cartographers:
-         case Faction.Type.Naturalists:
-            return "Explorer";
-         default:
-            return "Sailor";
-      }
    }
 
    protected void handleAutoMove () {
@@ -217,87 +204,9 @@ public class WormEntity : SeaMonsterEntity
       }
    }
 
-   private int lockToTarget (NetEntity attacker) {
-      int horizontalDirection = 0;
-      int verticalDirection = 0;
-
-      float offset = .1f;
-      float distanceGapHorizontal = 0;
-      float distanceGapVertical = 0;
-
-
-      // Check where the attacker currently is
-      Vector2 spot = attacker.transform.position;
-      if (spot.x > transform.position.x + offset) {
-         horizontalDirection = (int)Direction.East;
-      } else if (spot.x < transform.position.x - offset) {
-         horizontalDirection = (int) Direction.West;
-      } else {
-        // Debug.LogError("Neither west or east");
-         horizontalDirection = 0;
-      }
-
-      if (spot.y > transform.position.y + offset) {
-         verticalDirection = (int) Direction.North;
-      } else if (spot.y < transform.position.y - offset) {
-         verticalDirection = (int) Direction.South;
-      } else {
-        // Debug.LogError("Neither north or southh");
-         verticalDirection = 0;
-      }
-
-      int finalDirection = 0;
-      if (horizontalDirection == (int) Direction.East) {
-         if (verticalDirection == (int) Direction.North) {
-            finalDirection = (int) Direction.NorthEast;
-         } else if (verticalDirection == (int) Direction.South) {
-            finalDirection = (int) Direction.SouthEast;
-         }
-
-         if (verticalDirection == 0) {
-            finalDirection = (int) Direction.East;
-         }
-      } else if (horizontalDirection == (int) Direction.West) {
-         if (verticalDirection == (int) Direction.North) {
-            finalDirection = (int) Direction.NorthWest;
-         } else if (verticalDirection == (int) Direction.South) {
-            finalDirection = (int) Direction.SouthWest;
-         }
-
-         if (verticalDirection == 0) {
-            finalDirection = (int) Direction.West;
-         }
-      } else {
-         if (verticalDirection == (int) Direction.North) {
-            finalDirection = (int) Direction.North;
-         } else if (verticalDirection == (int) Direction.South) {
-            finalDirection = (int) Direction.South;
-         }
-      }
-
-      return finalDirection;
-   }
-
    IEnumerator CO_AttackCooldown () {
       yield return new WaitForSeconds(.2f);
       callAnimation(TentacleAnimType.EndAttack);
-   }
-
-   [Server]
-   public void callAnimation (TentacleAnimType anim) {
-      Rpc_CallAnimation(anim);
-   }
-
-   [ClientRpc]
-   public void Rpc_CallAnimation (TentacleAnimType anim) {
-      switch (anim) {
-         case TentacleAnimType.Attack:
-            animator.SetBool("attacking", true);
-            break;
-         case TentacleAnimType.EndAttack:
-            animator.SetBool("attacking", false);
-            break;
-      }
    }
 
    #region Private Variables
@@ -307,6 +216,12 @@ public class WormEntity : SeaMonsterEntity
 
    // Keeps reference to the recent coroutine so that it can be manually stopped
    private Coroutine _attackCoroutine = null;
+
+   // The radius that defines how far the monster will chase before it retreats
+   private float _territoryRadius = 3.5f;
+
+   // The radius that defines how near the player ships are before this unit chases it
+   private float _detectRadius = 3;
 
    #endregion
 }

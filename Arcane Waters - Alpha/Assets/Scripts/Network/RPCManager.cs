@@ -1503,6 +1503,24 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
+   public void Cmd_SpawnFishman (Vector2 spawnPosition) {
+      FishmanEntity bot = Instantiate(PrefabsManager.self.fishmanPrefab, spawnPosition, Quaternion.identity);
+      bot.instanceId = _player.instanceId;
+      bot.facing = Util.randomEnum<Direction>();
+      bot.areaType = _player.areaType;
+      bot.npcType = NPC.Type.Worm;
+      bot.faction = NPC.getFaction(bot.npcType);
+      bot.nationType = Nation.Type.Pirate;
+      bot.entityName = "Fishman";
+
+      // Spawn the bot on the Clients
+      NetworkServer.Spawn(bot.gameObject);
+
+      Instance instance = InstanceManager.self.getInstance(_player.instanceId);
+      instance.entities.Add(bot);
+   }
+
+   [Command]
    public void Cmd_StartNewBattle (uint enemyNetId) {
       // We need a Player Body object to proceed
       if (!(_player is PlayerBodyEntity)) {
