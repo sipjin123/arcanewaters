@@ -8,6 +8,15 @@ public class SeaMonsterEntity : SeaEntity
 {
    #region Public Variables
 
+   // Incase this unit has projectile attack, this variable determines if the target is near enough
+   public bool withinProjectileDistance = false;
+
+   // Determines if this monster is engaging a ship
+   public bool isEngaging = false;
+
+   // Current target entity
+   public NetEntity targetEntity;
+
    // The Type of NPC SeaMonster
    [SyncVar]
    public NPC.Type npcType;
@@ -59,7 +68,7 @@ public class SeaMonsterEntity : SeaEntity
             animator.SetBool("attacking", false);
             break;
          case TentacleAnimType.Die:
-            animator.SetBool("die", true);
+            animator.Play("Die");
             break;
          case TentacleAnimType.Move:
             animator.SetBool("move", true);
@@ -70,20 +79,77 @@ public class SeaMonsterEntity : SeaEntity
       }
    }
 
+   protected void lookAtTarget () {
+      if (!isEngaging || (isEngaging && !withinProjectileDistance) || targetEntity == null) {
+         Direction newFacingDirection = DirectionUtil.getDirectionForVelocity(_body.velocity);
+         if (newFacingDirection != this.facing) {
+            this.facing = newFacingDirection;
+            animator.SetFloat("facingF", (float) this.facing);
+         }
+      }
+   }
+
+   protected void launchProjectile (Vector2 spot, SeaEntity attacker, Attack.Type attackType) {
+      if (getVelocity().magnitude > .1f) {
+         return;
+      }
+
+      int accuracy = Random.Range(1, 4);
+      Vector2 targetLoc = new Vector2(0, 0);
+      if (accuracy == 1) {
+         targetLoc = spot + (attacker.getVelocity());
+      } else if (accuracy == 2) {
+         targetLoc = spot + (attacker.getVelocity() * 1.1f);
+      } else {
+         targetLoc = spot;
+      }
+
+      fireAtSpot(targetLoc, attackType);
+      if (!hasReloaded()) {
+         callAnimation(TentacleAnimType.Attack);
+         _attackCoroutine = StartCoroutine(CO_AttackCooldown());
+      }
+
+      targetEntity = attacker;
+      isEngaging = true;
+   }
+
+   protected bool canMoveTowardEnemy () {
+      if (targetEntity != null) {
+         if (isEngaging) {
+            float distanceGap = Vector2.Distance(targetEntity.transform.position, transform.position);
+            if (distanceGap > 1 && distanceGap < 3) {
+               // Pick a new spot around our spawn position
+               Vector2 newSpot1 = targetEntity.transform.position;
+               Waypoint newWaypoint1 = Instantiate(PrefabsManager.self.waypointPrefab);
+               newWaypoint1.transform.position = newSpot1;
+               this.waypoint = newWaypoint1;
+               return true;
+            } else if (distanceGap >= 3) {
+               // Forget about target
+               targetEntity = null;
+               isEngaging = false;
+            } else {
+               // Keep attacking
+               return true;
+            }
+         }
+      }
+      return false;
+   }
+
    protected int lockToTarget (NetEntity attacker) {
       int horizontalDirection = 0;
       int verticalDirection = 0;
 
       float offset = .1f;
 
-      // Check where the attacker currently is
       Vector2 spot = attacker.transform.position;
       if (spot.x > transform.position.x + offset) {
          horizontalDirection = (int) Direction.East;
       } else if (spot.x < transform.position.x - offset) {
          horizontalDirection = (int) Direction.West;
       } else {
-         // Debug.LogError("Neither west or east");
          horizontalDirection = 0;
       }
 
@@ -92,7 +158,6 @@ public class SeaMonsterEntity : SeaEntity
       } else if (spot.y < transform.position.y - offset) {
          verticalDirection = (int) Direction.South;
       } else {
-         // Debug.LogError("Neither north or southh");
          verticalDirection = 0;
       }
 
@@ -128,7 +193,26 @@ public class SeaMonsterEntity : SeaEntity
       return finalDirection;
    }
 
+   IEnumerator CO_AttackCooldown () {
+      yield return new WaitForSeconds(.2f);
+      callAnimation(TentacleAnimType.EndAttack);
+   }
+
    #region Private Variables
+
+   // The position we spawned at
+   protected Vector2 _spawnPos;
+
+   // The radius that defines how far the monster will chase before it retreats
+   protected float _territoryRadius = 3.5f;
+
+   // Keeps reference to the recent coroutine so that it can be manually stopped
+   protected Coroutine _attackCoroutine = null;
+
+#pragma warning disable 1234
+   // The radius that defines how near the player ships are before this unit chases it
+   protected float _detectRadius = 3;
+#pragma warning restore 1234
 
    #endregion
 }

@@ -237,9 +237,6 @@ public class TentacleEntity : SeaMonsterEntity
 
    #region Private Variables
 
-   // The position we spawned at
-   protected Vector2 _spawnPos;
-
    // Keeps reference to the recent coroutine so that it can be manually stopped
    private Coroutine _movementCoroutine = null;
 

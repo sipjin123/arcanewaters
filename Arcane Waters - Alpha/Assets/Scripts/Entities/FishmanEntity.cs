@@ -8,16 +8,6 @@ public class FishmanEntity : SeaMonsterEntity
 {
    #region Public Variables
 
-   // A custom max force that we can optionally specify
-   public float maxForceOverride = 0f;
-
-   public bool isEngaging = false;
-
-   // Current target entity
-   public NetEntity targetEntity;
-
-   public bool withinProjectileDistance = false;
-
    #endregion
 
    protected override void Start () {
@@ -51,7 +41,6 @@ public class FishmanEntity : SeaMonsterEntity
             targetEntity = null;
             isEngaging = false;
             waypoint = null;
-            Debug.LogError("Too far, go back");
          }
 
          if (isEngaging && withinProjectileDistance && getVelocity().magnitude < .1f) {
@@ -115,13 +104,7 @@ public class FishmanEntity : SeaMonsterEntity
       _body.AddForce(waypointDirection.normalized * getMoveSpeed());
 
       // Update our facing direction
-      if (!isEngaging || (isEngaging && !withinProjectileDistance) || targetEntity == null) {
-         Direction newFacingDirection = DirectionUtil.getDirectionForVelocity(_body.velocity);
-         if (newFacingDirection != this.facing) {
-            this.facing = newFacingDirection;
-            animator.SetFloat("facingF", (float) this.facing);
-         }
-      }
+      lookAtTarget();
 
       // Make note of the time
       _lastMoveChangeTime = Time.time;
@@ -137,26 +120,9 @@ public class FishmanEntity : SeaMonsterEntity
          Destroy(this.waypoint.gameObject);
       }
 
-      if (targetEntity != null) {
-         if (isEngaging) {
-            float distanceGap = Vector2.Distance(targetEntity.transform.position, transform.position);
-            if (distanceGap > 1 && distanceGap < 3) {
-               // Pick a new spot around our spawn position
-               Vector2 newSpot1 = targetEntity.transform.position;
-               Waypoint newWaypoint1 = Instantiate(PrefabsManager.self.waypointPrefab);
-               newWaypoint1.transform.position = newSpot1;
-               this.waypoint = newWaypoint1;
-               Debug.LogError("Going near player");
-               return;
-            } else if (distanceGap >= 3) {
-               // Forget about target
-               targetEntity = null;
-               isEngaging = false;
-            } else {
-               // Keep attacking
-               return;
-            }
-         }
+      // This handles the waypoint spawn toward the target enemy
+      if (canMoveTowardEnemy()) {
+         return;
       }
 
       // Pick a new spot around our spawn position
@@ -167,7 +133,6 @@ public class FishmanEntity : SeaMonsterEntity
    }
 
    protected void checkForAttackers () {
-      //---------------------------------------------------------------------------------
       if (isDead() || !isServer) {
          return;
       }
@@ -179,7 +144,7 @@ public class FishmanEntity : SeaMonsterEntity
 
       // Check if any of our attackers are within range
       foreach (SeaEntity attacker in _attackers) {
-         if (attacker == null || attacker.isDead() || attacker == this) {
+         if (attacker == null || attacker.isDead() || attacker == this || attacker.GetComponent<SeaMonsterEntity>() != null) {
             continue;
          }
 
@@ -188,53 +153,13 @@ public class FishmanEntity : SeaMonsterEntity
 
          // If the requested spot is not in the allowed area, reject the request
          if (leftAttackBox.OverlapPoint(spot) || rightAttackBox.OverlapPoint(spot)) {
-            if (getVelocity().magnitude < .1f) {
-               int accuracy = Random.Range(1, 4);
-               Vector2 targetLoc = new Vector2(0, 0);
-               if (accuracy == 1) {
-                  targetLoc = spot + (attacker.getVelocity());
-               } else if (accuracy == 2) {
-                  targetLoc = spot + (attacker.getVelocity() * 1.1f);
-               } else {
-                  targetLoc = spot;
-               }
-
-               fireAtSpot(targetLoc, Attack.Type.Shock_Ball);
-               Debug.LogError("ATtacking at: (" + spot.x + " : " + spot.y + ")");
-               Debug.LogError("Velocity at: (" + attacker.getVelocity().x + " : " + attacker.getVelocity().y + ")");
-               Direction newFacingDirection = DirectionUtil.getDirectionForVelocity(attacker.getVelocity());
-               Debug.LogError("Direction of the ship: "+newFacingDirection);
-               if (!hasReloaded()) {
-                  callAnimation(TentacleAnimType.Attack);
-                  _attackCoroutine = StartCoroutine(CO_AttackCooldown());
-               }
-
-               targetEntity = attacker;
-               isEngaging = true;
-            }
+            launchProjectile(spot, attacker, Attack.Type.Shock_Ball);
             return;
          }
       }
    }
 
-   IEnumerator CO_AttackCooldown () {
-      yield return new WaitForSeconds(.2f);
-      callAnimation(TentacleAnimType.EndAttack);
-   }
-
    #region Private Variables
-
-   // The position we spawned at
-   protected Vector2 _spawnPos;
-
-   // Keeps reference to the recent coroutine so that it can be manually stopped
-   private Coroutine _attackCoroutine = null;
-
-   // The radius that defines how far the monster will chase before it retreats
-   private float _territoryRadius = 3.5f;
-
-   // The radius that defines how near the player ships are before this unit chases it
-   private float _detectRadius = 3;
 
    #endregion
 }

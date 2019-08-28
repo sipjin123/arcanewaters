@@ -13,9 +13,6 @@ public class HorrorEntity : SeaMonsterEntity
    // List of tentacle entities
    public List<TentacleEntity> tentacleList;
 
-   // Checks nearest target
-   public NetEntity nearestShipTarget;
-
    // Determines if the monster is approaching a target ship
    public bool approachShip;
 
@@ -93,9 +90,9 @@ public class HorrorEntity : SeaMonsterEntity
       _body.AddForce(waypointDirection.normalized * getMoveSpeed());
 
       // Checks if the distance of the target ship is too far
-      if (nearestShipTarget != null) {
+      if (targetEntity != null) {
          if (Vector2.Distance(_spawnPos, waypoint.transform.position) > _territoryRadius) {
-            nearestShipTarget = null;
+            targetEntity = null;
          }
       }
 
@@ -120,9 +117,9 @@ public class HorrorEntity : SeaMonsterEntity
       }
 
       Vector2 newSpot = new Vector2(0,0); 
-      if (nearestShipTarget != null) {
+      if (targetEntity != null) {
          // Go to the spot near the nearest target ship
-         newSpot = new Vector2(nearestShipTarget.transform.position.x, nearestShipTarget.transform.position.y);
+         newSpot = new Vector2(targetEntity.transform.position.x, targetEntity.transform.position.y);
       } else {
          // Pick a new spot around our spawn position
          newSpot = _spawnPos + new Vector2(Random.Range(-.5f, .5f), Random.Range(-.5f, .5f));
@@ -159,29 +156,11 @@ public class HorrorEntity : SeaMonsterEntity
 
       // Checks if nearest ship is valid to pursue
       if (closestEntity != null && closestDistance < _detectRadius) {
-         nearestShipTarget = closestEntity;
-      }
-   }
-
-   [ClientRpc]
-   public void Rpc_CallAnimation (TentacleAnimType tentacleAnim) {
-      switch(tentacleAnim) {
-         case TentacleAnimType.Die:
-            animator.Play("Die");
-            break;
+         targetEntity = closestEntity;
       }
    }
 
    #region Private Variables
-
-   // The position we spawned at
-   protected Vector2 _spawnPos;
-
-   // The radius that defines how far the monster will chase before it retreats
-   private float _territoryRadius = 3.5f;
-
-   // The radius that defines how near the player ships are before this unit chases it
-   private float _detectRadius = 3;
 
    #endregion
 }

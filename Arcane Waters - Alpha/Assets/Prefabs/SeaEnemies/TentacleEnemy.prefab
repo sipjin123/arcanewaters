@@ -277,6 +277,11 @@ MonoBehaviour:
   leftSideTarget: {fileID: 2083341788368610960}
   rightSideTarget: {fileID: 6334897482679909241}
   invulnerable: 0
+  spawnTransformList: []
+  spawnTransform: {fileID: 0}
+  withinProjectileDistance: 0
+  isEngaging: 0
+  targetEntity: {fileID: 0}
   npcType: 0
   monsterName: 
   route: {fileID: 0}
@@ -288,6 +293,7 @@ MonoBehaviour:
   locationSide: 0
   locationSideTopBot: 0
   randomizedTimer: 1
+  variety: 0
 --- !u!50 &50644847342071564
 Rigidbody2D:
   serializedVersion: 4
@@ -2139,4 +2145,4 @@ MonoBehaviour:
   enemyIcon: {fileID: 3625824054032196252}
   barBackgroundImage: {fileID: 2579565505197064094}
   barsBackgroundAlt: {fileID: 21300000, guid: 468e60adbe0887a429437702a2a8d82e, type: 3}
-  isMinion: 1
+  isDamageable: 1

@@ -8,16 +8,6 @@ public class ReefGiantEntity : SeaMonsterEntity
 {
    #region Public Variables
 
-   // A custom max force that we can optionally specify
-   public float maxForceOverride = 0f;
-
-   public bool isEngaging = false;
-
-   // Current target entity
-   public NetEntity targetEntity;
-
-   public bool withinProjectileDistance = false;
-
    #endregion
 
    protected override void Start () {
@@ -51,7 +41,6 @@ public class ReefGiantEntity : SeaMonsterEntity
             targetEntity = null;
             isEngaging = false;
             waypoint = null;
-            Debug.LogError("Too far, go back");
          }
 
          if (isEngaging && withinProjectileDistance && getVelocity().magnitude < .1f) {
@@ -115,13 +104,7 @@ public class ReefGiantEntity : SeaMonsterEntity
       _body.AddForce(waypointDirection.normalized * getMoveSpeed());
 
       // Update our facing direction
-      if (!isEngaging || (isEngaging && !withinProjectileDistance)) {
-         Direction newFacingDirection = DirectionUtil.getDirectionForVelocity(_body.velocity);
-         if (newFacingDirection != this.facing) {
-            this.facing = newFacingDirection;
-            animator.SetFloat("facingF", (float) this.facing);
-         }
-      }
+      lookAtTarget();
 
       // Make note of the time
       _lastMoveChangeTime = Time.time;
@@ -137,26 +120,9 @@ public class ReefGiantEntity : SeaMonsterEntity
          Destroy(this.waypoint.gameObject);
       }
 
-      if (targetEntity != null) {
-         if (isEngaging) {
-            float distanceGap = Vector2.Distance(targetEntity.transform.position, transform.position);
-            if (distanceGap > 1 && distanceGap < 3) {
-               // Pick a new spot around our spawn position
-               Vector2 newSpot1 = targetEntity.transform.position;
-               Waypoint newWaypoint1 = Instantiate(PrefabsManager.self.waypointPrefab);
-               newWaypoint1.transform.position = newSpot1;
-               this.waypoint = newWaypoint1;
-               Debug.LogError("Going near player");
-               return;
-            } else if (distanceGap >= 3) {
-               // Forget about target
-               targetEntity = null;
-               isEngaging = false;
-            } else {
-               // Keep attacking
-               return;
-            }
-         }
+      // This handles the waypoint spawn toward the target enemy
+      if (canMoveTowardEnemy()) {
+         return;
       }
 
       // Pick a new spot around our spawn position
@@ -178,7 +144,7 @@ public class ReefGiantEntity : SeaMonsterEntity
 
       // Check if any of our attackers are within range
       foreach (SeaEntity attacker in _attackers) {
-         if (attacker == null || attacker.isDead() || attacker == this) {
+         if (attacker == null || attacker.isDead() || attacker == this || attacker.GetComponent<SeaMonsterEntity>() != null) {
             continue;
          }
 
@@ -187,39 +153,13 @@ public class ReefGiantEntity : SeaMonsterEntity
 
          // If the requested spot is not in the allowed area, reject the request
          if (leftAttackBox.OverlapPoint(spot) || rightAttackBox.OverlapPoint(spot)) {
-            if (getVelocity().magnitude < .1f) {
-               fireAtSpot(spot, Attack.Type.Boulder);
-               if (!hasReloaded()) {
-                  callAnimation(TentacleAnimType.Attack);
-                  _attackCoroutine = StartCoroutine(CO_AttackCooldown());
-               }
-
-               targetEntity = attacker;
-               isEngaging = true;
-            }
+            launchProjectile(spot, attacker, Attack.Type.Boulder);
             return;
          }
       }
    }
-
-   IEnumerator CO_AttackCooldown () {
-      yield return new WaitForSeconds(.2f);
-      callAnimation(TentacleAnimType.EndAttack);
-   }
-
+   
    #region Private Variables
-
-   // The position we spawned at
-   protected Vector2 _spawnPos;
-
-   // Keeps reference to the recent coroutine so that it can be manually stopped
-   private Coroutine _attackCoroutine = null;
-
-   // The radius that defines how far the monster will chase before it retreats
-   private float _territoryRadius = 3.5f;
-
-   // The radius that defines how near the player ships are before this unit chases it
-   private float _detectRadius = 3;
 
    #endregion
 }

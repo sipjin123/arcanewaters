@@ -30,7 +30,7 @@ public class SeaMonsterBars : MonoBehaviour
    public Sprite barsBackgroundAlt;
 
    // Determines if this unit is part of another unit
-   public bool isMinion;
+   public bool isDamageable;
 
    #endregion
 
@@ -54,7 +54,7 @@ public class SeaMonsterBars : MonoBehaviour
       // Hide our bars if we haven't had a combat action
       barsContainer.SetActive(_entity.hasAnyCombat());
 
-      if (!isMinion) {
+      if (!isDamageable) {
          return;
       }
 
@@ -82,7 +82,7 @@ public class SeaMonsterBars : MonoBehaviour
 
       // Show the red skull icon if we're an enemy of the player
       if (_entity.isEnemyOf(Global.player)) {
-         if (!isMinion) {
+         if (!isDamageable) {
             enemyIcon.gameObject.SetActive(true);
          }
       } else if (_entity.hasAttackers()) {
