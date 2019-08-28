@@ -44,19 +44,23 @@ public class ClientManager : MonoBehaviour {
       }
 
       if (Global.startAutoHost) {
-         TitleScreen.self.startHost(1);
+         QuickLaunchPanel.self.hostToggle.isOn = true;
+         QuickLaunchPanel.self.launch();
       }
 
       if (CommandCodes.get(CommandCodes.Type.AUTO_TEST)) {
          int testerNumber = Util.getCommandLineInt(CommandCodes.Type.AUTO_TEST+"");
-         TitleScreen.self.startClient(testerNumber);
+         QuickLaunchPanel.self.accountInputField.text = "tester" + testerNumber;
+         QuickLaunchPanel.self.passwordInputField.text = "test";
+         QuickLaunchPanel.self.clientToggle.isOn = true;
+         QuickLaunchPanel.self.launch();
       }
 
       // Try to start with fast login only if no command codes were used
       if (!MyNetworkManager.self.isNetworkActive) {
          Util.readFastLoginFile();
          if (Global.isFastLogin) {
-            TitleScreen.self.startWithFastLogin();
+            QuickLaunchPanel.self.startWithFastLogin();
          }
       }
    }

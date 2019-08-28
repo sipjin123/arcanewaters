@@ -260,6 +260,24 @@ public class RPCManager : NetworkBehaviour {
       panel.updatePanelWithTrades(tradeList, pageIndex, totalTradeCount);
    }
 
+   [TargetRpc]
+   public void Target_ReceiveLeaderBoards (NetworkConnection connection, LeaderBoardsManager.Period period, 
+      double secondsLeftUntilRecalculation, LeaderBoardInfo[] farmingEntries, LeaderBoardInfo[] sailingEntries,
+      LeaderBoardInfo[] exploringEntries, LeaderBoardInfo[] tradingEntries, LeaderBoardInfo[] craftingEntries,
+      LeaderBoardInfo[] miningEntries) {
+
+      // Make sure the panel is showing
+      LeaderBoardsPanel panel = (LeaderBoardsPanel) PanelManager.self.get(Panel.Type.LeaderBoards);
+
+      if (!panel.isShowing()) {
+         PanelManager.self.pushPanel(panel.type);
+      }
+
+      // Pass them along to the Leader Boards panel
+      panel.updatePanelWithLeaderBoardEntries(period, secondsLeftUntilRecalculation,  farmingEntries, sailingEntries,
+         exploringEntries, tradingEntries, craftingEntries, miningEntries);
+   }
+
    [Command]
    public void Cmd_BugReport (string subject, string message) {
       // We need a player object
@@ -375,6 +393,42 @@ public class RPCManager : NetworkBehaviour {
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             _player.rpc.Target_ReceiveTradeHistory(_player.connectionToClient, tradeList.ToArray(), pageIndex, totalTradeCount);
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_RequestLeaderBoardsFromServer (LeaderBoardsManager.Period period) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      List<LeaderBoardInfo> farmingEntries;
+      List<LeaderBoardInfo> sailingEntries;
+      List<LeaderBoardInfo> exploringEntries;
+      List<LeaderBoardInfo> tradingEntries;
+      List<LeaderBoardInfo> craftingEntries;
+      List<LeaderBoardInfo> miningEntries;
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+
+         // Get the leader boards
+         LeaderBoardsManager.self.getLeaderBoards(period, out farmingEntries, out sailingEntries, out exploringEntries, out tradingEntries,
+            out craftingEntries, out miningEntries);
+
+         // Get the last calculation date of this period
+         DateTime lastCalculationDate = DB_Main.getLeaderBoardEndDate(period);
+
+         // Get the time left until recalculation
+         TimeSpan timeLeftUntilRecalculation = LeaderBoardsManager.self.getTimeLeftUntilRecalculation(period, lastCalculationDate);
+
+         // Back to the Unity thread to send the results back to the client
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            _player.rpc.Target_ReceiveLeaderBoards(_player.connectionToClient, period, timeLeftUntilRecalculation.TotalSeconds,
+               farmingEntries.ToArray(), sailingEntries.ToArray(), exploringEntries.ToArray(), tradingEntries.ToArray(),
+               craftingEntries.ToArray(), miningEntries.ToArray());
          });
       });
    }

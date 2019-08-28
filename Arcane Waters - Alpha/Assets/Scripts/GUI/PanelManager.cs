@@ -83,6 +83,10 @@ public class PanelManager : MonoBehaviour {
          BottomBar.self.toggleMapPanel();
       } else if (Input.GetKeyUp(KeyCode.Y)) {
          BottomBar.self.toggleCraftingPanel();
+      } else if (Input.GetKeyUp(KeyCode.T)) {
+         BottomBar.self.toggleTradeHistoryPanel();
+      } else if (Input.GetKeyUp(KeyCode.B)) {
+         BottomBar.self.toggleLeaderBoardsPanel();
       }
    }
 

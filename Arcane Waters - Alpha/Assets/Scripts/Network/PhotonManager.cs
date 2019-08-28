@@ -54,12 +54,6 @@ public class PhotonManager : Photon.PunBehaviour {
    protected string getServerRoomName () {
       string name = "ServerRoom";
 
-      if (Application.isEditor) {
-         name += "-Editor";
-      } else if (MyNetworkManager.self.serverOverride == MyNetworkManager.ServerType.Localhost) {
-         name += "-Localhost";
-      }
-
       // Make sure multiple devs can launch servers locally without having the names be the same
       name += "-" + SystemInfo.deviceName;
 

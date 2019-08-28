@@ -4,40 +4,53 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class Instance : Photon.PunBehaviour {
+public class Instance : NetworkBehaviour
+{
    #region Public Variables
 
    // The id of this instance
+   [SyncVar]
    public int id;
 
    // The type of Area this Instance is
+   [SyncVar]
    public Area.Type areaType;
 
    // The type of Biome this Instance is
+   [SyncVar]
    public Biome.Type biomeType = Biome.Type.None;
 
-   // The list of Entities in this instance
+   // The list of Entities in this instance (server only)
    public List<NetworkBehaviour> entities = new List<NetworkBehaviour>();
 
    // For debugging in the Editor
+   [SyncVar]
    public int entityCount;
 
    // The number assigned to this instance based on the area type
+   [SyncVar]
    public int numberInArea;
 
    // The server address for this Instance
+   [SyncVar]
    public string serverAddress;
 
    // The server port for this Instance
+   [SyncVar]
    public int serverPort;
+
+   // Our network ident
+   public NetworkIdentity netIdent;
 
    #endregion
 
-   private void Awake () {
-      _view = GetComponent<PhotonView>();
+   public void Awake () {
+      // Look up components
+      netIdent = GetComponent<NetworkIdentity>();
    }
 
    private void Start () {
+      // We only spawn Bots on the Server
       if (NetworkServer.active) {
          Area area = AreaManager.self.getArea(this.areaType);
          List<BotSpot> spots = BotManager.self.getSpots(area.areaType);
@@ -71,26 +84,6 @@ public class Instance : Photon.PunBehaviour {
       InvokeRepeating("checkIfInstanceIsEmpty", 10f, 30f);
    }
 
-   void OnPhotonSerializeView (PhotonStream stream, PhotonMessageInfo info) {
-      if (stream.isWriting) {
-         // We own this object: send the others our data 
-         stream.SendNext(id);
-         stream.SendNext(areaType);
-         stream.SendNext(biomeType);
-         stream.SendNext(entities.Count);
-         stream.SendNext(serverAddress);
-         stream.SendNext(serverPort);
-      } else {
-         // Someone else owns this object, receive data 
-         this.id = (int) stream.ReceiveNext();
-         this.areaType = (Area.Type) stream.ReceiveNext();
-         this.biomeType = (Biome.Type) stream.ReceiveNext();
-         this.entityCount = (int) stream.ReceiveNext();
-         this.serverAddress = (string) stream.ReceiveNext();
-         this.serverPort = (int) stream.ReceiveNext();
-      }
-   }
-
    public int getPlayerCount() {
       int count = 0;
 
@@ -122,6 +115,11 @@ public class Instance : Photon.PunBehaviour {
    }
 
    protected void checkIfInstanceIsEmpty () {
+      // We only do this on the server
+      if (!NetworkServer.active) {
+         return;
+      }
+
       // We don't worry about this for the Randomly generated maps
       if (Area.isRandom(this.areaType)) {
          return;
@@ -143,9 +141,6 @@ public class Instance : Photon.PunBehaviour {
    }
 
    #region Private Variables
-
-   // Our Photon View
-   protected PhotonView _view;
 
    // The number of consecutive times we've checked this instance and found it empty
    protected int _consecutiveEmptyChecks = 0;

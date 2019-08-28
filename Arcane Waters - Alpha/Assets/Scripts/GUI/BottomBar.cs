@@ -108,6 +108,16 @@ public class BottomBar : MonoBehaviour {
       }
    }
 
+   public void toggleLeaderBoardsPanel () {
+      LeaderBoardsPanel panel = (LeaderBoardsPanel) PanelManager.self.get(Panel.Type.LeaderBoards);
+
+      if (!panel.isShowing()) {
+         Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(LeaderBoardsManager.Period.Week);
+      } else {
+         PanelManager.self.togglePanel(Panel.Type.LeaderBoards);
+      }
+   }
+
    #region Private Variables
 
    #endregion

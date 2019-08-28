@@ -120,6 +120,12 @@ public class MyNetworkManager : NetworkManager {
       // Start up Photon so the servers can talk to each other
       connectToPhotonMaster();
 
+      // Schedule the leader boards recalculation
+      LeaderBoardsManager.self.scheduleLeaderBoardRecalculation();
+
+      // Delete old records in the job_history table
+      LeaderBoardsManager.self.pruneJobHistory();
+
       // Make note that we started up a server
       wasServerStarted = true;
    }
@@ -257,6 +263,14 @@ public class MyNetworkManager : NetworkManager {
    public static void noteUserIdForConnection (int selectedUserId, NetworkConnection conn) {
       // Keep track of the user ID that we're associating with this connection
       _userIdForConnection[conn] = selectedUserId;
+   }
+
+   public static int getCurrentPort () {
+      if (self != null && self.telepathy != null) {
+         return self.telepathy.port;
+      }
+
+      return 0;
    }
 
    public static Dictionary<int, NetEntity> getPlayers () {

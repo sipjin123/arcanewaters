@@ -87,6 +87,9 @@ public class InstanceManager : MonoBehaviour {
       // Create any Enemies that exist in this Instance
       EnemyManager.self.spawnEnemiesOnServerForInstance(instance);
 
+      // Spawn the network object on the Clients
+      NetworkServer.Spawn(instance.gameObject);
+
       return instance;
    }
 
@@ -133,6 +136,9 @@ public class InstanceManager : MonoBehaviour {
                instanceEntity.netIdentity.RebuildObservers(false);
             }
          }
+
+         // We also need the Instance object to be viewable by the new player
+         instance.netIdent.RebuildObservers(false);
       }
    }
 
@@ -205,7 +211,7 @@ public class InstanceManager : MonoBehaviour {
       _instances.Remove(instance.id);
 
       // Then destroy the instance
-      Destroy(instance.gameObject);
+      NetworkServer.Destroy(instance.gameObject);
    }
 
    #region Private Variables

@@ -16,9 +16,6 @@ public class TitleScreen : MonoBehaviour {
    // The login button
    public Button loginButton;
 
-   // The container for the debug button group
-   public GameObject debugButtonGroup;
-
    // The drop down menu to select the database server - debug only
    public Dropdown dbServerDropDown;
 
@@ -32,12 +29,6 @@ public class TitleScreen : MonoBehaviour {
 
    private void Awake () {
       self = this;
-
-      Debug.Log("Server build: " + Util.isServerBuild());
-      Debug.Log("Test class result: " + TestClass.someIntFunction());
-
-      // We don't show the debug button group in the normal build
-      debugButtonGroup.SetActive(Util.isServerBuild());
    }
 
    void Start () {
@@ -68,44 +59,9 @@ public class TitleScreen : MonoBehaviour {
       }
    }
 
-   public void startHost (int num=0) {
-      // Auto-fill the fields in the server build for faster testing
-      if (num != 0) {
-         accountInputField.text = "Tester" + num;
-         passwordInputField.text = "test";
-      }
-
-      MyNetworkManager.self.StartHost();
-   }
-
-   public void startClient (int clientNumber=1) {
-      // Auto-fill the fields in the server build for faster testing
-      if (accountInputField.text == "" && Util.isServerBuild()) {
-         accountInputField.text = "Tester" + clientNumber;
-         passwordInputField.text = "test";
-      }
-
-      MyNetworkManager.self.StartClient();
-   }
-
-   public void startServer () {
-      MyNetworkManager.self.StartServer();
-   }
-
    public void startUpNetworkClient() {
       // Start up the Network Client, which triggers the rest of the login process
       MyNetworkManager.self.StartClient();
-   }
-
-   public void startWithFastLogin () {
-      accountInputField.text = Global.fastLoginAccountName;
-      passwordInputField.text = Global.fastLoginAccountPassword;
-
-      if (Global.isFastLoginHostMode) {
-         MyNetworkManager.self.StartHost();
-      } else {
-         MyNetworkManager.self.StartClient();
-      }
    }
 
    public bool isShowing () {
@@ -128,16 +84,6 @@ public class TitleScreen : MonoBehaviour {
             PanelManager.self.noticeScreen.show("Invalid account/password combination.");
             break;
       }
-   }
-
-   public void refreshDatabaseServer() {
-      #if IS_SERVER_BUILD
-      if (dbServerDropDown.value == 0) {
-         DB_Main.setServer(DB_Main.RemoteServer);
-      } else {
-         DB_Main.setServer("127.0.0.1");
-      }
-      #endif
    }
 
    #region Private Variables
