@@ -178,8 +178,7 @@ public class ReefGiantEntity : SeaMonsterEntity
 
       // Check if any of our attackers are within range
       foreach (SeaEntity attacker in _attackers) {
-         if (attacker == null || attacker.isDead()) {
-            Debug.LogError("Attacker is null");
+         if (attacker == null || attacker.isDead() || attacker == this) {
             continue;
          }
 

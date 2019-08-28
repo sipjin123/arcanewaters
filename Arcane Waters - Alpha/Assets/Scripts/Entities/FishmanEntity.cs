@@ -115,7 +115,7 @@ public class FishmanEntity : SeaMonsterEntity
       _body.AddForce(waypointDirection.normalized * getMoveSpeed());
 
       // Update our facing direction
-      if (!isEngaging || (isEngaging && !withinProjectileDistance)) {
+      if (!isEngaging || (isEngaging && !withinProjectileDistance) || targetEntity == null) {
          Direction newFacingDirection = DirectionUtil.getDirectionForVelocity(_body.velocity);
          if (newFacingDirection != this.facing) {
             this.facing = newFacingDirection;
@@ -179,8 +179,7 @@ public class FishmanEntity : SeaMonsterEntity
 
       // Check if any of our attackers are within range
       foreach (SeaEntity attacker in _attackers) {
-         if (attacker == null || attacker.isDead()) {
-            Debug.LogError("Attacker is null");
+         if (attacker == null || attacker.isDead() || attacker == this) {
             continue;
          }
 
@@ -190,7 +189,21 @@ public class FishmanEntity : SeaMonsterEntity
          // If the requested spot is not in the allowed area, reject the request
          if (leftAttackBox.OverlapPoint(spot) || rightAttackBox.OverlapPoint(spot)) {
             if (getVelocity().magnitude < .1f) {
-               fireAtSpot(spot, Attack.Type.Shock_Ball);
+               int accuracy = Random.Range(1, 4);
+               Vector2 targetLoc = new Vector2(0, 0);
+               if (accuracy == 1) {
+                  targetLoc = spot + (attacker.getVelocity());
+               } else if (accuracy == 2) {
+                  targetLoc = spot + (attacker.getVelocity() * 1.1f);
+               } else {
+                  targetLoc = spot;
+               }
+
+               fireAtSpot(targetLoc, Attack.Type.Shock_Ball);
+               Debug.LogError("ATtacking at: (" + spot.x + " : " + spot.y + ")");
+               Debug.LogError("Velocity at: (" + attacker.getVelocity().x + " : " + attacker.getVelocity().y + ")");
+               Direction newFacingDirection = DirectionUtil.getDirectionForVelocity(attacker.getVelocity());
+               Debug.LogError("Direction of the ship: "+newFacingDirection);
                if (!hasReloaded()) {
                   callAnimation(TentacleAnimType.Attack);
                   _attackCoroutine = StartCoroutine(CO_AttackCooldown());
