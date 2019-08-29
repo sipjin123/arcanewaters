@@ -107,9 +107,8 @@ public class CraftingPanel : Panel, IPointerClickHandler
 
             if (myIngredient != null) {
                ingredientCount = myIngredient.count;
-            } else {
-               D.error("Not enough quantity");
-            }
+            } 
+
             bool passedRequirement = false;
 
             if (ingredientCount >= requirement.count) {
