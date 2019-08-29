@@ -1468,11 +1468,8 @@ public class RPCManager : NetworkBehaviour {
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
       bot.areaType = _player.areaType;
-      bot.npcType = NPC.Type.Tentacle;
-      bot.faction = NPC.getFaction(bot.npcType);
       bot.route = null;
       bot.autoMove = true;
-      bot.nationType = Nation.Type.Pirate;
       bot.entityName = "Tentacle";
       bot.locationSide = xVal;
       bot.locationSideTopBot = yVal;
@@ -1495,9 +1492,6 @@ public class RPCManager : NetworkBehaviour {
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
       bot.areaType = _player.areaType;
-      bot.npcType = NPC.Type.Horror;
-      bot.faction = NPC.getFaction(bot.npcType);
-      bot.nationType = Nation.Type.Pirate;
       bot.entityName = "Horror";
       bot.tentaclesLeft = 8;
 
@@ -1526,9 +1520,6 @@ public class RPCManager : NetworkBehaviour {
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
       bot.areaType = _player.areaType;
-      bot.npcType = NPC.Type.Worm;
-      bot.faction = NPC.getFaction(bot.npcType);
-      bot.nationType = Nation.Type.Pirate;
       bot.entityName = "Worm";
 
       // Spawn the bot on the Clients
@@ -1544,9 +1535,6 @@ public class RPCManager : NetworkBehaviour {
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
       bot.areaType = _player.areaType;
-      bot.npcType = NPC.Type.Worm;
-      bot.faction = NPC.getFaction(bot.npcType);
-      bot.nationType = Nation.Type.Pirate;
       bot.entityName = "Giant";
 
       // Spawn the bot on the Clients
@@ -1562,9 +1550,6 @@ public class RPCManager : NetworkBehaviour {
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
       bot.areaType = _player.areaType;
-      bot.npcType = NPC.Type.Worm;
-      bot.faction = NPC.getFaction(bot.npcType);
-      bot.nationType = Nation.Type.Pirate;
       bot.entityName = "Fishman";
 
       // Spawn the bot on the Clients
