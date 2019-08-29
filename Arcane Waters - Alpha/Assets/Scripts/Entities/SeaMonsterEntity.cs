@@ -36,8 +36,8 @@ public class SeaMonsterEntity : SeaEntity
    // A flag to determine if the object has died
    public bool hasDied = false;
 
-   // Tentacle Animation
-   public enum TentacleAnimType
+   // Seamonster Animation
+   public enum SeaMonsterAnimState
    {
       Idle,
       Attack,
@@ -50,26 +50,26 @@ public class SeaMonsterEntity : SeaEntity
    #endregion
 
    [Server]
-   public void callAnimation (TentacleAnimType anim) {
+   public void callAnimation (SeaMonsterAnimState anim) {
       Rpc_CallAnimation(anim);
    }
 
    [ClientRpc]
-   public void Rpc_CallAnimation (TentacleAnimType anim) {
+   public void Rpc_CallAnimation (SeaMonsterAnimState anim) {
       switch (anim) {
-         case TentacleAnimType.Attack:
+         case SeaMonsterAnimState.Attack:
             animator.SetBool("attacking", true);
             break;
-         case TentacleAnimType.EndAttack:
+         case SeaMonsterAnimState.EndAttack:
             animator.SetBool("attacking", false);
             break;
-         case TentacleAnimType.Die:
+         case SeaMonsterAnimState.Die:
             animator.Play("Die");
             break;
-         case TentacleAnimType.Move:
+         case SeaMonsterAnimState.Move:
             animator.SetBool("move", true);
             break;
-         case TentacleAnimType.MoveStop:
+         case SeaMonsterAnimState.MoveStop:
             animator.SetBool("move", false);
             break;
       }
@@ -102,7 +102,7 @@ public class SeaMonsterEntity : SeaEntity
 
       fireAtSpot(targetLoc, attackType);
       if (!hasReloaded()) {
-         callAnimation(TentacleAnimType.Attack);
+         callAnimation(SeaMonsterAnimState.Attack);
          _attackCoroutine = StartCoroutine(CO_AttackCooldown());
       }
 
@@ -191,7 +191,7 @@ public class SeaMonsterEntity : SeaEntity
 
    IEnumerator CO_AttackCooldown () {
       yield return new WaitForSeconds(.2f);
-      callAnimation(TentacleAnimType.EndAttack);
+      callAnimation(SeaMonsterAnimState.EndAttack);
    }
 
    #region Private Variables

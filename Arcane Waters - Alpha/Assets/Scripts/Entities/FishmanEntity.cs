@@ -62,7 +62,7 @@ public class FishmanEntity : SeaMonsterEntity
       if (!isServer || isDead()) {
          if (hasDied == false && isDead()) {
             hasDied = true;
-            callAnimation(TentacleAnimType.Die);
+            callAnimation(SeaMonsterAnimState.Die);
          }
          return;
       }

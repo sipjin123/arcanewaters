@@ -66,9 +66,9 @@ public class TentacleEntity : SeaMonsterEntity
 
       // Updates animation if monster is moving
       if (_body.velocity.magnitude < .05f) {
-         callAnimation(TentacleAnimType.MoveStop);
+         callAnimation(SeaMonsterAnimState.MoveStop);
       } else {
-         callAnimation(TentacleAnimType.Move);
+         callAnimation(SeaMonsterAnimState.Move);
       }
 
       // Only change our movement if enough time has passed
@@ -206,7 +206,7 @@ public class TentacleEntity : SeaMonsterEntity
          // If the requested spot is not in the allowed area, reject the request
          if (leftAttackBox.OverlapPoint(spot) || rightAttackBox.OverlapPoint(spot)) {
             meleeAtSpot(spot, Attack.Type.Tentacle);
-            callAnimation(TentacleAnimType.Attack);
+            callAnimation(SeaMonsterAnimState.Attack);
             return;
          }
       }
@@ -224,11 +224,11 @@ public class TentacleEntity : SeaMonsterEntity
 
    [Server]
    public void tentacleDeath () {
-      callAnimation(TentacleAnimType.Die);
+      callAnimation(SeaMonsterAnimState.Die);
       horrorEntity.tentaclesLeft -= 1;
       if (horrorEntity.tentaclesLeft <= 0) {
          horrorEntity.currentHealth = 0;
-         horrorEntity.Rpc_CallAnimation(TentacleEntity.TentacleAnimType.Die);
+         horrorEntity.Rpc_CallAnimation(TentacleEntity.SeaMonsterAnimState.Die);
       }
    }
 

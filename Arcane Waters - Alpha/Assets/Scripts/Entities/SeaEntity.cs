@@ -119,13 +119,13 @@ public class SeaEntity : NetEntity {
 
       if (attackType == Attack.Type.Boulder) {
          // Create a boulder
-         BoulderProjectile venom = Instantiate(PrefabsManager.self.getBoulderPrefab(attackType), startPos, Quaternion.identity);
-         venom.creator = this;
-         venom.startPos = startPos;
-         venom.endPos = endPos;
-         venom.startTime = startTime;
-         venom.endTime = endTime;
-         venom.setDirection((Direction) facing);
+         BoulderProjectile boulder = Instantiate(PrefabsManager.self.getBoulderPrefab(attackType), startPos, Quaternion.identity);
+         boulder.creator = this;
+         boulder.startPos = startPos;
+         boulder.endPos = endPos;
+         boulder.startTime = startTime;
+         boulder.endTime = endTime;
+         boulder.setDirection((Direction) facing);
       } else if (attackType == Attack.Type.Venom) {
          // Create a venom
          VenomProjectile venom = Instantiate(PrefabsManager.self.getVenomPrefab(attackType), startPos, Quaternion.identity);
@@ -137,13 +137,13 @@ public class SeaEntity : NetEntity {
          venom.setDirection((Direction) facing);
       } else if (attackType == Attack.Type.Shock_Ball) {
          // Create a shock ball
-         ShockballProjectile venom = Instantiate(PrefabsManager.self.getShockballPrefab(attackType), startPos, Quaternion.identity);
-         venom.creator = this;
-         venom.startPos = startPos;
-         venom.endPos = endPos;
-         venom.startTime = startTime;
-         venom.endTime = endTime;
-         venom.setDirection((Direction) facing);
+         ShockballProjectile shockBall = Instantiate(PrefabsManager.self.getShockballPrefab(attackType), startPos, Quaternion.identity);
+         shockBall.creator = this;
+         shockBall.startPos = startPos;
+         shockBall.endPos = endPos;
+         shockBall.startTime = startTime;
+         shockBall.endTime = endTime;
+         shockBall.setDirection((Direction) facing);
       } else {
          // Create a cannon ball
          CannonBall ball = Instantiate(PrefabsManager.self.getCannonBallPrefab(attackType), startPos, Quaternion.identity);
