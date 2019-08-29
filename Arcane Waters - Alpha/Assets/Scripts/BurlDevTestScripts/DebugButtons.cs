@@ -7,12 +7,90 @@ using System.Collections;
 using Mirror;
 public class DebugButtons : NetworkBehaviour
 {
+   #region Public Variables
+
    public GenericLootData tempDrop;
+
+   public bool enableDebug;
+
+   public string quantity;
+   public Item.Category categoryType;
+   public string itemType;
+   public string outputItem;
+
+   #endregion
 
    private void processItem(Item item) {
       RewardManager.self.showItemInRewardPanel(item);
    }
 
+   private void Start () {
+      categoryType = Item.Category.CraftingIngredients;
+   }
+
+   private void OnGUI () {
+      if (!enableDebug) {
+         return;
+      }
+
+      GUILayout.BeginHorizontal("box");
+      {
+         GUILayout.BeginVertical("box");
+         {
+            foreach (Item.Category category in System.Enum.GetValues(typeof(Item.Category))) {
+               if (category == Item.Category.CraftingIngredients || category == Item.Category.Blueprint || category == Item.Category.Weapon || category == Item.Category.Armor) {
+                  if (GUILayout.Button("Select CraftingItems:: " + category, GUILayout.Width(buttonSizeX), GUILayout.Height(buttonSizeY))) {
+                     categoryType = (Item.Category) System.Enum.Parse(typeof(Item.Category), category.ToString(), true);
+                  }
+               }
+            }
+         }
+         GUILayout.EndVertical();
+
+         GUILayout.BeginVertical("box");
+         {
+            if (GUILayout.Button("CRAFT ITEM: " + categoryType.ToString(), GUILayout.Width(buttonSizeX), GUILayout.Height(buttonSizeY * 2))) {
+               Item newItem = new Item(0, categoryType, int.Parse(itemType), int.Parse(quantity), ColorType.Black, ColorType.BlackEyes, "");
+               int newQuantity = int.Parse(quantity);
+               newQuantity = Mathf.Clamp(newQuantity, 0, 100);
+               newItem.count = newQuantity;
+
+               processRewardItems(newItem);
+            }
+
+            quantity = GUILayout.TextField(quantity, GUILayout.Width(buttonSizeX), GUILayout.Height(buttonSizeY));
+            itemType = GUILayout.TextField(itemType, GUILayout.Width(buttonSizeX), GUILayout.Height(buttonSizeY));
+
+            if (GUILayout.Button("Check final output: ", GUILayout.Width(buttonSizeX), GUILayout.Height(buttonSizeY))) {
+               string itemTypeName = "";
+               int itemTypeID = int.Parse(itemType);
+               switch (categoryType) {
+                  case Item.Category.CraftingIngredients:
+                     itemTypeID = Mathf.Clamp(itemTypeID, 0, System.Enum.GetNames(typeof(CraftingIngredients.Type)).Length - 1);
+                     itemTypeName = "Item Type: "+(CraftingIngredients.Type) itemTypeID;
+                     break;
+                  case Item.Category.Armor:
+                     itemTypeID = Mathf.Clamp(itemTypeID, 0, System.Enum.GetNames(typeof(Armor.Type)).Length - 1);
+                     itemTypeName = "Item Type: " + (Armor.Type) itemTypeID;
+                     break;
+                  case Item.Category.Blueprint:
+                     itemTypeID = Mathf.Clamp(itemTypeID, 0, System.Enum.GetNames(typeof(Blueprint.Type)).Length - 1);
+                     itemTypeName = "Item Type: " + (Blueprint.Type) itemTypeID;
+                     break;
+                  case Item.Category.Weapon:
+                     itemTypeID = Mathf.Clamp(itemTypeID, 0, System.Enum.GetNames(typeof(Weapon.Type)).Length - 1);
+                     itemTypeName = "Item Type: " + (Weapon.Type) itemTypeID;
+                     break;
+
+               }
+               outputItem = "Category: "+categoryType.ToString() + "\nQuantity: " + quantity + "\n" + itemTypeName;
+            }
+            GUILayout.Label("Final output is: \n"+outputItem, GUILayout.Width(buttonSizeX), GUILayout.Height(buttonSizeY * 2));
+         }
+         GUILayout.EndVertical();
+      }
+      GUILayout.EndHorizontal();
+   }
 
    [Server]
    public void processRewardItems (Item item) {
@@ -26,19 +104,11 @@ public class DebugButtons : NetworkBehaviour
       });
    }
 
-   Random.State seedGenerator;
-   int seedGeneratorSeed = 1337;
    private void Update () {
-      if (Global.player != null && Global.player.isLocalPlayer) {
-         if (Input.GetKeyDown(KeyCode.T)) {
-            NPCRelationInfo newinfo = new NPCRelationInfo(Global.player.userId, 555, "TESTER", "Deliver", 0, 1, 1);
-            DB_Main.createNPCRelation(newinfo);
-            return;
 
-            //Global.player.requestAnimationPlay();
-            Global.player.rpc.Cmd_InteractAnimation(Anim.Type.Mining);
-         }
-      }  
+      if (Input.GetKeyDown(KeyCode.Q)) {
+         enableDebug = !enableDebug;
+      }
 
       if(Input.GetKeyDown(KeyCode.Tilde)) {
          var temp = tempDrop.requestLootList();
@@ -52,99 +122,19 @@ public class DebugButtons : NetworkBehaviour
 
          RewardManager.self.showItemsInRewardPanel(itemList);
       }
-
-      if(Input.GetKey(KeyCode.U)) {
-         if (Input.GetKeyDown(KeyCode.Alpha2)) {
-            seedGeneratorSeed = 1137;
-         }
-         if (Input.GetKeyDown(KeyCode.Alpha3)) {
-            seedGeneratorSeed = 1037;
-         }
-
-         if (Input.GetKeyDown(KeyCode.Alpha1)) {
-            bool seedGeneratorInitialized = false;
-            // remember old seed
-            var temp = Random.state;
- 
-            // initialize generator state if needed
-            if (!seedGeneratorInitialized)
-            {
-                  Random.InitState(seedGeneratorSeed);
-                  seedGenerator = Random.state;
-                  seedGeneratorInitialized = true;
-            }
- 
-            // set our generator state to the seed generator
-            Random.state = seedGenerator;
-            // generate our new seed
-            var generatedSeed = Random.Range(int.MinValue, int.MaxValue);
-            // remember the new generator state
-            seedGenerator = Random.state;
-            // set the original state back so that normal random generation can continue where it left off
-            Random.state = temp;
-            Debug.LogError("SEED GEB : "+generatedSeed);
-         }
-      }
-
-      if (Input.GetKey(KeyCode.Q)) {
-         if (Input.GetKeyDown(KeyCode.Alpha1)) {
-            Blueprint craftingIngredients = new Blueprint(0, (int) Blueprint.Type.Sword_1, ColorType.DarkGreen, ColorType.DarkPurple, "");
-            craftingIngredients.itemTypeId = (int) craftingIngredients.type;
-            processRewardItems(craftingIngredients);
-         }
-         if (Input.GetKeyDown(KeyCode.Alpha2)) {
-            Blueprint craftingIngredients = new Blueprint(0, (int) Blueprint.Type.Sword_2, ColorType.DarkGreen, ColorType.DarkPurple, "");
-            craftingIngredients.itemTypeId = (int) craftingIngredients.type;
-            processRewardItems(craftingIngredients);
-         }
-         if (Input.GetKeyDown(KeyCode.Alpha3)) {
-            Blueprint craftingIngredients = new Blueprint(0, (int) Blueprint.Type.Sword_3, ColorType.DarkGreen, ColorType.DarkPurple, "");
-            craftingIngredients.itemTypeId = (int) craftingIngredients.type;
-            processRewardItems(craftingIngredients);
-         }
-         if (Input.GetKeyDown(KeyCode.Alpha4)) {
-            Blueprint craftingIngredients = new Blueprint(0, (int) Blueprint.Type.Sword_4, ColorType.DarkGreen, ColorType.DarkPurple, "");
-            craftingIngredients.itemTypeId = (int) craftingIngredients.type;
-            processRewardItems(craftingIngredients);
-         }
-         if (Input.GetKeyDown(KeyCode.Alpha5)) {
-            CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Lizard_Claw, ColorType.DarkGreen, ColorType.DarkPurple, "");
-            craftingIngredients.itemTypeId = (int) craftingIngredients.type;
-            //processItem(craftingIngredients);
-            processRewardItems(craftingIngredients);
-         }
-         if (Input.GetKeyDown(KeyCode.Alpha6)) {
-            CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Green_Scale, ColorType.DarkGreen, ColorType.DarkPurple, "");
-            craftingIngredients.itemTypeId = (int) craftingIngredients.type;
-            //processItem(craftingIngredients);
-            processRewardItems(craftingIngredients);
-         }
-         if (Input.GetKeyDown(KeyCode.Alpha7)) {
-            CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Bark, ColorType.DarkGreen, ColorType.DarkPurple, "");
-            craftingIngredients.itemTypeId = (int) craftingIngredients.type;
-            //processItem(craftingIngredients);
-            processRewardItems(craftingIngredients);
-         }
-         if (Input.GetKeyDown(KeyCode.Alpha8)) {
-            CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) CraftingIngredients.Type.Gold_Ore, ColorType.DarkGreen, ColorType.DarkPurple, "");
-            craftingIngredients.itemTypeId = (int) craftingIngredients.type;
-            processRewardItems(craftingIngredients);
-         }
-         if (Input.GetKeyDown(KeyCode.Alpha9)) {
-            StartCoroutine(CO_LoopInventory());
-         }
-      }
-      IEnumerator CO_LoopInventory () {
-         // Check All Icons
-         foreach (var item in System.Enum.GetValues(typeof(CraftingIngredients.Type))) {
-            Debug.LogError("CREATING : " + item.ToString());
-            CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) ((CraftingIngredients.Type) System.Enum.Parse(typeof(CraftingIngredients.Type), item.ToString())), ColorType.DarkGreen, ColorType.DarkPurple, "");
-            craftingIngredients.itemTypeId = (int) craftingIngredients.type;
-            processRewardItems(craftingIngredients);
-            yield return new WaitForSeconds(1);
-         }
-      }
    }
+
+   #region Private Variables
+
+   private float buttonSizeX = 250;
+
+   private float buttonSizeY = 50;
+
+   private Random.State seedGenerator;
+
+   private int seedGeneratorSeed = 1337;
+
+   #endregion
 }
 
 #endif
