@@ -31,9 +31,6 @@ public class TentacleEntity : SeaMonsterEntity
       // Note our spawn position
       _spawnPos = this.transform.position;
 
-      // Set our name
-      NPC.setNameColor(nameText, npcType);
-
       // Calls functions that randomizes and calls the coroutine that handles movement
       initializeBehavior();
 

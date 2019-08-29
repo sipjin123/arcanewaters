@@ -17,10 +17,6 @@ public class SeaMonsterEntity : SeaEntity
    // Current target entity
    public NetEntity targetEntity;
 
-   // The Type of NPC SeaMonster
-   [SyncVar]
-   public NPC.Type npcType;
-
    // The Name of the NPC Seamonster
    [SyncVar]
    public string monsterName;

@@ -24,9 +24,6 @@ public class HorrorEntity : SeaMonsterEntity
       // Note our spawn position
       _spawnPos = this.transform.position;
 
-      // Set our name
-      NPC.setNameColor(nameText, npcType);
-
       // Sometimes we want to generate random waypoints
       InvokeRepeating("handleAutoMove", 7f, 7f);
 

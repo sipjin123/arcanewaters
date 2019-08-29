@@ -8,7 +8,7 @@ public class ShockballProjectile : MonoBehaviour
 {
    #region Public Variables
 
-   // The Type of cannon ball this is
+   // The Type of projectile this is
    public Attack.Type attackType = Attack.Type.Shock_Ball;
 
    // The creator of this Attack Circle
@@ -29,7 +29,7 @@ public class ShockballProjectile : MonoBehaviour
    // Our End Time
    public float endTime;
 
-   // Our venom boulder sprite
+   // Our shockball projectile sprite
    public GameObject shockballProjectile;
 
    #endregion
@@ -49,7 +49,7 @@ public class ShockballProjectile : MonoBehaviour
       float lerpTime = (TimeManager.self.getSyncedTime() - startTime) / totalLifetime;
       Util.setXY(this.transform, Vector2.Lerp(startPos, endPos, lerpTime));
 
-      // Adjusts the height of the cannon ball sprite based in an arch
+      // Adjusts the height of the projectile sprite based in an arch
       Util.setLocalY(shockballProjectile.transform, AttackManager.getArcHeight(startPos, endPos, lerpTime));
 
       // If we've been alive long enough, destroy ourself
@@ -84,7 +84,7 @@ public class ShockballProjectile : MonoBehaviour
 
          // If we didn't hit an enemy, then show an effect based on whether we hit land or water
          if (!hitEnemy) {
-            // Was there a Land collider where the cannonball hit?
+            // Was there a Land collider where the projectile hit?
             if (Util.hasLandTile(endPos)) {
                Instantiate(PrefabsManager.self.cannonSmokePrefab, this.transform.position, Quaternion.identity);
                SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position);

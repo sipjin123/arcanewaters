@@ -88,7 +88,7 @@ public class SeaManager : MonoBehaviour {
             Global.player.rpc.Cmd_SpawnGiant(Util.getMousePos());
          }
 
-         // Allow spawning a Giant
+         // Allow spawning a Fishman
          if (Input.GetKeyUp(KeyCode.F4) && Global.player is SeaEntity) {
             Global.player.rpc.Cmd_SpawnFishman(Util.getMousePos());
          }

@@ -29,7 +29,7 @@ public class SeaMonsterBars : MonoBehaviour
    // An alternate sprite we use for the health bar background on non-player ships
    public Sprite barsBackgroundAlt;
 
-   // Determines if this unit is part of another unit
+   // Determines if this unit should update health bar upon taking damage
    public bool isDamageable;
 
    #endregion
