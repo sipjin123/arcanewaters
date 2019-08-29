@@ -75,16 +75,17 @@ public class SeaMonsterEntity : SeaEntity
       }
    }
 
+   [Server]
    protected void lookAtTarget () {
       if (!isEngaging || (isEngaging && !withinProjectileDistance) || targetEntity == null) {
          Direction newFacingDirection = DirectionUtil.getDirectionForVelocity(_body.velocity);
          if (newFacingDirection != this.facing) {
             this.facing = newFacingDirection;
-            animator.SetFloat("facingF", (float) this.facing);
          }
       }
    }
 
+   [Server]
    protected void launchProjectile (Vector2 spot, SeaEntity attacker, Attack.Type attackType) {
       if (getVelocity().magnitude > .1f) {
          return;
@@ -115,23 +116,29 @@ public class SeaMonsterEntity : SeaEntity
          if (isEngaging) {
             float distanceGap = Vector2.Distance(targetEntity.transform.position, transform.position);
             if (distanceGap > 1 && distanceGap < 3) {
-               // Pick a new spot around our spawn position
-               Vector2 newSpot1 = targetEntity.transform.position;
-               Waypoint newWaypoint1 = Instantiate(PrefabsManager.self.waypointPrefab);
-               newWaypoint1.transform.position = newSpot1;
-               this.waypoint = newWaypoint1;
                return true;
             } else if (distanceGap >= 3) {
-               // Forget about target
-               targetEntity = null;
-               isEngaging = false;
-            } else {
-               // Keep attacking
-               return true;
+               return false;
             }
          }
       }
       return false;
+   }
+
+   protected void setWaypoint (Transform target) {
+      if (target == null) {
+         // Pick a new spot around our spawn position
+         Vector2 newSpot = _spawnPos + new Vector2(Random.Range(-.5f, .5f), Random.Range(-.5f, .5f));
+         Waypoint newWaypoint = Instantiate(PrefabsManager.self.waypointPrefab);
+         newWaypoint.transform.position = newSpot;
+         this.waypoint = newWaypoint;
+      } else {
+         // Pick a new spot around target object position
+         Vector2 newSpot1 = targetEntity.transform.position;
+         Waypoint newWaypoint1 = Instantiate(PrefabsManager.self.waypointPrefab);
+         newWaypoint1.transform.position = newSpot1;
+         this.waypoint = newWaypoint1;
+      }
    }
 
    protected int lockToTarget (NetEntity attacker) {

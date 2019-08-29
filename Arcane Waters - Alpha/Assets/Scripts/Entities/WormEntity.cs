@@ -25,6 +25,7 @@ public class WormEntity : SeaMonsterEntity
 
    protected override void Update () {
       base.Update();
+      animator.SetFloat("facingF", (float) this.facing);
 
       if (targetEntity != null) {
          float distanceGap = Vector2.Distance(targetEntity.transform.position, transform.position);
@@ -42,7 +43,6 @@ public class WormEntity : SeaMonsterEntity
 
          if (isEngaging && withinProjectileDistance && getVelocity().magnitude < .1f) {
             this.facing = (Direction) lockToTarget(targetEntity);
-            animator.SetFloat("facingF", (float) this.facing);
          }
       }
 
@@ -119,14 +119,15 @@ public class WormEntity : SeaMonsterEntity
 
       // This handles the waypoint spawn toward the target enemy
       if (canMoveTowardEnemy()) {
+         setWaypoint(targetEntity.transform);
          return;
+      } else {
+         // Forget about target
+         targetEntity = null;
+         isEngaging = false;
       }
 
-      // Pick a new spot around our spawn position
-      Vector2 newSpot = _spawnPos + new Vector2(Random.Range(-.5f, .5f), Random.Range(-.5f, .5f));
-      Waypoint newWaypoint = Instantiate(PrefabsManager.self.waypointPrefab);
-      newWaypoint.transform.position = newSpot;
-      this.waypoint = newWaypoint;
+      setWaypoint(null);
    }
 
    protected void checkForAttackers () {
