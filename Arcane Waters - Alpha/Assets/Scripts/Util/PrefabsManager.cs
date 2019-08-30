@@ -61,6 +61,9 @@ public class PrefabsManager : MonoBehaviour {
    // The Prefab we use for creating networked cannon balls
    public GameObject networkedCannonBallPrefab;
 
+   // The Prefab we use for creating networked venom projectiles
+   public GameObject networkedVenomProjectilePrefab;
+
    // The Prefab we use for creating Damage text
    public ShipDamageText shipDamageTextPrefab;
 

@@ -20,7 +20,7 @@ public class Attack : MonoBehaviour {
          case Type.Tentacle:
             return .10f;
          case Type.Venom:
-            return 1.10f;
+            return .10f;
          case Type.Boulder:
             return 1.10f;
          case Type.Shock_Ball:

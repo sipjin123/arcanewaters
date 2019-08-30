@@ -101,8 +101,8 @@ public class SeaEntity : NetEntity {
       return (hasAttackers() || _lastAttackTime > 0f);
    }
 
-   [ClientRpc]
-   public void Rpc_CreateAttackCircle (Vector2 startPos, Vector2 endPos, float startTime, float endTime, Attack.Type attackType) {
+   [TargetRpc]
+   public void Target_CreateLocalAttackCircle (NetworkConnection connection, Vector2 startPos, Vector2 endPos, float startTime, float endTime) {
       // Create a new Attack Circle object from the prefab
       AttackCircle attackCircle = Instantiate(attackCirclePrefab, endPos, Quaternion.identity);
       attackCircle.creator = this;
@@ -111,6 +111,20 @@ public class SeaEntity : NetEntity {
       attackCircle.startTime = startTime;
       attackCircle.endTime = endTime;
       attackCircle.hasBeenPlaced = true;
+   }
+
+   [ClientRpc]
+   public void Rpc_CreateAttackCircle (Vector2 startPos, Vector2 endPos, float startTime, float endTime, Attack.Type attackType, bool showCircle) {
+      if (showCircle) {
+         // Create a new Attack Circle object from the prefab
+         AttackCircle attackCircle = Instantiate(attackCirclePrefab, endPos, Quaternion.identity);
+         attackCircle.creator = this;
+         attackCircle.startPos = startPos;
+         attackCircle.endPos = endPos;
+         attackCircle.startTime = startTime;
+         attackCircle.endTime = endTime;
+         attackCircle.hasBeenPlaced = true;
+      }
 
       // Create a cannon smoke effect
       Vector2 direction = endPos - startPos;
@@ -127,14 +141,7 @@ public class SeaEntity : NetEntity {
          boulder.endTime = endTime;
          boulder.setDirection((Direction) facing);
       } else if (attackType == Attack.Type.Venom) {
-         // Create a venom
-         VenomProjectile venom = Instantiate(PrefabsManager.self.getVenomPrefab(attackType), startPos, Quaternion.identity);
-         venom.creator = this;
-         venom.startPos = startPos;
-         venom.endPos = endPos;
-         venom.startTime = startTime;
-         venom.endTime = endTime;
-         venom.setDirection((Direction) facing);
+         Cmd_FireTimedVenomProjectile(endPos);
       } else if (attackType == Attack.Type.Shock_Ball) {
          // Create a shock ball
          ShockballProjectile shockBall = Instantiate(PrefabsManager.self.getShockballPrefab(attackType), startPos, Quaternion.identity);
@@ -331,17 +338,28 @@ public class SeaEntity : NetEntity {
       float delay = Mathf.Clamp(distance, .5f, 1.5f);
 
       if (spawnTransformList == null || spawnTransformList.Count < 1) {
-         Rpc_CreateAttackCircle(this.transform.position, spot, Time.time, Time.time + delay, attackType);
+         if (GetComponent<PlayerShipEntity>() == null) {
+            Rpc_CreateAttackCircle(this.transform.position, spot, Time.time, Time.time + delay, attackType, true);
+         } else {
+            Target_CreateLocalAttackCircle(connectionToClient, this.transform.position, spot, Time.time, Time.time + delay);
+            Rpc_CreateAttackCircle(this.transform.position, spot, Time.time, Time.time + delay, attackType, false);
+         }
       } else {
-         //Debug.LogError("facing is : " +(Direction)this.facing);
          if (this.facing != 0) {
             spawnTransform = spawnTransformList.Find(_ => _.direction == (Direction) this.facing).spawnTransform;
-            Rpc_CreateAttackCircle(spawnTransform.position, spot, Time.time, Time.time + delay, attackType);
+            if (GetComponent<PlayerShipEntity>() == null) {
+               Rpc_CreateAttackCircle(spawnTransform.position, spot, Time.time, Time.time + delay, attackType, true);
+            } else {
+               Target_CreateLocalAttackCircle(connectionToClient, this.transform.position, spot, Time.time, Time.time + delay);
+               Rpc_CreateAttackCircle(spawnTransform.position, spot, Time.time, Time.time + delay, attackType, false);
+            }
          }
       }
 
-      // Have the server check for collisions after the cannonball reaches the target
-      StartCoroutine(CO_CheckCircleForCollisions(this, delay, spot, attackType, false));
+      if (attackType != Attack.Type.Venom) {
+         // Have the server check for collisions after the cannonball reaches the target
+         StartCoroutine(CO_CheckCircleForCollisions(this, delay, spot, attackType, false));
+      }
 
       // Make note on the clients that the ship just attacked
       Rpc_NoteAttack();
@@ -382,7 +400,7 @@ public class SeaEntity : NetEntity {
                   } else if (attackType == Attack.Type.Tentacle) {
                      StatusManager.self.create(Status.Type.Slow, 1f, entity.userId);
                   } else if (attackType == Attack.Type.Venom) {
-                     StatusManager.self.create(Status.Type.Slow, 1f, entity.userId);
+                     StatusManager.self.create(Status.Type.None, 1f, entity.userId);
                   } else if (attackType == Attack.Type.Boulder) {
                      StatusManager.self.create(Status.Type.Slow, 1f, entity.userId);
                   }
@@ -399,6 +417,64 @@ public class SeaEntity : NetEntity {
       Physics2D.OverlapCircleNonAlloc(circleCenter, .20f, hits);
 
       return hits;
+   }
+
+   [Command]
+   void Cmd_FireTimedVenomProjectile (Vector2 mousePos) {
+      if (isDead() ) {
+         return;
+      }
+
+      // We either fire out the left or right side depending on which was clicked
+      for (int i = 0; i < 1; i++) {
+         Vector2 direction = mousePos - (Vector2) this.transform.position;
+         direction = direction.normalized;
+        // direction = direction.Rotate(i * 3f);
+
+         // Figure out the desired velocity
+         Vector2 velocity = direction.normalized * NetworkedVenomProjectile.MOVE_SPEED;
+
+         // Delay the firing a little bit to compensate for lag
+         float timeToStartFiring = TimeManager.self.getSyncedTime() + .150f;
+
+         // Note the time at which we last successfully attacked
+         _lastAttackTime = Time.time;
+
+         // Make note on the clients that the ship just attacked
+         Rpc_NoteAttack();
+
+         // Tell all clients to fire the cannon ball at the same time
+         Rpc_FireTimedVenomProjectile(timeToStartFiring, velocity, mousePos);
+
+         // Standalone Server needs to call this as well
+         if (!MyNetworkManager.isHost) {
+            StartCoroutine(CO_FireTimedVenomProjectile(timeToStartFiring, velocity, mousePos));
+         }
+      }
+   }
+
+   [ClientRpc]
+   public void Rpc_FireTimedVenomProjectile (float startTime, Vector2 velocity, Vector3 endPos) {
+      StartCoroutine(CO_FireTimedVenomProjectile(startTime, velocity, endPos));
+   }
+
+   protected IEnumerator CO_FireTimedVenomProjectile (float startTime, Vector2 velocity, Vector3 endpos) {
+      float delay = startTime - TimeManager.self.getSyncedTime();
+
+      yield return new WaitForSeconds(delay);
+
+      // Create the venom projectile object from the prefab
+      GameObject venomObject = Instantiate(PrefabsManager.self.networkedVenomProjectilePrefab, this.transform.position, Quaternion.identity);
+      NetworkedVenomProjectile netVenom = venomObject.GetComponent<NetworkedVenomProjectile>();
+      netVenom.creatorUserId = this.userId;
+      netVenom.instanceId = this.instanceId;
+      netVenom.setDirection((Direction) facing, endpos);
+
+      // Add velocity to the ball
+      netVenom.body.velocity = velocity;
+
+      // Destroy the venom projectile after a couple seconds
+      Destroy(venomObject, NetworkedVenomProjectile.LIFETIME);
    }
 
    #region Private Variables
