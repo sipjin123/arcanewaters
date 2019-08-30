@@ -215,11 +215,18 @@ public class TentacleEntity : SeaMonsterEntity
    private void OnTriggerStay2D (Collider2D collision) {
       if (collision.GetComponent<PlayerShipEntity>() != null) {
          NetEntity shipEntity = collision.GetComponent<PlayerShipEntity>();
-         if (!_attackers.Contains(shipEntity)) {
-            _attackers.Add(shipEntity);
-            horrorEntity.noteAttacker(shipEntity);
+         if (shipEntity != null) {
+            if (!_attackers.Contains(shipEntity)) {
+               _attackers.Add(shipEntity);
+               sendEntityToHorror(shipEntity);
+            }
          }
       }
+   }
+
+   [Server]
+   public void sendEntityToHorror (NetEntity entity) {
+      horrorEntity.noteAttacker(entity);
    }
 
    [Server]
