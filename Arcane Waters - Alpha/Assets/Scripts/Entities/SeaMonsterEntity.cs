@@ -50,29 +50,53 @@ public class SeaMonsterEntity : SeaEntity
    #endregion
 
    [Server]
-   public void callAnimation (SeaMonsterAnimState anim) {
-      Rpc_CallAnimation(anim);
+   public void initializeAttack () {
+      Rpc_InitializeAttack();
+   }
+
+   [Server]
+   public void endAttack () {
+      Rpc_EndAttack();
+   }
+
+   [Server]
+   public void triggerDeath () {
+      Rpc_triggerDeath();
+   }
+
+   [Server]
+   public void initializeMovement () {
+      Rpc_InitializeMovement();
+   }
+
+   [Server]
+   public void stopMovement () {
+      Rpc_StopMovement();
    }
 
    [ClientRpc]
-   public void Rpc_CallAnimation (SeaMonsterAnimState anim) {
-      switch (anim) {
-         case SeaMonsterAnimState.Attack:
-            animator.SetBool("attacking", true);
-            break;
-         case SeaMonsterAnimState.EndAttack:
-            animator.SetBool("attacking", false);
-            break;
-         case SeaMonsterAnimState.Die:
-            animator.Play("Die");
-            break;
-         case SeaMonsterAnimState.Move:
-            animator.SetBool("move", true);
-            break;
-         case SeaMonsterAnimState.MoveStop:
-            animator.SetBool("move", false);
-            break;
-      }
+   private void Rpc_InitializeAttack () {
+      animator.SetBool("attacking", true);
+   }
+
+   [ClientRpc]
+   private void Rpc_EndAttack () {
+      animator.SetBool("attacking", false);
+   }
+
+   [ClientRpc]
+   private void Rpc_triggerDeath () {
+      animator.Play("Die");
+   }
+
+   [ClientRpc]
+   private void Rpc_InitializeMovement () {
+      animator.SetBool("move", true);
+   }
+
+   [ClientRpc]
+   private void Rpc_StopMovement () {
+      animator.SetBool("move", false);
    }
 
    [Server]
@@ -103,7 +127,7 @@ public class SeaMonsterEntity : SeaEntity
 
       fireAtSpot(targetLoc, attackType);
       if (!hasReloaded()) {
-         callAnimation(SeaMonsterAnimState.Attack);
+         initializeAttack();
          _attackCoroutine = StartCoroutine(CO_AttackCooldown());
       }
 
@@ -198,7 +222,7 @@ public class SeaMonsterEntity : SeaEntity
 
    IEnumerator CO_AttackCooldown () {
       yield return new WaitForSeconds(.2f);
-      callAnimation(SeaMonsterAnimState.EndAttack);
+      endAttack();
    }
 
    #region Private Variables

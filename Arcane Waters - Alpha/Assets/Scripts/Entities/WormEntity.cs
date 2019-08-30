@@ -62,7 +62,7 @@ public class WormEntity : SeaMonsterEntity
       if (!isServer || isDead()) {
          if (hasDied == false && isDead()) {
             hasDied = true;
-            callAnimation(SeaMonsterAnimState.Die);
+            triggerDeath();
          }
          return;
       }
