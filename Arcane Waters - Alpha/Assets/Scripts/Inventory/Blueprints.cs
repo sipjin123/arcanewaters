@@ -86,7 +86,7 @@ public class Blueprint : RecipeItem
    }
 
    public override string getDescription () {
-      return "A blueprint design for "+getItemData(type).getDescription();
+      return "A blueprint design for: "+getItemData(type).getDescription();
    }
 
    public override string getTooltip () {
@@ -98,7 +98,7 @@ public class Blueprint : RecipeItem
    }
 
    public override string getName () {
-      return getName(type);
+      return getName(type)+" Design";
    }
 
    public static string getName (Blueprint.Type recipeType) {

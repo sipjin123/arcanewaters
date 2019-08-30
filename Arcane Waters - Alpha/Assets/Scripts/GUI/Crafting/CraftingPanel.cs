@@ -159,8 +159,8 @@ public class CraftingPanel : Panel, IPointerClickHandler
       itemInfoText.text = "";
 
       List<CombinationData> dataList = RewardManager.self.combinationDataList.comboDataList;
-      itemInfoText.text = craftableItem.getDescription();
-      itemTitleText.text = craftableItem.getName();
+      itemInfoText.text = "A blueprint design for: "+craftableItem.getDescription();
+      itemTitleText.text = craftableItem.getName() + " Design";
    }
 
    public void receiveItemsFromServer (UserObjects userObjects, int pageNumber, int gold, int gems, int totalItemCount, int equippedArmorId, int equippedWeaponId, Item[] itemArray) {

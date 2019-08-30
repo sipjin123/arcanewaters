@@ -49,7 +49,7 @@ public class DebugButtons : NetworkBehaviour
 
          GUILayout.BeginVertical("box");
          {
-            if (GUILayout.Button("CRAFT ITEM: " + categoryType.ToString(), GUILayout.Width(buttonSizeX), GUILayout.Height(buttonSizeY * 2))) {
+            if (GUILayout.Button("GENERATE ITEM: " + categoryType.ToString(), GUILayout.Width(buttonSizeX), GUILayout.Height(buttonSizeY * 2))) {
                Item newItem = new Item(0, categoryType, int.Parse(itemType), int.Parse(quantity), ColorType.Black, ColorType.BlackEyes, "");
                int newQuantity = int.Parse(quantity);
                newQuantity = Mathf.Clamp(newQuantity, 0, 100);
@@ -58,8 +58,14 @@ public class DebugButtons : NetworkBehaviour
                processRewardItems(newItem);
             }
 
-            quantity = GUILayout.TextField(quantity, GUILayout.Width(buttonSizeX), GUILayout.Height(buttonSizeY));
-            itemType = GUILayout.TextField(itemType, GUILayout.Width(buttonSizeX), GUILayout.Height(buttonSizeY));
+            GUILayout.BeginHorizontal();
+            GUILayout.Box("Quantity: ", GUILayout.Width(buttonSizeX/2), GUILayout.Height(buttonSizeY));
+            quantity = GUILayout.TextField(quantity, GUILayout.Width(buttonSizeX/2), GUILayout.Height(buttonSizeY));
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.Box("ItemTypeID: ", GUILayout.Width(buttonSizeX/2), GUILayout.Height(buttonSizeY));
+            itemType = GUILayout.TextField(itemType, GUILayout.Width(buttonSizeX/2), GUILayout.Height(buttonSizeY));
+            GUILayout.EndHorizontal();
 
             if (GUILayout.Button("Check final output: ", GUILayout.Width(buttonSizeX), GUILayout.Height(buttonSizeY))) {
                string itemTypeName = "";
