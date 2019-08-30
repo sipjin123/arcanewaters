@@ -141,6 +141,7 @@ public class SeaEntity : NetEntity {
          boulder.endTime = endTime;
          boulder.setDirection((Direction) facing);
       } else if (attackType == Attack.Type.Venom) {
+         // Create a venom
          Cmd_FireTimedVenomProjectile(endPos);
       } else if (attackType == Attack.Type.Shock_Ball) {
          // Create a shock ball
@@ -306,7 +307,7 @@ public class SeaEntity : NetEntity {
       float distance = Vector2.Distance(this.transform.position, spot);
       float delay = Mathf.Clamp(distance, .5f, 1.5f);
 
-      // Have the server check for collisions after the cannonball reaches the target
+      // Have the server check for collisions after the melee attack reaches the target
       StartCoroutine(CO_CheckCircleForCollisions(this, delay, spot, attackType, true));
 
       // Make note on the clients that the ship just attacked
@@ -357,7 +358,7 @@ public class SeaEntity : NetEntity {
       }
 
       if (attackType != Attack.Type.Venom) {
-         // Have the server check for collisions after the cannonball reaches the target
+         // Have the server check for collisions after the AOE projectile reaches the target
          StartCoroutine(CO_CheckCircleForCollisions(this, delay, spot, attackType, false));
       }
 
@@ -429,7 +430,6 @@ public class SeaEntity : NetEntity {
       for (int i = 0; i < 1; i++) {
          Vector2 direction = mousePos - (Vector2) this.transform.position;
          direction = direction.normalized;
-        // direction = direction.Rotate(i * 3f);
 
          // Figure out the desired velocity
          Vector2 velocity = direction.normalized * NetworkedVenomProjectile.MOVE_SPEED;
@@ -443,7 +443,7 @@ public class SeaEntity : NetEntity {
          // Make note on the clients that the ship just attacked
          Rpc_NoteAttack();
 
-         // Tell all clients to fire the cannon ball at the same time
+         // Tell all clients to fire the venom projectile at the same time
          Rpc_FireTimedVenomProjectile(timeToStartFiring, velocity, mousePos);
 
          // Standalone Server needs to call this as well
@@ -470,7 +470,7 @@ public class SeaEntity : NetEntity {
       netVenom.instanceId = this.instanceId;
       netVenom.setDirection((Direction) facing, endpos);
 
-      // Add velocity to the ball
+      // Add velocity to the projectile
       netVenom.body.velocity = velocity;
 
       // Destroy the venom projectile after a couple seconds
