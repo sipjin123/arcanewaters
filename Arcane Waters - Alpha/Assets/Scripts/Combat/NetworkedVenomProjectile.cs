@@ -40,17 +40,8 @@ public class NetworkedVenomProjectile : MonoBehaviour
    private void Start () {
       _startTime = TimeManager.self.getSyncedTime();
 
-      // Create a smoke effect at our creation point
-      Vector2 offset = this.body.velocity.normalized * .1f;
-      Instantiate(PrefabsManager.self.cannonSmokePrefab, (Vector2) this.transform.position + offset, Quaternion.identity);
-
       // Play a sound effect
-      SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Cannon_2, this.transform.position);
-
-      // If it was our ship, shake the camera
-      if (Global.player != null && creatorUserId == Global.player.userId) {
-         CameraManager.shakeCamera();
-      }
+      SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Attack_Fire, this.transform.position);
    }
 
    public void setDirection (Direction direction, Vector3 endposNew) {
@@ -85,7 +76,7 @@ public class NetworkedVenomProjectile : MonoBehaviour
          hitEntity.noteAttacker(sourceEntity);
 
          // Apply the status effect
-         StatusManager.self.create(Status.Type.Slow, 3f, hitEntity.userId);
+         StatusManager.self.create(Status.Type.None, 3f, hitEntity.userId);
 
          // Have the server tell the clients where the explosion occurred
          hitEntity.Rpc_ShowExplosion(circleCollider.transform.position, damage, Attack.Type.Venom);

@@ -126,11 +126,6 @@ public class SeaEntity : NetEntity {
          attackCircle.hasBeenPlaced = true;
       }
 
-      // Create a cannon smoke effect
-      Vector2 direction = endPos - startPos;
-      Vector2 offset = direction.normalized * .1f;
-      Instantiate(PrefabsManager.self.cannonSmokePrefab, startPos + offset, Quaternion.identity);
-
       if (attackType == Attack.Type.Boulder) {
          // Create a boulder
          BoulderProjectile boulder = Instantiate(PrefabsManager.self.getBoulderPrefab(attackType), startPos, Quaternion.identity);
@@ -142,7 +137,7 @@ public class SeaEntity : NetEntity {
          boulder.setDirection((Direction) facing);
       } else if (attackType == Attack.Type.Venom) {
          // Create a venom
-         Cmd_FireTimedVenomProjectile(endPos);
+         fireTimedVenomProjectile(endPos);
       } else if (attackType == Attack.Type.Shock_Ball) {
          // Create a shock ball
          ShockballProjectile shockBall = Instantiate(PrefabsManager.self.getShockballPrefab(attackType), startPos, Quaternion.identity);
@@ -153,6 +148,11 @@ public class SeaEntity : NetEntity {
          shockBall.endTime = endTime;
          shockBall.setDirection((Direction) facing);
       } else {
+         // Create a cannon smoke effect
+         Vector2 direction = endPos - startPos;
+         Vector2 offset = direction.normalized * .1f;
+         Instantiate(PrefabsManager.self.cannonSmokePrefab, startPos + offset, Quaternion.identity);
+
          // Create a cannon ball
          CannonBall ball = Instantiate(PrefabsManager.self.getCannonBallPrefab(attackType), startPos, Quaternion.identity);
          ball.creator = this;
@@ -397,13 +397,13 @@ public class SeaEntity : NetEntity {
                   if (attackType == Attack.Type.Ice) {
                      StatusManager.self.create(Status.Type.Freeze, 2f, entity.userId);
                   } else if (attackType == Attack.Type.Air) {
-                     StatusManager.self.create(Status.Type.Slow, 3f, entity.userId);
+                     StatusManager.self.create(Status.Type.None, 3f, entity.userId);
                   } else if (attackType == Attack.Type.Tentacle) {
-                     StatusManager.self.create(Status.Type.Slow, 1f, entity.userId);
+                     StatusManager.self.create(Status.Type.None, 1f, entity.userId);
                   } else if (attackType == Attack.Type.Venom) {
                      StatusManager.self.create(Status.Type.None, 1f, entity.userId);
                   } else if (attackType == Attack.Type.Boulder) {
-                     StatusManager.self.create(Status.Type.Slow, 1f, entity.userId);
+                     StatusManager.self.create(Status.Type.None, 1f, entity.userId);
                   }
                   enemyHitList.Add(entity);
                }
@@ -420,15 +420,15 @@ public class SeaEntity : NetEntity {
       return hits;
    }
 
-   [Command]
-   void Cmd_FireTimedVenomProjectile (Vector2 mousePos) {
+   [Server]
+   void fireTimedVenomProjectile (Vector2 targetPos) {
       if (isDead() ) {
          return;
       }
 
       // We either fire out the left or right side depending on which was clicked
       for (int i = 0; i < 1; i++) {
-         Vector2 direction = mousePos - (Vector2) this.transform.position;
+         Vector2 direction = targetPos - (Vector2) this.transform.position;
          direction = direction.normalized;
 
          // Figure out the desired velocity
@@ -444,11 +444,11 @@ public class SeaEntity : NetEntity {
          Rpc_NoteAttack();
 
          // Tell all clients to fire the venom projectile at the same time
-         Rpc_FireTimedVenomProjectile(timeToStartFiring, velocity, mousePos);
+         Rpc_FireTimedVenomProjectile(timeToStartFiring, velocity, targetPos);
 
          // Standalone Server needs to call this as well
          if (!MyNetworkManager.isHost) {
-            StartCoroutine(CO_FireTimedVenomProjectile(timeToStartFiring, velocity, mousePos));
+            StartCoroutine(CO_FireTimedVenomProjectile(timeToStartFiring, velocity, targetPos));
          }
       }
    }

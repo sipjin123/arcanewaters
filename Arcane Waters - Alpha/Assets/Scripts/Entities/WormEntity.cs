@@ -17,7 +17,7 @@ public class WormEntity : SeaMonsterEntity
       _spawnPos = this.transform.position;
 
       // Sometimes we want to generate random waypoints
-      InvokeRepeating("handleAutoMove", 5+1f,5+ 2f);
+      InvokeRepeating("handleAutoMove", 2f, 4f);
 
       // Check if we can shoot at any of our attackers
       InvokeRepeating("checkForAttackers", 2f, 2.5f);
@@ -25,8 +25,31 @@ public class WormEntity : SeaMonsterEntity
 
    protected override void Update () {
       base.Update();
+
       animator.SetFloat("facingF", (float) this.facing);
 
+      // If we're dead and have finished sinking, remove the ship
+      if (isServer && isDead() && spritesContainer.transform.localPosition.y < -.25f) {
+         InstanceManager.self.removeEntityFromInstance(this);
+
+         // Destroy the object
+         NetworkServer.Destroy(this.gameObject);
+      }
+   }
+
+   protected override void FixedUpdate () {
+      base.FixedUpdate();
+
+      // Only the server updates waypoints and movement forces
+      if (!isServer || isDead()) {
+         return;
+      }
+
+      // Only change our movement if enough time has passed
+      if (Time.time - _lastMoveChangeTime < MOVE_CHANGE_INTERVAL) {
+         return;
+      }
+      
       if (targetEntity != null) {
          float distanceGap = Vector2.Distance(targetEntity.transform.position, transform.position);
          if (distanceGap < 2) {
@@ -44,32 +67,11 @@ public class WormEntity : SeaMonsterEntity
          if (isEngaging && withinProjectileDistance && getVelocity().magnitude < .1f) {
             this.facing = (Direction) lockToTarget(targetEntity);
          }
-      }
-
-      // If we're dead and have finished sinking, remove the ship
-      if (isServer && isDead() && spritesContainer.transform.localPosition.y < -.25f) {
-         InstanceManager.self.removeEntityFromInstance(this);
-
-         // Destroy the object
-         NetworkServer.Destroy(this.gameObject);
-      }
-   }
-
-   protected override void FixedUpdate () {
-      base.FixedUpdate();
-
-      // Only the server updates waypoints and movement forces
-      if (!isServer || isDead()) {
-         if (hasDied == false && isDead()) {
-            hasDied = true;
-            triggerDeath();
+      } else {
+         if (getVelocity().magnitude > .1f) {
+            // Update our facing direction
+            lookAtTarget();
          }
-         return;
-      }
-
-      // Only change our movement if enough time has passed
-      if (Time.time - _lastMoveChangeTime < MOVE_CHANGE_INTERVAL) {
-         return;
       }
 
       // If we've been assigned a Route, get our waypoint from that
@@ -99,9 +101,6 @@ public class WormEntity : SeaMonsterEntity
       Vector2 waypointDirection = this.waypoint.transform.position - this.transform.position;
       waypointDirection = waypointDirection.normalized;
       _body.AddForce(waypointDirection.normalized * getMoveSpeed());
-
-      // Update our facing direction
-      lookAtTarget();
 
       // Make note of the time
       _lastMoveChangeTime = Time.time;

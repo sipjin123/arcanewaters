@@ -44,7 +44,18 @@ public class HorrorEntity : SeaMonsterEntity
    }
 
    protected override void FixedUpdate () {
+      if (tentaclesLeft <= 0 && !hasDied) {
+         currentHealth -= maxHealth;
+         hasDied = true;
+         animator.Play("Die");
+      }
+
       base.FixedUpdate();
+
+      // Only the server updates waypoints and movement forces
+      if (!isServer || isDead()) {
+         return;
+      }
 
       // Only change our movement if enough time has passed
       if (Time.time - _lastMoveChangeTime < MOVE_CHANGE_INTERVAL) {

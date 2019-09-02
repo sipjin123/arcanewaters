@@ -49,54 +49,19 @@ public class SeaMonsterEntity : SeaEntity
 
    #endregion
 
-   [Server]
-   public void initializeAttack () {
-      Rpc_InitializeAttack();
-   }
+   protected override void FixedUpdate () {
+      base.FixedUpdate();
 
-   [Server]
-   public void endAttack () {
-      Rpc_EndAttack();
-   }
+      if (hasDied == false && isDead()) {
+         hasDied = true;
+         animator.Play("Die");
+      }
 
-   [Server]
-   public void triggerDeath () {
-      Rpc_triggerDeath();
-   }
-
-   [Server]
-   public void initializeMovement () {
-      Rpc_InitializeMovement();
-   }
-
-   [Server]
-   public void stopMovement () {
-      Rpc_StopMovement();
-   }
-
-   [ClientRpc]
-   private void Rpc_InitializeAttack () {
-      animator.SetBool("attacking", true);
-   }
-
-   [ClientRpc]
-   private void Rpc_EndAttack () {
-      animator.SetBool("attacking", false);
-   }
-
-   [ClientRpc]
-   private void Rpc_triggerDeath () {
-      animator.Play("Die");
-   }
-
-   [ClientRpc]
-   private void Rpc_InitializeMovement () {
-      animator.SetBool("move", true);
-   }
-
-   [ClientRpc]
-   private void Rpc_StopMovement () {
-      animator.SetBool("move", false);
+      if (Time.time - _lastAttackTime < .2f) {
+         animator.SetBool("attacking", true);
+      } else {
+         animator.SetBool("attacking", false);
+      }
    }
 
    [Server]
@@ -126,10 +91,6 @@ public class SeaMonsterEntity : SeaEntity
       }
 
       fireAtSpot(targetLoc, attackType);
-      if (!hasReloaded()) {
-         initializeAttack();
-         _attackCoroutine = StartCoroutine(CO_AttackCooldown());
-      }
 
       targetEntity = attacker;
       isEngaging = true;
@@ -220,11 +181,6 @@ public class SeaMonsterEntity : SeaEntity
       return finalDirection;
    }
 
-   IEnumerator CO_AttackCooldown () {
-      yield return new WaitForSeconds(.2f);
-      endAttack();
-   }
-
    #region Private Variables
 
    // The position we spawned at
@@ -232,9 +188,6 @@ public class SeaMonsterEntity : SeaEntity
 
    // The radius that defines how far the monster will chase before it retreats
    protected float _territoryRadius = 3.5f;
-
-   // Keeps reference to the recent coroutine so that it can be manually stopped
-   protected Coroutine _attackCoroutine = null;
 
 #pragma warning disable 1234
    // The radius that defines how near the player ships are before this unit chases it

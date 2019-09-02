@@ -243,8 +243,8 @@ MonoBehaviour:
   gender: 1
   entityName: 
   nationType: 0
-  currentHealth: 150
-  maxHealth: 150
+  currentHealth: 25
+  maxHealth: 25
   XP: 0
   desiredAngle: 0
   netIdent: {fileID: 0}
@@ -282,7 +282,6 @@ MonoBehaviour:
   withinProjectileDistance: 0
   isEngaging: 0
   targetEntity: {fileID: 0}
-  npcType: 0
   monsterName: 
   route: {fileID: 0}
   waypoint: {fileID: 0}
@@ -405,8 +404,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: d1663649abf91904f8af5dfaa6cd2747
-  m_SceneId: 0
+  m_AssetId: 
+  m_SceneId: 2554474442
 --- !u!114 &20651762200388567
 MonoBehaviour:
   m_ObjectHideFlags: 0

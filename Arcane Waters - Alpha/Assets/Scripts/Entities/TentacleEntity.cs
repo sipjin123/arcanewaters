@@ -53,22 +53,16 @@ public class TentacleEntity : SeaMonsterEntity
    }
 
    protected override void FixedUpdate () {
+      // Ensures tentacles sends signals to horror before killing it
+      if (currentHealth <= 0 && !hasDied) {
+         tentacleDeath();
+      }
+
       base.FixedUpdate();
 
       // Only the server updates waypoints and movement forces
       if (!isServer || isDead()) {
-         if (hasDied == false && isDead()) {
-            hasDied = true;
-            tentacleDeath();
-         }
          return;
-      }
-
-      // Updates animation if monster is moving
-      if (_body.velocity.magnitude < .05f) {
-         stopMovement();
-      } else {
-         initializeMovement();
       }
 
       // Only change our movement if enough time has passed
@@ -120,8 +114,10 @@ public class TentacleEntity : SeaMonsterEntity
 
    [Server]
    public void initializeBehavior () {
-      randomizedTimer = Random.Range(2.0f, 4.5f);
-      _movementCoroutine = StartCoroutine (CO_HandleAutoMove());
+      if (!isDead()) {
+         randomizedTimer = Random.Range(2.0f, 4.5f);
+         _movementCoroutine = StartCoroutine(CO_HandleAutoMove());
+      }
    }
 
    public IEnumerator CO_HandleAutoMove () {
@@ -206,7 +202,6 @@ public class TentacleEntity : SeaMonsterEntity
          // If the requested spot is not in the allowed area, reject the request
          if (leftAttackBox.OverlapPoint(spot) || rightAttackBox.OverlapPoint(spot)) {
             meleeAtSpot(spot, Attack.Type.Tentacle);
-            initializeAttack();
             return;
          }
       }
@@ -231,12 +226,7 @@ public class TentacleEntity : SeaMonsterEntity
 
    [Server]
    public void tentacleDeath () {
-      triggerDeath();
       horrorEntity.tentaclesLeft -= 1;
-      if (horrorEntity.tentaclesLeft <= 0) {
-         horrorEntity.currentHealth = 0;
-         horrorEntity.triggerDeath();
-      }
    }
 
    #region Private Variables
