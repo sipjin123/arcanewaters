@@ -55,15 +55,20 @@ public class NetworkedVenomProjectile : MonoBehaviour
       float lerpTime = 1f - (timeAlive / LIFETIME);
       float angleInDegrees = lerpTime * 180f;
       float ballHeight = Util.getSinOfAngle(angleInDegrees) * ARCH_HEIGHT;
+
       Util.setLocalY(venomProjectile.transform, ballHeight);
+
+      if (timeAlive > .9f && !_hasCollided) {
+         processDestruction();
+      }
    }
 
-   private void OnTriggerEnter2D (Collider2D other) {
+   private void OnTriggerStay2D (Collider2D other) {
       // Check if the other object is a Sea Entity
       SeaEntity hitEntity = other.transform.GetComponentInParent<SeaEntity>();
 
       // We only care about hitting other sea entities in our instance
-      if (hitEntity == null || hitEntity.instanceId != this.instanceId || hitEntity.userId == this.creatorUserId) {
+      if (hitEntity == null || this.creatorUserId == hitEntity.userId || other.GetComponent<CombatCollider>() != null || hitEntity.instanceId != this.instanceId) {
          return;
       }
 
@@ -80,30 +85,38 @@ public class NetworkedVenomProjectile : MonoBehaviour
 
          // Have the server tell the clients where the explosion occurred
          hitEntity.Rpc_ShowExplosion(circleCollider.transform.position, damage, Attack.Type.Venom);
+
+         Instantiate(PrefabsManager.self.venomCollisionPrefab, circleCollider.transform.position, Quaternion.identity);
+         SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position);
       }
 
-      // Get rid of the venom projectile 
+      _hasCollided = true;
+
+      processDestruction();
+      Debug.LogError(other.gameObject.name);
+   }
+
+   private void processDestruction () {
+      CallCollision(Util.hasLandTile(this.transform.position), circleCollider.transform.position);
       Destroy(this.gameObject);
+   }
+
+   public void CallCollision (bool hitLand, Vector3 location) {
+      if (hitLand) {
+         Instantiate(PrefabsManager.self.cannonSmokePrefab, location, Quaternion.identity);
+         SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position);
+      } else {
+         Instantiate(PrefabsManager.self.venomResiduePrefab, location + new Vector3(0f, -.1f), Quaternion.identity);
+         SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Coralbow_Attack, this.transform.position);
+      }
    }
 
    private void OnDestroy () {
       // Don't need to handle any of these effects in Batch Mode
       if (Application.isBatchMode) {
          return;
-      }
-
-      // If we didn't hit an enemy and the venom projectile  is hitting the water, either show a splash or some smoke
-      if (venomProjectile.transform.localPosition.y <= .02f) {
-         // Was there a Land collider where the venom projectile hit?
-         if (Util.hasLandTile(this.transform.position)) {
-            Instantiate(PrefabsManager.self.cannonSmokePrefab, circleCollider.transform.position, Quaternion.identity);
-            SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position);
-         } else {
-            Instantiate(PrefabsManager.self.cannonSplashPrefab, circleCollider.transform.position + new Vector3(0f, -.1f), Quaternion.identity);
-            SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Splash_Cannon_1, this.transform.position);
-         }
-      }
-
+      }   
+      
       // Detach the Trail Renderer so that it continues to show up a little while longer
       TrailRenderer trail = this.gameObject.GetComponentInChildren<TrailRenderer>();
       trail.transform.parent = null;
@@ -114,6 +127,9 @@ public class NetworkedVenomProjectile : MonoBehaviour
 
    // Our Start Time
    protected float _startTime;
+
+   // Blocks update func if the projectile collided
+   protected bool _hasCollided;
 
    #endregion
 }

@@ -19,6 +19,10 @@ public class TreasureChest : NetworkBehaviour {
    [SyncVar]
    public long creationTime;
 
+   [SyncVar]
+   // Destroys the chest upon trigger
+   public bool destroyOnInteract;
+
    // Our sprite renderer
    public SpriteRenderer spriteRenderer;
 
@@ -158,6 +162,12 @@ public class TreasureChest : NetworkBehaviour {
 
       // Set the name text
       floatingIcon.GetComponentInChildren<FloatAndStop>().nameText.text = item.getName();
+
+      yield return new WaitForSeconds(1f);
+
+      if (destroyOnInteract) {
+         Destroy(this.gameObject);
+      }
    }
 
    private void OnTriggerEnter2D (Collider2D other) {

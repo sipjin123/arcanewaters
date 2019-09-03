@@ -55,6 +55,7 @@ public class SeaMonsterEntity : SeaEntity
       if (hasDied == false && isDead()) {
          hasDied = true;
          animator.Play("Die");
+         spawnChest();
       }
 
       if (Time.time - _lastAttackTime < .2f) {
@@ -62,6 +63,12 @@ public class SeaMonsterEntity : SeaEntity
       } else {
          animator.SetBool("attacking", false);
       }
+   }
+
+   [Server]
+   protected void spawnChest () {
+      Instance currentInstance = InstanceManager.self.getOpenInstance(Area.Type.SeaBottom);
+      TreasureManager.self.createSeaTreasure(currentInstance, transform.position, true);
    }
 
    [Server]
@@ -84,8 +91,6 @@ public class SeaMonsterEntity : SeaEntity
       Vector2 targetLoc = new Vector2(0, 0);
       if (accuracy == 1) {
          targetLoc = spot + (attacker.getVelocity());
-      } else if (accuracy == 2) {
-         targetLoc = spot + (attacker.getVelocity() * 1.1f);
       } else {
          targetLoc = spot;
       }
@@ -187,11 +192,11 @@ public class SeaMonsterEntity : SeaEntity
    protected Vector2 _spawnPos;
 
    // The radius that defines how far the monster will chase before it retreats
-   protected float _territoryRadius = 3.5f;
+   protected float _territoryRadius = 4.5f;
 
 #pragma warning disable 1234
    // The radius that defines how near the player ships are before this unit chases it
-   protected float _detectRadius = 3;
+   protected float _detectRadius = 4;
 #pragma warning restore 1234
 
    #endregion

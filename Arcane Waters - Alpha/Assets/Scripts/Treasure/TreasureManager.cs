@@ -10,6 +10,9 @@ public class TreasureManager : MonoBehaviour {
    // The prefab we use for creating Treasure Chests
    public TreasureChest chestPrefab;
 
+   // The prefab we use for creating Treasure Chests for sea maps
+   public TreasureChest seaChestPrefab;
+
    // The prefab we use for creating floating icons
    public GameObject floatingIconPrefab;
 
@@ -36,8 +39,12 @@ public class TreasureManager : MonoBehaviour {
    }
 
    protected TreasureChest createTreasure (Instance instance, TreasureSpot spot) {
+      return createTreasure(instance, spot.transform.position, false);
+   }
+
+   public TreasureChest createTreasure (Instance instance, Vector3 spot, bool destroyOnInteract) {
       // Instantiate a new Treasure Chest
-      TreasureChest chest = Instantiate(chestPrefab, spot.transform.position, Quaternion.identity);
+      TreasureChest chest = Instantiate(chestPrefab, spot, Quaternion.identity);
 
       // Keep it parented to this Manager
       chest.transform.SetParent(this.transform, true);
@@ -47,6 +54,37 @@ public class TreasureManager : MonoBehaviour {
 
       // Note which instance the chest is in
       chest.instanceId = instance.id;
+
+      // Destroys the chest after looting
+      chest.destroyOnInteract = (destroyOnInteract);
+
+      // Keep track of the chests that we've created
+      _chests.Add(chest.id, chest);
+
+      // The Instance needs to keep track of all Networked objects inside
+      instance.entities.Add(chest);
+
+      // Spawn the network object on the Clients
+      NetworkServer.Spawn(chest.gameObject);
+
+      return chest;
+   }
+
+   public TreasureChest createSeaTreasure (Instance instance, Vector3 spot, bool destroyOnInteract) {
+      // Instantiate a new Treasure Chest
+      TreasureChest chest = Instantiate(seaChestPrefab, spot, Quaternion.identity);
+
+      // Keep it parented to this Manager
+      chest.transform.SetParent(this.transform, true);
+
+      // Assign a unique ID
+      chest.id = _id++;
+
+      // Note which instance the chest is in
+      chest.instanceId = instance.id;
+
+      // Destroys the chest after looting
+      chest.destroyOnInteract = (destroyOnInteract);
 
       // Keep track of the chests that we've created
       _chests.Add(chest.id, chest);
