@@ -150,7 +150,7 @@ public class FishmanEntity : SeaMonsterEntity
 
          // If the requested spot is not in the allowed area, reject the request
          if (leftAttackBox.OverlapPoint(spot) || rightAttackBox.OverlapPoint(spot)) {
-            launchProjectile(spot, attacker, Attack.Type.Shock_Ball);
+            launchProjectile(spot, attacker, Attack.Type.Shock_Ball, .1f);
             return;
          }
       }

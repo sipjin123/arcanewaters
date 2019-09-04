@@ -82,7 +82,7 @@ public class SeaMonsterEntity : SeaEntity
    }
 
    [Server]
-   protected void launchProjectile (Vector2 spot, SeaEntity attacker, Attack.Type attackType) {
+   protected void launchProjectile (Vector2 spot, SeaEntity attacker, Attack.Type attackType, float attackDelay) {
       if (getVelocity().magnitude > .1f) {
          return;
       }
@@ -95,7 +95,7 @@ public class SeaMonsterEntity : SeaEntity
          targetLoc = spot;
       }
 
-      fireAtSpot(targetLoc, attackType);
+      fireAtSpot(targetLoc, attackType, attackDelay);
 
       targetEntity = attacker;
       isEngaging = true;

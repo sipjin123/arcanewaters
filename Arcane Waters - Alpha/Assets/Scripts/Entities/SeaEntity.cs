@@ -323,13 +323,13 @@ public class SeaEntity : NetEntity {
    }
 
    [Command]
-   public void Cmd_FireAtSpot (Vector2 spot, Attack.Type attackType) {
+   public void Cmd_FireAtSpot (Vector2 spot, Attack.Type attackType, float attackDelay) {
       // We handle the logic in a non-Cmd function so that it can be called directly on the server if needed
-      fireAtSpot(spot, attackType);
+      fireAtSpot(spot, attackType, attackDelay);
    }
 
    [Server]
-   public void fireAtSpot (Vector2 spot, Attack.Type attackType) {
+   public void fireAtSpot (Vector2 spot, Attack.Type attackType, float attackDelay) {
       if (isDead() || !hasReloaded()) {
          return;
       }
@@ -358,6 +358,23 @@ public class SeaEntity : NetEntity {
          }
       }
 
+      StartCoroutine(CO_DelayLaunchProjectile(spot, attackType, spawnPosition, delay, attackDelay));
+
+      attackCounter++;
+
+      if (attackType != Attack.Type.Venom) {
+         // Have the server check for collisions after the AOE projectile reaches the target
+         StartCoroutine(CO_CheckCircleForCollisions(this, delay, spot, attackType, false));
+      }
+
+      // Make note on the clients that the ship just attacked
+      Rpc_NoteAttack();
+   }
+
+   [Server]
+   protected IEnumerator CO_DelayLaunchProjectile (Vector2 spot, Attack.Type attackType, Vector2 spawnPosition, float delay, float attackDelay) {
+      yield return new WaitForSeconds(attackDelay);
+
       // Creates the projectile and the target circle
       if (GetComponent<PlayerShipEntity>() == null) {
          if (attackType != Attack.Type.Venom) {
@@ -370,16 +387,6 @@ public class SeaEntity : NetEntity {
          Target_CreateLocalAttackCircle(connectionToClient, this.transform.position, spot, Time.time, Time.time + delay);
          Rpc_CreateAttackCircle(spawnPosition, spot, Time.time, Time.time + delay, attackType, false);
       }
-
-      attackCounter++;
-
-      if (attackType != Attack.Type.Venom) {
-         // Have the server check for collisions after the AOE projectile reaches the target
-         StartCoroutine(CO_CheckCircleForCollisions(this, delay, spot, attackType, false));
-      }
-
-      // Make note on the clients that the ship just attacked
-      Rpc_NoteAttack();
    }
 
    [Server]

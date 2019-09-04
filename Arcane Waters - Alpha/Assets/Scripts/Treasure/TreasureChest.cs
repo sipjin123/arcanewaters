@@ -162,11 +162,13 @@ public class TreasureChest : NetworkBehaviour {
 
       // Set the name text
       floatingIcon.GetComponentInChildren<FloatAndStop>().nameText.text = item.getName();
-
+      
       yield return new WaitForSeconds(1f);
 
       if (destroyOnInteract) {
-         Destroy(this.gameObject);
+         GetComponent<BoxCollider2D>().enabled = false;
+         GetComponent<CircleCollider2D>().enabled = false;
+         GetComponent<SpriteRenderer>().enabled = false;
       }
    }
 
