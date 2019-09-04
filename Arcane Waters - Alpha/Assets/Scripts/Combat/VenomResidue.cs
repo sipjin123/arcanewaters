@@ -33,11 +33,9 @@ public class VenomResidue : MonoBehaviour {
    }
 
    private void OnTriggerStay2D (Collider2D other) {
-      //Debug.LogError("STaying with : " + other.gameObject.name);
       if (other.GetComponent<SeaEntity>() != null && other.GetComponent<PlayerShipEntity>() != null) {
          SeaEntity entity = other.GetComponent<SeaEntity>();
          if (!targetEntities.Find(_ => _.netId == entity.netId)) {
-           // Debug.LogError("ADDED THIS:: " + entity.netId);
             targetEntities.Add(entity);
          }
       }
@@ -53,8 +51,6 @@ public class VenomResidue : MonoBehaviour {
    }
 
    #region Private Variables
-
-   private float _burnTimer;
 
    #endregion
 }
