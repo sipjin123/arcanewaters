@@ -120,7 +120,7 @@ public class SeaEntity : NetEntity {
    }
 
    [ClientRpc]
-   public void Rpc_CreateAttackCircle (Vector2 startPos, Vector2 endPos, float startTime, float endTime, Attack.Type attackType, bool showCircle) {
+   public void Rpc_CreateAttackCircle (Vector2 startPos, Vector2 endPos, float startTime, float endTime, Attack.Type attackType, bool showCircle, float delay) {
       if (showCircle) {
          // Create a new Attack Circle object from the prefab
          AttackCircle attackCircle = Instantiate(attackCirclePrefab, endPos, Quaternion.identity);
@@ -358,7 +358,11 @@ public class SeaEntity : NetEntity {
          }
       }
 
-      StartCoroutine(CO_DelayLaunchProjectile(spot, attackType, spawnPosition, delay, attackDelay));
+      if (attackDelay <= 0) {
+         serverFireProjectile(spot, attackType, spawnPosition, delay);
+      } else {
+         registerProjectileSchedule(spot, spawnPosition, attackType, .25f, Time.time + .55f, delay);
+      }
 
       attackCounter++;
 
@@ -372,20 +376,52 @@ public class SeaEntity : NetEntity {
    }
 
    [Server]
-   protected IEnumerator CO_DelayLaunchProjectile (Vector2 spot, Attack.Type attackType, Vector2 spawnPosition, float delay, float attackDelay) {
-      yield return new WaitForSeconds(attackDelay);
+   protected void registerProjectileSchedule (Vector2 targetposition, Vector2 spawnPosition, Attack.Type attackType, float animationTime, float projectileTime, float impactDelay) {
+      ProjectileSchedule newSched = new ProjectileSchedule {
+         attackAnimationTime = animationTime,
+         projectileLaunchTime = projectileTime,
+         attackType = attackType,
+         spawnLocation = spawnPosition,
+         targetLocation = targetposition,
+         impactDelay = impactDelay
+      };
 
+      if (GetComponent<SeaMonsterEntity>() != null) {
+         GetComponent<SeaMonsterEntity>().Rpc_registerAttackTime(animationTime);
+      }
+
+      _projectileSched.Add(newSched);
+   }
+
+   protected override void FixedUpdate () {
+      base.FixedUpdate();
+
+      if (NetworkServer.active && _projectileSched.Count > 0) {
+         foreach(ProjectileSchedule sched in _projectileSched) { 
+            if (!sched.dispose) {
+               if (Time.time > sched.projectileLaunchTime) {
+                  serverFireProjectile(sched.targetLocation, sched.attackType, sched.spawnLocation, sched.impactDelay);
+                  sched.dispose = true;
+               }
+            }
+         }
+         _projectileSched.RemoveAll(item => item.dispose == true);
+      }
+   }
+   
+   [Server]
+   protected void serverFireProjectile (Vector2 spot, Attack.Type attackType, Vector2 spawnPosition, float delay) {
       // Creates the projectile and the target circle
       if (GetComponent<PlayerShipEntity>() == null) {
          if (attackType != Attack.Type.Venom) {
-            Rpc_CreateAttackCircle(spawnPosition, spot, Time.time, Time.time + delay, attackType, true);
+            Rpc_CreateAttackCircle(spawnPosition, spot, Time.time, Time.time + delay, attackType, true, delay);
          } else {
             // Create a venom
             fireTimedVenomProjectile(spawnPosition, spot);
          }
       } else {
          Target_CreateLocalAttackCircle(connectionToClient, this.transform.position, spot, Time.time, Time.time + delay);
-         Rpc_CreateAttackCircle(spawnPosition, spot, Time.time, Time.time + delay, attackType, false);
+         Rpc_CreateAttackCircle(spawnPosition, spot, Time.time, Time.time + delay, attackType, false, delay);
       }
    }
 
@@ -445,7 +481,7 @@ public class SeaEntity : NetEntity {
    }
 
    [Server]
-   void fireTimedVenomProjectile (Vector2 startPos,Vector2 targetPos) {
+   private void fireTimedVenomProjectile (Vector2 startPos, Vector2 targetPos) {
       if (isDead() ) {
          return;
       }
@@ -460,7 +496,7 @@ public class SeaEntity : NetEntity {
       for (int i = 0; i < attackCount; i++) {
          Vector2 direction = targetPos - (Vector2) startPos;
          direction = direction.normalized;
-         direction = direction.Rotate(i * 3f);
+         direction = direction.Rotate(i * 10f);
 
          // Figure out the desired velocity
          Vector2 velocity = direction.normalized * NetworkedVenomProjectile.MOVE_SPEED;
@@ -519,6 +555,9 @@ public class SeaEntity : NetEntity {
    // How far back in time we check to see if this ship was recently involved in some combat action
    protected static float RECENT_COMBAT_COOLDOWN = 5f;
 
+   // The list of projectiles scheduled to launch
+   protected List<ProjectileSchedule> _projectileSched = new List<ProjectileSchedule>();
+
    #endregion
 }
 
@@ -527,4 +566,16 @@ public class DirectionalSpawn
 {
    public Direction direction;
    public Transform spawnTransform;
+}
+
+public class ProjectileSchedule
+{
+   public Vector2 targetLocation;
+   public Vector2 spawnLocation;
+   public Attack.Type attackType;
+   public float projectileLaunchTime;
+   public float attackAnimationTime;
+   public float impactDelay;
+   public bool dispose;
+   public bool triggeredAnim;
 }

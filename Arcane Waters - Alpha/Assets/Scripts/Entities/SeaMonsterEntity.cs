@@ -58,17 +58,21 @@ public class SeaMonsterEntity : SeaEntity
          spawnChest();
       }
 
-      if (Time.time - _lastAttackTime < .2f) {
+      if (Time.time > _attackAnimateTime && !_hasTriggered) {
          animator.SetBool("attacking", true);
+         _hasTriggered = true;
+         _attackEndAnimateTime = Time.time + .2f;
       } else {
-         animator.SetBool("attacking", false);
+         if (Time.time > _attackEndAnimateTime) {
+            animator.SetBool("attacking", false);
+         }
       }
    }
 
    [Server]
    protected void spawnChest () {
-      Instance currentInstance = InstanceManager.self.getOpenInstance(Area.Type.SeaBottom);
-      TreasureManager.self.createSeaTreasure(currentInstance, transform.position, true);
+      Instance currentInstance = InstanceManager.self.getInstance(this.instanceId);
+      TreasureManager.self.createSeaTreasure(currentInstance, transform.position);
    }
 
    [Server]
@@ -99,6 +103,12 @@ public class SeaMonsterEntity : SeaEntity
 
       targetEntity = attacker;
       isEngaging = true;
+   }
+
+   [ClientRpc]
+   public void Rpc_registerAttackTime (float delayTime) {
+      _attackAnimateTime = Time.time + delayTime;
+      _hasTriggered = false;
    }
 
    protected bool canMoveTowardEnemy () {
@@ -193,6 +203,15 @@ public class SeaMonsterEntity : SeaEntity
 
    // The radius that defines how far the monster will chase before it retreats
    protected float _territoryRadius = 4.5f;
+
+   // The time expected to play the animation
+   protected float _attackAnimateTime = 0;
+
+   // The time expected to reset the animation
+   protected float _attackEndAnimateTime = 0;
+
+   // A flag to check if the attack anim has been triggered
+   protected bool _hasTriggered = false;
 
 #pragma warning disable 1234
    // The radius that defines how near the player ships are before this unit chases it
