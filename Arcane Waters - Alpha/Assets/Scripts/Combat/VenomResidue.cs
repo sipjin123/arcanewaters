@@ -23,11 +23,12 @@ public class VenomResidue : MonoBehaviour {
    }
 
    private void damageEnemies () {
-      if (targetEntities.Count > 0) {
-         for (int i = 0; i < targetEntities.Count; i++) {
-            targetEntities[i].currentHealth -= damagePerSec;
-            targetEntities[i].Rpc_ShowDamageText(damagePerSec, creatorUserId, Attack.Type.Venom);
-            targetEntities[i].Rpc_ShowExplosion(transform.position, 0, Attack.Type.Venom);
+      if ((NetworkServer.active)) {
+         if (targetEntities.Count > 0) {
+            for (int i = 0; i < targetEntities.Count; i++) {
+               targetEntities[i].currentHealth -= damagePerSec;
+               targetEntities[i].Rpc_ShowExplosion(transform.position, damagePerSec, Attack.Type.Venom);
+            }
          }
       }
    }

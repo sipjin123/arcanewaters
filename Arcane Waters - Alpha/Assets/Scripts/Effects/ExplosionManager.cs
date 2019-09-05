@@ -13,6 +13,12 @@ public class ExplosionManager : ClientMonoBehaviour {
    // The prefab we use for creating explosion particles
    public ExplosionParticle explosionParticlePrefab;
 
+   // The prefab we use for creating rock explosion particles
+   public ExplosionParticle rockExplosionParticlePrefab;
+
+   // The prefab we use for creating slime explosion particles
+   public ExplosionParticle slimeExplosionParticlePrefab;
+
    #endregion
 
    protected override void Awake () {
@@ -25,6 +31,28 @@ public class ExplosionManager : ClientMonoBehaviour {
       // Create a bunch of particles from the prefab
       for (int i = 0; i < particleCount; i++) {
          ExplosionParticle particle = Instantiate(self.explosionParticlePrefab, position, Quaternion.identity);
+         Vector2 direction = new Vector2(Random.Range(-.35f, .35f), 1f);
+         float force = Random.Range(minForce, maxForce);
+         particle.body.AddForce(force * direction);
+         particle.body.AddTorque(Random.Range(-1000f, 1000f));
+      }
+   }
+
+   public static void createRockExplosion (Vector2 position, int particleCount = 12, float minForce = 60f, float maxForce = 90f) {
+      // Create a bunch of particles from the prefab
+      for (int i = 0; i < particleCount; i++) {
+         ExplosionParticle particle = Instantiate(self.rockExplosionParticlePrefab, position, Quaternion.identity);
+         Vector2 direction = new Vector2(Random.Range(-.35f, .35f), 1f);
+         float force = Random.Range(minForce, maxForce);
+         particle.body.AddForce(force * direction);
+         particle.body.AddTorque(Random.Range(-1000f, 1000f));
+      }
+   }
+
+   public static void createSlimeExplosion (Vector2 position, int particleCount = 12, float minForce = 60f, float maxForce = 90f) {
+      // Create a bunch of particles from the prefab
+      for (int i = 0; i < particleCount; i++) {
+         ExplosionParticle particle = Instantiate(self.slimeExplosionParticlePrefab, position, Quaternion.identity);
          Vector2 direction = new Vector2(Random.Range(-.35f, .35f), 1f);
          float force = Random.Range(minForce, maxForce);
          particle.body.AddForce(force * direction);

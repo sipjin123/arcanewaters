@@ -86,22 +86,22 @@ public class NetworkedVenomProjectile : MonoBehaviour
          // Have the server tell the clients where the explosion occurred
          hitEntity.Rpc_ShowExplosion(circleCollider.transform.position, damage, Attack.Type.Venom);
 
-         Instantiate(PrefabsManager.self.venomCollisionPrefab, circleCollider.transform.position, Quaternion.identity);
+         ExplosionManager.createSlimeExplosion(circleCollider.transform.position);
+         Instantiate(PrefabsManager.self.venomCollisionPrefab, hitEntity.transform.position, Quaternion.identity);
          SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position);
       }
 
       _hasCollided = true;
 
       processDestruction();
-      Debug.LogError(other.gameObject.name);
    }
 
    private void processDestruction () {
-      CallCollision(Util.hasLandTile(this.transform.position), circleCollider.transform.position);
+      callCollision(Util.hasLandTile(this.transform.position), circleCollider.transform.position);
       Destroy(this.gameObject);
    }
 
-   public void CallCollision (bool hitLand, Vector3 location) {
+   public void callCollision (bool hitLand, Vector3 location) {
       if (hitLand) {
          Instantiate(PrefabsManager.self.cannonSmokePrefab, location, Quaternion.identity);
          SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position);
