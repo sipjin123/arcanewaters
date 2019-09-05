@@ -39,10 +39,10 @@ public class TreasureManager : MonoBehaviour {
    }
 
    protected TreasureChest createTreasure (Instance instance, TreasureSpot spot) {
-      return createTreasure(instance, spot.transform.position, false);
+      return createTreasure(instance, spot.transform.position);
    }
 
-   public TreasureChest createTreasure (Instance instance, Vector3 spot, bool destroyOnInteract) {
+   public TreasureChest createTreasure (Instance instance, Vector3 spot) {
       // Instantiate a new Treasure Chest
       TreasureChest chest = Instantiate(chestPrefab, spot, Quaternion.identity);
 
@@ -54,9 +54,6 @@ public class TreasureManager : MonoBehaviour {
 
       // Note which instance the chest is in
       chest.instanceId = instance.id;
-
-      // Destroys the chest after looting
-      chest.destroyOnInteract = (destroyOnInteract);
 
       // Keep track of the chests that we've created
       _chests.Add(chest.id, chest);
@@ -70,7 +67,7 @@ public class TreasureManager : MonoBehaviour {
       return chest;
    }
 
-   public TreasureChest createSeaTreasure (Instance instance, Vector3 spot, bool destroyOnInteract) {
+   public TreasureChest createSeaTreasure (Instance instance, Vector3 spot) {
       // Instantiate a new Treasure Chest
       TreasureChest chest = Instantiate(seaChestPrefab, spot, Quaternion.identity);
 
@@ -82,9 +79,6 @@ public class TreasureManager : MonoBehaviour {
 
       // Note which instance the chest is in
       chest.instanceId = instance.id;
-
-      // Destroys the chest after looting
-      chest.destroyOnInteract = (destroyOnInteract);
 
       // Keep track of the chests that we've created
       _chests.Add(chest.id, chest);

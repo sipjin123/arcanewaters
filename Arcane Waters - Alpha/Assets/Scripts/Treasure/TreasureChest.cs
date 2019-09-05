@@ -19,10 +19,6 @@ public class TreasureChest : NetworkBehaviour {
    [SyncVar]
    public long creationTime;
 
-   [SyncVar]
-   // Destroys the chest upon trigger
-   public bool destroyOnInteract;
-
    // Our sprite renderer
    public SpriteRenderer spriteRenderer;
 
@@ -53,6 +49,9 @@ public class TreasureChest : NetworkBehaviour {
    // The container for our animated arrow
    public GameObject arrowContainer;
 
+   // Determines if this chest is a land or sea chest
+   public bool ifSeaChest;
+
    #endregion
 
    public void Awake () {
@@ -75,8 +74,13 @@ public class TreasureChest : NetworkBehaviour {
       // Activate certain things when the global player is nearby
       arrowContainer.SetActive(_isGlobalPlayerNearby && !hasBeenOpened());
 
-      // We only enable the box collider for clients in the relevant instance
-      boxCollider.enabled = (Global.player != null && Global.player.instanceId == this.instanceId);
+      if (!ifSeaChest) {
+         // We only enable the box collider for clients in the relevant instance
+         boxCollider.enabled = (Global.player != null && Global.player.instanceId == this.instanceId);
+      } else {
+         boxCollider.enabled = !hasBeenOpened();
+         triggerCollider.enabled = !hasBeenOpened();
+      }
 
       // Figure out whether our outline should be showing
       handleSpriteOutline();
@@ -162,14 +166,6 @@ public class TreasureChest : NetworkBehaviour {
 
       // Set the name text
       floatingIcon.GetComponentInChildren<FloatAndStop>().nameText.text = item.getName();
-      
-      yield return new WaitForSeconds(1f);
-
-      if (destroyOnInteract) {
-         GetComponent<BoxCollider2D>().enabled = false;
-         GetComponent<CircleCollider2D>().enabled = false;
-         GetComponent<SpriteRenderer>().enabled = false;
-      }
    }
 
    private void OnTriggerEnter2D (Collider2D other) {
