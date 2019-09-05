@@ -24,7 +24,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1810493408227306}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.034, z: 0}
+  m_LocalPosition: {x: 0, y: 0.034, z: 1.053}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7505906518947951878}
@@ -43,6 +43,7 @@ GameObject:
   - component: {fileID: -4484021391034602585}
   - component: {fileID: 2082489589812046251}
   - component: {fileID: 3767119556233888731}
+  - component: {fileID: -4447237384594849683}
   m_Layer: 0
   m_Name: Venom Residue Effect
   m_TagString: Untagged
@@ -102,7 +103,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 0.46}
+  m_Size: {x: 0.36, y: 0.25}
   m_EdgeRadius: 0
 --- !u!50 &2082489589812046251
 Rigidbody2D:
@@ -139,6 +140,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetEntities: []
   creatorUserId: 0
+  damagePerSec: 5
+--- !u!114 &-4447237384594849683
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1946685176054144}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e851007333b54a4190716c035b83695, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  offsetZ: 0
+  isActive: 1
+  sortPoint: {fileID: 0}
 --- !u!1 &7511378881459224776
 GameObject:
   m_ObjectHideFlags: 0
@@ -150,7 +167,6 @@ GameObject:
   - component: {fileID: 7505906518947951878}
   - component: {fileID: 7695067769814980498}
   - component: {fileID: 7615256197268978156}
-  - component: {fileID: 7162422961571681637}
   m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
@@ -166,8 +182,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7511378881459224776}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.134, z: 0}
-  m_LocalScale: {x: 0.17, y: 0.17, z: 0.17}
+  m_LocalPosition: {x: 0, y: -0.057, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4217145405721754}
   m_Father: {fileID: 4920324331762766}
@@ -210,8 +226,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -3721134921811652079, guid: da85bd55cd10f8f489b924f442d55bf9,
-    type: 3}
+  m_Sprite: {fileID: 21300000, guid: f430126f9ab826741b8cd7bac2173fbb, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -237,22 +252,3 @@ MonoBehaviour:
   offsetZ: 0
   isActive: 0
   sortPoint: {fileID: 1810493408227306}
---- !u!95 &7162422961571681637
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7511378881459224776}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: a0b8fdbdbb29550429ddf0e24fd25094, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
