@@ -81,14 +81,14 @@ public class NetworkedVenomProjectile : MonoBehaviour
          hitEntity.noteAttacker(sourceEntity);
 
          // Apply the status effect
-         StatusManager.self.create(Status.Type.None, 3f, hitEntity.userId);
+         StatusManager.self.create(Status.Type.Slow, 3f, hitEntity.userId);
 
          // Have the server tell the clients where the explosion occurred
-         hitEntity.Rpc_ShowExplosion(circleCollider.transform.position, damage, Attack.Type.Venom);
+         hitEntity.Rpc_AttachEffect(damage, Attack.Type.Venom);
+         hitEntity.Rpc_ShowExplosion(hitEntity.transform.position, damage, Attack.Type.Venom);
 
          ExplosionManager.createSlimeExplosion(circleCollider.transform.position);
 
-         EffectManager.self.create(Effect.Type.Slime_Collision, hitEntity.transform.position);
          SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position);
       }
 
@@ -107,8 +107,9 @@ public class NetworkedVenomProjectile : MonoBehaviour
          Instantiate(PrefabsManager.self.cannonSmokePrefab, location, Quaternion.identity);
          SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position);
       } else {
-         GameObject venomResidue = Instantiate(PrefabsManager.self.venomResiduePrefab, location + new Vector3(0f, -.1f), Quaternion.identity);
+         GameObject venomResidue = Instantiate(PrefabsManager.self.venomResiduePrefab, location, Quaternion.identity);
          venomResidue.GetComponent<VenomResidue>().creatorUserId = this.creatorUserId;
+         ExplosionManager.createSlimeExplosion(circleCollider.transform.position);
 
          SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Coralbow_Attack, this.transform.position);
       }

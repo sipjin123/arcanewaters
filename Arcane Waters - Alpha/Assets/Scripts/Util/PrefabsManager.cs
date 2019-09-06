@@ -37,6 +37,9 @@ public class PrefabsManager : MonoBehaviour {
    // The Prefab we use for creating venom projectiles
    public VenomProjectile venomPrefab;
 
+   // The Prefab we use for creating venom sticky residue
+   public GameObject venomStickyPrefab;
+
    // The Prefab we use for creating shockball projectiles
    public ShockballProjectile shockballPrefab;
 

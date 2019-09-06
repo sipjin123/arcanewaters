@@ -28,6 +28,7 @@ public class VenomResidue : MonoBehaviour {
             for (int i = 0; i < targetEntities.Count; i++) {
                targetEntities[i].currentHealth -= damagePerSec;
                targetEntities[i].Rpc_ShowExplosion(targetEntities[i].transform.position, damagePerSec, Attack.Type.Venom);
+               targetEntities[i].Rpc_AttachEffect(damagePerSec, Attack.Type.Venom);
             }
          }
       }

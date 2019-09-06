@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c40781998075c846a4b87f7de0bbaf3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fadeSpeed: 0.7
+  fadeSpeed: 1.7
   body: {fileID: 50759128096991390}
 --- !u!212 &212457112844173752
 SpriteRenderer:

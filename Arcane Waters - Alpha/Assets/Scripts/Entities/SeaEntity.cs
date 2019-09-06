@@ -206,13 +206,14 @@ public class SeaEntity : NetEntity {
          SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Hit_1, pos);
       } else {
          // Show the explosion
-         if (attackType != Attack.Type.Ice) {
+         if (attackType != Attack.Type.Ice && attackType != Attack.Type.Venom) {
             Instantiate(PrefabsManager.self.explosionPrefab, pos, Quaternion.identity);
          }
 
          // If venom attack calls slime effect
          if (attackType == Attack.Type.Venom) {
-            EffectManager.self.create(Effect.Type.Slime_Collision,pos);
+            ExplosionManager.createSlimeExplosion(pos);
+            EffectManager.self.create(Effect.Type.Slime_Collision, pos);
          }
 
          // Show the damage text
@@ -222,6 +223,17 @@ public class SeaEntity : NetEntity {
 
       // Play the damage sound
       SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Hit_2, pos);
+   }
+
+   [ClientRpc]
+   public void Rpc_AttachEffect (int damage, Attack.Type attackType) {
+      Transform targetTransform = spritesContainer.transform;
+
+      // If venom attack calls slime effect
+      if (attackType == Attack.Type.Venom) {
+         GameObject stickyInstance = Instantiate(PrefabsManager.self.venomStickyPrefab, targetTransform);
+         stickyInstance.transform.localPosition = Vector3.zero;
+      }
    }
 
    [ClientRpc]
@@ -360,6 +372,16 @@ public class SeaEntity : NetEntity {
       if (attackDelay <= 0) {
          serverFireProjectile(spot, attackType, spawnPosition, delay);
       } else {
+         // Speed modifiers for the projectile types
+         switch (attackType) {
+            case Attack.Type.Boulder:
+               delay /= 1.5f;
+               break;
+            case Attack.Type.Shock_Ball:
+               delay /= 1.25f;
+               break;
+         }
+
          registerProjectileSchedule(spot, spawnPosition, attackType, attackDelay, Util.netTime() + launchDelay, delay);
       }
 
