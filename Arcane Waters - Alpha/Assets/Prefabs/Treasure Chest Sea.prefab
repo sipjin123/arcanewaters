@@ -368,7 +368,6 @@ MonoBehaviour:
   id: 0
   instanceId: 0
   creationTime: 0
-  destroyOnInteract: 0
   spriteRenderer: {fileID: 8381824578476549286}
   openButtonContainer: {fileID: 8686771682710097170}
   shineContainer: {fileID: 8263979464909163114}
@@ -378,7 +377,7 @@ MonoBehaviour:
   chestBurstAnimation: {fileID: 459723537}
   openedChestSprite: {fileID: 21300010, guid: 1bdf206630ab66142a2f46fa99f026f2, type: 3}
   arrowContainer: {fileID: 959486711}
-  ifSeaChest: 1
+  isSeaChest: 1
 --- !u!114 &4298218442774226192
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -394,7 +393,7 @@ MonoBehaviour:
   serverOnly: 0
   localPlayerAuthority: 0
   m_AssetId: 
-  m_SceneId: 1018159317
+  m_SceneId: 2385924133
 --- !u!114 &4298218442774226193
 MonoBehaviour:
   m_ObjectHideFlags: 0
