@@ -19,6 +19,9 @@ public class LeaderBoardInfo
    // The job type
    public Jobs.Type jobType;
 
+   // The faction of the board - used when filtering the leader boards by faction
+   public Faction.Type boardFaction;
+
    // The period of time of the leader board (day, week, month)
    public LeaderBoardsManager.Period period;
 
@@ -27,6 +30,9 @@ public class LeaderBoardInfo
 
    // The user name
    public string userName;
+
+   // The faction of the user
+   public Faction.Type userFaction;
 
    // The score
    public int score;
@@ -40,20 +46,25 @@ public class LeaderBoardInfo
    public LeaderBoardInfo (MySqlDataReader dataReader) {
       this.rank = DataUtil.getInt(dataReader, "rank");
       this.jobType = (Jobs.Type) DataUtil.getInt(dataReader, "jobType");
+      this.boardFaction = (Faction.Type) DataUtil.getInt(dataReader, "boardFaction");
       this.period = (LeaderBoardsManager.Period) DataUtil.getInt(dataReader, "period");
       this.userId = DataUtil.getInt(dataReader, "usrId");
       this.userName = DataUtil.getString(dataReader, "usrName");
+      this.userFaction = (Faction.Type) DataUtil.getInt(dataReader, "faction");
       this.score = DataUtil.getInt(dataReader, "score");
    }
 
 #endif
 
-   public LeaderBoardInfo (int rank, Jobs.Type jobType, LeaderBoardsManager.Period period, int userId, int score) {
+   public LeaderBoardInfo (int rank, Jobs.Type jobType, Faction.Type boardFaction, LeaderBoardsManager.Period period, int userId,
+      int score) {
       this.rank= rank;
       this.jobType = jobType;
+      this.boardFaction = boardFaction;
       this.period = period;
       this.userId = userId;
       this.userName = "";
+      this.userFaction = Faction.Type.None;
       this.score = score;
    }
 

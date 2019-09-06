@@ -26,6 +26,9 @@ public class MerchantScreen : Panel {
    public Sprite[] timerSprites;
    public Sprite timerEmptySprite;
 
+   // The time left text
+   public Text timeLeftText;
+
    // Self
    public static MerchantScreen self;
 
@@ -38,6 +41,10 @@ public class MerchantScreen : Panel {
 
       // Keep track of what our intro text is
       _greetingText = greetingText.text;
+
+      // Initializes the offer expiration countdown
+      timeLeftText.text = "";
+      timerImage.sprite = timerEmptySprite;
    }
 
    public override void show () {
@@ -50,32 +57,80 @@ public class MerchantScreen : Panel {
       AutoTyper.SlowlyRevealText(greetingText, _greetingText);
    }
 
+   public override void Update () {
+      base.Update();
+      
+      // Determine the time left until the offers expire
+      TimeSpan timeLeft = TimeSpan.FromSeconds(CropOffer.REGEN_INTERVAL * 3600)
+      - (DateTime.UtcNow - _lastCropRegenTime);
+
+      // If the offers have expired, show a special message
+      if (timeLeft.Ticks <= 0) {
+         timeLeftText.text = "The offers have expired!";
+         timerImage.sprite = timerEmptySprite;
+      } else {
+         // Show the seconds if it happened in the last 60s, the
+         // minutes in the last 60m, or the hours.
+         if (timeLeft.TotalSeconds <= 60) {
+            if (timeLeft.Seconds <= 1) {
+               timeLeftText.text = timeLeft.Seconds.ToString() + " second left";
+            } else {
+               timeLeftText.text = timeLeft.Seconds.ToString() + " seconds left";
+            }
+         } else if (timeLeft.TotalMinutes <= 60) {
+            timeLeftText.text = timeLeft.Minutes.ToString() + " min left";
+         } else {
+            if (timeLeft.Hours <= 1) {
+               timeLeftText.text = timeLeft.Hours.ToString() + " hour left";
+            } else {
+               timeLeftText.text = timeLeft.Hours.ToString() + " hours left";
+            }
+         }
+
+         // Determine the timer sprite
+         int spriteIndex = Mathf.FloorToInt(
+            (float) timeLeft.TotalSeconds / ((CropOffer.REGEN_INTERVAL * 3600) / timerSprites.Length));
+         timerImage.sprite = timerSprites[spriteIndex];
+      }
+   }
+
    public void sellButtonPressed (int offerId) {
       CropOffer offer = getOffer(offerId);
 
       // Calculate the time left until the offers regenerate
       float timeLeftUntilRegeneration = (CropOffer.REGEN_INTERVAL * 3600)
          - (float) (DateTime.UtcNow - _lastCropRegenTime).TotalSeconds;
-      
-      // Check if the offer has expired or if everything has been sold
-      if (timeLeftUntilRegeneration <= 0 || offer == null || offer.amount <= 0) {
+
+      // Check if the offer has expired
+      if (timeLeftUntilRegeneration <= 0 || offer == null) {
          // Show an error pannel
-         PanelManager.self.noticeScreen.show("This offer has expired.");
-      } else {
-         TradeConfirmScreen confirmScreen = PanelManager.self.tradeConfirmScreen;
-
-         // Update the Trade Confirm Screen
-         confirmScreen.cropType = offer.cropType;
-         confirmScreen.maxAmount = offer.amount;
-
-         // Associate a new function with the confirmation button
-         confirmScreen.confirmButton.onClick.RemoveAllListeners();
-         confirmScreen.confirmButton.onClick.AddListener(() => sellButtonConfirmed(offerId));
-
-         // Show a confirmation panel
-         string cropName = System.Enum.GetName(typeof(Crop.Type), offer.cropType);
-         confirmScreen.show("How many " + cropName + " do you want to sell?");
+         PanelManager.self.noticeScreen.show("This offer has expired!");
+         return;
       }
+
+      // Check if everything has been sold
+      if (offer.amount <= 0) {
+         // Show an error pannel
+         PanelManager.self.noticeScreen.show("This offer has sold out!");
+
+         // Update the offers
+         Global.player.rpc.Cmd_GetOffersForArea();
+         return;
+      }
+
+      TradeConfirmScreen confirmScreen = PanelManager.self.tradeConfirmScreen;
+
+      // Update the Trade Confirm Screen
+      confirmScreen.cropType = offer.cropType;
+      confirmScreen.maxAmount = offer.amount;
+
+      // Associate a new function with the confirmation button
+      confirmScreen.confirmButton.onClick.RemoveAllListeners();
+      confirmScreen.confirmButton.onClick.AddListener(() => sellButtonConfirmed(offerId));
+
+      // Show a confirmation panel
+      string cropName = System.Enum.GetName(typeof(Crop.Type), offer.cropType);
+      confirmScreen.show("How many " + cropName + " do you want to sell?");
    }
 
    protected void sellButtonConfirmed (int offerId) {
@@ -102,19 +157,8 @@ public class MerchantScreen : Panel {
          row.setRowForCrop(offer);
       }
 
-      // Determine the time left until the offers expire
+      // Store the last regeneration time
       _lastCropRegenTime = DateTime.FromBinary(lastCropRegenTime);
-      float timeLeftUntilRegeneration = (CropOffer.REGEN_INTERVAL * 3600)
-         - (float) (DateTime.UtcNow - _lastCropRegenTime).TotalSeconds;
-
-      // Determine the timer sprite
-      if (timeLeftUntilRegeneration > 0) {
-         int spriteIndex = Mathf.FloorToInt(
-            timeLeftUntilRegeneration / ((CropOffer.REGEN_INTERVAL * 3600) / timerSprites.Length));
-         timerImage.sprite = timerSprites[spriteIndex];
-      } else {
-         timerImage.sprite = timerEmptySprite;
-      }
    }
 
    protected CropOffer getOffer (int offerId) {

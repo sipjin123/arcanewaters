@@ -142,7 +142,7 @@ public class Area : MonoBehaviour {
          case Type.SeaBottom:
          case Type.Shipyard_Forest:
          case Type.StartingTown:
-            return Biome.Type.Tropical;
+            return Biome.Type.Forest;
          case Type.AdventureShop_Desert:
          case Type.MerchantShop_Desert:
          case Type.DesertTown:

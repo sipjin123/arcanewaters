@@ -11,6 +11,9 @@ public class LeaderBoardRow : MonoBehaviour
    // The rank of the user
    public Text rankText;
 
+   // The faction icon
+   public Image factionIcon;
+
    // The name of the user
    public Text userName;
 
@@ -21,6 +24,7 @@ public class LeaderBoardRow : MonoBehaviour
 
    public void setRowForLeaderBoard (LeaderBoardInfo entry) {
       rankText.text = entry.rank.ToString() + ".";
+      factionIcon.sprite = Faction.getShipIcon(entry.userFaction);
       userName.text = entry.userName;
       score.text = entry.score.ToString();
    }

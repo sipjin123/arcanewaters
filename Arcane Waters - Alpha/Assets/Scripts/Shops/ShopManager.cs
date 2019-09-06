@@ -23,9 +23,9 @@ public class ShopManager : MonoBehaviour {
 
    private void Start () {
       // Routinely change out the items
-      InvokeRepeating("randomlyGenerateItems", 0f, TimeSpan.FromHours(1).Seconds);
-      InvokeRepeating("randomlyGenerateShips", 0f, TimeSpan.FromHours(1).Seconds);
-      InvokeRepeating("randomlyGenerateCropOffers", 0f, TimeSpan.FromHours(CropOffer.REGEN_INTERVAL).Seconds);
+      InvokeRepeating("randomlyGenerateItems", 0f, (float) TimeSpan.FromHours(1).TotalSeconds);
+      InvokeRepeating("randomlyGenerateShips", 0f, (float) TimeSpan.FromHours(1).TotalSeconds);
+      InvokeRepeating("randomlyGenerateCropOffers", 0f, (float) TimeSpan.FromHours(CropOffer.REGEN_INTERVAL).TotalSeconds);
    }
 
    public Item getItem (int itemId) {
@@ -164,7 +164,7 @@ public class ShopManager : MonoBehaviour {
                offer.cropType = CropManager.STARTING_CROP;
                offer.rarity = Rarity.Type.Common;
                offer.pricePerUnit = 80;
-               offer.amount = 9000;
+               offer.amount = int.MaxValue;
             }
 
             // Store the offer

@@ -2144,4 +2144,5 @@ MonoBehaviour:
   enemyIcon: {fileID: 3625824054032196252}
   barBackgroundImage: {fileID: 2579565505197064094}
   barsBackgroundAlt: {fileID: 21300000, guid: 468e60adbe0887a429437702a2a8d82e, type: 3}
+  isMinion: 1
   isDamageable: 1

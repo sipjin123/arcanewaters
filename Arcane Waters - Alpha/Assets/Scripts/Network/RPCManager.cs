@@ -262,9 +262,9 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_ReceiveLeaderBoards (NetworkConnection connection, LeaderBoardsManager.Period period, 
-      double secondsLeftUntilRecalculation, LeaderBoardInfo[] farmingEntries, LeaderBoardInfo[] sailingEntries,
-      LeaderBoardInfo[] exploringEntries, LeaderBoardInfo[] tradingEntries, LeaderBoardInfo[] craftingEntries,
-      LeaderBoardInfo[] miningEntries) {
+      Faction.Type boardFaction, double secondsLeftUntilRecalculation, LeaderBoardInfo[] farmingEntries,
+      LeaderBoardInfo[] sailingEntries, LeaderBoardInfo[] exploringEntries, LeaderBoardInfo[] tradingEntries,
+      LeaderBoardInfo[] craftingEntries, LeaderBoardInfo[] miningEntries) {
 
       // Make sure the panel is showing
       LeaderBoardsPanel panel = (LeaderBoardsPanel) PanelManager.self.get(Panel.Type.LeaderBoards);
@@ -274,7 +274,7 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Pass them along to the Leader Boards panel
-      panel.updatePanelWithLeaderBoardEntries(period, secondsLeftUntilRecalculation,  farmingEntries, sailingEntries,
+      panel.updatePanelWithLeaderBoardEntries(period, boardFaction, secondsLeftUntilRecalculation,  farmingEntries, sailingEntries,
          exploringEntries, tradingEntries, craftingEntries, miningEntries);
    }
 
@@ -295,6 +295,12 @@ public class RPCManager : NetworkBehaviour {
       // Pass this data along to the Random Maps panel to display
       RandomMapsPanel panel = (RandomMapsPanel) PanelManager.self.get(Panel.Type.RandomMaps);
       panel.showPanelUsingMapSummaries(mapSummaryArray);
+   }
+
+   [TargetRpc]
+   public void Target_SpawnRandomMap (NetworkConnection connection, MapConfig mapConfig) {
+      // Generate the random map tiles
+      RandomMapCreator.generateRandomMap(mapConfig);
    }
 
    [Command]
@@ -398,7 +404,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_RequestLeaderBoardsFromServer (LeaderBoardsManager.Period period) {
+   public void Cmd_RequestLeaderBoardsFromServer (LeaderBoardsManager.Period period, Faction.Type boardFaction) {
       if (_player == null) {
          D.warning("No player object found.");
          return;
@@ -415,8 +421,8 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
 
          // Get the leader boards
-         LeaderBoardsManager.self.getLeaderBoards(period, out farmingEntries, out sailingEntries, out exploringEntries, out tradingEntries,
-            out craftingEntries, out miningEntries);
+         LeaderBoardsManager.self.getLeaderBoards(period, boardFaction, out farmingEntries, out sailingEntries, out exploringEntries,
+            out tradingEntries, out craftingEntries, out miningEntries);
 
          // Get the last calculation date of this period
          DateTime lastCalculationDate = DB_Main.getLeaderBoardEndDate(period);
@@ -426,7 +432,7 @@ public class RPCManager : NetworkBehaviour {
 
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            _player.rpc.Target_ReceiveLeaderBoards(_player.connectionToClient, period, timeLeftUntilRecalculation.TotalSeconds,
+            _player.rpc.Target_ReceiveLeaderBoards(_player.connectionToClient, period, boardFaction, timeLeftUntilRecalculation.TotalSeconds,
                farmingEntries.ToArray(), sailingEntries.ToArray(), exploringEntries.ToArray(), tradingEntries.ToArray(),
                craftingEntries.ToArray(), miningEntries.ToArray());
          });
@@ -760,13 +766,16 @@ public class RPCManager : NetworkBehaviour {
       // Get the current list of offers for the area
       List<CropOffer> list = ShopManager.self.getOffers(_player.areaType);
 
+      // Get the last offer regeneration time
+      long lastCropRegenTime = ShopManager.self.lastCropRegenTime.ToBinary();
+
       // Look up their current gold in the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          int gold = DB_Main.getGold(_player.userId);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             _player.rpc.Target_ReceiveOffers(_player.connectionToClient, gold, list.ToArray(),
-               ShopManager.self.lastCropRegenTime.ToBinary());
+               lastCropRegenTime);
          });
       });
    }
@@ -787,6 +796,13 @@ public class RPCManager : NetworkBehaviour {
 
       // Pass the data back to the client
       Target_ReceiveMapSummaries(_player.connectionToClient, list.ToArray());
+   }
+
+   [Command]
+   public void Cmd_GetMapConfigFromServer (Area.Type areaType) {
+      if (RandomMapManager.self.mapConfigs.ContainsKey(areaType)) {
+         Target_SpawnRandomMap(_player.connectionToClient, RandomMapManager.self.mapConfigs[areaType]);
+      }
    }
 
    [Command]
@@ -1232,10 +1248,18 @@ public class RPCManager : NetworkBehaviour {
          // Fetches reward item id
          int rewardItemID = DB_Main.getItemID(userId, (int) rewardItem.category, rewardItem.itemTypeId);
 
+         // Add the crafting xp
+         int xp = 10;
+         DB_Main.addJobXP(_player.userId, Jobs.Type.Crafter, _player.faction, xp);
+         Jobs newJobXP = DB_Main.getJobXP(_player.userId);
+
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             rewardItem.id = rewardItemID;
             rewardItemList.Add(data.resultItem);
             finalizeRewards(userId, rewardItemList, databaseItems, requiredItems);
+
+            // Let them know they gained experience
+            _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Crafter, 0);
          });
       });
    }
@@ -1319,8 +1343,17 @@ public class RPCManager : NetworkBehaviour {
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<Item> databaseList = DB_Main.getRequiredIngredients(_player.userId, itemLoots);
+
+         // Add the mining xp
+         int xp = 10;
+         DB_Main.addJobXP(_player.userId, Jobs.Type.Miner, _player.faction, xp);
+         Jobs newJobXP = DB_Main.getJobXP(_player.userId);
+
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             processGroupRewards(_player.userId, databaseList, lootInfoList);
+
+            // Let them know they gained experience
+            _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Miner, 0);
          });
       });
    }
@@ -1461,6 +1494,7 @@ public class RPCManager : NetworkBehaviour {
       // Spawn the bot on the Clients
       NetworkServer.Spawn(bot.gameObject);
    }
+
 
    [Command]
    public void Cmd_SpawnTentacle (Vector2 spawnPosition, uint horrorEntityID, int xVal, int yVal, int variety) {

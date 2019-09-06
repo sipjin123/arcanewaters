@@ -36,12 +36,25 @@ public class LeaderBoardsPanel : Panel
    public Toggle weekToggle;
    public Toggle monthToggle;
 
+   // The faction icon
+   public Image factionIcon;
+
+   // The faction text
+   public Text factionText;
+
    #endregion
 
    public override void Awake () {
       base.Awake();
 
       self = this;
+
+      // Initialize the faction filter
+      _factionList = new List<Faction.Type>();
+      foreach (Faction.Type faction in System.Enum.GetValues(typeof(Faction.Type))) {
+         _factionList.Add(faction);
+      }
+      _selectedFactionIndex = 0;
    }
 
    public override void Start () {
@@ -50,9 +63,10 @@ public class LeaderBoardsPanel : Panel
       _initialized = true;
    }
 
-   public void updatePanelWithLeaderBoardEntries(LeaderBoardsManager.Period period, double secondsLeftUntilRecalculation,
-      LeaderBoardInfo[] farmingEntries, LeaderBoardInfo[] sailingEntries, LeaderBoardInfo[] exploringEntries,
-      LeaderBoardInfo[] tradingEntries, LeaderBoardInfo[] craftingEntries, LeaderBoardInfo[] miningEntries) {
+   public void updatePanelWithLeaderBoardEntries(LeaderBoardsManager.Period period, Faction.Type boardFaction,
+      double secondsLeftUntilRecalculation, LeaderBoardInfo[] farmingEntries, LeaderBoardInfo[] sailingEntries,
+      LeaderBoardInfo[] exploringEntries, LeaderBoardInfo[] tradingEntries, LeaderBoardInfo[] craftingEntries,
+      LeaderBoardInfo[] miningEntries) {
 
       // Update the board entries
       updateBoardWithEntries(farmingBoardRowsContainer, farmingEntries);
@@ -62,7 +76,7 @@ public class LeaderBoardsPanel : Panel
       updateBoardWithEntries(craftingBoardRowsContainer, craftingEntries);
       updateBoardWithEntries(miningBoardRowsContainer, miningEntries);
 
-      // Updates the time left until recalculation
+      // Update the time left until recalculation
       // Show the seconds if it happened in the last 60s, the
       // minutes in the last 60m, etc, up to the days.
       TimeSpan timeLeft = TimeSpan.FromSeconds(secondsLeftUntilRecalculation);
@@ -96,7 +110,7 @@ public class LeaderBoardsPanel : Panel
       weekToggle.onValueChanged = emptyToggleEvent;
       monthToggle.onValueChanged = emptyToggleEvent;
 
-      // Selects the correct period toggle
+      // Select the correct period toggle
       switch (period) {
          case LeaderBoardsManager.Period.Day:
             dayToggle.isOn = true;
@@ -111,31 +125,82 @@ public class LeaderBoardsPanel : Panel
             break;
       }
 
-      // Restores the onValueChanged events on the toggles
+      // Restore the onValueChanged events on the toggles
       dayToggle.onValueChanged = backupDayEvent;
       weekToggle.onValueChanged = backupWeekEvent;
       monthToggle.onValueChanged = backupMonthEvent;
+
+      // Select the correct faction
+      _selectedFactionIndex = _factionList.IndexOf(boardFaction);
+      refreshFactionFilterDisplay();
    }
 
    public void onPeriodToggleChange (Toggle toggle) {
       // Avoid unecessary calls
       if (_initialized && isShowing() && toggle.isOn) {
-         // Determines which toggle is on and request the entries from the server
-         if (dayToggle.isOn) {
-            Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(LeaderBoardsManager.Period.Day);
-         } else if (weekToggle.isOn) {
-            Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(LeaderBoardsManager.Period.Week);
-         } else {
-            Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(LeaderBoardsManager.Period.Month);
-         }
+         // Request the entries from the server
+         Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(getSelectedPeriod(), getSelectedFaction());
       }
+   }
+
+   public void onFactionFilterLeftButtonPress () {
+      _selectedFactionIndex--;
+      if (_selectedFactionIndex < 0) {
+         _selectedFactionIndex = _factionList.Count - 1;
+      }
+
+      // Update the displayed selected faction
+      refreshFactionFilterDisplay();
+
+      // Request the entries from the server
+      Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(getSelectedPeriod(), getSelectedFaction());
+   }
+
+   public void onFactionFilterRightButtonPress () {
+      _selectedFactionIndex++;
+      if (_selectedFactionIndex >= _factionList.Count) {
+         _selectedFactionIndex = 0;
+      }
+
+      // Update the displayed selected faction
+      refreshFactionFilterDisplay();
+
+      // Request the entries from the server
+      Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(getSelectedPeriod(), getSelectedFaction());
+   }
+
+   private void refreshFactionFilterDisplay () {
+      // Retrieve the correct faction icon
+      factionIcon.sprite = Faction.getIcon(_factionList[_selectedFactionIndex]);
+
+      // Set the faction name text
+      if (_factionList[_selectedFactionIndex] == Faction.Type.None) {
+         factionText.text = "All factions";
+      } else {
+         factionText.text = Faction.toString(_factionList[_selectedFactionIndex]);
+      }
+   }
+
+   private LeaderBoardsManager.Period getSelectedPeriod () {
+      // Determine which toggle is on
+      if (dayToggle.isOn) {
+         return LeaderBoardsManager.Period.Day;
+      } else if (weekToggle.isOn) {
+         return LeaderBoardsManager.Period.Week;
+      } else {
+         return LeaderBoardsManager.Period.Month;
+      }
+   }
+
+   private Faction.Type getSelectedFaction () {
+      return _factionList[_selectedFactionIndex];
    }
 
    private void updateBoardWithEntries (GameObject rowsContainer, LeaderBoardInfo[] entries) {
       // Clear out any old info
       rowsContainer.DestroyChildren();
 
-      // Instantiates the rows
+      // Instantiate the rows
       for (int i = 0; i < entries.Length; i++) {
          LeaderBoardRow row = Instantiate(leaderBoardRowPrefab, rowsContainer.transform, false);
          row.transform.SetParent(rowsContainer.transform, false);
@@ -147,6 +212,12 @@ public class LeaderBoardsPanel : Panel
 
    // Get set to true when the MonoBehaviour has started
    private bool _initialized;
+
+   // The list of factions filters
+   private List<Faction.Type> _factionList;
+
+   // The index of the currently selected faction
+   private int _selectedFactionIndex;
 
    #endregion
 }

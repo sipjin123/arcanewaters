@@ -105,7 +105,7 @@ public class CropManager : NetworkBehaviour {
 
          // Add the farming XP
          int xp = Crop.getXP(cropType);
-         DB_Main.addJobXP(userId, Jobs.Type.Farmer, xp);
+         DB_Main.addJobXP(userId, Jobs.Type.Farmer, _player.faction, xp);
          Jobs newJobXP = DB_Main.getJobXP(userId);
 
          // Back to the Unity thread
@@ -163,7 +163,7 @@ public class CropManager : NetworkBehaviour {
 
          // Add the farming XP
          int xp = Crop.getXP(cropToWater.cropType);
-         DB_Main.addJobXP(_player.userId, Jobs.Type.Farmer, xp);
+         DB_Main.addJobXP(_player.userId, Jobs.Type.Farmer, _player.faction, xp);
          Jobs newJobXP = DB_Main.getJobXP(_player.userId);
 
          // Back to the Unity thread
@@ -222,7 +222,7 @@ public class CropManager : NetworkBehaviour {
 
          // Add the farming XP
          int xp = Crop.getXP(cropToHarvest.cropType);
-         DB_Main.addJobXP(_player.userId, Jobs.Type.Farmer, xp);
+         DB_Main.addJobXP(_player.userId, Jobs.Type.Farmer, _player.faction, xp);
          Jobs newJobXP = DB_Main.getJobXP(_player.userId);
 
          // Back to the Unity thread
@@ -262,12 +262,13 @@ public class CropManager : NetworkBehaviour {
       // Check if we found the specified offer
       if (offer.id <= 0) {
          D.warning("Couldn't find the requested crop offer: " + offerId);
+         ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, "This offer has expired!");
          return;
       }
 
       // Make sure it hasn't sold out
       if (offer.amount <= 0) {
-         ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, "That offer has sold out!");
+         ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, "This offer has sold out!");
          return;
       }
 
@@ -309,7 +310,7 @@ public class CropManager : NetworkBehaviour {
             // Add experience
             int baseXP = Crop.getXP(offer.cropType) * amountToSell;
             int totalXP = (int) (baseXP * xpModifier);
-            DB_Main.addJobXP(_player.userId, Jobs.Type.Trader, totalXP);
+            DB_Main.addJobXP(_player.userId, Jobs.Type.Trader, _player.faction, totalXP);
             Jobs jobs = DB_Main.getJobXP(_player.userId);
             _player.Target_GainedXP(_player.connectionToClient, totalXP, jobs, Jobs.Type.Trader, 0);
 

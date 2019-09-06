@@ -9,7 +9,7 @@ public class CropOffer {
    #region Public Variables
 
    // The maximum stock amount (demand)
-   public static int MAX_STOCK = 10000;
+   public static int MAX_STOCK = 3000;
 
    // The offer regeneration interval, common to all offers - in hours
    public static int REGEN_INTERVAL = 24;

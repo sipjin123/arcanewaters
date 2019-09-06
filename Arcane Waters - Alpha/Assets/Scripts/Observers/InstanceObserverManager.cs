@@ -25,12 +25,9 @@ public class InstanceObserverManager : NetworkBehaviour
       // It seems this has to be cleared out at the start, or else it can contain unwanted connections
       connectionsToObserve.Clear();
 
-      foreach (NetworkBehaviour netBehavior in _instance.entities) {
-         if (netBehavior.GetComponent<NetEntity>() != null) {
-            NetEntity newEntity = netBehavior.GetComponent<NetEntity>();
-            if (newEntity.connectionToClient != null) {
-               connectionsToObserve.Add(newEntity.connectionToClient);
-            }
+      foreach (NetworkBehaviour entity in _instance.entities) {
+         if (entity != null && entity.connectionToClient != null) {
+            connectionsToObserve.Add(entity.connectionToClient);
          }
       }
 

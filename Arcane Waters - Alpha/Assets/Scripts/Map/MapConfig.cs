@@ -28,15 +28,19 @@ public struct MapConfig
    // The Type of Biome that's associated with this map configuration
    public Biome.Type biomeType;
 
+   // Seed for decision made during generating path
+   public int seedPath;
+
    #endregion
 
-   public MapConfig (int seed, float persistance, float lacunarity, Vector2 offset, Area.Type areaType, Biome.Type biomeType) {
+   public MapConfig (int seed, float persistance, float lacunarity, Vector2 offset, Area.Type areaType, Biome.Type biomeType, int seedPath) {
       this.seed = seed;
       this.persistance = persistance;
       this.lacunarity = lacunarity;
       this.offset = offset;
       this.areaType = areaType;
       this.biomeType = biomeType;
+      this.seedPath = seedPath;
    }
 
    #region Private Variables

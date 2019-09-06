@@ -299,7 +299,7 @@ public class DB_MainStub : MonoBehaviour {
        
    }
 
-   public static void addJobXP (int userId, Jobs.Type jobType, int XP) {
+   public static void addJobXP (int userId, Jobs.Type jobType, Faction.Type faction, int XP) {
 
    }
 
@@ -326,8 +326,8 @@ public class DB_MainStub : MonoBehaviour {
    public static void pruneJobHistory (DateTime untilDate) {
    }
 
-   public static List<LeaderBoardInfo> calculateLeaderBoard (Jobs.Type jobType, LeaderBoardsManager.Period period,
-      DateTime startDate, DateTime endDate) {
+   public static List<LeaderBoardInfo> calculateLeaderBoard (Jobs.Type jobType, Faction.Type faction, 
+      LeaderBoardsManager.Period period, DateTime startDate, DateTime endDate) {
       return null;
    }
 
@@ -345,7 +345,7 @@ public class DB_MainStub : MonoBehaviour {
       return DateTime.UtcNow;
    }
 
-   public static void getLeaderBoards (LeaderBoardsManager.Period period, out List<LeaderBoardInfo> farmingEntries,
+   public static void getLeaderBoards (LeaderBoardsManager.Period period, Faction.Type boardFaction, out List<LeaderBoardInfo> farmingEntries,
       out List<LeaderBoardInfo> sailingEntries, out List<LeaderBoardInfo> exploringEntries, out List<LeaderBoardInfo> tradingEntries,
       out List<LeaderBoardInfo> craftingEntries, out List<LeaderBoardInfo> miningEntries) {
       farmingEntries = null;

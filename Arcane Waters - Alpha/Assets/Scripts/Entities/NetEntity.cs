@@ -563,7 +563,7 @@ public class NetEntity : NetworkBehaviour
       xpCanvas.GetComponentInChildren<Text>().text = "+" + xpGained + " " + jobType + " XP";
 
       // Show some types of gain in chat
-      if (jobType == Jobs.Type.Trader) {
+      if (jobType == Jobs.Type.Trader || jobType == Jobs.Type.Miner || jobType == Jobs.Type.Crafter) {
          string message = string.Format("You gained {0} {1} XP!", xpGained, jobType);
          ChatManager.self.addChat(message, ChatInfo.Type.System);
       }
