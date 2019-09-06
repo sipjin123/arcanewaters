@@ -21,16 +21,16 @@ public class DB_Main : DB_MainStub {
    #region NPC Relation Feature
 
    public static new void createNPCRelation (NPCRelationInfo npcInfo) {
-      int questTypeIndex = (int) npcInfo.npcQuestType;
+      int newID = 0;
+
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO npc_relationship (relation_id, npc_id, user_id, npc_name, npc_relation_level,npc_quest_index, npc_quest_progress, npc_quest_type) " +
-            "VALUES (@relation_id, @npc_id, @user_id, @npc_name, @npc_relation_level, @npc_quest_index, @npc_quest_progress , @npc_quest_type);", conn)) {
+            "INSERT INTO npc_relationship (npc_id, user_id, npc_name, npc_relation_level,npc_quest_index, npc_quest_progress, npc_quest_type) " +
+            "VALUES (@npc_id, @user_id, @npc_name, @npc_relation_level, @npc_quest_index, @npc_quest_progress , @npc_quest_type);", conn)) {
 
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@relation_id", npcInfo.npcID + npcInfo.userID + questTypeIndex + npcInfo.npcQuestIndex);
             cmd.Parameters.AddWithValue("@npc_id", npcInfo.npcID);
             cmd.Parameters.AddWithValue("@user_id", npcInfo.userID);
             cmd.Parameters.AddWithValue("@npc_name", npcInfo.npcName);
@@ -41,6 +41,8 @@ public class DB_Main : DB_MainStub {
 
             // Execute the command
             cmd.ExecuteNonQuery();
+
+            newID = (int) cmd.LastInsertedId;
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
@@ -1351,9 +1353,8 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static new void decreaseQuantityOrDeleteItem (int userId, int itmId, int deductCount) {
+   public static new void decreaseQuantityOrDeleteItem (int userId, int itmId, int deductedValue) {
       int currentCount = 0;
-
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM items WHERE usrId=@usrId and itmId=@itmId", conn)) {
@@ -1373,14 +1374,14 @@ public class DB_Main : DB_MainStub {
       }
 
       // Computes the item count after reducing the require item count
-      int deductedValue = currentCount - deductCount;
+      int computedValue = currentCount - deductedValue;
 
-      if (deductedValue <= 0) {
+      if (computedValue <= 0) {
          // Deletes item from the database if count hits zero
          deleteItem(userId, itmId);
       } else {
          // Updates item count
-         updateItemQuantity(userId, itmId, deductCount);
+         updateItemQuantity(userId, itmId, computedValue);
       }
    }
 
@@ -2058,7 +2059,7 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static void setServer(string server) {
+   public static new void setServer(string server) {
       _connectionString = buildConnectionString(server);
    }
 

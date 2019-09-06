@@ -260,6 +260,24 @@ public class RPCManager : NetworkBehaviour {
       panel.updatePanelWithTrades(tradeList, pageIndex, totalTradeCount);
    }
 
+   [TargetRpc]
+   public void Target_ReceiveLeaderBoards (NetworkConnection connection, LeaderBoardsManager.Period period, 
+      double secondsLeftUntilRecalculation, LeaderBoardInfo[] farmingEntries, LeaderBoardInfo[] sailingEntries,
+      LeaderBoardInfo[] exploringEntries, LeaderBoardInfo[] tradingEntries, LeaderBoardInfo[] craftingEntries,
+      LeaderBoardInfo[] miningEntries) {
+
+      // Make sure the panel is showing
+      LeaderBoardsPanel panel = (LeaderBoardsPanel) PanelManager.self.get(Panel.Type.LeaderBoards);
+
+      if (!panel.isShowing()) {
+         PanelManager.self.pushPanel(panel.type);
+      }
+
+      // Pass them along to the Leader Boards panel
+      panel.updatePanelWithLeaderBoardEntries(period, secondsLeftUntilRecalculation,  farmingEntries, sailingEntries,
+         exploringEntries, tradingEntries, craftingEntries, miningEntries);
+   }
+
    [Command]
    public void Cmd_BugReport (string subject, string message) {
       // We need a player object
@@ -270,6 +288,13 @@ public class RPCManager : NetworkBehaviour {
 
       // Pass things along to the Bug Report Manager to handle
       BugReportManager.self.storeBugReportOnServer(_player, subject, message);
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveMapSummaries (NetworkConnection connection, MapSummary[] mapSummaryArray) {
+      // Pass this data along to the Random Maps panel to display
+      RandomMapsPanel panel = (RandomMapsPanel) PanelManager.self.get(Panel.Type.RandomMaps);
+      panel.showPanelUsingMapSummaries(mapSummaryArray);
    }
 
    [Command]
@@ -368,6 +393,42 @@ public class RPCManager : NetworkBehaviour {
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             _player.rpc.Target_ReceiveTradeHistory(_player.connectionToClient, tradeList.ToArray(), pageIndex, totalTradeCount);
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_RequestLeaderBoardsFromServer (LeaderBoardsManager.Period period) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      List<LeaderBoardInfo> farmingEntries;
+      List<LeaderBoardInfo> sailingEntries;
+      List<LeaderBoardInfo> exploringEntries;
+      List<LeaderBoardInfo> tradingEntries;
+      List<LeaderBoardInfo> craftingEntries;
+      List<LeaderBoardInfo> miningEntries;
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+
+         // Get the leader boards
+         LeaderBoardsManager.self.getLeaderBoards(period, out farmingEntries, out sailingEntries, out exploringEntries, out tradingEntries,
+            out craftingEntries, out miningEntries);
+
+         // Get the last calculation date of this period
+         DateTime lastCalculationDate = DB_Main.getLeaderBoardEndDate(period);
+
+         // Get the time left until recalculation
+         TimeSpan timeLeftUntilRecalculation = LeaderBoardsManager.self.getTimeLeftUntilRecalculation(period, lastCalculationDate);
+
+         // Back to the Unity thread to send the results back to the client
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            _player.rpc.Target_ReceiveLeaderBoards(_player.connectionToClient, period, timeLeftUntilRecalculation.TotalSeconds,
+               farmingEntries.ToArray(), sailingEntries.ToArray(), exploringEntries.ToArray(), tradingEntries.ToArray(),
+               craftingEntries.ToArray(), miningEntries.ToArray());
          });
       });
    }
@@ -713,6 +774,19 @@ public class RPCManager : NetworkBehaviour {
    [Command]
    public void Cmd_GetItemsForArea () {
       getItemsForArea();
+   }
+
+   [Command]
+   public void Cmd_GetSummaryOfGeneratedMaps () {
+      // Create a list to store the map data
+      List<MapSummary> list = new List<MapSummary>();
+
+      foreach (MapSummary mapSummary in ServerNetwork.self.getAllMapSummaries()) {
+         list.Add(mapSummary);
+      }
+
+      // Pass the data back to the client
+      Target_ReceiveMapSummaries(_player.connectionToClient, list.ToArray());
    }
 
    [Command]
@@ -1389,19 +1463,17 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_SpawnTentacle (Vector2 spawnPosition, uint horrorEntityID, int xVal, int yVal) {
+   public void Cmd_SpawnTentacle (Vector2 spawnPosition, uint horrorEntityID, int xVal, int yVal, int variety) {
       TentacleEntity bot = Instantiate(PrefabsManager.self.tentaclePrefab, spawnPosition, Quaternion.identity);
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
       bot.areaType = _player.areaType;
-      bot.npcType = NPC.Type.Tentacle;
-      bot.faction = NPC.getFaction(bot.npcType);
       bot.route = null;
       bot.autoMove = true;
-      bot.nationType = Nation.Type.Pirate;
       bot.entityName = "Tentacle";
       bot.locationSide = xVal;
       bot.locationSideTopBot = yVal;
+      bot.variety = (variety);
 
       Instance instance = InstanceManager.self.getInstance(_player.instanceId);
       HorrorEntity horror = instance.entities.Find(_ => _.netId == horrorEntityID).GetComponent<HorrorEntity>();
@@ -1420,9 +1492,6 @@ public class RPCManager : NetworkBehaviour {
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
       bot.areaType = _player.areaType;
-      bot.npcType = NPC.Type.Horror;
-      bot.faction = NPC.getFaction(bot.npcType);
-      bot.nationType = Nation.Type.Pirate;
       bot.entityName = "Horror";
       bot.tentaclesLeft = 8;
 
@@ -1432,17 +1501,62 @@ public class RPCManager : NetworkBehaviour {
       Instance instance = InstanceManager.self.getInstance(_player.instanceId);
       instance.entities.Add(bot);
 
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(.5f, -.5f), bot.netId, 1, -1);
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(-.5f, -.5f), bot.netId, -1, -1);
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(.5f, -.5f), bot.netId, 1, -1, 1);
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(-.5f, -.5f), bot.netId, -1, -1, 0);
 
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(.5f, .5f), bot.netId, 1, 1);
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(-.5f, .5f), bot.netId, -1, 1);
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(.5f, .5f), bot.netId, 1, 1, 1);
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(-.5f, .5f), bot.netId, -1, 1, 0);
 
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(-.75f, 0), bot.netId, -1, 0);
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(.75f, 0), bot.netId, 1, 0);
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(-.75f, 0), bot.netId, -1, 0, 1);
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(.75f, 0), bot.netId, 1, 0, 0);
 
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(0, -.75f), bot.netId, 0, -1);
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(0, .75f), bot.netId, 0, 1);
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(0, -.75f), bot.netId, 0, -1, 1);
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(0, .75f), bot.netId, 0, 1, 0);
+   }
+
+   [Command]
+   public void Cmd_SpawnWorm (Vector2 spawnPosition) {
+      WormEntity bot = Instantiate(PrefabsManager.self.wormPrefab, spawnPosition, Quaternion.identity);
+      bot.instanceId = _player.instanceId;
+      bot.facing = Util.randomEnum<Direction>();
+      bot.areaType = _player.areaType;
+      bot.entityName = "Worm";
+
+      // Spawn the bot on the Clients
+      NetworkServer.Spawn(bot.gameObject);
+
+      Instance instance = InstanceManager.self.getInstance(_player.instanceId);
+      instance.entities.Add(bot);
+   }
+
+   [Command]
+   public void Cmd_SpawnGiant (Vector2 spawnPosition) {
+      ReefGiantEntity bot = Instantiate(PrefabsManager.self.giantPrefab, spawnPosition, Quaternion.identity);
+      bot.instanceId = _player.instanceId;
+      bot.facing = Util.randomEnum<Direction>();
+      bot.areaType = _player.areaType;
+      bot.entityName = "Giant";
+
+      // Spawn the bot on the Clients
+      NetworkServer.Spawn(bot.gameObject);
+
+      Instance instance = InstanceManager.self.getInstance(_player.instanceId);
+      instance.entities.Add(bot);
+   }
+
+   [Command]
+   public void Cmd_SpawnFishman (Vector2 spawnPosition) {
+      FishmanEntity bot = Instantiate(PrefabsManager.self.fishmanPrefab, spawnPosition, Quaternion.identity);
+      bot.instanceId = _player.instanceId;
+      bot.facing = Util.randomEnum<Direction>();
+      bot.areaType = _player.areaType;
+      bot.entityName = "Fishman";
+
+      // Spawn the bot on the Clients
+      NetworkServer.Spawn(bot.gameObject);
+
+      Instance instance = InstanceManager.self.getInstance(_player.instanceId);
+      instance.entities.Add(bot);
    }
 
    [Command]

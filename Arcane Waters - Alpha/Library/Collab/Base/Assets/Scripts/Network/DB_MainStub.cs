@@ -22,6 +22,10 @@ public class DB_MainStub : MonoBehaviour {
       return new List<NPCRelationInfo>();
    }
 
+   public static List<Item> getRequiredIngredients (int usrId, List<CraftingIngredients.Type> itemList) {
+      return new List<Item>();
+   }
+
    public static void updateNPCRelation (int userId, int npcID, int relationLevel) {
 
    }
@@ -207,6 +211,26 @@ public class DB_MainStub : MonoBehaviour {
       return 0;
    }
 
+   public static int getItemID (int userId, int itmCategory, int itmType) {
+      return 0;
+   }
+
+   public static void createOrUpdateItemListCount (int userId, List<Item> itemList) {
+
+   }
+
+   public static void createOrUpdateItemCount (int userId, int itmId, Item baseItem) {
+
+   }
+
+   public static void updateItemQuantity (int userId, int itmId, int itmCount) { 
+
+   }
+
+   public static void decreaseQuantityOrDeleteItem (int userId, int itmId, int deductCount) {
+
+   }
+
    public static int getItemCount (int userId) {
       return 0;
    }
@@ -285,6 +309,22 @@ public class DB_MainStub : MonoBehaviour {
 
    public static List<ShipInfo> getShips (int userId, int page, int shipsPerPage) {
       return null;
+   }
+
+   public static void addToTradeHistory (int userId, TradeHistoryInfo tradeInfo) {
+
+   }
+
+   public static int getTradeHistoryCount (int userId) {
+      return 0;
+   }
+
+   public static List<TradeHistoryInfo> getTradeHistory (int userId, int page, int tradesPerPage) {
+      return null;
+   }
+
+   public static void setServer (string server) {
+      
    }
 
    /*

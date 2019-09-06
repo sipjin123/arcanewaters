@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
 
 #if IS_SERVER_BUILD
 using MySql.Data.MySqlClient;
@@ -1905,6 +1906,27 @@ public class DB_Main : DB_MainStub {
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
+
+      // Log the xp gain in the history table
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO job_history (usrId, jobType, metric, jobTime)" +
+            "VALUES (@usrId, @jobType, @metric, @jobTime)", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@jobType", (int) jobType);
+            cmd.Parameters.AddWithValue("@metric", XP);
+            cmd.Parameters.AddWithValue("@jobTime", DateTime.UtcNow);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
    }
 
    public static new void insertIntoJobs (int userId) {
@@ -2031,6 +2053,223 @@ public class DB_Main : DB_MainStub {
       }
 
       return tradeList;
+   } 
+
+   public static new void pruneJobHistory (DateTime untilDate) {
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "DELETE FROM job_history WHERE jobTime<@untilDate", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@untilDate", untilDate);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<LeaderBoardInfo> calculateLeaderBoard (Jobs.Type jobType, LeaderBoardsManager.Period period,
+      DateTime startDate, DateTime endDate) {
+
+      List<LeaderBoardInfo> list = new List<LeaderBoardInfo>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT usrId, SUM(metric) AS totalMetric " +
+            "FROM job_history WHERE jobType = @jobType AND jobTime >= @startDate AND jobTime <= @endDate " +
+            "GROUP BY usrId ORDER BY totalMetric DESC, jobTime DESC LIMIT 10", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@jobType", (int) jobType);
+            cmd.Parameters.AddWithValue("@startDate", startDate);
+            cmd.Parameters.AddWithValue("@endDate", endDate);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               int rank = 1;
+               while (dataReader.Read()) {
+                  int userId = DataUtil.getInt(dataReader, "usrId");
+                  int totalMetric = DataUtil.getInt(dataReader, "totalMetric");
+                  LeaderBoardInfo entry = new LeaderBoardInfo(rank, jobType, period, userId, totalMetric);
+                  list.Add(entry);
+                  rank++;
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return list;
+   }
+
+   public static new void deleteLeaderBoards (LeaderBoardsManager.Period period) {
+      
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "DELETE FROM leader_boards WHERE period=@period", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@period", (int) period);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void updateLeaderBoards (List<LeaderBoardInfo> entries) {
+      // Return if the list is empty
+      if (entries.Count <= 0) {
+         return;
+      }
+
+      // Insert all the rows with the same SQL connection
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO leader_boards (rank, jobType, period, usrId, score) " +
+            "VALUES (@rank, @jobType, @period, @usrId, @score)", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.Add(new MySqlParameter("@rank", MySqlDbType.Int32));
+            cmd.Parameters.Add(new MySqlParameter("@jobType", MySqlDbType.Int32));
+            cmd.Parameters.Add(new MySqlParameter("@period", MySqlDbType.Int32));
+            cmd.Parameters.Add(new MySqlParameter("@usrId", MySqlDbType.Int32));
+            cmd.Parameters.Add(new MySqlParameter("@score", MySqlDbType.Int32));
+
+            // Execute the query for each leader board entry
+            for (int i = 0; i < entries.Count; i++) {
+               cmd.Parameters["@rank"].Value = entries[i].rank;
+               cmd.Parameters["@jobType"].Value = (int) entries[i].jobType;
+               cmd.Parameters["@period"].Value = (int) entries[i].period;
+               cmd.Parameters["@usrId"].Value = entries[i].userId;
+               cmd.Parameters["@score"].Value = entries[i].score;
+
+               // Execute the command
+               cmd.ExecuteNonQuery();
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void updateLeaderBoardDates (LeaderBoardsManager.Period period, 
+      DateTime startDate, DateTime endDate) {
+      
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO leader_board_dates (period, startDate, endDate) VALUES (@period, @startDate, @endDate)" +
+            "ON DUPLICATE KEY UPDATE period=values(period), startDate=values(startDate), endDate=values(endDate)", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@period", (int) period);
+            cmd.Parameters.AddWithValue("@startDate", startDate);
+            cmd.Parameters.AddWithValue("@endDate", endDate);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new DateTime getLeaderBoardEndDate (LeaderBoardsManager.Period period) {
+
+      // If there are no leader boards, sets a long past date to force a recalculation
+      DateTime periodEndDate = DateTime.UtcNow.AddYears(-10);
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT endDate FROM leader_board_dates WHERE period=@period", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@period", (int) period);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  periodEndDate = DataUtil.getDateTime(dataReader, "endDate");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return periodEndDate;
+   }
+
+   public static new void getLeaderBoards (LeaderBoardsManager.Period period, out List<LeaderBoardInfo> farmingEntries,
+      out List<LeaderBoardInfo> sailingEntries, out List<LeaderBoardInfo> exploringEntries, out List<LeaderBoardInfo> tradingEntries,
+      out List<LeaderBoardInfo> craftingEntries, out List<LeaderBoardInfo> miningEntries) {
+
+      farmingEntries = new List<LeaderBoardInfo>();
+      sailingEntries = new List<LeaderBoardInfo>();
+      exploringEntries = new List<LeaderBoardInfo>();
+      tradingEntries = new List<LeaderBoardInfo>();
+      craftingEntries = new List<LeaderBoardInfo>();
+      miningEntries = new List<LeaderBoardInfo>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM leader_boards JOIN users USING (usrID) " +
+            "WHERE leader_boards.period=@period ORDER BY leader_boards.jobType, leader_boards.rank", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@period", (int) period);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  LeaderBoardInfo entry = new LeaderBoardInfo(dataReader);
+
+                  // Place the entry in its corresponding list
+                  switch (entry.jobType) {
+                     case Jobs.Type.Farmer:
+                        farmingEntries.Add(entry);
+                        break;
+                     case Jobs.Type.Sailor:
+                        sailingEntries.Add(entry);
+                        break;
+                     case Jobs.Type.Explorer:
+                        exploringEntries.Add(entry);
+                        break;
+                     case Jobs.Type.Trader:
+                        tradingEntries.Add(entry);
+                        break;
+                     case Jobs.Type.Crafter:
+                        craftingEntries.Add(entry);
+                        break;
+                     case Jobs.Type.Miner:
+                        miningEntries.Add(entry);
+                        break;
+                     default:
+                        break;
+                  }
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
    }
 
    public static new void readTest () {

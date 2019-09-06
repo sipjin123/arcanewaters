@@ -272,6 +272,13 @@ public class RPCManager : NetworkBehaviour {
       BugReportManager.self.storeBugReportOnServer(_player, subject, message);
    }
 
+   [TargetRpc]
+   public void Target_ReceiveMapSummaries (NetworkConnection connection, MapSummary[] mapSummaryArray) {
+      // Pass this data along to the Random Maps panel to display
+      RandomMapsPanel panel = (RandomMapsPanel) PanelManager.self.get(Panel.Type.RandomMaps);
+      panel.showPanelUsingMapSummaries(mapSummaryArray);
+   }
+
    [Command]
    public void Cmd_SendChat (string message, ChatInfo.Type chatType) {
       // Create a Chat Info for this message
@@ -713,6 +720,19 @@ public class RPCManager : NetworkBehaviour {
    [Command]
    public void Cmd_GetItemsForArea () {
       getItemsForArea();
+   }
+
+   [Command]
+   public void Cmd_GetSummaryOfGeneratedMaps () {
+      // Create a list to store the map data
+      List<MapSummary> list = new List<MapSummary>();
+
+      foreach (MapSummary mapSummary in ServerNetwork.self.getAllMapSummaries()) {
+         list.Add(mapSummary);
+      }
+
+      // Pass the data back to the client
+      Target_ReceiveMapSummaries(_player.connectionToClient, list.ToArray());
    }
 
    [Command]
@@ -1386,6 +1406,63 @@ public class RPCManager : NetworkBehaviour {
 
       // Spawn the bot on the Clients
       NetworkServer.Spawn(bot.gameObject);
+   }
+
+   [Command]
+   public void Cmd_SpawnTentacle (Vector2 spawnPosition, uint horrorEntityID, int xVal, int yVal) {
+      TentacleEntity bot = Instantiate(PrefabsManager.self.tentaclePrefab, spawnPosition, Quaternion.identity);
+      bot.instanceId = _player.instanceId;
+      bot.facing = Util.randomEnum<Direction>();
+      bot.areaType = _player.areaType;
+      bot.npcType = NPC.Type.Tentacle;
+      bot.faction = NPC.getFaction(bot.npcType);
+      bot.route = null;
+      bot.autoMove = true;
+      bot.nationType = Nation.Type.Pirate;
+      bot.entityName = "Tentacle";
+      bot.locationSide = xVal;
+      bot.locationSideTopBot = yVal;
+
+      Instance instance = InstanceManager.self.getInstance(_player.instanceId);
+      HorrorEntity horror = instance.entities.Find(_ => _.netId == horrorEntityID).GetComponent<HorrorEntity>();
+      bot.horrorEntity = horror;
+      horror.tentacleList.Add(bot);
+
+      instance.entities.Add(bot);
+
+      // Spawn the bot on the Clients
+      NetworkServer.Spawn(bot.gameObject);
+   }
+
+   [Command]
+   public void Cmd_SpawnHorror (Vector2 spawnPosition) {
+      HorrorEntity bot = Instantiate(PrefabsManager.self.horrorPrefab, spawnPosition, Quaternion.identity);
+      bot.instanceId = _player.instanceId;
+      bot.facing = Util.randomEnum<Direction>();
+      bot.areaType = _player.areaType;
+      bot.npcType = NPC.Type.Horror;
+      bot.faction = NPC.getFaction(bot.npcType);
+      bot.nationType = Nation.Type.Pirate;
+      bot.entityName = "Horror";
+      bot.tentaclesLeft = 8;
+
+      // Spawn the bot on the Clients
+      NetworkServer.Spawn(bot.gameObject);
+
+      Instance instance = InstanceManager.self.getInstance(_player.instanceId);
+      instance.entities.Add(bot);
+
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(.5f, -.5f), bot.netId, 1, -1);
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(-.5f, -.5f), bot.netId, -1, -1);
+
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(.5f, .5f), bot.netId, 1, 1);
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(-.5f, .5f), bot.netId, -1, 1);
+
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(-.75f, 0), bot.netId, -1, 0);
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(.75f, 0), bot.netId, 1, 0);
+
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(0, -.75f), bot.netId, 0, -1);
+      Cmd_SpawnTentacle(spawnPosition + new Vector2(0, .75f), bot.netId, 0, 1);
    }
 
    [Command]

@@ -323,6 +323,43 @@ public class DB_MainStub : MonoBehaviour {
       return null;
    }
 
+   public static void pruneJobHistory (DateTime untilDate) {
+   }
+
+   public static List<LeaderBoardInfo> calculateLeaderBoard (Jobs.Type jobType, LeaderBoardsManager.Period period,
+      DateTime startDate, DateTime endDate) {
+      return null;
+   }
+
+   public static void deleteLeaderBoards (LeaderBoardsManager.Period period) {
+   }
+
+   public static void updateLeaderBoards (List<LeaderBoardInfo> entries) {
+   }
+
+   public static void updateLeaderBoardDates (LeaderBoardsManager.Period period,
+      DateTime startDate, DateTime endDate) {
+   }
+
+   public static DateTime getLeaderBoardEndDate (LeaderBoardsManager.Period period) {
+      return DateTime.UtcNow;
+   }
+
+   public static void getLeaderBoards (LeaderBoardsManager.Period period, out List<LeaderBoardInfo> farmingEntries,
+      out List<LeaderBoardInfo> sailingEntries, out List<LeaderBoardInfo> exploringEntries, out List<LeaderBoardInfo> tradingEntries,
+      out List<LeaderBoardInfo> craftingEntries, out List<LeaderBoardInfo> miningEntries) {
+      farmingEntries = null;
+      sailingEntries = null;
+      exploringEntries = null;
+      tradingEntries = null;
+      craftingEntries = null;
+      miningEntries = null;
+   }
+
+   public static void setServer (string server) {
+      
+   }
+
    /*
 
    public static void refillSupplies (int userId) {
