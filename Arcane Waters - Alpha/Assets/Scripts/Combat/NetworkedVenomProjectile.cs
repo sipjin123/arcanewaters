@@ -87,7 +87,8 @@ public class NetworkedVenomProjectile : MonoBehaviour
          hitEntity.Rpc_ShowExplosion(circleCollider.transform.position, damage, Attack.Type.Venom);
 
          ExplosionManager.createSlimeExplosion(circleCollider.transform.position);
-         Instantiate(PrefabsManager.self.venomCollisionPrefab, hitEntity.transform.position, Quaternion.identity);
+
+         EffectManager.self.create(Effect.Type.Slime_Collision, hitEntity.transform.position);
          SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position);
       }
 

@@ -39,6 +39,10 @@ public class ExplosionManager : ClientMonoBehaviour {
    }
 
    public static void createRockExplosion (Vector2 position, int particleCount = 12, float minForce = 60f, float maxForce = 90f) {
+      if (Application.isBatchMode) {
+         return;
+      }
+
       // Create a bunch of particles from the prefab
       for (int i = 0; i < particleCount; i++) {
          ExplosionParticle particle = Instantiate(self.rockExplosionParticlePrefab, position, Quaternion.identity);
@@ -50,6 +54,10 @@ public class ExplosionManager : ClientMonoBehaviour {
    }
 
    public static void createSlimeExplosion (Vector2 position, int particleCount = 12, float minForce = 60f, float maxForce = 90f) {
+      if (Application.isBatchMode) {
+         return;
+      }
+
       // Create a bunch of particles from the prefab
       for (int i = 0; i < particleCount; i++) {
          ExplosionParticle particle = Instantiate(self.slimeExplosionParticlePrefab, position, Quaternion.identity);

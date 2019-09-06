@@ -32,11 +32,10 @@ public class BoulderProjectile : MonoBehaviour
    // Our boulder projectile sprite
    public GameObject boulderProjectile;
 
-   #endregion
+   // How high the projectile should arch upwards
+   public static float ARCH_HEIGHT = .20f;
 
-   public void setDirection (Direction direction) {
-      transform.LookAt(endPos);
-   }
+   #endregion
 
    void Update () {
       // If a target object has been specified, update our end position
@@ -48,7 +47,12 @@ public class BoulderProjectile : MonoBehaviour
       float totalLifetime = endTime - startTime;
       float lerpTime = (TimeManager.self.getSyncedTime() - startTime) / totalLifetime;
       Util.setXY(this.transform, Vector2.Lerp(startPos, endPos, lerpTime));
-      
+
+      // Adjusts the height of the projectile sprite based in an arch
+      float angleInDegrees = lerpTime * 180f;
+      float ballHeight = Util.getSinOfAngle(angleInDegrees) * ARCH_HEIGHT;
+      Util.setLocalY(boulderProjectile.transform, ballHeight);
+
       // If we've been alive long enough, destroy ourself
       if (TimeManager.self.getSyncedTime() > this.endTime) {
          bool hitEnemy = false;

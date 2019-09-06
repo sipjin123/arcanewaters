@@ -47,7 +47,7 @@ public class PlayerShipEntity : ShipEntity {
 
       // Right-click to attack in a circle
       if (Input.GetMouseButtonUp(1) && !isDead() && SeaManager.selectedAttackType != Attack.Type.Air) {
-         Cmd_FireAtSpot(Util.getMousePos(), SeaManager.selectedAttackType, 0);
+         Cmd_FireAtSpot(Util.getMousePos(), SeaManager.selectedAttackType, 0, 0);
       }
 
       // Space to fire at the selected ship

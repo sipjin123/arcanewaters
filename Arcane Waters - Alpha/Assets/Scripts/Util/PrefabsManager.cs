@@ -58,15 +58,6 @@ public class PrefabsManager : MonoBehaviour {
    // The Prefab we use for creating venom residue
    public GameObject venomResiduePrefab;
 
-   // The Prefab we use for creating venom collision
-   public GameObject venomCollisionPrefab;
-
-   // The Prefab we use for creating boulder collision
-   public GameObject boulderCollisionPrefab;
-
-   // The Prefab we use for creating electric collision
-   public GameObject electricCollisionPrefab;
-
    // The Prefab we use for treasureChest spawning
    public GameObject treasureChestPrefab;
 

@@ -150,7 +150,7 @@ public class ReefGiantEntity : SeaMonsterEntity
 
          // If the requested spot is not in the allowed area, reject the request
          if (leftAttackBox.OverlapPoint(spot) || rightAttackBox.OverlapPoint(spot)) {
-            launchProjectile(spot, attacker, Attack.Type.Boulder, .1f);
+            launchProjectile(spot, attacker, Attack.Type.Boulder, .2f, .4f);
             return;
          }
       }

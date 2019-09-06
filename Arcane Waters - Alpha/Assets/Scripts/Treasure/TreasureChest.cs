@@ -50,7 +50,7 @@ public class TreasureChest : NetworkBehaviour {
    public GameObject arrowContainer;
 
    // Determines if this chest is a land or sea chest
-   public bool ifSeaChest;
+   public bool isSeaChest;
 
    #endregion
 
@@ -74,7 +74,7 @@ public class TreasureChest : NetworkBehaviour {
       // Activate certain things when the global player is nearby
       arrowContainer.SetActive(_isGlobalPlayerNearby && !hasBeenOpened());
 
-      if (!ifSeaChest) {
+      if (!isSeaChest) {
          // We only enable the box collider for clients in the relevant instance
          boxCollider.enabled = (Global.player != null && Global.player.instanceId == this.instanceId);
       } else {

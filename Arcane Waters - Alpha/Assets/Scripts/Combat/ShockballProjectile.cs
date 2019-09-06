@@ -69,7 +69,7 @@ public class ShockballProjectile : MonoBehaviour
                      // If we hit a ship, show some flying particles
                      if (entity is ShipEntity && attackType != Attack.Type.Ice) {
                         ExplosionManager.createExplosion(entity.transform.position);
-                        Instantiate(PrefabsManager.self.electricCollisionPrefab, entity.transform.position, Quaternion.identity);
+                        EffectManager.self.create(Effect.Type.Shock_Collision, entity.transform.position);
                         SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position);
                      } 
 

@@ -163,7 +163,7 @@ public class BotShipEntity : ShipEntity {
 
          // If the requested spot is not in the allowed area, reject the request
          if (leftAttackBox.OverlapPoint(spot) || rightAttackBox.OverlapPoint(spot)) {
-            fireAtSpot(spot, Attack.Type.Cannon, 0);
+            fireAtSpot(spot, Attack.Type.Cannon, 0, 0);
 
             return;
          }
