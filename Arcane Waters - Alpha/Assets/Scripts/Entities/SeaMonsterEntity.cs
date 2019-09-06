@@ -58,12 +58,12 @@ public class SeaMonsterEntity : SeaEntity
          spawnChest();
       }
 
-      if (Time.time > _attackAnimateTime && !_hasTriggered) {
+      if (Util.netTime() > _attackStartAnimateTime && !_hasAttackAnimTriggered) {
          animator.SetBool("attacking", true);
-         _hasTriggered = true;
+         _hasAttackAnimTriggered = true;
          _attackEndAnimateTime = Time.time + .2f;
       } else {
-         if (Time.time > _attackEndAnimateTime) {
+         if (Util.netTime() > _attackEndAnimateTime) {
             animator.SetBool("attacking", false);
          }
       }
@@ -86,7 +86,7 @@ public class SeaMonsterEntity : SeaEntity
    }
 
    [Server]
-   protected void launchProjectile (Vector2 spot, SeaEntity attacker, Attack.Type attackType, float attackDelay) {
+   protected void launchProjectile (Vector2 spot, SeaEntity attacker, Attack.Type attackType, float attackDelay, float launchDelay) {
       if (getVelocity().magnitude > .1f) {
          return;
       }
@@ -99,16 +99,10 @@ public class SeaMonsterEntity : SeaEntity
          targetLoc = spot;
       }
 
-      fireAtSpot(targetLoc, attackType, attackDelay);
+      fireAtSpot(targetLoc, attackType, attackDelay, launchDelay);
 
       targetEntity = attacker;
       isEngaging = true;
-   }
-
-   [ClientRpc]
-   public void Rpc_registerAttackTime (float delayTime) {
-      _attackAnimateTime = Time.time + delayTime;
-      _hasTriggered = false;
    }
 
    protected bool canMoveTowardEnemy () {
@@ -203,15 +197,6 @@ public class SeaMonsterEntity : SeaEntity
 
    // The radius that defines how far the monster will chase before it retreats
    protected float _territoryRadius = 4.5f;
-
-   // The time expected to play the animation
-   protected float _attackAnimateTime = 0;
-
-   // The time expected to reset the animation
-   protected float _attackEndAnimateTime = 0;
-
-   // A flag to check if the attack anim has been triggered
-   protected bool _hasTriggered = false;
 
 #pragma warning disable 1234
    // The radius that defines how near the player ships are before this unit chases it
