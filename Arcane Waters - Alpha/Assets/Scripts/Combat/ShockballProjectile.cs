@@ -70,6 +70,7 @@ public class ShockballProjectile : MonoBehaviour
                      if (entity is ShipEntity && attackType != Attack.Type.Ice) {
                         ExplosionManager.createExplosion(entity.transform.position);
                         EffectManager.self.create(Effect.Type.Shock_Collision, entity.transform.position);
+
                         SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position);
                      } 
 

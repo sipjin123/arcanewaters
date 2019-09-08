@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using DigitalRuby.LightningBolt;
 using Mirror;
 using System;
 
@@ -117,6 +118,52 @@ public class SeaEntity : NetEntity {
       attackCircle.startTime = startTime;
       attackCircle.endTime = endTime;
       attackCircle.hasBeenPlaced = true;
+   }
+
+   [Server]
+   public void chainLightning (Vector2 sourcePos) {
+      Collider2D[] hits = new Collider2D[16];
+      Physics2D.OverlapCircleNonAlloc(sourcePos, 1.20f, hits);
+      Dictionary<NetEntity, Transform> collidedEntities = new Dictionary<NetEntity, Transform>();
+      List<Vector2> targetList = new List<Vector2>();
+
+      int i = 0;
+      while (i < hits.Length) {
+         try {
+            if (hits[i].GetComponent<SeaEntity>() != null) {
+               if (!collidedEntities.ContainsKey(hits[i].GetComponent<SeaEntity>())) {
+                  collidedEntities.Add(hits[i].GetComponent<SeaEntity>(), hits[i].transform);
+
+                  int damage = (int) (this.damage * Attack.getDamageModifier(Attack.Type.Shock_Ball));
+
+                  SeaEntity entity = hits[i].GetComponent<SeaEntity>();
+                  entity.currentHealth -= damage;
+                  entity.Rpc_ShowDamageText(damage, userId, Attack.Type.Shock_Ball);
+                  entity.Rpc_ShowExplosion(hits[i].transform.position, 0, Attack.Type.None);
+
+                  targetList.Add(hits[i].transform.position);
+               }
+            }
+         } catch {
+         }
+         i++;
+      }
+
+      Rpc_ChainLightning(targetList.ToArray(), sourcePos);
+   }
+
+   [ClientRpc]
+   private void Rpc_ChainLightning (Vector2[] targets, Vector2 sourcePos) {
+      GameObject shockResidue = Instantiate(PrefabsManager.self.lightningResiduePrefab);
+      shockResidue.transform.position = sourcePos;
+
+      foreach (Vector2 loc in targets) {
+         GameObject lightning = Instantiate(PrefabsManager.self.lightningChainPrefab, shockResidue.transform);
+         lightning.transform.position = transform.position;
+         lightning.GetComponent<LineRenderer>().enabled = true;
+         lightning.GetComponent<LightningBoltScript>().StartObject.transform.position = sourcePos;
+         lightning.GetComponent<LightningBoltScript>().EndObject.transform.position = loc;
+      }
    }
 
    [ClientRpc]
@@ -465,6 +512,10 @@ public class SeaEntity : NetEntity {
                      entity.currentHealth -= damage;
                      entity.Rpc_ShowDamageText(damage, attacker.userId, attackType);
                      entity.Rpc_ShowExplosion(entity.transform.position, 0, Attack.Type.None);
+
+                     if (attackType == Attack.Type.Shock_Ball) {
+                        chainLightning(entity.transform.position);
+                     }
                   } else {
                      entity.Rpc_ShowExplosion(entity.transform.position, 0, Attack.Type.None);
                   }

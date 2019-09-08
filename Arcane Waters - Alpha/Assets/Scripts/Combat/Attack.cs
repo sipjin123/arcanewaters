@@ -24,7 +24,7 @@ public class Attack : MonoBehaviour {
          case Type.Boulder:
             return 1.10f;
          case Type.Shock_Ball:
-            return 1.10f;
+            return .10f;
          default:
             return 1.0f;
       }

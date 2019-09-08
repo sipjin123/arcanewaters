@@ -40,6 +40,12 @@ public class PrefabsManager : MonoBehaviour {
    // The Prefab we use for creating venom sticky residue
    public GameObject venomStickyPrefab;
 
+   // The Prefab we use for creating lightning residue
+   public GameObject lightningResiduePrefab;
+
+   // The Prefab we use for creating lightning chain
+   public GameObject lightningChainPrefab;
+
    // The Prefab we use for creating shockball projectiles
    public ShockballProjectile shockballPrefab;
 

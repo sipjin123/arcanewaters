@@ -107,6 +107,7 @@ public class NetworkedVenomProjectile : MonoBehaviour
          Instantiate(PrefabsManager.self.cannonSmokePrefab, location, Quaternion.identity);
          SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position);
       } else {
+         location.z = 0;
          GameObject venomResidue = Instantiate(PrefabsManager.self.venomResiduePrefab, location, Quaternion.identity);
          venomResidue.GetComponent<VenomResidue>().creatorUserId = this.creatorUserId;
          ExplosionManager.createSlimeExplosion(circleCollider.transform.position);
