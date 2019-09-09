@@ -49,8 +49,8 @@ public class WormEntity : SeaMonsterEntity
       if (Time.time - _lastMoveChangeTime < MOVE_CHANGE_INTERVAL) {
          return;
       }
-      
-      if (targetEntity != null) {
+
+      if (getVelocity().magnitude < .05f && targetEntity != null) {
          float distanceGap = Vector2.Distance(targetEntity.transform.position, transform.position);
          if (distanceGap < 2) {
             withinProjectileDistance = true;
@@ -64,15 +64,16 @@ public class WormEntity : SeaMonsterEntity
             waypoint = null;
          }
 
-         if (isEngaging && withinProjectileDistance && getVelocity().magnitude < .1f) {
+         if (isEngaging) {
             this.facing = (Direction) lockToTarget(targetEntity);
          }
       } else {
-         if (getVelocity().magnitude > .1f) {
+         if (getVelocity().magnitude > .05f) {
             // Update our facing direction
             lookAtTarget();
          }
       }
+
 
       // If we've been assigned a Route, get our waypoint from that
       if (route != null) {

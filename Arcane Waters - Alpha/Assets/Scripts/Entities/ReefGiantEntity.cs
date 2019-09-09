@@ -50,7 +50,7 @@ public class ReefGiantEntity : SeaMonsterEntity
          return;
       }
 
-      if (targetEntity != null) {
+      if (getVelocity().magnitude < .05f && targetEntity != null) {
          float distanceGap = Vector2.Distance(targetEntity.transform.position, transform.position);
          if (distanceGap < 2) {
             withinProjectileDistance = true;
@@ -64,11 +64,11 @@ public class ReefGiantEntity : SeaMonsterEntity
             waypoint = null;
          }
 
-         if (isEngaging && withinProjectileDistance && getVelocity().magnitude < .1f) {
+         if (isEngaging) {
             this.facing = (Direction) lockToTarget(targetEntity);
          }
       } else {
-         if (getVelocity().magnitude > .1f) {
+         if (getVelocity().magnitude > .05f) {
             // Update our facing direction
             lookAtTarget();
          }

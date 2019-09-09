@@ -63,7 +63,7 @@ public class SeaMonsterEntity : SeaEntity
          _hasAttackAnimTriggered = true;
          _attackEndAnimateTime = Time.time + .2f;
       } else {
-         if (Util.netTime() > _attackEndAnimateTime) {
+         if (Util.netTime() > _attackEndAnimateTime || getVelocity().magnitude > .05f) {
             animator.SetBool("attacking", false);
          }
       }
@@ -77,19 +77,18 @@ public class SeaMonsterEntity : SeaEntity
 
    [Server]
    protected void lookAtTarget () {
-      if (!isEngaging || (isEngaging && !withinProjectileDistance) || targetEntity == null) {
-         Direction newFacingDirection = DirectionUtil.getDirectionForVelocity(_body.velocity);
-         if (newFacingDirection != this.facing) {
-            this.facing = newFacingDirection;
-         }
+      Direction newFacingDirection = DirectionUtil.getDirectionForVelocity(_body.velocity);
+      if (newFacingDirection != this.facing) {
+         this.facing = newFacingDirection;
       }
    }
 
    [Server]
    protected void launchProjectile (Vector2 spot, SeaEntity attacker, Attack.Type attackType, float attackDelay, float launchDelay) {
-      if (getVelocity().magnitude > .1f) {
+      if (getVelocity().magnitude > .05f) {
          return;
       }
+      this.facing = (Direction) lockToTarget(attacker);
 
       int accuracy = Random.Range(1, 4);
       Vector2 targetLoc = new Vector2(0, 0);

@@ -122,15 +122,15 @@ public class SeaEntity : NetEntity {
 
    [Server]
    public void chainLightning (Vector2 sourcePos) {
-      Collider2D[] hits = new Collider2D[16];
+      Collider2D[] hits = new Collider2D[32];
       Physics2D.OverlapCircleNonAlloc(sourcePos, 1.20f, hits);
       Dictionary<NetEntity, Transform> collidedEntities = new Dictionary<NetEntity, Transform>();
-      List<Vector2> targetList = new List<Vector2>();
+      List<Vector2> locationList = new List<Vector2>();
 
       int i = 0;
       while (i < hits.Length) {
          try {
-            if (hits[i].GetComponent<SeaEntity>() != null) {
+            if (hits[i].GetComponent<PlayerShipEntity>() != null) {
                if (!collidedEntities.ContainsKey(hits[i].GetComponent<SeaEntity>())) {
                   collidedEntities.Add(hits[i].GetComponent<SeaEntity>(), hits[i].transform);
 
@@ -141,7 +141,7 @@ public class SeaEntity : NetEntity {
                   entity.Rpc_ShowDamageText(damage, userId, Attack.Type.Shock_Ball);
                   entity.Rpc_ShowExplosion(hits[i].transform.position, 0, Attack.Type.None);
 
-                  targetList.Add(hits[i].transform.position);
+                  locationList.Add(hits[i].transform.position);
                }
             }
          } catch {
@@ -149,20 +149,22 @@ public class SeaEntity : NetEntity {
          i++;
       }
 
-      Rpc_ChainLightning(targetList.ToArray(), sourcePos);
+      Rpc_ChainLightning(locationList.ToArray(), sourcePos);
    }
 
    [ClientRpc]
-   private void Rpc_ChainLightning (Vector2[] targets, Vector2 sourcePos) {
+   private void Rpc_ChainLightning (Vector2[] targetLocations, Vector2 sourcePos) {
       GameObject shockResidue = Instantiate(PrefabsManager.self.lightningResiduePrefab);
       shockResidue.transform.position = sourcePos;
+      EffectManager.self.create(Effect.Type.Shock_Collision, sourcePos);
 
-      foreach (Vector2 loc in targets) {
+      foreach (Vector2 loc in targetLocations) {
          GameObject lightning = Instantiate(PrefabsManager.self.lightningChainPrefab, shockResidue.transform);
          lightning.transform.position = transform.position;
          lightning.GetComponent<LineRenderer>().enabled = true;
          lightning.GetComponent<LightningBoltScript>().StartObject.transform.position = sourcePos;
          lightning.GetComponent<LightningBoltScript>().EndObject.transform.position = loc;
+         EffectManager.self.create(Effect.Type.Shock_Collision, loc);
       }
    }
 
