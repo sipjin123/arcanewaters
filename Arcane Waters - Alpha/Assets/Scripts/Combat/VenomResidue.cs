@@ -25,10 +25,10 @@ public class VenomResidue : MonoBehaviour {
    private void damageEnemies () {
       if (NetworkServer.active) {
          if (targetEntities.Count > 0) {
-            for (int i = 0; i < targetEntities.Count; i++) {
-               targetEntities[i].currentHealth -= damagePerSec;
-               targetEntities[i].Rpc_ShowExplosion(targetEntities[i].transform.position, damagePerSec, Attack.Type.Venom);
-               targetEntities[i].Rpc_AttachEffect(damagePerSec, Attack.Type.Venom);
+            foreach (SeaEntity seaEntity in targetEntities) {
+               seaEntity.currentHealth -= damagePerSec;
+               seaEntity.Rpc_ShowExplosion(seaEntity.transform.position, damagePerSec, Attack.Type.Venom);
+               seaEntity.Rpc_AttachEffect(damagePerSec, Attack.Type.Venom);
             }
          }
       }

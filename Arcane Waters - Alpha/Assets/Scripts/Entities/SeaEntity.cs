@@ -436,7 +436,7 @@ public class SeaEntity : NetEntity {
 
       if (attackType != Attack.Type.Venom) {
          // Have the server check for collisions after the AOE projectile reaches the target
-         StartCoroutine(CO_CheckCircleForCollisions(this, (launchDelay) + delay, spot, attackType, false));
+         StartCoroutine(CO_CheckCircleForCollisions(this, launchDelay + delay, spot, attackType, false));
       }
 
       // Make note on the clients that the ship just attacked
@@ -451,7 +451,7 @@ public class SeaEntity : NetEntity {
          attackType = attackType,
          spawnLocation = spawnPosition,
          targetLocation = targetposition,
-         impactDelay = impactDelay
+         impactTimestamp = impactDelay
       };
 
       Rpc_RegisterAttackTime(animationTime);
@@ -465,7 +465,7 @@ public class SeaEntity : NetEntity {
       if (NetworkServer.active && _projectileSched.Count > 0) {
          foreach(ProjectileSchedule sched in _projectileSched) { 
             if (!sched.dispose && Util.netTime() > sched.projectileLaunchTime) {
-               serverFireProjectile(sched.targetLocation, sched.attackType, sched.spawnLocation, sched.impactDelay);
+               serverFireProjectile(sched.targetLocation, sched.attackType, sched.spawnLocation, sched.impactTimestamp);
                sched.dispose = true;
             }
          }

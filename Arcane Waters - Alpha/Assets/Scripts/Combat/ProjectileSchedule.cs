@@ -24,7 +24,7 @@ public class ProjectileSchedule
    public float attackAnimationTime;
 
    // The estimated time the projectile will collide its destination
-   public float impactDelay;
+   public float impactTimestamp;
 
    // A flag to determine if the schedule should be disposed
    public bool dispose;
