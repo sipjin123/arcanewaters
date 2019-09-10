@@ -128,50 +128,56 @@ public class SeaEntity : NetEntity {
    }
 
    [Server]
-   public void chainLightning (Vector2 sourcePos) {
-      Collider2D[] hits = new Collider2D[32];
-      Physics2D.OverlapCircleNonAlloc(sourcePos, 1.20f, hits);
+   public void chainLightning (Vector2 sourcePos, int primaryTargetID) {
+      Collider2D[] hits = Physics2D.OverlapCircleAll(sourcePos, 1);
       Dictionary<NetEntity, Transform> collidedEntities = new Dictionary<NetEntity, Transform>();
-      List<Vector2> locationList = new List<Vector2>();
+      List<int> targetIDList = new List<int>();
 
-      int i = 0;
-      while (i < hits.Length) {
-         try {
-            if (hits[i].GetComponent<PlayerShipEntity>() != null) {
-               if (!collidedEntities.ContainsKey(hits[i].GetComponent<SeaEntity>())) {
-                  collidedEntities.Add(hits[i].GetComponent<SeaEntity>(), hits[i].transform);
-
+      foreach (Collider2D collidedEntity in hits) {
+         if (collidedEntity != null) {
+            if (collidedEntity.GetComponent<PlayerShipEntity>() != null) {
+               if (!collidedEntities.ContainsKey(collidedEntity.GetComponent<SeaEntity>())) {
                   int damage = (int) (this.damage * Attack.getDamageModifier(Attack.Type.Shock_Ball));
 
-                  SeaEntity entity = hits[i].GetComponent<SeaEntity>();
+                  SeaEntity entity = collidedEntity.GetComponent<SeaEntity>();
                   entity.currentHealth -= damage;
                   entity.Rpc_ShowDamageText(damage, userId, Attack.Type.Shock_Ball);
-                  entity.Rpc_ShowExplosion(hits[i].transform.position, 0, Attack.Type.None);
+                  entity.Rpc_ShowExplosion(collidedEntity.transform.position, 0, Attack.Type.None);
 
-                  locationList.Add(hits[i].transform.position);
+                  collidedEntities.Add(entity, collidedEntity.transform);
+                  targetIDList.Add(entity.userId);
                }
             }
-         } catch {
          }
-         i++;
       }
 
-      Rpc_ChainLightning(locationList.ToArray(), sourcePos);
+      Rpc_ChainLightning(targetIDList.ToArray(), primaryTargetID, sourcePos);
    }
 
    [ClientRpc]
-   private void Rpc_ChainLightning (Vector2[] targetLocations, Vector2 sourcePos) {
+   private void Rpc_ChainLightning (int[] targetIDList, int primaryTargetID, Vector2 sourcePos) {
+      SeaEntity parentEntity = SeaManager.self.getEntity(primaryTargetID);
+
       GameObject shockResidue = Instantiate(PrefabsManager.self.lightningResiduePrefab);
-      shockResidue.transform.position = sourcePos;
+      shockResidue.transform.SetParent(parentEntity.spritesContainer.transform, false);
       EffectManager.self.create(Effect.Type.Shock_Collision, sourcePos);
 
-      foreach (Vector2 loc in targetLocations) {
-         GameObject lightning = Instantiate(PrefabsManager.self.lightningChainPrefab, shockResidue.transform);
-         lightning.transform.position = transform.position;
+      foreach (int attackerID in targetIDList) {
+         SeaEntity seaEntity = SeaManager.self.getEntity(attackerID);
+         LightningBoltScript lightning = Instantiate(PrefabsManager.self.lightningChainPrefab);
+         lightning.transform.SetParent(shockResidue.transform, false);
+
+         lightning.StartObject.transform.position = lightning.transform.position;
+
+         lightning.EndObject.transform.position = seaEntity.spritesContainer.transform.position;
+         lightning.EndObject.transform.SetParent(seaEntity.spritesContainer.transform);
+
          lightning.GetComponent<LineRenderer>().enabled = true;
-         lightning.GetComponent<LightningBoltScript>().StartObject.transform.position = sourcePos;
-         lightning.GetComponent<LightningBoltScript>().EndObject.transform.position = loc;
-         EffectManager.self.create(Effect.Type.Shock_Collision, loc);
+
+         GameObject subShockResidue = Instantiate(PrefabsManager.self.lightningResiduePrefab);
+         subShockResidue.transform.SetParent(seaEntity.spritesContainer.transform, false);
+
+         EffectManager.self.create(Effect.Type.Shock_Collision, seaEntity.transform.position);
       }
    }
 
@@ -501,7 +507,7 @@ public class SeaEntity : NetEntity {
                      entity.Rpc_ShowExplosion(entity.transform.position, 0, Attack.Type.None);
 
                      if (attackType == Attack.Type.Shock_Ball) {
-                        chainLightning(entity.transform.position);
+                        chainLightning(entity.transform.position, entity.userId);
                      }
                   } else {
                      entity.Rpc_ShowExplosion(entity.transform.position, 0, Attack.Type.None);
@@ -619,7 +625,7 @@ public class SeaEntity : NetEntity {
    protected List<ProjectileSchedule> _projectileSched = new List<ProjectileSchedule>();
 
    // The time expected to play the animation
-   protected float _attackStartAnimateTime = 0;
+   protected float _attackStartAnimateTime = 100;
 
    // The time expected to reset the animation
    protected float _attackEndAnimateTime = 0;

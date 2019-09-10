@@ -39,6 +39,9 @@ public class SeaMonsterEntity : SeaEntity
    // The max gap distance between target and this unity
    public const float DISTANCE_GAP = 3;
 
+   // The minimum magnitude to determine the movement of the unit
+   public const float MOVEMENT_MAGNITUDE = .05f;
+
    // Seamonster Animation
    public enum SeaMonsterAnimState
    {
@@ -58,7 +61,9 @@ public class SeaMonsterEntity : SeaEntity
       if (hasDied == false && isDead()) {
          hasDied = true;
          animator.Play("Die");
-         spawnChest();
+         if (GetComponent<TentacleEntity>() == null) {
+            spawnChest();
+         }
       }
 
       if (Util.netTime() > _attackStartAnimateTime && !_hasAttackAnimTriggered) {
@@ -66,7 +71,7 @@ public class SeaMonsterEntity : SeaEntity
          _hasAttackAnimTriggered = true;
          _attackEndAnimateTime = Time.time + .2f;
       } else {
-         if (Util.netTime() > _attackEndAnimateTime || getVelocity().magnitude > .05f) {
+         if (animator.GetBool("attacking") == true && (Util.netTime() > _attackEndAnimateTime || getVelocity().magnitude > MOVEMENT_MAGNITUDE)) {
             animator.SetBool("attacking", false);
          }
       }
@@ -88,7 +93,7 @@ public class SeaMonsterEntity : SeaEntity
 
    [Server]
    protected void launchProjectile (Vector2 spot, SeaEntity attacker, Attack.Type attackType, float attackDelay, float launchDelay) {
-      if (getVelocity().magnitude > .05f) {
+      if (getVelocity().magnitude > MOVEMENT_MAGNITUDE) {
          return;
       }
       this.facing = (Direction) lockToTarget(attacker);

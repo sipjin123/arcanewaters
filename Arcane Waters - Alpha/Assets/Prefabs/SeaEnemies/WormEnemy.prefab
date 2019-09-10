@@ -269,6 +269,7 @@ MonoBehaviour:
   interactingAnimation: 0
   damage: 25
   reloadDelay: 1
+  attackCounter: 0
   leftAttackBox: {fileID: 1226546929952306529}
   rightAttackBox: {fileID: 1268288670249470209}
   attackCirclePrefab: {fileID: 114088976693073942, guid: f70aab4ab08e2424d8c89334e492291f,
@@ -278,21 +279,21 @@ MonoBehaviour:
   leftSideTarget: {fileID: 2083341788368610960}
   rightSideTarget: {fileID: 6334897482679909241}
   invulnerable: 0
-  spawnTransformList:
+  projectileSpawnLocations:
   - direction: 1
     spawnTransform: {fileID: 4374025247144692287}
+  - direction: 5
+    spawnTransform: {fileID: 3938294540739665686}
   - direction: 3
+    spawnTransform: {fileID: 767459379335707260}
+  - direction: 4
+    spawnTransform: {fileID: 767459379335707260}
+  - direction: 2
     spawnTransform: {fileID: 767459379335707260}
   - direction: 7
     spawnTransform: {fileID: 8973144502682084800}
-  - direction: 5
-    spawnTransform: {fileID: 3938294540739665686}
-  - direction: 2
-    spawnTransform: {fileID: 767459379335707260}
   - direction: 8
     spawnTransform: {fileID: 8973144502682084800}
-  - direction: 4
-    spawnTransform: {fileID: 767459379335707260}
   - direction: 6
     spawnTransform: {fileID: 8973144502682084800}
   spawnTransform: {fileID: 0}

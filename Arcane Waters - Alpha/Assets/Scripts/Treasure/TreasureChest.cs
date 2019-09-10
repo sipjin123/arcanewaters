@@ -52,6 +52,9 @@ public class TreasureChest : NetworkBehaviour {
    // Determines if this chest is a land or sea chest
    public bool isSeaChest;
 
+   // The animator of the chest
+   public Animator chestAnimator;
+
    #endregion
 
    public void Awake () {
@@ -80,6 +83,7 @@ public class TreasureChest : NetworkBehaviour {
       } else {
          boxCollider.enabled = !hasBeenOpened();
          triggerCollider.enabled = !hasBeenOpened();
+         chestAnimator.SetBool("open", hasBeenOpened());
       }
 
       // Figure out whether our outline should be showing

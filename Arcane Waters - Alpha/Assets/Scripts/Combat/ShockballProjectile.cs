@@ -32,13 +32,20 @@ public class ShockballProjectile : MonoBehaviour
    // Our shockball projectile sprite
    public GameObject shockballProjectile;
 
+   // Reference to the trail of the projectile
+   public TrailRenderer trail;
+
    #endregion
+
+   private void Start () {
+      trail.enabled = true;
+   }
 
    public void setDirection (Direction direction) {
       transform.LookAt(endPos);
    }
 
-   void Update () {
+   private void Update () {
       // If a target object has been specified, update our end position
       if (targetObject != null) {
          endPos = targetObject.transform.position;

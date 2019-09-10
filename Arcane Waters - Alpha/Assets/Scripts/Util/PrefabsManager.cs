@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using DigitalRuby.LightningBolt;
 
 public class PrefabsManager : MonoBehaviour {
    #region Public Variables
@@ -44,7 +45,7 @@ public class PrefabsManager : MonoBehaviour {
    public GameObject lightningResiduePrefab;
 
    // The Prefab we use for creating lightning chain
-   public GameObject lightningChainPrefab;
+   public LightningBoltScript lightningChainPrefab;
 
    // The Prefab we use for creating shockball projectiles
    public ShockballProjectile shockballPrefab;

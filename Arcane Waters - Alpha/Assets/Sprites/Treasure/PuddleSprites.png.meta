@@ -1,19 +1,19 @@
 fileFormatVersion: 2
-guid: f430126f9ab826741b8cd7bac2173fbb
+guid: e3df20e2eaa29aa47a201426acdbfbd8
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7581260844990790426
-    second: SmallSlime_0
+      213: 862489052355584042
+    second: PuddleSprites_0
   - first:
-      213: -6680661014123461599
-    second: SmallSlime_1
+      213: 1934105167074483151
+    second: PuddleSprites_1
   - first:
-      213: 2977022089766513496
-    second: SmallSlime_2
+      213: -3966257881566730632
+    second: PuddleSprites_2
   - first:
-      213: -478764011137203176
-    second: SmallSlime_3
+      213: 7644630347052300426
+    second: PuddleSprites_3
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -32,7 +32,7 @@ TextureImporter:
     externalNormalMap: 0
     heightScale: 0.25
     normalMapFilter: 0
-  isReadable: 0
+  isReadable: 1
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   grayScaleToAlpha: 0
@@ -96,13 +96,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: SmallSlime_0
+      name: PuddleSprites_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 34
-        height: 23
+        width: 40
+        height: 36
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -110,20 +110,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3ed4c789403bf6544b39b366211e7f75
-      internalID: 7581260844990790426
+      spriteID: 5f1412a13e1febe4ba0069e469423826
+      internalID: 862489052355584042
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SmallSlime_1
+      name: PuddleSprites_1
       rect:
         serializedVersion: 2
-        x: 34
+        x: 40
         y: 0
-        width: 34
-        height: 23
+        width: 40
+        height: 36
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -131,20 +131,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: de2fabe05730b34419022a5e6c866bcc
-      internalID: -6680661014123461599
+      spriteID: af0ac5cb0d9c470438529d120f0693a2
+      internalID: 1934105167074483151
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SmallSlime_2
+      name: PuddleSprites_2
       rect:
         serializedVersion: 2
-        x: 68
+        x: 80
         y: 0
-        width: 34
-        height: 23
+        width: 40
+        height: 36
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -152,20 +152,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0fe5eca91ac4e5e4fa573c42c7dc2472
-      internalID: 2977022089766513496
+      spriteID: 6c8283d074fe1f24fbc5fee4d466f730
+      internalID: -3966257881566730632
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SmallSlime_3
+      name: PuddleSprites_3
       rect:
         serializedVersion: 2
-        x: 102
+        x: 120
         y: 0
-        width: 34
-        height: 23
+        width: 40
+        height: 36
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -173,8 +173,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c6174fdc8d1b1874e8fccc5e01199b24
-      internalID: -478764011137203176
+      spriteID: 0c9ab813c223f6a45b2d04ca38a0dd2d
+      internalID: 7644630347052300426
       vertices: []
       indices: 
       edges: []
@@ -182,7 +182,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: d674087d07fd48146ac26df67b2fe2e9
+    spriteID: 7feb6f72a07094a46b1df92064d621e7
     internalID: 0
     vertices: []
     indices: 

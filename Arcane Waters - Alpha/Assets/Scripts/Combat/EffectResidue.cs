@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class VenomStickyResidue : MonoBehaviour {
+public class EffectResidue : MonoBehaviour {
    #region Public Variables
 
    #endregion

@@ -50,7 +50,7 @@ public class WormEntity : SeaMonsterEntity
          return;
       }
 
-      if (getVelocity().magnitude < .05f && targetEntity != null) {
+      if (getVelocity().magnitude < MOVEMENT_MAGNITUDE && targetEntity != null) {
          float distanceGap = Vector2.Distance(targetEntity.transform.position, transform.position);
          if (distanceGap < 2) {
             withinProjectileDistance = true;
@@ -68,12 +68,11 @@ public class WormEntity : SeaMonsterEntity
             this.facing = (Direction) lockToTarget(targetEntity);
          }
       } else {
-         if (getVelocity().magnitude > .05f) {
+         if (getVelocity().magnitude > MOVEMENT_MAGNITUDE) {
             // Update our facing direction
             lookAtTarget();
          }
       }
-
 
       // If we've been assigned a Route, get our waypoint from that
       if (route != null) {
