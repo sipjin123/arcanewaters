@@ -16,10 +16,13 @@ public class VenomResidue : MonoBehaviour {
    // The damage to the ships per second
    public int damagePerSec = 5;
 
+   // The frequency of the residue to process the damage
+   public const float DAMAGE_FREQUENCY = .75f;
+
    #endregion
 
    private void Start () {
-      InvokeRepeating("damageEnemies", .75f, .75f);
+      InvokeRepeating("damageEnemies", DAMAGE_FREQUENCY, DAMAGE_FREQUENCY);
    }
 
    private void damageEnemies () {

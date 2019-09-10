@@ -30,6 +30,18 @@ public class Attack : MonoBehaviour {
       }
    }
 
+   public static float getSpeedModifier (Type attackType) {
+      // Used for altering the speed of the projectile
+      switch (attackType) {
+         case Type.Boulder:
+            return 1.50f;
+         case Type.Shock_Ball:
+            return 1.25f;
+         default:
+            return 1.0f;
+      }
+   }
+
    #region Private Variables
 
    #endregion

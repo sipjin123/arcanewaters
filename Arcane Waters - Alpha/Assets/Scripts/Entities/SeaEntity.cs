@@ -44,10 +44,7 @@ public class SeaEntity : NetEntity {
    public bool invulnerable;
 
    // The position data where the projectile starts
-   public List<DirectionalSpawn> spawnTransformList;
-
-   // Current Spawn Transform
-   public Transform spawnTransform;
+   public List<DirectionalTransform> projectileSpawnLocations;
 
    #endregion
 
@@ -69,6 +66,16 @@ public class SeaEntity : NetEntity {
 
    protected override void Update () {
       base.Update();
+
+      if (NetworkServer.active && _projectileSched.Count > 0) {
+         foreach (ProjectileSchedule sched in _projectileSched) {
+            if (!sched.dispose && Util.netTime() > sched.projectileLaunchTime) {
+               serverFireProjectile(sched.targetLocation, sched.attackType, sched.spawnLocation, sched.impactTimestamp);
+               sched.dispose = true;
+            }
+         }
+         _projectileSched.RemoveAll(item => item.dispose == true);
+      }
 
       // If we've died, start slowing moving our sprites downward
       if (currentHealth <= 0) {
@@ -262,7 +269,6 @@ public class SeaEntity : NetEntity {
          // If venom attack calls slime effect
          if (attackType == Attack.Type.Venom) {
             ExplosionManager.createSlimeExplosion(pos);
-            EffectManager.self.create(Effect.Type.Slime_Collision, pos);
          }
 
          // Show the damage text
@@ -375,7 +381,7 @@ public class SeaEntity : NetEntity {
       float distance = Vector2.Distance(this.transform.position, spot);
       float delay = Mathf.Clamp(distance, .5f, 1.5f);
 
-      // Have the server check for collisions after the melee attack reaches the target
+      // Have the server check for collisions after the attack reaches the target
       StartCoroutine(CO_CheckCircleForCollisions(this, delay, spot, attackType, true));
 
       // Make note on the clients that the ship just attacked
@@ -409,12 +415,12 @@ public class SeaEntity : NetEntity {
       Vector3 spawnPosition = new Vector3(0, 0, 0);
 
       // Determines the origin of the projectile
-      if (spawnTransformList == null || spawnTransformList.Count < 1) {
+      if (projectileSpawnLocations == null || projectileSpawnLocations.Count < 1) {
          spawnPosition = transform.position;
       } else {
          if (this.facing != 0) {
-            spawnTransform = spawnTransformList.Find(_ => _.direction == (Direction) this.facing).spawnTransform;
-            spawnPosition = spawnTransform.position;
+            projectileSpawnLocation = projectileSpawnLocations.Find(_ => _.direction == (Direction) this.facing).spawnTransform;
+            spawnPosition = projectileSpawnLocation.position;
          }
       }
 
@@ -422,14 +428,7 @@ public class SeaEntity : NetEntity {
          serverFireProjectile(spot, attackType, spawnPosition, delay);
       } else {
          // Speed modifiers for the projectile types
-         switch (attackType) {
-            case Attack.Type.Boulder:
-               delay /= 1.5f;
-               break;
-            case Attack.Type.Shock_Ball:
-               delay /= 1.25f;
-               break;
-         }
+         delay /= Attack.getSpeedModifier(attackType);
 
          registerProjectileSchedule(spot, spawnPosition, attackType, attackDelay, Util.netTime() + launchDelay, delay);
       }
@@ -459,20 +458,6 @@ public class SeaEntity : NetEntity {
       Rpc_RegisterAttackTime(animationTime);
 
       _projectileSched.Add(newSched);
-   }
-
-   protected override void FixedUpdate () {
-      base.FixedUpdate();
-
-      if (NetworkServer.active && _projectileSched.Count > 0) {
-         foreach(ProjectileSchedule sched in _projectileSched) { 
-            if (!sched.dispose && Util.netTime() > sched.projectileLaunchTime) {
-               serverFireProjectile(sched.targetLocation, sched.attackType, sched.spawnLocation, sched.impactTimestamp);
-               sched.dispose = true;
-            }
-         }
-         _projectileSched.RemoveAll(item => item.dispose == true);
-      }
    }
    
    [Server]
@@ -526,14 +511,10 @@ public class SeaEntity : NetEntity {
                   // Apply any status effects from the attack
                   if (attackType == Attack.Type.Ice) {
                      StatusManager.self.create(Status.Type.Freeze, 2f, entity.userId);
-                  } else if (attackType == Attack.Type.Air) {
-                     StatusManager.self.create(Status.Type.None, 3f, entity.userId);
                   } else if (attackType == Attack.Type.Tentacle) {
-                     StatusManager.self.create(Status.Type.None, 1f, entity.userId);
+                     StatusManager.self.create(Status.Type.Slow, 1f, entity.userId);
                   } else if (attackType == Attack.Type.Venom) {
-                     StatusManager.self.create(Status.Type.None, 1f, entity.userId);
-                  } else if (attackType == Attack.Type.Boulder) {
-                     StatusManager.self.create(Status.Type.None, 1f, entity.userId);
+                     StatusManager.self.create(Status.Type.Slow, 1f, entity.userId);
                   }
                   enemyHitList.Add(entity);
                }
@@ -552,7 +533,7 @@ public class SeaEntity : NetEntity {
 
    [Server]
    private void fireTimedVenomProjectile (Vector2 startPos, Vector2 targetPos) {
-      if (isDead() ) {
+      if (isDead()) {
          return;
       }
 
@@ -622,6 +603,9 @@ public class SeaEntity : NetEntity {
 
    #region Private Variables
 
+   // Current Spawn Transform
+   protected Transform projectileSpawnLocation;
+
    // The time at which we last fired an attack
    protected float _lastAttackTime = float.MinValue;
 
@@ -644,11 +628,4 @@ public class SeaEntity : NetEntity {
    protected bool _hasAttackAnimTriggered = false;
 
    #endregion
-}
-
-[Serializable]
-public class DirectionalSpawn
-{
-   public Direction direction;
-   public Transform spawnTransform;
 }

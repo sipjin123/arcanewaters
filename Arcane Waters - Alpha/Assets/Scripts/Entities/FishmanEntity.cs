@@ -17,10 +17,10 @@ public class FishmanEntity : SeaMonsterEntity
       _spawnPos = this.transform.position;
 
       // Sometimes we want to generate random waypoints
-      InvokeRepeating("handleAutoMove", 5 + 1f, 5 + 2f);
+      InvokeRepeating("handleAutoMove", 1f, 5f);
 
       // Check if we can shoot at any of our attackers
-      InvokeRepeating("checkForAttackers", 2f, 2.5f);
+      InvokeRepeating("checkForAttackers", 2f, .5f);
    }
 
    protected override void Update () {

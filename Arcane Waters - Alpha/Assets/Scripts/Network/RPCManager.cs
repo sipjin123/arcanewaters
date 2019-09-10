@@ -1495,7 +1495,6 @@ public class RPCManager : NetworkBehaviour {
       NetworkServer.Spawn(bot.gameObject);
    }
 
-
    [Command]
    public void Cmd_SpawnTentacle (Vector2 spawnPosition, uint horrorEntityID, int xVal, int yVal, int variety) {
       TentacleEntity bot = Instantiate(PrefabsManager.self.tentaclePrefab, spawnPosition, Quaternion.identity);

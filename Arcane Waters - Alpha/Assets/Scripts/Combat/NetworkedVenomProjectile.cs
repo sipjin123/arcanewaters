@@ -57,8 +57,9 @@ public class NetworkedVenomProjectile : MonoBehaviour
       float ballHeight = Util.getSinOfAngle(angleInDegrees) * ARCH_HEIGHT;
 
       Util.setLocalY(venomProjectile.transform, ballHeight);
-
-      if (timeAlive > .9f && !_hasCollided) {
+      
+      //if (timeAlive > .9f && !_hasCollided) {
+      if (timeAlive > LIFETIME && !_hasCollided) {
          processDestruction();
       }
    }

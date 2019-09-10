@@ -36,6 +36,9 @@ public class SeaMonsterEntity : SeaEntity
    // A flag to determine if the object has died
    public bool hasDied = false;
 
+   // The max gap distance between target and this unity
+   public const float DISTANCE_GAP = 3;
+
    // Seamonster Animation
    public enum SeaMonsterAnimState
    {
@@ -49,8 +52,8 @@ public class SeaMonsterEntity : SeaEntity
 
    #endregion
 
-   protected override void FixedUpdate () {
-      base.FixedUpdate();
+   protected override void Update () {
+      base.Update();
 
       if (hasDied == false && isDead()) {
          hasDied = true;
@@ -105,14 +108,12 @@ public class SeaMonsterEntity : SeaEntity
    }
 
    protected bool canMoveTowardEnemy () {
-      if (targetEntity != null) {
-         if (isEngaging) {
-            float distanceGap = Vector2.Distance(targetEntity.transform.position, transform.position);
-            if (distanceGap > 1 && distanceGap < 3) {
-               return true;
-            } else if (distanceGap >= 3) {
-               return false;
-            }
+      if (targetEntity != null && isEngaging) {
+         float distanceGap = Vector2.Distance(targetEntity.transform.position, transform.position);
+         if (distanceGap > 1 && distanceGap < DISTANCE_GAP) {
+            return true;
+         } else if (distanceGap >= DISTANCE_GAP) {
+            return false;
          }
       }
       return false;

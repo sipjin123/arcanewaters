@@ -20,7 +20,7 @@ public class WormEntity : SeaMonsterEntity
       InvokeRepeating("handleAutoMove", 2f, 4f);
 
       // Check if we can shoot at any of our attackers
-      InvokeRepeating("checkForAttackers", 2f, 2.5f);
+      InvokeRepeating("checkForAttackers", 1f, .5f);
    }
 
    protected override void Update () {
