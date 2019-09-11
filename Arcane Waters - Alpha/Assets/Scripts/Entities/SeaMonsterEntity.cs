@@ -37,10 +37,10 @@ public class SeaMonsterEntity : SeaEntity
    public bool hasDied = false;
 
    // The max gap distance between target and this unity
-   public const float DISTANCE_GAP = 3;
+   public const float MAX_DISTANCE_GAP = 3;
 
    // The minimum magnitude to determine the movement of the unit
-   public const float MOVEMENT_MAGNITUDE = .05f;
+   public const float MIN_MOVEMENT_MAGNITUDE = .05f;
 
    // Seamonster Animation
    public enum SeaMonsterAnimState
@@ -61,7 +61,7 @@ public class SeaMonsterEntity : SeaEntity
       if (hasDied == false && isDead()) {
          hasDied = true;
          animator.Play("Die");
-         if (GetComponent<TentacleEntity>() == null) {
+         if (shouldDropTreasure()) {
             spawnChest();
          }
       }
@@ -71,10 +71,14 @@ public class SeaMonsterEntity : SeaEntity
          _hasAttackAnimTriggered = true;
          _attackEndAnimateTime = Time.time + .2f;
       } else {
-         if (animator.GetBool("attacking") == true && (Util.netTime() > _attackEndAnimateTime || getVelocity().magnitude > MOVEMENT_MAGNITUDE)) {
+         if (animator.GetBool("attacking") && (Util.netTime() > _attackEndAnimateTime || getVelocity().magnitude > MIN_MOVEMENT_MAGNITUDE)) {
             animator.SetBool("attacking", false);
          }
       }
+   }
+
+   protected virtual bool shouldDropTreasure () {
+      return true;
    }
 
    [Server]
@@ -93,7 +97,7 @@ public class SeaMonsterEntity : SeaEntity
 
    [Server]
    protected void launchProjectile (Vector2 spot, SeaEntity attacker, Attack.Type attackType, float attackDelay, float launchDelay) {
-      if (getVelocity().magnitude > MOVEMENT_MAGNITUDE) {
+      if (getVelocity().magnitude > MIN_MOVEMENT_MAGNITUDE) {
          return;
       }
       this.facing = (Direction) lockToTarget(attacker);
@@ -115,9 +119,9 @@ public class SeaMonsterEntity : SeaEntity
    protected bool canMoveTowardEnemy () {
       if (targetEntity != null && isEngaging) {
          float distanceGap = Vector2.Distance(targetEntity.transform.position, transform.position);
-         if (distanceGap > 1 && distanceGap < DISTANCE_GAP) {
+         if (distanceGap > 1 && distanceGap < MAX_DISTANCE_GAP) {
             return true;
-         } else if (distanceGap >= DISTANCE_GAP) {
+         } else if (distanceGap >= MAX_DISTANCE_GAP) {
             return false;
          }
       }

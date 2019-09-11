@@ -207,6 +207,10 @@ public class TentacleEntity : SeaMonsterEntity
       }
    }
 
+   protected override bool shouldDropTreasure () {
+      return false;
+   }
+
    private void OnTriggerStay2D (Collider2D collision) {
       if (collision.GetComponent<PlayerShipEntity>() != null) {
          NetEntity shipEntity = collision.GetComponent<PlayerShipEntity>();

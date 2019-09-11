@@ -58,7 +58,6 @@ public class NetworkedVenomProjectile : MonoBehaviour
 
       Util.setLocalY(venomProjectile.transform, ballHeight);
       
-      //if (timeAlive > .9f && !_hasCollided) {
       if (timeAlive > LIFETIME && !_hasCollided) {
          processDestruction();
       }

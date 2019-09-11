@@ -50,7 +50,7 @@ public class FishmanEntity : SeaMonsterEntity
          return;
       }
 
-      if (getVelocity().magnitude < MOVEMENT_MAGNITUDE && targetEntity != null) {
+      if (getVelocity().magnitude < MIN_MOVEMENT_MAGNITUDE && targetEntity != null) {
          float distanceGap = Vector2.Distance(targetEntity.transform.position, transform.position);
          if (distanceGap < 2) {
             withinProjectileDistance = true;
@@ -68,7 +68,7 @@ public class FishmanEntity : SeaMonsterEntity
             this.facing = (Direction) lockToTarget(targetEntity);
          }
       } else {
-         if (getVelocity().magnitude > MOVEMENT_MAGNITUDE) {
+         if (getVelocity().magnitude > MIN_MOVEMENT_MAGNITUDE) {
             // Update our facing direction
             lookAtTarget();
          }

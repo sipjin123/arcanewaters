@@ -425,8 +425,8 @@ public class SeaEntity : NetEntity {
          spawnPosition = transform.position;
       } else {
          if (this.facing != 0) {
-            projectileSpawnLocation = projectileSpawnLocations.Find(_ => _.direction == (Direction) this.facing).spawnTransform;
-            spawnPosition = projectileSpawnLocation.position;
+            _projectileSpawnLocation = projectileSpawnLocations.Find(_ => _.direction == (Direction) this.facing).spawnTransform;
+            spawnPosition = _projectileSpawnLocation.position;
          }
       }
 
@@ -610,7 +610,7 @@ public class SeaEntity : NetEntity {
    #region Private Variables
 
    // Current Spawn Transform
-   protected Transform projectileSpawnLocation;
+   protected Transform _projectileSpawnLocation;
 
    // The time at which we last fired an attack
    protected float _lastAttackTime = float.MinValue;
