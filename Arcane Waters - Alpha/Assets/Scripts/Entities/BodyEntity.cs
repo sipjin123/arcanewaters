@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -77,6 +77,7 @@ public class BodyEntity : NetEntity
       this.eyesColor1 = userInfo.eyesColor1;
       this.bodyType = userInfo.bodyType;
       this.armorManager.updateArmorSyncVars(armor);
+      
       this.weaponManager.updateWeaponSyncVars(weapon);
    }
 

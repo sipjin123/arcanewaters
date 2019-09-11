@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -15,9 +15,6 @@ public class Ability {
         Cancel_Ability = 200,
         Stance_Ability = 300,
     }
-
-    // The elemental damage types
-    public enum Element { Physical = 0, Fire = 1, Earth = 2, Air = 3, Water = 4, Heal = 5 }
 
     // The type of ability this is
     public Type type;
@@ -132,10 +129,11 @@ public class Ability {
       return 0f;
    }
 
-   public virtual IEnumerator display (float timeToWait, BattleAction battleAction, bool isFirstAction) {
+   // Zeronev-Comment: Moved this method completely to the new AbilityData as an interface.
+   /*public virtual IEnumerator display (float timeToWait, BattleAction battleAction, bool isFirstAction) {
       // Display code is implemented in the child class
       yield return new WaitForSeconds(timeToWait);
-   }
+   }*/
 
    public virtual void playCastSound (Battler attacker, Battler defender) {
       // Nothing by default

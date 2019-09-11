@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -21,9 +21,9 @@ public class SlashLightning : MeleeAbility {
         return 1.2f;
     }
 
-    public override Element getElement() {
+    /*public override Element getElement() {
         return Element.Air;
-    }
+    }*/
 
     public override float getCooldown() {
         return 4.0f;

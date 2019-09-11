@@ -33,9 +33,12 @@ namespace ItemEditor
          _builderTypeText = (_battleItemType == BattleItemType.Ability) ? "Ability" : "Weapon";
          _builderFolder = (_battleItemType == BattleItemType.Ability) ? "Abilities" : "Weapons";
 
-         // Header "Item builder"
+         if(_battleItemType == BattleItemType.UNDEFINED) {
+            ItemEditorLayout.header("ITEM BUILDER - " + "Select an item type");
 
-         ItemEditorLayout.header("ITEM BUILDER - " + "building " + _builderTypeText + "...");
+         } else {
+            ItemEditorLayout.header("ITEM BUILDER - " + "Building " + _builderTypeText + ":");
+         }
 
          string editMsg = isItemInSlot ? "Editing item..." : "Drag or select an item to edit";
          EditorGUILayout.LabelField(editMsg, GUILayout.MinWidth(100));
@@ -43,7 +46,7 @@ namespace ItemEditor
          _itemToEdit = (BattleItemData) EditorGUILayout.ObjectField(_itemToEdit, typeof(BattleItemData), true);
 
          if (isItemInSlot) {
-            EditorGUILayout.HelpBox("Item in slot, now editting " + _itemToEdit.getName + " properties...", MessageType.Info);
+            EditorGUILayout.HelpBox("Item in slot, now editting " + _itemToEdit.getName() + " properties...", MessageType.Info);
          }
 
          EditorGUILayout.BeginHorizontal("box");
@@ -54,8 +57,8 @@ namespace ItemEditor
          // Item in slot to edit, we fill the data to the item we placed in the slot.
          if (_itemToEdit != null) {
             if (isItemInSlot) {
-               if (_lastPlacedItemID != _itemToEdit.getItemID) {
-                  _lastPlacedItemID = _itemToEdit.getItemID;
+               if (_lastPlacedItemID != _itemToEdit.getItemID()) {
+                  _lastPlacedItemID = _itemToEdit.getItemID();
 
                   _hasPlacedItem = false;
                }
@@ -64,7 +67,7 @@ namespace ItemEditor
                   setMainItemValues(_itemToEdit);
 
                   // Check the item type.
-                  switch (_itemToEdit.getBattleItemType) {
+                  switch (_itemToEdit.getBattleItemType()) {
                      case BattleItemType.Ability:
                         _battleItemType = BattleItemType.Ability;
                         setAbilityItemValues((AbilityData) _itemToEdit);
@@ -87,7 +90,7 @@ namespace ItemEditor
 
          switch (_battleItemType) {
             case BattleItemType.Ability:
-               drawAbilityBlock();
+               drawAllAbilityBlocks();
                break;
             case BattleItemType.Weapon:
                drawWeaponBlock();
@@ -97,13 +100,14 @@ namespace ItemEditor
          if (GUILayout.Button("Build " + _builderTypeText)) {
             // Basic data set
             BattleItemData basicData = BattleItemData.CreateInstance(_itemID, _itemName, _itemDesc, _itemDamage, _itemElementType, _hitAudioClip,
-                _hitParticle, _battleItemType, _itemIcon);
+                _hitParticle, _battleItemType, _itemIcon, _levelRequirement);
 
             switch (_battleItemType) {
                case BattleItemType.Ability:
 
                   AbilityData newAbility = AbilityData.CreateInstance(basicData, _abilityCost, _abilityCanBeBlocked,
-                      _abilityCastParticle, _abilityCastAudioclip, abilityAllowedStances, _classRequirement);
+                      _abilityCastParticle, _abilityCastAudioclip, abilityAllowedStances, _classRequirement, _abilityType, 
+                      _cooldown, _hasKnockup, _hasShake, _apChange);
 
                   createAbilityAsset(_builderFolder, newAbility);
 
@@ -143,12 +147,16 @@ namespace ItemEditor
          EditorGUILayout.EndHorizontal();
          EditorGUILayout.Space();
 
+         EditorGUILayout.PrefixLabel("Level requirement");
+         _levelRequirement = EditorGUILayout.IntField(_levelRequirement, GUILayout.MinWidth(20));
+         EditorGUILayout.Space();
+
          EditorGUILayout.PrefixLabel("Item Description");
          _itemDesc = EditorGUILayout.TextArea(_itemDesc, GUILayout.MinWidth(20), GUILayout.MinHeight(40));
          EditorGUILayout.Space();
 
          EditorGUILayout.PrefixLabel("Item Element");
-         _itemElementType = (ItemElementType) EditorGUILayout.EnumPopup(_itemElementType);
+         _itemElementType = (Element) EditorGUILayout.EnumPopup(_itemElementType);
          EditorGUILayout.Space();
 
          EditorGUILayout.PrefixLabel("Hit Parameters");
@@ -166,6 +174,20 @@ namespace ItemEditor
          if (!isItemInSlot) {
             EditorGUILayout.PrefixLabel("Item type to build");
             _battleItemType = (BattleItemType) EditorGUILayout.EnumPopup(_battleItemType);
+         }
+
+         EditorGUILayout.Space();
+
+         if (_battleItemType == BattleItemType.Ability) {
+            // Prepare item array.
+            ItemBuilderWindow target = this;
+            SerializedObject so = new SerializedObject(target);
+            SerializedProperty stancesProperties = so.FindProperty("abilityAllowedStances");
+
+            // Stances
+            ItemEditorLayout.centeredLabel("Allowed stances");
+            EditorGUILayout.PropertyField(stancesProperties, true);
+            so.ApplyModifiedProperties();
          }
 
          EditorGUILayout.Space();
@@ -190,40 +212,48 @@ namespace ItemEditor
          _secondaryColor = (ColorType) EditorGUILayout.EnumPopup(_secondaryColor, GUILayout.MaxWidth(120));
       }
 
-      private void drawAbilityEdit () {
+      private void drawAbilityFirstBlock () {
          ItemEditorLayout.centeredLabel("AP Cost");
          _abilityCost = EditorGUILayout.IntField(_abilityCost, GUILayout.MaxWidth(40));
 
+         ItemEditorLayout.centeredLabel("AP Change");
+         _apChange = EditorGUILayout.IntField(_apChange, GUILayout.MaxWidth(40));
+
+         ItemEditorLayout.centeredLabel("Base cooldown");
+         _cooldown = EditorGUILayout.FloatField(_cooldown, GUILayout.MaxWidth(40));
+      }
+
+      private void drawAbilitySecondBlock() {
          ItemEditorLayout.centeredLabel("Can be blocked");
          _abilityCanBeBlocked = EditorGUILayout.Toggle(_abilityCanBeBlocked, GUILayout.MaxWidth(40));
 
-         ItemEditorLayout.centeredLabel("Cast Particle");
-         _abilityCastParticle = (ParticleSystem) EditorGUILayout.ObjectField(_abilityCastParticle, typeof(ParticleSystem), true);
+         ItemEditorLayout.centeredLabel("Has Knockup");
+         _hasKnockup = EditorGUILayout.Toggle(_hasKnockup, GUILayout.MaxWidth(40));
+
+         ItemEditorLayout.centeredLabel("Has Shake");
+         _hasKnockup = EditorGUILayout.Toggle(_hasKnockup, GUILayout.MaxWidth(40));
       }
 
-      private void abilitySecondBlock () {
+      private void drawAbilityThirdBlock () {
          ItemEditorLayout.centeredLabel("Cast audioclip");
          _abilityCastAudioclip = (AudioClip) EditorGUILayout.ObjectField(_abilityCastAudioclip, typeof(AudioClip), true);
 
-         // Prepare item array.
-         ItemBuilderWindow target = this;
-         SerializedObject so = new SerializedObject(target);
-         SerializedProperty stancesProperties = so.FindProperty("abilityAllowedStances");
+         ItemEditorLayout.centeredLabel("Cast Particle");
+         _abilityCastParticle = (ParticleSystem) EditorGUILayout.ObjectField(_abilityCastParticle, typeof(ParticleSystem), true);
 
-         // Stances
-         ItemEditorLayout.centeredLabel("Allowed stances");
-         EditorGUILayout.PropertyField(stancesProperties, true);
-         so.ApplyModifiedProperties();
+         ItemEditorLayout.centeredLabel("Ability Type");
+         _abilityType = (AbilityType) EditorGUILayout.EnumPopup(_abilityType, GUILayout.MaxWidth(120));
       }
 
-      private void drawAbilityBlock () {
+      private void drawAllAbilityBlocks () {
          EditorGUILayout.BeginVertical("box");
 
          EditorGUILayout.Space();
-         ItemEditorLayout.horizontallyCentered(drawAbilityEdit);
+         ItemEditorLayout.horizontallyCentered(drawAbilityFirstBlock);
          EditorGUILayout.Space();
-
-         ItemEditorLayout.horizontallyCentered(abilitySecondBlock);
+         ItemEditorLayout.horizontallyCentered(drawAbilitySecondBlock);
+         EditorGUILayout.Space();
+         ItemEditorLayout.horizontallyCentered(drawAbilityThirdBlock);
 
          EditorGUILayout.Space();
 
@@ -231,29 +261,29 @@ namespace ItemEditor
       }
 
       private void setMainItemValues (BattleItemData item) {
-         BattleItemType itemType = item.getBattleItemType;
+         BattleItemType itemType = item.getBattleItemType();
 
-         _itemName = item.getName;
-         _itemDesc = item.getDescription;
-         _itemID = item.getItemID;
-         _itemIcon = item.getItemIcon;
+         _itemName = item.getName();
+         _itemDesc = item.getDescription();
+         _itemID = item.getItemID();
+         _itemIcon = item.getItemIcon();
 
-         _itemDamage = item.getBaseDamage;
-         _itemElementType = item.getElementType;
+         _itemDamage = item.getBaseDamage();
+         _itemElementType = item.getElementType();
 
-         _hitAudioClip = item.getHitAudioClip;
-         _hitParticle = item.getHitParticle;
-         _classRequirement = item.getClassRequirement;
+         _hitAudioClip = item.getHitAudioClip();
+         _hitParticle = item.getHitParticle();
+         _classRequirement = item.getClassRequirement();
       }
 
       private void setAbilityItemValues (AbilityData item) {
-         _abilityCost = item.GetAbilityCost;
-         _abilityCanBeBlocked = item.GetBlockStatus;
+         _abilityCost = item.getAbilityCost();
+         _abilityCanBeBlocked = item.getBlockStatus();
 
-         _abilityCastParticle = item.GetCastParticle;
-         _abilityCastAudioclip = item.GetCastAudioClip;
+         _abilityCastParticle = item.getCastParticle();
+         _abilityCastAudioclip = item.getCastAudioClip();
 
-         abilityAllowedStances = item.GetAllowedStances;
+         abilityAllowedStances = item.getAllowedStances();
       }
 
       private void cleanInputs () {
@@ -261,13 +291,13 @@ namespace ItemEditor
          _itemDesc = string.Empty;
 
          // Basic Item Values, all weapons and abilities have a name and description.
-         _itemName = "ItemName";
-         _itemDesc = "ItemDescription";
+         _itemName = "NewItem";
+         _itemDesc = "Item new Description";
          _itemID = -1;
          _itemIcon = null;
 
          _itemDamage = 10;
-         _itemElementType = ItemElementType.Physical;
+         _itemElementType = Element.Physical;
          _hitAudioClip = null;
          _hitParticle = null;
          _battleItemType = BattleItemType.UNDEFINED;
@@ -280,6 +310,11 @@ namespace ItemEditor
          _abilityCastParticle = null;
          _abilityCastAudioclip = null;
 
+         _cooldown = 4;
+         _hasShake = false;
+         _hasKnockup = false;
+         _apChange = 3;
+
          // Weapon parameters
          _primaryColor = ColorType.Black;
          _secondaryColor = ColorType.Black;
@@ -289,22 +324,22 @@ namespace ItemEditor
          AbilityData asset = AbilityData.CreateInstance(itemToBuild);
 
          string path = "Assets/CreatedItems/" + folder;
-         string assetPathAndName = path + "/" + asset.getName + ".asset";
+         string assetPathAndName = path + "/" + asset.getName() + ".asset";
 
          EditorUtility.SetDirty(asset);
 
-         createFinalAsset(asset, assetPathAndName, asset.getName);
+         createFinalAsset(asset, assetPathAndName, asset.getName());
       }
 
       public static void createWeaponAsset (string folder, WeaponData itemToBuild) {
          WeaponData asset = WeaponData.CreateInstance(itemToBuild);
 
          string path = "Assets/CreatedItems/" + folder;
-         string assetPathAndName = path + "/" + asset.getName + ".asset";
+         string assetPathAndName = path + "/" + asset.getName() + ".asset";
 
          EditorUtility.SetDirty(asset);
 
-         createFinalAsset(asset, assetPathAndName, asset.getName);
+         createFinalAsset(asset, assetPathAndName, asset.getName());
       }
 
       private static void createFinalAsset (Object finalAsset, string assetFinalPath, string assetName) {
@@ -332,7 +367,7 @@ namespace ItemEditor
       }
 
       private BattleItemType typeInSlot{
-         get { return _itemToEdit.getBattleItemType; }
+         get { return _itemToEdit.getBattleItemType(); }
       }
 
       private void OnDestroy () {
@@ -351,11 +386,12 @@ namespace ItemEditor
       private string _itemName = "ItemName";
       private string _itemDesc = "ItemDescription";
       private int _itemID = -1;
+      private int _levelRequirement = -1;
       private Sprite _itemIcon;
 
       // More battle related data
       private int _itemDamage = 10;
-      private ItemElementType _itemElementType = ItemElementType.Physical;
+      private Element _itemElementType = Element.Physical;
       private AudioClip _hitAudioClip;
       private ParticleSystem _hitParticle;
       private BattleItemType _battleItemType = BattleItemType.UNDEFINED;
@@ -368,6 +404,11 @@ namespace ItemEditor
       private bool _abilityCanBeBlocked = true;
       private ParticleSystem _abilityCastParticle;
       private AudioClip _abilityCastAudioclip;
+      private AbilityType _abilityType = AbilityType.UNDEFINED;
+      private float _cooldown = 4;
+      private bool _hasShake = true;
+      private bool _hasKnockup = false;
+      private int _apChange = 3;
 
       // Basic Weapon parameters
       private ColorType _primaryColor = ColorType.Black;

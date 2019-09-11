@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -6,9 +6,6 @@ using Mirror;
 
 public class AttackPanel : MonoBehaviour {
    #region Public Variables
-
-   // Our Container object
-   public GameObject container;
 
    #endregion
 
@@ -18,28 +15,8 @@ public class AttackPanel : MonoBehaviour {
       _button = GetComponentInChildren<Button>();
    }
 
-   private void Update () {
-      Battler target = BattleSelectionManager.self.selectedBattler;
-
-      // Only show the attack panel when we have a battler selected
-      _canvasGroup.alpha = target is MonsterBattler ? 1f : 0f;
-
-      if (target == null) {
-         return;
-      }
-
-      // Hide the Canvas while our ability is on cooldown
-      container.SetActive(Util.netTime() > getBattler().cooldownEndTime);
-
-      // Place it on top of the selected battler
-      this.transform.position = new Vector3(
-         target.battleSpot.transform.position.x + .5f,
-         target.battleSpot.transform.position.y,
-         target.transform.position.z - 5f
-      );
-   }
-
-   public void requestAttackTarget () {
+   // Currently only used in the UI for the local client
+   public void requestAttackTarget (int abilityIndex) {
       Battler target = BattleSelectionManager.self.selectedBattler;
 
       // We have to have a target to attack
@@ -48,7 +25,7 @@ public class AttackPanel : MonoBehaviour {
       }
 
       // Send the request to the server
-      Global.player.rpc.Cmd_RequestAttack(target.netId, Ability.Type.Basic_Attack);
+      Global.player.rpc.Cmd_RequestAttack(target.netId, abilityIndex);
    }
 
    protected Battler getBattler () {

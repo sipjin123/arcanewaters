@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -21,30 +21,30 @@ public class LizardBattler : MonsterBattler
       return .35f;
    }
 
-   public override float getDefense (Ability.Element element) {
+   public override float getDefense (Element element) {
       float defense = base.getDefense(element);
 
       switch (element) {
-         case Ability.Element.Fire:
+         case Element.Fire:
             return defense * 1.25f;
-         case Ability.Element.Earth:
+         case Element.Earth:
             return defense * 1.50f;
-         case Ability.Element.Water:
+         case Element.Water:
             return defense * .75f;
          default:
             return defense;
       }
    }
 
-   public override float getDamage (Ability.Element element) {
+   public override float getDamage (Element element) {
       float damage = base.getDamage(element);
 
       switch (element) {
-         case Ability.Element.Fire:
+         case Element.Fire:
             return damage * 1.25f;
-         case Ability.Element.Earth:
+         case Element.Earth:
             return damage * 1.50f;
-         case Ability.Element.Water:
+         case Element.Water:
             return damage * .75f;
          default:
             return damage;

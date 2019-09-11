@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -139,6 +139,9 @@ public class BattleManager : MonoBehaviour {
       Battler battler = createBattlerForPlayer(battle, player, teamType);
       BattleManager.self.storeBattler(battler);
 
+      // Initialize player battler abilities.
+      battler.initAbilities();
+
       // Add the Battler to the Battle
       if (teamType == Battle.TeamType.Attackers) {
          battle.attackers.Add(battler.userId);
@@ -156,6 +159,9 @@ public class BattleManager : MonoBehaviour {
    public void addEnemyToBattle (Battle battle, Enemy enemy, Battle.TeamType teamType, PlayerBodyEntity aggressor) {
       // Create a Battler for this Enemy
       MonsterBattler battler = createBattlerForEnemy(battle, enemy, teamType);
+
+      // Initialize enemy abilities
+      battler.initAbilities();
       BattleManager.self.storeBattler(battler);
 
       // Add the Battler to the Battle
@@ -195,6 +201,8 @@ public class BattleManager : MonoBehaviour {
          // Destroy the Battler from the Network
          NetworkServer.Destroy(battler.gameObject);
       }
+
+      battle.onBattleEnded.Invoke();
 
       // Destroy the Battle from the Network
       NetworkServer.Destroy(battle.gameObject);
@@ -270,6 +278,10 @@ public class BattleManager : MonoBehaviour {
       battler.weaponManager.color1 = player.weaponManager.color1;
       battler.weaponManager.color2 = player.weaponManager.color2;
 
+      // Player battler abilities:
+      battler.battlerBaseAbilities = AbilityInventory.self.equippedAbilitiesBPs;
+      battler.initAbilities();
+
       return battler;
    }
 
@@ -296,6 +308,14 @@ public class BattleManager : MonoBehaviour {
       BattleSpot battleSpot = battle.battleBoard.getSpot(teamType, battler.boardPosition);
       battler.battleSpot = battleSpot;
       battler.transform.position = battleSpot.transform.position;
+
+      battler.onBattlerSelect.AddListener(() => {
+         BattleUIManager.self.triggerTargetUI(battler);
+      });
+
+      battler.onBattlerDeselect.AddListener(() => {
+         BattleUIManager.self.hideTargetGameobjectUI();
+      });
 
       // Actually spawn the Battler as a Network object now
       NetworkServer.Spawn(battler.gameObject);
@@ -347,21 +367,33 @@ public class BattleManager : MonoBehaviour {
       return enemyCount;
    }
 
-   public void executeAttack (Battle battle, Battler source, List<Battler> targets, Ability.Type abilityType) {
+   #region Attack Execution
+
+   /// <summary>
+   /// Executes an attack
+   /// </summary>
+   /// <param name="battle"> Battle reference </param>
+   /// <param name="source"> Source battler that will execute the attack</param>
+   /// <param name="targets"> Targets for the attack </param>
+   /// <param name="abilityIndex"> Index to know which ability data to grab when executing the attack </param>
+   public void executeAttack (Battle battle, Battler source, List<Battler> targets, int abilityInventoryIndex) {
       bool wasBlocked = false;
       bool wasCritical = false;
       bool isMultiTarget = targets.Count > 1;
       float timeToWait = battle.getTimeToWait(source, targets);
-      Ability ability = AbilityManager.getAbility(abilityType);
+
+      // Get ability reference from the source battler, cause the source battler is the one executing the ability.
+      AbilityData abilityData = source.getAbilities[abilityInventoryIndex];
+      //Ability ability = AbilityManager.getAbility(abilityType);
       List<AttackAction> actions = new List<AttackAction>();
 
       // Apply the AP change
-      int sourceApChange = ability.getApChange();
+      int sourceApChange = abilityData.getApChange();
       source.addAP(sourceApChange);
 
       foreach (Battler target in targets) {
          // For now, players have a 50% chance of blocking monsters
-         if (target.canBlock() && ability.canBeBlocked()) {
+         if (target.canBlock() && abilityData.getBlockStatus()) {
             wasBlocked = Random.Range(0f, 1f) > .50f;
          }
 
@@ -371,8 +403,8 @@ public class BattleManager : MonoBehaviour {
          }
 
          // Adjust the damage amount based on element, ability, and the target's armor
-         Ability.Element element = ability.getElement();
-         float damage = source.getDamage(element) * ability.getModifier();
+         Element element = abilityData.getElementType();
+         float damage = source.getDamage(element) * abilityData.getModifier;
          damage *= (100f / (100f + target.getDefense(element)));
          float increaseAdditive = 0f;
          float decreaseMultiply = 1f;
@@ -382,7 +414,7 @@ public class BattleManager : MonoBehaviour {
          // Adjust the damage based on the source and target stances
          increaseAdditive += (source.stance == Battler.Stance.Attack) ? .25f : 0f;
          decreaseMultiply *= (source.stance == Battler.Stance.Defense) ? .75f : 1f;
-         if (!ability.isHeal()) {
+         if (!abilityData.isHeal()) {
             increaseAdditive += (target.stance == Battler.Stance.Attack) ? .25f : 0f;
             decreaseMultiply *= (target.stance == Battler.Stance.Defense) ? .75f : 1f;
          }
@@ -397,17 +429,18 @@ public class BattleManager : MonoBehaviour {
          damage *= decreaseMultiply;
 
          // Make note of the time that this battle action is going to be fully completed, considering animation times
-         float timeAttackEnds = Util.netTime() + timeToWait + ability.getTotalAnimLength(source, target);
-         float cooldownDuration = ability.getCooldown() * source.getCooldownModifier();
+         float timeAttackEnds = Util.netTime() + timeToWait + abilityData.getTotalAnimLength(source, target);
+         float cooldownDuration = abilityData.getCooldown() * source.getCooldownModifier();
          source.cooldownEndTime = timeAttackEnds + cooldownDuration;
 
          // Apply the target's AP change
-         int targetApChange = target.getApWhenDamagedBy(ability);
+         int targetApChange = target.getApWhenDamagedBy(abilityData);
          target.addAP(targetApChange);
 
          // Create the Action object
          AttackAction action = new AttackAction(battle.battleId, AttackAction.ActionType.Melee, source.userId, target.userId,
-             (int) damage, timeAttackEnds, abilityType, wasCritical, wasBlocked, cooldownDuration, sourceApChange, targetApChange);
+             (int) damage, timeAttackEnds, abilityInventoryIndex, wasCritical, wasBlocked, cooldownDuration, sourceApChange, 
+             targetApChange, abilityData.getItemID());
          actions.Add(action);
 
          // Make note how long the two Battler objects need in order to execute the attack/hit animations
@@ -426,27 +459,29 @@ public class BattleManager : MonoBehaviour {
       battle.Rpc_SendAttackAction(stringList.ToArray());
    }
 
-   public void executeBuff (Battle battle, Battler source, List<Battler> targets, Ability.Type abilityType) {
+   public void executeBuff (Battle battle, Battler source, List<Battler> targets, int abilityInventoryIndex) {
       bool isMultiTarget = targets.Count > 1;
       float timeToWait = battle.getTimeToWait(source, targets);
       List<BuffAction> actions = new List<BuffAction>();
 
       // Get the Ability object and apply the AP change
-      BuffAbility ability = (BuffAbility) AbilityManager.getAbility(abilityType);
-      int sourceApChange = ability.getApChange();
+      // BuffAbility ability = (BuffAbility) AbilityManager.getAbility(abilityType);
+      // AbilityData abilityReference = AbilityManager.getAbility(globalAbilityID);
+      AbilityData abilityData = source.getAbilities[abilityInventoryIndex];
+      int sourceApChange = abilityData.getApChange();
       source.addAP(sourceApChange);
 
       foreach (Battler target in targets) {
          // Make note of the time that this battle action is going to be fully completed, considering animation times
          float timeBuffStarts = Util.netTime() + timeToWait;
-         float timeBuffEnds = timeBuffStarts + ability.getDuration();
-         float timeActionEnds = timeBuffStarts + ability.getTotalAnimLength(source, target);
-         float cooldownDuration = ability.getCooldown() * source.getCooldownModifier();
+         float timeBuffEnds = timeBuffStarts + abilityData.getDuration();
+         float timeActionEnds = timeBuffStarts + abilityData.getTotalAnimLength(source, target);
+         float cooldownDuration = abilityData.getCooldown() * source.getCooldownModifier();
          source.cooldownEndTime = timeActionEnds + cooldownDuration;
 
          // Create the Action object
-         BuffAction action = new BuffAction(battle.battleId, ability.type, source.userId, target.userId, timeBuffStarts,
-             timeBuffEnds, cooldownDuration, timeActionEnds, sourceApChange, 0);
+         BuffAction action = new BuffAction(battle.battleId, abilityInventoryIndex, source.userId, target.userId, timeBuffStarts,
+             timeBuffEnds, cooldownDuration, timeActionEnds, sourceApChange, 0, abilityData.getItemID());
          actions.Add(action);
 
          // Make note how long the two Battler objects need in order to execute the attack/hit animations
@@ -464,6 +499,8 @@ public class BattleManager : MonoBehaviour {
       }
       battle.Rpc_SendBuffAction(stringList.ToArray());
    }
+
+   #endregion
 
    protected int getGoldForDefeated (List<Battler> defeatedList) {
       int totalGold = 0;
@@ -509,7 +546,10 @@ public class BattleManager : MonoBehaviour {
       } else if (actionToApply is AttackAction || actionToApply is BuffAction) {
          BattleAction action = (BattleAction) actionToApply;
          Battler target = battle.getBattler(action.targetId);
-         Ability ability = AbilityManager.getAbility(action.abilityType);
+
+         // ZERONEV-COMMENT: It is supossed we are still grabbing the ability from the source battler to apply it.
+         // So we will grab the source battler.
+         AbilityData abilityData = source.getAbilities[action.abilityInventoryIndex];
 
          // If the source or target is already dead, then send a Cancel Action
          if (source.isDead() || target.isDead()) {
@@ -519,7 +559,7 @@ public class BattleManager : MonoBehaviour {
             }
 
             // Remove the action cooldown and animation duration from the source's timestamps
-            float animLength = ability.getTotalAnimLength(source, target);
+            float animLength = abilityData.getTotalAnimLength(source, target);
             float timeToSubtract = action.cooldownDuration + animLength;
 
             // Update the battler's action timestamps here on the server

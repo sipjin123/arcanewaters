@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -10,10 +10,20 @@ public class AbilityManager : MonoBehaviour {
    // A convenient self reference
    public static AbilityManager self;
 
+   // ZERONEV-COMMENT: For now I will just add them manually into the inspector, all the abilities in-game.
+   // I will load them later on from the resource folder and not make them public like this, it can be unsafe in the long run.
+   public AbilityData[] allGameAbilities;
+
    #endregion
 
    void Start () {
       self = this;
+
+      // TODO ZERONEV: Instead of this method below, it would be better to grab all the files from the abilities folder.
+      // This way we do not miss any ability and we have them in memory, in case we want to adjust an ability at runtime,
+      // change an ability for an enemy at runtime, etc, and we can do that by grabbing their name or their ID. or even just an element.
+
+      initAllGameAbilities();
 
       // Base ability classes
       _abilities.Add(Ability.Type.Basic_Attack, new BasicAttack());
@@ -41,10 +51,12 @@ public class AbilityManager : MonoBehaviour {
       // _abilities.Add(Ability.Type.SlimeRain, new SlimeRain());
    }
 
+   [System.Obsolete("All abilities are per battler. Grab the ability index from the battler abilities, or use getAbility(int) instead")]
    public static Ability getAbility (Ability.Type abilityType) {
       return self._abilities[abilityType];
    }
 
+   [System.Obsolete("All abilities are per battler. Grab the ability index from the battler abilities instead.")]
    public static List<Ability> getAllowedAbilities (Battler battler) {
       List<Ability> visibleAbilities = new List<Ability>();
 
@@ -75,13 +87,17 @@ public class AbilityManager : MonoBehaviour {
          targetBattler.animatingUntil = action.actionEndTime;
 
          // Get the ability object for this action
-         Ability ability = getAbility(action.abilityType);
+         //Ability ability = getAbility(action.abilityType);
+         AbilityData abilityData = sourceBattler.getAbilities[action.abilityInventoryIndex];
 
          // Check how long we need to wait before displaying this action
-         float timeToWait = action.actionEndTime - Util.netTime() - ability.getTotalAnimLength(sourceBattler, targetBattler);
+         float timeToWait = action.actionEndTime - Util.netTime() - abilityData.getTotalAnimLength(sourceBattler, targetBattler);
 
          // Display the ability at the assigned time
-         StartCoroutine(ability.display(timeToWait, action, isFirst));
+         // Zeronev-Modified:
+
+         //StartCoroutine(ability.display(timeToWait, action, isFirst));
+         StartCoroutine(sourceBattler.attackDisplay(timeToWait, action, isFirst));
 
          // Don't affect the source for any subsequent actions
          isFirst = false;
@@ -102,7 +118,8 @@ public class AbilityManager : MonoBehaviour {
       Ability ability = getAbility(Ability.Type.Stance_Ability);
 
       // Display the stance change at the assigned time
-      StartCoroutine(ability.display(timeToWait, action, true));
+      // TODO ZERONEV: Line commented out below.
+      //StartCoroutine(ability.display(timeToWait, action, true));
    }
 
    public void execute (CancelAction action) {
@@ -120,10 +137,42 @@ public class AbilityManager : MonoBehaviour {
       targetBattler.animatingUntil -= animLength;
    }
 
+   // Prepares all game abilities
+   private void initAllGameAbilities () {
+      foreach (AbilityData ability in allGameAbilities) {
+         AbilityData newInstance = AbilityData.CreateInstance(ability);
+         _allAbilities.Add(newInstance);
+      }
+   }
+
+   /// <summary>
+   /// Gets UNINITIALIZED AbilityData, list only to be used for reading, do not modify values directly here.
+   /// </summary>
+   /// <param name="abilityGlobalID"></param>
+   /// <returns></returns>
+   public static AbilityData getAbility(int abilityGlobalID) {
+
+      for (int i = 0; i < self._allAbilities.Count; i++) {
+         if (self._allAbilities[i].getItemID().Equals(abilityGlobalID)) {
+            return self._allAbilities[i];
+         }
+      }
+
+      Debug.LogWarning("Tried to search an unexisting item");
+      return null;
+   }
+
    #region Private Variables
 
    // A mapping of Ability Type to the Ability object
+   // TODO ZERONEV: This will be removed soon.
    protected Dictionary<Ability.Type, Ability> _abilities = new Dictionary<Ability.Type, Ability>();
+
+   /// <summary>
+   /// 
+   /// </summary>
+   //protected Dictionary<int, AbilityData> _allAbilities = new Dictionary<int, AbilityData>();
+   private List<AbilityData> _allAbilities = new List<AbilityData>();
 
    #endregion
 }

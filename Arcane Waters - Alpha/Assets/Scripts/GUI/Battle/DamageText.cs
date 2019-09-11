@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -83,40 +83,42 @@ public class DamageText : MonoBehaviour {
    }
 
    public void customizeForAction (AttackAction action) {
-      Ability ability = AbilityManager.getAbility(action.abilityType);
-      Ability.Element element = ability.getElement();
+      // TODO ZERONEV: Grab the element directly from the attack action.
+      // Not grabbing the ability and then the element, for now I will just hardcode the element.
+      //Ability ability = AbilityManager.getAbility(action.abilityType);
+      Element element = Element.Physical;
 
       customizeForAction(element, action.wasCritical);
    }
 
-   public void customizeForAction (Ability.Element element, bool wasCritical) {
+   public void customizeForAction (Element element, bool wasCritical) {
       // Gradient gradient = text.GetComponent<Gradient>();
       text.font = Resources.Load<Font>("Fonts/PhysicalDamage");
       string fontString = "PhysicalDamage";
 
       switch (element) {
-         case Ability.Element.Air:
+         case Element.Air:
             // gradient.vertex2 = Color.magenta;
             fontString = wasCritical ? "AirCrit" : "AirDamage";
             break;
-         case Ability.Element.Earth:
+         case Element.Earth:
             // gradient.vertex1 = Util.getColor(245, 117, 88);
             // gradient.vertex2 = Util.getColor(140, 70, 60);
             fontString = wasCritical ? "EarthCrit" : "EarthDamage";
             break;
-         case Ability.Element.Fire:
+         case Element.Fire:
             // gradient.vertex2 = Color.red;
             fontString = wasCritical ? "FireCrit" : "FireDamage";
             break;
-         case Ability.Element.Water:
+         case Element.Water:
             // gradient.vertex2 = Color.blue;
             fontString = wasCritical ? "WaterCrit" : "WaterDamage";
             break;
-         case Ability.Element.Physical:
+         case Element.Physical:
             // gradient.vertex2 = Color.yellow;
             fontString = wasCritical ? "PhysicalCrit" : "PhysicalDamage";
             break;
-         case Ability.Element.Heal:
+         case Element.Heal:
             fontString = wasCritical ? "HealCrit" : "HealDamage";
             break;
       }

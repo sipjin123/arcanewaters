@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -135,10 +135,14 @@ public class EffectManager : MonoBehaviour {
       );
    }
 
+   // TODO ZERONEV: This method can be simplifieD
    public static void playAttackEffect (Battler attacker, Battler target, AttackAction action, Vector2 targetPos) {
       Weapon.Type attackerWeapon = attacker.weaponManager.weaponType;
-      Ability ability = AbilityManager.getAbility(action.abilityType);
 
+      // TODO ZERONEV-IMPORTANT: This was commented out to be able to compile, restore it later. (using deprecated method in the meantime)
+      //Ability ability = AbilityManager.getAbility(action.abilityType);
+      Ability ability = AbilityManager.getAbility(Ability.Type.Basic_Attack);
+      
       // Look up the appropriate attack effect
       Effect.Type effectType = ability.getEffectType(attackerWeapon);
 

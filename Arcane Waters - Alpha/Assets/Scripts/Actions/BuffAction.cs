@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
@@ -16,10 +16,10 @@ public class BuffAction : BattleAction {
 
    public BuffAction () { }
 
-   public BuffAction (int battleId, Ability.Type type, int sourceId, int targetId, float buffStartTime, float buffEndTime,
-           float cooldownDuration, float actionEndTime, int sourceApChange, int targetApChange) {
+   public BuffAction (int battleId, int abilityInventoryIndex, int sourceId, int targetId, float buffStartTime, float buffEndTime,
+           float cooldownDuration, float actionEndTime, int sourceApChange, int targetApChange, int abilityGlobalID) {
       this.battleId = battleId;
-      this.abilityType = type;
+      this.abilityInventoryIndex = abilityInventoryIndex;
       this.sourceId = sourceId;
       this.targetId = targetId;
       this.buffStartTime = buffStartTime;
@@ -28,12 +28,13 @@ public class BuffAction : BattleAction {
       this.actionEndTime = actionEndTime;
       this.sourceApChange = sourceApChange;
       this.targetApChange = targetApChange;
+      this.abilityGlobalID = abilityGlobalID;
    }
 
    public override bool Equals (object rhs) {
       if (rhs is BuffAction) {
          var other = rhs as BuffAction;
-         return abilityType == other.abilityType &&
+         return abilityGlobalID == other.abilityGlobalID &&
              sourceId == other.sourceId && targetId == other.targetId && buffStartTime == other.buffStartTime;
       }
       return false;
@@ -43,7 +44,7 @@ public class BuffAction : BattleAction {
       unchecked // Overflow is fine, just wrap
       {
          int hash = 17;
-         hash = hash * 23 + abilityType.GetHashCode();
+         hash = hash * 23 + abilityGlobalID.GetHashCode();
          hash = hash * 23 + sourceId.GetHashCode();
          hash = hash * 23 + targetId.GetHashCode();
          hash = hash * 23 + buffStartTime.GetHashCode();
@@ -53,7 +54,8 @@ public class BuffAction : BattleAction {
 
    public BuffTimer getBuffTimer () {
       BuffTimer buff = new BuffTimer();
-      buff.buffType = this.abilityType;
+      buff.buffAbilityGlobalID = this.abilityGlobalID;
+      //buff.buffType = this.abilityType;
       buff.buffStartTime = this.buffStartTime;
       buff.buffEndTime = this.buffEndTime;
 
@@ -65,7 +67,7 @@ public class BuffAction : BattleAction {
 
       serialized += "BuffAction" + ",";
       serialized += this.battleId + ",";
-      serialized += (int) this.abilityType + ",";
+      serialized += (int) this.abilityInventoryIndex + ",";
       serialized += this.sourceId + ",";
       serialized += this.targetId + ",";
       serialized += this.buffStartTime + ",";
@@ -74,6 +76,7 @@ public class BuffAction : BattleAction {
       serialized += this.actionEndTime + ",";
       serialized += this.sourceApChange + ",";
       serialized += this.targetApChange + ",";
+      serialized += this.abilityGlobalID + ",";
 
       return serialized;
    }
@@ -83,7 +86,8 @@ public class BuffAction : BattleAction {
       string[] stringArray = serialized.Split(',');
 
       action.battleId = Convert.ToInt32(stringArray[1]);
-      action.abilityType = (Ability.Type) Convert.ToInt32(stringArray[2]);
+      //action.abilityType = (Ability.Type) Convert.ToInt32(stringArray[2]);
+      action.abilityInventoryIndex = Convert.ToInt32(stringArray[2]);
       action.sourceId = Convert.ToInt32(stringArray[3]);
       action.targetId = Convert.ToInt32(stringArray[4]);
       action.buffStartTime = Convert.ToSingle(stringArray[5]);
@@ -92,6 +96,7 @@ public class BuffAction : BattleAction {
       action.actionEndTime = Convert.ToSingle(stringArray[8]);
       action.sourceApChange = Convert.ToInt32(stringArray[9]);
       action.targetApChange = Convert.ToInt32(stringArray[10]);
+      action.abilityGlobalID = Convert.ToInt32(stringArray[11]);
 
       return action;
    }

@@ -1,6 +1,3 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
 using System;
 
 public class AttackAction: BattleAction {
@@ -25,23 +22,25 @@ public class AttackAction: BattleAction {
 
    public AttackAction () { }
 
-    public AttackAction(int battleId, ActionType actionType, int sourceId, int targetId, int damage, float actionEndTime,
-            Ability.Type abilityType, bool wasCritical, bool wasBlocked, float cooldownDuration, int sourceApChange, int targetApChange) {
-        this.battleId = battleId;
-        this.actionType = actionType;
-        this.sourceId = sourceId;
-        this.targetId = targetId;
-        this.damage = damage;
-        this.actionEndTime = actionEndTime;
-        this.abilityType = abilityType;
-        this.wasCritical = wasCritical;
-        this.wasBlocked = wasBlocked;
-        this.cooldownDuration = cooldownDuration;
-        this.sourceApChange = sourceApChange;
-        this.targetApChange = targetApChange;
-    }
+   public AttackAction (int battleId, ActionType actionType, int sourceId, int targetId, int damage, float actionEndTime,
+           int abilityInventoryIndex, bool wasCritical, bool wasBlocked, float cooldownDuration,
+           int sourceApChange, int targetApChange, int abilityGlobalID) {
+      this.battleId = battleId;
+      this.actionType = actionType;
+      this.sourceId = sourceId;
+      this.targetId = targetId;
+      this.damage = damage;
+      this.actionEndTime = actionEndTime;
+      this.abilityInventoryIndex = abilityInventoryIndex;
+      this.wasCritical = wasCritical;
+      this.wasBlocked = wasBlocked;
+      this.cooldownDuration = cooldownDuration;
+      this.sourceApChange = sourceApChange;
+      this.targetApChange = targetApChange;
+      this.abilityGlobalID = abilityGlobalID;
+   }
 
-    public override bool Equals(object rhs) {
+   public override bool Equals (object rhs) {
         if (rhs is AttackAction) {
             var other = rhs as AttackAction;
             return battleId == other.battleId && actionType == other.actionType &&
@@ -73,12 +72,13 @@ public class AttackAction: BattleAction {
       serialized += this.targetId + ",";
       serialized += this.damage + ",";
       serialized += this.actionEndTime + ",";
-      serialized += (int)this.abilityType + ",";
+      serialized += (int)this.abilityInventoryIndex + ",";
       serialized += this.wasCritical + ",";
       serialized += this.wasBlocked + ",";
       serialized += this.cooldownDuration + ",";
       serialized += this.sourceApChange + ",";
       serialized += this.targetApChange + ",";
+      serialized += this.abilityGlobalID + ",";
 
       return serialized;
    }
@@ -93,12 +93,13 @@ public class AttackAction: BattleAction {
       action.targetId = Convert.ToInt32(stringArray[4]);
       action.damage = Convert.ToInt32(stringArray[5]);
       action.actionEndTime = Convert.ToSingle(stringArray[6]);
-      action.abilityType = (Ability.Type) Convert.ToInt32(stringArray[7]);
+      action.abilityInventoryIndex = Convert.ToInt32(stringArray[7]);
       action.wasCritical = Convert.ToBoolean(stringArray[8]);
       action.wasBlocked = Convert.ToBoolean(stringArray[9]);
       action.cooldownDuration = Convert.ToSingle(stringArray[10]);
       action.sourceApChange = Convert.ToInt32(stringArray[11]);
       action.targetApChange = Convert.ToInt32(stringArray[12]);
+      action.abilityGlobalID = Convert.ToInt32(stringArray[13]);
 
       return action;
    }

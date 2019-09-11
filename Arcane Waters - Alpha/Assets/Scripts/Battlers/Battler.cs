@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using UnityEngine.Events;
 
-public class Battler : NetworkBehaviour {
+public class Battler : NetworkBehaviour, IAttackBehaviour {
    #region Public Variables
 
    // The amount of time a jump takes
@@ -133,6 +134,19 @@ public class Battler : NetworkBehaviour {
    public ArmorManager armorManager;
    public WeaponManager weaponManager;
 
+   // Battler Abilities.
+   [Header("Battler Abilities")]
+
+   // Ability blueprints that we will use for this battler.
+   // DO NOT use this data directly in anything, use getAbilities instead. (Except for when changing this battler abilities.)
+   public List<AbilityData> battlerBaseAbilities = new List<AbilityData>();
+
+   // Base select/deselect battlers events. Hidden from inspector to avoid untracked events.
+   [HideInInspector] public UnityEvent onBattlerSelect = new UnityEvent();
+   [HideInInspector] public UnityEvent onBattlerDeselect = new UnityEvent();
+   [HideInInspector] public UnityEvent onBattlerAttackStart = new UnityEvent();
+   [HideInInspector] public UnityEvent onBattlerAttackEnd = new UnityEvent();
+
    #endregion
 
    public virtual void Awake () {
@@ -254,6 +268,20 @@ public class Battler : NetworkBehaviour {
       return clickBox.bounds.Contains(mouseLocation);
    }
 
+   /// <summary>
+   /// Basic method that will handle the functionality for whenever we click on this battler.
+   /// </summary>
+   public void selectThis () {
+      onBattlerSelect.Invoke();
+   }
+
+   /// <summary>
+   /// Basic method that will handle the functionality for whenever we deselect this battler
+   /// </summary>
+   public void deselectThis () {
+      onBattlerDeselect.Invoke();
+   }
+
    public void checkIfSpritesShouldFlip () {
       // All of the Battlers on the right side of the board need to flip
       if (this.teamType == Battle.TeamType.Attackers) {
@@ -338,7 +366,7 @@ public class Battler : NetworkBehaviour {
 
    public void addBuff (BuffTimer buff) {
       // If we already had a buff of this type, then remove it
-      removeBuffsOfType(buff.buffType);
+      removeBuffsOfType(buff.buffAbilityGlobalID);
 
       // Add the new buff
       this.buffs.Add(buff);
@@ -362,9 +390,9 @@ public class Battler : NetworkBehaviour {
       }
    }
 
-   public bool hasBuffOfType (Ability.Type type) {
+   public bool hasBuffOfType (int globalAbilityID) {
       foreach (BuffTimer buff in this.buffs) {
-         if (buff.buffType == type) {
+         if (buff.buffAbilityGlobalID == globalAbilityID) {
             return true;
          }
       }
@@ -372,12 +400,13 @@ public class Battler : NetworkBehaviour {
       return false;
    }
 
-   public void removeBuffsOfType (Ability.Type type) {
+   // Remove all buffs created by a certain ability.
+   public void removeBuffsOfType (int globalAbilityID) {
       List<BuffTimer> toRemove = new List<BuffTimer>();
 
       // Populate a separate list of the buffs that we're going to remove
       foreach (BuffTimer buff in this.buffs) {
-         if (buff.buffType == type) {
+         if (buff.buffAbilityGlobalID.Equals(globalAbilityID)) {
             toRemove.Add(buff);
          }
       }
@@ -404,16 +433,18 @@ public class Battler : NetworkBehaviour {
       // Nothing by default
    }
 
-   public virtual int getApWhenDamagedBy (Ability ability) {
+   public virtual int getApWhenDamagedBy (AbilityData ability) {
       // By default, characters gain a small amount of AP when taking damage
       return 3;
    }
 
    public virtual float getCooldownModifier () {
       // Some buffs affect our cooldown durations
-      if (hasBuffOfType(Ability.Type.Haste)) {
+
+      // TODO: ZERONEV: Set this instead to buff IDs, or check if an ability is buff and then which buff type.
+      /*if (hasBuffOfType(Ability.Type.Haste)) {
          return .5f;
-      }
+      }*/
 
       return 1f;
    }
@@ -443,7 +474,7 @@ public class Battler : NetworkBehaviour {
       return .2f;
    }
 
-   public virtual float getPreMagicLength (Ability ability) {
+   public virtual float getPreMagicLength (AbilityData ability) {
       // The amount of time before the ground effect appears depends on the type of Battler
       return .6f;
    }
@@ -451,10 +482,6 @@ public class Battler : NetworkBehaviour {
    public virtual Vector2 getMagicGroundPosition () {
       Vector2 startPos = this.battleSpot.transform.position;
       return startPos + new Vector2(0f, -.15f);
-   }
-
-   public virtual Ability.Type getDefaultAttack () {
-      return Ability.Type.Basic_Attack;
    }
 
    public virtual IEnumerator animateDeath () {
@@ -504,17 +531,17 @@ public class Battler : NetworkBehaviour {
       return 80f;
    }
 
-   protected virtual float getBaseDefense (Ability.Element element) {
+   protected virtual float getBaseDefense (Element element) {
       // Default base defense for all characters
       return 20f;
    }
 
-   protected virtual float getDefensePerLevel (Ability.Element element) {
+   protected virtual float getDefensePerLevel (Element element) {
       // Default gain for level for all characters
       return 4f;
    }
 
-   public virtual float getDefense (Ability.Element element) {
+   public virtual float getDefense (Element element) {
       int level = LevelUtil.levelForXp(this.XP);
 
       // Calculate our defense based on our base and gain per level
@@ -528,7 +555,7 @@ public class Battler : NetworkBehaviour {
       return defense;
    }
 
-   public virtual float getDamage (Ability.Element element) {
+   public virtual float getDamage (Element element) {
       int level = LevelUtil.levelForXp(XP);
 
       // Calculate our offense based on our base and gain per level
@@ -542,12 +569,12 @@ public class Battler : NetworkBehaviour {
       return damage;
    }
 
-   protected virtual float getBaseDamage (Ability.Element element) {
+   protected virtual float getBaseDamage (Element element) {
       // Default base damage for all characters
       return 50f;
    }
 
-   protected virtual float getDamagePerLevel (Ability.Element element) {
+   protected virtual float getDamagePerLevel (Element element) {
       // Default gain for level for all characters
       return 3f;
    }
@@ -589,14 +616,15 @@ public class Battler : NetworkBehaviour {
 
    public void showDamageText (AttackAction action) {
       BattleSpot spot = this.battleSpot;
-      Ability ability = AbilityManager.getAbility(action.abilityType);
+      
+      AbilityData abilityData = AbilityManager.getAbility(action.abilityGlobalID);
 
       // Create the Text instance from the prefab
-      GameObject damageTextObject = (GameObject) GameObject.Instantiate(PrefabsManager.self.damageTextPrefab);
+      GameObject damageTextObject = (GameObject) Instantiate(PrefabsManager.self.damageTextPrefab);
       DamageText damageText = damageTextObject.GetComponent<DamageText>();
 
       // Place the damage numbers just above where the impact occurred for the given ability
-      damageText.transform.position = (ability is ProjectileAbility) ?
+      damageText.transform.position = abilityData.isProjectile() ?
           new Vector3(0f, .10f, -3f) + (Vector3) this.getRangedEndPosition() :
           new Vector3(transform.position.x, transform.position.y + .25f, -3f);
       damageText.setDamageAmount(action.damage, action.wasCritical, action.wasBlocked);
@@ -637,6 +665,34 @@ public class Battler : NetworkBehaviour {
       GameObject battleTextInstance = Instantiate(PrefabsManager.self.battleTextPrefab);
       battleTextInstance.transform.SetParent(this.transform, false);
       battleTextInstance.GetComponentInChildren<BattleText>().customizeTextForCritical();
+   }
+   
+   /// <summary>
+   /// Initializes the abilities to be in a usable state
+   /// Whenever we change directly our abilityBlueprints, we need to call this method again
+   /// </summary>
+   public void initAbilities () {
+      _initializedAbilities.Clear();
+
+      // If we are a monster battler, we want to grab the abilities from the battler.
+      if (this is MonsterBattler) {
+         if (battlerBaseAbilities.Count <= 0) {
+            Debug.LogWarning("This battler do not have any abilities, cancelling ability init.");
+            return;
+         }
+
+         foreach (AbilityData ability in battlerBaseAbilities) {
+            AbilityData newInstance = AbilityData.CreateInstance(ability);
+            _initializedAbilities.Add(newInstance);
+         }
+      }
+      // If we are a player battler, we will grab the abilities from somewhere else.
+      else {
+         foreach (AbilityData ability in AbilityInventory.self.equippedAbilitiesBPs) {
+            AbilityData newInstance = AbilityData.CreateInstance(ability);
+            _initializedAbilities.Add(newInstance);
+         }
+      }
    }
 
    public IEnumerator animateKnockback () {
@@ -760,6 +816,218 @@ public class Battler : NetworkBehaviour {
       battler.removeBuff(buff);
    }
 
+   public IEnumerator attackDisplay (float timeToWait, BattleAction battleAction, bool isFirstAction) {
+      // TODO ZERONEV-IMPORTANT: The combat behaviour needs to be here.
+
+      // In here we will check all the information related to the ability we want to execute.
+      // If it is a melee attack, then normally we will get close to the target battler and execute an animation.
+      // If it is a ranged attack, then normally we will stay in our place, executing our cast particles (if any)
+
+      // Then proceeding to execute the remaining for each path, it is a little extensive, but definitely a lot better than
+      // creating a lot of different scripts.
+
+      // Behaviour for cancel ability (WIP still!)
+      Battle battle = BattleManager.self.getBattle(battleAction.battleId);
+      Battler sourceBattler = battle.getBattler(battleAction.sourceId);
+
+      // I believe we must grab the index from this battler, since this will be the one executing the attack.
+      AbilityData attackerAbility = null;
+      
+      AbilityData globalAbilityData = AbilityManager.getAbility(battleAction.abilityGlobalID);
+
+      // Cancel ability works differently, so before we try to get the ability from the local battler, 
+      // we check if the ability we want to reference is a cancel ability.
+      if (!globalAbilityData.isCancel())
+         attackerAbility = getAbilities[battleAction.abilityInventoryIndex];
+
+      switch (globalAbilityData.getAbilityType()) {
+         case AbilityType.Melee:
+
+            onBattlerAttackStart.Invoke();
+
+            // Default all abilities to display as attacks
+            if (!(battleAction is AttackAction)) {
+               D.warning("Ability doesn't know how to handle action: " + battleAction + ", ability: " + this);
+               yield break;
+            }
+
+            // Cast version of the Attack Action
+            AttackAction action = (AttackAction) battleAction;
+
+            // Look up our needed references
+            Battler targetBattler = battle.getBattler(action.targetId);
+            Vector2 startPos = sourceBattler.battleSpot.transform.position;
+            
+            float jumpDuration = attackerAbility.getJumpDuration(sourceBattler, targetBattler);
+
+            // Don't start animating until both sprites are available
+            yield return new WaitForSeconds(timeToWait);
+
+            // Make sure the source battler is still alive at this point
+            if (sourceBattler.isDead()) {
+               yield break;
+            }
+
+            // Mark the source battler as jumping
+            sourceBattler.isJumping = true;
+
+            // Play an appropriate jump sound
+            sourceBattler.playJumpSound();
+
+            // Smoothly jump into position
+            sourceBattler.playAnim(Anim.Type.Jump_East);
+            Vector2 targetPosition = targetBattler.getMeleeStandPosition();
+            float startTime = Time.time;
+            while (Time.time - startTime < jumpDuration) {
+               float timePassed = Time.time - startTime;
+               Vector2 newPos = Vector2.Lerp(startPos, targetPosition, (timePassed / jumpDuration));
+               sourceBattler.transform.position = new Vector3(newPos.x, newPos.y, sourceBattler.transform.position.z);
+               yield return 0;
+            }
+
+            // Make sure we're exactly in position now that the jump is over
+            sourceBattler.transform.position = new Vector3(targetPosition.x, targetPosition.y, sourceBattler.transform.position.z);
+
+            // Pause for a moment after reaching our destination
+            yield return new WaitForSeconds(Battler.PAUSE_LENGTH);
+
+            sourceBattler.playAnim(attackerAbility.getAnimation());
+
+            // Play any sounds that go along with the ability being cast
+            
+            // We want to play the cast clip at our battler position.
+            attackerAbility.playCastClipAtTarget(transform.position);
+
+            // Apply the damage at the correct time in the swing animation
+            yield return new WaitForSeconds(sourceBattler.getPreContactLength());
+
+            // Note that the contact is happening right now
+            targetBattler.showDamageText(action);
+
+            // Play an impact sound appropriate for the ability
+            attackerAbility.playHitClipAtTarget(targetBattler.transform.position);
+
+            // Move the sprite back and forward to simulate knockback
+            targetBattler.StartCoroutine(targetBattler.animateKnockback());
+
+            // If the action was blocked, animate that
+            if (action.wasBlocked) {
+               targetBattler.StartCoroutine(targetBattler.animateBlock(sourceBattler));
+
+            } else {
+               // Play an appropriate attack animation effect
+               Vector2 effectPosition = targetBattler.getMagicGroundPosition() + new Vector2(0f, .25f);
+               EffectManager.playAttackEffect(sourceBattler, targetBattler, action, effectPosition);
+
+               // Make the target sprite display its "Hit" animation
+               targetBattler.StartCoroutine(targetBattler.animateHit(sourceBattler, action));
+            }
+
+            // If either sprite is owned by the client, play a camera shake
+            if (Util.isPlayer(sourceBattler.userId) || Util.isPlayer(targetBattler.userId)) {
+               BattleCamera.self.shakeCamera(.25f);
+            }
+
+            targetBattler.displayedHealth -= action.damage;
+            targetBattler.displayedHealth = Util.clamp<int>(targetBattler.displayedHealth, 0, targetBattler.getStartingHealth());
+            yield return new WaitForSeconds(Battler.POST_CONTACT_LENGTH);
+
+            // Now jump back to where we started from
+            sourceBattler.playAnim(Anim.Type.Jump_East);
+            startTime = Time.time;
+            while (Time.time - startTime < jumpDuration) {
+               float timePassed = Time.time - startTime;
+               Vector2 newPos = Vector2.Lerp(targetBattler.getMeleeStandPosition(), startPos, (timePassed / jumpDuration));
+               sourceBattler.transform.position = new Vector3(newPos.x, newPos.y, sourceBattler.transform.position.z);
+               yield return 0;
+            }
+
+            // Make sure we're exactly in position now that the jump is over
+            sourceBattler.transform.position = new Vector3(startPos.x, startPos.y, sourceBattler.transform.position.z);
+
+            // Wait for a moment after we reach our jump destination
+            yield return new WaitForSeconds(Battler.PAUSE_LENGTH);
+
+            // Switch back to our battle stance
+            sourceBattler.playAnim(Anim.Type.Battle_East);
+
+            // Mark the source sprite as no longer jumping
+            sourceBattler.isJumping = false;
+
+            // Add any AP we earned
+            sourceBattler.displayedAP = Util.clamp<int>(sourceBattler.displayedAP + action.sourceApChange, 0, Battler.MAX_AP);
+            targetBattler.displayedAP = Util.clamp<int>(targetBattler.displayedAP + action.targetApChange, 0, Battler.MAX_AP);
+
+            // If the target died, animate that death now
+            if (targetBattler.displayedHealth <= 0) {
+               targetBattler.StartCoroutine(targetBattler.animateDeath());
+            }
+
+            onBattlerAttackEnd.Invoke();
+
+            break;
+         case AbilityType.Ranged:
+
+            // AbilityData ability = AbilityManager.getAbility(battleAction.abilityIndex);
+            // Battle battle = BattleManager.self.getBattle(battleAction.battleId);
+            // Battler sourceBattler = battle.getBattler(battleAction.sourceId);
+            // Battler targetBattler = battle.getBattler(battleAction.targetId);
+
+            // Don't start animating until both sprites are available
+            yield return new WaitForSeconds(timeToWait);
+
+            // The unused code is on the MagicAbility script
+
+            onBattlerAttackEnd.Invoke();
+            break;
+
+         case AbilityType.Projectile:
+            onBattlerAttackStart.Invoke();
+
+            // TODO - Zeronev: add projectile functionality. (same as ranged it is perhaps.)
+            yield return new WaitForEndOfFrame();
+
+            onBattlerAttackEnd.Invoke();
+            break;
+
+         case AbilityType.Cancel:
+            // Cancel requires time before activating.
+            yield return new WaitForSeconds(timeToWait);
+
+            // Cast version of the Attack Action
+            CancelAction cancelAction = (CancelAction) battleAction;
+
+            // Look up our needed references
+            battle = BattleManager.self.getBattle(cancelAction.battleId);
+
+            // If the battle has ended, no problem
+            if (battle == null) {
+               yield break;
+            }
+
+            // Display the cancel icon over the source's head
+            //Battler sourceBattler = battle.getBattler(action.sourceId);
+            GameObject cancelPrefab = PrefabsManager.self.cancelIconPrefab;
+            GameObject cancelInstance = (GameObject) GameObject.Instantiate(cancelPrefab);
+            cancelInstance.transform.SetParent(sourceBattler.transform, false);
+            cancelInstance.transform.position = new Vector3(
+                sourceBattler.transform.position.x,
+                sourceBattler.transform.position.y + .55f,
+                -5f
+            );
+
+            break;
+         default:
+            D.warning("Ability doesn't know how to handle action: " + battleAction + ", ability: " + this);
+            yield break;
+      }
+   }
+
+   /// <summary>
+   /// Gets the initialized abilities for this battler
+   /// </summary>
+   public AbilityData[] getAbilities { get { return _initializedAbilities.ToArray(); } }
+
    #region Private Variables
 
    // Our Animators
@@ -776,6 +1044,9 @@ public class Battler : NetworkBehaviour {
 
    // Gets set to true if this is the Battler that the client owns
    protected bool _isClientBattler = false;
+
+   // Initialized ablities that each battler will have.
+   private List<AbilityData> _initializedAbilities = new List<AbilityData>();
 
    #endregion
 }

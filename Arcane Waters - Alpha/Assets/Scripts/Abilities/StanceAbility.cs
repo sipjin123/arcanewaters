@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -20,7 +20,9 @@ public class StanceAbility : Ability {
         return true;
     }
 
-    public override IEnumerator display(float timeToWait, BattleAction battleAction, bool isFirstAction) {
+   // TODO ZERONEV: RE-implement stance ability display into the general battle action.
+   // After knowing exactly the details of an stance ability.
+    /*public override IEnumerator display(float timeToWait, BattleAction battleAction, bool isFirstAction) {
         yield return new WaitForSeconds(timeToWait);
 
         // Make sure we have the right type of Action
@@ -58,7 +60,7 @@ public class StanceAbility : Ability {
 
         // Update our assigned stance
         sourceBattler.stance = action.newStance;
-    }
+    }*/
 
     #region Private Variables
 

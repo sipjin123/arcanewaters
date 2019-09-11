@@ -1,25 +1,37 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.Networking;
+using UnityEngine.Events;
 
 public class PixelFadeEffect : MonoBehaviour {
    #region Public Variables
 
+   // If this is set to true, at the start it will perform a fade in effect
+   // (currently used for the main camera, for the main menu when starting the game.)
+   public bool startWithFade = false;
+
    // The Camera effect
    public CameraFilterPack_Pixel_Pixelisation camFX_Pixel;
 
-   // Self
-   public static PixelFadeEffect self;
+   // Custom events that will be used whenever we have finished a pixel fade event
+   [HideInInspector] public UnityEvent onFadeInEnd = new UnityEvent();
+   [HideInInspector] public UnityEvent onFadeOutEnd = new UnityEvent();
 
    #endregion
 
-   void Awake () {
-      self = this;
+   private void Start () {
+      if (startWithFade) {
+         fadeIn();
+      }
    }
 
    void Update () {
+
+      // If we do not want to fade in or fade out we do not execute the code (Optimization)
+      //if (!_willFadeIn && !_willFadeOut) { return; }
+
       // How long has passed since we started fading?
       float timePassed = Time.time - _fadeStartTime;
 
@@ -36,6 +48,16 @@ public class PixelFadeEffect : MonoBehaviour {
       if (Mathf.Abs(_targetPixelAmount - getPixelAmount()) < .5f && _targetPixelAmount == MIN_PIXEL_AMOUNT) {
          setNewPixelAmount(MIN_PIXEL_AMOUNT);
          camFX_Pixel.enabled = false;
+
+         if (_willFadeIn) {
+            //onFadeInEnd.Invoke();
+            _willFadeIn = false;
+         }
+
+         if (_willFadeOut) {
+            //onFadeOutEnd.Invoke();
+            _willFadeOut = false;
+         }
       }
    }
 
@@ -43,7 +65,9 @@ public class PixelFadeEffect : MonoBehaviour {
       return camFX_Pixel.enabled && (_targetPixelAmount > MIN_PIXEL_AMOUNT || getPixelAmount() > MIN_PIXEL_AMOUNT);
    }
 
-   public void fadeOut() {
+   public void fadeOut () {
+      _willFadeOut = true;
+
       // Note that we're about to start the fade
       _fadeStartTime = Time.time;
 
@@ -60,7 +84,9 @@ public class PixelFadeEffect : MonoBehaviour {
       BrightnessManager.self.setNewTargetIntensity(0f, 1f);
    }
 
-   public void fadeIn() {
+   public void fadeIn () {
+      _willFadeIn = true;
+
       // Note that we're about to start the fade
       _fadeStartTime = Time.time;
 
@@ -107,6 +133,10 @@ public class PixelFadeEffect : MonoBehaviour {
 
    // Our desired pixel amount
    protected float _targetPixelAmount = MIN_PIXEL_AMOUNT;
+
+   // Flags for checking if we are fading in or fading out.
+   private bool _willFadeOut;
+   private bool _willFadeIn;
 
    #endregion
 }

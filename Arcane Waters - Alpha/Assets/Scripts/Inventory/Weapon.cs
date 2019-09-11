@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
@@ -235,7 +235,7 @@ public class Weapon : EquippableItem {
       return 0;
    }
 
-   public virtual float getDamage (Ability.Element element) {
+   public virtual float getDamage (Element element) {
       // Placeholder
       return 10f;
    }

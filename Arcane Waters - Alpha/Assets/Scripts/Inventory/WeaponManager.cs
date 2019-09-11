@@ -1,9 +1,9 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
 using Mirror;
-
+// TODO ZERONEV: Will need to tweak most values here to use the new WeaponData.
 public class WeaponManager : EquipmentManager {
    #region Public Variables
 

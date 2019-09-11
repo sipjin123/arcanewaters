@@ -48,6 +48,9 @@ public class QuickLaunchPanel : MonoBehaviour {
    }
 
    private void Start () {
+      // Default setting
+      hostToggle.isOn = true;
+
       // Check if we've saved any quick launch settings
       this.accountInputField.text = PlayerPrefs.GetString(ACCOUNT_KEY, "tester1");
       this.passwordInputField.text = PlayerPrefs.GetString(PASSWORD_KEY, "test");

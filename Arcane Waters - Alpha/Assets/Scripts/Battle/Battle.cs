@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using UnityEngine.Events;
 
 public class Battle : NetworkBehaviour {
    #region Public Variables
@@ -36,6 +37,9 @@ public class Battle : NetworkBehaviour {
    // The list of Battlers that are defending
    public SyncListInt defenders = new SyncListInt();
 
+   // Local events to execute whenever we finish a battle. (hiding battle UI for example)
+   [HideInInspector] public UnityEvent onBattleEnded = new UnityEvent();
+
    #endregion
 
    public void Start () {
@@ -46,6 +50,7 @@ public class Battle : NetworkBehaviour {
       this.battleBoard = BattleManager.self.getBattleBoard(this.biomeType);
    }
 
+   // TODO ZERONEV-COMMENT: This handles the general battle flow, will need to work on this.
    public TickResult tick () {
       // Everything below here is only valid for the server
       if (!NetworkServer.active) {
@@ -61,6 +66,7 @@ public class Battle : NetworkBehaviour {
             continue;
          }
 
+         // Basic Monster AI.
          // If any of our monsters are ready to attack, then do so
          if (battler.isMonster() && Util.netTime() > battler.animatingUntil && Util.netTime() > bufferedCooldown) {
             BattlePlan battlePlan = battler.getBattlePlan(this);
@@ -70,12 +76,16 @@ public class Battle : NetworkBehaviour {
                continue;
             }
 
+            // Handles the current and only attack a monster can do.
+            BattleManager.self.executeAttack(this, battler, battlePlan.targets, 0);
+
             // If there was a random target available, attack it
-            if (battlePlan.ability is BuffAbility) {
-               BattleManager.self.executeBuff(this, battler, battlePlan.targets, battlePlan.ability.type);
+            // DEBUG - Commented enemy attacking below to be able to test player flow only
+            /*if (battlePlan.ability is BuffAbility) {
+               //BattleManager.self.executeBuff(this, battler, battlePlan.targets, battlePlan.ability.type);
             } else {
-               BattleManager.self.executeAttack(this, battler, battlePlan.targets, battlePlan.ability.type);
-            }
+               //BattleManager.self.executeAttack(this, battler, battlePlan.targets, battlePlan.ability.type);
+            }*/
          }
       }
 

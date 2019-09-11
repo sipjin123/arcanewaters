@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -51,7 +51,7 @@ public abstract class MeleeAbility : AttackAbility {
       return jumpDuration;
    }
 
-   public override IEnumerator display (float timeToWait, BattleAction battleAction, bool isFirst) {
+   /*public override IEnumerator display (float timeToWait, BattleAction battleAction, bool isFirst) {
       // Default all abilities to display as attacks
       if (!(battleAction is AttackAction)) {
          D.warning("Ability doesn't know how to handle action: " + battleAction + ", ability: " + this);
@@ -169,7 +169,7 @@ public abstract class MeleeAbility : AttackAbility {
       if (targetBattler.displayedHealth <= 0) {
          targetBattler.StartCoroutine(targetBattler.animateDeath());
       }
-   }
+   }*/
 
    #region Private Variables
 

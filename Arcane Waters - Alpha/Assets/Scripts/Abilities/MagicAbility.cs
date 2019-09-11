@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -8,13 +8,14 @@ public abstract class MagicAbility : AttackAbility {
 
    #endregion
 
-   public override float getTotalAnimLength (Battler attacker, Battler target) {
+   // ZERONEV - UNUSED
+   /*public override float getTotalAnimLength (Battler attacker, Battler target) {
       float shakeLength = hasShake() ? Battler.SHAKE_LENGTH : 0f;
       float knockupLength = hasKnockup() ? Battler.KNOCKUP_LENGTH : 0f;
 
       // Add up the amount of time it takes to animate an entire action
       return attacker.getPreMagicLength(this) + shakeLength + knockupLength + getPreDamageLength() + getPostDamageLength();
-   }
+   }*/
 
    public virtual float getAnimationSpeed () {
       // The default framerate is 10 FPS, so twice that is 20 FPS or .05 seconds per frame
@@ -69,15 +70,17 @@ public abstract class MagicAbility : AttackAbility {
       targetBattler.displayedHealth = Util.clamp<int>(targetBattler.displayedHealth, 0, targetBattler.getStartingHealth());
    }
 
-   public override IEnumerator display (float timeToWait, BattleAction action, bool isFirstAction) {
+   //public override IEnumerator display (float timeToWait, BattleAction action, bool isFirstAction) {
       // Look up our needed references
-      Ability ability = AbilityManager.getAbility(action.abilityType);
-      Battle battle = BattleManager.self.getBattle(action.battleId);
-      Battler sourceBattler = battle.getBattler(action.sourceId);
-      Battler targetBattler = battle.getBattler(action.targetId);
+      //AbilityData ability = AbilityManager.getAbility(action.abilityIndex);
+      //Battle battle = BattleManager.self.getBattle(action.battleId);
+      //Battler sourceBattler = battle.getBattler(action.sourceId);
+      //Battler targetBattler = battle.getBattler(action.targetId);
 
       // Don't start animating until both sprites are available
-      yield return new WaitForSeconds(timeToWait);
+      //yield return new WaitForSeconds(timeToWait);
+
+      // ALREADY COMMENTED CODE BELOW
 
       // Make sure the battlers are still alive at this point
       /*if (sourceBattler.isDead() || targetBattler.isDead()) {
@@ -154,7 +157,7 @@ public abstract class MagicAbility : AttackAbility {
       if (targetBattler.isDead()) {
          targetBattler.StartCoroutine(targetBattler.animateDeath());
       }*/
-   }
+   //}
 
    #region Private Variables
 

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -88,7 +88,7 @@ public class CameraManager : ClientMonoBehaviour {
       battleCamera.GetComponent<AudioListener>().enabled = true;
 
       // Start the fade in effect
-      defaultCamera.getPixelFadeEffect().fadeIn();
+      //defaultCamera.getPixelFadeEffect().fadeIn();
       battleCamera.getPixelFadeEffect().fadeIn();
    }
 

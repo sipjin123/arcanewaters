@@ -13,19 +13,19 @@ public class WeaponData : BattleItemData
 
       // Basic battle item data.
 
-      data.setName(datacopy.getName);
-      data.setItemID(datacopy.getItemID);
-      data.setDescription(datacopy.getDescription);
-      data.setItemIcon(datacopy.getItemIcon);
+      data.setName(datacopy.getName());
+      data.setItemID(datacopy.getItemID());
+      data.setDescription(datacopy.getDescription());
+      data.setItemIcon(datacopy.getItemIcon());
 
-      data.setItemDamage(datacopy.getBaseDamage);
-      data.setItemElement(datacopy.getElementType);
+      data.setItemDamage(datacopy.getBaseDamage());
+      data.setItemElement(datacopy.getElementType());
 
-      data.setHitAudioClip(datacopy.getHitAudioClip);
-      data.setHitParticle(datacopy.getHitParticle);
+      data.setHitAudioClip(datacopy.getHitAudioClip());
+      data.setHitParticle(datacopy.getHitParticle());
 
-      data.setBattleItemType(datacopy.getBattleItemType);
-      data.setClassRequirement(datacopy.getClassRequirement);
+      data.setBattleItemType(datacopy.getBattleItemType());
+      data.setClassRequirement(datacopy.getClassRequirement());
 
       // Weapon Data
       data.setPrimaryColor(datacopy.getPrimaryColor);
@@ -40,18 +40,18 @@ public class WeaponData : BattleItemData
 
       // Basic battle item data.
 
-      data.setName(basicData.getName);
-      data.setItemID(basicData.getItemID);
-      data.setDescription(basicData.getDescription);
-      data.setItemIcon(basicData.getItemIcon);
+      data.setName(basicData.getName());
+      data.setItemID(basicData.getItemID());
+      data.setDescription(basicData.getDescription());
+      data.setItemIcon(basicData.getItemIcon());
 
-      data.setItemDamage(basicData.getBaseDamage);
-      data.setItemElement(basicData.getElementType);
+      data.setItemDamage(basicData.getBaseDamage());
+      data.setItemElement(basicData.getElementType());
 
-      data.setHitAudioClip(basicData.getHitAudioClip);
-      data.setHitParticle(basicData.getHitParticle);
+      data.setHitAudioClip(basicData.getHitAudioClip());
+      data.setHitParticle(basicData.getHitParticle());
 
-      data.setBattleItemType(basicData.getBattleItemType);
+      data.setBattleItemType(basicData.getBattleItemType());
       data.setClassRequirement(_classRequirement);
 
       // Weapon Data

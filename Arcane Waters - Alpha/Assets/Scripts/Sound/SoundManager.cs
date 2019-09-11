@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -309,6 +309,20 @@ public class SoundManager : MonoBehaviour {
       return source;
    }
 
+   /// <summary>
+   /// This function automatically created an audio source at the position, and disposes of it when clip has finished playing
+   /// </summary>
+   /// <param name="clip"></param>
+   /// <param name="pos"></param>
+   public static void playClipOneShotAtPoint(AudioClip clip, Vector3 pos) {
+      if(clip == null) {
+         //Debug.LogWarning("There was no clip attached, will not play any sound");
+         return;
+      }
+
+      AudioSource.PlayClipAtPoint(clip, pos);
+   }
+
    public static AudioSource playClipAtPoint (Type type, Vector3 pos) {
       AudioSource source = createAudioSource(type, pos);
       source.Play();
@@ -318,6 +332,22 @@ public class SoundManager : MonoBehaviour {
 
       // Cleanup after the clip finishes
       Destroy(source.gameObject, source.clip.length);
+
+      return source;
+   }
+
+   protected static AudioSource createAudioSource(Vector3 pos) {
+      // Get the Z position of the currently active camera
+      float posZ = Global.isInBattle() ? BattleCamera.self.getCamera().transform.position.z : Camera.main.transform.position.z;
+      pos = new Vector3(pos.x, pos.y, posZ);
+
+      // Create a Game Object and audio source to play the clip
+      GameObject soundObject = new GameObject();
+      soundObject.transform.SetParent(self.transform, false);
+      soundObject.name = "SFX";
+      soundObject.transform.position = pos;
+      AudioSource source = soundObject.AddComponent<AudioSource>();
+      //applySoundEffectSettings(source, type);
 
       return source;
    }

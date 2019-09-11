@@ -718,8 +718,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: 
-  m_SceneId: 2701232476
+  m_AssetId: 8bcd6859cc8006941a08f3e7e3c88b20
+  m_SceneId: 0
 --- !u!114 &1794610510582907335
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -763,6 +763,8 @@ MonoBehaviour:
   clickBox: {fileID: 7755621588238819464}
   armorManager: {fileID: 7820501118173417693}
   weaponManager: {fileID: 974644440130733799}
+  battlerBaseAbilities:
+  - {fileID: 11400000, guid: 90f032773df34bf4e9180d40f658e7f1, type: 2}
   enemyType: 205
   bodyColor1: 0
   bodyColor2: 0

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -25,6 +25,7 @@ public class BattleSelectionManager : MonoBehaviour {
    void Update () {
       // If our target has died, deselect it
       if (selectedBattler != null && selectedBattler.isDead()) {
+         selectedBattler.deselectThis();
          selectedBattler = null;
       }
 
@@ -67,11 +68,18 @@ public class BattleSelectionManager : MonoBehaviour {
             if (bounds.Contains(clickLocation) && !battler.isDead()) {
                clickedBattler = true;
 
-               // Check if this battler was already selected
+               // Check if the newly selected battler is the same as the previous one
                if (selectedBattler == battler) {
+                  selectedBattler.deselectThis();
                   selectedBattler = null;
                } else {
+
+                  if (selectedBattler != null) {
+                     selectedBattler.deselectThis();
+                  }
+                  
                   selectedBattler = battler;
+                  selectedBattler.selectThis();
                }
 
                break;
@@ -80,6 +88,9 @@ public class BattleSelectionManager : MonoBehaviour {
 
          // If no Battler was clicked on, then select nothing
          if (!clickedBattler) {
+            if(selectedBattler != null) {
+               selectedBattler.deselectThis();
+            }
             selectedBattler = null;
          }
       }

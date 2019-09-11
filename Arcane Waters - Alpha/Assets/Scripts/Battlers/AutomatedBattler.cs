@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -8,22 +8,21 @@ public class AutomatedBattler : Battler {
 
    #endregion
 
-   public virtual List<Ability.Type> getAbilities () {
-      List<Ability.Type> abilities = new List<Ability.Type>();
+   // New, gets the very first attack.
+   public AbilityData getBasicAttack () {
 
-      // By default, just use the default attack
-      abilities.Add(getDefaultAttack());
+      // Safe check
+      if (getAbilities.Length <= 0) {
+         Debug.LogError("This battler do not have any abilities");
+         return null;
+      }
 
-      return abilities;
-   }
-
-   public override Ability.Type getDefaultAttack () {
-      return Ability.Type.Monster_Attack;
+      return getAbilities[0];
    }
 
    public override BattlePlan getBattlePlan (Battle battle) {
-      Ability ability = AbilityManager.getAbility(getDefaultAttack());
-      Battler target = getRandomTargetFor(ability, battle);
+      //Ability ability = AbilityManager.getAbility(getDefaultAttack());
+      Battler target = getRandomTargetFor(getBasicAttack(), battle);
 
       // Set up a list of targets
       List<Battler> targets = new List<Battler>();
@@ -32,10 +31,10 @@ public class AutomatedBattler : Battler {
       }
 
       // By default, AI battlers will use the Monster attack ability
-      return new BattlePlan(ability, targets);
+      return new BattlePlan(getBasicAttack(), targets);
    }
 
-   protected Battler getRandomTargetFor (Ability ability, Battle battle) {
+   protected Battler getRandomTargetFor (AbilityData abilityData, Battle battle) {
       List<Battler> options = new List<Battler>();
 
       // Cycle over all of the participants in the battle
@@ -43,7 +42,7 @@ public class AutomatedBattler : Battler {
          // Check if the battler is on the other team and not dead
          if (targetBattler.teamType != this.teamType && !targetBattler.isDead()) {
             // If it's a Melee Ability, make sure the target isn't protected
-            if (ability is MeleeAbility && targetBattler.isProtected(battle)) {
+            if (abilityData.isMelee() && targetBattler.isProtected(battle)) {
                continue;
             }
 
@@ -60,13 +59,13 @@ public class AutomatedBattler : Battler {
       return null;
    }
 
-   protected Battler getBattlerForBuff (Battle battle, Ability.Type abilityType) {
+   protected Battler getBattlerForBuff (Battle battle, int globalAbilityID) {
       List<Battler> options = new List<Battler>();
 
       // Cycle over all of the participants in the battle
       foreach (Battler targetBattler in battle.getParticipants()) {
          // Check if the battler is on our team, not dead, and doesn't already have the buff
-         if (targetBattler.teamType == this.teamType && !targetBattler.isDead() && !targetBattler.hasBuffOfType(abilityType)) {
+         if (targetBattler.teamType == this.teamType && !targetBattler.isDead() && !targetBattler.hasBuffOfType(globalAbilityID)) {
             options.Add(targetBattler);
          }
       }

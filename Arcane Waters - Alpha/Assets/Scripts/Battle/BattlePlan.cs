@@ -1,13 +1,17 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
+// ZERONEV COMMENT
+/// <summary>
+/// "Blueprint" for AI controlled battler actions.
+/// </summary>
 public class BattlePlan {
    #region Public Variables
 
    // The ability we're going to use
-   public Ability ability;
+   public AbilityData ability;
 
    // The battlers we're going to target
    public List<Battler> targets;
@@ -16,14 +20,24 @@ public class BattlePlan {
 
    public BattlePlan () { }
 
-   public BattlePlan (Battler target, Ability ability) {
+   /// <summary>
+   /// An initialized ability MUST be added.
+   /// </summary>
+   /// <param name="target"></param>
+   /// <param name="ability"></param>
+   public BattlePlan (Battler target, AbilityData ability) {
       this.ability = ability;
 
       this.targets = new List<Battler>();
       this.targets.Add(target);
    }
 
-   public BattlePlan (Ability ability, List<Battler> targets) {
+   /// <summary>
+   /// An initialized ability MUST be added.
+   /// </summary>
+   /// <param name="ability"></param>
+   /// <param name="targets"></param>
+   public BattlePlan (AbilityData ability, List<Battler> targets) {
       this.ability = ability;
       this.targets = targets;
    }

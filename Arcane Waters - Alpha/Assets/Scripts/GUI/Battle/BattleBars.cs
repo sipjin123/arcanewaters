@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -27,6 +27,10 @@ public class BattleBars : MonoBehaviour {
       _startPos = _battler.transform.position;
    }
 
+   // ZERONEV-Comment: setting all these values in update are really inneficient
+   // and can cause a lot of trouble later on, cause these values that are set are basically permanent.
+   // For example, I think it is important to only change the health bar whenever we have a health change.
+   // Having callbacks for whenever we have a health change for a battler
    private void Update () {
       // Can't do anything until we have our battler
       if (_battler == null || _battler.player == null) {
