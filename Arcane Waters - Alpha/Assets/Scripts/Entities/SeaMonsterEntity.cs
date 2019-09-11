@@ -59,11 +59,7 @@ public class SeaMonsterEntity : SeaEntity
       base.Update();
 
       if (hasDied == false && isDead()) {
-         hasDied = true;
-         animator.Play("Die");
-         if (shouldDropTreasure()) {
-            spawnChest();
-         }
+         killUnit();
       }
 
       if (Util.netTime() > _attackStartAnimateTime && !_hasAttackAnimTriggered) {
@@ -79,6 +75,14 @@ public class SeaMonsterEntity : SeaEntity
 
    protected virtual bool shouldDropTreasure () {
       return true;
+   }
+
+   protected virtual void killUnit () {
+      hasDied = true;
+      animator.Play("Die");
+      if (shouldDropTreasure()) {
+         spawnChest();
+      }
    }
 
    [Server]

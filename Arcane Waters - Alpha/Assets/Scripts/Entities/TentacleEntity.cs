@@ -53,11 +53,6 @@ public class TentacleEntity : SeaMonsterEntity
    }
 
    protected override void FixedUpdate () {
-      // Ensures tentacles sends signals to horror before killing it
-      if (currentHealth <= 0 && !hasDied) {
-         tentacleDeath();
-      }
-
       base.FixedUpdate();
 
       // Only the server updates waypoints and movement forces
@@ -209,6 +204,15 @@ public class TentacleEntity : SeaMonsterEntity
 
    protected override bool shouldDropTreasure () {
       return false;
+   }
+
+   protected override void killUnit () {
+      // Ensures tentacles sends signals to horror before killing it
+      if (currentHealth <= 0 && !hasDied) {
+         tentacleDeath();
+      }
+
+      base.killUnit();
    }
 
    private void OnTriggerStay2D (Collider2D collision) {
