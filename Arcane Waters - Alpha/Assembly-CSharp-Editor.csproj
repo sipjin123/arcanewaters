@@ -129,6 +129,7 @@
     <Compile Include="Assets\GamingGarrison\TiledTMXImporter\Editor\TMXTypes.cs" />
     <Compile Include="Assets\GamingGarrison\TiledTMXImporter\Editor\TSXTypes.cs" />
     <Compile Include="Assets\GamingGarrison\TiledTMXImporter\Editor\TXTypes.cs" />
+    <Compile Include="Assets\LightningBolt\Editor\LightningBoltEditor.cs" />
     <Compile Include="Assets\Mirror\Editor\NetworkAnimatorEditor.cs" />
     <Compile Include="Assets\Mirror\Editor\NetworkBehaviourInspector.cs" />
     <Compile Include="Assets\Mirror\Editor\NetworkIdentityEditor.cs" />

@@ -125,6 +125,7 @@
     <Compile Include="Assets\GamingGarrison\TiledTMXImporter\Custom2DColliders\CustomCollider2D.cs" />
     <Compile Include="Assets\GamingGarrison\TiledTMXImporter\Custom2DColliders\EllipseCollider2D.cs" />
     <Compile Include="Assets\GamingGarrison\TiledTMXImporter\TileTypes\AnimatedTile.cs" />
+    <Compile Include="Assets\LightningBolt\LightningBoltScript.cs" />
     <Compile Include="Assets\Mirror\Components\NetworkAnimator.cs" />
     <Compile Include="Assets\Mirror\Components\NetworkLobbyManager.cs" />
     <Compile Include="Assets\Mirror\Components\NetworkLobbyPlayer.cs" />
@@ -282,6 +283,7 @@
     <Compile Include="Assets\Scripts\Abilities\SlashIce.cs" />
     <Compile Include="Assets\Scripts\Abilities\SlashLightning.cs" />
     <Compile Include="Assets\Scripts\Abilities\StanceAbility.cs" />
+    <Compile Include="Assets\Scripts\Abilities\UI\AbilityButton.cs" />
     <Compile Include="Assets\Scripts\Actions\AttackAction.cs" />
     <Compile Include="Assets\Scripts\Actions\BattleAction.cs" />
     <Compile Include="Assets\Scripts\Actions\BuffAction.cs" />
@@ -296,6 +298,7 @@
     <Compile Include="Assets\Scripts\Battle\BattleManager.cs" />
     <Compile Include="Assets\Scripts\Battle\BattlePlan.cs" />
     <Compile Include="Assets\Scripts\Battle\BattleSpot.cs" />
+    <Compile Include="Assets\Scripts\Battle\BattleUIManager.cs" />
     <Compile Include="Assets\Scripts\Battlers\AutomatedBattler.cs" />
     <Compile Include="Assets\Scripts\Battlers\Battler.cs" />
     <Compile Include="Assets\Scripts\Battlers\GolemBattler.cs" />
@@ -339,6 +342,7 @@
     <Compile Include="Assets\Scripts\Combat\CannonBall.cs" />
     <Compile Include="Assets\Scripts\Combat\CannonballParticles.cs" />
     <Compile Include="Assets\Scripts\Combat\CombatCollider.cs" />
+    <Compile Include="Assets\Scripts\Combat\EffectResidue.cs" />
     <Compile Include="Assets\Scripts\Combat\GrapeshotAimer.cs" />
     <Compile Include="Assets\Scripts\Combat\NetworkedCannonBall.cs" />
     <Compile Include="Assets\Scripts\Combat\NetworkedVenomProjectile.cs" />
@@ -347,7 +351,6 @@
     <Compile Include="Assets\Scripts\Combat\TargetingManager.cs" />
     <Compile Include="Assets\Scripts\Combat\VenomProjectile.cs" />
     <Compile Include="Assets\Scripts\Combat\VenomResidue.cs" />
-    <Compile Include="Assets\Scripts\Combat\VenomStickyResidue.cs" />
     <Compile Include="Assets\Scripts\Crops\Crop.cs" />
     <Compile Include="Assets\Scripts\Crops\CropInfo.cs" />
     <Compile Include="Assets\Scripts\Crops\CropManager.cs" />
@@ -390,6 +393,7 @@
     <Compile Include="Assets\Scripts\Entities\Stats.cs" />
     <Compile Include="Assets\Scripts\Entities\TentacleEntity.cs" />
     <Compile Include="Assets\Scripts\Entities\WormEntity.cs" />
+    <Compile Include="Assets\Scripts\Events\BattleTooltipEvent.cs" />
     <Compile Include="Assets\Scripts\Events\EventManager.cs" />
     <Compile Include="Assets\Scripts\Furniture\BedSheets.cs" />
     <Compile Include="Assets\Scripts\Furniture\Dresser.cs" />
@@ -476,6 +480,7 @@
     <Compile Include="Assets\Scripts\Input\InputManager.cs" />
     <Compile Include="Assets\Scripts\Instance\Instance.cs" />
     <Compile Include="Assets\Scripts\Instance\InstanceManager.cs" />
+    <Compile Include="Assets\Scripts\Inventory\AbilityInventory.cs" />
     <Compile Include="Assets\Scripts\Inventory\Armor.cs" />
     <Compile Include="Assets\Scripts\Inventory\ArmorManager.cs" />
     <Compile Include="Assets\Scripts\Inventory\Blueprints.cs" />
@@ -493,6 +498,7 @@
     <Compile Include="Assets\Scripts\ItemCreation\ItemBuilder.cs" />
     <Compile Include="Assets\Scripts\ItemData\AbilityData.cs" />
     <Compile Include="Assets\Scripts\ItemData\BattleItemData.cs" />
+    <Compile Include="Assets\Scripts\ItemData\ItemElement.cs" />
     <Compile Include="Assets\Scripts\ItemData\WeaponData.cs" />
     <Compile Include="Assets\Scripts\Layers\ArmorLayer.cs" />
     <Compile Include="Assets\Scripts\Layers\BodyLayer.cs" />
@@ -649,6 +655,7 @@
     <Compile Include="Assets\Scripts\Util\DataUtil.cs" />
     <Compile Include="Assets\Scripts\Util\DestroyAfterAnimation.cs" />
     <Compile Include="Assets\Scripts\Util\DestroyAfterDelay.cs" />
+    <Compile Include="Assets\Scripts\Util\DirectionalTransform.cs" />
     <Compile Include="Assets\Scripts\Util\DirectionUtil.cs" />
     <Compile Include="Assets\Scripts\Util\ExtensionsUtil.cs" />
     <Compile Include="Assets\Scripts\Util\FadeIn.cs" />
@@ -781,6 +788,7 @@
     <None Include="Assets\ThreadHelper\readme.txt" />
     <None Include="Assets\Colorify\Shaders\Realtime\2 colors\Colorify-2colors-Cutout-Bumped.shader" />
     <None Include="Assets\ScriptTemplates\81-C# Script-NewBehaviourScript.cs.txt" />
+    <None Include="Assets\LightningBolt\Readme.txt" />
     <None Include="Assets\Colorify\Manual\changelog.txt" />
     <None Include="Assets\Colorify\Shaders\Realtime\2 colors\Colorify-2colors-Alpha-Bumped.shader" />
     <None Include="Assets\Colorify\Shaders\Realtime\Dissolve\Colorify-Dissolve-Recolor-Bump.shader" />
