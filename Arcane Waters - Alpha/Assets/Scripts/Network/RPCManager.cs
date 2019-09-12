@@ -24,7 +24,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_InteractAnimation(Anim.Type animType) {
+   public void Cmd_InteractAnimation (Anim.Type animType) {
       Rpc_InteractAnimation(animType);
    }
 
@@ -261,7 +261,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_ReceiveLeaderBoards (NetworkConnection connection, LeaderBoardsManager.Period period, 
+   public void Target_ReceiveLeaderBoards (NetworkConnection connection, LeaderBoardsManager.Period period,
       Faction.Type boardFaction, double secondsLeftUntilRecalculation, LeaderBoardInfo[] farmingEntries,
       LeaderBoardInfo[] sailingEntries, LeaderBoardInfo[] exploringEntries, LeaderBoardInfo[] tradingEntries,
       LeaderBoardInfo[] craftingEntries, LeaderBoardInfo[] miningEntries) {
@@ -274,7 +274,7 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Pass them along to the Leader Boards panel
-      panel.updatePanelWithLeaderBoardEntries(period, boardFaction, secondsLeftUntilRecalculation,  farmingEntries, sailingEntries,
+      panel.updatePanelWithLeaderBoardEntries(period, boardFaction, secondsLeftUntilRecalculation, farmingEntries, sailingEntries,
          exploringEntries, tradingEntries, craftingEntries, miningEntries);
    }
 
@@ -1123,7 +1123,7 @@ public class RPCManager : NetworkBehaviour {
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Determines if npc is near player
             float distance = Vector2.Distance(npc.transform.position, _player.transform.position);
-            
+
             if (distance > NPC.TALK_DISTANCE) {
                D.log("Too far away from the player!");
                return;
@@ -1171,7 +1171,7 @@ public class RPCManager : NetworkBehaviour {
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Fetches reward item id
-         for(int i = 0; i < rewardItems.Count; i++) {
+         for (int i = 0; i < rewardItems.Count; i++) {
             int rewardItemID = DB_Main.getItemID(userID, (int) rewardItems[i].category, rewardItems[i].itemTypeId);
             rewardItemIDList.Add(rewardItemID);
          }
@@ -1191,7 +1191,7 @@ public class RPCManager : NetworkBehaviour {
       // Gets loots for enemy type
       EnemyLootLibrary lootLibrary = RewardManager.self.enemyLootList.Find(_ => _.enemyType == enemyType);
       List<LootInfo> processedLoots = lootLibrary.dropTypes.requestLootList();
-   
+
       // Registers list of ingredient types for data fetching
       List<CraftingIngredients.Type> itemLoots = new List<CraftingIngredients.Type>();
       for (int i = 0; i < processedLoots.Count; i++) {
@@ -1201,7 +1201,7 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<Item> databaseList = DB_Main.getRequiredIngredients(_player.userId, itemLoots);
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            processGroupRewards(_player.userId, databaseList, processedLoots);
+            processGroupRewards(_player.userId, databaseList, processedLoots, true);
          });
       });
    }
@@ -1209,7 +1209,7 @@ public class RPCManager : NetworkBehaviour {
    [Server]
    public void validateCraftingRewards (int userId, Blueprint.Type blueprintType) {
       CombinationData data = RewardManager.self.combinationDataList.comboDataList.Find(_ => _.blueprintTypeID == (int) blueprintType);
-  
+
       List<CraftingIngredients.Type> requiredItemList = new List<CraftingIngredients.Type>();
       for (int i = 0; i < data.combinationRequirements.Count; i++) {
          requiredItemList.Add((CraftingIngredients.Type) data.combinationRequirements[i].itemTypeId);
@@ -1272,7 +1272,7 @@ public class RPCManager : NetworkBehaviour {
             DB_Main.createOrUpdateItemCount(userId, rewardItem[i].id, rewardItem[i]);
          }
 
-         for(int i = 0; i < requiredItems.Count; i++) {
+         for (int i = 0; i < requiredItems.Count; i++) {
             int deductCount = requiredItems[i].count;
 
             // Deduct quantity of each required ingredient or delete item if it hits zero count
@@ -1281,14 +1281,16 @@ public class RPCManager : NetworkBehaviour {
          }
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_ReceiveItemList(_player.connectionToClient, rewardItem.ToArray());
+            Target_ReceiveItemList(_player.connectionToClient, rewardItem.ToArray(), true);
          });
       });
    }
-   
+
    [TargetRpc]
-   public void Target_ReceiveItemList(NetworkConnection connection, Item[] itemList) {
-      RewardManager.self.showItemsInRewardPanel(itemList.ToList());
+   public void Target_ReceiveItemList (NetworkConnection connection, Item[] itemList, bool showPanel) {
+      if (showPanel) {
+         RewardManager.self.showItemsInRewardPanel(itemList.ToList());
+      }
 
       // Tells the user to update their inventory cache to retrieve the updated items
       InventoryCacheManager.self.fetchInventory();
@@ -1337,7 +1339,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Registers list of ingredient types for data fetching
       List<CraftingIngredients.Type> itemLoots = new List<CraftingIngredients.Type>();
-      for(int i = 0; i < lootInfoList.Count; i++) {
+      for (int i = 0; i < lootInfoList.Count; i++) {
          itemLoots.Add(lootInfoList[i].lootType);
       }
 
@@ -1350,7 +1352,7 @@ public class RPCManager : NetworkBehaviour {
          Jobs newJobXP = DB_Main.getJobXP(_player.userId);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            processGroupRewards(_player.userId, databaseList, lootInfoList);
+            processGroupRewards(_player.userId, databaseList, lootInfoList, true);
 
             // Let them know they gained experience
             _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Miner, 0);
@@ -1359,13 +1361,13 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Server]
-   private void processGroupRewards(int userID, List<Item> databaseItems, List<LootInfo> rewardList) {
+   private void processGroupRewards (int userID, List<Item> databaseItems, List<LootInfo> rewardList, bool showPanel) {
       // Generate Item List to show in popup after data writing
       List<Item> itemRewardList = new List<Item>();
       for (int i = 0; i < rewardList.Count; i++) {
          Item itemToCreate = new CraftingIngredients(0, rewardList[i].lootType, ColorType.Black, ColorType.Black);
          Item databaseItemType = databaseItems.Find(_ => _.category == Item.Category.CraftingIngredients && _.itemTypeId == (int) rewardList[i].lootType);
-         
+
          // Registers the quantity of each item
          itemToCreate.count = rewardList[i].quantity;
          if (databaseItemType != null) {
@@ -1380,9 +1382,69 @@ public class RPCManager : NetworkBehaviour {
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Calls Reward Popup
-            Target_ReceiveItemList(_player.connectionToClient, itemRewardList.ToArray());
+            Target_ReceiveItemList(_player.connectionToClient, itemRewardList.ToArray(), showPanel);
          });
       });
+   }
+
+
+   [Command]
+   public void Cmd_OpenSeaChest (int chestId) {
+      TreasureChest chest = TreasureManager.self.getChest(chestId);
+
+      // Make sure we found the Treasure Chest
+      if (chest == null) {
+         D.warning("Treasure chest not found: " + chestId);
+         return;
+      }
+
+      // Make sure the user is in the right instance
+      if (_player.instanceId != chest.instanceId) {
+         D.warning("Player trying to open treasure from a different instance!");
+         return;
+      }
+
+      // Make sure they didn't already open it
+      if (chest.userIds.Contains(_player.userId)) {
+         D.warning("Player already opened this chest!");
+         return;
+      }
+
+      // Add the user ID to the list
+      chest.userIds.Add(_player.userId);
+
+      processSeaChest(chestId);
+   }
+
+   [Server]
+   private void processSeaChest (int chestId) {
+      TreasureChest chest = TreasureManager.self.getChest(chestId);
+
+      // Check what we're going to give the user
+      Item item = chest.getContents();
+
+      // Gathers the item rewards from the scriptable object
+      List<LootInfo> lootInfoList = new List<LootInfo>();
+      CraftingIngredients craftingIngredient = new CraftingIngredients { category = Item.Category.CraftingIngredients, count = item.count, type = (CraftingIngredients.Type) item.itemTypeId };
+      LootInfo newLootInfo = new LootInfo { lootType = craftingIngredient.type, chanceRatio = 100, quantity = craftingIngredient.count };
+      lootInfoList.Add(newLootInfo);
+
+      List<CraftingIngredients.Type> itemLoots = new List<CraftingIngredients.Type>();
+      for (int i = 0; i < lootInfoList.Count; i++) {
+         itemLoots.Add(lootInfoList[i].lootType);
+      }
+
+      // Add it to their inventory
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<Item> databaseList = DB_Main.getRequiredIngredients(_player.userId, itemLoots);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            processGroupRewards(_player.userId, databaseList, lootInfoList, false);
+         });
+      });
+
+      // Send it to the specific player that opened it
+      Target_OpenChest(_player.connectionToClient, item, chest.id);
    }
 
    [Command]

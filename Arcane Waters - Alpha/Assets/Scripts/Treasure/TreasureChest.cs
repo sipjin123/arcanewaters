@@ -55,6 +55,10 @@ public class TreasureChest : NetworkBehaviour {
    // The animator of the chest
    public Animator chestAnimator;
 
+   // The type of enemy that dropped the loot
+   [SyncVar]
+   public int enemyType;
+
    #endregion
 
    public void Awake () {
@@ -81,7 +85,6 @@ public class TreasureChest : NetworkBehaviour {
          // We only enable the box collider for clients in the relevant instance
          boxCollider.enabled = (Global.player != null && Global.player.instanceId == this.instanceId);
       } else {
-         boxCollider.enabled = !hasBeenOpened();
          triggerCollider.enabled = !hasBeenOpened();
          chestAnimator.SetBool("open", hasBeenOpened());
       }
@@ -113,7 +116,11 @@ public class TreasureChest : NetworkBehaviour {
          return;
       }
 
-      Global.player.rpc.Cmd_OpenChest(this.id);
+      if (isSeaChest) {
+         Global.player.rpc.Cmd_OpenSeaChest(this.id);
+      } else {
+         Global.player.rpc.Cmd_OpenChest(this.id);
+      }
    }
 
    public void handleSpriteOutline () {
@@ -126,6 +133,10 @@ public class TreasureChest : NetworkBehaviour {
    }
 
    public Item getContents () {
+      if (isSeaChest) {
+         return getEnemyContents();
+      }
+
       // Create a random item for now
       if (Random.Range(0f, 1f) > .5f) {
          Weapon weapon = new Weapon(0, (int) Weapon.Type.Sword_3, ColorType.DarkGreen, ColorType.DarkPurple, "");
@@ -138,6 +149,21 @@ public class TreasureChest : NetworkBehaviour {
 
          return armor;
       }
+   }
+
+   public Item getEnemyContents () {
+      // Gets loots for enemy type
+      EnemyLootLibrary lootLibrary = RewardManager.self.enemyLootList.Find(_ => _.enemyType == (Enemy.Type)enemyType);
+      List<LootInfo> processedLoots = lootLibrary.dropTypes.requestLootList();
+
+      // Registers list of ingredient types for data fetching
+      List<CraftingIngredients.Type> itemLoots = new List<CraftingIngredients.Type>();
+      for (int i = 0; i < processedLoots.Count; i++) {
+         itemLoots.Add(processedLoots[i].lootType);
+      }
+
+      Item itemToCreate = new CraftingIngredients(0, processedLoots[0].lootType, ColorType.Black, ColorType.Black);
+      return itemToCreate;
    }
 
    public bool hasBeenOpened () {

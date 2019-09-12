@@ -42,6 +42,8 @@ public class SeaMonsterEntity : SeaEntity
    // The minimum magnitude to determine the movement of the unit
    public const float MIN_MOVEMENT_MAGNITUDE = .05f;
 
+   public Enemy.Type seaMonsterType;
+
    // Seamonster Animation
    public enum SeaMonsterAnimState
    {
@@ -88,7 +90,7 @@ public class SeaMonsterEntity : SeaEntity
    [Server]
    protected void spawnChest () {
       Instance currentInstance = InstanceManager.self.getInstance(this.instanceId);
-      TreasureManager.self.createSeaTreasure(currentInstance, transform.position);
+      TreasureManager.self.createSeaTreasure(currentInstance, transform.position, seaMonsterType);
    }
 
    [Server]
