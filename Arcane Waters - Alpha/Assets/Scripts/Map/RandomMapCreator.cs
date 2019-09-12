@@ -58,6 +58,7 @@ public static class RandomMapCreator {
          D.error("No valid preset exists for RandomMapGenerator");
          return null;
       }
+
       GameObject generatedMap = GenerateMap(preset, mapConfig);
 
       if (generatedMap == null) {
@@ -84,7 +85,29 @@ public static class RandomMapCreator {
       spawnPosition.x = (_spawnStartsBottom[_areaSize.Length / 2] + (_spawnEndsBottom[_areaSize.Length / 2] - _spawnStartsBottom[_areaSize.Length / 2]) * 0.5f) * mapScale;
       area.transform.GetComponentInChildren<Spawn>().transform.localPosition = spawnPosition;
 
+      // Set warp zone at spawn areas
+      CreateWarpBack(true, preset, area);
+      CreateWarpBack(false, preset, area);
+
       return generatedMap;
+   }
+
+   private static void CreateWarpBack(bool bottom, MapGeneratorPreset preset, Area area) {
+      // Create warp object to docks
+      Warp backWarp = new GameObject(bottom ? "Warp Back Bottom" : "Warp Back Top").AddComponent<Warp>();
+      backWarp.gameObject.AddComponent<SpriteRenderer>();
+      backWarp.spawnTarget = Spawn.Type.ForestTownDock;
+      backWarp.transform.SetParent(area.transform);
+      float localScale = (1 + (bottom ? _spawnEndsBottom[0] - _spawnStartsBottom[0] : _spawnEndsTop[0] - _spawnStartsTop[0])) / 64.0f * 10.25f;
+      backWarp.transform.localScale = new Vector3(localScale, 1f, 1f);
+      float startPos = bottom ? _spawnStartsBottom[0] : _spawnStartsTop[0];
+      float localPosition = (startPos / (float) preset.mapSize.x * 10.25f) + localScale * 0.5f;
+      backWarp.transform.localPosition = new Vector2(localPosition,  bottom ? -10.5f : 0.25f); //TODO Magic number
+
+      // Trigger collider for warp
+      BoxCollider2D warpCol = backWarp.gameObject.AddComponent<BoxCollider2D>();
+      warpCol.size = new Vector2(1.0f, 1.0f);
+      warpCol.isTrigger = true;
    }
 
    /// <summary>
@@ -127,6 +150,12 @@ public static class RandomMapCreator {
       if (!IsAnyPathBetweenSpawns(preset)) {
          CreatePathBetweenSpawns(preset, gridLayers, noiseMap, mapConfig.seedPath);
       }
+
+      // Find inaccessible areas
+      FindClosedArea(noiseMap, preset, gridLayers, mapConfig.seedPath);
+
+      // Set land tiles for border
+      GenerateLandBorder(noiseMap, preset);
 
       for (int i = 0; i < preset.layers.Length; i++) {
          grid = new Node[preset.mapSize.x, preset.mapSize.y];
@@ -446,13 +475,19 @@ public static class RandomMapCreator {
 
       int start = pseudoRandom.Next(_spawnStartsBottom[0], _spawnEndsBottom[0] + 1);
       int trueEnd = pseudoRandom.Next(_spawnStartsTop[0], _spawnEndsTop[0] + 1);
-      int end = 0;
-      while (end >= _spawnStartsTop[0] && end <= _spawnEndsTop[0]) {
-         end = pseudoRandom.Next(0, sizeX);
+      // Leave one tile for land border
+      start = Mathf.Clamp(start, 1, sizeX - 2);
+      trueEnd = Mathf.Clamp(trueEnd, 1, sizeX - 2);
+      int end = -1;
+      while (end < _spawnStartsTop[0] || end > _spawnEndsTop[0]) {
+         // Leave one tile for land border
+         end = pseudoRandom.Next(1, sizeX - 2);
       }
-      int swapEndHeight = pseudoRandom.Next((int)(sizeY * 0.5f), (int)(sizeY * 0.75f));
+      int swapEndHeight = pseudoRandom.Next((int) (sizeY * 0.5f), (int) (sizeY * 0.75f));
 
-      int maxY = sizeY - 1;
+      // Make sure that top tile is land border, set max to one tile before top
+      int maxY = sizeY - 2;
+
       int y = 0;
       int x = start;
 
@@ -482,11 +517,11 @@ public static class RandomMapCreator {
          }
 
          // Move up
-         if (y + 1 < sizeY && freeTiles[x, y + 1]) {
+         if (y + 1 < maxY && freeTiles[x, y + 1]) {
             freeTiles[x, y + 1] = false;
             y = y + 1;
          }
-         else if (x <= end && ((x + 1 < sizeX && freeTiles[x + 1, y]) || (x - 1 >= 0 && freeTiles[x - 1, y]))) {
+         else if (x <= end && ((x + 1 < sizeX && freeTiles[x + 1, y]) || (x - 1 >= 1 && freeTiles[x - 1, y]))) {
             // Move right
             if (x + 1 < sizeX && freeTiles[x + 1, y]) {
                freeTiles[x + 1, y] = false;
@@ -494,14 +529,14 @@ public static class RandomMapCreator {
                continue;
             }
             // Move left
-            else if (x - 1 >= 0 && freeTiles[x - 1, y]) {
+            else if (x - 1 >= 1 && freeTiles[x - 1, y]) {
                freeTiles[x - 1, y] = false;
                x = x - 1;
                continue;
             }
-         } else if (x > end && ((x - 1 >= 0 && freeTiles[x - 1, y]) || (x + 1 < sizeX && freeTiles[x + 1, y]))) {
+         } else if (x > end && ((x - 1 >= 1 && freeTiles[x - 1, y]) || (x + 1 < sizeX && freeTiles[x + 1, y]))) {
             // Move left
-            if (x - 1 >= 0 && freeTiles[x - 1, y]) {
+            if (x - 1 >= 1 && freeTiles[x - 1, y]) {
                freeTiles[x - 1, y] = false;
                x = x - 1;
                continue;
@@ -535,7 +570,7 @@ public static class RandomMapCreator {
                if (x < end) {
                   x++;
                   freeTiles[x, y] = false;
-               } else if (x - 1 >= 0) {
+               } else if (x - 1 >= 1) {
                   x--;
                   freeTiles[x, y] = false;
                }
@@ -565,7 +600,7 @@ public static class RandomMapCreator {
                SetFreeTile(x + 2, y, freeTiles, noiseMap, baseTilemap, preset, false);
             }
 
-            if (Time.realtimeSinceStartup - startTime > 15.0f) {
+            if (Time.realtimeSinceStartup - startTime > 1.0f) {
                D.error("Creating random map: Time out");
                return;
             }
@@ -573,15 +608,151 @@ public static class RandomMapCreator {
       }
    }
 
+   static void CreatePathBetweenPoints (Point startPoint, Point endPoint, MapGeneratorPreset preset, GameObject parentObject, float[,] noiseMap, bool[,] freeTiles_, int seed, bool bottom) {
+      System.Random pseudoRandom = new System.Random(seed);
+
+      float startTime = Time.realtimeSinceStartup;
+
+      bool[,] freeTiles = new bool[preset.mapSize.x, preset.mapSize.y];
+      {
+         for (int x_ = 0; x_ < preset.mapSize.x; x_++) {
+            for (int y_ = 0; y_ < preset.mapSize.y; y_++) {
+               freeTiles[x_, y_] = freeTiles_[x_, y_];
+            }
+         }
+      }
+
+      int y = startPoint.y;
+      int x = startPoint.x;
+
+      int end = endPoint.x;
+
+      int sizeX = preset.mapSize.x - 2;
+      int sizeY = preset.mapSize.y;
+      int maxY = Mathf.Clamp(endPoint.y, 1, preset.mapSize.y - 3);
+
+      while (true) {
+         if (noiseMap[x, y] < preset.replaceWaterHeight) {
+            noiseMap[x, y] = preset.replaceWaterHeight;
+         }
+
+         if (x == end && y == maxY) {
+            break;
+         }
+
+         // Move up or down
+         if (bottom == false && y + 1 < maxY && freeTiles[x, y + 1]) {
+            freeTiles[x, y + 1] = false;
+            y = y + 1;
+         }
+         else if (bottom == true && y - 1 >= maxY && freeTiles[x, y - 1]) {
+            freeTiles[x, y - 1] = false;
+            y = y - 1;
+         }
+         else if (x <= end && ((x + 1 < sizeX && freeTiles[x + 1, y]) || (x - 1 >= 1 && freeTiles[x - 1, y]))) {
+            // Move right
+            if (x + 1 < sizeX && freeTiles[x + 1, y]) {
+               freeTiles[x + 1, y] = false;
+               x = x + 1;
+               continue;
+            }
+            // Move left
+            else if (x - 1 >= 1 && freeTiles[x - 1, y]) {
+               freeTiles[x - 1, y] = false;
+               x = x - 1;
+               continue;
+            }
+         } else if (x > end && ((x - 1 >= 1 && freeTiles[x - 1, y]) || (x + 1 < sizeX && freeTiles[x + 1, y]))) {
+            // Move left
+            if (x - 1 >= 1 && freeTiles[x - 1, y]) {
+               freeTiles[x - 1, y] = false;
+               x = x - 1;
+               continue;
+            }
+            // Move right
+            else if (x + 1 < sizeX && freeTiles[x + 1, y]) {
+               freeTiles[x + 1, y] = false;
+               x = x + 1;
+               continue;
+            }
+         }
+         // Go back
+         else {
+            if (x == end && y == maxY) {
+               break;
+            }
+
+            // Top, right, left
+            SetFreeTile(x, y + 1, freeTiles, noiseMap, null, preset, false);
+            SetFreeTile(x + 1, y, freeTiles, noiseMap, null, preset, false);
+            SetFreeTile(x - 1, y, freeTiles, noiseMap, null, preset, false);
+
+            // Always can add bottom because we are never going down
+            SetFreeTile(x, y - 1, freeTiles, noiseMap, null, preset, false);
+
+            // Move in random direction (up or right/left)
+            if (pseudoRandom.Next(0, 2) == 0 && (bottom ? (y - 1 >= maxY) : (y + 1 <= maxY))) {
+               if (bottom)
+                  y--;
+               else
+                  y++;
+               freeTiles[x, y] = false;
+            } else {
+               if (x < end) {
+                  x++;
+                  freeTiles[x, y] = false;
+               } else if (x - 1 >= 1) {
+                  x--;
+                  freeTiles[x, y] = false;
+               }
+            }
+
+            // Top-left, top-right, bottom-left, bottom-right (cannot move to those)
+            SetFreeTile(x + 1, y + 1, freeTiles, noiseMap, null, preset, false);
+            SetFreeTile(x + 1, y - 1, freeTiles, noiseMap, null, preset, false);
+            SetFreeTile(x - 1, y - 1, freeTiles, noiseMap, null, preset, false);
+            SetFreeTile(x - 1, y + 1, freeTiles, noiseMap, null, preset, false);
+
+            // Randomly placed water tiles nearby to improve path look
+            if (pseudoRandom.Next(0, 10) >= 8) {
+               SetFreeTile(x + 2, y + 1, freeTiles, noiseMap, null, preset, false);
+               SetFreeTile(x + 2, y - 1, freeTiles, noiseMap, null, preset, false);
+               SetFreeTile(x + 2, y, freeTiles, noiseMap, null, preset, false);
+            }
+            if (pseudoRandom.Next(0, 10) >= 8) {
+               SetFreeTile(x - 2, y + 1, freeTiles, noiseMap, null, preset, false);
+               SetFreeTile(x - 2, y - 1, freeTiles, noiseMap, null, preset, false);
+               SetFreeTile(x - 2, y, freeTiles, noiseMap, null, preset, false);
+            }
+            if (pseudoRandom.Next(0, 10) >= 8) {
+               SetFreeTile(x - 2, y, freeTiles, noiseMap, null, preset, false);
+            }
+            if (pseudoRandom.Next(0, 10) >= 8) {
+               SetFreeTile(x + 2, y, freeTiles, noiseMap, null, preset, false);
+            }
+
+            if (Time.realtimeSinceStartup - startTime > 1f) {
+               D.error("CreatePathBetweenPoints: Time out");
+               return;
+            }
+         }
+      }
+
+   }
+
    static void SetFreeTile(int x, int y, bool[,] freeTiles, float[,] noiseMap, Tilemap tilemap, MapGeneratorPreset preset, bool freeTile = true) {
-      if (x < tilemap.size.x && x >= 0 && y < tilemap.size.y && y >= 0) {
+      if (preset == null) {
+         D.error("Empty preset passed");
+      }
+
+      if (x < preset.mapSize.x - 1 && x >= 1 && y < preset.mapSize.y && y >= 1) {
          if (freeTile) {
             freeTiles[x, y] = true;
          }
          _waterTiles[x, y] = true;
          noiseMap[x, y] = preset.replaceWaterHeight;
 #if UNITY_EDITOR
-         if (_enableDrawDebug) {
+         if (_enableDrawDebug && tilemap) {
             tilemap.SetTile(new Vector3Int(x, y, 0), RandomMapManager.self.debugTileBlack);
          }
 #endif
@@ -721,6 +892,164 @@ public static class RandomMapCreator {
       }
    }
 
+   static void GenerateLandBorder (float[,] noiseMap, MapGeneratorPreset preset) {
+      // Set bottom tiles
+      int bottomStart = _spawnStartsBottom[0];
+      int bottomEnd = _spawnEndsBottom[0];
+      for (int x = 0; x < preset.mapSize.x; x++) {
+         if (x < bottomStart || x > bottomEnd) {
+            noiseMap[x, 0] = preset.landBorderHeight;
+         }
+      }
+      // Set top tiles
+      int topStart = _spawnStartsTop[0];
+      int topEnd = _spawnEndsTop[0];
+      for (int x = 0; x < preset.mapSize.x; x++) {
+         if (x < topStart || x > topEnd) {
+            noiseMap[x, preset.mapSize.y - 1] = preset.landBorderHeight;
+         }
+      }
+      // Set left tiles
+      {
+         // Prepare list to check if tiles of start area are taken
+         List<int> spawnLefts = new List<int>(_areaSize.Length * 2);
+
+         // Iterate over start area tiles and find taken ones
+         for (int i = 0; i < _spawnStartsBottom.Length; i++) {
+            if (_spawnStartsBottom[i] == 0) {
+               spawnLefts.Add(i);
+            }
+         }
+         for (int i = 0; i < _spawnStartsTop.Length; i++) {
+            if (_spawnStartsTop[i] == 0) {
+               spawnLefts.Add(preset.mapSize.y - 1 - i);
+            }
+         }
+
+         // Set left tiles with checking taken tiles in spawn area
+         for (int y = 0; y < preset.mapSize.y; y++) {
+            if (spawnLefts.Contains(y) == false) {
+               noiseMap[0, y] = preset.landBorderHeight;
+            }
+         }
+      }
+      // Set right tiles
+      {
+         // Prepare list to check if tiles of start area are taken
+         List<int> spawnRights = new List<int>(_areaSize.Length * 2);
+
+         // Iterate over start area tiles and find taken ones
+         for (int i = 0; i < _spawnEndsBottom.Length; i++) {
+            if (_spawnEndsBottom[i] == preset.mapSize.y - 1) {
+               spawnRights.Add(i);
+            }
+         }
+         for (int i = 0; i < _spawnEndsTop.Length; i++) {
+            if (_spawnEndsTop[i] == preset.mapSize.y - 1) {
+               spawnRights.Add(preset.mapSize.y - 1 - i);
+            }
+         }
+
+         // Set right tiles with checking taken tiles in spawn area
+         for (int y = 0; y < preset.mapSize.y; y++) {
+            if (spawnRights.Contains(y) == false) {
+               noiseMap[preset.mapSize.x - 1, y] = preset.landBorderHeight;
+            }
+         }
+      }
+   }
+
+   static void FindClosedArea (float[,] noiseMap, MapGeneratorPreset preset, GameObject parentObject, int seed) {
+      // Recreate water tiles array after changing map
+      PrepareWaterTiles(preset, noiseMap);
+
+      // Prepare array with tiles to mark inaccessible areas
+      bool[,] freeTiles = new bool[preset.mapSize.x, preset.mapSize.y];
+      for (int x = 0; x < preset.mapSize.x; x++) {
+         for (int y = 0; y < preset.mapSize.y; y++) {
+            freeTiles[x, y] = _waterTiles[x, y];
+         }
+      }
+
+      // Mark closed areas
+      MarkClosedAreas(freeTiles, preset);
+
+      // Pseudo-random number generator based on seed
+      System.Random pseudoRandom = new System.Random(seed);
+
+      // Calculate areas size
+      List<Point> allPointsLast = new List<Point>();
+      for (int x = 0; x < preset.mapSize.x; x++) {
+         for (int y = 0; y < preset.mapSize.y; y++) {
+            if (freeTiles[x, y]) {
+               List<Point> allPoints = new List<Point>();
+               // Create path to only big areas
+               if (CalculateClosedAreaSize(freeTiles, preset, new Point(x, y), ref allPoints) > _minClosedPathSize) {
+
+                  // Path from random area point to top/bottom spawns
+                  CreatePathBetweenPoints(allPoints.ChooseRandom(pseudoRandom.Next()), new Point(_spawnEndsTop[0], preset.mapSize.y - 2), preset, parentObject, noiseMap, freeTiles, seed, false);
+                  CreatePathBetweenPoints(allPoints.ChooseRandom(pseudoRandom.Next()), new Point(_spawnEndsBottom[0], 1), preset, parentObject, noiseMap, freeTiles, seed, true);
+
+                  // Create path between two closed areas
+                  if (allPointsLast.Count > 0) {
+                     Point first = allPoints.ChooseRandom();
+                     Point second = allPointsLast.ChooseRandom();
+                     CreatePathBetweenPoints(first, second, preset, parentObject, noiseMap, freeTiles, seed, first.y > second.y);
+                     allPointsLast.Clear();
+                  } else {
+                     allPointsLast = allPoints;
+                  }
+               }
+            }
+         }
+      }
+   }
+   
+   static void MarkClosedAreas (bool[,] freeTiles, MapGeneratorPreset preset) {
+      List<Point> allPoints = new List<Point>();
+      CalculateClosedAreaSize(freeTiles, preset, new Point(_spawnStartsBottom[0], 0), ref allPoints);
+   }
+   
+   static int CalculateClosedAreaSize (bool[,] freeTiles, MapGeneratorPreset preset, Point startPoint, ref List<Point> allPoints) {
+      Stack<Point> points = new Stack<Point>();
+      points.Push(startPoint);
+      allPoints.Add(startPoint);
+      int size = 0;
+
+      while (points.Count > 0) {
+         Point point = points.Pop();
+         allPoints.Add(point);
+
+         freeTiles[point.x, point.y] = false;
+         // Check bottom
+         if (point.y - 1 >= 0 && freeTiles[point.x, point.y - 1]) {
+            points.Push(new Point(point.x, point.y - 1));
+            freeTiles[point.x, point.y - 1] = false;
+            size++;
+         }
+         // Check left
+         if (point.x - 1 >= 0 && freeTiles[point.x - 1, point.y]) {
+            points.Push(new Point(point.x - 1, point.y));
+            freeTiles[point.x - 1, point.y] = false;
+            size++;
+         }
+         // Check right
+         if (point.x + 1 < preset.mapSize.x && freeTiles[point.x + 1, point.y]) {
+            points.Push(new Point(point.x + 1, point.y));
+            freeTiles[point.x + 1, point.y] = false;
+            size++;
+         }
+         // Check top
+         if (point.y + 1 < preset.mapSize.y && freeTiles[point.x, point.y + 1]) {
+            points.Push(new Point(point.x, point.y + 1));
+            freeTiles[point.x, point.y + 1] = false;
+            size++;
+         }
+      }
+
+      return size;
+   }
+
    /// <summary>
    /// set tiles on preset
    /// </summary>
@@ -728,37 +1057,41 @@ public static class RandomMapCreator {
    static void SetTiles (MapGeneratorPreset preset) {
       // Updates tiles only when playing in editor
 #if UNITY_EDITOR
+
       // Time improved due to data locality and not searching every time through all paths
-      List<string> assetsPath = new List<string>();
-      foreach (string assetPath in AssetDatabase.GetAllAssetPaths()) {
-         // We only care about our map assets
-         if (assetPath.StartsWith(_tilesPath)) {
-            assetsPath.Add(assetPath);
+      if (_assetsPath == null) {
+         _assetsPath = new List<string>();
+         foreach (string assetPath in AssetDatabase.GetAllAssetPaths()) {
+            // We only care about our map assets
+            if (assetPath.StartsWith(_tilesPath)) {
+               _assetsPath.Add(assetPath);
+            }
          }
       }
 
       foreach (var layer in preset.layers) {
 
-         SetTileFromProject(ref layer.tile, layer.biome, layer.tilePrefix, layer.tileSuffix, assetsPath);
+         SetTileFromProject(ref layer.tile, layer.biome, layer.tilePrefix, layer.tileSuffix, _assetsPath);
 
          foreach (var border in layer.borders) {
-            SetTileFromProject(ref border.borderTile, layer.biome, border.tilePrefix, border.tileSuffix, assetsPath);
+            SetTileFromProject(ref border.borderTile, layer.biome, border.tilePrefix, border.tileSuffix, _assetsPath);
          }
 
          foreach (var corner in layer.corners) {
-            SetTileFromProject(ref corner.cornerTile, layer.biome, corner.tilePrefix, corner.tileSuffix, assetsPath);
+            SetTileFromProject(ref corner.cornerTile, layer.biome, corner.tilePrefix, corner.tileSuffix, _assetsPath);
          }
 
          foreach (var objectLayer in layer.objectLayers) {
-            SetTileFromProject(ref objectLayer.tile, layer.biome, objectLayer.tilePrefix, objectLayer.tileSuffix, assetsPath);
+            SetTileFromProject(ref objectLayer.tile, layer.biome, objectLayer.tilePrefix, objectLayer.tileSuffix, _assetsPath);
          }
       }
 
-      SetTileFromProject(ref preset.river.riverTile, preset.river.biome, preset.river.tilePrefix, preset.river.tileSuffix, assetsPath);
+      SetTileFromProject(ref preset.river.riverTile, preset.river.biome, preset.river.tilePrefix, preset.river.tileSuffix, _assetsPath);
 
       foreach (var border in preset.river.riverBorders) {
-         SetTileFromProject(ref border.borderTile, preset.river.biome, border.tilePrefix, border.tileSuffix, assetsPath);
+         SetTileFromProject(ref border.borderTile, preset.river.biome, border.tilePrefix, border.tileSuffix, _assetsPath);
       }
+
 #endif
    }
 
@@ -1770,6 +2103,12 @@ public static class RandomMapCreator {
 
    // Allow to draw debug tiles for testing purposes
    static bool _enableDrawDebug = false;
+
+   // List of tiles paths (to calculate once)
+   static List<string> _assetsPath = new List<string>();
+
+   // Minimum closed area size to create path to
+   static int _minClosedPathSize = 50;
 
    #endregion
 }

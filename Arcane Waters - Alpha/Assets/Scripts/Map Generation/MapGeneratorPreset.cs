@@ -17,6 +17,7 @@ namespace ProceduralMap
       public string MapSuffixName = " Biome";
       public Vector2Int mapSize = new Vector2Int(64, 64);
       public float replaceWaterHeight = 0.6f;
+      public float landBorderHeight = 0.3f;
 
       [Header("Noise")]
       public float noiseScale = 27.6f;

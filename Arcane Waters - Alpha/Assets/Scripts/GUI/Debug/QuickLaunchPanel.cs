@@ -41,7 +41,7 @@ public class QuickLaunchPanel : MonoBehaviour {
       self = this;
 
       Debug.Log("Server build: " + Util.isServerBuild());
-      Debug.Log("Test class result: " + TestClass.someIntFunction());
+      // Debug.Log("Test class result: " + TestClass.someIntFunction());
 
       // We only show this panel if it's a server build, never in the production client
       this.gameObject.SetActive(Util.isServerBuild());
