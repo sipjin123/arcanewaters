@@ -333,7 +333,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2777622320295005369}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.004, y: -0.0208, z: 0}
+  m_LocalPosition: {x: 0.004, y: -0.0208, z: 0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4298218442774226194}
@@ -484,6 +484,7 @@ MonoBehaviour:
   arrowContainer: {fileID: 959486711}
   isSeaChest: 1
   chestAnimator: {fileID: 5989040040333118063}
+  enemyType: 0
 --- !u!114 &4298218442774226192
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -498,8 +499,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: ff7b6e58c4305ba4aaec31a78ffd455e
-  m_SceneId: 0
+  m_AssetId: 
+  m_SceneId: 4074196255
 --- !u!114 &4298218442774226193
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -602,9 +603,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e851007333b54a4190716c035b83695, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  offsetZ: 0
-  isActive: 0
-  sortPoint: {fileID: 5354010385016615196}
+  offsetZ: 5
+  isActive: 1
+  sortPoint: {fileID: 0}
 --- !u!58 &5021075951075969440
 CircleCollider2D:
   m_ObjectHideFlags: 0

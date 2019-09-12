@@ -52,9 +52,20 @@ public class SeaMonsterEntity : SeaEntity
 
    #endregion
 
+   #region Unity Lifecycle
+
    protected override void Start () {
       base.Start();
-      
+
+      // Note our spawn position
+      _spawnPos = this.transform.position;
+
+      // Sometimes we want to generate random waypoints
+      InvokeRepeating("handleAutoMove", 1f, seaMonsterData.moveFrequency);
+
+      // Check if we can shoot at any of our attackers
+      InvokeRepeating("checkForAttackers", 2f, seaMonsterData.attackFrequency);
+
       if (seaMonsterData.isAggressive) {
          // Check if we can shoot at any of our attackers
          InvokeRepeating("checkForTargets", 1f, 5f);
@@ -63,6 +74,16 @@ public class SeaMonsterEntity : SeaEntity
 
    protected override void Update () {
       base.Update();
+
+      animator.SetFloat("facingF", (float) this.facing);
+
+      // If we're dead and have finished sinking, remove the ship
+      if (isServer && isDead() && spritesContainer.transform.localPosition.y < -.25f) {
+         InstanceManager.self.removeEntityFromInstance(this);
+
+         // Destroy the object
+         NetworkServer.Destroy(this.gameObject);
+      }
 
       if (hasDied == false && isDead()) {
          killUnit();
@@ -78,6 +99,41 @@ public class SeaMonsterEntity : SeaEntity
          }
       }
    }
+
+   protected override void FixedUpdate () {
+      base.FixedUpdate();
+
+      // Only the server updates waypoints and movement forces
+      if (!isServer || isDead()) {
+         return;
+      }
+
+      // Only change our movement if enough time has passed
+      if (Time.time - _lastMoveChangeTime < MOVE_CHANGE_INTERVAL) {
+         return;
+      }
+
+      handleFaceDirection();
+
+      handleWaypoints();
+
+      // If we don't have a waypoint, we're done
+      if (this.waypoint == null || Vector2.Distance(this.transform.position, waypoint.transform.position) < .08f) {
+         return;
+      }
+
+      // Move towards our current waypoint
+      Vector2 waypointDirection = this.waypoint.transform.position - this.transform.position;
+      waypointDirection = waypointDirection.normalized;
+      _body.AddForce(waypointDirection.normalized * getMoveSpeed());
+
+      // Make note of the time
+      _lastMoveChangeTime = Time.time;
+   }
+
+   #endregion
+
+   #region Invoke Functions
 
    protected virtual void handleAutoMove () {
       if (!seaMonsterData.autoMove || !isServer) {
@@ -101,6 +157,52 @@ public class SeaMonsterEntity : SeaEntity
 
       setWaypoint(null);
    }
+
+   protected void checkForTargets () {
+      if (isDead() || !isServer) {
+         return;
+      }
+
+      Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, seaMonsterData.detectRadius);
+      if (hits.Length > 0) {
+         foreach (Collider2D hit in hits) {
+            if (hit.GetComponent<PlayerShipEntity>() != null) {
+               if (!_attackers.Contains(hit.GetComponent<NetEntity>())) {
+                  noteAttacker(hit.GetComponent<PlayerShipEntity>());
+               }
+            }
+         }
+      }
+   }
+
+   protected void checkForAttackers () {
+      if (isDead() || !isServer) {
+         return;
+      }
+
+      // If we haven't reloaded, we can't attack
+      if (!hasReloaded()) {
+         return;
+      }
+
+      // Check if any of our attackers are within range
+      foreach (SeaEntity attacker in _attackers) {
+         if (attacker == null || attacker.isDead() || attacker == this || attacker.GetComponent<SeaMonsterEntity>() != null) {
+            continue;
+         }
+
+         // Check where the attacker currently is
+         Vector2 spot = attacker.transform.position;
+
+         // If the requested spot is not in the allowed area, reject the request
+         if (leftAttackBox.OverlapPoint(spot) || rightAttackBox.OverlapPoint(spot)) {
+            launchProjectile(spot, attacker, seaMonsterData.attackType, .2f, .4f);
+            return;
+         }
+      }
+   }
+
+   #endregion
 
    protected void handleFaceDirection () {
       if (getVelocity().magnitude < MIN_MOVEMENT_MAGNITUDE && targetEntity != null) {
@@ -148,8 +250,20 @@ public class SeaMonsterEntity : SeaEntity
       }
    }
 
-   protected virtual bool shouldDropTreasure () {
-      return true;
+   protected void setWaypoint (Transform target) {
+      if (target == null) {
+         // Pick a new spot around our spawn position
+         Vector2 newSpot = _spawnPos + new Vector2(Random.Range(-.5f, .5f), Random.Range(-.5f, .5f));
+         Waypoint newWaypoint = Instantiate(PrefabsManager.self.waypointPrefab);
+         newWaypoint.transform.position = newSpot;
+         this.waypoint = newWaypoint;
+      } else {
+         // Pick a new spot around target object position
+         Vector2 newSpot1 = targetEntity.transform.position;
+         Waypoint newWaypoint1 = Instantiate(PrefabsManager.self.waypointPrefab);
+         newWaypoint1.transform.position = newSpot1;
+         this.waypoint = newWaypoint1;
+      }
    }
 
    protected virtual void killUnit () {
@@ -158,23 +272,6 @@ public class SeaMonsterEntity : SeaEntity
 
       if (shouldDropTreasure()) {
          spawnChest();
-      }
-   }
-
-   protected void checkForTargets() {
-      if (isDead() || !isServer) {
-         return;
-      }
-
-      Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, seaMonsterData.detectRadius);
-      if (hits.Length > 0) {
-         foreach (Collider2D hit in hits) {
-            if (hit.GetComponent<PlayerShipEntity>() != null) {
-               if (!_attackers.Contains(hit.GetComponent<NetEntity>())) {
-                  noteAttacker(hit.GetComponent<PlayerShipEntity>());
-               }
-            }
-         }
       }
    }
 
@@ -225,20 +322,8 @@ public class SeaMonsterEntity : SeaEntity
       return false;
    }
 
-   protected void setWaypoint (Transform target) {
-      if (target == null) {
-         // Pick a new spot around our spawn position
-         Vector2 newSpot = _spawnPos + new Vector2(Random.Range(-.5f, .5f), Random.Range(-.5f, .5f));
-         Waypoint newWaypoint = Instantiate(PrefabsManager.self.waypointPrefab);
-         newWaypoint.transform.position = newSpot;
-         this.waypoint = newWaypoint;
-      } else {
-         // Pick a new spot around target object position
-         Vector2 newSpot1 = targetEntity.transform.position;
-         Waypoint newWaypoint1 = Instantiate(PrefabsManager.self.waypointPrefab);
-         newWaypoint1.transform.position = newSpot1;
-         this.waypoint = newWaypoint1;
-      }
+   protected virtual bool shouldDropTreasure () {
+      return true;
    }
 
    protected int lockToTarget (NetEntity attacker) {

@@ -189,13 +189,13 @@ GameObject:
   - component: {fileID: 3925063923804190753}
   - component: {fileID: 50644847342071564}
   - component: {fileID: 114073007438733822}
+  - component: {fileID: 1500667301808487911}
   - component: {fileID: 114394699576994808}
   - component: {fileID: 5025622234824572739}
   - component: {fileID: 114653129648744142}
   - component: {fileID: 190877409254396758}
   - component: {fileID: 114502046227778398}
   - component: {fileID: 20651762200388567}
-  - component: {fileID: 1500667301808487911}
   m_Layer: 8
   m_Name: TentacleEnemy
   m_TagString: Untagged
@@ -287,7 +287,6 @@ MonoBehaviour:
   monsterName: 
   route: {fileID: 0}
   waypoint: {fileID: 0}
-  autoMove: 1
   animator: {fileID: 95269474888133974}
   hasDied: 0
   seaMonsterData: {fileID: 11400000, guid: f004ad1cc0210d14482143cb2f4cb001, type: 2}
@@ -331,6 +330,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+--- !u!61 &1500667301808487911
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1505246131218474}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: -0.05}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 0.07, y: 0.07}
+  m_EdgeRadius: 0
 --- !u!114 &114394699576994808
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -410,7 +435,7 @@ MonoBehaviour:
   serverOnly: 0
   localPlayerAuthority: 0
   m_AssetId: 
-  m_SceneId: 2188828735
+  m_SceneId: 2528144661
 --- !u!114 &20651762200388567
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -465,32 +490,6 @@ MonoBehaviour:
   useLocalTransformOnly: 0
   ownerChangeIndicator: 1
   receivedStatesCounter: 0
---- !u!61 &1500667301808487911
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1505246131218474}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.05}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 0.07, y: 0.07}
-  m_EdgeRadius: 0
 --- !u!1 &1658159506029436
 GameObject:
   m_ObjectHideFlags: 0
