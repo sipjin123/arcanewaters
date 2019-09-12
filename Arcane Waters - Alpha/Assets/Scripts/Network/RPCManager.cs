@@ -1564,7 +1564,6 @@ public class RPCManager : NetworkBehaviour {
       bot.facing = Util.randomEnum<Direction>();
       bot.areaType = _player.areaType;
       bot.route = null;
-      bot.autoMove = true;
       bot.entityName = "Tentacle";
       bot.locationSide = xVal;
       bot.locationSideTopBot = yVal;

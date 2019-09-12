@@ -290,7 +290,7 @@ MonoBehaviour:
   autoMove: 1
   animator: {fileID: 95269474888133974}
   hasDied: 0
-  seaMonsterType: 25
+  seaMonsterData: {fileID: 11400000, guid: f004ad1cc0210d14482143cb2f4cb001, type: 2}
   horrorEntity: {fileID: 0}
   locationSide: 0
   locationSideTopBot: 0
@@ -410,7 +410,7 @@ MonoBehaviour:
   serverOnly: 0
   localPlayerAuthority: 0
   m_AssetId: 
-  m_SceneId: 3687780672
+  m_SceneId: 2188828735
 --- !u!114 &20651762200388567
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -931,7 +931,7 @@ MonoBehaviour:
   autoMove: 1
   animator: {fileID: 3288871493769707182}
   hasDied: 0
-  seaMonsterType: 26
+  seaMonsterData: {fileID: 11400000, guid: 5629ab1a37357004bb61914bb4bb61fe, type: 2}
   tentaclesLeft: 0
   tentacleList: []
   approachShip: 0
@@ -1065,7 +1065,7 @@ MonoBehaviour:
   serverOnly: 0
   localPlayerAuthority: 0
   m_AssetId: 
-  m_SceneId: 1525582852
+  m_SceneId: 2660387083
 --- !u!114 &3087981066399650522
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -99,7 +99,7 @@ public class HorrorEntity : SeaMonsterEntity
 
       // Checks if the distance of the target ship is too far
       if (targetEntity != null) {
-         if (Vector2.Distance(_spawnPos, waypoint.transform.position) > _territoryRadius) {
+         if (Vector2.Distance(_spawnPos, waypoint.transform.position) > seaMonsterData.territoryRadius) {
             targetEntity = null;
          }
       }
@@ -114,8 +114,8 @@ public class HorrorEntity : SeaMonsterEntity
       _lastMoveChangeTime = Time.time;
    }
 
-   protected void handleAutoMove () {
-      if (!autoMove || !isServer) {
+   protected override void handleAutoMove () {
+      if (!seaMonsterData.autoMove || !isServer) {
          return;
       }
 
@@ -163,7 +163,7 @@ public class HorrorEntity : SeaMonsterEntity
       }
 
       // Checks if nearest ship is valid to pursue
-      if (closestEntity != null && closestDistance < _detectRadius) {
+      if (closestEntity != null && closestDistance < seaMonsterData.detectRadius) {
          targetEntity = closestEntity;
       }
    }

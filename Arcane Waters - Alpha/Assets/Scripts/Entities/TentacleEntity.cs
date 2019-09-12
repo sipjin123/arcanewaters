@@ -116,7 +116,7 @@ public class TentacleEntity : SeaMonsterEntity
    }
 
    public IEnumerator CO_HandleAutoMove () {
-      if (!autoMove || !isServer) {
+      if (!seaMonsterData.autoMove || !isServer) {
          yield return null;
       }
 
@@ -151,7 +151,7 @@ public class TentacleEntity : SeaMonsterEntity
    private IEnumerator CO_HandleBossMovement (Vector2 newPos, float delay) {
       yield return new WaitForSeconds(delay);
 
-      if (!autoMove || !isServer) {
+      if (!seaMonsterData.autoMove || !isServer) {
          yield return null;
       }
 

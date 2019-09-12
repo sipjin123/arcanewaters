@@ -307,7 +307,7 @@ MonoBehaviour:
   autoMove: 1
   animator: {fileID: 95269474888133974}
   hasDied: 0
-  seaMonsterType: 28
+  seaMonsterData: {fileID: 11400000, guid: 2113d9145808eb9449411da57afce3d8, type: 2}
 --- !u!50 &50644847342071564
 Rigidbody2D:
   serializedVersion: 4
@@ -438,7 +438,7 @@ MonoBehaviour:
   serverOnly: 0
   localPlayerAuthority: 0
   m_AssetId: 
-  m_SceneId: 2888397570
+  m_SceneId: 1955967125
 --- !u!114 &20651762200388567
 MonoBehaviour:
   m_ObjectHideFlags: 0

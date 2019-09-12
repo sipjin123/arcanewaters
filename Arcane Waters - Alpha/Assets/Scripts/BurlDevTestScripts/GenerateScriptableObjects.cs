@@ -61,7 +61,12 @@ public class GenerateScriptableObjects : MonoBehaviour
       GenericLootData asset = ScriptableObject.CreateInstance<GenericLootData>();
       Process(asset);
    }
-   
+
+   [MenuItem("Assets/Create/Create SeaMonsterEntityData Object")]
+   public static void Create_SeaMonsterEntityData () {
+      SeaMonsterEntityData asset = ScriptableObject.CreateInstance<SeaMonsterEntityData>();
+      Process(asset);
+   }
 }
 
 #endif

@@ -79,6 +79,8 @@ public class SeaEntity : NetEntity {
 
       // If we've died, start slowing moving our sprites downward
       if (currentHealth <= 0) {
+         _outline.Hide();
+
          Util.setLocalY(spritesContainer.transform, spritesContainer.transform.localPosition.y - .03f * Time.smoothDeltaTime);
 
          // Fade the sprites out

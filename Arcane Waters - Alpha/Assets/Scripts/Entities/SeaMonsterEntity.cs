@@ -27,22 +27,17 @@ public class SeaMonsterEntity : SeaEntity
    // The current waypoint
    public Waypoint waypoint;
 
-   // When set to true, we pick random waypoints
-   public bool autoMove = false;
-
    // Animator
    public Animator animator;
 
    // A flag to determine if the object has died
    public bool hasDied = false;
 
-   // The max gap distance between target and this unity
-   public const float MAX_DISTANCE_GAP = 3;
+   // The unique data for each seamonster
+   public SeaMonsterEntityData seaMonsterData;
 
    // The minimum magnitude to determine the movement of the unit
    public const float MIN_MOVEMENT_MAGNITUDE = .05f;
-
-   public Enemy.Type seaMonsterType;
 
    // Seamonster Animation
    public enum SeaMonsterAnimState
@@ -56,6 +51,15 @@ public class SeaMonsterEntity : SeaEntity
    }
 
    #endregion
+
+   protected override void Start () {
+      base.Start();
+      
+      if (seaMonsterData.isAggressive) {
+         // Check if we can shoot at any of our attackers
+         InvokeRepeating("checkForTargets", 1f, 5f);
+      }
+   }
 
    protected override void Update () {
       base.Update();
@@ -75,6 +79,75 @@ public class SeaMonsterEntity : SeaEntity
       }
    }
 
+   protected virtual void handleAutoMove () {
+      if (!seaMonsterData.autoMove || !isServer) {
+         return;
+      }
+
+      // Remove our current waypoint
+      if (this.waypoint != null) {
+         Destroy(this.waypoint.gameObject);
+      }
+
+      // This handles the waypoint spawn toward the target enemy
+      if (canMoveTowardEnemy()) {
+         setWaypoint(targetEntity.transform);
+         return;
+      } else {
+         // Forget about target
+         targetEntity = null;
+         isEngaging = false;
+      }
+
+      setWaypoint(null);
+   }
+
+   protected void handleFaceDirection () {
+      if (getVelocity().magnitude < MIN_MOVEMENT_MAGNITUDE && targetEntity != null) {
+         float distanceGap = Vector2.Distance(targetEntity.transform.position, transform.position);
+         if (distanceGap < seaMonsterData.max_projectile_distance_gap) {
+            withinProjectileDistance = true;
+         } else {
+            withinProjectileDistance = false;
+         }
+
+         if (Vector2.Distance(transform.position, _spawnPos) > seaMonsterData.territoryRadius) {
+            targetEntity = null;
+            isEngaging = false;
+            waypoint = null;
+         }
+
+         if (isEngaging) {
+            this.facing = (Direction) lockToTarget(targetEntity);
+         }
+      } else {
+         if (getVelocity().magnitude > MIN_MOVEMENT_MAGNITUDE) {
+            // Update our facing direction
+            lookAtTarget();
+         }
+      }
+   }
+
+   protected void handleWaypoints () {
+      // If we've been assigned a Route, get our waypoint from that
+      if (route != null) {
+         List<Waypoint> waypoints = route.getWaypoints();
+
+         // If we haven't picked a waypoint yet, start with the first one
+         if (waypoint == null) {
+            waypoint = route.getClosest(this.transform.position);
+         }
+
+         // Check if we're close enough to update our waypoint
+         if (Vector2.Distance(this.transform.position, waypoint.transform.position) < .16f) {
+            int index = waypoints.IndexOf(waypoint);
+            index++;
+            index %= waypoints.Count;
+            this.waypoint = waypoints[index];
+         }
+      }
+   }
+
    protected virtual bool shouldDropTreasure () {
       return true;
    }
@@ -82,15 +155,33 @@ public class SeaMonsterEntity : SeaEntity
    protected virtual void killUnit () {
       hasDied = true;
       animator.Play("Die");
+
       if (shouldDropTreasure()) {
          spawnChest();
+      }
+   }
+
+   protected void checkForTargets() {
+      if (isDead() || !isServer) {
+         return;
+      }
+
+      Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, seaMonsterData.detectRadius);
+      if (hits.Length > 0) {
+         foreach (Collider2D hit in hits) {
+            if (hit.GetComponent<PlayerShipEntity>() != null) {
+               if (!_attackers.Contains(hit.GetComponent<NetEntity>())) {
+                  noteAttacker(hit.GetComponent<PlayerShipEntity>());
+               }
+            }
+         }
       }
    }
 
    [Server]
    protected void spawnChest () {
       Instance currentInstance = InstanceManager.self.getInstance(this.instanceId);
-      TreasureManager.self.createSeaTreasure(currentInstance, transform.position, seaMonsterType);
+      TreasureManager.self.createSeaTreasure(currentInstance, transform.position, seaMonsterData.seaMonsterType);
    }
 
    [Server]
@@ -125,9 +216,9 @@ public class SeaMonsterEntity : SeaEntity
    protected bool canMoveTowardEnemy () {
       if (targetEntity != null && isEngaging) {
          float distanceGap = Vector2.Distance(targetEntity.transform.position, transform.position);
-         if (distanceGap > 1 && distanceGap < MAX_DISTANCE_GAP) {
+         if (distanceGap > 1 && distanceGap < seaMonsterData.max_distance_gap) {
             return true;
-         } else if (distanceGap >= MAX_DISTANCE_GAP) {
+         } else if (distanceGap >= seaMonsterData.max_distance_gap) {
             return false;
          }
       }
@@ -209,14 +300,6 @@ public class SeaMonsterEntity : SeaEntity
 
    // The position we spawned at
    protected Vector2 _spawnPos;
-
-   // The radius that defines how far the monster will chase before it retreats
-   protected float _territoryRadius = 4.5f;
-
-#pragma warning disable 1234
-   // The radius that defines how near the player ships are before this unit chases it
-   protected float _detectRadius = 4;
-#pragma warning restore 1234
 
    #endregion
 }

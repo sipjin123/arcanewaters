@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02da0f708a5bcdf40bd3646c523222ce, type: 3}
+  m_Name: LizardDrops
+  m_EditorClassIdentifier: 
+  lootList:
+  - lootType: 12
+    quantity: 1
+    chanceRatio: 70
+  - lootType: 13
+    quantity: 1
+    chanceRatio: 50
+  - lootType: 14
+    quantity: 1
+    chanceRatio: 25
+  - lootType: 15
+    quantity: 1
+    chanceRatio: 10
+  - lootType: 16
+    quantity: 1
+    chanceRatio: 5
+  defaultLoot: 12
+  minQuantity: 2
+  maxQuantity: 5
