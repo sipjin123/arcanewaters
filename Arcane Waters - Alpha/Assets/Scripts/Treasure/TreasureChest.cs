@@ -59,6 +59,10 @@ public class TreasureChest : NetworkBehaviour {
    [SyncVar]
    public int enemyType;
 
+   // Determines if this chest should be destroyed after interaction
+   [SyncVar]
+   public bool autoDestroy;
+
    #endregion
 
    public void Awake () {
@@ -85,6 +89,7 @@ public class TreasureChest : NetworkBehaviour {
          // We only enable the box collider for clients in the relevant instance
          boxCollider.enabled = (Global.player != null && Global.player.instanceId == this.instanceId);
       } else {
+         boxCollider.enabled = !hasBeenOpened();
          triggerCollider.enabled = !hasBeenOpened();
          chestAnimator.SetBool("open", hasBeenOpened());
       }
@@ -218,6 +223,11 @@ public class TreasureChest : NetworkBehaviour {
       if (entity != null && Global.player != null && entity.userId == Global.player.userId) {
          _isGlobalPlayerNearby = false;
       }
+   }
+
+   [ClientRpc]
+   public void Rpc_DestroyChest () {
+      Destroy(this.gameObject, 3);
    }
 
    #region Private Variables

@@ -219,6 +219,10 @@ public class RPCManager : NetworkBehaviour {
       // Show a confirmation in chat
       string msg = string.Format("You found one <color=red>{0}</color>!", item.getName());
       ChatManager.self.addChat(msg, ChatInfo.Type.System);
+
+      if (chest.autoDestroy) {
+         chest.Rpc_DestroyChest();
+      }
    }
 
    [TargetRpc]
@@ -1445,6 +1449,12 @@ public class RPCManager : NetworkBehaviour {
             Target_OpenChest(_player.connectionToClient, item, chest.id);
          });
       });
+   }
+
+   [Server]
+   public void spawnLandMonsterChest (Enemy.Type enemyType, int instanceID, Vector3 position) {
+      Instance currentInstance = InstanceManager.self.getInstance(instanceID);
+      TreasureManager.self.createMonsterChest(currentInstance, position, enemyType, true);
    }
 
    [Command]

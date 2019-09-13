@@ -13,6 +13,9 @@ public class TreasureManager : MonoBehaviour {
    // The prefab we use for creating Treasure Chests for sea maps
    public TreasureChest seaChestPrefab;
 
+   // The prefab we use for creating Treasure Chests for monster drops
+   public TreasureChest monsterBagPrefab;
+
    // The prefab we use for creating floating icons
    public GameObject floatingIconPrefab;
 
@@ -67,9 +70,18 @@ public class TreasureManager : MonoBehaviour {
       return chest;
    }
 
-   public TreasureChest createSeaTreasure (Instance instance, Vector3 spot, Enemy.Type enemyType) {
+   public TreasureChest createMonsterChest (Instance instance, Vector3 spot, Enemy.Type enemyType, bool isLandMonster) {
       // Instantiate a new Treasure Chest
-      TreasureChest chest = Instantiate(seaChestPrefab, spot, Quaternion.identity);
+      TreasureChest chest = null;
+      if (!isLandMonster) {
+         chest = Instantiate(seaChestPrefab, spot, Quaternion.identity);
+      } else {
+         chest = Instantiate(monsterBagPrefab, spot, Quaternion.identity);
+         chest.isSeaChest = false;
+      }
+
+      // Sets the chest to be destroyed after interaction
+      chest.autoDestroy = true;
 
       // Sets the type of enemy
       chest.enemyType = (int)enemyType;

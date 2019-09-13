@@ -629,7 +629,7 @@ public class BattleManager : MonoBehaviour {
             Enemy.Type battlerType = battler.GetComponent<MonsterBattler>().enemyType;
             foreach (Battler participant in winningBattlers) {
                if (!participant.isMonster()) {
-                  participant.player.rpc.processEnemyRewards(battlerType);
+                  participant.player.rpc.spawnLandMonsterChest(battlerType, participant.player.instanceId, BodyManager.self.getBody(participant.player.userId).transform.position);
                }
             }
          }

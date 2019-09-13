@@ -282,7 +282,7 @@ public class SeaMonsterEntity : SeaEntity
    [Server]
    protected void spawnChest () {
       Instance currentInstance = InstanceManager.self.getInstance(this.instanceId);
-      TreasureManager.self.createSeaTreasure(currentInstance, transform.position, seaMonsterData.seaMonsterType);
+      TreasureManager.self.createMonsterChest(currentInstance, transform.position, seaMonsterData.seaMonsterType, false);
    }
 
    [Server]
