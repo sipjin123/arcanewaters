@@ -158,8 +158,8 @@ public class TreasureChest : NetworkBehaviour {
 
       // Registers list of ingredient types for data fetching
       List<CraftingIngredients.Type> itemLoots = new List<CraftingIngredients.Type>();
-      for (int i = 0; i < processedLoots.Count; i++) {
-         itemLoots.Add(processedLoots[i].lootType);
+      foreach(LootInfo info in processedLoots) {
+         itemLoots.Add(info.lootType);
       }
 
       Item itemToCreate = new CraftingIngredients(0, processedLoots[0].lootType, ColorType.Black, ColorType.Black);

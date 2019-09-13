@@ -67,12 +67,12 @@ public class TreasureManager : MonoBehaviour {
       return chest;
    }
 
-   public TreasureChest createSeaTreasure (Instance instance, Vector3 spot, Enemy.Type enemyTyp) {
+   public TreasureChest createSeaTreasure (Instance instance, Vector3 spot, Enemy.Type enemyType) {
       // Instantiate a new Treasure Chest
       TreasureChest chest = Instantiate(seaChestPrefab, spot, Quaternion.identity);
 
       // Sets the type of enemy
-      chest.enemyType = (int)enemyTyp;
+      chest.enemyType = (int)enemyType;
 
       // Keep it parented to this Manager
       chest.transform.SetParent(this.transform, true);

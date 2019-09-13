@@ -67,8 +67,8 @@ public class SeaMonsterEntity : SeaEntity
       InvokeRepeating("checkForAttackers", 2f, seaMonsterData.attackFrequency);
 
       if (seaMonsterData.isAggressive) {
-         // Check if we can shoot at any of our attackers
-         InvokeRepeating("checkForTargets", 1f, 5f);
+         // Check if there are players to attack nearby
+         InvokeRepeating("checkForTargets", 1f, seaMonsterData.findTargetsFrequency);
       }
    }
 
@@ -196,7 +196,11 @@ public class SeaMonsterEntity : SeaEntity
 
          // If the requested spot is not in the allowed area, reject the request
          if (leftAttackBox.OverlapPoint(spot) || rightAttackBox.OverlapPoint(spot)) {
-            launchProjectile(spot, attacker, seaMonsterData.attackType, .2f, .4f);
+            if (seaMonsterData.isMelee) {
+               meleeAtSpot(spot, seaMonsterData.attackType);
+            } else {
+               launchProjectile(spot, attacker, seaMonsterData.attackType, .2f, .4f);
+            }
             return;
          }
       }
@@ -207,7 +211,7 @@ public class SeaMonsterEntity : SeaEntity
    protected void handleFaceDirection () {
       if (getVelocity().magnitude < MIN_MOVEMENT_MAGNITUDE && targetEntity != null) {
          float distanceGap = Vector2.Distance(targetEntity.transform.position, transform.position);
-         if (distanceGap < seaMonsterData.max_projectile_distance_gap) {
+         if (distanceGap < seaMonsterData.maxProjectileDistanceGap) {
             withinProjectileDistance = true;
          } else {
             withinProjectileDistance = false;
@@ -313,9 +317,9 @@ public class SeaMonsterEntity : SeaEntity
    protected bool canMoveTowardEnemy () {
       if (targetEntity != null && isEngaging) {
          float distanceGap = Vector2.Distance(targetEntity.transform.position, transform.position);
-         if (distanceGap > 1 && distanceGap < seaMonsterData.max_distance_gap) {
+         if (distanceGap > 1 && distanceGap < seaMonsterData.maxDistanceGap) {
             return true;
-         } else if (distanceGap >= seaMonsterData.max_distance_gap) {
+         } else if (distanceGap >= seaMonsterData.maxDistanceGap) {
             return false;
          }
       }

@@ -1339,8 +1339,8 @@ public class RPCManager : NetworkBehaviour {
 
       // Registers list of ingredient types for data fetching
       List<CraftingIngredients.Type> itemLoots = new List<CraftingIngredients.Type>();
-      for (int i = 0; i < lootInfoList.Count; i++) {
-         itemLoots.Add(lootInfoList[i].lootType);
+      foreach(LootInfo info in lootInfoList) {
+         itemLoots.Add(info.lootType);
       }
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -1430,8 +1430,8 @@ public class RPCManager : NetworkBehaviour {
       lootInfoList.Add(newLootInfo);
 
       List<CraftingIngredients.Type> itemLoots = new List<CraftingIngredients.Type>();
-      for (int i = 0; i < lootInfoList.Count; i++) {
-         itemLoots.Add(lootInfoList[i].lootType);
+      foreach(LootInfo info in lootInfoList) {
+         itemLoots.Add(info.lootType);
       }
 
       // Add it to their inventory
@@ -1440,11 +1440,11 @@ public class RPCManager : NetworkBehaviour {
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             processGroupRewards(_player.userId, databaseList, lootInfoList, false);
+
+            // Send it to the specific player that opened it
+            Target_OpenChest(_player.connectionToClient, item, chest.id);
          });
       });
-
-      // Send it to the specific player that opened it
-      Target_OpenChest(_player.connectionToClient, item, chest.id);
    }
 
    [Command]

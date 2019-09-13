@@ -16,11 +16,14 @@ public class SeaMonsterEntityData : ScriptableObject {
    // When set to true, we pick random waypoints
    public bool autoMove = false;
 
-   // The max gap distance between target and this unity
-   public float max_projectile_distance_gap = 2;
+   // Determines if this is a Melee Unit
+   public bool isMelee = false;
 
    // The max gap distance between target and this unity
-   public float max_distance_gap = 3;
+   public float maxProjectileDistanceGap = 2;
+
+   // The max gap distance between target and this unity
+   public float maxDistanceGap = 3;
 
    // Determines the type of attack this unit does
    public Attack.Type attackType;
@@ -36,6 +39,9 @@ public class SeaMonsterEntityData : ScriptableObject {
 
    // Determines how often the unit moves
    public float moveFrequency = 1;
+
+   // Determines how often this unit checks its surroundings for targets
+   public float findTargetsFrequency = .5f;
 
    #endregion
 
