@@ -12,13 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 015b30d0ca9d1574eb52d04e674e46b8, type: 3}
   m_Name: TentacleData
   m_EditorClassIdentifier: 
-  seaMonsterType: 25
+  seaMonsterType: 300
   isAggressive: 1
   autoMove: 1
-  max_projectile_distance_gap: 2
-  max_distance_gap: 3
+  isMelee: 0
+  maxProjectileDistanceGap: 2
+  maxDistanceGap: 3
   attackType: 4
   territoryRadius: 4.5
   detectRadius: 4
   attackFrequency: 1
   moveFrequency: 1
+  findTargetsFrequency: 0.5
+  defaultSprite: {fileID: 0}
+  defaultRippleSprite: {fileID: 0}

@@ -12,13 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 015b30d0ca9d1574eb52d04e674e46b8, type: 3}
   m_Name: FishmanData
   m_EditorClassIdentifier: 
-  seaMonsterType: 29
+  seaMonsterType: 304
   isAggressive: 1
   autoMove: 1
-  max_projectile_distance_gap: 2
-  max_distance_gap: 3
+  isMelee: 0
+  maxProjectileDistanceGap: 2
+  maxDistanceGap: 3
   attackType: 7
   territoryRadius: 4.5
   detectRadius: 4
   attackFrequency: 1
   moveFrequency: 5
+  findTargetsFrequency: 0.5
+  defaultSprite: {fileID: 3267800377565148373, guid: c1c7d428df4031747ac24670a0fc825b,
+    type: 3}
+  defaultRippleSprite: {fileID: -33352273080245201, guid: ad0439fe51d026c4e90bb93798f9d170,
+    type: 3}

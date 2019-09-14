@@ -12,13 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 015b30d0ca9d1574eb52d04e674e46b8, type: 3}
   m_Name: WormData
   m_EditorClassIdentifier: 
-  seaMonsterType: 27
+  seaMonsterType: 302
   isAggressive: 1
   autoMove: 1
-  max_projectile_distance_gap: 2
-  max_distance_gap: 3
+  isMelee: 0
+  maxProjectileDistanceGap: 2
+  maxDistanceGap: 3
   attackType: 5
   territoryRadius: 4.5
   detectRadius: 4
   attackFrequency: 1
   moveFrequency: 2
+  findTargetsFrequency: 0.5
+  defaultSprite: {fileID: -1379284931105554088, guid: 1b01523e83443a84abd4e5422079f406,
+    type: 3}
+  defaultRippleSprite: {fileID: 8606102959079553536, guid: 5c1cf74553558b54bb8ab8274c0bf4cb,
+    type: 3}
