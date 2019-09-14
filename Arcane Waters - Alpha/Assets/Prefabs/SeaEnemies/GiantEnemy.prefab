@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 95269474888133974}
   - component: {fileID: 114087970259467542}
   - component: {fileID: 2813122444238123029}
+  - component: {fileID: 3928110517285931189}
   m_Layer: 0
   m_Name: Ship Sprites
   m_TagString: Untagged
@@ -93,7 +94,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1013934132990528}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: b907ebbf5cda06a4190771ad8db4a668, type: 2}
   m_CullingMode: 0
@@ -147,6 +148,29 @@ MonoBehaviour:
   customFrameName: 
   generatesOnStart: 0
   generatesOnValidate: 1
+--- !u!114 &3928110517285931189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1013934132990528}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59a9a98428d226e419fede1b7cdd5674, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialDelay: 0
+  frameLengthOverride: 0.1
+  delayStart: 0
+  destroyAtEnd: 0
+  stayAtLastFrame: 0
+  loopDelay: 0
+  isPaused: 0
+  minIndex: 0
+  maxIndex: 1000
+  currentAnimation: 3
+  group: 5
 --- !u!1 &1307228615476472
 GameObject:
   m_ObjectHideFlags: 0
@@ -304,10 +328,10 @@ MonoBehaviour:
   monsterName: 
   route: {fileID: 0}
   waypoint: {fileID: 0}
-  autoMove: 1
   animator: {fileID: 95269474888133974}
   hasDied: 0
   seaMonsterData: {fileID: 11400000, guid: 2113d9145808eb9449411da57afce3d8, type: 2}
+  isAttacking: 0
 --- !u!50 &50644847342071564
 Rigidbody2D:
   serializedVersion: 4
@@ -437,8 +461,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: 
-  m_SceneId: 1955967125
+  m_AssetId: 28b8992d3fbd1bc4aba1f0d2fc739291
+  m_SceneId: 0
 --- !u!114 &20651762200388567
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -584,7 +608,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1658159506029436}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 51787b590b932f142b23e937d5c59e35, type: 2}
   m_CullingMode: 0

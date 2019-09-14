@@ -15,14 +15,23 @@ MonoBehaviour:
   seaMonsterType: 301
   isAggressive: 1
   autoMove: 1
-  isMelee: 0
+  isMelee: 1
+  shouldDropTreasure: 1
+  isInvulnerable: 1
   maxProjectileDistanceGap: 2
   maxDistanceGap: 3
   attackType: 0
   territoryRadius: 4.5
   detectRadius: 4
   attackFrequency: 1
-  moveFrequency: 1
-  findTargetsFrequency: 0.5
-  defaultSprite: {fileID: 0}
-  defaultRippleSprite: {fileID: 0}
+  moveFrequency: 7
+  findTargetsFrequency: 2
+  defaultSprite: {fileID: 764851303485985294, guid: d9f8336b2a162354ab8f845c4dbe0498,
+    type: 3}
+  defaultRippleSprite: {fileID: 2800000, guid: 5c1cf74553558b54bb8ab8274c0bf4cb, type: 3}
+  scaleOverride: 0.6
+  outlineScaleOverride: 0.6
+  rippleScaleOverride: 1
+  maxHealth: 8
+  animGroup: 7
+  seaMonsterDependencyType: 3

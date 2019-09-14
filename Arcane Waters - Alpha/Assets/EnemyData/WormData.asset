@@ -16,6 +16,8 @@ MonoBehaviour:
   isAggressive: 1
   autoMove: 1
   isMelee: 0
+  shouldDropTreasure: 1
+  isInvulnerable: 0
   maxProjectileDistanceGap: 2
   maxDistanceGap: 3
   attackType: 5
@@ -30,3 +32,6 @@ MonoBehaviour:
   scaleOverride: 0.5
   outlineScaleOverride: 1
   rippleScaleOverride: 2
+  maxHealth: 50
+  animGroup: 4
+  seaMonsterDependencyType: 1

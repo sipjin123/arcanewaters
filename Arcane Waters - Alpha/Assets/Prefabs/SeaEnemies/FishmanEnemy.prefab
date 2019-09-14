@@ -10,9 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 4484190077274146}
   - component: {fileID: 212945152816631566}
-  - component: {fileID: 95269474888133974}
   - component: {fileID: 114087970259467542}
   - component: {fileID: 2813122444238123029}
+  - component: {fileID: 8643771523719322778}
+  - component: {fileID: 4869363016125088647}
   m_Layer: 0
   m_Name: Ship Sprites
   m_TagString: Untagged
@@ -85,25 +86,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!95 &95269474888133974
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1013934132990528}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 2aba174529c77f648b7e1fe95de222fe, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &114087970259467542
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -147,6 +129,48 @@ MonoBehaviour:
   customFrameName: 
   generatesOnStart: 0
   generatesOnValidate: 1
+--- !u!114 &8643771523719322778
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1013934132990528}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59a9a98428d226e419fede1b7cdd5674, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialDelay: 0
+  frameLengthOverride: -1
+  delayStart: 0
+  destroyAtEnd: 0
+  stayAtLastFrame: 0
+  loopDelay: 0
+  isPaused: 0
+  minIndex: 0
+  maxIndex: 1000
+  currentAnimation: 3
+  group: 4
+--- !u!95 &4869363016125088647
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1013934132990528}
+  m_Enabled: 0
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 2aba174529c77f648b7e1fe95de222fe, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &1307228615476472
 GameObject:
   m_ObjectHideFlags: 0
@@ -304,10 +328,10 @@ MonoBehaviour:
   monsterName: 
   route: {fileID: 0}
   waypoint: {fileID: 0}
-  autoMove: 1
-  animator: {fileID: 95269474888133974}
+  animator: {fileID: 4869363016125088647}
   hasDied: 0
   seaMonsterData: {fileID: 11400000, guid: ad8ad225b25f91d4a9473b81f1c33d64, type: 2}
+  isAttacking: 0
 --- !u!50 &50644847342071564
 Rigidbody2D:
   serializedVersion: 4
@@ -437,8 +461,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: 
-  m_SceneId: 1462523718
+  m_AssetId: 7d953afee92183b41be36c7349fbb04b
+  m_SceneId: 0
 --- !u!114 &20651762200388567
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -585,7 +609,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1658159506029436}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 107926666961b6b488982b927f7e5946, type: 2}
   m_CullingMode: 0

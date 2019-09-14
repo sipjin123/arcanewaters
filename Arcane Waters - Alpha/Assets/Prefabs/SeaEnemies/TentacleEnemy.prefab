@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 1013934132990528}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_Children:
   - {fileID: 8981850656167230958}
   m_Father: {fileID: 4900218821786150}
@@ -212,7 +212,7 @@ Transform:
   m_GameObject: {fileID: 1505246131218474}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 64.092384, y: -58.13542, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 1}
   m_Children:
   - {fileID: 4838368087517210}
   - {fileID: 4362643083908726}
@@ -281,20 +281,22 @@ MonoBehaviour:
   rightSideTarget: {fileID: 6334897482679909241}
   invulnerable: 0
   projectileSpawnLocations: []
+  seaMonsterChildrenList: []
+  seaMonsterParentEntity: {fileID: 0}
   withinProjectileDistance: 0
   isEngaging: 0
   targetEntity: {fileID: 0}
   monsterName: 
-  route: {fileID: 0}
-  waypoint: {fileID: 0}
   animator: {fileID: 95269474888133974}
   hasDied: 0
   seaMonsterData: {fileID: 11400000, guid: f004ad1cc0210d14482143cb2f4cb001, type: 2}
-  horrorEntity: {fileID: 0}
-  locationSide: 0
-  locationSideTopBot: 0
+  isAttacking: 0
+  route: {fileID: 0}
   randomizedTimer: 1
   variety: 0
+  locationSetup: {x: 0, y: 0}
+  horrorEntity: {fileID: 0}
+  randomizedTimer: 1
 --- !u!50 &50644847342071564
 Rigidbody2D:
   serializedVersion: 4
@@ -434,8 +436,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: 
-  m_SceneId: 2528144661
+  m_AssetId: d1663649abf91904f8af5dfaa6cd2747
+  m_SceneId: 0
 --- !u!114 &20651762200388567
 MonoBehaviour:
   m_ObjectHideFlags: 0

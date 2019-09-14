@@ -227,7 +227,12 @@ public class TreasureChest : NetworkBehaviour {
 
    [ClientRpc]
    public void Rpc_DestroyChest () {
-      Destroy(this.gameObject, 3);
+      StartCoroutine(CO_DisableChest());
+   }
+
+   private IEnumerator CO_DisableChest() {
+      yield return new WaitForSeconds(3);
+      gameObject.SetActive(false);
    }
 
    #region Private Variables

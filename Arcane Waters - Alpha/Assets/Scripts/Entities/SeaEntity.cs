@@ -473,14 +473,14 @@ public class SeaEntity : NetEntity {
       // Creates the projectile and the target circle
       if (GetComponent<PlayerShipEntity>() == null) {
          if (attackType != Attack.Type.Venom) {
-            Rpc_CreateAttackCircle(spawnPosition, spot, Time.time, Time.time + delay, attackType, true);
+            Rpc_CreateAttackCircle(spawnPosition, spot, Util.netTime(), Util.netTime() + delay, attackType, true);
          } else {
             // Create a venom
             fireTimedVenomProjectile(spawnPosition, spot);
          }
       } else {
-         Target_CreateLocalAttackCircle(connectionToClient, this.transform.position, spot, Time.time, Time.time + delay);
-         Rpc_CreateAttackCircle(spawnPosition, spot, Time.time, Time.time + delay, attackType, false);
+         Target_CreateLocalAttackCircle(connectionToClient, this.transform.position, spot, Util.netTime(), Util.netTime() + delay);
+         Rpc_CreateAttackCircle(spawnPosition, spot, Util.netTime(), Util.netTime() + delay, attackType, false);
       }
    }
 
