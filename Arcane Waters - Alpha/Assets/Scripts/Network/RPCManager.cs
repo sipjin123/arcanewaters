@@ -221,7 +221,7 @@ public class RPCManager : NetworkBehaviour {
       ChatManager.self.addChat(msg, ChatInfo.Type.System);
 
       if (chest.autoDestroy) {
-         chest.Rpc_DestroyChest();
+         chest.Rpc_DisableChest();
       }
    }
 
@@ -1568,15 +1568,15 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_SpawnTentacle (Vector2 spawnPosition, uint horrorEntityID, int xVal, int yVal, int variety) {
+   public void Cmd_SpawnBossChild (Vector2 spawnPosition, uint horrorEntityID, int xVal, int yVal, int variety, Enemy.Type enemyType) {
       SeaMonsterEntity bot = Instantiate(PrefabsManager.self.seaMonsterPrefab, spawnPosition, Quaternion.identity);
-      //TentacleEntity bot = Instantiate(PrefabsManager.self.tentaclePrefab, spawnPosition, Quaternion.identity);
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
       bot.areaType = _player.areaType;
       bot.route = null;
-      bot.entityName = "Tentacle";
-      bot.initData(EnemyManager.self.seaMonsterPair.Find(_ => _.seaMonsterType == Enemy.Type.Tentacle).seaMonsterData);
+      bot.entityName = enemyType.ToString();
+      bot.monsterType = (int) enemyType;
+      bot.initData(EnemyManager.self.SeaMonsterEntityData.Find(_ => _.seaMonsterType == Enemy.Type.Tentacle).seaMonsterData);
       bot.locationSetup = new Vector2(xVal, yVal);
       bot.variety = (variety);
 
@@ -1592,14 +1592,14 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_SpawnHorror (Vector2 spawnPosition) {
+   public void Cmd_SpawnBossParent (Vector2 spawnPosition, Enemy.Type enemyType) {
       SeaMonsterEntity bot = Instantiate(PrefabsManager.self.seaMonsterPrefab, spawnPosition, Quaternion.identity);
-      //HorrorEntity bot = Instantiate(PrefabsManager.self.horrorPrefab, spawnPosition, Quaternion.identity);
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
       bot.areaType = _player.areaType;
-      bot.entityName = "Horror";
-      bot.initData(EnemyManager.self.seaMonsterPair.Find(_ => _.seaMonsterType == Enemy.Type.Horror).seaMonsterData);
+      bot.entityName = enemyType.ToString();
+      bot.monsterType = (int) enemyType;
+      bot.initData(EnemyManager.self.SeaMonsterEntityData.Find(_ => _.seaMonsterType == Enemy.Type.Horror).seaMonsterData);
 
       // Spawn the bot on the Clients
       NetworkServer.Spawn(bot.gameObject);
@@ -1607,60 +1607,28 @@ public class RPCManager : NetworkBehaviour {
       Instance instance = InstanceManager.self.getInstance(_player.instanceId);
       instance.entities.Add(bot);
 
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(.5f, -.5f), bot.netId, 1, -1, 1);
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(-.5f, -.5f), bot.netId, -1, -1, 0);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(.5f, -.5f), bot.netId, 1, -1, 1, Enemy.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(-.5f, -.5f), bot.netId, -1, -1, 0, Enemy.Type.Tentacle);
 
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(.5f, .5f), bot.netId, 1, 1, 1);
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(-.5f, .5f), bot.netId, -1, 1, 0);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(.5f, .5f), bot.netId, 1, 1, 1, Enemy.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(-.5f, .5f), bot.netId, -1, 1, 0, Enemy.Type.Tentacle);
 
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(-.75f, 0), bot.netId, -1, 0, 1);
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(.75f, 0), bot.netId, 1, 0, 0);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(-.75f, 0), bot.netId, -1, 0, 1, Enemy.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(.75f, 0), bot.netId, 1, 0, 0, Enemy.Type.Tentacle);
 
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(0, -.75f), bot.netId, 0, -1, 1);
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(0, .75f), bot.netId, 0, 1, 0);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(0, -.75f), bot.netId, 0, -1, 1, Enemy.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(0, .75f), bot.netId, 0, 1, 0, Enemy.Type.Tentacle);
    }
 
    [Command]
-   public void Cmd_SpawnWorm (Vector2 spawnPosition) {
+   public void Cmd_SpawnSeaMonster (Vector2 spawnPosition, Enemy.Type enemyType) {
       SeaMonsterEntity bot = Instantiate(PrefabsManager.self.seaMonsterPrefab, spawnPosition, Quaternion.identity);
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
       bot.areaType = _player.areaType;
-      bot.entityName = "Worm";
-      bot.initData(EnemyManager.self.seaMonsterPair.Find(_ => _.seaMonsterType == Enemy.Type.Worm).seaMonsterData);
-
-      // Spawn the bot on the Clients
-      NetworkServer.Spawn(bot.gameObject);
-
-      Instance instance = InstanceManager.self.getInstance(_player.instanceId);
-      instance.entities.Add(bot);
-   }
-
-   [Command]
-   public void Cmd_SpawnGiant (Vector2 spawnPosition) {
-      SeaMonsterEntity bot = Instantiate(PrefabsManager.self.seaMonsterPrefab, spawnPosition, Quaternion.identity);
-      bot.instanceId = _player.instanceId;
-      bot.facing = Util.randomEnum<Direction>();
-      bot.areaType = _player.areaType;
-      bot.entityName = "Giant";
-      bot.initData(EnemyManager.self.seaMonsterPair.Find(_ => _.seaMonsterType == Enemy.Type.Reef_Giant).seaMonsterData);
-
-      // Spawn the bot on the Clients
-      NetworkServer.Spawn(bot.gameObject);
-
-      Instance instance = InstanceManager.self.getInstance(_player.instanceId);
-      instance.entities.Add(bot);
-   }
-
-   [Command]
-   public void Cmd_SpawnFishman (Vector2 spawnPosition) {
-      SeaMonsterEntity bot = Instantiate(PrefabsManager.self.seaMonsterPrefab, spawnPosition, Quaternion.identity);
-      bot.instanceId = _player.instanceId;
-      bot.facing = Util.randomEnum<Direction>();
-      bot.areaType = _player.areaType;
-      bot.entityName = "Fishman";
-      bot.gameObject.name = bot.entityName;
-      bot.initData(EnemyManager.self.seaMonsterPair.Find(_ => _.seaMonsterType == Enemy.Type.Fishman).seaMonsterData);
+      bot.monsterType = (int) enemyType;
+      bot.entityName = enemyType.ToString();
+      bot.initData(EnemyManager.self.SeaMonsterEntityData.Find(_ => _.seaMonsterType == enemyType).seaMonsterData);
 
       // Spawn the bot on the Clients
       NetworkServer.Spawn(bot.gameObject);

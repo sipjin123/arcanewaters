@@ -8,7 +8,20 @@ public class EditorUtil : EditorWindow {
    #region Public Variables
 
    #endregion
-   
+
+   [MenuItem("Util/Clear Image Manager")]
+   public static void clearImagerManager () {
+      // Find the Image Manager and clear out the stored paths
+      ImageManager imageManager = FindObjectOfType<ImageManager>();
+
+      if (imageManager == null) {
+         Debug.Log("Couldn't find the Image Manager in the scene, so not updating it.");
+         return;
+      }
+
+      imageManager.imageDataList.Clear();
+   }
+
    [MenuItem("Util/Update Image Manager")]
    public static void updateImagerManager () {
       // Find the Image Manager and clear out the stored paths
@@ -43,6 +56,7 @@ public class EditorUtil : EditorWindow {
             imageData.texture2D = texture;
             imageData.sprite = sprite;
             imageData.sprites = new List<Sprite>();
+            List<Sprite> spritesCopy = new List<Sprite>();
 
             // We have to load the animation frames separately
             Object[] data = AssetDatabase.LoadAllAssetsAtPath(assetPath);
@@ -51,8 +65,23 @@ public class EditorUtil : EditorWindow {
             foreach (Object obj in data) {
                if (obj is Sprite) {
                   imageData.sprites.Add((Sprite) obj);
+                  spritesCopy.Add((Sprite) obj);
                }
             }
+
+            for (int p = 0; p <= spritesCopy.Count - 2; p++) {
+               for (int i = 0; i <= spritesCopy.Count - 2; i++) {
+                  int compared1 = extractInteger (spritesCopy[i].name);
+                  int compared2 = extractInteger (spritesCopy[i+1].name);
+
+                  if (compared1 > compared2) {
+                     Sprite tempT = spritesCopy[i + 1];
+                     spritesCopy[i + 1] = spritesCopy[i];
+                     spritesCopy[i] = tempT;
+                  }
+               }
+            }
+            imageData.sprites = spritesCopy;
 
             // Add the new Image Data instance to the Image Manager's list
             imageManager.imageDataList.Add(imageData);
@@ -66,7 +95,24 @@ public class EditorUtil : EditorWindow {
       AssetDatabase.SaveAssets();
       AssetDatabase.Refresh();
    }
-   
+
+   public static int extractInteger (string name) {
+      string newString = "";
+      for (int i = name.Length - 1; i > 0; i--) {
+         if (name[i] == '_') {
+            break;
+         }
+         newString.Insert(0, name[i].ToString());
+      }
+
+      try {
+         return int.Parse(newString);
+      } 
+      catch {
+         return 0;
+      }
+   }
+
    [MenuItem("Util/Set Image Read Write")]
    public static void changeReadWrite () {
       // Loop through all of our assets

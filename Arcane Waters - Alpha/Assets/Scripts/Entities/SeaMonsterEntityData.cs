@@ -52,6 +52,9 @@ public class SeaMonsterEntityData : ScriptableObject {
    // Holds the sprite texture to be used for the sea monster
    public Sprite defaultSprite;
 
+   // Holds the other sprite texture option to be used for the sea monster
+   public Sprite secondarySprite;
+
    // Holds the sprite texture to be used for the ripples
    public Texture2D defaultRippleSprite;
 
@@ -71,7 +74,10 @@ public class SeaMonsterEntityData : ScriptableObject {
    public Anim.Group animGroup;
 
    // Determines if this unit is a standalone/minion/master being
-   public SeaMonsterEntity.SeaMonsterDependencyType seaMonsterDependencyType;
+   public RoleType seaMonsterDependencyType;
+
+   // Holds teh value of the speed override of the simple animation
+   public float animationSpeedOverride = -1;
 
    #endregion
 

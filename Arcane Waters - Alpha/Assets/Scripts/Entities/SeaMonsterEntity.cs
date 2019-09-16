@@ -48,6 +48,10 @@ public class SeaMonsterEntity : SeaEntity
    // Determines the variety of the monster sprite if there is one
    public int variety = 0;
 
+   [SyncVar]
+   // Determines the monster type index of this unit
+   public int monsterType = 0;
+
    // Determines the location of this unit in relation to its spawn point
    public Vector2 locationSetup;
 
@@ -55,7 +59,10 @@ public class SeaMonsterEntity : SeaEntity
    public SeaMonsterBars seaMonsterBars;
 
    // Determines if the monster is approaching a target ship
-   public bool approachShip = true;
+   public bool isApproachingTarget = true;
+
+   // The time an attack animation plays
+   public const float ATTACK_DURATION = .3f;
 
    // Seamonster Animation
    public enum SeaMonsterAnimState
@@ -68,15 +75,6 @@ public class SeaMonsterEntity : SeaEntity
       MoveStop
    }
 
-   // Determines if the unit relies on other entities
-   public enum SeaMonsterDependencyType
-   {
-      None,
-      Standalone,
-      Minion,
-      Master
-   }
-
    #endregion
 
    #region Unity Lifecycle
@@ -84,14 +82,15 @@ public class SeaMonsterEntity : SeaEntity
    public void initData (SeaMonsterEntityData entityData) {
       seaMonsterData = entityData;
       ripplesContainer.GetComponent<SpriteSwap>().newTexture = seaMonsterData.defaultRippleSprite;
-      spritesContainer.GetComponent<SpriteRenderer>().sprite = seaMonsterData.defaultSprite;
-
+      
       ripplesContainer.transform.localScale = new Vector3(seaMonsterData.rippleScaleOverride, seaMonsterData.rippleScaleOverride, seaMonsterData.rippleScaleOverride);
       spritesContainer.transform.localScale = new Vector3(seaMonsterData.scaleOverride, seaMonsterData.scaleOverride, seaMonsterData.scaleOverride);
       spritesContainer.transform.GetChild(0).localScale = new Vector3(seaMonsterData.outlineScaleOverride, seaMonsterData.outlineScaleOverride, seaMonsterData.outlineScaleOverride);
 
       _simpleAnim = spritesContainer.GetComponent<SimpleAnimation>();
       _simpleAnim.group = seaMonsterData.animGroup;
+      _simpleAnim.frameLengthOverride = seaMonsterData.animationSpeedOverride;
+      _simpleAnim.enabled = true;
 
       currentHealth = seaMonsterData.maxHealth;
       maxHealth = seaMonsterData.maxHealth;
@@ -103,7 +102,7 @@ public class SeaMonsterEntity : SeaEntity
          spritesContainer.transform.GetChild(0).gameObject.SetActive(false);
       }
 
-      if (seaMonsterData.seaMonsterDependencyType == SeaMonsterDependencyType.Minion) {
+      if (seaMonsterData.seaMonsterDependencyType == RoleType.Minion) {
          // Calls functions that randomizes and calls the coroutine that handles movement
          initializeBehavior();
       } else {
@@ -114,6 +113,15 @@ public class SeaMonsterEntity : SeaEntity
 
    protected override void Start () {
       base.Start();
+      if (!isServer) {
+         initData(EnemyManager.self.SeaMonsterEntityData.Find(_ => _.seaMonsterType == (Enemy.Type)monsterType).seaMonsterData);
+      }
+
+      if (variety != 0 && seaMonsterData.secondarySprite != null) {
+         spritesContainer.GetComponent<SpriteRenderer>().sprite = seaMonsterData.secondarySprite;
+      } else {
+         spritesContainer.GetComponent<SpriteRenderer>().sprite = seaMonsterData.defaultSprite;
+      }
 
       // Note our spawn position
       _spawnPos = this.transform.position;
@@ -142,12 +150,12 @@ public class SeaMonsterEntity : SeaEntity
          killUnit();
       }
 
-      simpleAnimSetup();
+      handleAnimations();
 
       if (Util.netTime() > _attackStartAnimateTime && !_hasAttackAnimTriggered) {
          isAttacking = true;
          _hasAttackAnimTriggered = true;
-         _attackEndAnimateTime = Util.netTime() + .2f;
+         _attackEndAnimateTime = Util.netTime() + ATTACK_DURATION;
       } else {
          if (isAttacking && (Util.netTime() > _attackEndAnimateTime)) {//|| getVelocity().magnitude > MIN_MOVEMENT_MAGNITUDE)) {
             isAttacking = false;
@@ -155,8 +163,9 @@ public class SeaMonsterEntity : SeaEntity
       }
    }
 
-   private void simpleAnimSetup () {
+   private void handleAnimations () {
       if (hasDied) {
+         _simpleAnim.playAnimation(Anim.Type.Death_East);
          return;
       }
 
@@ -173,6 +182,7 @@ public class SeaMonsterEntity : SeaEntity
                break;
          }
       } else {
+         _simpleAnim.isPaused = false;
          if (getVelocity().magnitude > MIN_MOVEMENT_MAGNITUDE) {
             switch (this.facing) {
                case Direction.North:
@@ -219,9 +229,9 @@ public class SeaMonsterEntity : SeaEntity
       handleWaypoints();
 
       // If we don't have a waypoint, we're done
-      if (this._waypoint == null || Vector2.Distance(this.transform.position, _waypoint.transform.position) < .08f) {
-         if (seaMonsterData.seaMonsterDependencyType == SeaMonsterDependencyType.Master && approachShip) {
-            approachShip = false;
+      if (_waypoint == null || Vector2.Distance(this.transform.position, _waypoint.transform.position) < .08f) {
+         if (seaMonsterData.seaMonsterDependencyType == RoleType.Master && isApproachingTarget) {
+            isApproachingTarget = false;
             foreach (SeaMonsterEntity childEntities in seaMonsterChildrenList) {
                childEntities.initializeBehavior();
             }
@@ -230,7 +240,7 @@ public class SeaMonsterEntity : SeaEntity
       }
 
       // Move towards our current waypoint
-      Vector2 waypointDirection = this._waypoint.transform.position - this.transform.position;
+      Vector2 waypointDirection = _waypoint.transform.position - this.transform.position;
       waypointDirection = waypointDirection.normalized;
       _body.AddForce(waypointDirection.normalized * getMoveSpeed());
 
@@ -248,8 +258,8 @@ public class SeaMonsterEntity : SeaEntity
       }
 
       // Remove our current waypoint
-      if (this._waypoint != null) {
-         Destroy(this._waypoint.gameObject);
+      if (_waypoint != null) {
+         Destroy(_waypoint.gameObject);
       }
 
       // This handles the waypoint spawn toward the target enemy
@@ -353,8 +363,8 @@ public class SeaMonsterEntity : SeaEntity
       }
 
       // Remove our current waypoint
-      if (this._waypoint != null) {
-         Destroy(this._waypoint.gameObject);
+      if (_waypoint != null) {
+         Destroy(_waypoint.gameObject);
       }
 
       float randomizedX = Random.Range(.4f, .8f);
@@ -369,7 +379,7 @@ public class SeaMonsterEntity : SeaEntity
 
       Waypoint newWaypoint = Instantiate(PrefabsManager.self.waypointPrefab);
       newWaypoint.transform.position = newLoc;
-      this._waypoint = newWaypoint;
+      _waypoint = newWaypoint;
    }
 
    public IEnumerator CO_HandleAutoMove () {
@@ -378,8 +388,8 @@ public class SeaMonsterEntity : SeaEntity
       }
 
       // Remove our current waypoint
-      if (this._waypoint != null) {
-         Destroy(this._waypoint.gameObject);
+      if (_waypoint != null) {
+         Destroy(_waypoint.gameObject);
       }
 
       float randomizedX = (locationSetup.x != 0 && locationSetup.y != 0) ? Random.Range(.4f, .6f) : Random.Range(.6f, .8f);
@@ -388,13 +398,13 @@ public class SeaMonsterEntity : SeaEntity
       randomizedX *= locationSetup.x;
       randomizedY *= locationSetup.y;
 
-      // Pick a new spot around the Horror monster
+      // Pick a new spot around the Parent Entity if this unit is a minion
       if (seaMonsterParentEntity != null) {
          Vector2 newSpot = new Vector2(seaMonsterParentEntity.transform.position.x, seaMonsterParentEntity.transform.position.y) + new Vector2(randomizedX, randomizedY);
 
          Waypoint newWaypoint = Instantiate(PrefabsManager.self.waypointPrefab);
          newWaypoint.transform.position = newSpot;
-         this._waypoint = newWaypoint;
+         _waypoint = newWaypoint;
       }
 
       yield return new WaitForSeconds(randomizedTimer);
@@ -446,7 +456,7 @@ public class SeaMonsterEntity : SeaEntity
             int index = waypoints.IndexOf(_waypoint);
             index++;
             index %= waypoints.Count;
-            this._waypoint = waypoints[index];
+            _waypoint = waypoints[index];
          }
       }
    }
@@ -457,20 +467,20 @@ public class SeaMonsterEntity : SeaEntity
          Vector2 newSpot = _spawnPos + new Vector2(Random.Range(-.5f, .5f), Random.Range(-.5f, .5f));
          Waypoint newWaypoint = Instantiate(PrefabsManager.self.waypointPrefab);
          newWaypoint.transform.position = newSpot;
-         this._waypoint = newWaypoint;
+         _waypoint = newWaypoint;
       } else {
          // Pick a new spot around target object position
          Vector2 newSpot1 = targetEntity.transform.position;
          Waypoint newWaypoint1 = Instantiate(PrefabsManager.self.waypointPrefab);
          newWaypoint1.transform.position = newSpot1;
-         this._waypoint = newWaypoint1;
+         _waypoint = newWaypoint1;
       }
 
-      if (seaMonsterData.seaMonsterDependencyType == SeaMonsterDependencyType.Master) {
+      if (seaMonsterData.seaMonsterDependencyType == RoleType.Master) {
          if (seaMonsterChildrenList.Count > 0) {
             foreach (SeaMonsterEntity childEntity in seaMonsterChildrenList) {
                if (!childEntity.isDead()) {
-                  childEntity.moveToParentDestination(this._waypoint.transform.position);
+                  childEntity.moveToParentDestination(_waypoint.transform.position);
                }
             }
          }
@@ -479,9 +489,9 @@ public class SeaMonsterEntity : SeaEntity
 
    protected virtual void killUnit () {
       hasDied = true;
-      _simpleAnim.playAnimation(Anim.Type.Death_East);
+      handleAnimations();
 
-      if (seaMonsterData.seaMonsterDependencyType == SeaMonsterDependencyType.Minion) {
+      if (seaMonsterData.seaMonsterDependencyType == RoleType.Minion) {
          seaMonsterParentEntity.currentHealth -= 1;
       }
 

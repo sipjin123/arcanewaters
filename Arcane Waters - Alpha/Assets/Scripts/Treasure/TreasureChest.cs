@@ -50,10 +50,7 @@ public class TreasureChest : NetworkBehaviour {
    public GameObject arrowContainer;
 
    // Determines if this chest is a land or sea chest
-   public bool isSeaChest;
-
-   // The animator of the chest
-   public Animator chestAnimator;
+   public bool isEnemyDropped;
 
    // The type of enemy that dropped the loot
    [SyncVar]
@@ -85,13 +82,12 @@ public class TreasureChest : NetworkBehaviour {
       // Activate certain things when the global player is nearby
       arrowContainer.SetActive(_isGlobalPlayerNearby && !hasBeenOpened());
 
-      if (!isSeaChest) {
+      if (!isEnemyDropped) {
          // We only enable the box collider for clients in the relevant instance
          boxCollider.enabled = (Global.player != null && Global.player.instanceId == this.instanceId);
       } else {
          boxCollider.enabled = !hasBeenOpened();
          triggerCollider.enabled = !hasBeenOpened();
-         chestAnimator.SetBool("open", hasBeenOpened());
       }
 
       // Figure out whether our outline should be showing
@@ -121,7 +117,7 @@ public class TreasureChest : NetworkBehaviour {
          return;
       }
 
-      if (isSeaChest) {
+      if (isEnemyDropped) {
          Global.player.rpc.Cmd_OpenSeaChest(this.id);
       } else {
          Global.player.rpc.Cmd_OpenChest(this.id);
@@ -138,7 +134,7 @@ public class TreasureChest : NetworkBehaviour {
    }
 
    public Item getContents () {
-      if (isSeaChest) {
+      if (isEnemyDropped) {
          return getEnemyContents();
       }
 
@@ -226,11 +222,11 @@ public class TreasureChest : NetworkBehaviour {
    }
 
    [ClientRpc]
-   public void Rpc_DestroyChest () {
-      StartCoroutine(CO_DisableChest());
+   public void Rpc_DisableChest () {
+      StartCoroutine(CO_DisableChestAfterDelay());
    }
 
-   private IEnumerator CO_DisableChest() {
+   private IEnumerator CO_DisableChestAfterDelay() {
       yield return new WaitForSeconds(3);
       gameObject.SetActive(false);
    }

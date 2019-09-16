@@ -77,7 +77,6 @@ public class TreasureManager : MonoBehaviour {
          chest = Instantiate(seaChestPrefab, spot, Quaternion.identity);
       } else {
          chest = Instantiate(monsterBagPrefab, spot, Quaternion.identity);
-         chest.isSeaChest = false;
       }
 
       // Sets the chest to be destroyed after interaction
