@@ -101,14 +101,6 @@ public class SeaMonsterEntity : SeaEntity
 
          spritesContainer.transform.GetChild(0).gameObject.SetActive(false);
       }
-
-      if (seaMonsterData.seaMonsterDependencyType == RoleType.Minion) {
-         // Calls functions that randomizes and calls the coroutine that handles movement
-         initializeBehavior();
-      } else {
-         // Sometimes we want to generate random waypoints
-         InvokeRepeating("handleAutoMove", 1f, seaMonsterData.moveFrequency);
-      }
    }
 
    protected override void Start () {
@@ -132,6 +124,14 @@ public class SeaMonsterEntity : SeaEntity
       if (seaMonsterData.isAggressive) {
          // Check if there are players to attack nearby
          InvokeRepeating("checkForTargets", 1f, seaMonsterData.findTargetsFrequency);
+      }
+
+      if (seaMonsterData.seaMonsterDependencyType == RoleType.Minion) {
+         // Calls functions that randomizes and calls the coroutine that handles movement
+         initializeBehavior();
+      } else {
+         // Sometimes we want to generate random waypoints
+         InvokeRepeating("handleAutoMove", 1f, seaMonsterData.moveFrequency);
       }
    }
 
@@ -352,7 +352,24 @@ public class SeaMonsterEntity : SeaEntity
    public void moveToParentDestination (Vector2 newPos) {
       StopCoroutine(_movementCoroutine);
       float delayTime = .1f;
+
+      Vector2 areaAroundParent = getAreaAroundParent();
+      if (Vector2.Distance(transform.position, areaAroundParent) > 1f) {
+         transform.position = areaAroundParent;
+      }
+
       StartCoroutine(CO_HandleBossMovement(newPos, delayTime));
+   }
+
+   private Vector2 getAreaAroundParent () {
+      float randomizedX = (locationSetup.x != 0 && locationSetup.y != 0) ? Random.Range(.4f, .6f) : Random.Range(.6f, .8f);
+      float randomizedY = (locationSetup.x != 0 && locationSetup.y != 0) ? Random.Range(.4f, .6f) : Random.Range(.6f, .8f);
+
+      randomizedX *= locationSetup.x;
+      randomizedY *= locationSetup.y;
+
+      Vector2 newSpot = new Vector2(seaMonsterParentEntity.transform.position.x, seaMonsterParentEntity.transform.position.y) + new Vector2(randomizedX, randomizedY);
+      return newSpot;
    }
 
    private IEnumerator CO_HandleBossMovement (Vector2 newPos, float delay) {
@@ -392,15 +409,11 @@ public class SeaMonsterEntity : SeaEntity
          Destroy(_waypoint.gameObject);
       }
 
-      float randomizedX = (locationSetup.x != 0 && locationSetup.y != 0) ? Random.Range(.4f, .6f) : Random.Range(.6f, .8f);
-      float randomizedY = (locationSetup.x != 0 && locationSetup.y != 0) ? Random.Range(.4f, .6f) : Random.Range(.6f, .8f);
-
-      randomizedX *= locationSetup.x;
-      randomizedY *= locationSetup.y;
+      Vector2 areaAroundParent = getAreaAroundParent();
 
       // Pick a new spot around the Parent Entity if this unit is a minion
       if (seaMonsterParentEntity != null) {
-         Vector2 newSpot = new Vector2(seaMonsterParentEntity.transform.position.x, seaMonsterParentEntity.transform.position.y) + new Vector2(randomizedX, randomizedY);
+         Vector2 newSpot = areaAroundParent;
 
          Waypoint newWaypoint = Instantiate(PrefabsManager.self.waypointPrefab);
          newWaypoint.transform.position = newSpot;
@@ -427,7 +440,6 @@ public class SeaMonsterEntity : SeaEntity
          if (Vector2.Distance(transform.position, _spawnPos) > seaMonsterData.territoryRadius) {
             targetEntity = null;
             isEngaging = false;
-            _waypoint = null;
          }
 
          if (isEngaging) {
