@@ -155,7 +155,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1013934132990528}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 59a9a98428d226e419fede1b7cdd5674, type: 3}
   m_Name: 
@@ -293,7 +293,7 @@ MonoBehaviour:
   battleId: 0
   isAboutToWarpOnServer: 0
   interactingAnimation: 0
-  damage: 25
+  damage: 10
   reloadDelay: 1
   attackCounter: 0
   leftAttackBox: {fileID: 1226546929952306529}
@@ -328,16 +328,16 @@ MonoBehaviour:
   isEngaging: 0
   targetEntity: {fileID: 0}
   monsterName: 
-  animator: {fileID: 0}
   hasDied: 0
   seaMonsterData: {fileID: 0}
   isAttacking: 0
   route: {fileID: 0}
   randomizedTimer: 1
   variety: 0
+  monsterType: 0
   locationSetup: {x: 0, y: 0}
   seaMonsterBars: {fileID: 1576247974216057746}
-  approachShip: 1
+  isApproachingTarget: 1
 --- !u!50 &50644847342071564
 Rigidbody2D:
   serializedVersion: 4
@@ -467,8 +467,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: 
-  m_SceneId: 1032957979
+  m_AssetId: 0059c0caa2289d44fb0ab483814bf77f
+  m_SceneId: 0
 --- !u!114 &20651762200388567
 MonoBehaviour:
   m_ObjectHideFlags: 0
