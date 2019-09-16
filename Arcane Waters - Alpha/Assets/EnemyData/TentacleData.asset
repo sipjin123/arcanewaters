@@ -28,6 +28,8 @@ MonoBehaviour:
   findTargetsFrequency: 0.5
   defaultSprite: {fileID: -5710345286123915637, guid: afc35c71681f753418147a7603be088d,
     type: 3}
+  secondarySprite: {fileID: 8516348126183087292, guid: e9ebbf80d23dad34b86a73806d8737fc,
+    type: 3}
   defaultRippleSprite: {fileID: 2800000, guid: 5c1cf74553558b54bb8ab8274c0bf4cb, type: 3}
   scaleOverride: 0.5
   outlineScaleOverride: 1
