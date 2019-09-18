@@ -1573,15 +1573,14 @@ public class RPCManager : NetworkBehaviour {
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
       bot.areaType = _player.areaType;
-      bot.route = null;
       bot.entityName = enemyType.ToString();
       bot.monsterType = (int) enemyType;
-      bot.initData(EnemyManager.self.seaMonsterEntityData.Find(_ => _.seaMonsterType == Enemy.Type.Tentacle).seaMonsterData);
       bot.locationSetup = new Vector2(xVal, yVal);
       bot.variety = (variety);
 
       Instance instance = InstanceManager.self.getInstance(_player.instanceId);
       SeaMonsterEntity horror = instance.entities.Find(_ => _.netId == horrorEntityID).GetComponent<SeaMonsterEntity>();
+
       bot.seaMonsterParentEntity = horror;
       horror.seaMonsterChildrenList.Add(bot);
 
@@ -1599,7 +1598,6 @@ public class RPCManager : NetworkBehaviour {
       bot.areaType = _player.areaType;
       bot.entityName = enemyType.ToString();
       bot.monsterType = (int) enemyType;
-      bot.initData(EnemyManager.self.seaMonsterEntityData.Find(_ => _.seaMonsterType == Enemy.Type.Horror).seaMonsterData);
 
       // Spawn the bot on the Clients
       NetworkServer.Spawn(bot.gameObject);
@@ -1628,7 +1626,6 @@ public class RPCManager : NetworkBehaviour {
       bot.areaType = _player.areaType;
       bot.monsterType = (int) enemyType;
       bot.entityName = enemyType.ToString();
-      bot.initData(EnemyManager.self.seaMonsterEntityData.Find(_ => _.seaMonsterType == enemyType).seaMonsterData);
 
       // Spawn the bot on the Clients
       NetworkServer.Spawn(bot.gameObject);

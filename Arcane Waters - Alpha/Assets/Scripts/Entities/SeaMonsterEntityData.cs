@@ -10,6 +10,9 @@ public class SeaMonsterEntityData : ScriptableObject {
    // Determines the type of monster
    public Enemy.Type seaMonsterType;
 
+   // Shows the gizmos indicating the ranges of each sea monster
+   public bool showDebugGizmo;
+
    // Determines the aggression state of the unit
    public bool isAggressive;
 
@@ -42,6 +45,9 @@ public class SeaMonsterEntityData : ScriptableObject {
 
    // Determines how often the unit attacks
    public float attackFrequency = 1;
+
+   // Determines how quick the unit reloads
+   public float reloadDelay = 1;
 
    // Determines how often the unit moves
    public float moveFrequency = 1;
