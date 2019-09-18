@@ -13,17 +13,19 @@ MonoBehaviour:
   m_Name: WormData
   m_EditorClassIdentifier: 
   seaMonsterType: 302
+  showDebugGizmo: 1
   isAggressive: 1
   autoMove: 1
   isMelee: 0
   shouldDropTreasure: 1
   isInvulnerable: 0
-  maxProjectileDistanceGap: 2
-  maxDistanceGap: 3
+  maxProjectileDistanceGap: 1.5
+  maxDistanceGap: 2.5
   attackType: 5
-  territoryRadius: 4.5
-  detectRadius: 4
+  territoryRadius: 2.5
+  detectRadius: 2
   attackFrequency: 1
+  reloadDelay: 2
   moveFrequency: 2
   findTargetsFrequency: 0.5
   defaultSprite: {fileID: -1379284931105554088, guid: 1b01523e83443a84abd4e5422079f406,

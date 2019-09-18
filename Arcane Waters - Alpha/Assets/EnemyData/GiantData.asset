@@ -13,17 +13,19 @@ MonoBehaviour:
   m_Name: GiantData
   m_EditorClassIdentifier: 
   seaMonsterType: 303
+  showDebugGizmo: 1
   isAggressive: 1
   autoMove: 1
   isMelee: 0
   shouldDropTreasure: 1
   isInvulnerable: 0
-  maxProjectileDistanceGap: 2
-  maxDistanceGap: 3
+  maxProjectileDistanceGap: 1.5
+  maxDistanceGap: 2.5
   attackType: 6
-  territoryRadius: 4.5
-  detectRadius: 4
+  territoryRadius: 2.5
+  detectRadius: 2
   attackFrequency: 1
+  reloadDelay: 2
   moveFrequency: 5
   findTargetsFrequency: 0.5
   defaultSprite: {fileID: -1170078775172088249, guid: 66fcc7f86bc53864fbfa8ea45cb1f95e,

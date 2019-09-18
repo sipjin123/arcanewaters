@@ -13,17 +13,19 @@ MonoBehaviour:
   m_Name: HorrorData
   m_EditorClassIdentifier: 
   seaMonsterType: 301
+  showDebugGizmo: 1
   isAggressive: 1
   autoMove: 1
   isMelee: 1
   shouldDropTreasure: 1
   isInvulnerable: 1
-  maxProjectileDistanceGap: 2
-  maxDistanceGap: 3
+  maxProjectileDistanceGap: 1
+  maxDistanceGap: 3.2
   attackType: 0
   territoryRadius: 3
   detectRadius: 2
   attackFrequency: 1
+  reloadDelay: 1
   moveFrequency: 5
   findTargetsFrequency: 2
   defaultSprite: {fileID: 764851303485985294, guid: d9f8336b2a162354ab8f845c4dbe0498,
