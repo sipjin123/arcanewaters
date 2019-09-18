@@ -189,7 +189,7 @@ namespace AStar
                   Gizmos.color = Color.white;//Set the color of the node
                   continue;
                } else {
-                  Gizmos.color = Color.blue;//Set the color of the node
+                  Gizmos.color = Color.white;//Set the color of the node
                }
 
                if (finalPath != null)//If the final path is not empty
