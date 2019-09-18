@@ -12,7 +12,7 @@ public class EnemyManager : MonoBehaviour {
    public static EnemyManager self;
 
    // The data of the seamonster by type
-   public List<SeaMonsterDataPair> SeaMonsterEntityData;
+   public List<SeaMonsterDataPair> seaMonsterEntityData;
 
    #endregion
 

@@ -482,8 +482,7 @@ MonoBehaviour:
   openedChestSprite: {fileID: 4142961907861163260, guid: 5aa837bd93a1eb149ab953e6b2fdd825,
     type: 3}
   arrowContainer: {fileID: 959486711}
-  isEnemyDropped: 1
-  chestAnimator: {fileID: 5989040040333118063}
+  chestType: 3
   enemyType: 0
   autoDestroy: 1
 --- !u!114 &4298218442774226192
@@ -501,7 +500,7 @@ MonoBehaviour:
   serverOnly: 0
   localPlayerAuthority: 0
   m_AssetId: 
-  m_SceneId: 3792284596
+  m_SceneId: 3926546899
 --- !u!114 &4298218442774226193
 MonoBehaviour:
   m_ObjectHideFlags: 0

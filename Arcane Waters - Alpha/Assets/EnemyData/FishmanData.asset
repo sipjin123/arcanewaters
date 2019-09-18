@@ -28,10 +28,12 @@ MonoBehaviour:
   findTargetsFrequency: 0.5
   defaultSprite: {fileID: 3267800377565148373, guid: c1c7d428df4031747ac24670a0fc825b,
     type: 3}
+  secondarySprite: {fileID: 0}
   defaultRippleSprite: {fileID: 2800000, guid: cf3aeda784889864aa3c6507335879cb, type: 3}
   scaleOverride: 0.5
   outlineScaleOverride: 1
   rippleScaleOverride: 2
   maxHealth: 50
   animGroup: 4
-  seaMonsterDependencyType: 1
+  roleType: 1
+  animationSpeedOverride: -1

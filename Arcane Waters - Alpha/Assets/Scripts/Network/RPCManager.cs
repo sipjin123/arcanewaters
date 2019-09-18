@@ -1393,7 +1393,7 @@ public class RPCManager : NetworkBehaviour {
 
 
    [Command]
-   public void Cmd_OpenSeaChest (int chestId) {
+   public void Cmd_OpenLootBag (int chestId) {
       TreasureChest chest = TreasureManager.self.getChest(chestId);
 
       // Make sure we found the Treasure Chest
@@ -1576,7 +1576,7 @@ public class RPCManager : NetworkBehaviour {
       bot.route = null;
       bot.entityName = enemyType.ToString();
       bot.monsterType = (int) enemyType;
-      bot.initData(EnemyManager.self.SeaMonsterEntityData.Find(_ => _.seaMonsterType == Enemy.Type.Tentacle).seaMonsterData);
+      bot.initData(EnemyManager.self.seaMonsterEntityData.Find(_ => _.seaMonsterType == Enemy.Type.Tentacle).seaMonsterData);
       bot.locationSetup = new Vector2(xVal, yVal);
       bot.variety = (variety);
 
@@ -1599,7 +1599,7 @@ public class RPCManager : NetworkBehaviour {
       bot.areaType = _player.areaType;
       bot.entityName = enemyType.ToString();
       bot.monsterType = (int) enemyType;
-      bot.initData(EnemyManager.self.SeaMonsterEntityData.Find(_ => _.seaMonsterType == Enemy.Type.Horror).seaMonsterData);
+      bot.initData(EnemyManager.self.seaMonsterEntityData.Find(_ => _.seaMonsterType == Enemy.Type.Horror).seaMonsterData);
 
       // Spawn the bot on the Clients
       NetworkServer.Spawn(bot.gameObject);
@@ -1628,7 +1628,7 @@ public class RPCManager : NetworkBehaviour {
       bot.areaType = _player.areaType;
       bot.monsterType = (int) enemyType;
       bot.entityName = enemyType.ToString();
-      bot.initData(EnemyManager.self.SeaMonsterEntityData.Find(_ => _.seaMonsterType == enemyType).seaMonsterData);
+      bot.initData(EnemyManager.self.seaMonsterEntityData.Find(_ => _.seaMonsterType == enemyType).seaMonsterData);
 
       // Spawn the bot on the Clients
       NetworkServer.Spawn(bot.gameObject);

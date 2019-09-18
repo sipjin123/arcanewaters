@@ -49,8 +49,8 @@ public class TreasureChest : NetworkBehaviour {
    // The container for our animated arrow
    public GameObject arrowContainer;
 
-   // Determines if this chest is a land or sea chest
-   public bool isEnemyDropped;
+   // Determines the type of chest if it is dropped by a land or sea monster or spawned at a treasure site
+   public ChestSpawnType chestType;
 
    // The type of enemy that dropped the loot
    [SyncVar]
@@ -82,7 +82,7 @@ public class TreasureChest : NetworkBehaviour {
       // Activate certain things when the global player is nearby
       arrowContainer.SetActive(_isGlobalPlayerNearby && !hasBeenOpened());
 
-      if (!isEnemyDropped) {
+      if (chestType == ChestSpawnType.Site) {
          // We only enable the box collider for clients in the relevant instance
          boxCollider.enabled = (Global.player != null && Global.player.instanceId == this.instanceId);
       } else {
@@ -117,8 +117,8 @@ public class TreasureChest : NetworkBehaviour {
          return;
       }
 
-      if (isEnemyDropped) {
-         Global.player.rpc.Cmd_OpenSeaChest(this.id);
+      if (chestType == ChestSpawnType.Sea || chestType == ChestSpawnType.Land) {
+         Global.player.rpc.Cmd_OpenLootBag(this.id);
       } else {
          Global.player.rpc.Cmd_OpenChest(this.id);
       }
@@ -134,7 +134,7 @@ public class TreasureChest : NetworkBehaviour {
    }
 
    public Item getContents () {
-      if (isEnemyDropped) {
+      if (chestType == ChestSpawnType.Sea || chestType == ChestSpawnType.Land) {
          return getEnemyContents();
       }
 
@@ -241,4 +241,12 @@ public class TreasureChest : NetworkBehaviour {
    protected ClickableBox _clickableBox;
 
    #endregion
+}
+
+public enum ChestSpawnType
+{
+   None = 0,
+   Site = 1,
+   Land = 2,
+   Sea = 3
 }

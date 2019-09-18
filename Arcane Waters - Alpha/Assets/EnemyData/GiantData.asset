@@ -35,5 +35,5 @@ MonoBehaviour:
   rippleScaleOverride: 1
   maxHealth: 50
   animGroup: 5
-  seaMonsterDependencyType: 1
+  roleType: 1
   animationSpeedOverride: 0.1

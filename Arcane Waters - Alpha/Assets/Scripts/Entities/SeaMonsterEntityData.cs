@@ -74,9 +74,9 @@ public class SeaMonsterEntityData : ScriptableObject {
    public Anim.Group animGroup;
 
    // Determines if this unit is a standalone/minion/master being
-   public RoleType seaMonsterDependencyType;
+   public RoleType roleType;
 
-   // Holds teh value of the speed override of the simple animation
+   // Holds the value of the speed override of the simple animation
    public float animationSpeedOverride = -1;
 
    #endregion

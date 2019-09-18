@@ -379,8 +379,7 @@ MonoBehaviour:
   chestBurstAnimation: {fileID: 459723537}
   openedChestSprite: {fileID: 21300000, guid: 44f29cf028f4efc43822eba24f114a73, type: 3}
   arrowContainer: {fileID: 959486711}
-  isEnemyDropped: 1
-  chestAnimator: {fileID: 0}
+  chestType: 2
   enemyType: 0
   autoDestroy: 1
 --- !u!114 &4298218442774226192
@@ -398,7 +397,7 @@ MonoBehaviour:
   serverOnly: 0
   localPlayerAuthority: 0
   m_AssetId: 
-  m_SceneId: 2880607368
+  m_SceneId: 381895931
 --- !u!114 &4298218442774226193
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -106,7 +106,7 @@ public class SeaMonsterEntity : SeaEntity
    protected override void Start () {
       base.Start();
       if (!isServer) {
-         initData(EnemyManager.self.SeaMonsterEntityData.Find(_ => _.seaMonsterType == (Enemy.Type)monsterType).seaMonsterData);
+         initData(EnemyManager.self.seaMonsterEntityData.Find(_ => _.seaMonsterType == (Enemy.Type)monsterType).seaMonsterData);
       }
 
       if (variety != 0 && seaMonsterData.secondarySprite != null) {
@@ -126,7 +126,7 @@ public class SeaMonsterEntity : SeaEntity
          InvokeRepeating("checkForTargets", 1f, seaMonsterData.findTargetsFrequency);
       }
 
-      if (seaMonsterData.seaMonsterDependencyType == RoleType.Minion) {
+      if (seaMonsterData.roleType == RoleType.Minion) {
          // Calls functions that randomizes and calls the coroutine that handles movement
          initializeBehavior();
       } else {
@@ -230,7 +230,7 @@ public class SeaMonsterEntity : SeaEntity
 
       // If we don't have a waypoint, we're done
       if (_waypoint == null || Vector2.Distance(this.transform.position, _waypoint.transform.position) < .08f) {
-         if (seaMonsterData.seaMonsterDependencyType == RoleType.Master && isApproachingTarget) {
+         if (seaMonsterData.roleType == RoleType.Master && isApproachingTarget) {
             isApproachingTarget = false;
             foreach (SeaMonsterEntity childEntities in seaMonsterChildrenList) {
                childEntities.initializeBehavior();
@@ -353,7 +353,7 @@ public class SeaMonsterEntity : SeaEntity
       StopCoroutine(_movementCoroutine);
       float delayTime = .1f;
 
-      Vector2 areaAroundParent = getAreaAroundParent();
+      Vector2 areaAroundParent = randomPositionAroundParent();
       if (Vector2.Distance(transform.position, areaAroundParent) > 1f) {
          transform.position = areaAroundParent;
       }
@@ -361,7 +361,7 @@ public class SeaMonsterEntity : SeaEntity
       StartCoroutine(CO_HandleBossMovement(newPos, delayTime));
    }
 
-   private Vector2 getAreaAroundParent () {
+   private Vector2 randomPositionAroundParent () {
       float randomizedX = (locationSetup.x != 0 && locationSetup.y != 0) ? Random.Range(.4f, .6f) : Random.Range(.6f, .8f);
       float randomizedY = (locationSetup.x != 0 && locationSetup.y != 0) ? Random.Range(.4f, .6f) : Random.Range(.6f, .8f);
 
@@ -409,7 +409,7 @@ public class SeaMonsterEntity : SeaEntity
          Destroy(_waypoint.gameObject);
       }
 
-      Vector2 areaAroundParent = getAreaAroundParent();
+      Vector2 areaAroundParent = randomPositionAroundParent();
 
       // Pick a new spot around the Parent Entity if this unit is a minion
       if (seaMonsterParentEntity != null) {
@@ -488,7 +488,7 @@ public class SeaMonsterEntity : SeaEntity
          _waypoint = newWaypoint1;
       }
 
-      if (seaMonsterData.seaMonsterDependencyType == RoleType.Master) {
+      if (seaMonsterData.roleType == RoleType.Master) {
          if (seaMonsterChildrenList.Count > 0) {
             foreach (SeaMonsterEntity childEntity in seaMonsterChildrenList) {
                if (!childEntity.isDead()) {
@@ -503,7 +503,7 @@ public class SeaMonsterEntity : SeaEntity
       hasDied = true;
       handleAnimations();
 
-      if (seaMonsterData.seaMonsterDependencyType == RoleType.Minion) {
+      if (seaMonsterData.roleType == RoleType.Minion) {
          seaMonsterParentEntity.currentHealth -= 1;
       }
 
