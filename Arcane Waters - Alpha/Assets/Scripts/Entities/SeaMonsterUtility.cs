@@ -6,7 +6,7 @@ using Mirror;
 
 public static class SeaMonsterUtility
 {
-   public static int lockToTarget (NetEntity attacker, Vector3 currentPos) {
+   public static int getDirectionToFace (NetEntity attacker, Vector3 currentPos) {
       int horizontalDirection = 0;
       int verticalDirection = 0;
 
@@ -61,7 +61,7 @@ public static class SeaMonsterUtility
       return finalDirection;
    }
 
-   public static Vector2 randomPositionAroundPosition (Vector2 position, Vector2 locationSetup) {
+   public static Vector2 GetRandomPositionAroundPosition (Vector2 position, Vector2 locationSetup) {
       float minXRange = .4f;
       float maxXRange = .6f;
       float minYRange = .6f;

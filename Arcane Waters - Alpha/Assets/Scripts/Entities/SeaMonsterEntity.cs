@@ -185,7 +185,7 @@ public class SeaMonsterEntity : SeaEntity
       // If this entity is a Minion, snap to its parent
       if (seaMonsterData.roleType == RoleType.Minion && snapToParent) {
          if (seaMonsterParentEntity != null) {
-            Vector2 targetLocation = SeaMonsterUtility.randomPositionAroundPosition(seaMonsterParentEntity.transform.position, locationSetup);
+            Vector2 targetLocation = SeaMonsterUtility.GetRandomPositionAroundPosition(seaMonsterParentEntity.transform.position, locationSetup);
             Vector2 waypointDirection = targetLocation - (Vector2) this.transform.position;
             waypointDirection = waypointDirection.normalized;
 
@@ -221,7 +221,7 @@ public class SeaMonsterEntity : SeaEntity
             // Clears a node as the unit passes by
             float distanceToWaypoint = Vector2.Distance(_waypointList[0].transform.position, this.transform.position);
             if (distanceToWaypoint < .1f) {
-               commandMninions();
+               commandMinions();
                Destroy(_waypointList[0].gameObject);
                _waypointList.RemoveAt(0);
             }
@@ -338,7 +338,7 @@ public class SeaMonsterEntity : SeaEntity
       }
    }
 
-   private void commandMninions () {
+   private void commandMinions () {
       if (seaMonsterData.roleType == RoleType.Master && seaMonsterChildrenList.Count > 0) {
          foreach (SeaMonsterEntity childEntity in seaMonsterChildrenList) {
             if (!childEntity.isDead()) {
@@ -382,8 +382,6 @@ public class SeaMonsterEntity : SeaEntity
    }
 
    private IEnumerator CO_ProcessNextMove () {
-      yield return new WaitForSeconds(seaMonsterData.attackFrequency);
-
       // Checks if there are enemies nearby
       scanTargetsInArea();
 
@@ -394,16 +392,23 @@ public class SeaMonsterEntity : SeaEntity
          // If there is a target, calculate if
          if (enemyWithinMoveDistance()) {
             if (enemyWithinAttackDistance() && seaMonsterData.roleType != RoleType.Master) {
-               attackTarget();
+               if (hasReloaded()) {
+                  attackTarget();
+               } else {
+                  yield return new WaitForSeconds(seaMonsterData.attackFrequency);
+                  planNextMove();
+               }
             } else {
                setWaypoint(targetEntity.transform);
             }
          } else {
             // Enemy is too far, keep moving around
+            yield return new WaitForSeconds(seaMonsterData.moveFrequency);
             setWaypoint(null);
          }
       } else {
          // No enemy, keep moving around
+         yield return new WaitForSeconds(seaMonsterData.moveFrequency);
          setWaypoint(null);
       }
    }
@@ -466,7 +471,7 @@ public class SeaMonsterEntity : SeaEntity
 
          if (isEngaging) {
             // Look at target entity
-            this.facing = (Direction) SeaMonsterUtility.lockToTarget(targetEntity, transform.position);
+            this.facing = (Direction) SeaMonsterUtility.getDirectionToFace(targetEntity, transform.position);
          }
       } else {
          if (getVelocity().magnitude > MIN_MOVEMENT_MAGNITUDE) {
@@ -498,9 +503,9 @@ public class SeaMonsterEntity : SeaEntity
             }
 
             // Register Route
-            foreach (ANode tem in gridPath) {
+            foreach (ANode node in gridPath) {
                Waypoint newWaypointPath = Instantiate(PrefabsManager.self.waypointPrefab);
-               newWaypointPath.transform.position = tem.vPosition;
+               newWaypointPath.transform.position = node.vPosition;
                _waypointList.Add(newWaypointPath);
             }
 
@@ -511,16 +516,16 @@ public class SeaMonsterEntity : SeaEntity
 
             // Register Route
             _waypointList = new List<Waypoint>();
-            foreach (ANode tem in pathFindingReference.findPathNowInit(transform.position, newTargetPos)) {
+            foreach (ANode node in pathFindingReference.findPathNowInit(transform.position, newTargetPos)) {
                Waypoint newWaypointPath = Instantiate(PrefabsManager.self.waypointPrefab);
-               newWaypointPath.transform.position = tem.vPosition;
+               newWaypointPath.transform.position = node.vPosition;
                _waypointList.Add(newWaypointPath);
             }
 
             monsterBehavior = MonsterBehavior.MoveToTarget;
          }
          // If has minions, command them to follow
-         commandMninions();
+         commandMinions();
       }
    }
 
@@ -553,7 +558,7 @@ public class SeaMonsterEntity : SeaEntity
 
    [Server]
    protected void launchProjectile (Vector2 spot, SeaEntity attacker, Attack.Type attackType, float attackDelay, float launchDelay) {
-      this.facing = (Direction) SeaMonsterUtility.lockToTarget(attacker,transform.position);
+      this.facing = (Direction) SeaMonsterUtility.getDirectionToFace(attacker,transform.position);
 
       int accuracy = Random.Range(1, 4);
       Vector2 targetLoc = new Vector2(0, 0);

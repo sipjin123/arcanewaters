@@ -11,19 +11,19 @@ namespace AStar
    {
       #region Public Variables
 
-      //The array of nodes that the A Star algorithm uses
+      // The array of nodes that the A Star algorithm uses
       public ANode[,] nodeArray;
 
-      //The List of nodes that the A Star algorithm uses
+      // The List of nodes that the A Star algorithm uses
       public List<ANode> nodeList;
 
-      //The completed path that the red line will be drawn along
+      // The completed path that the red line will be drawn along
       public List<ANode> finalPath;
 
       // Reference to the current grid size of the map
       public float iGridSizeY, iGridSizeX;
 
-      //A vector2 to store the width and height of the graph in world units.
+      // A vector2 to store the width and height of the graph in world units.
       public Vector2 vGridWorldSize;
 
       // Fixed grid size of all maps
@@ -38,18 +38,18 @@ namespace AStar
 
          List<ANode> nodeList = new List<ANode>();
 
-         for (int q = 0; q < 42; q++) {
-            for (int i = 0; i < 42; i++) {
-               Vector3 alteredPos = new Vector3(grid.transform.position.x + (i * .25f), grid.transform.position.y - (q * .25f), pos.z);
+         for (int col = 0; col < 42; col++) {
+            for (int row = 0; row < 42; row++) {
+               Vector3 alteredPos = new Vector3(grid.transform.position.x + (row * .25f), grid.transform.position.y - (col * .25f), pos.z);
                foreach (Tilemap tilemap in area.GetComponentsInChildren<Tilemap>()) {
                   if (tilemap.name.StartsWith("Land")) {
                      Vector3Int cellPos = grid.WorldToCell(alteredPos);
                      TileBase tile = tilemap.GetTile(cellPos);
 
                      if (tile != null) {
-                        nodeList.Add(new ANode(true, alteredPos, i, q));
+                        nodeList.Add(new ANode(true, alteredPos, row, col));
                      } else {
-                        nodeList.Add(new ANode(false, alteredPos, i, q));
+                        nodeList.Add(new ANode(false, alteredPos, row, col));
                      }
                      break;
                   }
@@ -61,7 +61,7 @@ namespace AStar
       }
 
       private void setupGrid (Vector3 startPos, int iGridSizeX, int iGridSizeY, List<ANode> nodeList) {
-         //Declare the array of nodes. 
+         // Declare the array of nodes. 
          nodeArray = new ANode[iGridSizeX, iGridSizeY];
          this.nodeList = new List<ANode>();
          this.nodeList = nodeList;
@@ -72,15 +72,13 @@ namespace AStar
          this.iGridSizeX = iGridSizeX;
 
          int i = 0;
-         //Loop through the array of nodes.
-         for (int x = 0; x < iGridSizeX; x++)
-         {
-            //Loop through the array of nodes
-            for (int y = 0; y < iGridSizeY; y++)
-            {
+         // Loop through the array of nodes.
+         for (int x = 0; x < iGridSizeX; x++) {
+            // Loop through the array of nodes
+            for (int y = 0; y < iGridSizeY; y++) {
                ANode currNode = nodeList[i];
 
-               //Create a new node in the array.
+               // Create a new node in the array.
                nodeArray[x, y] = new ANode(currNode.bIsWall, currNode.vPosition, x, y);
                this.nodeList[i].iGridX = x;
                nodeList[i].iGridY = y;
@@ -89,76 +87,35 @@ namespace AStar
          }
       }
 
-      //Function that gets the neighboring nodes of the given node.
+      // Function that gets the neighboring nodes of the given node.
       public List<ANode> getNeighboringNodes (ANode a_NeighborNode) {
-         //Make a new list of all available neighbors.
+         // Make a new list of all available neighbors.
          List<ANode> neighborList = new List<ANode>();
-         int icheckX;//Variable to check if the XPosition is within range of the node array to avoid out of range errors.
-         int icheckY;//Variable to check if the YPosition is within range of the node array to avoid out of range errors.
 
-         //Check the right side of the current node.
-         icheckX = a_NeighborNode.iGridX + 1;
-         icheckY = a_NeighborNode.iGridY;
+         for (int row = -1; row <= 1; row++) {
+            for (int col = -1; col <= 1; col++) {
+               // if we are on the node that was passed in, skip this iteration.
+               if (row == 0 && col == 0) {
+                  continue;
+               }
 
-         //If the XPosition is in range of the array
-         if (icheckX >= 0 && icheckX < iGridSizeX)
-         {
-            //If the YPosition is in range of the array
-            if (icheckY >= 0 && icheckY < iGridSizeY)
-            {
-               //Add the grid to the available neighbors list
-               neighborList.Add(nodeArray[icheckX, icheckY]);
-            }
-         }
-         //Check the Left side of the current node.
-         icheckX = a_NeighborNode.iGridX - 1;
-         icheckY = a_NeighborNode.iGridY;
+               int checkX = a_NeighborNode.iGridX + row;
+               int checkY = a_NeighborNode.iGridY + col;
 
-         //If the XPosition is in range of the array
-         if (icheckX >= 0 && icheckX < iGridSizeX)
-         {
-            //If the YPosition is in range of the array
-            if (icheckY >= 0 && icheckY < iGridSizeY)
-            {
-               //Add the grid to the available neighbors list
-               neighborList.Add(nodeArray[icheckX, icheckY]);
-            }
-         }
-         //Check the Top side of the current node.
-         icheckX = a_NeighborNode.iGridX;
-         icheckY = a_NeighborNode.iGridY + 1;
-
-         //If the XPosition is in range of the array
-         if (icheckX >= 0 && icheckX < iGridSizeX)
-         {
-            //If the YPosition is in range of the array
-            if (icheckY >= 0 && icheckY < iGridSizeY)
-            {
-               //Add the grid to the available neighbors list
-               neighborList.Add(nodeArray[icheckX, icheckY]);
-            }
-         }
-         //Check the Bottom side of the current node.
-         icheckX = a_NeighborNode.iGridX;
-         icheckY = a_NeighborNode.iGridY - 1;
-
-         //If the XPosition is in range of the array
-         if (icheckX >= 0 && icheckX < iGridSizeX)
-         {
-            //If the YPosition is in range of the array
-            if (icheckY >= 0 && icheckY < iGridSizeY)
-            {
-               //Add the grid to the available neighbors list
-               neighborList.Add(nodeArray[icheckX, icheckY]);
+               // Make sure the node is within the grid.
+               if (checkX >= 0 && checkX < iGridSizeX && checkY >= 0 && checkY < iGridSizeY) {
+                  // Adds to the neighbours list.
+                  neighborList.Add(nodeArray[checkX, checkY]); 
+               }
             }
          }
 
-         //Return the neighbors list.
          return neighborList;
       }
 
-      //Gets the closest node to the given world position.
+      // Gets the closest node to the given world position.
       public ANode nodeFromWorldPoint (Vector3 a_vWorldPos) {
+         // Snaps the position into a grid node
          float computedX = a_vWorldPos.x - (a_vWorldPos.x % .25f);
          float computedY = a_vWorldPos.y - (a_vWorldPos.y % .25f);
 
@@ -170,6 +127,7 @@ namespace AStar
             return null;
          }
 
+         // Find the node in the array with the coordinates
          ANode currNode = nodeList.Find(_ => _.vPosition.x == computedX && _.vPosition.y == computedY);
 
          try {
@@ -180,30 +138,30 @@ namespace AStar
       }
 
       private void OnDrawGizmos () {
-         if (nodeArray != null)//If the grid is not empty
-         {
-            foreach (ANode n in nodeArray)//Loop through every node in the grid
-            {
-               if (n.bIsWall)//If the current node is a wall node
-                {
-                  Gizmos.color = Color.white;//Set the color of the node
+         // If the grid is not empty
+         if (nodeArray != null) {
+            // Loop through every node in the grid
+            foreach (ANode n in nodeArray) {
+               // If the current node is a wall node
+               if (n.bIsWall) {
+                  Gizmos.color = Color.white;
                   continue;
                } else {
-                  Gizmos.color = Color.white;//Set the color of the node
+                  Gizmos.color = Color.white;
                }
 
-               if (finalPath != null)//If the final path is not empty
-               {
-                  if (finalPath.Contains(n))//If the current node is in the final path
-                  {
-                     Gizmos.color = Color.red;//Set the color of that node
+               // If the final path is not empty
+               if (finalPath != null) {
+                  // If the current node is in the final path
+                  if (finalPath.Contains(n)) {
+                     Gizmos.color = Color.red;
                      float sizex = .1f;
-                     Gizmos.DrawWireSphere(n.vPosition, sizex);//Draw the node at the position of the node.
+                     Gizmos.DrawWireSphere(n.vPosition, sizex);
                   }
                }
 
                float size = .05f;
-               Gizmos.DrawCube(n.vPosition, new Vector3(size, size, size));//Draw the node at the position of the node.
+               Gizmos.DrawCube(n.vPosition, new Vector3(size, size, size));
             }
          }
       }
