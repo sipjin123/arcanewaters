@@ -55,7 +55,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 655269299}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
@@ -89,7 +89,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 655269299}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1573420865, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_EffectColor: {r: 0.13725491, g: 0.10588236, b: 0.29803923, a: 1}
@@ -150,7 +150,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 361689813957802564}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
@@ -184,7 +184,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 361689813957802564}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1573420865, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_EffectColor: {r: 0.13725491, g: 0.10588236, b: 0.29803923, a: 1}
@@ -243,7 +243,13 @@ MonoBehaviour:
   serverText: {fileID: 361689813957802563}
   biomeLevelText: {fileID: 6060202903603514094}
   playerCountText: {fileID: 655269302}
-  preset: {fileID: 11400000, guid: c13190e63883ca94f993515467e2dc48, type: 2}
+  mapSummary:
+    serverAddress: 
+    serverPort: 0
+    areaType: 0
+    biomeType: 0
+    playersCount: 0
+    maxPlayersCount: 0
 --- !u!222 &361689815080340498
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -310,7 +316,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5910499194967977074}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
@@ -330,6 +336,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!114 &3344666648219913219
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -339,7 +346,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5910499194967977074}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1392445389, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -441,7 +448,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8991950285108136281}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
@@ -475,7 +482,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8991950285108136281}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1573420865, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_EffectColor: {r: 0.13725491, g: 0.10588236, b: 0.29803923, a: 1}

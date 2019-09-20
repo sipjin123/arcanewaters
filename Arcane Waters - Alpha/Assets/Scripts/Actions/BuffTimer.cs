@@ -11,7 +11,6 @@ public struct BuffTimer {
    // ZERONEV-COMMENT: This will not work anymore cause each ability is instanced, we will not be able to know by this value alone.
    // So it was changed to the global ability index instead.
    public int buffAbilityGlobalID;
-   //public Ability.Type buffType;
 
    // The time at which the buff starts
    public float buffStartTime;

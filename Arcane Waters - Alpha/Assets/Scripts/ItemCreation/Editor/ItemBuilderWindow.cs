@@ -70,7 +70,7 @@ namespace ItemEditor
                   switch (_itemToEdit.getBattleItemType()) {
                      case BattleItemType.Ability:
                         _battleItemType = BattleItemType.Ability;
-                        setAbilityItemValues((AbilityData) _itemToEdit);
+                        setAbilityItemValues((BasicAbilityData) _itemToEdit);
                         break;
                      case BattleItemType.Weapon:
                         _battleItemType = BattleItemType.Weapon;
@@ -105,7 +105,7 @@ namespace ItemEditor
             switch (_battleItemType) {
                case BattleItemType.Ability:
 
-                  AbilityData newAbility = AbilityData.CreateInstance(basicData, _abilityCost, _abilityCanBeBlocked,
+                  BasicAbilityData newAbility = BasicAbilityData.CreateInstance(basicData, _abilityCost, _abilityCanBeBlocked,
                       _abilityCastParticle, _abilityCastAudioclip, abilityAllowedStances, _classRequirement, _abilityType, 
                       _cooldown, _hasKnockup, _hasShake, _apChange);
 
@@ -276,7 +276,7 @@ namespace ItemEditor
          _classRequirement = item.getClassRequirement();
       }
 
-      private void setAbilityItemValues (AbilityData item) {
+      private void setAbilityItemValues (BasicAbilityData item) {
          _abilityCost = item.getAbilityCost();
          _abilityCanBeBlocked = item.getBlockStatus();
 
@@ -320,8 +320,8 @@ namespace ItemEditor
          _secondaryColor = ColorType.Black;
       }
 
-      public static void createAbilityAsset (string folder, AbilityData itemToBuild) {
-         AbilityData asset = AbilityData.CreateInstance(itemToBuild);
+      public static void createAbilityAsset (string folder, BasicAbilityData itemToBuild) {
+         BasicAbilityData asset = BasicAbilityData.CreateInstance(itemToBuild);
 
          string path = "Assets/CreatedItems/" + folder;
          string assetPathAndName = path + "/" + asset.getName() + ".asset";

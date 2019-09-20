@@ -48,6 +48,9 @@ public class Battle : NetworkBehaviour {
 
       // Keep track of the Battle Board we're using
       this.battleBoard = BattleManager.self.getBattleBoard(this.biomeType);
+
+      // Set battle end UI events.
+      onBattleEnded.AddListener(BattleUIManager.self.disableBattleUI);
    }
 
    // TODO ZERONEV-COMMENT: This handles the general battle flow, will need to work on this.
@@ -277,6 +280,10 @@ public class Battle : NetworkBehaviour {
 
       // We just received an action from the server, so execute it at the assigned time
       AbilityManager.self.execute(actionList.ToArray());
+   }
+
+   private void OnDestroy () {
+      onBattleEnded.Invoke();
    }
 
    #region Private Variables

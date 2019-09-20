@@ -7,10 +7,15 @@ using Mirror;
 public class AbilityInventory : MonoBehaviour{
    #region Public Variables
 
-   // Temporary simulation of the current abilities equipped for the local player.
-   // (Do not use this in battle directly, they must be instanced first.)
-   // We will use these as the main blueprints.
-   public List<AbilityData> equippedAbilitiesBPs = new List<AbilityData>();
+   // Temporary simulation of the current abilities equipped for the local player
+   // (Do not use this in battle directly, they must be instanced first)
+   // We will use these as the main abilities
+   public List<BasicAbilityData> equippedAbilitiesBPs = new List<BasicAbilityData>();
+
+   // Temporary variables, until we fully unify the ability data to handle stances too.
+   public BasicAbilityData balancedStance;
+   public BasicAbilityData defenseStance;
+   public BasicAbilityData offenseStance;
 
    // Instance
    public static AbilityInventory self;
@@ -21,22 +26,7 @@ public class AbilityInventory : MonoBehaviour{
       self = this;
    }
 
-   // Scriptable objects must not be used directly from the asset.
-   // They need to be instanced as they own, and they use that data before trying to access their data.
-   public void initializeAbilities () {
-      for (int i = 0; i < equippedAbilitiesBPs.Count; i++) {
-         AbilityData instancedAbility = AbilityData.CreateInstance(equippedAbilitiesBPs[i]);
-         _inBattleAbilities.Add(instancedAbility);
-      }
-   }
-
-   // Whenever we want to have access to the local player equipped abilities, we will use this getter method.
-   public List<AbilityData> equippedAbilities { get { return _inBattleAbilities; } }
-
    #region Private Variables
-
-   // Instanced abilities that will be used inside the battle.
-   private List<AbilityData> _inBattleAbilities = new List<AbilityData>();
 
    #endregion
 }

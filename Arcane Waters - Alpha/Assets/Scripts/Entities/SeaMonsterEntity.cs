@@ -128,7 +128,7 @@ public class SeaMonsterEntity : SeaEntity
 
       if (isServer && seaMonsterData.roleType != RoleType.Minion) {
          gridReference.displayGrid(transform.position, this.areaType);
-         setWaypoint(null);
+         planNextMove();
       }
 
       // Note our spawn position
@@ -198,6 +198,7 @@ public class SeaMonsterEntity : SeaEntity
 
             float distanceToWaypoint = Vector2.Distance(targetLocation, this.transform.position);
             if (distanceToWaypoint < .05f) {
+               planNextMove();
                snapToParent = false;
             }
          }
@@ -286,6 +287,7 @@ public class SeaMonsterEntity : SeaEntity
                if (Vector2.Distance(transform.position, spot) < seaMonsterData.maxProjectileDistanceGap) {
                   meleeAtSpot(spot, seaMonsterData.attackType);
                   monsterBehavior = MonsterBehavior.AttackTarget;
+                  planNextMove();
                }
             } else {
                launchProjectile(spot, attacker, seaMonsterData.attackType, .2f, .4f);
@@ -339,7 +341,7 @@ public class SeaMonsterEntity : SeaEntity
    }
 
    private void commandMinions () {
-      if (seaMonsterData.roleType == RoleType.Master && seaMonsterChildrenList.Count > 0) {
+      if (seaMonsterData.roleType == RoleType.Master && seaMonsterChildrenList.Count > 0 && _waypointList.Count > 0) {
          foreach (SeaMonsterEntity childEntity in seaMonsterChildrenList) {
             if (!childEntity.isDead()) {
                childEntity.stopMoving();
@@ -371,7 +373,7 @@ public class SeaMonsterEntity : SeaEntity
 
    private void planNextMove () {
       // Minions cant decide for themselves
-      if (seaMonsterData.roleType == RoleType.Minion || !isServer) {
+      if (!isServer) {
          return;
       }
 
@@ -388,28 +390,35 @@ public class SeaMonsterEntity : SeaEntity
       // Gets the nearest target if there is
       targetEntity = getNearestTarget();
 
-      if (targetEntity != null && enemyWithinTerritory()) {
-         // If there is a target, calculate if
-         if (enemyWithinMoveDistance()) {
-            if (enemyWithinAttackDistance() && seaMonsterData.roleType != RoleType.Master) {
-               if (hasReloaded()) {
-                  attackTarget();
+      if (seaMonsterData.roleType == RoleType.Minion && targetEntity != null) {
+         if (enemyWithinAttackDistance() && hasReloaded()) {
+            attackTarget();
+         }
+      } else {
+         if (targetEntity != null && enemyWithinTerritory()) {
+            // If there is a target, calculate if
+            if (enemyWithinMoveDistance()) {
+               if (enemyWithinAttackDistance() && seaMonsterData.roleType != RoleType.Master) {
+                  if (hasReloaded()) {
+                     attackTarget();
+                  } else {
+                     yield return new WaitForSeconds(seaMonsterData.attackFrequency);
+                     planNextMove();
+                  }
                } else {
-                  yield return new WaitForSeconds(seaMonsterData.attackFrequency);
-                  planNextMove();
+                  yield return new WaitForSeconds(seaMonsterData.moveFrequency * .5f);
+                  setWaypoint(targetEntity.transform);
                }
             } else {
-               setWaypoint(targetEntity.transform);
+               // Enemy is too far, keep moving around
+               yield return new WaitForSeconds(seaMonsterData.moveFrequency);
+               setWaypoint(null);
             }
          } else {
-            // Enemy is too far, keep moving around
+            // No enemy, keep moving around
             yield return new WaitForSeconds(seaMonsterData.moveFrequency);
             setWaypoint(null);
          }
-      } else {
-         // No enemy, keep moving around
-         yield return new WaitForSeconds(seaMonsterData.moveFrequency);
-         setWaypoint(null);
       }
    }
 
@@ -533,7 +542,7 @@ public class SeaMonsterEntity : SeaEntity
       hasDied = true;
       handleAnimations();
 
-      if (seaMonsterData.roleType == RoleType.Minion) {
+      if (seaMonsterData.roleType == RoleType.Minion && seaMonsterParentEntity != null) {
          seaMonsterParentEntity.currentHealth -= 1;
       }
 

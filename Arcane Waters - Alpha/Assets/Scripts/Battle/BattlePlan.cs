@@ -11,7 +11,7 @@ public class BattlePlan {
    #region Public Variables
 
    // The ability we're going to use
-   public AbilityData ability;
+   public BasicAbilityData ability;
 
    // The battlers we're going to target
    public List<Battler> targets;
@@ -25,7 +25,7 @@ public class BattlePlan {
    /// </summary>
    /// <param name="target"></param>
    /// <param name="ability"></param>
-   public BattlePlan (Battler target, AbilityData ability) {
+   public BattlePlan (Battler target, BasicAbilityData ability) {
       this.ability = ability;
 
       this.targets = new List<Battler>();
@@ -37,7 +37,7 @@ public class BattlePlan {
    /// </summary>
    /// <param name="ability"></param>
    /// <param name="targets"></param>
-   public BattlePlan (AbilityData ability, List<Battler> targets) {
+   public BattlePlan (BasicAbilityData ability, List<Battler> targets) {
       this.ability = ability;
       this.targets = targets;
    }

@@ -12,6 +12,7 @@ using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using System.Linq;
 using System.IO;
+using System.Xml.Serialization;
 
 public class Util : MonoBehaviour {
    public static NetEntity getPlayer () {
@@ -651,6 +652,46 @@ public class Util : MonoBehaviour {
       } else {
          return angle;
       }
+   }
+
+   // Loads an XML text asset and deserializes it into an object
+   public static T xmlLoad<T> (TextAsset textAsset) {
+      StringReader reader = null;
+      try {
+         // Streams the xml string
+         reader = new StringReader(textAsset.text);
+
+         // Create an instance of the XMLSerializer
+         XmlSerializer serializer = new XmlSerializer(typeof(T));
+
+         // Deserialize the object
+         T obj = (T) serializer.Deserialize(reader);
+
+         // Return the result
+         return obj;
+
+      } catch (Exception e) {
+         D.error("Error when loading the file " + textAsset.name + "\n" + e.ToString());
+         return default(T);
+      } finally {
+         // Close the reader
+         if (reader != null) {
+            reader.Close();
+         }
+      }
+   }
+
+   public static string[] getFileNamesInFolder(string directoryPath, string searchPattern="*.*") {
+      // Get the list of files in the directory
+      DirectoryInfo dir = new DirectoryInfo(directoryPath);
+      FileInfo[] info = dir.GetFiles(searchPattern);
+
+      // Get the name of each file
+      string[] fileNamesArray = new string[info.Length];
+      for (int i = 0; i < info.Length; i++) {
+         fileNamesArray[i] = info[i].Name;
+      }
+      return fileNamesArray;
    }
 
    // A Random instance we can use for generating random numbers

@@ -14,24 +14,36 @@ public class DB_MainStub : MonoBehaviour {
       
    }
 
-   public static void createNPCRelation (NPCRelationInfo npcInfo) {
+   public static void createNPCRelationship (int npcId, int userId, int friendshipLevel) {
 
    }
 
-   public static List<NPCRelationInfo> getNPCRelationInfo (int user_id, int npc_id) {
-      return new List<NPCRelationInfo>();
+   public static int getFriendshipLevel (int npcId, int userId) {
+      return 0;
+   }
+
+   public static void updateNPCRelationship (int npcId, int userId, int friendshipLevel) {
+
+   }
+
+   public static void createQuestStatus (int npcId, int userId, int questId, int questNodeId) {
+
+   }
+
+   public static void updateQuestStatus (int npcId, int userId, int questId, int questNodeId) {
+
+   }
+
+   public static QuestStatusInfo getQuestStatus (int npcId, int userId, int questId) {
+      return null;
+   }
+
+   public static List<QuestStatusInfo> getQuestStatuses (int npcId, int userId) {
+      return null;
    }
 
    public static List<Item> getRequiredIngredients (int usrId, List<CraftingIngredients.Type> itemList) {
       return new List<Item>();
-   }
-
-   public static void updateNPCRelation (int userId, int npcID, int relationLevel) {
-
-   }
-
-   public static void updateNPCProgress (int userId, int npcID, int questProgress, int questIndex, string questType) {
-
    }
 
    public static List<CropInfo> getCropInfo (int userId) {
@@ -219,8 +231,8 @@ public class DB_MainStub : MonoBehaviour {
 
    }
 
-   public static void createOrUpdateItemCount (int userId, int itmId, Item baseItem) {
-
+   public static Item createItemOrUpdateItemCount (int userId, Item baseItem) {
+      return null;
    }
 
    public static void updateItemQuantity (int userId, int itmId, int itmCount) { 
@@ -235,11 +247,19 @@ public class DB_MainStub : MonoBehaviour {
       return 0;
    }
 
+   public static int getItemCount (int userId, int itemCategory, int itemType) {
+      return 0;
+   }
+
    public static List<Item> getItems (int userId, int page, int itemsPerPage) {
       return null;
    }
 
    public static Item getItem (int userId, int itemId) {
+      return null;
+   }
+
+   public static Item getFirstItem (int userId, Item.Category itemCategory, int itemTypeId) {
       return null;
    }
 

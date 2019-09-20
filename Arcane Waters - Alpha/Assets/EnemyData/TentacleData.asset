@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: TentacleData
   m_EditorClassIdentifier: 
   seaMonsterType: 300
+  showDebugGizmo: 0
   isAggressive: 1
   autoMove: 1
   isMelee: 1
@@ -21,9 +22,10 @@ MonoBehaviour:
   maxProjectileDistanceGap: 0.5
   maxDistanceGap: 1
   attackType: 4
-  territoryRadius: 3
+  territoryRadius: 1
   detectRadius: 2
   attackFrequency: 1
+  reloadDelay: 1
   moveFrequency: 2
   findTargetsFrequency: 0.5
   defaultSprite: {fileID: -5710345286123915637, guid: afc35c71681f753418147a7603be088d,

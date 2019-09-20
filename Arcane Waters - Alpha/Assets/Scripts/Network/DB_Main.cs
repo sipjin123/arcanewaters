@@ -19,53 +19,46 @@ public class DB_Main : DB_MainStub {
 
    #endregion
 
-   #region NPC Relation Feature
-
-   public static new void createNPCRelation (NPCRelationInfo npcInfo) {
-      int newID = 0;
+   public static new void createNPCRelationship (int npcId, int userId, int friendshipLevel) {
 
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO npc_relationship (npc_id, user_id, npc_name, npc_relation_level,npc_quest_index, npc_quest_progress, npc_quest_type) " +
-            "VALUES (@npc_id, @user_id, @npc_name, @npc_relation_level, @npc_quest_index, @npc_quest_progress , @npc_quest_type);", conn)) {
+            "INSERT INTO npc_relationship (npcId, usrId, friendshipLevel) " +
+            "VALUES (@npcId, @usrId, @friendshipLevel)", conn)) {
 
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@npc_id", npcInfo.npcID);
-            cmd.Parameters.AddWithValue("@user_id", npcInfo.userID);
-            cmd.Parameters.AddWithValue("@npc_name", npcInfo.npcName);
-            cmd.Parameters.AddWithValue("@npc_relation_level", npcInfo.npcRelationLevel);
-            cmd.Parameters.AddWithValue("@npc_quest_index", npcInfo.npcQuestIndex);
-            cmd.Parameters.AddWithValue("@npc_quest_progress", npcInfo.npcQuestProgress);
-            cmd.Parameters.AddWithValue("@npc_quest_type", npcInfo.npcQuestType.ToString());
+            cmd.Parameters.AddWithValue("@npcId", npcId);
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@friendshipLevel", friendshipLevel);
 
             // Execute the command
             cmd.ExecuteNonQuery();
 
-            newID = (int) cmd.LastInsertedId;
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
    }
 
-   public static new List<NPCRelationInfo> getNPCRelationInfo (int user_id, int npc_id) {
-      List<NPCRelationInfo> npcRelationList = new List<NPCRelationInfo>();
+   public static new int getFriendshipLevel(int npcId, int userId) {
+
+      int friendshipLevel = -1;
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM arcane.npc_relationship WHERE npc_id=@npc_id AND user_id=@user_id", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT friendshipLevel FROM npc_relationship WHERE npcId=@npcId AND usrId=@usrId", conn)) {
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@user_id", user_id);
-            cmd.Parameters.AddWithValue("@npc_id", npc_id);
+            cmd.Parameters.AddWithValue("@npcId", npcId);
+            cmd.Parameters.AddWithValue("@usrId", userId);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  NPCRelationInfo info = new NPCRelationInfo(dataReader);
-                  npcRelationList.Add(info);
+                  friendshipLevel = DataUtil.getInt(dataReader, "friendshipLevel");
                }
             }
          }
@@ -73,20 +66,20 @@ public class DB_Main : DB_MainStub {
          D.error("MySQL Error: " + e.ToString());
       }
 
-      return npcRelationList;
+      return friendshipLevel;
    }
-    
-   public static new void updateNPCRelation (int userId, int npcID, int relationLevel) {
+
+   public static new void updateNPCRelationship (int npcId, int userId, int friendshipLevel) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "UPDATE npc_relationship SET npc_relation_level=@npc_relation_level WHERE npc_id=@npc_id AND user_id=@userId;", conn)) {
+            "UPDATE npc_relationship SET friendshipLevel=@friendshipLevel WHERE npcId=@npcId AND usrId=@usrId", conn)) {
 
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@userId", userId);
-            cmd.Parameters.AddWithValue("@npc_id", npcID);
-            cmd.Parameters.AddWithValue("@npc_relation_level", relationLevel);
+            cmd.Parameters.AddWithValue("@npcId", npcId);
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@friendshipLevel", friendshipLevel);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -96,19 +89,42 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static new void updateNPCProgress (int userId, int npcID, int questProgress, int questIndex, string questType) {
+   public static new void createQuestStatus (int npcId, int userId, int questId, int questNodeId) {
+
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "UPDATE npc_relationship SET npc_quest_progress=@npc_quest_progress WHERE npc_id=@npc_id AND user_id=@userId AND npc_quest_index=@npc_quest_index AND npc_quest_type=@npc_quest_type;", conn)) {
+            "INSERT INTO quest_status (npcId, usrId, questId, questNodeId) " +
+            "VALUES (@npcId, @usrId, @questId, @questNodeId)", conn)) {
 
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@userId", userId);
-            cmd.Parameters.AddWithValue("@npc_id", npcID);
-            cmd.Parameters.AddWithValue("@npc_quest_index", questIndex);
-            cmd.Parameters.AddWithValue("@npc_quest_type", questType);
-            cmd.Parameters.AddWithValue("@npc_quest_progress", questProgress);
+            cmd.Parameters.AddWithValue("@npcId", npcId);
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@questId", questId);
+            cmd.Parameters.AddWithValue("@questNodeId", questNodeId);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void updateQuestStatus (int npcId, int userId, int questId, int questNodeId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "UPDATE quest_status SET questNodeId=@questNodeId WHERE npcId=@npcId AND usrId=@usrId AND questId=@questId", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@npcId", npcId);
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@questId", questId);
+            cmd.Parameters.AddWithValue("@questNodeId", questNodeId);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -118,7 +134,62 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   #endregion
+   public static new QuestStatusInfo getQuestStatus (int npcId, int userId, int questId) {
+
+      QuestStatusInfo questStatus = null;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM quest_status WHERE npcId=@npcId AND usrId=@usrId AND questId=@questId", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@npcId", npcId);
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@questId", questId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  questStatus = new QuestStatusInfo(dataReader);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return questStatus;
+   }
+
+   public static new List<QuestStatusInfo> getQuestStatuses (int npcId, int userId) {
+      List<QuestStatusInfo> questList = new List<QuestStatusInfo>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM quest_status WHERE npcId=@npcId AND usrId=@usrId ORDER BY questId", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@npcId", npcId);
+            cmd.Parameters.AddWithValue("@usrId", userId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  QuestStatusInfo quest = new QuestStatusInfo(dataReader);
+                  questList.Add(quest);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return questList;
+   }
 
    public static new List<Item> getRequiredIngredients (int usrId, List<CraftingIngredients.Type> itemList) {
       int itmCategory = (int) Item.Category.CraftingIngredients;
@@ -1386,63 +1457,26 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static new void createOrUpdateItemCount (int userId, int itmId, Item baseItem) {
-      int existingItemCount = 0;
+   public static new Item createItemOrUpdateItemCount (int userId, Item baseItem) {
+      // Make sure that we have the right class
+      Item castedItem = baseItem.getCastItem();
 
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM items WHERE usrId=@usrId and itmId=@itmId", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@usrId", userId);
-            cmd.Parameters.AddWithValue("@itmId", itmId);
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  existingItemCount += dataReader.GetInt32("itmCount");
-               }
-            }
+      // Verify if the item can be stacked
+      if (castedItem.canBeStacked()) {
+         // Retrieve the item from the database, if it exists
+         Item databaseItem = getFirstItem(userId, castedItem.category, castedItem.itemTypeId);
+
+         // If the item exist, update its count
+         if (databaseItem != null) {
+            databaseItem.count += castedItem.count;
+            updateItemQuantity(userId, databaseItem.id, databaseItem.count);
+            // Return the updated item
+            return databaseItem;
          }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
       }
-
-      if(existingItemCount > 0) {
-         updateItemQuantity(userId, itmId, existingItemCount + baseItem.count);
-      }
-      else {
-         createNewItem(userId, baseItem);
-      }
-   }
-
-   public static new void createOrUpdateItemListCount (int userId, List<Item> itemList) {
-      for(int i = 0; i < itemList.Count; i++) {
-         int existingItemCount = 0;
       
-         try {
-            using (MySqlConnection conn = getConnection())
-            using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM items WHERE usrId=@usrId and itmId=@itmId", conn)) {
-               conn.Open();
-               cmd.Prepare();
-               cmd.Parameters.AddWithValue("@usrId", userId);
-               cmd.Parameters.AddWithValue("@itmId", itemList[i].id);
-               // Create a data reader and Execute the command
-               using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-                  while (dataReader.Read()) {
-                     existingItemCount += dataReader.GetInt32("itmCount");
-                  }
-               }
-            }
-         } catch (Exception e) {
-            D.error("MySQL Error: " + e.ToString());
-         }
-
-         if (existingItemCount > 0) {
-            updateItemQuantity(userId, itemList[i].id, existingItemCount + itemList[i].count);
-         } else {
-            createNewItem(userId, itemList[i]);
-         }
-      }
+      // Create the item
+      return createNewItem(userId, castedItem).getCastItem();
    }
 
    public static new int getItemCount (int userId) {
@@ -1454,6 +1488,34 @@ public class DB_Main : DB_MainStub {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  itemCount = dataReader.GetInt32("itemCount");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return itemCount;
+   }
+
+   public static new int getItemCount (int userId, int itemCategory, int itemType) {
+      int itemCount = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT IFNULL(SUM(itmCount), 0) AS itemCount FROM items " +
+            "WHERE usrId=@usrId AND itmCategory=@itmCategory AND itmType=@itmType", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@itmCategory", itemCategory);
+            cmd.Parameters.AddWithValue("@itmType", itemType);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -1729,6 +1791,44 @@ public class DB_Main : DB_MainStub {
       }
 
       return item.getCastItem();
+   }
+
+   public static new Item getFirstItem (int userId, Item.Category itemCategory, int itemTypeId) {
+      Item item = null;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM items WHERE usrId=@usrId AND itmCategory=@itmCategory AND itmType=@itmType", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@itmCategory", (int) itemCategory);
+            cmd.Parameters.AddWithValue("@itmType", itemTypeId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               if (dataReader.Read()) {
+                  int itemId = dataReader.GetInt32("itmId");
+                  ColorType color1 = (ColorType) dataReader.GetInt32("itmColor1");
+                  ColorType color2 = (ColorType) dataReader.GetInt32("itmColor2");
+                  string data = dataReader.GetString("itmData");
+                  int count = dataReader.GetInt32("itmCount");
+
+                  // Create an Item instance of the proper class
+                  item = new Item(itemId, itemCategory, itemTypeId, count, color1, color2, data);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      if (item != null) {
+         return item.getCastItem();
+      } else {
+         return null;
+      }
    }
 
    public static new Stats getStats (int userId) {
@@ -2330,6 +2430,11 @@ public class DB_Main : DB_MainStub {
    }
 
    private static MySqlConnection getConnection () {
+      // Throws a warning if used in the main thread
+      if (UnityThreadHelper.IsMainThread) {
+         D.warning("A database query is being run in the main thread - use the background thread instead");
+      }
+
       // In order to support threaded DB calls, each function needs its own Connection
       return new MySqlConnection(_connectionString);
    }

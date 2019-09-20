@@ -731,7 +731,7 @@ public static class RandomMapCreator {
                SetFreeTile(x + 2, y, freeTiles, noiseMap, null, preset, false);
             }
 
-            if (Time.realtimeSinceStartup - startTime > 1f) {
+            if (Time.realtimeSinceStartup - startTime > 0.1f) {
                D.error("CreatePathBetweenPoints: Time out");
                return;
             }
@@ -2082,7 +2082,9 @@ public static class RandomMapCreator {
    #region Private Variables
 
    // Relative path for tiles in Unity project
+#pragma warning disable
    static private string _tilesPath = "Assets/TileSets/";
+#pragma warning restore
 
    // List of generated maps in client game instance
    static List<Area.Type> _generatedAreas = new List<Area.Type>();
@@ -2102,7 +2104,9 @@ public static class RandomMapCreator {
    static bool[,] _waterTiles;
 
    // Allow to draw debug tiles for testing purposes
+#pragma warning disable
    static bool _enableDrawDebug = false;
+#pragma warning restore
 
    // List of tiles paths (to calculate once)
    static List<string> _assetsPath = new List<string>();

@@ -20,12 +20,6 @@ public class NPC : MonoBehaviour {
       Stripes = 21, Vest = 22, Dog = 23, Lizard = 24
    }
 
-   // Holds the scriptable object npc data
-   public NPCQuestData npcData;
-
-   // Holds the current player answers depending on quest state
-   public List<ClickableText.Type> currentAnswerDialogue = new List<ClickableText.Type>();
-
    // The Type of NPC this is
    public Type npcType;
 
@@ -64,9 +58,6 @@ public class NPC : MonoBehaviour {
 
    // Our name text
    public Text nameText;
-
-   // Stores the reply of the NPC
-   public string npcReply;
 
    #endregion
 
@@ -131,8 +122,6 @@ public class NPC : MonoBehaviour {
          // nameText.text = "[" + npcType + "]";
          // setNameColor(nameText, npcType);
       }
-
-      npcData = QuestManager.self.deliveryQuestData;
    }
 
    private void Update () {
@@ -215,12 +204,12 @@ public class NPC : MonoBehaviour {
          return;
       }
 
-      // If this is a Shop NPC, then show the appropriate panel
       if (_shopTrigger != null) {
+         // If this is a Shop NPC, then show the appropriate panel
          PanelManager.self.pushIfNotShowing(_shopTrigger.panelType);
       } else {
-         // Send a request to the server to get the clickable text options
-         Global.player.rpc.Cmd_GetNPCRelation(this.npcId, this.npcName);
+         // Send a request to the server to get the npc panel info
+         Global.player.rpc.Cmd_RequestNPCQuestSelectionListFromServer(npcId);
       }
    }
 
@@ -238,7 +227,7 @@ public class NPC : MonoBehaviour {
 
       return (Vector2.Distance(Global.player.transform.position, this.transform.position) < TALK_DISTANCE);
    }
-
+    
    public bool isTalkingToGlobalPlayer () {
       return (PanelManager.self.get(Panel.Type.NPC_Panel).isShowing() && isCloseToGlobalPlayer());
    }

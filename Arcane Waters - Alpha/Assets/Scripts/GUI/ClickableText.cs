@@ -10,44 +10,40 @@ public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointer
 
    // The different types of clickable text options
    public enum Type { None = 0, TradeGossip = 1, TradeBluePrint = 2, TradeDeliveryInit = 3, TradeDeliveryComplete = 4 , QuestAccept = 5, TradeDeliverySuccess = 6, TradeDeliveryFail = 7, AcceptReward =8,
-   HuntInit = 9, HuntComplete = 10, HuntSuccess = 11, HuntFail = 12}
+   HuntInit = 9, HuntComplete = 10, HuntSuccess = 11, HuntFail = 12, NPCDialogueOption = 13, NPCDialogueEnd = 14, TradeGossipThanks = 15}
 
    // The Type of clickable text option this is
    public Type textType;
+
+   // Our Text component
+   public Text textComp;
 
    // A custom Event that gets invoked when we're clicked
    public UnityEvent clickedEvent = new UnityEvent();
 
    #endregion
 
-   public void SetColor(Color color) {
-      // Look up components
-      _text = GetComponent<Text>();
-      
-      // Color update
-      _text.color = color;
-   }
-
-   public void initData(int rowNumber) {
-      // Look up components
-      _text = GetComponent<Text>();
-
+   public void initData (Type textType) {
       // Note our initial settings
-      _initialFontColor = _text.color;
+      _initialFontColor = textComp.color;
+
+      // Set the type
+      this.textType = textType;
 
       // Fill in our text
-      _text.text = rowNumber + ". " + getMessageForType();
+      textComp.text = getMessageForType();
    }
 
-   public void customText(string msg, int rowNumber) {
-      // Look up components
-      _text = GetComponent<Text>();
-
-      // Note our initial settings
-      _initialFontColor = _text.color;
+   public void initData (Type textType, string msg) {
+      initData(textType);
 
       // Fill in our text
-      _text.text = rowNumber + ". " + msg;
+      textComp.text = msg;
+   }
+
+   public void disablePointerEvents (Color disabledColor) {
+      _interactable = false;
+      textComp.color = disabledColor;
    }
 
    protected string getMessageForType () {
@@ -78,39 +74,51 @@ public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointer
             return "Target eliminated!";
          case Type.HuntFail:
             return "I havent killed it yet!";
-   }
+         case Type.NPCDialogueEnd:
+            return "Goodbye!";
+         case Type.TradeGossipThanks:
+            return "Thank you!";
+      }
 
       return "";
    }
 
    public void OnPointerEnter (PointerEventData eventData) {
-      // Switch our color
-      _text.color = Color.yellow;
+      if (_interactable) {
+         // Switch our color
+         textComp.color = Color.yellow;
+      }
    }
 
    public void OnPointerExit (PointerEventData eventData) {
-      // Switch back to our original color
-      _text.color = _initialFontColor;
+      if (_interactable) {
+         // Switch back to our original color
+         textComp.color = _initialFontColor;
+      }
    }
 
    public void OnPointerDown (PointerEventData eventData) {
-      _text.fontStyle = FontStyle.Bold;
+      if (_interactable) {
+         textComp.fontStyle = FontStyle.Bold;
+      }
    }
 
    public void OnPointerUp (PointerEventData eventData) {
-      _text.fontStyle = FontStyle.Normal;
+      if (_interactable) {
+         textComp.fontStyle = FontStyle.Normal;
 
-      // Invoke our event that may have been customized by whatever created this clickable text row
-      clickedEvent.Invoke();
+         // Invoke our event that may have been customized by whatever created this clickable text row
+         clickedEvent.Invoke();
+      }
    }
 
    #region Private Variables
 
-   // Our Text component
-   protected Text _text;
-
    // Our initial font color
    protected Color _initialFontColor;
+
+   // Gets set to true when the text must react to pointer events
+   protected bool _interactable = true;
       
    #endregion
 }

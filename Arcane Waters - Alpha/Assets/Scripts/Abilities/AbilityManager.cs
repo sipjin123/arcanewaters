@@ -12,7 +12,7 @@ public class AbilityManager : MonoBehaviour {
 
    // ZERONEV-COMMENT: For now I will just add them manually into the inspector, all the abilities in-game.
    // I will load them later on from the resource folder and not make them public like this, it can be unsafe in the long run.
-   public AbilityData[] allGameAbilities;
+   public BasicAbilityData[] allGameAbilities;
 
    #endregion
 
@@ -88,7 +88,7 @@ public class AbilityManager : MonoBehaviour {
 
          // Get the ability object for this action
          //Ability ability = getAbility(action.abilityType);
-         AbilityData abilityData = sourceBattler.getAbilities[action.abilityInventoryIndex];
+         BasicAbilityData abilityData = sourceBattler.getAbilities[action.abilityInventoryIndex];
 
          // Check how long we need to wait before displaying this action
          float timeToWait = action.actionEndTime - Util.netTime() - abilityData.getTotalAnimLength(sourceBattler, targetBattler);
@@ -139,8 +139,8 @@ public class AbilityManager : MonoBehaviour {
 
    // Prepares all game abilities
    private void initAllGameAbilities () {
-      foreach (AbilityData ability in allGameAbilities) {
-         AbilityData newInstance = AbilityData.CreateInstance(ability);
+      foreach (BasicAbilityData ability in allGameAbilities) {
+         BasicAbilityData newInstance = BasicAbilityData.CreateInstance(ability);
          _allAbilities.Add(newInstance);
       }
    }
@@ -150,7 +150,7 @@ public class AbilityManager : MonoBehaviour {
    /// </summary>
    /// <param name="abilityGlobalID"></param>
    /// <returns></returns>
-   public static AbilityData getAbility(int abilityGlobalID) {
+   public static BasicAbilityData getAbility(int abilityGlobalID) {
 
       for (int i = 0; i < self._allAbilities.Count; i++) {
          if (self._allAbilities[i].getItemID().Equals(abilityGlobalID)) {
@@ -172,7 +172,7 @@ public class AbilityManager : MonoBehaviour {
    /// 
    /// </summary>
    //protected Dictionary<int, AbilityData> _allAbilities = new Dictionary<int, AbilityData>();
-   private List<AbilityData> _allAbilities = new List<AbilityData>();
+   private List<BasicAbilityData> _allAbilities = new List<BasicAbilityData>();
 
    #endregion
 }

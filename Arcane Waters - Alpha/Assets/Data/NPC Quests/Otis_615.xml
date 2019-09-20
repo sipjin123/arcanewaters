@@ -1,0 +1,155 @@
+<?xml version="1.0"?>
+<NPCData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <npcId>615</npcId>
+  <greetingText>Leave me alone.</greetingText>
+  <Quests>
+    <Quest>
+      <questId>0</questId>
+      <title>You seem troubled.</title>
+	  <friendshipLevelRequired>0</friendshipLevelRequired>
+      <Nodes>
+        <Node>
+          <nodeId>0</nodeId>
+          <nextNodeId>1</nextNodeId>
+          <npcText>I look troubled, don't I? Good observation skills. I am trying to cast this spell, but it seems the whole world doesn't want me to!</npcText>
+          <userText>What can I help you with?</userText>
+        </Node>
+        <Node>
+          <nodeId>1</nodeId>
+          <nextNodeId>2</nextNodeId>
+          <npcText>Am I dreaming? Is someone coming to my rescue? Let's see if you can be useful.</npcText>
+          <userText>I am all hears</userText>
+        </Node>
+        <Node>
+          <nodeId>2</nodeId>
+          <nextNodeId>3</nextNodeId>
+          <npcText>I need a few items to cast the spell. Please bring me those ingredients. I believe the lizards located in the north have some in their possession.</npcText>
+          <userText>Here are the items you asked for.</userText>
+          <QuestObjectives>
+            <Deliver>
+              <category>CraftingIngredients</category>
+              <itemTypeId>13</itemTypeId>
+              <count>1</count>
+            </Deliver>
+			<Deliver>
+              <category>CraftingIngredients</category>
+              <itemTypeId>14</itemTypeId>
+              <count>1</count>
+            </Deliver>
+          </QuestObjectives>
+          <Rewards>
+            <Friendship>
+              <rewardedFriendship>1</rewardedFriendship>
+            </Friendship>
+          </Rewards>
+        </Node>
+        <Node>
+          <nodeId>3</nodeId>
+          <nextNodeId>4</nextNodeId>
+          <npcText>Incredible! However, I forgot that I also need to make a soup of lizard claws. Bring me five!</npcText>
+          <userText>Here are the claws you asked for.</userText>
+          <QuestObjectives>
+            <Deliver>
+              <category>CraftingIngredients</category>
+              <itemTypeId>12</itemTypeId>
+              <count>5</count>
+            </Deliver>
+          </QuestObjectives>
+          <Rewards>
+            <Friendship>
+              <rewardedFriendship>1</rewardedFriendship>
+            </Friendship>
+          </Rewards>
+        </Node>
+        <Node>
+          <nodeId>4</nodeId>
+          <nextNodeId>5</nextNodeId>
+          <npcText>Amazing! I will cast the spell now. Please stand back.</npcText>
+          <userText>*Stand back*</userText>
+        </Node>
+        <Node>
+          <nodeId>5</nodeId>
+          <nextNodeId>6</nextNodeId>
+          <npcText>*Explosion* Here it is! A powerful... Wait, this is not a sword?! This is a piece of armor!</npcText>
+          <userText>It is still a nice piece of equipment.</userText>
+        </Node>
+        <Node>
+          <nodeId>6</nodeId>
+          <nextNodeId>7</nextNodeId>
+          <npcText>I can't believe that merchant played me! He sold me a cheaper spell parchment! I have no use of armor. Do you want it?</npcText>
+          <userText>Yes, please.</userText>
+          <Rewards>
+            <Item>
+              <category>Armor</category>
+              <itemTypeId>2</itemTypeId>
+              <count>1</count>
+            </Item>
+          </Rewards>
+        </Node>
+        <Node>
+          <nodeId>7</nodeId>
+          <nextNodeId>-1</nextNodeId>
+          <npcText>Well, it made someone happy at least. Go away now, I must think about how to get revenge.</npcText>
+          <userText>Goodbye!</userText>
+          <Rewards>
+            <Friendship>
+              <rewardedFriendship>5</rewardedFriendship>
+            </Friendship>
+          </Rewards>
+        </Node>
+      </Nodes>
+    </Quest>
+	<Quest>
+      <questId>1</questId>
+      <title>Is that a new spell parchment in your hands?</title>
+	  <friendshipLevelRequired>5</friendshipLevelRequired>
+      <Nodes>
+        <Node>
+          <nodeId>0</nodeId>
+          <nextNodeId>1</nextNodeId>
+          <npcText>I sure cannot hide anything from you. I found another parchment, yes, and this one glows! It must be the powerful weapon I seek.</npcText>
+          <userText>Do you also need ingredients for this one?</userText>
+        </Node>
+        <Node>
+          <nodeId>1</nodeId>
+          <nextNodeId>2</nextNodeId>
+          <npcText>No, it doesn't require ingredients. The recipe requires a place without lizards. Unfortunately, there are a lot of them north of here.</npcText>
+          <userText>I can drive them away if you want.</userText>
+        </Node>
+        <Node>
+          <nodeId>2</nodeId>
+          <nextNodeId>3</nextNodeId>
+          <npcText>You are always offering me your help, why is that? Fine, go defeat the lizards. And take those green scales they wear. I like their color.</npcText>
+          <userText>Here are the green scales.</userText>
+          <QuestObjectives>
+            <Deliver>
+              <category>CraftingIngredients</category>
+              <itemTypeId>13</itemTypeId>
+              <count>5</count>
+            </Deliver>
+          </QuestObjectives>
+          <Rewards>
+            <Friendship>
+              <rewardedFriendship>5</rewardedFriendship>
+            </Friendship>
+          </Rewards>
+        </Node>
+        <Node>
+          <nodeId>3</nodeId>
+          <nextNodeId>-1</nextNodeId>
+          <npcText>Here, something for your trouble.</npcText>
+          <userText>Thank you.</userText>
+          <QuestObjectives>
+          </QuestObjectives>
+          <Rewards>
+            <Item>
+              <category>Weapon</category>
+              <itemTypeId>105</itemTypeId>
+              <count>1</count>
+            </Item>
+          </Rewards>
+        </Node>                
+      </Nodes>
+    </Quest>
+  </Quests>
+</NPCData>

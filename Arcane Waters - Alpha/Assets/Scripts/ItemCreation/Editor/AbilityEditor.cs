@@ -6,7 +6,7 @@ namespace ItemEditor
    /// Custom editor boiler plate code, in case a custom editor wants to be created for an
    /// AbilityData ScriptableObject.
    /// </summary>
-   [CustomEditor(typeof(AbilityData))]
+   [CustomEditor(typeof(BasicAbilityData))]
    public class AbilityEditor : Editor
    {
       #region Public Variables
@@ -16,7 +16,7 @@ namespace ItemEditor
       // This is called whenever we select a scriptable object file.
       private void OnEnable () {
          // We save that reference to be able to know which item we are editing.
-         _item = (AbilityData) target;
+         _item = (BasicAbilityData) target;
       }
 
       public override void OnInspectorGUI () {
@@ -26,7 +26,7 @@ namespace ItemEditor
       #region Private Variables
 
       // Which item will we edit whenever we select a scriptable object file
-      private AbilityData _item;
+      private BasicAbilityData _item;
 
       #endregion
    }

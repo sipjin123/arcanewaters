@@ -65,11 +65,43 @@ public class BattleUIManager : MonoBehaviour {
    // All UI objects related to the player stance UI, starting with the main frame
    public GameObject playerStanceFrame;
 
+   // Used for showing features that are not in place.
+   public GameObject debugWIPFrame;
+
    // Stance main icon that appears at the right side of the player
    public Image stanceMainIcon;
 
    // Different sprites to change whenever we have changed out battle stance
    public Sprite balancedSprite, offenseSprite, defenseSprite;
+
+   [Space(8)]
+
+   // Reference to the stance change button
+   public Button stanceChangeButton;
+
+   // Window that appears whenever we hover on the stance change button
+   public GameObject stanceButtonFrame;
+
+   // Content that appears in the stance change window (cooldown or that if we are ready)
+   public Text stanceButtonFrameText;
+
+   // Icon that appears at the top of the stance change frame
+   public Image stanceButtonFrameIcon;
+
+   [Space(4)]
+   [Header("Stance Action Tooltip")]
+
+   // Main frame window that appears whenever we hover on a stance action button
+   public GameObject stanceActionFrame;
+
+   // The cooldown that will be shown depending on the stance
+   public Text stanceUICooldown;
+
+   // The description of the stance action frame.
+   public Text stanceActionDescription;
+
+   // Top icon that will appear at the top of the stance action frame
+   public Image stanceActionIcon;
 
    // Subscribe to this event to have something done whenever we hover on an ability in battle
    [HideInInspector] public BattleTooltipEvent onAbilityHover = new BattleTooltipEvent();
@@ -104,26 +136,24 @@ public class BattleUIManager : MonoBehaviour {
    }
 
    private void Update () {
-#if UNITY_EDITOR
-      if (canSimulateEnterBattle) {
-         // A "dev" and temporary way to enter battle simulation
-         if (Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.D)) {
-            if (!_alreadyEnteredBattleSimulation) {
-
-               AbilityInventory.self.initializeAbilities();
-               _alreadyEnteredBattleSimulation = true;
-
-               prepareBattleScenario();
-            }
-         }
-      }
-#endif
-
       // Normally I would only update these values when needed (updating when action timer var is not full, or when the player received damage)
       // But for now I will just update them every frame
       if (_playerLocalBattler != null) {
          playerApBar.value = _playerLocalBattler.getActionTimerPercent();
          playerHealthBar.value = _playerLocalBattler.displayedHealth;
+
+         // TODO - Zeronev, remove this when implemented correctly
+         // Will be correctly made whenever we have fully stablished the buff/attack ability data.
+         // Cause this will only allow us to change stance locally, but the value can be changed externally (needs to be networked and not in here)
+         if (_playerLocalBattler.stanceCurrentCooldown > 0) {
+            _playerLocalBattler.stanceCurrentCooldown -= Time.deltaTime;
+            stanceChangeButton.interactable = false;
+            stanceButtonFrameText.text = "cooldown " + _playerLocalBattler.stanceCurrentCooldown.ToString("F0") + " s";
+         } else {
+            _playerLocalBattler.stanceCurrentCooldown = 0;
+            stanceChangeButton.interactable = true;
+            stanceButtonFrameText.text = "change stance";
+         }
       }
    }
 
@@ -131,7 +161,7 @@ public class BattleUIManager : MonoBehaviour {
       // Enable UI
       targetEnemyCG.Show();
       playerBattleCG.Show();
-
+      
       usernameText.text = Global.player.entityName;
 
       StartCoroutine(setPlayerBattlerUIEvents());
@@ -140,9 +170,14 @@ public class BattleUIManager : MonoBehaviour {
    }
 
    public void disableBattleUI () {
+      mainPlayerRectCG.Hide();
+      playerMainUIHolder.Hide();
       targetEnemyCG.Hide();
-      playerBattleCG.Hide();
-      _playerLocalBattler = null;
+      mainPlayerRectCG.Hide();
+      playerStanceFrame.SetActive(false);
+      playerMainUIHolder.gameObject.SetActive(false);
+      setStanceFrameActiveState(false);
+      hideActionStanceFrame();
    }
 
    // Changes the icon that is at the right side of the player battle ring UI
@@ -150,23 +185,32 @@ public class BattleUIManager : MonoBehaviour {
       switch ((Battler.Stance) newStance) {
          case Battler.Stance.Balanced:
             stanceMainIcon.sprite = balancedSprite;
+            _playerLocalBattler.stanceCurrentCooldown = AbilityInventory.self.balancedStance.getCooldown();
+            stanceButtonFrameIcon.sprite = balancedSprite;
             break;
          case Battler.Stance.Attack:
             stanceMainIcon.sprite = offenseSprite;
+            _playerLocalBattler.stanceCurrentCooldown = AbilityInventory.self.offenseStance.getCooldown();
+            stanceButtonFrameIcon.sprite = offenseSprite;
             break;
          case Battler.Stance.Defense:
             stanceMainIcon.sprite = defenseSprite;
+            _playerLocalBattler.stanceCurrentCooldown = AbilityInventory.self.defenseStance.getCooldown();
+            stanceButtonFrameIcon.sprite = defenseSprite;
             break;
       }
 
       BattleManager.self.getPlayerBattler().stance = (Battler.Stance) newStance;
 
       // Whenever we have finished setting the new stance, we hide the frame
-      setStanceFrameActiveState(false);
+      hideActionStanceFrame();
+      toggleStanceFrame();
    }
 
+   #region Tooltips
+
    // Triggers the tooltip frame, showing a battle item data (called only in the onAbilityHover callback)
-   public void triggerTooltip (AbilityData battleItemData) {
+   public void triggerTooltip (BasicAbilityData battleItemData) {
       setTooltipActiveState(true);
 
       // Set the window to change depending if we hovered onto the enemy or the player (change grey or gold sprite)
@@ -187,12 +231,16 @@ public class BattleUIManager : MonoBehaviour {
       tooltipDescription.text = battleItemData.getDescription();
    }
 
+   public void setDebugTooltipState (bool enabled) {
+      debugWIPFrame.SetActive(enabled);
+   }
+
    /// <summary>
    /// Sets the outline frame color
    /// </summary>
    /// <param name="frameType"> 0 = Silver, 1 = Gold </param>
    public void setTooltipFrame (int frameType) {
-      tooltipOutline.sprite = frameType.Equals(0) ? greyTooltipSprite : goldTooltipSprite;
+      tooltipOutline.sprite = frameType.Equals(1) ? greyTooltipSprite : goldTooltipSprite;
    }
 
    // Changes state of ability tooltip
@@ -200,10 +248,33 @@ public class BattleUIManager : MonoBehaviour {
       tooltipWindow.gameObject.SetActive(enabled);
    }
 
-   // Enable/Disable the stance frame window
-   public void setStanceFrameActiveState (bool enabled) {
-      playerStanceFrame.SetActive(enabled);
+   // Enable/Disable the stance main button frame window
+   public void setStanceFrameActiveState (bool enabled, string frameDescription = "") {
+      stanceButtonFrame.SetActive(enabled);
+      stanceButtonFrameText.text = frameDescription;
    }
+
+   // Toggles the stance frame
+   public void toggleStanceFrame () {
+      playerStanceFrame.SetActive(!playerStanceFrame.activeSelf);
+
+      if (playerStanceFrame.activeSelf) {
+         setStanceFrameActiveState(false, "");
+      }
+   }
+
+   public void showActionStanceFrame (int cooldown, Sprite stanceIcon, string stanceDescription) {
+      stanceActionFrame.SetActive(true);
+      stanceActionDescription.text = stanceDescription;
+      stanceUICooldown.text = "cooldown " + cooldown + " s";
+      stanceActionIcon.sprite = stanceIcon;
+   }
+
+   public void hideActionStanceFrame () {
+      stanceActionFrame.SetActive(false);
+   }
+
+   #endregion
 
    /// <summary>
    /// Auto adjusts a UI RectTransform from world space to Screen space
@@ -227,15 +298,8 @@ public class BattleUIManager : MonoBehaviour {
       mainTargetRect.gameObject.SetActive(false);
    }
 
-   // Toggles the stance frame
-   public void toggleStanceFrame () {
-      playerStanceFrame.SetActive(!playerStanceFrame.activeSelf);
-   }
-
    // Simulates a debug battle scenario
    private void prepareBattleScenario () {
-      Debug.Log("Entered battle simulation");
-
       // Find an enemy present in the scene
       Enemy randomEnemy = FindObjectOfType<Enemy>();
 
@@ -255,7 +319,7 @@ public class BattleUIManager : MonoBehaviour {
       // I would want to set this whenever the transition into the battle has finished
       yield return new WaitForSeconds(2);
 
-      Battler playerBattler = BattleManager.self.getBattler(Global.player.userId);
+      Battler playerBattler = BattleManager.self.getPlayerBattler();
       mainPlayerRectCG.Show();
 
       Vector3 pointOffset = new Vector3(playerBattler.clickBox.bounds.size.x / 4, playerBattler.clickBox.bounds.size.y * 1.75f);
@@ -285,7 +349,10 @@ public class BattleUIManager : MonoBehaviour {
 
       playerHealthBar.maxValue = playerBattler.getStartingHealth();
 
-      playerBattler.onBattlerDeselect.AddListener(() => { playerMainUIHolder.gameObject.SetActive(false); });
+      playerBattler.onBattlerDeselect.AddListener(() => {
+         playerStanceFrame.SetActive(false);
+         playerMainUIHolder.gameObject.SetActive(false);
+      });
 
       _playerLocalBattler = playerBattler;
    }
@@ -301,12 +368,6 @@ public class BattleUIManager : MonoBehaviour {
    }
 
    #region Private Variables
-
-   // Debug variables
-
-   // Used for knowing whenever we already entered battle simulation
-   // (So that we do not enter double battles, just in case)
-   private bool _alreadyEnteredBattleSimulation = false;
 
    // Reference for the local player battler, used for setting the bars information only
    private Battler _playerLocalBattler;

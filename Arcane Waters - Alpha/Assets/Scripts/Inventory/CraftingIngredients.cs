@@ -225,7 +225,7 @@ public class CraftingIngredients : RecipeItem
       switch (recipeType) {
          // Lizard Drops
          case Type.Green_Scale:
-            return "A Green Scale";
+            return "Green Scale";
 
          case Type.Lizard_Claw:
             return "Lizard Claw";

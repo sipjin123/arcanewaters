@@ -67,10 +67,12 @@ public class GuildPanel : Panel, IPointerClickHandler {
       // Clear out any old member info
       memberContainer.DestroyChildren();
 
-      foreach (UserInfo member in info.guildMembers) {
-         GameObject memberRow = Instantiate(guildMemberPrefab);
-         memberRow.GetComponent<Text>().text = member.username;
-         memberRow.transform.SetParent(memberContainer.transform);
+      if (info.guildMembers != null) {
+         foreach (UserInfo member in info.guildMembers) {
+            GameObject memberRow = Instantiate(guildMemberPrefab);
+            memberRow.GetComponent<Text>().text = member.username;
+            memberRow.transform.SetParent(memberContainer.transform);
+         }
       }
    }
 

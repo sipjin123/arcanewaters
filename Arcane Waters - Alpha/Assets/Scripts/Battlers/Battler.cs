@@ -40,6 +40,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    [SyncVar]
    public int battleId;
 
+   // The type of Biome this battle is in
+   [SyncVar]
+   public Biome.Type biomeType;
+
    // The Team that this Battler is on
    [SyncVar]
    public Battle.TeamType teamType;
@@ -73,6 +77,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    // The time at which we can use the next ability
    [SyncVar]
    public float cooldownEndTime;
+
+   // TODO - Zeronev: Temporary stance cooldown, only while we setup the correct stance ability.
+   public float stanceCurrentCooldown;
 
    // The current battle stance
    [SyncVar]
@@ -139,7 +146,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
    // Ability blueprints that we will use for this battler.
    // DO NOT use this data directly in anything, use getAbilities instead. (Except for when changing this battler abilities.)
-   public List<AbilityData> battlerBaseAbilities = new List<AbilityData>();
+   public List<BasicAbilityData> battlerBaseAbilities = new List<BasicAbilityData>();
 
    // Base select/deselect battlers events. Hidden from inspector to avoid untracked events.
    [HideInInspector] public UnityEvent onBattlerSelect = new UnityEvent();
@@ -167,13 +174,21 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       // Set our sprite sheets according to our types
       if (!(this is MonsterBattler)) {
          updateSprites();
+      } else {
+         onBattlerSelect.AddListener(() => {
+            BattleUIManager.self.triggerTargetUI(this);
+         });
+
+         onBattlerDeselect.AddListener(() => {
+            BattleUIManager.self.hideTargetGameobjectUI();
+         });
       }
 
       // Keep track of Battlers when they're created
       BattleManager.self.storeBattler(this);
 
       // Look up the Battle Board that contains this Battler
-      BattleBoard battleBoard = BattleManager.self.getBattleBoardForBattler(this);
+      BattleBoard battleBoard = BattleManager.self.getBattleBoard(this.biomeType);
 
       // The client needs to look up and assign the Battle Spot
       BattleSpot battleSpot = battleBoard.getSpot(teamType, this.boardPosition);
@@ -182,6 +197,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       // When our Battle is created, we need to switch to the Battle camera
       if (isLocalBattler()) {
          CameraManager.enableBattleDisplay();
+
+         BattleUIManager.self.prepareBattleUI();
       }
 
       // Start off with the displayed values matching the sync vars
@@ -194,6 +211,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       // Stop and restart our animation at the correct speed
       Anim.Type animToPlay = isDead() ? Anim.Type.Death_East : Anim.Type.Battle_East;
       playAnim(animToPlay);
+
+      initAbilities();
    }
 
    public virtual void Update () {
@@ -433,7 +452,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       // Nothing by default
    }
 
-   public virtual int getApWhenDamagedBy (AbilityData ability) {
+   public virtual int getApWhenDamagedBy (BasicAbilityData ability) {
       // By default, characters gain a small amount of AP when taking damage
       return 3;
    }
@@ -474,7 +493,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       return .2f;
    }
 
-   public virtual float getPreMagicLength (AbilityData ability) {
+   public virtual float getPreMagicLength (BasicAbilityData ability) {
       // The amount of time before the ground effect appears depends on the type of Battler
       return .6f;
    }
@@ -617,7 +636,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    public void showDamageText (AttackAction action) {
       BattleSpot spot = this.battleSpot;
       
-      AbilityData abilityData = AbilityManager.getAbility(action.abilityGlobalID);
+      BasicAbilityData abilityData = AbilityManager.getAbility(action.abilityGlobalID);
 
       // Create the Text instance from the prefab
       GameObject damageTextObject = (GameObject) Instantiate(PrefabsManager.self.damageTextPrefab);
@@ -681,15 +700,15 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             return;
          }
 
-         foreach (AbilityData ability in battlerBaseAbilities) {
-            AbilityData newInstance = AbilityData.CreateInstance(ability);
+         foreach (BasicAbilityData ability in battlerBaseAbilities) {
+            BasicAbilityData newInstance = BasicAbilityData.CreateInstance(ability);
             _initializedAbilities.Add(newInstance);
          }
       }
       // If we are a player battler, we will grab the abilities from somewhere else.
       else {
-         foreach (AbilityData ability in AbilityInventory.self.equippedAbilitiesBPs) {
-            AbilityData newInstance = AbilityData.CreateInstance(ability);
+         foreach (BasicAbilityData ability in AbilityInventory.self.equippedAbilitiesBPs) {
+            BasicAbilityData newInstance = BasicAbilityData.CreateInstance(ability);
             _initializedAbilities.Add(newInstance);
          }
       }
@@ -831,9 +850,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       Battler sourceBattler = battle.getBattler(battleAction.sourceId);
 
       // I believe we must grab the index from this battler, since this will be the one executing the attack.
-      AbilityData attackerAbility = null;
+      BasicAbilityData attackerAbility = null;
       
-      AbilityData globalAbilityData = AbilityManager.getAbility(battleAction.abilityGlobalID);
+      BasicAbilityData globalAbilityData = AbilityManager.getAbility(battleAction.abilityGlobalID);
 
       // Cancel ability works differently, so before we try to get the ability from the local battler, 
       // we check if the ability we want to reference is a cancel ability.
@@ -1026,7 +1045,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    /// <summary>
    /// Gets the initialized abilities for this battler
    /// </summary>
-   public AbilityData[] getAbilities { get { return _initializedAbilities.ToArray(); } }
+   public BasicAbilityData[] getAbilities { get { return _initializedAbilities.ToArray(); } }
 
    #region Private Variables
 
@@ -1046,7 +1065,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    protected bool _isClientBattler = false;
 
    // Initialized ablities that each battler will have.
-   private List<AbilityData> _initializedAbilities = new List<AbilityData>();
+   private List<BasicAbilityData> _initializedAbilities = new List<BasicAbilityData>();
 
    #endregion
 }

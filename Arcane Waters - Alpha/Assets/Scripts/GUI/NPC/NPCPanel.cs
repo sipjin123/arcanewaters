@@ -3,37 +3,16 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using TMPro;
 using Mirror;
+using System.Text;
 
 public class NPCPanel : Panel {
    #region Public Variables
 
-   // A class utilized by the server side that caches the player and npc response
-   public class DialogueData
-   {
-      // List of response for the player during npc dialogue
-      public List<ClickableText.Type> answerList;
-
-      // The npc quest dialogue 
-      public string npcDialogue;
-   }
-
-   // Data cache for current hunting quest
-   public HuntQuestPair currentHuntQuest;
-
-   // Data cache for current delivery quest
-   public DeliveryQuestPair currentDeliveryQuest;
-
-   // Data cache for current quest type
-   public QuestType currentQuestType;
-
-   // Data cache for current quest index
-   public int currentQuestIndex;
-
    // The NPC associated with this panel
    public NPC npc;
 
-   // The text we want to type out
-   public TextMeshProUGUI greetingText;
+   // The Text element showing the current NPC dialogue line
+   public TextMeshProUGUI npcDialogueText;
 
    // Our head animation
    public SimpleAnimation headAnim;
@@ -50,20 +29,32 @@ public class NPCPanel : Panel {
    // The Text that shows our friendship number
    public Text friendshipText;
 
-   // The level of relationship between the player and npc
-   public int friendshipLevel;
-
-   // The container of our clickable rows
+   // The container for our clickable dialogue rows
    public GameObject clickableRowContainer;
 
-   // The prefab we use for creating NPC text rows
+   // The prefab we use for creating dialogue rows
    public ClickableText clickableRowPrefab;
+
+   // The animator to trigger when the friendship increases
+   public Animator friendshipIncreaseAnimator;
+
+   // The root of the quest objectives section
+   public GameObject questObjectivesGO;
+
+   // The title of the quest objectives section
+   public Text questObjectiveTitle;
+
+   // The container for the quest objective cells
+   public GameObject questObjectivesContainer;
+
+   // The prefab we use for creating quest objective cells
+   public NPCPanelQuestObjectiveCell questObjectiveCellPrefab;
+
+   // The color for dialogue options that cannot be clicked
+   public Color disabledClickableRowColor;
 
    // Self
    public static NPCPanel self;
-
-   // Loader Indicators
-   public List<GameObject> loadingIndicators;
 
    #endregion
 
@@ -71,14 +62,6 @@ public class NPCPanel : Panel {
       base.Awake();
 
       self = this;
-
-      // Keep track of what our intro text is
-      _greetingText = greetingText.text;
-   }
-
-   public void SetMessage (string text) {
-      greetingText.text = text;
-      _greetingText = text;
    }
 
    public override void show () {
@@ -95,249 +78,187 @@ public class NPCPanel : Panel {
       headAnim.GetComponent<SimpleAnimation>().setNewTexture(newTexture);
 
       // Start typing out our intro text
-      AutoTyper.SlowlyRevealText(greetingText, _greetingText);
+      AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
+   }
 
-      // Toggle loading indicators
-      for (int i = 0; i < loadingIndicators.Count; i++) {
-         loadingIndicators[i].SetActive(true);
+   public void updatePanelWithQuestSelection (int npcId, int friendshipLevel, int[] questIds) {
+      // Set the panel content common to the different configurations
+      setCommonPanelContent(npcId, NPCManager.self.getGreetingText(npcId), friendshipLevel);
+
+      // Clear out the old clickable options
+      clickableRowContainer.DestroyChildren();
+
+      // Create a clickable text row for each quest in the list
+      foreach (int questId in questIds) {
+         // Retrieve the quest
+         Quest quest = NPCManager.self.getQuest(npcId, questId);
+
+         // Set the quest title
+         string questTitle = quest.title;
+
+         // Verifies if the user has enough friendship to start the quest
+         bool canStartQuest = true;
+         if (friendshipLevel < quest.friendshipLevelRequired) {
+            canStartQuest = false;
+            questTitle += " (friendship too low)";
+         }
+
+         // Create a clickable text row for the quest
+         addDialogueOptionRow(ClickableText.Type.NPCDialogueOption,
+            () => questSelectionRowClickedOn(questId), canStartQuest, questTitle);
+      }
+
+      // Create a clickable text row for the trade gossip
+      addDialogueOptionRow(ClickableText.Type.TradeGossip,
+         () => gossipRowClickedOn(), true);
+
+      // Create a clickable text row for the 'Goodbye'
+      addDialogueOptionRow(ClickableText.Type.NPCDialogueEnd,
+         () => dialogueEndClickedOn(), true);
+   }
+
+   public void updatePanelWithQuestNode (int npcId, int friendshipLevel, int questId, int questNodeId,
+      bool areObjectivesCompleted, int[] objectivesProgress) {
+      // Get the quest node
+      QuestNode node = NPCManager.self.getQuestNode(npcId, questId, questNodeId);
+
+      // Set the panel content common to the different configurations
+      setCommonPanelContent(npcId, node.npcText, friendshipLevel);
+
+      // Clear out the old clickable options
+      clickableRowContainer.DestroyChildren();
+
+      // Create a clickable text row with the user's answer
+      addDialogueOptionRow(ClickableText.Type.NPCDialogueOption, 
+         () => nextQuestNodeRowClickedOn(questId), areObjectivesCompleted, node.userText);
+
+      // Retrieve the quest objectives
+      List<QuestObjective> questObjectives = node.objectives;
+
+      // If there are quest objectives, display them in their section
+      if (questObjectives != null && questObjectives.Count > 0) {
+         // Enable the quest objectives section
+         questObjectivesGO.SetActive(true);
+
+         // Set the title of the section
+         if (questObjectives.Count > 1) {
+            questObjectiveTitle.text = "Quest Objectives";
+         } else {
+            questObjectiveTitle.text = "Quest Objective";
+         }
+
+         // Clear the quest objectives grid
+         questObjectivesContainer.DestroyChildren();
+
+         // Add each quest objective
+         int k = 0;
+         foreach(QuestObjective o in questObjectives) {
+            // Create a quest objective cell
+            NPCPanelQuestObjectiveCell cell = Instantiate(questObjectiveCellPrefab);
+            cell.transform.SetParent(questObjectivesContainer.transform);
+
+            // Test if we received the progress for this objective from the server
+            if (k < objectivesProgress.Length) {
+               cell.setCellForQuestObjective(o, objectivesProgress[k]);
+            } else {
+               D.warning("The quest objectives progress received from the server is inconsistent with the client's quest data");
+               cell.setCellForQuestObjective(o, -1);
+            }
+            k++;
+         }
       }
    }
 
-   public void receiveIndividualNPCQuestData (QuestType questType, int npcQuestIndex, int npcQuestProgress) {
-      switch (questType) {
-         case QuestType.Deliver:
-            npc.npcData.deliveryQuestList[npcQuestIndex].questState = (QuestState) npcQuestProgress;
-            break;
-         case QuestType.Hunt:
-            npc.npcData.huntQuestList[npcQuestIndex].questState = (QuestState) npcQuestProgress;
-            break;
-      }
+   public void updatePanelWithTradeGossip (int npcId, string gossip) {
+      // Set the panel content common to the different configurations
+      setCommonPanelContent(npcId, gossip);
+
+      // Clear out the old clickable options
+      clickableRowContainer.DestroyChildren();
+
+      // Create a clickable text row with the user's answer
+      addDialogueOptionRow(ClickableText.Type.TradeGossipThanks, 
+         () => backToQuestSelectionRowClickedOn(), true);
    }
 
-   public void readyNPCPanel (int friendshipLevel) {
-      // Displays initial friendship level
-      this.friendshipLevel = friendshipLevel;
+   public void questSelectionRowClickedOn (int questId) {
+      Global.player.rpc.Cmd_SelectNPCQuest(npc.npcId, questId);
+   }
+
+   public void nextQuestNodeRowClickedOn (int questId) {
+      Global.player.rpc.Cmd_MoveToNextNPCQuestNode(npc.npcId, questId);
+   }
+
+   public void gossipRowClickedOn () {
+      Global.player.rpc.Cmd_RequestNPCTradeGossipFromServer(npc.npcId);
+   }
+
+   public void dialogueEndClickedOn () {
+      PanelManager.self.popPanel();
+   }
+
+   public void backToQuestSelectionRowClickedOn () {
+      Global.player.rpc.Cmd_RequestNPCQuestSelectionListFromServer(npc.npcId);
+   }
+
+   private void setCommonPanelContent(int npcId, string npcText, int friendshipLevel) {
+      // If the friendship level changed, play an animation
+      if (_friendshipLevel != -1 && _friendshipLevel != friendshipLevel) {
+         friendshipIncreaseAnimator.SetTrigger("friendshipChanged");
+      }
+
+      // Set the friendship level
+      _friendshipLevel = friendshipLevel;
       friendshipText.text = friendshipLevel.ToString();
 
-      // Toggle loading indicators
-      for (int i = 0; i < loadingIndicators.Count; i++) {
-         loadingIndicators[i].SetActive(false);
+      setCommonPanelContent(npcId, npcText);
+   }
+
+   private void setCommonPanelContent (int npcId, string npcText) {
+      this.npc = NPCManager.self.getNPC(npcId);
+
+      // Set the current npc text line
+      _npcDialogueLine = npcText;
+
+      // If the panel is already showing, start writing the new text
+      if (isShowing()) {
+         AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
       }
+
+      // By default, hide the quest objectives section
+      questObjectivesGO.SetActive(false);
    }
 
-   public void receiveNPCRelationDataFromServer (int friendshipLevel) {
-      // Updates friendship level
-      this.friendshipLevel = friendshipLevel;
-      friendshipText.text = friendshipText.ToString();
-   }
+   private void addDialogueOptionRow (ClickableText.Type clickableType,
+      UnityEngine.Events.UnityAction functionToCall, bool isInteractive, string text = null) {
+      // Create a clickable text row
+      ClickableText row = Instantiate(clickableRowPrefab);
+      row.transform.SetParent(clickableRowContainer.transform);
 
-   public void setClickableQuestOptions () {
-      // Clear out any old stuff
-      clickableRowContainer.DestroyChildren();
-
-      // Sets the index of the dialogue
-      _questOptionIndex = 1;
-
-      // Sets npc quest selection greeting
-      SetMessage("What can I do for ya?");
-
-      // Sets quest data such as dialogues and index
-      QuestInfoData deliveryQuests = processQuestInfo(QuestType.Deliver);
-      QuestInfoData huntQuest = processQuestInfo(QuestType.Hunt);
-
-      // Sets functionality to ClickableText
-      setQuestClicker(deliveryQuests);
-      setQuestClicker(huntQuest);
-   }
-
-   public void setClickableRows (List<ClickableText.Type> options) {
-      // Clear out any old stuff
-      clickableRowContainer.DestroyChildren();
-
-      // Sets the index of the dialogue
-      int index = 1;
-
-      // Create a clickable text row for each option in the list
-      foreach (ClickableText.Type option in options) {
-         ClickableText row = Instantiate(clickableRowPrefab);
-         row.transform.SetParent(clickableRowContainer.transform);
-
-         // Set the type
-         row.textType = option;
-         row.initData(index);
-         index++;
-
-         // Set up the click function
-         row.clickedEvent.AddListener(() => rowClickedOn(row, this.npc));
-         row.gameObject.SetActive(true);
-      }
-   }
-
-   public void questCategoryRowClickedOn (ClickableText row, NPC npc, QuestType questType, int questIndex) {
-      currentQuestType = questType;
-      currentQuestIndex = questIndex;
-      switch (questType) {
-         case QuestType.Hunt:
-            currentHuntQuest = npc.npcData.huntQuestList[questIndex];
-            break;
-         case QuestType.Deliver:
-            currentDeliveryQuest = npc.npcData.deliveryQuestList[questIndex];
-            break;
-      }
-      checkQuest(currentDeliveryQuest);
-   }
-
-   public void rowClickedOn (ClickableText row, NPC npc) {
-      row.gameObject.SetActive(false);
-      QuestState currentQuestState = currentDeliveryQuest.questState;
-      QuestDialogue currentDialogue = currentDeliveryQuest.dialogueData.questDialogueList.Find(_ => _.questState == currentQuestState);
-
-      if (row.textType == ClickableText.Type.TradeDeliveryFail) {
-         // Change reply of NPC
-         string reply = "go on and get my stuff then";
-         npc.npcReply = reply;
-         SetMessage(reply);
-      } else if (row.textType == ClickableText.Type.TradeDeliveryComplete) {
-         // CloseNPCPanel and Call Reward Panel
-         PanelManager.self.popPanel();
-         Global.player.rpc.Cmd_FinishedQuest(npc.npcId, currentQuestIndex);
-
-         // Update quest State
-         currentDeliveryQuest.questState = currentDialogue.nextState;
-         Global.player.rpc.Cmd_UpdateNPCQuestProgress(npc.npcId, (int) QuestState.Completed, currentQuestIndex, currentQuestType.ToString());
-
-         // Setup dialogue of player
-         npc.currentAnswerDialogue.Clear();
-         npc.currentAnswerDialogue.Add(ClickableText.Type.None);
-
-         int updatedRelationship = (int.Parse(friendshipText.text) + 20);
-         Global.player.rpc.Cmd_UpdateNPCRelation(npc.npcId, updatedRelationship);
+      // Set the text
+      if (text == null) {
+         row.initData(clickableType);
       } else {
-         Global.player.rpc.Cmd_UpdateNPCQuestProgress(npc.npcId, (int) currentDialogue.nextState, currentQuestIndex, currentQuestType.ToString());
-         currentDeliveryQuest.questState = currentDialogue.nextState;
-         checkQuest(currentDeliveryQuest);
-      }
-   }
-
-   public void checkQuest (DeliveryQuestPair deliveryQuestPair) {
-      QuestState currentQuestState = deliveryQuestPair.questState;
-      QuestDialogue currentDialogue = deliveryQuestPair.dialogueData.questDialogueList.Find(_ => _.questState == currentQuestState);
-   
-      npc.currentAnswerDialogue.Clear();
-
-      if (currentDialogue.checkCondition) {
-         // Checks the required items if it exists in the database
-         QuestSeed randomizedSeed = QuestSeed.randomizedQuestSeed(npc.npcId);
-
-         List<Item> itemList = InventoryCacheManager.self.itemList;
-         DeliverQuest deliveryQuest = deliveryQuestPair.deliveryQuest;
-         Item findingItemList = itemList.Find(_ => (CraftingIngredients.Type) _.itemTypeId == (CraftingIngredients.Type) randomizedSeed.quantity
-         && _.category == Item.Category.CraftingIngredients);
-
-         if (findingItemList != null) {
-            if (findingItemList.count >= randomizedSeed.quantity) {
-               // Sets the player to a positive response if Requirements are met
-               npc.currentAnswerDialogue.Add(currentDialogue.playerReply);
-               Global.player.rpc.Cmd_GetClickableRows(npc.npcId, (int) currentQuestType, (int) currentQuestState, currentQuestIndex);
-               return;
-            }
-         } else {
-            // Sets the player to a negative response if Requirements are met
-            npc.currentAnswerDialogue.Add(currentDialogue.playerNegativeReply);
-            Global.player.rpc.Cmd_GetClickableRows(npc.npcId, (int) currentQuestType, (int) currentQuestState, currentQuestIndex);
-            return;
-         }
+         row.initData(clickableType, text);
       }
 
-      // Sets the player to a positive response if Requirements are met
-      npc.currentAnswerDialogue.Add(currentDialogue.playerReply);
+      // Set up the click function
+      row.clickedEvent.AddListener(functionToCall);
+      row.gameObject.SetActive(true);
 
-      // Send a request to the server to get the clickable text options
-      Global.player.rpc.Cmd_GetClickableRows(this.npc.npcId, (int) currentQuestType, (int) currentQuestState, currentQuestIndex);
-   }
-
-   private void setQuestClicker (QuestInfoData data) {
-      for (int i = 0; i < data.questList.Count; i++) {
-         ClickableText row = Instantiate(clickableRowPrefab);
-         row.transform.SetParent(clickableRowContainer.transform);
-
-         // Handles visual update if quest is finished
-         string clickableTextName = data.questList[i].questType.ToString() + " (" + data.questList[i].questTitle + ")";
-         if (data.questList[i].questState == QuestState.Completed) {
-            row.SetColor(Color.black);
-            clickableTextName += "(Finished)";
-         }
-
-         // Handles visual update if quest is locked
-         if (data.questList[i].relationRequirement > friendshipLevel) {
-            row.SetColor(Color.gray);
-            clickableTextName += "(Requires level [" + data.questList[i].relationRequirement + "])";
-         }
-
-         // Updates row data
-         row.customText(clickableTextName, _questOptionIndex);
-         int newIndex = data.index;
-         row.clickedEvent.AddListener(() => questCategoryRowClickedOn(row, this.npc, data.questType, newIndex));
-
-         // Iterates indexes
-         data.index++;
-         _questOptionIndex++;
+      // Disable the row if it is not interactive
+      if (!isInteractive) {
+         row.disablePointerEvents(disabledClickableRowColor);
       }
-   }
-
-   private QuestInfoData processQuestInfo (QuestType type) {
-      QuestInfoData newInfoData = new QuestInfoData();
-      newInfoData.questList = npc.npcData.getAllQuestSpecific(type);
-      newInfoData.index = 0;
-      newInfoData.questType = type;
-
-      return newInfoData;
-   }
-
-   public static DialogueData getDialogueInfo (int questState, DeliveryQuestPair deliveryQuestPair, bool hasMaterials, int npcId) {
-      DialogueData newDialogueData = new DialogueData();
-      List<ClickableText.Type> newList = new List<ClickableText.Type>();
-      QuestDialogue currentDialogue = deliveryQuestPair.dialogueData.questDialogueList.Find(_ => (int) _.questState == questState);
-
-      // Determines if the dialogue needs a condition check
-      if (currentDialogue.checkCondition) {
-         List<Item> itemList = InventoryCacheManager.self.itemList;
-         DeliverQuest deliveryQuest = deliveryQuestPair.deliveryQuest;
-
-         if (hasMaterials) {
-            // Sets the player to a positive response if Requirements are met
-            newList.Add(currentDialogue.playerReply);
-         } else {
-            // Sets the player to a negative response if Requirements are met
-            newList.Add(currentDialogue.playerNegativeReply);
-         }
-      } else {
-         // Returns default positive reply
-         newList.Add(currentDialogue.playerReply);
-      }
-
-      newDialogueData.answerList = newList;
-      newDialogueData.npcDialogue = currentDialogue.npcDialogue;
-
-      // Sets npc response
-      string npcReply = newDialogueData.npcDialogue;
-      QuestSeed randomizedSeed = QuestSeed.randomizedQuestSeed(npcId);
-      Item requiredItem = randomizedSeed.requiredItem;
-
-      npcReply = npcReply.Replace("@type", requiredItem.getCastItem().getName().ToString());
-      npcReply = npcReply.Replace("@count", requiredItem.getCastItem().count.ToString());
-      newDialogueData.npcDialogue = npcReply;
-
-      return newDialogueData;
    }
 
    #region Private Variables
 
    // Keeps track of what our starting text is
-   protected string _greetingText = "";
+   protected string _npcDialogueLine = "";
 
-   // Used for quest category index
-   protected int _questOptionIndex = 0;
+   // Keep track of the current displayed friendship level
+   protected int _friendshipLevel = -1;
 
    #endregion
 }
