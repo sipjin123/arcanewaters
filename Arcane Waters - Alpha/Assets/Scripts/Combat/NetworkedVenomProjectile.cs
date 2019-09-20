@@ -57,7 +57,7 @@ public class NetworkedVenomProjectile : MonoBehaviour
       float ballHeight = Util.getSinOfAngle(angleInDegrees) * ARCH_HEIGHT;
 
       Util.setLocalY(venomProjectile.transform, ballHeight);
-
+      
       if (timeAlive > LIFETIME && !_hasCollided) {
          processDestruction();
       }
@@ -91,12 +91,14 @@ public class NetworkedVenomProjectile : MonoBehaviour
 
          SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position);
       }
+
       _hasCollided = true;
 
       processDestruction();
    }
 
    private void processDestruction () {
+      callCollision(Util.hasLandTile(this.transform.position), circleCollider.transform.position);
       Destroy(this.gameObject);
    }
 
@@ -105,6 +107,7 @@ public class NetworkedVenomProjectile : MonoBehaviour
          Instantiate(PrefabsManager.self.cannonSmokePrefab, location, Quaternion.identity);
          SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position);
       } else {
+         location.z = 0;
          GameObject venomResidue = Instantiate(PrefabsManager.self.venomResiduePrefab, location, Quaternion.identity);
          venomResidue.GetComponent<VenomResidue>().creatorUserId = this.creatorUserId;
          ExplosionManager.createSlimeExplosion(circleCollider.transform.position);
@@ -114,8 +117,6 @@ public class NetworkedVenomProjectile : MonoBehaviour
    }
 
    private void OnDestroy () {
-      callCollision(Util.hasLandTile(this.transform.position), circleCollider.transform.position);
-
       // Don't need to handle any of these effects in Batch Mode
       if (Application.isBatchMode) {
          return;

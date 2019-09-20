@@ -10,8 +10,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <RootNamespace>
-    </RootNamespace>
+    <RootNamespace></RootNamespace>
     <ProjectGuid>{58EE1A64-2A7E-C56C-BD83-70EFA6D9AB39}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -96,9 +95,7 @@
     <Compile Include="Assets\Plugins\crosstales\Common\Scripts\Util\BaseConstants.cs" />
     <Compile Include="Assets\Plugins\crosstales\Common\Scripts\Util\BaseHelper.cs" />
     <Compile Include="Assets\Plugins\crosstales\Common\Scripts\Util\CTPlayerPrefs.cs" />
-    <Compile Include="Assets\Plugins\crosstales\Common\Scripts\Util\CTWebClient.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Assets\Plugins\crosstales\Common\Scripts\Util\CTWebClient.cs" />
     <Compile Include="Assets\Plugins\crosstales\Common\Scripts\Util\FFTAnalyzer.cs" />
     <Compile Include="Assets\Plugins\crosstales\Common\Scripts\Util\PlatformController.cs" />
     <Compile Include="Assets\Plugins\crosstales\Common\Scripts\Util\RandomColor.cs" />

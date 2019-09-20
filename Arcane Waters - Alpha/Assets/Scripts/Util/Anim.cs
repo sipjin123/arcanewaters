@@ -17,9 +17,7 @@ public class Anim : MonoBehaviour {
       Battle_East = 10, Battle_North = 11, Battle_South = 12,
       Block_East = 13,
       Jump_East = 14,
-      Mining = 15,
-      Attack_North = 16,
-      Attack_South = 17
+      Mining = 15
    }
 
    // The different animation groups
@@ -27,10 +25,6 @@ public class Anim : MonoBehaviour {
       Player = 1,
       Lizard = 2,
       Golem = 3,
-      SeaMonster = 4,
-      ReefGiant = 5,
-      Tentacle = 6,
-      Horror = 7,
    }
       
    #endregion
@@ -38,12 +32,6 @@ public class Anim : MonoBehaviour {
    public static bool pausesAtEnd (Type animType) {
       switch (animType) {
          case Type.Death_East:
-            return true;
-         case Type.Attack_East:
-            return true;
-         case Type.Attack_North:
-            return true;
-         case Type.Attack_South:
             return true;
          default:
             return false;

@@ -49,16 +49,11 @@ public class TreasureChest : NetworkBehaviour {
    // The container for our animated arrow
    public GameObject arrowContainer;
 
-   // Determines the type of chest if it is dropped by a land or sea monster or spawned at a treasure site
-   public ChestSpawnType chestType;
+   // Determines if this chest is a land or sea chest
+   public bool isSeaChest;
 
-   // The type of enemy that dropped the loot
-   [SyncVar]
-   public int enemyType;
-
-   // Determines if this chest should be destroyed after interaction
-   [SyncVar]
-   public bool autoDestroy;
+   // The animator of the chest
+   public Animator chestAnimator;
 
    #endregion
 
@@ -82,12 +77,13 @@ public class TreasureChest : NetworkBehaviour {
       // Activate certain things when the global player is nearby
       arrowContainer.SetActive(_isGlobalPlayerNearby && !hasBeenOpened());
 
-      if (chestType == ChestSpawnType.Site) {
+      if (!isSeaChest) {
          // We only enable the box collider for clients in the relevant instance
          boxCollider.enabled = (Global.player != null && Global.player.instanceId == this.instanceId);
       } else {
          boxCollider.enabled = !hasBeenOpened();
          triggerCollider.enabled = !hasBeenOpened();
+         chestAnimator.SetBool("open", hasBeenOpened());
       }
 
       // Figure out whether our outline should be showing
@@ -117,11 +113,7 @@ public class TreasureChest : NetworkBehaviour {
          return;
       }
 
-      if (chestType == ChestSpawnType.Sea || chestType == ChestSpawnType.Land) {
-         Global.player.rpc.Cmd_OpenLootBag(this.id);
-      } else {
-         Global.player.rpc.Cmd_OpenChest(this.id);
-      }
+      Global.player.rpc.Cmd_OpenChest(this.id);
    }
 
    public void handleSpriteOutline () {
@@ -134,10 +126,6 @@ public class TreasureChest : NetworkBehaviour {
    }
 
    public Item getContents () {
-      if (chestType == ChestSpawnType.Sea || chestType == ChestSpawnType.Land) {
-         return getEnemyContents();
-      }
-
       // Create a random item for now
       if (Random.Range(0f, 1f) > .5f) {
          Weapon weapon = new Weapon(0, (int) Weapon.Type.Sword_3, ColorType.DarkGreen, ColorType.DarkPurple, "");
@@ -150,21 +138,6 @@ public class TreasureChest : NetworkBehaviour {
 
          return armor;
       }
-   }
-
-   public Item getEnemyContents () {
-      // Gets loots for enemy type
-      EnemyLootLibrary lootLibrary = RewardManager.self.enemyLootList.Find(_ => _.enemyType == (Enemy.Type)enemyType);
-      List<LootInfo> processedLoots = lootLibrary.dropTypes.requestLootList();
-
-      // Registers list of ingredient types for data fetching
-      List<CraftingIngredients.Type> itemLoots = new List<CraftingIngredients.Type>();
-      foreach(LootInfo info in processedLoots) {
-         itemLoots.Add(info.lootType);
-      }
-
-      Item itemToCreate = new CraftingIngredients(0, processedLoots[0].lootType, ColorType.Black, ColorType.Black);
-      return itemToCreate;
    }
 
    public bool hasBeenOpened () {
@@ -221,16 +194,6 @@ public class TreasureChest : NetworkBehaviour {
       }
    }
 
-   [ClientRpc]
-   public void Rpc_DisableChest () {
-      StartCoroutine(CO_DisableChestAfterDelay());
-   }
-
-   private IEnumerator CO_DisableChestAfterDelay() {
-      yield return new WaitForSeconds(3);
-      gameObject.SetActive(false);
-   }
-
    #region Private Variables
 
    // Gets set to true when the global player is nearby
@@ -241,12 +204,4 @@ public class TreasureChest : NetworkBehaviour {
    protected ClickableBox _clickableBox;
 
    #endregion
-}
-
-public enum ChestSpawnType
-{
-   None = 0,
-   Site = 1,
-   Land = 2,
-   Sea = 3
 }

@@ -13,14 +13,21 @@ MonoBehaviour:
   m_Name: LizardDrops
   m_EditorClassIdentifier: 
   lootList:
-  - lootType: 1
-    chanceRatio: 22.71
-  - lootType: 2
-    chanceRatio: 4
-  - lootType: 8
-    chanceRatio: 3
-  - lootType: 7
-    chanceRatio: 0.25
-  defaultLoot: 9
-  minQuantity: 1
+  - lootType: 12
+    quantity: 1
+    chanceRatio: 70
+  - lootType: 13
+    quantity: 1
+    chanceRatio: 50
+  - lootType: 14
+    quantity: 1
+    chanceRatio: 25
+  - lootType: 15
+    quantity: 1
+    chanceRatio: 10
+  - lootType: 16
+    quantity: 1
+    chanceRatio: 5
+  defaultLoot: 12
+  minQuantity: 2
   maxQuantity: 5

@@ -79,8 +79,6 @@ public class SeaEntity : NetEntity {
 
       // If we've died, start slowing moving our sprites downward
       if (currentHealth <= 0) {
-         _outline.Hide();
-
          Util.setLocalY(spritesContainer.transform, spritesContainer.transform.localPosition.y - .03f * Time.smoothDeltaTime);
 
          // Fade the sprites out
@@ -473,14 +471,14 @@ public class SeaEntity : NetEntity {
       // Creates the projectile and the target circle
       if (GetComponent<PlayerShipEntity>() == null) {
          if (attackType != Attack.Type.Venom) {
-            Rpc_CreateAttackCircle(spawnPosition, spot, Util.netTime(), Util.netTime() + delay, attackType, true);
+            Rpc_CreateAttackCircle(spawnPosition, spot, Time.time, Time.time + delay, attackType, true);
          } else {
             // Create a venom
             fireTimedVenomProjectile(spawnPosition, spot);
          }
       } else {
-         Target_CreateLocalAttackCircle(connectionToClient, this.transform.position, spot, Util.netTime(), Util.netTime() + delay);
-         Rpc_CreateAttackCircle(spawnPosition, spot, Util.netTime(), Util.netTime() + delay, attackType, false);
+         Target_CreateLocalAttackCircle(connectionToClient, this.transform.position, spot, Time.time, Time.time + delay);
+         Rpc_CreateAttackCircle(spawnPosition, spot, Time.time, Time.time + delay, attackType, false);
       }
    }
 

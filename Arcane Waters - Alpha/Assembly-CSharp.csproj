@@ -62,9 +62,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\AStar\AStarGrid.cs" />
-    <Compile Include="Assets\AStar\Node.cs" />
-    <Compile Include="Assets\AStar\Pathfinding.cs" />
     <Compile Include="Assets\Camera Filter Pack\Scripts\CameraFilterPack_Color_BrightContrastSaturation.cs" />
     <Compile Include="Assets\Camera Filter Pack\Scripts\CameraFilterPack_FX_EarthQuake.cs" />
     <Compile Include="Assets\Camera Filter Pack\Scripts\CameraFilterPack_FX_Spot.cs" />
@@ -359,18 +356,20 @@
     <Compile Include="Assets\Scripts\Enemy\GenericLootData.cs" />
     <Compile Include="Assets\Scripts\Entities\BodyEntity.cs" />
     <Compile Include="Assets\Scripts\Entities\BotShipEntity.cs" />
+    <Compile Include="Assets\Scripts\Entities\FishmanEntity.cs" />
+    <Compile Include="Assets\Scripts\Entities\HorrorEntity.cs" />
     <Compile Include="Assets\Scripts\Entities\Jobs.cs" />
     <Compile Include="Assets\Scripts\Entities\LizardKing.cs" />
     <Compile Include="Assets\Scripts\Entities\NetEntity.cs" />
     <Compile Include="Assets\Scripts\Entities\PlayerBodyEntity.cs" />
     <Compile Include="Assets\Scripts\Entities\PlayerShipEntity.cs" />
-    <Compile Include="Assets\Scripts\Entities\RoleType.cs" />
+    <Compile Include="Assets\Scripts\Entities\ReefGiantEntity.cs" />
     <Compile Include="Assets\Scripts\Entities\SeaEntity.cs" />
     <Compile Include="Assets\Scripts\Entities\SeaMonsterEntity.cs" />
-    <Compile Include="Assets\Scripts\Entities\SeaMonsterEntityData.cs" />
-    <Compile Include="Assets\Scripts\Entities\SeaMonsterUtility.cs" />
     <Compile Include="Assets\Scripts\Entities\ShipEntity.cs" />
     <Compile Include="Assets\Scripts\Entities\Stats.cs" />
+    <Compile Include="Assets\Scripts\Entities\TentacleEntity.cs" />
+    <Compile Include="Assets\Scripts\Entities\WormEntity.cs" />
     <Compile Include="Assets\Scripts\Events\BattleTooltipEvent.cs" />
     <Compile Include="Assets\Scripts\Events\EventManager.cs" />
     <Compile Include="Assets\Scripts\Furniture\BedSheets.cs" />
