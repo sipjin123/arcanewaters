@@ -50,12 +50,14 @@ MonoBehaviour:
     dropTypes: {fileID: 11400000, guid: 14b2cf647e92538408f269479e3ea968, type: 2}
   - enemyType: 204
     dropTypes: {fileID: 11400000, guid: dc8469089fcf3b74f839df9d50c08e9c, type: 2}
-  - enemyType: 206
-    dropTypes: {fileID: 11400000, guid: 3fa3b5cc8ec0e1f47a7efa028c177abe, type: 2}
-  - enemyType: 207
-    dropTypes: {fileID: 11400000, guid: e4a6d0484a8e7b449acd5ea4cce9be62, type: 2}
-  - enemyType: 203
-    dropTypes: {fileID: 11400000, guid: dc8469089fcf3b74f839df9d50c08e9c, type: 2}
+  - enemyType: 301
+    dropTypes: {fileID: 11400000, guid: 8cfe6b7eee1ba50429a6ce0a77f304c4, type: 2}
+  - enemyType: 302
+    dropTypes: {fileID: 11400000, guid: f148bcb44e469c647a3421a448073e98, type: 2}
+  - enemyType: 303
+    dropTypes: {fileID: 11400000, guid: c12814251973c494eb5e9e92b30ee814, type: 2}
+  - enemyType: 304
+    dropTypes: {fileID: 11400000, guid: 1cbed1e38ef34e346b1ab2f9a73d4e57, type: 2}
   oreLootList:
   - oreType: 1
     dropTypes: {fileID: 11400000, guid: d3485a0035cf0d549b22eb1d9295276f, type: 2}
