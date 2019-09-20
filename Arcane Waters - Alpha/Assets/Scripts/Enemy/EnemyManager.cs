@@ -3,12 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System;
 
 public class EnemyManager : MonoBehaviour {
    #region Public Variables
 
    // Self
    public static EnemyManager self;
+
+   // The data of the seamonster by type
+   public List<SeaMonsterDataPair> seaMonsterEntityData;
 
    #endregion
 
@@ -53,4 +57,14 @@ public class EnemyManager : MonoBehaviour {
    protected Dictionary<Area.Type, List<Enemy_Spawner>> _spawners = new Dictionary<Area.Type, List<Enemy_Spawner>>();
 
    #endregion
+}
+
+[Serializable]
+public class SeaMonsterDataPair
+{
+   // The type of seamonster
+   public Enemy.Type seaMonsterType;
+   
+   // The data to assign to the seamonster
+   public SeaMonsterEntityData seaMonsterData; 
 }

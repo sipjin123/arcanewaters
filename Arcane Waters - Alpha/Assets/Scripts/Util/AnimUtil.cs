@@ -177,6 +177,100 @@ public class AnimUtil : MonoBehaviour {
                      return new AnimInfo(animType, 11, 11);
                }
             break;
+
+         case Anim.Group.SeaMonster:
+            switch (animType) {
+               case Anim.Type.Idle_East:
+                  return new AnimInfo(animType, 0, 3);
+               case Anim.Type.Idle_North:
+                  return new AnimInfo(animType, 4, 7);
+               case Anim.Type.Idle_South:
+                  return new AnimInfo(animType, 8, 11);
+
+               case Anim.Type.Run_East:
+                  return new AnimInfo(animType, 12, 15);
+               case Anim.Type.Run_North:
+                  return new AnimInfo(animType, 16, 19);
+               case Anim.Type.Run_South:
+                  return new AnimInfo(animType, 20, 23);
+
+               case Anim.Type.Attack_East:
+                  return new AnimInfo(animType, 24, 27);
+               case Anim.Type.Attack_North:
+                  return new AnimInfo(animType, 28, 31);
+               case Anim.Type.Attack_South:
+                  return new AnimInfo(animType, 32, 35);
+
+               case Anim.Type.Death_East:
+                  return new AnimInfo(animType, 39, 42);
+            }
+            break;
+            
+         case Anim.Group.ReefGiant:
+            switch (animType) {
+               case Anim.Type.Idle_East:
+                  return new AnimInfo(animType, 0, 3);
+               case Anim.Type.Idle_North:
+                  return new AnimInfo(animType, 4, 7);
+               case Anim.Type.Idle_South:
+                  return new AnimInfo(animType, 8, 11);
+
+               case Anim.Type.Run_East:
+                  return new AnimInfo(animType, 12, 17);
+               case Anim.Type.Run_North:
+                  return new AnimInfo(animType, 18, 23);
+               case Anim.Type.Run_South:
+                  return new AnimInfo(animType, 24, 29);
+
+               case Anim.Type.Attack_East:
+                  return new AnimInfo(animType, 30, 35);
+               case Anim.Type.Attack_North:
+                  return new AnimInfo(animType, 36, 41);
+               case Anim.Type.Attack_South:
+                  return new AnimInfo(animType, 42, 47);
+
+               case Anim.Type.Death_East:
+                  return new AnimInfo(animType, 51, 59);
+            }
+            break;
+
+         case Anim.Group.Tentacle:
+            switch (animType) {
+               case Anim.Type.Idle_East:
+                  return new AnimInfo(animType, 0, 3);
+               case Anim.Type.Idle_North:
+                  return new AnimInfo(animType, 0, 3);
+               case Anim.Type.Idle_South:
+                  return new AnimInfo(animType, 0, 3);
+
+               case Anim.Type.Run_East:
+                  return new AnimInfo(animType, 4, 7);
+               case Anim.Type.Run_North:
+                  return new AnimInfo(animType, 4, 7);
+               case Anim.Type.Run_South:
+                  return new AnimInfo(animType, 4, 7);
+
+               case Anim.Type.Attack_East:
+                  return new AnimInfo(animType, 0, 7);
+               case Anim.Type.Attack_North:
+                  return new AnimInfo(animType, 0, 7);
+               case Anim.Type.Attack_South:
+                  return new AnimInfo(animType, 0, 7);
+
+               case Anim.Type.Death_East:
+                  return new AnimInfo(animType, 9, 14);
+            }
+            break;
+
+         case Anim.Group.Horror:
+            switch (animType) {
+               case Anim.Type.Death_East:
+                  return new AnimInfo(animType, 4, 13);
+               default:
+                  return new AnimInfo(animType, 0, 3);
+                  break;
+            }
+            break;
       }
 
       D.warning("Couldn't find animation info for group: " + animGroup + " and type: " + animType);
