@@ -17,8 +17,14 @@ public class NPC : MonoBehaviour {
       Gardener = 6, Glasses = 7, Gramps = 8, Hammer = 9, Headband = 10,
       ItemShop = 11, Mapper = 12, Monocle = 13, Parrot = 14, Patch = 15,
       Pegleg = 16, Seagull = 17, Shipyard = 18, Shroom = 19, Skullhat = 20,
-      Stripes = 21, Vest = 22, Dog = 23, Lizard = 24,
+      Stripes = 21, Vest = 22, Dog = 23, Lizard = 24, Tentacle = 25, Horror = 26, Worm = 27, Reef_Giant = 28, Fishman = 29
    }
+
+   // Holds the scriptable object npc data
+   public NPCQuestData npcData;
+
+   // Holds the current player answers depending on quest state
+   public List<ClickableText.Type> currentAnswerDialogue = new List<ClickableText.Type>();
 
    // The Type of NPC this is
    public Type npcType;
@@ -58,6 +64,9 @@ public class NPC : MonoBehaviour {
 
    // Our name text
    public Text nameText;
+
+   // Stores the reply of the NPC
+   public string npcReply;
 
    #endregion
 
@@ -122,6 +131,8 @@ public class NPC : MonoBehaviour {
          // nameText.text = "[" + npcType + "]";
          // setNameColor(nameText, npcType);
       }
+
+      npcData = QuestManager.self.deliveryQuestData;
    }
 
    private void Update () {
@@ -209,7 +220,7 @@ public class NPC : MonoBehaviour {
          PanelManager.self.pushIfNotShowing(_shopTrigger.panelType);
       } else {
          // Send a request to the server to get the clickable text options
-         Global.player.rpc.Cmd_GetClickableRows(this.npcId);
+         Global.player.rpc.Cmd_GetNPCRelation(this.npcId, this.npcName);
       }
    }
 

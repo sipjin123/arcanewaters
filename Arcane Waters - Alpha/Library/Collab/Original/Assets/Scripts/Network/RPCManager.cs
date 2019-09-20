@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -24,7 +24,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_InteractAnimation(Anim.Type animType) {
+   public void Cmd_InteractAnimation (Anim.Type animType) {
       Rpc_InteractAnimation(animType);
    }
 
@@ -219,6 +219,10 @@ public class RPCManager : NetworkBehaviour {
       // Show a confirmation in chat
       string msg = string.Format("You found one <color=red>{0}</color>!", item.getName());
       ChatManager.self.addChat(msg, ChatInfo.Type.System);
+
+      if (chest.autoDestroy) {
+         chest.Rpc_DisableChest();
+      }
    }
 
    [TargetRpc]
@@ -261,7 +265,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_ReceiveLeaderBoards (NetworkConnection connection, LeaderBoardsManager.Period period, 
+   public void Target_ReceiveLeaderBoards (NetworkConnection connection, LeaderBoardsManager.Period period,
       Faction.Type boardFaction, double secondsLeftUntilRecalculation, LeaderBoardInfo[] farmingEntries,
       LeaderBoardInfo[] sailingEntries, LeaderBoardInfo[] exploringEntries, LeaderBoardInfo[] tradingEntries,
       LeaderBoardInfo[] craftingEntries, LeaderBoardInfo[] miningEntries) {
@@ -274,7 +278,7 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Pass them along to the Leader Boards panel
-      panel.updatePanelWithLeaderBoardEntries(period, boardFaction, secondsLeftUntilRecalculation,  farmingEntries, sailingEntries,
+      panel.updatePanelWithLeaderBoardEntries(period, boardFaction, secondsLeftUntilRecalculation, farmingEntries, sailingEntries,
          exploringEntries, tradingEntries, craftingEntries, miningEntries);
    }
 
@@ -1123,7 +1127,7 @@ public class RPCManager : NetworkBehaviour {
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Determines if npc is near player
             float distance = Vector2.Distance(npc.transform.position, _player.transform.position);
-            
+
             if (distance > NPC.TALK_DISTANCE) {
                D.log("Too far away from the player!");
                return;
@@ -1171,7 +1175,7 @@ public class RPCManager : NetworkBehaviour {
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Fetches reward item id
-         for(int i = 0; i < rewardItems.Count; i++) {
+         for (int i = 0; i < rewardItems.Count; i++) {
             int rewardItemID = DB_Main.getItemID(userID, (int) rewardItems[i].category, rewardItems[i].itemTypeId);
             rewardItemIDList.Add(rewardItemID);
          }
@@ -1191,7 +1195,7 @@ public class RPCManager : NetworkBehaviour {
       // Gets loots for enemy type
       EnemyLootLibrary lootLibrary = RewardManager.self.enemyLootList.Find(_ => _.enemyType == enemyType);
       List<LootInfo> processedLoots = lootLibrary.dropTypes.requestLootList();
-   
+
       // Registers list of ingredient types for data fetching
       List<CraftingIngredients.Type> itemLoots = new List<CraftingIngredients.Type>();
       for (int i = 0; i < processedLoots.Count; i++) {
@@ -1201,7 +1205,7 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<Item> databaseList = DB_Main.getRequiredIngredients(_player.userId, itemLoots);
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            processGroupRewards(_player.userId, databaseList, processedLoots);
+            processGroupRewards(_player.userId, databaseList, processedLoots, true);
          });
       });
    }
@@ -1209,7 +1213,7 @@ public class RPCManager : NetworkBehaviour {
    [Server]
    public void validateCraftingRewards (int userId, Blueprint.Type blueprintType) {
       CombinationData data = RewardManager.self.combinationDataList.comboDataList.Find(_ => _.blueprintTypeID == (int) blueprintType);
-  
+
       List<CraftingIngredients.Type> requiredItemList = new List<CraftingIngredients.Type>();
       for (int i = 0; i < data.combinationRequirements.Count; i++) {
          requiredItemList.Add((CraftingIngredients.Type) data.combinationRequirements[i].itemTypeId);
@@ -1272,7 +1276,7 @@ public class RPCManager : NetworkBehaviour {
             DB_Main.createOrUpdateItemCount(userId, rewardItem[i].id, rewardItem[i]);
          }
 
-         for(int i = 0; i < requiredItems.Count; i++) {
+         for (int i = 0; i < requiredItems.Count; i++) {
             int deductCount = requiredItems[i].count;
 
             // Deduct quantity of each required ingredient or delete item if it hits zero count
@@ -1281,14 +1285,16 @@ public class RPCManager : NetworkBehaviour {
          }
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_ReceiveItemList(_player.connectionToClient, rewardItem.ToArray());
+            Target_ReceiveItemList(_player.connectionToClient, rewardItem.ToArray(), true);
          });
       });
    }
-   
+
    [TargetRpc]
-   public void Target_ReceiveItemList(NetworkConnection connection, Item[] itemList) {
-      RewardManager.self.showItemsInRewardPanel(itemList.ToList());
+   public void Target_ReceiveItemList (NetworkConnection connection, Item[] itemList, bool showPanel) {
+      if (showPanel) {
+         RewardManager.self.showItemsInRewardPanel(itemList.ToList());
+      }
 
       // Tells the user to update their inventory cache to retrieve the updated items
       InventoryCacheManager.self.fetchInventory();
@@ -1337,8 +1343,8 @@ public class RPCManager : NetworkBehaviour {
 
       // Registers list of ingredient types for data fetching
       List<CraftingIngredients.Type> itemLoots = new List<CraftingIngredients.Type>();
-      for(int i = 0; i < lootInfoList.Count; i++) {
-         itemLoots.Add(lootInfoList[i].lootType);
+      foreach(LootInfo info in lootInfoList) {
+         itemLoots.Add(info.lootType);
       }
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -1350,7 +1356,7 @@ public class RPCManager : NetworkBehaviour {
          Jobs newJobXP = DB_Main.getJobXP(_player.userId);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            processGroupRewards(_player.userId, databaseList, lootInfoList);
+            processGroupRewards(_player.userId, databaseList, lootInfoList, true);
 
             // Let them know they gained experience
             _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Miner, 0);
@@ -1359,13 +1365,13 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Server]
-   private void processGroupRewards(int userID, List<Item> databaseItems, List<LootInfo> rewardList) {
+   private void processGroupRewards (int userID, List<Item> databaseItems, List<LootInfo> rewardList, bool showPanel) {
       // Generate Item List to show in popup after data writing
       List<Item> itemRewardList = new List<Item>();
       for (int i = 0; i < rewardList.Count; i++) {
          Item itemToCreate = new CraftingIngredients(0, rewardList[i].lootType, ColorType.Black, ColorType.Black);
          Item databaseItemType = databaseItems.Find(_ => _.category == Item.Category.CraftingIngredients && _.itemTypeId == (int) rewardList[i].lootType);
-         
+
          // Registers the quantity of each item
          itemToCreate.count = rewardList[i].quantity;
          if (databaseItemType != null) {
@@ -1380,9 +1386,75 @@ public class RPCManager : NetworkBehaviour {
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Calls Reward Popup
-            Target_ReceiveItemList(_player.connectionToClient, itemRewardList.ToArray());
+            Target_ReceiveItemList(_player.connectionToClient, itemRewardList.ToArray(), showPanel);
          });
       });
+   }
+
+
+   [Command]
+   public void Cmd_OpenLootBag (int chestId) {
+      TreasureChest chest = TreasureManager.self.getChest(chestId);
+
+      // Make sure we found the Treasure Chest
+      if (chest == null) {
+         D.warning("Treasure chest not found: " + chestId);
+         return;
+      }
+
+      // Make sure the user is in the right instance
+      if (_player.instanceId != chest.instanceId) {
+         D.warning("Player trying to open treasure from a different instance!");
+         return;
+      }
+
+      // Make sure they didn't already open it
+      if (chest.userIds.Contains(_player.userId)) {
+         D.warning("Player already opened this chest!");
+         return;
+      }
+
+      // Add the user ID to the list
+      chest.userIds.Add(_player.userId);
+
+      processSeaChest(chestId);
+   }
+
+   [Server]
+   private void processSeaChest (int chestId) {
+      TreasureChest chest = TreasureManager.self.getChest(chestId);
+
+      // Check what we're going to give the user
+      Item item = chest.getContents();
+
+      // Gathers the item rewards from the scriptable object
+      List<LootInfo> lootInfoList = new List<LootInfo>();
+      CraftingIngredients craftingIngredient = new CraftingIngredients { category = Item.Category.CraftingIngredients, count = item.count, type = (CraftingIngredients.Type) item.itemTypeId };
+      LootInfo newLootInfo = new LootInfo { lootType = craftingIngredient.type, chanceRatio = 100, quantity = craftingIngredient.count };
+      lootInfoList.Add(newLootInfo);
+
+      List<CraftingIngredients.Type> itemLoots = new List<CraftingIngredients.Type>();
+      foreach(LootInfo info in lootInfoList) {
+         itemLoots.Add(info.lootType);
+      }
+
+      // Add it to their inventory
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<Item> databaseList = DB_Main.getRequiredIngredients(_player.userId, itemLoots);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            processGroupRewards(_player.userId, databaseList, lootInfoList, false);
+
+            // Send it to the specific player that opened it
+            Target_OpenChest(_player.connectionToClient, item, chest.id);
+         });
+      });
+   }
+
+   [Server]
+   public void spawnLandMonsterChest (Enemy.Type enemyType, int instanceID, Vector3 position) {
+      Instance currentInstance = InstanceManager.self.getInstance(instanceID);
+      TreasureManager.self.createMonsterChest(currentInstance, position, enemyType, true);
    }
 
    [Command]
@@ -1496,22 +1568,21 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_SpawnTentacle (Vector2 spawnPosition, uint horrorEntityID, int xVal, int yVal, int variety) {
-      TentacleEntity bot = Instantiate(PrefabsManager.self.tentaclePrefab, spawnPosition, Quaternion.identity);
+   public void Cmd_SpawnBossChild (Vector2 spawnPosition, uint horrorEntityID, int xVal, int yVal, int variety, Enemy.Type enemyType) {
+      SeaMonsterEntity bot = Instantiate(PrefabsManager.self.seaMonsterPrefab, spawnPosition, Quaternion.identity);
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
       bot.areaType = _player.areaType;
-      bot.route = null;
-      bot.autoMove = true;
-      bot.entityName = "Tentacle";
-      bot.locationSide = xVal;
-      bot.locationSideTopBot = yVal;
+      bot.entityName = enemyType.ToString();
+      bot.monsterType = (int) enemyType;
+      bot.locationSetup = new Vector2(xVal, yVal);
       bot.variety = (variety);
 
       Instance instance = InstanceManager.self.getInstance(_player.instanceId);
-      HorrorEntity horror = instance.entities.Find(_ => _.netId == horrorEntityID).GetComponent<HorrorEntity>();
-      bot.horrorEntity = horror;
-      horror.tentacleList.Add(bot);
+      SeaMonsterEntity horror = instance.entities.Find(_ => _.netId == horrorEntityID).GetComponent<SeaMonsterEntity>();
+
+      bot.seaMonsterParentEntity = horror;
+      horror.seaMonsterChildrenList.Add(bot);
 
       instance.entities.Add(bot);
 
@@ -1520,70 +1591,41 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_SpawnHorror (Vector2 spawnPosition) {
-      HorrorEntity bot = Instantiate(PrefabsManager.self.horrorPrefab, spawnPosition, Quaternion.identity);
+   public void Cmd_SpawnBossParent (Vector2 spawnPosition, Enemy.Type enemyType) {
+      SeaMonsterEntity bot = Instantiate(PrefabsManager.self.seaMonsterPrefab, spawnPosition, Quaternion.identity);
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
       bot.areaType = _player.areaType;
-      bot.entityName = "Horror";
-      bot.tentaclesLeft = 8;
-
-      // Spawn the bot on the Clients
-      NetworkServer.Spawn(bot.gameObject);
-
-      Instance instance = InstanceManager.self.getInstance(_player.instanceId);
-      instance.entities.Add(bot);
-
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(.5f, -.5f), bot.netId, 1, -1, 1);
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(-.5f, -.5f), bot.netId, -1, -1, 0);
-
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(.5f, .5f), bot.netId, 1, 1, 1);
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(-.5f, .5f), bot.netId, -1, 1, 0);
-
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(-.75f, 0), bot.netId, -1, 0, 1);
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(.75f, 0), bot.netId, 1, 0, 0);
-
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(0, -.75f), bot.netId, 0, -1, 1);
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(0, .75f), bot.netId, 0, 1, 0);
-   }
-
-   [Command]
-   public void Cmd_SpawnWorm (Vector2 spawnPosition) {
-      WormEntity bot = Instantiate(PrefabsManager.self.wormPrefab, spawnPosition, Quaternion.identity);
-      bot.instanceId = _player.instanceId;
-      bot.facing = Util.randomEnum<Direction>();
-      bot.areaType = _player.areaType;
-      bot.entityName = "Worm";
+      bot.entityName = enemyType.ToString();
+      bot.monsterType = (int) enemyType;
 
       // Spawn the bot on the Clients
       NetworkServer.Spawn(bot.gameObject);
 
       Instance instance = InstanceManager.self.getInstance(_player.instanceId);
       instance.entities.Add(bot);
+
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(.5f, -.5f), bot.netId, 1, -1, 1, Enemy.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(-.5f, -.5f), bot.netId, -1, -1, 0, Enemy.Type.Tentacle);
+
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(.5f, .5f), bot.netId, 1, 1, 1, Enemy.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(-.5f, .5f), bot.netId, -1, 1, 0, Enemy.Type.Tentacle);
+
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(-.75f, 0), bot.netId, -1, 0, 1, Enemy.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(.75f, 0), bot.netId, 1, 0, 0, Enemy.Type.Tentacle);
+
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(0, -.75f), bot.netId, 0, -1, 1, Enemy.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(0, .75f), bot.netId, 0, 1, 0, Enemy.Type.Tentacle);
    }
 
    [Command]
-   public void Cmd_SpawnGiant (Vector2 spawnPosition) {
-      ReefGiantEntity bot = Instantiate(PrefabsManager.self.giantPrefab, spawnPosition, Quaternion.identity);
+   public void Cmd_SpawnSeaMonster (Vector2 spawnPosition, Enemy.Type enemyType) {
+      SeaMonsterEntity bot = Instantiate(PrefabsManager.self.seaMonsterPrefab, spawnPosition, Quaternion.identity);
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
       bot.areaType = _player.areaType;
-      bot.entityName = "Giant";
-
-      // Spawn the bot on the Clients
-      NetworkServer.Spawn(bot.gameObject);
-
-      Instance instance = InstanceManager.self.getInstance(_player.instanceId);
-      instance.entities.Add(bot);
-   }
-
-   [Command]
-   public void Cmd_SpawnFishman (Vector2 spawnPosition) {
-      FishmanEntity bot = Instantiate(PrefabsManager.self.fishmanPrefab, spawnPosition, Quaternion.identity);
-      bot.instanceId = _player.instanceId;
-      bot.facing = Util.randomEnum<Direction>();
-      bot.areaType = _player.areaType;
-      bot.entityName = "Fishman";
+      bot.monsterType = (int) enemyType;
+      bot.entityName = enemyType.ToString();
 
       // Spawn the bot on the Clients
       NetworkServer.Spawn(bot.gameObject);
@@ -1627,10 +1669,15 @@ public class RPCManager : NetworkBehaviour {
 
       // Add the player to the Battle
       BattleManager.self.addPlayerToBattle(battle, playerBody, Battle.TeamType.Attackers);
+
+      // Set battle end UI events.
+      battle.onBattleEnded.AddListener(BattleUIManager.self.disableBattleUI);
+
+      BattleUIManager.self.prepareBattleUI();
    }
 
    [Command]
-   public void Cmd_RequestAttack (uint netId, Ability.Type abilityType) {
+   public void Cmd_RequestAttack (uint netId, int abilityInventoryIndex) {
       if (_player == null || !(_player is PlayerBodyEntity)) {
          return;
       }
@@ -1638,8 +1685,11 @@ public class RPCManager : NetworkBehaviour {
       // Look up the player's Battle object
       PlayerBodyEntity playerBody = (PlayerBodyEntity) _player;
       Battle battle = BattleManager.self.getBattle(playerBody.battleId);
-      Ability ability = AbilityManager.getAbility(abilityType);
       Battler sourceBattler = battle.getBattler(_player.userId);
+
+      // Get the ability from the battler abilities.
+      AbilityData abilityData = sourceBattler.getAbilities[abilityInventoryIndex];
+      //Ability ability = AbilityManager.getAbility(abilityType);
 
       Battler targetBattler = null;
 
@@ -1655,20 +1705,20 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Make sure the source battler can use that ability type
-      if (!ability.isReadyForUseBy(sourceBattler)) {
-         D.warning("Battler requested to use ability they're not allowed: " + playerBody.entityName + ", " + abilityType);
+      if (!abilityData.isReadyForUseBy(sourceBattler)) {
+         D.warning("Battler requested to use ability they're not allowed: " + playerBody.entityName + ", " + abilityData.getName());
          return;
       }
 
       // If it's a Melee Ability, make sure the target isn't currently protected
-      if (ability is MeleeAbility && targetBattler.isProtected(battle)) {
+      if (abilityData.isMelee() && targetBattler.isProtected(battle)) {
          D.warning("Battler requested melee ability against protected target! Player: " + playerBody.entityName);
          return;
       }
 
       // Let the Battle Manager handle executing the attack
       List<Battler> targetBattlers = new List<Battler>() { targetBattler };
-      BattleManager.self.executeAttack(battle, sourceBattler, targetBattlers, Ability.Type.Basic_Attack);
+      BattleManager.self.executeAttack(battle, sourceBattler, targetBattlers, abilityInventoryIndex);
    }
 
    [Server]

@@ -17,11 +17,11 @@ public class NPC : MonoBehaviour {
       Gardener = 6, Glasses = 7, Gramps = 8, Hammer = 9, Headband = 10,
       ItemShop = 11, Mapper = 12, Monocle = 13, Parrot = 14, Patch = 15,
       Pegleg = 16, Seagull = 17, Shipyard = 18, Shroom = 19, Skullhat = 20,
-      Stripes = 21, Vest = 22, Dog = 23, Lizard = 24,
+      Stripes = 21, Vest = 22, Dog = 23, Lizard = 24
    }
 
    // Holds the scriptable object npc data
-   public NPCData npcData;
+   public NPCQuestData npcData;
 
    // Holds the current player answers depending on quest state
    public List<ClickableText.Type> currentAnswerDialogue = new List<ClickableText.Type>();
@@ -131,6 +131,8 @@ public class NPC : MonoBehaviour {
          // nameText.text = "[" + npcType + "]";
          // setNameColor(nameText, npcType);
       }
+
+      npcData = QuestManager.self.deliveryQuestData;
    }
 
    private void Update () {
@@ -200,43 +202,6 @@ public class NPC : MonoBehaviour {
       // Figure out the direction of our movement
       Vector2 direction = moveTarget - (Vector2)this.transform.position;
       _body.AddForce(direction.normalized * moveSpeed);
-   }
-
-   public void checkQuest(DeliveryQuestPair deliveryQuestPair) {
-      QuestState currentQuestState = deliveryQuestPair.questState;
-      QuestDialogue currentDialogue = deliveryQuestPair.dialogueData.questDialogueList.Find(_ => _.questState == currentQuestState);
-
-      // Sets npc response
-      npcReply = currentDialogue.npcDialogue;
-      PanelManager.self.get(Panel.Type.NPC_Panel).GetComponent<NPCPanel>().SetMessage(npcReply);
-      currentAnswerDialogue.Clear();
-
-      if(currentDialogue.checkCondition) {
-         List<Item> itemList = InventoryCacheManager.self.itemList;
-         DeliverQuest deliveryQuest = deliveryQuestPair.deliveryQuest;
-         Item findingItemList = itemList.Find(_ => (CraftingIngredients.Type) _.itemTypeId == (CraftingIngredients.Type) deliveryQuest.itemToDeliver.itemTypeId
-         && _.category == Item.Category.CraftingIngredients);
-
-         if (findingItemList != null) {
-            if (findingItemList.count >= deliveryQuest.quantity) {
-               // Sets the player to a positive response if Requirements are met
-               currentAnswerDialogue.Add(currentDialogue.playerReply);
-               Global.player.rpc.Cmd_GetClickableRows(this.npcId);
-               return;
-            }
-         } else {
-            // Sets the player to a negative response if Requirements are met
-            currentAnswerDialogue.Add(currentDialogue.playerNegativeReply);
-            Global.player.rpc.Cmd_GetClickableRows(this.npcId);
-            return;
-         }
-      }
-
-      // Sets the player to a positive response if Requirements are met
-      currentAnswerDialogue.Add(currentDialogue.playerReply);
-     
-      // Send a request to the server to get the clickable text options
-      Global.player.rpc.Cmd_GetClickableRows(this.npcId);
    }
 
    public void clientClickedMe () {

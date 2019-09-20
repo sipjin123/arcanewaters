@@ -32,12 +32,6 @@ public class GenerateScriptableObjects : MonoBehaviour
       Process(asset);
    }
 
-   [MenuItem("Assets/Create/Create NPCData Object")]
-   public static void Create_NPCData () {
-      NPCData asset = ScriptableObject.CreateInstance<NPCData>();
-      Process(asset);
-   }
-
    [MenuItem("Assets/Create/Create HuntQuest Object")]
    public static void Create_HuntQuest () {
       HuntQuest asset = ScriptableObject.CreateInstance<HuntQuest>();
@@ -59,6 +53,18 @@ public class GenerateScriptableObjects : MonoBehaviour
    [MenuItem("Assets/Create/Create QuestDialogueData Object")]
    public static void Create_QuestDialogueData () {
       QuestDialogueData asset = ScriptableObject.CreateInstance<QuestDialogueData>();
+      Process(asset);
+   }
+
+   [MenuItem("Assets/Create/Create EnemyDropsData Object")]
+   public static void Create_EnemyDropsData () {
+      GenericLootData asset = ScriptableObject.CreateInstance<GenericLootData>();
+      Process(asset);
+   }
+
+   [MenuItem("Assets/Create/Create SeaMonsterEntityData Object")]
+   public static void Create_SeaMonsterEntityData () {
+      SeaMonsterEntityData asset = ScriptableObject.CreateInstance<SeaMonsterEntityData>();
       Process(asset);
    }
 }

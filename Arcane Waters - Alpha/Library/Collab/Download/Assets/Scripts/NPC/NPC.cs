@@ -17,14 +17,8 @@ public class NPC : MonoBehaviour {
       Gardener = 6, Glasses = 7, Gramps = 8, Hammer = 9, Headband = 10,
       ItemShop = 11, Mapper = 12, Monocle = 13, Parrot = 14, Patch = 15,
       Pegleg = 16, Seagull = 17, Shipyard = 18, Shroom = 19, Skullhat = 20,
-      Stripes = 21, Vest = 22, Dog = 23, Lizard = 24,
+      Stripes = 21, Vest = 22, Dog = 23, Lizard = 24, Tentacle = 25, Horror = 26, Worm = 27, Reef_Giant = 28, Fishman = 29
    }
-
-   // Holds the scriptable object npc data
-   public NPCData npcData;
-
-   // Holds the current player answers depending on quest state
-   public List<ClickableText.Type> currentAnswerDialogue = new List<ClickableText.Type>();
 
    // The Type of NPC this is
    public Type npcType;
@@ -64,9 +58,6 @@ public class NPC : MonoBehaviour {
 
    // Our name text
    public Text nameText;
-
-   // Stores the reply of the NPC
-   public string npcReply;
 
    #endregion
 
@@ -202,46 +193,6 @@ public class NPC : MonoBehaviour {
       _body.AddForce(direction.normalized * moveSpeed);
    }
 
-   public void checkQuest() {
-      NPCQuestData currentQuest = npcData.npcQuestList[0];
-      // Checks if the active quest is a Delivery Quest
-      if (currentQuest.questType == QuestType.Deliver) {
-         for (int i = 0; i < currentQuest.deliveryQuestList.Count; i++) {
-            DeliveryQuestPair currentDeliverQuest = currentQuest.deliveryQuestList[0];
-
-            QuestState currentQuestState = currentDeliverQuest.questState;
-            QuestDialogue currentDialogue = currentDeliverQuest.questDialogueList.Find(_ => _.questState == currentQuestState);
-
-            // Sets npc response
-            npcReply = currentDialogue.npcDialogue;
-            PanelManager.self.get(Panel.Type.NPC_Panel).GetComponent<NPCPanel>().SetMessage(npcReply);
-            currentAnswerDialogue.Clear();
-
-            if(currentDialogue.checkCondition) {
-               List<Item> itemList = InventoryCacheManager.self.itemList;
-               DeliverQuest deliveryQuest = currentDeliverQuest.deliveryQuest;
-
-               Item findingItemList = itemList.Find(_ => (CraftingIngredients.Type) _.itemTypeId == (CraftingIngredients.Type) deliveryQuest.itemToDeliver.itemTypeId);
-               if (findingItemList != null) {
-                  if (findingItemList.count >= deliveryQuest.quantity) {
-                     // Sets the player to a positive response if Requirements are met
-                     currentAnswerDialogue.Add(currentDialogue.playerReply);
-                     break;
-                  }
-               }
-               // Sets the player to a negative response if Requirements are met
-               currentAnswerDialogue.Add(currentDialogue.playerNegativeReply);
-               Global.player.rpc.Cmd_GetClickableRows(this.npcId);
-               return;
-            }
-            // Sets the player to a positive response if Requirements are met
-            currentAnswerDialogue.Add(currentDialogue.playerReply);
-         }
-      }
-      // Send a request to the server to get the clickable text options
-      Global.player.rpc.Cmd_GetClickableRows(this.npcId);
-   }
-
    public void clientClickedMe () {
       if (Global.player == null || _clickableBox == null || Global.isInBattle()) {
          return;
@@ -253,11 +204,12 @@ public class NPC : MonoBehaviour {
          return;
       }
 
-      // If this is a Shop NPC, then show the appropriate panel
       if (_shopTrigger != null) {
+         // If this is a Shop NPC, then show the appropriate panel
          PanelManager.self.pushIfNotShowing(_shopTrigger.panelType);
       } else {
-         checkQuest();
+         // Send a request to the server to get the npc panel info
+         Global.player.rpc.Cmd_RequestNPCQuestSelectionListFromServer(npcId);
       }
    }
 
@@ -275,7 +227,7 @@ public class NPC : MonoBehaviour {
 
       return (Vector2.Distance(Global.player.transform.position, this.transform.position) < TALK_DISTANCE);
    }
-
+    
    public bool isTalkingToGlobalPlayer () {
       return (PanelManager.self.get(Panel.Type.NPC_Panel).isShowing() && isCloseToGlobalPlayer());
    }

@@ -62,6 +62,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\AStar\AStarGrid.cs" />
+    <Compile Include="Assets\AStar\Node.cs" />
+    <Compile Include="Assets\AStar\Pathfinding.cs" />
     <Compile Include="Assets\Camera Filter Pack\Scripts\CameraFilterPack_Color_BrightContrastSaturation.cs" />
     <Compile Include="Assets\Camera Filter Pack\Scripts\CameraFilterPack_FX_EarthQuake.cs" />
     <Compile Include="Assets\Camera Filter Pack\Scripts\CameraFilterPack_FX_Spot.cs" />
@@ -356,20 +359,18 @@
     <Compile Include="Assets\Scripts\Enemy\GenericLootData.cs" />
     <Compile Include="Assets\Scripts\Entities\BodyEntity.cs" />
     <Compile Include="Assets\Scripts\Entities\BotShipEntity.cs" />
-    <Compile Include="Assets\Scripts\Entities\FishmanEntity.cs" />
-    <Compile Include="Assets\Scripts\Entities\HorrorEntity.cs" />
     <Compile Include="Assets\Scripts\Entities\Jobs.cs" />
     <Compile Include="Assets\Scripts\Entities\LizardKing.cs" />
     <Compile Include="Assets\Scripts\Entities\NetEntity.cs" />
     <Compile Include="Assets\Scripts\Entities\PlayerBodyEntity.cs" />
     <Compile Include="Assets\Scripts\Entities\PlayerShipEntity.cs" />
-    <Compile Include="Assets\Scripts\Entities\ReefGiantEntity.cs" />
+    <Compile Include="Assets\Scripts\Entities\RoleType.cs" />
     <Compile Include="Assets\Scripts\Entities\SeaEntity.cs" />
     <Compile Include="Assets\Scripts\Entities\SeaMonsterEntity.cs" />
+    <Compile Include="Assets\Scripts\Entities\SeaMonsterEntityData.cs" />
+    <Compile Include="Assets\Scripts\Entities\SeaMonsterUtility.cs" />
     <Compile Include="Assets\Scripts\Entities\ShipEntity.cs" />
     <Compile Include="Assets\Scripts\Entities\Stats.cs" />
-    <Compile Include="Assets\Scripts\Entities\TentacleEntity.cs" />
-    <Compile Include="Assets\Scripts\Entities\WormEntity.cs" />
     <Compile Include="Assets\Scripts\Events\BattleTooltipEvent.cs" />
     <Compile Include="Assets\Scripts\Events\EventManager.cs" />
     <Compile Include="Assets\Scripts\Furniture\BedSheets.cs" />
@@ -420,6 +421,7 @@
     <Compile Include="Assets\Scripts\GUI\MouseManager.cs" />
     <Compile Include="Assets\Scripts\GUI\NoticeScreen.cs" />
     <Compile Include="Assets\Scripts\GUI\NPC\NPCPanel.cs" />
+    <Compile Include="Assets\Scripts\GUI\NPC\NPCPanelQuestObjectiveCell.cs" />
     <Compile Include="Assets\Scripts\GUI\OptionsPanel.cs" />
     <Compile Include="Assets\Scripts\GUI\Overworld\OverworldScreen.cs" />
     <Compile Include="Assets\Scripts\GUI\Panel.cs" />
@@ -473,8 +475,10 @@
     <Compile Include="Assets\Scripts\Inventory\Weapon.cs" />
     <Compile Include="Assets\Scripts\Inventory\WeaponManager.cs" />
     <Compile Include="Assets\Scripts\ItemCreation\ItemBuilder.cs" />
-    <Compile Include="Assets\Scripts\ItemData\AbilityData.cs" />
+    <Compile Include="Assets\Scripts\ItemData\AttackAbilityData.cs" />
+    <Compile Include="Assets\Scripts\ItemData\BasicAbilityData.cs" />
     <Compile Include="Assets\Scripts\ItemData\BattleItemData.cs" />
+    <Compile Include="Assets\Scripts\ItemData\BuffAbilityData.cs" />
     <Compile Include="Assets\Scripts\ItemData\ItemElement.cs" />
     <Compile Include="Assets\Scripts\ItemData\WeaponData.cs" />
     <Compile Include="Assets\Scripts\Layers\ArmorLayer.cs" />
@@ -552,6 +556,7 @@
     <Compile Include="Assets\Scripts\Network\LeaderBoardInfo.cs" />
     <Compile Include="Assets\Scripts\Network\MyNetworkManager.cs" />
     <Compile Include="Assets\Scripts\Network\PhotonManager.cs" />
+    <Compile Include="Assets\Scripts\Network\QuestStatusInfo.cs" />
     <Compile Include="Assets\Scripts\Network\RPCManager.cs" />
     <Compile Include="Assets\Scripts\Network\SceneObjectManager.cs" />
     <Compile Include="Assets\Scripts\Network\Server.cs" />
@@ -562,20 +567,18 @@
     <Compile Include="Assets\Scripts\NPC\BotManager.cs" />
     <Compile Include="Assets\Scripts\NPC\BotSpot.cs" />
     <Compile Include="Assets\Scripts\NPC\NPC.cs" />
-    <Compile Include="Assets\Scripts\NPC\NPCFriendshipManager.cs" />
     <Compile Include="Assets\Scripts\NPC\NPCManager.cs" />
-    <Compile Include="Assets\Scripts\NPC\NPCRelationInfo.cs" />
-    <Compile Include="Assets\Scripts\NPC\QuestManager.cs" />
-    <Compile Include="Assets\Scripts\NPC\Quests\DeliverQuest.cs" />
-    <Compile Include="Assets\Scripts\NPC\Quests\HuntQuest.cs" />
-    <Compile Include="Assets\Scripts\NPC\Quests\InteractQuest.cs" />
-    <Compile Include="Assets\Scripts\NPC\Quests\NPCQuestData.cs" />
-    <Compile Include="Assets\Scripts\NPC\Quests\QuestDialogueData.cs" />
-    <Compile Include="Assets\Scripts\NPC\Quests\QuestSeed.cs" />
-    <Compile Include="Assets\Scripts\NPC\QuestTemplate.cs" />
     <Compile Include="Assets\Scripts\NPC\ShopTrigger.cs" />
     <Compile Include="Assets\Scripts\NPC\Tip.cs" />
     <Compile Include="Assets\Scripts\NPC\TipManager.cs" />
+    <Compile Include="Assets\Scripts\NPCData\NPCData.cs" />
+    <Compile Include="Assets\Scripts\NPCData\Quest.cs" />
+    <Compile Include="Assets\Scripts\NPCData\QuestNode.cs" />
+    <Compile Include="Assets\Scripts\NPCData\QuestObjective.cs" />
+    <Compile Include="Assets\Scripts\NPCData\QuestObjectiveDeliver.cs" />
+    <Compile Include="Assets\Scripts\NPCData\QuestReward.cs" />
+    <Compile Include="Assets\Scripts\NPCData\QuestRewardFriendship.cs" />
+    <Compile Include="Assets\Scripts\NPCData\QuestRewardItem.cs" />
     <Compile Include="Assets\Scripts\Observers\BattleObserverManager.cs" />
     <Compile Include="Assets\Scripts\Observers\BattlerObserverManager.cs" />
     <Compile Include="Assets\Scripts\Observers\CannonObserverManager.cs" />
@@ -810,6 +813,7 @@
     <None Include="Assets\Resources\Fonts\EarthCrit.fnt" />
     <None Include="Assets\PaymentWall\Examples\Resources\Data\widget.txt" />
     <None Include="Assets\Resources\Fonts\Battle\AP.fnt" />
+    <None Include="Assets\Data\NPC Quests\Otis_615.xml" />
     <None Include="Assets\Colorify\Shaders\Realtime\Mobile\Colorify-Mobile-1color-Bumped.shader" />
     <None Include="Assets\TextMesh Pro\Examples &amp; Extras\Fonts\Oswald-Bold - OFL.txt" />
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />

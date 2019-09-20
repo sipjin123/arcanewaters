@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -1501,11 +1501,8 @@ public class RPCManager : NetworkBehaviour {
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
       bot.areaType = _player.areaType;
-      bot.npcType = NPC.Type.Tentacle;
-      bot.faction = NPC.getFaction(bot.npcType);
       bot.route = null;
       bot.autoMove = true;
-      bot.nationType = Nation.Type.Pirate;
       bot.entityName = "Tentacle";
       bot.locationSide = xVal;
       bot.locationSideTopBot = yVal;
@@ -1528,9 +1525,6 @@ public class RPCManager : NetworkBehaviour {
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
       bot.areaType = _player.areaType;
-      bot.npcType = NPC.Type.Horror;
-      bot.faction = NPC.getFaction(bot.npcType);
-      bot.nationType = Nation.Type.Pirate;
       bot.entityName = "Horror";
       bot.tentaclesLeft = 8;
 
@@ -1551,6 +1545,51 @@ public class RPCManager : NetworkBehaviour {
 
       Cmd_SpawnTentacle(spawnPosition + new Vector2(0, -.75f), bot.netId, 0, -1, 1);
       Cmd_SpawnTentacle(spawnPosition + new Vector2(0, .75f), bot.netId, 0, 1, 0);
+   }
+
+   [Command]
+   public void Cmd_SpawnWorm (Vector2 spawnPosition) {
+      WormEntity bot = Instantiate(PrefabsManager.self.wormPrefab, spawnPosition, Quaternion.identity);
+      bot.instanceId = _player.instanceId;
+      bot.facing = Util.randomEnum<Direction>();
+      bot.areaType = _player.areaType;
+      bot.entityName = "Worm";
+
+      // Spawn the bot on the Clients
+      NetworkServer.Spawn(bot.gameObject);
+
+      Instance instance = InstanceManager.self.getInstance(_player.instanceId);
+      instance.entities.Add(bot);
+   }
+
+   [Command]
+   public void Cmd_SpawnGiant (Vector2 spawnPosition) {
+      ReefGiantEntity bot = Instantiate(PrefabsManager.self.giantPrefab, spawnPosition, Quaternion.identity);
+      bot.instanceId = _player.instanceId;
+      bot.facing = Util.randomEnum<Direction>();
+      bot.areaType = _player.areaType;
+      bot.entityName = "Giant";
+
+      // Spawn the bot on the Clients
+      NetworkServer.Spawn(bot.gameObject);
+
+      Instance instance = InstanceManager.self.getInstance(_player.instanceId);
+      instance.entities.Add(bot);
+   }
+
+   [Command]
+   public void Cmd_SpawnFishman (Vector2 spawnPosition) {
+      FishmanEntity bot = Instantiate(PrefabsManager.self.fishmanPrefab, spawnPosition, Quaternion.identity);
+      bot.instanceId = _player.instanceId;
+      bot.facing = Util.randomEnum<Direction>();
+      bot.areaType = _player.areaType;
+      bot.entityName = "Fishman";
+
+      // Spawn the bot on the Clients
+      NetworkServer.Spawn(bot.gameObject);
+
+      Instance instance = InstanceManager.self.getInstance(_player.instanceId);
+      instance.entities.Add(bot);
    }
 
    [Command]
@@ -1588,10 +1627,15 @@ public class RPCManager : NetworkBehaviour {
 
       // Add the player to the Battle
       BattleManager.self.addPlayerToBattle(battle, playerBody, Battle.TeamType.Attackers);
+
+      // Set battle end UI events.
+      battle.onBattleEnded.AddListener(BattleUIManager.self.disableBattleUI);
+
+      BattleUIManager.self.prepareBattleUI();
    }
 
    [Command]
-   public void Cmd_RequestAttack (uint netId, Ability.Type abilityType) {
+   public void Cmd_RequestAttack (uint netId, int abilityInventoryIndex) {
       if (_player == null || !(_player is PlayerBodyEntity)) {
          return;
       }
@@ -1599,8 +1643,11 @@ public class RPCManager : NetworkBehaviour {
       // Look up the player's Battle object
       PlayerBodyEntity playerBody = (PlayerBodyEntity) _player;
       Battle battle = BattleManager.self.getBattle(playerBody.battleId);
-      Ability ability = AbilityManager.getAbility(abilityType);
       Battler sourceBattler = battle.getBattler(_player.userId);
+
+      // Get the ability from the battler abilities.
+      AbilityData abilityData = sourceBattler.getAbilities[abilityInventoryIndex];
+      //Ability ability = AbilityManager.getAbility(abilityType);
 
       Battler targetBattler = null;
 
@@ -1616,20 +1663,20 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Make sure the source battler can use that ability type
-      if (!ability.isReadyForUseBy(sourceBattler)) {
-         D.warning("Battler requested to use ability they're not allowed: " + playerBody.entityName + ", " + abilityType);
+      if (!abilityData.isReadyForUseBy(sourceBattler)) {
+         D.warning("Battler requested to use ability they're not allowed: " + playerBody.entityName + ", " + abilityData.getName());
          return;
       }
 
       // If it's a Melee Ability, make sure the target isn't currently protected
-      if (ability is MeleeAbility && targetBattler.isProtected(battle)) {
+      if (abilityData.isMelee() && targetBattler.isProtected(battle)) {
          D.warning("Battler requested melee ability against protected target! Player: " + playerBody.entityName);
          return;
       }
 
       // Let the Battle Manager handle executing the attack
       List<Battler> targetBattlers = new List<Battler>() { targetBattler };
-      BattleManager.self.executeAttack(battle, sourceBattler, targetBattlers, Ability.Type.Basic_Attack);
+      BattleManager.self.executeAttack(battle, sourceBattler, targetBattlers, abilityInventoryIndex);
    }
 
    [Server]
