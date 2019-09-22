@@ -1547,7 +1547,7 @@ public class RPCManager : NetworkBehaviour {
       bot.facing = Util.randomEnum<Direction>();
       bot.areaType = _player.areaType;
       bot.entityName = enemyType.ToString();
-      bot.monsterType = (int) enemyType;
+      bot.monsterType = enemyType;
       bot.distanceFromSpawnPoint = new Vector2(xVal, yVal);
       bot.variety = (variety);
 
@@ -1570,7 +1570,7 @@ public class RPCManager : NetworkBehaviour {
       bot.facing = Util.randomEnum<Direction>();
       bot.areaType = _player.areaType;
       bot.entityName = enemyType.ToString();
-      bot.monsterType = (int) enemyType;
+      bot.monsterType = enemyType;
 
       // Spawn the bot on the Clients
       NetworkServer.Spawn(bot.gameObject);
@@ -1597,7 +1597,7 @@ public class RPCManager : NetworkBehaviour {
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
       bot.areaType = _player.areaType;
-      bot.monsterType = (int) enemyType;
+      bot.monsterType = enemyType;
       bot.entityName = enemyType.ToString();
 
       // Spawn the bot on the Clients

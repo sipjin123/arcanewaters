@@ -185,7 +185,7 @@ public class SeaMonsterEntity : SeaEntity
       // If this entity is a Minion, snap to its parent
       if (seaMonsterData.roleType == RoleType.Minion && snapToParent) {
          if (seaMonsterParentEntity != null) {
-            Vector2 targetLocation = SeaMonsterUtility.GetRandomPositionAroundPosition(seaMonsterParentEntity.transform.position, distanceFromSpawnPoint);
+            Vector2 targetLocation = SeaMonsterUtility.getRandomPositionAroundPosition(seaMonsterParentEntity.transform.position, distanceFromSpawnPoint);
             Vector2 waypointDirection = targetLocation - (Vector2) this.transform.position;
             waypointDirection = waypointDirection.normalized;
 
