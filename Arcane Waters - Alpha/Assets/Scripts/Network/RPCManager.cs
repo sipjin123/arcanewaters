@@ -1541,21 +1541,21 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_SpawnBossChild (Vector2 spawnPosition, uint horrorEntityID, int xVal, int yVal, int variety, Enemy.Type enemyType) {
+   public void Cmd_SpawnBossChild (Vector2 spawnPosition, uint parentEntityID, int xVal, int yVal, int variety, Enemy.Type enemyType) {
       SeaMonsterEntity bot = Instantiate(PrefabsManager.self.seaMonsterPrefab, spawnPosition, Quaternion.identity);
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
       bot.areaType = _player.areaType;
       bot.entityName = enemyType.ToString();
       bot.monsterType = (int) enemyType;
-      bot.locationSetup = new Vector2(xVal, yVal);
+      bot.distanceFromSpawnPoint = new Vector2(xVal, yVal);
       bot.variety = (variety);
 
       Instance instance = InstanceManager.self.getInstance(_player.instanceId);
-      SeaMonsterEntity horror = instance.entities.Find(_ => _.netId == horrorEntityID).GetComponent<SeaMonsterEntity>();
+      SeaMonsterEntity parentEntity = instance.entities.Find(_ => _.netId == parentEntityID).GetComponent<SeaMonsterEntity>();
 
-      bot.seaMonsterParentEntity = horror;
-      horror.seaMonsterChildrenList.Add(bot);
+      bot.seaMonsterParentEntity = parentEntity;
+      parentEntity.seaMonsterChildrenList.Add(bot);
 
       instance.entities.Add(bot);
 
