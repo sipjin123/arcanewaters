@@ -11,5 +11,6 @@ public enum Element {
    Earth = 2,
    Air = 3,
    Water = 4,
-   Heal = 5
+   Heal = 5,
+   ALL = 6
 }

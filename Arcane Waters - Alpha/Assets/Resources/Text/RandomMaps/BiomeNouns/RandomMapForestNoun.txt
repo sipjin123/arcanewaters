@@ -1,0 +1,4 @@
+glades
+forests
+isles
+wastes

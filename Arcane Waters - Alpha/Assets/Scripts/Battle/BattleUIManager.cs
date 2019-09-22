@@ -174,9 +174,14 @@ public class BattleUIManager : MonoBehaviour {
       playerMainUIHolder.Hide();
       targetEnemyCG.Hide();
       mainPlayerRectCG.Hide();
-      playerStanceFrame.SetActive(false);
-      playerMainUIHolder.gameObject.SetActive(false);
-      setStanceFrameActiveState(false);
+
+      // If any of these are null, then we do not call anything.
+      if (playerStanceFrame != null) {
+         playerStanceFrame.SetActive(false);
+         playerMainUIHolder.gameObject.SetActive(false);
+         setStanceFrameActiveState(false);
+      }
+      
       hideActionStanceFrame();
    }
 
@@ -271,7 +276,9 @@ public class BattleUIManager : MonoBehaviour {
    }
 
    public void hideActionStanceFrame () {
-      stanceActionFrame.SetActive(false);
+      if (stanceActionFrame != null) {
+         stanceActionFrame.SetActive(false);
+      }
    }
 
    #endregion

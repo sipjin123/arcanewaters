@@ -42,7 +42,7 @@ public class BattleManager : MonoBehaviour {
       // Repeatedly call the tick() function for our Battle objects
       InvokeRepeating("tickBattles", 0f, TICK_INTERVAL);
    }
-
+   
    public Battle createBattle (Area area, Instance instance, Enemy enemy, PlayerBodyEntity playerBody) {
       // We need to make a new one
       Battle battle = Instantiate(battlePrefab);
@@ -116,6 +116,7 @@ public class BattleManager : MonoBehaviour {
       return _boards[biomeType];
    }
 
+   // [Server]
    public void addPlayerToBattle (Battle battle, PlayerBodyEntity player, Battle.TeamType teamType) {
       // Maintain a Mapping of which players are in which Battles
       _activeBattles[player.userId] = battle;
@@ -141,6 +142,7 @@ public class BattleManager : MonoBehaviour {
       rebuildObservers(battler, battle);
    }
 
+   // [Server]
    public void addEnemyToBattle (Battle battle, Enemy enemy, Battle.TeamType teamType, PlayerBodyEntity aggressor) {
       // Create a Battler for this Enemy
       MonsterBattler battler = createBattlerForEnemy(battle, enemy, teamType);
@@ -261,9 +263,12 @@ public class BattleManager : MonoBehaviour {
       battler.weaponManager.color2 = player.weaponManager.color2;
 
       // Player battler abilities:
-      // TODO ZERONEV: Right now all player battlers will have the same abilities.
-      // later they will need their own inventories.
-      battler.battlerBaseAbilities = AbilityInventory.self.equippedAbilitiesBPs;
+      // TODO ZERONEV: Right now all player battlers will have the same abilities
+      // later they will need their own inventories
+      battler.baseAttackAbilities = AbilityInventory.self.playerAttackAbilities;
+
+      // Parent fix
+      battler.transform.SetParent(battle.transform, false);
 
       return battler;
    }
@@ -294,6 +299,7 @@ public class BattleManager : MonoBehaviour {
 
       // Actually spawn the Battler as a Network object now
       NetworkServer.Spawn(battler.gameObject);
+      battler.transform.SetParent(battle.transform, false);
 
       return battler;
    }
@@ -344,6 +350,7 @@ public class BattleManager : MonoBehaviour {
 
    #region Attack Execution
 
+   //[System.Obsolete("Use executeBattleAction instead")]
    /// <summary>
    /// Executes an attack
    /// </summary>
@@ -358,7 +365,7 @@ public class BattleManager : MonoBehaviour {
       float timeToWait = battle.getTimeToWait(source, targets);
 
       // Get ability reference from the source battler, cause the source battler is the one executing the ability.
-      BasicAbilityData abilityData = source.getAbilities[abilityInventoryIndex];
+      AttackAbilityData abilityData = source.getAbilities[abilityInventoryIndex];
       //Ability ability = AbilityManager.getAbility(abilityType);
       List<AttackAction> actions = new List<AttackAction>();
 
@@ -434,14 +441,16 @@ public class BattleManager : MonoBehaviour {
       battle.Rpc_SendAttackAction(stringList.ToArray());
    }
 
+   //[System.Obsolete("Use executeBattleAction instead")]
    public void executeBuff (Battle battle, Battler source, List<Battler> targets, int abilityInventoryIndex) {
       bool isMultiTarget = targets.Count > 1;
       float timeToWait = battle.getTimeToWait(source, targets);
       List<BuffAction> actions = new List<BuffAction>();
 
+      // TODO - ZERONEV: Current buffs method are currently disabled. re add it when buff data is finished.
+
       // Get the Ability object and apply the AP change
-      // BuffAbility ability = (BuffAbility) AbilityManager.getAbility(abilityType);
-      BasicAbilityData abilityData = source.getAbilities[abilityInventoryIndex];
+      /*BuffAbilityData abilityData = source.getAbilities[abilityInventoryIndex] as BuffAbilityData;
       int sourceApChange = abilityData.getApChange();
       source.addAP(sourceApChange);
 
@@ -471,7 +480,12 @@ public class BattleManager : MonoBehaviour {
       foreach (BuffAction action in actions) {
          stringList.Add(action.serialize());
       }
-      battle.Rpc_SendBuffAction(stringList.ToArray());
+      battle.Rpc_SendBuffAction(stringList.ToArray());*/
+   }
+
+   // Unified action for a battle action, instead of having "execute buff & executeAttack"
+   public void executeBattleAction(Battle battle, Battler source, List<Battler> targets, int abilityInventoryIndex) {
+      // TODO ZERONEV: This will now be the global method for calling any battle action.
    }
 
    #endregion
@@ -521,9 +535,9 @@ public class BattleManager : MonoBehaviour {
          BattleAction action = (BattleAction) actionToApply;
          Battler target = battle.getBattler(action.targetId);
 
-         // ZERONEV-COMMENT: It is supossed we are still grabbing the ability from the source battler to apply it.
+         // ZERONEV-COMMENT: It is supossed we are still grabbing the ability from the source battler to apply it
          // So we will grab the source battler.
-         BasicAbilityData abilityData = source.getAbilities[action.abilityInventoryIndex];
+         AttackAbilityData abilityData = source.getAbilities[action.abilityInventoryIndex];
 
          // If the source or target is already dead, then send a Cancel Action
          if (source.isDead() || target.isDead()) {

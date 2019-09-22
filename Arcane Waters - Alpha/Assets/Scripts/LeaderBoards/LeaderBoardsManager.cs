@@ -119,7 +119,7 @@ public class LeaderBoardsManager : MonoBehaviour
             /* WEEKLY BOARDS */
 
             // Check if one week has passed since the last calculation
-            if (getTimeLeftUntilRecalculation(Period.Week, lastDailyCalculationDate).Ticks <= 0) {
+            if (getTimeLeftUntilRecalculation(Period.Week, lastWeeklyCalculationDate).Ticks <= 0) {
 
                // Set a new interval of 7 days from the current date backwards
                DateTime endDate = roundedUtcNow;
@@ -132,7 +132,7 @@ public class LeaderBoardsManager : MonoBehaviour
             /* MONTHLY BOARDS */
 
             // Check if one month has passed since the last calculation
-            if (getTimeLeftUntilRecalculation(Period.Month, lastDailyCalculationDate).Ticks <= 0) {
+            if (getTimeLeftUntilRecalculation(Period.Month, lastMonthlyCalculationDate).Ticks <= 0) {
 
                // Set a new interval of 1 month from the current date backwards
                DateTime endDate = roundedUtcNow;
@@ -148,7 +148,6 @@ public class LeaderBoardsManager : MonoBehaviour
    private void calculateBoards (Period period, DateTime startDate, DateTime endDate) {
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-
          // Delete the boards for this time period
          DB_Main.deleteLeaderBoards(period);
 

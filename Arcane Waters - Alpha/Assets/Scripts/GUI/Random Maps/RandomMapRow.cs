@@ -9,11 +9,17 @@ using Mirror;
 public class RandomMapRow : MonoBehaviour {
    #region Public Variables
 
-   // The server name text
-   public Text serverText;
+   // The frame UI reference
+   public Image frameImage;
 
-   // The biome type name and map difficulty text
-   public Text biomeLevelText;
+   // The plaque UI reference
+   public Image plaqueImage;
+
+   // The biome image UI reference
+   public Image biomeImage;
+
+   // The randomized map name based on biome type
+   public Text mapNameText;
 
    // Number of players on given map at given server
    public Text playerCountText;
@@ -27,29 +33,8 @@ public class RandomMapRow : MonoBehaviour {
       // Store for later reference
       this.mapSummary = mapSummary;
 
-      // Update the name displayed
-      serverText.text = mapSummary.serverAddress + ":" + mapSummary.serverPort;
-
-      // Show biome name
-      biomeLevelText.text = mapSummary.biomeType.ToString();
-
       // Set current player count before entering map
-      playerCountText.text = "Players: " + mapSummary.playersCount.ToString() + "/" + mapSummary.maxPlayersCount.ToString();      
-
-      // Fill data based on type
-      switch (mapSummary.areaType) {
-         case Area.Type.SeaRandom_1:
-            biomeLevelText.text += " - Easy";
-            break;
-
-         case Area.Type.SeaRandom_2:
-            biomeLevelText.text += " - Medium";
-            break;
-
-         case Area.Type.SeaRandom_3:
-            biomeLevelText.text += " - Hard";
-            break;
-      }
+      playerCountText.text = mapSummary.playersCount.ToString() + "/" + mapSummary.maxPlayersCount.ToString();
    }
 
    public void joinInstance () {
@@ -73,7 +58,60 @@ public class RandomMapRow : MonoBehaviour {
       return mapSummary.playersCount >= mapSummary.maxPlayersCount;
    }
 
+   public void setPlaqueNames () {
+      // Set plaque based on difficulty - they don't change on hover/pressed
+      plaqueImage.sprite = ImageManager.getSprite(_seaMapPath + "count_plaque_" + getFrameName());
+   }
+
+   public void OnPointerEnter () {
+      // Change frame sprite - HOVERED
+      frameImage.sprite = ImageManager.getSprite(_seaMapPath + getFrameName() + "_frame_hover");
+
+      // Change biome sprite - HOVERED
+      biomeImage.sprite = ImageManager.getSprite(_seaMapPath + getBiomeName() + "_hover");
+   }
+
+   public void OnPointerExit () {
+      // Change frame sprite - DEFAULT
+      frameImage.sprite = ImageManager.getSprite(_seaMapPath + getFrameName() + "_frame_default");
+
+      // Change biome sprite - DEFAULT
+      biomeImage.sprite = ImageManager.getSprite(_seaMapPath + getBiomeName() + "_default");
+   }
+
+   public void OnPointerDown () {
+      // Change frame sprite - PRESSED
+      frameImage.sprite = ImageManager.getSprite(_seaMapPath + getFrameName() + "_frame_pressed");
+
+      // Change biome sprite - PRESSED
+      biomeImage.sprite = ImageManager.getSprite(_seaMapPath + getBiomeName() + "_pressed");
+   }
+
+   public void OnPointerUp () {
+      // Set default sprites
+      OnPointerExit();
+   }
+
+   private string getFrameName() {
+      switch (mapSummary.mapDifficulty) {
+         case MapSummary.MapDifficulty.Easy:
+            return "bronze";
+         case MapSummary.MapDifficulty.Medium:
+            return "silver";
+         case MapSummary.MapDifficulty.Hard:
+            return "gold";
+      }
+      return "";
+   }
+
+   private string getBiomeName () {
+      return mapSummary.biomeType.ToString().ToLower();
+   }
+
    #region Private Variables
+
+   // Path for Sea Random map sprites on UI
+   private string _seaMapPath = "GUI/Sea Random/";
 
    #endregion
 }

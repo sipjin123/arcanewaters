@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEditor;
 using System.IO;
+using System.Collections.Generic;
 
 // Christopher Palacios
 
@@ -33,7 +34,7 @@ namespace ItemEditor
          _builderTypeText = (_battleItemType == BattleItemType.Ability) ? "Ability" : "Weapon";
          _builderFolder = (_battleItemType == BattleItemType.Ability) ? "Abilities" : "Weapons";
 
-         if(_battleItemType == BattleItemType.UNDEFINED) {
+         if (_battleItemType == BattleItemType.UNDEFINED) {
             ItemEditorLayout.header("ITEM BUILDER - " + "Select an item type");
 
          } else {
@@ -42,6 +43,12 @@ namespace ItemEditor
 
          string editMsg = isItemInSlot ? "Editing item..." : "Drag or select an item to edit";
          EditorGUILayout.LabelField(editMsg, GUILayout.MinWidth(100));
+
+         if(GUILayout.Button("Check all item IDs")){
+            string[] guids = AssetDatabase.FindAssets(" t:BattleItemData", new[] { "Assets/CreatedItems/Abilities" });
+
+            checkForDuplicatedIDs(guids);
+         }
 
          _itemToEdit = (BattleItemData) EditorGUILayout.ObjectField(_itemToEdit, typeof(BattleItemData), true);
 
@@ -52,9 +59,10 @@ namespace ItemEditor
          EditorGUILayout.BeginHorizontal("box");
          EditorGUILayout.BeginVertical();
 
+         _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition, false, false);
          drawDefault();
 
-         // Item in slot to edit, we fill the data to the item we placed in the slot.
+         // Item in slot to edit, we fill the data to the item we placed in the slot
          if (_itemToEdit != null) {
             if (isItemInSlot) {
                if (_lastPlacedItemID != _itemToEdit.getItemID()) {
@@ -70,7 +78,17 @@ namespace ItemEditor
                   switch (_itemToEdit.getBattleItemType()) {
                      case BattleItemType.Ability:
                         _battleItemType = BattleItemType.Ability;
-                        setAbilityItemValues((BasicAbilityData) _itemToEdit);
+                        setBasicAbilityItemValues((BasicAbilityData) _itemToEdit);
+
+                        switch (_abilityType) {
+                           case AbilityType.Standard:
+                              setAttackAbilityItemValues((AttackAbilityData) _itemToEdit);
+                              break;
+                           case AbilityType.BuffDebuff:
+                              setBuffAbilityItemValues((BuffAbilityData) _itemToEdit);
+                              break;
+                        }
+
                         break;
                      case BattleItemType.Weapon:
                         _battleItemType = BattleItemType.Weapon;
@@ -90,37 +108,62 @@ namespace ItemEditor
 
          switch (_battleItemType) {
             case BattleItemType.Ability:
-               drawAllAbilityBlocks();
+               drawAllBasicAbilityBlocks();
                break;
             case BattleItemType.Weapon:
                drawWeaponBlock();
                break;
          }
 
-         if (GUILayout.Button("Build " + _builderTypeText)) {
-            // Basic data set
-            BattleItemData basicData = BattleItemData.CreateInstance(_itemID, _itemName, _itemDesc, _itemDamage, _itemElementType, _hitAudioClip,
-                _hitParticle, _battleItemType, _itemIcon, _levelRequirement);
+         if (_battleItemType != BattleItemType.UNDEFINED) {
+            if (GUILayout.Button("Build " + _builderTypeText)) {
 
-            switch (_battleItemType) {
-               case BattleItemType.Ability:
+               // Item ID validation.
+               if (_itemID.Equals(-1)) {
+                  if (EditorUtility.DisplayDialog("Invalid item ID", "Please select a positive item ID", "Ok", "Ignore")) {
+                     return;
+                  }
+               }
 
-                  BasicAbilityData newAbility = BasicAbilityData.CreateInstance(basicData, _abilityCost, _abilityCanBeBlocked,
-                      _abilityCastParticle, _abilityCastAudioclip, abilityAllowedStances, _classRequirement, _abilityType, 
-                      _cooldown, _hasKnockup, _hasShake, _apChange);
+               // Basic data set
+               BattleItemData basicData = BattleItemData.CreateInstance(_itemID, _itemName, _itemDesc, _itemElementType, _hitAudioClip,
+                   _hitParticle, _battleItemType, _itemIcon, _levelRequirement);
 
-                  createAbilityAsset(_builderFolder, newAbility);
+               switch (_battleItemType) {
+                  case BattleItemType.Ability:
+                     /*BasicAbilityData newAbility = BasicAbilityData.CreateInstance(basicData, _abilityCost, _abilityCanBeBlocked,
+                         _abilityCastParticle, _abilityCastAudioclip, abilityAllowedStances, _classRequirement, _abilityType,
+                         _cooldown, _hasKnockup, _hasShake, _apChange);*/
 
-                  break;
-               case BattleItemType.Weapon:
+                     BasicAbilityData basicAbilityData = BasicAbilityData.CreateInstance(basicData, _abilityCost, _abilityCastParticle,
+                        _abilityCastAudioclip, abilityAllowedStances, _classRequirement, _abilityType, _cooldown, _apChange);
 
-                  WeaponData newWeapon = WeaponData.CreateInstance(basicData, _classRequirement, _primaryColor, _secondaryColor);
-                  createWeaponAsset(_builderFolder, newWeapon);
+                     switch (_abilityType) {
+                        case AbilityType.Standard:
+                           AttackAbilityData newAttackAbility = AttackAbilityData.CreateInstance(basicAbilityData, _hasKnockup, _itemDamage, _hasShake,
+                              _abilityActionType, _abilityCanBeBlocked);
 
-                  break;
+                           createAttackAbilityAsset(_builderFolder, newAttackAbility);
+                           break;
+
+                        case AbilityType.BuffDebuff:
+                           BuffAbilityData newBuffAbility = BuffAbilityData.CreateInstance(basicAbilityData, _buffDuration, _buffType,
+                              _buffActionType, _buffIcon, _buffValue);
+
+                           createBuffAbilityAsset(_builderFolder, newBuffAbility);
+                           break;
+                     }
+
+                     break;
+                  case BattleItemType.Weapon:
+                     WeaponData newWeapon = WeaponData.CreateInstance(basicData, _classRequirement, _primaryColor, _secondaryColor, _itemDamage);
+                     createWeaponAsset(_builderFolder, newWeapon);
+                     break;
+               }
             }
          }
 
+         EditorGUILayout.EndScrollView();
          EditorGUILayout.EndHorizontal();
          EditorGUILayout.EndVertical();
       }
@@ -129,34 +172,32 @@ namespace ItemEditor
          EditorGUILayout.BeginHorizontal("box");
 
          ItemEditorLayout.centeredLabel("Item ID");
-         _itemID = EditorGUILayout.IntField(_itemID, GUILayout.MinWidth(20), GUILayout.MaxWidth(132));
+         _itemID = EditorGUILayout.IntField(_itemID, GUILayout.MinWidth(20), GUILayout.MaxWidth(60));
 
          ItemEditorLayout.centeredLabel("Item Name");
          _itemName = EditorGUILayout.TextArea(_itemName, GUILayout.MinWidth(20));
 
          EditorGUILayout.EndHorizontal();
 
+         EditorGUILayout.Space();
+
+         ItemEditorLayout.centeredLabel("Item Description");
+         _itemDesc = EditorGUILayout.TextArea(_itemDesc, GUILayout.MinWidth(20), GUILayout.MinHeight(60));
+
+         EditorGUILayout.Space();
+
          EditorGUILayout.BeginHorizontal("box");
+
+         ItemEditorLayout.centeredLabel("Level requirement");
+         _levelRequirement = EditorGUILayout.IntField(_levelRequirement, GUILayout.MinWidth(20), GUILayout.MaxWidth(60));
 
          ItemEditorLayout.centeredLabel("Item Icon");
          _itemIcon = (Sprite) EditorGUILayout.ObjectField(_itemIcon, typeof(Sprite), true, GUILayout.MaxWidth(120));
 
-         ItemEditorLayout.centeredLabel("Item Damage");
-         _itemDamage = EditorGUILayout.IntField(_itemDamage, GUILayout.MinWidth(20));
+         ItemEditorLayout.centeredLabel("Item Element");
+         _itemElementType = (Element) EditorGUILayout.EnumPopup(_itemElementType);
 
          EditorGUILayout.EndHorizontal();
-         EditorGUILayout.Space();
-
-         EditorGUILayout.PrefixLabel("Level requirement");
-         _levelRequirement = EditorGUILayout.IntField(_levelRequirement, GUILayout.MinWidth(20));
-         EditorGUILayout.Space();
-
-         EditorGUILayout.PrefixLabel("Item Description");
-         _itemDesc = EditorGUILayout.TextArea(_itemDesc, GUILayout.MinWidth(20), GUILayout.MinHeight(40));
-         EditorGUILayout.Space();
-
-         EditorGUILayout.PrefixLabel("Item Element");
-         _itemElementType = (Element) EditorGUILayout.EnumPopup(_itemElementType);
          EditorGUILayout.Space();
 
          EditorGUILayout.PrefixLabel("Hit Parameters");
@@ -178,8 +219,14 @@ namespace ItemEditor
 
          EditorGUILayout.Space();
 
+         if (_battleItemType == BattleItemType.UNDEFINED) {
+            ItemEditorLayout.horizontalHelpbox(() => {
+               EditorGUILayout.HelpBox("Please select an item type to build", MessageType.Warning);
+            });
+         }
+
          if (_battleItemType == BattleItemType.Ability) {
-            // Prepare item array.
+            // Prepare item array
             ItemBuilderWindow target = this;
             SerializedObject so = new SerializedObject(target);
             SerializedProperty stancesProperties = so.FindProperty("abilityAllowedStances");
@@ -223,29 +270,35 @@ namespace ItemEditor
          _cooldown = EditorGUILayout.FloatField(_cooldown, GUILayout.MaxWidth(40));
       }
 
-      private void drawAbilitySecondBlock() {
-         ItemEditorLayout.centeredLabel("Can be blocked");
-         _abilityCanBeBlocked = EditorGUILayout.Toggle(_abilityCanBeBlocked, GUILayout.MaxWidth(40));
-
-         ItemEditorLayout.centeredLabel("Has Knockup");
-         _hasKnockup = EditorGUILayout.Toggle(_hasKnockup, GUILayout.MaxWidth(40));
-
-         ItemEditorLayout.centeredLabel("Has Shake");
-         _hasKnockup = EditorGUILayout.Toggle(_hasKnockup, GUILayout.MaxWidth(40));
-      }
-
-      private void drawAbilityThirdBlock () {
+      private void drawAbilitySecondBlock () {
          ItemEditorLayout.centeredLabel("Cast audioclip");
          _abilityCastAudioclip = (AudioClip) EditorGUILayout.ObjectField(_abilityCastAudioclip, typeof(AudioClip), true);
 
          ItemEditorLayout.centeredLabel("Cast Particle");
          _abilityCastParticle = (ParticleSystem) EditorGUILayout.ObjectField(_abilityCastParticle, typeof(ParticleSystem), true);
-
-         ItemEditorLayout.centeredLabel("Ability Type");
-         _abilityType = (AbilityType) EditorGUILayout.EnumPopup(_abilityType, GUILayout.MaxWidth(120));
       }
 
-      private void drawAllAbilityBlocks () {
+      private void drawAbilityThirdBlock () {
+         EditorGUILayout.BeginVertical("box");
+
+         ItemEditorLayout.centeredLabel("Ability Type");
+         _abilityType = (AbilityType) EditorGUILayout.EnumPopup(_abilityType);
+
+         switch (_abilityType) {
+            // Fill the remaining blocks with the standard ability (attack)
+            case AbilityType.Standard:
+               drawAllAttackAbilityBlocks();
+               break;
+            // Fill the remaining blocks with a buff/debuff ability
+            case AbilityType.BuffDebuff:
+               drawAllBuffDebuffBlocks();
+               break;
+         }
+
+         EditorGUILayout.EndVertical();
+      }
+
+      private void drawAllBasicAbilityBlocks () {
          EditorGUILayout.BeginVertical("box");
 
          EditorGUILayout.Space();
@@ -260,6 +313,80 @@ namespace ItemEditor
          EditorGUILayout.EndVertical();
       }
 
+      private void drawAllAttackAbilityBlocks () {
+         EditorGUILayout.BeginVertical("box");
+
+         EditorGUILayout.PrefixLabel("Standard Ability");
+
+         EditorGUILayout.Space();
+
+         EditorGUILayout.BeginHorizontal();
+
+         ItemEditorLayout.centeredLabel("Action Type");
+         _abilityActionType = (AbilityActionType) EditorGUILayout.EnumPopup(_abilityActionType, GUILayout.MaxWidth(120));
+
+         ItemEditorLayout.centeredLabel("Item Damage");
+         _itemDamage = EditorGUILayout.IntField(_itemDamage, GUILayout.MinWidth(20));
+
+         EditorGUILayout.EndHorizontal();
+
+         EditorGUILayout.Space();
+
+         EditorGUILayout.BeginHorizontal();
+
+         ItemEditorLayout.centeredLabel("Can be blocked");
+         _abilityCanBeBlocked = EditorGUILayout.Toggle(_abilityCanBeBlocked, GUILayout.MaxWidth(40));
+
+         ItemEditorLayout.centeredLabel("Has Knockup");
+         _hasKnockup = EditorGUILayout.Toggle(_hasKnockup, GUILayout.MaxWidth(40));
+
+         ItemEditorLayout.centeredLabel("Has Shake");
+         _hasShake = EditorGUILayout.Toggle(_hasShake, GUILayout.MaxWidth(40));
+
+         EditorGUILayout.EndHorizontal();
+
+         EditorGUILayout.Space();
+
+         EditorGUILayout.EndVertical();
+      }
+
+      private void drawAllBuffDebuffBlocks () {
+         EditorGUILayout.BeginVertical("box");
+
+         EditorGUILayout.PrefixLabel("Buffs & Debuffs");
+
+         EditorGUILayout.Space();
+
+         EditorGUILayout.BeginHorizontal();
+
+         ItemEditorLayout.centeredLabel("Action Type");
+         _buffActionType = (BuffActionType) EditorGUILayout.EnumPopup(_buffActionType, GUILayout.MinWidth(20));
+
+         ItemEditorLayout.centeredLabel("Type");
+         _buffType = (BuffType) EditorGUILayout.EnumPopup(_buffType, GUILayout.MinWidth(20));
+
+         EditorGUILayout.EndHorizontal();
+
+         EditorGUILayout.Space();
+
+         EditorGUILayout.BeginHorizontal();
+
+         ItemEditorLayout.centeredLabel("Icon");
+         _buffIcon = (Sprite) EditorGUILayout.ObjectField(_buffIcon, typeof(Sprite), true);
+
+         ItemEditorLayout.centeredLabel("Duration");
+         _buffDuration = EditorGUILayout.FloatField(_buffDuration, GUILayout.MinWidth(20));
+
+         ItemEditorLayout.centeredLabel("Value");
+         _buffValue = EditorGUILayout.IntField(_buffValue, GUILayout.MinWidth(20));
+
+         EditorGUILayout.EndHorizontal();
+
+         EditorGUILayout.Space();
+
+         EditorGUILayout.EndVertical();
+      }
+      
       private void setMainItemValues (BattleItemData item) {
          BattleItemType itemType = item.getBattleItemType();
 
@@ -268,31 +395,47 @@ namespace ItemEditor
          _itemID = item.getItemID();
          _itemIcon = item.getItemIcon();
 
-         _itemDamage = item.getBaseDamage();
          _itemElementType = item.getElementType();
 
          _hitAudioClip = item.getHitAudioClip();
          _hitParticle = item.getHitParticle();
          _classRequirement = item.getClassRequirement();
       }
-
-      private void setAbilityItemValues (BasicAbilityData item) {
+      
+      private void setBasicAbilityItemValues (BasicAbilityData item) {
          _abilityCost = item.getAbilityCost();
-         _abilityCanBeBlocked = item.getBlockStatus();
 
          _abilityCastParticle = item.getCastParticle();
          _abilityCastAudioclip = item.getCastAudioClip();
 
          abilityAllowedStances = item.getAllowedStances();
+         _apChange = item.getApChange();
+
+         _abilityType = item.getAbilityType();
+      }
+
+      private void setAttackAbilityItemValues (AttackAbilityData item) {
+         _abilityCanBeBlocked = item.getBlockStatus();
+         _itemDamage = item.getBaseDamage();
+         _hasShake = item.hasShake();
+         _hasKnockup = item.hasKnockup();
+         _abilityActionType = item.getAbilityActionType();
+      }
+
+      private void setBuffAbilityItemValues (BuffAbilityData item) {
+         _buffDuration = item.getBuffDuration();
+         _buffIcon = item.getBuffIcon();
+         _buffType = item.getBuffType();
+         _buffValue = item.getBuffValue();
       }
 
       private void cleanInputs () {
          _itemName = string.Empty;
          _itemDesc = string.Empty;
 
-         // Basic Item Values, all weapons and abilities have a name and description.
+         // Basic Item Values, all weapons and abilities have a name and description
          _itemName = "NewItem";
-         _itemDesc = "Item new Description";
+         _itemDesc = "new item description";
          _itemID = -1;
          _itemIcon = null;
 
@@ -309,19 +452,66 @@ namespace ItemEditor
          _abilityCanBeBlocked = true;
          _abilityCastParticle = null;
          _abilityCastAudioclip = null;
-
          _cooldown = 4;
          _hasShake = false;
          _hasKnockup = false;
          _apChange = 3;
+         _abilityActionType = AbilityActionType.UNDEFINED;
+         _abilityType = AbilityType.Standard;
+
+         // Buff/Debuff parameters
+         _buffActionType = BuffActionType.UNDEFINED;
+         _buffType = BuffType.UNDEFINED;
+         _buffIcon = null;
+         _buffDuration = 12;
+         _buffValue = 10;
 
          // Weapon parameters
          _primaryColor = ColorType.Black;
          _secondaryColor = ColorType.Black;
       }
 
-      public static void createAbilityAsset (string folder, BasicAbilityData itemToBuild) {
-         BasicAbilityData asset = BasicAbilityData.CreateInstance(itemToBuild);
+      // Just a very basic verification, for checking if we have abilities that have the same ID
+      private static void checkForDuplicatedIDs (string[] guids) {
+         List<int> occupiedIDs = new List<int>();
+
+         foreach (string guid in guids) {
+            BattleItemData dataAsset = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guid), typeof(BattleItemData)) as BattleItemData;
+
+            if (occupiedIDs.Contains(dataAsset.getItemID())) {
+               string msg = "Duplicated item ID found, same item ID assets will and can cause problems in the game," +
+                  " please select duplicated item and change its ID to a different one.";
+
+               if (EditorUtility.DisplayDialog("Duplicated Item ID Found", msg, "Yes, select duplicated ID asset", "Ignore")) {
+                  EditorUtility.FocusProjectWindow();
+                  Selection.activeObject = dataAsset;
+               }
+            } else {
+               occupiedIDs.Add(dataAsset.getItemID());
+            }
+         }
+      }
+
+      // Full check for duplicated IDs if no asset paths are given
+      private static void checkForDuplicatedIDs () {
+         string[] guids = AssetDatabase.FindAssets(" t:BattleItemData", new[] { "Assets/CreatedItems/Abilities" });
+
+         checkForDuplicatedIDs(guids);
+      }
+
+      public static void createAttackAbilityAsset (string folder, AttackAbilityData itemToBuild) {
+         AttackAbilityData asset = AttackAbilityData.CreateInstance(itemToBuild);
+
+         string path = "Assets/CreatedItems/" + folder;
+         string assetPathAndName = path + "/" + asset.getName() + ".asset";
+
+         EditorUtility.SetDirty(asset);
+
+         createFinalAsset(asset, assetPathAndName, asset.getName());
+      }
+
+      public static void createBuffAbilityAsset (string folder, BuffAbilityData itemToBuild) {
+         BuffAbilityData asset = BuffAbilityData.CreateInstance(itemToBuild);
 
          string path = "Assets/CreatedItems/" + folder;
          string assetPathAndName = path + "/" + asset.getName() + ".asset";
@@ -362,29 +552,30 @@ namespace ItemEditor
          }
       }
 
-      private bool isItemInSlot{
+      private bool isItemInSlot
+      {
          get { return _itemToEdit != null; }
       }
 
-      private BattleItemType typeInSlot{
+      private BattleItemType typeInSlot
+      {
          get { return _itemToEdit.getBattleItemType(); }
       }
 
       private void OnDestroy () {
          _onRemovedItem.RemoveAllListeners();
-         Debug.Log("removed events");
       }
 
       #region Private Variables
 
-      // Callback called whenever we have removed an item from the editor window.
+      // Callback called whenever we have removed an item from the editor window
       UnityEvent _onRemovedItem = new UnityEvent();
 
       // All variables below are just store temporarily the information that we are filling inside the editor window
 
-      // Very basic BattleItemData that all items have.
+      // Very basic BattleItemData that all items have
       private string _itemName = "ItemName";
-      private string _itemDesc = "ItemDescription";
+      private string _itemDesc = "New item description - (This is a great item)";
       private int _itemID = -1;
       private int _levelRequirement = -1;
       private Sprite _itemIcon;
@@ -396,7 +587,7 @@ namespace ItemEditor
       private ParticleSystem _hitParticle;
       private BattleItemType _battleItemType = BattleItemType.UNDEFINED;
 
-      // The class that the player needs to be to be able to use this item.
+      // The class that the player needs to be to be able to use this item
       private Weapon.Class _classRequirement = Weapon.Class.Any;
 
       // Basic AbilityData combat values
@@ -404,32 +595,43 @@ namespace ItemEditor
       private bool _abilityCanBeBlocked = true;
       private ParticleSystem _abilityCastParticle;
       private AudioClip _abilityCastAudioclip;
-      private AbilityType _abilityType = AbilityType.UNDEFINED;
+      private AbilityActionType _abilityActionType = AbilityActionType.UNDEFINED;
+      private AbilityType _abilityType = AbilityType.Standard;
       private float _cooldown = 4;
       private bool _hasShake = true;
       private bool _hasKnockup = false;
       private int _apChange = 3;
 
+      // Buff ability parameters
+      private BuffActionType _buffActionType;
+      private BuffType _buffType;
+      private Sprite _buffIcon;
+      private float _buffDuration;
+      private int _buffValue;
+
       // Basic Weapon parameters
       private ColorType _primaryColor = ColorType.Black;
       private ColorType _secondaryColor = ColorType.Black;
 
-      // Used for setting the message of what we are building in the editor window.
+      // Used for setting the message of what we are building in the editor window
       private string _builderTypeText;
 
-      // Folder that we will place the created asset.
+      // Folder that we will place the created asset
       private string _builderFolder;
 
-      // Flags used only for telling whenever we have switched an item directly in the item editor window. 
-      // And adjust the values again for the new item.
+      // Flags used only for telling whenever we have switched an item directly in the item editor window
+      // And adjust the values again for the new item
       private bool _hasPlacedItem = false;
       private int _lastPlacedItemID = -99;
 
-      // Item that it is inside the "Edit item" object field.
+      // Item that it is inside the "Edit item" object field
       private BattleItemData _itemToEdit = null;
 
-      // Reference to the ItemBuilder window.
+      // Reference to the ItemBuilder window
       private static ItemBuilderWindow _window;
+
+      // Used for handling the scrollbar in the window
+      private Vector2 _scrollPosition = Vector2.zero;
 
       #endregion
    }

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -109,12 +109,14 @@ public static class ExtensionsUtil {
    }
 
    public static void Show (this CanvasGroup canvasGroup, bool blocksRaycasts = true) {
+      if (canvasGroup == null) { return; }
       canvasGroup.interactable = true;
       canvasGroup.alpha = 1f;
       canvasGroup.blocksRaycasts = blocksRaycasts;
    }
 
    public static void Hide (this CanvasGroup canvasGroup) {
+      if(canvasGroup == null) { return; }
       canvasGroup.interactable = false;
       canvasGroup.alpha = 0f;
       canvasGroup.blocksRaycasts = false;

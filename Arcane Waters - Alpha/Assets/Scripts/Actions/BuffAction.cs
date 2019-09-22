@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
+/// <summary>
+/// Networked battle action.
+/// </summary>
 public class BuffAction : BattleAction {
    #region Public Variables
 

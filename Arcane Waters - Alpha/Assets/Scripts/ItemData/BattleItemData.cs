@@ -15,7 +15,6 @@ public class BattleItemData : ScriptableObject
    protected void setDescription (string value) { _abilityDescription = value; }
    protected void setLevelRequirement (int value) { _levelRequirement = value; }
    protected void setItemElement (Element value) { _elementType = value; }
-   protected void setItemDamage (int value) { _baseDamage = value; }
    protected void setHitAudioClip (AudioClip value) { _hitAudioClip = value; }
    protected void setHitParticle (ParticleSystem value) { _hitParticle = value; }
    protected void setBattleItemType (BattleItemType value) { _battleItemType = value; }
@@ -27,7 +26,7 @@ public class BattleItemData : ScriptableObject
    public int getItemID () { return _itemID; }
    public string getDescription () { return _abilityDescription; }
    public int getLevelRequirement () { return _levelRequirement; }
-   public int getBaseDamage () { return _baseDamage; }
+   
    public Element getElementType () { return _elementType; }
    public AudioClip getHitAudioClip () { return _hitAudioClip; }
    public ParticleSystem getHitParticle () { return _hitParticle; }
@@ -40,7 +39,7 @@ public class BattleItemData : ScriptableObject
    /// </summary>
    /// <returns> Newly created battle item data, not to be used in game
    /// this data needs to be used to create an ability or a weapon. </returns>
-   public static BattleItemData CreateInstance (int itemID, string name, string desc, int baseDmg, Element elemType,
+   public static BattleItemData CreateInstance (int itemID, string name, string desc, Element elemType,
        AudioClip hitClip, ParticleSystem hitParticle, BattleItemType battleItemType, Sprite itemIcon, int levelRequirement) {
       BattleItemData data = CreateInstance<BattleItemData>();
 
@@ -48,8 +47,7 @@ public class BattleItemData : ScriptableObject
       data.setDescription(desc);
       data.setItemID(itemID);
       data.setLevelRequirement(levelRequirement);
-
-      data.setItemDamage(baseDmg);
+      
       data.setItemElement(elemType);
 
       data.setHitAudioClip(hitClip);
@@ -75,7 +73,6 @@ public class BattleItemData : ScriptableObject
    [SerializeField] private int _levelRequirement;
 
    // Main combat data that this item holds
-   [SerializeField] private int _baseDamage;
    [SerializeField] private Element _elementType;
    [SerializeField] private AudioClip _hitAudioClip;
    [SerializeField] private ParticleSystem _hitParticle;
@@ -95,14 +92,3 @@ public enum BattleItemType
    Ability = 1,
    Weapon = 2
 }
-
-/*public enum ItemElementType
-{
-   UNDEFINED = 0,
-   Physical = 1,
-   Fire = 2,
-   Earth = 3,
-   Air = 4,
-   Water = 5,
-   Heal = 6
-}*/

@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d16b6aeddee40846b5ec15ac472c2bb, type: 3}
+  m_Name: CancelAbility
+  m_EditorClassIdentifier: 
+  _itemID: 5
+  _abilityName: CancelAbility
+  _abilityDescription: Used only as cancel ability, never used directly in any inventory.
+  _itemIcon: {fileID: 0}
+  _levelRequirement: 1
+  _elementType: 0
+  _hitAudioClip: {fileID: 0}
+  _hitParticle: {fileID: 0}
+  _classRequirement: 0
+  _battleItemType: 1
+  _castParticle: {fileID: 0}
+  _castAudioClip: {fileID: 0}
+  _allowedStances: 010000000000000002000000
+  _abilityType: 0
+  _abilityCooldown: 4
+  _apChange: 3
+  _abilityCost: 10
+  _baseDamage: 0
+  _hasShake: 0
+  _hasKnockup: 0
+  _abilityActionType: 4
+  _canBeBlocked: 0

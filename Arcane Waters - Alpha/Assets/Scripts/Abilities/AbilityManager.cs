@@ -88,7 +88,7 @@ public class AbilityManager : MonoBehaviour {
 
          // Get the ability object for this action
          //Ability ability = getAbility(action.abilityType);
-         BasicAbilityData abilityData = sourceBattler.getAbilities[action.abilityInventoryIndex];
+         AttackAbilityData abilityData = sourceBattler.getAbilities[action.abilityInventoryIndex];
 
          // Check how long we need to wait before displaying this action
          float timeToWait = action.actionEndTime - Util.netTime() - abilityData.getTotalAnimLength(sourceBattler, targetBattler);
@@ -140,8 +140,13 @@ public class AbilityManager : MonoBehaviour {
    // Prepares all game abilities
    private void initAllGameAbilities () {
       foreach (BasicAbilityData ability in allGameAbilities) {
-         BasicAbilityData newInstance = BasicAbilityData.CreateInstance(ability);
-         _allAbilities.Add(newInstance);
+         if (ability.getAbilityType() == AbilityType.Standard) {
+            AttackAbilityData newInstance = AttackAbilityData.CreateInstance((AttackAbilityData) ability);
+            _allAbilities.Add(newInstance);
+         } else {
+            BuffAbilityData newInstance = BuffAbilityData.CreateInstance((BuffAbilityData) ability);
+            _allAbilities.Add(newInstance);
+         }
       }
    }
 
@@ -150,7 +155,7 @@ public class AbilityManager : MonoBehaviour {
    /// </summary>
    /// <param name="abilityGlobalID"></param>
    /// <returns></returns>
-   public static BasicAbilityData getAbility(int abilityGlobalID) {
+   public static BasicAbilityData getAbility (int abilityGlobalID) {
 
       for (int i = 0; i < self._allAbilities.Count; i++) {
          if (self._allAbilities[i].getItemID().Equals(abilityGlobalID)) {

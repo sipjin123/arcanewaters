@@ -20,6 +20,14 @@ public class Instance : NetworkBehaviour
    [SyncVar]
    public Biome.Type biomeType = Biome.Type.None;
 
+   // The difficulty of created map (only for random maps)
+   [SyncVar]
+   public MapSummary.MapDifficulty mapDifficulty = MapSummary.MapDifficulty.None;
+
+   // The seed used for making based on pseudo-random numbers on clients
+   [SyncVar]
+   public int mapSeed;
+
    // The list of Entities in this instance (server only)
    public List<NetworkBehaviour> entities = new List<NetworkBehaviour>();
 
@@ -105,7 +113,7 @@ public class Instance : NetworkBehaviour
    }
 
    public MapSummary getMapSummary () {
-      return new MapSummary(this.serverAddress, this.serverPort, this.areaType, this.biomeType, getPlayerCount(), getMaxPlayers());
+      return new MapSummary(this.serverAddress, this.serverPort, this.areaType, this.biomeType, getPlayerCount(), getMaxPlayers(), this.mapDifficulty, this.mapSeed);
    }
 
    public void removeEntityFromInstance (NetworkBehaviour entity) {

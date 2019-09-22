@@ -68,12 +68,12 @@ public class BattleSelectionManager : MonoBehaviour {
             if (bounds.Contains(clickLocation) && !battler.isDead()) {
                clickedBattler = true;
 
-               // Check if the newly selected battler is the same as the previous one, we deselect it.
+               // Check if the newly selected battler is the same as the previous one, we deselect it
                if (selectedBattler == battler) {
                   selectedBattler.deselectThis();
                   selectedBattler = null;
                } else {
-                  //If it is another battler
+                  // If it is another battler
                   if (selectedBattler != null) {
                      selectedBattler.deselectThis();
                   }
