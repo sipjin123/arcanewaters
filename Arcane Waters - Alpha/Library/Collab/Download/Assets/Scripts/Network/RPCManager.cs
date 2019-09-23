@@ -1612,8 +1612,7 @@ public class RPCManager : NetworkBehaviour {
       Battler sourceBattler = battle.getBattler(_player.userId);
 
       // Get the ability from the battler abilities.
-      BasicAbilityData abilityData = sourceBattler.getAbilities[abilityInventoryIndex];
-      //Ability ability = AbilityManager.getAbility(abilityType);
+      AttackAbilityData abilityData = sourceBattler.getAbilities[abilityInventoryIndex];
 
       Battler targetBattler = null;
 

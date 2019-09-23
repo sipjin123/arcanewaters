@@ -149,6 +149,7 @@
     <Compile Include="Assets\Photon Unity Networking\UtilityScripts\PhotonPlayer\Editor\PunTeamsInspector.cs" />
     <Compile Include="Assets\Scripts\Editor\EditorMonitor.cs" />
     <Compile Include="Assets\Scripts\Editor\EditorUtil.cs" />
+    <Compile Include="Assets\Scripts\Editor\FindMissingScriptsRecursively.cs" />
     <Compile Include="Assets\Scripts\Editor\MapGenerator.cs" />
     <Compile Include="Assets\Scripts\Editor\MaterialInstancer.cs" />
     <Compile Include="Assets\Scripts\Editor\MinimapCreator.cs" />

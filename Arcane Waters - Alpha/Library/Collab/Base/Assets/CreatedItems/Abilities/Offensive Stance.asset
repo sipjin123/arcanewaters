@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 061e032e9f530dc45a97ee3417836da5, type: 3}
+  m_Name: Offensive Stance
+  m_EditorClassIdentifier: 
+  _itemID: 11
+  _abilityName: Offensive Stance
+  _abilityDescription: switches to an offensive stance
+  _itemIcon: {fileID: 21300000, guid: 3ffb3a89f6f8d5b468629918e8afb1ed, type: 3}
+  _levelRequirement: -1
+  _baseDamage: 0
+  _elementType: 0
+  _hitAudioClip: {fileID: 0}
+  _hitParticle: {fileID: 0}
+  _classRequirement: 0
+  _battleItemType: 1
+  _abilityCost: 0
+  _canBeBlocked: 0
+  _castParticle: {fileID: 0}
+  _castAudioClip: {fileID: 0}
+  _allowedStances: 010000000000000002000000
+  _abilityType: 5
+  _abilityCooldown: 10
+  _hasShake: 0
+  _hasKnockup: 0
+  _apChange: 0

@@ -112,18 +112,6 @@ public class BattleManager : MonoBehaviour {
       return getBattler(Global.player.userId);
    }
 
-   public BattleBoard getBattleBoardForBattler (Battler battler) {
-      // Cycle over all of our Battle Boards
-      foreach (BattleBoard battleBoard in _boards.Values) {
-         // Check for one that contains the Battler position
-         if (Vector2.Distance(battleBoard.transform.position, battler.transform.position) <= 5f) {
-            return battleBoard;
-         }
-      }
-
-      return null;
-   }
-
    public BattleBoard getBattleBoard (Biome.Type biomeType) {
       return _boards[biomeType];
    }
@@ -138,9 +126,6 @@ public class BattleManager : MonoBehaviour {
       // Create a Battler for this Player
       Battler battler = createBattlerForPlayer(battle, player, teamType);
       BattleManager.self.storeBattler(battler);
-
-      // Initialize player battler abilities.
-      battler.initAbilities();
 
       // Add the Battler to the Battle
       if (teamType == Battle.TeamType.Attackers) {
@@ -160,8 +145,6 @@ public class BattleManager : MonoBehaviour {
       // Create a Battler for this Enemy
       MonsterBattler battler = createBattlerForEnemy(battle, enemy, teamType);
 
-      // Initialize enemy abilities
-      battler.initAbilities();
       BattleManager.self.storeBattler(battler);
 
       // Add the Battler to the Battle
@@ -202,8 +185,6 @@ public class BattleManager : MonoBehaviour {
          NetworkServer.Destroy(battler.gameObject);
       }
 
-      battle.onBattleEnded.Invoke();
-
       // Destroy the Battle from the Network
       NetworkServer.Destroy(battle.gameObject);
    }
@@ -242,6 +223,7 @@ public class BattleManager : MonoBehaviour {
       battler.userId = player.userId;
       battler.battleId = battle.battleId;
       battler.teamType = teamType;
+      battler.biomeType = battle.biomeType;
       battler.transform.SetParent(battle.transform);
 
       // Copy the layer data
@@ -279,8 +261,9 @@ public class BattleManager : MonoBehaviour {
       battler.weaponManager.color2 = player.weaponManager.color2;
 
       // Player battler abilities:
+      // TODO ZERONEV: Right now all player battlers will have the same abilities.
+      // later they will need their own inventories.
       battler.battlerBaseAbilities = AbilityInventory.self.equippedAbilitiesBPs;
-      battler.initAbilities();
 
       return battler;
    }
@@ -308,14 +291,6 @@ public class BattleManager : MonoBehaviour {
       BattleSpot battleSpot = battle.battleBoard.getSpot(teamType, battler.boardPosition);
       battler.battleSpot = battleSpot;
       battler.transform.position = battleSpot.transform.position;
-
-      battler.onBattlerSelect.AddListener(() => {
-         BattleUIManager.self.triggerTargetUI(battler);
-      });
-
-      battler.onBattlerDeselect.AddListener(() => {
-         BattleUIManager.self.hideTargetGameobjectUI();
-      });
 
       // Actually spawn the Battler as a Network object now
       NetworkServer.Spawn(battler.gameObject);
@@ -383,7 +358,7 @@ public class BattleManager : MonoBehaviour {
       float timeToWait = battle.getTimeToWait(source, targets);
 
       // Get ability reference from the source battler, cause the source battler is the one executing the ability.
-      AbilityData abilityData = source.getAbilities[abilityInventoryIndex];
+      BasicAbilityData abilityData = source.getAbilities[abilityInventoryIndex];
       //Ability ability = AbilityManager.getAbility(abilityType);
       List<AttackAction> actions = new List<AttackAction>();
 
@@ -466,8 +441,7 @@ public class BattleManager : MonoBehaviour {
 
       // Get the Ability object and apply the AP change
       // BuffAbility ability = (BuffAbility) AbilityManager.getAbility(abilityType);
-      // AbilityData abilityReference = AbilityManager.getAbility(globalAbilityID);
-      AbilityData abilityData = source.getAbilities[abilityInventoryIndex];
+      BasicAbilityData abilityData = source.getAbilities[abilityInventoryIndex];
       int sourceApChange = abilityData.getApChange();
       source.addAP(sourceApChange);
 
@@ -549,7 +523,7 @@ public class BattleManager : MonoBehaviour {
 
          // ZERONEV-COMMENT: It is supossed we are still grabbing the ability from the source battler to apply it.
          // So we will grab the source battler.
-         AbilityData abilityData = source.getAbilities[action.abilityInventoryIndex];
+         BasicAbilityData abilityData = source.getAbilities[action.abilityInventoryIndex];
 
          // If the source or target is already dead, then send a Cancel Action
          if (source.isDead() || target.isDead()) {
