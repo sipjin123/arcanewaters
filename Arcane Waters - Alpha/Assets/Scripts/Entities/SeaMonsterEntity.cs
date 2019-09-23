@@ -542,10 +542,21 @@ public class SeaMonsterEntity : SeaEntity
       hasDied = true;
       handleAnimations();
 
+      // Disable all colliders that would block the clicking of the spawned treasure bag
+      if (interactiveColliders.Count > 0) {
+         foreach (Collider2D collider in interactiveColliders) {
+            collider.enabled = false;
+         }
+      }
+      _clickableBox.gameObject.SetActive(false);
+      seaMonsterBars.gameObject.SetActive(false);
+
+      // Reduces the life of the parent entity if there is one
       if (seaMonsterData.roleType == RoleType.Minion && seaMonsterParentEntity != null) {
          seaMonsterParentEntity.currentHealth -= 1;
       }
 
+      // Drops the treasure bag if this entity can spawn one
       if (seaMonsterData.shouldDropTreasure) {
          spawnChest();
       }

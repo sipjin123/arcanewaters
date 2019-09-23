@@ -301,6 +301,11 @@ MonoBehaviour:
   attackCounter: 0
   leftAttackBox: {fileID: 1226546929952306529}
   rightAttackBox: {fileID: 1268288670249470209}
+  interactiveColliders:
+  - {fileID: 58256050713667648}
+  - {fileID: 6938392427603369774}
+  - {fileID: 1268288670249470209}
+  - {fileID: 1226546929952306529}
   attackCirclePrefab: {fileID: 114088976693073942, guid: f70aab4ab08e2424d8c89334e492291f,
     type: 3}
   spritesContainer: {fileID: 1013934132990528}
@@ -338,8 +343,9 @@ MonoBehaviour:
   isAttacking: 0
   variety: 0
   monsterType: 0
-  locationSetup: {x: 0, y: 0}
+  distanceFromSpawnPoint: {x: 0, y: 0}
   seaMonsterBars: {fileID: 1576247974216057746}
+  snapToParent: 0
 --- !u!50 &50644847342071564
 Rigidbody2D:
   serializedVersion: 4
@@ -555,7 +561,6 @@ MonoBehaviour:
   gridReference: {fileID: 7004716821006049083}
   startPosition: {fileID: 5567158127947618040}
   targetPosition: {fileID: 7544103583339269683}
-  hasStarted: 0
 --- !u!1 &1658159506029436
 GameObject:
   m_ObjectHideFlags: 0

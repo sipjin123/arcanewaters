@@ -199,7 +199,7 @@ public class TreasureChest : NetworkBehaviour {
       floatingIcon.GetComponentInChildren<FloatAndStop>().nameText.text = item.getName();
    }
 
-   private void OnTriggerEnter2D (Collider2D other) {
+   private void OnTriggerStay2D (Collider2D other) {
       NetEntity entity = other.GetComponent<NetEntity>();
 
       if (hasBeenOpened()) {
@@ -221,8 +221,7 @@ public class TreasureChest : NetworkBehaviour {
       }
    }
 
-   [ClientRpc]
-   public void Rpc_DisableChest () {
+   public void disableChest () {
       StartCoroutine(CO_DisableChestAfterDelay());
    }
 

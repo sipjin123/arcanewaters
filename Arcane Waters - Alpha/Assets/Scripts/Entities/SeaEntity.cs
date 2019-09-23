@@ -27,6 +27,9 @@ public class SeaEntity : NetEntity {
    // The right Attack Box
    public PolygonCollider2D rightAttackBox;
 
+   // The list of colliders this unity has that could obstruct interaction
+   public List<Collider2D> interactiveColliders;
+
    // The prefab we use for creating Attack Circles
    public AttackCircle attackCirclePrefab;
 
@@ -58,6 +61,7 @@ public class SeaEntity : NetEntity {
       if (isClient) {
          ClickTrigger clickTrigger = Instantiate(PrefabsManager.self.clickTriggerPrefab);
          clickTrigger.transform.SetParent(this.transform);
+         interactiveColliders.Add(clickTrigger.GetComponent<Collider2D>());
       }
 
       // Set our sprite sheets according to our types
