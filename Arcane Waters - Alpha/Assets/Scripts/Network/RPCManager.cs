@@ -306,7 +306,7 @@ public class RPCManager : NetworkBehaviour {
       ChatManager.self.addChat(msg, ChatInfo.Type.System);
 
       if (chest.autoDestroy) {
-         chest.Rpc_DisableChest();
+         chest.disableChest();
       }
    }
 
