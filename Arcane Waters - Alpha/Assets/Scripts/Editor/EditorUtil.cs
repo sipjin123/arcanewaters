@@ -56,7 +56,6 @@ public class EditorUtil : EditorWindow {
             imageData.texture2D = texture;
             imageData.sprite = sprite;
             imageData.sprites = new List<Sprite>();
-            List<Sprite> spritesCopy = new List<Sprite>();
 
             // We have to load the animation frames separately
             Object[] data = AssetDatabase.LoadAllAssetsAtPath(assetPath);
@@ -65,23 +64,10 @@ public class EditorUtil : EditorWindow {
             foreach (Object obj in data) {
                if (obj is Sprite) {
                   imageData.sprites.Add((Sprite) obj);
-                  spritesCopy.Add((Sprite) obj);
                }
             }
 
-            for (int p = 0; p <= spritesCopy.Count - 2; p++) {
-               for (int i = 0; i <= spritesCopy.Count - 2; i++) {
-                  int compared1 = extractInteger (spritesCopy[i].name);
-                  int compared2 = extractInteger (spritesCopy[i+1].name);
-
-                  if (compared1 > compared2) {
-                     Sprite tempT = spritesCopy[i + 1];
-                     spritesCopy[i + 1] = spritesCopy[i];
-                     spritesCopy[i] = tempT;
-                  }
-               }
-            }
-            imageData.sprites = spritesCopy;
+            imageData.sprites = imageData.sprites.OrderBy(_ => extractInteger(_.name)).ToList();
 
             // Add the new Image Data instance to the Image Manager's list
             imageManager.imageDataList.Add(imageData);

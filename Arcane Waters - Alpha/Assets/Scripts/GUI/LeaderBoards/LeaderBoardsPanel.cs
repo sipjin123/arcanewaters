@@ -14,8 +14,8 @@ public class LeaderBoardsPanel : Panel
    // Self
    public static LeaderBoardsPanel self;
 
-   // An empty event to modify the UI toggle values without triggering an update of the boards
-   public static Toggle.ToggleEvent emptyToggleEvent = new Toggle.ToggleEvent();
+   // The default period the panel displays
+   public static LeaderBoardsManager.Period DEFAULT_PERIOD;
 
    // The container for the rows for each leader board
    public GameObject farmingBoardRowsContainer;
@@ -31,10 +31,15 @@ public class LeaderBoardsPanel : Panel
    // The prefab we use for creating entry rows
    public LeaderBoardRow leaderBoardRowPrefab;
 
-   // The period toggles
-   public Toggle dayToggle;
-   public Toggle weekToggle;
-   public Toggle monthToggle;
+   // The period tabs
+   public GameObject dayTab;
+   public GameObject weekTab;
+   public GameObject monthTab;
+
+   // The period tab buttons
+   public Button dayTabButton;
+   public Button weekTabButton;
+   public Button monthTabButton;
 
    // The faction icon
    public Image factionIcon;
@@ -55,12 +60,9 @@ public class LeaderBoardsPanel : Panel
          _factionList.Add(faction);
       }
       _selectedFactionIndex = 0;
-   }
 
-   public override void Start () {
-      base.Start();
-
-      _initialized = true;
+      // Initialize the selected period
+      _selectedPeriod = DEFAULT_PERIOD;
    }
 
    public void updatePanelWithLeaderBoardEntries(LeaderBoardsManager.Period period, Faction.Type boardFaction,
@@ -102,45 +104,54 @@ public class LeaderBoardsPanel : Panel
          }
       }
 
-      // Temporarily disables the 'onValueChanged' event on the toggles
-      ToggleEvent backupDayEvent = dayToggle.onValueChanged;
-      ToggleEvent backupWeekEvent = weekToggle.onValueChanged;
-      ToggleEvent backupMonthEvent = monthToggle.onValueChanged;
-      dayToggle.onValueChanged = emptyToggleEvent;
-      weekToggle.onValueChanged = emptyToggleEvent;
-      monthToggle.onValueChanged = emptyToggleEvent;
-
-      // Select the correct period toggle
+      // Select the correct period tab
       switch (period) {
          case LeaderBoardsManager.Period.Day:
-            dayToggle.isOn = true;
+            dayTab.SetActive(true);
+            weekTab.SetActive(false);
+            monthTab.SetActive(false);
+            dayTabButton.interactable = false;
+            weekTabButton.interactable = true;
+            monthTabButton.interactable = true;
             break;
          case LeaderBoardsManager.Period.Week:
-            weekToggle.isOn = true;
+            dayTab.SetActive(false);
+            weekTab.SetActive(true);
+            monthTab.SetActive(false);
+            dayTabButton.interactable = true;
+            weekTabButton.interactable = false;
+            monthTabButton.interactable = true;
             break;
          case LeaderBoardsManager.Period.Month:
-            monthToggle.isOn = true;
+            dayTab.SetActive(false);
+            weekTab.SetActive(false);
+            monthTab.SetActive(true);
+            dayTabButton.interactable = true;
+            weekTabButton.interactable = true;
+            monthTabButton.interactable = false;
             break;
          default:
             break;
       }
-
-      // Restore the onValueChanged events on the toggles
-      dayToggle.onValueChanged = backupDayEvent;
-      weekToggle.onValueChanged = backupWeekEvent;
-      monthToggle.onValueChanged = backupMonthEvent;
 
       // Select the correct faction
       _selectedFactionIndex = _factionList.IndexOf(boardFaction);
       refreshFactionFilterDisplay();
    }
 
-   public void onPeriodToggleChange (Toggle toggle) {
-      // Avoid unecessary calls
-      if (_initialized && isShowing() && toggle.isOn) {
-         // Request the entries from the server
-         Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(getSelectedPeriod(), getSelectedFaction());
-      }
+   public void onDayPeriodTabButtonPress () {
+      _selectedPeriod = LeaderBoardsManager.Period.Day;
+      Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(_selectedPeriod, getSelectedFaction());
+   }
+
+   public void onWeekPeriodTabButtonPress () {
+      _selectedPeriod = LeaderBoardsManager.Period.Week;
+      Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(_selectedPeriod, getSelectedFaction());
+   }
+
+   public void onMonthPeriodTabButtonPress () {
+      _selectedPeriod = LeaderBoardsManager.Period.Month;
+      Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(_selectedPeriod, getSelectedFaction());
    }
 
    public void onFactionFilterLeftButtonPress () {
@@ -153,7 +164,7 @@ public class LeaderBoardsPanel : Panel
       refreshFactionFilterDisplay();
 
       // Request the entries from the server
-      Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(getSelectedPeriod(), getSelectedFaction());
+      Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(_selectedPeriod, getSelectedFaction());
    }
 
    public void onFactionFilterRightButtonPress () {
@@ -166,7 +177,7 @@ public class LeaderBoardsPanel : Panel
       refreshFactionFilterDisplay();
 
       // Request the entries from the server
-      Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(getSelectedPeriod(), getSelectedFaction());
+      Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(_selectedPeriod, getSelectedFaction());
    }
 
    private void refreshFactionFilterDisplay () {
@@ -178,17 +189,6 @@ public class LeaderBoardsPanel : Panel
          factionText.text = "All factions";
       } else {
          factionText.text = Faction.toString(_factionList[_selectedFactionIndex]);
-      }
-   }
-
-   private LeaderBoardsManager.Period getSelectedPeriod () {
-      // Determine which toggle is on
-      if (dayToggle.isOn) {
-         return LeaderBoardsManager.Period.Day;
-      } else if (weekToggle.isOn) {
-         return LeaderBoardsManager.Period.Week;
-      } else {
-         return LeaderBoardsManager.Period.Month;
       }
    }
 
@@ -210,14 +210,14 @@ public class LeaderBoardsPanel : Panel
 
    #region Private Variables
 
-   // Get set to true when the MonoBehaviour has started
-   private bool _initialized;
-
    // The list of factions filters
    private List<Faction.Type> _factionList;
 
    // The index of the currently selected faction
    private int _selectedFactionIndex;
+
+   // The currently selected period
+   private LeaderBoardsManager.Period _selectedPeriod;
 
    #endregion
 }

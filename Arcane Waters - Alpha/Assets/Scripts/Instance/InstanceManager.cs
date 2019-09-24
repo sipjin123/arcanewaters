@@ -68,6 +68,10 @@ public class InstanceManager : MonoBehaviour {
       instance.numberInArea = getInstanceCount(areaType) + 1;
       instance.serverAddress = MyNetworkManager.self.networkAddress;
       instance.serverPort = MyNetworkManager.self.telepathy.port;
+      instance.mapSeed = Random.Range(0, 1000000);
+      if (Area.isRandom(areaType)) {
+         instance.mapDifficulty = (MapSummary.MapDifficulty) Random.Range((int) MapSummary.MapDifficulty.Easy, (int) MapSummary.MapDifficulty.Hard + 1);
+      }
 
       // Keep track of it
       _instances.Add(instance.id, instance);

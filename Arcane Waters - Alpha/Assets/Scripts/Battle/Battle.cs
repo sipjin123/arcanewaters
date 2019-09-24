@@ -51,9 +51,23 @@ public class Battle : NetworkBehaviour {
 
       // Set battle end UI events.
       onBattleEnded.AddListener(BattleUIManager.self.disableBattleUI);
+
+      clientBattleReposition();
    }
 
-   // TODO ZERONEV-COMMENT: This handles the general battle flow, will need to work on this.
+   // Accommodates the battle item with their respective battlers, if no parent is set
+   private void clientBattleReposition () {
+      if (transform.parent == null) {
+
+         transform.SetParent(BattleManager.self.transform, true);
+
+         foreach (Battler battler in BattleManager.self.getBattle(battleId).getParticipants()) {
+            battler.transform.SetParent(transform, false);
+         }
+      }
+   }
+
+   // TODO ZERONEV-COMMENT: This handles the general battle flow, will need to work on this (Enemy AI for example)
    public TickResult tick () {
       // Everything below here is only valid for the server
       if (!NetworkServer.active) {

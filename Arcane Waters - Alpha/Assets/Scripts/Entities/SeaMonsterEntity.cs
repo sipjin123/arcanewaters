@@ -45,16 +45,16 @@ public class SeaMonsterEntity : SeaEntity
    // Determines if this unit should play the attack sprite sheet
    public bool isAttacking = false;
 
-   [SyncVar]
    // Determines the variety of the monster sprite if there is one
+   [SyncVar]
    public int variety = 0;
 
-   [SyncVar]
    // Determines the monster type index of this unit
-   public int monsterType = 0;
+   [SyncVar]
+   public Enemy.Type monsterType = 0;
 
    // Determines the location of this unit in relation to its spawn point
-   public Vector2 locationSetup;
+   public Vector2 distanceFromSpawnPoint;
 
    // Holds the info of the seamonster health Bars
    public SeaMonsterBars seaMonsterBars;
@@ -63,7 +63,7 @@ public class SeaMonsterEntity : SeaEntity
    public const float ATTACK_DURATION = .3f;
 
    // Snaps the minion to its parents position while moving
-   private bool snapToParent = false;
+   public bool snapToParent = false;
 
    // Seamonster Animation
    public enum SeaMonsterAnimState
@@ -124,7 +124,7 @@ public class SeaMonsterEntity : SeaEntity
       base.Start();
 
       // Initializes the data from the scriptable object
-      initData(EnemyManager.self.seaMonsterEntityData.Find(_ => _.seaMonsterType == (Enemy.Type)monsterType).seaMonsterData);
+      initData(EnemyManager.self.seaMonsterDataList.Find(_ => _.seaMonsterType == monsterType).seaMonsterData);
 
       if (isServer && seaMonsterData.roleType != RoleType.Minion) {
          gridReference.displayGrid(transform.position, this.areaType);
@@ -185,7 +185,7 @@ public class SeaMonsterEntity : SeaEntity
       // If this entity is a Minion, snap to its parent
       if (seaMonsterData.roleType == RoleType.Minion && snapToParent) {
          if (seaMonsterParentEntity != null) {
-            Vector2 targetLocation = SeaMonsterUtility.GetRandomPositionAroundPosition(seaMonsterParentEntity.transform.position, locationSetup);
+            Vector2 targetLocation = SeaMonsterUtility.getRandomPositionAroundPosition(seaMonsterParentEntity.transform.position, distanceFromSpawnPoint);
             Vector2 waypointDirection = targetLocation - (Vector2) this.transform.position;
             waypointDirection = waypointDirection.normalized;
 
@@ -207,7 +207,7 @@ public class SeaMonsterEntity : SeaEntity
 
       // Process movement towards route
       if (monsterBehavior == MonsterBehavior.MoveAround || monsterBehavior == MonsterBehavior.MoveToTarget) {
-         if (seaMonsterData.roleType != RoleType.Minion && (enemyWithinAttackDistance() || (!enemyWithinTerritory() && monsterBehavior == MonsterBehavior.MoveToTarget))) { //|| !enemyWithinTerritory()) {
+         if (seaMonsterData.roleType != RoleType.Minion && (isEnemyWithinAttackDistance() || (!isEnemyWithinTerritory() && monsterBehavior == MonsterBehavior.MoveToTarget))) {
             stopMoving();
          }
 
@@ -391,14 +391,14 @@ public class SeaMonsterEntity : SeaEntity
       targetEntity = getNearestTarget();
 
       if (seaMonsterData.roleType == RoleType.Minion && targetEntity != null) {
-         if (enemyWithinAttackDistance() && hasReloaded()) {
+         if (isEnemyWithinAttackDistance() && hasReloaded()) {
             attackTarget();
          }
       } else {
-         if (targetEntity != null && enemyWithinTerritory()) {
+         if (targetEntity != null && isEnemyWithinTerritory()) {
             // If there is a target, calculate if
-            if (enemyWithinMoveDistance()) {
-               if (enemyWithinAttackDistance() && seaMonsterData.roleType != RoleType.Master) {
+            if (isEnemyWithinMoveDistance()) {
+               if (isEnemyWithinAttackDistance() && seaMonsterData.roleType != RoleType.Master) {
                   if (hasReloaded()) {
                      attackTarget();
                   } else {
@@ -616,7 +616,7 @@ public class SeaMonsterEntity : SeaEntity
       }
    }
    
-   protected bool enemyWithinMoveDistance () {
+   protected bool isEnemyWithinMoveDistance () {
       if (targetEntity != null) {
          float distanceGap = Vector2.Distance(targetEntity.transform.position, transform.position);
          if (distanceGap < seaMonsterData.maxDistanceGap) {
@@ -626,7 +626,7 @@ public class SeaMonsterEntity : SeaEntity
       return false;
    }
 
-   protected bool enemyWithinTerritory () {
+   protected bool isEnemyWithinTerritory () {
       float distanceGap = Vector2.Distance(_spawnPos, transform.position);
       if (distanceGap < seaMonsterData.territoryRadius) {
          return true;
@@ -634,7 +634,7 @@ public class SeaMonsterEntity : SeaEntity
       return false;
    }
 
-   protected bool enemyWithinAttackDistance () {
+   protected bool isEnemyWithinAttackDistance () {
       if (targetEntity != null) {
          float distanceGap = Vector2.Distance(targetEntity.transform.position, transform.position);
          if (distanceGap < seaMonsterData.maxProjectileDistanceGap) {

@@ -61,7 +61,7 @@ public static class SeaMonsterUtility
       return finalDirection;
    }
 
-   public static Vector2 GetRandomPositionAroundPosition (Vector2 position, Vector2 locationSetup) {
+   public static Vector2 getRandomPositionAroundPosition (Vector2 position, Vector2 locationSetup) {
       float minXRange = .4f;
       float maxXRange = .6f;
       float minYRange = .6f;

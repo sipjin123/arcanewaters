@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -144,7 +144,7 @@ public class Enemy : NetEntity {
          PanelManager.self.noticeScreen.show("You need to equip a sword to attack this enemy!");
          return;
       }
-
+      
       Global.player.rpc.Cmd_StartNewBattle(this.netId);
    }
 

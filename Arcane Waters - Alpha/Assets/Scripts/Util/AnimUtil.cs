@@ -268,9 +268,7 @@ public class AnimUtil : MonoBehaviour {
                   return new AnimInfo(animType, 4, 13);
                default:
                   return new AnimInfo(animType, 0, 3);
-                  break;
             }
-            break;
       }
 
       D.warning("Couldn't find animation info for group: " + animGroup + " and type: " + animType);

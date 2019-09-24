@@ -9,7 +9,7 @@ public class AutomatedBattler : Battler {
    #endregion
 
    // New, gets the very first attack.
-   public BasicAbilityData getBasicAttack () {
+   public AttackAbilityData getBasicAttack () {
 
       // Safe check
       if (getAbilities.Length <= 0) {
@@ -34,7 +34,7 @@ public class AutomatedBattler : Battler {
       return new BattlePlan(getBasicAttack(), targets);
    }
 
-   protected Battler getRandomTargetFor (BasicAbilityData abilityData, Battle battle) {
+   protected Battler getRandomTargetFor (AttackAbilityData abilityData, Battle battle) {
       List<Battler> options = new List<Battler>();
 
       // Cycle over all of the participants in the battle

@@ -10,12 +10,14 @@ public class AbilityInventory : MonoBehaviour{
    // Temporary simulation of the current abilities equipped for the local player
    // (Do not use this in battle directly, they must be instanced first)
    // We will use these as the main abilities
-   public List<BasicAbilityData> equippedAbilitiesBPs = new List<BasicAbilityData>();
+   public List<AttackAbilityData> playerAttackAbilities = new List<AttackAbilityData>();
+   
+   // Abilities that appear when the local player is selected
+   public List<BasicAbilityData> playerBuffAbilities = new List<BasicAbilityData>();
 
-   // Temporary variables, until we fully unify the ability data to handle stances too.
    public BasicAbilityData balancedStance;
-   public BasicAbilityData defenseStance;
    public BasicAbilityData offenseStance;
+   public BasicAbilityData defenseStance;
 
    // Instance
    public static AbilityInventory self;

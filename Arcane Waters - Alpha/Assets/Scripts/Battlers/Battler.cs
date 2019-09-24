@@ -5,7 +5,8 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.Events;
 
-public class Battler : NetworkBehaviour, IAttackBehaviour {
+public class Battler : NetworkBehaviour, IAttackBehaviour
+{
    #region Public Variables
 
    // The amount of time a jump takes
@@ -146,7 +147,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
    // Ability blueprints that we will use for this battler.
    // DO NOT use this data directly in anything, use getAbilities instead. (Except for when changing this battler abilities.)
-   public List<BasicAbilityData> battlerBaseAbilities = new List<BasicAbilityData>();
+   public List<AttackAbilityData> baseAttackAbilities = new List<AttackAbilityData>();
 
    // Base select/deselect battlers events. Hidden from inspector to avoid untracked events.
    [HideInInspector] public UnityEvent onBattlerSelect = new UnityEvent();
@@ -192,6 +193,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
       // The client needs to look up and assign the Battle Spot
       BattleSpot battleSpot = battleBoard.getSpot(teamType, this.boardPosition);
+
       this.battleSpot = battleSpot;
 
       // When our Battle is created, we need to switch to the Battle camera
@@ -635,8 +637,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
    public void showDamageText (AttackAction action) {
       BattleSpot spot = this.battleSpot;
-      
-      BasicAbilityData abilityData = AbilityManager.getAbility(action.abilityGlobalID);
+
+      AttackAbilityData abilityData = AbilityManager.getAbility(action.abilityGlobalID) as AttackAbilityData;
 
       // Create the Text instance from the prefab
       GameObject damageTextObject = (GameObject) Instantiate(PrefabsManager.self.damageTextPrefab);
@@ -685,31 +687,31 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       battleTextInstance.transform.SetParent(this.transform, false);
       battleTextInstance.GetComponentInChildren<BattleText>().customizeTextForCritical();
    }
-   
+
    /// <summary>
    /// Initializes the abilities to be in a usable state
    /// Whenever we change directly our abilityBlueprints, we need to call this method again
    /// </summary>
    public void initAbilities () {
-      _initializedAbilities.Clear();
+      _initializedAttackAbilities.Clear();
 
       // If we are a monster battler, we want to grab the abilities from the battler.
       if (this is MonsterBattler) {
-         if (battlerBaseAbilities.Count <= 0) {
+         if (baseAttackAbilities.Count <= 0) {
             Debug.LogWarning("This battler do not have any abilities, cancelling ability init.");
             return;
          }
 
-         foreach (BasicAbilityData ability in battlerBaseAbilities) {
-            BasicAbilityData newInstance = BasicAbilityData.CreateInstance(ability);
-            _initializedAbilities.Add(newInstance);
+         foreach (AttackAbilityData ability in baseAttackAbilities) {
+            AttackAbilityData newInstance = AttackAbilityData.CreateInstance(ability);
+            _initializedAttackAbilities.Add(newInstance);
          }
       }
       // If we are a player battler, we will grab the abilities from somewhere else.
       else {
-         foreach (BasicAbilityData ability in AbilityInventory.self.equippedAbilitiesBPs) {
-            BasicAbilityData newInstance = BasicAbilityData.CreateInstance(ability);
-            _initializedAbilities.Add(newInstance);
+         foreach (AttackAbilityData ability in AbilityInventory.self.playerAttackAbilities) {
+            AttackAbilityData newInstance = AttackAbilityData.CreateInstance(ability);
+            _initializedAttackAbilities.Add(newInstance);
          }
       }
    }
@@ -836,31 +838,32 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    }
 
    public IEnumerator attackDisplay (float timeToWait, BattleAction battleAction, bool isFirstAction) {
-      // TODO ZERONEV-IMPORTANT: The combat behaviour needs to be here.
+      // TODO ZERONEV-IMPORTANT: The combat behaviour needs to be here
 
-      // In here we will check all the information related to the ability we want to execute.
-      // If it is a melee attack, then normally we will get close to the target battler and execute an animation.
+      // In here we will check all the information related to the ability we want to execute
+      // If it is a melee attack, then normally we will get close to the target battler and execute an animation
       // If it is a ranged attack, then normally we will stay in our place, executing our cast particles (if any)
 
       // Then proceeding to execute the remaining for each path, it is a little extensive, but definitely a lot better than
-      // creating a lot of different scripts.
+      // creating a lot of different scripts
 
       // Behaviour for cancel ability (WIP still!)
       Battle battle = BattleManager.self.getBattle(battleAction.battleId);
       Battler sourceBattler = battle.getBattler(battleAction.sourceId);
 
-      // I believe we must grab the index from this battler, since this will be the one executing the attack.
-      BasicAbilityData attackerAbility = null;
+      // I believe we must grab the index from this battler, since this will be the one executing the attack
+      AttackAbilityData attackerAbility = null;
       
-      BasicAbilityData globalAbilityData = AbilityManager.getAbility(battleAction.abilityGlobalID);
+      AttackAbilityData abilityDataReference = (AttackAbilityData) AbilityManager.getAbility(battleAction.abilityGlobalID);
+      AttackAbilityData globalAbilityData = AttackAbilityData.CreateInstance(abilityDataReference);
 
       // Cancel ability works differently, so before we try to get the ability from the local battler, 
-      // we check if the ability we want to reference is a cancel ability.
+      // we check if the ability we want to reference is a cancel ability
       if (!globalAbilityData.isCancel())
          attackerAbility = getAbilities[battleAction.abilityInventoryIndex];
 
-      switch (globalAbilityData.getAbilityType()) {
-         case AbilityType.Melee:
+      switch (globalAbilityData.getAbilityActionType()) {
+         case AbilityActionType.Melee:
 
             onBattlerAttackStart.Invoke();
 
@@ -876,7 +879,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             // Look up our needed references
             Battler targetBattler = battle.getBattler(action.targetId);
             Vector2 startPos = sourceBattler.battleSpot.transform.position;
-            
+
             float jumpDuration = attackerAbility.getJumpDuration(sourceBattler, targetBattler);
 
             // Don't start animating until both sprites are available
@@ -913,7 +916,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             sourceBattler.playAnim(attackerAbility.getAnimation());
 
             // Play any sounds that go along with the ability being cast
-            
+
             // We want to play the cast clip at our battler position.
             attackerAbility.playCastClipAtTarget(transform.position);
 
@@ -985,7 +988,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             onBattlerAttackEnd.Invoke();
 
             break;
-         case AbilityType.Ranged:
+         case AbilityActionType.Ranged:
 
             // AbilityData ability = AbilityManager.getAbility(battleAction.abilityIndex);
             // Battle battle = BattleManager.self.getBattle(battleAction.battleId);
@@ -1000,7 +1003,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             onBattlerAttackEnd.Invoke();
             break;
 
-         case AbilityType.Projectile:
+         case AbilityActionType.Projectile:
             onBattlerAttackStart.Invoke();
 
             // TODO - Zeronev: add projectile functionality. (same as ranged it is perhaps.)
@@ -1009,7 +1012,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             onBattlerAttackEnd.Invoke();
             break;
 
-         case AbilityType.Cancel:
+         case AbilityActionType.Cancel:
             // Cancel requires time before activating.
             yield return new WaitForSeconds(timeToWait);
 
@@ -1045,7 +1048,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    /// <summary>
    /// Gets the initialized abilities for this battler
    /// </summary>
-   public BasicAbilityData[] getAbilities { get { return _initializedAbilities.ToArray(); } }
+   public AttackAbilityData[] getAbilities { get { return _initializedAttackAbilities.ToArray(); } }
 
    #region Private Variables
 
@@ -1065,7 +1068,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    protected bool _isClientBattler = false;
 
    // Initialized ablities that each battler will have.
-   private List<BasicAbilityData> _initializedAbilities = new List<BasicAbilityData>();
+   private List<AttackAbilityData> _initializedAttackAbilities = new List<AttackAbilityData>();
 
    #endregion
 }
