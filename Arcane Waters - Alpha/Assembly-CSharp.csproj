@@ -62,9 +62,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\AStar\AStarGrid.cs" />
-    <Compile Include="Assets\AStar\Node.cs" />
-    <Compile Include="Assets\AStar\Pathfinding.cs" />
     <Compile Include="Assets\Camera Filter Pack\Scripts\CameraFilterPack_Color_BrightContrastSaturation.cs" />
     <Compile Include="Assets\Camera Filter Pack\Scripts\CameraFilterPack_FX_EarthQuake.cs" />
     <Compile Include="Assets\Camera Filter Pack\Scripts\CameraFilterPack_FX_Spot.cs" />
@@ -128,7 +125,6 @@
     <Compile Include="Assets\GamingGarrison\TiledTMXImporter\Custom2DColliders\CustomCollider2D.cs" />
     <Compile Include="Assets\GamingGarrison\TiledTMXImporter\Custom2DColliders\EllipseCollider2D.cs" />
     <Compile Include="Assets\GamingGarrison\TiledTMXImporter\TileTypes\AnimatedTile.cs" />
-    <Compile Include="Assets\LightningBolt\LightningBoltScript.cs" />
     <Compile Include="Assets\PaymentWall\Examples\Scripts\Brick Form\Logic\CartManager.cs" />
     <Compile Include="Assets\PaymentWall\Examples\Scripts\Brick Form\Logic\DigitalGoodController.cs" />
     <Compile Include="Assets\PaymentWall\Examples\Scripts\Brick Form\Logic\FakeAccountController.cs" />
@@ -270,6 +266,9 @@
     <Compile Include="Assets\Scripts\Actions\BuffTimer.cs" />
     <Compile Include="Assets\Scripts\Actions\CancelAction.cs" />
     <Compile Include="Assets\Scripts\Actions\StanceAction.cs" />
+    <Compile Include="Assets\Scripts\AStar\AStarGrid.cs" />
+    <Compile Include="Assets\Scripts\AStar\Node.cs" />
+    <Compile Include="Assets\Scripts\AStar\Pathfinding.cs" />
     <Compile Include="Assets\Scripts\Attributes\ClientOnlyAttribute.cs" />
     <Compile Include="Assets\Scripts\Attributes\ServerOnlyAttribute.cs" />
     <Compile Include="Assets\Scripts\Attributes\StripClassAttribute.cs" />
@@ -344,6 +343,7 @@
     <Compile Include="Assets\Scripts\Effects\ExplosionParticle.cs" />
     <Compile Include="Assets\Scripts\Effects\Footprint.cs" />
     <Compile Include="Assets\Scripts\Effects\FootprintManager.cs" />
+    <Compile Include="Assets\Scripts\Effects\LightningBolt\LightningBoltScript.cs" />
     <Compile Include="Assets\Scripts\Effects\LineCreator.cs" />
     <Compile Include="Assets\Scripts\Effects\MovingDot.cs" />
     <Compile Include="Assets\Scripts\Effects\TrailingLine.cs" />
@@ -770,7 +770,7 @@
     <None Include="Assets\Resources\Text\RandomMaps\BiomeAdjectives\RandomMapLavaAdj.txt" />
     <None Include="Assets\Colorify\Shaders\Realtime\2 colors\Colorify-2colors-Cutout-Bumped.shader" />
     <None Include="Assets\ScriptTemplates\81-C# Script-NewBehaviourScript.cs.txt" />
-    <None Include="Assets\LightningBolt\Readme.txt" />
+    <None Include="Assets\Scripts\Effects\LightningBolt\Readme.txt" />
     <None Include="Assets\Resources\Text\RandomMaps\BiomeNouns\RandomMapDesertNoun.txt" />
     <None Include="Assets\Colorify\Manual\changelog.txt" />
     <None Include="Assets\Colorify\Shaders\Realtime\2 colors\Colorify-2colors-Alpha-Bumped.shader" />
