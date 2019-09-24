@@ -281,6 +281,11 @@ MonoBehaviour:
   attackCounter: 0
   leftAttackBox: {fileID: 1226546929952306529}
   rightAttackBox: {fileID: 1268288670249470209}
+  interactiveColliders:
+  - {fileID: 58256050713667648}
+  - {fileID: 6938392427603369774}
+  - {fileID: 1268288670249470209}
+  - {fileID: 1226546929952306529}
   attackCirclePrefab: {fileID: 114088976693073942, guid: f70aab4ab08e2424d8c89334e492291f,
     type: 3}
   spritesContainer: {fileID: 1013934132990528}
