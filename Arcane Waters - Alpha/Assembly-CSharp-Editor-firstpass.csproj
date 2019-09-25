@@ -93,6 +93,7 @@
     <Compile Include="Assets\Plugins\crosstales\Common\Editor\Task\OCCheck.cs" />
     <Compile Include="Assets\Plugins\crosstales\Common\Editor\Util\BaseEditorHelper.cs" />
     <Compile Include="Assets\Plugins\crosstales\Common\Editor\Util\BaseGAApi.cs" />
+    <Compile Include="Assets\Plugins\LightningBolt\Editor\LightningBoltEditor.cs" />
     <Reference Include="UnityEditor.TestRunner">
       <HintPath>D:/Projects/UnityEngineProjects/ArcaneWatersRepo/Arcane Waters - Alpha/Library/ScriptAssemblies/UnityEditor.TestRunner.dll</HintPath>
     </Reference>

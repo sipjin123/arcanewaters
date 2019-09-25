@@ -25,7 +25,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_InteractAnimation(Anim.Type animType) {
+   public void Cmd_InteractAnimation (Anim.Type animType) {
       Rpc_InteractAnimation(animType);
    }
 
@@ -210,6 +210,71 @@ public class RPCManager : NetworkBehaviour {
       PanelManager.self.confirmScreen.show(message);
    }
 
+   [Command]
+   public void Cmd_OpenLootBag (int chestId) {
+      TreasureChest chest = TreasureManager.self.getChest(chestId);
+
+      // Make sure we found the Treasure Chest
+      if (chest == null) {
+         D.warning("Treasure chest not found: " + chestId);
+         return;
+      }
+
+      // Make sure the user is in the right instance
+      if (_player.instanceId != chest.instanceId) {
+         D.warning("Player trying to open treasure from a different instance!");
+         return;
+      }
+
+      // Make sure they didn't already open it
+      if (chest.userIds.Contains(_player.userId)) {
+         D.warning("Player already opened this chest!");
+         return;
+      }
+
+      // Add the user ID to the list
+      chest.userIds.Add(_player.userId);
+
+      processLootBagRewards(chestId);
+   }
+
+   [Server]
+   private void processLootBagRewards (int chestId) {
+      TreasureChest chest = TreasureManager.self.getChest(chestId);
+
+      // Check what we're going to give the user
+      Item item = chest.getContents();
+
+      // Gathers the item rewards from the scriptable object
+      List<LootInfo> lootInfoList = new List<LootInfo>();
+      CraftingIngredients craftingIngredient = new CraftingIngredients { category = Item.Category.CraftingIngredients, count = item.count, type = (CraftingIngredients.Type) item.itemTypeId };
+      LootInfo newLootInfo = new LootInfo { lootType = craftingIngredient.type, chanceRatio = 100, quantity = craftingIngredient.count };
+      lootInfoList.Add(newLootInfo);
+
+      List<CraftingIngredients.Type> itemLoots = new List<CraftingIngredients.Type>();
+      foreach (LootInfo info in lootInfoList) {
+         itemLoots.Add(info.lootType);
+      }
+
+      // Add it to their inventory
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<Item> databaseList = DB_Main.getRequiredIngredients(_player.userId, itemLoots);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            processGroupRewards(_player.userId, databaseList, lootInfoList);
+
+            // Send it to the specific player that opened it
+            Target_OpenChest(_player.connectionToClient, item, chest.id);
+         });
+      });
+   }
+
+   [Server]
+   public void spawnLandMonsterChest (Enemy.Type enemyType, int instanceID, Vector3 position) {
+      Instance currentInstance = InstanceManager.self.getInstance(instanceID);
+      TreasureManager.self.createMonsterChest(currentInstance, position, enemyType, true);
+   }
+
    [TargetRpc]
    public void Target_OpenChest (NetworkConnection connection, Item item, int chestId) {
       item = item.getCastItem();
@@ -224,7 +289,12 @@ public class RPCManager : NetworkBehaviour {
 
       // Start the opening and burst animations
       chest.chestBurstAnimation.enabled = true;
-      chest.chestOpeningAnimation.enabled = true;
+      if (chest.chestType == ChestSpawnType.Site) {
+         chest.chestOpeningAnimation.enabled = true;
+      } else {
+         chest.spriteRenderer.sprite = chest.openedChestSprite;
+         chest.chestOpeningAnimation.enabled = false;
+      }
       chest.StartCoroutine(chest.CO_CreatingFloatingIcon(item));
 
       // Play some sounds
@@ -234,6 +304,10 @@ public class RPCManager : NetworkBehaviour {
       // Show a confirmation in chat
       string msg = string.Format("You found one <color=red>{0}</color>!", item.getName());
       ChatManager.self.addChat(msg, ChatInfo.Type.System);
+
+      if (chest.autoDestroy) {
+         chest.Rpc_DisableChest();
+      }
    }
 
    [TargetRpc]
@@ -1467,22 +1541,21 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_SpawnTentacle (Vector2 spawnPosition, uint horrorEntityID, int xVal, int yVal, int variety) {
-      TentacleEntity bot = Instantiate(PrefabsManager.self.tentaclePrefab, spawnPosition, Quaternion.identity);
+   public void Cmd_SpawnBossChild (Vector2 spawnPosition, uint parentEntityID, int xVal, int yVal, int variety, Enemy.Type enemyType) {
+      SeaMonsterEntity bot = Instantiate(PrefabsManager.self.seaMonsterPrefab, spawnPosition, Quaternion.identity);
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
       bot.areaType = _player.areaType;
-      bot.route = null;
-      bot.autoMove = true;
-      bot.entityName = "Tentacle";
-      bot.locationSide = xVal;
-      bot.locationSideTopBot = yVal;
+      bot.entityName = enemyType.ToString();
+      bot.monsterType = enemyType;
+      bot.distanceFromSpawnPoint = new Vector2(xVal, yVal);
       bot.variety = (variety);
 
       Instance instance = InstanceManager.self.getInstance(_player.instanceId);
-      HorrorEntity horror = instance.entities.Find(_ => _.netId == horrorEntityID).GetComponent<HorrorEntity>();
-      bot.horrorEntity = horror;
-      horror.tentacleList.Add(bot);
+      SeaMonsterEntity parentEntity = instance.entities.Find(_ => _.netId == parentEntityID).GetComponent<SeaMonsterEntity>();
+
+      bot.seaMonsterParentEntity = parentEntity;
+      parentEntity.seaMonsterChildrenList.Add(bot);
 
       instance.entities.Add(bot);
 
@@ -1491,70 +1564,41 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_SpawnHorror (Vector2 spawnPosition) {
-      HorrorEntity bot = Instantiate(PrefabsManager.self.horrorPrefab, spawnPosition, Quaternion.identity);
+   public void Cmd_SpawnBossParent (Vector2 spawnPosition, Enemy.Type enemyType) {
+      SeaMonsterEntity bot = Instantiate(PrefabsManager.self.seaMonsterPrefab, spawnPosition, Quaternion.identity);
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
       bot.areaType = _player.areaType;
-      bot.entityName = "Horror";
-      bot.tentaclesLeft = 8;
-
-      // Spawn the bot on the Clients
-      NetworkServer.Spawn(bot.gameObject);
-
-      Instance instance = InstanceManager.self.getInstance(_player.instanceId);
-      instance.entities.Add(bot);
-
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(.5f, -.5f), bot.netId, 1, -1, 1);
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(-.5f, -.5f), bot.netId, -1, -1, 0);
-
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(.5f, .5f), bot.netId, 1, 1, 1);
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(-.5f, .5f), bot.netId, -1, 1, 0);
-
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(-.75f, 0), bot.netId, -1, 0, 1);
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(.75f, 0), bot.netId, 1, 0, 0);
-
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(0, -.75f), bot.netId, 0, -1, 1);
-      Cmd_SpawnTentacle(spawnPosition + new Vector2(0, .75f), bot.netId, 0, 1, 0);
-   }
-
-   [Command]
-   public void Cmd_SpawnWorm (Vector2 spawnPosition) {
-      WormEntity bot = Instantiate(PrefabsManager.self.wormPrefab, spawnPosition, Quaternion.identity);
-      bot.instanceId = _player.instanceId;
-      bot.facing = Util.randomEnum<Direction>();
-      bot.areaType = _player.areaType;
-      bot.entityName = "Worm";
+      bot.entityName = enemyType.ToString();
+      bot.monsterType = enemyType;
 
       // Spawn the bot on the Clients
       NetworkServer.Spawn(bot.gameObject);
 
       Instance instance = InstanceManager.self.getInstance(_player.instanceId);
       instance.entities.Add(bot);
+
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(.5f, -.5f), bot.netId, 1, -1, 1, Enemy.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(-.5f, -.5f), bot.netId, -1, -1, 0, Enemy.Type.Tentacle);
+
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(.5f, .5f), bot.netId, 1, 1, 1, Enemy.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(-.5f, .5f), bot.netId, -1, 1, 0, Enemy.Type.Tentacle);
+
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(-.75f, 0), bot.netId, -1, 0, 1, Enemy.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(.75f, 0), bot.netId, 1, 0, 0, Enemy.Type.Tentacle);
+
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(0, -.75f), bot.netId, 0, -1, 1, Enemy.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(0, .75f), bot.netId, 0, 1, 0, Enemy.Type.Tentacle);
    }
 
    [Command]
-   public void Cmd_SpawnGiant (Vector2 spawnPosition) {
-      ReefGiantEntity bot = Instantiate(PrefabsManager.self.giantPrefab, spawnPosition, Quaternion.identity);
+   public void Cmd_SpawnSeaMonster (Vector2 spawnPosition, Enemy.Type enemyType) {
+      SeaMonsterEntity bot = Instantiate(PrefabsManager.self.seaMonsterPrefab, spawnPosition, Quaternion.identity);
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
       bot.areaType = _player.areaType;
-      bot.entityName = "Giant";
-
-      // Spawn the bot on the Clients
-      NetworkServer.Spawn(bot.gameObject);
-
-      Instance instance = InstanceManager.self.getInstance(_player.instanceId);
-      instance.entities.Add(bot);
-   }
-
-   [Command]
-   public void Cmd_SpawnFishman (Vector2 spawnPosition) {
-      FishmanEntity bot = Instantiate(PrefabsManager.self.fishmanPrefab, spawnPosition, Quaternion.identity);
-      bot.instanceId = _player.instanceId;
-      bot.facing = Util.randomEnum<Direction>();
-      bot.areaType = _player.areaType;
-      bot.entityName = "Fishman";
+      bot.monsterType = enemyType;
+      bot.entityName = enemyType.ToString();
 
       // Spawn the bot on the Clients
       NetworkServer.Spawn(bot.gameObject);
@@ -1642,6 +1686,11 @@ public class RPCManager : NetworkBehaviour {
       // Let the Battle Manager handle executing the attack
       List<Battler> targetBattlers = new List<Battler>() { targetBattler };
       BattleManager.self.executeAttack(battle, sourceBattler, targetBattlers, abilityInventoryIndex);
+   }
+
+   [Command]
+   public void Cmd_StanceChange (int userID, Battler.Stance newStance) {
+      BattleManager.self.getBattler(userID).stance = newStance;
    }
 
    [Server]

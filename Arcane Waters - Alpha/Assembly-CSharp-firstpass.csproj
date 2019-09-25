@@ -117,9 +117,11 @@
     <Compile Include="Assets\Plugins\crosstales\Common\UI\Scripts\Util\FPSDisplay.cs" />
     <Compile Include="Assets\Plugins\crosstales\Common\UI\Scripts\Util\ScrollRectHandler.cs" />
     <Compile Include="Assets\Plugins\crosstales\Common\UI\Scripts\WindowManager.cs" />
+    <Compile Include="Assets\Plugins\LightningBolt\LightningBoltScript.cs" />
     <Compile Include="Assets\Plugins\WebSocket\WebSocket.cs" />
     <None Include="Assets\Plugins\changes-library.txt" />
     <None Include="Assets\Plugins\crosstales\BadWordFilter\Resources\Filters\ltr\no.txt" />
+    <None Include="Assets\Plugins\LightningBolt\Readme.txt" />
     <None Include="Assets\Plugins\crosstales\BadWordFilter\Resources\Filters\special\names.txt" />
     <None Include="Assets\Plugins\crosstales\BadWordFilter\Resources\Filters\special\global.txt" />
     <None Include="Assets\Plugins\crosstales\BadWordFilter\Resources\Filters\ltr\ko.txt" />

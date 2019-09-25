@@ -6,6 +6,7 @@ ScriptsOnlyBuild:
     - Crosstales.BWF.Data.Source
     - Crosstales.BWF.Manager.BadWordManager
     - Crosstales.BWF.Provider.BadWordProviderText
+    - DigitalRuby.LightningBolt.LightningBoltScript
     Assembly-CSharp.dll:
     - AStar.AStarGrid
     - AStar.Pathfinding
@@ -115,7 +116,6 @@ ScriptsOnlyBuild:
     - DestroyAfterAnimation
     - DestroyAfterDelay
     - DigitalGoodController
-    - DigitalRuby.LightningBolt.LightningBoltScript
     - DirectionArrow
     - Door
     - DoorCollider
@@ -1868,7 +1868,7 @@ ScriptsOnlyBuild:
   - hash:
       serializedVersion: 2
       Hash: 8037b5a5c2c80155a18a2623b362806b
-    assemblyName: Assembly-CSharp.dll
+    assemblyName: Assembly-CSharp-firstpass.dll
     namespaceName: DigitalRuby.LightningBolt
     className: LightningBoltScript
   - hash:
@@ -1975,7 +1975,7 @@ ScriptsOnlyBuild:
     className: TestScript
   - hash:
       serializedVersion: 2
-      Hash: 49568861875d1b19f5892072dc6c5fd2
+      Hash: ac14fae0ab4bc22324dbd045716f4949
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: BattleBars
@@ -2029,7 +2029,7 @@ ScriptsOnlyBuild:
     className: WebBounce
   - hash:
       serializedVersion: 2
-      Hash: 50e7a584f91658cdab752695a36224c8
+      Hash: 034f64fc9546096ac3cf29152a36b409
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: PlayerShipEntity
@@ -2089,7 +2089,7 @@ ScriptsOnlyBuild:
     className: Critter
   - hash:
       serializedVersion: 2
-      Hash: 6c0752f130398f34b1d836aa748b5654
+      Hash: e495d6e9e757dab605804b063d7bc48e
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: SeaMonsterEntity
@@ -2119,7 +2119,7 @@ ScriptsOnlyBuild:
     className: BadWordManager
   - hash:
       serializedVersion: 2
-      Hash: 4fe8e6efbe4ab3616e8ad649eed1d84e
+      Hash: 4e5eded11d35d65c8d1296fae1cbe0ac
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: SeaEntity
@@ -2947,7 +2947,7 @@ ScriptsOnlyBuild:
     className: TradeHistoryPanel
   - hash:
       serializedVersion: 2
-      Hash: bba8b357d1d71f98c03e8549b5d11429
+      Hash: 211332097d72704dde897c9192ca9ad2
     assemblyName: Assembly-CSharp.dll
     namespaceName: AStar
     className: AStarGrid
@@ -3529,7 +3529,7 @@ ScriptsOnlyBuild:
     className: CinemachineShot
   - hash:
       serializedVersion: 2
-      Hash: 03e4263f2da7c598f93bf7a411fa3761
+      Hash: 10814c49712256a2e5c181aad8098b31
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: BotShipEntity
@@ -3625,7 +3625,7 @@ ScriptsOnlyBuild:
     className: CinemachineVirtualCamera
   - hash:
       serializedVersion: 2
-      Hash: 5407d16c9050bcc03ad03916bddb9829
+      Hash: 3efd860bf955a3dfe32e51c24a4fd12e
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: ShipEntity
@@ -4411,7 +4411,7 @@ ScriptsOnlyBuild:
     className: SpriteOutline
   - hash:
       serializedVersion: 2
-      Hash: e272046d9bf1f2aa007cfba5c59a06ed
+      Hash: 6b316ce7f3099fa4953cfb1bd80cef9a
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: Ship

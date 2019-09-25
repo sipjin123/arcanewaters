@@ -343,7 +343,6 @@
     <Compile Include="Assets\Scripts\Effects\ExplosionParticle.cs" />
     <Compile Include="Assets\Scripts\Effects\Footprint.cs" />
     <Compile Include="Assets\Scripts\Effects\FootprintManager.cs" />
-    <Compile Include="Assets\Scripts\Effects\LightningBolt\LightningBoltScript.cs" />
     <Compile Include="Assets\Scripts\Effects\LineCreator.cs" />
     <Compile Include="Assets\Scripts\Effects\MovingDot.cs" />
     <Compile Include="Assets\Scripts\Effects\TrailingLine.cs" />
@@ -770,7 +769,6 @@
     <None Include="Assets\Resources\Text\RandomMaps\BiomeAdjectives\RandomMapLavaAdj.txt" />
     <None Include="Assets\Colorify\Shaders\Realtime\2 colors\Colorify-2colors-Cutout-Bumped.shader" />
     <None Include="Assets\ScriptTemplates\81-C# Script-NewBehaviourScript.cs.txt" />
-    <None Include="Assets\Scripts\Effects\LightningBolt\Readme.txt" />
     <None Include="Assets\Resources\Text\RandomMaps\BiomeNouns\RandomMapDesertNoun.txt" />
     <None Include="Assets\Colorify\Manual\changelog.txt" />
     <None Include="Assets\Colorify\Shaders\Realtime\2 colors\Colorify-2colors-Alpha-Bumped.shader" />

@@ -154,7 +154,6 @@
     <Compile Include="Assets\Scripts\Editor\MinimapCreator.cs" />
     <Compile Include="Assets\Scripts\Editor\RandomBrush.cs" />
     <Compile Include="Assets\Scripts\Editor\TestWindow.cs" />
-    <Compile Include="Assets\Scripts\Effects\LightningBolt\Editor\LightningBoltEditor.cs" />
     <Compile Include="Assets\Scripts\ItemCreation\Editor\AbilityEditor.cs" />
     <Compile Include="Assets\Scripts\ItemCreation\Editor\ItemBuilderEditor.cs" />
     <Compile Include="Assets\Scripts\ItemCreation\Editor\ItemBuilderWindow.cs" />
