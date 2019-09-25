@@ -133,6 +133,9 @@ public class SeaMonsterEntity : SeaEntity
 
       // Note our spawn position
       _spawnPos = this.transform.position;
+
+      _simpleAnim.playAnimation(Anim.Type.Idle_North);
+      gridReference.showGizmo = seaMonsterData.showDebugGizmo;
    }
 
    protected override void Update () {
@@ -541,13 +544,7 @@ public class SeaMonsterEntity : SeaEntity
    protected virtual void killUnit () {
       hasDied = true;
       handleAnimations();
-
-      // Disable all colliders that would block the clicking of the spawned treasure bag
-      if (interactiveColliders.Count > 0) {
-         foreach (Collider2D collider in interactiveColliders) {
-            collider.enabled = false;
-         }
-      }
+      
       _clickableBox.gameObject.SetActive(false);
       seaMonsterBars.gameObject.SetActive(false);
 

@@ -1688,6 +1688,11 @@ public class RPCManager : NetworkBehaviour {
       BattleManager.self.executeAttack(battle, sourceBattler, targetBattlers, abilityInventoryIndex);
    }
 
+   [Command]
+   public void Cmd_StanceChange (int userID, Battler.Stance newStance) {
+      BattleManager.self.getBattler(userID).stance = newStance;
+   }
+
    [Server]
    protected void getShipsForArea () {
       // Get the current list of ships for the area

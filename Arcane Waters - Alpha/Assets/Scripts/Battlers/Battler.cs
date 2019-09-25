@@ -215,6 +215,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       playAnim(animToPlay);
 
       initAbilities();
+
+      StartCoroutine(CO_initializeClientBattler());
    }
 
    public virtual void Update () {
@@ -1042,6 +1044,18 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          default:
             D.warning("Ability doesn't know how to handle action: " + battleAction + ", ability: " + this);
             yield break;
+      }
+   }
+
+   private IEnumerator CO_initializeClientBattler () {
+      // We will wait until this battler battle is in the BattleManager battle list.
+      yield return new WaitUntil(() => BattleManager.self.getBattle(battleId) != null);
+
+      if (battle == null) {
+         if (!(this is MonsterBattler)) {
+            battle = BattleManager.self.getBattle(battleId);
+            transform.SetParent(battle.transform, false);
+         }
       }
    }
 

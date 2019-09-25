@@ -77,7 +77,11 @@ public class BattleManager : MonoBehaviour {
    }
 
    public Battle getBattle (int battleId) {
-      return _battles[battleId];
+      if (_battles.ContainsKey(battleId)) {
+         return _battles[battleId];
+      }
+
+      return null;
    }
 
    public Battler getBattler (int userId) {
@@ -223,6 +227,8 @@ public class BattleManager : MonoBehaviour {
       battler.player = player;
       battler.battle = battle;
       battler.userId = player.userId;
+
+      // Zeronev: this will not sync the battle ID to all created battlers, a CMD is needed.
       battler.battleId = battle.battleId;
       battler.teamType = teamType;
       battler.biomeType = battle.biomeType;
@@ -528,8 +534,9 @@ public class BattleManager : MonoBehaviour {
       if (actionToApply is StanceAction) {
          StanceAction action = (StanceAction) actionToApply;
 
-         // Assign the new stance
-         source.stance = action.newStance;
+         // Assign the new stance (ZERONEV - I commented the line below cause we are changing stances in a different way now)
+         // will fully remove "stance action" later on.
+         // source.stance = action.newStance;
 
       } else if (actionToApply is AttackAction || actionToApply is BuffAction) {
          BattleAction action = (BattleAction) actionToApply;

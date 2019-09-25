@@ -58,10 +58,11 @@ public class Battle : NetworkBehaviour {
    // Accommodates the battle item with their respective battlers, if no parent is set
    private void clientBattleReposition () {
       if (transform.parent == null) {
-
          transform.SetParent(BattleManager.self.transform, true);
+      }
 
-         foreach (Battler battler in BattleManager.self.getBattle(battleId).getParticipants()) {
+      foreach (Battler battler in BattleManager.self.getBattle(battleId).getParticipants()) {
+         if (battler.transform.parent == null) {
             battler.transform.SetParent(transform, false);
          }
       }
@@ -76,6 +77,11 @@ public class Battle : NetworkBehaviour {
 
       // Cycle over all of the participants in the battle
       foreach (Battler battler in getParticipants()) {
+
+         if (battler.transform.parent == null) {
+            battler.transform.SetParent(transform, false);
+         }
+
          float bufferedCooldown = battler.cooldownEndTime + MONSTER_ATTACK_BUFFER;
 
          // Dead battlers don't do anything

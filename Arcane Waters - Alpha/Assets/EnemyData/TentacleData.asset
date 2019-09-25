@@ -34,7 +34,7 @@ MonoBehaviour:
     type: 3}
   defaultRippleSprite: {fileID: 2800000, guid: 5c1cf74553558b54bb8ab8274c0bf4cb, type: 3}
   scaleOverride: 0.5
-  outlineScaleOverride: 1
+  outlineScaleOverride: 1.15
   rippleScaleOverride: 1
   maxHealth: 25
   animGroup: 6
