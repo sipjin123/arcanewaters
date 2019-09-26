@@ -220,7 +220,7 @@ MonoBehaviour:
   serverOnly: 0
   localPlayerAuthority: 0
   m_AssetId: 
-  m_SceneId: 1513215522
+  m_SceneId: 4166705278
 --- !u!114 &114000012734016052
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -355,8 +355,8 @@ MonoBehaviour:
   extrapolationMode: 1
   useExtrapolationTimeLimit: 1
   extrapolationTimeLimit: 5
-  useExtrapolationDistanceLimit: 1
-  extrapolationDistanceLimit: 0.2
+  useExtrapolationDistanceLimit: 0
+  extrapolationDistanceLimit: 20
   sendPositionThreshold: 0
   sendRotationThreshold: 0
   sendScaleThreshold: 0
@@ -367,7 +367,7 @@ MonoBehaviour:
   snapPositionThreshold: 0
   snapRotationThreshold: 0
   snapScaleThreshold: 0
-  positionLerpSpeed: 0.25
+  positionLerpSpeed: 0.85
   rotationLerpSpeed: 0.85
   scaleLerpSpeed: 0.85
   timeCorrectionSpeed: 0.1
@@ -384,7 +384,7 @@ MonoBehaviour:
   isAngularVelocityCompressed: 0
   isSmoothingAuthorityChanges: 0
   whenToUpdateTransform: 1
-  sendRate: 45
+  sendRate: 30
   childObjectToSync: {fileID: 0}
   setVelocityInsteadOfPositionOnNonOwners: 0
   maxPositionDifferenceForVelocitySyncing: 10
