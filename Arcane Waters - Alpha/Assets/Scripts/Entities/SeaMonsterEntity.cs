@@ -254,10 +254,21 @@ public class SeaMonsterEntity : SeaEntity
       }
 
       Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, seaMonsterData.detectRadius);
+
+      int maxCount = 40;
+      int currentCount = 0;
       if (hits.Length > 0) {
          foreach (Collider2D hit in hits) {
+            if (currentCount > maxCount) {
+               // Avoid stack overflow
+               break;
+            }
+            currentCount++;
+            if (hit == null) {
+               continue;
+            }
             if (hit.GetComponent<PlayerShipEntity>() != null) {
-               if (!_attackers.Contains(hit.GetComponent<NetEntity>())) {
+               if (!_attackers.Contains(hit.GetComponent<NetEntity>()) && !hit.GetComponent<PlayerShipEntity>().isDead()) {
                   noteAttacker(hit.GetComponent<PlayerShipEntity>());
                }
             }
@@ -290,6 +301,7 @@ public class SeaMonsterEntity : SeaEntity
                if (Vector2.Distance(transform.position, spot) < seaMonsterData.maxProjectileDistanceGap) {
                   meleeAtSpot(spot, seaMonsterData.attackType);
                   monsterBehavior = MonsterBehavior.AttackTarget;
+
                   planNextMove();
                }
             } else {
@@ -302,6 +314,7 @@ public class SeaMonsterEntity : SeaEntity
          }
          return;
       }
+
       planNextMove();
    }
 
@@ -313,7 +326,11 @@ public class SeaMonsterEntity : SeaEntity
          }
 
          if (nearestEntity == null) {
-            nearestEntity = entity;
+            if (!entity.isDead()) {
+               nearestEntity = entity;
+            } else {
+               return null;
+            }
          }
 
          float oldDistanceGap = Vector2.Distance(nearestEntity.transform.position, transform.position);
@@ -387,8 +404,17 @@ public class SeaMonsterEntity : SeaEntity
    }
 
    private IEnumerator CO_ProcessNextMove () {
+      yield return new WaitForSeconds(.3f);
+
       // Checks if there are enemies nearby
-      scanTargetsInArea();
+      if (targetEntity == null) {
+         scanTargetsInArea();
+      } else {
+         if (targetEntity.isDead()) {
+            targetEntity = null;
+            scanTargetsInArea();
+         }
+      }
 
       // Gets the nearest target if there is
       targetEntity = getNearestTarget();
@@ -510,6 +536,7 @@ public class SeaMonsterEntity : SeaEntity
             List<ANode> gridPath = pathFindingReference.findPathNowInit(transform.position, newTargetPos);
             if (gridPath == null) {
                // Invalid Path, attempt again
+
                planNextMove();
                return;
             }
@@ -591,6 +618,7 @@ public class SeaMonsterEntity : SeaEntity
       isEngaging = true;
 
       monsterBehavior = MonsterBehavior.Idle;
+
       planNextMove();
    }
 
