@@ -65,6 +65,9 @@ public class SeaMonsterEntity : SeaEntity
    // Snaps the minion to its parents position while moving
    public bool snapToParent = false;
 
+   // The limit of the overlap collider check to avoid too much checking
+   public const int MAX_COLLISION_COUNT = 40;
+
    // Seamonster Animation
    public enum SeaMonsterAnimState
    {
@@ -255,11 +258,10 @@ public class SeaMonsterEntity : SeaEntity
 
       Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, seaMonsterData.detectRadius);
 
-      int maxCount = 40;
       int currentCount = 0;
       if (hits.Length > 0) {
          foreach (Collider2D hit in hits) {
-            if (currentCount > maxCount) {
+            if (currentCount > MAX_COLLISION_COUNT) {
                // Avoid stack overflow
                break;
             }
@@ -407,14 +409,7 @@ public class SeaMonsterEntity : SeaEntity
       yield return new WaitForSeconds(.3f);
 
       // Checks if there are enemies nearby
-      if (targetEntity == null) {
-         scanTargetsInArea();
-      } else {
-         if (targetEntity.isDead()) {
-            targetEntity = null;
-            scanTargetsInArea();
-         }
-      }
+      scanTargetsInArea();
 
       // Gets the nearest target if there is
       targetEntity = getNearestTarget();
