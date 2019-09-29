@@ -261,7 +261,7 @@ public class RPCManager : NetworkBehaviour {
          List<Item> databaseList = DB_Main.getRequiredIngredients(_player.userId, itemLoots);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            processGroupRewards(_player.userId, databaseList, lootInfoList);
+            processGroupRewards(_player.userId, databaseList, lootInfoList, false);
 
             // Send it to the specific player that opened it
             Target_OpenChest(_player.connectionToClient, item, chest.id);
@@ -1292,7 +1292,7 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<Item> databaseList = DB_Main.getRequiredIngredients(_player.userId, itemLoots);
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            processGroupRewards(_player.userId, databaseList, processedLoots);
+            processGroupRewards(_player.userId, databaseList, processedLoots, true);
          });
       });
    }
@@ -1441,7 +1441,7 @@ public class RPCManager : NetworkBehaviour {
          Jobs newJobXP = DB_Main.getJobXP(_player.userId);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            processGroupRewards(_player.userId, databaseList, lootInfoList);
+            processGroupRewards(_player.userId, databaseList, lootInfoList, true);
 
             // Let them know they gained experience
             _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Miner, 0);
@@ -1450,7 +1450,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Server]
-   private void processGroupRewards(int userID, List<Item> databaseItems, List<LootInfo> rewardList) {
+   private void processGroupRewards(int userID, List<Item> databaseItems, List<LootInfo> rewardList, bool showPanel) {
       // Generate Item List to show in popup after data writing
       List<Item> itemRewardList = new List<Item>();
       for (int i = 0; i < rewardList.Count; i++) {
@@ -1473,7 +1473,9 @@ public class RPCManager : NetworkBehaviour {
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Calls Reward Popup
-            Target_ReceiveItemList(_player.connectionToClient, itemRewardList.ToArray());
+            if (showPanel) {
+               Target_ReceiveItemList(_player.connectionToClient, itemRewardList.ToArray());
+            }
          });
       });
    }
@@ -1578,17 +1580,20 @@ public class RPCManager : NetworkBehaviour {
       Instance instance = InstanceManager.self.getInstance(_player.instanceId);
       instance.entities.Add(bot);
 
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(.5f, -.5f), bot.netId, 1, -1, 1, Enemy.Type.Tentacle);
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(-.5f, -.5f), bot.netId, -1, -1, 0, Enemy.Type.Tentacle);
+      float distanceGap = .35f;
+      float diagonalDistanceGap = .55f;
 
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(.5f, .5f), bot.netId, 1, 1, 1, Enemy.Type.Tentacle);
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(-.5f, .5f), bot.netId, -1, 1, 0, Enemy.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(distanceGap, -distanceGap), bot.netId, 1, -1, 1, Enemy.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(-distanceGap, -distanceGap), bot.netId, -1, -1, 0, Enemy.Type.Tentacle);
 
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(-.75f, 0), bot.netId, -1, 0, 1, Enemy.Type.Tentacle);
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(.75f, 0), bot.netId, 1, 0, 0, Enemy.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(distanceGap, distanceGap), bot.netId, 1, 1, 1, Enemy.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(-distanceGap, distanceGap), bot.netId, -1, 1, 0, Enemy.Type.Tentacle);
 
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(0, -.75f), bot.netId, 0, -1, 1, Enemy.Type.Tentacle);
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(0, .75f), bot.netId, 0, 1, 0, Enemy.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(-diagonalDistanceGap, 0), bot.netId, -1, 0, 1, Enemy.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(diagonalDistanceGap, 0), bot.netId, 1, 0, 0, Enemy.Type.Tentacle);
+
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(0, -diagonalDistanceGap), bot.netId, 0, -1, 1, Enemy.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(0, diagonalDistanceGap), bot.netId, 0, 1, 0, Enemy.Type.Tentacle);
    }
 
    [Command]

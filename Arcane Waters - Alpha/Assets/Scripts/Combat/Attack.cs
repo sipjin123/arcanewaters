@@ -8,7 +8,7 @@ public class Attack : MonoBehaviour {
    #region Public Variables
 
    // The types of attack
-   public enum Type {  None = 0, Cannon = 1, Ice = 2, Air = 3, Tentacle = 4, Venom = 5, Boulder = 6, Shock_Ball = 7 }
+   public enum Type {  None = 0, Cannon = 1, Ice = 2, Air = 3, Tentacle = 4, Venom = 5, Boulder = 6, Shock_Ball = 7, Tentacle_Range = 8 }
 
    #endregion
 
@@ -22,7 +22,9 @@ public class Attack : MonoBehaviour {
          case Type.Venom:
             return .10f;
          case Type.Boulder:
-            return 1.10f;
+            return .10f;
+         case Type.Tentacle_Range:
+            return .10f;
          case Type.Shock_Ball:
             return .10f;
          default:

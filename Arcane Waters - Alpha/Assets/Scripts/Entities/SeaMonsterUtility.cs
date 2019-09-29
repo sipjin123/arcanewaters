@@ -76,4 +76,15 @@ public static class SeaMonsterUtility
       Vector2 newSpot = new Vector2(position.x, position.y) + new Vector2(randomizedX, randomizedY);
       return newSpot;
    }
+
+   public static Vector2 getFixedPositionAroundPosition (Vector2 position, Vector2 locationSetup) {
+      float newX = (locationSetup.x != 0 && locationSetup.y != 0) ? .4f : .6f;
+      float newY = (locationSetup.x != 0 && locationSetup.y != 0) ? .4f : .6f;
+
+      newX *= locationSetup.x;
+      newY *= locationSetup.y;
+
+      Vector2 newSpot = new Vector2(position.x, position.y) + new Vector2(newX, newY);
+      return newSpot;
+   }
 }

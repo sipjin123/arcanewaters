@@ -40,7 +40,10 @@ public class PrefabsManager : MonoBehaviour {
 
    // The Prefab we use for creating boulder projectiles
    public BoulderProjectile boulderPrefab;
-   
+
+   // The Prefab we use for creating mini boulder projectiles
+   public GameObject miniBoulderPrefab;
+
    // The Prefab we use for creating cannon balls
    public CannonBall cannonBallPrefab;
 
@@ -67,6 +70,9 @@ public class PrefabsManager : MonoBehaviour {
 
    // The Prefab we use for creating networked venom projectiles
    public GameObject networkedVenomProjectilePrefab;
+
+   // The Prefab we use for creating networked tentacle projectiles
+   public GameObject networkedTentacleProjectilePrefab;
 
    // The Prefab we use for creating Damage text
    public ShipDamageText shipDamageTextPrefab;

@@ -11,6 +11,9 @@ namespace AStar
    {
       #region Public Variables
 
+      // Displays the gizmo on editor
+      public bool showGizmo;
+
       // The array of nodes that the A Star algorithm uses
       public ANode[,] nodeArray;
 
@@ -138,6 +141,10 @@ namespace AStar
       }
 
       private void OnDrawGizmos () {
+         if (!showGizmo) {
+            return;
+         }
+
          // If the grid is not empty
          if (nodeArray != null) {
             // Loop through every node in the grid
