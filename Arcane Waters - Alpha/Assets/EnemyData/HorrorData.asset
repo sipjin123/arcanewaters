@@ -13,13 +13,15 @@ MonoBehaviour:
   m_Name: HorrorData
   m_EditorClassIdentifier: 
   seaMonsterType: 301
-  showDebugGizmo: 1
+  showDebugGizmo: 0
   isAggressive: 1
   autoMove: 1
   isMelee: 1
+  isRanged: 1
   shouldDropTreasure: 1
   isInvulnerable: 1
   maxProjectileDistanceGap: 1
+  maxMeleeDistanceGap: 0.5
   maxDistanceGap: 3.2
   attackType: 0
   territoryRadius: 3
@@ -33,7 +35,7 @@ MonoBehaviour:
   secondarySprite: {fileID: 0}
   defaultRippleSprite: {fileID: 2800000, guid: 5c1cf74553558b54bb8ab8274c0bf4cb, type: 3}
   scaleOverride: 0.6
-  outlineScaleOverride: 0.6
+  outlineScaleOverride: 0.7
   rippleScaleOverride: 1
   maxHealth: 8
   animGroup: 7

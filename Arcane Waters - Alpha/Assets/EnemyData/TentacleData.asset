@@ -17,11 +17,13 @@ MonoBehaviour:
   isAggressive: 1
   autoMove: 1
   isMelee: 1
+  isRanged: 1
   shouldDropTreasure: 0
   isInvulnerable: 0
-  maxProjectileDistanceGap: 0.5
+  maxProjectileDistanceGap: 1
+  maxMeleeDistanceGap: 0.5
   maxDistanceGap: 1
-  attackType: 4
+  attackType: 8
   territoryRadius: 1
   detectRadius: 2
   attackFrequency: 1
@@ -34,7 +36,7 @@ MonoBehaviour:
     type: 3}
   defaultRippleSprite: {fileID: 2800000, guid: 5c1cf74553558b54bb8ab8274c0bf4cb, type: 3}
   scaleOverride: 0.5
-  outlineScaleOverride: 1
+  outlineScaleOverride: 1.15
   rippleScaleOverride: 1
   maxHealth: 25
   animGroup: 6

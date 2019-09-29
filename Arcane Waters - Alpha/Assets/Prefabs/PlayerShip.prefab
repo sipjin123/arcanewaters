@@ -997,8 +997,7 @@ GameObject:
   - component: {fileID: 25324}
   - component: {fileID: 25910}
   - component: {fileID: -573325106903764786}
-  - component: {fileID: 989367263819846219}
-  - component: {fileID: 4855974840767711315}
+  - component: {fileID: -2487086605111269621}
   m_Layer: 8
   m_Name: PlayerShip
   m_TagString: Untagged
@@ -1091,8 +1090,6 @@ MonoBehaviour:
   sailors: 0
   rarity: 0
   shipId: 0
-  gridReference: {fileID: 989367263819846219}
-  pathReference: {fileID: 4855974840767711315}
 --- !u!50 &20007
 Rigidbody2D:
   serializedVersion: 4
@@ -1256,8 +1253,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 1
-  m_AssetId: c8d4ea8d65520ad47b76fc8c88ed97be
-  m_SceneId: 0
+  m_AssetId: 
+  m_SceneId: 3503272958
 --- !u!114 &25910
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1338,7 +1335,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.1, y: 0.07}
   m_EdgeRadius: 0
---- !u!114 &989367263819846219
+--- !u!114 &-2487086605111269621
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1347,28 +1344,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 16787}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 322532b722ed52540aa6aff6bf85475e, type: 3}
+  m_Script: {fileID: 11500000, guid: 569f79bb107f88641824d5d35062e0b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  iGridSizeY: 0
-  iGridSizeX: 0
-  vGridWorldSize: {x: 0, y: 0}
---- !u!114 &4855974840767711315
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 16787}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a758185215ea54b4ca3463d151ddcdb9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GridReference: {fileID: 989367263819846219}
-  StartPosition: {fileID: 7680250784173055385}
-  TargetPosition: {fileID: 2883240364513772329}
-  hasStarted: 0
+  syncMode: 0
+  syncInterval: 0.1
+  tempDrop: {fileID: 0}
+  enableDebug: 0
+  quantity: 
+  categoryType: 0
+  itemType: 
+  outputItem: 
 --- !u!1 &16792
 GameObject:
   m_ObjectHideFlags: 0

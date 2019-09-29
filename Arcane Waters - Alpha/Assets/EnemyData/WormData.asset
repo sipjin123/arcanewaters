@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: WormData
   m_EditorClassIdentifier: 
   seaMonsterType: 302
-  showDebugGizmo: 1
+  showDebugGizmo: 0
   isAggressive: 1
   autoMove: 1
   isMelee: 0

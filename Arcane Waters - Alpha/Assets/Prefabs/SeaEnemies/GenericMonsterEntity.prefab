@@ -281,11 +281,6 @@ MonoBehaviour:
   attackCounter: 0
   leftAttackBox: {fileID: 1226546929952306529}
   rightAttackBox: {fileID: 1268288670249470209}
-  interactiveColliders:
-  - {fileID: 58256050713667648}
-  - {fileID: 6938392427603369774}
-  - {fileID: 1268288670249470209}
-  - {fileID: 1226546929952306529}
   attackCirclePrefab: {fileID: 114088976693073942, guid: f70aab4ab08e2424d8c89334e492291f,
     type: 3}
   spritesContainer: {fileID: 1013934132990528}
@@ -455,8 +450,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: 0059c0caa2289d44fb0ab483814bf77f
-  m_SceneId: 0
+  m_AssetId: 
+  m_SceneId: 1831387138
 --- !u!114 &20651762200388567
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -523,6 +518,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 322532b722ed52540aa6aff6bf85475e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showGizmo: 0
   iGridSizeY: 0
   iGridSizeX: 0
   vGridWorldSize: {x: 0, y: 0}
