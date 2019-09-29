@@ -17,9 +17,11 @@ MonoBehaviour:
   isAggressive: 1
   autoMove: 1
   isMelee: 1
+  isRanged: 1
   shouldDropTreasure: 1
   isInvulnerable: 1
   maxProjectileDistanceGap: 1
+  maxMeleeDistanceGap: 0.5
   maxDistanceGap: 3.2
   attackType: 0
   territoryRadius: 3
