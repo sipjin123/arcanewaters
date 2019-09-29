@@ -186,7 +186,18 @@ public class SeaMonsterEntity : SeaEntity
       }
 
       // Sets up where this unit is facing
-      handleFaceDirection();
+      if (seaMonsterData.roleType != RoleType.Minion) {
+         handleFaceDirection();
+      } else {
+         // Forces minions to look at direction in relation to the parent
+         if (distanceFromSpawnPoint.x < 0) {
+            this.facing = Direction.West;
+         } else if (distanceFromSpawnPoint.x == 0) {
+            this.facing = distanceFromSpawnPoint.y == 1 ? Direction.East : Direction.West;
+         } else {
+            this.facing = Direction.East;
+         }
+      }
 
       // If this entity is a Minion, snap to its parent
       if (seaMonsterData.roleType == RoleType.Minion && snapToParent) {
@@ -200,7 +211,7 @@ public class SeaMonsterEntity : SeaEntity
                transform.position = targetLocation;
             }
 
-            _body.AddForce(waypointDirection.normalized * (getMoveSpeed()/1.5f));
+            _body.AddForce(waypointDirection.normalized * (getMoveSpeed()/1.75f));
 
             float distanceToWaypoint = Vector2.Distance(targetLocation, this.transform.position);
             if (distanceToWaypoint < .05f) {
