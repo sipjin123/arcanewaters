@@ -40,7 +40,10 @@ public class PrefabsManager : MonoBehaviour {
 
    // The Prefab we use for creating boulder projectiles
    public BoulderProjectile boulderPrefab;
-   
+
+   // The Prefab we use for creating mini boulder projectiles
+   public GameObject miniBoulderPrefab;
+
    // The Prefab we use for creating cannon balls
    public CannonBall cannonBallPrefab;
 

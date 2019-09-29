@@ -129,7 +129,7 @@ public class SeaMonsterEntity : SeaEntity
       // Initializes the data from the scriptable object
       initData(EnemyManager.self.seaMonsterDataList.Find(_ => _.seaMonsterType == monsterType).seaMonsterData);
 
-      if (isServer && seaMonsterData.roleType != RoleType.Minion) {
+      if (isServer) {
          gridReference.displayGrid(transform.position, this.areaType);
          planNextMove();
       }
@@ -191,16 +191,16 @@ public class SeaMonsterEntity : SeaEntity
       // If this entity is a Minion, snap to its parent
       if (seaMonsterData.roleType == RoleType.Minion && snapToParent) {
          if (seaMonsterParentEntity != null) {
-            Vector2 targetLocation = SeaMonsterUtility.getRandomPositionAroundPosition(seaMonsterParentEntity.transform.position, distanceFromSpawnPoint);
+            Vector2 targetLocation = SeaMonsterUtility.getFixedPositionAroundPosition(seaMonsterParentEntity.transform.position, distanceFromSpawnPoint);
             Vector2 waypointDirection = targetLocation - (Vector2) this.transform.position;
             waypointDirection = waypointDirection.normalized;
 
             // Teleports the Minions if too far away from Parent
-            if (Vector3.Distance(transform.position, seaMonsterParentEntity.transform.position) > 1) {
+            if (Vector3.Distance(transform.position, seaMonsterParentEntity.transform.position) > 2) {
                transform.position = targetLocation;
             }
 
-            _body.AddForce(waypointDirection.normalized * (getMoveSpeed()/2));
+            _body.AddForce(waypointDirection.normalized * (getMoveSpeed()/1.5f));
 
             float distanceToWaypoint = Vector2.Distance(targetLocation, this.transform.position);
             if (distanceToWaypoint < .05f) {
@@ -213,7 +213,7 @@ public class SeaMonsterEntity : SeaEntity
 
       // Process movement towards route
       if (monsterBehavior == MonsterBehavior.MoveAround || monsterBehavior == MonsterBehavior.MoveToTarget) {
-         if (seaMonsterData.roleType != RoleType.Minion && (isEnemyWithinAttackDistance() || (!isEnemyWithinTerritory() && monsterBehavior == MonsterBehavior.MoveToTarget))) {
+         if (seaMonsterData.roleType != RoleType.Minion && (isEnemyWithinRangedAttackDistance() || (!isEnemyWithinTerritory() && monsterBehavior == MonsterBehavior.MoveToTarget))) {
             stopMoving();
          }
 
@@ -299,7 +299,7 @@ public class SeaMonsterEntity : SeaEntity
          Vector2 spot = attacker.transform.position;
 
          if (seaMonsterData.attackType != Attack.Type.None) {
-            if (seaMonsterData.isMelee) {
+            if (seaMonsterData.isMelee && isEnemyWithinMeleeAttackDistance()) {
                if (Vector2.Distance(transform.position, spot) < seaMonsterData.maxProjectileDistanceGap) {
                   meleeAtSpot(spot, seaMonsterData.attackType);
                   monsterBehavior = MonsterBehavior.AttackTarget;
@@ -307,8 +307,10 @@ public class SeaMonsterEntity : SeaEntity
                   planNextMove();
                }
             } else {
-               launchProjectile(spot, attacker, seaMonsterData.attackType, .2f, .4f);
-               monsterBehavior = MonsterBehavior.AttackTarget;
+               if (seaMonsterData.isRanged) {
+                  launchProjectile(spot, attacker, seaMonsterData.attackType, .2f, .4f);
+                  monsterBehavior = MonsterBehavior.AttackTarget;
+               }
             }
          } else {
             isEngaging = true;
@@ -414,15 +416,19 @@ public class SeaMonsterEntity : SeaEntity
       // Gets the nearest target if there is
       targetEntity = getNearestTarget();
 
-      if (seaMonsterData.roleType == RoleType.Minion && targetEntity != null) {
-         if (isEnemyWithinAttackDistance() && hasReloaded()) {
-            attackTarget();
+      if (seaMonsterData.roleType == RoleType.Minion) {
+         if (targetEntity != null) {
+            if (isEnemyWithinRangedAttackDistance() && hasReloaded()) {
+               attackTarget();
+            }
+         } else {
+            setWaypoint(null, .2f);
          }
       } else {
          if (targetEntity != null && isEnemyWithinTerritory()) {
             // If there is a target, calculate if
             if (isEnemyWithinMoveDistance()) {
-               if (isEnemyWithinAttackDistance() && seaMonsterData.roleType != RoleType.Master) {
+               if (isEnemyWithinRangedAttackDistance() && seaMonsterData.roleType != RoleType.Master) {
                   if (hasReloaded()) {
                      attackTarget();
                   } else {
@@ -514,52 +520,52 @@ public class SeaMonsterEntity : SeaEntity
       }
    }
 
-   private void setWaypoint (Transform target) {
+   private void setWaypoint (Transform target, float moveDist = .5f) {
       if (seaMonsterData.roleType == RoleType.Minion) {
          if (target != null) {
             snapToParent = true;
          } else {
+            monsterBehavior = MonsterBehavior.MoveAround;
             snapToParent = false;
+
+            // Pick a new spot around our spawn position
+            Vector2 newTargetPos = SeaMonsterUtility.getRandomPositionAroundPosition(seaMonsterParentEntity.transform.position, distanceFromSpawnPoint);
+            finalizeWaypoint(newTargetPos);
          }
       } else {
          if (target == null) {
-            // Pick a new spot around our spawn position
-            float moveDistance = .5f;
-            Vector2 newTargetPos = _spawnPos + new Vector2(Random.Range(-moveDistance, moveDistance), Random.Range(-moveDistance, moveDistance));
-
-            _waypointList = new List<Waypoint>();
-            List<ANode> gridPath = pathFindingReference.findPathNowInit(transform.position, newTargetPos);
-            if (gridPath == null) {
-               // Invalid Path, attempt again
-
-               planNextMove();
-               return;
-            }
-
-            // Register Route
-            foreach (ANode node in gridPath) {
-               Waypoint newWaypointPath = Instantiate(PrefabsManager.self.waypointPrefab);
-               newWaypointPath.transform.position = node.vPosition;
-               _waypointList.Add(newWaypointPath);
-            }
-
             monsterBehavior = MonsterBehavior.MoveAround;
+
+            // Pick a new spot around our spawn position
+            Vector2 newTargetPos = _spawnPos + new Vector2(Random.Range(-moveDist, moveDist), Random.Range(-moveDist, moveDist));
+            finalizeWaypoint(newTargetPos);
          } else {
+            monsterBehavior = MonsterBehavior.MoveToTarget;
+
             // Pick a new spot around the target opponent
             Vector2 newTargetPos = targetEntity.transform.position;
-
-            // Register Route
-            _waypointList = new List<Waypoint>();
-            foreach (ANode node in pathFindingReference.findPathNowInit(transform.position, newTargetPos)) {
-               Waypoint newWaypointPath = Instantiate(PrefabsManager.self.waypointPrefab);
-               newWaypointPath.transform.position = node.vPosition;
-               _waypointList.Add(newWaypointPath);
-            }
-
-            monsterBehavior = MonsterBehavior.MoveToTarget;
+            finalizeWaypoint(newTargetPos);
          }
          // If has minions, command them to follow
          commandMinions();
+      }
+   }
+
+   private void finalizeWaypoint (Vector3 location) {
+      _waypointList = new List<Waypoint>();
+      List<ANode> gridPath = pathFindingReference.findPathNowInit(transform.position, location);
+      if (gridPath == null) {
+         // Invalid Path, attempt again
+
+         planNextMove();
+         return;
+      }
+
+      // Register Route
+      foreach (ANode node in gridPath) {
+         Waypoint newWaypointPath = Instantiate(PrefabsManager.self.waypointPrefab);
+         newWaypointPath.transform.position = node.vPosition;
+         _waypointList.Add(newWaypointPath);
       }
    }
 
@@ -665,10 +671,20 @@ public class SeaMonsterEntity : SeaEntity
       return false;
    }
 
-   protected bool isEnemyWithinAttackDistance () {
+   protected bool isEnemyWithinRangedAttackDistance () {
       if (targetEntity != null) {
          float distanceGap = Vector2.Distance(targetEntity.transform.position, transform.position);
          if (distanceGap < seaMonsterData.maxProjectileDistanceGap) {
+            return true;
+         }
+      }
+      return false;
+   }
+
+   protected bool isEnemyWithinMeleeAttackDistance () {
+      if (targetEntity != null) {
+         float distanceGap = Vector2.Distance(targetEntity.transform.position, transform.position);
+         if (distanceGap < seaMonsterData.maxMeleeDistanceGap) {
             return true;
          }
       }

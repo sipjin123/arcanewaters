@@ -22,16 +22,22 @@ public class SeaMonsterEntityData : ScriptableObject {
    // Determines if this is a Melee Unit
    public bool isMelee = false;
 
+   // Determines if this is a Ranged Unit
+   public bool isRanged = true;
+
    // Determines if this is unit can drop treasures
    public bool shouldDropTreasure = true;
 
    // Determines if this is can take damage
    public bool isInvulnerable = false;
 
-   // The max gap distance between target and this unity
+   // The max gap distance between target and this unit to perform a ranged attack
    public float maxProjectileDistanceGap = 2;
 
-   // The max gap distance between target and this unity
+   // The max gap distance between target and this unit to perform a melee attack
+   public float maxMeleeDistanceGap = .5f;
+
+   // The max gap distance between target and this unit before it stops chasing
    public float maxDistanceGap = 3;
 
    // Determines the type of attack this unit does

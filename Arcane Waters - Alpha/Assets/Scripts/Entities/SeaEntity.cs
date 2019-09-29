@@ -270,7 +270,7 @@ public class SeaEntity : NetEntity {
          SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Hit_1, pos);
       } else {
          // Show the explosion
-         if (attackType != Attack.Type.Ice && attackType != Attack.Type.Venom) {
+         if (attackType != Attack.Type.Ice && attackType != Attack.Type.Venom && attackType != Attack.Type.Tentacle_Range) {
             Instantiate(PrefabsManager.self.explosionPrefab, pos, Quaternion.identity);
          }
 
@@ -443,7 +443,7 @@ public class SeaEntity : NetEntity {
 
       attackCounter++;
 
-      if (attackType != Attack.Type.Venom) {
+      if (attackType != Attack.Type.Venom && attackType != Attack.Type.Tentacle_Range) {
          // Have the server check for collisions after the AOE projectile reaches the target
          StartCoroutine(CO_CheckCircleForCollisions(this, launchDelay + delay, spot, attackType, false));
       }
@@ -472,7 +472,7 @@ public class SeaEntity : NetEntity {
    protected void serverFireProjectile (Vector2 spot, Attack.Type attackType, Vector2 spawnPosition, float delay) {
       // Creates the projectile and the target circle
       if (GetComponent<PlayerShipEntity>() == null) {
-         if (attackType != Attack.Type.Venom) {
+         if (attackType != Attack.Type.Venom && attackType != Attack.Type.Tentacle_Range) {
             Rpc_CreateAttackCircle(spawnPosition, spot, Util.netTime(), Util.netTime() + delay, attackType, true);
          } else {
             // Create a venom
@@ -510,6 +510,19 @@ public class SeaEntity : NetEntity {
 
                      if (attackType == Attack.Type.Shock_Ball) {
                         chainLightning(entity.transform.position, entity.userId);
+                     } else if (attackType == Attack.Type.Boulder) {
+                        float offset = .2f;
+                        float targetOffset = .5f;
+                        float diagonalValue = 0;
+
+                        if (attackCounter % 2 == 0) {
+                           diagonalValue = offset;
+                        }
+
+                        fireTimedBoulderProjectile(entity.transform.position + new Vector3(diagonalValue, offset, 0), entity.transform.position + new Vector3(targetOffset, targetOffset, entity.transform.position.z));
+                        fireTimedBoulderProjectile(entity.transform.position + new Vector3(diagonalValue, -offset, 0), entity.transform.position + new Vector3(targetOffset, -targetOffset, entity.transform.position.z));
+                        fireTimedBoulderProjectile(entity.transform.position + new Vector3(-offset, diagonalValue, 0), entity.transform.position + new Vector3(-targetOffset, targetOffset, entity.transform.position.z));
+                        fireTimedBoulderProjectile(entity.transform.position + new Vector3(-offset, -diagonalValue, 0), entity.transform.position + new Vector3(-targetOffset, -targetOffset, entity.transform.position.z));
                      }
                   } else {
                      entity.Rpc_ShowExplosion(entity.transform.position, 0, Attack.Type.None);
@@ -537,6 +550,61 @@ public class SeaEntity : NetEntity {
       Physics2D.OverlapCircleNonAlloc(circleCenter, .20f, hits);
 
       return hits;
+   }
+
+   [Server]
+   private void fireTimedBoulderProjectile (Vector2 startPos, Vector2 targetPos) {
+      if (isDead()) {
+         return;
+      }
+
+      // We either fire out the left or right side depending on which was clicked
+      Vector2 direction = targetPos - (Vector2) startPos;
+      direction = direction.normalized;
+
+      // Figure out the desired velocity
+      Vector2 velocity = direction.normalized * NetworkedBoulderProjectile.MOVE_SPEED;
+
+      // Delay the firing a little bit to compensate for lag
+      float timeToStartFiring = TimeManager.self.getSyncedTime() + .150f;
+
+      // Note the time at which we last successfully attacked
+      _lastAttackTime = Time.time;
+
+      // Make note on the clients that the ship just attacked
+      Rpc_NoteAttack();
+
+      // Tell all clients to fire the boulder projectile at the same time
+      Rpc_FireTimedBoulderProjectile(timeToStartFiring, velocity, startPos, targetPos);
+
+      // Standalone Server needs to call this as well
+      if (!MyNetworkManager.isHost) {
+         StartCoroutine(CO_FireTimedBoulderProjectile(timeToStartFiring, velocity, startPos, targetPos));
+      }
+   }
+
+   [ClientRpc]
+   public void Rpc_FireTimedBoulderProjectile (float startTime, Vector2 velocity, Vector3 startPos, Vector3 endPos) {
+      StartCoroutine(CO_FireTimedBoulderProjectile(startTime, velocity, startPos, endPos));
+   }
+
+   protected IEnumerator CO_FireTimedBoulderProjectile (float startTime, Vector2 velocity, Vector3 startPos, Vector3 endpos) {
+      float delay = startTime - TimeManager.self.getSyncedTime();
+
+      yield return new WaitForSeconds(delay);
+
+      // Create the boulder projectile object from the prefab
+      GameObject boulderObject = Instantiate(PrefabsManager.self.miniBoulderPrefab, startPos, Quaternion.identity);
+      NetworkedBoulderProjectile netBoulder = boulderObject.GetComponent<NetworkedBoulderProjectile>();
+      netBoulder.creatorUserId = this.userId;
+      netBoulder.instanceId = this.instanceId;
+      netBoulder.setDirection((Direction) facing, endpos);
+
+      // Add velocity to the projectile
+      netBoulder.body.velocity = velocity;
+
+      // Destroy the boulder projectile after a couple seconds
+      Destroy(boulderObject, NetworkedBoulderProjectile.LIFETIME);
    }
 
    [Server]
