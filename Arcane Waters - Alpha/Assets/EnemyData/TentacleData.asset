@@ -27,7 +27,7 @@ MonoBehaviour:
   territoryRadius: 1
   detectRadius: 2
   attackFrequency: 1
-  reloadDelay: 1
+  reloadDelay: 3
   moveFrequency: 2
   findTargetsFrequency: 0.5
   defaultSprite: {fileID: -5710345286123915637, guid: afc35c71681f753418147a7603be088d,
