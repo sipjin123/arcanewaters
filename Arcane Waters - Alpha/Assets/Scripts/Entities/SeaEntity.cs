@@ -215,7 +215,7 @@ public class SeaEntity : NetEntity {
          boulder.startTime = startTime;
          boulder.endTime = endTime;
       } else if (attackType == Attack.Type.Tentacle_Range) {
-         // Create a boulder
+         // Create a tentacle projectile
          TentacleProjectile tentacleProjectile = Instantiate(PrefabsManager.self.getTentacleProjectilePrefab(attackType), startPos, Quaternion.identity);
          tentacleProjectile.creator = this;
          tentacleProjectile.startPos = startPos;
@@ -412,13 +412,13 @@ public class SeaEntity : NetEntity {
    }
 
    [Server]
-   public void fireAtSpot (Vector2 spot, Attack.Type attackType, float attackDelay, float launchDelay, Vector2 spawnPositionOverride = new Vector2(), bool isLastProjectile = true) {
-      if (spawnPositionOverride.magnitude == 0 && (isDead() || !hasReloaded())) {
+   public void fireAtSpot (Vector2 spot, Attack.Type attackType, float attackDelay, float launchDelay, Vector2 spawnPosition = new Vector2(), bool isLastProjectile = true) {
+      if (spawnPosition.magnitude == 0 && (isDead() || !hasReloaded())) {
          return;
       }
 
       // If the requested spot is not in the allowed area, reject the request
-      if (spawnPositionOverride.magnitude == 0 && leftAttackBox.OverlapPoint(spot) && !rightAttackBox.OverlapPoint(spot) && GetComponent<SeaMonsterEntity>() == null) {
+      if ((spawnPosition.magnitude == 0 && !(this is SeaMonsterEntity)) && leftAttackBox.OverlapPoint(spot) && !rightAttackBox.OverlapPoint(spot)) {
          return;
       }
 
@@ -429,33 +429,25 @@ public class SeaEntity : NetEntity {
       float distance = Vector2.Distance(this.transform.position, spot);
       float delay = Mathf.Clamp(distance, .5f, 1.5f);
 
-      Vector3 spawnPosition = new Vector3(0, 0, 0);
-
-      // Determines the origin of the projectile
-      if (projectileSpawnLocations == null || projectileSpawnLocations.Count < 1) {
-         spawnPosition = transform.position;
-      } else {
-         if (this.facing != 0) {
-            _projectileSpawnLocation = projectileSpawnLocations.Find(_ => _.direction == (Direction) this.facing).spawnTransform;
-            spawnPosition = _projectileSpawnLocation.position;
+      if (spawnPosition.magnitude == 0) {
+         // Determines the origin of the projectile
+         if (projectileSpawnLocations == null || projectileSpawnLocations.Count < 1) {
+            spawnPosition = transform.position;
+         } else {
+            if (this.facing != 0) {
+               _projectileSpawnLocation = projectileSpawnLocations.Find(_ => _.direction == (Direction) this.facing).spawnTransform;
+               spawnPosition = _projectileSpawnLocation.position;
+            }
          }
       }
 
       if (attackDelay <= 0) {
-         if (spawnPositionOverride.magnitude != 0) {
-            serverFireProjectile(spot, attackType, spawnPositionOverride, delay);
-         } else {
-            serverFireProjectile(spot, attackType, spawnPosition, delay);
-         }
+         serverFireProjectile(spot, attackType, spawnPosition, delay);
       } else {
          // Speed modifiers for the projectile types
          delay /= Attack.getSpeedModifier(attackType);
 
-         if (spawnPositionOverride.magnitude != 0) {
-            registerProjectileSchedule(spot, spawnPositionOverride, attackType, attackDelay, Util.netTime() + launchDelay, delay, isLastProjectile);
-         } else {
-            registerProjectileSchedule(spot, spawnPosition, attackType, attackDelay, Util.netTime() + launchDelay, delay, isLastProjectile);
-         }
+         registerProjectileSchedule(spot, spawnPosition, attackType, attackDelay, Util.netTime() + launchDelay, delay, isLastProjectile);
       }
 
       attackCounter++;
@@ -471,7 +463,7 @@ public class SeaEntity : NetEntity {
 
    [Server]
    protected void registerProjectileSchedule (Vector2 targetposition, Vector2 spawnPosition, Attack.Type attackType, float animationTime, float projectileTime, float impactDelay, bool lastProjectile = true) {
-      //_projectileSched.RemoveAll(item => item.dispose == true);
+      _projectileSched.RemoveAll(item => item.dispose == true);
       ProjectileSchedule newSched = new ProjectileSchedule {
          attackAnimationTime = animationTime,
          projectileLaunchTime = projectileTime,
@@ -492,7 +484,7 @@ public class SeaEntity : NetEntity {
    [Server]
    protected void serverFireProjectile (Vector2 spot, Attack.Type attackType, Vector2 spawnPosition, float delay) {
       // Creates the projectile and the target circle
-      if (GetComponent<PlayerShipEntity>() == null) {
+      if (!(this is PlayerShipEntity)) {
          if (attackType != Attack.Type.Venom && attackType != Attack.Type.Boulder && attackType != Attack.Type.Tentacle) {
             Rpc_CreateAttackCircle(spawnPosition, spot, Util.netTime(), Util.netTime() + delay, attackType, true);
          } else {
@@ -523,8 +515,9 @@ public class SeaEntity : NetEntity {
       yield return new WaitForSeconds(delay);
 
       List<NetEntity> enemyHitList = new List<NetEntity>();
+      Collider2D[] getColliders = attackType == Attack.Type.Tentacle_Range ? getHitColliders(circleCenter, .1f) : getHitColliders(circleCenter);
       // Check for collisions inside the circle
-      foreach (Collider2D hit in attackType == Attack.Type.Tentacle_Range ? getHitColliders(circleCenter, .1f) : getHitColliders(circleCenter)) {
+      foreach (Collider2D hit in getColliders) {
          if (hit != null) {
             SeaEntity entity = hit.GetComponent<SeaEntity>();
 

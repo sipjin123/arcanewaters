@@ -260,11 +260,11 @@ public class SeaMonsterEntity : SeaEntity
 
    #region External Entity Related Functions
 
-   public override void noteAttacker (NetEntity entity) {
-      if (entity.GetComponent<SeaMonsterEntity>() == null) {
-         base.noteAttacker(entity);
+   public override void noteAttacker (NetEntity attacker) {
+      if (!(attacker is SeaMonsterEntity)) {
+         base.noteAttacker(attacker);
          if (seaMonsterParentEntity != null) {
-            seaMonsterParentEntity.noteAttacker(entity);
+            seaMonsterParentEntity.noteAttacker(attacker);
          }
       }
    }
@@ -309,7 +309,7 @@ public class SeaMonsterEntity : SeaEntity
 
       // Check if any of our attackers are within range
       foreach (SeaEntity attacker in _attackers) {
-         if (attacker == null || attacker.isDead() || attacker == this || attacker.GetComponent<SeaMonsterEntity>() != null) {
+         if (attacker == null || attacker.isDead() || attacker == this || attacker is SeaMonsterEntity) {
             continue;
          }
 
@@ -346,7 +346,7 @@ public class SeaMonsterEntity : SeaEntity
          }
 
          if (nearestEntity == null) {
-            if (!entity.isDead() && entity.GetComponent<SeaMonsterEntity>() == null) {
+            if (!entity.isDead() && !(entity is SeaMonsterEntity)) {
                nearestEntity = entity;
             } else {
                return null;
