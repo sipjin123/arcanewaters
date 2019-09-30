@@ -20,9 +20,9 @@ MonoBehaviour:
   isRanged: 1
   shouldDropTreasure: 1
   isInvulnerable: 1
-  maxProjectileDistanceGap: 1
+  maxProjectileDistanceGap: 1.25
   maxMeleeDistanceGap: 0.5
-  maxDistanceGap: 2.3
+  maxDistanceGap: 1.5
   attackType: 0
   territoryRadius: 3
   detectRadius: 2
