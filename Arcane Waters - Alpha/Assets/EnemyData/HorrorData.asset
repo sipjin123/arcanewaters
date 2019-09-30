@@ -22,13 +22,13 @@ MonoBehaviour:
   isInvulnerable: 1
   maxProjectileDistanceGap: 1
   maxMeleeDistanceGap: 0.5
-  maxDistanceGap: 3.2
+  maxDistanceGap: 2.3
   attackType: 0
   territoryRadius: 3
   detectRadius: 2
   attackFrequency: 1
   reloadDelay: 1
-  moveFrequency: 5
+  moveFrequency: 3
   findTargetsFrequency: 2
   defaultSprite: {fileID: 764851303485985294, guid: d9f8336b2a162354ab8f845c4dbe0498,
     type: 3}
