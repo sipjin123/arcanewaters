@@ -9,7 +9,7 @@ public class SeaMonsterEntity : SeaEntity
    #region Public Variables
 
    // List of children dependencies
-   public List<SeaMonsterEntity> seaMonsterChildrenList;
+   public List<SeaMonsterEntity> seaMonsterChildrenList = new List<SeaMonsterEntity>();
 
    // The parent entity of this sea monster
    public SeaMonsterEntity seaMonsterParentEntity;
@@ -162,12 +162,15 @@ public class SeaMonsterEntity : SeaEntity
 
       // Handles attack animations
       if (Util.netTime() > _attackStartAnimateTime && !_hasAttackAnimTriggered) {
+         _simpleAnim.stayAtLastFrame = true;
          isAttacking = true;
          _hasAttackAnimTriggered = true;
          _attackEndAnimateTime = Util.netTime() + ATTACK_DURATION;
       } else {
          if (isAttacking && (Util.netTime() > _attackEndAnimateTime)) {
+            _attackStartAnimateTime = Util.netTime() + 50;
             isAttacking = false;
+            _simpleAnim.stayAtLastFrame = false;
          }
       }
    }
@@ -256,9 +259,11 @@ public class SeaMonsterEntity : SeaEntity
    #region External Entity Related Functions
 
    public override void noteAttacker (NetEntity entity) {
-      base.noteAttacker(entity);
-      if (seaMonsterParentEntity != null) {
-         seaMonsterParentEntity.noteAttacker(entity);
+      if (entity.GetComponent<SeaMonsterEntity>() == null) {
+         base.noteAttacker(entity);
+         if (seaMonsterParentEntity != null) {
+            seaMonsterParentEntity.noteAttacker(entity);
+         }
       }
    }
 
@@ -311,12 +316,10 @@ public class SeaMonsterEntity : SeaEntity
 
          if (seaMonsterData.attackType != Attack.Type.None) {
             if (seaMonsterData.isMelee && isEnemyWithinMeleeAttackDistance()) {
-               if (Vector2.Distance(transform.position, spot) < seaMonsterData.maxProjectileDistanceGap) {
-                  meleeAtSpot(spot, seaMonsterData.attackType);
-                  monsterBehavior = MonsterBehavior.AttackTarget;
+               meleeAtSpot(spot, seaMonsterData.attackType);
+               monsterBehavior = MonsterBehavior.AttackTarget;
 
-                  planNextMove();
-               }
+               planNextMove();
             } else {
                if (seaMonsterData.isRanged) {
                   launchProjectile(spot, attacker, seaMonsterData.attackType, .2f, .4f);
@@ -341,7 +344,7 @@ public class SeaMonsterEntity : SeaEntity
          }
 
          if (nearestEntity == null) {
-            if (!entity.isDead()) {
+            if (!entity.isDead() && entity.GetComponent<SeaMonsterEntity>() == null) {
                nearestEntity = entity;
             } else {
                return null;
@@ -419,7 +422,7 @@ public class SeaMonsterEntity : SeaEntity
    }
 
    private IEnumerator CO_ProcessNextMove () {
-      yield return new WaitForSeconds(.3f);
+      yield return new WaitForSeconds(.2f);
 
       // Checks if there are enemies nearby
       scanTargetsInArea();
@@ -536,14 +539,10 @@ public class SeaMonsterEntity : SeaEntity
          if (target != null) {
             snapToParent = true;
          } else {
-            monsterBehavior = MonsterBehavior.MoveAround;
             snapToParent = false;
-
-            // Pick a new spot around our spawn position
-            Vector2 newTargetPos = SeaMonsterUtility.getRandomPositionAroundPosition(seaMonsterParentEntity.transform.position, distanceFromSpawnPoint);
-            finalizeWaypoint(newTargetPos);
          }
       } else {
+         // If has minions, command them to follow
          if (target == null) {
             monsterBehavior = MonsterBehavior.MoveAround;
 
@@ -557,9 +556,8 @@ public class SeaMonsterEntity : SeaEntity
             Vector2 newTargetPos = targetEntity.transform.position;
             finalizeWaypoint(newTargetPos);
          }
-         // If has minions, command them to follow
-         commandMinions();
       }
+      commandMinions();
    }
 
    private void finalizeWaypoint (Vector3 location) {
@@ -652,6 +650,11 @@ public class SeaMonsterEntity : SeaEntity
          sizex = seaMonsterData.detectRadius;
          Gizmos.DrawWireSphere(transform.position, sizex);
 
+         // Draws the range of the monsters search radius
+         Gizmos.color = Color.red;
+         sizex = seaMonsterData.maxMeleeDistanceGap;
+         Gizmos.DrawWireSphere(transform.position, sizex);
+
          // Draws the range of the monsters follow radius
          Gizmos.color = Color.blue;
          sizex = seaMonsterData.maxDistanceGap;
@@ -713,7 +716,7 @@ public class SeaMonsterEntity : SeaEntity
    protected Vector2 _spawnPos;
 
    // The current waypoint List
-   protected List<Waypoint> _waypointList;
+   protected List<Waypoint> _waypointList = new List<Waypoint>();
 
    // Keeps reference to the recent coroutine so that it can be manually stopped
    private Coroutine _analysisCoroutine = null;
