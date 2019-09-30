@@ -251,14 +251,14 @@ public class AnimUtil : MonoBehaviour {
                   return new AnimInfo(animType, 4, 7);
 
                case Anim.Type.Attack_East:
-                  return new AnimInfo(animType, 0, 7);
+                  return new AnimInfo(animType, 8, 11);
                case Anim.Type.Attack_North:
-                  return new AnimInfo(animType, 0, 7);
+                  return new AnimInfo(animType, 12, 15);
                case Anim.Type.Attack_South:
-                  return new AnimInfo(animType, 0, 7);
+                  return new AnimInfo(animType, 12, 15);
 
                case Anim.Type.Death_East:
-                  return new AnimInfo(animType, 9, 14);
+                  return new AnimInfo(animType, 16, 22);
             }
             break;
 

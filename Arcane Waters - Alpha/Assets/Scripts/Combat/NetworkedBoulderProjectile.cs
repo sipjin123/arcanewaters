@@ -24,7 +24,7 @@ public class NetworkedBoulderProjectile : MonoBehaviour
    public CircleCollider2D circleCollider;
 
    // How long a boulder projectile lives at most
-   public static float LIFETIME = .5f;//1.25f;
+   public static float LIFETIME = .75f;//1.25f;
 
    // How high the boulder projectile should arch upwards
    public static float ARCH_HEIGHT = .10f;
@@ -88,6 +88,8 @@ public class NetworkedBoulderProjectile : MonoBehaviour
          int damage = (int) (sourceEntity.damage / 3f);
          hitEntity.currentHealth -= damage;
          hitEntity.noteAttacker(sourceEntity);
+
+         SeaManager.self.getEntity(creatorUserId).fireMultiDirectionalProjectile(transform.position, Attack.Type.Mini_Boulder);
 
          // Apply the status effect
          StatusManager.self.create(Status.Type.Slow, 3f, hitEntity.userId);

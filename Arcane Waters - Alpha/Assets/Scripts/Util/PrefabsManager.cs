@@ -39,10 +39,10 @@ public class PrefabsManager : MonoBehaviour {
    public ShockballProjectile shockballPrefab;
 
    // The Prefab we use for creating boulder projectiles
-   public BoulderProjectile boulderPrefab;
+   public GameObject boulderPrefab;
 
    // The Prefab we use for creating mini boulder projectiles
-   public GameObject miniBoulderPrefab;
+   public BoulderProjectile miniBoulderPrefab;
 
    // The Prefab we use for creating cannon balls
    public CannonBall cannonBallPrefab;
@@ -71,8 +71,8 @@ public class PrefabsManager : MonoBehaviour {
    // The Prefab we use for creating networked venom projectiles
    public GameObject networkedVenomProjectilePrefab;
 
-   // The Prefab we use for creating networked tentacle projectiles
-   public GameObject networkedTentacleProjectilePrefab;
+   // The Prefab we use for creating tentacle projectiles
+   public TentacleProjectile tentacleProjectilePrefab;
 
    // The Prefab we use for creating Damage text
    public ShipDamageText shipDamageTextPrefab;
@@ -171,10 +171,17 @@ public class PrefabsManager : MonoBehaviour {
       }
    }
 
-   public BoulderProjectile getBoulderPrefab (Attack.Type attackType) {
+   public BoulderProjectile getMiniBoulderPrefab (Attack.Type attackType) {
       switch (attackType) {
          default:
-            return boulderPrefab;
+            return miniBoulderPrefab;
+      }
+   }
+
+   public TentacleProjectile getTentacleProjectilePrefab (Attack.Type attackType) {
+      switch (attackType) {
+         default:
+            return tentacleProjectilePrefab;
       }
    }
 
