@@ -102,6 +102,13 @@ public class SeaMonsterEntity : SeaEntity
       spritesContainer.transform.GetChild(0).localScale = new Vector3(seaMonsterData.outlineScaleOverride, seaMonsterData.outlineScaleOverride, seaMonsterData.outlineScaleOverride);
 
       _simpleAnim = spritesContainer.GetComponent<SimpleAnimation>();
+      
+      _simpleAnimRipple = ripplesContainer.GetComponent<SimpleAnimation>();
+
+      _simpleAnimRipple.group = seaMonsterData.animGroup;
+      _simpleAnimRipple.frameLengthOverride = seaMonsterData.animationSpeedOverride;
+      _simpleAnimRipple.enabled = true;
+
       _simpleAnim.group = seaMonsterData.animGroup;
       _simpleAnim.frameLengthOverride = seaMonsterData.animationSpeedOverride;
       _simpleAnim.enabled = true;
@@ -110,6 +117,12 @@ public class SeaMonsterEntity : SeaEntity
       currentHealth = seaMonsterData.maxHealth;
       maxHealth = seaMonsterData.maxHealth;
       invulnerable = seaMonsterData.isInvulnerable;
+
+      if (seaMonsterData.projectileSpawnLocations.Count > 0) {
+         foreach (DirectionalPositions directionalPos in seaMonsterData.projectileSpawnLocations) {
+            projectileSpawnLocations.Find(_ => _.direction == directionalPos.direction).spawnTransform.localPosition = directionalPos.spawnTransform;
+         }
+      }
 
       if (seaMonsterData.isInvulnerable) {
          seaMonsterBars.gameObject.SetActive(false);
@@ -308,31 +321,27 @@ public class SeaMonsterEntity : SeaEntity
       }
 
       // Check if any of our attackers are within range
-      foreach (SeaEntity attacker in _attackers) {
-         if (attacker == null || attacker.isDead() || attacker == this || attacker is SeaMonsterEntity) {
-            continue;
-         }
-
-         // Check where the attacker currently is
-         Vector2 spot = attacker.transform.position;
-
-         if (seaMonsterData.attackType != Attack.Type.None) {
-            if (seaMonsterData.isMelee && isEnemyWithinMeleeAttackDistance()) {
-               meleeAtSpot(spot, seaMonsterData.attackType);
-               monsterBehavior = MonsterBehavior.AttackTarget;
-
-               planNextMove();
-            } else {
-               if (seaMonsterData.isRanged) {
-                  launchProjectile(spot, attacker, seaMonsterData.attackType, .2f, .4f);
-                  monsterBehavior = MonsterBehavior.AttackTarget;
-               }
-            }
-         } else {
-            isEngaging = true;
-            targetEntity = attacker;
-         }
+      if (targetEntity == null || targetEntity.isDead() || targetEntity == this || targetEntity is SeaMonsterEntity) {
          return;
+      }
+
+      // Check where the attacker currently is
+      Vector2 spot = targetEntity.transform.position;
+
+      if (seaMonsterData.attackType != Attack.Type.None) {
+         if (seaMonsterData.isMelee && isEnemyWithinMeleeAttackDistance()) {
+            meleeAtSpot(spot, seaMonsterData.attackType);
+            monsterBehavior = MonsterBehavior.AttackTarget;
+
+            planNextMove();
+         } else {
+            if (seaMonsterData.isRanged) {
+               launchProjectile(spot, targetEntity.GetComponent<SeaEntity>(), seaMonsterData.attackType, .2f, .4f);
+               monsterBehavior = MonsterBehavior.AttackTarget;
+            }
+         }
+      } else {
+         isEngaging = true;
       }
 
       planNextMove();
@@ -340,24 +349,22 @@ public class SeaMonsterEntity : SeaEntity
 
    protected NetEntity getNearestTarget () {
       NetEntity nearestEntity = null;
-      foreach (NetEntity entity in _attackers) {
-         if (entity == null) {
+      float oldDistanceGap = 100;
+
+      foreach (NetEntity attacker in _attackers) {
+         if (attacker == null) {
             continue;
          }
 
-         if (nearestEntity == null) {
-            if (!entity.isDead() && !(entity is SeaMonsterEntity)) {
-               nearestEntity = entity;
-            } else {
-               return null;
-            }
+         if (attacker.isDead() || (attacker is SeaMonsterEntity)) {
+            continue;
          }
 
-         float oldDistanceGap = Vector2.Distance(nearestEntity.transform.position, transform.position);
-         float newDistanceGap = Vector2.Distance(entity.transform.position, transform.position);
-
+         float newDistanceGap = Vector2.Distance(attacker.transform.position, transform.position);
+ 
          if (newDistanceGap < oldDistanceGap) {
-            nearestEntity = entity;
+            oldDistanceGap = newDistanceGap;
+            nearestEntity = attacker;
          }
       }
 
@@ -430,7 +437,7 @@ public class SeaMonsterEntity : SeaEntity
       scanTargetsInArea();
 
       // Gets the nearest target if there is
-      targetEntity = getNearestTarget();
+      yield return targetEntity = getNearestTarget();
 
       if (seaMonsterData.roleType == RoleType.Minion) {
          if (targetEntity != null) {
@@ -620,9 +627,18 @@ public class SeaMonsterEntity : SeaEntity
          targetLoc = spot;
       }
 
-      fireAtSpot(targetLoc, attackType, attackDelay, launchDelay);
+      Vector2 spawnPosition = new Vector2(0,0);
+      // Determines the origin of the projectile
+      if (projectileSpawnLocations == null || projectileSpawnLocations.Count < 1) {
+         spawnPosition = transform.position;
+      } else {
+         if (this.facing != 0) {
+            _projectileSpawnLocation = projectileSpawnLocations.Find(_ => _.direction == (Direction) this.facing).spawnTransform;
+            spawnPosition = _projectileSpawnLocation.position;
+         }
+      }
+      fireAtSpot(targetLoc, attackType, attackDelay, launchDelay, spawnPosition);
 
-      targetEntity = attacker;
       isEngaging = true;
 
       monsterBehavior = MonsterBehavior.Idle;
@@ -636,6 +652,10 @@ public class SeaMonsterEntity : SeaEntity
       if (seaMonsterData != null) {
          if (!seaMonsterData.showDebugGizmo) {
             return;
+         }
+         if (targetEntity != null) {
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawSphere(targetEntity.transform.position, .5f);
          }
 
          // Draws the range of the monster territory
@@ -707,8 +727,11 @@ public class SeaMonsterEntity : SeaEntity
 
    #region Private Variables
 
-   // The handling for sprite animation
+   // The handling for monster sprite animation
    protected SimpleAnimation _simpleAnim;
+
+   // The handling for ripple sprite animation
+   protected SimpleAnimation _simpleAnimRipple;
 
    // The position we spawned at
    protected Vector2 _spawnPos;

@@ -214,7 +214,7 @@ public class SeaEntity : NetEntity {
          boulder.endPos = endPos;
          boulder.startTime = startTime;
          boulder.endTime = endTime;
-      } else if (attackType == Attack.Type.Tentacle_Range) {
+      } else if (attackType == Attack.Type.Tentacle) {
          // Create a tentacle projectile
          TentacleProjectile tentacleProjectile = Instantiate(PrefabsManager.self.getTentacleProjectilePrefab(attackType), startPos, Quaternion.identity);
          tentacleProjectile.creator = this;
@@ -279,11 +279,16 @@ public class SeaEntity : NetEntity {
          SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Hit_1, pos);
       } else {
          // Show the explosion
-         if (attackType != Attack.Type.Ice && attackType != Attack.Type.Venom) {
+         if (attackType != Attack.Type.Ice && attackType != Attack.Type.Venom && attackType != Attack.Type.Tentacle) {
             Instantiate(PrefabsManager.self.explosionPrefab, pos, Quaternion.identity);
          }
 
-         // If venom attack calls slime effect
+         // If tentacle attack, calls tentacle collision effect
+         if (attackType == Attack.Type.Tentacle) {
+            Instantiate(PrefabsManager.self.tentacleCollisionPrefab, this.transform.position + new Vector3(0f, 0), Quaternion.identity);
+         }
+
+         // If worm attack, calls slime collision effect
          if (attackType == Attack.Type.Venom) {
             ExplosionManager.createSlimeExplosion(pos);
          }
@@ -406,19 +411,20 @@ public class SeaEntity : NetEntity {
    }
 
    [Command]
-   public void Cmd_FireAtSpot (Vector2 spot, Attack.Type attackType, float attackDelay, float launchDelay) {
+   public void Cmd_FireAtSpot (Vector2 spot, Attack.Type attackType, float attackDelay, float launchDelay, Vector2 spawnPosition) {
       // We handle the logic in a non-Cmd function so that it can be called directly on the server if needed
-      fireAtSpot(spot, attackType, attackDelay, launchDelay);
+      fireAtSpot(spot, attackType, attackDelay, launchDelay, spawnPosition);
    }
 
    [Server]
    public void fireAtSpot (Vector2 spot, Attack.Type attackType, float attackDelay, float launchDelay, Vector2 spawnPosition = new Vector2(), bool isLastProjectile = true) {
-      if (spawnPosition.magnitude == 0 && (isDead() || !hasReloaded())) {
+      // Last projectile will only be false if it is a barrage of projectiles, a single projectile attack will always be a Last Projectile
+      if (isLastProjectile && (isDead() || !hasReloaded())) {
          return;
       }
 
-      // If the requested spot is not in the allowed area, reject the request
-      if ((spawnPosition.magnitude == 0 && !(this is SeaMonsterEntity)) && leftAttackBox.OverlapPoint(spot) && !rightAttackBox.OverlapPoint(spot)) {
+      // If the requested spot is not in the allowed area or if it is a sea monster, reject the request
+      if (!(this is SeaMonsterEntity) && !leftAttackBox.OverlapPoint(spot) && !rightAttackBox.OverlapPoint(spot)) {
          return;
       }
 
@@ -428,19 +434,7 @@ public class SeaEntity : NetEntity {
       // Tell all clients to display an attack circle at that position
       float distance = Vector2.Distance(this.transform.position, spot);
       float delay = Mathf.Clamp(distance, .5f, 1.5f);
-
-      if (spawnPosition.magnitude == 0) {
-         // Determines the origin of the projectile
-         if (projectileSpawnLocations == null || projectileSpawnLocations.Count < 1) {
-            spawnPosition = transform.position;
-         } else {
-            if (this.facing != 0) {
-               _projectileSpawnLocation = projectileSpawnLocations.Find(_ => _.direction == (Direction) this.facing).spawnTransform;
-               spawnPosition = _projectileSpawnLocation.position;
-            }
-         }
-      }
-
+      
       if (attackDelay <= 0) {
          serverFireProjectile(spot, attackType, spawnPosition, delay);
       } else {
@@ -450,11 +444,16 @@ public class SeaEntity : NetEntity {
          registerProjectileSchedule(spot, spawnPosition, attackType, attackDelay, Util.netTime() + launchDelay, delay, isLastProjectile);
       }
 
-      attackCounter++;
+      if (isLastProjectile) {
+         attackCounter++;
+      }
 
-      if (attackType != Attack.Type.Venom && attackType != Attack.Type.Boulder && attackType != Attack.Type.Tentacle) {
+      if (attackType != Attack.Type.Venom && attackType != Attack.Type.Boulder) {
+         // Prevents sea monsters to damage other sea monsters
+         bool targetPlayersOnly = this is SeaMonsterEntity;
+
          // Have the server check for collisions after the AOE projectile reaches the target
-         StartCoroutine(CO_CheckCircleForCollisions(this, launchDelay + delay, spot, attackType, false));
+         StartCoroutine(CO_CheckCircleForCollisions(this, launchDelay + delay, spot, attackType, targetPlayersOnly));
       }
 
       // Make note on the clients that the ship just attacked
@@ -485,7 +484,7 @@ public class SeaEntity : NetEntity {
    protected void serverFireProjectile (Vector2 spot, Attack.Type attackType, Vector2 spawnPosition, float delay) {
       // Creates the projectile and the target circle
       if (!(this is PlayerShipEntity)) {
-         if (attackType != Attack.Type.Venom && attackType != Attack.Type.Boulder && attackType != Attack.Type.Tentacle) {
+         if (attackType != Attack.Type.Venom && attackType != Attack.Type.Boulder) {
             Rpc_CreateAttackCircle(spawnPosition, spot, Util.netTime(), Util.netTime() + delay, attackType, true);
          } else {
             switch (attackType) {
@@ -532,21 +531,19 @@ public class SeaEntity : NetEntity {
                      int damage = (int) (this.damage * Attack.getDamageModifier(attackType));
                      entity.currentHealth -= damage;
                      entity.Rpc_ShowDamageText(damage, attacker.userId, attackType);
-                     entity.Rpc_ShowExplosion(entity.transform.position, 0, Attack.Type.None);
+                     entity.Rpc_ShowExplosion(entity.transform.position, damage, attackType);
 
                      if (attackType == Attack.Type.Shock_Ball) {
                         chainLightning(entity.transform.position, entity.userId);
                      } 
                   } else {
-                     entity.Rpc_ShowExplosion(entity.transform.position, 0, Attack.Type.None);
+                     entity.Rpc_ShowExplosion(entity.transform.position, damage, Attack.Type.None);
                   }
                   entity.noteAttacker(attacker);
 
                   // Apply any status effects from the attack
                   if (attackType == Attack.Type.Ice) {
                      StatusManager.self.create(Status.Type.Freeze, 2f, entity.userId);
-                  } else if (attackType == Attack.Type.Tentacle) {
-                     StatusManager.self.create(Status.Type.Slow, 1f, entity.userId);
                   } else if (attackType == Attack.Type.Venom) {
                      StatusManager.self.create(Status.Type.Slow, 1f, entity.userId);
                   }

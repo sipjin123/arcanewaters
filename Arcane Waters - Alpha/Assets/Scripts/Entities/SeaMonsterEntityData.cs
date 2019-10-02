@@ -91,6 +91,9 @@ public class SeaMonsterEntityData : ScriptableObject {
    // Holds the value of the speed override of the simple animation
    public float animationSpeedOverride = -1;
 
+   // Spawn Location Overrides may vary depending on the sea monster sprites
+   public List<DirectionalPositions> projectileSpawnLocations;
+
    #endregion
 
    #region Private Variables

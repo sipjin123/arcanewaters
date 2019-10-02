@@ -24,7 +24,7 @@ public class Attack : MonoBehaviour {
          case Type.Boulder:
             return .10f;
          case Type.Mini_Boulder:
-            return .05f;
+            return .10f;
          case Type.Tentacle_Range:
             return .10f;
          case Type.Shock_Ball:

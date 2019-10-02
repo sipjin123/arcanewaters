@@ -56,6 +56,9 @@ public class PrefabsManager : MonoBehaviour {
    // The Prefab we use for creating cannon splashes
    public GameObject cannonSplashPrefab;
 
+   // The Prefab we use for creating tentacle collision effects
+   public GameObject tentacleCollisionPrefab;
+
    // The Prefab we use for creating venom residue
    public GameObject venomResiduePrefab;
 
