@@ -320,7 +320,7 @@ MonoBehaviour:
   monsterType: 0
   distanceFromSpawnPoint: {x: 0, y: 0}
   seaMonsterBars: {fileID: 1576247974216057746}
-  snapToParent: 0
+  isMinionPlanning: 0
 --- !u!50 &50644847342071564
 Rigidbody2D:
   serializedVersion: 4
@@ -450,8 +450,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: 
-  m_SceneId: 1831387138
+  m_AssetId: 0059c0caa2289d44fb0ab483814bf77f
+  m_SceneId: 0
 --- !u!114 &20651762200388567
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -549,6 +549,7 @@ GameObject:
   - component: {fileID: 212874045415262740}
   - component: {fileID: 114252196938053686}
   - component: {fileID: 7021352677719540742}
+  - component: {fileID: 521357795250236262}
   m_Layer: 0
   m_Name: Ripple
   m_TagString: Untagged
@@ -640,12 +641,35 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1658159506029436}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b839a4fd7938f334ea1ab971883af132, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   newTexture: {fileID: 2800000, guid: 5c1cf74553558b54bb8ab8274c0bf4cb, type: 3}
+--- !u!114 &521357795250236262
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1658159506029436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59a9a98428d226e419fede1b7cdd5674, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialDelay: 0
+  frameLengthOverride: -1
+  delayStart: 0
+  destroyAtEnd: 0
+  stayAtLastFrame: 0
+  loopDelay: 0
+  isPaused: 0
+  minIndex: 0
+  maxIndex: 1000
+  currentAnimation: 0
+  group: 0
 --- !u!1 &1230843298899755287
 GameObject:
   m_ObjectHideFlags: 0

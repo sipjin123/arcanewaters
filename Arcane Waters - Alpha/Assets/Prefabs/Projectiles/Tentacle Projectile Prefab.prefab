@@ -378,6 +378,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1505858850113805820}
   - component: {fileID: 2156671124198857000}
+  - component: {fileID: 7072405390336999457}
   m_Layer: 0
   m_Name: ProjectileSprite
   m_TagString: Untagged
@@ -437,15 +438,38 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -7590832542369293719, guid: 3b66d912c3749b34d802864ea2182fff,
+  m_Sprite: {fileID: 4019607189785247734, guid: 73262e163085d0f45ac94461b134801d,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.08, y: 0.08}
+  m_Size: {x: 0.56, y: 0.56}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &7072405390336999457
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8914470583483593177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59a9a98428d226e419fede1b7cdd5674, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialDelay: 0
+  frameLengthOverride: 0.3
+  delayStart: 0
+  destroyAtEnd: 0
+  stayAtLastFrame: 0
+  loopDelay: 0
+  isPaused: 0
+  minIndex: 0
+  maxIndex: 1000
+  currentAnimation: 0
+  group: 0
