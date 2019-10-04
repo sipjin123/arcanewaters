@@ -69,7 +69,7 @@ public class SeaEntity : NetEntity {
 
       if (NetworkServer.active && _projectileSched.Count > 0) {
          // Avoid using foreach due to realtime changes in the list
-         for(int i = 0; i < _projectileSched.Count; i++) {
+         for (int i = 0; i < _projectileSched.Count; i++) {
             ProjectileSchedule sched = _projectileSched[i];
             if (!sched.dispose && Util.netTime() > sched.projectileLaunchTime) {
                serverFireProjectile(sched.targetLocation, sched.attackType, sched.spawnLocation, sched.impactTimestamp);
@@ -144,8 +144,7 @@ public class SeaEntity : NetEntity {
 
                   SeaEntity entity = collidedEntity.GetComponent<SeaEntity>();
                   entity.currentHealth -= damage;
-                  entity.Rpc_ShowDamageText(damage, userId, Attack.Type.Shock_Ball);
-                  entity.Rpc_ShowExplosion(collidedEntity.transform.position, 0, Attack.Type.None);
+                  entity.Rpc_ShowExplosion(collidedEntity.transform.position, damage, Attack.Type.None);
 
                   collidedEntities.Add(entity, collidedEntity.transform);
                   targetIDList.Add(entity.userId);
@@ -155,6 +154,16 @@ public class SeaEntity : NetEntity {
       }
 
       Rpc_ChainLightning(targetIDList.ToArray(), primaryTargetID, sourcePos);
+   }
+
+   [ClientRpc]
+   public void Rpc_SpawnVenomResidue (int creatorID, Vector3 location) {
+      GameObject venomResidue = Instantiate(PrefabsManager.self.venomResiduePrefab, location, Quaternion.identity);
+      venomResidue.GetComponent<VenomResidue>().creatorUserId = creatorID;
+      ExplosionManager.createSlimeExplosion(location);
+
+
+      SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Coralbow_Attack, this.transform.position);
    }
 
    [ClientRpc]
@@ -314,7 +323,7 @@ public class SeaEntity : NetEntity {
    }
 
    [ClientRpc]
-   public void Rpc_ShowDamageText(int damage, int attackerId, Attack.Type attackType) {
+   public void Rpc_ShowDamageText (int damage, int attackerId, Attack.Type attackType) {
       _lastDamagedTime = Time.time;
 
       // Note the attacker
@@ -335,6 +344,28 @@ public class SeaEntity : NetEntity {
       // If it was our ship, shake the camera
       if (isLocalPlayer) {
          CameraManager.shakeCamera();
+      }
+   }
+
+   [ClientRpc]
+   public void Rpc_NetworkProjectileDamage (int damage, int attackerID, Attack.Type attackType, Vector3 location) {
+      SeaEntity sourceEntity = SeaManager.self.getEntity(attackerID);
+      noteAttacker(sourceEntity);
+      currentHealth -= damage;
+
+      switch(attackType) {
+         case Attack.Type.Boulder:
+            // Apply the status effect
+            StatusManager.self.create(Status.Type.Slow, 3f, attackerID);
+            ExplosionManager.createRockExplosion(location);
+            SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Boulder, location);
+            break;
+         case Attack.Type.Venom:
+            // Apply the status effect
+            StatusManager.self.create(Status.Type.Slow, 3f, attackerID);
+            ExplosionManager.createSlimeExplosion(location);
+            SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Attack_Fire, location);
+            break;
       }
    }
 
@@ -494,7 +525,7 @@ public class SeaEntity : NetEntity {
                   break;
                case Attack.Type.Boulder:
                   // Create network boulder projectile
-                  fireTimedGenericProjectile(spawnPosition, spot, (int)attackType);
+                  fireTimedGenericProjectile(spawnPosition, spot, (int) attackType);
                   break;
                case Attack.Type.Tentacle:
                   // Create multiple tentacle projectile
@@ -555,7 +586,7 @@ public class SeaEntity : NetEntity {
    }
 
    [Server]
-   public void fireMultiDirectionalProjectile(Vector2 sourcePos, Attack.Type attackType) {
+   public void fireMultiDirectionalProjectile (Vector2 sourcePos, Attack.Type attackType) {
       float offset = .2f;
       float target = .5f;
       float diagonalValue = offset;

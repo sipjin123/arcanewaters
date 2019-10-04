@@ -77,19 +77,15 @@ public class NetworkedVenomProjectile : MonoBehaviour
       // The Server will handle applying damage
       if (NetworkServer.active) {
          int damage = (int) (sourceEntity.damage / 3f);
-         hitEntity.currentHealth -= damage;
-         hitEntity.noteAttacker(sourceEntity);
 
-         // Apply the status effect
-         StatusManager.self.create(Status.Type.Slow, 3f, hitEntity.userId);
+         // Spawn Damage Per Second Residue
+         hitEntity.Rpc_AttachEffect(damage, Attack.Type.Venom);
+
+         // Registers Damage throughout the clients
+         hitEntity.Rpc_NetworkProjectileDamage(damage, creatorUserId, Attack.Type.Venom, circleCollider.transform.position);
 
          // Have the server tell the clients where the explosion occurred
-         hitEntity.Rpc_AttachEffect(damage, Attack.Type.Venom);
          hitEntity.Rpc_ShowExplosion(hitEntity.transform.position, damage, Attack.Type.Venom);
-
-         ExplosionManager.createSlimeExplosion(circleCollider.transform.position);
-
-         SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position);
       }
       _hasCollided = true;
 
@@ -101,15 +97,14 @@ public class NetworkedVenomProjectile : MonoBehaviour
    }
 
    public void callCollision (bool hitLand, Vector3 location) {
-      if (hitLand) {
-         Instantiate(PrefabsManager.self.cannonSmokePrefab, location, Quaternion.identity);
-         SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position);
-      } else {
-         GameObject venomResidue = Instantiate(PrefabsManager.self.venomResiduePrefab, location, Quaternion.identity);
-         venomResidue.GetComponent<VenomResidue>().creatorUserId = this.creatorUserId;
-         ExplosionManager.createSlimeExplosion(circleCollider.transform.position);
-
-         SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Coralbow_Attack, this.transform.position);
+      if (NetworkServer.active) {
+         if (hitLand) {
+            Instantiate(PrefabsManager.self.cannonSmokePrefab, location, Quaternion.identity);
+            SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position);
+         } else {
+            SeaEntity sourceEntity = SeaManager.self.getEntity(this.creatorUserId);
+            sourceEntity.Rpc_SpawnVenomResidue(creatorUserId, circleCollider.transform.position);
+         }
       }
    }
 

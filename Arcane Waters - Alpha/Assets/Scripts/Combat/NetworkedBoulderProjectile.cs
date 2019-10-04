@@ -86,20 +86,15 @@ public class NetworkedBoulderProjectile : MonoBehaviour
       // The Server will handle applying damage
       if (NetworkServer.active) {
          int damage = (int) (sourceEntity.damage / 3f);
-         hitEntity.currentHealth -= damage;
-         hitEntity.noteAttacker(sourceEntity);
 
+         // Spawn Mini Boulders upon Collision
          SeaManager.self.getEntity(creatorUserId).fireMultiDirectionalProjectile(transform.position, Attack.Type.Mini_Boulder);
 
-         // Apply the status effect
-         StatusManager.self.create(Status.Type.Slow, 3f, hitEntity.userId);
+         // Registers Damage throughout the clients
+         hitEntity.Rpc_NetworkProjectileDamage(damage, creatorUserId, Attack.Type.Boulder, circleCollider.transform.position);
 
          // Have the server tell the clients where the explosion occurred
          hitEntity.Rpc_ShowExplosion(hitEntity.transform.position, damage, Attack.Type.Boulder);
-
-         ExplosionManager.createRockExplosion(circleCollider.transform.position);
-
-         SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Boulder, this.transform.position);
       }
       _hasCollided = true;
 
