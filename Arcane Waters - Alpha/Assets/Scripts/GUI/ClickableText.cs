@@ -9,8 +9,8 @@ public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointer
    #region Public Variables
 
    // The different types of clickable text options
-   public enum Type { None = 0, TradeGossip = 1, TradeBluePrint = 2, TradeDeliveryInit = 3, TradeDeliveryComplete = 4 , QuestAccept = 5, TradeDeliverySuccess = 6, TradeDeliveryFail = 7, AcceptReward =8,
-   HuntInit = 9, HuntComplete = 10, HuntSuccess = 11, HuntFail = 12, NPCDialogueOption = 13, NPCDialogueEnd = 14, TradeGossipThanks = 15}
+   public enum Type { None = 0, TradeGossip = 1, TradeBluePrint = 2, AcceptReward =8, NPCDialogueOption = 13, NPCDialogueEnd = 14, Gift = 16,
+      ThankYou = 17, YouAreWelcome = 18 }
 
    // The Type of clickable text option this is
    public Type textType;
@@ -52,32 +52,18 @@ public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointer
             return "Have you heard about any <color=green>crops</color> that are currently in high demand?";
          case Type.TradeBluePrint:
             return "May I have a blueprint?";
-         case Type.TradeDeliveryInit:
-            return "I will bring you these items";
-         case Type.QuestAccept:
-            return "Sure what do you want?";
-         case Type.TradeDeliveryComplete:
-            return "Thank you sir";
          case Type.None:
             return "Have a good day then";
-         case Type.TradeDeliverySuccess:
-            return "I got all your goods";
-         case Type.TradeDeliveryFail:
-            return "I still dont have enough";
          case Type.AcceptReward:
-            return "Thankyou very much!";
-         case Type.HuntInit:
-            return "Let the hunt begin!";
-         case Type.HuntComplete:
-            return "It was not easy!";
-         case Type.HuntSuccess:
-            return "Target eliminated!";
-         case Type.HuntFail:
-            return "I havent killed it yet!";
+            return "Thank you very much!";
          case Type.NPCDialogueEnd:
             return "Goodbye!";
-         case Type.TradeGossipThanks:
+         case Type.Gift:
+            return "I have a gift for you!";
+         case Type.ThankYou:
             return "Thank you!";
+         case Type.YouAreWelcome:
+            return "You are welcome!";
       }
 
       return "";

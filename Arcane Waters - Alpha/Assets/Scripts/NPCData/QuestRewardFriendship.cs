@@ -24,8 +24,13 @@ public class QuestRewardFriendship : QuestReward
       // Retrieve the current friendship
       int currentFriendship = DB_Main.getFriendshipLevel(npcId, userId);
 
-      // Increase and save the friendship value
-      DB_Main.updateNPCRelationship(npcId, userId, currentFriendship + rewardedFriendship);
+      // Increase the friendship level
+      int newFriendshipLevel = NPCFriendship.addToFriendship(currentFriendship, rewardedFriendship);
+
+      // Save the friendship value
+      if (newFriendshipLevel != currentFriendship) {
+         DB_Main.updateNPCRelationship(npcId, userId, newFriendshipLevel);
+      }
       return null;
    }
 

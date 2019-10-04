@@ -1,14 +1,22 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Xml.Serialization;
 using System;
 
 public class QuestRewardItem : QuestReward
 {
-   
    #region Public Variables
 
    // The category of the rewarded item
+   [XmlIgnore]
    public Item.Category category;
+
+   [XmlElement("category")]
+   public int CategoryInt
+   {
+      get { return (int) category; }
+      set { category = (Item.Category) value; }
+   }
 
    // The type of the rewarded item
    public int itemTypeId;

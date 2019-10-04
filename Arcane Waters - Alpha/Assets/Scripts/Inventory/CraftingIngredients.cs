@@ -213,7 +213,7 @@ public class CraftingIngredients : RecipeItem
       Color color = Rarity.getColor(getRarity());
       string colorHex = ColorUtility.ToHtmlStringRGBA(color);
 
-      return string.Format("<color={0}>{1}</color> ({2}, {3})\n\n{4}\n\nDamage = <color=red>{5}</color>",
+      return string.Format("<color={0}>{1}</color> ({2}, {3})\n\n{4}",
          "#" + colorHex, getName(), color1, color2, getDescription());
    }
 

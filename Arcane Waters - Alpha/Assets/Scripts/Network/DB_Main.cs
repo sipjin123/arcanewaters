@@ -1531,24 +1531,84 @@ public class DB_Main : DB_MainStub {
       return itemCount;
    }
 
-   public static new List<Item> getItems (int userId, int page, int itemsPerPage) {
-      List<Item> itemList = new List<Item>();
+   public static new int getItemCount (int userId, Item.Category category, int equippedWeaponId,
+      int equippedArmorId) {
+      // Initialize the count
+      int itemCount = 0;
+
+      // Build the query
+      StringBuilder query = new StringBuilder();
+      query.Append("SELECT count(*) AS itemCount FROM items WHERE usrId=@usrId ");
+
+      // Add the category filter, if defined
+      if (category != Item.Category.None) {
+         query.Append("AND itmCategory=@itmCategory ");
+      }
+
+      // Filter the equipped weapon and armor
+      query.Append("AND itmId NOT IN (@equippedWeaponId, @equippedArmorId) ");
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM items WHERE usrId=@usrId ORDER BY itmId DESC LIMIT @start, @perPage", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand(query.ToString(), conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@itmCategory", (int) category);
+            cmd.Parameters.AddWithValue("@equippedWeaponId", equippedWeaponId);
+            cmd.Parameters.AddWithValue("@equippedArmorId", equippedArmorId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  itemCount = dataReader.GetInt32("itemCount");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return itemCount;
+   }
+
+   public static new List<Item> getItems (int userId, Item.Category category, int page, int itemsPerPage,
+      int equippedWeaponId, int equippedArmorId) {
+      // Initialize the list
+      List<Item> itemList = new List<Item>();
+
+      // Build the query
+      StringBuilder query = new StringBuilder();
+      query.Append("SELECT * FROM items WHERE usrId = @usrId ");
+
+      // Add the category filter, if defined
+      if (category != Item.Category.None) {
+         query.Append("AND itmCategory=@itmCategory ");
+      }
+
+      // Filter the equipped weapon and armor
+      query.Append("AND itmId NOT IN (@equippedWeaponId, @equippedArmorId) ");
+
+      // Add the end of the query
+      query.Append("ORDER BY itmId DESC LIMIT @start, @perPage");
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(query.ToString(), conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@start", (page - 1) * itemsPerPage);
             cmd.Parameters.AddWithValue("@perPage", itemsPerPage);
+            cmd.Parameters.AddWithValue("@itmCategory", (int) category);
+            cmd.Parameters.AddWithValue("@equippedWeaponId", equippedWeaponId);
+            cmd.Parameters.AddWithValue("@equippedArmorId", equippedArmorId);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
                   int itemId = dataReader.GetInt32("itmId");
-                  Item.Category category = (Item.Category) dataReader.GetInt32("itmCategory");
+                  Item.Category itemCategory = (Item.Category) dataReader.GetInt32("itmCategory");
                   int itemTypeId = dataReader.GetInt32("itmType");
                   ColorType color1 = (ColorType) dataReader.GetInt32("itmColor1");
                   ColorType color2 = (ColorType) dataReader.GetInt32("itmColor2");
@@ -1556,7 +1616,7 @@ public class DB_Main : DB_MainStub {
                   int count = dataReader.GetInt32("itmCount");
 
                   // Create an Item instance of the proper class, and then add it to the list
-                  Item item = new Item(itemId, category, itemTypeId, count, color1, color2, data);
+                  Item item = new Item(itemId, itemCategory, itemTypeId, count, color1, color2, data);
                   itemList.Add(item.getCastItem());
                }
             }
@@ -1790,7 +1850,11 @@ public class DB_Main : DB_MainStub {
          D.error("MySQL Error: " + e.ToString());
       }
 
-      return item.getCastItem();
+      if (item != null) {
+         return item.getCastItem();
+      } else {
+         return null;
+      }
    }
 
    public static new Item getFirstItem (int userId, Item.Category itemCategory, int itemTypeId) {

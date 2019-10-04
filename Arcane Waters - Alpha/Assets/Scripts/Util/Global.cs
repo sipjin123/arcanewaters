@@ -9,7 +9,7 @@ public class Global {
    #region Public Variables
 
    // The version of the client and server
-   public static int GAME_VERSION = 10045;
+   public static int GAME_VERSION = 10047;
 
    // Can set this to true if we want to auto-start host mode and log in to a character to speed things up
    public static bool startAutoHost = false;

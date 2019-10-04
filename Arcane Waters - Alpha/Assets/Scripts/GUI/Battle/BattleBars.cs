@@ -13,6 +13,9 @@ public class BattleBars : MonoBehaviour {
    public Image timerBar;
    public GameObject timerContainer;
 
+   // Stance icon that will appear at the side of other player battlers.
+   public Image stanceImage;
+
    #endregion
 
    private void Start () {
@@ -25,6 +28,13 @@ public class BattleBars : MonoBehaviour {
 
       // Note our starting position
       _startPos = _battler.transform.position;
+
+      // If we are not a monster battler we enable the stance graphics
+      if (_battler is MonsterBattler) {
+         if (stanceImage != null) {
+            stanceImage.gameObject.SetActive(false);
+         }
+      }
    }
 
    // ZERONEV-Comment: setting all these values in update are really inneficient
@@ -48,6 +58,14 @@ public class BattleBars : MonoBehaviour {
       // Hide our bars while we're doing an attack
       _canvasGroup.alpha += _battler.isJumping ? -5f * Time.deltaTime : 5f * Time.deltaTime;
       _canvasGroup.alpha = Mathf.Clamp(_canvasGroup.alpha, 0f, 1f);
+
+      if (!(_battler is MonsterBattler)) {
+         setBattlerStanceIcon();
+      }
+   }
+
+   private void setBattlerStanceIcon () {
+      stanceImage.sprite = BattleUIManager.self.getStanceIcon(_battler.stance);
    }
 
    #region Private Variables

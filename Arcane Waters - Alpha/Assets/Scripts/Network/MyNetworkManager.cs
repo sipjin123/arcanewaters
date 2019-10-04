@@ -120,6 +120,9 @@ public class MyNetworkManager : NetworkManager {
       // Start up Photon so the servers can talk to each other
       connectToPhotonMaster();
 
+      // Loads the NPC quest data
+      NPCManager.self.initializeQuestCache();
+
       // Schedule the leader boards recalculation
       LeaderBoardsManager.self.scheduleLeaderBoardRecalculation();
 

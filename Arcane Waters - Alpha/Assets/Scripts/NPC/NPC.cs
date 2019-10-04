@@ -23,15 +23,6 @@ public class NPC : MonoBehaviour {
    // The Type of NPC this is
    public Type npcType;
 
-   // The Faction of this NPC
-   public Faction.Type faction = Faction.Type.Neutral;
-
-   // The Specialty of this NPC
-   public Specialty.Type specialty = Specialty.Type.Sailor;
-
-   // The name of this NPC
-   public string npcName = "NPC";
-
    // Whether we want to auto move around
    public bool autoMove = true;
 
@@ -88,11 +79,11 @@ public class NPC : MonoBehaviour {
       // Figure out our Type from our sprite
       this.npcType = getTypeFromSprite();
 
-      // Set our id, name, faction, and specialty
+      // Set our id and default name, faction, and specialty
       this.npcId = getId();
-      this.npcName = getNameForType();
-      this.faction = getFaction(this.npcType);
-      this.specialty = getSpecialty();
+      _npcName = getRandomName();
+      _faction = getFactionFromType(this.npcType);
+      _specialty = getRandomSpecialty();
 
       // Keep track of the NPC in the Manager
       NPCManager.self.storeNPC(this);
@@ -242,7 +233,7 @@ public class NPC : MonoBehaviour {
       Color textColor = Color.white;
       Color outlineColor = Color.black;
 
-      switch (getFaction(npcType)) {
+      switch (getFactionFromType(npcType)) {
          case Faction.Type.Pirates:
             textColor = Color.black;
             outlineColor = Color.white;
@@ -260,7 +251,18 @@ public class NPC : MonoBehaviour {
       nameText.GetComponent<Shadow>().effectColor = outlineColor;
    }
 
-   public static Faction.Type getFaction (Type npcType) {
+   public Faction.Type getFaction () {
+      // Try to get the faction from the data file
+      Faction.Type faction = NPCManager.self.getFaction(npcId);
+
+      // If the faction is not defined in the file, use the default one
+      if (faction == Faction.Type.None) {
+         faction = _faction;
+      }
+      return faction;
+   }
+
+   public static Faction.Type getFactionFromType (Type npcType) {
       switch (npcType) {
          case Type.Blackbeard:
          case Type.Headband:
@@ -294,11 +296,22 @@ public class NPC : MonoBehaviour {
    }
 
    public Specialty.Type getSpecialty () {
+      // Try to get the specialty from the data file
+      Specialty.Type specialty = NPCManager.self.getSpecialty(npcId);
+
+      // If the specialty is not defined in the file, use the default one
+      if (specialty == Specialty.Type.None) {
+         specialty = _specialty;
+      }
+
+      return specialty;
+   }
+
+   protected Specialty.Type getRandomSpecialty () {
       Area area = this.GetComponentInParent<Area>();
-      List<Specialty.Type> specialties = getPossibleSpecialties(this.faction);
+      List<Specialty.Type> specialties = getPossibleSpecialties(getFaction());
       int randomIndex = ((int) area.areaType * 50) + (int) npcType;
       randomIndex %= specialties.Count;
-
       return specialties[randomIndex];
    }
 
@@ -364,9 +377,20 @@ public class NPC : MonoBehaviour {
       return npcType;
    }
 
-   protected string getNameForType () {
-      Area area = this.GetComponentInParent<Area>();
+   public string getName () {
+      // Retrieve the name from the data file
+      string name = NPCManager.self.getName(npcId);
 
+      // If the name is not defined in the file, use the default one
+      if (name == null || string.Equals("", name)) {
+         name = _npcName;
+      }
+
+      return name;
+   }
+
+   protected string getRandomName () {
+      Area area = this.GetComponentInParent<Area>();
       return NameManager.self.getRandomName(getGender(this.npcType), area.areaType, this.npcType);
    }
 
@@ -450,6 +474,15 @@ public class NPC : MonoBehaviour {
 
    // Our Shop Trigger (if any)
    protected ShopTrigger _shopTrigger;
+
+   // The default faction, when not defined in the data file
+   protected Faction.Type _faction = Faction.Type.Neutral;
+
+   // The default specialty, when not defined in the data file
+   protected Specialty.Type _specialty = Specialty.Type.Sailor;
+
+   // The default name, when not defined in the data file
+   protected string _npcName = "NPC";
 
    #endregion
 }

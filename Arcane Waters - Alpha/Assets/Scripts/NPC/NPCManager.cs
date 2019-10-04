@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System.IO;
+using System;
 
 public class NPCManager : MonoBehaviour {
    #region Public Variables
@@ -11,19 +12,18 @@ public class NPCManager : MonoBehaviour {
    // Self
    public static NPCManager self;
 
-   // The data files containing the NPC dialogues and quests
+   // The files containing the NPC data
    public TextAsset[] npcDataAssets;
 
    #endregion
 
    public void Awake () {
       self = this;
+   }
 
-      // Initializes the quest cache
-      _npcData = new Dictionary<int, NPCData>();
-
+   public void initializeQuestCache () {
       // Iterate over the files
-      foreach(TextAsset textAsset in npcDataAssets) {
+      foreach (TextAsset textAsset in npcDataAssets) {
          // Deserialize the file
          //NPCData npcData = JsonUtility.FromJson<NPCData>(textAsset.text);
 
@@ -32,27 +32,6 @@ public class NPCManager : MonoBehaviour {
 
          // Save the NPC data in the memory cache
          _npcData.Add(npcData.npcId, npcData);
-      }
-
-      // Create dictionaries of quests and nodes, for easy access later
-      foreach (NPCData data in _npcData.Values) {
-         // Create the quest dictionary for this npc
-         data.questsDictionary = new Dictionary<int, Quest>();
-
-         // Iterate over each quest
-         foreach (Quest quest in data.quests) {
-            // Add the quest to the dictionary
-            data.questsDictionary.Add(quest.questId, quest);
-
-            // Create the node dictionary for this quest
-            quest.nodesDictionary = new Dictionary<int, QuestNode>();
-
-            // Iterate over each node
-            foreach(QuestNode node in quest.nodes) {
-               // Add the node to the dictionary
-               quest.nodesDictionary.Add(node.nodeId, node);
-            }
-         }
       }
    }
 
@@ -79,13 +58,15 @@ public class NPCManager : MonoBehaviour {
          return null;
       }
 
-      Quest quest;
-      if (!npcData.questsDictionary.TryGetValue(questId, out quest)) {
-         D.error("The quest does not exist: " + npcId + "/" + questId);
-         return null;
+      // Look for the quest
+      foreach(Quest quest in npcData.quests) {
+         if (quest.questId == questId) {
+            return quest;
+         }
       }
 
-      return quest;
+      D.error("The quest does not exist: " + npcId + "/" + questId);
+      return null;
    }
 
    public QuestNode getQuestNode (int npcId, int questId, int questNodeId) {
@@ -95,20 +76,140 @@ public class NPCManager : MonoBehaviour {
          return null;
       }
 
-      QuestNode node;
-      if (!quest.nodesDictionary.TryGetValue(questNodeId, out node)) {
-         D.error("The quest node does not exist: " + npcId + "/" + questId + "/" + questNodeId);
-         return null;
+      // Look for the quest node
+      foreach (QuestNode node in quest.nodes) {
+         if (node.nodeId == questNodeId) {
+            return node;
+         }
       }
 
-      return node;
+      D.error("The quest node does not exist: " + npcId + "/" + questId + "/" + questNodeId);
+      return null;
    }
 
-   public string getGreetingText (int npcId) {
+   public string getGreetingText (int npcId, int friendshipLevel) {
       if (_npcData.ContainsKey(npcId)) {
-         return _npcData[npcId].greetingText;
+         switch (NPCFriendship.getRank(friendshipLevel)) {
+            case NPCFriendship.Rank.Stranger:
+               return _npcData[npcId].greetingTextStranger;
+            case NPCFriendship.Rank.Acquaintance:
+               return _npcData[npcId].greetingTextAcquaintance;
+            case NPCFriendship.Rank.CasualFriend:
+               return _npcData[npcId].greetingTextCasualFriend;
+            case NPCFriendship.Rank.CloseFriend:
+               return _npcData[npcId].greetingTextCloseFriend;
+            case NPCFriendship.Rank.BestFriend:
+               return _npcData[npcId].greetingTextBestFriend;
+            default:
+               return _npcData[npcId].greetingTextStranger;
+         }
       } else {
          return "Hello! How can I help you?";
+      }
+   }
+
+   public string getName (int npcId) {
+      if (_npcData.ContainsKey(npcId)) {
+         return _npcData[npcId].name;
+      } else {
+         return null;
+      }
+   }
+
+   public Faction.Type getFaction (int npcId) {
+      if (_npcData.ContainsKey(npcId)) {
+         return _npcData[npcId].faction;
+      } else {
+         return Faction.Type.None;
+      }
+   }
+
+   public Specialty.Type getSpecialty (int npcId) {
+      if (_npcData.ContainsKey(npcId)) {
+         return _npcData[npcId].specialty;
+      } else {
+         return Specialty.Type.None;
+     }
+   }
+
+   public bool canOfferGift (int friendshipLevel) {
+      return NPCFriendship.isRankAboveOrEqual(friendshipLevel, NPCFriendship.Rank.Acquaintance);
+   }
+
+   public string getGiftOfferNPCText (int npcId) {
+      if (_npcData.ContainsKey(npcId)) {
+         return _npcData[npcId].giftOfferNPCText;
+      } else {
+         return "";
+      }
+   }
+
+   public string getGiftLikedText (int npcId) {
+      if (_npcData.ContainsKey(npcId)) {
+         return _npcData[npcId].giftLikedText;
+      } else {
+         return "";
+      }
+   }
+
+   public string getGiftNotLikedText (int npcId) {
+      if (_npcData.ContainsKey(npcId)) {
+         return _npcData[npcId].giftNotLikedText;
+      } else {
+         return "";
+      }
+   }
+
+   public int getRewardedFriendshipForGift (int npcId, Item gift) {
+      int rewardedFriendship = 0;
+
+      // Determine if the npc has data
+      if (!_npcData.ContainsKey(npcId)) {
+         return 0;
+      }
+
+      // Look for a gift that the npc likes with the same category and type
+      foreach (NPCGiftData likedGift in _npcData[npcId].gifts) {
+         if (likedGift.itemCategory == gift.category && likedGift.itemTypeId == gift.itemTypeId) {
+            
+            // Compare the colors, if defined
+            bool isColorMatch = true;
+            if (likedGift.color1 != ColorType.None) {
+               if (likedGift.color1 != gift.color1) {
+                  isColorMatch = false;
+               }
+            }
+
+            if (likedGift.color2 != ColorType.None) {
+               if (likedGift.color2 != gift.color2) {
+                  isColorMatch = false;
+               }
+            }
+
+            // If everything matches, end the search and return the rewarded friendship
+            if (isColorMatch) {
+               rewardedFriendship = likedGift.rewardedFriendship;
+               break;
+            }
+         }
+      }
+
+      return rewardedFriendship;
+   }
+
+   public bool hasTradeGossipDialogue (int npcId) {
+      if (_npcData.ContainsKey(npcId)) {
+         return _npcData[npcId].hasTradeGossipDialogue;
+      } else {
+         return true;
+      }
+   }
+
+   public bool hasGoodbyeDialogue (int npcId) {
+      if (_npcData.ContainsKey(npcId)) {
+         return _npcData[npcId].hasGoodbyeDialogue;
+      } else {
+         return true;
       }
    }
 
@@ -118,7 +219,7 @@ public class NPCManager : MonoBehaviour {
    protected Dictionary<int, NPC> _npcs = new Dictionary<int, NPC>();
 
    // The cached NPC data for interactive NPCs
-   private Dictionary<int, NPCData> _npcData;
+   private Dictionary<int, NPCData> _npcData = new Dictionary<int, NPCData>();
 
    #endregion
 }

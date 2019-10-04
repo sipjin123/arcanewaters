@@ -161,7 +161,10 @@ public class BattleUIManager : MonoBehaviour {
       // Enable UI
       targetEnemyCG.Show();
       playerBattleCG.Show();
-      
+
+      // Battler stances are always reset to balanced when a new battle begins, so we reset the UI too.
+      setStanceGraphics(Battler.Stance.Balanced);
+
       usernameText.text = Global.player.entityName;
 
       StartCoroutine(setPlayerBattlerUIEvents());
@@ -171,7 +174,6 @@ public class BattleUIManager : MonoBehaviour {
 
    public void disableBattleUI () {
       mainPlayerRectCG.Hide();
-      playerMainUIHolder.Hide();
       targetEnemyCG.Hide();
       mainPlayerRectCG.Hide();
 
@@ -181,7 +183,7 @@ public class BattleUIManager : MonoBehaviour {
          playerMainUIHolder.gameObject.SetActive(false);
          setStanceFrameActiveState(false);
       }
-      
+
       hideActionStanceFrame();
    }
 
@@ -189,25 +191,21 @@ public class BattleUIManager : MonoBehaviour {
    public void changeBattleStance (int newStance) {
       switch ((Battler.Stance) newStance) {
          case Battler.Stance.Balanced:
-            stanceMainIcon.sprite = balancedSprite;
             _playerLocalBattler.stanceCurrentCooldown = AbilityInventory.self.balancedStance.getCooldown();
-            stanceButtonFrameIcon.sprite = balancedSprite;
             break;
          case Battler.Stance.Attack:
-            stanceMainIcon.sprite = offenseSprite;
             _playerLocalBattler.stanceCurrentCooldown = AbilityInventory.self.offenseStance.getCooldown();
-            stanceButtonFrameIcon.sprite = offenseSprite;
             break;
          case Battler.Stance.Defense:
-            stanceMainIcon.sprite = defenseSprite;
             _playerLocalBattler.stanceCurrentCooldown = AbilityInventory.self.defenseStance.getCooldown();
-            stanceButtonFrameIcon.sprite = defenseSprite;
             break;
       }
 
-      BattleManager.self.getPlayerBattler().stance = (Battler.Stance) newStance;
+      setStanceGraphics((Battler.Stance) newStance);
 
-      // Whenever we have finished setting the new stance, we hide the frame
+      Global.player.rpc.Cmd_StanceChange(BattleManager.self.getPlayerBattler().userId , (Battler.Stance) newStance);
+
+      // Whenever we have finished setting the new stance, we hide the frames
       hideActionStanceFrame();
       toggleStanceFrame();
    }
@@ -281,6 +279,19 @@ public class BattleUIManager : MonoBehaviour {
       }
    }
 
+   public Sprite getStanceIcon (Battler.Stance stance) {
+      switch (stance) {
+         case Battler.Stance.Balanced:
+            return balancedSprite;
+         case Battler.Stance.Attack:
+            return offenseSprite;
+         case Battler.Stance.Defense:
+            return defenseSprite;
+         default:
+            return null;
+      }
+   }
+
    #endregion
 
    /// <summary>
@@ -322,8 +333,7 @@ public class BattleUIManager : MonoBehaviour {
    // Sets combat UI events for the local player battler
    private IEnumerator setPlayerBattlerUIEvents () {
 
-      // TODO ZERONEV: Hardcoded value until I find a correct place to set this event correctly
-      // I would want to set this whenever the transition into the battle has finished
+      // The transition takes 2 seconds
       yield return new WaitForSeconds(2);
 
       Battler playerBattler = BattleManager.self.getPlayerBattler();
@@ -372,6 +382,23 @@ public class BattleUIManager : MonoBehaviour {
       ((viewportPosition.y * mainCanvasRect.sizeDelta.y) - (mainCanvasRect.sizeDelta.y * 0.5f)));
 
       originRect.anchoredPosition = objectScreenPos;
+   }
+
+   private void setStanceGraphics (Battler.Stance stance) {
+      switch (stance) {
+         case Battler.Stance.Balanced:
+            stanceMainIcon.sprite = balancedSprite;
+            stanceButtonFrameIcon.sprite = balancedSprite;
+            break;
+         case Battler.Stance.Attack:
+            stanceMainIcon.sprite = offenseSprite;
+            stanceButtonFrameIcon.sprite = offenseSprite;
+            break;
+         case Battler.Stance.Defense:
+            stanceMainIcon.sprite = defenseSprite;
+            stanceButtonFrameIcon.sprite = defenseSprite;
+            break;
+      }
    }
 
    #region Private Variables

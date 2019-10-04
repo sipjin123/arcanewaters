@@ -2,13 +2,22 @@
 using System.Collections;
 using System.Xml.Serialization;
 using System.Text;
+using System;
 
 public class QuestObjectiveDeliver : QuestObjective
 {
    #region Public Variables
    
    // The category of the item to deliver
+   [XmlIgnore]
    public Item.Category category;
+
+   [XmlElement("category")]
+   public int CategoryInt
+   {
+      get { return (int) category; }
+      set { category = (Item.Category) value; }
+   }
 
    // The type of the item to deliver
    public int itemTypeId;

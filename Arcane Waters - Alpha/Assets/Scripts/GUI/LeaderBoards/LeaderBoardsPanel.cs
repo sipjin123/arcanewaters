@@ -15,7 +15,7 @@ public class LeaderBoardsPanel : Panel
    public static LeaderBoardsPanel self;
 
    // The default period the panel displays
-   public static LeaderBoardsManager.Period DEFAULT_PERIOD;
+   public static LeaderBoardsManager.Period DEFAULT_PERIOD = LeaderBoardsManager.Period.Week;
 
    // The container for the rows for each leader board
    public GameObject farmingBoardRowsContainer;

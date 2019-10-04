@@ -75,7 +75,7 @@ public class Instance : NetworkBehaviour
             bot.instanceId = this.id;
             bot.areaType = area.areaType;
             bot.npcType = spot.npcType;
-            bot.faction = NPC.getFaction(bot.npcType);
+            bot.faction = NPC.getFactionFromType(bot.npcType);
             bot.route = spot.route;
             bot.nationType = spot.nationType;
             bot.maxForceOverride = spot.maxForceOverride;

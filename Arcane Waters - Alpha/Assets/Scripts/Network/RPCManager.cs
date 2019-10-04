@@ -58,13 +58,13 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_ReceiveNPCQuestNode (NetworkConnection connection, int npcId, int questId,
-      int questNodeId, int friendshipLevel, bool areObjectivesCompleted, int[] objectivesProgress) {
+   public void Target_ReceiveNPCQuestNode (NetworkConnection connection, int questId,
+      QuestNode questNode, int friendshipLevel, bool areObjectivesCompleted, int[] objectivesProgress) {
       // Get the NPC panel
       NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
 
       // Pass the data to the panel
-      panel.updatePanelWithQuestNode(npcId, friendshipLevel, questId, questNodeId, areObjectivesCompleted,
+      panel.updatePanelWithQuestNode(friendshipLevel, questId, questNode, areObjectivesCompleted,
          objectivesProgress);
 
       // Make sure the panel is showing
@@ -74,13 +74,16 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_ReceiveNPCQuestList (NetworkConnection connection, int npcId, 
-      int friendshipLevel, int[] quests) {
+   public void Target_ReceiveNPCQuestList (NetworkConnection connection, int npcId,
+      string npcName, Faction.Type faction, Specialty.Type specialty, int friendshipLevel,
+      string greetingText, bool canOfferGift, bool hasTradeGossipDialogue, bool hasGoodbyeDialogue,
+      Quest[] quests) {
       // Get the NPC panel
       NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
 
       // Pass the data to the panel
-      panel.updatePanelWithQuestSelection(npcId, friendshipLevel, quests);
+      panel.updatePanelWithQuestSelection(npcId, npcName, faction, specialty, friendshipLevel, greetingText, 
+         canOfferGift, hasTradeGossipDialogue, hasGoodbyeDialogue, quests);
 
       // Make sure the panel is showing
       if (!panel.isShowing()) {
@@ -89,19 +92,33 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_ReceiveNPCTradeGossip (int npcId, string gossip) {
+   public void Target_ReceiveNPCCustomDialogue (int friendshipLevel, string npcText,
+      ClickableText.Type userTextType, string userText) {
       // Get the NPC panel
       NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
 
       // Pass the data to the panel
-      panel.updatePanelWithTradeGossip(npcId, gossip);
+      panel.updatePanelWithCustomDialogue(friendshipLevel, npcText, userTextType, userText);
 
       // Make sure the panel is showing
       if (!panel.isShowing()) {
          PanelManager.self.pushPanel(panel.type);
       }
    }
-   
+
+   [TargetRpc]
+   public void Target_ReceiveGiftOfferNPCText (string npcText) {
+      // Get the NPC panel
+      NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
+
+      // Pass the data to the panel
+      panel.updatePanelWithGiftOffer(npcText);
+
+      // Make sure the panel is showing
+      if (!panel.isShowing()) {
+         PanelManager.self.pushPanel(panel.type);
+      }
+   }
 
    [TargetRpc]
    public void Target_EndNPCDialogue (NetworkConnection connection) {
@@ -344,6 +361,15 @@ public class RPCManager : NetworkBehaviour {
          exploringEntries, tradingEntries, craftingEntries, miningEntries);
    }
 
+   [TargetRpc]
+   public void Target_ReceiveInventoryItemsForItemSelection (NetworkConnection connection, InventoryMessage msg) {
+      // Only if the screen is showing
+      if (PanelManager.self.itemSelectionScreen.isShowing()) {
+         PanelManager.self.itemSelectionScreen.receiveItemsFromServer(msg.userObjects, msg.pageNumber, msg.totalItemCount,
+            msg.equippedArmorId, msg.equippedWeaponId, msg.itemArray);
+      }
+   }
+
    [Command]
    public void Cmd_BugReport (string subject, string message) {
       // We need a player object
@@ -520,13 +546,48 @@ public class RPCManager : NetworkBehaviour {
          int totalItemCount = DB_Main.getItemCount(_player.userId);
 
          // Get the items from the database
-         List<Item> items = DB_Main.getItems(_player.userId, pageNumber, itemsPerPage);
+         List<Item> items = DB_Main.getItems(_player.userId, Item.Category.None, pageNumber, itemsPerPage, 0, 0);
 
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             InventoryMessage inventoryMessage = new InventoryMessage(_player.netId, userObjects,
                pageNumber, userInfo.gold, userInfo.gems, totalItemCount, userInfo.armorId, userInfo.weaponId, items.ToArray());
             NetworkServer.SendToClientOfPlayer(_player.netIdent, inventoryMessage);
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_RequestItemsFromServerForItemSelection (Item.Category category, int pageNumber, int itemsPerPage,
+      bool filterEquippedItems) {
+      // Enforce a reasonable max here
+      if (itemsPerPage > 200) {
+         D.warning("Requesting too many items per page.");
+         return;
+      }
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
+         UserInfo userInfo = userObjects.userInfo;
+
+         int totalItemCount;
+         List<Item> items;
+
+         // Get the item count and item list from the database
+         if (filterEquippedItems) {
+            totalItemCount = DB_Main.getItemCount(_player.userId, category, userInfo.weaponId, userInfo.armorId);
+            items = DB_Main.getItems(_player.userId, category, pageNumber, itemsPerPage, userInfo.weaponId, userInfo.armorId);
+         } else {
+            totalItemCount = DB_Main.getItemCount(_player.userId, category, 0, 0);
+            items = DB_Main.getItems(_player.userId, category, pageNumber, itemsPerPage, 0, 0);
+         }
+
+         // Back to the Unity thread to send the results back to the client
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            InventoryMessage inventoryMessage = new InventoryMessage(_player.netId, userObjects,
+               pageNumber, userInfo.gold, userInfo.gems, totalItemCount, userInfo.armorId, userInfo.weaponId, items.ToArray());
+            Target_ReceiveInventoryItemsForItemSelection(_player.connectionToClient, inventoryMessage);
          });
       });
    }
@@ -905,18 +966,27 @@ public class RPCManager : NetworkBehaviour {
             // Retrieve the full list of quests for this npc
             List<Quest> allQuests = NPCManager.self.getQuests(npcId);
 
-            // Create a list of quest IDs with each available quest
-            List<int> questList = new List<int>();
+            // Create a list of new quest objects, containing only information useful to the client
+            List<Quest> questList = new List<Quest>();
             foreach (Quest quest in allQuests) {
                // Skip the quest if the player has already completed it
                if (!completedQuestIds.Contains(quest.questId)) {
-                  questList.Add(quest.questId);
+                  Quest q = new Quest(quest.questId, quest.title, quest.friendshipRankRequired, quest.isPermanent, null);
+                  questList.Add(q);
                }
             }
 
+            // Retrieve other data only available server-side
+            string greetingText = NPCManager.self.getGreetingText(npcId, friendshipLevel);
+            bool canOfferGift = NPCManager.self.canOfferGift(friendshipLevel);
+            bool hasTradeGossipDialogue = NPCManager.self.hasTradeGossipDialogue(npcId);
+            bool hasGoodbyeDialogue = NPCManager.self.hasGoodbyeDialogue(npcId);
+            NPC npc = NPCManager.self.getNPC(npcId);
+
             // Send the data to the client
-            Target_ReceiveNPCQuestList(_player.connectionToClient, npcId,
-               friendshipLevel, questList.ToArray());
+            Target_ReceiveNPCQuestList(_player.connectionToClient, npcId, npc.getName(), npc.getFaction(), npc.getSpecialty(),
+               friendshipLevel, greetingText, canOfferGift, hasTradeGossipDialogue, hasGoodbyeDialogue,
+               questList.ToArray());
          });
       });
    }
@@ -933,7 +1003,7 @@ public class RPCManager : NetworkBehaviour {
          int friendshipLevel = DB_Main.getFriendshipLevel(npcId, _player.userId);
 
          // Verifies if the user has enough friendship to start the quest
-         if (friendshipLevel < quest.friendshipLevelRequired) {
+         if (!NPCFriendship.isRankAboveOrEqual(friendshipLevel, quest.friendshipRankRequired)) {
             return;
          }
 
@@ -965,7 +1035,7 @@ public class RPCManager : NetworkBehaviour {
          // Manage the objectives if they exist
          List<int> objectivesProgress = new List<int>();
          bool areObjectivesCompleted = true;
-         foreach (QuestObjective o in destinationNode.objectives) {
+         foreach (QuestObjective o in destinationNode.getAllQuestObjectives()) {
             // Retrieve the objective progress
             int progress = o.getObjectiveProgress(_player.userId);
             objectivesProgress.Add(progress);
@@ -979,7 +1049,7 @@ public class RPCManager : NetworkBehaviour {
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Send the new quest status to the client
-            Target_ReceiveNPCQuestNode(_player.connectionToClient, npcId, questId, destinationNodeId,
+            Target_ReceiveNPCQuestNode(_player.connectionToClient, questId, destinationNode,
                friendshipLevel, areObjectivesCompleted, objectivesProgress.ToArray());
          });
       });
@@ -1005,43 +1075,48 @@ public class RPCManager : NetworkBehaviour {
          // Get the last reached node in this conversation
          QuestNode currentNode = NPCManager.self.getQuestNode(npcId, questId, status.questNodeId);
          
-         if (currentNode.objectives != null) {
-            // Make sure that the quest objectives can be completed
-            foreach (QuestObjective objective in currentNode.objectives) {
-               if (!objective.canObjectiveBeCompletedDB(_player.userId)) {
-                  return;
-               }
+         // Make sure that the quest objectives can be completed
+         foreach (QuestObjective objective in currentNode.getAllQuestObjectives()) {
+            if (!objective.canObjectiveBeCompletedDB(_player.userId)) {
+               return;
             }
+         }
 
-            // Complete each quest objective
-            foreach (QuestObjective objective in currentNode.objectives) {
-               objective.completeObjective(_player.userId);
-            }
+         // Complete each quest objective
+         foreach (QuestObjective objective in currentNode.getAllQuestObjectives()) {
+            objective.completeObjective(_player.userId);
          }
 
          // Keeps track of all the rewarded items
          List<Item> rewardedItems = new List<Item>();
 
          // Grants the rewards
-         if (currentNode.rewards != null) {
-            foreach (QuestReward r in currentNode.rewards) {
-               Item item = r.giveRewardToUser(npcId, _player.userId);
-               if (item != null) {
-                  rewardedItems.Add(item);
-               }
+         foreach (QuestReward r in currentNode.getAllQuestRewards()) {
+            Item item = r.giveRewardToUser(npcId, _player.userId);
+            if (item != null) {
+               rewardedItems.Add(item);
             }
          }
 
-         // Update the DB with the quest status after advancing to the next node
-         DB_Main.updateQuestStatus(npcId, _player.userId, questId, currentNode.nextNodeId);
+         // If this is the end of the conversation and the quest is permanent, reset its progress
+         if (currentNode.nextNodeId == -1 && currentQuest.isPermanent) {
+            DB_Main.updateQuestStatus(npcId, _player.userId, questId, currentQuest.getFirstNode().nodeId);
+         } else {
+            // Update the DB with the quest status after advancing to the next node
+            DB_Main.updateQuestStatus(npcId, _player.userId, questId, currentNode.nextNodeId);
+         }
 
-         // Manage the objectives of the next node, if they exist
+         // Retrieve the next node
+         QuestNode nextNode = null;
+         if (currentNode.nextNodeId != -1) {
+            nextNode = NPCManager.self.getQuestNode(npcId, questId, currentNode.nextNodeId);
+         }
+
+         // Determine the objectives progress status of the next node
          List<int> objectivesProgress = new List<int>();
          bool areObjectivesCompleted = true;
          if (currentNode.nextNodeId != -1) {
-            // Retrieve the next node
-            QuestNode nextNode = NPCManager.self.getQuestNode(npcId, questId, currentNode.nextNodeId);
-            foreach (QuestObjective o in nextNode.objectives) {
+            foreach (QuestObjective o in nextNode.getAllQuestObjectives()) {
                // Retrieve the objective progress
                int progress = o.getObjectiveProgress(_player.userId);
                objectivesProgress.Add(progress);
@@ -1064,7 +1139,7 @@ public class RPCManager : NetworkBehaviour {
                Target_EndNPCDialogue(_player.connectionToClient);
             } else {
                // Send the new quest status to the client
-               Target_ReceiveNPCQuestNode(_player.connectionToClient, npcId, questId, currentNode.nextNodeId,
+               Target_ReceiveNPCQuestNode(_player.connectionToClient, questId, nextNode,
                   friendshipLevel, areObjectivesCompleted, objectivesProgress.ToArray());
             }
 
@@ -1080,8 +1155,93 @@ public class RPCManager : NetworkBehaviour {
    public void Cmd_RequestNPCTradeGossipFromServer (int npcId) {
       string gossip = NPCManager.self.getNPC(npcId).tradeGossip;
 
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+
+         // Retrieve the friendship level
+         int friendshipLevel = DB_Main.getFriendshipLevel(npcId, _player.userId);
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Send the gossip text to the client
+            Target_ReceiveNPCCustomDialogue(friendshipLevel, gossip, ClickableText.Type.ThankYou, null);
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_RequestGiftOfferNPCTextFromServer (int npcId) {
+      string npcText = NPCManager.self.getGiftOfferNPCText(npcId);
+
       // Send the gossip text to the client
-      Target_ReceiveNPCTradeGossip(npcId, gossip);
+      Target_ReceiveGiftOfferNPCText(npcText);
+   }
+
+   [Command]
+   public void Cmd_GiftItemToNPC (int npcId, int itemId, int count) {
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Retrieve the current friendship
+         int currentFriendship = DB_Main.getFriendshipLevel(npcId, _player.userId);
+
+         // Verify that the player has enough friendship to offer a gift
+         if (!NPCManager.self.canOfferGift(currentFriendship)) {
+            D.error(string.Format("User {0} does not have enough friendship with NPC {1} to offer a gift.", _player.userId, npcId));
+            return;
+         }
+
+         // Retrieve the item from the player's inventory
+         Item giftedItem = DB_Main.getItem(_player.userId, itemId);
+
+         // Verify if the player has the item in his inventory
+         if (giftedItem == null) {
+            D.error(string.Format("User {0} does not have item {1} in his inventory.", _player.userId, itemId));
+            return;
+         }
+
+         // Verify that there are enough items in the stack
+         if (count > giftedItem.count) {
+            D.error(string.Format("User {0} does not have enough quantity of item {1} in his inventory {2} < {3}.", _player.userId, itemId, giftedItem.count, count));
+            return;
+         }
+
+         // Verify that the item is not equipped
+         UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
+         UserInfo userInfo = userObjects.userInfo;
+
+         if (userInfo.armorId == itemId || userInfo.weaponId == itemId) {
+            D.error(string.Format("User {0} has item {1} equipped and cannot gift it.", _player.userId, itemId));
+            return;
+         }
+
+         // Remove the item from the player's inventory
+         DB_Main.decreaseQuantityOrDeleteItem(_player.userId, itemId, count);
+
+         // Retrieve the friendship rewarded for this item
+         int rewardedFriendship = NPCManager.self.getRewardedFriendshipForGift(npcId, giftedItem) * count;
+
+         // Calculate the new friendship value
+         int newFriendshipLevel = NPCFriendship.addToFriendship(currentFriendship, rewardedFriendship);
+
+         // Update the npc relationship with the new friendship value
+         if (newFriendshipLevel != currentFriendship) {
+            DB_Main.updateNPCRelationship(npcId, _player.userId, newFriendshipLevel);
+         }
+
+         // Retrieve the correct npc text after being gifted the item
+         string npcText;
+         if (rewardedFriendship > 0) {
+            npcText = NPCManager.self.getGiftLikedText(npcId);
+         } else {
+            npcText = NPCManager.self.getGiftNotLikedText(npcId);
+         }
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Send the npc answer to the client
+            Target_ReceiveNPCCustomDialogue(newFriendshipLevel, npcText, ClickableText.Type.YouAreWelcome, null);
+         });
+      });
    }
 
    [Command]
@@ -1524,7 +1684,7 @@ public class RPCManager : NetworkBehaviour {
       bot.facing = Util.randomEnum<Direction>();
       bot.areaType = _player.areaType;
       bot.npcType = NPC.Type.Blackbeard;
-      bot.faction = NPC.getFaction(bot.npcType);
+      bot.faction = NPC.getFactionFromType(bot.npcType);
       bot.route = null;
       bot.autoMove = true;
       bot.nationType = Nation.Type.Pirate;
@@ -1691,6 +1851,11 @@ public class RPCManager : NetworkBehaviour {
       // Let the Battle Manager handle executing the attack
       List<Battler> targetBattlers = new List<Battler>() { targetBattler };
       BattleManager.self.executeAttack(battle, sourceBattler, targetBattlers, abilityInventoryIndex);
+   }
+
+   [Command]
+   public void Cmd_StanceChange (int userID, Battler.Stance newStance) {
+      BattleManager.self.getBattler(userID).stance = newStance;
    }
 
    [Server]

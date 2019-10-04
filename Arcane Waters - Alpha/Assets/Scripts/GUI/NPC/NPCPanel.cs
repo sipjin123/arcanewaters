@@ -8,8 +8,8 @@ using System.Text;
 public class NPCPanel : Panel {
    #region Public Variables
 
-   // The NPC associated with this panel
-   public NPC npc;
+   // The mode of the panel
+   public enum Mode { QuestList = 1, QuestNode = 2, GiftOffer = 3 }
 
    // The Text element showing the current NPC dialogue line
    public TextMeshProUGUI npcDialogueText;
@@ -26,17 +26,22 @@ public class NPCPanel : Panel {
    // The Text that shows the NPC name
    public Text nameText;
 
-   // The Text that shows our friendship number
-   public Text friendshipText;
+   // The Text that shows our friendship level
+   public Text friendshipLevelText;
 
-   // The container for our clickable dialogue rows
-   public GameObject clickableRowContainer;
+   // The Text that shows our friendship rank
+   public Text friendshipRankText;
 
-   // The prefab we use for creating dialogue rows
-   public ClickableText clickableRowPrefab;
+   // The different sections that each mode uses
+   public GameObject questListSection;
+   public GameObject questNodeSection;
+   public GameObject giftOfferSection;
 
-   // The animator to trigger when the friendship increases
-   public Animator friendshipIncreaseAnimator;
+   // The container for the dialogue options, quest list mode
+   public GameObject dialogueOptionRowContainerForQuestList;
+
+   // The container for the dialogue options, quest node mode
+   public GameObject dialogueOptionRowContainerForQuestNode;
 
    // The root of the quest objectives section
    public GameObject questObjectivesGO;
@@ -49,6 +54,21 @@ public class NPCPanel : Panel {
 
    // The prefab we use for creating quest objective cells
    public NPCPanelQuestObjectiveCell questObjectiveCellPrefab;
+
+   // The container for the gifted item cell
+   public GameObject itemCellContainer;
+
+   // The button used to confirm the gifting of an item
+   public Button confirmOfferGiftButton;
+
+   // The prefab we use for creating dialogue rows
+   public ClickableText dialogueOptionRowPrefab;
+
+   // The prefab we use for creating item cells
+   public ItemCell itemCellPrefab;
+
+   // The animator to trigger when the friendship increases
+   public Animator friendshipIncreaseAnimator;
 
    // The color for dialogue options that cannot be clicked
    public Color disabledClickableRowColor;
@@ -67,13 +87,8 @@ public class NPCPanel : Panel {
    public override void show () {
       base.show();
 
-      // Fill in the details for this NPC
-      factionIcon.sprite = Faction.getIcon(npc.faction);
-      specialtyIcon.sprite = Specialty.getIcon(npc.specialty);
-      nameText.text = npc.npcName;
-
       // Update the head image based on the type of NPC this is
-      string path = "Faces/" + npc.GetComponent<SpriteSwap>().newTexture.name;
+      string path = "Faces/" + _npc.GetComponent<SpriteSwap>().newTexture.name;
       Texture2D newTexture = ImageManager.getTexture(path);
       headAnim.GetComponent<SimpleAnimation>().setNewTexture(newTexture);
 
@@ -81,59 +96,74 @@ public class NPCPanel : Panel {
       AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
    }
 
-   public void updatePanelWithQuestSelection (int npcId, int friendshipLevel, int[] questIds) {
-      // Set the panel content common to the different configurations
-      setCommonPanelContent(npcId, NPCManager.self.getGreetingText(npcId), friendshipLevel);
+   public void updatePanelWithQuestSelection (int npcId, string npcName, Faction.Type faction, Specialty.Type specialty,
+      int friendshipLevel, string greetingText, bool canOfferGift, bool hasTradeGossipDialogue, bool hasGoodbyeDialogue,
+      Quest[] quests) {
+      // Show the correct section
+      configurePanelForMode(Mode.QuestList);
+
+      // Initialize the NPC characteristics
+      setNPC(npcId, npcName, faction, specialty, friendshipLevel);
+
+      // Set the panel content common to the different modes
+      setCommonPanelContent(greetingText, friendshipLevel);
 
       // Clear out the old clickable options
-      clickableRowContainer.DestroyChildren();
+      clearDialogueOptions();
 
       // Create a clickable text row for each quest in the list
-      foreach (int questId in questIds) {
-         // Retrieve the quest
-         Quest quest = NPCManager.self.getQuest(npcId, questId);
-
+      foreach (Quest quest in quests) {
          // Set the quest title
          string questTitle = quest.title;
 
          // Verifies if the user has enough friendship to start the quest
          bool canStartQuest = true;
-         if (friendshipLevel < quest.friendshipLevelRequired) {
+         if (!NPCFriendship.isRankAboveOrEqual(friendshipLevel, quest.friendshipRankRequired)) {
             canStartQuest = false;
             questTitle += " (friendship too low)";
          }
 
          // Create a clickable text row for the quest
-         addDialogueOptionRow(ClickableText.Type.NPCDialogueOption,
-            () => questSelectionRowClickedOn(questId), canStartQuest, questTitle);
+         addDialogueOptionRow(Mode.QuestList, ClickableText.Type.NPCDialogueOption,
+            () => questSelectionRowClickedOn(quest.questId), canStartQuest, questTitle);
+      }
+
+      // Create a clickable text row for the gift offering
+      if (canOfferGift) {
+         addDialogueOptionRow(Mode.QuestList, ClickableText.Type.Gift,
+            () => giftRowClickedOn(), true);
       }
 
       // Create a clickable text row for the trade gossip
-      addDialogueOptionRow(ClickableText.Type.TradeGossip,
-         () => gossipRowClickedOn(), true);
+      if (hasTradeGossipDialogue) {
+         addDialogueOptionRow(Mode.QuestList, ClickableText.Type.TradeGossip,
+            () => gossipRowClickedOn(), true);
+      }
 
       // Create a clickable text row for the 'Goodbye'
-      addDialogueOptionRow(ClickableText.Type.NPCDialogueEnd,
+      if (hasGoodbyeDialogue) {
+         addDialogueOptionRow(Mode.QuestList, ClickableText.Type.NPCDialogueEnd,
          () => dialogueEndClickedOn(), true);
+      }
    }
 
-   public void updatePanelWithQuestNode (int npcId, int friendshipLevel, int questId, int questNodeId,
+   public void updatePanelWithQuestNode (int friendshipLevel, int questId, QuestNode node,
       bool areObjectivesCompleted, int[] objectivesProgress) {
-      // Get the quest node
-      QuestNode node = NPCManager.self.getQuestNode(npcId, questId, questNodeId);
+      // Show the correct section
+      configurePanelForMode(Mode.QuestNode);
 
-      // Set the panel content common to the different configurations
-      setCommonPanelContent(npcId, node.npcText, friendshipLevel);
+      // Set the panel content common to the different modes
+      setCommonPanelContent(node.npcText, friendshipLevel);
 
       // Clear out the old clickable options
-      clickableRowContainer.DestroyChildren();
+      clearDialogueOptions();
 
       // Create a clickable text row with the user's answer
-      addDialogueOptionRow(ClickableText.Type.NPCDialogueOption, 
+      addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.NPCDialogueOption, 
          () => nextQuestNodeRowClickedOn(questId), areObjectivesCompleted, node.userText);
 
       // Retrieve the quest objectives
-      List<QuestObjective> questObjectives = node.objectives;
+      List<QuestObjective> questObjectives = node.getAllQuestObjectives();
 
       // If there are quest objectives, display them in their section
       if (questObjectives != null && questObjectives.Count > 0) {
@@ -169,28 +199,51 @@ public class NPCPanel : Panel {
       }
    }
 
-   public void updatePanelWithTradeGossip (int npcId, string gossip) {
-      // Set the panel content common to the different configurations
-      setCommonPanelContent(npcId, gossip);
+   public void updatePanelWithGiftOffer (string npcText) {
+      // Show the correct section
+      configurePanelForMode(Mode.GiftOffer);
+
+      // Clear out the item cell
+      itemCellContainer.DestroyChildren();
+
+      // Disable the 'offer' button
+      confirmOfferGiftButton.interactable = false;
+
+      // Set the panel content common to the different modes
+      setCommonPanelContent(npcText);
+   }
+
+   public void updatePanelWithCustomDialogue (int friendshipLevel, string npcText,
+      ClickableText.Type userTextType, string userText) {
+      // Show the correct section
+      configurePanelForMode(Mode.QuestNode);
+
+      // Set the panel content common to the different modes
+      setCommonPanelContent(npcText, friendshipLevel);
 
       // Clear out the old clickable options
-      clickableRowContainer.DestroyChildren();
+      clearDialogueOptions();
 
       // Create a clickable text row with the user's answer
-      addDialogueOptionRow(ClickableText.Type.TradeGossipThanks, 
-         () => backToQuestSelectionRowClickedOn(), true);
+      if (userText == null) {
+         addDialogueOptionRow(Mode.QuestNode, userTextType,
+            () => backToQuestSelectionRowClickedOn(), true);
+      } else {
+         addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.NPCDialogueOption,
+            () => backToQuestSelectionRowClickedOn(), true, userText);
+      }
    }
 
    public void questSelectionRowClickedOn (int questId) {
-      Global.player.rpc.Cmd_SelectNPCQuest(npc.npcId, questId);
+      Global.player.rpc.Cmd_SelectNPCQuest(_npc.npcId, questId);
    }
 
    public void nextQuestNodeRowClickedOn (int questId) {
-      Global.player.rpc.Cmd_MoveToNextNPCQuestNode(npc.npcId, questId);
+      Global.player.rpc.Cmd_MoveToNextNPCQuestNode(_npc.npcId, questId);
    }
 
    public void gossipRowClickedOn () {
-      Global.player.rpc.Cmd_RequestNPCTradeGossipFromServer(npc.npcId);
+      Global.player.rpc.Cmd_RequestNPCTradeGossipFromServer(_npc.npcId);
    }
 
    public void dialogueEndClickedOn () {
@@ -198,25 +251,86 @@ public class NPCPanel : Panel {
    }
 
    public void backToQuestSelectionRowClickedOn () {
-      Global.player.rpc.Cmd_RequestNPCQuestSelectionListFromServer(npc.npcId);
+      Global.player.rpc.Cmd_RequestNPCQuestSelectionListFromServer(_npc.npcId);
    }
 
-   private void setCommonPanelContent(int npcId, string npcText, int friendshipLevel) {
+   public void giftRowClickedOn () {
+      Global.player.rpc.Cmd_RequestGiftOfferNPCTextFromServer(_npc.npcId);
+   }
+
+   public void selectGiftButtonClickedOn () {
+      // Associate a new function with the select button
+      PanelManager.self.itemSelectionScreen.selectButton.onClick.RemoveAllListeners();
+      PanelManager.self.itemSelectionScreen.selectButton.onClick.AddListener(() => returnFromGiftSelection());
+
+      // Associate a new function with the cancel button
+      PanelManager.self.itemSelectionScreen.cancelButton.onClick.RemoveAllListeners();
+      PanelManager.self.itemSelectionScreen.cancelButton.onClick.AddListener(() => hideItemSelectionScreen());
+
+      // Show the item selection screen
+      PanelManager.self.itemSelectionScreen.show(Item.Category.None);
+   }
+
+   public void confirmOfferGiftButtonClickedOn () {
+      Global.player.rpc.Cmd_GiftItemToNPC(_npc.npcId, _selectedGiftItem.id, _selectedGiftItemCount);
+   }
+
+   public void hideItemSelectionScreen () {
+      PanelManager.self.itemSelectionScreen.hide();
+   }
+
+   public void returnFromGiftSelection () {
+      // Hide item selection screen
+      PanelManager.self.itemSelectionScreen.hide();
+
+      // Save the selected item
+      _selectedGiftItem = ItemSelectionScreen.selectedItem;
+
+      // Save the number of items to gift
+      _selectedGiftItemCount = ItemSelectionScreen.selectedItemCount;
+
+      // Clear out the old item cell
+      itemCellContainer.DestroyChildren();
+
+      // Instantiates the item cell
+      ItemCell cell = Instantiate(itemCellPrefab, itemCellContainer.transform, false);
+      cell.transform.SetParent(itemCellContainer.transform, false);
+
+      // Initializes the cell
+      cell.setCellForItem(_selectedGiftItem, _selectedGiftItemCount);
+
+      // Disable the click event on the cell
+      cell.disablePointerEvents();
+
+      // Enables the 'confirm gift' button
+      confirmOfferGiftButton.interactable = true;
+   }
+
+   private void setCommonPanelContent(string npcText, int friendshipLevel) {
       // If the friendship level changed, play an animation
       if (_friendshipLevel != -1 && _friendshipLevel != friendshipLevel) {
          friendshipIncreaseAnimator.SetTrigger("friendshipChanged");
+
+         // If the friendship rank increased, notice the player
+         if (_friendshipRank != NPCFriendship.Rank.None &&
+            friendshipLevel > _friendshipLevel &&
+            _friendshipRank != NPCFriendship.getRank(friendshipLevel))  {
+            PanelManager.self.noticeScreen.show(string.Format("Your friendship with {0} raised to {1}", _npc.getName(), NPCFriendship.getRankName(friendshipLevel)));
+         }
       }
 
       // Set the friendship level
       _friendshipLevel = friendshipLevel;
-      friendshipText.text = friendshipLevel.ToString();
+      friendshipLevelText.text = friendshipLevel.ToString();
 
-      setCommonPanelContent(npcId, npcText);
+      // Set the friendship rank
+      _friendshipRank = NPCFriendship.getRank(friendshipLevel);
+      friendshipRankText.text = NPCFriendship.getRankName(_friendshipRank);
+
+      setCommonPanelContent(npcText);
    }
 
-   private void setCommonPanelContent (int npcId, string npcText) {
-      this.npc = NPCManager.self.getNPC(npcId);
-
+   private void setCommonPanelContent (string npcText) {
       // Set the current npc text line
       _npcDialogueLine = npcText;
 
@@ -229,11 +343,73 @@ public class NPCPanel : Panel {
       questObjectivesGO.SetActive(false);
    }
 
-   private void addDialogueOptionRow (ClickableText.Type clickableType,
+   private void setNPC(int npcId, string npcName, Faction.Type faction, Specialty.Type specialty,
+      int friendshipLevel) {
+      _npc = NPCManager.self.getNPC(npcId);
+
+      // Fill in the details for this NPC
+      factionIcon.sprite = Faction.getIcon(faction);
+      specialtyIcon.sprite = Specialty.getIcon(specialty);
+      nameText.text = npcName;
+
+      // Set the friendship level
+      _friendshipLevel = friendshipLevel;
+      friendshipLevelText.text = friendshipLevel.ToString();
+
+      // Set the friendship rank
+      _friendshipRank = NPCFriendship.getRank(friendshipLevel);
+      friendshipRankText.text = NPCFriendship.getRankName(_friendshipRank);
+   }
+
+   private void configurePanelForMode(Mode mode) {
+      switch (mode) {
+         case Mode.QuestList:
+            questListSection.SetActive(true);
+            questNodeSection.SetActive(false);
+            giftOfferSection.SetActive(false);
+            break;
+         case Mode.QuestNode:
+            questListSection.SetActive(false);
+            questNodeSection.SetActive(true);
+            giftOfferSection.SetActive(false);
+            break;
+         case Mode.GiftOffer:
+            questListSection.SetActive(false);
+            questNodeSection.SetActive(false);
+            giftOfferSection.SetActive(true);
+            break;
+         default:
+            questListSection.SetActive(false);
+            questNodeSection.SetActive(true);
+            giftOfferSection.SetActive(false);
+            break;
+      }
+   }
+
+   private void clearDialogueOptions () {
+      dialogueOptionRowContainerForQuestList.DestroyChildren();
+      dialogueOptionRowContainerForQuestNode.DestroyChildren();
+   }
+
+   private void addDialogueOptionRow (Mode mode, ClickableText.Type clickableType,
       UnityEngine.Events.UnityAction functionToCall, bool isInteractive, string text = null) {
+      // Find the correct container that will hold the row
+      GameObject container;
+      switch (mode) {
+         case Mode.QuestList:
+            container = dialogueOptionRowContainerForQuestList;
+            break;
+         case Mode.QuestNode:
+            container = dialogueOptionRowContainerForQuestNode;
+            break;
+         default:
+            D.warning("The NPC Panel mode " + mode.ToString() + " does not handle dialogue options");
+            return;
+      }
+
       // Create a clickable text row
-      ClickableText row = Instantiate(clickableRowPrefab);
-      row.transform.SetParent(clickableRowContainer.transform);
+      ClickableText row = Instantiate(dialogueOptionRowPrefab);
+      row.transform.SetParent(container.transform);
 
       // Set the text
       if (text == null) {
@@ -254,11 +430,23 @@ public class NPCPanel : Panel {
 
    #region Private Variables
 
+   // The NPC associated with this panel
+   private NPC _npc;
+
    // Keeps track of what our starting text is
    protected string _npcDialogueLine = "";
 
-   // Keep track of the current displayed friendship level
+   // Keep track of the currently displayed friendship level
    protected int _friendshipLevel = -1;
+
+   // Keep track of the currently displayed friendship rank
+   protected NPCFriendship.Rank _friendshipRank = NPCFriendship.Rank.None;
+
+   // The selected gift item
+   protected Item _selectedGiftItem;
+
+   // The number of gift items
+   protected int _selectedGiftItemCount = 1;
 
    #endregion
 }

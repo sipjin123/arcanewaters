@@ -252,7 +252,7 @@ public class ClientMessageManager : MonoBehaviour {
          }
          // Update the Crafting Panel with the items we received from the server
          craftPanel.receiveItemsFromServer(msg.userObjects, msg.pageNumber, msg.gold, msg.gems, msg.totalItemCount, msg.equippedArmorId, msg.equippedWeaponId, msg.itemArray);
-      } 
+      }
    }
 
    public static void On_Store (NetworkConnection conn, StoreMessage msg) {
