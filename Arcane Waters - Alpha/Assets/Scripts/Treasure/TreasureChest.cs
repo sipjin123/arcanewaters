@@ -76,6 +76,7 @@ public class TreasureChest : NetworkBehaviour {
       if (!NetworkClient.active) {
          triggerCollider.enabled = false;
       }
+      StartCoroutine(CO_DisableChestAfterLifetime());
    }
 
    public void Update () {
@@ -227,6 +228,11 @@ public class TreasureChest : NetworkBehaviour {
 
    private IEnumerator CO_DisableChestAfterDelay() {
       yield return new WaitForSeconds(3);
+      gameObject.SetActive(false);
+   }
+
+   private IEnumerator CO_DisableChestAfterLifetime () {
+      yield return new WaitForSeconds(30);
       gameObject.SetActive(false);
    }
 

@@ -219,6 +219,14 @@ public class Util : MonoBehaviour {
       color.a = newAlpha;
       block.SetColor("_Color", color);
 
+      if (renderer.sprite == null) {
+         return;
+      }
+
+      if (renderer.sprite.texture == null) {
+         return;
+      }
+
       // Ensures that the texture is not lost during sprite change while animating
       block.SetTexture("_MainTex", renderer.sprite.texture);
 

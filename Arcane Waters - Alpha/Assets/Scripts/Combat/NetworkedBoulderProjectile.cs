@@ -86,12 +86,13 @@ public class NetworkedBoulderProjectile : MonoBehaviour
       // The Server will handle applying damage
       if (NetworkServer.active) {
          int damage = (int) (sourceEntity.damage / 3f);
+         hitEntity.currentHealth -= damage;
 
          // Spawn Mini Boulders upon Collision
          SeaManager.self.getEntity(creatorUserId).fireMultiDirectionalProjectile(transform.position, Attack.Type.Mini_Boulder);
 
          // Registers Damage throughout the clients
-         hitEntity.Rpc_NetworkProjectileDamage(damage, creatorUserId, Attack.Type.Boulder, circleCollider.transform.position);
+         hitEntity.Rpc_NetworkProjectileDamage(creatorUserId, Attack.Type.Boulder, circleCollider.transform.position);
 
          // Have the server tell the clients where the explosion occurred
          hitEntity.Rpc_ShowExplosion(hitEntity.transform.position, damage, Attack.Type.Boulder);

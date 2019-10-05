@@ -67,8 +67,11 @@ public class SeaMonsterEntityData : ScriptableObject {
    // Holds the other sprite texture option to be used for the sea monster
    public Sprite secondarySprite;
 
+   // Holds the texture to be used for the ripples
+   public Texture2D defaultRippleTexture;
+
    // Holds the sprite texture to be used for the ripples
-   public Texture2D defaultRippleSprite;
+   public Sprite defaultRippleSprite;
 
    // Overrides the scale of the monster
    public float scaleOverride = 1;
@@ -93,6 +96,9 @@ public class SeaMonsterEntityData : ScriptableObject {
 
    // Spawn Location Overrides may vary depending on the sea monster sprites
    public List<DirectionalPositions> projectileSpawnLocations;
+
+   // Offset value for the position of the ripples
+   public Vector3 rippleLocOffset;
 
    #endregion
 

@@ -161,8 +161,6 @@ public class SeaEntity : NetEntity {
       GameObject venomResidue = Instantiate(PrefabsManager.self.venomResiduePrefab, location, Quaternion.identity);
       venomResidue.GetComponent<VenomResidue>().creatorUserId = creatorID;
       ExplosionManager.createSlimeExplosion(location);
-
-
       SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Coralbow_Attack, this.transform.position);
    }
 
@@ -348,15 +346,13 @@ public class SeaEntity : NetEntity {
    }
 
    [ClientRpc]
-   public void Rpc_NetworkProjectileDamage (int damage, int attackerID, Attack.Type attackType, Vector3 location) {
+   public void Rpc_NetworkProjectileDamage (int attackerID, Attack.Type attackType, Vector3 location) {
       SeaEntity sourceEntity = SeaManager.self.getEntity(attackerID);
       noteAttacker(sourceEntity);
-      currentHealth -= damage;
 
       switch(attackType) {
          case Attack.Type.Boulder:
             // Apply the status effect
-            StatusManager.self.create(Status.Type.Slow, 3f, attackerID);
             ExplosionManager.createRockExplosion(location);
             SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Boulder, location);
             break;

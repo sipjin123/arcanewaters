@@ -1740,8 +1740,8 @@ public class RPCManager : NetworkBehaviour {
       Instance instance = InstanceManager.self.getInstance(_player.instanceId);
       instance.entities.Add(bot);
 
-      float distanceGap = .35f;
-      float diagonalDistanceGap = .55f;
+      float distanceGap = .25f;
+      float diagonalDistanceGap = .35f;
 
       Cmd_SpawnBossChild(spawnPosition + new Vector2(distanceGap, -distanceGap), bot.netId, 1, -1, 1, Enemy.Type.Tentacle);
       Cmd_SpawnBossChild(spawnPosition + new Vector2(-distanceGap, -distanceGap), bot.netId, -1, -1, 0, Enemy.Type.Tentacle);
@@ -1751,9 +1751,6 @@ public class RPCManager : NetworkBehaviour {
 
       Cmd_SpawnBossChild(spawnPosition + new Vector2(-diagonalDistanceGap, 0), bot.netId, -1, 0, 1, Enemy.Type.Tentacle);
       Cmd_SpawnBossChild(spawnPosition + new Vector2(diagonalDistanceGap, 0), bot.netId, 1, 0, 0, Enemy.Type.Tentacle);
-
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(0, -diagonalDistanceGap), bot.netId, 0, -1, 1, Enemy.Type.Tentacle);
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(0, diagonalDistanceGap), bot.netId, 0, 1, 0, Enemy.Type.Tentacle);
    }
 
    [Command]

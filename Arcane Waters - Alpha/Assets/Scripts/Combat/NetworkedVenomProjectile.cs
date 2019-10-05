@@ -77,12 +77,13 @@ public class NetworkedVenomProjectile : MonoBehaviour
       // The Server will handle applying damage
       if (NetworkServer.active) {
          int damage = (int) (sourceEntity.damage / 3f);
+         hitEntity.currentHealth -= damage;
 
          // Spawn Damage Per Second Residue
          hitEntity.Rpc_AttachEffect(damage, Attack.Type.Venom);
 
          // Registers Damage throughout the clients
-         hitEntity.Rpc_NetworkProjectileDamage(damage, creatorUserId, Attack.Type.Venom, circleCollider.transform.position);
+         hitEntity.Rpc_NetworkProjectileDamage(creatorUserId, Attack.Type.Venom, circleCollider.transform.position);
 
          // Have the server tell the clients where the explosion occurred
          hitEntity.Rpc_ShowExplosion(hitEntity.transform.position, damage, Attack.Type.Venom);
@@ -97,15 +98,19 @@ public class NetworkedVenomProjectile : MonoBehaviour
    }
 
    public void callCollision (bool hitLand, Vector3 location) {
+      // Commands the server to process spawning of venom residue
       if (NetworkServer.active) {
-         if (hitLand) {
-            Instantiate(PrefabsManager.self.cannonSmokePrefab, location, Quaternion.identity);
-            SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position);
-         } else {
+         if (!hitLand) {
             SeaEntity sourceEntity = SeaManager.self.getEntity(this.creatorUserId);
             sourceEntity.Rpc_SpawnVenomResidue(creatorUserId, circleCollider.transform.position);
-         }
+         } 
       }
+
+      // Plays SFX and VFX for land collision
+      if (hitLand) {
+         Instantiate(PrefabsManager.self.cannonSmokePrefab, location, Quaternion.identity);
+         SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position);
+      } 
    }
 
    private void OnDestroy () {

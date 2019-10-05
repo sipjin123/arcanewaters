@@ -95,8 +95,10 @@ public class SeaMonsterEntity : SeaEntity
 
    public void initData (SeaMonsterEntityData entityData) {
       seaMonsterData = entityData;
-      ripplesContainer.GetComponent<SpriteSwap>().newTexture = seaMonsterData.defaultRippleSprite;
-      
+      ripplesContainer.GetComponent<SpriteRenderer>().sprite = seaMonsterData.defaultRippleSprite;
+      ripplesContainer.GetComponent<SpriteSwap>().newTexture = seaMonsterData.defaultRippleTexture;
+      ripplesContainer.transform.localPosition += seaMonsterData.rippleLocOffset;
+
       ripplesContainer.transform.localScale = new Vector3(seaMonsterData.rippleScaleOverride, seaMonsterData.rippleScaleOverride, seaMonsterData.rippleScaleOverride);
       spritesContainer.transform.localScale = new Vector3(seaMonsterData.scaleOverride, seaMonsterData.scaleOverride, seaMonsterData.scaleOverride);
       spritesContainer.transform.GetChild(0).localScale = new Vector3(seaMonsterData.outlineScaleOverride, seaMonsterData.outlineScaleOverride, seaMonsterData.outlineScaleOverride);
