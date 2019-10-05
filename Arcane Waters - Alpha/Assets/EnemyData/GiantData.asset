@@ -13,13 +13,15 @@ MonoBehaviour:
   m_Name: GiantData
   m_EditorClassIdentifier: 
   seaMonsterType: 303
-  showDebugGizmo: 0
+  showDebugGizmo: 1
   isAggressive: 1
   autoMove: 1
   isMelee: 0
+  isRanged: 1
   shouldDropTreasure: 1
   isInvulnerable: 0
   maxProjectileDistanceGap: 1.5
+  maxMeleeDistanceGap: 0.5
   maxDistanceGap: 2.5
   attackType: 6
   territoryRadius: 2.5
@@ -31,7 +33,10 @@ MonoBehaviour:
   defaultSprite: {fileID: -1170078775172088249, guid: 66fcc7f86bc53864fbfa8ea45cb1f95e,
     type: 3}
   secondarySprite: {fileID: 0}
-  defaultRippleSprite: {fileID: 2800000, guid: ad0439fe51d026c4e90bb93798f9d170, type: 3}
+  defaultRippleTexture: {fileID: 2800000, guid: ad0439fe51d026c4e90bb93798f9d170,
+    type: 3}
+  defaultRippleSprite: {fileID: -33352273080245201, guid: ad0439fe51d026c4e90bb93798f9d170,
+    type: 3}
   scaleOverride: 0.3
   outlineScaleOverride: 1.5
   rippleScaleOverride: 1
@@ -39,3 +44,4 @@ MonoBehaviour:
   animGroup: 5
   roleType: 1
   animationSpeedOverride: 0.1
+  projectileSpawnLocations: []
