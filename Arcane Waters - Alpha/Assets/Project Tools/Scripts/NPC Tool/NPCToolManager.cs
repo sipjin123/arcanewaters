@@ -23,7 +23,6 @@ public class NPCToolManager : MonoBehaviour {
    }
 
    public void Start () {
-      npcSelectionScreen.updatePanelWithNPCs(_npcData);
       npcSelectionScreen.show();
    }
 
@@ -45,6 +44,7 @@ public class NPCToolManager : MonoBehaviour {
          // Save the NPC data in the memory cache
          _npcData.Add(npcData.npcId, npcData);
       }
+      npcSelectionScreen.updatePanelWithNPCs(_npcData);
    }
 
    public void createNewNPC(int npcId) {

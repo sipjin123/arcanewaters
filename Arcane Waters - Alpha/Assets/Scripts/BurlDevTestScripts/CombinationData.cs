@@ -1,10 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CombinationData : ScriptableObject
 {
+   // The id of the blueprint
    public int blueprintTypeID;
+
+   // The item result of the crafting
    public Item resultItem;
+
+   // The item requirements of the crafting
    public List<Item> combinationRequirements;
 
    public bool checkIfRequirementsPass (List<Item> itemList) {
@@ -16,4 +22,16 @@ public class CombinationData : ScriptableObject
       }
       return true;
    }
+}
+[Serializable]
+public class CraftableItemRequirements
+{
+   // The id of the blueprint
+   public int blueprintTypeID;
+
+   // The item result of the crafting
+   public Item resultItem;
+
+   // The item requirements of the crafting
+   public List<Item> combinationRequirements;
 }

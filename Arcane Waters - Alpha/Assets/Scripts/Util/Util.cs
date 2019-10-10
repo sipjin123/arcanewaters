@@ -45,6 +45,62 @@ public class Util : MonoBehaviour {
       return -1;
    }
 
+   public static string getItemName (Item.Category category, int typeID) {
+      string itemTypeName = "";
+      switch (category) {
+         case Item.Category.CraftingIngredients:
+            itemTypeName = ((CraftingIngredients.Type) typeID).ToString();
+            break;
+         case Item.Category.Armor:
+            itemTypeName = ((Armor.Type) typeID).ToString();
+            break;
+         case Item.Category.Blueprint:
+            itemTypeName = ((Blueprint.Type) typeID).ToString();
+            break;
+         case Item.Category.Weapon:
+            itemTypeName = ((Weapon.Type) typeID).ToString();
+            break;
+         case Item.Category.Usable:
+            itemTypeName = ((UsableItem.Type) typeID).ToString();
+            break;
+         case Item.Category.Helm:
+            itemTypeName = ((Armor.Type) typeID).ToString();
+            break;
+         default:
+            itemTypeName = "None";
+            break;
+      }
+      return itemTypeName;
+   }
+
+   public static Type getItemType (Item.Category category) {
+      Type newType = null;
+      switch (category) {
+         case Item.Category.CraftingIngredients:
+            newType = typeof(CraftingIngredients.Type);
+            break;
+         case Item.Category.Armor:
+            newType = typeof(Armor.Type);
+            break;
+         case Item.Category.Blueprint:
+            newType = typeof(Blueprint.Type);
+            break;
+         case Item.Category.Weapon:
+            newType = typeof(Weapon.Type);
+            break;
+         case Item.Category.Usable:
+            newType = typeof(UsableItem.Type);
+            break;
+         case Item.Category.Helm:
+            newType = typeof(Armor.Type);
+            break;
+         default:
+            newType = null;
+            break;
+      }
+      return newType;
+   }
+
    public static bool isEmpty (String str) {
       return (str == null || str.Equals(""));
    }

@@ -25,6 +25,27 @@ public class QuestNodeRow : MonoBehaviour
    // The prefab we use for creating item rewards
    public ItemRewardRow itemRewardPrefab;
 
+   // The button for triggering creation of quest delivery
+   public Button createDeliveryQuestButton;
+
+   // The button for triggering creation of reward
+   public Button createRewardButton;
+
+   // The cached Quest Delivery Objective
+   public QuestObjectiveDeliver cachedDeliverObjective = new QuestObjectiveDeliver();
+   
+   // The cached Reward
+   public QuestRewardItem cachedReward = new QuestRewardItem();
+
+   // The current quest node being edited
+   public QuestNode cachedQuestNode;
+
+   // The list of delivery quests being edited
+   public List<QuestObjectiveDeliver> cachedDeliverList;
+
+   // The list of reward being edited
+   public List<QuestRewardItem> cachedRewardList;
+
    #endregion
 
    public void setRowForQuestNode (QuestNode node) {
@@ -32,6 +53,7 @@ public class QuestNodeRow : MonoBehaviour
       questNodeIdText.text = node.nodeId.ToString();
       npcText.text = node.npcText;
       userText.text = node.userText;
+      cachedQuestNode = node;
 
       // Calculate the total friendship reward and display only the sum
       int totalFriendshipReward = 0;
@@ -45,6 +67,9 @@ public class QuestNodeRow : MonoBehaviour
       // Clear all the rows
       deliverObjectivesRowsContainer.DestroyChildren();
 
+      cachedDeliverList = new List<QuestObjectiveDeliver>();
+      cachedRewardList = new List<QuestRewardItem>();
+
       // Create a row for each deliver objective
       if (node.deliverObjectives != null) {
          foreach (QuestObjectiveDeliver deliverObjective in node.deliverObjectives) {
@@ -52,8 +77,12 @@ public class QuestNodeRow : MonoBehaviour
             DeliverObjectiveRow row = Instantiate(deliverObjectivePrefab, deliverObjectivesRowsContainer.transform, false);
             row.transform.SetParent(deliverObjectivesRowsContainer.transform, false);
             row.setRowForDeliverObjective(deliverObjective);
+
+            cachedDeliverList.Add(deliverObjective);
          }
       }
+
+      cachedQuestNode.deliverObjectives = cachedDeliverList.ToArray();
 
       // Clear all the rows
       itemRewardRowsContainer.DestroyChildren();
@@ -65,8 +94,54 @@ public class QuestNodeRow : MonoBehaviour
             ItemRewardRow row = Instantiate(itemRewardPrefab, itemRewardRowsContainer.transform, false);
             row.transform.SetParent(itemRewardRowsContainer.transform, false);
             row.setRowForItemReward(itemReward);
+
+            cachedRewardList.Add(itemReward);
          }
       }
+      cachedQuestNode.itemRewards = cachedRewardList.ToArray();
+
+      createRewardButton.onClick.AddListener(() => createRewardButtonClickedOn());
+      createDeliveryQuestButton.onClick.AddListener(() => createDeliveryQuestButtonClickedOn());
+   }
+
+   private void createRewardButtonClickedOn() {
+      cachedReward = new QuestRewardItem();
+      ItemRewardRow row = Instantiate(itemRewardPrefab, itemRewardRowsContainer.transform, false);
+      row.transform.SetParent(itemRewardRowsContainer.transform, false);
+
+      row.setRowForItemReward(cachedReward);
+
+      row.updateButton.onClick.AddListener(() => updateRewardButtonClicked(row));
+   }
+
+   private void updateRewardButtonClicked (ItemRewardRow row) {
+      cachedReward.count = int.Parse(row.count.text);
+      cachedReward.category = (Item.Category) int.Parse(row.itemCategory.text);
+      cachedReward.itemTypeId = int.Parse(row.itemTypeId.text);
+
+      row.setRowForItemReward(cachedReward);
+      cachedQuestNode.itemRewards = cachedRewardList.ToArray();
+   }
+
+   private void createDeliveryQuestButtonClickedOn () {
+      cachedDeliverObjective = new QuestObjectiveDeliver();
+      DeliverObjectiveRow row = Instantiate(deliverObjectivePrefab, deliverObjectivesRowsContainer.transform, false);
+      row.transform.SetParent(deliverObjectivesRowsContainer.transform, false);
+
+      row.setRowForDeliverObjective(cachedDeliverObjective);
+
+      row.updateButton.onClick.AddListener(() => updateDataButtonClicked(row));
+   }
+
+   private void updateDataButtonClicked(DeliverObjectiveRow row) {
+      cachedDeliverObjective.category = (Item.Category) int.Parse(row.itemCategory.text);
+      cachedDeliverObjective.count = int.Parse(row.count.text);
+      cachedDeliverObjective.itemTypeId = int.Parse(row.itemTypeId.text);
+      cachedDeliverList.Add(cachedDeliverObjective);
+
+      row.setRowForDeliverObjective(cachedDeliverObjective);
+
+      cachedQuestNode.deliverObjectives = cachedDeliverList.ToArray();
    }
 
    public void moveNodeUpButtonClickedOn () {

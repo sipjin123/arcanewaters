@@ -36,7 +36,7 @@ public static class ToolsUtil
       FileStream stream = null;
       try {
          // Create an instance of the XMLSerializer
-         XmlSerializer serializer = new XmlSerializer(typeof(NPCData));
+         XmlSerializer serializer = new XmlSerializer(data.GetType());
 
          // Create or overwrite the file
          stream = new FileStream(filePath, FileMode.Create);

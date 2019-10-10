@@ -12,6 +12,9 @@ public class ItemRewardRow : MonoBehaviour
    public InputField itemTypeId;
    public InputField count;
 
+   // Button for updating data
+   public Button updateButton;
+
    #endregion
 
    public void setRowForItemReward (QuestRewardItem itemReward) {

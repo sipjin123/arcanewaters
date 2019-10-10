@@ -35,6 +35,15 @@ public class NPCEditionScreen : MonoBehaviour
    // The panel scrollbar
    public Scrollbar scrollbar;
 
+   // Holds the info of the quests
+   public GameObject questInfo;
+
+   // Holds the info of the gifts
+   public GameObject giftInfo;
+
+   // Holds the info of the gifts
+   public GiftNodeRow giftNode;
+
    #endregion
 
    public void updatePanelWithNPC (NPCData npcData) {
@@ -69,6 +78,20 @@ public class NPCEditionScreen : MonoBehaviour
             row.setRowForQuest(quest);
          }
       }
+
+      if (npcData.gifts != null) {
+         giftNode.setRowForQuestNode(npcData.gifts);
+      } else {
+         giftNode.setRowForQuestNode(new List<NPCGiftData>());
+      }
+   }
+
+   public void toggleQuestView() {
+      questInfo.SetActive(!questInfo.activeSelf);
+   }
+
+   public void toggleGiftView () {
+      giftInfo.SetActive(!giftInfo.activeSelf);
    }
 
    public void createQuestButtonClickedOn () {
@@ -104,7 +127,7 @@ public class NPCEditionScreen : MonoBehaviour
          greetingCasualFriend.text, greetingCloseFriend.text, greetingBestFriend.text, giftOfferText.text,
          giftLiked.text, giftNotLiked.text, npcName.text, (Faction.Type) int.Parse(faction.text),
          (Specialty.Type) int.Parse(specialty.text), hasTradeGossip.isOn, hasGoodbye.isOn, _lastUsedQuestId,
-         questList, null);
+         questList, giftNode.cachedGiftList);
 
       // Save the data
       NPCToolManager.self.updateNPCData(npcData);
