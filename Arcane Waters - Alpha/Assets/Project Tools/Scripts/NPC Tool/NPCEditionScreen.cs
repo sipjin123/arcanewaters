@@ -35,18 +35,9 @@ public class NPCEditionScreen : MonoBehaviour
    // The panel scrollbar
    public Scrollbar scrollbar;
 
-   public NPCData testNPCData;
-
-   // Holds the info of the quests
-   public GameObject questInfo;
-
-   // Holds the info of the gifts
-   public GiftNodeRow giftNode;
-
    #endregion
 
    public void updatePanelWithNPC (NPCData npcData) {
-      testNPCData = npcData;
       _npcId = npcData.npcId;
       _lastUsedQuestId = npcData.lastUsedQuestId;
 
@@ -78,18 +69,6 @@ public class NPCEditionScreen : MonoBehaviour
             row.setRowForQuest(quest);
          }
       }
-
-      Debug.LogError("--------- " +npcData.name);
-      Debug.LogError("--------- " + npcData.gifts.Count);
-      if (npcData.gifts != null) {
-         giftNode.setRowForQuestNode(npcData.gifts);
-      } else {
-         giftNode.setRowForQuestNode(new List<NPCGiftData>());
-      }
-   }
-
-   public void toggleQuestView() {
-      questInfo.SetActive(!questInfo.activeSelf);
    }
 
    public void createQuestButtonClickedOn () {
@@ -118,34 +97,14 @@ public class NPCEditionScreen : MonoBehaviour
       List<Quest> questList = new List<Quest>();
       foreach (QuestRow questRow in questRowsContainer.GetComponentsInChildren<QuestRow>()) {
          questList.Add(questRow.getModifiedQuest());
-         Debug.LogError("Adding the quest");
-         Debug.LogError("1 : " + questRow.getModifiedQuest().title);
-         Debug.LogError("2 : " + questRow.getModifiedQuest().nodes.Length);
-
-         int i = 0;
-         foreach(QuestNode node in questRow.getModifiedQuest().nodes) {
-            int q = 0;
-            Debug.LogError(i+" : "+questRow.getModifiedQuest().title);
-            foreach (QuestObjectiveDeliver delivey in node.deliverObjectives) {
-               Debug.LogError(q+" : Quest node is : " + delivey.itemTypeId);
-               q++;
-            }
-            i++;
-         }
       }
-
-      Debug.LogError("THE COUNT OF GIFT IS : "+giftNode.cachedGiftList.Count);
-      /*
-      foreach(NPCGiftData gift in giftNode.cachedGiftList) {
-         Debug.LogError("Gift: "+gift.itemCategory + " "+gift.itemTypeId);
-      }*/
 
       // Create a new npcData object and initialize it with the values from the UI
       NPCData npcData = new NPCData(_npcId, greetingStranger.text, greetingAcquaintance.text,
          greetingCasualFriend.text, greetingCloseFriend.text, greetingBestFriend.text, giftOfferText.text,
          giftLiked.text, giftNotLiked.text, npcName.text, (Faction.Type) int.Parse(faction.text),
          (Specialty.Type) int.Parse(specialty.text), hasTradeGossip.isOn, hasGoodbye.isOn, _lastUsedQuestId,
-         questList, giftNode.cachedGiftList);
+         questList, null);
 
       // Save the data
       NPCToolManager.self.updateNPCData(npcData);

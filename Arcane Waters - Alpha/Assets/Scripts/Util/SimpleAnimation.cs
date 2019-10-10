@@ -52,20 +52,24 @@ public class SimpleAnimation : ClientMonoBehaviour {
    }
 
    private void Start () {
-      // Load our sprites
-      reloadSprites(getCurrentTexture());
+      if (!Application.isBatchMode) {
+         // Load our sprites
+         reloadSprites(getCurrentTexture());
 
-      // Routinely change our sprite
-      float delay = this.delayStart ? (getTimePerFrame() * _sprites.Length / 2f) : initialDelay;
-      InvokeRepeating("changeSprite", delay, getTimePerFrame());
+         // Routinely change our sprite
+         float delay = this.delayStart ? (getTimePerFrame() * _sprites.Length / 2f) : initialDelay;
+         InvokeRepeating("changeSprite", delay, getTimePerFrame());
+      }
    }
 
    private void Update () {
-      Texture2D currentTexture = getCurrentTexture();
+      if (!Application.isBatchMode) {
+         Texture2D currentTexture = getCurrentTexture();
 
-      // If the Texture associated with our sprites has changed, we need to reload
-      if (_lastLoadedTexture != currentTexture) {
-         setNewTexture(currentTexture);
+         // If the Texture associated with our sprites has changed, we need to reload
+         if (_lastLoadedTexture != currentTexture) {
+            setNewTexture(currentTexture);
+         }
       }
    }
 

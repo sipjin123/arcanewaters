@@ -1286,6 +1286,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8774379600860385911}
     m_Modifications:
+    - target: {fileID: 6010962907280926819, guid: 396fcb93e50f6264b9d0dbbf5433173d,
+        type: 3}
+      propertyPath: m_Name
+      value: Is Permanent
+      objectReference: {fileID: 0}
     - target: {fileID: 7266398552671161813, guid: 396fcb93e50f6264b9d0dbbf5433173d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1390,11 +1395,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6010962907280926819, guid: 396fcb93e50f6264b9d0dbbf5433173d,
-        type: 3}
-      propertyPath: m_Name
-      value: Is Permanent
       objectReference: {fileID: 0}
     - target: {fileID: 81452859040202904, guid: 396fcb93e50f6264b9d0dbbf5433173d,
         type: 3}
@@ -1720,6 +1720,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cf247d87f846fb348af5e917ad74d094, type: 3}
+--- !u!224 &1308267315582788516 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7774125496475325630, guid: cf247d87f846fb348af5e917ad74d094,
+    type: 3}
+  m_PrefabInstance: {fileID: 8774379600700045082}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &2917093055191637581 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5890500984787708247, guid: cf247d87f846fb348af5e917ad74d094,
@@ -1732,12 +1738,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d199490a83bb2b844b9695cbf13b01ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!224 &1308267315582788516 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 7774125496475325630, guid: cf247d87f846fb348af5e917ad74d094,
-    type: 3}
-  m_PrefabInstance: {fileID: 8774379600700045082}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8774379601537200638
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1745,6 +1745,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8774379600866929754}
     m_Modifications:
+    - target: {fileID: 5623607646054623292, guid: 8f3698d64d5d7644f853eb9f2d249308,
+        type: 3}
+      propertyPath: m_Name
+      value: Quest Node Row
+      objectReference: {fileID: 0}
     - target: {fileID: 4230308971873369690, guid: 8f3698d64d5d7644f853eb9f2d249308,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1849,11 +1854,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 5623607646054623292, guid: 8f3698d64d5d7644f853eb9f2d249308,
-        type: 3}
-      propertyPath: m_Name
-      value: Quest Node Row
       objectReference: {fileID: 0}
     - target: {fileID: 23622917955830403, guid: 8f3698d64d5d7644f853eb9f2d249308,
         type: 3}
@@ -5120,50 +5120,8 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4755362436271171628, guid: 8f3698d64d5d7644f853eb9f2d249308,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4755362436271171628, guid: 8f3698d64d5d7644f853eb9f2d249308,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4755362436271171628, guid: 8f3698d64d5d7644f853eb9f2d249308,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4755362436271171628, guid: 8f3698d64d5d7644f853eb9f2d249308,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 2057009447808747205}
-    - target: {fileID: 4755362436271171628, guid: 8f3698d64d5d7644f853eb9f2d249308,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: createDeliveryQuestButtonClickedOn
-      objectReference: {fileID: 0}
-    - target: {fileID: 4755362436271171628, guid: 8f3698d64d5d7644f853eb9f2d249308,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8f3698d64d5d7644f853eb9f2d249308, type: 3}
---- !u!114 &2057009447808747205 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7300102947311826747, guid: 8f3698d64d5d7644f853eb9f2d249308,
-    type: 3}
-  m_PrefabInstance: {fileID: 8774379601537200638}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dcf75f7221130b34bb3b0d44490370de, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &4859885764141780900 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4230308971873369690, guid: 8f3698d64d5d7644f853eb9f2d249308,
@@ -5177,6 +5135,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8774379601969667284}
     m_Modifications:
+    - target: {fileID: 3481312311825378145, guid: a372bebbdf1aca0409e11e7eafe22535,
+        type: 3}
+      propertyPath: m_Name
+      value: Quest Title (1)
+      objectReference: {fileID: 0}
     - target: {fileID: 570918169693933271, guid: a372bebbdf1aca0409e11e7eafe22535,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -5282,11 +5245,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 3481312311825378145, guid: a372bebbdf1aca0409e11e7eafe22535,
-        type: 3}
-      propertyPath: m_Name
-      value: Quest Title (1)
-      objectReference: {fileID: 0}
     - target: {fileID: 7069034039356998554, guid: a372bebbdf1aca0409e11e7eafe22535,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -5359,6 +5317,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a372bebbdf1aca0409e11e7eafe22535, type: 3}
+--- !u!224 &9090679462598387038 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 570918169693933271, guid: a372bebbdf1aca0409e11e7eafe22535,
+    type: 3}
+  m_PrefabInstance: {fileID: 8774379602097335177}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &4932825130003437751 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4445107328496726846, guid: a372bebbdf1aca0409e11e7eafe22535,
@@ -5371,9 +5335,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d199490a83bb2b844b9695cbf13b01ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!224 &9090679462598387038 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 570918169693933271, guid: a372bebbdf1aca0409e11e7eafe22535,
-    type: 3}
-  m_PrefabInstance: {fileID: 8774379602097335177}
-  m_PrefabAsset: {fileID: 0}

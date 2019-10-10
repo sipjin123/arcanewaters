@@ -4,7 +4,7 @@ using System.IO;
 using System.Xml.Serialization;
 using System;
 
-[XmlRoot("NPCData"), Serializable]
+[XmlRoot("NPCData")]
 public class NPCData
 {
    #region Public Variables

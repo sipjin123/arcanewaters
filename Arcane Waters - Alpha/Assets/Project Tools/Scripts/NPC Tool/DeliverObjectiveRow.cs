@@ -12,9 +12,6 @@ public class DeliverObjectiveRow : MonoBehaviour
    public InputField itemTypeId;
    public InputField count;
 
-   // The button for updating data
-   public Button updateButton;
-
    #endregion
 
    public void setRowForDeliverObjective (QuestObjectiveDeliver deliverObjective) {

@@ -1,0 +1,396 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cedb88bfd16c92a4e8649af2b59d9a7f, type: 3}
+  m_Name: Procedural Map Preset
+  m_EditorClassIdentifier: 
+  mapPath: Assets/Prefabs/Maps/
+  MapPrefixName: 'Sea '
+  MapName: Map
+  MapSuffixName: ' Forest'
+  mapSize: {x: 64, y: 64}
+  replaceWaterHeight: 0.6
+  landBorderHeight: 0.5
+  noiseScale: 10.6
+  octaves: 8
+  persistance: 0.5
+  lacunarity: 2
+  seed: 0
+  offset: {x: 0, y: 0}
+  usePresetLayerHeight: 1
+  updateTilesFromProject: 1
+  layers:
+  - name: Water (Deep)
+    isLand: 0
+    height: 1
+    useCollider: 0
+    biome: 1
+    tile: {fileID: 11400000, guid: b33b3b925fb775e4f9e2cf13d911b068, type: 2}
+    tilePrefix: tiles_
+    tileSuffix: _61
+    useBorderOnDifferentLayer: 0
+    BorderLayerName: 
+    borders: []
+    corners: []
+    objectLayers: []
+  - name: Water (Edge)
+    isLand: 0
+    height: 0.696
+    useCollider: 0
+    biome: 1
+    tile: {fileID: 11400000, guid: 83b600197b77d0e41bee8c54165f2496, type: 2}
+    tilePrefix: animations_
+    tileSuffix: _126
+    useBorderOnDifferentLayer: 0
+    BorderLayerName: 0
+    borders:
+    - borderDirection: 0
+      tilePrefix: animations_
+      tileSuffix: _130
+      borderTile: {fileID: 11400000, guid: f48d842824854d74c8f09d068c440395, type: 2}
+    - borderDirection: 1
+      tilePrefix: animations_
+      tileSuffix: _109
+      borderTile: {fileID: 11400000, guid: 8511ad7b3eb25d94f9d3aa33f85a2f66, type: 2}
+    - borderDirection: 2
+      tilePrefix: animations_
+      tileSuffix: _153
+      borderTile: {fileID: 11400000, guid: da83a1c3f529c1e4c958ace3ee67064c, type: 2}
+    - borderDirection: 3
+      tilePrefix: animations_
+      tileSuffix: _150
+      borderTile: {fileID: 11400000, guid: 8e0b7900d20142940b4911ccdcc41dc9, type: 2}
+    - borderDirection: 4
+      tilePrefix: animations_
+      tileSuffix: _152
+      borderTile: {fileID: 11400000, guid: 2133af4b1f8df7b47802b812421ba6f6, type: 2}
+    - borderDirection: 5
+      tilePrefix: animations_
+      tileSuffix: _151
+      borderTile: {fileID: 11400000, guid: ee0059a1051c6184394b5f967953b953, type: 2}
+    - borderDirection: 6
+      tilePrefix: animations_
+      tileSuffix: _131
+      borderTile: {fileID: 11400000, guid: a543279c73158854885664af19b44743, type: 2}
+    - borderDirection: 7
+      tilePrefix: animations_
+      tileSuffix: _103
+      borderTile: {fileID: 11400000, guid: 302b995fcb50c214a86cac1251e64c89, type: 2}
+    - borderDirection: 8
+      tilePrefix: animations_
+      tileSuffix: _147
+      borderTile: {fileID: 11400000, guid: e734806cbe555d244b195143ff8ea2a9, type: 2}
+    - borderDirection: 9
+      tilePrefix: animations_
+      tileSuffix: _105
+      borderTile: {fileID: 11400000, guid: 12254975d3f012244932ca8c60a4596e, type: 2}
+    - borderDirection: 10
+      tilePrefix: animations_
+      tileSuffix: _149
+      borderTile: {fileID: 11400000, guid: 8b8137eea901a784a95091ac0ee5083c, type: 2}
+    - borderDirection: 11
+      tilePrefix: animations_
+      tileSuffix: _104
+      borderTile: {fileID: 11400000, guid: a1eb52d65d33ba546961ef029f012ef8, type: 2}
+    - borderDirection: 12
+      tilePrefix: animations_
+      tileSuffix: _148
+      borderTile: {fileID: 11400000, guid: a33bf67e06e335b47a1d0f7529c53e45, type: 2}
+    - borderDirection: 13
+      tilePrefix: animations_
+      tileSuffix: _127
+      borderTile: {fileID: 11400000, guid: 0f8cfa1c0dfe268428108370b419912b, type: 2}
+    - borderDirection: 14
+      tilePrefix: animations_
+      tileSuffix: _125
+      borderTile: {fileID: 11400000, guid: 6a1689bfdbd54da45981dae3800b5396, type: 2}
+    corners:
+    - cornerDirection: 0
+      tilePrefix: animations_
+      tileSuffix: _128
+      cornerTile: {fileID: 11400000, guid: ebb743cdaa050974ea76d113c33f0afe, type: 2}
+    - cornerDirection: 3
+      tilePrefix: animations_
+      tileSuffix: _129
+      cornerTile: {fileID: 11400000, guid: 31bcf6a9e5b5c7e4897b036e0e31a0de, type: 2}
+    - cornerDirection: 1
+      tilePrefix: animations_
+      tileSuffix: _106
+      cornerTile: {fileID: 11400000, guid: dd1e7b641f79bc1488f14d584e8b8e52, type: 2}
+    - cornerDirection: 2
+      tilePrefix: animations_
+      tileSuffix: _107
+      cornerTile: {fileID: 11400000, guid: bacc03f07d9903342a36b96fa8f0e4bb, type: 2}
+    objectLayers: []
+  - name: Land (1)
+    isLand: 1
+    height: 0.507
+    useCollider: 1
+    biome: 1
+    tile: {fileID: 11400000, guid: 9a13b83306690b543a9f7b8c3b3ef4c6, type: 2}
+    tilePrefix: animations_
+    tileSuffix: _45
+    useBorderOnDifferentLayer: 0
+    BorderLayerName: 
+    borders:
+    - borderDirection: 0
+      tilePrefix: animations_
+      tileSuffix: _30
+      borderTile: {fileID: 11400000, guid: d3ac133cff4afe243a28559d795dc327, type: 2}
+    - borderDirection: 11
+      tilePrefix: animations_
+      tileSuffix: _23
+      borderTile: {fileID: 11400000, guid: 25403b992330d044f936f71c85ebd1be, type: 2}
+    - borderDirection: 14
+      tilePrefix: animations_
+      tileSuffix: _44
+      borderTile: {fileID: 11400000, guid: 588e7b5cc187c8545a719429015e1860, type: 2}
+    - borderDirection: 12
+      tilePrefix: animations_
+      tileSuffix: _67
+      borderTile: {fileID: 11400000, guid: 31d496816de94394086bd62d0b716327, type: 2}
+    - borderDirection: 13
+      tilePrefix: animations_
+      tileSuffix: _46
+      borderTile: {fileID: 11400000, guid: c80dda34ec1a566499f87b8169a7a4b9, type: 2}
+    - borderDirection: 1
+      tilePrefix: animations_
+      tileSuffix: _28
+      borderTile: {fileID: 11400000, guid: 92abb8a7a1651f448a38bf6a6f3e3f9b, type: 2}
+    - borderDirection: 2
+      tilePrefix: animations_
+      tileSuffix: _72
+      borderTile: {fileID: 11400000, guid: df3c9836805845d4ea5dcdc193df792c, type: 2}
+    - borderDirection: 3
+      tilePrefix: animations_
+      tileSuffix: _52
+      borderTile: {fileID: 11400000, guid: a742d08f27450f044aadaa82a200c0ca, type: 2}
+    - borderDirection: 4
+      tilePrefix: animations_
+      tileSuffix: _54
+      borderTile: {fileID: 11400000, guid: ed542ebd8fb53d64babbcadb9047d94f, type: 2}
+    - borderDirection: 5
+      tilePrefix: animations_
+      tileSuffix: _53
+      borderTile: {fileID: 11400000, guid: 15ebb3e748abdf14cb8bef8e079d88b5, type: 2}
+    - borderDirection: 6
+      tilePrefix: animations_
+      tileSuffix: _50
+      borderTile: {fileID: 11400000, guid: 69290773571c8c942917cbb7f91441e5, type: 2}
+    - borderDirection: 7
+      tilePrefix: animations_
+      tileSuffix: _22
+      borderTile: {fileID: 11400000, guid: 98ab36a01b822d64bbccde51846cdcef, type: 2}
+    - borderDirection: 8
+      tilePrefix: animations_
+      tileSuffix: _66
+      borderTile: {fileID: 11400000, guid: 165f7b9c4abcdbe48938b457a4819220, type: 2}
+    - borderDirection: 9
+      tilePrefix: animations_
+      tileSuffix: _24
+      borderTile: {fileID: 11400000, guid: d6e358af893759745aa6dccb0daabeee, type: 2}
+    - borderDirection: 10
+      tilePrefix: animations_
+      tileSuffix: _68
+      borderTile: {fileID: 11400000, guid: b6385bf12839d544783d13a1f26330a2, type: 2}
+    corners:
+    - cornerDirection: 0
+      tilePrefix: animations_
+      tileSuffix: _82
+      cornerTile: {fileID: 11400000, guid: cf580bd92b0fabb4ca62971a70e11b37, type: 2}
+    - cornerDirection: 1
+      tilePrefix: animations_
+      tileSuffix: _60
+      cornerTile: {fileID: 11400000, guid: 7321e2a248c58c84d95edc664d293d31, type: 2}
+    - cornerDirection: 2
+      tilePrefix: animations_
+      tileSuffix: _61
+      cornerTile: {fileID: 11400000, guid: e56b70326801fcb4992cdb513d56e705, type: 2}
+    - cornerDirection: 3
+      tilePrefix: animations_
+      tileSuffix: _83
+      cornerTile: {fileID: 11400000, guid: a0fcf82b11ed2f849bf7370791a00ef5, type: 2}
+    objectLayers:
+    - name: Farm
+      maxNumberOfObjects: 10
+      percentageOfRejection: 96
+      tilePrefix: tiles_
+      tileSuffix: _19
+      tile: {fileID: 11400000, guid: c4d5af11b41af8d4baa75a2c75e22c02, type: 2}
+    - name: Church
+      maxNumberOfObjects: 10
+      percentageOfRejection: 94
+      tilePrefix: tiles_
+      tileSuffix: _10
+      tile: {fileID: 11400000, guid: aa55e53b8637d05498e864532341350d, type: 2}
+  - name: Land (2)
+    isLand: 1
+    height: 0.343
+    useCollider: 1
+    biome: 1
+    tile: {fileID: 11400000, guid: b78c6e6b299a13f49aacc0b5c196a345, type: 2}
+    tilePrefix: tiles_
+    tileSuffix: _12
+    useBorderOnDifferentLayer: 0
+    BorderLayerName: 
+    borders:
+    - borderDirection: 0
+      tilePrefix: tiles_
+      tileSuffix: _16
+      borderTile: {fileID: 11400000, guid: cb545d52b2829e44d8c3bd8ea1c980a3, type: 2}
+    - borderDirection: 11
+      tilePrefix: tiles_
+      tileSuffix: _1
+      borderTile: {fileID: 11400000, guid: c4aff14ec0c793e4897b306bedf6b831, type: 2}
+    - borderDirection: 14
+      tilePrefix: tiles_
+      tileSuffix: _11
+      borderTile: {fileID: 11400000, guid: be67ffea3f2da3445bf61a22a516ff55, type: 2}
+    - borderDirection: 12
+      tilePrefix: tiles_
+      tileSuffix: _23
+      borderTile: {fileID: 11400000, guid: 90dde0ae65384ae4bb794a06945a44aa, type: 2}
+    - borderDirection: 13
+      tilePrefix: tiles_
+      tileSuffix: _13
+      borderTile: {fileID: 11400000, guid: 8df361c02af99a145b49e24ea95abb2a, type: 2}
+    - borderDirection: 1
+      tilePrefix: tiles_
+      tileSuffix: _6
+      borderTile: {fileID: 11400000, guid: 10493333e5d672346b5a098226e49d47, type: 2}
+    - borderDirection: 2
+      tilePrefix: tiles_
+      tileSuffix: _28
+      borderTile: {fileID: 11400000, guid: d0900ecbfb470504da97c84be80be461, type: 2}
+    - borderDirection: 3
+      tilePrefix: tiles_
+      tileSuffix: _25
+      borderTile: {fileID: 11400000, guid: 9743a7b56c57f894e987a42e5b5951ff, type: 2}
+    - borderDirection: 4
+      tilePrefix: tiles_
+      tileSuffix: _27
+      borderTile: {fileID: 11400000, guid: fccc24b12a902d341a2f27d5db119955, type: 2}
+    - borderDirection: 5
+      tilePrefix: tiles_
+      tileSuffix: _26
+      borderTile: {fileID: 11400000, guid: 3556a68f8c6177348a5f44e3fff4627c, type: 2}
+    - borderDirection: 6
+      tilePrefix: tiles_
+      tileSuffix: _17
+      borderTile: {fileID: 11400000, guid: ef24c233a4f149748a7c54e466feb7ee, type: 2}
+    - borderDirection: 7
+      tilePrefix: tiles_
+      tileSuffix: _0
+      borderTile: {fileID: 11400000, guid: 69ee532bd5fb3304b9c6a47f38fc8340, type: 2}
+    - borderDirection: 8
+      tilePrefix: tiles_
+      tileSuffix: _22
+      borderTile: {fileID: 11400000, guid: 2f173c7aeffbb5048a666f73c046f15a, type: 2}
+    - borderDirection: 9
+      tilePrefix: tiles_
+      tileSuffix: _2
+      borderTile: {fileID: 11400000, guid: 9794423118ff035418b5ee44f638fa39, type: 2}
+    - borderDirection: 10
+      tilePrefix: tiles_
+      tileSuffix: _24
+      borderTile: {fileID: 11400000, guid: 8baf71e525baaf14197143387bd7017f, type: 2}
+    corners:
+    - cornerDirection: 0
+      tilePrefix: tiles_
+      tileSuffix: _14
+      cornerTile: {fileID: 11400000, guid: 73f9aa244474fec4d8f4312318ad4c22, type: 2}
+    - cornerDirection: 3
+      tilePrefix: tiles_
+      tileSuffix: _15
+      cornerTile: {fileID: 11400000, guid: 01957e1f9ef7ad04d857eb1657588210, type: 2}
+    - cornerDirection: 1
+      tilePrefix: tiles_
+      tileSuffix: _3
+      cornerTile: {fileID: 11400000, guid: 13d23382cb76bbf4a8eed3b91756988d, type: 2}
+    - cornerDirection: 2
+      tilePrefix: tiles_
+      tileSuffix: _4
+      cornerTile: {fileID: 11400000, guid: e04474cf25ea2954a96b296ebef6d47e, type: 2}
+    objectLayers:
+    - name: Houses 1
+      maxNumberOfObjects: 10
+      percentageOfRejection: 87
+      tilePrefix: tiles_
+      tileSuffix: _9
+      tile: {fileID: 11400000, guid: 2152720a7b8825a41a2dc5037fcd8ff1, type: 2}
+  river:
+    layerToPlaceRiver: Land (1)
+    numberOfAttempts: 10
+    biome: 1
+    tilePrefix: animations_
+    tileSuffix: _123
+    riverTile: {fileID: 11400000, guid: 9144d562049098c45bf4566706e5a7ed, type: 2}
+    riverBorders:
+    - riverDirection: 0
+      tilePrefix: animations_
+      tileSuffix: _123
+      borderTile: {fileID: 11400000, guid: 9144d562049098c45bf4566706e5a7ed, type: 2}
+    - riverDirection: 1
+      tilePrefix: animations_
+      tileSuffix: _100
+      borderTile: {fileID: 11400000, guid: 8baee5e75b7eae94f8baeb2b90ead2f6, type: 2}
+    - riverDirection: 3
+      tilePrefix: animations_
+      tileSuffix: _211
+      borderTile: {fileID: 11400000, guid: 6b1ea63e3fffa47449ff8a43c4190c22, type: 2}
+    - riverDirection: 4
+      tilePrefix: animations_
+      tileSuffix: _210
+      borderTile: {fileID: 11400000, guid: b3edc7dca4b703d49ad8ec2cddfda6f4, type: 2}
+    - riverDirection: 2
+      tilePrefix: animations_
+      tileSuffix: _145
+      borderTile: {fileID: 11400000, guid: 549f4755a874b18419c23a4fa68315b7, type: 2}
+    - riverDirection: 5
+      tilePrefix: animations_
+      tileSuffix: _102
+      borderTile: {fileID: 11400000, guid: c3f02c46b2b070449a780b56be4d015f, type: 2}
+    - riverDirection: 7
+      tilePrefix: animations_
+      tileSuffix: _168
+      borderTile: {fileID: 11400000, guid: 1d986087b49722f43b0bd1bd73927790, type: 2}
+    - riverDirection: 8
+      tilePrefix: animations_
+      tileSuffix: _190
+      borderTile: {fileID: 11400000, guid: cc39242db108e09478fd348edc01fcaf, type: 2}
+    - riverDirection: 6
+      tilePrefix: animations_
+      tileSuffix: _124
+      borderTile: {fileID: 11400000, guid: 94ec0a8bc285ffc4dbb0aac454245a01, type: 2}
+    - riverDirection: 9
+      tilePrefix: animations_
+      tileSuffix: _146
+      borderTile: {fileID: 11400000, guid: 47bc683212640c045bdda4739ccba5aa, type: 2}
+    - riverDirection: 10
+      tilePrefix: animations_
+      tileSuffix: _144
+      borderTile: {fileID: 11400000, guid: 7c2db5dfe6be9f74497cde7591918bc2, type: 2}
+    - riverDirection: 11
+      tilePrefix: animations_
+      tileSuffix: _166
+      borderTile: {fileID: 11400000, guid: 8b666cad5c5f8a04a880aac796b36feb, type: 2}
+    - riverDirection: 12
+      tilePrefix: animations_
+      tileSuffix: _167
+      borderTile: {fileID: 11400000, guid: 870b00cbcc3d0a743bb3b5bcb873f092, type: 2}
+    - riverDirection: 13
+      tilePrefix: animations_
+      tileSuffix: _188
+      borderTile: {fileID: 11400000, guid: 109809b6afadd10488c67a8bc73e5083, type: 2}
+    - riverDirection: 14
+      tilePrefix: animations_
+      tileSuffix: _189
+      borderTile: {fileID: 11400000, guid: d8f28aaee7dc2a94486ad3775e5d9fd9, type: 2}

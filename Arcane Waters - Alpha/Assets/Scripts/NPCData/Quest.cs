@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Xml.Serialization;
 using System;
 
-[Serializable]
 public class Quest
 {
    #region Public Variables
