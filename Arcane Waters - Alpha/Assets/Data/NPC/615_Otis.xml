@@ -12,13 +12,13 @@
   <giftNotLikedText>Ah. Well, thank you, I guess.</giftNotLikedText>
   <hasTradeGossipDialogue>true</hasTradeGossipDialogue>
   <hasGoodbyeDialogue>true</hasGoodbyeDialogue>
-  <lastUsedQuestId>1</lastUsedQuestId>
+  <lastUsedQuestId>0</lastUsedQuestId>
   <Quests>
     <Quest>
       <questId>0</questId>
-      <title>You seem troubled.</title>
+      <title>You seem troubled.?__?</title>
       <isRepeatable>false</isRepeatable>
-      <lastUsedNodeId>7</lastUsedNodeId>
+      <lastUsedNodeId>0</lastUsedNodeId>
       <Nodes>
         <Node>
           <nodeId>0</nodeId>
@@ -26,7 +26,13 @@
           <npcText>I look troubled, don't I? Good observation skills. I am trying to cast this spell, but it seems the whole world doesn't want me to!</npcText>
           <userText>What can I help you with?</userText>
           <DeliverObjectives />
-          <ItemRewards />
+          <ItemRewards>
+            <Item>
+              <itemTypeId>2</itemTypeId>
+              <count>3</count>
+              <category>1</category>
+            </Item>
+          </ItemRewards>
         </Node>
         <Node>
           <nodeId>1</nodeId>
@@ -39,7 +45,7 @@
         <Node>
           <nodeId>2</nodeId>
           <nextNodeId>3</nextNodeId>
-          <npcText>I need a few items to cast the spell. Please bring me those ingredients. I believe the lizards located in the north have some in their possession.</npcText>
+          <npcText>I need a few items to cast the spell. Please bring me those ingredients. I believe the lizards located in the north have some in their possession. TRY</npcText>
           <userText>Here are the items you asked for.</userText>
           <DeliverObjectives>
             <Deliver>
@@ -53,7 +59,13 @@
               <category>6</category>
             </Deliver>
           </DeliverObjectives>
-          <ItemRewards />
+          <ItemRewards>
+            <Item>
+              <itemTypeId>2</itemTypeId>
+              <count>1</count>
+              <category>3</category>
+            </Item>
+          </ItemRewards>
           <FriendshipRewards>
             <Friendship>
               <rewardedFriendship>1</rewardedFriendship>
@@ -72,7 +84,13 @@
               <category>6</category>
             </Deliver>
           </DeliverObjectives>
-          <ItemRewards />
+          <ItemRewards>
+            <Item>
+              <itemTypeId>21</itemTypeId>
+              <count>5</count>
+              <category>6</category>
+            </Item>
+          </ItemRewards>
           <FriendshipRewards>
             <Friendship>
               <rewardedFriendship>1</rewardedFriendship>
@@ -129,7 +147,7 @@
       <questId>1</questId>
       <title>Is that a new spell parchment in your hands?</title>
       <isRepeatable>false</isRepeatable>
-      <lastUsedNodeId>3</lastUsedNodeId>
+      <lastUsedNodeId>0</lastUsedNodeId>
       <Nodes>
         <Node>
           <nodeId>0</nodeId>
@@ -186,27 +204,4 @@
   </Quests>
   <faction>2</faction>
   <specialty>6</specialty>
-  <Gifts>
-    <Gift>
-        <itemCategory>1</itemCategory>
-        <itemTypeId>1</itemTypeId>
-        <color1>0</color1>
-        <color2>0</color2>
-        <rewardedFriendship>5</rewardedFriendship>
-    </Gift>
-    <Gift>
-        <itemCategory>1</itemCategory>
-        <itemTypeId>101</itemTypeId>
-        <color1>101</color1>
-        <color2>0</color2>
-        <rewardedFriendship>15</rewardedFriendship>
-    </Gift>    
-    <Gift>
-        <itemCategory>6</itemCategory>
-        <itemTypeId>13</itemTypeId>
-        <color1>0</color1>
-        <color2>0</color2>
-        <rewardedFriendship>1</rewardedFriendship>
-    </Gift>
-  </Gifts>
 </NPCData>
