@@ -50,6 +50,11 @@ public class OreNode : NetworkBehaviour
       // Load the sprites based on our type
       oreSprites = ImageManager.getSprites("Mining/" + this.oreType);
 
+      // We don't need to do anything more when we're running in batch mode
+      if (Application.isBatchMode) {
+         return;
+      }
+
       // Update the sprite shown if we've already mined this node
       if (hasBeenMined()) {
          spriteRenderer.sprite = oreSprites.Last();

@@ -32,6 +32,9 @@ public class RandomMapManager : MonoBehaviour
    public Tile debugTileBlue;
    public Tile debugTileBlack;
 
+   // Treasure site prefab - spawned on map
+   public GameObject treasureSitePrefab;
+
    #endregion
 
    private void Awake () {

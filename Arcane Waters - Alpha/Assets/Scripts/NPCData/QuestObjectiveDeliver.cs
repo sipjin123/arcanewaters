@@ -4,6 +4,7 @@ using System.Xml.Serialization;
 using System.Text;
 using System;
 
+[Serializable]
 public class QuestObjectiveDeliver : QuestObjective
 {
    #region Public Variables

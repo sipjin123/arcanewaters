@@ -61,7 +61,9 @@ public class SeaEntity : NetEntity {
       }
 
       // Set our sprite sheets according to our types
-      StartCoroutine(CO_UpdateAllSprites());
+      if (!Application.isBatchMode) {
+         StartCoroutine(CO_UpdateAllSprites());
+      }
    }
 
    protected override void Update () {

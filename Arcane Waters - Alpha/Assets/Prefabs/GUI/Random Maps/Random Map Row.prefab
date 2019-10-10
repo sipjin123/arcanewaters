@@ -93,7 +93,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_EffectColor: {r: 0.3254902, g: 0.40784317, b: 0.5137255, a: 0.5}
-  m_EffectDistance: {x: 2, y: -2}
+  m_EffectDistance: {x: 1, y: -1}
   m_UseGraphicAlpha: 1
 --- !u!1 &361689815080340500
 GameObject:
@@ -148,6 +148,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   frameImage: {fileID: 1382242386075327297}
   plaqueImage: {fileID: 7238292194842181964}
+  plaqueCountOutline: {fileID: 335155430470583367}
   biomeImage: {fileID: 4985248035653708416}
   mapNameText: {fileID: 6060202903603514094}
   playerCountText: {fileID: 655269302}

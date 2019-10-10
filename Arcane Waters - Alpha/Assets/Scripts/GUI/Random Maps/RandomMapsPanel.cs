@@ -9,7 +9,7 @@ using System.Globalization;
 public class RandomMapsPanel : Panel, IPointerClickHandler
 {
    #region Public Variables
-
+   
    [Header("References")]
    // The container for horizontal rows
    public RectTransform horizontalRowsContainer;
@@ -32,6 +32,12 @@ public class RandomMapsPanel : Panel, IPointerClickHandler
 
    // Singleton reference
    static public RandomMapsPanel self;
+
+   [Header("Outline colors")]
+   // Colors for outline of player count for different difficulty levels
+   public Color outlineColorEasy;
+   public Color outlineColorMedium;
+   public Color outlineColorHard;
 
    #endregion
 
@@ -101,6 +107,9 @@ public class RandomMapsPanel : Panel, IPointerClickHandler
    private void setPanelSprites(RandomMapRow panel) {
       // Set plaque based on difficulty - they don't change on hover/pressed
       panel.setPlaqueNames();
+
+      // Set plaque players count outline color based on difficulty level
+      panel.setPlaqueOutlineColor();
 
       // Set sprites which use hover/pressed
       panel.OnPointerExit();

@@ -44,7 +44,7 @@ public class EnemyManager : MonoBehaviour {
          enemy.enemyType = spawner.enemyType;
 
          // Add it to the Instance
-         InstanceManager.self.addPlayerToInstance(enemy, instance.areaType);
+         InstanceManager.self.addEnemyToInstance(enemy, instance);
          enemy.transform.position = spawner.transform.position;
          enemy.desiredPosition = enemy.transform.position;
          NetworkServer.Spawn(enemy.gameObject);

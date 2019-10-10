@@ -741,6 +741,9 @@ public class NetEntity : NetworkBehaviour
       // Make a note that we're about to proceed with a warp
       this.isAboutToWarpOnServer = true;
 
+      // Store the connection reference so that we don't lose it while on the background thread
+      NetworkConnection connectionToClient = this.connectionToClient;
+
       // Update the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.setNewPosition(this.userId, newPosition, newFacingDirection, (int) newArea);
@@ -751,8 +754,7 @@ public class NetEntity : NetworkBehaviour
             InstanceManager.self.removeEntityFromInstance(this);
 
             // Destroy the old Player object
-            NetworkConnection connection = this.connectionToClient;
-            NetworkServer.DestroyPlayerForConnection(this.connectionToClient);
+            NetworkServer.DestroyPlayerForConnection(connectionToClient);
             NetworkServer.Destroy(this.gameObject);
 
             // Send a Redirect message to the client

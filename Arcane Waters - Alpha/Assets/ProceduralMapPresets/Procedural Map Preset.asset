@@ -54,81 +54,81 @@ MonoBehaviour:
     borders:
     - borderDirection: 0
       tilePrefix: animations_
-      tileSuffix: _196
-      borderTile: {fileID: 11400000, guid: 370160a48e5d27d4285085c3cbb32b48, type: 2}
+      tileSuffix: _130
+      borderTile: {fileID: 11400000, guid: f48d842824854d74c8f09d068c440395, type: 2}
     - borderDirection: 1
       tilePrefix: animations_
-      tileSuffix: _175
-      borderTile: {fileID: 11400000, guid: f1132f258a80e18459cd30346d4f9e52, type: 2}
+      tileSuffix: _109
+      borderTile: {fileID: 11400000, guid: 8511ad7b3eb25d94f9d3aa33f85a2f66, type: 2}
     - borderDirection: 2
       tilePrefix: animations_
-      tileSuffix: _219
-      borderTile: {fileID: 11400000, guid: ad4b449da2b11b0409074684507abaf8, type: 2}
+      tileSuffix: _153
+      borderTile: {fileID: 11400000, guid: da83a1c3f529c1e4c958ace3ee67064c, type: 2}
     - borderDirection: 3
       tilePrefix: animations_
-      tileSuffix: _216
-      borderTile: {fileID: 11400000, guid: 7b80cc1af05adb94c92cfcbf5b6f2524, type: 2}
+      tileSuffix: _150
+      borderTile: {fileID: 11400000, guid: 8e0b7900d20142940b4911ccdcc41dc9, type: 2}
     - borderDirection: 4
       tilePrefix: animations_
-      tileSuffix: _218
-      borderTile: {fileID: 11400000, guid: 051dbf8b160077248b1430f106aee344, type: 2}
+      tileSuffix: _152
+      borderTile: {fileID: 11400000, guid: 2133af4b1f8df7b47802b812421ba6f6, type: 2}
     - borderDirection: 5
       tilePrefix: animations_
-      tileSuffix: _217
-      borderTile: {fileID: 11400000, guid: db8e388d19bee6348936a09637ede25f, type: 2}
+      tileSuffix: _151
+      borderTile: {fileID: 11400000, guid: ee0059a1051c6184394b5f967953b953, type: 2}
     - borderDirection: 6
       tilePrefix: animations_
-      tileSuffix: _197
-      borderTile: {fileID: 11400000, guid: 3ced503223b603f4d87a15d4043c520d, type: 2}
+      tileSuffix: _131
+      borderTile: {fileID: 11400000, guid: a543279c73158854885664af19b44743, type: 2}
     - borderDirection: 7
       tilePrefix: animations_
-      tileSuffix: _169
-      borderTile: {fileID: 11400000, guid: b6bac0d0d6944644f818b8c4e12ea533, type: 2}
+      tileSuffix: _103
+      borderTile: {fileID: 11400000, guid: 302b995fcb50c214a86cac1251e64c89, type: 2}
     - borderDirection: 8
       tilePrefix: animations_
-      tileSuffix: _213
-      borderTile: {fileID: 11400000, guid: 892c3da70d13370409c138f38229bc6e, type: 2}
+      tileSuffix: _147
+      borderTile: {fileID: 11400000, guid: e734806cbe555d244b195143ff8ea2a9, type: 2}
     - borderDirection: 9
       tilePrefix: animations_
-      tileSuffix: _171
-      borderTile: {fileID: 11400000, guid: e9d09146b7d52e5429c6e24d06f32bae, type: 2}
+      tileSuffix: _105
+      borderTile: {fileID: 11400000, guid: 12254975d3f012244932ca8c60a4596e, type: 2}
     - borderDirection: 10
       tilePrefix: animations_
-      tileSuffix: _215
-      borderTile: {fileID: 11400000, guid: e086eddd10af6b44d98c9ef37bdf11d3, type: 2}
+      tileSuffix: _149
+      borderTile: {fileID: 11400000, guid: 8b8137eea901a784a95091ac0ee5083c, type: 2}
     - borderDirection: 11
       tilePrefix: animations_
-      tileSuffix: _170
-      borderTile: {fileID: 11400000, guid: c85540f4e0c522f4fb219dc7f0468eb6, type: 2}
+      tileSuffix: _104
+      borderTile: {fileID: 11400000, guid: a1eb52d65d33ba546961ef029f012ef8, type: 2}
     - borderDirection: 12
       tilePrefix: animations_
-      tileSuffix: _214
-      borderTile: {fileID: 11400000, guid: 1d5e55cf1adbd1546a6c3008a452e26f, type: 2}
+      tileSuffix: _148
+      borderTile: {fileID: 11400000, guid: a33bf67e06e335b47a1d0f7529c53e45, type: 2}
     - borderDirection: 13
       tilePrefix: animations_
-      tileSuffix: _193
-      borderTile: {fileID: 11400000, guid: 7e0b341978f14084e9fab8ea213342e3, type: 2}
+      tileSuffix: _127
+      borderTile: {fileID: 11400000, guid: 0f8cfa1c0dfe268428108370b419912b, type: 2}
     - borderDirection: 14
       tilePrefix: animations_
-      tileSuffix: _191
-      borderTile: {fileID: 11400000, guid: e791f34c82b1e144b8ac2e0adb09e637, type: 2}
+      tileSuffix: _125
+      borderTile: {fileID: 11400000, guid: 6a1689bfdbd54da45981dae3800b5396, type: 2}
     corners:
     - cornerDirection: 0
       tilePrefix: animations_
-      tileSuffix: _194
-      cornerTile: {fileID: 11400000, guid: 3497f76de6df8374b942faec5ccabea0, type: 2}
+      tileSuffix: _128
+      cornerTile: {fileID: 11400000, guid: ebb743cdaa050974ea76d113c33f0afe, type: 2}
     - cornerDirection: 3
       tilePrefix: animations_
-      tileSuffix: _195
-      cornerTile: {fileID: 11400000, guid: 869e8d12d5fefac45914cab7b09ade76, type: 2}
+      tileSuffix: _129
+      cornerTile: {fileID: 11400000, guid: 31bcf6a9e5b5c7e4897b036e0e31a0de, type: 2}
     - cornerDirection: 1
       tilePrefix: animations_
-      tileSuffix: _172
-      cornerTile: {fileID: 11400000, guid: 98031a067b394e740b2dfd1d5fa470cd, type: 2}
+      tileSuffix: _106
+      cornerTile: {fileID: 11400000, guid: dd1e7b641f79bc1488f14d584e8b8e52, type: 2}
     - cornerDirection: 2
       tilePrefix: animations_
-      tileSuffix: _173
-      cornerTile: {fileID: 11400000, guid: 18f8cb051e16abf45be01f0587ee44c2, type: 2}
+      tileSuffix: _107
+      cornerTile: {fileID: 11400000, guid: bacc03f07d9903342a36b96fa8f0e4bb, type: 2}
     objectLayers: []
   - name: Land (1)
     isLand: 1
@@ -143,64 +143,64 @@ MonoBehaviour:
     borders:
     - borderDirection: 0
       tilePrefix: animations_
-      tileSuffix: _31
-      borderTile: {fileID: 11400000, guid: 5c6c1c88c32549d48ae08bec6369af84, type: 2}
+      tileSuffix: _30
+      borderTile: {fileID: 11400000, guid: d3ac133cff4afe243a28559d795dc327, type: 2}
     - borderDirection: 11
       tilePrefix: animations_
       tileSuffix: _23
       borderTile: {fileID: 11400000, guid: 25403b992330d044f936f71c85ebd1be, type: 2}
     - borderDirection: 14
       tilePrefix: animations_
-      tileSuffix: _47
-      borderTile: {fileID: 11400000, guid: ae12b79746f5e0c48b59494185599930, type: 2}
+      tileSuffix: _44
+      borderTile: {fileID: 11400000, guid: 588e7b5cc187c8545a719429015e1860, type: 2}
     - borderDirection: 12
       tilePrefix: animations_
-      tileSuffix: _70
-      borderTile: {fileID: 11400000, guid: 400006472717a604d8bd60083cc648ca, type: 2}
+      tileSuffix: _67
+      borderTile: {fileID: 11400000, guid: 31d496816de94394086bd62d0b716327, type: 2}
     - borderDirection: 13
       tilePrefix: animations_
-      tileSuffix: _49
-      borderTile: {fileID: 11400000, guid: 7e4e45f3795d64f4f8ab61f0f9bcadee, type: 2}
+      tileSuffix: _46
+      borderTile: {fileID: 11400000, guid: c80dda34ec1a566499f87b8169a7a4b9, type: 2}
     - borderDirection: 1
       tilePrefix: animations_
-      tileSuffix: _29
-      borderTile: {fileID: 11400000, guid: 30d2158f06c94584eb83c17ad152f8b7, type: 2}
+      tileSuffix: _28
+      borderTile: {fileID: 11400000, guid: 92abb8a7a1651f448a38bf6a6f3e3f9b, type: 2}
     - borderDirection: 2
       tilePrefix: animations_
-      tileSuffix: _73
-      borderTile: {fileID: 11400000, guid: 37250780aa8963349885ecc07f13fb8e, type: 2}
+      tileSuffix: _72
+      borderTile: {fileID: 11400000, guid: df3c9836805845d4ea5dcdc193df792c, type: 2}
     - borderDirection: 3
       tilePrefix: animations_
-      tileSuffix: _74
-      borderTile: {fileID: 11400000, guid: e5f2c36d421b0a446ae33aa1efd049b9, type: 2}
+      tileSuffix: _52
+      borderTile: {fileID: 11400000, guid: a742d08f27450f044aadaa82a200c0ca, type: 2}
     - borderDirection: 4
       tilePrefix: animations_
-      tileSuffix: _76
-      borderTile: {fileID: 11400000, guid: 064173cb9a8286c4a8298f18c2c4e530, type: 2}
+      tileSuffix: _54
+      borderTile: {fileID: 11400000, guid: ed542ebd8fb53d64babbcadb9047d94f, type: 2}
     - borderDirection: 5
       tilePrefix: animations_
-      tileSuffix: _75
-      borderTile: {fileID: 11400000, guid: d355e0526314bff458e80aea8c14fc43, type: 2}
+      tileSuffix: _53
+      borderTile: {fileID: 11400000, guid: 15ebb3e748abdf14cb8bef8e079d88b5, type: 2}
     - borderDirection: 6
       tilePrefix: animations_
-      tileSuffix: _51
-      borderTile: {fileID: 11400000, guid: 31b89f5450c8c4e439bf0b0debaadbf8, type: 2}
+      tileSuffix: _50
+      borderTile: {fileID: 11400000, guid: 69290773571c8c942917cbb7f91441e5, type: 2}
     - borderDirection: 7
       tilePrefix: animations_
-      tileSuffix: _25
-      borderTile: {fileID: 11400000, guid: ebedaa3642ef889499ceca727d3cedc6, type: 2}
+      tileSuffix: _22
+      borderTile: {fileID: 11400000, guid: 98ab36a01b822d64bbccde51846cdcef, type: 2}
     - borderDirection: 8
       tilePrefix: animations_
-      tileSuffix: _69
-      borderTile: {fileID: 11400000, guid: 7879ba9b2d3abe44791d180a8001e536, type: 2}
+      tileSuffix: _66
+      borderTile: {fileID: 11400000, guid: 165f7b9c4abcdbe48938b457a4819220, type: 2}
     - borderDirection: 9
       tilePrefix: animations_
-      tileSuffix: _27
-      borderTile: {fileID: 11400000, guid: b0898bf4770d6a144973c7530bf24eb9, type: 2}
+      tileSuffix: _24
+      borderTile: {fileID: 11400000, guid: d6e358af893759745aa6dccb0daabeee, type: 2}
     - borderDirection: 10
       tilePrefix: animations_
-      tileSuffix: _71
-      borderTile: {fileID: 11400000, guid: 79d51c36e2230d74b8a8bbadcc4e84d5, type: 2}
+      tileSuffix: _68
+      borderTile: {fileID: 11400000, guid: b6385bf12839d544783d13a1f26330a2, type: 2}
     corners:
     - cornerDirection: 0
       tilePrefix: animations_
@@ -331,66 +331,66 @@ MonoBehaviour:
     numberOfAttempts: 10
     biome: 1
     tilePrefix: animations_
-    tileSuffix: _255
-    riverTile: {fileID: 11400000, guid: 2550bc31a29454845a815be53fe5a4a0, type: 2}
+    tileSuffix: _123
+    riverTile: {fileID: 11400000, guid: 9144d562049098c45bf4566706e5a7ed, type: 2}
     riverBorders:
     - riverDirection: 0
       tilePrefix: animations_
-      tileSuffix: _255
-      borderTile: {fileID: 11400000, guid: 2550bc31a29454845a815be53fe5a4a0, type: 2}
+      tileSuffix: _123
+      borderTile: {fileID: 11400000, guid: 9144d562049098c45bf4566706e5a7ed, type: 2}
     - riverDirection: 1
       tilePrefix: animations_
-      tileSuffix: _232
-      borderTile: {fileID: 11400000, guid: b2809e897e9fe1d45b8afd018d0668fb, type: 2}
+      tileSuffix: _100
+      borderTile: {fileID: 11400000, guid: 8baee5e75b7eae94f8baeb2b90ead2f6, type: 2}
     - riverDirection: 3
       tilePrefix: animations_
-      tileSuffix: _343
-      borderTile: {fileID: 11400000, guid: beb0b23bc2f31b146aae354cac465eb3, type: 2}
+      tileSuffix: _211
+      borderTile: {fileID: 11400000, guid: 6b1ea63e3fffa47449ff8a43c4190c22, type: 2}
     - riverDirection: 4
       tilePrefix: animations_
-      tileSuffix: _342
-      borderTile: {fileID: 11400000, guid: 47b1175b39ea95141a31423b007b3402, type: 2}
+      tileSuffix: _210
+      borderTile: {fileID: 11400000, guid: b3edc7dca4b703d49ad8ec2cddfda6f4, type: 2}
     - riverDirection: 2
       tilePrefix: animations_
-      tileSuffix: _233
-      borderTile: {fileID: 11400000, guid: 87fb03ab8bc88ad4994386ba2ee52560, type: 2}
+      tileSuffix: _145
+      borderTile: {fileID: 11400000, guid: 549f4755a874b18419c23a4fa68315b7, type: 2}
     - riverDirection: 5
       tilePrefix: animations_
-      tileSuffix: _234
-      borderTile: {fileID: 11400000, guid: 0e51f0a9a440f674cbaa06f95fafcebf, type: 2}
+      tileSuffix: _102
+      borderTile: {fileID: 11400000, guid: c3f02c46b2b070449a780b56be4d015f, type: 2}
     - riverDirection: 7
       tilePrefix: animations_
-      tileSuffix: _300
-      borderTile: {fileID: 11400000, guid: 2b53e207001c9194ba57782c8d203942, type: 2}
+      tileSuffix: _168
+      borderTile: {fileID: 11400000, guid: 1d986087b49722f43b0bd1bd73927790, type: 2}
     - riverDirection: 8
       tilePrefix: animations_
-      tileSuffix: _322
-      borderTile: {fileID: 11400000, guid: 21168ac574425ee41bddb54a2e34c6bb, type: 2}
+      tileSuffix: _190
+      borderTile: {fileID: 11400000, guid: cc39242db108e09478fd348edc01fcaf, type: 2}
     - riverDirection: 6
       tilePrefix: animations_
-      tileSuffix: _256
-      borderTile: {fileID: 11400000, guid: d53860c90d6847447931d0de3e5aa459, type: 2}
+      tileSuffix: _124
+      borderTile: {fileID: 11400000, guid: 94ec0a8bc285ffc4dbb0aac454245a01, type: 2}
     - riverDirection: 9
       tilePrefix: animations_
-      tileSuffix: _278
-      borderTile: {fileID: 11400000, guid: c2fd1a65d6d54024c89e9b13f343dadd, type: 2}
+      tileSuffix: _146
+      borderTile: {fileID: 11400000, guid: 47bc683212640c045bdda4739ccba5aa, type: 2}
     - riverDirection: 10
       tilePrefix: animations_
-      tileSuffix: _276
-      borderTile: {fileID: 11400000, guid: 193075ab5c2f01b46bcb382d17075a43, type: 2}
+      tileSuffix: _144
+      borderTile: {fileID: 11400000, guid: 7c2db5dfe6be9f74497cde7591918bc2, type: 2}
     - riverDirection: 11
       tilePrefix: animations_
-      tileSuffix: _298
-      borderTile: {fileID: 11400000, guid: bff3be389adbc84418aa26f19c6e65d1, type: 2}
+      tileSuffix: _166
+      borderTile: {fileID: 11400000, guid: 8b666cad5c5f8a04a880aac796b36feb, type: 2}
     - riverDirection: 12
       tilePrefix: animations_
-      tileSuffix: _299
-      borderTile: {fileID: 11400000, guid: 4f2d30d41645f8b418d12213165d0af5, type: 2}
+      tileSuffix: _167
+      borderTile: {fileID: 11400000, guid: 870b00cbcc3d0a743bb3b5bcb873f092, type: 2}
     - riverDirection: 13
       tilePrefix: animations_
-      tileSuffix: _320
-      borderTile: {fileID: 11400000, guid: bde2a9fc8b0bd4d4f8c28d9c7d065c8f, type: 2}
+      tileSuffix: _188
+      borderTile: {fileID: 11400000, guid: 109809b6afadd10488c67a8bc73e5083, type: 2}
     - riverDirection: 14
       tilePrefix: animations_
-      tileSuffix: _321
-      borderTile: {fileID: 11400000, guid: 77b0fff58fc9e52428cba335825866cd, type: 2}
+      tileSuffix: _189
+      borderTile: {fileID: 11400000, guid: d8f28aaee7dc2a94486ad3775e5d9fd9, type: 2}

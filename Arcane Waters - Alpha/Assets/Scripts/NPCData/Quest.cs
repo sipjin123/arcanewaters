@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Xml.Serialization;
 using System;
 
+[Serializable]
 public class Quest
 {
    #region Public Variables
@@ -25,11 +26,14 @@ public class Quest
    }
 
    // Gets set to true when the quest always reappears after completing it
-   public bool isPermanent = false;
+   public bool isRepeatable = false;
+
+   // The last used node id, used when creating new nodes
+   public int lastUsedNodeId;
 
    // The list of quest nodes
    [XmlArray("Nodes"), XmlArrayItem("Node")]
-   public QuestNode[] nodes;   
+   public QuestNode[] nodes;
 
    #endregion
 
@@ -37,11 +41,13 @@ public class Quest
 
    }
 
-   public Quest (int id, string title, NPCFriendship.Rank friendshipRankRequired, bool isPermanent, QuestNode[] nodes) {
+   public Quest (int id, string title, NPCFriendship.Rank friendshipRankRequired, bool isRepeatable,
+      int lastUsedNodeId, QuestNode[] nodes) {
       this.questId = id;
       this.title = title;
       this.friendshipRankRequired = friendshipRankRequired;
-      this.isPermanent = isPermanent;
+      this.isRepeatable = isRepeatable;
+      this.lastUsedNodeId = lastUsedNodeId;
       this.nodes = nodes;
    }
 

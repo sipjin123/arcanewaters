@@ -52,6 +52,11 @@ public class InstanceManager : MonoBehaviour {
       enemy.instanceId = instance.id;
    }
 
+   public void addSeaMonsterToInstance (SeaMonsterEntity seaMonster, Instance instance) {
+      instance.entities.Add(seaMonster);
+      seaMonster.instanceId = instance.id;
+   }
+
    public Instance getInstance (int instanceId) {
       if (_instances.ContainsKey(instanceId)) {
          return _instances[instanceId];
@@ -87,9 +92,14 @@ public class InstanceManager : MonoBehaviour {
             OreManager.self.createOreNodesForInstance(instance);
          }
       }
-
-      // Create any Enemies that exist in this Instance
-      EnemyManager.self.spawnEnemiesOnServerForInstance(instance);
+      
+      if (Area.isRandom(areaType)) {
+         // Create any SeaMonsters that exist in this Sea Random Map instance
+         SeaMonsterManager.self.spawnSeaMonstersOnServerForInstance(instance);
+      } else {
+         // Create any Enemies that exist in this Instance
+         EnemyManager.self.spawnEnemiesOnServerForInstance(instance);
+      }
 
       // Spawn the network object on the Clients
       NetworkServer.Spawn(instance.gameObject);

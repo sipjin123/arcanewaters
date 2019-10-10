@@ -219,11 +219,7 @@ public class Util : MonoBehaviour {
       color.a = newAlpha;
       block.SetColor("_Color", color);
 
-      if (renderer.sprite == null) {
-         return;
-      }
-
-      if (renderer.sprite.texture == null) {
+      if (renderer.sprite == null || renderer.sprite.texture == null) {
          return;
       }
 

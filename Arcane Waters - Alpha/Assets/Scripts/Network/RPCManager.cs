@@ -971,7 +971,8 @@ public class RPCManager : NetworkBehaviour {
             foreach (Quest quest in allQuests) {
                // Skip the quest if the player has already completed it
                if (!completedQuestIds.Contains(quest.questId)) {
-                  Quest q = new Quest(quest.questId, quest.title, quest.friendshipRankRequired, quest.isPermanent, null);
+                  Quest q = new Quest(quest.questId, quest.title, quest.friendshipRankRequired, quest.isRepeatable,
+                     quest.lastUsedNodeId, null);
                   questList.Add(q);
                }
             }
@@ -1098,8 +1099,8 @@ public class RPCManager : NetworkBehaviour {
             }
          }
 
-         // If this is the end of the conversation and the quest is permanent, reset its progress
-         if (currentNode.nextNodeId == -1 && currentQuest.isPermanent) {
+         // If this is the end of the conversation and the quest is repeatable, reset its progress
+         if (currentNode.nextNodeId == -1 && currentQuest.isRepeatable) {
             DB_Main.updateQuestStatus(npcId, _player.userId, questId, currentQuest.getFirstNode().nodeId);
          } else {
             // Update the DB with the quest status after advancing to the next node

@@ -86,7 +86,8 @@ public class ImageManager : ClientMonoBehaviour {
       ImageData imageData = getData(texture);
 
       if (imageData.sprites == null) {
-         Debug.LogWarning("Couldn't find image data for texture: " + texture);
+         D.warning("Couldn't find image data for texture: " + texture);
+         return new Sprite[0];
       }
 
       return imageData.sprites.ToArray();

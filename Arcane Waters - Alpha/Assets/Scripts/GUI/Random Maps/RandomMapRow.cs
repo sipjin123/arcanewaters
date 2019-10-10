@@ -15,6 +15,9 @@ public class RandomMapRow : MonoBehaviour {
    // The plaque UI reference
    public Image plaqueImage;
 
+   // The plaque players count outline UI reference
+   public Outline plaqueCountOutline;
+
    // The biome image UI reference
    public Image biomeImage;
 
@@ -61,6 +64,23 @@ public class RandomMapRow : MonoBehaviour {
    public void setPlaqueNames () {
       // Set plaque based on difficulty - they don't change on hover/pressed
       plaqueImage.sprite = ImageManager.getSprite(_seaMapPath + "count_plaque_" + getFrameName());
+   }
+
+   public void setPlaqueOutlineColor () {
+      // Set plaque players count outline color based on difficulty level
+      Color chosenColor = Color.white;
+      switch (mapSummary.mapDifficulty) {
+         case MapSummary.MapDifficulty.Easy:
+            chosenColor = RandomMapsPanel.self.outlineColorEasy;
+            break;
+         case MapSummary.MapDifficulty.Medium:
+            chosenColor = RandomMapsPanel.self.outlineColorMedium;
+            break;
+         case MapSummary.MapDifficulty.Hard:
+            chosenColor = RandomMapsPanel.self.outlineColorHard;
+            break;
+      }
+      plaqueCountOutline.effectColor = chosenColor;
    }
 
    public void OnPointerEnter () {

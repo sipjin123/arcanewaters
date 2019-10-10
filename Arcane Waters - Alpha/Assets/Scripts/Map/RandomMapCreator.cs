@@ -122,7 +122,7 @@ public static class RandomMapCreator {
       if (preset.updateTilesFromProject) {
          SetTiles(preset);
       }
-      Node[,] grid;
+      Node[,] grid = null;
 
       GameObject prefab = new GameObject(preset.MapPrefixName + preset.MapName + preset.MapSuffixName);
       GameObject gridLayers = new GameObject("Grid Layers");
@@ -156,6 +156,18 @@ public static class RandomMapCreator {
 
       // Set land tiles for border
       GenerateLandBorder(noiseMap, preset);
+
+      // Find land with lowest height parameter
+      int lowestLandIndex = CalculateLowestLand(preset);
+
+      // Find ocean tiles
+      bool[,] oceanTiles = FindOceanTiles(preset);
+
+      // Detect borders for lowest land - used for spawning items to pickup (like treasure sites)
+      List<Vector3Int> lowLandBorderList = null;
+
+      // Detect borders for any land - used for finding tight passages
+      List<Vector3Int> nearWaterLandList = null;
 
       for (int i = 0; i < preset.layers.Length; i++) {
          grid = new Node[preset.mapSize.x, preset.mapSize.y];
@@ -191,18 +203,32 @@ public static class RandomMapCreator {
             Tilemap borderTilemap = borderLayerObject.AddComponent(typeof(Tilemap)) as Tilemap;
             TilemapRenderer borderTilemapRenderer = borderLayerObject.AddComponent(typeof(TilemapRenderer)) as TilemapRenderer;
             borderTilemapRenderer.sortOrder = TilemapRenderer.SortOrder.TopLeft;
-
-            SetBorder(preset, i, baseTilemap, borderTilemap, availableTiles, grid);
+            
+            if (preset.layers[i].isLand) {
+               // Prepare data to spawn treasure sites
+               SetBorderAndLowLandList(preset, i, baseTilemap, borderTilemap, availableTiles, grid, lowestLandIndex, ref lowLandBorderList, ref nearWaterLandList);
+            } else {
+               SetBorder(preset, i, baseTilemap, borderTilemap, availableTiles, grid);
+            }
 
             SetCorner(preset, i, gridLayers, baseTilemap, borderTilemap, availableTiles, grid);
 
          } else {
-            SetBorder(preset, i, baseTilemap, baseTilemap, availableTiles, grid);
+            if (preset.layers[i].isLand) {
+               // Prepare data to spawn treasure sites
+               SetBorderAndLowLandList(preset, i, baseTilemap, baseTilemap, availableTiles, grid, lowestLandIndex, ref lowLandBorderList, ref nearWaterLandList);
+            } else {
+               SetBorder(preset, i, baseTilemap, baseTilemap, availableTiles, grid);
+            }
 
             SetCorner(preset, i, gridLayers, baseTilemap, baseTilemap, availableTiles, grid);
          }
 
-         SetRiver(preset, grid, gridLayers, i, availableTiles);
+         // Remove river tile from lowest land - prepare tiles to spawn treasure sites
+         List<Vector3Int> riverTiles = SetRiver(preset, grid, gridLayers, i, availableTiles);
+         foreach (Vector3Int tile in riverTiles) {
+            lowLandBorderList.Remove(tile);
+         }
 
          SetObjects(preset, gridLayers, availableTiles, i);
       }
@@ -213,6 +239,12 @@ public static class RandomMapCreator {
          DrawStartAreaTiles(true, gridLayers, preset.mapSize.y);
       }
 #endif
+
+      // Spawn at the very end when all tiles are set
+      List<Vector3Int> treasureSites = SpawnTreasureSites(preset, gridLayers, lowLandBorderList, oceanTiles, preset.seed, mapConfig.areaType);
+
+      // Spawn at the very end when all tiles are set
+      SpawnSeaMonsters(preset, gridLayers, oceanTiles, nearWaterLandList, treasureSites, preset.seed, mapConfig.areaType);
 
       return prefab;
    }
@@ -383,6 +415,10 @@ public static class RandomMapCreator {
    }
 
    static bool IsAnyPathBetweenSpawns (MapGeneratorPreset preset) {
+      return IsAnyPathBetweenPoints(preset, new Point(_spawnStartsBottom[0], 0), new Point(_spawnEndsTop[0], preset.mapSize.y - 1));
+   }
+
+   static bool IsAnyPathBetweenPoints (MapGeneratorPreset preset, Point pointA, Point pointB) {
 
       int sizeX = preset.mapSize.x;
       int sizeY = preset.mapSize.y;
@@ -397,11 +433,11 @@ public static class RandomMapCreator {
       }
 
       Stack<Point> tilesStack = new Stack<Point>();
-      int start = _spawnStartsBottom[0];
-      int end = _spawnEndsTop[0];
+      int start = pointA.x;
+      int end = pointB.x;
 
-      int maxY = sizeY - 1;
-      int y = 0;
+      int maxY = pointB.y;
+      int y = pointA.y;
       int x = start;
 
       // Starting point
@@ -622,14 +658,14 @@ public static class RandomMapCreator {
          }
       }
 
-      int y = startPoint.y;
-      int x = startPoint.x;
+      int y = Mathf.Clamp(startPoint.y, 1, preset.mapSize.y - 2);
+      int x = Mathf.Clamp(startPoint.x, 1, preset.mapSize.x - 2);
 
-      int end = endPoint.x;
+      int end = Mathf.Clamp(endPoint.x, 1, preset.mapSize.x - 2);
 
       int sizeX = preset.mapSize.x - 2;
       int sizeY = preset.mapSize.y;
-      int maxY = Mathf.Clamp(endPoint.y, 1, preset.mapSize.y - 3);
+      int maxY = Mathf.Clamp(endPoint.y, 1, preset.mapSize.y - 2);
 
       while (true) {
          if (noiseMap[x, y] < preset.replaceWaterHeight) {
@@ -737,7 +773,6 @@ public static class RandomMapCreator {
             }
          }
       }
-
    }
 
    static void SetFreeTile(int x, int y, bool[,] freeTiles, float[,] noiseMap, Tilemap tilemap, MapGeneratorPreset preset, bool freeTile = true) {
@@ -1022,13 +1057,13 @@ public static class RandomMapCreator {
 
          freeTiles[point.x, point.y] = false;
          // Check bottom
-         if (point.y - 1 >= 0 && freeTiles[point.x, point.y - 1]) {
+         if (point.y - 1 >= 1 && freeTiles[point.x, point.y - 1]) {
             points.Push(new Point(point.x, point.y - 1));
             freeTiles[point.x, point.y - 1] = false;
             size++;
          }
          // Check left
-         if (point.x - 1 >= 0 && freeTiles[point.x - 1, point.y]) {
+         if (point.x >= 1 && freeTiles[point.x - 1, point.y]) {
             points.Push(new Point(point.x - 1, point.y));
             freeTiles[point.x - 1, point.y] = false;
             size++;
@@ -1050,6 +1085,471 @@ public static class RandomMapCreator {
       return size;
    }
 
+   static List<Vector3Int> SpawnTreasureSites (MapGeneratorPreset preset, GameObject gridLayers, List<Vector3Int> availableTiles, bool[,] oceanTiles, int seed, Area.Type areaType) {
+      // Prepare data structures
+      List<Vector3Int> tilesToTest = new List<Vector3Int>();
+      List<Vector3Int> tilesToSpawn = new List<Vector3Int>();
+      List<Vector3Int> spawnedTiles = new List<Vector3Int>();
+
+      // Get only tiles which are near ocean (ignore lakes)
+      foreach (Vector3Int tile in availableTiles) {
+         if (tile.y > 0 && tile.x > 0 && tile.x < preset.mapSize.x - 1 && tile.y < preset.mapSize.y - 1 && IsNearOceanTile(preset, oceanTiles, tile.x, tile.y)) {
+            tilesToTest.Add(new Vector3Int(tile.x, tile.y, 0));
+         }
+      }
+
+      // Get tiles with correct distance from spawns
+      foreach (Vector3Int tile in tilesToTest) {
+         int distanceToBottom = Mathf.Abs(tile.x - _spawnStartsBottom[0]) + tile.y;
+         int distanceToTop = Mathf.Abs(tile.x - _spawnStartsTop[0]) + (preset.mapSize.y - tile.y);
+
+         if (distanceToTop > _minDistanceToSpawnTreasureSites && distanceToBottom > _minDistanceToSpawnTreasureSites) {
+            tilesToSpawn.Add(tile);
+         }
+      }      
+
+      Area area = AreaManager.self.getArea(areaType);
+      System.Random pseudoRandom = new System.Random(seed);
+
+      // Start spawning sites
+      for (int i = 0; i < _treasureSitesToSpawn; i++) {
+         if (tilesToSpawn.Count <= 0) {
+            break;
+         }
+         // Make sure that sites have some distance between each other
+         int index = pseudoRandom.Next(0, tilesToSpawn.Count);
+         if (!IsDistantEnoughToOtherTreasure(tilesToSpawn[index].x, tilesToSpawn[index].y, spawnedTiles)) {
+            tilesToSpawn.RemoveAt(index);
+            continue;
+         }
+
+         // Spawn sites with correct distance
+         spawnedTiles.Add(tilesToSpawn[index]);
+         Vector3 treasureOffset = Vector3.zero;
+         int tileX = tilesToSpawn[index].x;
+         int tileY = tilesToSpawn[index].y;
+         bool oceanLeft = IsOceanOnLeft(preset, oceanTiles, tileX, tileY);
+         bool oceanRight = IsOceanOnRight(preset, oceanTiles, tileX, tileY);
+         bool oceanBottom = IsOceanBelow(preset, oceanTiles, tileX, tileY);
+         bool oceanTop = IsOceanAbove(preset, oceanTiles, tileX, tileY);
+
+         // Move treasure up
+         if ((oceanRight && !oceanLeft && oceanBottom && !oceanTop) || (!oceanRight && !oceanLeft && oceanBottom && !oceanTop) || (oceanRight && oceanLeft && oceanBottom && !oceanTop) || (oceanRight && !oceanLeft && oceanBottom && oceanTop)) {
+            treasureOffset = new Vector3(0.0f, 1.0f, 0.0f);
+         }
+         // Move treasure right
+         else if ((!oceanRight && oceanLeft && !oceanBottom && !oceanTop) || (!oceanRight && oceanLeft && !oceanBottom && oceanTop)) {
+            treasureOffset = new Vector3(1.0f, 0.0f, 0.0f);
+         }
+         // Move treasure right-up
+         else if (!oceanRight && oceanLeft && oceanBottom && !oceanTop) {
+            treasureOffset = new Vector3(1.0f, 1.0f, 0.0f);
+         } 
+         // Move treasure half-right
+         else if ((oceanRight && oceanLeft && !oceanBottom && oceanTop) || (oceanRight && oceanLeft && oceanBottom && !oceanTop)) {
+            treasureOffset = new Vector3(0.5f, 0.0f, 0.0f);
+         } 
+         // Move treasure half-right half-up
+         else if ((oceanRight && oceanLeft && oceanBottom && oceanTop) || (!oceanRight && oceanLeft && oceanBottom && oceanTop)) {
+            treasureOffset = new Vector3(0.5f, 0.5f, 0.0f);
+         }
+         GameObject treasureSite = GameObject.Instantiate(RandomMapManager.self.treasureSitePrefab, tilesToSpawn[index] + treasureOffset, Quaternion.identity, gridLayers.transform);
+         treasureSite.transform.localScale = new Vector3(1.0f / 0.16f, 1.0f / 0.16f, 1.0f);
+         tilesToSpawn.RemoveAt(index);
+         // Debug purposes only
+         //treasureSite.name += "_ocean " + (oceanLeft ? "Left " : "") + (oceanRight ? "Right " : "") + (oceanBottom ? "Bottom " : "") + (oceanTop ? "Top " : "");
+      }
+
+      return spawnedTiles;
+   }
+
+   static bool IsDistantEnoughToOtherTreasure (int currentTileX, int currentTileY, List<Vector3Int> spawnedTiles) {
+      foreach (Vector3Int tile in spawnedTiles) {
+         int distance = Mathf.Abs(tile.x - currentTileX) + Mathf.Abs(tile.y - currentTileY);
+         if (distance < _minDistanceBetweenEachTreasureSite) {
+            return false;
+         }
+      }
+      return true;
+   }
+
+   static int CalculateLowestLand(MapGeneratorPreset preset) {
+      int lowestLandIndex = -1;
+      float lowestLandHeight = -1;
+      for (int i = 0; i < preset.layers.Length; i++) {
+         // Find first index to compare
+         if (preset.layers[i].isLand) {
+            lowestLandIndex = i;
+            lowestLandHeight = preset.layers[i].height;
+            break;
+         }
+      }
+      // Now compare heights
+      for (int i = 0; i < preset.layers.Length; i++) {
+         if (preset.layers[i].isLand && i != lowestLandIndex && lowestLandHeight < preset.layers[i].height) {
+            lowestLandIndex = i;
+            lowestLandHeight = preset.layers[i].height;
+         }
+      }
+
+      return lowestLandIndex;
+   }
+
+   static bool[,] FindOceanTiles (MapGeneratorPreset preset) {
+      // Make sure that tiles are zero-initialized to 'false' value
+      bool[,] oceanTiles = new bool[preset.mapSize.x, preset.mapSize.y];
+      for (int x = 0; x < preset.mapSize.x; x++) {
+         for (int y = 0; y < preset.mapSize.y; y++) {
+            oceanTiles[x, y] = false;
+         }
+      }
+
+      // Recurrent algorithm to find water tiles connect directly to spawn (ocean)
+      CalculateOceanTile(preset, oceanTiles, _spawnStartsBottom[0], 0);
+
+      return oceanTiles;
+   }
+
+   static void CalculateOceanTile (MapGeneratorPreset preset, bool[,] oceanTiles, int x, int y) {
+      if (x + 1 < preset.mapSize.x - 1 && _waterTiles[x + 1, y] && !oceanTiles[x + 1, y]) {
+         oceanTiles[x + 1, y] = true;
+         CalculateOceanTile(preset, oceanTiles, x + 1, y);
+      }
+      if (x - 1 >= 1 && _waterTiles[x - 1, y] && !oceanTiles[x - 1, y]) {
+         oceanTiles[x - 1, y] = true;
+         CalculateOceanTile(preset, oceanTiles, x - 1, y);
+      }
+      if (y + 1 < preset.mapSize.y - 1 && _waterTiles[x, y + 1] && !oceanTiles[x, y + 1]) {
+         oceanTiles[x, y + 1] = true;
+         CalculateOceanTile(preset, oceanTiles, x, y + 1);
+      }
+      if (y - 1 >= 1 && _waterTiles[x, y - 1] && !oceanTiles[x, y - 1]) {
+         oceanTiles[x, y - 1] = true;
+         CalculateOceanTile(preset, oceanTiles, x, y - 1);
+      }
+   }
+
+   static bool IsOceanOnLeft (MapGeneratorPreset preset, bool[,] oceanTiles, int x, int y) {
+      return (x - 1 >= 1 && oceanTiles[x - 1, y]);
+   }
+
+   static bool IsOceanOnRight (MapGeneratorPreset preset, bool[,] oceanTiles, int x, int y) {
+      return (x + 1 < preset.mapSize.x - 1 && oceanTiles[x + 1, y]);
+   }
+
+   static bool IsOceanBelow (MapGeneratorPreset preset, bool[,] oceanTiles, int x, int y) {
+      return (y - 1 >= 1 && oceanTiles[x, y - 1]);
+   }
+
+   static bool IsOceanAbove (MapGeneratorPreset preset, bool[,] oceanTiles, int x, int y) {
+      return (y + 1 < preset.mapSize.y - 1 && oceanTiles[x, y + 1]);
+   }
+
+   static bool IsNearOceanTile(MapGeneratorPreset preset, bool[,] oceanTiles, int x, int y) {
+      // Check if given tile is near the ocean
+      if (x + 1 < preset.mapSize.x - 1 && oceanTiles[x + 1, y]) {
+         return true;
+      } else if (x - 1 >= 1 && oceanTiles[x - 1, y]) {
+         return true;
+      } else if (y + 1 < preset.mapSize.y - 1 && oceanTiles[x, y + 1]) {
+         return true;
+      } else if (y - 1 >= 1 && oceanTiles[x, y - 1]) {
+         return true;
+      }
+
+      return false;
+   }
+
+   static void SpawnSeaMonsters(MapGeneratorPreset preset, GameObject gridLayers, bool[,] oceanTiles, List<Vector3Int> borderLandList, List<Vector3Int> spawnedTreasuresSites, int seed, Area.Type areaType) {
+      // Prepare debug tiles
+      GameObject baseLayerGameObject = new GameObject("Spawn Sea Monsters");
+      baseLayerGameObject.transform.position = new Vector3(baseLayerGameObject.transform.position.x, baseLayerGameObject.transform.position.y, -1.0f);
+      baseLayerGameObject.transform.parent = gridLayers.transform;
+      Tilemap baseTilemap = baseLayerGameObject.AddComponent(typeof(Tilemap)) as Tilemap;
+      TilemapRenderer baseTilemapRenderer = baseLayerGameObject.AddComponent(typeof(TilemapRenderer)) as TilemapRenderer;
+      baseTilemapRenderer.sortOrder = TilemapRenderer.SortOrder.TopLeft;
+
+      // Deep copy of ocean tiles
+      bool[,] availableTiles = new bool[preset.mapSize.x, preset.mapSize.y];
+      for (int x_ = 0; x_ < preset.mapSize.x; x_++) {
+         for (int y_ = 0; y_ < preset.mapSize.y; y_++) {
+            availableTiles[x_, y_] = oceanTiles[x_, y_];
+         }
+      }
+
+      // Find tight passages
+      FindTightPassages(preset, oceanTiles, availableTiles, borderLandList);
+
+      // Disable tiles near edges
+      foreach (Vector3Int tile in borderLandList) {
+         for (int x = tile.x - 1; x <= tile.x + 1; x++) {
+            for (int y = tile.y - 1; y <= tile.y + 1; y++) {
+               DisableMonsterSpawnTileAvailability(availableTiles, preset, baseTilemap, x, y);
+            }
+         }
+      }
+
+      // Disable tiles near spawn points
+      for (int y = 0; y < _areaSize.Length + 2; y++) {
+         for (int x = _spawnStartsBottom[0]; x < _spawnEndsBottom[0]; x++) {
+            DisableMonsterSpawnTileAvailability(availableTiles, preset, baseTilemap, x, y);
+         }
+         for (int x = _spawnStartsTop[0]; x < _spawnEndsTop[0]; x++) {
+            DisableMonsterSpawnTileAvailability(availableTiles, preset, baseTilemap, x, preset.mapSize.y - y - 1);
+         }
+      }
+
+      // Prefer sites near treasure sites
+      List<Vector3Int> spawnList = FindTreasureTilesForMonsters(oceanTiles, preset, availableTiles, spawnedTreasuresSites);
+      System.Random pseudoRandom = new System.Random(seed);
+
+      // Prepare data for spawning
+      Area area = AreaManager.self.getArea(areaType);
+      int monstersCountToSpawn = pseudoRandom.Next(_minSeaMonstersCount, _maxSeaMonstersCount + 1);
+      int monstersCountToSpawnNearTreasure = pseudoRandom.Next(_minSeaMonstersNearTreasureCount, _maxSeaMonstersNearTreasureCount + 1);
+
+      // Start with spawning near treasure sites
+      SpawnSeaMonstersNearTreasureSites(monstersCountToSpawnNearTreasure, ref spawnList, ref pseudoRandom, availableTiles, preset, baseTilemap, gridLayers.transform, areaType);
+
+      // Spawn rest of the monsters in free tiles
+      SpawnSeaMonstersFreeTiles(monstersCountToSpawn - monstersCountToSpawnNearTreasure, monstersCountToSpawnNearTreasure, ref spawnList, ref pseudoRandom, availableTiles, preset, baseTilemap, gridLayers.transform, areaType);
+   }
+
+   static void SpawnSeaMonstersNearTreasureSites (int monstersCount, ref List<Vector3Int> spawnList, ref System.Random pseudoRandom, bool[,] availableTiles, MapGeneratorPreset preset, Tilemap tilemap, Transform parent, Area.Type areaType) {
+      Vector3Int pos = Vector3Int.zero;
+      for (int i = 0; i < monstersCount; i++) {
+         if (spawnList.Count == 0) {
+            break;
+         }
+
+         while (true) {
+            if (spawnList.Count == 0) {
+               return;
+            }
+            int spawnListIndex = pseudoRandom.Next(0, spawnList.Count);
+            pos = spawnList[spawnListIndex];
+            spawnList.RemoveAt(spawnListIndex);
+            if (availableTiles[pos.x, pos.y]) {
+               break;
+            }
+         }
+
+         // Disable nearby tiles after creating spawner
+         for (int x = pos.x - _minDistanceBetweenSeaMonster; x < pos.x + _minDistanceBetweenSeaMonster; x++) {
+            for (int y = pos.y - _minDistanceBetweenSeaMonster; y < pos.y + _minDistanceBetweenSeaMonster; y++) {
+               DisableMonsterSpawnTileAvailability(availableTiles, preset, tilemap, x, y);
+            }
+         }
+
+         SpawnSeaMonster("Monster spawn #" + i.ToString(), pos, parent, areaType, EnemyManager.self.seaMonsterDataList.ChooseRandom().seaMonsterType);
+      }
+   }
+
+   static void SpawnSeaMonstersFreeTiles (int monstersCount, int addMonsterCount, ref List<Vector3Int> spawnList, ref System.Random pseudoRandom, bool[,] availableTiles, MapGeneratorPreset preset, Tilemap tilemap, Transform parent, Area.Type areaType) {
+      Vector3Int pos = Vector3Int.zero;
+      for (int i = 0; i < monstersCount; i++) {
+         if (spawnList.Count == 0) {
+            break;
+         }
+         // Limit retries - there might be situations where there are no free tiles left
+         int retries = 50;
+         while (true) {
+            --retries;
+            if (retries < 0) {
+               return;
+            }
+
+            int spawnTileX = pseudoRandom.Next(0, preset.mapSize.x);
+            int spawnTileY = pseudoRandom.Next(0, preset.mapSize.y);
+
+            if (availableTiles[spawnTileX, spawnTileY]) {
+               pos.x = spawnTileX;
+               pos.y = spawnTileY;
+               break;
+            }
+         }
+         // Disable nearby tiles after creating spawner
+         for (int x = pos.x - _minDistanceBetweenSeaMonster; x < pos.x + _minDistanceBetweenSeaMonster; x++) {
+            for (int y = pos.y - _minDistanceBetweenSeaMonster; y < pos.y + _minDistanceBetweenSeaMonster; y++) {
+               DisableMonsterSpawnTileAvailability(availableTiles, preset, tilemap, x, y);
+            }
+         }
+
+         SpawnSeaMonster("Monster spawn #" + (i + addMonsterCount).ToString(), pos, parent, areaType, EnemyManager.self.seaMonsterDataList.ChooseRandom().seaMonsterType);
+      }
+   }
+
+   static void DisableMonsterSpawnTileAvailability(bool[,] availableTiles, MapGeneratorPreset preset, Tilemap tilemap, int x, int y) {
+      if (x >= 0 && x < preset.mapSize.x && y >= 0 && y < preset.mapSize.y) {
+         availableTiles[x, y] = false;
+         if (_enableDrawDebug) {
+            tilemap.SetTile(new Vector3Int(x, y, 0), RandomMapManager.self.debugTileBlack);
+         }
+      }
+   }
+
+   static void SpawnSeaMonster(string name, Vector3 pos, Transform parent, Area.Type areaType, Enemy.Type seaMonsterType) {
+      GameObject spawnObject = new GameObject(name);
+      spawnObject.transform.SetParent(parent);
+      spawnObject.transform.position = new Vector3(pos.x + 0.5f, pos.y + 0.5f, 0.0f);
+
+      SeaMonsterSpawner enemySpawner = spawnObject.AddComponent<SeaMonsterSpawner>();
+      enemySpawner.enemyType = seaMonsterType;
+      SeaMonsterManager.self.storeSpawner(enemySpawner, areaType);
+   }
+
+   static void FindTightPassages (MapGeneratorPreset preset, bool[,] oceanTiles, bool[,] availableTiles, List<Vector3Int> borderLandList) {
+      foreach (Vector3Int tile in borderLandList) {
+         int x = tile.x;
+         int y = tile.y;
+         int sum = 0;
+
+         // Test horizontal passages
+         x++;
+         while (x < preset.mapSize.x && oceanTiles[x, y]) {
+            x++;
+            sum++;
+         }
+
+         if (sum <= _tightPassageMinDistance) {
+            sum--;
+            x--;
+            while (sum >= 0) {
+               availableTiles[x, y] = false;
+               sum--;
+               x--;
+            }
+         }
+
+         // Test vertical passages
+         x = tile.x;
+         y = tile.y;
+         sum = 0;
+         y++;
+         while (y < preset.mapSize.y && oceanTiles[x, y]) {
+            y++;
+            sum++;
+         }
+
+         if (sum <= _tightPassageMinDistance) {
+            sum--;
+            y--;
+            while (sum >= 0) {
+               availableTiles[x, y] = false;
+               sum--;
+               y--;
+            }
+         }
+      }
+   }
+
+   static List<Vector3Int> FindTreasureTilesForMonsters (bool[,] oceanTiles, MapGeneratorPreset preset, bool[,] availableTiles, List<Vector3Int> spawnedTreasuresSites) {
+      List<Vector3Int> spawnList = new List<Vector3Int>();
+      foreach (Vector3Int tileTreasure in spawnedTreasuresSites) {
+         int x = tileTreasure.x;
+         int y = tileTreasure.y;
+         int sum = 0;
+
+         // Move right
+         x++;
+         while (x < preset.mapSize.x && ((oceanTiles[x, y] && availableTiles[x, y]) || sum == 0)) {
+            if (oceanTiles[x, y] && availableTiles[x, y]) {
+               sum++;
+            }
+            x++;
+            if (sum >= _maxPreferredDistanceTreasureToMonster) {
+               break;
+            }
+         }
+
+         if (sum <= _maxPreferredDistanceTreasureToMonster) {
+            sum--;
+            x--;
+            while (sum >= 0) {
+               spawnList.Add(new Vector3Int(x, y, 0));
+               sum--;
+               x--;
+            }
+         }
+
+         // Move left
+         x = tileTreasure.x;
+         y = tileTreasure.y;
+         sum = 0;
+         x--;
+         while (x >= 0 && ((oceanTiles[x, y] && availableTiles[x, y]) || sum == 0)) {
+            if (oceanTiles[x, y] && availableTiles[x, y]) {
+               sum++;
+            }
+            x--;
+            if (sum >= _maxPreferredDistanceTreasureToMonster) {
+               break;
+            }
+         }
+
+         if (sum <= _maxPreferredDistanceTreasureToMonster) {
+            sum--;
+            x++;
+            while (sum >= 0) {
+               spawnList.Add(new Vector3Int(x, y, 0));
+               sum--;
+               x++;
+            }
+         }
+
+         // Move up
+         x = tileTreasure.x;
+         y = tileTreasure.y;
+         sum = 0;
+         y++;
+         while (y < preset.mapSize.y && ((oceanTiles[x, y] && availableTiles[x, y]) || sum == 0)) {
+            if (oceanTiles[x, y] && availableTiles[x, y]) {
+               sum++;
+            }
+            y++;
+            if (sum >= _maxPreferredDistanceTreasureToMonster) {
+               break;
+            }
+         }
+
+         if (sum <= _maxPreferredDistanceTreasureToMonster) {
+            sum--;
+            y--;
+            while (sum >= 0) {
+               spawnList.Add(new Vector3Int(x, y, 0));
+               sum--;
+               y--;
+            }
+         }
+
+         // Move down
+         x = tileTreasure.x;
+         y = tileTreasure.y;
+         sum = 0;
+         y--;
+         while (y >= 0 && ((oceanTiles[x, y] && availableTiles[x, y]) || sum == 0)) {
+            if (oceanTiles[x, y] && availableTiles[x, y]) {
+               sum++;
+            }
+            y--;
+            if (sum >= _maxPreferredDistanceTreasureToMonster) {
+               break;
+            }
+         }
+
+         if (sum <= _maxPreferredDistanceTreasureToMonster) {
+            sum--;
+            y++;
+            while (sum >= 0) {
+               spawnList.Add(new Vector3Int(x, y, 0));
+               sum--;
+               y++;
+            }
+         }
+      }
+      return spawnList;
+   }
+
    /// <summary>
    /// set tiles on preset
    /// </summary>
@@ -1059,18 +1559,19 @@ public static class RandomMapCreator {
 #if UNITY_EDITOR
 
       // Time improved due to data locality and not searching every time through all paths
-      if (_assetsPath == null) {
-         _assetsPath = new List<string>();
-         foreach (string assetPath in AssetDatabase.GetAllAssetPaths()) {
-            // We only care about our map assets
-            if (assetPath.StartsWith(_tilesPath)) {
-               _assetsPath.Add(assetPath);
-            }
-         }
-      }
+      //if (_assetsPath == null) {
+      //   _assetsPath = new List<string>();
+      //   foreach (string assetPath in AssetDatabase.GetAllAssetPaths()) {
+      //      D.log(assetPath);
+      //      // We only care about our map assets
+      //      if (assetPath.StartsWith(_tilesPath)) {
+      //         _assetsPath.Add(assetPath);
+      //      }
+      //   }
+      //}
 
       foreach (var layer in preset.layers) {
-
+         
          SetTileFromProject(ref layer.tile, layer.biome, layer.tilePrefix, layer.tileSuffix, _assetsPath);
 
          foreach (var border in layer.borders) {
@@ -1122,33 +1623,35 @@ public static class RandomMapCreator {
          return;
       }
 
-      D.log("Tile: " + tileToSet.name + "; generated: " + tilePrefix + biomeName + tileSuffix);
+      //D.log("Tile: " + tileToSet.name + "; generated: " + tilePrefix + biomeName + tileSuffix);
 
       // Iterate over paths that we are only interested in (map related)
-      foreach (string assetPath in assetsPath) {
-         // Get the tile
-         Tile tile = AssetDatabase.LoadAssetAtPath<Tile>(assetPath);
-         if (tile) {
-            // check tile name
-            if (!biomeIsEmpty) {
-               if (!tile.name.Contains(biomeName)) {
-                  continue;
-               }
-            }
-            if (!tilePrefixIsEmpty) {
-               if (!tile.name.StartsWith(tilePrefix)) {
-                  continue;
-               }
-            }
-            if (!tileSuffixIsEmpty) {
-               if (!tile.name.EndsWith(tileSuffix)) {
-                  continue;
-               }
-            }
+      string assetPath = _tilesPath + tilePrefix + biomeName + tileSuffix + ".asset";
+      // Get the tile
+      Tile tile = AssetDatabase.LoadAssetAtPath<Tile>(assetPath);
+      D.log(assetPath);
 
-            tileToSet = tile;
-            return;
+      if (tile) {
+
+         // check tile name
+         if (!biomeIsEmpty) {
+            if (!tile.name.Contains(biomeName)) {
+               return;
+            }
          }
+         if (!tilePrefixIsEmpty) {
+            if (!tile.name.StartsWith(tilePrefix)) {
+               return;
+            }
+         }
+         if (!tileSuffixIsEmpty) {
+            if (!tile.name.EndsWith(tileSuffix)) {
+               return;
+            }
+         }
+
+         tileToSet = tile;
+         return;
       }
 #endif
    }
@@ -1226,6 +1729,21 @@ public static class RandomMapCreator {
       }
    }
 
+   static void SetBorderAndLowLandList (MapGeneratorPreset preset, int i, Tilemap checkedTilemap, Tilemap setTilemap, bool[,] availableTiles, Node[,] grid, int lowestLandIndex, ref List<Vector3Int> lowLandList, ref List<Vector3Int> borderLandList) {
+      // Store result in list only for lowest land
+      if (i == lowestLandIndex) {
+         lowLandList = SetBorder(preset, i, checkedTilemap, setTilemap, availableTiles, grid);
+         borderLandList = lowLandList.ConvertAll(tile => new Vector3Int(tile.x, tile.y, tile.z));
+      }
+      // Substract higher tiles from stored list
+      else {
+         List<Vector3Int> list = SetBorder(preset, i, checkedTilemap, setTilemap, availableTiles, grid);
+         foreach (Vector3Int tile in list) {
+            lowLandList.Remove(tile);
+         }
+      }
+   }
+
    /// <summary>
    /// use the paramref name="checkedTilemap" to find the borders and set on paramref name="setTilemap" 
    /// </summary>
@@ -1233,7 +1751,9 @@ public static class RandomMapCreator {
    /// <param name="i">index</param>
    /// <param name="checkedTilemap">tilemap to check</param>
    /// <param name="setTilemap">tilemap to set</param>
-   static void SetBorder (MapGeneratorPreset preset, int i, Tilemap checkedTilemap, Tilemap setTilemap, bool[,] availableTiles, Node[,] grid) {
+   static List<Vector3Int> SetBorder (MapGeneratorPreset preset, int i, Tilemap checkedTilemap, Tilemap setTilemap, bool[,] availableTiles, Node[,] grid) {
+      List<Vector3Int> detectedBorders = new List<Vector3Int>();
+
       for (int x = 0; x < preset.mapSize.x; x++) {
          for (int y = 0; y < preset.mapSize.y; y++) {
             Vector3Int cellPos = new Vector3Int(x, y, 0);
@@ -1250,6 +1770,7 @@ public static class RandomMapCreator {
                         if (CheckExistingBorderDirections(checkedTilemap, x, y, false, false, false, false)) {
                            setTilemap.SetTile(cellPos, border.borderTile);
                            availableTiles[x, y] = false;
+                           detectedBorders.Add(new Vector3Int(x, y, 0));
 
                            if (grid[x, y] != null && preset.layers[i].name == preset.river.layerToPlaceRiver) {
                               grid[x, y].nodeType = NodeType.Wall;
@@ -1263,6 +1784,7 @@ public static class RandomMapCreator {
                         if (CheckExistingBorderDirections(checkedTilemap, x, y, false, false, false, true)) {
                            setTilemap.SetTile(cellPos, border.borderTile);
                            availableTiles[x, y] = false;
+                           detectedBorders.Add(new Vector3Int(x, y, 0));
                            if (grid[x, y] != null && preset.layers[i].name == preset.river.layerToPlaceRiver) {
                               grid[x, y].nodeType = NodeType.Wall;
                            }
@@ -1273,6 +1795,7 @@ public static class RandomMapCreator {
                         if (CheckExistingBorderDirections(checkedTilemap, x, y, false, false, true, false)) {
                            setTilemap.SetTile(cellPos, border.borderTile);
                            availableTiles[x, y] = false;
+                           detectedBorders.Add(new Vector3Int(x, y, 0));
                            if (grid[x, y] != null && preset.layers[i].name == preset.river.layerToPlaceRiver) {
                               grid[x, y].nodeType = NodeType.Wall;
                            }
@@ -1283,6 +1806,7 @@ public static class RandomMapCreator {
                         if (CheckExistingBorderDirections(checkedTilemap, x, y, true, false, false, false)) {
                            setTilemap.SetTile(cellPos, border.borderTile);
                            availableTiles[x, y] = false;
+                           detectedBorders.Add(new Vector3Int(x, y, 0));
                            if (grid[x, y] != null && preset.layers[i].name == preset.river.layerToPlaceRiver) {
                               grid[x, y].nodeType = NodeType.Wall;
                            }
@@ -1293,6 +1817,7 @@ public static class RandomMapCreator {
                         if (CheckExistingBorderDirections(checkedTilemap, x, y, false, true, false, false)) {
                            setTilemap.SetTile(cellPos, border.borderTile);
                            availableTiles[x, y] = false;
+                           detectedBorders.Add(new Vector3Int(x, y, 0));
                            if (grid[x, y] != null && preset.layers[i].name == preset.river.layerToPlaceRiver) {
                               grid[x, y].nodeType = NodeType.Wall;
                            }
@@ -1304,6 +1829,7 @@ public static class RandomMapCreator {
                         if (CheckExistingBorderDirections(checkedTilemap, x, y, true, true, false, false)) {
                            setTilemap.SetTile(cellPos, border.borderTile);
                            availableTiles[x, y] = false;
+                           detectedBorders.Add(new Vector3Int(x, y, 0));
                            if (grid[x, y] != null && preset.layers[i].name == preset.river.layerToPlaceRiver) {
                               grid[x, y].nodeType = NodeType.Wall;
                            }
@@ -1314,6 +1840,7 @@ public static class RandomMapCreator {
                         if (CheckExistingBorderDirections(checkedTilemap, x, y, false, false, true, true)) {
                            setTilemap.SetTile(cellPos, border.borderTile);
                            availableTiles[x, y] = false;
+                           detectedBorders.Add(new Vector3Int(x, y, 0));
                            if (grid[x, y] != null && preset.layers[i].name == preset.river.layerToPlaceRiver) {
                               grid[x, y].nodeType = NodeType.Wall;
                            }
@@ -1324,6 +1851,7 @@ public static class RandomMapCreator {
                         if (CheckExistingBorderDirections(checkedTilemap, x, y, true, false, false, true)) {
                            setTilemap.SetTile(cellPos, border.borderTile);
                            availableTiles[x, y] = false;
+                           detectedBorders.Add(new Vector3Int(x, y, 0));
                            if (grid[x, y] != null && preset.layers[i].name == preset.river.layerToPlaceRiver) {
                               grid[x, y].nodeType = NodeType.Wall;
                            }
@@ -1334,6 +1862,7 @@ public static class RandomMapCreator {
                         if (CheckExistingBorderDirections(checkedTilemap, x, y, true, false, true, false)) {
                            setTilemap.SetTile(cellPos, border.borderTile);
                            availableTiles[x, y] = false;
+                           detectedBorders.Add(new Vector3Int(x, y, 0));
                            if (grid[x, y] != null && preset.layers[i].name == preset.river.layerToPlaceRiver) {
                               grid[x, y].nodeType = NodeType.Wall;
                            }
@@ -1344,6 +1873,7 @@ public static class RandomMapCreator {
                         if (CheckExistingBorderDirections(checkedTilemap, x, y, false, true, false, true)) {
                            setTilemap.SetTile(cellPos, border.borderTile);
                            availableTiles[x, y] = false;
+                           detectedBorders.Add(new Vector3Int(x, y, 0));
                            if (grid[x, y] != null && preset.layers[i].name == preset.river.layerToPlaceRiver) {
                               grid[x, y].nodeType = NodeType.Wall;
                            }
@@ -1354,6 +1884,7 @@ public static class RandomMapCreator {
                         if (CheckExistingBorderDirections(checkedTilemap, x, y, false, true, true, false)) {
                            setTilemap.SetTile(cellPos, border.borderTile);
                            availableTiles[x, y] = false;
+                           detectedBorders.Add(new Vector3Int(x, y, 0));
                            if (grid[x, y] != null && preset.layers[i].name == preset.river.layerToPlaceRiver) {
                               grid[x, y].nodeType = NodeType.Wall;
                            }
@@ -1365,6 +1896,7 @@ public static class RandomMapCreator {
                         if (CheckExistingBorderDirections(checkedTilemap, x, y, true, true, false, true)) {
                            setTilemap.SetTile(cellPos, border.borderTile);
                            availableTiles[x, y] = false;
+                           detectedBorders.Add(new Vector3Int(x, y, 0));
                            if (grid[x, y] != null && preset.layers[i].name == preset.river.layerToPlaceRiver) {
                               grid[x, y].nodeType = NodeType.LandBorder_N;
                            }
@@ -1375,6 +1907,7 @@ public static class RandomMapCreator {
                         if (CheckExistingBorderDirections(checkedTilemap, x, y, true, true, true, false)) {
                            setTilemap.SetTile(cellPos, border.borderTile);
                            availableTiles[x, y] = false;
+                           detectedBorders.Add(new Vector3Int(x, y, 0));
                            if (grid[x, y] != null && preset.layers[i].name == preset.river.layerToPlaceRiver) {
                               grid[x, y].nodeType = NodeType.LandBorder_S;
                            }
@@ -1385,6 +1918,7 @@ public static class RandomMapCreator {
                         if (CheckExistingBorderDirections(checkedTilemap, x, y, false, true, true, true)) {
                            setTilemap.SetTile(cellPos, border.borderTile);
                            availableTiles[x, y] = false;
+                           detectedBorders.Add(new Vector3Int(x, y, 0));
                            if (grid[x, y] != null && preset.layers[i].name == preset.river.layerToPlaceRiver) {
                               grid[x, y].nodeType = NodeType.LandBorder_E;
                            }
@@ -1395,6 +1929,7 @@ public static class RandomMapCreator {
                         if (CheckExistingBorderDirections(checkedTilemap, x, y, true, false, true, true)) {
                            setTilemap.SetTile(cellPos, border.borderTile);
                            availableTiles[x, y] = false;
+                           detectedBorders.Add(new Vector3Int(x, y, 0));
                            if (grid[x, y] != null && preset.layers[i].name == preset.river.layerToPlaceRiver) {
                               grid[x, y].nodeType = NodeType.LandBorder_W;
                            }
@@ -1405,6 +1940,7 @@ public static class RandomMapCreator {
             }
          }
       }
+      return detectedBorders;
    }
 
    /// <summary>
@@ -1415,7 +1951,7 @@ public static class RandomMapCreator {
    /// <param name="gridLayers">grid object</param>
    /// <param name="i">i</param>
    /// <param name="availableTiles">tiles to place objects</param>
-   static void SetRiver (MapGeneratorPreset preset, Node[,] grid, GameObject gridLayers, int i, bool[,] availableTiles) {
+   static List<Vector3Int> SetRiver (MapGeneratorPreset preset, Node[,] grid, GameObject gridLayers, int i, bool[,] availableTiles) {
       if (preset.river.numberOfAttempts > 0 && preset.layers[i].name == preset.river.layerToPlaceRiver) {
          GameObject riverLayerObject = new GameObject(preset.layers[i].name + " River");
          riverLayerObject.transform.position = new Vector3(riverLayerObject.transform.position.x, riverLayerObject.transform.position.y, .0001f);
@@ -1452,8 +1988,10 @@ public static class RandomMapCreator {
 
             }
          }
-         SetRiverDirection(preset, i, riverTilemap, grid);
+         List<Vector3Int> borderTiles = SetRiverDirection(preset, i, riverTilemap, grid);
+         return borderTiles;
       }
+      return new List<Vector3Int>();
    }
 
    /// <summary>
@@ -1463,7 +2001,8 @@ public static class RandomMapCreator {
    /// <param name="i">i</param>
    /// <param name="setTilemap">tilemap</param>
    /// <param name="grid">a* grid</param>
-   static void SetRiverDirection (MapGeneratorPreset preset, int i, Tilemap setTilemap, Node[,] grid) {
+   static List<Vector3Int> SetRiverDirection (MapGeneratorPreset preset, int i, Tilemap setTilemap, Node[,] grid) {
+      List<Vector3Int> borderTiles = new List<Vector3Int>();
       for (int x = 0; x < preset.mapSize.x; x++) {
          for (int y = 0; y < preset.mapSize.y; y++) {
             Vector3Int cellPos = new Vector3Int(x, y, 0);
@@ -1478,18 +2017,21 @@ public static class RandomMapCreator {
                         //                                                  E      W     N     S
                         if (CheckExistingBorderDirections(setTilemap, x, y, true, false, false, true) && grid[x, y].nodeType == NodeType.Wall) {
                            setTilemap.SetTile(cellPos, riverBorder.borderTile);
+                           borderTiles.Add(cellPos);
                         }
                         break;
 
                      case RiverDirection.EBorder_W:
                         if (grid[x, y].nodeType == NodeType.LandBorder_E) {
                            setTilemap.SetTile(cellPos, riverBorder.borderTile);
+                           borderTiles.Add(cellPos);
                         }
                         break;
 
                      case RiverDirection.E_WBorder:
                         if (grid[x, y].nodeType == NodeType.LandBorder_W) {
                            setTilemap.SetTile(cellPos, riverBorder.borderTile);
+                           borderTiles.Add(cellPos);
                         }
                         break;
 
@@ -1497,18 +2039,21 @@ public static class RandomMapCreator {
                         if (CheckExistingBorderDirections(setTilemap, x, y, true, true, false, false) && grid[x, y].nodeType == NodeType.Wall) //
                         {
                            setTilemap.SetTile(cellPos, riverBorder.borderTile);
+                           borderTiles.Add(cellPos);
                         }
                         break;
 
                      case RiverDirection.S_W:
                         if (CheckExistingBorderDirections(setTilemap, x, y, false, true, false, true) && grid[x, y].nodeType == NodeType.Wall) {
                            setTilemap.SetTile(cellPos, riverBorder.borderTile);
+                           borderTiles.Add(cellPos);
                         }
                         break;
 
                      case RiverDirection.NBorder_S:
                         if (grid[x, y].nodeType == NodeType.LandBorder_N) {
                            setTilemap.SetTile(cellPos, riverBorder.borderTile);
+                           borderTiles.Add(cellPos);
 
                         }
                         break;
@@ -1516,6 +2061,7 @@ public static class RandomMapCreator {
                      case RiverDirection.N_SBorder:
                         if (grid[x, y].nodeType == NodeType.LandBorder_S) {
                            setTilemap.SetTile(cellPos, riverBorder.borderTile);
+                           borderTiles.Add(cellPos);
                         }
                         break;
 
@@ -1523,19 +2069,21 @@ public static class RandomMapCreator {
                         if (CheckExistingBorderDirections(setTilemap, x, y, false, false, true, true) && grid[x, y].nodeType == NodeType.Wall) // && grid[x, y].nodeType == NodeType.Land
                         {
                            setTilemap.SetTile(cellPos, riverBorder.borderTile);
-
+                           borderTiles.Add(cellPos);
                         }
                         break;
 
                      case RiverDirection.N_W:
                         if (CheckExistingBorderDirections(setTilemap, x, y, false, true, true, false) && grid[x, y].nodeType == NodeType.Wall) {
                            setTilemap.SetTile(cellPos, riverBorder.borderTile);
+                           borderTiles.Add(cellPos);
                         }
                         break;
 
                      case RiverDirection.N_E:
                         if (CheckExistingBorderDirections(setTilemap, x, y, true, false, true, false) && grid[x, y].nodeType == NodeType.Wall) {
                            setTilemap.SetTile(cellPos, riverBorder.borderTile);
+                           borderTiles.Add(cellPos);
                         }
                         break;
 
@@ -1543,24 +2091,28 @@ public static class RandomMapCreator {
 
                         if (CheckExistingBorderDirections(setTilemap, x, y, true, false, true, true) && grid[x, y].nodeType == NodeType.Wall) {
                            setTilemap.SetTile(cellPos, riverBorder.borderTile);
+                           borderTiles.Add(cellPos);
                         }
                         break;
 
                      case RiverDirection.N_S_W:
                         if (CheckExistingBorderDirections(setTilemap, x, y, false, true, true, true) && grid[x, y].nodeType == NodeType.Wall) {
                            setTilemap.SetTile(cellPos, riverBorder.borderTile);
+                           borderTiles.Add(cellPos);
                         }
                         break;
 
                      case RiverDirection.E_S_W:
                         if (CheckExistingBorderDirections(setTilemap, x, y, true, true, false, true) && grid[x, y].nodeType == NodeType.Wall) {
                            setTilemap.SetTile(cellPos, riverBorder.borderTile);
+                           borderTiles.Add(cellPos);
                         }
                         break;
 
                      case RiverDirection.N_E_W:
                         if (CheckExistingBorderDirections(setTilemap, x, y, true, true, true, false) && grid[x, y].nodeType == NodeType.Wall) {
                            setTilemap.SetTile(cellPos, riverBorder.borderTile);
+                           borderTiles.Add(cellPos);
                         }
                         break;
 
@@ -1568,6 +2120,7 @@ public static class RandomMapCreator {
 
                         if (CheckExistingBorderDirections(setTilemap, x, y, true, true, true, true) && grid[x, y].nodeType == NodeType.Wall) {
                            setTilemap.SetTile(cellPos, riverBorder.borderTile);
+                           borderTiles.Add(cellPos);
                         }
                         break;
                   }
@@ -1575,6 +2128,7 @@ public static class RandomMapCreator {
             }
          }
       }
+      return borderTiles;
    }
 
    /// <summary>
@@ -1741,10 +2295,10 @@ public static class RandomMapCreator {
             if (border.borderDirection == borderType) {
                Vector3Int cellPos = new Vector3Int(x, y, 0);
 
-               var tileSprite = borderTilemap.GetSprite(cellPos);
+               TileBase tile = borderTilemap.GetTile(cellPos);
 
-               if (tileSprite) {
-                  if (tileSprite == border.borderTile.sprite) {
+               if (tile) {
+                  if (tile == border.borderTile) {
                      return true;
                   }
                }
@@ -2083,7 +2637,7 @@ public static class RandomMapCreator {
 
    // Relative path for tiles in Unity project
 #pragma warning disable
-   static private string _tilesPath = "Assets/TileSets/";
+   static private string _tilesPath = "Assets/TileSets/animations/TileAssets/";
 #pragma warning restore
 
    // List of generated maps in client game instance
@@ -2113,6 +2667,32 @@ public static class RandomMapCreator {
 
    // Minimum closed area size to create path to
    static int _minClosedPathSize = 50;
+
+   // Number of treasure sites that will be spawned on sea map
+   static int _treasureSitesToSpawn = 3;
+
+   // Minimum Manhattan distance, from treasure sites to spawn, which allows creating sites
+   static int _minDistanceToSpawnTreasureSites = 25;
+
+   // Minimum Manhattan distance between each spawned treasure site
+   static int _minDistanceBetweenEachTreasureSite = 10;
+
+   // Minimum distance in straight line to mark area as tight passage
+   static int _tightPassageMinDistance = 5;
+
+   // Maximum distance to use tile as preferred location when spawning sea monster near treasure site
+   static int _maxPreferredDistanceTreasureToMonster = 10;
+
+   // Min/Max number of sea monsters to spawn
+   static int _minSeaMonstersCount = 3;
+   static int _maxSeaMonstersCount = 6;
+
+   // Min/Max number of sea monsters to spawn near treasure sites
+   static int _minSeaMonstersNearTreasureCount = 0;
+   static int _maxSeaMonstersNearTreasureCount = 3;
+
+   // Minimum distance between sea monsters
+   static int _minDistanceBetweenSeaMonster = 8;
 
    #endregion
 }

@@ -4,7 +4,7 @@ using System.IO;
 using System.Xml.Serialization;
 using System;
 
-[XmlRoot("NPCData")]
+[XmlRoot("NPCData"), Serializable]
 public class NPCData
 {
    #region Public Variables
@@ -59,6 +59,9 @@ public class NPCData
    // Gets set to true when the NPC has the Goodbye dialogue option
    public bool hasGoodbyeDialogue = true;
 
+   // The last used quest id, used when creating new quests
+   public int lastUsedQuestId;
+
    // The list of quests
    [XmlArray("Quests"), XmlArrayItem("Quest")]
    public List<Quest> quests;
@@ -77,7 +80,7 @@ public class NPCData
       string greetingTextCasualFriend, string greetingTextCloseFriend, string greetingTextBestFriend,
       string giftOfferNPCText, string giftLikedText, string giftNotLikedText, string name,
       Faction.Type faction, Specialty.Type specialty, bool hasTradeGossipDialogue, bool hasGoodbyeDialogue,
-      List<Quest> quests, List<NPCGiftData> gifts) {
+      int lastUsedQuestId, List<Quest> quests, List<NPCGiftData> gifts) {
       this.npcId = npcId;
       this.greetingTextStranger = greetingTextStranger;
       this.greetingTextAcquaintance = greetingTextAcquaintance;
@@ -92,6 +95,7 @@ public class NPCData
       this.specialty = specialty;
       this.hasTradeGossipDialogue = hasTradeGossipDialogue;
       this.hasGoodbyeDialogue = hasGoodbyeDialogue;
+      this.lastUsedQuestId = lastUsedQuestId;
       this.quests = quests;
       this.gifts = gifts;
    }

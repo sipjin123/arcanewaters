@@ -3,6 +3,7 @@ using System.Collections;
 using System.Xml.Serialization;
 using System;
 
+[Serializable]
 public class QuestRewardItem : QuestReward
 {
    #region Public Variables

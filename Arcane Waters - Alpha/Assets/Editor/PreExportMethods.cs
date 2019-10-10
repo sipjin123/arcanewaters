@@ -25,6 +25,7 @@ public static class PreExportMethods {
       SetAmazonVPC();
       ExcludeMySQL();
       StripServerCode();
+      DeleteNPCDataXML();
 
       Debug.Log("Done executing client preExport methods");
    }
@@ -228,6 +229,21 @@ public static class PreExportMethods {
 
    public static bool containsMethodToStrip (string line) {
       return line.Contains("[Command]") || line.Contains("[Server]") || line.Contains("[ServerOnly]");
+   }
+
+   public static void DeleteNPCDataXML () {
+      // Look through all of our stuff in the Assets folder
+      foreach (string assetPath in AssetDatabase.GetAllAssetPaths()) {
+         // We only care about files in the NPC Data folder
+         if (assetPath.StartsWith("Assets/Data/NPC/")) {
+            // Delete the file
+            AssetDatabase.DeleteAsset(assetPath);
+            Debug.Log("Deleted the NPC XML file: " + assetPath);
+         }
+      }
+
+      // Refresh the asset database because we changed the asset files
+      AssetDatabase.Refresh();
    }
 
    #region Private Variables
