@@ -10,6 +10,9 @@ public class ItemTypeTemplate : MonoBehaviour {
    // Displays the type of item
    public Text itemTypeText;
 
+   // Displays the index of item
+   public Text itemIndexText;
+
    // Button for selecting the item
    public Button selectButton;
 

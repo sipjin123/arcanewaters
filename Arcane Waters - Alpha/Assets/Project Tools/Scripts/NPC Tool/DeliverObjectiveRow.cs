@@ -8,18 +8,33 @@ public class DeliverObjectiveRow : MonoBehaviour
    #region Public Variables
 
    // The components displaying the parameters
-   public InputField itemCategory;
-   public InputField itemTypeId;
+   public Text itemCategory;
+   public Text itemTypeId;
    public InputField count;
+   public Text itemCategoryName;
+   public Text itemTypeName;
+
+   // Button for changing selection data after clicking category
+   public Button updateCategoryButton;
+
+   // Button for changing selection data after clicking type
+   public Button updateTypeButton;
 
    // The button for updating data
    public Button updateButton;
+
+   // The button for deleting data
+   public Button deleteButton;
 
    #endregion
 
    public void setRowForDeliverObjective (QuestObjectiveDeliver deliverObjective) {
       itemCategory.text = ((int) deliverObjective.category).ToString();
       itemTypeId.text = deliverObjective.itemTypeId.ToString();
+
+      itemCategoryName.text = deliverObjective.category.ToString();
+      itemTypeName.text = Util.getItemName(deliverObjective.category, deliverObjective.itemTypeId);
+
       count.text = deliverObjective.count.ToString();
    }
 
@@ -29,6 +44,10 @@ public class DeliverObjectiveRow : MonoBehaviour
          (Item.Category) int.Parse(itemCategory.text), int.Parse(itemTypeId.text), int.Parse(count.text));
 
       return deliverObjective;
+   }
+
+   public void destroyRow () {
+      Destroy(gameObject, .25f);
    }
 
    #region Private Variables

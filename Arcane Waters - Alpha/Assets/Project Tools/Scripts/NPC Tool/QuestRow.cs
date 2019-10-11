@@ -19,6 +19,12 @@ public class QuestRow : MonoBehaviour
    // The prefab we use for creating quest node rows
    public QuestNodeRow questNodePrefab;
 
+   // The reference to the current quest node being modified
+   public QuestNodeRow currentQuestNode;
+
+   // Reference to the npc edition screen
+   public NPCEditionScreen npcEditionScreen;
+
    #endregion
 
    public void setRowForQuest (Quest quest) {
@@ -70,7 +76,9 @@ public class QuestRow : MonoBehaviour
          foreach (QuestNode node in nodeList) {
             // Create a new row
             QuestNodeRow row = Instantiate(questNodePrefab, rowsContainer.transform, false);
+            row.questRow = this;
             row.transform.SetParent(rowsContainer.transform, false);
+            row.npcEditionScreen = npcEditionScreen;
             row.setRowForQuestNode(node);
          }
       } else {
@@ -87,7 +95,9 @@ public class QuestRow : MonoBehaviour
 
       // Create a new node row
       QuestNodeRow row = Instantiate(questNodePrefab, rowsContainer.transform, false);
+      row.questRow = this;
       row.transform.SetParent(rowsContainer.transform, false);
+      row.npcEditionScreen = npcEditionScreen;
       row.setRowForQuestNode(node);
    }
 

@@ -8,18 +8,33 @@ public class ItemRewardRow : MonoBehaviour
    #region Public Variables
 
    // The components displaying the parameters
-   public InputField itemCategory;
-   public InputField itemTypeId;
+   public Text itemCategory;
+   public Text itemTypeId;
    public InputField count;
+   public Text itemCategoryName;
+   public Text itemTypeName;
 
-   // Button for updating data
+   // Button for changing selection data after clicking category
+   public Button updateCategoryButton;
+
+   // Button for changing selection data after clicking type
+   public Button updateTypeButton;
+
+   // Button for updating data upon clicking the type
    public Button updateButton;
+
+   // Button for deleting selected data 
+   public Button deleteButton;
 
    #endregion
 
    public void setRowForItemReward (QuestRewardItem itemReward) {
       itemCategory.text = ((int) itemReward.category).ToString();
       itemTypeId.text = itemReward.itemTypeId.ToString();
+
+      itemCategoryName.text = itemReward.category.ToString();
+      itemTypeName.text = Util.getItemName(itemReward.category, itemReward.itemTypeId);
+
       count.text = itemReward.count.ToString();
    }
 
@@ -29,6 +44,17 @@ public class ItemRewardRow : MonoBehaviour
          (Item.Category) int.Parse(itemCategory.text), int.Parse(itemTypeId.text), int.Parse(count.text));
 
       return itemReward;
+   }
+
+   public Item getItem() {
+      return new Item {
+         category = (Item.Category)int.Parse(itemCategory.text),
+         itemTypeId = int.Parse(itemTypeId.text)
+      };
+   }
+
+   public void destroyRow() {
+      Destroy(gameObject, .25f);
    }
 
    #region Private Variables

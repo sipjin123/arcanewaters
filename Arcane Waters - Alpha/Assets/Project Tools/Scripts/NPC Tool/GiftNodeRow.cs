@@ -17,10 +17,19 @@ public class GiftNodeRow : MonoBehaviour
    public Button createRewardButton;
 
    // Data cache for gifts
-   public NPCGiftData cachedGiftData;
+   public NPCGiftData cachedGiftData = new NPCGiftData();
 
    // Cache List of gifts
    public List<NPCGiftData> cachedGiftList;
+
+   // Reference to the npc edition screen
+   public NPCEditionScreen npcEditionScreen;
+
+   // Reference to the item being modified
+   public ItemRewardRow currentItemModifying;
+
+   // Cache List of item rows
+   public List<ItemRewardRow> cachedItemRowsList;
 
    #endregion
 
@@ -29,6 +38,7 @@ public class GiftNodeRow : MonoBehaviour
       itemRewardRowsContainer.DestroyChildren();
 
       cachedGiftList = new List<NPCGiftData>();
+      cachedItemRowsList = new List<ItemRewardRow>();
       // Create a row for each deliver objective
       if (node != null) {
          foreach (NPCGiftData itemReward in node) {
@@ -40,8 +50,23 @@ public class GiftNodeRow : MonoBehaviour
             questReward.itemTypeId = itemReward.itemTypeId;
             questReward.category = itemReward.itemCategory;
 
+            row.updateCategoryButton.onClick.AddListener(() => {
+               npcEditionScreen.toggleItemSelectionPanel(NPCEditionScreen.ItemSelectionType.Gift);
+               currentItemModifying = row;
+            });
+
+            row.updateTypeButton.onClick.AddListener(() => {
+               row.updateCategoryButton.onClick.Invoke();
+            });
+
+            row.deleteButton.onClick.AddListener(() => {
+               cachedItemRowsList.Remove(row);
+               row.destroyRow();
+            });
+
             row.setRowForItemReward(questReward);
             cachedGiftList.Add(itemReward);
+            cachedItemRowsList.Add(row);
          }
       }
 
@@ -52,8 +77,20 @@ public class GiftNodeRow : MonoBehaviour
       NPCGiftData newGiftData = new NPCGiftData();
       ItemRewardRow row = Instantiate(itemRewardPrefab, itemRewardRowsContainer.transform, false);
       row.transform.SetParent(itemRewardRowsContainer.transform, false);
+      row.updateCategoryButton.onClick.AddListener(() => {
+         npcEditionScreen.toggleItemSelectionPanel(NPCEditionScreen.ItemSelectionType.Gift);
+         currentItemModifying = row;
+      });
+      row.updateTypeButton.onClick.AddListener(() => {
+         row.updateCategoryButton.onClick.Invoke();
+      });
+      row.deleteButton.onClick.AddListener(() => {
+         cachedItemRowsList.Remove(row);
+         row.destroyRow();
+      });
 
       cachedGiftList.Add(newGiftData);
+      cachedItemRowsList.Add(row);
 
       row.updateButton.onClick.AddListener(() => updateRewardButtonClicked(row, newGiftData));
    }

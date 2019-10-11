@@ -68,6 +68,9 @@ public class SeaMonsterEntity : SeaEntity
    // The limit of the overlap collider check to avoid too much checking
    public const int MAX_COLLISION_COUNT = 40;
 
+   // Holds the corpse object
+   public GameObject corpseHolder;
+
    // Seamonster Animation
    public enum SeaMonsterAnimState
    {
@@ -160,11 +163,15 @@ public class SeaMonsterEntity : SeaEntity
       base.Update();
 
       // If we're dead and have finished sinking, remove the ship
-      if (isServer && isDead() && spritesContainer.transform.localPosition.y < -.25f) {
-         InstanceManager.self.removeEntityFromInstance(this);
+      if (seaMonsterData.roleType != RoleType.Minion) {
+         if (isServer && isDead() && spritesContainer.transform.localPosition.y < -.25f) {
+            InstanceManager.self.removeEntityFromInstance(this);
 
-         // Destroy the object
-         NetworkServer.Destroy(this.gameObject);
+            // Destroy the object
+            NetworkServer.Destroy(this.gameObject);
+         }
+      } else {
+
       }
 
       // Alters the simple animation data
@@ -195,7 +202,7 @@ public class SeaMonsterEntity : SeaEntity
       base.FixedUpdate();
 
       // Only the server updates waypoints and movement forces
-      if (!isServer || isDead()) {
+      if (!isServer || (isDead() && seaMonsterData.roleType != RoleType.Minion)) {
          return;
       }
 

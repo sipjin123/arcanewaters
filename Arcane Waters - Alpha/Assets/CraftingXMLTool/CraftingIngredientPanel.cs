@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System;
+using System.Linq;
 
 public class CraftingIngredientPanel : MonoBehaviour {
    #region Public Variables
@@ -105,7 +106,7 @@ public class CraftingIngredientPanel : MonoBehaviour {
       updateRootTemplate();
    }
 
-   private void updateMainItemDisplay() {
+   public void updateMainItemDisplay() {
       resultItemCategoryDisplay.text = selectedCategory.ToString();
       resultItemTypeDisplay.text = Util.getItemName(selectedCategory, selectedTypeID).ToString();
       resultItemTypeInt = selectedTypeID;
@@ -127,6 +128,7 @@ public class CraftingIngredientPanel : MonoBehaviour {
          GameObject template = Instantiate(categoryButtonsPrefab, categoryButtonContainer);
          ItemCategoryTemplate categoryTemp = template.GetComponent<ItemCategoryTemplate>();
          categoryTemp.itemCategoryText.text = category.ToString();
+         categoryTemp.itemIndexText.text = ((int)category).ToString();
          categoryTemp.itemCategory = category;
          categoryTemp.selectButton.onClick.AddListener(() => {
             selectedCategory = category;
@@ -142,16 +144,23 @@ public class CraftingIngredientPanel : MonoBehaviour {
       Type itemType = Util.getItemType(selectedCategory);
       typeButtonContainer.gameObject.DestroyChildren();
 
+      Dictionary<int,string> itemNameList = new Dictionary<int,string>();
       if (itemType != null) {
          foreach (object item in Enum.GetValues(itemType)) {
+            int newVal = (int) item;
+            itemNameList.Add(newVal, item.ToString());
+         }
+
+         var sortedList = itemNameList.OrderBy(r => r.Value);
+         foreach (var item in sortedList) {
             GameObject template = Instantiate(typeButtonsPrefab, typeButtonContainer);
             ItemTypeTemplate itemTemp = template.GetComponent<ItemTypeTemplate>();
-            itemTemp.itemTypeText.text = item.ToString();
+            itemTemp.itemTypeText.text = item.Value.ToString();
+            itemTemp.itemIndexText.text = "" + item.Key;
             itemTemp.selectButton.onClick.AddListener(() => {
-               selectedTypeID = (int) item;
+               selectedTypeID = (int) item.Key;
+               confirmSelectionButton.onClick.Invoke();
             });
-
-            template.SetActive(true);
          }
       }
    }

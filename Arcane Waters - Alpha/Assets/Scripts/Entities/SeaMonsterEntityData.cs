@@ -73,6 +73,9 @@ public class SeaMonsterEntityData : ScriptableObject {
    // Holds the sprite texture to be used for the ripples
    public Sprite defaultRippleSprite;
 
+   // Holds the sprite for the corpse of this monster
+   public Sprite corpseSprite;
+
    // Overrides the scale of the monster
    public float scaleOverride = 1;
 

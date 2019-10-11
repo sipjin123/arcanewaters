@@ -22,6 +22,12 @@ public class QuestNodeRow : MonoBehaviour
    // The prefab we use for creating deliver objectives
    public DeliverObjectiveRow deliverObjectivePrefab;
 
+   // The current deliver objective roww being modified
+   public DeliverObjectiveRow currentDeliverObjective;
+
+   // List of item templates to be delivered
+   public List<DeliverObjectiveRow> deliveryItemList;
+
    // The prefab we use for creating item rewards
    public ItemRewardRow itemRewardPrefab;
 
@@ -33,18 +39,30 @@ public class QuestNodeRow : MonoBehaviour
 
    // The cached Quest Delivery Objective
    public QuestObjectiveDeliver cachedDeliverObjective = new QuestObjectiveDeliver();
-   
+
+   // The list of delivery quests being edited
+   public List<QuestObjectiveDeliver> cachedDeliverList;
+
    // The cached Reward
    public QuestRewardItem cachedReward = new QuestRewardItem();
 
    // The current quest node being edited
    public QuestNode cachedQuestNode;
 
-   // The list of delivery quests being edited
-   public List<QuestObjectiveDeliver> cachedDeliverList;
-
    // The list of reward being edited
    public List<QuestRewardItem> cachedRewardList;
+
+   // The list of reward row
+   public List<ItemRewardRow> cachedRewardRowList;
+
+   // Reference to the npc edition screen
+   public NPCEditionScreen npcEditionScreen;
+
+   // Reference to the item being modified
+   public ItemRewardRow currentItemModifying;
+
+   // Quest Row Reference
+   public QuestRow questRow;
 
    #endregion
 
@@ -74,10 +92,26 @@ public class QuestNodeRow : MonoBehaviour
       if (node.deliverObjectives != null) {
          foreach (QuestObjectiveDeliver deliverObjective in node.deliverObjectives) {
             // Create a new row
-            DeliverObjectiveRow row = Instantiate(deliverObjectivePrefab, deliverObjectivesRowsContainer.transform, false);
-            row.transform.SetParent(deliverObjectivesRowsContainer.transform, false);
-            row.setRowForDeliverObjective(deliverObjective);
+            DeliverObjectiveRow deliveryRow = Instantiate(deliverObjectivePrefab, deliverObjectivesRowsContainer.transform, false);
+            deliveryRow.transform.SetParent(deliverObjectivesRowsContainer.transform, false);
+            deliveryRow.setRowForDeliverObjective(deliverObjective);
 
+
+            deliveryRow.updateCategoryButton.onClick.AddListener(() => {
+               npcEditionScreen.toggleItemSelectionPanel(NPCEditionScreen.ItemSelectionType.Delivery);
+               currentDeliverObjective = deliveryRow;
+               questRow.currentQuestNode = this;
+               questRow.npcEditionScreen.currentQuestModified = questRow;
+            });
+            deliveryRow.deleteButton.onClick.AddListener(() => {
+               deliveryItemList.Remove(deliveryRow);
+               deliveryRow.destroyRow();
+            });
+            deliveryRow.updateTypeButton.onClick.AddListener(() => {
+               deliveryRow.updateCategoryButton.onClick.Invoke();
+            });
+
+            deliveryItemList.Add(deliveryRow);
             cachedDeliverList.Add(deliverObjective);
          }
       }
@@ -91,11 +125,24 @@ public class QuestNodeRow : MonoBehaviour
       if (node.itemRewards != null) {
          foreach (QuestRewardItem itemReward in node.itemRewards) {
             // Create a new row
-            ItemRewardRow row = Instantiate(itemRewardPrefab, itemRewardRowsContainer.transform, false);
-            row.transform.SetParent(itemRewardRowsContainer.transform, false);
-            row.setRowForItemReward(itemReward);
+            ItemRewardRow itemRewardRow = Instantiate(itemRewardPrefab, itemRewardRowsContainer.transform, false);
+            itemRewardRow.transform.SetParent(itemRewardRowsContainer.transform, false);
+            itemRewardRow.setRowForItemReward(itemReward);
+
+            itemRewardRow.updateCategoryButton.onClick.AddListener(() => {
+               npcEditionScreen.toggleItemSelectionPanel(NPCEditionScreen.ItemSelectionType.Reward);
+               currentItemModifying = itemRewardRow;
+               questRow.currentQuestNode = this;
+               questRow.npcEditionScreen.currentQuestModified = questRow;
+            });
+            itemRewardRow.updateTypeButton.onClick.AddListener(() => { itemRewardRow.updateCategoryButton.onClick.Invoke(); });
+            itemRewardRow.deleteButton.onClick.AddListener(() => {
+               cachedRewardRowList.Remove(itemRewardRow);
+               itemRewardRow.destroyRow();
+            });
 
             cachedRewardList.Add(itemReward);
+            cachedRewardRowList.Add(itemRewardRow);
          }
       }
       cachedQuestNode.itemRewards = cachedRewardList.ToArray();
@@ -106,12 +153,25 @@ public class QuestNodeRow : MonoBehaviour
 
    private void createRewardButtonClickedOn() {
       cachedReward = new QuestRewardItem();
-      ItemRewardRow row = Instantiate(itemRewardPrefab, itemRewardRowsContainer.transform, false);
-      row.transform.SetParent(itemRewardRowsContainer.transform, false);
+      ItemRewardRow itemRewardRow = Instantiate(itemRewardPrefab, itemRewardRowsContainer.transform, false);
+      itemRewardRow.transform.SetParent(itemRewardRowsContainer.transform, false);
 
-      row.setRowForItemReward(cachedReward);
+      itemRewardRow.updateCategoryButton.onClick.AddListener(() => {
+         npcEditionScreen.toggleItemSelectionPanel(NPCEditionScreen.ItemSelectionType.Reward);
+         currentItemModifying = itemRewardRow;
+         questRow.currentQuestNode = this;
+         questRow.npcEditionScreen.currentQuestModified = questRow;
+      });
+      itemRewardRow.updateTypeButton.onClick.AddListener(() => { itemRewardRow.updateCategoryButton.onClick.Invoke(); });
+      itemRewardRow.deleteButton.onClick.AddListener(() => {
+         cachedRewardRowList.Remove(itemRewardRow);
+         itemRewardRow.destroyRow();
+      });
 
-      row.updateButton.onClick.AddListener(() => updateRewardButtonClicked(row));
+      itemRewardRow.setRowForItemReward(cachedReward);
+      cachedRewardRowList.Add(itemRewardRow);
+
+      itemRewardRow.updateButton.onClick.AddListener(() => updateRewardButtonClicked(itemRewardRow));
    }
 
    private void updateRewardButtonClicked (ItemRewardRow row) {
@@ -125,12 +185,28 @@ public class QuestNodeRow : MonoBehaviour
 
    private void createDeliveryQuestButtonClickedOn () {
       cachedDeliverObjective = new QuestObjectiveDeliver();
-      DeliverObjectiveRow row = Instantiate(deliverObjectivePrefab, deliverObjectivesRowsContainer.transform, false);
-      row.transform.SetParent(deliverObjectivesRowsContainer.transform, false);
+      DeliverObjectiveRow deliveryRow = Instantiate(deliverObjectivePrefab, deliverObjectivesRowsContainer.transform, false);
+      deliveryRow.transform.SetParent(deliverObjectivesRowsContainer.transform, false);
 
-      row.setRowForDeliverObjective(cachedDeliverObjective);
+      deliveryRow.updateCategoryButton.onClick.AddListener(() => {
+         npcEditionScreen.toggleItemSelectionPanel(NPCEditionScreen.ItemSelectionType.Delivery);
+         currentDeliverObjective = deliveryRow;
+         questRow.currentQuestNode = this;
+         questRow.npcEditionScreen.currentQuestModified = questRow;
+      });
+      deliveryRow.deleteButton.onClick.AddListener(() => {
+         deliveryItemList.Remove(deliveryRow);
+         deliveryRow.destroyRow();
+      });
+      deliveryRow.updateTypeButton.onClick.AddListener(() => {
+         deliveryRow.updateCategoryButton.onClick.Invoke();
+      });
 
-      row.updateButton.onClick.AddListener(() => updateDataButtonClicked(row));
+      deliveryItemList.Add(deliveryRow);
+
+      deliveryRow.setRowForDeliverObjective(cachedDeliverObjective);
+
+      deliveryRow.updateButton.onClick.AddListener(() => updateDataButtonClicked(deliveryRow));
    }
 
    private void updateDataButtonClicked(DeliverObjectiveRow row) {

@@ -13,6 +13,9 @@ public class ItemCategoryTemplate : MonoBehaviour {
    // The name of the category
    public Text itemCategoryText;
 
+   // The index of the category
+   public Text itemIndexText;
+
    // Select the category
    public Button selectButton;
 

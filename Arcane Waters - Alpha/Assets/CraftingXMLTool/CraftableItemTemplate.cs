@@ -10,6 +10,9 @@ public class CraftableItemTemplate : MonoBehaviour {
    // Name of the craftable item
    public Text nameText;
 
+   // Index of the craftable item
+   public Text indexText;
+
    // Button for showing the panel in charge of editing the ingredients
    public Button editButton;
 
@@ -26,6 +29,7 @@ public class CraftableItemTemplate : MonoBehaviour {
       }
 
       nameText.text = newName;
+      indexText.text = resultItem.itemTypeId.ToString();
    }
 
    #region Private Variables

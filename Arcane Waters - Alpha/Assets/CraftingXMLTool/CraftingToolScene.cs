@@ -29,6 +29,7 @@ public class CraftingToolScene : MonoBehaviour {
 
    private void Awake () {
       craftingPanel.gameObject.SetActive(false);
+      craftingPanel.popUpSelectionPanel.gameObject.SetActive(false);
       refreshButton.onClick.AddListener(() => refreshXML());
       createTemplateButton.onClick.AddListener(() => createNewTemplate(new CraftableItemRequirements()));
    }

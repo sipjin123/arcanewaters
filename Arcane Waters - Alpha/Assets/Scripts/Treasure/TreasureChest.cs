@@ -86,6 +86,9 @@ public class TreasureChest : NetworkBehaviour {
       if (chestType == ChestSpawnType.Site) {
          // We only enable the box collider for clients in the relevant instance
          boxCollider.enabled = (Global.player != null && Global.player.instanceId == this.instanceId);
+      } else if (chestType == ChestSpawnType.Sea) {
+         boxCollider.enabled = false;
+         triggerCollider.enabled = !hasBeenOpened();
       } else {
          boxCollider.enabled = !hasBeenOpened();
          triggerCollider.enabled = !hasBeenOpened();

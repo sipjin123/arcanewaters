@@ -84,6 +84,15 @@ public class SeaEntity : NetEntity {
       if (currentHealth <= 0) {
          _outline.Hide();
 
+         if (this is SeaMonsterEntity) {
+            SeaMonsterEntity monsterEntity = GetComponent<SeaMonsterEntity>();
+            if(monsterEntity.seaMonsterData.roleType == RoleType.Minion) {
+               monsterEntity.corpseHolder.SetActive(true);
+               spritesContainer.SetActive(false);
+               return;
+            }
+         }
+
          Util.setLocalY(spritesContainer.transform, spritesContainer.transform.localPosition.y - .03f * Time.smoothDeltaTime);
 
          // Fade the sprites out
