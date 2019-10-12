@@ -71,6 +71,9 @@ public class SeaMonsterEntity : SeaEntity
    // Holds the corpse object
    public GameObject corpseHolder;
 
+   // Holds the list of colliders for this obj
+   public List<Collider2D> colliderList;
+
    // Seamonster Animation
    public enum SeaMonsterAnimState
    {
@@ -111,7 +114,7 @@ public class SeaMonsterEntity : SeaEntity
       _simpleAnimRipple = ripplesContainer.GetComponent<SimpleAnimation>();
 
       _simpleAnimRipple.group = seaMonsterData.animGroup;
-      _simpleAnimRipple.frameLengthOverride = seaMonsterData.animationSpeedOverride;
+      _simpleAnimRipple.frameLengthOverride = seaMonsterData.rippleAnimationSpeedOverride;
       _simpleAnimRipple.enabled = true;
 
       _simpleAnim.group = seaMonsterData.animGroup;
@@ -554,6 +557,12 @@ public class SeaMonsterEntity : SeaEntity
       }
    }
 
+   public void disableCollisions() {
+      foreach(Collider2D col in colliderList) {
+         col.enabled = false;
+      }
+   }
+
    private void setWaypoint (Transform target, float moveDist = .5f) {
       if (seaMonsterData.roleType != RoleType.Minion) {
          if (target == null) {
@@ -604,10 +613,21 @@ public class SeaMonsterEntity : SeaEntity
          seaMonsterParentEntity.currentHealth -= 1;
       }
 
+      if (seaMonsterData.roleType == RoleType.Master) {
+         foreach (SeaMonsterEntity childEntity in seaMonsterChildrenList) {
+            childEntity.notifyChildrenOfDeath();
+         }
+      }
+
       // Drops the treasure bag if this entity can spawn one
       if (seaMonsterData.shouldDropTreasure) {
          spawnChest();
       }
+   }
+
+   public void notifyChildrenOfDeath() {
+      // Destroy the object
+      NetworkServer.Destroy(this.gameObject);
    }
 
    [Server]

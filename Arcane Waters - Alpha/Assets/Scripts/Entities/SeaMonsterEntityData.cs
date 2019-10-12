@@ -97,6 +97,9 @@ public class SeaMonsterEntityData : ScriptableObject {
    // Holds the value of the speed override of the simple animation
    public float animationSpeedOverride = -1;
 
+   // Holds the value of the speed override of the simple animation of the ripples
+   public float rippleAnimationSpeedOverride = -1;
+
    // Spawn Location Overrides may vary depending on the sea monster sprites
    public List<DirectionalPositions> projectileSpawnLocations;
 

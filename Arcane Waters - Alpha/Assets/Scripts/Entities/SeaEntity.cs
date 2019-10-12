@@ -88,6 +88,7 @@ public class SeaEntity : NetEntity {
             SeaMonsterEntity monsterEntity = GetComponent<SeaMonsterEntity>();
             if(monsterEntity.seaMonsterData.roleType == RoleType.Minion) {
                monsterEntity.corpseHolder.SetActive(true);
+               monsterEntity.disableCollisions();
                spritesContainer.SetActive(false);
                return;
             }
