@@ -13,14 +13,14 @@ public class NPCSelectionScreen : MonoBehaviour
    public NPCIdInputScreen npcIdInputScreen;
 
    // The screen we use to edit NPCs
-   public NPCEditionScreen npcEditionScreen;
+   public NPCEditScreen npcEditScreen;
 
    // The container for the npc rows
    public GameObject rowsContainer;
 
    // The prefab we use for creating rows
    public NPCSelectionRow npcRowPrefab;
-
+   
    #endregion
 
    public void updatePanelWithNPCs(Dictionary<int, NPCData> _npcData) {
@@ -33,6 +33,18 @@ public class NPCSelectionScreen : MonoBehaviour
          NPCSelectionRow row = Instantiate(npcRowPrefab, rowsContainer.transform, false);
          row.transform.SetParent(rowsContainer.transform, false);
          row.setRowForNPC(this, npcData.npcId, npcData.name);
+
+         if (npcData.iconPath != "") {
+            try {
+               row.npcIcon.sprite = ImageManager.getSprite(npcData.iconPath);
+            } catch {
+               // Should be an Error Icon
+               row.npcIcon.sprite = ImageManager.getSprite("Assets/Sprites/Icons/Stats/icon_vitality.png");
+            }
+         } else {
+            // Should be a NULL Icon
+            row.npcIcon.sprite = ImageManager.getSprite("Assets/Sprites/Icons/Stats/icon_luck.png");
+         }
       }
    }
 
@@ -41,10 +53,10 @@ public class NPCSelectionScreen : MonoBehaviour
       NPCData data = NPCToolManager.self.getNPCData(npcId);
 
       // Initialize the NPC edition screen with the data
-      npcEditionScreen.updatePanelWithNPC(data);
+      npcEditScreen.updatePanelWithNPC(data);
 
       // Show the NPC edition screen
-      npcEditionScreen.show();
+      npcEditScreen.show();
    }
 
    public void createNewNPCButtonClickedOn () {

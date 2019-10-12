@@ -70,6 +70,9 @@ public class NPCData
    [XmlArray("Gifts"), XmlArrayItem("Gift")]
    public List<NPCGiftData> gifts;
 
+   // Holds the address of the image icon
+   public string iconPath;
+
    #endregion
 
    public NPCData () {
@@ -80,7 +83,7 @@ public class NPCData
       string greetingTextCasualFriend, string greetingTextCloseFriend, string greetingTextBestFriend,
       string giftOfferNPCText, string giftLikedText, string giftNotLikedText, string name,
       Faction.Type faction, Specialty.Type specialty, bool hasTradeGossipDialogue, bool hasGoodbyeDialogue,
-      int lastUsedQuestId, List<Quest> quests, List<NPCGiftData> gifts) {
+      int lastUsedQuestId, List<Quest> quests, List<NPCGiftData> gifts, string iconPath) {
       this.npcId = npcId;
       this.greetingTextStranger = greetingTextStranger;
       this.greetingTextAcquaintance = greetingTextAcquaintance;
@@ -98,6 +101,7 @@ public class NPCData
       this.lastUsedQuestId = lastUsedQuestId;
       this.quests = quests;
       this.gifts = gifts;
+      this.iconPath = iconPath;
    }
 
    #region Private Variables

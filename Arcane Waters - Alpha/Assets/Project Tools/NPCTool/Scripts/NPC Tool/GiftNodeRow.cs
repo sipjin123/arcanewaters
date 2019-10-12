@@ -23,7 +23,7 @@ public class GiftNodeRow : MonoBehaviour
    public List<NPCGiftData> cachedGiftList;
 
    // Reference to the npc edition screen
-   public NPCEditionScreen npcEditionScreen;
+   public NPCEditScreen npcEditScreen;
 
    // Reference to the item being modified
    public ItemRewardRow currentItemModifying;
@@ -51,7 +51,7 @@ public class GiftNodeRow : MonoBehaviour
             questReward.category = itemReward.itemCategory;
 
             row.updateCategoryButton.onClick.AddListener(() => {
-               npcEditionScreen.toggleItemSelectionPanel(NPCEditionScreen.ItemSelectionType.Gift);
+               npcEditScreen.toggleItemSelectionPanel(NPCEditScreen.ItemSelectionType.Gift);
                currentItemModifying = row;
             });
 
@@ -76,9 +76,10 @@ public class GiftNodeRow : MonoBehaviour
    private void createGiftButtonClickedOn() {
       NPCGiftData newGiftData = new NPCGiftData();
       ItemRewardRow row = Instantiate(itemRewardPrefab, itemRewardRowsContainer.transform, false);
+      row.count.text = "1";
       row.transform.SetParent(itemRewardRowsContainer.transform, false);
       row.updateCategoryButton.onClick.AddListener(() => {
-         npcEditionScreen.toggleItemSelectionPanel(NPCEditionScreen.ItemSelectionType.Gift);
+         npcEditScreen.toggleItemSelectionPanel(NPCEditScreen.ItemSelectionType.Gift);
          currentItemModifying = row;
       });
       row.updateTypeButton.onClick.AddListener(() => {

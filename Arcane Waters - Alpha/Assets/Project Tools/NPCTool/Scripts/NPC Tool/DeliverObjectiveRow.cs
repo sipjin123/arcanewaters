@@ -26,14 +26,23 @@ public class DeliverObjectiveRow : MonoBehaviour
    // The button for deleting data
    public Button deleteButton;
 
+   // Holds the icon of the item
+   public Image itemIcon;
+
    #endregion
 
    public void setRowForDeliverObjective (QuestObjectiveDeliver deliverObjective) {
-      itemCategory.text = ((int) deliverObjective.category).ToString();
-      itemTypeId.text = deliverObjective.itemTypeId.ToString();
+      if (deliverObjective.category == Item.Category.None || deliverObjective.itemTypeId == 0) {
+         itemCategory.text = "(Select)";
+         itemTypeId.text = "(Select)";
+      } else {
+         itemCategory.text = ((int) deliverObjective.category).ToString();
+         itemTypeId.text = deliverObjective.itemTypeId.ToString();
+      }
 
       itemCategoryName.text = deliverObjective.category.ToString();
       itemTypeName.text = Util.getItemName(deliverObjective.category, deliverObjective.itemTypeId);
+      itemIcon.sprite = Util.getRawSpriteIcon(deliverObjective.category, deliverObjective.itemTypeId);
 
       count.text = deliverObjective.count.ToString();
    }

@@ -16,6 +16,9 @@ public class ItemTypeTemplate : MonoBehaviour {
    // Button for selecting the item
    public Button selectButton;
 
+   // Holds the icon of the item
+   public Image spriteIcon;
+
    #endregion
 
    #region Private Variables

@@ -19,6 +19,9 @@ public class CraftableItemTemplate : MonoBehaviour {
    // Button for deleting a craftable item
    public Button deleteButton;
 
+   // Icon of the item
+   public Image itemIcon;
+
    #endregion
 
    public void updateItemDisplay(Item resultItem) {
@@ -29,7 +32,7 @@ public class CraftableItemTemplate : MonoBehaviour {
       }
 
       nameText.text = newName;
-      indexText.text = resultItem.itemTypeId.ToString();
+      indexText.text = "ID# "+resultItem.itemTypeId.ToString();
    }
 
    #region Private Variables

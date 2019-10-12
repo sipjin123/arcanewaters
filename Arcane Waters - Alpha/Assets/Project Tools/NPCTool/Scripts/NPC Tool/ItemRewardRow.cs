@@ -26,14 +26,23 @@ public class ItemRewardRow : MonoBehaviour
    // Button for deleting selected data 
    public Button deleteButton;
 
+   // Holds the icon for the item image
+   public Image itemIcon;
+
    #endregion
 
    public void setRowForItemReward (QuestRewardItem itemReward) {
-      itemCategory.text = ((int) itemReward.category).ToString();
-      itemTypeId.text = itemReward.itemTypeId.ToString();
+      if (itemReward.category == Item.Category.None || itemReward.itemTypeId == 0) {
+         itemCategory.text = "(Select)";
+         itemTypeId.text = "(Select)";
+      } else {
+         itemCategory.text = ((int) itemReward.category).ToString();
+         itemTypeId.text = itemReward.itemTypeId.ToString();
+      }
 
       itemCategoryName.text = itemReward.category.ToString();
       itemTypeName.text = Util.getItemName(itemReward.category, itemReward.itemTypeId);
+      itemIcon.sprite = Util.getRawSpriteIcon(itemReward.category, itemReward.itemTypeId);
 
       count.text = itemReward.count.ToString();
    }

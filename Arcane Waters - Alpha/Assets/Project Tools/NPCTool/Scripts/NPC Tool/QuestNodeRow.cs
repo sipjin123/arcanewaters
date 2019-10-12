@@ -56,7 +56,7 @@ public class QuestNodeRow : MonoBehaviour
    public List<ItemRewardRow> cachedRewardRowList;
 
    // Reference to the npc edition screen
-   public NPCEditionScreen npcEditionScreen;
+   public NPCEditScreen npcEditScreen;
 
    // Reference to the item being modified
    public ItemRewardRow currentItemModifying;
@@ -95,10 +95,10 @@ public class QuestNodeRow : MonoBehaviour
             DeliverObjectiveRow deliveryRow = Instantiate(deliverObjectivePrefab, deliverObjectivesRowsContainer.transform, false);
             deliveryRow.transform.SetParent(deliverObjectivesRowsContainer.transform, false);
             deliveryRow.setRowForDeliverObjective(deliverObjective);
-
-
+            deliveryRow.itemIcon.sprite = Util.getRawSpriteIcon(deliverObjective.category, deliverObjective.itemTypeId);
+            
             deliveryRow.updateCategoryButton.onClick.AddListener(() => {
-               npcEditionScreen.toggleItemSelectionPanel(NPCEditionScreen.ItemSelectionType.Delivery);
+               npcEditScreen.toggleItemSelectionPanel(NPCEditScreen.ItemSelectionType.Delivery);
                currentDeliverObjective = deliveryRow;
                questRow.currentQuestNode = this;
                questRow.npcEditionScreen.currentQuestModified = questRow;
@@ -128,9 +128,10 @@ public class QuestNodeRow : MonoBehaviour
             ItemRewardRow itemRewardRow = Instantiate(itemRewardPrefab, itemRewardRowsContainer.transform, false);
             itemRewardRow.transform.SetParent(itemRewardRowsContainer.transform, false);
             itemRewardRow.setRowForItemReward(itemReward);
+            itemRewardRow.itemIcon.sprite = Util.getRawSpriteIcon(itemReward.category, itemReward.itemTypeId);
 
             itemRewardRow.updateCategoryButton.onClick.AddListener(() => {
-               npcEditionScreen.toggleItemSelectionPanel(NPCEditionScreen.ItemSelectionType.Reward);
+               npcEditScreen.toggleItemSelectionPanel(NPCEditScreen.ItemSelectionType.Reward);
                currentItemModifying = itemRewardRow;
                questRow.currentQuestNode = this;
                questRow.npcEditionScreen.currentQuestModified = questRow;
@@ -153,11 +154,12 @@ public class QuestNodeRow : MonoBehaviour
 
    private void createRewardButtonClickedOn() {
       cachedReward = new QuestRewardItem();
+      cachedReward.count = 1;
       ItemRewardRow itemRewardRow = Instantiate(itemRewardPrefab, itemRewardRowsContainer.transform, false);
       itemRewardRow.transform.SetParent(itemRewardRowsContainer.transform, false);
 
       itemRewardRow.updateCategoryButton.onClick.AddListener(() => {
-         npcEditionScreen.toggleItemSelectionPanel(NPCEditionScreen.ItemSelectionType.Reward);
+         npcEditScreen.toggleItemSelectionPanel(NPCEditScreen.ItemSelectionType.Reward);
          currentItemModifying = itemRewardRow;
          questRow.currentQuestNode = this;
          questRow.npcEditionScreen.currentQuestModified = questRow;
@@ -185,11 +187,12 @@ public class QuestNodeRow : MonoBehaviour
 
    private void createDeliveryQuestButtonClickedOn () {
       cachedDeliverObjective = new QuestObjectiveDeliver();
+      cachedDeliverObjective.count = 1;
       DeliverObjectiveRow deliveryRow = Instantiate(deliverObjectivePrefab, deliverObjectivesRowsContainer.transform, false);
       deliveryRow.transform.SetParent(deliverObjectivesRowsContainer.transform, false);
 
       deliveryRow.updateCategoryButton.onClick.AddListener(() => {
-         npcEditionScreen.toggleItemSelectionPanel(NPCEditionScreen.ItemSelectionType.Delivery);
+         npcEditScreen.toggleItemSelectionPanel(NPCEditScreen.ItemSelectionType.Delivery);
          currentDeliverObjective = deliveryRow;
          questRow.currentQuestNode = this;
          questRow.npcEditionScreen.currentQuestModified = questRow;

@@ -48,6 +48,7 @@ public class CraftingToolScene : MonoBehaviour {
          template.deleteButton.onClick.AddListener(() => {
             toolManager.deleteCraftingDataFile(requirementData);
          });
+         template.itemIcon.sprite = Util.getRawSpriteIcon(requirementData.resultItem.category, requirementData.resultItem.itemTypeId);
 
          template.gameObject.SetActive(true);
          toolManager.saveDataToFile(requirementData);
@@ -77,6 +78,7 @@ public class CraftingToolScene : MonoBehaviour {
             toolManager.deleteCraftingDataFile(craftingRequirement);
             toolManager.loadAllDataFiles();
          });
+         template.itemIcon.sprite = Util.getRawSpriteIcon(craftingRequirement.resultItem.category, craftingRequirement.resultItem.itemTypeId);
 
          template.gameObject.SetActive(true);
       }

@@ -66,6 +66,9 @@ public class CraftingIngredientPanel : MonoBehaviour {
    // Cached item category selected in the popup
    public Item.Category selectedCategory;
 
+   // The icon of the result item
+   public Image resultItemIcon;
+
    #endregion
 
    private void Awake () {
@@ -96,6 +99,7 @@ public class CraftingIngredientPanel : MonoBehaviour {
       int resultType = resultItemTypeInt;
       Item resultItem = getItem(resultCategory, resultType, 1);
       craftableRequirements.resultItem = resultItem;
+      resultItemIcon.sprite = Util.getRawSpriteIcon(resultCategory, resultType);
 
       foreach (ItemRequirementRow item in itemRowList) {
          Item newItem = getItem(item.currentCategory, item.currentType, int.Parse(item.itemCount.text));
@@ -130,6 +134,7 @@ public class CraftingIngredientPanel : MonoBehaviour {
          categoryTemp.itemCategoryText.text = category.ToString();
          categoryTemp.itemIndexText.text = ((int)category).ToString();
          categoryTemp.itemCategory = category;
+
          categoryTemp.selectButton.onClick.AddListener(() => {
             selectedCategory = category;
             updateTypeOptions();
@@ -157,6 +162,8 @@ public class CraftingIngredientPanel : MonoBehaviour {
             ItemTypeTemplate itemTemp = template.GetComponent<ItemTypeTemplate>();
             itemTemp.itemTypeText.text = item.Value.ToString();
             itemTemp.itemIndexText.text = "" + item.Key;
+            itemTemp.spriteIcon.sprite = Util.getRawSpriteIcon(selectedCategory, item.Key);
+
             itemTemp.selectButton.onClick.AddListener(() => {
                selectedTypeID = (int) item.Key;
                confirmSelectionButton.onClick.Invoke();
@@ -171,7 +178,7 @@ public class CraftingIngredientPanel : MonoBehaviour {
 
    private ItemRequirementRow itemRequirementRow() {
       ItemRequirementRow itemRow = Instantiate(ingredientTemplate, ingredientTemplateParent);
-      itemRow.itemCount.text = "0";
+      itemRow.itemCount.text = "1";
       itemRow.initializeSetup();
       itemRow.updateDisplayName();
 

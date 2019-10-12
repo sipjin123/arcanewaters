@@ -30,6 +30,16 @@ public class Util : MonoBehaviour {
       return null;
    }
 
+   public static Sprite getRawSpriteIcon(Item.Category category, int itemType) {
+      if (category != Item.Category.None && itemType != 0) {
+         string castItem = new Item { category = category, itemTypeId = itemType }.getCastItem().getIconPath();
+         Sprite spriteCache = ImageManager.getSprite(castItem);
+         return spriteCache;
+      }
+
+      return null;
+   }
+
    public static int getMyUserId () {
       if (NetworkClient.connection != null) {
          NetworkIdentity controller = NetworkClient.connection.playerController;

@@ -12,6 +12,12 @@ public class NPCSelectionRow : MonoBehaviour
    // The text component displaying the npc name
    public Text npcNameText;
 
+   // Holds the icon of the npc
+   public Image npcIcon;
+
+   // Holds the button icon of the npc
+   public Button npcIconButton;
+
    #endregion
 
    public void setRowForNPC(NPCSelectionScreen npcSelectionScreen, int npcId, string npcName) {

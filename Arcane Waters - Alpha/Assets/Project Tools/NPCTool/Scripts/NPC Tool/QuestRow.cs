@@ -23,7 +23,7 @@ public class QuestRow : MonoBehaviour
    public QuestNodeRow currentQuestNode;
 
    // Reference to the npc edition screen
-   public NPCEditionScreen npcEditionScreen;
+   public NPCEditScreen npcEditionScreen;
 
    #endregion
 
@@ -78,7 +78,7 @@ public class QuestRow : MonoBehaviour
             QuestNodeRow row = Instantiate(questNodePrefab, rowsContainer.transform, false);
             row.questRow = this;
             row.transform.SetParent(rowsContainer.transform, false);
-            row.npcEditionScreen = npcEditionScreen;
+            row.npcEditScreen = npcEditionScreen;
             row.setRowForQuestNode(node);
          }
       } else {
@@ -97,7 +97,7 @@ public class QuestRow : MonoBehaviour
       QuestNodeRow row = Instantiate(questNodePrefab, rowsContainer.transform, false);
       row.questRow = this;
       row.transform.SetParent(rowsContainer.transform, false);
-      row.npcEditionScreen = npcEditionScreen;
+      row.npcEditScreen = npcEditionScreen;
       row.setRowForQuestNode(node);
    }
 

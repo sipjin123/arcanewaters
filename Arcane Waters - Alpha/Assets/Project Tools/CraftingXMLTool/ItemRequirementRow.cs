@@ -32,6 +32,9 @@ public class ItemRequirementRow : MonoBehaviour {
    // Current type of the item
    public int currentType;
 
+   // The icon of the item
+   public Image itemIcon;
+
    #endregion
 
    public void initializeSetup () {
@@ -52,9 +55,15 @@ public class ItemRequirementRow : MonoBehaviour {
    }
 
    public void updateDisplayName() {
-      itemCategoryString.text = currentCategory.ToString();
-      itemTypeString.text = Util.getItemName(currentCategory, currentType).ToString();
+      if (currentCategory == Item.Category.None || currentType == 0) {
+         itemCategoryString.text = "(Select)";
+         itemTypeString.text = "(Select)";
+      } else {
+         itemCategoryString.text = currentCategory.ToString();
+         itemTypeString.text = Util.getItemName(currentCategory, currentType).ToString();
+      }
       ingredientPanel.popUpSelectionPanel.SetActive(false);
+      itemIcon.sprite = Util.getRawSpriteIcon(currentCategory, currentType);
    }
 
    private void deleteData() {

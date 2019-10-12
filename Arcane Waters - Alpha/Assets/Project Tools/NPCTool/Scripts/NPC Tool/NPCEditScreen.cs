@@ -4,8 +4,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using System.IO;
 
-public class NPCEditionScreen : MonoBehaviour
+public class NPCEditScreen : MonoBehaviour
 {
    #region Public Variables
 
@@ -15,8 +16,12 @@ public class NPCEditionScreen : MonoBehaviour
    // The main parameters of the NPC
    public Text npcIdText;
    public InputField npcName;
-   public InputField faction;
-   public InputField specialty;
+   public Slider faction;
+   public Slider specialty;
+   public Text factionText;
+   public Text specialtyText;
+   public Text factionCountText;
+   public Text specialtyCountText;
    public Toggle hasTradeGossip;
    public Toggle hasGoodbye;
    public InputField greetingStranger;
@@ -27,6 +32,10 @@ public class NPCEditionScreen : MonoBehaviour
    public InputField giftOfferText;
    public InputField giftLiked;
    public InputField giftNotLiked;
+
+   // Icons for the selected Faction/Specialty
+   public Image factionImage;
+   public Image specialtyImage;
 
    // The container for the quests
    public GameObject questRowsContainer;
@@ -79,6 +88,33 @@ public class NPCEditionScreen : MonoBehaviour
    // Button to close the item selection
    public Button exitSelectionButton;
 
+   // Holds the address of the image icon
+   public string npcIconPath;
+
+   // The panel that allows you to select an icon
+   public GameObject iconSelectionPanel;
+
+   // The prefab for icon templates
+   public GameObject iconTemplatePrefab;
+
+   // The container for the icon templates
+   public Transform iconTemplateParent;
+
+   // The current npc being modified
+   public NPCSelectionRow currentNPCRow;
+
+   // The icon of the NPC avatar
+   public Image avatarIcon;
+
+   // Button that allows changing of avatar
+   public Button changeAvatarButton;
+
+   // Button that closes popup window of avatar selection
+   public Button closeAvatarSelectionButton;
+
+   // The cache list for avatar icon selection
+   public Dictionary<string,Sprite> iconSpriteList = new Dictionary<string, Sprite>();
+
    // Enum to determine the current item category
    public enum ItemSelectionType
    {
@@ -96,17 +132,58 @@ public class NPCEditionScreen : MonoBehaviour
       confirmSelectionButton.onClick.AddListener(() => {
          itemTypeSelectionPanel.SetActive(false);
       });
+
+      changeAvatarButton.onClick.AddListener(() => {
+         showIconSelector();
+      });
+      closeAvatarSelectionButton.onClick.AddListener(() => {
+         iconSelectionPanel.SetActive(false);
+      });
+   }
+
+   public void convertFaction () {
+      factionText.text = ((Faction.Type)faction.value).ToString();
+      factionCountText.text = (int)faction.value + "/" + faction.maxValue;
+      factionImage.sprite = Faction.getIcon((Faction.Type) faction.value);
+   }
+
+   public void convertSpecialty () {
+      specialtyText.text = ((Specialty.Type) specialty.value).ToString();
+      specialtyCountText.text = (int) specialty.value + "/" + specialty.maxValue;
+      specialtyImage.sprite = Specialty.getIcon((Specialty.Type) specialty.value);
    }
 
    public void updatePanelWithNPC (NPCData npcData) {
+      faction.maxValue = Enum.GetValues(typeof(Faction.Type)).Length-1;
+      specialty.maxValue = Enum.GetValues(typeof(Specialty.Type)).Length-1;
+
+      factionCountText.text = (int) faction.value + "/" + faction.maxValue;
+      specialtyCountText.text = (int) specialty.value + "/" + specialty.maxValue;
+
+      factionImage.sprite = Faction.getIcon((Faction.Type) faction.value);
+      specialtyImage.sprite = Specialty.getIcon((Specialty.Type) specialty.value);
+
+      if (!_initSpriteList) {
+         _initSpriteList = true;
+         string[] spriteIconFiles = Directory.GetFiles(Application.dataPath + "/Sprites/Icons/NPCAvatarIcon", "*.png", SearchOption.AllDirectories);
+
+         foreach (string spritefile in spriteIconFiles) {
+            string assetPath = "Assets" + spritefile.Replace(Application.dataPath, "").Replace('\\', '/');
+            Sprite sourceSprite = (Sprite) UnityEditor.AssetDatabase.LoadAssetAtPath(assetPath, typeof(Sprite));
+            iconSpriteList.Add(assetPath, sourceSprite);
+         }
+      }
+
+      avatarIcon.sprite = iconSpriteList[npcData.iconPath];
+
       _npcId = npcData.npcId;
       _lastUsedQuestId = npcData.lastUsedQuestId;
 
       // Fill all the fields with the values from the data file
       npcIdText.text = npcData.npcId.ToString();
       npcName.text = npcData.name;
-      faction.text = ((int) npcData.faction).ToString();
-      specialty.text = ((int) npcData.specialty).ToString();
+      faction.value = (int) npcData.faction;
+      specialty.value = (int) npcData.specialty;
       hasTradeGossip.isOn = npcData.hasTradeGossipDialogue;
       hasGoodbye.isOn = npcData.hasGoodbyeDialogue;
       greetingStranger.text = npcData.greetingTextStranger;
@@ -137,7 +214,7 @@ public class NPCEditionScreen : MonoBehaviour
       } else {
          giftNode.setRowForQuestNode(new List<NPCGiftData>());
       }
-      giftNode.npcEditionScreen = this;
+      giftNode.npcEditScreen = this;
    }
 
    public void toggleQuestView() {
@@ -189,9 +266,9 @@ public class NPCEditionScreen : MonoBehaviour
       // Create a new npcData object and initialize it with the values from the UI
       NPCData npcData = new NPCData(_npcId, greetingStranger.text, greetingAcquaintance.text,
          greetingCasualFriend.text, greetingCloseFriend.text, greetingBestFriend.text, giftOfferText.text,
-         giftLiked.text, giftNotLiked.text, npcName.text, (Faction.Type) int.Parse(faction.text),
-         (Specialty.Type) int.Parse(specialty.text), hasTradeGossip.isOn, hasGoodbye.isOn, _lastUsedQuestId,
-         questList, newGiftDataList);
+         giftLiked.text, giftNotLiked.text, npcName.text, (Faction.Type) faction.value,
+         (Specialty.Type) specialty.value, hasTradeGossip.isOn, hasGoodbye.isOn, _lastUsedQuestId,
+         questList, newGiftDataList, npcIconPath);
 
       // Save the data
       NPCToolManager.self.updateNPCData(npcData);
@@ -219,6 +296,23 @@ public class NPCEditionScreen : MonoBehaviour
       updateTypeOptions(selectionType);
    }
 
+   public void showIconSelector () {
+      iconSelectionPanel.SetActive(true);
+      iconTemplateParent.gameObject.DestroyChildren();
+
+      foreach (KeyValuePair<string, Sprite> sourceSprite in iconSpriteList) {
+         GameObject iconTempObj = Instantiate(iconTemplatePrefab, iconTemplateParent);
+         ItemTypeTemplate iconTemp = iconTempObj.GetComponent<ItemTypeTemplate>();
+         iconTemp.spriteIcon.sprite = sourceSprite.Value;
+         iconTemp.itemTypeText.text = sourceSprite.Value.name;
+         iconTemp.selectButton.onClick.AddListener(() => {
+            npcIconPath = sourceSprite.Key;
+            avatarIcon.sprite = sourceSprite.Value;
+            closeAvatarSelectionButton.onClick.Invoke();
+         });
+      }
+   }
+
    private void updateTypeOptions (ItemSelectionType selectionType) {
       // Dynamically handles the type of item
       Type itemType = Util.getItemType(selectedCategory);
@@ -237,6 +331,8 @@ public class NPCEditionScreen : MonoBehaviour
             ItemTypeTemplate itemTemp = template.GetComponent<ItemTypeTemplate>();
             itemTemp.itemTypeText.text = item.Value.ToString();
             itemTemp.itemIndexText.text = "" + item.Key;
+            itemTemp.spriteIcon.sprite = Util.getRawSpriteIcon(selectedCategory, item.Key);
+
             itemTemp.selectButton.onClick.AddListener(() => {
                selectedTypeID = (int) item.Key;
 
@@ -246,6 +342,7 @@ public class NPCEditionScreen : MonoBehaviour
 
                   giftNode.currentItemModifying.itemCategoryName.text = selectedCategory.ToString();
                   giftNode.currentItemModifying.itemTypeName.text = item.Value.ToString();
+                  giftNode.currentItemModifying.itemIcon.sprite = Util.getRawSpriteIcon(selectedCategory, item.Key);
 
                   giftNode.cachedGiftData.itemCategory = selectedCategory;
                   giftNode.cachedGiftData.itemTypeId = selectedTypeID;
@@ -253,9 +350,9 @@ public class NPCEditionScreen : MonoBehaviour
                   currentQuestModified.currentQuestNode.currentItemModifying.itemCategory.text = ((int) selectedCategory).ToString();
                   currentQuestModified.currentQuestNode.currentItemModifying.itemTypeId.text = selectedTypeID.ToString();
 
-
                   currentQuestModified.currentQuestNode.currentItemModifying.itemCategoryName.text = selectedCategory.ToString();
                   currentQuestModified.currentQuestNode.currentItemModifying.itemTypeName.text = item.Value.ToString();
+                  currentQuestModified.currentQuestNode.currentItemModifying.itemIcon.sprite = Util.getRawSpriteIcon(selectedCategory, item.Key);
 
                   currentQuestModified.currentQuestNode.cachedReward.category = selectedCategory;
                   currentQuestModified.currentQuestNode.cachedReward.itemTypeId = selectedTypeID;
@@ -265,6 +362,7 @@ public class NPCEditionScreen : MonoBehaviour
 
                   currentQuestModified.currentQuestNode.currentDeliverObjective.itemCategoryName.text = selectedCategory.ToString();
                   currentQuestModified.currentQuestNode.currentDeliverObjective.itemTypeName.text = item.Value.ToString();
+                  currentQuestModified.currentQuestNode.currentDeliverObjective.itemIcon.sprite = Util.getRawSpriteIcon(selectedCategory, item.Key);
                }
 
                confirmSelectionButton.onClick.Invoke();
@@ -272,7 +370,7 @@ public class NPCEditionScreen : MonoBehaviour
          }
       }
    }
-
+   
    public void show () {
       this.canvasGroup.alpha = 1f;
       this.canvasGroup.blocksRaycasts = true;
@@ -294,6 +392,9 @@ public class NPCEditionScreen : MonoBehaviour
 
    // The the last used quest id
    private int _lastUsedQuestId;
+
+   // If the sprite list is initialized
+   private bool _initSpriteList;
 
    #endregion
 }
