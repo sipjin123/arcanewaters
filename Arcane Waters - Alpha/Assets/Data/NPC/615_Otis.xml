@@ -202,6 +202,8 @@
       <friendshipRankRequired>2</friendshipRankRequired>
     </Quest>
   </Quests>
+  <Gifts />
+  <iconPath>Assets/Sprites/Faces/shroom_8.png</iconPath>
   <faction>2</faction>
   <specialty>6</specialty>
 </NPCData>

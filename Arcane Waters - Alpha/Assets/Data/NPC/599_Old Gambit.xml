@@ -27,26 +27,26 @@
           <userText>dfs</userText>
           <DeliverObjectives>
             <Deliver>
-              <itemTypeId>3</itemTypeId>
-              <count>5</count>
+              <itemTypeId>21</itemTypeId>
+              <count>1</count>
               <category>6</category>
             </Deliver>
             <Deliver>
-              <itemTypeId>5</itemTypeId>
-              <count>5</count>
-              <category>3</category>
-            </Deliver>
-            <Deliver>
-              <itemTypeId>4</itemTypeId>
+              <itemTypeId>19</itemTypeId>
               <count>2</count>
-              <category>3</category>
+              <category>6</category>
             </Deliver>
           </DeliverObjectives>
           <ItemRewards>
             <Item>
-              <itemTypeId>3</itemTypeId>
-              <count>2</count>
-              <category>1</category>
+              <itemTypeId>26</itemTypeId>
+              <count>3</count>
+              <category>6</category>
+            </Item>
+            <Item>
+              <itemTypeId>34</itemTypeId>
+              <count>4</count>
+              <category>6</category>
             </Item>
           </ItemRewards>
         </Node>
@@ -56,27 +56,21 @@
   </Quests>
   <Gifts>
     <Gift>
-      <itemTypeId>5</itemTypeId>
+      <itemTypeId>4</itemTypeId>
       <rewardedFriendship>0</rewardedFriendship>
-      <itemCategory>5</itemCategory>
+      <itemCategory>6</itemCategory>
       <color1>0</color1>
       <color2>0</color2>
     </Gift>
     <Gift>
-      <itemTypeId>2</itemTypeId>
+      <itemTypeId>1</itemTypeId>
       <rewardedFriendship>0</rewardedFriendship>
-      <itemCategory>1</itemCategory>
-      <color1>0</color1>
-      <color2>0</color2>
-    </Gift>
-    <Gift>
-      <itemTypeId>2</itemTypeId>
-      <rewardedFriendship>0</rewardedFriendship>
-      <itemCategory>3</itemCategory>
+      <itemCategory>6</itemCategory>
       <color1>0</color1>
       <color2>0</color2>
     </Gift>
   </Gifts>
-  <faction>1</faction>
-  <specialty>2</specialty>
+  <iconPath>Assets/Sprites/Faces/fatty_1.png</iconPath>
+  <faction>7</faction>
+  <specialty>3</specialty>
 </NPCData>

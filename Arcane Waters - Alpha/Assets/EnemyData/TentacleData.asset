@@ -38,13 +38,16 @@ MonoBehaviour:
     type: 3}
   defaultRippleSprite: {fileID: 8606102959079553536, guid: 5c1cf74553558b54bb8ab8274c0bf4cb,
     type: 3}
+  corpseSprite: {fileID: -3097994721150649197, guid: c69a30d84ef49af42aff2e1beef82d05,
+    type: 3}
   scaleOverride: 0.5
   outlineScaleOverride: 1.15
   rippleScaleOverride: 1.25
   maxHealth: 25
   animGroup: 6
   roleType: 2
-  animationSpeedOverride: 0.1
+  animationSpeedOverride: 0.15
+  rippleAnimationSpeedOverride: 0.17
   projectileSpawnLocations:
   - direction: 1
     spawnTransform: {x: 0, y: 0.1, z: 0}

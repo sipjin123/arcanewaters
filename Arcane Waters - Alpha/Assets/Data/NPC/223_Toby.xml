@@ -76,15 +76,16 @@
       <friendshipRankRequired>2</friendshipRankRequired>
     </Quest>
   </Quests>
+  <Gifts>
+    <Gift>
+      <itemTypeId>12</itemTypeId>
+      <rewardedFriendship>0</rewardedFriendship>
+      <itemCategory>6</itemCategory>
+      <color1>0</color1>
+      <color2>0</color2>
+    </Gift>
+  </Gifts>
+  <iconPath>Assets/Sprites/Faces/feather_1.png</iconPath>
   <faction>1</faction>
   <specialty>2</specialty>
-  <Gifts>
-	<Gift>
-		<itemCategory>6</itemCategory>
-        <itemTypeId>12</itemTypeId>
-		<color1>0</color1>
-		<color2>0</color2>
-		<rewardedFriendship>1</rewardedFriendship>
-	</Gift>
-  </Gifts>
 </NPCData>

@@ -1,10 +1,10 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <CraftableItemRequirements xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <blueprintTypeID>0</blueprintTypeID>
   <resultItem>
     <category>Weapon</category>
     <id>0</id>
-    <itemTypeId>151</itemTypeId>
+    <itemTypeId>201</itemTypeId>
     <color1>None</color1>
     <color2>None</color2>
     <count>1</count>
@@ -13,10 +13,18 @@
     <Item>
       <category>CraftingIngredients</category>
       <id>0</id>
-      <itemTypeId>16</itemTypeId>
+      <itemTypeId>4</itemTypeId>
       <color1>None</color1>
       <color2>None</color2>
       <count>3</count>
+    </Item>
+    <Item>
+      <category>CraftingIngredients</category>
+      <id>0</id>
+      <itemTypeId>6</itemTypeId>
+      <color1>None</color1>
+      <color2>None</color2>
+      <count>5</count>
     </Item>
   </combinationRequirements>
 </CraftableItemRequirements>
