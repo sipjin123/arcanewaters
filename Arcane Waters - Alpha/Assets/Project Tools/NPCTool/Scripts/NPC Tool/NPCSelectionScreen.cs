@@ -20,19 +20,24 @@ public class NPCSelectionScreen : MonoBehaviour
 
    // The prefab we use for creating rows
    public NPCSelectionRow npcRowPrefab;
-   
+
+   // The list of the rows created
+   public List<NPCSelectionRow> npcRowList = new List<NPCSelectionRow>();
+
    #endregion
 
    public void updatePanelWithNPCs(Dictionary<int, NPCData> _npcData) {
       // Clear all the rows
       rowsContainer.DestroyChildren();
+      npcRowList = new List<NPCSelectionRow>();
 
       // Create a row for each npc
-      foreach(NPCData npcData in _npcData.Values) {
+      foreach (NPCData npcData in _npcData.Values) {
          // Create a new row
          NPCSelectionRow row = Instantiate(npcRowPrefab, rowsContainer.transform, false);
          row.transform.SetParent(rowsContainer.transform, false);
          row.setRowForNPC(this, npcData.npcId, npcData.name);
+         row.deleteButton.onClick.AddListener(() => deleteNPC(npcData.npcId));
 
          if (npcData.iconPath != "") {
             try {
@@ -44,6 +49,19 @@ public class NPCSelectionScreen : MonoBehaviour
          } else {
             // Should be a NULL Icon
             row.npcIcon.sprite = ImageManager.getSprite("Assets/Sprites/Icons/Stats/icon_luck.png");
+         }
+
+         npcRowList.Add(row);
+      }
+
+      if (!_initSprites) {
+         _initSprites = true;
+         string spritePath = "Assets/Sprites/Faces/";
+         List<ImageManager.ImageData> spriteIconFiles = ImageManager.getSpritesInDirectory(spritePath);
+
+         foreach (ImageManager.ImageData imgData in spriteIconFiles) {
+            Sprite sourceSprite = imgData.sprite;
+            npcEditScreen.iconSpriteList.Add(imgData.imagePath, sourceSprite);
          }
       }
    }
@@ -57,6 +75,19 @@ public class NPCSelectionScreen : MonoBehaviour
 
       // Show the NPC edition screen
       npcEditScreen.show();
+   }
+
+   public void deleteNPC (int npcId) {
+      NPCSelectionRow selectionRow = npcRowList.Find(_ => int.Parse(_.npcIdText.text) == npcId);
+      GameObject rowObj = selectionRow.gameObject;
+      npcRowList.Remove(selectionRow);
+      Destroy(rowObj,.5f);
+
+      // Retrieve the NPC data
+      NPCData data = NPCToolManager.self.getNPCData(npcId);
+
+      // Initialize the NPC edition screen with the data
+      NPCToolManager.self.deleteEntireNPCData(data);
    }
 
    public void createNewNPCButtonClickedOn () {
@@ -82,6 +113,9 @@ public class NPCSelectionScreen : MonoBehaviour
    }
 
    #region Private Variables
+
+   // Determines if the sprites were initialied
+   public bool _initSprites;
 
    #endregion
 }

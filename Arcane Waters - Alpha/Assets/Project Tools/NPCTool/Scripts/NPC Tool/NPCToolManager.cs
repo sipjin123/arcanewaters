@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System.IO;
+using System.Linq;
 
 public class NPCToolManager : MonoBehaviour {
 
@@ -30,21 +31,25 @@ public class NPCToolManager : MonoBehaviour {
       // Build the path to the folder containing the NPC data XML files
       string directoryPath = Path.Combine(Application.dataPath, "Data", "NPC");
 
-      // Get the list of XML files in the folder
-      string[] fileNames = ToolsUtil.getFileNamesInFolder(directoryPath, "*.xml");
+      if (!Directory.Exists(directoryPath)) {
+         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
+      } else {
+         // Get the list of XML files in the folder
+         string[] fileNames = ToolsUtil.getFileNamesInFolder(directoryPath, "*.xml");
 
-      // Iterate over the files
-      for (int i = 0; i < fileNames.Length; i++) {
-         // Build the path to a single file
-         string filePath = Path.Combine(directoryPath, fileNames[i]);
+         // Iterate over the files
+         for (int i = 0; i < fileNames.Length; i++) {
+            // Build the path to a single file
+            string filePath = Path.Combine(directoryPath, fileNames[i]);
 
-         // Read and deserialize the file
-         NPCData npcData = ToolsUtil.xmlLoad<NPCData>(filePath);
+            // Read and deserialize the file
+            NPCData npcData = ToolsUtil.xmlLoad<NPCData>(filePath);
 
-         // Save the NPC data in the memory cache
-         _npcData.Add(npcData.npcId, npcData);
+            // Save the NPC data in the memory cache
+            _npcData.Add(npcData.npcId, npcData);
+         }
+         npcSelectionScreen.updatePanelWithNPCs(_npcData);
       }
-      npcSelectionScreen.updatePanelWithNPCs(_npcData);
    }
 
    public void createNewNPC(int npcId) {
@@ -120,7 +125,20 @@ public class NPCToolManager : MonoBehaviour {
       ToolsUtil.deleteFile(path);
    }
 
+   public void deleteEntireNPCData (NPCData data) {
+      deleteNPCDataFile(data);
+      var myKey = _npcData.FirstOrDefault(x => x.Value == data).Key;
+      _npcData.Remove(myKey);
+   }
+
    private void saveNPCDataToFile (NPCData data) {
+      // Build the path to the folder containing the NPC data XML files
+      string directoryPath = Path.Combine(Application.dataPath, "Data", "NPC");
+
+      if (!Directory.Exists(directoryPath)) {
+         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
+      }
+
       // Build the file name
       string fileName = data.npcId.ToString() + "_" + data.name;
 

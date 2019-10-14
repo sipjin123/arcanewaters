@@ -163,19 +163,13 @@ public class NPCEditScreen : MonoBehaviour
       factionImage.sprite = Faction.getIcon((Faction.Type) faction.value);
       specialtyImage.sprite = Specialty.getIcon((Specialty.Type) specialty.value);
 
-      if (!_initSpriteList) {
-         _initSpriteList = true;
-         string[] spriteIconFiles = Directory.GetFiles(Application.dataPath + "/Sprites/Icons/NPCAvatarIcon", "*.png", SearchOption.AllDirectories);
+      try {
+         avatarIcon.sprite = iconSpriteList[npcData.iconPath];
+      } catch {
 
-         foreach (string spritefile in spriteIconFiles) {
-            string assetPath = "Assets" + spritefile.Replace(Application.dataPath, "").Replace('\\', '/');
-            Sprite sourceSprite = (Sprite) UnityEditor.AssetDatabase.LoadAssetAtPath(assetPath, typeof(Sprite));
-            iconSpriteList.Add(assetPath, sourceSprite);
-         }
       }
 
-      avatarIcon.sprite = iconSpriteList[npcData.iconPath];
-
+      npcIconPath = npcData.iconPath;
       _npcId = npcData.npcId;
       _lastUsedQuestId = npcData.lastUsedQuestId;
 
@@ -392,9 +386,6 @@ public class NPCEditScreen : MonoBehaviour
 
    // The the last used quest id
    private int _lastUsedQuestId;
-
-   // If the sprite list is initialized
-   private bool _initSpriteList;
 
    #endregion
 }

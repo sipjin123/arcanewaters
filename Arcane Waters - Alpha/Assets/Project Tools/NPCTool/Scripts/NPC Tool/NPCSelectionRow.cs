@@ -18,6 +18,9 @@ public class NPCSelectionRow : MonoBehaviour
    // Holds the button icon of the npc
    public Button npcIconButton;
 
+   // Holds the button for the deletion of the npc
+   public Button deleteButton;
+
    #endregion
 
    public void setRowForNPC(NPCSelectionScreen npcSelectionScreen, int npcId, string npcName) {
