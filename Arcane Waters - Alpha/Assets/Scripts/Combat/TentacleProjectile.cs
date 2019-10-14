@@ -33,7 +33,7 @@ public class TentacleProjectile : MonoBehaviour
    public GameObject tentacleProjectile;
 
    // How high the projectile should arch upwards
-   public static float ARCH_HEIGHT = .20f;
+   public static float ARCH_HEIGHT = .60f;
 
    #endregion
 

@@ -14,18 +14,6 @@ public class GenerateScriptableObjects : MonoBehaviour
       Selection.activeObject = asset;
    }
 
-   [MenuItem("Assets/Create/Create CombinationData Object")]
-   public static void Create_CombinationData () {
-      CombinationData asset = ScriptableObject.CreateInstance<CombinationData>();
-      Process(asset);
-   }
-
-   [MenuItem("Assets/Create/Create ComboDataList Object")]
-   public static void Create_ComboDataList () {
-      CombinationDataList asset = ScriptableObject.CreateInstance<CombinationDataList>();
-      Process(asset);
-   }
-
    //[MenuItem("Assets/Create/Create NPCQuestData Object")]
    //public static void Create_NPCQuestData () {
    //   NPCQuestData asset = ScriptableObject.CreateInstance<NPCQuestData>();

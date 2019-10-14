@@ -12,7 +12,7 @@ public class BlueprintRow : MonoBehaviour
    public Text itemName;
 
    // The cached data of the item
-   public Item itemData;
+   public Blueprint itemData;
 
    // An image to indicate the highlighted item
    public Image selectionIndicator;
@@ -22,7 +22,7 @@ public class BlueprintRow : MonoBehaviour
 
    #endregion Public Variables
 
-   public void initData (Item item, Sprite newicon) {
+   public void initData (Blueprint item, Sprite newicon) {
       itemData = item;
       itemName.text = item.getName();
       icon.sprite = newicon;

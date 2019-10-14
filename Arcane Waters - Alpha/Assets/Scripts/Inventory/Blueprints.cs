@@ -15,7 +15,17 @@ public class Blueprint : RecipeItem
    // The Type
    public enum Type
    {
-      None = 0, Sword_1 = 1, Sword_2 = 2, Sword_3 = 3, Sword_4 = 4, Sword_5 = 5,
+      None = 0, Sword_Steel = 1, Staff_Mage = 8, Lance_Steel = 9, Mace_Steel = 10, Mace_Star = 11, Sword_Rune = 12,
+      Sword_1 = 101, Sword_2 = 102, Sword_3 = 103, Sword_4 = 104, Sword_5 = 105,
+      Sword_6 = 106, Sword_7 = 107, Sword_8 = 108,
+      Seeds = 150, Pitchfork = 151, WateringPot = 152,
+
+      Gun_6 = 200, Gun_7 = 201, Gun_2 = 202, Gun_3 = 203,
+
+      Cloth = 301, Leather = 302, Steel = 303, Sash = 304, Tunic = 305,
+      Posh = 306, Formal = 307, Casual = 308, Plate = 309, Wool = 310,
+      Strapped = 311,
+
    }
 
    // The type
@@ -98,6 +108,9 @@ public class Blueprint : RecipeItem
    }
 
    public override string getName () {
+      if (type.ToString() == "") {
+         return "Missing Design";
+      }
       return getName(type)+" Design";
    }
 
@@ -105,39 +118,59 @@ public class Blueprint : RecipeItem
       return getItemData(recipeType).getName();
    }
 
-   private static Item getItemData (Blueprint.Type recipeType) {
+   public static Item getItemData (Blueprint.Type recipeType) {
       string recipepString = recipeType.ToString();
-      Category itemCategory = Category.Weapon;
-      Weapon.Type weaponType = Weapon.Type.None;
 
-      foreach (var item in Enum.GetValues(typeof(Weapon.Type))) {
-         string weaponString = item.ToString();
-         if (recipepString == weaponString) {
-            weaponType = (Weapon.Type) item;
+      Item.Category itemCategory = getEquipmentType(recipeType);
+      if (itemCategory == Category.Weapon) {
+         Weapon.Type weaponType = Weapon.Type.None;
+
+         foreach (var item in Enum.GetValues(typeof(Weapon.Type))) {
+            string weaponString = item.ToString();
+            if (recipepString == weaponString) {
+               weaponType = (Weapon.Type) item;
+            }
          }
+         Weapon newWeapon = new Weapon {
+            category = itemCategory,
+            type = weaponType,
+            itemTypeId = (int) weaponType,
+            id = 0,
+            count = 1,
+         };
+         return newWeapon;
+      } else {
+         Armor.Type armorType = Armor.Type.None;
+
+         foreach (var item in Enum.GetValues(typeof(Armor.Type))) {
+            string armorString = item.ToString();
+            if (recipepString == armorString) {
+               armorType = (Armor.Type) item;
+            }
+         }
+         Armor newArmor = new Armor {
+            category = itemCategory,
+            type = armorType,
+            itemTypeId = (int) armorType,
+            id = 0,
+            count = 1,
+         };
+         return newArmor;
       }
-      Weapon newWeapon = new Weapon {
-         category = itemCategory,
-         type = weaponType,
-         itemTypeId = (int) weaponType,
-         id = 0,
-         count = 1,
-      };
-      return newWeapon;
    }
 
    public static Blueprint getEmpty () {
       return new Blueprint(0, Blueprint.Type.None, ColorType.None, ColorType.None);
    }
 
-   public Item.Category getEquipmentType () {
-      string nameComparison = type.ToString();
+   public static Item.Category getEquipmentType (Blueprint.Type blueprintType) {
+      string nameComparison = blueprintType.ToString();
       foreach (Weapon.Type val in Enum.GetValues(typeof(Weapon.Type))) {
          if (val.ToString() == nameComparison) {
             return Item.Category.Weapon;
          }
       }
-      foreach (Weapon.Type val in Enum.GetValues(typeof(Armor.Type))) {
+      foreach (Armor.Type val in Enum.GetValues(typeof(Armor.Type))) {
          if (val.ToString() == nameComparison) {
             return Item.Category.Armor;
          }

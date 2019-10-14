@@ -74,28 +74,31 @@ public class CraftingPanel : Panel, IPointerClickHandler
    }
 
    private void clickMaterialRow (BlueprintRow currBlueprintRow) {
-      // Un selects previous selected blueprint
-      if (_currBlueprintRow != null) {
-         if (_currBlueprintRow != currBlueprintRow) {
-            _currBlueprintRow.deselectItem();
-         }
-      }
-      // Enables Selection Frame
-      currBlueprintRow.selectItem();
-      _currBlueprintRow = currBlueprintRow;
-
-      int id = currBlueprintRow.itemData.getCastItem().itemTypeId;
-      CombinationData itemCombo = RewardManager.self.combinationDataList.comboDataList.Find(_ => _.blueprintTypeID == id);
-      _craftingIngredientList = itemCombo.combinationRequirements;
-
-      int requirementCount = itemCombo.combinationRequirements.Count;
-      int passedRequirementCount = 0;
+      Blueprint currItem = currBlueprintRow.itemData;
+      Item convertedItem = Blueprint.getItemData(currItem.type);
+      CraftableItemRequirements itemCombo = RewardManager.self.craftableDataList.Find(_ => _.resultItem.category == Blueprint.getEquipmentType((Blueprint.Type)currItem.type) && _.resultItem.itemTypeId == convertedItem.itemTypeId);
 
       if (itemCombo == null) {
          D.error("Item does not exist");
+         currBlueprintRow.itemName.text = "Missing Data";
       } else {
+         // Un selects previous selected blueprint
+         if (_currBlueprintRow != null) {
+            if (_currBlueprintRow != currBlueprintRow) {
+               _currBlueprintRow.deselectItem();
+            }
+         }
+         // Enables Selection Frame
+         currBlueprintRow.selectItem();
+         _currBlueprintRow = currBlueprintRow;
+
+         _craftingIngredientList = itemCombo.combinationRequirements;
+
+         int requirementCount = itemCombo.combinationRequirements.Count;
+         int passedRequirementCount = 0;
+
          // Clears previous requirement list
-         for(int i = 0; i < craftingRowList.Count; i++) {
+         for (int i = 0; i < craftingRowList.Count; i++) {
             craftingRowList[i].purgeData();
          }
 
@@ -131,7 +134,12 @@ public class CraftingPanel : Panel, IPointerClickHandler
 
          // Updates the Icon and description of the item
          previewItem();
-         characterStack.updateWeapon(_userObjects.userInfo.gender, (Weapon.Type) craftableItem.itemTypeId, ColorType.Black, ColorType.Blue);
+
+         if (craftableItem.category == Item.Category.Weapon) {
+            characterStack.updateWeapon(_userObjects.userInfo.gender, (Weapon.Type) craftableItem.itemTypeId, ColorType.Black, ColorType.Blue);
+         } else if (craftableItem.category == Item.Category.Armor) {
+            characterStack.updateArmor(_userObjects.userInfo.gender, (Armor.Type) craftableItem.itemTypeId, ColorType.Black, ColorType.Blue);
+         }
       }
    }
 
@@ -147,7 +155,7 @@ public class CraftingPanel : Panel, IPointerClickHandler
          Item item = craftableItem;
 
          // Tells the server the item was crafted
-         Global.player.rpc.Cmd_CraftItem((Blueprint.Type)_currBlueprintRow.itemData.itemTypeId);
+         Global.player.rpc.Cmd_CraftItem(Blueprint.getEquipmentType((Blueprint.Type)item.itemTypeId), _currBlueprintRow.itemData.itemTypeId);
 
          PanelManager.self.get(Type.Craft).hide();
          craftableItem = null;
@@ -158,7 +166,7 @@ public class CraftingPanel : Panel, IPointerClickHandler
       itemTitleText.text = "";
       itemInfoText.text = "";
 
-      List<CombinationData> dataList = RewardManager.self.combinationDataList.comboDataList;
+      List<CraftableItemRequirements> dataList = RewardManager.self.craftableDataList;
       itemInfoText.text = "A blueprint design for: "+craftableItem.getDescription();
       itemTitleText.text = craftableItem.getName() + " Design";
    }
@@ -191,20 +199,19 @@ public class CraftingPanel : Panel, IPointerClickHandler
             int ingredient = itemData.itemTypeId;
             Blueprint blueprint = new Blueprint(0, ingredient, ColorType.DarkGreen, ColorType.DarkPurple, "");
             blueprint.itemTypeId = (int) blueprint.type;
-            Item item = blueprint;
 
             // Determines what icon to preview in crafting panel
             Sprite blueprintIcon = emptyImage;
-            if (blueprint.getEquipmentType() == Item.Category.Weapon) {
+            if (Blueprint.getEquipmentType(blueprint.type) == Item.Category.Weapon) {
                blueprintIcon = weaponBlueprintIcon;
-            } else if (blueprint.getEquipmentType() == Item.Category.Armor) {
+            } else if (Blueprint.getEquipmentType(blueprint.type) == Item.Category.Armor) {
                blueprintIcon = armorBlueprintIcon;
             }
 
             blueprintRow.button.onClick.AddListener(() => {
                clickMaterialRow(blueprintRow);
             });
-            blueprintRow.initData(item, blueprintIcon);
+            blueprintRow.initData(blueprint, blueprintIcon);
             prefab.SetActive(true);
          }
          else if (itemData.category == Item.Category.CraftingIngredients) {

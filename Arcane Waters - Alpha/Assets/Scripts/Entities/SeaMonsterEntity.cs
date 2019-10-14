@@ -615,7 +615,7 @@ public class SeaMonsterEntity : SeaEntity
 
       if (seaMonsterData.roleType == RoleType.Master) {
          foreach (SeaMonsterEntity childEntity in seaMonsterChildrenList) {
-            childEntity.notifyChildrenOfDeath();
+            NetworkServer.Destroy(childEntity.gameObject);
          }
       }
 
@@ -623,11 +623,6 @@ public class SeaMonsterEntity : SeaEntity
       if (seaMonsterData.shouldDropTreasure) {
          spawnChest();
       }
-   }
-
-   public void notifyChildrenOfDeath() {
-      // Destroy the object
-      NetworkServer.Destroy(this.gameObject);
    }
 
    [Server]

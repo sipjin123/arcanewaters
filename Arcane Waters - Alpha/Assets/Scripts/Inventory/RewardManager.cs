@@ -9,7 +9,7 @@ public class RewardManager : MonoBehaviour {
    #region Public Variables
 
    // List of items that can be crafted
-   public CombinationDataList combinationDataList;
+   public List<CraftableItemRequirements> craftableDataList;
 
    // Self reference
    public static RewardManager self;
@@ -24,6 +24,10 @@ public class RewardManager : MonoBehaviour {
 
    private void Awake () {
       self = this;
+   }
+
+   private void Start () {
+      craftableDataList = CraftingManager.self.getAllCraftableData();
    }
 
    public void showItemsInRewardPanel (List<Item> loots) {

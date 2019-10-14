@@ -1428,8 +1428,8 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_CraftItem (Blueprint.Type blueprintType) {
-      validateCraftingRewards(_player.userId, blueprintType);
+   public void Cmd_CraftItem (Item.Category category, int itemType) {
+      validateCraftingRewards(_player.userId, category, itemType);
    }
 
    [TargetRpc]
@@ -1459,8 +1459,8 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Server]
-   public void validateCraftingRewards (int userId, Blueprint.Type blueprintType) {
-      CombinationData data = RewardManager.self.combinationDataList.comboDataList.Find(_ => _.blueprintTypeID == (int) blueprintType);
+   public void validateCraftingRewards (int userId, Item.Category category, int itemType) {
+      CraftableItemRequirements data = RewardManager.self.craftableDataList.Find(_ => _.resultItem.category == category && _.resultItem.itemTypeId == itemType);
   
       List<CraftingIngredients.Type> requiredItemList = new List<CraftingIngredients.Type>();
       for (int i = 0; i < data.combinationRequirements.Count; i++) {
@@ -1484,15 +1484,15 @@ public class RPCManager : NetworkBehaviour {
                }
             }
 
-            processCraftingRewards(userId, blueprintType, databaseItemList, data.combinationRequirements);
+            processCraftingRewards(userId, category, itemType, databaseItemList, data.combinationRequirements);
          });
       });
    }
 
    [Server]
-   private void processCraftingRewards (int userId, Blueprint.Type blueprintType, List<Item> databaseItems, List<Item> requiredItems) {
+   private void processCraftingRewards (int userId, Item.Category category, int itemType, List<Item> databaseItems, List<Item> requiredItems) {
       // Gets the crafting result using cached scriptable object combo data
-      CombinationData data = RewardManager.self.combinationDataList.comboDataList.Find(_ => _.blueprintTypeID == (int) blueprintType);
+      CraftableItemRequirements data = RewardManager.self.craftableDataList.Find(_ => _.resultItem.category == category && _.resultItem.itemTypeId == itemType);
       Item rewardItem = data.resultItem;
       List<Item> rewardItemList = new List<Item>();
 
@@ -1715,7 +1715,14 @@ public class RPCManager : NetworkBehaviour {
       bot.variety = (variety);
 
       Instance instance = InstanceManager.self.getInstance(_player.instanceId);
-      SeaMonsterEntity parentEntity = instance.entities.Find(_ => _.netId == parentEntityID).GetComponent<SeaMonsterEntity>();
+      SeaMonsterEntity parentEntity = null;
+      foreach (var temp in instance.entities) {
+         if (temp != null) {
+            if (temp.netId == parentEntityID) {
+               parentEntity = temp.GetComponent<SeaMonsterEntity>();
+            }
+         } 
+      }
 
       bot.seaMonsterParentEntity = parentEntity;
       parentEntity.seaMonsterChildrenList.Add(bot);
@@ -1743,15 +1750,16 @@ public class RPCManager : NetworkBehaviour {
 
       float distanceGap = .25f;
       float diagonalDistanceGap = .35f;
+      uint parentID = bot.netIdent.netId;
 
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(distanceGap, -distanceGap), bot.netId, 1, -1, 1, Enemy.Type.Tentacle);
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(-distanceGap, -distanceGap), bot.netId, -1, -1, 0, Enemy.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(distanceGap, -distanceGap), parentID, 1, -1, 1, Enemy.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(-distanceGap, -distanceGap), parentID, -1, -1, 0, Enemy.Type.Tentacle);
 
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(distanceGap, distanceGap), bot.netId, 1, 1, 1, Enemy.Type.Tentacle);
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(-distanceGap, distanceGap), bot.netId, -1, 1, 0, Enemy.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(distanceGap, distanceGap), parentID, 1, 1, 1, Enemy.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(-distanceGap, distanceGap), parentID, -1, 1, 0, Enemy.Type.Tentacle);
 
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(-diagonalDistanceGap, 0), bot.netId, -1, 0, 1, Enemy.Type.Tentacle);
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(diagonalDistanceGap, 0), bot.netId, 1, 0, 0, Enemy.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(-diagonalDistanceGap, 0), parentID, -1, 0, 1, Enemy.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(diagonalDistanceGap, 0), parentID, 1, 0, 0, Enemy.Type.Tentacle);
    }
 
    [Command]

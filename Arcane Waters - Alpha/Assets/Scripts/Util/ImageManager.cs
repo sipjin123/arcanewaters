@@ -62,6 +62,12 @@ public class ImageManager : ClientMonoBehaviour {
       return self.getSpritesFromTexture(texture);
    }
 
+   public static List<ImageData> getSpritesInDirectory (string path) {
+      List<ImageData> imgDataList = self.imageDataList.FindAll(_ => _.imagePath.Contains(path));
+
+      return imgDataList;
+   }
+
    public static Sprite[] getSprites (string path) {
       return self.getSpritesFromPath(path);
    }
