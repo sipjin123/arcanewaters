@@ -17,10 +17,7 @@ public class CraftingManager : MonoBehaviour {
 
    public void Awake () {
       self = this;
-   }
-
-   private void Start () {
-      initializeQuestCache();
+      initializeCraftCache();
    }
 
    public CraftableItemRequirements getItem(Item.Category itemCategory, int itemType) {
@@ -35,7 +32,7 @@ public class CraftingManager : MonoBehaviour {
       return craftableList;
    }
 
-   public void initializeQuestCache () {
+   public void initializeCraftCache () {
       // Iterate over the files
       foreach (TextAsset textAsset in craftingDataAssets) {
          // Read and deserialize the file

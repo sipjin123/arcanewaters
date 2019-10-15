@@ -31,8 +31,15 @@ public class SpriteLayer : RecoloredSprite {
          yield return new WaitForEndOfFrame();
       }
 
-      // Set the new texture and wait another frame
-      GetComponent<SpriteSwap>().newTexture = newTexture;
+      if (newTexture == null) {
+         Texture2D emptySprite = ImageManager.getTexture("Assets/Sprites/empty_layer");
+
+         // Set the new texture and wait another frame
+         GetComponent<SpriteSwap>().newTexture = emptySprite;
+      } else {
+         // Set the new texture and wait another frame
+         GetComponent<SpriteSwap>().newTexture = newTexture;
+      }
       yield return new WaitForEndOfFrame();
 
       // Now we can enable the sprite again

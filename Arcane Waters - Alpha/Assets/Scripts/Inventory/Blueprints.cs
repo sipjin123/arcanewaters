@@ -11,39 +11,23 @@ using MySql.Data.MySqlClient;
 public class Blueprint : RecipeItem
 {
    #region Public Variables
-
-   // The Type
-   public enum Type
-   {
-      None = 0, Sword_Steel = 1, Staff_Mage = 8, Lance_Steel = 9, Mace_Steel = 10, Mace_Star = 11, Sword_Rune = 12,
-      Sword_1 = 101, Sword_2 = 102, Sword_3 = 103, Sword_4 = 104, Sword_5 = 105,
-      Sword_6 = 106, Sword_7 = 107, Sword_8 = 108,
-      Seeds = 150, Pitchfork = 151, WateringPot = 152,
-
-      Gun_6 = 200, Gun_7 = 201, Gun_2 = 202, Gun_3 = 203,
-
-      Cloth = 301, Leather = 302, Steel = 303, Sash = 304, Tunic = 305,
-      Posh = 306, Formal = 307, Casual = 308, Plate = 309, Wool = 310,
-      Strapped = 311,
-
-   }
-
-   // The type
-   public Type type;
-
+   
    // The type of blueprint equipment if Weapon or Armor
    public Item.Category equipmentType;
+
+   // The id of the blueprint items //prefix 100 for weapons, prefix 200 for armors
+   public int bpTypeID;
 
    #endregion Public Variables
 
    public Blueprint () {
-      this.type = Type.None;
+      this.bpTypeID = 1000;
    }
 
 #if IS_SERVER_BUILD
 
    public Blueprint (MySqlDataReader dataReader) {
-      this.type = (Blueprint.Type) DataUtil.getInt(dataReader, "itmType");
+      this.bpTypeID = DataUtil.getInt(dataReader, "itmType");
       this.id = DataUtil.getInt(dataReader, "itmId");
       this.category = (Item.Category) DataUtil.getInt(dataReader, "itmCategory");
       this.itemTypeId = DataUtil.getInt(dataReader, "itmType");
@@ -62,10 +46,10 @@ public class Blueprint : RecipeItem
 
 #endif
 
-   public Blueprint (int id, Blueprint.Type recipeType, int primaryColorId, int secondaryColorId) {
+   public Blueprint (int id, int recipeType, int primaryColorId, int secondaryColorId) {
       this.category = Category.Blueprint;
       this.id = id;
-      this.type = recipeType;
+      this.bpTypeID = recipeType;
       this.itemTypeId = (int) recipeType;
       this.count = 1;
       this.color1 = (ColorType) primaryColorId;
@@ -73,10 +57,10 @@ public class Blueprint : RecipeItem
       this.data = "";
    }
 
-   public Blueprint (int id, Blueprint.Type recipeType, ColorType primaryColorId, ColorType secondaryColorId) {
+   public Blueprint (int id, int recipeType, ColorType primaryColorId, ColorType secondaryColorId) {
       this.category = Category.Blueprint;
       this.id = id;
-      this.type = recipeType;
+      this.bpTypeID = recipeType;
       this.itemTypeId = (int) recipeType;
       this.count = 1;
       this.color1 = primaryColorId;
@@ -89,14 +73,14 @@ public class Blueprint : RecipeItem
       this.id = id;
       this.count = count;
       this.itemTypeId = itemTypeId;
-      this.type = (Type) itemTypeId;
+      this.bpTypeID = itemTypeId;
       this.color1 = color1;
       this.color2 = color2;
       this.data = data;
    }
 
    public override string getDescription () {
-      return "A blueprint design for: "+getItemData(type).getDescription();
+      return "A blueprint design for: "+getItemData(bpTypeID).getDescription();
    }
 
    public override string getTooltip () {
@@ -108,17 +92,32 @@ public class Blueprint : RecipeItem
    }
 
    public override string getName () {
-      if (type.ToString() == "") {
-         return "Missing Design";
+      string currName = "";
+      string idString = bpTypeID.ToString();
+      Item.Category newCategory = getEquipmentType(bpTypeID);
+
+      switch (newCategory) {
+         case Category.Armor:
+            idString = idString.Replace("200", "");
+            currName = ((Armor.Type) int.Parse(idString)).ToString();
+            break;
+         case Category.Weapon:
+            idString = idString.Replace("100", "");
+            currName = ((Weapon.Type) int.Parse(idString)).ToString();
+            break;
       }
-      return getName(type)+" Design";
+
+      if (newCategory == Category.Weapon || newCategory == Category.Armor) {
+         return getName(bpTypeID) + " Design";
+      }
+      return "Missing Design";
    }
 
-   public static string getName (Blueprint.Type recipeType) {
-      return getItemData(recipeType).getName();
+   public static string getName (int recipeTypeID) {
+      return getItemData(recipeTypeID).getName();
    }
 
-   public static Item getItemData (Blueprint.Type recipeType) {
+   public static Item getItemData (int recipeType) {
       string recipepString = recipeType.ToString();
 
       Item.Category itemCategory = getEquipmentType(recipeType);
@@ -127,7 +126,8 @@ public class Blueprint : RecipeItem
 
          foreach (var item in Enum.GetValues(typeof(Weapon.Type))) {
             string weaponString = item.ToString();
-            if (recipepString == weaponString) {
+            recipepString = recipepString.Replace("100", "");
+            if (recipepString == ((int)item).ToString()) {
                weaponType = (Weapon.Type) item;
             }
          }
@@ -144,7 +144,8 @@ public class Blueprint : RecipeItem
 
          foreach (var item in Enum.GetValues(typeof(Armor.Type))) {
             string armorString = item.ToString();
-            if (recipepString == armorString) {
+            recipepString = recipepString.Replace("200", "");
+            if (recipepString == ((int)item).ToString()) {
                armorType = (Armor.Type) item;
             }
          }
@@ -160,19 +161,33 @@ public class Blueprint : RecipeItem
    }
 
    public static Blueprint getEmpty () {
-      return new Blueprint(0, Blueprint.Type.None, ColorType.None, ColorType.None);
+      return new Blueprint(0, 1000, ColorType.None, ColorType.None);
    }
 
-   public static Item.Category getEquipmentType (Blueprint.Type blueprintType) {
-      string nameComparison = blueprintType.ToString();
-      foreach (Weapon.Type val in Enum.GetValues(typeof(Weapon.Type))) {
-         if (val.ToString() == nameComparison) {
-            return Item.Category.Weapon;
-         }
+   public static Item.Category getEquipmentType (int blueprintType) {
+      Item.Category prefixCategory = Category.None;
+      string prefixExtracted = "";
+      if (blueprintType.ToString()[0] == '1') {
+         prefixCategory = Category.Weapon;
+         prefixExtracted = "100";
+      } else if (blueprintType.ToString()[0] == '2') {
+         prefixCategory = Category.Armor;
+         prefixExtracted = "200";
       }
-      foreach (Armor.Type val in Enum.GetValues(typeof(Armor.Type))) {
-         if (val.ToString() == nameComparison) {
-            return Item.Category.Armor;
+      
+      int idComparison = int.Parse(blueprintType.ToString().Replace(prefixExtracted,""));
+
+      if (prefixCategory == Category.Weapon) {
+         foreach (Weapon.Type val in Enum.GetValues(typeof(Weapon.Type))) {
+            if ((int) val == idComparison) {
+               return Item.Category.Weapon;
+            }
+         }
+      } else if (prefixCategory == Category.Armor) {
+         foreach (Armor.Type val in Enum.GetValues(typeof(Armor.Type))) {
+            if ((int) val == idComparison) {
+               return Item.Category.Armor;
+            }
          }
       }
 
@@ -180,13 +195,10 @@ public class Blueprint : RecipeItem
    }
 
    public override bool canBeTrashed () {
-      switch (this.type) {
-         default:
-            return base.canBeTrashed();
-      }
+      return base.canBeTrashed();
    }
 
    public override string getIconPath () {
-      return "Icons/Blueprint/" + this.type;
+      return "Icons/Blueprint/" + this.bpTypeID;
    }
 }

@@ -80,8 +80,12 @@ public class DebugButtons : NetworkBehaviour
                      itemTypeName = "Item Type: " + (Armor.Type) itemTypeID;
                      break;
                   case Item.Category.Blueprint:
-                     itemTypeID = Mathf.Clamp(itemTypeID, 0, System.Enum.GetNames(typeof(Blueprint.Type)).Length - 1);
-                     itemTypeName = "Item Type: " + (Blueprint.Type) itemTypeID;
+                     Item.Category newCategory = Blueprint.getEquipmentType(itemTypeID);
+                     if (newCategory == Item.Category.Weapon) {
+                        itemTypeName = "Item Type: " + Blueprint.getName(itemTypeID);
+                     } else if (newCategory == Item.Category.Armor) {
+                        itemTypeName = "Item Type: " + Blueprint.getName(itemTypeID);
+                     }
                      break;
                   case Item.Category.Weapon:
                      itemTypeID = Mathf.Clamp(itemTypeID, 0, System.Enum.GetNames(typeof(Weapon.Type)).Length - 1);

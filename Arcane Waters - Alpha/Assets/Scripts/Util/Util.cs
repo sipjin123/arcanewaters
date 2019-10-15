@@ -65,7 +65,7 @@ public class Util : MonoBehaviour {
             itemTypeName = ((Armor.Type) typeID).ToString();
             break;
          case Item.Category.Blueprint:
-            itemTypeName = ((Blueprint.Type) typeID).ToString();
+            itemTypeName = Blueprint.getEquipmentType(typeID).ToString();
             break;
          case Item.Category.Weapon:
             itemTypeName = ((Weapon.Type) typeID).ToString();
@@ -91,9 +91,6 @@ public class Util : MonoBehaviour {
             break;
          case Item.Category.Armor:
             newType = typeof(Armor.Type);
-            break;
-         case Item.Category.Blueprint:
-            newType = typeof(Blueprint.Type);
             break;
          case Item.Category.Weapon:
             newType = typeof(Weapon.Type);

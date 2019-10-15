@@ -73,8 +73,8 @@ public class OfflineCharacter : ClientMonoBehaviour {
       this.userId = userInfo.userId;
 
       setBodyLayers(userInfo);
-      setWeapon(userInfo, weapon);
       setArmor(armor.type, armorColor1, armorColor2);
+      setWeapon(userInfo, weapon);
    }
 
    public void setBodyLayers (UserInfo userInfo) {

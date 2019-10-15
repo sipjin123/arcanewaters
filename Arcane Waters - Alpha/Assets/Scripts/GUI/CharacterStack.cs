@@ -32,9 +32,8 @@ public class CharacterStack : MonoBehaviour {
       eyesLayer.setType(info.eyesType);
       eyesLayer.recolor(info.eyesColor1, info.eyesColor1);
       updateHair(info.hairType, info.hairColor1, info.hairColor2);
-      updateWeapon(info.gender, userObjects.weapon.type, userObjects.weaponColor1, userObjects.weaponColor2);
       updateArmor(info.gender, userObjects.armor.type, userObjects.armorColor1, userObjects.armorColor2);
-      
+      updateWeapon(info.gender, userObjects.weapon.type, userObjects.weaponColor1, userObjects.weaponColor2);
    }
 
    public void updateWeapon (Gender.Type gender, Weapon.Type weaponType, ColorType color1, ColorType color2) {

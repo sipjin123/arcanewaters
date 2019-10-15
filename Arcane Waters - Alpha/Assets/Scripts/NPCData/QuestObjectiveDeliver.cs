@@ -108,7 +108,7 @@ public class QuestObjectiveDeliver : QuestObjective
             builder.Append(CraftingIngredients.getName((CraftingIngredients.Type) itemTypeId));
             break;
          case Item.Category.Blueprint:
-            builder.Append(Blueprint.getName((Blueprint.Type) itemTypeId));
+            builder.Append(Blueprint.getName(itemTypeId));
             break;
          default:
             break;

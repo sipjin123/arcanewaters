@@ -75,8 +75,9 @@ public class CraftingPanel : Panel, IPointerClickHandler
 
    private void clickMaterialRow (BlueprintRow currBlueprintRow) {
       Blueprint currItem = currBlueprintRow.itemData;
-      Item convertedItem = Blueprint.getItemData(currItem.type);
-      CraftableItemRequirements itemCombo = RewardManager.self.craftableDataList.Find(_ => _.resultItem.category == Blueprint.getEquipmentType((Blueprint.Type)currItem.type) && _.resultItem.itemTypeId == convertedItem.itemTypeId);
+      Item convertedItem = Blueprint.getItemData(currItem.itemTypeId);
+
+      CraftableItemRequirements itemCombo = RewardManager.self.craftableDataList.Find(_ => _.resultItem.category == Blueprint.getEquipmentType(currItem.itemTypeId) && _.resultItem.itemTypeId == convertedItem.itemTypeId);
 
       if (itemCombo == null) {
          D.error("Item does not exist");
@@ -155,7 +156,7 @@ public class CraftingPanel : Panel, IPointerClickHandler
          Item item = craftableItem;
 
          // Tells the server the item was crafted
-         Global.player.rpc.Cmd_CraftItem(Blueprint.getEquipmentType((Blueprint.Type)item.itemTypeId), _currBlueprintRow.itemData.itemTypeId);
+         Global.player.rpc.Cmd_CraftItem(Blueprint.getEquipmentType(_currBlueprintRow.itemData.itemTypeId), item.itemTypeId);
 
          PanelManager.self.get(Type.Craft).hide();
          craftableItem = null;
@@ -198,13 +199,13 @@ public class CraftingPanel : Panel, IPointerClickHandler
             // Setting up the data of the blueprint template
             int ingredient = itemData.itemTypeId;
             Blueprint blueprint = new Blueprint(0, ingredient, ColorType.DarkGreen, ColorType.DarkPurple, "");
-            blueprint.itemTypeId = (int) blueprint.type;
+            blueprint.itemTypeId = ingredient;
 
             // Determines what icon to preview in crafting panel
             Sprite blueprintIcon = emptyImage;
-            if (Blueprint.getEquipmentType(blueprint.type) == Item.Category.Weapon) {
+            if (Blueprint.getEquipmentType(blueprint.itemTypeId) == Item.Category.Weapon) {
                blueprintIcon = weaponBlueprintIcon;
-            } else if (Blueprint.getEquipmentType(blueprint.type) == Item.Category.Armor) {
+            } else if (Blueprint.getEquipmentType(blueprint.itemTypeId) == Item.Category.Armor) {
                blueprintIcon = armorBlueprintIcon;
             }
 
