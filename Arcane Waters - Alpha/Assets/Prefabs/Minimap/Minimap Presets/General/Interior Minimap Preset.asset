@@ -1,0 +1,1046 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0886f0a5f4d4ac646b12c0bb78a3f62a, type: 3}
+  m_Name: Interior Minimap Preset
+  m_EditorClassIdentifier: 
+  _minimapsPath: /Sprites/Minimaps/
+  imagePrefixName: 
+  imageSuffixName: 
+  _textureSize: {x: 64, y: 64}
+  useBackground: 1
+  backgroundColor: {r: 0, g: 0, b: 0, a: 1}
+  useOutline: 1
+  outlineColor: {r: 0.2901961, g: 0.15686275, b: 0.25882354, a: 1}
+  mapTypeNames:
+  - Interior
+  - House
+  biome: 
+  _tileLayer:
+  - Name: Floor
+    color: {r: 0.6117647, g: 0.64705884, b: 0.5921569, a: 1}
+    description: floor 1
+    isSubLayer: 0
+    subLayerSpriteSuffixNames: []
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Floor
+    color: {r: 0.6392157, g: 0.52156866, b: 0.38823533, a: 1}
+    description: floor 2
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _5
+    - _45
+    - _46
+    - _47
+    - _65
+    - _67
+    - _85
+    - _86
+    - _87
+    - _346
+    - _347
+    - _348
+    - _366
+    - _367
+    - _252
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: FloorDetail
+    color: {r: 0, g: 0, b: 0, a: 0.3137255}
+    description: 
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _25
+    - _231
+    - _232
+    - _233
+    - _251
+    - _253
+    - _271
+    - _272
+    - _273
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Rugs
+    color: {r: 0.227451, g: 0.36078432, b: 0.30588236, a: 1}
+    description: green rug
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _147
+    - _148
+    - _149
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Rugs
+    color: {r: 0.454902, g: 0.15686275, b: 0.32156864, a: 1}
+    description: red rug
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _167
+    - _168
+    - _169
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Rugs
+    color: {r: 0.31764707, g: 0.28627452, b: 0.43921572, a: 1}
+    description: purple rug
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _187
+    - _188
+    - _189
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Rugs
+    color: {r: 0.3529412, g: 0.24705884, b: 0.2784314, a: 1}
+    description: brown rug
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _207
+    - _208
+    - _209
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Wall
+    color: {r: 0.63529414, g: 0.64705884, b: 0.6039216, a: 1}
+    description: grey part
+    isSubLayer: 0
+    subLayerSpriteSuffixNames: []
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Wall
+    color: {r: 0.49411768, g: 0.2627451, b: 0.33333334, a: 1}
+    description: red part
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _41
+    - _42
+    - _43
+    - _160
+    - _163
+    - _144
+    - _164
+    - _84
+    - _104
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Wall
+    color: {r: 0.35686275, g: 0.40784317, b: 0.45098042, a: 1}
+    description: rock part
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _180
+    - _181
+    - _182
+    - _183
+    - _184
+    - _200
+    - _203
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Wall
+    color: {r: 0.47058827, g: 0.69803923, b: 0.70980394, a: 1}
+    description: window
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _145
+    - _146
+    - _165
+    - _166
+    - _185
+    - _186
+    - _205
+    - _206
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Wall
+    color: {r: 0.2901961, g: 0.15686275, b: 0.25882354, a: 1}
+    description: door frame
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _64
+    - _84
+    - _104
+    - _124
+    - _144
+    - _164
+    - _220
+    - _221
+    - _222
+    - _240
+    - _242
+    - _260
+    - _262
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: WallDetail
+    color: {r: 0.47058827, g: 0.69803923, b: 0.70980394, a: 1}
+    description: Window
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _145
+    - _146
+    - _165
+    - _166
+    - _185
+    - _186
+    - _205
+    - _206
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: WallDetail
+    color: {r: 0.2901961, g: 0.15686275, b: 0.25882354, a: 1}
+    description: door frame
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _64
+    - _84
+    - _104
+    - _124
+    - _144
+    - _164
+    - _220
+    - _221
+    - _222
+    - _240
+    - _242
+    - _260
+    - _262
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: WallDetail
+    color: {r: 0.12941177, g: 0.09411766, b: 0.16078432, a: 1}
+    description: door
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _246
+    - _266
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Furniture 2
+    color: {r: 0.6, g: 0.4784314, b: 0.29803923, a: 1}
+    description: Boxes
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _75
+    - _95
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Furniture
+    color: {r: 0.4901961, g: 0.3921569, b: 0.3019608, a: 1}
+    description: table
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _8
+    - _9
+    - _10
+    - _28
+    - _29
+    - _30
+    - _292
+    - _293
+    - _294
+    - _312
+    - _313
+    - _314
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Furniture
+    color: {r: 0.40000004, g: 0.27450982, b: 0.29411766, a: 1}
+    description: table legs
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _48
+    - _50
+    - _332
+    - _334
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Furniture
+    color: {r: 0.5058824, g: 0.40784317, b: 0.3137255, a: 1}
+    description: bar counter
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _11
+    - _31
+    - _51
+    - _52
+    - _53
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Furniture
+    color: {r: 0.40000004, g: 0.27450982, b: 0.29411766, a: 1}
+    description: bar counter bottom
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _71
+    - _72
+    - _73
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Furniture
+    color: {r: 0.42352945, g: 0.5019608, b: 0.5019608, a: 1}
+    description: steel
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _254
+    - _154
+    - _155
+    - _135
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Furniture
+    color: {r: 0.6, g: 0.4784314, b: 0.29803923, a: 1}
+    description: Boxes
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _75
+    - _95
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Furniture
+    color: {r: 1, g: 0.6784314, b: 0.2392157, a: 1}
+    description: furnace
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _234
+    - _235
+    - _236
+    - _237
+    - _238
+    - _239
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Furniture
+    color: {r: 0.31764707, g: 0.28627452, b: 0.43921572, a: 1}
+    description: furnace
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _214
+    - _215
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Furniture
+    color: {r: 0.42352945, g: 0.5019608, b: 0.5019608, a: 1}
+    description: furnace
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _194
+    - _195
+    - _174
+    - _175
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Furniture
+    color: {r: 0.6745098, g: 0.20000002, b: 0.34117648, a: 1}
+    description: Bed
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _306
+    - _307
+    - _308
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Furniture
+    color: {r: 0.4039216, g: 0.36078432, b: 0.6392157, a: 1}
+    description: Bed
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _309
+    - _310
+    - _311
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Furniture
+    color: {r: 0.48235297, g: 0.32156864, b: 0.2901961, a: 1}
+    description: Bed
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _329
+    - _330
+    - _331
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Furniture
+    color: {r: 0.9450981, g: 0.9843138, b: 0.9960785, a: 1}
+    description: Bed
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _286
+    - _287
+    - _288
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Furniture
+    color: {r: 0.3773585, g: 0.25685713, b: 0.250979, a: 1}
+    description: Cabinets
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _190
+    - _191
+    - _210
+    - _211
+    - _172
+    - _173
+    - _192
+    - _193
+    - _212
+    - _213
+    - _283
+    - _284
+    - _303
+    - _304
+    - _323
+    - _324
+    - _340
+    - _341
+    - _360
+    - _361
+    - _380
+    - _381
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Furniture
+    color: {r: 0.3773585, g: 0.25685713, b: 0.250979, a: 1}
+    description: Cabinets
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _276
+    - _277
+    - _278
+    - _315
+    - _316
+    - _317
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Furniture 2
+    color: {r: 0.3773585, g: 0.25685713, b: 0.250979, a: 1}
+    description: Cabinets
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _276
+    - _277
+    - _278
+    - _315
+    - _316
+    - _317
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  _tileIconLayers: []

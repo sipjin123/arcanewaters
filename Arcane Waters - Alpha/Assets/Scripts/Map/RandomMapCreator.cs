@@ -59,6 +59,12 @@ public static class RandomMapCreator {
          return null;
       }
 
+      // Get area root object
+      Area area = AreaManager.self.getArea(mapConfig.areaType);
+      if (area.GetComponentInChildren<Grid>()) {
+         GameObject.Destroy(area.GetComponentInChildren<Grid>());
+      }
+
       GameObject generatedMap = GenerateMap(preset, mapConfig);
 
       if (generatedMap == null) {
@@ -71,9 +77,6 @@ public static class RandomMapCreator {
 
       // Scale down the generated map
       generatedMap.transform.localScale = new Vector3(mapScale, mapScale, mapScale);
-
-      // Get area root object
-      Area area = AreaManager.self.getArea(mapConfig.areaType);
 
       // Set the parent and local position
       generatedMap.transform.SetParent(area.transform, false);
@@ -169,6 +172,9 @@ public static class RandomMapCreator {
       // Detect borders for any land - used for finding tight passages
       List<Vector3Int> nearWaterLandList = null;
 
+      // Randomly spawned treasure sites
+      List<Vector3Int> treasureSites = null;
+
       for (int i = 0; i < preset.layers.Length; i++) {
          grid = new Node[preset.mapSize.x, preset.mapSize.y];
          if (preset.layers[i].name == preset.river.layerToPlaceRiver) {
@@ -231,6 +237,11 @@ public static class RandomMapCreator {
          }
 
          SetObjects(preset, gridLayers, availableTiles, i);
+
+         // Already spawned water - continue with creating treasure sites; It is needed to manipulate land tiles around treasure sites
+         if (lowestLandIndex == i) {
+            treasureSites = SpawnTreasureSites(preset, gridLayers, lowLandBorderList, oceanTiles, preset.seed, mapConfig.areaType, noiseMap);
+         }
       }
 
 #if UNITY_EDITOR
@@ -241,7 +252,7 @@ public static class RandomMapCreator {
 #endif
 
       // Spawn at the very end when all tiles are set
-      List<Vector3Int> treasureSites = SpawnTreasureSites(preset, gridLayers, lowLandBorderList, oceanTiles, preset.seed, mapConfig.areaType);
+      //List<Vector3Int> treasureSites = SpawnTreasureSites(preset, gridLayers, lowLandBorderList, oceanTiles, preset.seed, mapConfig.areaType, noiseMap);
 
       // Spawn at the very end when all tiles are set
       SpawnSeaMonsters(preset, gridLayers, oceanTiles, nearWaterLandList, treasureSites, preset.seed, mapConfig.areaType);
@@ -1085,7 +1096,7 @@ public static class RandomMapCreator {
       return size;
    }
 
-   static List<Vector3Int> SpawnTreasureSites (MapGeneratorPreset preset, GameObject gridLayers, List<Vector3Int> availableTiles, bool[,] oceanTiles, int seed, Area.Type areaType) {
+   static List<Vector3Int> SpawnTreasureSites (MapGeneratorPreset preset, GameObject gridLayers, List<Vector3Int> availableTiles, bool[,] oceanTiles, int seed, Area.Type areaType, float[,] noiseMap) {
       // Prepare data structures
       List<Vector3Int> tilesToTest = new List<Vector3Int>();
       List<Vector3Int> tilesToSpawn = new List<Vector3Int>();
@@ -1155,12 +1166,25 @@ public static class RandomMapCreator {
          }
          GameObject treasureSite = GameObject.Instantiate(RandomMapManager.self.treasureSitePrefab, tilesToSpawn[index] + treasureOffset, Quaternion.identity, gridLayers.transform);
          treasureSite.transform.localScale = new Vector3(1.0f / 0.16f, 1.0f / 0.16f, 1.0f);
+         ForceLowLandTilesNearTreasureSide(preset, tilesToSpawn[index].x, tilesToSpawn[index].y, noiseMap, oceanTiles);
          tilesToSpawn.RemoveAt(index);
+
          // Debug purposes only
          //treasureSite.name += "_ocean " + (oceanLeft ? "Left " : "") + (oceanRight ? "Right " : "") + (oceanBottom ? "Bottom " : "") + (oceanTop ? "Top " : "");
       }
 
       return spawnedTiles;
+   }
+
+   static void ForceLowLandTilesNearTreasureSide (MapGeneratorPreset preset, int x, int y, float[,] noiseMap, bool[,] oceanTiles) {
+      for (int x_ = x - 2; x_ <= x + 2; x_++) {
+         for (int y_ = y - 2; y_ <= y + 2; y_++) {
+            // Iterate 5x5 grid near treasure side, forcing it to be low land tile layer; Requires generator layers to be: first water tiles, then land tiles (first layer should be lowest)
+            if (x_ >= 0 && x_ < preset.mapSize.x && y_ >= 0 && y_ < preset.mapSize.y) {
+               noiseMap[x_, y_] = 1.0f;
+            }
+         }
+      }
    }
 
    static bool IsDistantEnoughToOtherTreasure (int currentTileX, int currentTileY, List<Vector3Int> spawnedTiles) {
@@ -1260,7 +1284,7 @@ public static class RandomMapCreator {
       return false;
    }
 
-   static void SpawnSeaMonsters(MapGeneratorPreset preset, GameObject gridLayers, bool[,] oceanTiles, List<Vector3Int> borderLandList, List<Vector3Int> spawnedTreasuresSites, int seed, Area.Type areaType) {
+   static void SpawnSeaMonsters(MapGeneratorPreset preset, GameObject gridLayers, bool[,] oceanTiles, List<Vector3Int> borderLandList, List<Vector3Int> spawnedTreasureSites, int seed, Area.Type areaType) {
       // Prepare debug tiles
       GameObject baseLayerGameObject = new GameObject("Spawn Sea Monsters");
       baseLayerGameObject.transform.position = new Vector3(baseLayerGameObject.transform.position.x, baseLayerGameObject.transform.position.y, -1.0f);
@@ -1300,7 +1324,7 @@ public static class RandomMapCreator {
       }
 
       // Prefer sites near treasure sites
-      List<Vector3Int> spawnList = FindTreasureTilesForMonsters(oceanTiles, preset, availableTiles, spawnedTreasuresSites);
+      List<Vector3Int> spawnList = FindTreasureTilesForMonsters(oceanTiles, preset, availableTiles, spawnedTreasureSites);
       System.Random pseudoRandom = new System.Random(seed);
 
       // Prepare data for spawning
@@ -1341,7 +1365,7 @@ public static class RandomMapCreator {
             }
          }
 
-         SpawnSeaMonster("Monster spawn #" + i.ToString(), pos, parent, areaType, EnemyManager.self.seaMonsterDataList.ChooseRandom().seaMonsterType);
+         SpawnSeaMonster("Monster spawn #" + i.ToString(), pos, parent, areaType, SeaMonsterManager.self.randomSeaMonsters.ChooseRandom());
       }
    }
 
@@ -1375,7 +1399,7 @@ public static class RandomMapCreator {
             }
          }
 
-         SpawnSeaMonster("Monster spawn #" + (i + addMonsterCount).ToString(), pos, parent, areaType, EnemyManager.self.seaMonsterDataList.ChooseRandom().seaMonsterType);
+         SpawnSeaMonster("Monster spawn #" + (i + addMonsterCount).ToString(), pos, parent, areaType, SeaMonsterManager.self.randomSeaMonsters.ChooseRandom());
       }
    }
 

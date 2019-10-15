@@ -10,6 +10,9 @@ public class SeaMonsterManager : MonoBehaviour {
    // Self
    public static SeaMonsterManager self;
 
+   // Sea monsters to spawn on random maps
+   public Enemy.Type[] randomSeaMonsters;
+
    #endregion
 
    public void Awake () {

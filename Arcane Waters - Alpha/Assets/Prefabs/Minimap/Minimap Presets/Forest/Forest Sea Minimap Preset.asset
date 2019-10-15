@@ -1,0 +1,389 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0886f0a5f4d4ac646b12c0bb78a3f62a, type: 3}
+  m_Name: Forest Sea Minimap Preset
+  m_EditorClassIdentifier: 
+  _minimapsPath: /Sprites/Minimaps/
+  imagePrefixName: 
+  imageSuffixName: 
+  _textureSize: {x: 64, y: 64}
+  useBackground: 0
+  backgroundColor: {r: 0, g: 0, b: 0, a: 0}
+  useOutline: 0
+  outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  mapTypeNames:
+  - Sea
+  biome: forest
+  _tileLayer:
+  - Name: Water (Deep)
+    color: {r: 0.16470589, g: 0.427451, b: 0.8588236, a: 1}
+    description: 
+    isSubLayer: 0
+    subLayerSpriteSuffixNames: []
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 1
+    borderColor: {r: 0.19607845, g: 0.45882356, b: 0.89019614, a: 1}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Water (Edge)
+    color: {r: 0.21568629, g: 0.5137255, b: 1, a: 1}
+    description: 
+    isSubLayer: 0
+    subLayerSpriteSuffixNames: []
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Land (1)
+    color: {r: 0.38823533, g: 0.654902, b: 0.5882353, a: 1}
+    description: 
+    isSubLayer: 0
+    subLayerSpriteSuffixNames: []
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 1
+    downBorderColor: {r: 0.6, g: 0.36078432, b: 0.29803923, a: 1}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 1
+    outlineColor: {r: 0.19607845, g: 0.45882356, b: 0.89019614, a: 1}
+  - Name: Land (2)
+    color: {r: 0.39017445, g: 0.6037736, b: 0.54638875, a: 1}
+    description: 
+    isSubLayer: 0
+    subLayerSpriteSuffixNames: []
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Land (2)
+    color: {r: 0.2901961, g: 0.47450984, b: 0.41960788, a: 1}
+    description: Borde
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - animations_forest_22
+    - animations_forest_23
+    - animations_forest_24
+    - animations_forest_25
+    - animations_forest_26
+    - animations_forest_27
+    - animations_forest_28
+    - animations_forest_29
+    - animations_forest_30
+    - animations_forest_31
+    - animations_forest_44
+    - animations_forest_46
+    - animations_forest_47
+    - animations_forest_49
+    - animations_forest_50
+    - animations_forest_51
+    - animations_forest_52
+    - animations_forest_53
+    - animations_forest_54
+    - animations_forest_66
+    - animations_forest_67
+    - animations_forest_68
+    - animations_forest_69
+    - animations_forest_70
+    - animations_forest_71
+    - animations_forest_72
+    - animations_forest_73
+    - animations_forest_74
+    - animations_forest_75
+    - animations_forest_76
+    - tiles_forest_0
+    - tiles_forest_1
+    - tiles_forest_2
+    - tiles_forest_6
+    - tiles_forest_11
+    - tiles_forest_13
+    - tiles_forest_16
+    - tiles_forest_17
+    - tiles_forest_22
+    - tiles_forest_23
+    - tiles_forest_24
+    - tiles_forest_25
+    - tiles_forest_26
+    - tiles_forest_27
+    - tiles_forest_28
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Land (3)
+    color: {r: 0.38823533, g: 0.654902, b: 0.5882353, a: 1}
+    description: 
+    isSubLayer: 0
+    subLayerSpriteSuffixNames: []
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Land (3)
+    color: {r: 0.2901961, g: 0.47450984, b: 0.41960788, a: 1}
+    description: Borde
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - animations_forest_22
+    - animations_forest_23
+    - animations_forest_24
+    - animations_forest_25
+    - animations_forest_26
+    - animations_forest_27
+    - animations_forest_28
+    - animations_forest_29
+    - animations_forest_30
+    - animations_forest_31
+    - animations_forest_44
+    - animations_forest_46
+    - animations_forest_47
+    - animations_forest_49
+    - animations_forest_50
+    - animations_forest_51
+    - animations_forest_52
+    - animations_forest_53
+    - animations_forest_54
+    - animations_forest_66
+    - animations_forest_67
+    - animations_forest_68
+    - animations_forest_69
+    - animations_forest_70
+    - animations_forest_71
+    - animations_forest_72
+    - animations_forest_73
+    - animations_forest_74
+    - animations_forest_75
+    - animations_forest_76
+    - tiles_forest_0
+    - tiles_forest_1
+    - tiles_forest_2
+    - tiles_forest_6
+    - tiles_forest_11
+    - tiles_forest_13
+    - tiles_forest_16
+    - tiles_forest_17
+    - tiles_forest_22
+    - tiles_forest_23
+    - tiles_forest_24
+    - tiles_forest_25
+    - tiles_forest_26
+    - tiles_forest_27
+    - tiles_forest_28
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Trees+
+    color: {r: 0.4198113, g: 0.63371944, b: 1, a: 1}
+    description: Waterfall
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _228
+    - _229
+    - _230
+    - _231
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: Trees+
+    color: {r: 0.19215688, g: 0.45882356, b: 0.9058824, a: 1}
+    description: River
+    isSubLayer: 1
+    subLayerSpriteSuffixNames:
+    - _100
+    - _101
+    - _102
+    - _122
+    - _123
+    - _124
+    - _144
+    - _145
+    - _146
+    - _166
+    - _167
+    - _168
+    - _188
+    - _189
+    - _190
+    - _210
+    - _211
+    - _232
+    - _233
+    - _234
+    - _254
+    - _255
+    - _256
+    - _276
+    - _277
+    - _278
+    - _298
+    - _299
+    - _300
+    - _320
+    - _321
+    - _322
+    - _342
+    - _343
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  _tileIconLayers: []
