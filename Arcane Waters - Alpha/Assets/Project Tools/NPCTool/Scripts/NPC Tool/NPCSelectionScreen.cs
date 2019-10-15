@@ -54,8 +54,8 @@ public class NPCSelectionScreen : MonoBehaviour
          npcRowList.Add(row);
       }
 
-      if (!_initSprites) {
-         _initSprites = true;
+      if (!_hasBeenInitialized) {
+         _hasBeenInitialized = true;
          string spritePath = "Assets/Sprites/Faces/";
          List<ImageManager.ImageData> spriteIconFiles = ImageManager.getSpritesInDirectory(spritePath);
 
@@ -115,7 +115,7 @@ public class NPCSelectionScreen : MonoBehaviour
    #region Private Variables
 
    // Determines if the sprites were initialied
-   public bool _initSprites;
+   protected bool _hasBeenInitialized;
 
    #endregion
 }

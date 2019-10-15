@@ -64,6 +64,7 @@ public class GiftNodeRow : MonoBehaviour
                row.destroyRow();
             });
 
+            row.GetComponent<FriendshipField>().friendshipPts.text = itemReward.rewardedFriendship.ToString();
             row.setRowForItemReward(questReward);
             cachedGiftList.Add(itemReward);
             cachedItemRowsList.Add(row);

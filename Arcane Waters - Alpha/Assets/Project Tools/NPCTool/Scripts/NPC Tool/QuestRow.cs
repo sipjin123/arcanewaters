@@ -25,6 +25,12 @@ public class QuestRow : MonoBehaviour
    // Reference to the npc edition screen
    public NPCEditScreen npcEditionScreen;
 
+   // Holds the contents of the quest node
+   public GameObject[] contentView;
+
+   // If is showing content
+   public bool showContents = true;
+
    #endregion
 
    public void setRowForQuest (Quest quest) {
@@ -83,6 +89,13 @@ public class QuestRow : MonoBehaviour
          }
       } else {
          rowsContainer.DestroyChildren();
+      }
+   }
+
+   public void toggleContents() {
+      showContents = !showContents;
+      foreach (GameObject obj in contentView) {
+         obj.SetActive(showContents);
       }
    }
 

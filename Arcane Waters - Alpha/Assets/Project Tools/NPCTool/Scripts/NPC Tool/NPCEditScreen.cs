@@ -253,7 +253,7 @@ public class NPCEditScreen : MonoBehaviour
          NPCGiftData newGiftData = new NPCGiftData();
          newGiftData.itemCategory = itemRow.getItem().category;
          newGiftData.itemTypeId = itemRow.getItem().itemTypeId;
-
+         newGiftData.rewardedFriendship = int.Parse(itemRow.GetComponent<FriendshipField>().friendshipPts.text);
          newGiftDataList.Add(newGiftData);
       }
 

@@ -99,6 +99,59 @@ public static class PreExportMethods {
       }
    }
 
+   public static void setupGameBuild () {
+      PlayerSettings.productName = "Arcane Waters";
+      SceneAsset sceneAsset = (SceneAsset) AssetDatabase.LoadAssetAtPath("Assets/Scenes/Main.unity", typeof(SceneAsset));
+      setupBuildScenes(sceneAsset);
+      setIcon("Main");
+      SetCursor(BuildEditorWindow.CURSOR_GAME);
+   }
+
+   public static void setupCraftingBuild () {
+      PlayerSettings.productName = "Arcane Waters Crafting Tool";
+      SceneAsset sceneAsset = (SceneAsset) AssetDatabase.LoadAssetAtPath("Assets/Scenes/CraftingScene.unity", typeof(SceneAsset));
+      setupBuildScenes(sceneAsset);
+      setIcon("Crafting");
+      SetCursor(BuildEditorWindow.CURSOR_TOOL);
+   }
+   
+   public static void setupNPCBuild () {
+      PlayerSettings.productName = "Arcane Waters NPC Tool";
+      SceneAsset sceneAsset = (SceneAsset) AssetDatabase.LoadAssetAtPath("Assets/Scenes/NPC Tool.unity", typeof(SceneAsset));
+      setupBuildScenes(sceneAsset);
+      setIcon("NPC");
+      SetCursor(BuildEditorWindow.CURSOR_TOOL);
+   }
+
+   private static void setupBuildScenes(SceneAsset sceneAsset) {
+      // Find valid Scene paths and make a list of EditorBuildSettingsScene
+      List<EditorBuildSettingsScene> editorBuildSettingsScenes = new List<EditorBuildSettingsScene>();
+      string scenePath = AssetDatabase.GetAssetPath(sceneAsset);
+      if (!string.IsNullOrEmpty(scenePath)) {
+         editorBuildSettingsScenes.Add(new EditorBuildSettingsScene(scenePath, true));
+      }
+
+      // Set the Build Settings window Scene list
+      EditorBuildSettings.scenes = editorBuildSettingsScenes.ToArray();
+   }
+
+   private static void SetCursor (string mouseImageName) {
+      string filePath = "Assets/Sprites/GUI/" + mouseImageName + ".png";
+      Texture2D texture = (Texture2D) AssetDatabase.LoadAssetAtPath(filePath, typeof(Texture2D));
+
+      PlayerSettings.defaultCursor = texture;
+   }
+
+   private static void setIcon (string iconname) {
+      string filePath = "Assets/BuildIcons/"+ iconname + ".png";
+      Texture2D texture = (Texture2D) AssetDatabase.LoadAssetAtPath(filePath, typeof(Texture2D));
+      List<Texture2D> text2d = new List<Texture2D>();
+      for (int i = 0; i < 8; i++) {
+         text2d.Add(texture);
+      }
+      PlayerSettings.SetIconsForTargetGroup(BuildTargetGroup.Standalone, text2d.ToArray());
+   }
+
    public static void StripServerCode () {
       // Look through all of our stuff in the Assets folder
       foreach (string assetPath in AssetDatabase.GetAllAssetPaths()) {
@@ -235,7 +288,7 @@ public static class PreExportMethods {
       // Look through all of our stuff in the Assets folder
       foreach (string assetPath in AssetDatabase.GetAllAssetPaths()) {
          // We only care about files in the NPC Data folder
-         if (assetPath.StartsWith("Assets/Data/NPC/")) {
+         if (assetPath.StartsWith("Assets/Data/NPC/") || assetPath.StartsWith("Assets/Data/Crafting/")) {
             // Delete the file
             AssetDatabase.DeleteAsset(assetPath);
             Debug.Log("Deleted the NPC XML file: " + assetPath);

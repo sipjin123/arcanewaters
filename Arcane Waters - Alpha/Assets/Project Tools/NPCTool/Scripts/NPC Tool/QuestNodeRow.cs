@@ -64,6 +64,9 @@ public class QuestNodeRow : MonoBehaviour
    // Quest Row Reference
    public QuestRow questRow;
 
+   // Holds the contents of the quest node row
+   public GameObject contentView;
+
    #endregion
 
    public void setRowForQuestNode (QuestNode node) {
@@ -174,6 +177,10 @@ public class QuestNodeRow : MonoBehaviour
       cachedRewardRowList.Add(itemRewardRow);
 
       itemRewardRow.updateButton.onClick.AddListener(() => updateRewardButtonClicked(itemRewardRow));
+   }
+
+   public void toggleContents() {
+      contentView.SetActive(!contentView.activeSelf);
    }
 
    private void updateRewardButtonClicked (ItemRewardRow row) {
