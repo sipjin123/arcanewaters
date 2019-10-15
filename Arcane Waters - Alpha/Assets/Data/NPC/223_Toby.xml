@@ -79,7 +79,7 @@
   <Gifts>
     <Gift>
       <itemTypeId>12</itemTypeId>
-      <rewardedFriendship>0</rewardedFriendship>
+      <rewardedFriendship>4</rewardedFriendship>
       <itemCategory>6</itemCategory>
       <color1>0</color1>
       <color2>0</color2>

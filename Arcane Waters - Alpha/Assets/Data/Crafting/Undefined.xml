@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<CraftableItemRequirements xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <resultItem>
+    <category>None</category>
+    <id>0</id>
+    <itemTypeId>0</itemTypeId>
+    <color1>None</color1>
+    <color2>None</color2>
+    <count>0</count>
+  </resultItem>
+</CraftableItemRequirements>
