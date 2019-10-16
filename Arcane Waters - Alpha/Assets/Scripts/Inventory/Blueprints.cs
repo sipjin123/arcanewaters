@@ -118,7 +118,7 @@ public class Blueprint : RecipeItem
    }
 
    public static Item getItemData (int recipeType) {
-      string recipepString = recipeType.ToString();
+      string recipeString = recipeType.ToString();
 
       Item.Category itemCategory = getEquipmentType(recipeType);
       if (itemCategory == Category.Weapon) {
@@ -126,8 +126,8 @@ public class Blueprint : RecipeItem
 
          foreach (var item in Enum.GetValues(typeof(Weapon.Type))) {
             string weaponString = item.ToString();
-            recipepString = recipepString.Replace("100", "");
-            if (recipepString == ((int)item).ToString()) {
+            recipeString = recipeString.Replace("100", "");
+            if (recipeString == ((int)item).ToString()) {
                weaponType = (Weapon.Type) item;
             }
          }
@@ -144,8 +144,8 @@ public class Blueprint : RecipeItem
 
          foreach (var item in Enum.GetValues(typeof(Armor.Type))) {
             string armorString = item.ToString();
-            recipepString = recipepString.Replace("200", "");
-            if (recipepString == ((int)item).ToString()) {
+            recipeString = recipeString.Replace("200", "");
+            if (recipeString == ((int)item).ToString()) {
                armorType = (Armor.Type) item;
             }
          }

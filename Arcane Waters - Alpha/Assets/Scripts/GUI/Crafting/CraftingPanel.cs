@@ -95,7 +95,7 @@ public class CraftingPanel : Panel, IPointerClickHandler
 
          _craftingIngredientList = itemCombo.combinationRequirements;
 
-         int requirementCount = itemCombo.combinationRequirements.Count;
+         int requirementCount = itemCombo.combinationRequirements.Length;
          int passedRequirementCount = 0;
 
          // Clears previous requirement list
@@ -242,7 +242,7 @@ public class CraftingPanel : Panel, IPointerClickHandler
    protected UserObjects _userObjects;
 
    // Caches ingredients that are needed for crafting
-   private List<Item> _craftingIngredientList;
+   private Item[] _craftingIngredientList;
 
    #endregion
 }

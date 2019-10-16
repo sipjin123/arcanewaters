@@ -14,9 +14,6 @@ public class BuildEditorWindow : EditorWindow {
 
    #region Public Variables
 
-   // Holds the scenes
-   List<SceneAsset> m_SceneAssets = new List<SceneAsset>();
-
    // Determines if auto build upon changing scene
    public bool buildOnClick;
 
@@ -30,19 +27,16 @@ public class BuildEditorWindow : EditorWindow {
    #endregion
 
    // Add menu item named "Example Window" to the Window menu
-   [MenuItem("Window/Example Window")]
+   [MenuItem("Window/Builder Window")]
    public static void ShowWindow () {
-      //Show existing window instance. If one doesn't exist, make one.
+      // Show existing window instance. If one doesn't exist, make one.
       EditorWindow.GetWindow(typeof(BuildEditorWindow));
    }
 
    void OnGUI () {
       GUILayout.Label("Scenes to include in build:", EditorStyles.boldLabel);
-      for (int i = 0; i < m_SceneAssets.Count; ++i) {
-         m_SceneAssets[i] = (SceneAsset) EditorGUILayout.ObjectField(m_SceneAssets[i], typeof(SceneAsset), false);
-      }
-      if (GUILayout.Button("Add")) {
-         m_SceneAssets.Add(null);
+      for (int i = 0; i < _sceneAssets.Count; ++i) {
+         _sceneAssets[i] = (SceneAsset) EditorGUILayout.ObjectField(_sceneAssets[i], typeof(SceneAsset), false);
       }
 
       GUILayout.Space(8);
@@ -54,7 +48,7 @@ public class BuildEditorWindow : EditorWindow {
       GUILayout.Space(8);
       
       if (GUILayout.Button("Main")) {
-         m_SceneAssets.Clear();
+         _sceneAssets.Clear();
 
          setTexture("Main");
          PlayerSettings.productName = "Arcane Waters";
@@ -67,7 +61,7 @@ public class BuildEditorWindow : EditorWindow {
       }
 
       if (GUILayout.Button("Crafting")) {
-         m_SceneAssets.Clear();
+         _sceneAssets.Clear();
 
          setTexture("Crafting");
          PlayerSettings.productName = "Arcane Waters Crafting Tool";
@@ -80,7 +74,7 @@ public class BuildEditorWindow : EditorWindow {
       }
 
       if (GUILayout.Button("NPC")) {
-         m_SceneAssets.Clear();
+         _sceneAssets.Clear();
 
          setTexture("NPC");
          PlayerSettings.productName = "Arcane Waters NPC Tool";
@@ -104,6 +98,11 @@ public class BuildEditorWindow : EditorWindow {
    }
 
    private void setCursor (string mouseImageName) {
+      if (mouseImageName == CURSOR_TOOL) {
+         PlayerSettings.defaultCursor = null;
+         return;
+      }
+
       string filePath = "Assets/Sprites/GUI/" + mouseImageName + ".png";
       Texture2D texture = (Texture2D) AssetDatabase.LoadAssetAtPath(filePath, typeof(Texture2D));
     
@@ -112,11 +111,11 @@ public class BuildEditorWindow : EditorWindow {
 
    private void setEditorBuildSettingsScenes (string sceneName) {
       SceneAsset sceneAssetData = (SceneAsset) AssetDatabase.LoadAssetAtPath("Assets/Scenes/" + sceneName + ".unity", typeof(SceneAsset));
-      m_SceneAssets.Add(sceneAssetData);
+      _sceneAssets.Add(sceneAssetData);
 
       // Find valid Scene paths and make a list of EditorBuildSettingsScene
       List<EditorBuildSettingsScene> editorBuildSettingsScenes = new List<EditorBuildSettingsScene>();
-      foreach (var sceneAsset in m_SceneAssets) {
+      foreach (var sceneAsset in _sceneAssets) {
          string scenePath = AssetDatabase.GetAssetPath(sceneAsset);
          if (!string.IsNullOrEmpty(scenePath))
             editorBuildSettingsScenes.Add(new EditorBuildSettingsScene(scenePath, true));
@@ -140,6 +139,14 @@ public class BuildEditorWindow : EditorWindow {
       proc.StartInfo.FileName = path + "/"+ buildName + ".exe";
       proc.Start();
    }
+
+   #region Private Variables
+
+   // Holds the scenes
+   protected List<SceneAsset> _sceneAssets = new List<SceneAsset>();
+
+   #endregion
+
 }
 
 #endif

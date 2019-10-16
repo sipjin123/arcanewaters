@@ -93,7 +93,7 @@ public class CraftingIngredientPanel : MonoBehaviour {
 
    public void updateData() {
       CraftableItemRequirements craftableRequirements = new CraftableItemRequirements();
-      craftableRequirements.combinationRequirements = new List<Item>();
+      List<Item> cacheItemList = new List<Item>();
 
       Item.Category resultCategory = (Item.Category) Enum.Parse(typeof(Item.Category), resultItemCategoryDisplay.text);
       int resultType = resultItemTypeInt;
@@ -103,8 +103,9 @@ public class CraftingIngredientPanel : MonoBehaviour {
 
       foreach (ItemRequirementRow item in itemRowList) {
          Item newItem = getItem(item.currentCategory, item.currentType, int.Parse(item.itemCount.text));
-         craftableRequirements.combinationRequirements.Add(newItem);
+         cacheItemList.Add(newItem);
       }
+      craftableRequirements.combinationRequirements = cacheItemList.ToArray();
 
       currentCombinationData = craftableRequirements;
       updateRootTemplate();

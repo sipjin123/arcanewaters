@@ -31,6 +31,9 @@ public class QuestRow : MonoBehaviour
    // If is showing content
    public bool showContents = true;
 
+   // An image indicator for dropdown capabilities
+   public GameObject dropDownIndicator;
+
    #endregion
 
    public void setRowForQuest (Quest quest) {
@@ -97,6 +100,7 @@ public class QuestRow : MonoBehaviour
       foreach (GameObject obj in contentView) {
          obj.SetActive(showContents);
       }
+      dropDownIndicator.SetActive(!showContents);
    }
 
    public void addNodeButtonClickedOn () {

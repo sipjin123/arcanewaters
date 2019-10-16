@@ -13,11 +13,13 @@ public class CraftingManager : MonoBehaviour {
    // The files containing the crafting data
    public TextAsset[] craftingDataAssets;
 
+   // Determines if the list is generated already
+   public bool hasInitialized;
+
    #endregion
 
    public void Awake () {
       self = this;
-      initializeCraftCache();
    }
 
    public CraftableItemRequirements getItem(Item.Category itemCategory, int itemType) {
@@ -33,13 +35,18 @@ public class CraftingManager : MonoBehaviour {
    }
 
    public void initializeCraftCache () {
-      // Iterate over the files
-      foreach (TextAsset textAsset in craftingDataAssets) {
-         // Read and deserialize the file
-         CraftableItemRequirements craftingData = Util.xmlLoad<CraftableItemRequirements>(textAsset);
+      if (!hasInitialized) {
+         hasInitialized = true;
+         // Iterate over the files
+         foreach (TextAsset textAsset in craftingDataAssets) {
+            // Read and deserialize the file
+            CraftableItemRequirements craftingData = Util.xmlLoad<CraftableItemRequirements>(textAsset);
 
-         // Save the Crafting data in the memory cache
-         _craftingData.Add(craftingData.resultItem.category == Item.Category.None ? "Undefined" : craftingData.resultItem.getCastItem().getName(), craftingData);
+            // Save the Crafting data in the memory cache
+            _craftingData.Add(craftingData.resultItem.category == Item.Category.None ? "Undefined" : craftingData.resultItem.getCastItem().getName(), craftingData);
+         }
+
+         RewardManager.self.craftableDataList = getAllCraftableData();
       }
    }
 

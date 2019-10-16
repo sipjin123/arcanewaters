@@ -67,6 +67,9 @@ public class QuestNodeRow : MonoBehaviour
    // Holds the contents of the quest node row
    public GameObject contentView;
 
+   // An image indicator for dropdown capabilities
+   public GameObject dropDownIndicator;
+
    #endregion
 
    public void setRowForQuestNode (QuestNode node) {
@@ -181,6 +184,8 @@ public class QuestNodeRow : MonoBehaviour
 
    public void toggleContents() {
       contentView.SetActive(!contentView.activeSelf);
+
+      dropDownIndicator.SetActive(!contentView.activeSelf);
    }
 
    private void updateRewardButtonClicked (ItemRewardRow row) {

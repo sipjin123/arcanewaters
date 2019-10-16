@@ -26,8 +26,11 @@ public class RewardManager : MonoBehaviour {
       self = this;
    }
 
-   private void Start () {
-      craftableDataList = CraftingManager.self.getAllCraftableData();
+   public void receiveListFromServer (CraftableItemRequirements[] requirements) {
+      craftableDataList = new List<CraftableItemRequirements>();
+      foreach(CraftableItemRequirements requirement in requirements) {
+         craftableDataList.Add(requirement);
+      }
    }
 
    public void showItemsInRewardPanel (List<Item> loots) {

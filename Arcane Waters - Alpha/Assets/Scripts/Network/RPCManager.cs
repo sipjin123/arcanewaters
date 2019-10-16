@@ -21,6 +21,7 @@ public class RPCManager : NetworkBehaviour {
       // Initialized Inventory Cache
       if (_player.netIdent.isLocalPlayer) {
          InventoryCacheManager.self.fetchInventory();
+         Cmd_RequestCraftingItems();
       }
    }
 
@@ -1463,7 +1464,7 @@ public class RPCManager : NetworkBehaviour {
       CraftableItemRequirements data = RewardManager.self.craftableDataList.Find(_ => _.resultItem.category == category && _.resultItem.itemTypeId == itemType);
   
       List<CraftingIngredients.Type> requiredItemList = new List<CraftingIngredients.Type>();
-      for (int i = 0; i < data.combinationRequirements.Count; i++) {
+      for (int i = 0; i < data.combinationRequirements.Length; i++) {
          requiredItemList.Add((CraftingIngredients.Type) data.combinationRequirements[i].itemTypeId);
       }
 
@@ -1490,7 +1491,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Server]
-   private void processCraftingRewards (int userId, Item.Category category, int itemType, List<Item> databaseItems, List<Item> requiredItems) {
+   private void processCraftingRewards (int userId, Item.Category category, int itemType, List<Item> databaseItems, Item[] requiredItems) {
       // Gets the crafting result using cached scriptable object combo data
       CraftableItemRequirements data = RewardManager.self.craftableDataList.Find(_ => _.resultItem.category == category && _.resultItem.itemTypeId == itemType);
       Item rewardItem = data.resultItem;
@@ -1517,14 +1518,14 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Server]
-   private void finalizeRewards (int userId, List<Item> rewardItem, List<Item> databaseItems, List<Item> requiredItems) {
+   private void finalizeRewards (int userId, List<Item> rewardItem, List<Item> databaseItems, Item[] requiredItems) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          for (int i = 0; i < rewardItem.Count; i++) {
             // Creates or updates item database count
             DB_Main.createItemOrUpdateItemCount(userId, rewardItem[i]);
          }
 
-         for(int i = 0; i < requiredItems.Count; i++) {
+         for(int i = 0; i < requiredItems.Length; i++) {
             int deductCount = requiredItems[i].count;
 
             // Deduct quantity of each required ingredient or delete item if it hits zero count
@@ -1556,6 +1557,7 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_UpdateInventory (NetworkConnection connection) {
+      Cmd_RequestCraftingItems();
       InventoryCacheManager.self.fetchInventory();
    }
 
@@ -1813,6 +1815,22 @@ public class RPCManager : NetworkBehaviour {
 
       // Add the player to the Battle
       BattleManager.self.addPlayerToBattle(battle, playerBody, Battle.TeamType.Attackers);
+   }
+
+   [Command]
+   public void Cmd_RequestCraftingItems () {
+      provideCraftingRecipe();
+   }
+
+   [Server]
+   public void provideCraftingRecipe () {
+      CraftingManager.self.initializeCraftCache();
+      Target_ReceiveCraftingTools(_player.connectionToClient, RewardManager.self.craftableDataList.ToArray());
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveCraftingTools (NetworkConnection connection, CraftableItemRequirements[] itemRequirements) {
+      RewardManager.self.receiveListFromServer(itemRequirements);
    }
 
    [Command]

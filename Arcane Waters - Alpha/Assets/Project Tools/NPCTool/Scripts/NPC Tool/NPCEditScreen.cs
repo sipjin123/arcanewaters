@@ -115,6 +115,13 @@ public class NPCEditScreen : MonoBehaviour
    // The cache list for avatar icon selection
    public Dictionary<string,Sprite> iconSpriteList = new Dictionary<string, Sprite>();
 
+   // An image indicator for dropdown capabilities of quests
+   public GameObject dropDownIndicatorQuest;
+
+   // An image indicator for dropdown capabilities of gifts
+   public GameObject dropDownIndicatorGifts;
+
+
    // Enum to determine the current item category
    public enum ItemSelectionType
    {
@@ -213,10 +220,12 @@ public class NPCEditScreen : MonoBehaviour
 
    public void toggleQuestView() {
       questInfo.SetActive(!questInfo.activeSelf);
+      dropDownIndicatorQuest.SetActive(!questInfo.activeSelf);
    }
 
    public void toggleGiftView () {
       giftInfo.SetActive(!giftInfo.activeSelf);
+      dropDownIndicatorGifts.SetActive(!giftInfo.activeSelf);
    }
 
    public void createQuestButtonClickedOn () {
