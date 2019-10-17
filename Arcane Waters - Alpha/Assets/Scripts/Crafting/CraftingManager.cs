@@ -20,6 +20,10 @@ public class CraftingManager : MonoBehaviour {
 
    public void Awake () {
       self = this;
+
+#if IS_SERVER_BUILD && !UNITY_EDITOR
+      initializeCraftCache();
+#endif
    }
 
    public CraftableItemRequirements getItem(Item.Category itemCategory, int itemType) {
@@ -34,7 +38,7 @@ public class CraftingManager : MonoBehaviour {
       return craftableList;
    }
 
-   public void initializeCraftCache () {
+   private void initializeCraftCache () {
       if (!hasInitialized) {
          hasInitialized = true;
          // Iterate over the files

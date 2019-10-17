@@ -121,7 +121,6 @@ public class NPCEditScreen : MonoBehaviour
    // An image indicator for dropdown capabilities of gifts
    public GameObject dropDownIndicatorGifts;
 
-
    // Enum to determine the current item category
    public enum ItemSelectionType
    {

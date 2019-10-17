@@ -18,6 +18,10 @@ public class Blueprint : RecipeItem
    // The id of the blueprint items //prefix 100 for weapons, prefix 200 for armors
    public int bpTypeID;
 
+   // Prefixes for ID
+   public const string WEAPON_PREFIX = "100";
+   public const string ARMOR_PREFIX = "200";
+
    #endregion Public Variables
 
    public Blueprint () {
@@ -98,11 +102,11 @@ public class Blueprint : RecipeItem
 
       switch (newCategory) {
          case Category.Armor:
-            idString = idString.Replace("200", "");
+            idString = idString.Replace(ARMOR_PREFIX, "");
             currName = ((Armor.Type) int.Parse(idString)).ToString();
             break;
          case Category.Weapon:
-            idString = idString.Replace("100", "");
+            idString = idString.Replace(WEAPON_PREFIX, "");
             currName = ((Weapon.Type) int.Parse(idString)).ToString();
             break;
       }
@@ -126,7 +130,7 @@ public class Blueprint : RecipeItem
 
          foreach (var item in Enum.GetValues(typeof(Weapon.Type))) {
             string weaponString = item.ToString();
-            recipeString = recipeString.Replace("100", "");
+            recipeString = recipeString.Replace(WEAPON_PREFIX, "");
             if (recipeString == ((int)item).ToString()) {
                weaponType = (Weapon.Type) item;
             }
@@ -144,7 +148,7 @@ public class Blueprint : RecipeItem
 
          foreach (var item in Enum.GetValues(typeof(Armor.Type))) {
             string armorString = item.ToString();
-            recipeString = recipeString.Replace("200", "");
+            recipeString = recipeString.Replace(ARMOR_PREFIX, "");
             if (recipeString == ((int)item).ToString()) {
                armorType = (Armor.Type) item;
             }
@@ -169,10 +173,10 @@ public class Blueprint : RecipeItem
       string prefixExtracted = "";
       if (blueprintType.ToString()[0] == '1') {
          prefixCategory = Category.Weapon;
-         prefixExtracted = "100";
+         prefixExtracted = WEAPON_PREFIX;
       } else if (blueprintType.ToString()[0] == '2') {
          prefixCategory = Category.Armor;
-         prefixExtracted = "200";
+         prefixExtracted = ARMOR_PREFIX;
       }
       
       int idComparison = int.Parse(blueprintType.ToString().Replace(prefixExtracted,""));

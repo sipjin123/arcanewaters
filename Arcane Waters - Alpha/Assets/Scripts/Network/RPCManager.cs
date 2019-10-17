@@ -21,7 +21,6 @@ public class RPCManager : NetworkBehaviour {
       // Initialized Inventory Cache
       if (_player.netIdent.isLocalPlayer) {
          InventoryCacheManager.self.fetchInventory();
-         Cmd_RequestCraftingItems();
       }
    }
 
@@ -1464,8 +1463,8 @@ public class RPCManager : NetworkBehaviour {
       CraftableItemRequirements data = RewardManager.self.craftableDataList.Find(_ => _.resultItem.category == category && _.resultItem.itemTypeId == itemType);
   
       List<CraftingIngredients.Type> requiredItemList = new List<CraftingIngredients.Type>();
-      for (int i = 0; i < data.combinationRequirements.Length; i++) {
-         requiredItemList.Add((CraftingIngredients.Type) data.combinationRequirements[i].itemTypeId);
+      foreach(Item item in data.combinationRequirements) {
+         requiredItemList.Add((CraftingIngredients.Type) item.itemTypeId);
       }
 
       // Fetches the needed items and checks if it is equivalent to the requirement
@@ -1525,11 +1524,11 @@ public class RPCManager : NetworkBehaviour {
             DB_Main.createItemOrUpdateItemCount(userId, rewardItem[i]);
          }
 
-         for(int i = 0; i < requiredItems.Length; i++) {
-            int deductCount = requiredItems[i].count;
+         foreach (Item item in requiredItems) {
+            int deductCount = item.count;
 
             // Deduct quantity of each required ingredient or delete item if it hits zero count
-            int databaseID = databaseItems.Find(_ => _.itemTypeId == requiredItems[i].itemTypeId && _.category == requiredItems[i].category).id;
+            int databaseID = databaseItems.Find(_ => _.itemTypeId == item.itemTypeId && _.category == item.category).id;
             DB_Main.decreaseQuantityOrDeleteItem(userId, databaseID, deductCount);
          }
 
@@ -1557,7 +1556,6 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_UpdateInventory (NetworkConnection connection) {
-      Cmd_RequestCraftingItems();
       InventoryCacheManager.self.fetchInventory();
    }
 
@@ -1818,18 +1816,21 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_RequestCraftingItems () {
-      provideCraftingRecipe();
-   }
+   public void Cmd_RequestCraftingItems (Item[] itemRequestList) {
+      List<CraftableItemRequirements> itemReturnList = new List<CraftableItemRequirements>();
 
-   [Server]
-   public void provideCraftingRecipe () {
-      CraftingManager.self.initializeCraftCache();
-      Target_ReceiveCraftingTools(_player.connectionToClient, RewardManager.self.craftableDataList.ToArray());
+      foreach (Item currItem in itemRequestList) {
+         CraftableItemRequirements requirement = RewardManager.self.craftableDataList.Find(_ => _.resultItem.itemTypeId == currItem.itemTypeId && _.resultItem.category == currItem.category);
+         if (requirement != null) {
+            itemReturnList.Add(requirement);
+         }
+      }
+
+      Target_ReceiveCraftingRecipes(_player.connectionToClient, itemReturnList.ToArray());
    }
 
    [TargetRpc]
-   public void Target_ReceiveCraftingTools (NetworkConnection connection, CraftableItemRequirements[] itemRequirements) {
+   public void Target_ReceiveCraftingRecipes (NetworkConnection connection, CraftableItemRequirements[] itemRequirements) {
       RewardManager.self.receiveListFromServer(itemRequirements);
    }
 

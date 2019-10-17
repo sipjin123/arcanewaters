@@ -35,8 +35,8 @@ public class BuildEditorWindow : EditorWindow {
 
    void OnGUI () {
       GUILayout.Label("Scenes to include in build:", EditorStyles.boldLabel);
-      for (int i = 0; i < _sceneAssets.Count; ++i) {
-         _sceneAssets[i] = (SceneAsset) EditorGUILayout.ObjectField(_sceneAssets[i], typeof(SceneAsset), false);
+      foreach(SceneAsset sceneAsset in _sceneAssets) {
+         GUILayout.Box(sceneAsset.name);
       }
 
       GUILayout.Space(8);
