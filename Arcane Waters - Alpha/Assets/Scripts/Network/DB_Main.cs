@@ -1589,8 +1589,11 @@ public class DB_Main : DB_MainStub {
       // Filter the equipped weapon and armor
       query.Append("AND itmId NOT IN (@equippedWeaponId, @equippedArmorId) ");
 
-      // Add the end of the query
-      query.Append("ORDER BY itmId DESC LIMIT @start, @perPage");
+      // Fetches everything if value is less than 0
+      if (page > 0 && itemsPerPage > 0) {
+         // Add the end of the query
+         query.Append("ORDER BY itmId DESC LIMIT @start, @perPage");
+      }
 
       try {
          using (MySqlConnection conn = getConnection())

@@ -171,10 +171,10 @@ public class Blueprint : RecipeItem
    public static Item.Category getEquipmentType (int blueprintType) {
       Item.Category prefixCategory = Category.None;
       string prefixExtracted = "";
-      if (blueprintType.ToString()[0] == '1') {
+      if (blueprintType.ToString().StartsWith(WEAPON_PREFIX)) {
          prefixCategory = Category.Weapon;
          prefixExtracted = WEAPON_PREFIX;
-      } else if (blueprintType.ToString()[0] == '2') {
+      } else if (blueprintType.ToString().StartsWith(ARMOR_PREFIX)) {
          prefixCategory = Category.Armor;
          prefixExtracted = ARMOR_PREFIX;
       }

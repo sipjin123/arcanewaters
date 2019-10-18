@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <NPCData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <npcId>599</npcId>
+  <npcId>621</npcId>
   <name>Old Gambit</name>
   <greetingTextStranger>What?</greetingTextStranger>
   <greetingTextAcquaintance>Hey there fella</greetingTextAcquaintance>

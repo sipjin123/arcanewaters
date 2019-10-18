@@ -21,7 +21,7 @@ public class CraftingManager : MonoBehaviour {
    public void Awake () {
       self = this;
 
-#if IS_SERVER_BUILD && !UNITY_EDITOR
+#if IS_SERVER_BUILD 
       initializeCraftCache();
 #endif
    }

@@ -69,8 +69,8 @@ public class CraftingPanel : Panel, IPointerClickHandler
    }
 
    public void requestInventoryFromServer (int pageNumber) {
-      // Get the latest info from the server to show in our character stack
-      Global.player.rpc.Cmd_RequestItemsFromServer(pageNumber, 35);
+      // Fetches all items for comparison if item requirements are met
+      Global.player.rpc.Cmd_RequestItemsFromServer(-1, -1);
    }
 
    private void clickMaterialRow (BlueprintRow currBlueprintRow) {

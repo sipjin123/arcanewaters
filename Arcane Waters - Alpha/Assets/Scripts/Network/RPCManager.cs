@@ -548,11 +548,21 @@ public class RPCManager : NetworkBehaviour {
          // Get the items from the database
          List<Item> items = DB_Main.getItems(_player.userId, Item.Category.None, pageNumber, itemsPerPage, 0, 0);
 
+         List<Item> craftableList = new List<Item>();
+         foreach (Item item in items) {
+            if (item.category == Item.Category.Blueprint) {
+               Item convertedItem = Blueprint.getItemData(item.itemTypeId);
+               craftableList.Add(convertedItem);
+            }
+         }
+
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             InventoryMessage inventoryMessage = new InventoryMessage(_player.netId, userObjects,
                pageNumber, userInfo.gold, userInfo.gems, totalItemCount, userInfo.armorId, userInfo.weaponId, items.ToArray());
             NetworkServer.SendToClientOfPlayer(_player.netIdent, inventoryMessage);
+
+            processCraftingItems(craftableList.ToArray());
          });
       });
    }
@@ -1815,17 +1825,16 @@ public class RPCManager : NetworkBehaviour {
       BattleManager.self.addPlayerToBattle(battle, playerBody, Battle.TeamType.Attackers);
    }
 
-   [Command]
-   public void Cmd_RequestCraftingItems (Item[] itemRequestList) {
+   [Server]
+   private void processCraftingItems (Item[] itemRequestList) {
       List<CraftableItemRequirements> itemReturnList = new List<CraftableItemRequirements>();
 
       foreach (Item currItem in itemRequestList) {
-         CraftableItemRequirements requirement = RewardManager.self.craftableDataList.Find(_ => _.resultItem.itemTypeId == currItem.itemTypeId && _.resultItem.category == currItem.category);
+         CraftableItemRequirements requirement = CraftingManager.self.getAllCraftableData().Find(_ => _.resultItem.itemTypeId == currItem.itemTypeId && _.resultItem.category == currItem.category);
          if (requirement != null) {
             itemReturnList.Add(requirement);
          }
       }
-
       Target_ReceiveCraftingRecipes(_player.connectionToClient, itemReturnList.ToArray());
    }
 
