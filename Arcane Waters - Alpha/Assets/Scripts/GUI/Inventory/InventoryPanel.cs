@@ -113,7 +113,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       }
 
       // Get the latest info from the server to show in our character stack
-      Global.player.rpc.Cmd_RequestItemsFromServer(_pageNumber, ITEMS_PER_PAGE);
+      Global.player.rpc.Cmd_RequestItemsFromServer(_pageNumber, ITEMS_PER_PAGE, new Item.Category[] { Item.Category.None });
    }
 
    public void OnPointerClick (PointerEventData eventData) {

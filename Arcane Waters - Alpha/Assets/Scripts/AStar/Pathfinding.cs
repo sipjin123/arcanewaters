@@ -36,7 +36,7 @@ namespace AStar
          ANode targetNode = gridReference.nodeFromWorldPoint(a_TargetPos);
 
          if (startNode == null || targetNode == null) {
-            Debug.LogError("Invalid Path");
+            Debug.LogError("Invalid Path Recalculating");
             return;
          }
 

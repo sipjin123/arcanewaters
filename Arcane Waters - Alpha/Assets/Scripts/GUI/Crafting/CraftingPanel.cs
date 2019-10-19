@@ -68,9 +68,9 @@ public class CraftingPanel : Panel, IPointerClickHandler
       }
    }
 
-   public void requestInventoryFromServer (int pageNumber) {
+   public void requestInventoryFromServer () {
       // Fetches all items for comparison if item requirements are met
-      Global.player.rpc.Cmd_RequestItemsFromServer(-1, -1);
+      Global.player.rpc.Cmd_RequestItemsFromServer(-1, -1, new Item.Category[] { Item.Category.CraftingIngredients, Item.Category.Blueprint });
    }
 
    private void clickMaterialRow (BlueprintRow currBlueprintRow) {

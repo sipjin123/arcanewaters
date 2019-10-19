@@ -17,13 +17,6 @@ public class RPCManager : NetworkBehaviour {
       _player = GetComponent<NetEntity>();
    }
 
-   void Start () {
-      // Initialized Inventory Cache
-      if (_player.netIdent.isLocalPlayer) {
-         InventoryCacheManager.self.fetchInventory();
-      }
-   }
-
    [Command]
    public void Cmd_InteractAnimation (Anim.Type animType) {
       Rpc_InteractAnimation(animType);
@@ -532,7 +525,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_RequestItemsFromServer (int pageNumber, int itemsPerPage) {
+   public void Cmd_RequestItemsFromServer (int pageNumber, int itemsPerPage, Item.Category[] category) {
       // Enforce a reasonable max here
       if (itemsPerPage > 200) {
          D.warning("Requesting too many items per page.");
@@ -546,7 +539,7 @@ public class RPCManager : NetworkBehaviour {
          int totalItemCount = DB_Main.getItemCount(_player.userId);
 
          // Get the items from the database
-         List<Item> items = DB_Main.getItems(_player.userId, Item.Category.None, pageNumber, itemsPerPage, 0, 0);
+         List<Item> items = DB_Main.getItems(_player.userId, category, pageNumber, itemsPerPage, 0, 0);
 
          List<Item> craftableList = new List<Item>();
          foreach (Item item in items) {
@@ -576,6 +569,9 @@ public class RPCManager : NetworkBehaviour {
          return;
       }
 
+      List<Item.Category> categoryList = new List<Item.Category>();
+      categoryList.Add(category);
+
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
@@ -587,10 +583,10 @@ public class RPCManager : NetworkBehaviour {
          // Get the item count and item list from the database
          if (filterEquippedItems) {
             totalItemCount = DB_Main.getItemCount(_player.userId, category, userInfo.weaponId, userInfo.armorId);
-            items = DB_Main.getItems(_player.userId, category, pageNumber, itemsPerPage, userInfo.weaponId, userInfo.armorId);
+            items = DB_Main.getItems(_player.userId, categoryList.ToArray(), pageNumber, itemsPerPage, userInfo.weaponId, userInfo.armorId);
          } else {
             totalItemCount = DB_Main.getItemCount(_player.userId, category, 0, 0);
-            items = DB_Main.getItems(_player.userId, category, pageNumber, itemsPerPage, 0, 0);
+            items = DB_Main.getItems(_player.userId, categoryList.ToArray(), pageNumber, itemsPerPage, 0, 0);
          }
 
          // Back to the Unity thread to send the results back to the client

@@ -292,18 +292,21 @@ public class NPCPanel : Panel {
       // Clear out the old item cell
       itemCellContainer.DestroyChildren();
 
-      // Instantiates the item cell
-      ItemCell cell = Instantiate(itemCellPrefab, itemCellContainer.transform, false);
-      cell.transform.SetParent(itemCellContainer.transform, false);
 
-      // Initializes the cell
-      cell.setCellForItem(_selectedGiftItem, _selectedGiftItemCount);
+      if (_selectedGiftItem != null) {
+         // Instantiates the item cell
+         ItemCell cell = Instantiate(itemCellPrefab, itemCellContainer.transform, false);
+         cell.transform.SetParent(itemCellContainer.transform, false);
 
-      // Disable the click event on the cell
-      cell.disablePointerEvents();
+         // Initializes the cell
+         cell.setCellForItem(_selectedGiftItem, _selectedGiftItemCount);
 
-      // Enables the 'confirm gift' button
-      confirmOfferGiftButton.interactable = true;
+         // Disable the click event on the cell
+         cell.disablePointerEvents();
+
+         // Enables the 'confirm gift' button
+         confirmOfferGiftButton.interactable = true;
+      }
    }
 
    private void setCommonPanelContent(string npcText, int friendshipLevel) {
@@ -336,7 +339,7 @@ public class NPCPanel : Panel {
 
       // If the panel is already showing, start writing the new text
       if (isShowing()) {
-         AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
+         //AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
       }
 
       // By default, hide the quest objectives section

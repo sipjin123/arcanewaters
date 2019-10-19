@@ -1572,7 +1572,7 @@ public class DB_Main : DB_MainStub {
       return itemCount;
    }
 
-   public static new List<Item> getItems (int userId, Item.Category category, int page, int itemsPerPage,
+   public static new List<Item> getItems (int userId, Item.Category[] category, int page, int itemsPerPage,
       int equippedWeaponId, int equippedArmorId) {
       // Initialize the list
       List<Item> itemList = new List<Item>();
@@ -1581,18 +1581,27 @@ public class DB_Main : DB_MainStub {
       StringBuilder query = new StringBuilder();
       query.Append("SELECT * FROM items WHERE usrId = @usrId ");
 
-      // Add the category filter, if defined
-      if (category != Item.Category.None) {
+      if (category.Length == 1 && category[0] != Item.Category.None) {
+         // Add the category filter, if defined
          query.Append("AND itmCategory=@itmCategory ");
+      } else if (category.Length > 1) {
+         // Setup multiple categories
+         query.Append("AND (itmCategory=@itmCategory0");
+         for (int i = 1; i < category.Length; i++) {
+            query.Append(" OR itmCategory=@itmCategory" + i);
+         }
+         query.Append(") ");
       }
 
       // Filter the equipped weapon and armor
       query.Append("AND itmId NOT IN (@equippedWeaponId, @equippedArmorId) ");
 
-      // Fetches everything if value is less than 0
+      // Sorts the item ID
+      query.Append("ORDER BY itmId");
+
+      // Removes the limit if the page is -1
       if (page > 0 && itemsPerPage > 0) {
-         // Add the end of the query
-         query.Append("ORDER BY itmId DESC LIMIT @start, @perPage");
+         query.Append(" DESC LIMIT @start, @perPage");
       }
 
       try {
@@ -1603,7 +1612,13 @@ public class DB_Main : DB_MainStub {
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@start", (page - 1) * itemsPerPage);
             cmd.Parameters.AddWithValue("@perPage", itemsPerPage);
-            cmd.Parameters.AddWithValue("@itmCategory", (int) category);
+            if (category.Length == 1) {
+               cmd.Parameters.AddWithValue("@itmCategory", (int) category[0]);
+            } else {
+               for (int i = 0; i < category.Length; i++) {
+                  cmd.Parameters.AddWithValue("@itmCategory"+i, (int) category[i]);
+               }
+            }
             cmd.Parameters.AddWithValue("@equippedWeaponId", equippedWeaponId);
             cmd.Parameters.AddWithValue("@equippedArmorId", equippedArmorId);
 

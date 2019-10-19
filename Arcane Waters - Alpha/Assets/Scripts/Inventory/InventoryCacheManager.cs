@@ -25,7 +25,7 @@ public class InventoryCacheManager : MonoBehaviour
       if (!hasInitialized) {
          if (Global.player != null) {
             // Fetches all inventory for caching
-            Global.player.rpc.Cmd_RequestItemsFromServer(-1, -1);
+            Global.player.rpc.Cmd_RequestItemsFromServer(1, 35, new Item.Category[] { Item.Category.None });
          }
       }
    }
