@@ -1987,6 +1987,31 @@ PrefabInstance:
       propertyPath: m_Name
       value: Item Count
       objectReference: {fileID: 0}
+    - target: {fileID: 5890500984787708247, guid: cf247d87f846fb348af5e917ad74d094,
+        type: 3}
+      propertyPath: m_Interactable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5890500984787708247, guid: cf247d87f846fb348af5e917ad74d094,
+        type: 3}
+      propertyPath: m_Text
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5890500984787708247, guid: cf247d87f846fb348af5e917ad74d094,
+        type: 3}
+      propertyPath: m_ContentType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5890500984787708247, guid: cf247d87f846fb348af5e917ad74d094,
+        type: 3}
+      propertyPath: m_KeyboardType
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5890500984787708247, guid: cf247d87f846fb348af5e917ad74d094,
+        type: 3}
+      propertyPath: m_CharacterValidation
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7774125496475325630, guid: cf247d87f846fb348af5e917ad74d094,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2187,25 +2212,15 @@ PrefabInstance:
       propertyPath: m_Text
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5890500984787708247, guid: cf247d87f846fb348af5e917ad74d094,
+    - target: {fileID: 4863785721622878822, guid: cf247d87f846fb348af5e917ad74d094,
         type: 3}
-      propertyPath: m_Interactable
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5890500984787708247, guid: cf247d87f846fb348af5e917ad74d094,
-        type: 3}
-      propertyPath: m_Text
-      value: 0
+      propertyPath: m_PreferredWidth
+      value: 150
       objectReference: {fileID: 0}
     - target: {fileID: 5983400605501313272, guid: cf247d87f846fb348af5e917ad74d094,
         type: 3}
       propertyPath: m_MinWidth
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4863785721622878822, guid: cf247d87f846fb348af5e917ad74d094,
-        type: 3}
-      propertyPath: m_PreferredWidth
-      value: 150
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cf247d87f846fb348af5e917ad74d094, type: 3}

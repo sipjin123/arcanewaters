@@ -202,7 +202,15 @@
       <friendshipRankRequired>2</friendshipRankRequired>
     </Quest>
   </Quests>
-  <Gifts />
+  <Gifts>
+    <Gift>
+      <itemTypeId>22</itemTypeId>
+      <rewardedFriendship>3</rewardedFriendship>
+      <itemCategory>6</itemCategory>
+      <color1>0</color1>
+      <color2>0</color2>
+    </Gift>
+  </Gifts>
   <iconPath>Assets/Sprites/Faces/shroom_8.png</iconPath>
   <faction>2</faction>
   <specialty>6</specialty>

@@ -12,17 +12,17 @@
   <giftNotLikedText>Eww</giftNotLikedText>
   <hasTradeGossipDialogue>true</hasTradeGossipDialogue>
   <hasGoodbyeDialogue>true</hasGoodbyeDialogue>
-  <lastUsedQuestId>0</lastUsedQuestId>
+  <lastUsedQuestId>1</lastUsedQuestId>
   <Quests>
     <Quest>
       <questId>0</questId>
       <title>Delivery Gold</title>
       <isRepeatable>false</isRepeatable>
-      <lastUsedNodeId>2</lastUsedNodeId>
+      <lastUsedNodeId>3</lastUsedNodeId>
       <Nodes>
         <Node>
           <nodeId>2</nodeId>
-          <nextNodeId>-1</nextNodeId>
+          <nextNodeId>3</nextNodeId>
           <npcText>sda</npcText>
           <userText>dfs</userText>
           <DeliverObjectives>
@@ -50,8 +50,67 @@
             </Item>
           </ItemRewards>
         </Node>
+        <Node>
+          <nodeId>3</nodeId>
+          <nextNodeId>-1</nextNodeId>
+          <npcText>gime a gold</npcText>
+          <userText>yes</userText>
+          <DeliverObjectives>
+            <Deliver>
+              <itemTypeId>1</itemTypeId>
+              <count>1</count>
+              <category>6</category>
+            </Deliver>
+          </DeliverObjectives>
+          <ItemRewards>
+            <Item>
+              <itemTypeId>16</itemTypeId>
+              <count>1</count>
+              <category>6</category>
+            </Item>
+          </ItemRewards>
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>25</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
       </Nodes>
-      <friendshipRankRequired>1</friendshipRankRequired>
+      <friendshipRankRequired>0</friendshipRankRequired>
+    </Quest>
+    <Quest>
+      <questId>1</questId>
+      <title>hella quest 2</title>
+      <isRepeatable>false</isRepeatable>
+      <lastUsedNodeId>0</lastUsedNodeId>
+      <Nodes>
+        <Node>
+          <nodeId>0</nodeId>
+          <nextNodeId>-1</nextNodeId>
+          <npcText>gold me</npcText>
+          <userText />
+          <DeliverObjectives>
+            <Deliver>
+              <itemTypeId>1</itemTypeId>
+              <count>1</count>
+              <category>6</category>
+            </Deliver>
+          </DeliverObjectives>
+          <ItemRewards>
+            <Item>
+              <itemTypeId>26</itemTypeId>
+              <count>1</count>
+              <category>6</category>
+            </Item>
+          </ItemRewards>
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>25</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+      </Nodes>
+      <friendshipRankRequired>0</friendshipRankRequired>
     </Quest>
   </Quests>
   <Gifts>
@@ -64,6 +123,20 @@
     </Gift>
     <Gift>
       <itemTypeId>1</itemTypeId>
+      <rewardedFriendship>2</rewardedFriendship>
+      <itemCategory>6</itemCategory>
+      <color1>0</color1>
+      <color2>0</color2>
+    </Gift>
+    <Gift>
+      <itemTypeId>21</itemTypeId>
+      <rewardedFriendship>1</rewardedFriendship>
+      <itemCategory>6</itemCategory>
+      <color1>0</color1>
+      <color2>0</color2>
+    </Gift>
+    <Gift>
+      <itemTypeId>20</itemTypeId>
       <rewardedFriendship>2</rewardedFriendship>
       <itemCategory>6</itemCategory>
       <color1>0</color1>
