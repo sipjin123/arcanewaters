@@ -27,13 +27,15 @@ public class RollingTextFade : ClientMonoBehaviour {
    private void Update () {
       // If the player clicks the mouse while we're fading in, then finish up
       if (Input.GetMouseButtonDown(0)) {
-         _delayPerCharacter = 0f;
+         _delayPerCharacter = .01f;
       }
    }
 
    public void fadeInText (string text) {
       // Clear any current coroutines that might be running
-      StopAllCoroutines();
+      if (_changeTextCoroutine != null) {
+         StopCoroutine(_changeTextCoroutine);
+      }
 
       // Reset the speed back to the default
       _delayPerCharacter = DEFAULT_DELAY;
@@ -45,7 +47,7 @@ public class RollingTextFade : ClientMonoBehaviour {
       _textComponent.color = new Color(_originalColor.r, _originalColor.g, _originalColor.b, 0f);
 
       // Start the coroutine to fade in the text
-      StartCoroutine(AnimateVertexColors());
+      _changeTextCoroutine = StartCoroutine (AnimateVertexColors());
    }
 
    /// <summary>
@@ -149,6 +151,9 @@ public class RollingTextFade : ClientMonoBehaviour {
 
    // The default wait length per character
    protected static float DEFAULT_DELAY = .03f;
+
+   // Holds the coroutine for the changing of the text
+   protected Coroutine _changeTextCoroutine;
 
    #endregion
 }

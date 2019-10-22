@@ -339,7 +339,7 @@ public class NPCPanel : Panel {
 
       // If the panel is already showing, start writing the new text
       if (isShowing()) {
-         //AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
+         AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
       }
 
       // By default, hide the quest objectives section

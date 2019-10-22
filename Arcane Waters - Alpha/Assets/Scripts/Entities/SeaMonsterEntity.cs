@@ -173,9 +173,7 @@ public class SeaMonsterEntity : SeaEntity
             // Destroy the object
             NetworkServer.Destroy(this.gameObject);
          }
-      } else {
-
-      }
+      } 
 
       // Alters the simple animation data
       handleAnimations();
@@ -608,20 +606,22 @@ public class SeaMonsterEntity : SeaEntity
       _clickableBox.gameObject.SetActive(false);
       seaMonsterBars.gameObject.SetActive(false);
 
-      // Reduces the life of the parent entity if there is one
-      if (seaMonsterData.roleType == RoleType.Minion && seaMonsterParentEntity != null) {
-         seaMonsterParentEntity.currentHealth -= 1;
-      }
-
-      if (seaMonsterData.roleType == RoleType.Master) {
-         foreach (SeaMonsterEntity childEntity in seaMonsterChildrenList) {
-            NetworkServer.Destroy(childEntity.gameObject);
+      if (isServer) {
+         // Reduces the life of the parent entity if there is one
+         if (seaMonsterData.roleType == RoleType.Minion && seaMonsterParentEntity != null) {
+            seaMonsterParentEntity.currentHealth -= 1;
          }
-      }
 
-      // Drops the treasure bag if this entity can spawn one
-      if (seaMonsterData.shouldDropTreasure) {
-         spawnChest();
+         if (seaMonsterData.roleType == RoleType.Master) {
+            foreach (SeaMonsterEntity childEntity in seaMonsterChildrenList) {
+               NetworkServer.Destroy(childEntity.gameObject);
+            }
+         }
+
+         // Drops the treasure bag if this entity can spawn one
+         if (seaMonsterData.shouldDropTreasure) {
+            spawnChest();
+         }
       }
    }
 
