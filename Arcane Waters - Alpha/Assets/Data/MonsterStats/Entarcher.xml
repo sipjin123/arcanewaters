@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<MonsterRawData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <imagePath>Assets/Sprites/Enemies/SeaMonsters/tentacle_b.png</imagePath>
+  <currentXP>0</currentXP>
+  <battlerID xmlns="EnemyType">Entarcher</battlerID>
+  <apGainWhenDamaged>0</apGainWhenDamaged>
+  <baseHealth>25</baseHealth>
+  <baseDefense>0</baseDefense>
+  <baseDamage>2</baseDamage>
+  <baseGoldReward>0</baseGoldReward>
+  <baseXPReward>5</baseXPReward>
+  <damagePerLevel>0</damagePerLevel>
+  <defensePerLevel>0</defensePerLevel>
+  <healthPerlevel>0</healthPerlevel>
+  <battlerLootData>
+    <lootList>
+      <LootInfo>
+        <lootType xmlns="IngredientType">Lizard_Claw</lootType>
+        <quantity>5</quantity>
+        <chanceRatio>27.157814</chanceRatio>
+      </LootInfo>
+      <LootInfo>
+        <lootType xmlns="IngredientType">Luminous_Powder</lootType>
+        <quantity>8</quantity>
+        <chanceRatio>67.85634</chanceRatio>
+      </LootInfo>
+    </lootList>
+    <defaultLoot xmlns="IngredientType">Mandible</defaultLoot>
+    <minQuantity>1</minQuantity>
+    <maxQuantity>4</maxQuantity>
+  </battlerLootData>
+  <physicalDefenseMultiplier>0</physicalDefenseMultiplier>
+  <fireDefenseMultiplier>0</fireDefenseMultiplier>
+  <earthDefenseMultiplier>2</earthDefenseMultiplier>
+  <airDefenseMultiplier>0</airDefenseMultiplier>
+  <waterDefenseMultiplier>3</waterDefenseMultiplier>
+  <allDefenseMultiplier>0</allDefenseMultiplier>
+  <physicalAttackMultiplier>0</physicalAttackMultiplier>
+  <fireAttackMultiplier>0</fireAttackMultiplier>
+  <earthAttackMultiplier>2</earthAttackMultiplier>
+  <airAttackMultiplier>0</airAttackMultiplier>
+  <waterAttackMultiplier>1</waterAttackMultiplier>
+  <allAttackMultiplier>0</allAttackMultiplier>
+  <preContactLength>0</preContactLength>
+  <preMagicLength>0</preMagicLength>
+</MonsterRawData>
