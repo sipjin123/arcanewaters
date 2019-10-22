@@ -141,10 +141,7 @@ public class BattleUIManager : MonoBehaviour {
       if (_playerLocalBattler != null) {
          playerApBar.value = _playerLocalBattler.getActionTimerPercent();
          playerHealthBar.value = _playerLocalBattler.displayedHealth;
-
-         // TODO - Zeronev, remove this when implemented correctly
-         // Will be correctly made whenever we have fully stablished the buff/attack ability data.
-         // Cause this will only allow us to change stance locally, but the value can be changed externally (needs to be networked and not in here)
+         
          if (_playerLocalBattler.stanceCurrentCooldown > 0) {
             _playerLocalBattler.stanceCurrentCooldown -= Time.deltaTime;
             stanceChangeButton.interactable = false;
@@ -163,7 +160,7 @@ public class BattleUIManager : MonoBehaviour {
       playerBattleCG.Show();
 
       // Battler stances are always reset to balanced when a new battle begins, so we reset the UI too.
-      setStanceGraphics(Battler.Stance.Balanced);
+      setStanceGraphics(BattlerBehaviour.Stance.Balanced);
 
       usernameText.text = Global.player.entityName;
 
@@ -189,21 +186,21 @@ public class BattleUIManager : MonoBehaviour {
 
    // Changes the icon that is at the right side of the player battle ring UI
    public void changeBattleStance (int newStance) {
-      switch ((Battler.Stance) newStance) {
-         case Battler.Stance.Balanced:
+      switch ((BattlerBehaviour.Stance) newStance) {
+         case BattlerBehaviour.Stance.Balanced:
             _playerLocalBattler.stanceCurrentCooldown = AbilityInventory.self.balancedStance.getCooldown();
             break;
-         case Battler.Stance.Attack:
+         case BattlerBehaviour.Stance.Attack:
             _playerLocalBattler.stanceCurrentCooldown = AbilityInventory.self.offenseStance.getCooldown();
             break;
-         case Battler.Stance.Defense:
+         case BattlerBehaviour.Stance.Defense:
             _playerLocalBattler.stanceCurrentCooldown = AbilityInventory.self.defenseStance.getCooldown();
             break;
       }
 
-      setStanceGraphics((Battler.Stance) newStance);
-
-      Global.player.rpc.Cmd_StanceChange(BattleManager.self.getPlayerBattler().userId , (Battler.Stance) newStance);
+      setStanceGraphics((BattlerBehaviour.Stance) newStance);
+      
+      Global.player.rpc.Cmd_RequestStanceChange((BattlerBehaviour.Stance) newStance);
 
       // Whenever we have finished setting the new stance, we hide the frames
       hideActionStanceFrame();
@@ -279,13 +276,13 @@ public class BattleUIManager : MonoBehaviour {
       }
    }
 
-   public Sprite getStanceIcon (Battler.Stance stance) {
+   public Sprite getStanceIcon (BattlerBehaviour.Stance stance) {
       switch (stance) {
-         case Battler.Stance.Balanced:
+         case BattlerBehaviour.Stance.Balanced:
             return balancedSprite;
-         case Battler.Stance.Attack:
+         case BattlerBehaviour.Stance.Attack:
             return offenseSprite;
-         case Battler.Stance.Defense:
+         case BattlerBehaviour.Stance.Defense:
             return defenseSprite;
          default:
             return null;
@@ -294,13 +291,7 @@ public class BattleUIManager : MonoBehaviour {
 
    #endregion
 
-   /// <summary>
-   /// Auto adjusts a UI RectTransform from world space to Screen space
-   /// Mainly used for automatically adjusting the targeted enemy UI into the correct spot
-   /// </summary>
-   /// <param name="target"> Battler target that we want to put the targetRect on </param>
-   public void triggerTargetUI (Battler target) {
-
+   public void triggerTargetUI (BattlerBehaviour target) {
       mainTargetRect.gameObject.SetActive(true);
 
       Vector2 viewportPosition = CameraManager.battleCamera.getCamera().WorldToViewportPoint(target.battleSpot.transform.position +
@@ -316,15 +307,6 @@ public class BattleUIManager : MonoBehaviour {
       mainTargetRect.gameObject.SetActive(false);
    }
 
-   // Simulates a debug battle scenario
-   private void prepareBattleScenario () {
-      // Find an enemy present in the scene
-      Enemy randomEnemy = FindObjectOfType<Enemy>();
-
-      // Prepare battle parameters, to begin the debug battle scenario
-      Global.player.rpc.Cmd_StartNewBattle(randomEnemy.netId);
-   }
-
    // Prepares main listener for preparing the onAbilityHover event
    public void prepareUIEvents () {
       onAbilityHover.AddListener(triggerTooltip);
@@ -336,7 +318,7 @@ public class BattleUIManager : MonoBehaviour {
       // The transition takes 2 seconds
       yield return new WaitForSeconds(2);
 
-      Battler playerBattler = BattleManager.self.getPlayerBattler();
+      BattlerBehaviour playerBattler = BattleManager.self.getPlayerBattler();
       mainPlayerRectCG.Show();
 
       Vector3 pointOffset = new Vector3(playerBattler.clickBox.bounds.size.x / 4, playerBattler.clickBox.bounds.size.y * 1.75f);
@@ -353,6 +335,8 @@ public class BattleUIManager : MonoBehaviour {
          playerMainUIHolder.Show();
          targetEnemyCG.Show();
          mainPlayerRectCG.Show();
+
+         playerBattler.unPauseAnims();
       });
 
       // Whenever we select our local battler, we prepare UI positioning of the ring
@@ -384,27 +368,81 @@ public class BattleUIManager : MonoBehaviour {
       originRect.anchoredPosition = objectScreenPos;
    }
 
-   private void setStanceGraphics (Battler.Stance stance) {
+   private void setStanceGraphics (BattlerBehaviour.Stance stance) {
       switch (stance) {
-         case Battler.Stance.Balanced:
+         case BattlerBehaviour.Stance.Balanced:
             stanceMainIcon.sprite = balancedSprite;
             stanceButtonFrameIcon.sprite = balancedSprite;
             break;
-         case Battler.Stance.Attack:
+         case BattlerBehaviour.Stance.Attack:
             stanceMainIcon.sprite = offenseSprite;
             stanceButtonFrameIcon.sprite = offenseSprite;
             break;
-         case Battler.Stance.Defense:
+         case BattlerBehaviour.Stance.Defense:
             stanceMainIcon.sprite = defenseSprite;
             stanceButtonFrameIcon.sprite = defenseSprite;
             break;
       }
    }
 
+   #region DamageText
+   
+   public void showDamageText (AttackAction action, BattlerBehaviour damagedBattler) {
+      BattleSpot spot = damagedBattler.battleSpot;
+
+      AttackAbilityData abilityData = AbilityManager.getAbility(action.abilityGlobalID) as AttackAbilityData;
+
+      // Create the Text instance from the prefab
+      GameObject damageTextObject = (GameObject) Instantiate(PrefabsManager.self.damageTextPrefab);
+      DamageText damageText = damageTextObject.GetComponent<DamageText>();
+
+      // Place the damage numbers just above where the impact occurred for the given ability
+      damageText.transform.position = abilityData.isProjectile() ?
+          new Vector3(0f, .10f, -3f) + (Vector3) damagedBattler.getRangedEndPosition() :
+          new Vector3(damagedBattler.transform.position.x, damagedBattler.transform.position.y + .25f, -3f);
+      damageText.setDamageAmount(action.damage, action.wasCritical, action.wasBlocked);
+      damageText.transform.SetParent(EffectManager.self.transform, false);
+      damageText.name = "DamageText";
+
+      // The damage text should be on the same layer as the target's Battle Spot
+      damageText.gameObject.layer = spot.gameObject.layer;
+
+      // Color the text color and icon based on the damage type
+      damageText.customizeForAction(action);
+
+      // If the attack was blocked, show some cool text
+      if (action.wasBlocked) {
+         createBlockBattleText(damagedBattler);
+      }
+
+      // If the attack was a critical, show some cool text
+      if (action.wasCritical) {
+         createCriticalBattleText(damagedBattler);
+      }
+
+      // Make note of the time at which we were last damaged
+      damagedBattler.lastDamagedTime = Time.time;
+   }
+
+   private void createBlockBattleText (BattlerBehaviour battler) {
+      GameObject battleTextInstance = Instantiate(PrefabsManager.self.battleTextPrefab);
+      battleTextInstance.transform.SetParent(battler.transform, false);
+      battleTextInstance.GetComponentInChildren<BattleText>().customizeTextForBlock();
+   }
+
+   private void createCriticalBattleText (BattlerBehaviour battler) {
+      GameObject battleTextInstance = Instantiate(PrefabsManager.self.battleTextPrefab);
+      battleTextInstance.transform.SetParent(battler.transform, false);
+      battleTextInstance.GetComponentInChildren<BattleText>().customizeTextForCritical();
+   }
+
+   #endregion
+
+
    #region Private Variables
 
    // Reference for the local player battler, used for setting the bars information only
-   private Battler _playerLocalBattler;
+   private BattlerBehaviour _playerLocalBattler;
 
    #endregion
 }

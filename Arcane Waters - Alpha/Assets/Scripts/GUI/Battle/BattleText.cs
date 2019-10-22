@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -39,18 +39,18 @@ public class BattleText : MonoBehaviour {
         }
     }
 
-    public void customizeTextForStance(Battler.Stance stance) {
+    public void customizeTextForStance(BattlerBehaviour.Stance stance) {
         _text = GetComponent<Text>();
 
         // Start out scaled completely down
         transform.localScale = Vector3.zero;
 
         switch (stance) {
-            case Battler.Stance.Attack:
+            case BattlerBehaviour.Stance.Attack:
                 _text.color = Color.red;
                 _text.text = "Offense\nStance";
                 break;
-            case Battler.Stance.Defense:
+            case BattlerBehaviour.Stance.Defense:
                 _text.color = Color.green;
                 _text.text = "Defense\nStance";
                 break;

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
@@ -17,7 +17,7 @@ public class EquipmentManager : NetworkBehaviour {
 
    public virtual void Awake () {
       _body = GetComponent<BodyEntity>();
-      _battler = GetComponent<Battler>();
+      _battler = GetComponent<BattlerBehaviour>();
    }
 
    protected Gender.Type getGender () {
@@ -34,7 +34,7 @@ public class EquipmentManager : NetworkBehaviour {
    protected BodyEntity _body;
 
    // The Battler we're associated with, if any
-   protected Battler _battler;
+   protected BattlerBehaviour _battler;
 
    #endregion
 }

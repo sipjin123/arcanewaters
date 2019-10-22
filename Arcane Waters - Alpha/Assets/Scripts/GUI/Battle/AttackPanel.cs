@@ -17,7 +17,7 @@ public class AttackPanel : MonoBehaviour {
 
    // Currently only used in the UI for the local client
    public void requestAttackTarget (int abilityIndex) {
-      Battler target = BattleSelectionManager.self.selectedBattler;
+      BattlerBehaviour target = BattleSelectionManager.self.selectedBattler;
 
       // We have to have a target to attack
       if (target == null) {
@@ -28,7 +28,7 @@ public class AttackPanel : MonoBehaviour {
       Global.player.rpc.Cmd_RequestAttack(target.netId, abilityIndex);
    }
 
-   protected Battler getBattler () {
+   protected BattlerBehaviour getBattler () {
       // If we're not in a battle, there isn't one
       if (!Global.isInBattle()) {
          return null;
@@ -40,7 +40,7 @@ public class AttackPanel : MonoBehaviour {
       }
 
       // Find our Battler and keep track of it
-      foreach (Battler battler in FindObjectsOfType<Battler>()) {
+      foreach (BattlerBehaviour battler in FindObjectsOfType<BattlerBehaviour>()) {
          if (battler.player == Global.player) {
             _battler = battler;
          }
@@ -58,7 +58,7 @@ public class AttackPanel : MonoBehaviour {
    protected Button _button;
 
    // The player's Battler
-   protected Battler _battler;
+   protected BattlerBehaviour _battler;
       
    #endregion
 }

@@ -13,7 +13,13 @@ namespace ItemEditor
       #region Public Variables
 
       // Holder for the stances that can be used for the ability that is being created in the AbilityBuilder
-      public Battler.Stance[] abilityAllowedStances = { Battler.Stance.Attack, Battler.Stance.Balanced, Battler.Stance.Defense };
+      public BattlerBehaviour.Stance[] abilityAllowedStances = { BattlerBehaviour.Stance.Attack, BattlerBehaviour.Stance.Balanced, BattlerBehaviour.Stance.Defense };
+
+      // Temporary holder that will store the hit sprites for the ability that is being built
+      public Sprite[] hitSpritesEffect;
+
+      // Temporary holder that will store the cast sprites for the ability that is being built
+      public Sprite[] castSpritesEffect;
 
       #endregion
 
@@ -127,16 +133,12 @@ namespace ItemEditor
 
                // Basic data set
                BattleItemData basicData = BattleItemData.CreateInstance(_itemID, _itemName, _itemDesc, _itemElementType, _hitAudioClip,
-                   _hitParticle, _battleItemType, _itemIcon, _levelRequirement);
+                  hitSpritesEffect, _battleItemType, _itemIcon, _levelRequirement);
 
                switch (_battleItemType) {
                   case BattleItemType.Ability:
-                     /*BasicAbilityData newAbility = BasicAbilityData.CreateInstance(basicData, _abilityCost, _abilityCanBeBlocked,
-                         _abilityCastParticle, _abilityCastAudioclip, abilityAllowedStances, _classRequirement, _abilityType,
-                         _cooldown, _hasKnockup, _hasShake, _apChange);*/
-
-                     BasicAbilityData basicAbilityData = BasicAbilityData.CreateInstance(basicData, _abilityCost, _abilityCastParticle,
-                        _abilityCastAudioclip, abilityAllowedStances, _classRequirement, _abilityType, _cooldown, _apChange);
+                     BasicAbilityData basicAbilityData = BasicAbilityData.CreateInstance(basicData, _abilityCost, castSpritesEffect,
+                        _abilityCastAudioclip, abilityAllowedStances, _abilityType, _cooldown, _apChange, _fxTimePerFrame);
 
                      switch (_abilityType) {
                         case AbilityType.Standard:
@@ -200,9 +202,9 @@ namespace ItemEditor
          EditorGUILayout.EndHorizontal();
          EditorGUILayout.Space();
 
-         EditorGUILayout.PrefixLabel("Hit Parameters");
+         EditorGUILayout.PrefixLabel("Hit SFX");
          _hitAudioClip = (AudioClip) EditorGUILayout.ObjectField(_hitAudioClip, typeof(AudioClip), true);
-         _hitParticle = (ParticleSystem) EditorGUILayout.ObjectField(_hitParticle, typeof(ParticleSystem), true);
+         drawHitVFXBlock();
          EditorGUILayout.Space();
 
          EditorGUILayout.PrefixLabel("Class requirement");
@@ -226,19 +228,52 @@ namespace ItemEditor
          }
 
          if (_battleItemType == BattleItemType.Ability) {
-            // Prepare item array
-            ItemBuilderWindow target = this;
-            SerializedObject so = new SerializedObject(target);
-            SerializedProperty stancesProperties = so.FindProperty("abilityAllowedStances");
-
-            // Stances
-            ItemEditorLayout.centeredLabel("Allowed stances");
-            EditorGUILayout.PropertyField(stancesProperties, true);
-            so.ApplyModifiedProperties();
+            // Show the allowed stances in the item creation window
+            drawAllowedStancesBlock();
          }
 
          EditorGUILayout.Space();
       }
+
+      #region Custom window arrays
+
+      private void drawAllowedStancesBlock () {
+         // Prepare item array
+         ItemBuilderWindow target = this;
+         SerializedObject so = new SerializedObject(target);
+         SerializedProperty stancesProperties = so.FindProperty("abilityAllowedStances");
+
+         // Stances
+         ItemEditorLayout.centeredLabel("Allowed stances");
+         EditorGUILayout.PropertyField(stancesProperties, true);
+         so.ApplyModifiedProperties();
+      }
+      
+      private void drawHitVFXBlock () {
+         // Prepare item array
+         ItemBuilderWindow target = this;
+         SerializedObject so = new SerializedObject(target);
+         SerializedProperty hitProperties = so.FindProperty("hitSpritesEffect");
+
+         // Stances
+         EditorGUILayout.PrefixLabel("Hit VFX");
+         EditorGUILayout.PropertyField(hitProperties, true);
+         so.ApplyModifiedProperties();
+      }
+      
+      private void drawCastVFXBlock () {
+         // Prepare item array
+         ItemBuilderWindow target = this;
+         SerializedObject so = new SerializedObject(target);
+         SerializedProperty castProperties = so.FindProperty("castSpritesEffect");
+
+         // Stances
+         ItemEditorLayout.centeredLabel("Cast VFX");
+         EditorGUILayout.PropertyField(castProperties, true);
+         so.ApplyModifiedProperties();
+      }
+
+      #endregion
 
       private void drawWeaponBlock () {
          EditorGUILayout.BeginVertical("box");
@@ -273,9 +308,8 @@ namespace ItemEditor
       private void drawAbilitySecondBlock () {
          ItemEditorLayout.centeredLabel("Cast audioclip");
          _abilityCastAudioclip = (AudioClip) EditorGUILayout.ObjectField(_abilityCastAudioclip, typeof(AudioClip), true);
-
-         ItemEditorLayout.centeredLabel("Cast Particle");
-         _abilityCastParticle = (ParticleSystem) EditorGUILayout.ObjectField(_abilityCastParticle, typeof(ParticleSystem), true);
+         
+         drawCastVFXBlock();
       }
 
       private void drawAbilityThirdBlock () {
@@ -323,7 +357,7 @@ namespace ItemEditor
          EditorGUILayout.BeginHorizontal();
 
          ItemEditorLayout.centeredLabel("Action Type");
-         _abilityActionType = (AbilityActionType) EditorGUILayout.EnumPopup(_abilityActionType, GUILayout.MaxWidth(120));
+         _abilityActionType = (AbilityActionType) EditorGUILayout.EnumPopup(_abilityActionType);
 
          ItemEditorLayout.centeredLabel("Item Damage");
          _itemDamage = EditorGUILayout.IntField(_itemDamage, GUILayout.MinWidth(20));
@@ -335,13 +369,13 @@ namespace ItemEditor
          EditorGUILayout.BeginHorizontal();
 
          ItemEditorLayout.centeredLabel("Can be blocked");
-         _abilityCanBeBlocked = EditorGUILayout.Toggle(_abilityCanBeBlocked, GUILayout.MaxWidth(40));
+         _abilityCanBeBlocked = EditorGUILayout.Toggle(_abilityCanBeBlocked);
 
          ItemEditorLayout.centeredLabel("Has Knockup");
-         _hasKnockup = EditorGUILayout.Toggle(_hasKnockup, GUILayout.MaxWidth(40));
+         _hasKnockup = EditorGUILayout.Toggle(_hasKnockup);
 
          ItemEditorLayout.centeredLabel("Has Shake");
-         _hasShake = EditorGUILayout.Toggle(_hasShake, GUILayout.MaxWidth(40));
+         _hasShake = EditorGUILayout.Toggle(_hasShake);
 
          EditorGUILayout.EndHorizontal();
 
@@ -398,14 +432,14 @@ namespace ItemEditor
          _itemElementType = item.getElementType();
 
          _hitAudioClip = item.getHitAudioClip();
-         _hitParticle = item.getHitParticle();
+         _hitVFXSprites = item.getHitEffect();
          _classRequirement = item.getClassRequirement();
       }
       
       private void setBasicAbilityItemValues (BasicAbilityData item) {
          _abilityCost = item.getAbilityCost();
-
-         _abilityCastParticle = item.getCastParticle();
+         
+         _castVFXSprites = item.getCastEffect();
          _abilityCastAudioclip = item.getCastAudioClip();
 
          abilityAllowedStances = item.getAllowedStances();
@@ -442,7 +476,7 @@ namespace ItemEditor
          _itemDamage = 10;
          _itemElementType = Element.Physical;
          _hitAudioClip = null;
-         _hitParticle = null;
+         _hitVFXSprites = null;
          _battleItemType = BattleItemType.UNDEFINED;
 
          _classRequirement = Weapon.Class.Any;
@@ -450,7 +484,7 @@ namespace ItemEditor
          // Ability parameters
          _abilityCost = 10;
          _abilityCanBeBlocked = true;
-         _abilityCastParticle = null;
+         _castVFXSprites = null;
          _abilityCastAudioclip = null;
          _cooldown = 4;
          _hasShake = false;
@@ -458,6 +492,7 @@ namespace ItemEditor
          _apChange = 3;
          _abilityActionType = AbilityActionType.UNDEFINED;
          _abilityType = AbilityType.Standard;
+         _fxTimePerFrame = 0.10f;
 
          // Buff/Debuff parameters
          _buffActionType = BuffActionType.UNDEFINED;
@@ -584,7 +619,8 @@ namespace ItemEditor
       private int _itemDamage = 10;
       private Element _itemElementType = Element.Physical;
       private AudioClip _hitAudioClip;
-      private ParticleSystem _hitParticle;
+      private Sprite[] _hitVFXSprites;
+      private Sprite[] _castVFXSprites;
       private BattleItemType _battleItemType = BattleItemType.UNDEFINED;
 
       // The class that the player needs to be to be able to use this item
@@ -593,7 +629,6 @@ namespace ItemEditor
       // Basic AbilityData combat values
       private int _abilityCost = 10;
       private bool _abilityCanBeBlocked = true;
-      private ParticleSystem _abilityCastParticle;
       private AudioClip _abilityCastAudioclip;
       private AbilityActionType _abilityActionType = AbilityActionType.UNDEFINED;
       private AbilityType _abilityType = AbilityType.Standard;
@@ -601,6 +636,7 @@ namespace ItemEditor
       private bool _hasShake = true;
       private bool _hasKnockup = false;
       private int _apChange = 3;
+      private float _fxTimePerFrame;
 
       // Buff ability parameters
       private BuffActionType _buffActionType;

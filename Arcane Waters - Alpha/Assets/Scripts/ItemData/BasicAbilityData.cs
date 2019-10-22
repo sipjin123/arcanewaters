@@ -1,55 +1,27 @@
 using System.Collections;
 using UnityEngine;
 
-// Chris Palacios
 /// <summary>
 /// Not to be used directly, this class is just a base for all abilities.
 /// Please use AttackAbilityData or BuffAbilityData instead.
 /// </summary>
 [System.Serializable]
-public class BasicAbilityData : BattleItemData
-{
-   // Builder scriptable object instance builder.
+public class BasicAbilityData : BattleItemData {
+   // Builder scriptable object instance builder
    public static BasicAbilityData CreateInstance (BasicAbilityData datacopy) {
       // If a new value needs to be added to the abilitydata class, it needs to be included in here!
       BasicAbilityData data = CreateInstance<BasicAbilityData>();
 
-      // Basic battle item data.
-      /*data.setName(datacopy.getName());
-      data.setDescription(datacopy.getDescription());
-      data.setItemIcon(datacopy.getItemIcon());
-      data.setItemID(datacopy.getItemID());
-      data.setLevelRequirement(datacopy.getLevelRequirement());
-
-      data.setItemElement(datacopy.getElementType());
-
-      data.setHitAudioClip(datacopy.getHitAudioClip());
-      data.setHitParticle(datacopy.getHitParticle());
-
-      data.setBattleItemType(datacopy.getBattleItemType());*/
       data.setBaseBattleItemData(datacopy);
-
-      // Ability Data.
-      data.setAbilityCost(datacopy.getAbilityCost());
-
-      data.setCastParticle(datacopy.getCastParticle());
-      data.setCastAudioClip(datacopy.getCastAudioClip());
-
-      data.setAllowedStances(datacopy.getAllowedStances());
-      data.setClassRequirement(datacopy.getClassRequirement());
-
-      data.setAbilityType(datacopy.getAbilityType());
-      data.setAbilityCooldown(datacopy.getCooldown());
-      
-      data.setApChange(datacopy.getApChange());
+      data.setBaseAbilityData(datacopy);
 
       return data;
    }
 
    // Builder for the ability data
-   public static BasicAbilityData CreateInstance (BattleItemData basicData, int abCost, ParticleSystem castPrt,
-       AudioClip castClip, Battler.Stance[] _allowedStances, Weapon.Class _classRequirement, AbilityType abilityType, float cooldown,
-       int apChange) {
+   public static BasicAbilityData CreateInstance (BattleItemData basicData, int abCost, Sprite[] castSprites,
+       AudioClip castClip, BattlerBehaviour.Stance[] _allowedStances, AbilityType abilityType, float cooldown,
+       int apChange, float fxTimePerFrame) {
       BasicAbilityData data = CreateInstance<BasicAbilityData>();
 
       // Basic battle item data
@@ -57,85 +29,90 @@ public class BasicAbilityData : BattleItemData
 
       // Ability Data
       data.setAbilityCost(abCost);
-
-      data.setCastParticle(castPrt);
+      
+      data.setCastEffect(castSprites);
       data.setCastAudioClip(castClip);
 
       data.setAllowedStances(_allowedStances);
-      data.setClassRequirement(_classRequirement);
 
       data.setAbilityType(abilityType);
       data.setAbilityCooldown(cooldown);
       
       data.setApChange(apChange);
+      data.setFXTimePerFrame(fxTimePerFrame);
 
       return data;
    }
 
    // Setters
    protected void setAbilityCost (int value) { _abilityCost = value; }
-   
-   protected void setCastParticle (ParticleSystem value) { _castParticle = value; }
    protected void setCastAudioClip (AudioClip value) { _castAudioClip = value; }
-   protected void setAllowedStances (Battler.Stance[] value) { _allowedStances = value; }
+   protected void setAllowedStances (BattlerBehaviour.Stance[] value) { _allowedStances = value; }
    protected void setAbilityType (AbilityType value) { _abilityType = value; }
    protected void setAbilityCooldown (float value) { _abilityCooldown = value; }
    protected void setApChange (int value) { _apChange = value; }
-
-   /// <summary>
-   /// Gets all base battle item data and sets it to this object.
-   /// </summary>
-   /// <param name="battleItemData"></param>
-   protected void setBaseBattleItemData (BattleItemData battleItemData) {
-      // Basic battle item data
-      setName(battleItemData.getName());
-      setDescription(battleItemData.getDescription());
-      setItemID(battleItemData.getItemID());
-      setItemIcon(battleItemData.getItemIcon());
-      setLevelRequirement(battleItemData.getLevelRequirement());
-
-      setItemElement(battleItemData.getElementType());
-
-      setHitAudioClip(battleItemData.getHitAudioClip());
-      setHitParticle(battleItemData.getHitParticle());
-
-      setBattleItemType(battleItemData.getBattleItemType());
-   }
-
-   protected void setBaseAbilityData (BasicAbilityData basicAbilityData) {
-      // Ability Data
-      setAbilityCost(basicAbilityData.getAbilityCost());
-
-      setCastParticle(basicAbilityData.getCastParticle());
-      setCastAudioClip(basicAbilityData.getCastAudioClip());
-
-      setAllowedStances(basicAbilityData.getAllowedStances());
-      setClassRequirement(basicAbilityData.getClassRequirement());
-
-      setAbilityType(basicAbilityData.getAbilityType());
-      setAbilityCooldown(basicAbilityData.getCooldown());
-
-      setApChange(basicAbilityData.getApChange());
-   }
+   protected void setCastEffect (Sprite[] value) { _castSprites = value; }
+   protected void setFXTimePerFrame (float value) { _FXTimePerFrame = value; }
 
    // Getters
    public int getAbilityCost () { return _abilityCost; }
    public float getCooldown () { return _abilityCooldown; }
-   public ParticleSystem getCastParticle () { return _castParticle; }
    public AudioClip getCastAudioClip () { return _castAudioClip; }
-   public Battler.Stance[] getAllowedStances () { return _allowedStances; }
+   public BattlerBehaviour.Stance[] getAllowedStances () { return _allowedStances; }
    public AbilityType getAbilityType () { return _abilityType; }
    public int getApChange () { return _apChange; }
+   public Sprite[] getCastEffect () { return _castSprites; }
+   public float getFXTimePerFrame () { return _FXTimePerFrame; }
+
+   protected void setBaseAbilityData (BasicAbilityData basicAbilityData) {
+      setAbilityCost(basicAbilityData.getAbilityCost());
+      setAbilityCooldown(basicAbilityData.getCooldown());
+
+      setCastAudioClip(basicAbilityData.getCastAudioClip());
+
+      setAllowedStances(basicAbilityData.getAllowedStances());
+
+      setAbilityType(basicAbilityData.getAbilityType());
+
+      setApChange(basicAbilityData.getApChange());
+      setCastEffect(basicAbilityData.getCastEffect());
+
+      setFXTimePerFrame(basicAbilityData.getFXTimePerFrame());
+   }
+
+   #region Helper Methods
+
+   public bool isReadyForUseBy (BattlerBehaviour sourceBattler) {
+      if (_abilityType == AbilityType.Standard) {
+
+         if (sourceBattler.AP < getAbilityCost()) {
+            Debug.Log("not enough ap");
+         }
+
+         if (Util.netTime() < sourceBattler.cooldownEndTime) {
+            Debug.Log("Time on cooldown");
+         }
+
+         return (sourceBattler.AP >= getAbilityCost()) && (Util.netTime() >= sourceBattler.cooldownEndTime);
+
+      } else if (_abilityType == AbilityType.Stance) {
+         return Util.netTime() >= sourceBattler.stanceCooldownEndTime;
+
+      } else {
+         Debug.Log("The ability type is undefined");
+         return false;
+      }
+   }
+
+   #endregion
 
    #region Private Variables
 
    // Cast parameters, effects that will play whenever we start casting the ability (if required)
-
-   [SerializeField] private ParticleSystem _castParticle;
    [SerializeField] private AudioClip _castAudioClip;
 
    // Combat stances required to be able to use this ability
-   [SerializeField] private Battler.Stance[] _allowedStances;
+   [SerializeField] private BattlerBehaviour.Stance[] _allowedStances;
 
    // Type of the ability. (Standard or buff/debuff)
    [SerializeField] private AbilityType _abilityType;
@@ -144,6 +121,12 @@ public class BasicAbilityData : BattleItemData
 
    // Cost required to execute this ability
    [SerializeField] private int _abilityCost;
+
+   // This can be null, like a sword attack for example
+   [SerializeField] private Sprite[] _castSprites;
+
+   // Visual effect time per frame
+   [SerializeField] private float _FXTimePerFrame = 0.10f;
 
    #endregion
 }
@@ -156,6 +139,8 @@ public interface IAttackBehaviour
 
 public enum AbilityType
 {
-   Standard,
-   BuffDebuff
+   Undefined = 0,
+   Standard = 1,
+   BuffDebuff = 2,
+   Stance = 3
 }

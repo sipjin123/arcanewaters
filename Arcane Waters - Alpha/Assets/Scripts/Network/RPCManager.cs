@@ -280,9 +280,9 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Server]
-   public void spawnLandMonsterChest (Enemy.Type enemyType, int instanceID, Vector3 position) {
+   public void spawnBattlerMonsterChest (int instanceID, Vector3 position, int enemyID) {
       Instance currentInstance = InstanceManager.self.getInstance(instanceID);
-      TreasureManager.self.createMonsterChest(currentInstance, position, enemyType, true);
+      TreasureManager.self.createBattlerMonsterChest(currentInstance, position, enemyID);
    }
 
    [TargetRpc]
@@ -1848,14 +1848,14 @@ public class RPCManager : NetworkBehaviour {
       // Look up the player's Battle object
       PlayerBodyEntity playerBody = (PlayerBodyEntity) _player;
       Battle battle = BattleManager.self.getBattle(playerBody.battleId);
-      Battler sourceBattler = battle.getBattler(_player.userId);
+      BattlerBehaviour sourceBattler = battle.getBattler(_player.userId);
 
       // Get the ability from the battler abilities.
-      AttackAbilityData abilityData = sourceBattler.getAbilities[abilityInventoryIndex];
+      AttackAbilityData abilityData = sourceBattler.getAttackAbilities()[abilityInventoryIndex];
 
-      Battler targetBattler = null;
+      BattlerBehaviour targetBattler = null;
 
-      foreach (Battler participant in battle.getParticipants()) {
+      foreach (BattlerBehaviour participant in battle.getParticipants()) {
          if (participant.netId == netId) {
             targetBattler = participant;
          }
@@ -1879,13 +1879,47 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Let the Battle Manager handle executing the attack
-      List<Battler> targetBattlers = new List<Battler>() { targetBattler };
-      BattleManager.self.executeAttack(battle, sourceBattler, targetBattlers, abilityInventoryIndex);
+      List<BattlerBehaviour> targetBattlers = new List<BattlerBehaviour>() { targetBattler };
+      BattleManager.self.executeBattleAction(battle, sourceBattler, targetBattlers, abilityInventoryIndex);
    }
 
    [Command]
-   public void Cmd_StanceChange (int userID, Battler.Stance newStance) {
-      BattleManager.self.getBattler(userID).stance = newStance;
+   public void Cmd_RequestStanceChange (BattlerBehaviour.Stance newStance) {
+      if (_player == null || !(_player is PlayerBodyEntity)) {
+         return;
+      }
+
+      // Look up the player's Battle object
+      PlayerBodyEntity playerBody = (PlayerBodyEntity) _player;
+      Battle battle = BattleManager.self.getBattle(playerBody.battleId);
+      BattlerBehaviour sourceBattler = battle.getBattler(_player.userId);
+      BasicAbilityData abilityData = null;
+
+      // Get the correct stance ability data.
+      switch (newStance) {
+         case BattlerBehaviour.Stance.Balanced:
+            abilityData = sourceBattler.getBalancedStance();
+            break;
+         case BattlerBehaviour.Stance.Attack:
+            abilityData = sourceBattler.getOffenseStance();
+            break;
+         case BattlerBehaviour.Stance.Defense:
+            abilityData = sourceBattler.getDefensiveStance();
+            break;
+      }
+
+      // Ignore invalid or dead sources and targets
+      if (sourceBattler == null || sourceBattler.isDead()) {
+         return;
+      }
+
+      // Make sure the source battler can use that ability type
+      if (!abilityData.isReadyForUseBy(sourceBattler)) {
+         D.debug("Battler requested to use ability they're not allowed: " + playerBody.entityName + ", " + abilityData.getName());
+         return;
+      }
+      
+      BattleManager.self.executeStanceChangeAction(battle, sourceBattler, newStance);
    }
 
    [Server]

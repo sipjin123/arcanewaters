@@ -83,17 +83,15 @@ public class DamageText : MonoBehaviour {
    }
 
    public void customizeForAction (AttackAction action) {
-      // TODO ZERONEV: Grab the element directly from the attack action.
-      // Not grabbing the ability and then the element, for now I will just hardcode the element.
-      //Ability ability = AbilityManager.getAbility(action.abilityType);
-      Element element = Element.Physical;
+      BasicAbilityData ability = AbilityManager.getAbility(action.abilityGlobalID);
+      Element element = ability.getElementType();
 
       customizeForAction(element, action.wasCritical);
    }
 
    public void customizeForAction (Element element, bool wasCritical) {
       // Gradient gradient = text.GetComponent<Gradient>();
-      text.font = Resources.Load<Font>("Fonts/PhysicalDamage");
+      text.font = Resources.Load<Font>("Fonts/");
       string fontString = "PhysicalDamage";
 
       switch (element) {

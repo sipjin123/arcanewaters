@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -70,20 +70,48 @@ public class TreasureManager : MonoBehaviour {
       return chest;
    }
 
-   public TreasureChest createMonsterChest (Instance instance, Vector3 spot, Enemy.Type enemyType, bool isLandMonster) {
+   public TreasureChest createSeaMonsterChest (Instance instance, Vector3 spot, Enemy.Type enemyType) {
       // Instantiate a new Treasure Chest
       TreasureChest chest = null;
-      if (!isLandMonster) {
-         chest = Instantiate(seaChestPrefab, spot, Quaternion.identity);
-      } else {
-         chest = Instantiate(monsterBagPrefab, spot, Quaternion.identity);
-      }
+      chest = Instantiate(seaChestPrefab, spot, Quaternion.identity);
 
       // Sets the chest to be destroyed after interaction
       chest.autoDestroy = true;
 
       // Sets the type of enemy
       chest.enemyType = (int)enemyType;
+
+      // Keep it parented to this Manager
+      chest.transform.SetParent(this.transform, true);
+
+      // Assign a unique ID
+      chest.id = _id++;
+
+      // Note which instance the chest is in
+      chest.instanceId = instance.id;
+
+      // Keep track of the chests that we've created
+      _chests.Add(chest.id, chest);
+
+      // The Instance needs to keep track of all Networked objects inside
+      instance.entities.Add(chest);
+
+      // Spawn the network object on the Clients
+      NetworkServer.Spawn(chest.gameObject);
+
+      return chest;
+   }
+
+   public TreasureChest createBattlerMonsterChest (Instance instance, Vector3 spot, int enemyTypeID) {
+      // Instantiate a new Treasure Chest
+      TreasureChest chest = null;
+      chest = Instantiate(monsterBagPrefab, spot, Quaternion.identity);
+
+      // Sets the chest to be destroyed after interaction
+      chest.autoDestroy = true;
+
+      // Sets the type of enemy
+      chest.enemyType = enemyTypeID;
 
       // Keep it parented to this Manager
       chest.transform.SetParent(this.transform, true);

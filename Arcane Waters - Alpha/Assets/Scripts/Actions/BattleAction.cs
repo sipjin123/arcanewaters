@@ -32,6 +32,9 @@ public class BattleAction {
 
    // The change in the target Battler AP that occurred as a result of this action
    public int targetApChange;
+   
+   // The type of the action that will be executed, either attack, buff/debuff or stance change.
+   public BattleActionType battleActionType;
 
    #endregion
 
@@ -40,4 +43,13 @@ public class BattleAction {
    #region Private Variables
 
    #endregion
+}
+
+public enum BattleActionType
+{
+   UNDEFINED = 0,
+   Attack = 1,
+   Stance = 2,
+   BuffDebuff = 3,
+   Cancel = 4
 }

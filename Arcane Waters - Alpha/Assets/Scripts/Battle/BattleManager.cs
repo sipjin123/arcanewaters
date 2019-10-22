@@ -16,8 +16,8 @@ public class BattleManager : MonoBehaviour {
    // The Prefab we use for creating new Battles
    public Battle battlePrefab;
 
-   // The Prefab we use for creating new player Battlers
-   public Battler battlerPrefab;
+   // The base battler behaviour that will be initialized depending on the type and data that the Scriptable Object includes
+   public BattlerBehaviour baseBattlerPrefab;
 
    // Self
    public static BattleManager self;
@@ -84,7 +84,7 @@ public class BattleManager : MonoBehaviour {
       return null;
    }
 
-   public Battler getBattler (int userId) {
+   public BattlerBehaviour getBattler (int userId) {
       if (_battlers.ContainsKey(userId)) {
          return _battlers[userId];
       }
@@ -108,7 +108,7 @@ public class BattleManager : MonoBehaviour {
       return null;
    }
 
-   public Battler getPlayerBattler () {
+   public BattlerBehaviour getPlayerBattler () {
       if (Global.player == null) {
          return null;
       }
@@ -119,8 +119,7 @@ public class BattleManager : MonoBehaviour {
    public BattleBoard getBattleBoard (Biome.Type biomeType) {
       return _boards[biomeType];
    }
-
-   // [Server]
+   
    public void addPlayerToBattle (Battle battle, PlayerBodyEntity player, Battle.TeamType teamType) {
       // Maintain a Mapping of which players are in which Battles
       _activeBattles[player.userId] = battle;
@@ -129,7 +128,7 @@ public class BattleManager : MonoBehaviour {
       ServerNetwork.self.claimPlayer(player.userId);
 
       // Create a Battler for this Player
-      Battler battler = createBattlerForPlayer(battle, player, teamType);
+      BattlerBehaviour battler = createBattlerForPlayer(battle, player, teamType);
       BattleManager.self.storeBattler(battler);
 
       // Add the Battler to the Battle
@@ -145,13 +144,11 @@ public class BattleManager : MonoBehaviour {
       // Update the observers associated with the Battle and the associated players
       rebuildObservers(battler, battle);
    }
-
-   // [Server]
+   
    public void addEnemyToBattle (Battle battle, Enemy enemy, Battle.TeamType teamType, PlayerBodyEntity aggressor) {
       // Create a Battler for this Enemy
-      MonsterBattler battler = createBattlerForEnemy(battle, enemy, teamType);
-
-      BattleManager.self.storeBattler(battler);
+      BattlerBehaviour battler = createBattlerForEnemy(battle, enemy, teamType);
+      self.storeBattler(battler);
 
       // Add the Battler to the Battle
       if (teamType == Battle.TeamType.Attackers) {
@@ -175,7 +172,7 @@ public class BattleManager : MonoBehaviour {
       battle.resetAllBattleIDs();
 
       // Cycle over each Battler in the Battle
-      foreach (Battler battler in battle.getParticipants()) {
+      foreach (BattlerBehaviour battler in battle.getParticipants()) {
          // Update our internal mapping of users to battles
          _activeBattles[battler.userId] = null;
 
@@ -198,8 +195,8 @@ public class BattleManager : MonoBehaviour {
    public void storeBattle (Battle battle) {
       _battles[battle.battleId] = battle;
    }
-
-   public void storeBattler (Battler battler) {
+   
+   public void storeBattler (BattlerBehaviour battler) {
       _battlers[battler.userId] = battler;
    }
 
@@ -218,9 +215,10 @@ public class BattleManager : MonoBehaviour {
       }
    }
 
-   protected Battler createBattlerForPlayer (Battle battle, PlayerBodyEntity player, Battle.TeamType teamType) {
+   protected BattlerBehaviour createBattlerForPlayer (Battle battle, PlayerBodyEntity player, Battle.TeamType teamType) {
       // We need to make a new one
-      Battler battler = Instantiate(battlerPrefab);
+      BattlerBehaviour battler = Instantiate(baseBattlerPrefab);
+      battler.battlerType = BattlerType.PlayerControlled;
 
       // Set up our initial data and position
       battler.playerNetId = player.netId;
@@ -268,21 +266,14 @@ public class BattleManager : MonoBehaviour {
       battler.weaponManager.color1 = player.weaponManager.color1;
       battler.weaponManager.color2 = player.weaponManager.color2;
 
-      // Player battler abilities:
-      // TODO ZERONEV: Right now all player battlers will have the same abilities
-      // later they will need their own inventories
-      battler.baseAttackAbilities = AbilityInventory.self.playerAttackAbilities;
-
-      // Parent fix
-      battler.transform.SetParent(battle.transform, false);
-
       return battler;
    }
 
-   protected MonsterBattler createBattlerForEnemy (Battle battle, Enemy enemy, Battle.TeamType teamType) {
-      // We need to make a new one
-      MonsterBattler enemyPrefab = Resources.Load<MonsterBattler>("Battlers/" + enemy.enemyType + "_Battler");
-      MonsterBattler battler = Instantiate(enemyPrefab);
+   private BattlerBehaviour createBattlerForEnemy (Battle battle, Enemy enemy, Battle.TeamType teamType) {
+      BattlerData data = System.Array.Find(getAllBattlersData(), x => x.getBattlerId() == (int) enemy.enemyType);
+      BattlerBehaviour enemyPrefab = data.getBattlerObject();
+
+      BattlerBehaviour battler = Instantiate(enemyPrefab);
 
       // Set up our initial data and position
       battler.playerNetId = enemy.netId;
@@ -290,7 +281,6 @@ public class BattleManager : MonoBehaviour {
       battler.battle = battle;
       battler.battleId = battle.battleId;
       battler.transform.SetParent(battle.transform);
-      battler.enemyType = enemy.enemyType;
       battler.teamType = teamType;
       battler.userId = _enemyId--;
 
@@ -310,13 +300,13 @@ public class BattleManager : MonoBehaviour {
       return battler;
    }
 
-   protected void rebuildObservers (Battler newBattler, Battle battle) {
+   protected void rebuildObservers (BattlerBehaviour newBattler, Battle battle) {
       // If this entity is a Bot and not a Player, then all it needs to do is make itself visible to clients in the Battle
       if (!(newBattler.player is PlayerBodyEntity)) {
          newBattler.netIdentity.RebuildObservers(false);
       } else {
          // Everything in the Battle needs to update its observer list to include the new Battler
-         foreach (Battler battler in battle.getParticipants()) {
+         foreach (BattlerBehaviour battler in battle.getParticipants()) {
             battler.netIdentity.RebuildObservers(false);
          }
 
@@ -355,163 +345,147 @@ public class BattleManager : MonoBehaviour {
    }
 
    #region Attack Execution
+   
+   public void executeBattleAction(Battle battle, BattlerBehaviour source, List<BattlerBehaviour> targets, int abilityInventoryIndex) {
+      // Get ability reference from the source battler, cause the source battler is the one executing the ability
+      BasicAbilityData abilityData = source.getAttackAbilities()[abilityInventoryIndex];
+      BattleActionType actionType = BattleActionType.UNDEFINED;
 
-   //[System.Obsolete("Use executeBattleAction instead")]
-   /// <summary>
-   /// Executes an attack
-   /// </summary>
-   /// <param name="battle"> Battle reference </param>
-   /// <param name="source"> Source battler that will execute the attack</param>
-   /// <param name="targets"> Targets for the attack </param>
-   /// <param name="abilityIndex"> Index to know which ability data to grab when executing the attack </param>
-   public void executeAttack (Battle battle, Battler source, List<Battler> targets, int abilityInventoryIndex) {
       bool wasBlocked = false;
       bool wasCritical = false;
       bool isMultiTarget = targets.Count > 1;
       float timeToWait = battle.getTimeToWait(source, targets);
 
-      // Get ability reference from the source battler, cause the source battler is the one executing the ability.
-      AttackAbilityData abilityData = source.getAbilities[abilityInventoryIndex];
-      //Ability ability = AbilityManager.getAbility(abilityType);
-      List<AttackAction> actions = new List<AttackAction>();
+      List<BattleAction> actions = new List<BattleAction>();
 
-      // Apply the AP change
-      int sourceApChange = abilityData.getApChange();
-      source.addAP(sourceApChange);
-
-      foreach (Battler target in targets) {
-         // For now, players have a 50% chance of blocking monsters
-         if (target.canBlock() && abilityData.getBlockStatus()) {
-            wasBlocked = Random.Range(0f, 1f) > .50f;
-         }
-
-         // If the attack wasn't blocked, it can be a critical
-         if (!wasBlocked) {
-            wasCritical = Random.Range(0f, 1f) > .50f;
-         }
-
-         // Adjust the damage amount based on element, ability, and the target's armor
-         Element element = abilityData.getElementType();
-         float damage = source.getDamage(element) * abilityData.getModifier;
-         damage *= (100f / (100f + target.getDefense(element)));
-         float increaseAdditive = 0f;
-         float decreaseMultiply = 1f;
-         decreaseMultiply *= wasBlocked ? .50f : 1f;
-         increaseAdditive += wasCritical ? .50f : 0f;
-
-         // Adjust the damage based on the source and target stances
-         increaseAdditive += (source.stance == Battler.Stance.Attack) ? .25f : 0f;
-         decreaseMultiply *= (source.stance == Battler.Stance.Defense) ? .75f : 1f;
-         if (!abilityData.isHeal()) {
-            increaseAdditive += (target.stance == Battler.Stance.Attack) ? .25f : 0f;
-            decreaseMultiply *= (target.stance == Battler.Stance.Defense) ? .75f : 1f;
-         }
-
-         // Decrease damage on protected targets
-         if (target.isProtected(battle)) {
-            decreaseMultiply *= .70f;
-         }
-
-         // Apply the adjustments to the damage
-         damage *= (1f + increaseAdditive);
-         damage *= decreaseMultiply;
-
-         // Make note of the time that this battle action is going to be fully completed, considering animation times
-         float timeAttackEnds = Util.netTime() + timeToWait + abilityData.getTotalAnimLength(source, target);
-         float cooldownDuration = abilityData.getCooldown() * source.getCooldownModifier();
-         source.cooldownEndTime = timeAttackEnds + cooldownDuration;
-
-         // Apply the target's AP change
-         int targetApChange = target.getApWhenDamagedBy(abilityData);
-         target.addAP(targetApChange);
-
-         // Create the Action object
-         AttackAction action = new AttackAction(battle.battleId, AttackAction.ActionType.Melee, source.userId, target.userId,
-             (int) damage, timeAttackEnds, abilityInventoryIndex, wasCritical, wasBlocked, cooldownDuration, sourceApChange, 
-             targetApChange, abilityData.getItemID());
-         actions.Add(action);
-
-         // Make note how long the two Battler objects need in order to execute the attack/hit animations
-         source.animatingUntil = timeAttackEnds;
-         target.animatingUntil = timeAttackEnds;
-
-         // Wait to apply the effects of the action here on the server until the appointed time
-         StartCoroutine(applyActionAfterDelay(timeToWait, action, isMultiTarget));
-      }
-
-      // Send it to all clients
+      // String action list that will be sent to clients
       List<string> stringList = new List<string>();
-      foreach (AttackAction action in actions) {
-         stringList.Add(action.serialize());
+
+      if (abilityData.getAbilityType() == AbilityType.Standard) {
+         AttackAbilityData attackAbilityData = abilityData as AttackAbilityData;
+
+         // Apply the AP change
+         int sourceApChange = abilityData.getApChange();
+         source.addAP(sourceApChange);
+
+         foreach (BattlerBehaviour target in targets) {
+            // For now, players have a 50% chance of blocking monsters
+            if (target.canBlock() && attackAbilityData.getBlockStatus()) {
+               wasBlocked = Random.Range(0f, 1f) > .50f;
+            }
+
+            // If the attack wasn't blocked, it can be a critical
+            if (!wasBlocked) {
+               wasCritical = Random.Range(0f, 1f) > .50f;
+            }
+
+            // Adjust the damage amount based on element, ability, and the target's armor
+            Element element = abilityData.getElementType();
+            float damage = source.getDamage(element) * attackAbilityData.getModifier;
+            damage *= (100f / (100f + target.getDefense(element)));
+            float increaseAdditive = 0f;
+            float decreaseMultiply = 1f;
+            decreaseMultiply *= wasBlocked ? .50f : 1f;
+            increaseAdditive += wasCritical ? .50f : 0f;
+
+            // Adjust the damage based on the source and target stances
+            increaseAdditive += (source.stance == BattlerBehaviour.Stance.Attack) ? .25f : 0f;
+            decreaseMultiply *= (source.stance == BattlerBehaviour.Stance.Defense) ? .75f : 1f;
+            if (!attackAbilityData.isHeal()) {
+               increaseAdditive += (target.stance == BattlerBehaviour.Stance.Attack) ? .25f : 0f;
+               decreaseMultiply *= (target.stance == BattlerBehaviour.Stance.Defense) ? .75f : 1f;
+            }
+
+            // Decrease damage on protected targets
+            if (target.isProtected(battle)) {
+               decreaseMultiply *= .70f;
+            }
+
+            // Apply the adjustments to the damage
+            damage *= (1f + increaseAdditive);
+            damage *= decreaseMultiply;
+
+            // Make note of the time that this battle action is going to be fully completed, considering animation times
+            float timeAttackEnds = Util.netTime() + timeToWait + attackAbilityData.getTotalAnimLength(source, target);
+            float cooldownDuration = abilityData.getCooldown() * source.getCooldownModifier();
+            source.cooldownEndTime = timeAttackEnds + cooldownDuration;
+
+            // Apply the target's AP change
+            int targetApChange = target.getApWhenDamaged();
+            target.addAP(targetApChange);
+
+            // Create the Action object
+            AttackAction action = new AttackAction(battle.battleId, AttackAction.ActionType.Melee, source.userId, target.userId,
+                (int) damage, timeAttackEnds, abilityInventoryIndex, wasCritical, wasBlocked, cooldownDuration, sourceApChange,
+                targetApChange, abilityData.getItemID());
+            actions.Add(action);
+
+            // Make note how long the two Battler objects need in order to execute the attack/hit animations
+            source.animatingUntil = timeAttackEnds;
+            target.animatingUntil = timeAttackEnds;
+
+            // Wait to apply the effects of the action here on the server until the appointed time
+            StartCoroutine(applyActionAfterDelay(timeToWait, action, isMultiTarget));
+
+            foreach (AttackAction attackAction in actions) {
+               stringList.Add(action.serialize());
+            }
+         }
+
+         switch (attackAbilityData.getAbilityActionType()) {
+            case AbilityActionType.Melee:
+               actionType = BattleActionType.Attack;
+               break;
+            case AbilityActionType.Ranged:
+               actionType = BattleActionType.Attack;
+               break;
+            case AbilityActionType.Cancel:
+               actionType = BattleActionType.Cancel;
+               break;
+         }
+
+      } else if (abilityData.getAbilityType() == AbilityType.BuffDebuff) {
+         BuffAbilityData buffAbilityData = abilityData as BuffAbilityData;
+
+         // TODO ZERONEV: Fill the buff and debuff information here now, when finished with the new battler data
+         actionType = BattleActionType.BuffDebuff;
+      } else {
+         D.log("Battle action was not prepared correctly");
       }
-      battle.Rpc_SendAttackAction(stringList.ToArray());
+
+      // Send it to clients
+      battle.Rpc_SendCombatAction(stringList.ToArray(), actionType);
    }
 
-   //[System.Obsolete("Use executeBattleAction instead")]
-   public void executeBuff (Battle battle, Battler source, List<Battler> targets, int abilityInventoryIndex) {
-      bool isMultiTarget = targets.Count > 1;
-      float timeToWait = battle.getTimeToWait(source, targets);
-      List<BuffAction> actions = new List<BuffAction>();
+   // Stance action does not requires another target or an ability inventory index, thus, being removed from executeBattleAction
+   public void executeStanceChangeAction (Battle battle, BattlerBehaviour source, BattlerBehaviour.Stance newStance) {
+      float timeActionEnds = Util.netTime() + source.getStanceCooldown(newStance);
+      StanceAction stanceAction = new StanceAction(battle.battleId, source.userId, timeActionEnds, newStance);
 
-      // TODO - ZERONEV: Current buffs method are currently disabled. re add it when buff data is finished.
+      string serializedValue = stanceAction.serialize();
+      string[] values = new[] { serializedValue };
 
-      // Get the Ability object and apply the AP change
-      /*BuffAbilityData abilityData = source.getAbilities[abilityInventoryIndex] as BuffAbilityData;
-      int sourceApChange = abilityData.getApChange();
-      source.addAP(sourceApChange);
-
-      foreach (Battler target in targets) {
-         // Make note of the time that this battle action is going to be fully completed, considering animation times
-         float timeBuffStarts = Util.netTime() + timeToWait;
-         float timeBuffEnds = timeBuffStarts + abilityData.getDuration();
-         float timeActionEnds = timeBuffStarts + abilityData.getTotalAnimLength(source, target);
-         float cooldownDuration = abilityData.getCooldown() * source.getCooldownModifier();
-         source.cooldownEndTime = timeActionEnds + cooldownDuration;
-
-         // Create the Action object
-         BuffAction action = new BuffAction(battle.battleId, abilityInventoryIndex, source.userId, target.userId, timeBuffStarts,
-             timeBuffEnds, cooldownDuration, timeActionEnds, sourceApChange, 0, abilityData.getItemID());
-         actions.Add(action);
-
-         // Make note how long the two Battler objects need in order to execute the attack/hit animations
-         source.animatingUntil = timeActionEnds;
-         target.animatingUntil = timeActionEnds;
-
-         // Wait to apply the effects of the action here on the server until the appointed time
-         StartCoroutine(applyActionAfterDelay(timeToWait, action, isMultiTarget));
-      }
-
-      // Send it to all clients
-      List<string> stringList = new List<string>();
-      foreach (BuffAction action in actions) {
-         stringList.Add(action.serialize());
-      }
-      battle.Rpc_SendBuffAction(stringList.ToArray());*/
-   }
-
-   // Unified action for a battle action, instead of having "execute buff & executeAttack"
-   public void executeBattleAction(Battle battle, Battler source, List<Battler> targets, int abilityInventoryIndex) {
-      // TODO ZERONEV: This will now be the global method for calling any battle action.
+      battle.Rpc_SendCombatAction(values, BattleActionType.Stance);
    }
 
    #endregion
 
-   protected int getGoldForDefeated (List<Battler> defeatedList) {
+   protected int getGoldForDefeated (List<BattlerBehaviour> defeatedList) {
       int totalGold = 0;
 
       // Get the value from each individual battler
-      foreach (Battler battler in defeatedList) {
+      foreach (BattlerBehaviour battler in defeatedList) {
          totalGold += battler.getGoldValue();
       }
 
       return totalGold;
    }
 
-   protected int getXPForDefeated (List<Battler> defeatedList) {
+   protected int getXPForDefeated (List<BattlerBehaviour> defeatedList) {
       int total = 0;
 
       // Get the value from each individual battler
-      foreach (Battler battler in defeatedList) {
+      foreach (BattlerBehaviour battler in defeatedList) {
          total += battler.getXPValue();
       }
 
@@ -528,23 +502,15 @@ public class BattleManager : MonoBehaviour {
       }
 
       // Get the Battler object
-      Battler source = battle.getBattler(actionToApply.sourceId);
+      BattlerBehaviour source = battle.getBattler(actionToApply.sourceId);
 
-      // Apply the effects of whichever type of action it is
-      if (actionToApply is StanceAction) {
-         StanceAction action = (StanceAction) actionToApply;
-
-         // Assign the new stance (ZERONEV - I commented the line below cause we are changing stances in a different way now)
-         // will fully remove "stance action" later on.
-         // source.stance = action.newStance;
-
-      } else if (actionToApply is AttackAction || actionToApply is BuffAction) {
+      if (actionToApply is AttackAction || actionToApply is BuffAction) {
          BattleAction action = (BattleAction) actionToApply;
-         Battler target = battle.getBattler(action.targetId);
+         BattlerBehaviour target = battle.getBattler(action.targetId);
 
          // ZERONEV-COMMENT: It is supossed we are still grabbing the ability from the source battler to apply it
-         // So we will grab the source battler.
-         AttackAbilityData abilityData = source.getAbilities[action.abilityInventoryIndex];
+         // So we will grab the source battler
+         AttackAbilityData abilityData = source.getAttackAbilities()[action.abilityInventoryIndex];
 
          // If the source or target is already dead, then send a Cancel Action
          if (source.isDead() || target.isDead()) {
@@ -564,7 +530,7 @@ public class BattleManager : MonoBehaviour {
 
             // Create a Cancel Action to send to the clients
             CancelAction cancelAction = new CancelAction(action.battleId, action.sourceId, action.targetId, Util.netTime(), timeToSubtract);
-            AbilityManager.self.execute(cancelAction);
+            AbilityManager.self.execute(new[] { cancelAction });
 
          } else {
             if (action is AttackAction) {
@@ -586,8 +552,8 @@ public class BattleManager : MonoBehaviour {
 
    protected IEnumerator endBattleAfterDelay (Battle battle, float delay) {
       Battle.TeamType teamThatWon = battle.getTeamThatWon();
-      List<Battler> defeatedBattlers = (battle.teamThatWon == Battle.TeamType.Attackers) ? battle.getDefenders() : battle.getAttackers();
-      List<Battler> winningBattlers = (battle.teamThatWon == Battle.TeamType.Attackers) ? battle.getAttackers() : battle.getDefenders();
+      List<BattlerBehaviour> defeatedBattlers = (battle.teamThatWon == Battle.TeamType.Attackers) ? battle.getDefenders() : battle.getAttackers();
+      List<BattlerBehaviour> winningBattlers = (battle.teamThatWon == Battle.TeamType.Attackers) ? battle.getAttackers() : battle.getDefenders();
 
       // Wait a bit for the death animations to finish
       yield return new WaitForSeconds(delay);
@@ -601,7 +567,7 @@ public class BattleManager : MonoBehaviour {
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Update the gold and XP in the database for the winners
-         foreach (Battler participant in battle.getParticipants()) {
+         foreach (BattlerBehaviour participant in battle.getParticipants()) {
             if (participant.teamType == battle.teamThatWon) {
                DB_Main.addGoldAndXP(participant.userId, goldWon, xpWon);
             }
@@ -609,7 +575,7 @@ public class BattleManager : MonoBehaviour {
       });
 
       // Update the XP amount on the PlayerController objects for the connected players
-      foreach (Battler battler in winningBattlers) {
+      foreach (BattlerBehaviour battler in winningBattlers) {
          if (!battler.isMonster()) {
             if (battler.player is PlayerBodyEntity) {
                PlayerBodyEntity body = (PlayerBodyEntity) battler.player;
@@ -619,12 +585,13 @@ public class BattleManager : MonoBehaviour {
       }
 
       // Process monster type reward
-      foreach (Battler battler in defeatedBattlers) {
+      foreach (BattlerBehaviour battler in defeatedBattlers) {
          if (battler.isMonster()) {
-            Enemy.Type battlerType = battler.GetComponent<MonsterBattler>().enemyType;
-            foreach (Battler participant in winningBattlers) {
+            int battlerEnemyID = battler.getBattlerData().getBattlerId();
+            foreach (BattlerBehaviour participant in winningBattlers) {
                if (!participant.isMonster()) {
-                  participant.player.rpc.spawnLandMonsterChest(battlerType, participant.player.instanceId, BodyManager.self.getBody(participant.player.userId).transform.position);
+                  Vector3 chestPos = BodyManager.self.getBody(participant.player.userId).transform.position;
+                  participant.player.rpc.spawnBattlerMonsterChest(participant.player.instanceId, chestPos, battlerEnemyID);
                }
             }
          }
@@ -634,6 +601,8 @@ public class BattleManager : MonoBehaviour {
       this.endBattle(battle, teamThatWon);
    }
 
+   public BattlerData[] getAllBattlersData () { return _allBattlersData; }
+
    #region Private Variables
 
    // Stores the Battle Board used for each Biome Type
@@ -641,9 +610,9 @@ public class BattleManager : MonoBehaviour {
 
    // Stores Battles by their Battle ID
    protected Dictionary<int, Battle> _battles = new Dictionary<int, Battle>();
-
-   // Stores Battlers by their user ID
-   protected Dictionary<int, Battler> _battlers = new Dictionary<int, Battler>();
+   
+   // Stored references of the battlers that are currently in a battle
+   private Dictionary<int, BattlerBehaviour> _battlers = new Dictionary<int, BattlerBehaviour>();
 
    // Keeps track of which user IDs are associated with which Battles
    protected Dictionary<int, Battle> _activeBattles = new Dictionary<int, Battle>();
@@ -653,6 +622,11 @@ public class BattleManager : MonoBehaviour {
 
    // The unique ID we assign to enemy Battlers that are created
    protected int _enemyId = -1;
+
+   // All battlers in the game
+#pragma warning disable
+   [SerializeField] private BattlerData[] _allBattlersData;
+#pragma warning restore
 
    #endregion
 }

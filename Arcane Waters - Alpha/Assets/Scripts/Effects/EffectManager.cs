@@ -10,6 +10,9 @@ public class EffectManager : MonoBehaviour {
    // The Generic Effect prefab
    public Effect effectPrefab;
 
+   // Generic effect prefab for use in combat actions
+   public CombatEffect combatVFXPrefab;
+
    // Self
    public static EffectManager self;
 
@@ -22,6 +25,19 @@ public class EffectManager : MonoBehaviour {
    public Effect create (Effect.Type effectType, Vector2 pos) {
       Effect effect = Instantiate(effectPrefab, pos, Quaternion.identity);
       effect.effectType = effectType;
+
+      return effect;
+   }
+
+   public CombatEffect createCombatEffect (Sprite[] effectSprites, Vector2 pos, float timePerFrame) {
+
+      //If we do not have any effect sprites we cancel
+      if (effectSprites.Length <= 0) {
+         return null;
+      }
+
+      CombatEffect effect = Instantiate(combatVFXPrefab, pos, Quaternion.identity);
+      effect.initEffect(effectSprites, timePerFrame);
 
       return effect;
    }
@@ -92,7 +108,7 @@ public class EffectManager : MonoBehaviour {
       }
    }
 
-   public static void playBlockEffect (Battler attacker, Battler target) {
+   public static void playBlockEffect (BattlerBehaviour attacker, BattlerBehaviour target) {
       SoundManager.playClipAtPoint(SoundManager.Type.Character_Block, target.transform.position);
 
       // Find a point at which to display the effect
@@ -112,18 +128,7 @@ public class EffectManager : MonoBehaviour {
       Util.setZ(effectInstance.transform, target.transform.position.z - 5f);
    }
 
-   public static void playHitEffect (Battler attacker, Battler target) {
-      // Instantiate and play a hit effect at that position
-      Effect effectInstance = self.create(Effect.Type.Hit, Vector3.zero);
-      effectInstance.transform.SetParent(self.transform, false);
-      effectInstance.transform.localPosition = new Vector3(
-          target.transform.localPosition.x,
-          target.transform.localPosition.y + .12f,
-          0f
-      );
-   }
-
-   public static void playPoofEffect (Battler deadBattler) {
+   public static void playPoofEffect (BattlerBehaviour deadBattler) {
       SoundManager.playClipAtPoint(SoundManager.Type.Death_Poof, deadBattler.transform.position);
 
       // Play a "Poof" effect on our head
@@ -135,19 +140,19 @@ public class EffectManager : MonoBehaviour {
       );
    }
 
-   // TODO ZERONEV: This method can be simplifieD
-   public static void playAttackEffect (Battler attacker, Battler target, AttackAction action, Vector2 targetPos) {
+   // Used for executing a VFX in the target battler
+   public static void playCombatAbilityVFX (BattlerBehaviour attacker, BattlerBehaviour target, AttackAction action, Vector2 targetPos) {
       Weapon.Type attackerWeapon = attacker.weaponManager.weaponType;
 
-      // TODO ZERONEV-IMPORTANT: This was commented out to be able to compile, restore it later. (using deprecated method in the meantime)
-      //Ability ability = AbilityManager.getAbility(action.abilityType);
-      Ability ability = AbilityManager.getAbility(Ability.Type.Basic_Attack);
-      
-      // Look up the appropriate attack effect
-      Effect.Type effectType = ability.getEffectType(attackerWeapon);
+      AttackAbilityData ability = attacker.getAttackAbilities()[action.abilityInventoryIndex];
+      CombatEffect effectInstance = self.createCombatEffect(ability.getHitEffect(), targetPos, ability.getFXTimePerFrame());
+
+      if (effectInstance == null) {
+         Debug.LogWarning("Ability didn't have any effect sprites assigned");
+         return;
+      }
 
       // Instantiate and play the effect at that position
-      Effect effectInstance = self.create(effectType, targetPos);
       effectInstance.transform.position = new Vector3(
           targetPos.x,
           targetPos.y,
@@ -157,6 +162,33 @@ public class EffectManager : MonoBehaviour {
 
       // Flip the X scale for the defenders
       if (!target.isAttacker()) {
+         effectInstance.transform.localScale = new Vector3(
+             effectInstance.transform.localScale.x * -1f,
+             effectInstance.transform.localScale.y,
+             effectInstance.transform.localScale.z
+         );
+      }
+   }
+
+   // Used for creating a VFX for casting a magic spell
+   public static void playCastAbilityVFX (BattlerBehaviour source, AttackAction action, Vector2 targetPos) {
+      AttackAbilityData ability = source.getAttackAbilities()[action.abilityInventoryIndex];
+      CombatEffect effectInstance = self.createCombatEffect(ability.getCastEffect(), targetPos, ability.getFXTimePerFrame());
+
+      if (effectInstance == null) {
+         Debug.LogWarning("Ability didn't have any effect sprites assigned");
+         return;
+      }
+
+      effectInstance.transform.position = new Vector3(
+         targetPos.x,
+         targetPos.y,
+         source.transform.position.z - .001F
+         );
+      effectInstance.transform.SetParent(self.transform, false);
+
+      // Flip the X scale for the defenders
+      if (!source.isAttacker()) {
          effectInstance.transform.localScale = new Vector3(
              effectInstance.transform.localScale.x * -1f,
              effectInstance.transform.localScale.y,

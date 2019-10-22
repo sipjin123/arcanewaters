@@ -20,7 +20,7 @@ public class BattleBars : MonoBehaviour {
 
    private void Start () {
       // Look up components
-      _battler = GetComponentInParent<Battler>();
+      _battler = GetComponentInParent<BattlerBehaviour>();
       _canvasGroup = GetComponent<CanvasGroup>();
 
       // Only show the timer for our own player
@@ -30,7 +30,7 @@ public class BattleBars : MonoBehaviour {
       _startPos = _battler.transform.position;
 
       // If we are not a monster battler we enable the stance graphics
-      if (_battler is MonsterBattler) {
+      if (_battler.battlerType == BattlerType.AIEnemyControlled) {
          if (stanceImage != null) {
             stanceImage.gameObject.SetActive(false);
          }
@@ -59,7 +59,7 @@ public class BattleBars : MonoBehaviour {
       _canvasGroup.alpha += _battler.isJumping ? -5f * Time.deltaTime : 5f * Time.deltaTime;
       _canvasGroup.alpha = Mathf.Clamp(_canvasGroup.alpha, 0f, 1f);
 
-      if (!(_battler is MonsterBattler)) {
+      if (_battler.battlerType == BattlerType.PlayerControlled) {
          setBattlerStanceIcon();
       }
    }
@@ -71,7 +71,7 @@ public class BattleBars : MonoBehaviour {
    #region Private Variables
 
    // Our associated Battler
-   protected Battler _battler;
+   protected BattlerBehaviour _battler;
 
    // Our Canvas Group
    protected CanvasGroup _canvasGroup;

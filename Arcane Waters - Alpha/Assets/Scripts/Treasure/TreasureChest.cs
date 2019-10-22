@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -62,7 +62,7 @@ public class TreasureChest : NetworkBehaviour {
 
    #endregion
 
-   public void Awake () {
+   private void Awake () {
       this.creationTime = System.DateTime.Now.ToBinary();
 
       // Start out with the open button hidden
@@ -138,8 +138,10 @@ public class TreasureChest : NetworkBehaviour {
    }
 
    public Item getContents () {
-      if (chestType == ChestSpawnType.Sea || chestType == ChestSpawnType.Land) {
+      if (chestType == ChestSpawnType.Sea) {
          return getEnemyContents();
+      } else if (chestType == ChestSpawnType.Land) {
+         return getBattlerLootContents();
       }
 
       // Create a random item for now
@@ -168,6 +170,21 @@ public class TreasureChest : NetworkBehaviour {
       }
 
       Item itemToCreate = new CraftingIngredients(0, processedLoots[0].lootType, ColorType.Black, ColorType.Black);
+      return itemToCreate;
+   }
+
+   public Item getBattlerLootContents () {
+      // Gets loot
+      BattlerData battlerData = System.Array.Find(BattleManager.self.getAllBattlersData(), x => x.getBattlerId() == enemyType);
+      List<LootInfo> processedLoot = battlerData.getLootData().requestLootList();
+
+      // Registers list of ingredient types for data fetching
+      List <CraftingIngredients.Type> itemLoots = new List<CraftingIngredients.Type>();
+      foreach (LootInfo info in processedLoot) {
+         itemLoots.Add(info.lootType);
+      }
+
+      Item itemToCreate = new CraftingIngredients(0, processedLoot[0].lootType, ColorType.Black, ColorType.Black);
       return itemToCreate;
    }
 

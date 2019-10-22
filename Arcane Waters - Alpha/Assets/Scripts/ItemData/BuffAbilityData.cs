@@ -1,8 +1,4 @@
 using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
-using Mirror;
 
 public class BuffAbilityData : BasicAbilityData
 {
@@ -15,48 +11,18 @@ public class BuffAbilityData : BasicAbilityData
       // If a new value needs to be added to the abilitydata class, it needs to be included in here!
       BuffAbilityData data = CreateInstance<BuffAbilityData>();
 
-      // Basic battle item data
-      /*data.setName(datacopy.getName());
-      data.setDescription(datacopy.getDescription());
-      data.setItemIcon(datacopy.getItemIcon());
-      data.setItemID(datacopy.getItemID());
-      data.setLevelRequirement(datacopy.getLevelRequirement());
-
-      data.setItemElement(datacopy.getElementType());
-
-      data.setHitAudioClip(datacopy.getHitAudioClip());
-      data.setHitParticle(datacopy.getHitParticle());
-
-      data.setBattleItemType(datacopy.getBattleItemType());*/
-
-      // Sets base ability data
-      data.setBaseAbilityData(datacopy);
-
       // Sets base battle item data
       data.setBaseBattleItemData(datacopy);
 
-      // Ability Data
-      /*data.setAbilityCost(datacopy.getAbilityCost());
-      data.setBlockStatus(datacopy.getBlockStatus());
-
-      data.setCastParticle(datacopy.getCastParticle());
-      data.setCastAudioClip(datacopy.getCastAudioClip());
-
-      data.setAllowedStances(datacopy.getAllowedStances());
-      data.setClassRequirement(datacopy.getClassRequirement());
-
-      data.setAbilityType(datacopy.getAbilityType());
-      data.setAbilityCooldown(datacopy.getCooldown());
-
-      data.setKnockup(datacopy.hasKnockup());
-      data.setShake(datacopy.hasShake());
-      data.setApChange(datacopy.getApChange());*/
+      // Sets base ability data
+      data.setBaseAbilityData(datacopy);
 
       // Sets attack ability item properties
       data.setBuffDuration(datacopy.getBuffDuration());
       data.setBuffType(datacopy.getBuffType());
       data.setBuffActionType(datacopy.getBuffActionType());
       data.setBuffIcon(datacopy.getBuffIcon());
+      data.setBuffValue(datacopy.getBuffValue());
 
       return data;
    }
@@ -66,12 +32,11 @@ public class BuffAbilityData : BasicAbilityData
    /// </summary>
    public static BuffAbilityData CreateInstance (BasicAbilityData basicAbilityData, float buffDuration, BuffType buffType,
       BuffActionType buffActionType, Sprite buffIcon, int buffValue) {
-
       BuffAbilityData data = CreateInstance<BuffAbilityData>();
 
       // Sets base ability data
-      data.setBaseAbilityData(basicAbilityData);
       data.setBaseBattleItemData(basicAbilityData);
+      data.setBaseAbilityData(basicAbilityData);
 
       // Sets attack ability item properties
       data.setBuffDuration(buffDuration);
@@ -85,42 +50,8 @@ public class BuffAbilityData : BasicAbilityData
 
    #region Custom Helper Methods
 
-   public float getTotalAnimLength (Battler attacker, Battler target) {
-
-      // TODO: ZERONEV - Not sure how animation lengths will be handled for buffs, for now I will just set a hardcoded value
-      // below lines were commented out because they're not being used atm.
-      // float shakeLength = 0;
-      // float knockupLength = 0;
-
+   public float getTotalAnimLength (BattlerBehaviour attacker, BattlerBehaviour target) {
       return 1;
-
-      /*switch (getAbilityActionType()) {
-         case AbilityActionType.Melee:
-            // The animation length depends on the distance between attacker and target
-            float jumpDuration = getJumpDuration(attacker, target);
-
-            // Add up the amount of time it takes to animate an entire melee action
-            return jumpDuration + Battler.PAUSE_LENGTH + attacker.getPreContactLength() +
-                Battler.POST_CONTACT_LENGTH + jumpDuration + Battler.PAUSE_LENGTH;
-
-         case AbilityActionType.Ranged:
-            shakeLength = hasShake() ? Battler.SHAKE_LENGTH : 0f;
-            knockupLength = hasKnockup() ? Battler.KNOCKUP_LENGTH : 0f;
-
-            // Add up the amount of time it takes to animate an entire action
-            return attacker.getPreMagicLength(this) + shakeLength + knockupLength + getPreDamageLength + getPostDamageLength;
-
-         case AbilityActionType.Projectile:
-            shakeLength = hasShake() ? Battler.SHAKE_LENGTH : 0f;
-            knockupLength = hasKnockup() ? Battler.KNOCKUP_LENGTH : 0f;
-
-            // Add up the amount of time it takes to animate an entire action
-            return attacker.getPreMagicLength(this) + shakeLength + knockupLength + getPreDamageLength + getPostDamageLength;
-
-         default:
-            Debug.LogWarning("Ability type is not defined for getting anim length");
-            return 0;
-      }*/
    }
 
    #endregion

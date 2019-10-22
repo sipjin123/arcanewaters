@@ -1,24 +1,24 @@
 using System;
 
-public class AttackAction: BattleAction {
-    #region Public Variables
+public class AttackAction : BattleAction {
+   #region Public Variables
 
-    // The type of action this is
-    public enum ActionType { Melee = 1 }
+   // The type of action this is
+   public enum ActionType { Melee = 1 }
 
-    // The type of action this is
-    public ActionType actionType;
+   // The type of action this is
+   public ActionType actionType;
 
-    // The amount of damage done by the action
-    public int damage;
+   // The amount of damage done by the action
+   public int damage;
 
-    // Whether or not the attack was blocked
-    public bool wasBlocked = false;
+   // Whether or not the attack was blocked
+   public bool wasBlocked = false;
 
-    // Whether or not the attack was a critical
-    public bool wasCritical = false;
+   // Whether or not the attack was a critical
+   public bool wasCritical = false;
 
-    #endregion
+   #endregion
 
    public AttackAction () { }
 
@@ -38,47 +38,49 @@ public class AttackAction: BattleAction {
       this.sourceApChange = sourceApChange;
       this.targetApChange = targetApChange;
       this.abilityGlobalID = abilityGlobalID;
+      this.battleActionType = BattleActionType.Attack;
    }
 
    public override bool Equals (object rhs) {
-        if (rhs is AttackAction) {
-            var other = rhs as AttackAction;
-            return battleId == other.battleId && actionType == other.actionType &&
-                sourceId == other.sourceId && targetId == other.targetId && cooldownDuration == other.cooldownDuration;
-        }
-        return false;
-    }
+      if (rhs is AttackAction) {
+         var other = rhs as AttackAction;
+         return battleId == other.battleId && actionType == other.actionType &&
+             sourceId == other.sourceId && targetId == other.targetId && cooldownDuration == other.cooldownDuration;
+      }
+      return false;
+   }
 
-    public override int GetHashCode() {
-        unchecked // Overflow is fine, just wrap
-        {
-            int hash = 17;
-            hash = hash * 23 + battleId.GetHashCode();
-            hash = hash * 23 + actionType.GetHashCode();
-            hash = hash * 23 + sourceId.GetHashCode();
-            hash = hash * 23 + targetId.GetHashCode();
-            hash = hash * 23 + cooldownDuration.GetHashCode();
-            return hash;
-        }
-    }
+   public override int GetHashCode () {
+      unchecked // Overflow is fine, just wrap
+      {
+         int hash = 17;
+         hash = hash * 23 + battleId.GetHashCode();
+         hash = hash * 23 + actionType.GetHashCode();
+         hash = hash * 23 + sourceId.GetHashCode();
+         hash = hash * 23 + targetId.GetHashCode();
+         hash = hash * 23 + cooldownDuration.GetHashCode();
+         return hash;
+      }
+   }
 
    public string serialize () {
       string serialized = "";
 
       serialized += "AttackAction" + ",";
       serialized += this.battleId + ",";
-      serialized += (int)this.actionType + ",";
+      serialized += (int) this.actionType + ",";
       serialized += this.sourceId + ",";
       serialized += this.targetId + ",";
       serialized += this.damage + ",";
       serialized += this.actionEndTime + ",";
-      serialized += (int)this.abilityInventoryIndex + ",";
+      serialized += (int) this.abilityInventoryIndex + ",";
       serialized += this.wasCritical + ",";
       serialized += this.wasBlocked + ",";
       serialized += this.cooldownDuration + ",";
       serialized += this.sourceApChange + ",";
       serialized += this.targetApChange + ",";
       serialized += this.abilityGlobalID + ",";
+      serialized += (int) this.battleActionType + ",";
 
       return serialized;
    }
@@ -100,6 +102,7 @@ public class AttackAction: BattleAction {
       action.sourceApChange = Convert.ToInt32(stringArray[11]);
       action.targetApChange = Convert.ToInt32(stringArray[12]);
       action.abilityGlobalID = Convert.ToInt32(stringArray[13]);
+      action.battleActionType = (BattleActionType) Convert.ToInt32(stringArray[14]);
 
       return action;
    }

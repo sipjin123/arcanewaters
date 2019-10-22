@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
@@ -23,7 +23,7 @@ public class BattleObserverManager : NetworkBehaviour {
       // It seems this has to be cleared out at the start, or else it can contain unwanted connections
       connectionsToObserve.Clear();
 
-      foreach (Battler battler in _battle.getParticipants()) {
+      foreach (BattlerBehaviour battler in _battle.getParticipants()) {
          if (battler.player != null && battler.player.connectionToClient != null) {
             connectionsToObserve.Add(battler.player.connectionToClient);
          }

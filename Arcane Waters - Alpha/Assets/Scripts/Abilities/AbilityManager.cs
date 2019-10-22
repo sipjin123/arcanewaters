@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class AbilityManager : MonoBehaviour {
+public class AbilityManager : MonoBehaviour
+{
    #region Public Variables
 
    // A convenient self reference
@@ -24,59 +25,17 @@ public class AbilityManager : MonoBehaviour {
       // change an ability for an enemy at runtime, etc, and we can do that by grabbing their name or their ID. or even just an element.
 
       initAllGameAbilities();
-
-      // Base ability classes
-      _abilities.Add(Ability.Type.Basic_Attack, new BasicAttack());
-      // _abilities.Add(Ability.Type.Stance_Ability, new StanceAbility());
-      // _abilities.Add(Ability.Type.Cancel_Ability, new CancelAbility());
-
-      // Melee abilities
-      _abilities.Add(Ability.Type.Monster_Attack, new MonsterAttack());
-      _abilities.Add(Ability.Type.Slash_Ice, new SlashIce());
-      _abilities.Add(Ability.Type.Slash_Fire, new SlashFire());
-      _abilities.Add(Ability.Type.Slash_Lightning, new SlashLightning());
-
-      // Ranged abilities
-      /*_abilities.Add(Ability.Type.Rockspire, new Rockspire());
-      _abilities.Add(Ability.Type.BossShout, new BossShout());
-      _abilities.Add(Ability.Type.Arrow_Coral, new ArrowCoral());
-      _abilities.Add(Ability.Type.Arrow_Ent, new ArrowEnt());
-      _abilities.Add(Ability.Type.Roots, new Roots());
-      _abilities.Add(Ability.Type.Haste, new Haste());
-      _abilities.Add(Ability.Type.Boulder, new Boulder());
-      _abilities.Add(Ability.Type.Heal, new Heal());*/
-
-      // _abilities.Add(Ability.Type.Lava_Glob, new LavaGlob());
-      // _abilities.Add(Ability.Type.SlimeSpit, new SlimeSpit());
-      // _abilities.Add(Ability.Type.SlimeRain, new SlimeRain());
-   }
-
-   [System.Obsolete("All abilities are per battler. Grab the ability index from the battler abilities, or use getAbility(int) instead")]
-   public static Ability getAbility (Ability.Type abilityType) {
-      return self._abilities[abilityType];
-   }
-
-   [System.Obsolete("All abilities are per battler. Grab the ability index from the battler abilities instead.")]
-   public static List<Ability> getAllowedAbilities (Battler battler) {
-      List<Ability> visibleAbilities = new List<Ability>();
-
-      // Cycle over each of the Ability instances in our internal mapping
-      foreach (Ability ability in self._abilities.Values) {
-         if (ability.isIncludedFor(battler)) {
-            visibleAbilities.Add(ability);
-         }
-      }
-
-      return visibleAbilities;
    }
 
    public void execute (BattleAction[] actions) {
       bool isFirst = true;
 
       foreach (BattleAction action in actions) {
+         BattleAction actionToExecute = null;
          Battle battle = BattleManager.self.getBattle(action.battleId);
-         Battler sourceBattler = battle.getBattler(action.sourceId);
-         Battler targetBattler = battle.getBattler(action.targetId);
+         BattlerBehaviour sourceBattler = battle.getBattler(action.sourceId);
+         BattlerBehaviour targetBattler = battle.getBattler(action.targetId);
+         float timeToWait = 0;
 
          // Update timestamps
          sourceBattler.lastAbilityEndTime = action.actionEndTime;
@@ -87,16 +46,42 @@ public class AbilityManager : MonoBehaviour {
          targetBattler.animatingUntil = action.actionEndTime;
 
          // Get the ability object for this action
-         //Ability ability = getAbility(action.abilityType);
-         AttackAbilityData abilityData = sourceBattler.getAbilities[action.abilityInventoryIndex];
+         AttackAbilityData abilityData = sourceBattler.getAttackAbilities()[action.abilityInventoryIndex];
 
-         // Check how long we need to wait before displaying this action
-         float timeToWait = action.actionEndTime - Util.netTime() - abilityData.getTotalAnimLength(sourceBattler, targetBattler);
+         switch (action.battleActionType) {
+            case BattleActionType.Attack:
+               AttackAction attackAction = action as AttackAction;
+               actionToExecute = attackAction;
 
-         // Display the ability at the assigned time
-         // Zeronev-Modified:
+               // Check how long we need to wait before displaying this action
+               timeToWait = actionToExecute.actionEndTime - Util.netTime() - abilityData.getTotalAnimLength(sourceBattler, targetBattler);
+               break;
 
-         //StartCoroutine(ability.display(timeToWait, action, isFirst));
+            case BattleActionType.Stance:
+               StanceAction stanceAction = action as StanceAction;
+               actionToExecute = stanceAction;
+
+               // Make note of the time that this action is going to occur
+               sourceBattler.lastStanceChange = actionToExecute.actionEndTime;
+
+               // Check how long we need to wait before displaying this action
+               timeToWait = actionToExecute.actionEndTime - Util.netTime();
+
+               break;
+
+            case BattleActionType.BuffDebuff:
+               // TODO Zeronev: Implement.
+               break;
+
+            case BattleActionType.Cancel:
+               CancelAction cancelAction = action as CancelAction;
+               actionToExecute = cancelAction;
+
+               // Update the battler's action timestamps
+               sourceBattler.cooldownEndTime -= cancelAction.timeToSubtract;
+               break;
+         }
+
          StartCoroutine(sourceBattler.attackDisplay(timeToWait, action, isFirst));
 
          // Don't affect the source for any subsequent actions
@@ -106,35 +91,12 @@ public class AbilityManager : MonoBehaviour {
 
    public void execute (StanceAction action) {
       Battle battle = BattleManager.self.getBattle(action.battleId);
-      Battler sourceBattler = battle.getBattler(action.sourceId);
+      BattlerBehaviour sourceBattler = battle.getBattler(action.sourceId);
 
       // Make note of the time that this action is going to occur
       sourceBattler.lastStanceChange = action.actionEndTime;
-
-      // Check how long we need to wait before displaying this action
-      float timeToWait = action.actionEndTime - Util.netTime();
-
-      // Get the ability object for this action
-      Ability ability = getAbility(Ability.Type.Stance_Ability);
-
-      // Display the stance change at the assigned time
-      // TODO ZERONEV: Line commented out below.
-      //StartCoroutine(ability.display(timeToWait, action, true));
-   }
-
-   public void execute (CancelAction action) {
-      Battle battle = BattleManager.self.getBattle(action.battleId);
-      Battler sourceBattler = battle.getBattler(action.sourceId);
-      Battler targetBattler = battle.getBattler(action.targetId);
-
-      // Get the ability object for this action
-      Ability ability = getAbility(Ability.Type.Cancel_Ability);
-      float animLength = ability.getTotalAnimLength(sourceBattler, targetBattler);
-
-      // Update the battler's action timestamps
-      sourceBattler.cooldownEndTime -= action.timeToSubtract;
-      sourceBattler.animatingUntil -= animLength;
-      targetBattler.animatingUntil -= animLength;
+      sourceBattler.stanceCooldownEndTime = action.actionEndTime;
+      sourceBattler.stance = action.newStance;
    }
 
    // Prepares all game abilities
@@ -143,7 +105,7 @@ public class AbilityManager : MonoBehaviour {
          if (ability.getAbilityType() == AbilityType.Standard) {
             AttackAbilityData newInstance = AttackAbilityData.CreateInstance((AttackAbilityData) ability);
             _allAbilities.Add(newInstance);
-         } else {
+         } else if (ability.getAbilityType() == AbilityType.BuffDebuff) {
             BuffAbilityData newInstance = BuffAbilityData.CreateInstance((BuffAbilityData) ability);
             _allAbilities.Add(newInstance);
          }
@@ -156,7 +118,6 @@ public class AbilityManager : MonoBehaviour {
    /// <param name="abilityGlobalID"></param>
    /// <returns></returns>
    public static BasicAbilityData getAbility (int abilityGlobalID) {
-
       for (int i = 0; i < self._allAbilities.Count; i++) {
          if (self._allAbilities[i].getItemID().Equals(abilityGlobalID)) {
             return self._allAbilities[i];
@@ -170,13 +131,6 @@ public class AbilityManager : MonoBehaviour {
    #region Private Variables
 
    // A mapping of Ability Type to the Ability object
-   // TODO ZERONEV: This will be removed soon.
-   protected Dictionary<Ability.Type, Ability> _abilities = new Dictionary<Ability.Type, Ability>();
-
-   /// <summary>
-   /// 
-   /// </summary>
-   //protected Dictionary<int, AbilityData> _allAbilities = new Dictionary<int, AbilityData>();
    private List<BasicAbilityData> _allAbilities = new List<BasicAbilityData>();
 
    #endregion

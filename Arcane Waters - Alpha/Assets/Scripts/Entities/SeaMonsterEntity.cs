@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using AStar;
 using Mirror;
@@ -628,7 +628,7 @@ public class SeaMonsterEntity : SeaEntity
    [Server]
    protected void spawnChest () {
       Instance currentInstance = InstanceManager.self.getInstance(this.instanceId);
-      TreasureManager.self.createMonsterChest(currentInstance, transform.position, seaMonsterData.seaMonsterType, false);
+      TreasureManager.self.createSeaMonsterChest(currentInstance, transform.position, seaMonsterData.seaMonsterType);
    }
 
    [Server]

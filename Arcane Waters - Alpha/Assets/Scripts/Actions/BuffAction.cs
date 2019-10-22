@@ -32,6 +32,7 @@ public class BuffAction : BattleAction {
       this.sourceApChange = sourceApChange;
       this.targetApChange = targetApChange;
       this.abilityGlobalID = abilityGlobalID;
+      this.battleActionType = BattleActionType.BuffDebuff;
    }
 
    public override bool Equals (object rhs) {
@@ -80,6 +81,7 @@ public class BuffAction : BattleAction {
       serialized += this.sourceApChange + ",";
       serialized += this.targetApChange + ",";
       serialized += this.abilityGlobalID + ",";
+      serialized += (int) this.battleActionType + ",";
 
       return serialized;
    }
@@ -89,7 +91,6 @@ public class BuffAction : BattleAction {
       string[] stringArray = serialized.Split(',');
 
       action.battleId = Convert.ToInt32(stringArray[1]);
-      //action.abilityType = (Ability.Type) Convert.ToInt32(stringArray[2]);
       action.abilityInventoryIndex = Convert.ToInt32(stringArray[2]);
       action.sourceId = Convert.ToInt32(stringArray[3]);
       action.targetId = Convert.ToInt32(stringArray[4]);
@@ -100,6 +101,7 @@ public class BuffAction : BattleAction {
       action.sourceApChange = Convert.ToInt32(stringArray[9]);
       action.targetApChange = Convert.ToInt32(stringArray[10]);
       action.abilityGlobalID = Convert.ToInt32(stringArray[11]);
+      action.battleActionType = (BattleActionType) Convert.ToInt32(stringArray[12]);
 
       return action;
    }

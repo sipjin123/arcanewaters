@@ -49,7 +49,7 @@ public class Battle : NetworkBehaviour {
       // Keep track of the Battle Board we're using
       this.battleBoard = BattleManager.self.getBattleBoard(this.biomeType);
 
-      // Set battle end UI events.
+      // Set battle end UI events
       onBattleEnded.AddListener(BattleUIManager.self.disableBattleUI);
 
       clientBattleReposition();
@@ -61,14 +61,13 @@ public class Battle : NetworkBehaviour {
          transform.SetParent(BattleManager.self.transform, true);
       }
 
-      foreach (Battler battler in BattleManager.self.getBattle(battleId).getParticipants()) {
+      foreach (BattlerBehaviour battler in BattleManager.self.getBattle(battleId).getParticipants()) {
          if (battler.transform.parent == null) {
             battler.transform.SetParent(transform, false);
          }
       }
    }
-
-   // TODO ZERONEV-COMMENT: This handles the general battle flow, will need to work on this (Enemy AI for example)
+   
    public TickResult tick () {
       // Everything below here is only valid for the server
       if (!NetworkServer.active) {
@@ -76,7 +75,7 @@ public class Battle : NetworkBehaviour {
       }
 
       // Cycle over all of the participants in the battle
-      foreach (Battler battler in getParticipants()) {
+      foreach (BattlerBehaviour battler in getParticipants()) {
 
          if (battler.transform.parent == null) {
             battler.transform.SetParent(transform, false);
@@ -99,16 +98,8 @@ public class Battle : NetworkBehaviour {
                continue;
             }
 
-            // Handles the current and only attack a monster can do.
-            BattleManager.self.executeAttack(this, battler, battlePlan.targets, 0);
-
-            // If there was a random target available, attack it
-            // DEBUG - Commented enemy attacking below to be able to test player flow only
-            /*if (battlePlan.ability is BuffAbility) {
-               //BattleManager.self.executeBuff(this, battler, battlePlan.targets, battlePlan.ability.type);
-            } else {
-               //BattleManager.self.executeAttack(this, battler, battlePlan.targets, battlePlan.ability.type);
-            }*/
+            // Handles the current and only attack a monster can do
+            BattleManager.self.executeBattleAction(this, battler, battlePlan.targets, 0);
          }
       }
 
@@ -123,8 +114,8 @@ public class Battle : NetworkBehaviour {
       return TickResult.None;
    }
 
-   public Battler getBattler (int userId) {
-      foreach (Battler battler in getParticipants()) {
+   public BattlerBehaviour getBattler (int userId) {
+      foreach (BattlerBehaviour battler in getParticipants()) {
          if (battler.userId == userId) {
             return battler;
          }
@@ -133,8 +124,8 @@ public class Battle : NetworkBehaviour {
       return null;
    }
 
-   public List<Battler> getParticipants () {
-      List<Battler> participants = new List<Battler>();
+   public List<BattlerBehaviour> getParticipants () {
+      List<BattlerBehaviour> participants = new List<BattlerBehaviour>();
 
       participants.AddRange(getAttackers());
       participants.AddRange(getDefenders());
@@ -142,8 +133,8 @@ public class Battle : NetworkBehaviour {
       return participants;
    }
 
-   public List<Battler> getAttackers () {
-      List<Battler> list = new List<Battler>();
+   public List<BattlerBehaviour> getAttackers () {
+      List<BattlerBehaviour> list = new List<BattlerBehaviour>();
 
       foreach (int userId in attackers) {
          list.Add(BattleManager.self.getBattler(userId));
@@ -152,8 +143,8 @@ public class Battle : NetworkBehaviour {
       return list;
    }
 
-   public List<Battler> getDefenders () {
-      List<Battler> list = new List<Battler>();
+   public List<BattlerBehaviour> getDefenders () {
+      List<BattlerBehaviour> list = new List<BattlerBehaviour>();
 
       foreach (int userId in defenders) {
          list.Add(BattleManager.self.getBattler(userId));
@@ -162,19 +153,19 @@ public class Battle : NetworkBehaviour {
       return list;
    }
 
-   public List<Battler> getTeam (TeamType teamType) {
+   public List<BattlerBehaviour> getTeam (TeamType teamType) {
       if (teamType == TeamType.Attackers) {
          return getAttackers();
       } else if (teamType == TeamType.Defenders) {
          return getDefenders();
       }
 
-      return new List<Battler>();
+      return new List<BattlerBehaviour>();
    }
 
    public void resetAllBattleIDs () {
       // Remove the Battle ID for any participants
-      foreach (Battler participant in this.getParticipants()) {
+      foreach (BattlerBehaviour participant in this.getParticipants()) {
          if (participant == null) {
             continue;
          }
@@ -184,7 +175,7 @@ public class Battle : NetworkBehaviour {
    }
 
    public bool hasRoomLeft (TeamType teamType) {
-      List<Battler> battlers = new List<Battler>();
+      List<BattlerBehaviour> battlers = new List<BattlerBehaviour>();
 
       if (teamType == TeamType.Attackers) {
          battlers.AddRange(getAttackers());
@@ -200,7 +191,7 @@ public class Battle : NetworkBehaviour {
    }
 
    public bool isTeamDead (TeamType teamType) {
-      List<Battler> battlers = new List<Battler>();
+      List<BattlerBehaviour> battlers = new List<BattlerBehaviour>();
 
       // Add the appropriate Battlers to our list
       if (teamType == TeamType.Attackers) {
@@ -210,7 +201,7 @@ public class Battle : NetworkBehaviour {
       }
 
       // Check if any of the Battlers are still alive
-      foreach (Battler battler in battlers) {
+      foreach (BattlerBehaviour battler in battlers) {
          if (!battler.isDead()) {
             return false;
          }
@@ -219,11 +210,11 @@ public class Battle : NetworkBehaviour {
       return true;
    }
 
-   public float getTimeToWait (Battler sourceBattler, List<Battler> targetBattlers) {
+   public float getTimeToWait (BattlerBehaviour sourceBattler, List<BattlerBehaviour> targetBattlers) {
       float timeToWait = 0f;
 
       // Check if our sprite or the target sprite is busy being animated
-      foreach (Battler targetBattler in targetBattlers) {
+      foreach (BattlerBehaviour targetBattler in targetBattlers) {
          if (sourceBattler.animatingUntil > Util.netTime() || targetBattler.animatingUntil > Util.netTime()) {
             // Check if the source or the target has the longer wait time
             float diff = Mathf.Max(sourceBattler.animatingUntil - Util.netTime(), targetBattler.animatingUntil - Util.netTime());
@@ -241,7 +232,7 @@ public class Battle : NetworkBehaviour {
       int defendersAlive = 0;
 
       // Check if there are any attackers alive
-      foreach (Battler attacker in getAttackers()) {
+      foreach (BattlerBehaviour attacker in getAttackers()) {
          if (!attacker.isDead()) {
             attackersAlive++;
             break;
@@ -253,7 +244,7 @@ public class Battle : NetworkBehaviour {
       }
 
       // Check if there are any defenders alive
-      foreach (Battler defender in getDefenders()) {
+      foreach (BattlerBehaviour defender in getDefenders()) {
          if (!defender.isDead()) {
             defendersAlive++;
             break;
@@ -267,7 +258,7 @@ public class Battle : NetworkBehaviour {
       return TeamType.None;
    }
 
-   public static float getDistance (Battler source, Battler target) {
+   public static float getDistance (BattlerBehaviour source, BattlerBehaviour target) {
       Vector2 sourcePosition = source.battleSpot.transform.position;
       Vector2 targetPosition = target.battleSpot.transform.position;
 
@@ -275,31 +266,32 @@ public class Battle : NetworkBehaviour {
    }
 
    [ClientRpc]
-   public void Rpc_SendAttackAction (string[] actionStrings) {
-      List<AttackAction> attackActionList = new List<AttackAction>();
+   public void Rpc_SendCombatAction (string[] actionStrings, BattleActionType type) {
+      List<BattleAction> actionList = new List<BattleAction>();
+      BattleAction actionToSend = null;
 
-      // Convert each of the object arrays into deserialized AttackActions
-      foreach (string actionString in actionStrings) {
-         AttackAction attackAction = AttackAction.deseralize(actionString);
-         attackActionList.Add(attackAction);
+      if (type == BattleActionType.Stance) {
+         // Stance action change
+         actionToSend = StanceAction.deserialize(actionStrings[0]);
+         AbilityManager.self.execute((StanceAction)actionToSend);
+
+      } else if (type != BattleActionType.UNDEFINED) {
+         // Standard attack
+         foreach (string actionString in actionStrings) {
+            switch (type) {
+               case BattleActionType.Attack:
+                  actionToSend = AttackAction.deseralize(actionString);
+                  actionList.Add(actionToSend);
+                  break;
+               case BattleActionType.BuffDebuff:
+                  actionToSend = BuffAction.deseralize(actionString);
+                  actionList.Add(actionToSend);
+                  break;
+            }
+         }
+
+         AbilityManager.self.execute(actionList.ToArray());
       }
-
-      // We just received an action from the server, so execute it at the assigned time
-      AbilityManager.self.execute(attackActionList.ToArray());
-   }
-
-   [ClientRpc]
-   public void Rpc_SendBuffAction (string[] actionStrings) {
-      List<BuffAction> actionList = new List<BuffAction>();
-
-      // Convert each of the object arrays into deserialized Actions
-      foreach (string actionString in actionStrings) {
-         BuffAction buffAction = BuffAction.deseralize(actionString);
-         actionList.Add(buffAction);
-      }
-
-      // We just received an action from the server, so execute it at the assigned time
-      AbilityManager.self.execute(actionList.ToArray());
    }
 
    private void OnDestroy () {
