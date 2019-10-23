@@ -129,6 +129,7 @@ public class BattlerData : ScriptableObject {
 
    #region Setters
 
+   public void setEnemyName (string value) { _enemyName = value; } 
    public void setBattlerObject (BattlerBehaviour value) { _battlerPrefab = value; }
 
    public void setCurrentXP (int value) { _currentXP = value; }
@@ -174,6 +175,8 @@ public class BattlerData : ScriptableObject {
    #region Getters
 
    public BattlerBehaviour getBattlerObject () { return _battlerPrefab; }
+   
+   public string getEnemyName () { return _enemyName; }
 
    public int getCurrentXP () { return _currentXP; }
    public int getBattlerId () { return (int) _battlerID; }
@@ -216,6 +219,8 @@ public class BattlerData : ScriptableObject {
    #endregion
 
    #region Private Variables
+
+   [SerializeField] private string _enemyName;
 
    [SerializeField] private BattlerBehaviour _battlerPrefab;
 

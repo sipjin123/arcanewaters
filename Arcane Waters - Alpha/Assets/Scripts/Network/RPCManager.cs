@@ -17,6 +17,12 @@ public class RPCManager : NetworkBehaviour {
       _player = GetComponent<NetEntity>();
    }
 
+   private void Start () {
+      if (!isServer) {
+         Cmd_ProcessMonsterData();
+      }
+   }
+
    [Command]
    public void Cmd_InteractAnimation (Anim.Type animType) {
       Rpc_InteractAnimation(animType);
@@ -1837,6 +1843,17 @@ public class RPCManager : NetworkBehaviour {
    [TargetRpc]
    public void Target_ReceiveCraftingRecipes (NetworkConnection connection, CraftableItemRequirements[] itemRequirements) {
       RewardManager.self.receiveListFromServer(itemRequirements);
+   }
+
+   [Command]
+   private void Cmd_ProcessMonsterData () {
+      List<MonsterRawData> monsterList = MonsterManager.self.getAllMonsterData();
+      Target_ReceiveMonsterData(_player.connectionToClient, monsterList.ToArray());
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveMonsterData (NetworkConnection connection, MonsterRawData[] rawDataList) {
+      MonsterManager.self.receiveListFromServer(rawDataList);
    }
 
    [Command]

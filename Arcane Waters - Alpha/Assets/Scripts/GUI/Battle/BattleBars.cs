@@ -49,7 +49,11 @@ public class BattleBars : MonoBehaviour {
       }
 
       // Set our text values
-      nameText.text = _battler.player.entityName + "";
+      if (_battler.battlerType == BattlerType.AIEnemyControlled) {
+         nameText.text = _battler.battlerMainData.getEnemyName();
+      } else {
+         nameText.text = _battler.player.entityName + "";
+      }
 
       // Figure out how full our bars should be
       timerBar.fillAmount = _battler.getActionTimerPercent();

@@ -110,6 +110,9 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
    // The time at which this Battler is no longer busy displaying attack/hit animations
    public float animatingUntil;
 
+   // Determines the enemy type which is used to retrieve enemy data from XML
+   public Enemy.Type enemyType;
+
    // Our associated player net ID
    [SyncVar]
    public uint playerNetId;
@@ -183,6 +186,8 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
       // Look up our associated player object
       NetworkIdentity enemyIdent = NetworkIdentity.spawned[playerNetId];
       this.player = enemyIdent.GetComponent<NetEntity>();
+
+      MonsterManager.self.translateRawDataToBattlerData(enemyType, battlerMainData);
 
       // Set our sprite sheets according to our types
       if (battlerType == BattlerType.PlayerControlled) {
