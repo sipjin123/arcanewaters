@@ -1677,6 +1677,7 @@ MonoBehaviour:
   lastStanceChange: -3.4028235e+38
   lastAbilityEndTime: 0
   animatingUntil: 0
+  enemyType: 0
   playerNetId: 0
   player: {fileID: 0}
   battle: {fileID: 0}
@@ -1690,6 +1691,7 @@ MonoBehaviour:
   hairColor2: 0
   lastDamagedTime: -3.4028235e+38
   clickBox: {fileID: 6527673178364909065}
+  nameUI: {fileID: 2276109995833147395}
   armorManager: {fileID: 6527673179465098355}
   weaponManager: {fileID: 6527673179465098356}
   onBattlerSelect:

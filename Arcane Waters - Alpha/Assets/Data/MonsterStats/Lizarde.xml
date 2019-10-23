@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
 <MonsterRawData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <imagePath>Assets/Sprites/Enemies/SeaMonsters/reef_giant.png</imagePath>
+  <enemyName>Lizarde</enemyName>
   <currentXP>0</currentXP>
-  <battlerID xmlns="EnemyType">Muckspirit</battlerID>
+  <battlerID xmlns="EnemyType">Lizard</battlerID>
   <apGainWhenDamaged>0</apGainWhenDamaged>
   <baseHealth>0</baseHealth>
   <baseDefense>0</baseDefense>

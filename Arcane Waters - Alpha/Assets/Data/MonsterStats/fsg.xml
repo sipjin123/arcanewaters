@@ -1,8 +1,21 @@
 <?xml version="1.0"?>
 <MonsterRawData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <imagePath>Assets/Sprites/Enemies/SeaMonsters/Tentacle_CollisionOnly_SpriteSheet.png</imagePath>
+  <tester>
+    <name />
+    <hideFlags>None</hideFlags>
+    <testBool>false</testBool>
+    <_itemID>1</_itemID>
+    <_itemName>AW</_itemName>
+    <_itemDescription>WE</_itemDescription>
+    <_levelRequirement>3</_levelRequirement>
+    <_elementType>Air</_elementType>
+    <_classRequirement>Any</_classRequirement>
+    <_battleItemType>Ability</_battleItemType>
+  </tester>
+  <imagePath>Assets/Sprites/Enemies/SeaMonsters/horror.png</imagePath>
+  <enemyName>fsg</enemyName>
   <currentXP>0</currentXP>
-  <battlerID xmlns="EnemyType">Slime</battlerID>
+  <battlerID xmlns="EnemyType">Treeman</battlerID>
   <apGainWhenDamaged>0</apGainWhenDamaged>
   <baseHealth>0</baseHealth>
   <baseDefense>0</baseDefense>
@@ -13,16 +26,10 @@
   <defensePerLevel>0</defensePerLevel>
   <healthPerlevel>0</healthPerlevel>
   <battlerLootData>
-    <lootList>
-      <LootInfo>
-        <lootType xmlns="IngredientType">Coal</lootType>
-        <quantity>3</quantity>
-        <chanceRatio>47.140873</chanceRatio>
-      </LootInfo>
-    </lootList>
-    <defaultLoot xmlns="IngredientType">Eldritch_Aura</defaultLoot>
-    <minQuantity>2</minQuantity>
-    <maxQuantity>5</maxQuantity>
+    <lootList />
+    <defaultLoot xmlns="IngredientType">None</defaultLoot>
+    <minQuantity>0</minQuantity>
+    <maxQuantity>0</maxQuantity>
   </battlerLootData>
   <physicalDefenseMultiplier>0</physicalDefenseMultiplier>
   <fireDefenseMultiplier>0</fireDefenseMultiplier>
