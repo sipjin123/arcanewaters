@@ -4,10 +4,17 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System.Xml.Serialization;
+using System;
 
+[Serializable]
 public class MonsterRawData {
 
    #region Public Variables
+
+   public MonsterRawData () { }
+
+   // The name of this unit
+   public string enemyName = "unknown";
 
    // Holds the path for the icon
    public string imagePath;

@@ -22,13 +22,13 @@ public class MonsterDataPanel : MonoBehaviour {
    public Button saveExitButton;
 
    // Button tabs for categorized input fields
-   public Button toggleMainStatsButton, toggleAttackButton, toggleDefenseButton;
+   public Button toggleMainStatsButton, toggleAttackButton, toggleDefenseButton, toggleLootsButton;
 
    // Content holders
-   public GameObject mainStatsContent, attackContent, defenseContent;
+   public GameObject mainStatsContent, attackContent, defenseContent, dropDownContent;
 
    // Dropdown indicator objects
-   public GameObject dropDownIndicatorMain, dropDownIndicatorAttack, dropDownIndicatorDefense;
+   public GameObject dropDownIndicatorMain, dropDownIndicatorAttack, dropDownIndicatorDefense, dropDownLoots;
 
    // Holds the item type selection template
    public ItemTypeTemplate monsterTypeTemplate;
@@ -46,7 +46,7 @@ public class MonsterDataPanel : MonoBehaviour {
    public Button toggleSelectionPanelButton;
 
    // Caches the initial type incase it is changed
-   public Enemy.Type startingType;
+   public string startingName;
 
    // The cache list for avatar icon selection
    public Dictionary<string, Sprite> iconSpriteList = new Dictionary<string, Sprite>();
@@ -80,6 +80,13 @@ public class MonsterDataPanel : MonoBehaviour {
    public InputField rewardItemMin, rewardItemMax;
    public Sprite emptySprite;
 
+   // Skill Variables
+   public Button addSkillTemplateButton;
+   public Transform skillTemplateParent;
+   public GameObject skillTemplatePrefab;
+   BattleItemData tempItemDAta;
+
+
    #endregion
 
    private void Awake () {
@@ -87,7 +94,9 @@ public class MonsterDataPanel : MonoBehaviour {
          monsterToolManager.loadAllDataFiles();
          gameObject.SetActive(false);
       });
+      addSkillTemplateButton.onClick.AddListener(() => addSkillTemplate());
       addLootButton.onClick.AddListener(() => addLootTemplate());
+      toggleLootsButton.onClick.AddListener(() => toggleLoots());
       closeItemPanelButton.onClick.AddListener(() => lootSelectionPanel.SetActive(false));
       openAvatarSelectionButton.onClick.AddListener(() => openImageSelectionPanel());
       closeAvatarSelectionButton.onClick.AddListener(() => selectionPanel.SetActive(false));
@@ -99,8 +108,8 @@ public class MonsterDataPanel : MonoBehaviour {
    }
 
    public void loadData(MonsterRawData newBattleData) {
-      startingType = ((Enemy.Type)newBattleData.battlerID);
-      monsterTypeText.text = startingType.ToString();
+      startingName = newBattleData.enemyName;
+      monsterTypeText.text = ((Enemy.Type) newBattleData.battlerID).ToString();
 
       try {
          avatarIcon.sprite = ImageManager.getSprite(newBattleData.imagePath);
@@ -133,6 +142,11 @@ public class MonsterDataPanel : MonoBehaviour {
       _waterAttackMultiplier.text = newBattleData.waterAttackMultiplier.ToString();
       _allAttackMultiplier.text = newBattleData.allAttackMultiplier.ToString();
 
+      _preContactLength.text = newBattleData.preContactLength.ToString();
+      _preMagicLength.text = newBattleData.preMagicLength.ToString();
+
+      _name.text = newBattleData.enemyName;
+
       loadLootTemplates(newBattleData);
    }
 
@@ -163,13 +177,20 @@ public class MonsterDataPanel : MonoBehaviour {
       newBattData.waterAttackMultiplier = int.Parse(_waterAttackMultiplier.text);
       newBattData.airAttackMultiplier = int.Parse(_airAttackMultiplier.text);
 
+      newBattData.preContactLength = int.Parse(_preContactLength.text);
+      newBattData.preMagicLength = int.Parse(_preMagicLength.text);
+
+      newBattData.enemyName = _name.text;
+
+      //newBattData.tester = tempItemDAta;
+
       return newBattData;
    }
 
    public void saveData() {
       MonsterRawData rawData = getMonsterRawData();
-      if (rawData.battlerID != startingType) {
-         deleteOldData(new MonsterRawData { battlerID = startingType });
+      if (rawData.enemyName != startingName) {
+         deleteOldData(new MonsterRawData { enemyName = startingName });
       }
 
       rawData.battlerLootData = getRawLootData();
@@ -238,7 +259,12 @@ public class MonsterDataPanel : MonoBehaviour {
       }
    }
 
-   private void toggleMainStats() {
+   private void toggleLoots () {
+      dropDownContent.SetActive(!dropDownContent.activeSelf);
+      dropDownLoots.SetActive(!dropDownContent.activeSelf);
+   }
+
+   private void toggleMainStats () {
       mainStatsContent.SetActive(!mainStatsContent.activeSelf);
       dropDownIndicatorMain.SetActive(!mainStatsContent.activeSelf);
    }
@@ -359,10 +385,28 @@ public class MonsterDataPanel : MonoBehaviour {
 
    #endregion
 
+   #region Skill Feature
+
+   private void addSkillTemplate() {
+      skillTemplateParent.gameObject.DestroyChildren();
+      // Basic data set
+      BattleItemData basicData = BattleItemData.CreateInstance(1, "AW", "WE", Element.Air, null,
+         null, BattleItemType.Ability, null, 3);
+      tempItemDAta = basicData;
+
+      GameObject template = Instantiate(skillTemplatePrefab, skillTemplateParent);
+   }
+
+   #endregion
+
    #region Private Variables
 
    // Main parameters
    [SerializeField] private InputField _name;
+
+   // Base battler parameters
+   [SerializeField] private InputField _preContactLength;
+   [SerializeField] private InputField _preMagicLength;
 
    // Base battler parameters
    [SerializeField] private InputField _baseHealth;

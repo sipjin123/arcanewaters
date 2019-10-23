@@ -37,7 +37,7 @@ public class MonsterToolManager : MonoBehaviour {
             MonsterRawData monsterData = ToolsUtil.xmlLoad<MonsterRawData>(filePath);
 
             // Save the Monster data in the memory cache
-            monsterDataList.Add(monsterData.battlerID.ToString(), monsterData);
+            monsterDataList.Add(monsterData.enemyName, monsterData);
          }
          monsterToolScreen.updatePanelWithMonsterRawData(monsterDataList);
       }
@@ -45,7 +45,7 @@ public class MonsterToolManager : MonoBehaviour {
 
    public void deleteMonsterDataFile (MonsterRawData data) {
       // Build the file name
-      string fileName = ((Enemy.Type) data.battlerID).ToString();
+      string fileName = data.enemyName;
 
       // Build the path to the file
       string path = Path.Combine(Application.dataPath, "Data", "MonsterStats", fileName + ".xml");
@@ -65,7 +65,7 @@ public class MonsterToolManager : MonoBehaviour {
       }
 
       // Build the file name
-      string fileName = ((Enemy.Type)data.battlerID).ToString();
+      string fileName = data.enemyName;
 
       // Build the path to the file
       string path = Path.Combine(Application.dataPath, "Data", "MonsterStats", fileName + ".xml");

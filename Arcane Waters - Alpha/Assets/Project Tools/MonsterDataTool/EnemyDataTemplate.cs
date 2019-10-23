@@ -24,15 +24,15 @@ public class EnemyDataTemplate : MonoBehaviour {
 
    #endregion
 
-   public void updateItemDisplay(MonsterRawData resultItem) {
+   public void updateItemDisplay (MonsterRawData resultItem) {
       string newName = "Undefined";
       try {
-         newName = ((Enemy.Type) resultItem.battlerID).ToString();
+         newName = resultItem.enemyName + " (" + ((Enemy.Type) resultItem.battlerID).ToString() + ")";
       } catch {
       }
 
       nameText.text = newName;
-      indexText.text = "ID# "+ ((int)resultItem.battlerID).ToString();
+      indexText.text = "ID# " + ((int) resultItem.battlerID).ToString();
    }
 
    #region Private Variables
