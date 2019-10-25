@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+<BattlerData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <enemyName>Mr. Lizard</enemyName>
+  <imagePath>Assets/Sprites/Enemies/lizard.png</imagePath>
+  <currentXP>0</currentXP>
+  <enemyType>Lizard</enemyType>
+  <apGainWhenDamaged>0</apGainWhenDamaged>
+  <baseHealth>1</baseHealth>
+  <baseDefense>9</baseDefense>
+  <baseDamage>2</baseDamage>
+  <baseGoldReward>9</baseGoldReward>
+  <baseXPReward>3</baseXPReward>
+  <damagePerLevel>9</damagePerLevel>
+  <defensePerLevel>4</defensePerLevel>
+  <healthPerlevel>9</healthPerlevel>
+  <battlerAbilities>
+    <BasicAbilityDataList>
+      <BasicAbilityData xsi:type="AttackAbilityData">
+        <itemID>1</itemID>
+        <itemName>Lizard Bash</itemName>
+        <itemDescription>Bashing the enemy</itemDescription>
+        <itemIconPath>Assets/Sprites/Effects/gate_damage_4.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Assets/Sprites/Effects/ranged_fire.png</string>
+        </hitSpritesPath>
+        <elementType>Air</elementType>
+        <hitAudioClipPath>Assets/Resources/Sound/Effects/Coin_XP_Gain.wav</hitAudioClipPath>
+        <classRequirement>Any</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath>Assets/Resources/Sound/Effects/Fishman_Dead.ogg</castAudioClipPath>
+        <allowedStances>
+          <Stance>Attack</Stance>
+          <Stance>Defense</Stance>
+          <Stance>Balanced</Stance>
+        </allowedStances>
+        <abilityType>Standard</abilityType>
+        <abilityCooldown>1</abilityCooldown>
+        <apChange>1</apChange>
+        <abilityCost>1</abilityCost>
+        <castSpritesPath>
+          <string>Assets/Sprites/Effects/Slime_Collision.png</string>
+        </castSpritesPath>
+        <FXTimePerFrame>1</FXTimePerFrame>
+        <baseDamage>5</baseDamage>
+        <hasShake>true</hasShake>
+        <hasKnockup>false</hasKnockup>
+        <abilityActionType>Melee</abilityActionType>
+        <canBeBlocked>true</canBeBlocked>
+      </BasicAbilityData>
+    </BasicAbilityDataList>
+    <AttackAbilityDataList>
+      <AttackAbilityData>
+        <itemID>1</itemID>
+        <itemName>Lizard Bash</itemName>
+        <itemDescription>Bashing the enemy</itemDescription>
+        <itemIconPath>Assets/Sprites/Effects/gate_damage_4.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Assets/Sprites/Effects/ranged_fire.png</string>
+        </hitSpritesPath>
+        <elementType>Air</elementType>
+        <hitAudioClipPath>Assets/Resources/Sound/Effects/Coin_XP_Gain.wav</hitAudioClipPath>
+        <classRequirement>Any</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath>Assets/Resources/Sound/Effects/Fishman_Dead.ogg</castAudioClipPath>
+        <allowedStances>
+          <Stance>Attack</Stance>
+          <Stance>Defense</Stance>
+          <Stance>Balanced</Stance>
+        </allowedStances>
+        <abilityType>Standard</abilityType>
+        <abilityCooldown>1</abilityCooldown>
+        <apChange>1</apChange>
+        <abilityCost>1</abilityCost>
+        <castSpritesPath>
+          <string>Assets/Sprites/Effects/Slime_Collision.png</string>
+        </castSpritesPath>
+        <FXTimePerFrame>1</FXTimePerFrame>
+        <baseDamage>5</baseDamage>
+        <hasShake>true</hasShake>
+        <hasKnockup>false</hasKnockup>
+        <abilityActionType>Melee</abilityActionType>
+        <canBeBlocked>true</canBeBlocked>
+      </AttackAbilityData>
+    </AttackAbilityDataList>
+    <BuffAbilityDataList />
+  </battlerAbilities>
+  <battlerLootData>
+    <lootList>
+      <LootInfo>
+        <lootType xmlns="IngredientType">Green_Scale</lootType>
+        <quantity>3</quantity>
+        <chanceRatio>68.24794</chanceRatio>
+      </LootInfo>
+      <LootInfo>
+        <lootType xmlns="IngredientType">Lizard_Claw</lootType>
+        <quantity>5</quantity>
+        <chanceRatio>74.93184</chanceRatio>
+      </LootInfo>
+    </lootList>
+    <defaultLoot xmlns="IngredientType">Green_Blood_Droplet</defaultLoot>
+    <minQuantity>1</minQuantity>
+    <maxQuantity>5</maxQuantity>
+  </battlerLootData>
+  <physicalDefenseMultiplier>1</physicalDefenseMultiplier>
+  <fireDefenseMultiplier>8</fireDefenseMultiplier>
+  <earthDefenseMultiplier>2</earthDefenseMultiplier>
+  <airDefenseMultiplier>8</airDefenseMultiplier>
+  <waterDefenseMultiplier>3</waterDefenseMultiplier>
+  <allDefenseMultiplier>8</allDefenseMultiplier>
+  <physicalAttackMultiplier>1</physicalAttackMultiplier>
+  <fireAttackMultiplier>7</fireAttackMultiplier>
+  <earthAttackMultiplier>2</earthAttackMultiplier>
+  <airAttackMultiplier>7</airAttackMultiplier>
+  <waterAttackMultiplier>3</waterAttackMultiplier>
+  <allAttackMultiplier>7</allAttackMultiplier>
+  <deathSoundPath>Assets/Resources/Sound/Effects/Attack_Fire.wav</deathSoundPath>
+  <attackJumpSoundPath>Assets/Resources/Sound/Effects/Boulder.wav</attackJumpSoundPath>
+  <preContactLength>5</preContactLength>
+  <preMagicLength>9</preMagicLength>
+</BattlerData>

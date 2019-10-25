@@ -1640,8 +1640,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: 46c2928bfded7a046b99eaee919556e1
-  m_SceneId: 0
+  m_AssetId: 
+  m_SceneId: 3268718430
 --- !u!114 &6527673179465098255
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1656,7 +1656,42 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  battlerMainData: {fileID: 11400000, guid: 7a5d47f621c940b4794d37586ef0f0d7, type: 2}
+  defaultAbilityData: {fileID: 11400000, guid: 6bff8c131c37fa345951adcbcb780b8f, type: 2}
+  battlerMainData:
+    enemyName: unknown
+    imagePath: 
+    currentXP: 0
+    battlerID: 0
+    apGainWhenDamaged: 0
+    baseHealth: 0
+    baseDefense: 0
+    baseDamage: 0
+    baseGoldReward: 0
+    baseXPReward: 0
+    damagePerLevel: 0
+    defensePerLevel: 0
+    healthPerlevel: 0
+    battlerAbilities:
+    - {fileID: 11400000, guid: 6825c9d58f6dca3469d7f9853588e8b5, type: 2}
+    battlerLootData:
+      lootList: []
+      defaultLoot: 0
+      minQuantity: 0
+      maxQuantity: 0
+    physicalDefenseMultiplier: 0
+    fireDefenseMultiplier: 0
+    earthDefenseMultiplier: 0
+    airDefenseMultiplier: 0
+    waterDefenseMultiplier: 0
+    allDefenseMultiplier: 0
+    physicalAttackMultiplier: 0
+    fireAttackMultiplier: 0
+    earthAttackMultiplier: 0
+    airAttackMultiplier: 0
+    waterAttackMultiplier: 0
+    allAttackMultiplier: 0
+    preContactLength: 0
+    preMagicLength: 0
   battlerType: 2
   mainSpriteRenderer: {fileID: 6527673177897736797}
   userId: 0
@@ -1677,7 +1712,7 @@ MonoBehaviour:
   lastStanceChange: -3.4028235e+38
   lastAbilityEndTime: 0
   animatingUntil: 0
-  enemyType: 0
+  enemyType: 305
   playerNetId: 0
   player: {fileID: 0}
   battle: {fileID: 0}
@@ -1691,7 +1726,6 @@ MonoBehaviour:
   hairColor2: 0
   lastDamagedTime: -3.4028235e+38
   clickBox: {fileID: 6527673178364909065}
-  nameUI: {fileID: 2276109995833147395}
   armorManager: {fileID: 6527673179465098355}
   weaponManager: {fileID: 6527673179465098356}
   onBattlerSelect:
