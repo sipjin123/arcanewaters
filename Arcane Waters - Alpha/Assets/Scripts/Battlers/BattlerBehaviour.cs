@@ -9,6 +9,9 @@ using UnityEngine.Events;
 public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
    #region Public Variables
 
+   // A default Attack Ability   
+   public AttackAbilityData defaultAbilityData;
+
    // Will be used to fill all the information related to this battler, it is uninitialized. 
    public BattlerData battlerMainData;
 
@@ -186,9 +189,7 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
       // Look up our associated player object
       NetworkIdentity enemyIdent = NetworkIdentity.spawned[playerNetId];
       this.player = enemyIdent.GetComponent<NetEntity>();
-
-      MonsterManager.self.translateRawDataToBattlerData(enemyType, battlerMainData);
-
+      
       // Set our sprite sheets according to our types
       if (battlerType == BattlerType.PlayerControlled) {
          updateSprites();
@@ -233,15 +234,6 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
 
       StartCoroutine(CO_initializeClientBattler());
 
-      if (battlerType == BattlerType.AIEnemyControlled) {
-         setBattlerAbilities(_initializedBattlerData.getAbilities());
-
-         // Extra cooldown time for AI controlled battlers, so they do not attack instantly
-         this.cooldownEndTime = Util.netTime() + 5f;
-      } else {
-         setBattlerAbilities(AbilityInventory.self.playerAbilities);
-      }
-
       // Flip sprites for the attackers
       checkIfSpritesShouldFlip();
    }
@@ -257,8 +249,30 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
    }
 
    public void mainInit () {
+      BattlerData getData = MonsterManager.self.rawMonsterDataList.Find(_ => _.enemyType == enemyType);
+      if (battlerType == BattlerType.PlayerControlled) {
+         getData = MonsterManager.self.rawMonsterDataList.Find(_ => _.enemyType == Enemy.Type.Humanoid);
+      } else {
+         if (getData == null) {
+            getData = MonsterManager.self.rawMonsterDataList.Find(_ => _.enemyType == Enemy.Type.Coralbow);
+         } 
+      }
+
+      battlerMainData = getData;
+      //battlerMainData.battlerAbilities = new AbilityDataRecord { BasicAbilityDataList = new BasicAbilityData[] { defaultAbilityData } };
       if (battlerMainData != null) {
          _initializedBattlerData = BattlerData.CreateInstance(battlerMainData);
+      } else {
+         Debug.LogError("DATA IS NULL");
+      }
+
+      if (battlerType == BattlerType.AIEnemyControlled) {
+         setBattlerAbilities(_initializedBattlerData.battlerAbilities);
+
+         // Extra cooldown time for AI controlled battlers, so they do not attack instantly
+         this.cooldownEndTime = Util.netTime() + 5f;
+      } else {
+         setBattlerAbilities(new AbilityDataRecord { BasicAbilityDataList = AbilityInventory.self.playerAbilities.ToArray() });
       }
    }
 
@@ -307,23 +321,27 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
       _outline.recreateOutlineIfVisible();
    }
 
-   public void setBattlerAbilities (List<BasicAbilityData> values) {
+   public void setBattlerAbilities (AbilityDataRecord values) {
       // Create initialized copies of the stances data.
       _balancedInitializedStance = BasicAbilityData.CreateInstance(AbilityInventory.self.balancedStance);
       _offenseInitializedStance = BasicAbilityData.CreateInstance(AbilityInventory.self.offenseStance);
       _defensiveInitializedStance = BasicAbilityData.CreateInstance(AbilityInventory.self.defenseStance);
 
-      foreach (BasicAbilityData item in values) {
-         switch (item.getAbilityType()) {
-            case AbilityType.Standard:
-               AttackAbilityData atkAbilityData = AttackAbilityData.CreateInstance(item as AttackAbilityData);
-               _battlerAttackAbilities.Add(atkAbilityData);
-               break;
-            case AbilityType.BuffDebuff:
-               BuffAbilityData buffAbilityData = BuffAbilityData.CreateInstance(item as BuffAbilityData);
-               _battlerBuffAbilities.Add(buffAbilityData);
-               break;
+      if (values.BasicAbilityDataList != null) {
+         foreach (BasicAbilityData item in values.BasicAbilityDataList) {
+            switch (item.abilityType) {
+               case AbilityType.Standard:
+                  AttackAbilityData atkAbilityData = AttackAbilityData.CreateInstance(item as AttackAbilityData);
+                  _battlerAttackAbilities.Add(atkAbilityData);
+                  break;
+               case AbilityType.BuffDebuff:
+                  BuffAbilityData buffAbilityData = BuffAbilityData.CreateInstance(item as BuffAbilityData);
+                  _battlerBuffAbilities.Add(buffAbilityData);
+                  break;
+            }
          }
+      } else {
+         Debug.LogError("There is no ability");
       }
    }
 
@@ -390,12 +408,14 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
    #region Battle Callers
 
    public void playDeathSound () {
-      if (getBattlerData().getDeathSound() == null) {
+      AudioClip deathSound = AudioClipManager.self.getAudioClipData(getBattlerData().deathSoundPath).audioClip;
+      
+      if (deathSound == null) {
          Debug.LogWarning("Battler does not have a death sound");
          return;
       }
 
-      SoundManager.playClipOneShotAtPoint(getBattlerData().getDeathSound(), transform.position);
+      SoundManager.playClipOneShotAtPoint(deathSound, transform.position);
    }
 
    public void handleEndOfBattle (Battle.TeamType winningTeam) {
@@ -427,12 +447,13 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
    }
 
    public void playJumpSound () {
-      if (getBattlerData().getAttackJumpSound() == null) {
+      AudioClip attackJumpSound = AudioClipManager.self.getAudioClipData(getBattlerData().attackJumpSoundPath).audioClip;
+
+      if (attackJumpSound == null) {
          Debug.LogWarning("Battler does not have a jump sound");
          return;
       }
-
-      SoundManager.playClipOneShotAtPoint(getBattlerData().getAttackJumpSound(), transform.position);
+      SoundManager.playClipOneShotAtPoint(attackJumpSound, transform.position);
    }
 
    public void playAnim (Anim.Type animationType) {
@@ -483,7 +504,7 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
          attackerAbility = _battlerAttackAbilities[battleAction.abilityInventoryIndex];
       }
 
-      switch (globalAbilityData.getAbilityActionType()) {
+      switch (globalAbilityData.abilityActionType) {
          case AbilityActionType.Melee:
 
             onBattlerAttackStart.Invoke();
@@ -632,8 +653,8 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
             // Start the attack animation that will eventually create the magic effect
             if (isFirstAction) {
                sourceBattler.playAnim(attackerAbility.getAnimation());
-
-               SoundManager.playClipOneShotAtPoint(abilityDataReference.getCastAudioClip(), sourceBattler.transform.position);
+               AudioClip clip = AudioClipManager.self.getAudioClipData(abilityDataReference.castAudioClipPath).audioClip;
+               SoundManager.playClipOneShotAtPoint(clip, sourceBattler.transform.position);
                Vector2 castEffectPosition = new Vector2(transform.position.x, transform.position.y - (mainSpriteRenderer.bounds.extents.y / 2));
                EffectManager.playCastAbilityVFX(sourceBattler, action, getMagicGroundPosition());
             }
@@ -642,7 +663,8 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
             yield return new WaitForSeconds(sourceBattler.getPreMagicLength());
 
             // Play the sound associated with the magic efect
-            SoundManager.playClipOneShotAtPoint(abilityDataReference.getHitAudioClip(), targetBattler.transform.position);
+            AudioClip hitclip = AudioClipManager.self.getAudioClipData(abilityDataReference.hitAudioClipPath).audioClip;
+            SoundManager.playClipOneShotAtPoint(hitclip, targetBattler.transform.position);
 
             effectPosition = targetBattler.mainSpriteRenderer.bounds.center;
             EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, action, effectPosition);
@@ -651,10 +673,10 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
             targetBattler.StartCoroutine(targetBattler.animateHit(sourceBattler, action));
 
             // If this magic ability has knockup, then start it now
-            if (abilityDataReference.hasKnockup()) {
+            if (abilityDataReference.hasKnockup) {
                targetBattler.StartCoroutine(targetBattler.animateKnockup());
                yield return new WaitForSeconds(KNOCKUP_LENGTH);
-            } else if (abilityDataReference.hasShake()) {
+            } else if (abilityDataReference.hasShake) {
                targetBattler.StartCoroutine(targetBattler.animateShake());
                yield return new WaitForSeconds(SHAKE_LENGTH);
             }
@@ -873,24 +895,24 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
 
    public int getApWhenDamaged () {
       // By default, characters gain a small amount of AP when taking damage
-      return getBattlerData().getApWhenDamaged();
+      return getBattlerData().apGainWhenDamaged;
    }
 
    public int getStartingHealth () {
       int level = LevelUtil.levelForXp(XP);
 
       // Calculate our health based on our base and gain per level
-      float health = getBattlerData().getBaseHealth() + (getBattlerData().getHealthPerLevel() * level);
+      float health = getBattlerData().baseHealth + (getBattlerData().healthPerlevel * level);
 
       return (int) health;
    }
 
    public int getXPValue () {
-      return getBattlerData().getBaseXPReward();
+      return getBattlerData().baseXPReward;
    }
 
    public int getGoldValue () {
-      return getBattlerData().getBaseGoldReward();
+      return getBattlerData().baseGoldReward;
    }
 
    public float getActionTimerPercent () {
@@ -908,11 +930,11 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
    public float getStanceCooldown (Stance stance) {
       switch (stance) {
          case Stance.Balanced:
-            return _balancedInitializedStance.getCooldown();
+            return _balancedInitializedStance.abilityCooldown;
          case Stance.Attack:
-            return _offenseInitializedStance.getCooldown();
+            return _offenseInitializedStance.abilityCooldown;
          case Stance.Defense:
-            return _defensiveInitializedStance.getCooldown();
+            return _defensiveInitializedStance.abilityCooldown;
       }
 
       return 0;
@@ -936,10 +958,10 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
    }
 
    public float getDefense (Element element) {
-      int level = LevelUtil.levelForXp(getBattlerData().getCurrentXP());
+      int level = LevelUtil.levelForXp(getBattlerData().currentXP);
 
       // Calculate our defense based on our base and gain per level
-      float defense = getBattlerData().getBaseDefense() + (getBattlerData().getDefensePerLevel() * level);
+      float defense = getBattlerData().baseDefense + (getBattlerData().defensePerLevel * level);
 
       // Add our armor's defense value, if we have any
       if (armorManager.hasArmor()) {
@@ -948,24 +970,24 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
 
       switch (element) {
          case Element.Physical:
-            defense *= getBattlerData().getPhysicalDefMultiplier();
+            defense *= getBattlerData().physicalDefenseMultiplier;
             break;
          case Element.Fire:
-            defense *= getBattlerData().getFireDefMultiplier();
+            defense *= getBattlerData().fireDefenseMultiplier;
             break;
          case Element.Earth:
-            defense *= getBattlerData().getEarthDefMultiplier();
+            defense *= getBattlerData().earthDefenseMultiplier;
             break;
          case Element.Air:
-            defense *= getBattlerData().getAirDefMultiplier();
+            defense *= getBattlerData().airDefenseMultiplier;
             break;
          case Element.Water:
-            defense *= getBattlerData().getWaterDefMultiplier();
+            defense *= getBattlerData().waterDefenseMultiplier;
             break;
       }
 
       // We will add as an additional the "All" multiplier with the base defense
-      defense += getBattlerData().getBaseDefense() + (getBattlerData().getDefensePerLevel() * level);
+      defense += getBattlerData().baseDefense + (getBattlerData().defensePerLevel * level);
 
       return defense;
    }
@@ -974,7 +996,7 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
       int level = LevelUtil.levelForXp(XP);
 
       // Calculate our offense based on our base and gain per level
-      float damage = getBattlerData().getBaseDamage() + (getBattlerData().getDamagePerLevel() * level);
+      float damage = getBattlerData().baseDamage + (getBattlerData().damagePerLevel * level);
 
       // Add our weapon's damage value, if we have a weapon
       if (weaponManager.hasWeapon()) {
@@ -983,24 +1005,24 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
 
       switch (element) {
          case Element.Physical:
-            damage *= getBattlerData().getPhysicalAtkMultiplier();
+            damage *= getBattlerData().physicalAttackMultiplier;
             break;
          case Element.Fire:
-            damage *= getBattlerData().getFireAtkMultiplier();
+            damage *= getBattlerData().fireAttackMultiplier;
             break;
          case Element.Earth:
-            damage *= getBattlerData().getEarthAtkMultiplier();
+            damage *= getBattlerData().earthAttackMultiplier;
             break;
          case Element.Air:
-            damage *= getBattlerData().getAirAtkMultiplier();
+            damage *= getBattlerData().airAttackMultiplier;
             break;
          case Element.Water:
-            damage *= getBattlerData().getWaterAtkMultiplier();
+            damage *= getBattlerData().waterAttackMultiplier;
             break;
       }
 
       // We will add as an additional the "All" multiplier with the base defense.
-      damage += (getBattlerData().getBaseDamage() * getBattlerData().getAllAtkMultiplier());
+      damage += (getBattlerData().baseDamage * getBattlerData().allAttackMultiplier);
 
       return damage;
    }

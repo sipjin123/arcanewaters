@@ -1,5 +1,5 @@
 using UnityEditor;
-
+/*
 namespace ItemEditor
 {
    /// <summary>
@@ -31,5 +31,4 @@ namespace ItemEditor
       #endregion
    }
 }
-
-
+ */

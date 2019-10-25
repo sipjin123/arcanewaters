@@ -188,13 +188,13 @@ public class BattleUIManager : MonoBehaviour {
    public void changeBattleStance (int newStance) {
       switch ((BattlerBehaviour.Stance) newStance) {
          case BattlerBehaviour.Stance.Balanced:
-            _playerLocalBattler.stanceCurrentCooldown = AbilityInventory.self.balancedStance.getCooldown();
+            _playerLocalBattler.stanceCurrentCooldown = AbilityInventory.self.balancedStance.abilityCooldown;
             break;
          case BattlerBehaviour.Stance.Attack:
-            _playerLocalBattler.stanceCurrentCooldown = AbilityInventory.self.offenseStance.getCooldown();
+            _playerLocalBattler.stanceCurrentCooldown = AbilityInventory.self.offenseStance.abilityCooldown;
             break;
          case BattlerBehaviour.Stance.Defense:
-            _playerLocalBattler.stanceCurrentCooldown = AbilityInventory.self.defenseStance.getCooldown();
+            _playerLocalBattler.stanceCurrentCooldown = AbilityInventory.self.defenseStance.abilityCooldown;
             break;
       }
 
@@ -216,19 +216,19 @@ public class BattleUIManager : MonoBehaviour {
       // Set the window to change depending if we hovered onto the enemy or the player (change grey or gold sprite)
 
       // Set top Sprite
-      tooltipIcon.sprite = battleItemData.getItemIcon();
+      tooltipIcon.sprite = ImageManager.getSprite(battleItemData.itemIconPath);
 
       // Set lvl requirement
-      tooltipLevel.text = "lvl " + battleItemData.getLevelRequirement().ToString();
+      tooltipLevel.text = "lvl " + battleItemData.levelRequirement.ToString();
 
       // Set ability name
-      tooltipName.text = battleItemData.getName();
+      tooltipName.text = battleItemData.itemName;
 
       // Set cost
-      tooltipCost.text = "AP: " + battleItemData.getAbilityCost().ToString();
+      tooltipCost.text = "AP: " + battleItemData.abilityCost.ToString();
 
       // Set description
-      tooltipDescription.text = battleItemData.getDescription();
+      tooltipDescription.text = battleItemData.itemDescription;
    }
 
    public void setDebugTooltipState (bool enabled) {

@@ -1846,13 +1846,35 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
+   private void Cmd_ProcessAbilities () {
+      List<BasicAbilityData> abilityList = new List<BasicAbilityData>(AbilityManager.self.allGameAbilities);
+      Target_ReceiveAbilities(_player.connectionToClient, abilityList.ToArray());
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveAbilities (NetworkConnection connection, BasicAbilityData[] rawDataList) {
+      AbilityManager.self.receiveAbilitiesFromServer(rawDataList);
+   }
+
+   [Command]
+   private void Cmd_ProcessPlayerAbilities () {
+      List<BasicAbilityData> abilityList = new List<BasicAbilityData>(AbilityInventory.self.playerAbilities);
+      Target_ReceivePlayerAbilities(_player.connectionToClient, abilityList.ToArray());
+   }
+
+   [TargetRpc]
+   public void Target_ReceivePlayerAbilities (NetworkConnection connection, BasicAbilityData[] rawDataList) {
+      AbilityInventory.self.receiveAbilitiesFromServer(rawDataList);
+   }
+
+   [Command]
    private void Cmd_ProcessMonsterData () {
-      List<MonsterRawData> monsterList = MonsterManager.self.getAllMonsterData();
+      List<BattlerData> monsterList = MonsterManager.self.getAllMonsterData();
       Target_ReceiveMonsterData(_player.connectionToClient, monsterList.ToArray());
    }
 
    [TargetRpc]
-   public void Target_ReceiveMonsterData (NetworkConnection connection, MonsterRawData[] rawDataList) {
+   public void Target_ReceiveMonsterData (NetworkConnection connection, BattlerData[] rawDataList) {
       MonsterManager.self.receiveListFromServer(rawDataList);
    }
 
@@ -1885,7 +1907,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Make sure the source battler can use that ability type
       if (!abilityData.isReadyForUseBy(sourceBattler)) {
-         D.debug("Battler requested to use ability they're not allowed: " + playerBody.entityName + ", " + abilityData.getName());
+         D.debug("Battler requested to use ability they're not allowed: " + playerBody.entityName + ", " + abilityData.itemName);
          return;
       }
 
@@ -1932,7 +1954,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Make sure the source battler can use that ability type
       if (!abilityData.isReadyForUseBy(sourceBattler)) {
-         D.debug("Battler requested to use ability they're not allowed: " + playerBody.entityName + ", " + abilityData.getName());
+         D.debug("Battler requested to use ability they're not allowed: " + playerBody.entityName + ", " + abilityData.itemName);
          return;
       }
       

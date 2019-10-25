@@ -82,6 +82,55 @@ public class EditorUtil : EditorWindow {
       AssetDatabase.Refresh();
    }
 
+
+   [MenuItem("Util/Update Audio Manager")]
+   public static void updateAudioManager () {
+      // Find the Audio Manager and clear out the stored paths
+      AudioClipManager audioManager = FindObjectOfType<AudioClipManager>();
+
+      if (audioManager == null) {
+         Debug.Log("Couldn't find the Audio Manager in the scene, so not updating it.");
+         return;
+      }
+
+      if (audioManager.audioDataList != null) {
+         audioManager.audioDataList.Clear();
+      }
+
+      // Look through all of our stuff in the Assets folder
+      foreach (string assetPath in AssetDatabase.GetAllAssetPaths()) {
+         // We only care about audio clips
+         if (assetPath.StartsWith("Assets/Resources/Sound/Effects")) {
+            AudioClip clip = AssetDatabase.LoadAssetAtPath<AudioClip>(assetPath);
+
+            if (clip == null) {
+               continue;
+            }
+
+            // Find the image name
+            string audioName = System.IO.Path.GetFileNameWithoutExtension(assetPath);
+
+            // Create a new Audio Clip Data instance and keep track of the name, path, and audio clips
+            AudioClipManager.AudioClipData audioData = new AudioClipManager.AudioClipData();
+            AudioClip audioClip = AssetDatabase.LoadAssetAtPath<AudioClip>(assetPath);
+            audioData.audioName = audioName;
+            audioData.audioPath = assetPath;
+            audioData.audioPathWithoutExtension = System.IO.Path.ChangeExtension(assetPath, null);
+            audioData.audioClip= audioClip;
+
+            // Add the new Audio Clip Data instance to the Audio Manager's list
+            audioManager.audioDataList.Add(audioData);
+         }
+      }
+
+      // Sort by audio clip name
+      audioManager.audioDataList = audioManager.audioDataList.OrderBy(o => o.audioName).ToList();
+
+      // Save the changes in the scene
+      AssetDatabase.SaveAssets();
+      AssetDatabase.Refresh();
+   }
+
    public static int extractInteger (string name) {
       string newString = "";
       for (int i = name.Length - 1; i > 0; i--) {

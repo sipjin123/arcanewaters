@@ -5,7 +5,7 @@ using System.IO;
 using System.Collections.Generic;
 
 // Christopher Palacios
-
+/*
 namespace ItemEditor
 {
    public class ItemBuilderWindow : EditorWindow
@@ -671,4 +671,4 @@ namespace ItemEditor
 
       #endregion
    }
-}
+}*/

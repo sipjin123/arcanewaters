@@ -175,8 +175,8 @@ public class TreasureChest : NetworkBehaviour {
 
    public Item getBattlerLootContents () {
       // Gets loot
-      BattlerData battlerData = System.Array.Find(BattleManager.self.getAllBattlersData(), x => x.getBattlerId() == enemyType);
-      List<LootInfo> processedLoot = battlerData.getLootData().requestLootList();
+      BattlerData battlerData = BattleManager.self.getAllBattlersData().Find(x => (int)x.enemyType == enemyType);
+      List<LootInfo> processedLoot = battlerData.battlerLootData.requestLootList();
 
       // Registers list of ingredient types for data fetching
       List <CraftingIngredients.Type> itemLoots = new List<CraftingIngredients.Type>();

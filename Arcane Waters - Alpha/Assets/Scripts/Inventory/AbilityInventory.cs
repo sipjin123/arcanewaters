@@ -24,6 +24,14 @@ public class AbilityInventory : MonoBehaviour{
       self = this;
    }
 
+   public void addPlayerAbility(BasicAbilityData ability) {
+      playerAbilities.Add(ability);
+   }
+
+   public void receiveAbilitiesFromServer (BasicAbilityData[] abilityList) {
+      playerAbilities = new List<BasicAbilityData>(abilityList);
+   }
+
    #region Private Variables
 
    #endregion

@@ -8,7 +8,7 @@ public class WeaponData : BattleItemData {
    // Builder scriptable object instance builder. (Override from the ScriptableObject class)
    public static WeaponData CreateInstance (WeaponData datacopy) {
       // If a new value needs to be added to the abilitydata class, it needs to be included in here!
-      WeaponData data = CreateInstance<WeaponData>();
+      WeaponData data = new WeaponData();
 
       // Basic battle item data
       data.setBaseBattleItemData(datacopy);
@@ -23,10 +23,10 @@ public class WeaponData : BattleItemData {
 
    // Builder for the weapon data in item builder
    public static WeaponData CreateInstance (BattleItemData basicData, Weapon.Class _classRequirement, ColorType _primaryC, ColorType _secondaryC, int damage) {
-      WeaponData data = CreateInstance<WeaponData>();
+      WeaponData data = new WeaponData();
 
       // Basic battle item data.
-      data.setClassRequirement(_classRequirement);
+      data.classRequirement = _classRequirement;
 
       data.setBaseBattleItemData(basicData);
 

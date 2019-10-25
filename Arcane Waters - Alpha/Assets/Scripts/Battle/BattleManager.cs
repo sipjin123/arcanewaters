@@ -3,6 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System;
+using Random = UnityEngine.Random;
+
+[Serializable]
+public class PrefabTypes
+{
+   // Determines the enemy type
+   public Enemy.Type enemyType;
+
+   // Holds the prefab of the type
+   public BattlerBehaviour enemyPrefab;
+}
 
 public class BattleManager : MonoBehaviour {
    #region Public Variables
@@ -21,6 +33,8 @@ public class BattleManager : MonoBehaviour {
 
    // Self
    public static BattleManager self;
+
+   public List<PrefabTypes> prefabTypes;
 
    #endregion
 
@@ -192,6 +206,14 @@ public class BattleManager : MonoBehaviour {
       NetworkServer.Destroy(battle.gameObject);
    }
 
+   public void registerBattler(BattlerData battler) {
+      if(_allBattlersData.Exists(_=>_.enemyType == battler.enemyType)) {
+         Debug.LogWarning("Duplicated Type: " + battler.enemyType);
+         return;
+      }
+      _allBattlersData.Add(battler);
+   }
+
    public void storeBattle (Battle battle) {
       _battles[battle.battleId] = battle;
    }
@@ -270,8 +292,8 @@ public class BattleManager : MonoBehaviour {
    }
 
    private BattlerBehaviour createBattlerForEnemy (Battle battle, Enemy enemy, Battle.TeamType teamType) {
-      BattlerData data = System.Array.Find(getAllBattlersData(), x => x.getBattlerId() == (int) enemy.enemyType);
-      BattlerBehaviour enemyPrefab = data.getBattlerObject();
+      BattlerData data = getAllBattlersData().Find(x => x.enemyType == enemy.enemyType);
+      BattlerBehaviour enemyPrefab = prefabTypes.Find(_ => _.enemyType == enemy.enemyType).enemyPrefab;
 
       BattlerBehaviour battler = Instantiate(enemyPrefab);
 
@@ -361,16 +383,16 @@ public class BattleManager : MonoBehaviour {
       // String action list that will be sent to clients
       List<string> stringList = new List<string>();
 
-      if (abilityData.getAbilityType() == AbilityType.Standard) {
+      if (abilityData.abilityType == AbilityType.Standard) {
          AttackAbilityData attackAbilityData = abilityData as AttackAbilityData;
 
          // Apply the AP change
-         int sourceApChange = abilityData.getApChange();
+         int sourceApChange = abilityData.apChange;
          source.addAP(sourceApChange);
 
          foreach (BattlerBehaviour target in targets) {
             // For now, players have a 50% chance of blocking monsters
-            if (target.canBlock() && attackAbilityData.getBlockStatus()) {
+            if (target.canBlock() && attackAbilityData.canBeBlocked) {
                wasBlocked = Random.Range(0f, 1f) > .50f;
             }
 
@@ -380,7 +402,7 @@ public class BattleManager : MonoBehaviour {
             }
 
             // Adjust the damage amount based on element, ability, and the target's armor
-            Element element = abilityData.getElementType();
+            Element element = abilityData.elementType;
             float damage = source.getDamage(element) * attackAbilityData.getModifier;
             damage *= (100f / (100f + target.getDefense(element)));
             float increaseAdditive = 0f;
@@ -407,7 +429,7 @@ public class BattleManager : MonoBehaviour {
 
             // Make note of the time that this battle action is going to be fully completed, considering animation times
             float timeAttackEnds = Util.netTime() + timeToWait + attackAbilityData.getTotalAnimLength(source, target);
-            float cooldownDuration = abilityData.getCooldown() * source.getCooldownModifier();
+            float cooldownDuration = abilityData.abilityCooldown * source.getCooldownModifier();
             source.cooldownEndTime = timeAttackEnds + cooldownDuration;
 
             // Apply the target's AP change
@@ -417,7 +439,7 @@ public class BattleManager : MonoBehaviour {
             // Create the Action object
             AttackAction action = new AttackAction(battle.battleId, AttackAction.ActionType.Melee, source.userId, target.userId,
                 (int) damage, timeAttackEnds, abilityInventoryIndex, wasCritical, wasBlocked, cooldownDuration, sourceApChange,
-                targetApChange, abilityData.getItemID());
+                targetApChange, abilityData.itemID);
             actions.Add(action);
 
             // Make note how long the two Battler objects need in order to execute the attack/hit animations
@@ -432,7 +454,7 @@ public class BattleManager : MonoBehaviour {
             }
          }
 
-         switch (attackAbilityData.getAbilityActionType()) {
+         switch (attackAbilityData.abilityActionType) {
             case AbilityActionType.Melee:
                actionType = BattleActionType.Attack;
                break;
@@ -444,7 +466,7 @@ public class BattleManager : MonoBehaviour {
                break;
          }
 
-      } else if (abilityData.getAbilityType() == AbilityType.BuffDebuff) {
+      } else if (abilityData.abilityType == AbilityType.BuffDebuff) {
          BuffAbilityData buffAbilityData = abilityData as BuffAbilityData;
 
          // TODO ZERONEV: Fill the buff and debuff information here now, when finished with the new battler data
@@ -587,7 +609,7 @@ public class BattleManager : MonoBehaviour {
       // Process monster type reward
       foreach (BattlerBehaviour battler in defeatedBattlers) {
          if (battler.isMonster()) {
-            int battlerEnemyID = battler.getBattlerData().getBattlerId();
+            int battlerEnemyID = (int)battler.getBattlerData().enemyType;
             foreach (BattlerBehaviour participant in winningBattlers) {
                if (!participant.isMonster()) {
                   Vector3 chestPos = BodyManager.self.getBody(participant.player.userId).transform.position;
@@ -601,7 +623,7 @@ public class BattleManager : MonoBehaviour {
       this.endBattle(battle, teamThatWon);
    }
 
-   public BattlerData[] getAllBattlersData () { return _allBattlersData; }
+   public List<BattlerData> getAllBattlersData () { return _allBattlersData; }
 
    #region Private Variables
 
@@ -625,7 +647,7 @@ public class BattleManager : MonoBehaviour {
 
    // All battlers in the game
 #pragma warning disable
-   [SerializeField] private BattlerData[] _allBattlersData;
+   [SerializeField] private List<BattlerData> _allBattlersData;
 #pragma warning restore
 
    #endregion

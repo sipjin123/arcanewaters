@@ -145,7 +145,13 @@ public class EffectManager : MonoBehaviour {
       Weapon.Type attackerWeapon = attacker.weaponManager.weaponType;
 
       AttackAbilityData ability = attacker.getAttackAbilities()[action.abilityInventoryIndex];
-      CombatEffect effectInstance = self.createCombatEffect(ability.getHitEffect(), targetPos, ability.getFXTimePerFrame());
+
+      List<Sprite> hitSprites = new List<Sprite>();
+      foreach (string path in ability.hitSpritesPath) {
+         hitSprites.Add(ImageManager.getSprite(path));
+      }
+
+      CombatEffect effectInstance = self.createCombatEffect(hitSprites.ToArray(), targetPos, ability.FXTimePerFrame);
 
       if (effectInstance == null) {
          Debug.LogWarning("Ability didn't have any effect sprites assigned");
@@ -173,7 +179,13 @@ public class EffectManager : MonoBehaviour {
    // Used for creating a VFX for casting a magic spell
    public static void playCastAbilityVFX (BattlerBehaviour source, AttackAction action, Vector2 targetPos) {
       AttackAbilityData ability = source.getAttackAbilities()[action.abilityInventoryIndex];
-      CombatEffect effectInstance = self.createCombatEffect(ability.getCastEffect(), targetPos, ability.getFXTimePerFrame());
+
+      List<Sprite> castSprites = new List<Sprite>();
+      foreach (string path in ability.castSpritesPath) {
+         castSprites.Add(ImageManager.getSprite(path));
+      }
+      
+      CombatEffect effectInstance = self.createCombatEffect(castSprites.ToArray(), targetPos, ability.FXTimePerFrame);
 
       if (effectInstance == null) {
          Debug.LogWarning("Ability didn't have any effect sprites assigned");

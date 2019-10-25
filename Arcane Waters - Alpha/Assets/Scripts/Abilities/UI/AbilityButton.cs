@@ -60,21 +60,21 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
             switch (abilityIndex) {
                case 0:
-                  stanceSprite = AbilityInventory.self.balancedStance.getItemIcon();
-                  abilityCooldown = (int)AbilityInventory.self.balancedStance.getCooldown();
-                  stanceDescription = AbilityInventory.self.balancedStance.getDescription();
+                  stanceSprite = ImageManager.getSprite(AbilityInventory.self.balancedStance.itemIconPath);
+                  abilityCooldown = (int)AbilityInventory.self.balancedStance.abilityCooldown;
+                  stanceDescription = AbilityInventory.self.balancedStance.itemDescription;
                   break;
 
                case 1:
-                  stanceSprite = AbilityInventory.self.offenseStance.getItemIcon();
-                  abilityCooldown = (int) AbilityInventory.self.offenseStance.getCooldown();
-                  stanceDescription = AbilityInventory.self.offenseStance.getDescription();
+                  stanceSprite = ImageManager.getSprite(AbilityInventory.self.offenseStance.itemIconPath);
+                  abilityCooldown = (int) AbilityInventory.self.offenseStance.abilityCooldown;
+                  stanceDescription = AbilityInventory.self.offenseStance.itemDescription;
                   break;
 
                case 2:
-                  stanceSprite = AbilityInventory.self.defenseStance.getItemIcon();
-                  abilityCooldown = (int) AbilityInventory.self.defenseStance.getCooldown();
-                  stanceDescription = AbilityInventory.self.defenseStance.getDescription();
+                  stanceSprite = ImageManager.getSprite(AbilityInventory.self.defenseStance.itemIconPath);
+                  abilityCooldown = (int) AbilityInventory.self.defenseStance.abilityCooldown;
+                  stanceDescription = AbilityInventory.self.defenseStance.itemDescription;
                   break;
             }
 

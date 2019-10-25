@@ -50,7 +50,7 @@ public class BattleBars : MonoBehaviour {
 
       // Set our text values
       if (_battler.battlerType == BattlerType.AIEnemyControlled) {
-         nameText.text = _battler.battlerMainData.getEnemyName();
+         nameText.text = _battler.battlerMainData.enemyName;
       } else {
          nameText.text = _battler.player.entityName + "";
       }

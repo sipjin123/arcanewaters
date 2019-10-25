@@ -13,18 +13,29 @@ public class AbilityManager : MonoBehaviour
 
    // ZERONEV-COMMENT: For now I will just add them manually into the inspector, all the abilities in-game.
    // I will load them later on from the resource folder and not make them public like this, it can be unsafe in the long run.
-   public BasicAbilityData[] allGameAbilities;
+   public List<BasicAbilityData> allGameAbilities = new List<BasicAbilityData>();
 
    #endregion
 
-   void Start () {
+   void Awake () {
       self = this;
 
       // TODO ZERONEV: Instead of this method below, it would be better to grab all the files from the abilities folder.
       // This way we do not miss any ability and we have them in memory, in case we want to adjust an ability at runtime,
       // change an ability for an enemy at runtime, etc, and we can do that by grabbing their name or their ID. or even just an element.
-
       initAllGameAbilities();
+   }
+
+   public void receiveAbilitiesFromServer(BasicAbilityData[] abilityList) {
+      allGameAbilities = new List<BasicAbilityData>(abilityList);
+   }
+
+   public void addNewAbility(BasicAbilityData ability) {
+      if (allGameAbilities.Exists(_=>_.itemName == ability.itemName)) {
+         Debug.LogWarning("Duplicated ability name: "+ability.itemName);
+         return;
+      }
+      allGameAbilities.Add(ability);
    }
 
    public void execute (BattleAction[] actions) {
@@ -102,10 +113,10 @@ public class AbilityManager : MonoBehaviour
    // Prepares all game abilities
    private void initAllGameAbilities () {
       foreach (BasicAbilityData ability in allGameAbilities) {
-         if (ability.getAbilityType() == AbilityType.Standard) {
+         if (ability.abilityType == AbilityType.Standard) {
             AttackAbilityData newInstance = AttackAbilityData.CreateInstance((AttackAbilityData) ability);
             _allAbilities.Add(newInstance);
-         } else if (ability.getAbilityType() == AbilityType.BuffDebuff) {
+         } else if (ability.abilityType == AbilityType.BuffDebuff) {
             BuffAbilityData newInstance = BuffAbilityData.CreateInstance((BuffAbilityData) ability);
             _allAbilities.Add(newInstance);
          }
@@ -119,7 +130,7 @@ public class AbilityManager : MonoBehaviour
    /// <returns></returns>
    public static BasicAbilityData getAbility (int abilityGlobalID) {
       for (int i = 0; i < self._allAbilities.Count; i++) {
-         if (self._allAbilities[i].getItemID().Equals(abilityGlobalID)) {
+         if (self._allAbilities[i].itemID.Equals(abilityGlobalID)) {
             return self._allAbilities[i];
          }
       }
