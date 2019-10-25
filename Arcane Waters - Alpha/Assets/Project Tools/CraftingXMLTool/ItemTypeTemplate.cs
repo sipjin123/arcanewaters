@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using UnityEngine.Events;
 
 public class ItemTypeTemplate : MonoBehaviour {
    #region Public Variables
@@ -19,9 +20,13 @@ public class ItemTypeTemplate : MonoBehaviour {
    // Holds the icon of the item
    public Image spriteIcon;
 
+   // Button for previewing the item
+   public Button previewButton;
+
    #endregion
 
+
    #region Private Variables
-      
+
    #endregion
 }

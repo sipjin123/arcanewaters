@@ -18,7 +18,7 @@ public class MonsterToolManager : MonoBehaviour {
    }
 
    public void loadAllDataFiles () {
-      monsterDataList = new Dictionary<string, MonsterRawData>();
+      monsterDataList = new Dictionary<string, BattlerData>();
       // Build the path to the folder containing the Monster data XML files
       string directoryPath = Path.Combine(Application.dataPath, "Data", "MonsterStats");
 
@@ -34,16 +34,16 @@ public class MonsterToolManager : MonoBehaviour {
             string filePath = Path.Combine(directoryPath, fileNames[i]);
 
             // Read and deserialize the file
-            MonsterRawData monsterData = ToolsUtil.xmlLoad<MonsterRawData>(filePath);
+            BattlerData monsterData = ToolsUtil.xmlLoad<BattlerData>(filePath);
 
             // Save the Monster data in the memory cache
             monsterDataList.Add(monsterData.enemyName, monsterData);
          }
-         monsterToolScreen.updatePanelWithMonsterRawData(monsterDataList);
+         monsterToolScreen.updatePanelWithBattlerData(monsterDataList);
       }
    }
 
-   public void deleteMonsterDataFile (MonsterRawData data) {
+   public void deleteMonsterDataFile (BattlerData data) {
       // Build the file name
       string fileName = data.enemyName;
 
@@ -58,7 +58,7 @@ public class MonsterToolManager : MonoBehaviour {
       return monsterDataList.ContainsKey(nameID);
    }
    
-   public void saveDataToFile (MonsterRawData data) {
+   public void saveDataToFile (BattlerData data) {
       string directoryPath = Path.Combine(Application.dataPath, "Data", "MonsterStats");
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
@@ -76,7 +76,7 @@ public class MonsterToolManager : MonoBehaviour {
 
    #region Private Variables
 
-   private Dictionary<string, MonsterRawData> monsterDataList = new Dictionary<string, MonsterRawData>();
+   private Dictionary<string, BattlerData> monsterDataList = new Dictionary<string, BattlerData>();
 
    #endregion
 }

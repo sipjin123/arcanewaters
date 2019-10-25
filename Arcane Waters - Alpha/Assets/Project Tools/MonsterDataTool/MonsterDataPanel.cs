@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 using System.Linq;
+using static MonsterSkillTemplate;
 
 public class MonsterDataPanel : MonoBehaviour {
    #region Public Variables
@@ -22,13 +23,13 @@ public class MonsterDataPanel : MonoBehaviour {
    public Button saveExitButton;
 
    // Button tabs for categorized input fields
-   public Button toggleMainStatsButton, toggleAttackButton, toggleDefenseButton, toggleLootsButton;
+   public Button toggleMainStatsButton, toggleAttackButton, toggleDefenseButton, toggleLootsButton, toggleSkillsButton;
 
    // Content holders
-   public GameObject mainStatsContent, attackContent, defenseContent, dropDownContent;
+   public GameObject mainStatsContent, attackContent, defenseContent, dropDownContent, skillContent;
 
    // Dropdown indicator objects
-   public GameObject dropDownIndicatorMain, dropDownIndicatorAttack, dropDownIndicatorDefense, dropDownLoots;
+   public GameObject dropDownIndicatorMain, dropDownIndicatorAttack, dropDownIndicatorDefense, dropDownLoots, dropDownSkills;
 
    // Holds the item type selection template
    public ItemTypeTemplate monsterTypeTemplate;
@@ -48,9 +49,6 @@ public class MonsterDataPanel : MonoBehaviour {
    // Caches the initial type incase it is changed
    public string startingName;
 
-   // The cache list for avatar icon selection
-   public Dictionary<string, Sprite> iconSpriteList = new Dictionary<string, Sprite>();
-
    // The cached icon path
    public string avatarIconPath;
 
@@ -63,16 +61,22 @@ public class MonsterDataPanel : MonoBehaviour {
    // The button that opens the avatar selection
    public Button openAvatarSelectionButton;
 
+   // Previews the sprite selection
+   public Image previewSelectionIcon;
+
+   // The cache list for icon selection
+   public Dictionary<string, Sprite> iconSpriteList = new Dictionary<string, Sprite>();
+   public Dictionary<string, Sprite> castIconSpriteList = new Dictionary<string, Sprite>();
+   public Dictionary<string, Sprite> hitIconSpriteList = new Dictionary<string, Sprite>();
+
    // Item Loot Variables
    public GameObject lootSelectionPanel;
    public GameObject lootTemplateParent;
    public MonsterLootRow lootTemplate, currentLootTemplate;
    public List<MonsterLootRow> monsterLootList = new List<MonsterLootRow>();
-
    public GameObject itemCategoryParent, itemTypeParent;
    public ItemCategoryTemplate itemCategoryTemplate;
    public ItemTypeTemplate itemTypeTemplate;
-
    public Button confirmItemButton, addLootButton, closeItemPanelButton;
    public Item.Category selectedCategory;
    public int itemTypeIDSelected;
@@ -80,12 +84,23 @@ public class MonsterDataPanel : MonoBehaviour {
    public InputField rewardItemMin, rewardItemMax;
    public Sprite emptySprite;
 
-   // Skill Variables
-   public Button addSkillTemplateButton;
+   // Skills Variables
+   public Button addATKSkillButton, addDEFSkillButton;
    public Transform skillTemplateParent;
    public GameObject skillTemplatePrefab;
-   BattleItemData tempItemDAta;
+   List<MonsterSkillTemplate> monsterSkillTemplateList = new List<MonsterSkillTemplate>();
 
+   // Audio Related updates
+   public Text jumpClipPath;
+   public Text deathClipPath;
+   public Button selectJumpAudioButton;
+   public Button selectDeathAudioButton;
+   public Button playJumpAudioButton;
+   public Button playDeathAudioButton;
+   public AudioClip jumpAudio, deathAudio;
+
+   // Audio source to play the sample clips
+   public AudioSource audioSource;
 
    #endregion
 
@@ -94,7 +109,8 @@ public class MonsterDataPanel : MonoBehaviour {
          monsterToolManager.loadAllDataFiles();
          gameObject.SetActive(false);
       });
-      addSkillTemplateButton.onClick.AddListener(() => addSkillTemplate());
+      addATKSkillButton.onClick.AddListener(() => addSkillTemplate(AbilityType.Standard));
+      addDEFSkillButton.onClick.AddListener(() => addSkillTemplate(AbilityType.BuffDebuff));
       addLootButton.onClick.AddListener(() => addLootTemplate());
       toggleLootsButton.onClick.AddListener(() => toggleLoots());
       closeItemPanelButton.onClick.AddListener(() => lootSelectionPanel.SetActive(false));
@@ -105,11 +121,27 @@ public class MonsterDataPanel : MonoBehaviour {
       toggleMainStatsButton.onClick.AddListener(() => toggleMainStats());
       toggleAttackButton.onClick.AddListener(() => toggleAttackStats());
       toggleDefenseButton.onClick.AddListener(() => toggleDefenseStats());
+      toggleSkillsButton.onClick.AddListener(() => toggleSkills());
+
+      selectJumpAudioButton.onClick.AddListener(() => toggleAudioSelection(PathType.JumpSfx));
+      selectDeathAudioButton.onClick.AddListener(() => toggleAudioSelection(PathType.DeathSfx));
+      playJumpAudioButton.onClick.AddListener(() => {
+         if (jumpAudio != null) {
+            audioSource.clip = jumpAudio;
+            audioSource.Play();
+         }
+      });
+      playDeathAudioButton.onClick.AddListener(() => {
+         if (deathAudio != null) {
+            audioSource.clip = deathAudio;
+            audioSource.Play();
+         }
+      });
    }
 
-   public void loadData(MonsterRawData newBattleData) {
+   public void loadData(BattlerData newBattleData) {
       startingName = newBattleData.enemyName;
-      monsterTypeText.text = ((Enemy.Type) newBattleData.battlerID).ToString();
+      monsterTypeText.text = ((Enemy.Type) newBattleData.enemyType).ToString();
 
       try {
          avatarIcon.sprite = ImageManager.getSprite(newBattleData.imagePath);
@@ -145,15 +177,53 @@ public class MonsterDataPanel : MonoBehaviour {
       _preContactLength.text = newBattleData.preContactLength.ToString();
       _preMagicLength.text = newBattleData.preMagicLength.ToString();
 
+      deathClipPath.text = newBattleData.deathSoundPath;
+      jumpClipPath.text = newBattleData.attackJumpSoundPath;
+      jumpAudio = AudioClipManager.self.getAudioClipData(newBattleData.attackJumpSoundPath).audioClip;
+      deathAudio = AudioClipManager.self.getAudioClipData(newBattleData.deathSoundPath).audioClip;
+
       _name.text = newBattleData.enemyName;
 
       loadLootTemplates(newBattleData);
+      loadSkillTemplates(newBattleData);
    }
 
-   private MonsterRawData getMonsterRawData () {
-      MonsterRawData newBattData = new MonsterRawData();
+   private void toggleAudioSelection (PathType pathType) {
+      selectionPanel.SetActive(true);
+      monsterTypeParent.DestroyChildren();
 
-      newBattData.battlerID = (Enemy.Type) Enum.Parse(typeof(Enemy.Type), monsterTypeText.text);
+      foreach (AudioClipManager.AudioClipData sourceClip in AudioClipManager.self.audioDataList) {
+         GameObject iconTempObj = Instantiate(monsterTypeTemplate.gameObject, monsterTypeParent.transform);
+         ItemTypeTemplate iconTemp = iconTempObj.GetComponent<ItemTypeTemplate>();
+         iconTemp.itemTypeText.text = sourceClip.audioName;
+
+         iconTemp.previewButton.onClick.AddListener(() => {
+            if (sourceClip.audioClip != null) {
+               audioSource.clip = sourceClip.audioClip;
+               audioSource.Play();
+            }
+         });
+
+         iconTemp.selectButton.onClick.AddListener(() => {
+            switch (pathType) {
+               case PathType.DeathSfx:
+                  deathClipPath.text = sourceClip.audioPath;
+                  deathAudio = sourceClip.audioClip;
+                  break;
+               case PathType.JumpSfx:
+                  jumpClipPath.text = sourceClip.audioPath;
+                  jumpAudio = sourceClip.audioClip;
+                  break;
+            }
+            closeAvatarSelectionButton.onClick.Invoke();
+         });
+      }
+   }
+
+   private BattlerData getBattlerData () {
+      BattlerData newBattData = new BattlerData();
+
+      newBattData.enemyType = (Enemy.Type) Enum.Parse(typeof(Enemy.Type), monsterTypeText.text);
       newBattData.imagePath = avatarIconPath;
 
       newBattData.baseHealth = int.Parse(_baseHealth.text);
@@ -165,12 +235,14 @@ public class MonsterDataPanel : MonoBehaviour {
       newBattData.defensePerLevel = int.Parse(_defensePerLevel.text);
       newBattData.healthPerlevel = int.Parse(_healthPerlevel.text);
 
+      newBattData.physicalDefenseMultiplier = int.Parse(_physicalDefenseMultiplier.text);
       newBattData.allDefenseMultiplier = int.Parse(_allDefenseMultiplier.text);
       newBattData.fireDefenseMultiplier = int.Parse(_fireDefenseMultiplier.text);
       newBattData.earthDefenseMultiplier = int.Parse(_earthDefenseMultiplier.text);
       newBattData.waterDefenseMultiplier = int.Parse(_waterDefenseMultiplier.text);
       newBattData.airDefenseMultiplier = int.Parse(_airDefenseMultiplier.text);
 
+      newBattData.physicalAttackMultiplier = int.Parse(_physicalAttackMultiplier.text);
       newBattData.allAttackMultiplier = int.Parse(_allAttackMultiplier.text);
       newBattData.fireAttackMultiplier = int.Parse(_fireAttackMultiplier.text);
       newBattData.earthAttackMultiplier = int.Parse(_earthAttackMultiplier.text);
@@ -180,17 +252,36 @@ public class MonsterDataPanel : MonoBehaviour {
       newBattData.preContactLength = int.Parse(_preContactLength.text);
       newBattData.preMagicLength = int.Parse(_preMagicLength.text);
 
+      newBattData.deathSoundPath = deathClipPath.text;
+      newBattData.attackJumpSoundPath = jumpClipPath.text;
+
       newBattData.enemyName = _name.text;
 
-      //newBattData.tester = tempItemDAta;
+      List<BasicAbilityData> basicAbilityList = new List<BasicAbilityData>();
+      List<AttackAbilityData> attackAbilityList = new List<AttackAbilityData>();
+      List<BuffAbilityData> buffAbilityList = new List<BuffAbilityData>();
+      foreach (MonsterSkillTemplate skillTemplate in monsterSkillTemplateList) {
+         if(skillTemplate.abilityTypeEnum == AbilityType.Standard) {
+            attackAbilityList.Add(skillTemplate.getAttackData());
+            basicAbilityList.Add(skillTemplate.getAttackData());
+         } else if (skillTemplate.abilityTypeEnum == AbilityType.BuffDebuff) {
+            buffAbilityList.Add(skillTemplate.getBuffData());
+            basicAbilityList.Add(skillTemplate.getBuffData());
+         }
+      }
+      newBattData.battlerAbilities = new AbilityDataRecord {
+         BasicAbilityDataList = basicAbilityList.ToArray(),
+         AttackAbilityDataList = attackAbilityList.ToArray(),
+         BuffAbilityDataList = buffAbilityList.ToArray()
+      };
 
       return newBattData;
    }
 
    public void saveData() {
-      MonsterRawData rawData = getMonsterRawData();
+      BattlerData rawData = getBattlerData();
       if (rawData.enemyName != startingName) {
-         deleteOldData(new MonsterRawData { enemyName = startingName });
+         deleteOldData(new BattlerData { enemyName = startingName });
       }
 
       rawData.battlerLootData = getRawLootData();
@@ -218,7 +309,7 @@ public class MonsterDataPanel : MonoBehaviour {
       return rawData;
    }
 
-   private void deleteOldData(MonsterRawData rawData) {
+   private void deleteOldData(BattlerData rawData) {
       monsterToolManager.deleteMonsterDataFile(rawData);
    }
 
@@ -228,11 +319,15 @@ public class MonsterDataPanel : MonoBehaviour {
       selectionPanel.SetActive(true);
       monsterTypeParent.DestroyChildren();
 
+      previewSelectionIcon.sprite = emptySprite;
       foreach (KeyValuePair<string, Sprite> sourceSprite in iconSpriteList) {
          GameObject iconTempObj = Instantiate(monsterTypeTemplate.gameObject, monsterTypeParent.transform);
          ItemTypeTemplate iconTemp = iconTempObj.GetComponent<ItemTypeTemplate>();
          iconTemp.spriteIcon.sprite = sourceSprite.Value;
          iconTemp.itemTypeText.text = sourceSprite.Value.name;
+         iconTemp.previewButton.onClick.AddListener(() => {
+            previewSelectionIcon.sprite = sourceSprite.Value;
+         });
          iconTemp.selectButton.onClick.AddListener(() => {
             avatarIconPath = sourceSprite.Key;
             avatarIcon.sprite = sourceSprite.Value;
@@ -279,6 +374,11 @@ public class MonsterDataPanel : MonoBehaviour {
       dropDownIndicatorDefense.SetActive(!defenseContent.activeSelf);
    }
 
+   private void toggleSkills () {
+      skillContent.SetActive(!skillContent.activeSelf);
+      dropDownSkills.SetActive(!skillContent.activeSelf);
+   }
+
    #endregion
 
    #region Loots Feature
@@ -293,7 +393,7 @@ public class MonsterDataPanel : MonoBehaviour {
       monsterLootList.Add(row);
    }
 
-   public void loadLootTemplates(MonsterRawData rawData) {
+   public void loadLootTemplates(BattlerData rawData) {
       lootTemplateParent.DestroyChildren();
       monsterLootList = new List<MonsterLootRow>();
 
@@ -387,14 +487,76 @@ public class MonsterDataPanel : MonoBehaviour {
 
    #region Skill Feature
 
-   private void addSkillTemplate() {
+   private void loadSkillTemplates(BattlerData battlerData) {
       skillTemplateParent.gameObject.DestroyChildren();
-      // Basic data set
-      BattleItemData basicData = BattleItemData.CreateInstance(1, "AW", "WE", Element.Air, null,
-         null, BattleItemType.Ability, null, 3);
-      tempItemDAta = basicData;
+      monsterSkillTemplateList = new List<MonsterSkillTemplate>();
+      AbilityDataRecord dataRecord = battlerData.battlerAbilities;
 
+      if (dataRecord != null) {
+         if (dataRecord.AttackAbilityDataList != null) {
+            foreach (AttackAbilityData ability in dataRecord.AttackAbilityDataList) {
+               BattleItemData battleItemData = BattleItemData.CreateInstance(ability.itemID, ability.itemName, ability.itemDescription, ability.elementType, ability.hitAudioClipPath, ability.hitSpritesPath, ability.battleItemType, ability.classRequirement, ability.itemIconPath, ability.levelRequirement);
+               BasicAbilityData basicData = BasicAbilityData.CreateInstance(battleItemData, ability.abilityCost, ability.castSpritesPath, ability.castAudioClipPath, ability.allowedStances, ability.abilityType, ability.abilityCooldown, ability.apChange, ability.FXTimePerFrame);
+               AttackAbilityData attackAbility = AttackAbilityData.CreateInstance(basicData, ability.hasKnockup, ability.baseDamage, ability.hasShake, ability.abilityActionType, ability.canBeBlocked);
+               finalizeAttackTemplate(attackAbility);
+            }
+         }
+         if (dataRecord.BuffAbilityDataList != null) {
+            foreach (BuffAbilityData ability in dataRecord.BuffAbilityDataList) {
+               BattleItemData battleItemData = BattleItemData.CreateInstance(ability.itemID, ability.itemName, ability.itemDescription, ability.elementType, ability.hitAudioClipPath, ability.hitSpritesPath, ability.battleItemType, ability.classRequirement, ability.itemIconPath, ability.levelRequirement);
+               BasicAbilityData basicData = BasicAbilityData.CreateInstance(battleItemData, ability.abilityCost, ability.castSpritesPath, ability.castAudioClipPath, ability.allowedStances, ability.abilityType, ability.abilityCooldown, ability.apChange, ability.FXTimePerFrame);
+               BuffAbilityData buffAbility = BuffAbilityData.CreateInstance(basicData, ability.duration, ability.buffType, ability.buffActionType, ability.iconPath, ability.value);
+               finalizeBuffTemplate(buffAbility);
+            }
+         }
+      }
+   }
+
+   private void addSkillTemplate(AbilityType type) {
+      switch(type) {
+         case AbilityType.Standard: {
+               // Basic data set
+               BattleItemData battleItemData = BattleItemData.CreateInstance(1, "Name", "Desc", Element.ALL, null, null, BattleItemType.UNDEFINED, Weapon.Class.Any, String.Empty, 1);
+               BasicAbilityData basicData = BasicAbilityData.CreateInstance(battleItemData, 1, null, "", new BattlerBehaviour.Stance[] { }, AbilityType.Stance, 1, 1, 1);
+               AttackAbilityData attackData = AttackAbilityData.CreateInstance(basicData, false, 0, false, AbilityActionType.UNDEFINED, false);
+               finalizeAttackTemplate(attackData);
+            }
+            break;
+         case AbilityType.BuffDebuff: {
+               // Basic data set
+               BattleItemData battleItemData = BattleItemData.CreateInstance(1, "Name", "Desc", Element.ALL, null, null, BattleItemType.UNDEFINED, Weapon.Class.Any, String.Empty, 1);
+               BasicAbilityData basicData = BasicAbilityData.CreateInstance(battleItemData, 1, null, "", new BattlerBehaviour.Stance[] { }, AbilityType.Stance, 1, 1, 1);
+               BuffAbilityData buffData = BuffAbilityData.CreateInstance(basicData, 1, BuffType.UNDEFINED, BuffActionType.UNDEFINED, string.Empty, 0);
+               finalizeBuffTemplate(buffData);
+            }
+            break;
+      }
+   }
+
+   private void finalizeAttackTemplate (AttackAbilityData attackAbility) {
       GameObject template = Instantiate(skillTemplatePrefab, skillTemplateParent);
+      MonsterSkillTemplate skillTemplate = template.GetComponent<MonsterSkillTemplate>();
+      skillTemplate.deleteSkillButton.onClick.AddListener(() => {
+         MonsterSkillTemplate monsterTemp = monsterSkillTemplateList.Find(_ => _ == skillTemplate);
+         monsterSkillTemplateList.Remove(monsterTemp);
+         Destroy(template);
+      });
+      skillTemplate.abilityTypeEnum = AbilityType.Standard;
+      skillTemplate.loadAttackData(attackAbility);
+      monsterSkillTemplateList.Add(skillTemplate);
+   }
+
+   private void finalizeBuffTemplate (BuffAbilityData buffAbility) {
+      GameObject template = Instantiate(skillTemplatePrefab, skillTemplateParent);
+      MonsterSkillTemplate skillTemplate = template.GetComponent<MonsterSkillTemplate>();
+      skillTemplate.deleteSkillButton.onClick.AddListener(() => {
+         MonsterSkillTemplate monsterTemp = monsterSkillTemplateList.Find(_ => _ == skillTemplate);
+         monsterSkillTemplateList.Remove(monsterTemp);
+         Destroy(template);
+      });
+      skillTemplate.abilityTypeEnum = AbilityType.BuffDebuff;
+      skillTemplate.loadBuffData(buffAbility);
+      monsterSkillTemplateList.Add(skillTemplate);
    }
 
    #endregion

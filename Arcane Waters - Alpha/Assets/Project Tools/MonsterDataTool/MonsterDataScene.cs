@@ -33,7 +33,7 @@ public class MonsterDataScene : MonoBehaviour {
 
    private void Awake () {
       monsterPanel.gameObject.SetActive(false);
-      createTemplateButton.onClick.AddListener(() => createNewTemplate(new MonsterRawData()));
+      createTemplateButton.onClick.AddListener(() => createNewTemplate(new BattlerData()));
 
       if (!hasBeenInitialized) {
          hasBeenInitialized = true;
@@ -44,11 +44,28 @@ public class MonsterDataScene : MonoBehaviour {
             Sprite sourceSprite = imgData.sprite;
             monsterPanel.iconSpriteList.Add(imgData.imagePath, sourceSprite);
          }
+
+         string hitSpritePath = "Assets/Sprites/Effects/";
+         List<ImageManager.ImageData> hitSpriteIconFiles = ImageManager.getSpritesInDirectory(hitSpritePath);
+
+         foreach (ImageManager.ImageData imgData in hitSpriteIconFiles) {
+            Sprite sourceSprite = imgData.sprite;
+            monsterPanel.hitIconSpriteList.Add(imgData.imagePath, sourceSprite);
+         }
+
+         string castSpritePath = "Assets/Sprites/Effects/";
+         List<ImageManager.ImageData> castSpriteIconFiles = ImageManager.getSpritesInDirectory(castSpritePath);
+
+         foreach (ImageManager.ImageData imgData in castSpriteIconFiles) {
+            Sprite sourceSprite = imgData.sprite;
+            monsterPanel.castIconSpriteList.Add(imgData.imagePath, sourceSprite);
+         }
       }
    }
 
-   private void createNewTemplate (MonsterRawData monsterData) {
+   private void createNewTemplate (BattlerData monsterData) {
       string itemName = "Undefined";
+      monsterData.enemyType = Enemy.Type.Coralbow;
 
       if (!toolManager.ifExists(itemName)) {
          EnemyDataTemplate template = Instantiate(monsterTemplate, monsterTemplateParent);
@@ -69,12 +86,12 @@ public class MonsterDataScene : MonoBehaviour {
       toolManager.loadAllDataFiles();
    }
 
-   public void updatePanelWithMonsterRawData (Dictionary<string, MonsterRawData> _MonsterRawData) {
+   public void updatePanelWithBattlerData (Dictionary<string, BattlerData> _BattlerData) {
       // Clear all the rows
       monsterTemplateParent.gameObject.DestroyChildren();
 
       // Create a row for each monster element
-      foreach (MonsterRawData battler in _MonsterRawData.Values) {
+      foreach (BattlerData battler in _BattlerData.Values) {
          EnemyDataTemplate template = Instantiate(monsterTemplate, monsterTemplateParent);
          template.updateItemDisplay(battler);
          template.editButton.onClick.AddListener(() => {
@@ -87,7 +104,7 @@ public class MonsterDataScene : MonoBehaviour {
             Destroy(template.gameObject, .5f);
 
             Enemy.Type type = (Enemy.Type) Enum.Parse(typeof(Enemy.Type), template.nameText.text);
-            toolManager.deleteMonsterDataFile(new MonsterRawData { battlerID = type });
+            toolManager.deleteMonsterDataFile(new BattlerData { enemyType = type });
             toolManager.loadAllDataFiles();
          });
 

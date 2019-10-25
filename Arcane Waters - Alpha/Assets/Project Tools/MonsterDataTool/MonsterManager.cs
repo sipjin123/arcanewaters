@@ -17,14 +17,23 @@ public class MonsterManager : MonoBehaviour {
    public bool hasInitialized;
 
    // Holds the list of the xml translated data
-   public List<MonsterRawData> rawMonsterDataList;
+   public List<BattlerData> rawMonsterDataList;
+
+   // Direct reference to ability manage for enemy skills
+   public AbilityManager abilityManager;
+
+   // Direct reference to ability inventory for player skills
+   public AbilityInventory abilityInventory;
+
+   // Direct reference to battleManager
+   public BattleManager battleManager;
 
    #endregion
 
    public void Awake () {
       self = this;
 
-#if IS_SERVER_BUILD && !UNITY_EDITOR
+#if IS_SERVER_BUILD
       initializeCraftCache();
 #else
       monsterDataAssets = null;
@@ -32,64 +41,64 @@ public class MonsterManager : MonoBehaviour {
    }
 
    public void translateRawDataToBattlerData (Enemy.Type enemyType, BattlerData mainData) {
-      MonsterRawData rawData = rawMonsterDataList.Find(_ => _.battlerID == enemyType);
+      BattlerData rawData = rawMonsterDataList.Find(_ => _.enemyType == enemyType);
       if(rawData == null) {
          return;
       }
 
-      mainData.setEnemyName(rawData.enemyName);
-      mainData.setBaseHealth(rawData.baseHealth);
-      mainData.setBaseDefense(rawData.baseDefense);
-      mainData.setBaseDamage(rawData.baseDamage);
-      mainData.setBaseGoldReward(rawData.baseGoldReward);
-      mainData.setBaseXPReward(rawData.baseXPReward);
+      mainData.enemyName = rawData.enemyName;
+      mainData.baseHealth = rawData.baseHealth;
+      mainData.baseDefense = rawData.baseDefense;
+      mainData.baseDamage = rawData.baseDamage;
+      mainData.baseGoldReward = rawData.baseGoldReward;
+      mainData.baseXPReward = rawData.baseXPReward;
 
-      mainData.setDamagePerLevel(rawData.damagePerLevel);
-      mainData.setDefensePerLevel(rawData.defensePerLevel);
-      mainData.setHealthPerLevel(rawData.healthPerlevel);
+      mainData.damagePerLevel = rawData.damagePerLevel;
+      mainData.defensePerLevel = rawData.defensePerLevel;
+      mainData.healthPerlevel = rawData.healthPerlevel;
 
-      GenericLootData newLootData = GenericLootData.CreateInstance<GenericLootData>();
+      RawGenericLootData newLootData = new RawGenericLootData();
       newLootData.defaultLoot = rawData.battlerLootData.defaultLoot;
-      newLootData.lootList = new List<LootInfo>(rawData.battlerLootData.lootList);
+      newLootData.lootList = rawData.battlerLootData.lootList;
       newLootData.maxQuantity = rawData.battlerLootData.maxQuantity;
       newLootData.minQuantity = rawData.battlerLootData.minQuantity;
-      mainData.setLootData(newLootData);
+      mainData.battlerLootData = (newLootData);
 
-      mainData.setPhysicalDefMultiplier(rawData.physicalDefenseMultiplier);
-      mainData.setFireDefMultiplier(rawData.fireDefenseMultiplier);
-      mainData.setEarthDefMultiplier(rawData.earthDefenseMultiplier);
-      mainData.setAirDefMultiplier(rawData.airDefenseMultiplier);
-      mainData.setWaterDefMultiplier(rawData.waterDefenseMultiplier);
-      mainData.setAllDefMultiplier(rawData.allDefenseMultiplier);
+      mainData.physicalDefenseMultiplier = rawData.physicalDefenseMultiplier;
+      mainData.fireDefenseMultiplier = rawData.fireDefenseMultiplier;
+      mainData.earthDefenseMultiplier = rawData.earthDefenseMultiplier;
+      mainData.airDefenseMultiplier = rawData.airDefenseMultiplier;
+      mainData.waterDefenseMultiplier = rawData.waterDefenseMultiplier;
+      mainData.allDefenseMultiplier = rawData.allDefenseMultiplier;
 
-      mainData.setPhysicalAtkMultiplier(rawData.physicalAttackMultiplier);
-      mainData.setFireAtkMultiplier(rawData.fireAttackMultiplier);
-      mainData.setEarthAtkMultiplier(rawData.earthAttackMultiplier);
-      mainData.setAirAtkMultiplier(rawData.airAttackMultiplier);
-      mainData.setWaterAtkMultiplier(rawData.waterAttackMultiplier);
-      mainData.setAllAtkMultiplier(rawData.allAttackMultiplier);
+      mainData.physicalAttackMultiplier = rawData.physicalAttackMultiplier;
+      mainData.fireAttackMultiplier = rawData.fireAttackMultiplier;
+      mainData.earthAttackMultiplier = rawData.earthAttackMultiplier;
+      mainData.airAttackMultiplier = rawData.airAttackMultiplier;
+      mainData.waterAttackMultiplier = rawData.waterAttackMultiplier;
+      mainData.allAttackMultiplier = rawData.allAttackMultiplier;
 
-      mainData.setPreContactLength(rawData.preContactLength);
-      mainData.setPreMagicLength(rawData.preMagicLength);
+      mainData.preContactLength = rawData.preContactLength;
+      mainData.preMagicLength = rawData.preMagicLength;
    }
 
-   public MonsterRawData getMonster (Enemy.Type enemyType, int itemType) {
+   public BattlerData getMonster (Enemy.Type enemyType, int itemType) {
       return _monsterData[enemyType];
    }
 
-   public void receiveListFromServer (MonsterRawData[] rawDataList) {
+   public void receiveListFromServer (BattlerData[] rawDataList) {
       if (!hasInitialized) {
          hasInitialized = true;
-         rawMonsterDataList = new List<MonsterRawData>();
-         foreach (MonsterRawData rawData in rawDataList) {
+         rawMonsterDataList = new List<BattlerData>();
+         foreach (BattlerData rawData in rawDataList) {
             rawMonsterDataList.Add(rawData);
          }
       }
    }
 
-   public List<MonsterRawData> getAllMonsterData () {
-      List<MonsterRawData> monsterList = new List<MonsterRawData>();
-      foreach (KeyValuePair<Enemy.Type, MonsterRawData> item in _monsterData) {
+   public List<BattlerData> getAllMonsterData () {
+      List<BattlerData> monsterList = new List<BattlerData>();
+      foreach (KeyValuePair<Enemy.Type, BattlerData> item in _monsterData) {
          monsterList.Add(item.Value);
       }
       return monsterList;
@@ -101,24 +110,32 @@ public class MonsterManager : MonoBehaviour {
          // Iterate over the files
          foreach (TextAsset textAsset in monsterDataAssets) {
             // Read and deserialize the file
-            MonsterRawData monsterData = Util.xmlLoad<MonsterRawData>(textAsset);
-            Enemy.Type typeID = (Enemy.Type) monsterData.battlerID;
+            BattlerData monsterData = Util.xmlLoad<BattlerData>(textAsset);
+            Enemy.Type typeID = (Enemy.Type) monsterData.enemyType;
+
+            foreach(BasicAbilityData basicAbility in monsterData.battlerAbilities.BasicAbilityDataList) {
+               if (typeID == Enemy.Type.Humanoid) {
+                  abilityInventory.addPlayerAbility(basicAbility);
+               } else {
+                  abilityManager.addNewAbility(basicAbility);
+               }
+            }
 
             // Save the monster data in the memory cache
             if (!_monsterData.ContainsKey(typeID)) {
                _monsterData.Add(typeID, monsterData);
             }
+            battleManager.registerBattler(monsterData);
          }
 
          rawMonsterDataList = getAllMonsterData();
-         /////RewardManager.self.craftableDataList = getAllCraftableData();
       }
    }
 
-#region Private Variables
+   #region Private Variables
 
    // The cached monster data 
-   private Dictionary<Enemy.Type, MonsterRawData> _monsterData = new Dictionary<Enemy.Type, MonsterRawData>();
+   private Dictionary<Enemy.Type, BattlerData> _monsterData = new Dictionary<Enemy.Type, BattlerData>();
 
-#endregion
+   #endregion
 }
