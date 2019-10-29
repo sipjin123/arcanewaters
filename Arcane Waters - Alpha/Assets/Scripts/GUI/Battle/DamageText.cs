@@ -83,7 +83,7 @@ public class DamageText : MonoBehaviour {
    }
 
    public void customizeForAction (AttackAction action) {
-      BasicAbilityData ability = AbilityManager.getAbility(action.abilityGlobalID);
+      BasicAbilityData ability = AbilityManager.getAbility(action.abilityGlobalID, AbilityType.Undefined);
       Element element = ability.elementType;
 
       customizeForAction(element, action.wasCritical);

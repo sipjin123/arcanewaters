@@ -289,7 +289,11 @@ public class Minimap : ClientMonoBehaviour {
    }
 
    public void deleteTreasureChestIcon (GameObject chestObject) {
-      _treasureChestIcons.Find(icon => icon.target == chestObject).gameObject.SetActive(false);
+      if (_treasureChestIcons.Find(icon => icon.target == chestObject) != null) {
+         _treasureChestIcons.Find(icon => icon.target == chestObject).gameObject.SetActive(false);
+      } else {
+         Debug.LogError("Tresure Chest Icon is NULL!");
+      }
    }
 
    public void addTreasureChestIcon (GameObject chestObject) {

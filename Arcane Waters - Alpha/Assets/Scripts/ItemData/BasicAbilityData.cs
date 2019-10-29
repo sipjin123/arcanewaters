@@ -37,6 +37,8 @@ public class BasicAbilityData : BattleItemData {
 
    #endregion
 
+   public BasicAbilityData () { }
+
    // Builder scriptable object instance builder
    public static BasicAbilityData CreateInstance (BasicAbilityData datacopy) {
       // If a new value needs to be added to the abilitydata class, it needs to be included in here!
@@ -91,10 +93,6 @@ public class BasicAbilityData : BattleItemData {
 
    #region Helper Methods
 
-   public virtual object getChildInheritance () {
-      return null;
-   }
-
    public bool isReadyForUseBy (BattlerBehaviour sourceBattler) {
       if (abilityType == AbilityType.Standard) {
 
@@ -137,7 +135,15 @@ public enum AbilityType
 [Serializable]
 public class AbilityDataRecord
 {
-   public BasicAbilityData[] BasicAbilityDataList;
-   public AttackAbilityData[] AttackAbilityDataList;
-   public BuffAbilityData[] BuffAbilityDataList;
+   // Generic Skills
+   public BasicAbilityData[] basicAbilityDataList;
+   public string[] basicAbilityRawData;
+
+   // Offensive Skills
+   public AttackAbilityData[] attackAbilityDataList;
+   public string[] attackAbilityRawData;
+
+   // Support Skills
+   public BuffAbilityData[] buffAbilityDataList;
+   public string[] buffAbilityRawData;
 }

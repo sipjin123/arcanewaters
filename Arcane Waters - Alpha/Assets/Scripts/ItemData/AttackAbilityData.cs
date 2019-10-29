@@ -24,6 +24,8 @@ public class AttackAbilityData : BasicAbilityData {
 
    #endregion
 
+   public AttackAbilityData () { }
+
    // Builder scriptable object instance builder
    public static AttackAbilityData CreateInstance (AttackAbilityData datacopy) {
       // If a new value needs to be added to the abilitydata class, it needs to be included in here!
@@ -125,10 +127,6 @@ public class AttackAbilityData : BasicAbilityData {
    // By default, we'll use the Attack animation when the ability is activated
    public Anim.Type getAnimation () {
       return Anim.Type.Attack_East;
-   }
-
-   public override object getChildInheritance () {
-      return this as AttackAbilityData;
    }
 
    public bool isMelee () {

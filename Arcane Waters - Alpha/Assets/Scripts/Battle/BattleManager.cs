@@ -34,6 +34,7 @@ public class BattleManager : MonoBehaviour {
    // Self
    public static BattleManager self;
 
+   // Holds the prefab reference for each monster type
    public List<PrefabTypes> prefabTypes;
 
    #endregion
@@ -206,7 +207,7 @@ public class BattleManager : MonoBehaviour {
       NetworkServer.Destroy(battle.gameObject);
    }
 
-   public void registerBattler(BattlerData battler) {
+   public void registerBattler (BattlerData battler) {
       if(_allBattlersData.Exists(_=>_.enemyType == battler.enemyType)) {
          Debug.LogWarning("Duplicated Type: " + battler.enemyType);
          return;

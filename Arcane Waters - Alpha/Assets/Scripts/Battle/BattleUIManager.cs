@@ -390,7 +390,7 @@ public class BattleUIManager : MonoBehaviour {
    public void showDamageText (AttackAction action, BattlerBehaviour damagedBattler) {
       BattleSpot spot = damagedBattler.battleSpot;
 
-      AttackAbilityData abilityData = AbilityManager.getAbility(action.abilityGlobalID) as AttackAbilityData;
+      AttackAbilityData abilityData = AbilityManager.getAbility(action.abilityGlobalID, AbilityType.Standard) as AttackAbilityData;
 
       // Create the Text instance from the prefab
       GameObject damageTextObject = (GameObject) Instantiate(PrefabsManager.self.damageTextPrefab);

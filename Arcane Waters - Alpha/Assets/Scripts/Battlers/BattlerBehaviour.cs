@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.Events;
+using System;
+using Random = UnityEngine.Random;
 
 // Will load Battler Data and use that accordingly in all actions.
 public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
@@ -249,17 +251,16 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
    }
 
    public void mainInit () {
-      BattlerData getData = MonsterManager.self.rawMonsterDataList.Find(_ => _.enemyType == enemyType);
+      BattlerData battlerData = MonsterManager.self.monsterDataList.Find(_ => _.enemyType == enemyType);
       if (battlerType == BattlerType.PlayerControlled) {
-         getData = MonsterManager.self.rawMonsterDataList.Find(_ => _.enemyType == Enemy.Type.Humanoid);
+         battlerData = MonsterManager.self.monsterDataList.Find(_ => _.enemyType == Enemy.Type.Humanoid);
       } else {
-         if (getData == null) {
-            getData = MonsterManager.self.rawMonsterDataList.Find(_ => _.enemyType == Enemy.Type.Coralbow);
+         if (battlerData == null) {
+            battlerData = MonsterManager.self.monsterDataList.Find(_ => _.enemyType == Enemy.Type.Coralbow);
          } 
       }
 
-      battlerMainData = getData;
-      //battlerMainData.battlerAbilities = new AbilityDataRecord { BasicAbilityDataList = new BasicAbilityData[] { defaultAbilityData } };
+      battlerMainData = battlerData;
       if (battlerMainData != null) {
          _initializedBattlerData = BattlerData.CreateInstance(battlerMainData);
       } else {
@@ -272,7 +273,7 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
          // Extra cooldown time for AI controlled battlers, so they do not attack instantly
          this.cooldownEndTime = Util.netTime() + 5f;
       } else {
-         setBattlerAbilities(new AbilityDataRecord { BasicAbilityDataList = AbilityInventory.self.playerAbilities.ToArray() });
+         setBattlerAbilities(new AbilityDataRecord { basicAbilityDataList = AbilityInventory.self.playerAbilities.ToArray() , attackAbilityDataList = battlerData.battlerAbilities.attackAbilityDataList, buffAbilityDataList = battlerData.battlerAbilities.buffAbilityDataList});
       }
    }
 
@@ -327,16 +328,19 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
       _offenseInitializedStance = BasicAbilityData.CreateInstance(AbilityInventory.self.offenseStance);
       _defensiveInitializedStance = BasicAbilityData.CreateInstance(AbilityInventory.self.defenseStance);
 
-      if (values.BasicAbilityDataList != null) {
-         foreach (BasicAbilityData item in values.BasicAbilityDataList) {
+      if (values.basicAbilityDataList != null) {
+         foreach (BasicAbilityData item in values.basicAbilityDataList) {
             switch (item.abilityType) {
                case AbilityType.Standard:
-                  AttackAbilityData atkAbilityData = AttackAbilityData.CreateInstance(item as AttackAbilityData);
+                  AttackAbilityData atkAbilityData = AttackAbilityData.CreateInstance(Array.Find<AttackAbilityData>(values.attackAbilityDataList, element => element.itemName == item.itemName));
                   _battlerAttackAbilities.Add(atkAbilityData);
                   break;
                case AbilityType.BuffDebuff:
-                  BuffAbilityData buffAbilityData = BuffAbilityData.CreateInstance(item as BuffAbilityData);
+                  BuffAbilityData buffAbilityData = BuffAbilityData.CreateInstance(Array.Find<BuffAbilityData>(values.buffAbilityDataList, element => element.itemName == item.itemName));
                   _battlerBuffAbilities.Add(buffAbilityData);
+                  break;
+               default:
+                  Debug.LogError("UNCATEGORIZED ability: " + item.itemName);
                   break;
             }
          }
@@ -492,7 +496,7 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
       // I believe we must grab the index from this battler, since this will be the one executing the attack
       AttackAbilityData attackerAbility = null;
 
-      AttackAbilityData abilityDataReference = (AttackAbilityData) AbilityManager.getAbility(battleAction.abilityGlobalID);
+      AttackAbilityData abilityDataReference = (AttackAbilityData) AbilityManager.getAbility(battleAction.abilityGlobalID, AbilityType.Standard);
       AttackAbilityData globalAbilityData = AttackAbilityData.CreateInstance(abilityDataReference);
 
       Vector2 effectPosition = new Vector2();

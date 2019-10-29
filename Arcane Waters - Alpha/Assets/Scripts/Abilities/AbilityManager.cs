@@ -13,7 +13,7 @@ public class AbilityManager : MonoBehaviour
 
    // ZERONEV-COMMENT: For now I will just add them manually into the inspector, all the abilities in-game.
    // I will load them later on from the resource folder and not make them public like this, it can be unsafe in the long run.
-   public List<BasicAbilityData> allGameAbilities = new List<BasicAbilityData>();
+   public List<BasicAbilityData> allGameAbilities { get { return _allGameAbilities; } }
 
    #endregion
 
@@ -23,19 +23,42 @@ public class AbilityManager : MonoBehaviour
       // TODO ZERONEV: Instead of this method below, it would be better to grab all the files from the abilities folder.
       // This way we do not miss any ability and we have them in memory, in case we want to adjust an ability at runtime,
       // change an ability for an enemy at runtime, etc, and we can do that by grabbing their name or their ID. or even just an element.
-      initAllGameAbilities();
-   }
-
-   public void receiveAbilitiesFromServer(BasicAbilityData[] abilityList) {
-      allGameAbilities = new List<BasicAbilityData>(abilityList);
+      init_allGameAbilities();
    }
 
    public void addNewAbility(BasicAbilityData ability) {
-      if (allGameAbilities.Exists(_=>_.itemName == ability.itemName)) {
+      if (_allGameAbilities.Exists(_=>_.itemName == ability.itemName)) {
          Debug.LogWarning("Duplicated ability name: "+ability.itemName);
          return;
       }
-      allGameAbilities.Add(ability);
+
+      if (ability.abilityType == AbilityType.Standard) {
+         AttackAbilityData newInstance = AttackAbilityData.CreateInstance((AttackAbilityData) ability);
+         _attackAbilities.Add(newInstance);
+         _allGameAbilities.Add(newInstance);
+      } else if (ability.abilityType == AbilityType.BuffDebuff) {
+         BuffAbilityData newInstance = BuffAbilityData.CreateInstance((BuffAbilityData) ability);
+         _buffAbilities.Add(newInstance);
+         _allGameAbilities.Add(newInstance);
+      }
+   }
+
+   public void addNewAbilities (BasicAbilityData[] abilities) {
+      foreach (BasicAbilityData ability in abilities) {
+         if (_allGameAbilities.Exists(_ => _.itemName == ability.itemName)) {
+            Debug.LogWarning("Duplicated ability name: " + ability.itemName);
+            return;
+         }
+         if (ability.abilityType == AbilityType.Standard) {
+            AttackAbilityData newInstance = AttackAbilityData.CreateInstance((AttackAbilityData) ability);
+            _attackAbilities.Add(newInstance);
+            _allGameAbilities.Add(newInstance);
+         } else if (ability.abilityType == AbilityType.BuffDebuff) {
+            BuffAbilityData newInstance = BuffAbilityData.CreateInstance((BuffAbilityData) ability);
+            _buffAbilities.Add(newInstance);
+            _allGameAbilities.Add(newInstance);
+         }
+      }
    }
 
    public void execute (BattleAction[] actions) {
@@ -111,14 +134,16 @@ public class AbilityManager : MonoBehaviour
    }
 
    // Prepares all game abilities
-   private void initAllGameAbilities () {
-      foreach (BasicAbilityData ability in allGameAbilities) {
+   private void init_allGameAbilities () {
+      foreach (BasicAbilityData ability in _allGameAbilities) {
          if (ability.abilityType == AbilityType.Standard) {
             AttackAbilityData newInstance = AttackAbilityData.CreateInstance((AttackAbilityData) ability);
-            _allAbilities.Add(newInstance);
+            _attackAbilities.Add(newInstance);
+            _allGameAbilities.Add(newInstance);
          } else if (ability.abilityType == AbilityType.BuffDebuff) {
             BuffAbilityData newInstance = BuffAbilityData.CreateInstance((BuffAbilityData) ability);
-            _allAbilities.Add(newInstance);
+            _buffAbilities.Add(newInstance);
+            _allGameAbilities.Add(newInstance);
          }
       }
    }
@@ -128,21 +153,34 @@ public class AbilityManager : MonoBehaviour
    /// </summary>
    /// <param name="abilityGlobalID"></param>
    /// <returns></returns>
-   public static BasicAbilityData getAbility (int abilityGlobalID) {
-      for (int i = 0; i < self._allAbilities.Count; i++) {
-         if (self._allAbilities[i].itemID.Equals(abilityGlobalID)) {
-            return self._allAbilities[i];
-         }
+   public static BasicAbilityData getAbility (int abilityGlobalID, AbilityType abilityType) {
+      BasicAbilityData returnAbility = new BasicAbilityData();
+      switch (abilityType) {
+         case AbilityType.Standard:
+            returnAbility = self._attackAbilities.Find(_ => _.itemID == abilityGlobalID);
+            return returnAbility;
+         case AbilityType.BuffDebuff:
+            returnAbility = self._buffAbilities.Find(_ => _.itemID == abilityGlobalID);
+            return returnAbility;
+         default:
+            returnAbility = self._allGameAbilities.Find(_ => _.itemID == abilityGlobalID);
+            if (returnAbility == null) {
+               Debug.LogWarning("Tried to search an unexisting item");
+            }
+            return returnAbility;
       }
-
-      Debug.LogWarning("Tried to search an unexisting item");
-      return null;
    }
 
    #region Private Variables
 
-   // A mapping of Ability Type to the Ability object
-   private List<BasicAbilityData> _allAbilities = new List<BasicAbilityData>();
+   // Stores the list of all abilities
+   private List<BasicAbilityData> _allGameAbilities = new List<BasicAbilityData>();
+
+   // Stores the list of all attack abilities
+   private List<AttackAbilityData> _attackAbilities = new List<AttackAbilityData>();
+
+   // Stores the list of all buff abilities
+   private List<BuffAbilityData> _buffAbilities = new List<BuffAbilityData>();
 
    #endregion
 }

@@ -28,8 +28,14 @@ public class AbilityInventory : MonoBehaviour{
       playerAbilities.Add(ability);
    }
 
-   public void receiveAbilitiesFromServer (BasicAbilityData[] abilityList) {
-      playerAbilities = new List<BasicAbilityData>(abilityList);
+   public void addNewAbilities (BasicAbilityData[] abilities) {
+      foreach (BasicAbilityData ability in abilities) {
+         if (playerAbilities.Exists(_ => _.itemName == ability.itemName)) {
+            Debug.LogWarning("Duplicated ability name: " + ability.itemName);
+            return;
+         }
+         playerAbilities.Add(ability);
+      }
    }
 
    #region Private Variables

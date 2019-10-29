@@ -22,6 +22,8 @@ public class BuffAbilityData : BasicAbilityData
 
    #endregion
 
+   public BuffAbilityData () { }
+
    // Builder scriptable object instance builder
    public static BuffAbilityData CreateInstance (BuffAbilityData datacopy) {
       // If a new value needs to be added to the abilitydata class, it needs to be included in here!

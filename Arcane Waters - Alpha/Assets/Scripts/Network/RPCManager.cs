@@ -17,12 +17,6 @@ public class RPCManager : NetworkBehaviour {
       _player = GetComponent<NetEntity>();
    }
 
-   private void Start () {
-      if (!isServer) {
-         Cmd_ProcessMonsterData();
-      }
-   }
-
    [Command]
    public void Cmd_InteractAnimation (Anim.Type animType) {
       Rpc_InteractAnimation(animType);
@@ -1846,36 +1840,100 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   private void Cmd_ProcessAbilities () {
-      List<BasicAbilityData> abilityList = new List<BasicAbilityData>(AbilityManager.self.allGameAbilities);
-      Target_ReceiveAbilities(_player.connectionToClient, abilityList.ToArray());
+   public void Cmd_ProcessMonsterData (Enemy.Type[] enemyTypes) {
+      List<BattlerData> monsterList = new List<BattlerData>();
+
+      BattlerData humanData = MonsterManager.self.monsterDataList.Find(_ => _.enemyType == Enemy.Type.Humanoid);
+      if (humanData != null) {
+         humanData.battlerAbilities.basicAbilityRawData = Util.serialize(new List<BasicAbilityData>(humanData.battlerAbilities.basicAbilityDataList));
+         humanData.battlerAbilities.attackAbilityRawData = Util.serialize(new List<AttackAbilityData>(humanData.battlerAbilities.attackAbilityDataList));
+         humanData.battlerAbilities.buffAbilityRawData = Util.serialize(new List<BuffAbilityData>(humanData.battlerAbilities.buffAbilityDataList));
+         monsterList.Add(humanData);
+      }
+
+      foreach (Enemy.Type enemyType in enemyTypes) {
+         BattlerData battData = MonsterManager.self.monsterDataList.Find(_ => _.enemyType == enemyType);
+         if (battData != null) {
+            battData.battlerAbilities.basicAbilityRawData = Util.serialize(new List<BasicAbilityData>(battData.battlerAbilities.basicAbilityDataList));
+            battData.battlerAbilities.attackAbilityRawData = Util.serialize(new List<AttackAbilityData>(battData.battlerAbilities.attackAbilityDataList));
+            battData.battlerAbilities.buffAbilityRawData = Util.serialize(new List<BuffAbilityData>(battData.battlerAbilities.buffAbilityDataList));
+            monsterList.Add(battData);
+         }
+      }
+
+      if (monsterList.Count > 0) {
+         Target_ReceiveMonsterData(_player.connectionToClient, monsterList.ToArray());
+      }
+
+      processEnemySkills(monsterList);
+      processPlayerSkills(monsterList);
+   }
+
+   [Server]
+   private void processEnemySkills (List<BattlerData> battleData) {
+      List<BuffAbilityData> returnBuffAbilityList = new List<BuffAbilityData>();
+      List<AttackAbilityData> returnAttackAbilityList = new List<AttackAbilityData>();
+      List<BasicAbilityData> serverAbilities = new List<BasicAbilityData>(AbilityManager.self.allGameAbilities);
+
+      foreach (BattlerData data in battleData) {
+         List<AttackAbilityData> attackAbilities = new List<AttackAbilityData>(data.battlerAbilities.attackAbilityDataList);
+         foreach (AttackAbilityData abilityData in attackAbilities) {
+            if (serverAbilities.Exists(_ => _.itemName == abilityData.itemName)) {
+               returnAttackAbilityList.Add(abilityData);
+            }
+         }
+         List<BuffAbilityData> buffAbilities = new List<BuffAbilityData>(data.battlerAbilities.buffAbilityDataList);
+         foreach (BuffAbilityData abilityData in buffAbilities) {
+            if (serverAbilities.Exists(_ => _.itemName == abilityData.itemName)) {
+               returnBuffAbilityList.Add(abilityData);
+            }
+         }
+      }
+
+      Target_ReceiveAbilities(_player.connectionToClient, Util.serialize(returnAttackAbilityList), Util.serialize(returnBuffAbilityList));
+   }
+
+   [Server]
+   private void processPlayerSkills (List<BattlerData> battleData) {
+      List<BasicAbilityData> returnAbilityList = new List<BasicAbilityData>();
+      List<BasicAbilityData> serverAbilities = new List<BasicAbilityData>(AbilityInventory.self.playerAbilities);
+
+      foreach (BattlerData data in battleData) {
+         List<BasicAbilityData> battlerAbilities = new List<BasicAbilityData>(data.battlerAbilities.basicAbilityDataList);
+         foreach(BasicAbilityData abilityData in battlerAbilities) {
+            if (serverAbilities.Exists(_=>_.itemName == abilityData.itemName)) {
+               returnAbilityList.Add(abilityData);
+            }
+         }
+      }
+
+      Target_ReceivePlayerAbilities(_player.connectionToClient, Util.serialize(returnAbilityList));
    }
 
    [TargetRpc]
-   public void Target_ReceiveAbilities (NetworkConnection connection, BasicAbilityData[] rawDataList) {
-      AbilityManager.self.receiveAbilitiesFromServer(rawDataList);
-   }
+   public void Target_ReceiveAbilities (NetworkConnection connection, string[] rawAttackAbilities, string[] rawDebuffAbilities) {
+      List<AttackAbilityData> attackAbilityDataList = Util.unserialize<AttackAbilityData>(rawAttackAbilities);
+      List<BuffAbilityData> buffAbilityDataList = Util.unserialize<BuffAbilityData>(rawDebuffAbilities);
 
-   [Command]
-   private void Cmd_ProcessPlayerAbilities () {
-      List<BasicAbilityData> abilityList = new List<BasicAbilityData>(AbilityInventory.self.playerAbilities);
-      Target_ReceivePlayerAbilities(_player.connectionToClient, abilityList.ToArray());
-   }
-
-   [TargetRpc]
-   public void Target_ReceivePlayerAbilities (NetworkConnection connection, BasicAbilityData[] rawDataList) {
-      AbilityInventory.self.receiveAbilitiesFromServer(rawDataList);
-   }
-
-   [Command]
-   private void Cmd_ProcessMonsterData () {
-      List<BattlerData> monsterList = MonsterManager.self.getAllMonsterData();
-      Target_ReceiveMonsterData(_player.connectionToClient, monsterList.ToArray());
+      AbilityManager.self.addNewAbilities(attackAbilityDataList.ToArray());
+      AbilityManager.self.addNewAbilities(buffAbilityDataList.ToArray());
    }
 
    [TargetRpc]
-   public void Target_ReceiveMonsterData (NetworkConnection connection, BattlerData[] rawDataList) {
-      MonsterManager.self.receiveListFromServer(rawDataList);
+   public void Target_ReceivePlayerAbilities (NetworkConnection connection, string[] rawDataList) {
+      List<BasicAbilityData> abilityDataList = Util.unserialize<BasicAbilityData>(rawDataList);
+      AbilityInventory.self.addNewAbilities(abilityDataList.ToArray());
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveMonsterData (NetworkConnection connection, BattlerData[] dataList) {
+      // Translates JSON Raw data into ability data for each monster
+      foreach(BattlerData battlerData in dataList) {
+         battlerData.battlerAbilities.basicAbilityDataList = Util.unserialize<BasicAbilityData>(battlerData.battlerAbilities.basicAbilityRawData).ToArray();
+         battlerData.battlerAbilities.attackAbilityDataList = Util.unserialize<AttackAbilityData>(battlerData.battlerAbilities.attackAbilityRawData).ToArray();
+         battlerData.battlerAbilities.buffAbilityDataList = Util.unserialize<BuffAbilityData>(battlerData.battlerAbilities.buffAbilityRawData).ToArray();
+      }
+      MonsterManager.self.receiveListFromServer(dataList);
    }
 
    [Command]
