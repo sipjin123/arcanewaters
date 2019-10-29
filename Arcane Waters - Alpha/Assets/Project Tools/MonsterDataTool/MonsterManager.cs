@@ -33,7 +33,7 @@ public class MonsterManager : MonoBehaviour {
    public void Awake () {
       self = this;
 
-#if IS_SERVER_BUILD
+#if IS_SERVER_BUILD// && !UNITY_EDITOR
       initializeCraftCache();
 #else
       monsterDataAssets = null;

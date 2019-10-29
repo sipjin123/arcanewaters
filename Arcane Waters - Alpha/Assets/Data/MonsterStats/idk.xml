@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<BattlerData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <enemyName>idk</enemyName>
+  <imagePath>Assets/Sprites/Enemies/golem.png</imagePath>
+  <currentXP>0</currentXP>
+  <enemyType>Entarcher</enemyType>
+  <apGainWhenDamaged>0</apGainWhenDamaged>
+  <baseHealth>0</baseHealth>
+  <baseDefense>0</baseDefense>
+  <baseDamage>0</baseDamage>
+  <baseGoldReward>0</baseGoldReward>
+  <baseXPReward>0</baseXPReward>
+  <damagePerLevel>0</damagePerLevel>
+  <defensePerLevel>0</defensePerLevel>
+  <healthPerlevel>0</healthPerlevel>
+  <battlerAbilities>
+    <BasicAbilityDataList>
+      <BasicAbilityData xsi:type="AttackAbilityData">
+        <itemID>1</itemID>
+        <itemName>Name</itemName>
+        <itemDescription>Desc</itemDescription>
+        <itemIconPath>Assets/Sprites/Effects/gate_damage_1.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Undefined</string>
+        </hitSpritesPath>
+        <elementType>ALL</elementType>
+        <hitAudioClipPath>Assets/Resources/Sound/Effects/Chomper_Attack.ogg</hitAudioClipPath>
+        <classRequirement>Any</classRequirement>
+        <battleItemType>UNDEFINED</battleItemType>
+        <castAudioClipPath>Assets/Resources/Sound/Effects/Character_Jump.wav</castAudioClipPath>
+        <allowedStances />
+        <abilityType>Stance</abilityType>
+        <abilityCooldown>1</abilityCooldown>
+        <apChange>1</apChange>
+        <abilityCost>1</abilityCost>
+        <castSpritesPath>
+          <string>Undefined</string>
+        </castSpritesPath>
+        <FXTimePerFrame>1</FXTimePerFrame>
+        <baseDamage>0</baseDamage>
+        <hasShake>false</hasShake>
+        <hasKnockup>false</hasKnockup>
+        <abilityActionType>Cancel</abilityActionType>
+        <canBeBlocked>false</canBeBlocked>
+      </BasicAbilityData>
+    </BasicAbilityDataList>
+    <AttackAbilityDataList>
+      <AttackAbilityData>
+        <itemID>1</itemID>
+        <itemName>Name</itemName>
+        <itemDescription>Desc</itemDescription>
+        <itemIconPath>Assets/Sprites/Effects/gate_damage_1.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Undefined</string>
+        </hitSpritesPath>
+        <elementType>ALL</elementType>
+        <hitAudioClipPath>Assets/Resources/Sound/Effects/Chomper_Attack.ogg</hitAudioClipPath>
+        <classRequirement>Any</classRequirement>
+        <battleItemType>UNDEFINED</battleItemType>
+        <castAudioClipPath>Assets/Resources/Sound/Effects/Character_Jump.wav</castAudioClipPath>
+        <allowedStances />
+        <abilityType>Stance</abilityType>
+        <abilityCooldown>1</abilityCooldown>
+        <apChange>1</apChange>
+        <abilityCost>1</abilityCost>
+        <castSpritesPath>
+          <string>Undefined</string>
+        </castSpritesPath>
+        <FXTimePerFrame>1</FXTimePerFrame>
+        <baseDamage>0</baseDamage>
+        <hasShake>false</hasShake>
+        <hasKnockup>false</hasKnockup>
+        <abilityActionType>Cancel</abilityActionType>
+        <canBeBlocked>false</canBeBlocked>
+      </AttackAbilityData>
+    </AttackAbilityDataList>
+    <BuffAbilityDataList />
+  </battlerAbilities>
+  <battlerLootData>
+    <lootList />
+    <defaultLoot xmlns="IngredientType">None</defaultLoot>
+    <minQuantity>0</minQuantity>
+    <maxQuantity>0</maxQuantity>
+  </battlerLootData>
+  <physicalDefenseMultiplier>0</physicalDefenseMultiplier>
+  <fireDefenseMultiplier>0</fireDefenseMultiplier>
+  <earthDefenseMultiplier>0</earthDefenseMultiplier>
+  <airDefenseMultiplier>0</airDefenseMultiplier>
+  <waterDefenseMultiplier>0</waterDefenseMultiplier>
+  <allDefenseMultiplier>0</allDefenseMultiplier>
+  <physicalAttackMultiplier>0</physicalAttackMultiplier>
+  <fireAttackMultiplier>0</fireAttackMultiplier>
+  <earthAttackMultiplier>0</earthAttackMultiplier>
+  <airAttackMultiplier>0</airAttackMultiplier>
+  <waterAttackMultiplier>0</waterAttackMultiplier>
+  <allAttackMultiplier>0</allAttackMultiplier>
+  <deathSoundPath />
+  <attackJumpSoundPath />
+  <preContactLength>0</preContactLength>
+  <preMagicLength>0</preMagicLength>
+</BattlerData>

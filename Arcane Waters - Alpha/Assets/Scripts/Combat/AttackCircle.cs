@@ -45,19 +45,19 @@ public class AttackCircle : MonoBehaviour {
       // Set the attack circle to wherever the mouse is
       this.transform.position = Util.getMousePos();
 
-      // If it's inside one of the attack boxes, we're done
-      if (creator.leftAttackBox.OverlapPoint(this.transform.position) || creator.rightAttackBox.OverlapPoint(this.transform.position)) {
-         return;
-      }
+      //// If it's inside one of the attack boxes, we're done
+      //if (creator.leftAttackBox.OverlapPoint(this.transform.position) || creator.rightAttackBox.OverlapPoint(this.transform.position)) {
+      //   return;
+      //}
 
-      // Calculate the closest point on the left and right attack boxes
-      ColliderDistance2D leftDistance = circleCollider.Distance(creator.leftAttackBox);
-      ColliderDistance2D rightDistance = circleCollider.Distance(creator.rightAttackBox);
-      Vector2 closestLeft = leftDistance.pointB;
-      Vector2 closestRight = rightDistance.pointB;
+      //// Calculate the closest point on the left and right attack boxes
+      //ColliderDistance2D leftDistance = circleCollider.Distance(creator.leftAttackBox);
+      //ColliderDistance2D rightDistance = circleCollider.Distance(creator.rightAttackBox);
+      //Vector2 closestLeft = leftDistance.pointB;
+      //Vector2 closestRight = rightDistance.pointB;
 
-      // Set the mouse position to which point is closest on the attack boxes
-      this.transform.position = (rightDistance.distance < leftDistance.distance) ? rightDistance.pointB : leftDistance.pointB;
+      //// Set the mouse position to which point is closest on the attack boxes
+      //this.transform.position = (rightDistance.distance < leftDistance.distance) ? rightDistance.pointB : leftDistance.pointB;
    }
 
    #region Private Variables

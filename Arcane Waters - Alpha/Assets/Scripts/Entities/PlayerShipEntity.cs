@@ -96,6 +96,7 @@ public class PlayerShipEntity : ShipEntity {
       this.shipId = shipInfo.shipId;
       this.currentHealth = shipInfo.health;
       this.maxHealth = shipInfo.maxHealth;
+      this.attackRange = shipInfo.attackRange;
       this.speed = shipInfo.speed;
       this.sailors = shipInfo.sailors;
       this.rarity = shipInfo.rarity;
@@ -309,11 +310,9 @@ public class PlayerShipEntity : ShipEntity {
 
       Vector2 spot = target.transform.position;
 
-      // If the requested spot is not in the allowed area, reject the request
-      if (!leftAttackBox.OverlapPoint(spot) && !rightAttackBox.OverlapPoint(spot)) {
-         return;
-      }
-
+      // The target point is clamped to the attack range
+      spot = AttackManager.clampToRange(transform.position, spot, attackRange);
+      
       // Note the time at which we last successfully attacked
       _lastAttackTime = Time.time;
 

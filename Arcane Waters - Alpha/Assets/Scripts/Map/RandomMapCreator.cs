@@ -67,6 +67,9 @@ public static class RandomMapCreator {
 
       GameObject generatedMap = GenerateMap(preset, mapConfig);
 
+      // Store map config locally on client game instance
+      RandomMapManager.self.mapConfigs[mapConfig.areaType] = mapConfig;
+
       if (generatedMap == null) {
          D.error("Failed to generate map");
          return null;

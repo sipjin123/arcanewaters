@@ -1239,7 +1239,7 @@ public class DB_Main : DB_MainStub {
       Ship.Type shipType = Ship.Type.Caravel;
       ShipInfo shipInfo = new ShipInfo(0, userId, shipType, Ship.SkinType.None, Ship.MastType.Caravel_1, Ship.SailType.Caravel_1, shipType + "",
             ColorType.HullBrown, ColorType.HullBrown, ColorType.SailWhite, ColorType.SailWhite, 100, 100, 20,
-            80, 80, 15, 90, 10, Rarity.Type.Common);
+            80, 80, 15, 1.5f, 90, 10, Rarity.Type.Common);
 
       try {
          using (MySqlConnection conn = getConnection())

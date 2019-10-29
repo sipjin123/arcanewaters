@@ -306,6 +306,7 @@ public class AdminManager : NetworkBehaviour {
          int damage = (int) (Ship.getBaseDamage(shipType) * Rarity.getIncreasingModifier(rarity));
          int health = (int) (Ship.getBaseHealth(shipType) * Rarity.getIncreasingModifier(rarity));
          int price = (int) (Ship.getBasePrice(shipType) * Rarity.getIncreasingModifier(rarity));
+         float attackRange = Ship.getBaseAttackRange(shipType) * Rarity.getIncreasingModifier(rarity);
 
          // Let's use nice numbers
          sailors = Util.roundToPrettyNumber(sailors);
@@ -317,7 +318,7 @@ public class AdminManager : NetworkBehaviour {
 
          // Set up the Ship Info
          ShipInfo ship = new ShipInfo(0, _player.userId, shipType, Ship.SkinType.None, Ship.MastType.Caravel_1, Ship.SailType.Caravel_1, shipType + "",
-            ColorType.None, ColorType.None, ColorType.None, ColorType.None, suppliesRoom, suppliesRoom, cargoRoom, health, health, damage, speed, sailors, rarity);
+            ColorType.None, ColorType.None, ColorType.None, ColorType.None, suppliesRoom, suppliesRoom, cargoRoom, health, health, damage, attackRange, speed, sailors, rarity);
 
          // Create the ship in the database
          DB_Main.createShipFromShipyard(_player.userId, ship);

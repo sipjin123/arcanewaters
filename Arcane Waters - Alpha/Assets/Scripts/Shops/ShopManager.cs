@@ -101,6 +101,7 @@ public class ShopManager : MonoBehaviour {
             int damage = (int) (Ship.getBaseDamage(shipType) * Rarity.getIncreasingModifier(rarity));
             int health = (int) (Ship.getBaseHealth(shipType) * Rarity.getIncreasingModifier(rarity));
             int price = (int) (Ship.getBasePrice(shipType) * Rarity.getIncreasingModifier(rarity));
+            float attackRange = Ship.getBaseAttackRange(shipType) * Rarity.getIncreasingModifier(rarity);
 
             // Let's use nice numbers
             sailors = Util.roundToPrettyNumber(sailors);
@@ -111,7 +112,7 @@ public class ShopManager : MonoBehaviour {
             price = Util.roundToPrettyNumber(price);
 
             ShipInfo ship = new ShipInfo(_shipId--, 0, shipType, Ship.SkinType.None, Ship.MastType.Caravel_1, Ship.SailType.Caravel_1, shipType+"",
-               ColorType.None, ColorType.None, ColorType.None, ColorType.None, suppliesRoom, suppliesRoom, cargoRoom, health, health, damage, speed, sailors, rarity);
+               ColorType.None, ColorType.None, ColorType.None, ColorType.None, suppliesRoom, suppliesRoom, cargoRoom, health, health, damage, attackRange, speed, sailors, rarity);
 
             // We note the price separately, since it's only used in this context
             ship.price = price;

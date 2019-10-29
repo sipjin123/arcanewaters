@@ -24,6 +24,7 @@ MonoBehaviour:
   - Town
   - Farm
   - Treasure Site
+  mapTypes: 
   biome: pine
   _tileLayer:
   - Name: Base Ground Layer
@@ -541,7 +542,7 @@ MonoBehaviour:
     outlineColor: {r: 0, g: 0, b: 0, a: 0}
   _tileIconLayers:
   - iconLayerName: Bounce
-    spriteIcon: {fileID: 21300000, guid: f56367ccce9adde4a8146eaeb9d27e3b, type: 3}
+    spriteIcon: {fileID: 21300000, guid: be0087f293f06fa47b49f23f1fd8cb99, type: 3}
     offset: {x: -2, y: 0}
     useAreaEffector2D: 1
     useCollider2D: 0
@@ -549,7 +550,7 @@ MonoBehaviour:
     subLayerSpriteSuffixNames: []
     subLayerSprites: []
   - iconLayerName: House
-    spriteIcon: {fileID: 21300000, guid: c6aa0c9f6e9b22a4883d25e0c8c84919, type: 3}
+    spriteIcon: {fileID: 21300000, guid: cc1437a77a69cfd499003aa8e49fea0d, type: 3}
     offset: {x: -5, y: -5}
     useAreaEffector2D: 0
     useCollider2D: 1

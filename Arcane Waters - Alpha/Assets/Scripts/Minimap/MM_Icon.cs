@@ -42,6 +42,13 @@ public class MM_Icon : ClientMonoBehaviour {
       return tooltip.text;
    }
 
+   public Image getImage () {
+      if (_image) {
+         return _image;
+      }
+      return _image = GetComponent<Image>();
+   }
+
    #region Private Variables
 
    // Our Image

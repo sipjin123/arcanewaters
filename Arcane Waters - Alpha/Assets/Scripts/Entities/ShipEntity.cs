@@ -19,6 +19,10 @@ public class ShipEntity : SeaEntity {
    [SyncVar]
    public int speed = 100;
 
+   // The range of attack
+   [SyncVar]
+   public float attackRange = 1.5f;
+
    // The number of sailors it takes to run this ship
    [SyncVar]
    public int sailors;
@@ -74,6 +78,15 @@ public class ShipEntity : SeaEntity {
          default:
             return .25f;
       }
+   }
+
+   [Server]
+   public override void fireAtSpot (Vector2 spot, Attack.Type attackType, float attackDelay, float launchDelay, Vector2 spawnPosition = new Vector2(), bool isLastProjectile = true) {
+      // The target point is clamped to the attack range
+      spot = AttackManager.clampToRange(transform.position, spot, attackRange);
+
+      // Run the base function
+      base.fireAtSpot(spot, attackType, attackDelay, launchDelay, spawnPosition, isLastProjectile);
    }
 
    #region Private Variables

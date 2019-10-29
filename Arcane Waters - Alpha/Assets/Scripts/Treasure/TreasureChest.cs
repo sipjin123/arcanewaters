@@ -126,6 +126,8 @@ public class TreasureChest : NetworkBehaviour {
       } else {
          Global.player.rpc.Cmd_OpenChest(this.id);
       }
+
+      deleteTreasureChestIcon();
    }
 
    public void handleSpriteOutline () {
@@ -242,6 +244,10 @@ public class TreasureChest : NetworkBehaviour {
       }
    }
 
+   private void deleteTreasureChestIcon () {
+      Minimap.self.deleteTreasureChestIcon(this.gameObject);
+   }
+
    public void disableChest () {
       StartCoroutine(CO_DisableChestAfterDelay());
    }
@@ -249,11 +255,13 @@ public class TreasureChest : NetworkBehaviour {
    private IEnumerator CO_DisableChestAfterDelay() {
       yield return new WaitForSeconds(3);
       gameObject.SetActive(false);
+      deleteTreasureChestIcon();
    }
 
    private IEnumerator CO_DisableChestAfterLifetime () {
       yield return new WaitForSeconds(30);
       gameObject.SetActive(false);
+      deleteTreasureChestIcon();
    }
 
    #region Private Variables

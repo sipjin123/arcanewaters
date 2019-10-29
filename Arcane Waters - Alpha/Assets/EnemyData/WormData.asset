@@ -20,12 +20,12 @@ MonoBehaviour:
   isRanged: 1
   shouldDropTreasure: 1
   isInvulnerable: 0
-  maxProjectileDistanceGap: 1.5
+  maxProjectileDistanceGap: 1
   maxMeleeDistanceGap: 0.5
-  maxDistanceGap: 2.5
+  maxDistanceGap: 1.6
   attackType: 5
-  territoryRadius: 2.5
-  detectRadius: 2
+  territoryRadius: 1.8
+  detectRadius: 1.2
   attackFrequency: 1
   reloadDelay: 2
   moveFrequency: 2
@@ -37,6 +37,7 @@ MonoBehaviour:
     type: 3}
   defaultRippleSprite: {fileID: 8606102959079553536, guid: 5c1cf74553558b54bb8ab8274c0bf4cb,
     type: 3}
+  corpseSprite: {fileID: 0}
   scaleOverride: 0.5
   outlineScaleOverride: 1
   rippleScaleOverride: 2
@@ -44,4 +45,6 @@ MonoBehaviour:
   animGroup: 4
   roleType: 1
   animationSpeedOverride: -1
+  rippleAnimationSpeedOverride: -1
   projectileSpawnLocations: []
+  rippleLocOffset: {x: 0, y: 0, z: 0}

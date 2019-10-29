@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 491dc37150c522b4aaf30926d55dbd4f, type: 3}
+  m_Name: MainConfig
+  m_EditorClassIdentifier: 
+  layerTiles:
+  - {fileID: 11400000, guid: 49aaf5c311a25ed419a10334a042d260, type: 2}
+  - {fileID: 11400000, guid: 7f9ed1239eac5784d8589ab79c6f03fd, type: 2}
+  - {fileID: 11400000, guid: fa27e48fe2026844abfef02b7cf0aa64, type: 2}
+  - {fileID: 11400000, guid: 9ad2b0917c36269468b929e7d8d32c53, type: 2}
+  - {fileID: 11400000, guid: 9d73c48066f80964fb0848885ae7b271, type: 2}
+  - {fileID: 11400000, guid: 6ab5e540a243f224db1f38b69dd54b94, type: 2}
+  - {fileID: 11400000, guid: a7360ea136d213347982e1b67a28b065, type: 2}
+  - {fileID: 11400000, guid: 2dc1a58c6f16e714b898dd6f2fd3322e, type: 2}
+  - {fileID: 11400000, guid: 3d3435e4863ebf243a52ae0744c078db, type: 2}
+  - {fileID: 11400000, guid: 7229389d359f8814d9c10bfc56e33edf, type: 2}
+  - {fileID: 11400000, guid: 94a93c9068771144fa46be4a010bcc6c, type: 2}
+  - {fileID: 11400000, guid: 4c6f7045efbe6f543a311c4cae4c0776, type: 2}
+  - {fileID: 11400000, guid: 3326f90cc7d07ad43b78982f63f68da6, type: 2}
+  - {fileID: 11400000, guid: 7a2b33ae3b17ca24ba2d1593fbb1339e, type: 2}
+  - {fileID: 11400000, guid: c7ed81befe4ddd241939d347e953c298, type: 2}
+  - {fileID: 11400000, guid: c347e1569f9aa5b4e9557da15d8243f6, type: 2}
+  - {fileID: 11400000, guid: 0a68f8aab0b5b8a47a079f9d318f95ed, type: 2}
+  - {fileID: 11400000, guid: 23f149af390231e46ba11548188299de, type: 2}
+  clusterTiles:
+  - {fileID: 11400000, guid: dea7d2dfb1d9ca24b8d1f6bc5c18ecdb, type: 2}
+  - {fileID: 11400000, guid: 6d2cd216317b03040a826dadf8399479, type: 2}
+  - {fileID: 11400000, guid: 15551267f8d51dc46be8ee806e5162d5, type: 2}
+  - {fileID: 11400000, guid: 288b8229d1866244594e56f28b688e89, type: 2}
+  transparentTile: {fileID: 11400000, guid: 6770d82dbc34c894eb30ee1fd5b3b937, type: 2}

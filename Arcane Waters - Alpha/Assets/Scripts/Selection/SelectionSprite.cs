@@ -93,14 +93,12 @@ public class SelectionSprite : MonoBehaviour {
       if (selectedEntity.userId == Global.player.userId) {
          setColors(Util.getColor(90, 255, 90));
       } else {
-         // Check if the target is in a position that we can shoot at
-         if (AttackManager.isAttackableSpot(selectedEntity.transform.position)) {
-            float timeSinceFired = Time.time - ourShip.getLastAttackTime();
+         // Calculate the time since the last shot was fired
+         float timeSinceFired = Time.time - ourShip.getLastAttackTime();
 
-            // If we've recently fired, or are ready to fire again, show red
-            if (ourShip.hasReloaded() || timeSinceFired < 1f) {
-               setColors(Util.getColor(255, 90, 90));
-            }
+         // If we've recently fired, or are ready to fire again, show red
+         if (ourShip.hasReloaded() || timeSinceFired < 1f) {
+            setColors(Util.getColor(255, 90, 90));
          }
       }
    }

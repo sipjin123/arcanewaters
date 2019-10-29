@@ -30,6 +30,56 @@ public static class PreExportMethods {
       Debug.Log("Done executing client preExport methods");
    }
 
+   public static void ExecuteNPCToolPreExportMethods () {
+      Debug.Log("Executing NPC Tool preExport methods");
+
+      #if CLOUD_BUILD
+      Debug.Log(" CLOUD_BUILD is true");
+      #endif
+
+      ClearCSC();
+      SetAmazonVPC();
+      ExcludeMySQL();
+      StripServerCode();
+      DeleteNPCDataXML();
+      setupNPCBuild();
+
+      Debug.Log("Done executing NPC Tool preExport methods");
+   }
+
+   public static void ExecuteCraftingToolPreExportMethods () {
+      Debug.Log("Executing Crafting Tool preExport methods");
+
+      #if CLOUD_BUILD
+      Debug.Log(" CLOUD_BUILD is true");
+      #endif
+
+      ClearCSC();
+      SetAmazonVPC();
+      ExcludeMySQL();
+      StripServerCode();
+      DeleteNPCDataXML();
+      setupCraftingBuild();
+
+      Debug.Log("Done executing Crafting Tool preExport methods");
+   }
+
+   public static void ExecuteMapToolPreExportMethods () {
+      Debug.Log("Executing Map Tool preExport methods");
+
+      #if CLOUD_BUILD
+      Debug.Log(" CLOUD_BUILD is true");
+      #endif
+
+      ClearCSC();
+      SetAmazonVPC();
+      ExcludeMySQL();
+      StripServerCode();
+      setupMapBuild();
+
+      Debug.Log("Done executing Map Tool preExport methods");
+   }
+
    public static void ExecuteServerPreExportMethods () {
       SetAmazonVPC();
    }
@@ -123,6 +173,14 @@ public static class PreExportMethods {
       SetCursor(BuildEditorWindow.CURSOR_TOOL);
    }
 
+   public static void setupMapBuild () {
+      PlayerSettings.productName = "Arcane Waters Map Creator";
+      SceneAsset sceneAsset = (SceneAsset) AssetDatabase.LoadAssetAtPath("Assets/Project Tools/MapCreationTool/Scenes/MapCreationTool.unity", typeof(SceneAsset));
+      setupBuildScenes(sceneAsset);
+      setIcon("Map");
+      SetCursor(BuildEditorWindow.CURSOR_TOOL);
+   }
+
    private static void setupBuildScenes(SceneAsset sceneAsset) {
       // Find valid Scene paths and make a list of EditorBuildSettingsScene
       List<EditorBuildSettingsScene> editorBuildSettingsScenes = new List<EditorBuildSettingsScene>();
@@ -136,6 +194,11 @@ public static class PreExportMethods {
    }
 
    private static void SetCursor (string mouseImageName) {
+      if (mouseImageName == BuildEditorWindow.CURSOR_TOOL) {
+         PlayerSettings.defaultCursor = null;
+         return;
+      }
+
       string filePath = "Assets/Sprites/GUI/" + mouseImageName + ".png";
       Texture2D texture = (Texture2D) AssetDatabase.LoadAssetAtPath(filePath, typeof(Texture2D));
 

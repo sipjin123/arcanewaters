@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using AStar;
 using Mirror;
@@ -555,8 +555,8 @@ public class SeaMonsterEntity : SeaEntity
       }
    }
 
-   public void disableCollisions() {
-      foreach(Collider2D col in colliderList) {
+   public void disableCollisions () {
+      foreach (Collider2D col in colliderList) {
          col.enabled = false;
       }
    }
@@ -628,7 +628,12 @@ public class SeaMonsterEntity : SeaEntity
    [Server]
    protected void spawnChest () {
       Instance currentInstance = InstanceManager.self.getInstance(this.instanceId);
-      TreasureManager.self.createSeaMonsterChest(currentInstance, transform.position, seaMonsterData.seaMonsterType);
+      Rpc_SpawnTreasureChestSea(TreasureManager.self.createSeaMonsterChest(currentInstance, transform.position, seaMonsterData.seaMonsterType).gameObject);
+   }
+
+   [ClientRpc]
+   private void Rpc_SpawnTreasureChestSea (GameObject obj) {
+      Minimap.self.addTreasureChestIcon(obj);
    }
 
    [Server]

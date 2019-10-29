@@ -21,12 +21,6 @@ public class SeaEntity : NetEntity {
    [SyncVar]
    public float attackCounter = 0f;
 
-   // The left Attack Box
-   public PolygonCollider2D leftAttackBox;
-
-   // The right Attack Box
-   public PolygonCollider2D rightAttackBox;
-
    // The prefab we use for creating Attack Circles
    public AttackCircle attackCirclePrefab;
 
@@ -431,11 +425,6 @@ public class SeaEntity : NetEntity {
          return;
       }
 
-      // If the requested spot is not in the allowed area, reject the request
-      if (!leftAttackBox.OverlapPoint(spot) && !rightAttackBox.OverlapPoint(spot)) {
-         return;
-      }
-
       // Note the time at which we last successfully attacked
       _lastAttackTime = Time.time;
 
@@ -456,14 +445,9 @@ public class SeaEntity : NetEntity {
    }
 
    [Server]
-   public void fireAtSpot (Vector2 spot, Attack.Type attackType, float attackDelay, float launchDelay, Vector2 spawnPosition = new Vector2(), bool isLastProjectile = true) {
+   public virtual void fireAtSpot (Vector2 spot, Attack.Type attackType, float attackDelay, float launchDelay, Vector2 spawnPosition = new Vector2(), bool isLastProjectile = true) {
       // Last projectile will only be false if it is a barrage of projectiles, a single projectile attack will always be a Last Projectile
       if (isLastProjectile && (isDead() || !hasReloaded())) {
-         return;
-      }
-
-      // If the requested spot is not in the allowed area or if it is a sea monster, reject the request
-      if (!(this is SeaMonsterEntity) && !leftAttackBox.OverlapPoint(spot) && !rightAttackBox.OverlapPoint(spot)) {
          return;
       }
 
@@ -473,7 +457,7 @@ public class SeaEntity : NetEntity {
       // Tell all clients to display an attack circle at that position
       float distance = Vector2.Distance(this.transform.position, spot);
       float delay = Mathf.Clamp(distance, .5f, 1.5f);
-      
+
       if (attackDelay <= 0) {
          serverFireProjectile(spot, attackType, spawnPosition, delay);
       } else {
@@ -661,7 +645,7 @@ public class SeaEntity : NetEntity {
       StartCoroutine(CO_FireTimedGenericProjectile(startTime, velocity, startPos, endPos, attackType));
    }
 
-   protected IEnumerator CO_FireTimedGenericProjectile (float startTime, Vector2 velocity, Vector3 startPos, Vector3 endpos, int attackType) {
+   protected IEnumerator CO_FireTimedGenericProjectile (float startTime, Vector2 velocity, Vector3 startPos, Vector3 endPos, int attackType) {
       float delay = startTime - TimeManager.self.getSyncedTime();
 
       yield return new WaitForSeconds(delay);
@@ -672,7 +656,7 @@ public class SeaEntity : NetEntity {
          NetworkedBoulderProjectile netBoulder = boulderObject.GetComponent<NetworkedBoulderProjectile>();
          netBoulder.creatorUserId = this.userId;
          netBoulder.instanceId = this.instanceId;
-         netBoulder.setDirection((Direction) facing, endpos);
+         netBoulder.setDirection((Direction) facing, endPos);
 
          // Add velocity to the projectile
          netBoulder.body.velocity = velocity;

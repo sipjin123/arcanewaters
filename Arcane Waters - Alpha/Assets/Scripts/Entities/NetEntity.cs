@@ -339,8 +339,13 @@ public class NetEntity : NetworkBehaviour
          return;
       }
 
-      // Draw a red outline around enemies of the Player
-      if (isEnemyOf(Global.player)) {
+      // Draw the outline
+      if (AttackManager.self.isHoveringOver(this)) {
+         // If the attack cursor is over us, draw a yellow outline
+         _outline.setNewColor(Color.yellow);
+         _outline.setVisibility(true);
+      } else if (isEnemyOf(Global.player)) {
+         // Draw a red outline around enemies of the Player   
          _outline.setNewColor(Color.red);
          _outline.setVisibility(true);
       } else if (hasAttackers()) {
@@ -349,7 +354,7 @@ public class NetEntity : NetworkBehaviour
          _outline.setVisibility(true);
       } else {
          // Only show our outline when the mouse is over us
-         Color color = this is Enemy ? Color.red : Color.white; ;
+         Color color = this is Enemy ? Color.red : Color.white;
          _outline.setNewColor(color);
          _outline.setVisibility(MouseManager.self.isHoveringOver(_clickableBox) && !isDead());
       }

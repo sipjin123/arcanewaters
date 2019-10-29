@@ -23,6 +23,9 @@ public class PrefabsManager : MonoBehaviour {
    // The Prefab we use for creating cannon smoke
    public GameObject cannonSmokePrefab;
 
+   // The Prefab we use for creating projectile target indicators
+   public GameObject projectileTargetIndicatorPrefab;
+
    // The Prefab we use for creating venom projectiles
    public VenomProjectile venomPrefab;
 

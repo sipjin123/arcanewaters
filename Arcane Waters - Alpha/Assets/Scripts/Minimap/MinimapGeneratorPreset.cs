@@ -25,6 +25,7 @@ namespace MinimapGeneration
 
       [Header("Map Types")]
       public string[] mapTypeNames;
+      public Area.Type[] mapTypes;
 
       [Tooltip("it is just checked if have something written")]
       public string biome = "";

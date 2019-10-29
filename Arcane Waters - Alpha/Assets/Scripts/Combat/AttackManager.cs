@@ -7,14 +7,17 @@ using Mirror;
 public class AttackManager : ClientMonoBehaviour {
    #region Public Variables
 
-   // The Game Object that shows where we would attack
-   public SpriteRenderer attackCircleIndicator;
+   // The Game Object that shows where we would attack - clamped to the attack zone
+   public SpriteRenderer attackCircleClampedIndicator;
 
-   // The sprite we use for an enabled attack
-   public Sprite enabledAttack;
+   // The Game Object that shows where we would attack - free to move anywhere
+   public SpriteRenderer attackCircleFreeIndicator;
 
-   // The sprite we use for a disabled attack
-   public Sprite disabledAttack;
+   // The cursor that highlights enemies being targeted
+   public AttackCircleAimCursor aimCursor;
+
+   // The circle that shows the zone were the attack is allowed
+   public AttackRangeCircle attackRangeCircle;
 
    // The currently selected attack target point
    public Vector2 targetPoint;
@@ -27,65 +30,87 @@ public class AttackManager : ClientMonoBehaviour {
 
    #endregion
 
-   private void Start() {
+   protected override void Awake () {
+      base.Awake();
       self = this;
+   }
+
+   private void Start() {
+      // Initialize the attack range circle
+      attackRangeCircle.initialize(5f);
+      attackRangeCircle.hide();
 
       // Continually create dots moving towards our current attack target
       InvokeRepeating("createMovingDot", 0f, .2f);
    }
 
    void Update () {
-      if (SeaManager.combatMode != SeaManager.CombatMode.Circle || SeaManager.selectedAttackType == Attack.Type.Air) {
-         attackCircleIndicator.enabled = false;
+      if (Global.player == null || Global.player.isDead() || !(Global.player is ShipEntity) ||
+         SeaManager.combatMode != SeaManager.CombatMode.Circle || SeaManager.selectedAttackType == Attack.Type.Air) {
+         attackCircleClampedIndicator.enabled = false;
+         attackCircleFreeIndicator.enabled = false;
+         attackRangeCircle.hide();
          return;
       }
 
       // Check if the right mouse is being held down
       bool rightMouseDown = Input.GetMouseButton(1);
 
-      // Only show the indicator while the right mouse is down
-      attackCircleIndicator.enabled = rightMouseDown;
-
-      // If we don't have a player, or the player isn't at sea, we're done
-      if (Global.player == null || !(Global.player is SeaEntity)) {
-         return;
+      // Only show the indicators while the right mouse is down
+      attackCircleClampedIndicator.enabled = rightMouseDown;
+      attackCircleFreeIndicator.enabled = rightMouseDown;
+      if (rightMouseDown) {
+         attackRangeCircle.show();
+         aimCursor.activate();
+      } else {
+         attackRangeCircle.hide();
+         aimCursor.deactivate();
       }
+
+      // Update the range indicator if the range has changed
+      ShipEntity shipEntity = (ShipEntity) Global.player;
+      if (shipEntity.attackRange != _attackRange) {
+         _attackRange = shipEntity.attackRange;
+         attackRangeCircle.draw(_attackRange);
+         attackRangeCircle.show();
+      }
+
+      // Move the range indicator to the player position
+      Util.setXY(attackRangeCircle.transform, Global.player.transform.position);
+
+      // By default, show the cursor
+      Cursor.visible = true;
 
       // If the mouse button isn't down, we don't have to do anything else
       if (!rightMouseDown) {
          return;
       }
 
+      // Hide the cursor when the right mouse is down
+      Cursor.visible = !rightMouseDown;
+
       // Figure out where the mouse is in world coordinates
       targetPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-      // Move the indicator to the mouse position
-      Util.setXY(attackCircleIndicator.transform, targetPoint);
+      // Move the free aim indicator to the mouse position
+      Util.setXY(attackCircleFreeIndicator.transform, targetPoint);
+
+      // Move the clamped aim indicator to the mouse position - clamped inside the range zone
+      Util.setXY(attackCircleClampedIndicator.transform,
+         clampToRange(Global.player.transform.position, targetPoint, _attackRange));
 
       // Update the sprite based on whether it's in position
-      attackCircleIndicator.sprite = isInValidSpot() ? enabledAttack : disabledAttack;
-
+      //attackCircleClampedIndicator.sprite = isInValidSpot() ? enabledAttack : disabledAttack;
    }
 
-   public static bool isAttackableSpot (Vector2 pos) {
-      SeaEntity entity = (SeaEntity) Global.player;
-
-      // If it's inside one of the attack boxes, we're done
-      return (entity.leftAttackBox.OverlapPoint(pos) || entity.rightAttackBox.OverlapPoint(pos));
+   public bool isHoveringOver (NetEntity entity) {
+      return aimCursor.isCursorHoveringOver(entity);
    }
 
-   protected bool isInValidSpot () {
-      if (!(Global.player is SeaEntity)) {
-         return false;
-      }
-
-      SeaEntity entity = (SeaEntity) Global.player;
-
-      // Check where our indicator is at
-      Vector3 pos = attackCircleIndicator.transform.position;
-
-      // If it's inside one of the attack boxes, we're done
-      return (entity.leftAttackBox.OverlapPoint(pos) || entity.rightAttackBox.OverlapPoint(pos));
+   public static Vector2 clampToRange (Vector2 entityPosition, Vector2 targetPoint, float range) {
+      Vector2 relativePosition = (targetPoint - entityPosition);
+      Vector2 clampedRelativePosition = Vector2.ClampMagnitude(relativePosition, range);
+      return entityPosition + clampedRelativePosition;
    }
 
    protected void createMovingDot () {
@@ -111,6 +136,9 @@ public class AttackManager : ClientMonoBehaviour {
    }
 
    #region Private Variables
+
+   // The attack range of the player's ship entity
+   private float _attackRange = 0f;
 
    #endregion
 }

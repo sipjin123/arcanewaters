@@ -38,7 +38,8 @@ public class GenericLootData : ScriptableObject {
       float maxRange = 100.00f;
 
       // Handles the chance drops of each loot item
-      foreach (LootInfo lootInfo in lootList) {
+      for(int i = 0; i < lootList.Count; i++) {
+         LootInfo lootInfo = lootList[i];
          float randomFactor = UnityEngine.Random.Range(0, maxRange);
          if(randomFactor <= lootInfo.chanceRatio) {
             newLootList.Add(lootInfo);
@@ -52,6 +53,7 @@ public class GenericLootData : ScriptableObject {
    }
 }
 
+[Serializable]
 public class RawGenericLootData
 {
    #region Public Variables
@@ -85,7 +87,8 @@ public class RawGenericLootData
       float maxRange = 100.00f;
 
       // Handles the chance drops of each loot item
-      foreach(LootInfo lootInfo in lootList) { 
+      for (int i = 0; i < lootList.Length; i++) {
+         LootInfo lootInfo = lootList[i];
          float randomFactor = UnityEngine.Random.Range(0, maxRange);
          if (randomFactor <= lootInfo.chanceRatio) {
             newLootList.Add(lootInfo);

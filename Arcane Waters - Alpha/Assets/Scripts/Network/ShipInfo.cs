@@ -52,6 +52,9 @@ public class ShipInfo {
    // The amount of damage this ship does
    public int damage;
 
+   // The range of fire
+   public float attackRange;
+
    // The speed of the ship
    public int speed;
 
@@ -98,6 +101,7 @@ public class ShipInfo {
       this.cargoMax = DataUtil.getInt(dataReader, "cargoMax");
       this.maxHealth = DataUtil.getInt(dataReader, "maxHealth");
       this.damage = DataUtil.getInt(dataReader, "damage");
+      this.attackRange = DataUtil.getFloat(dataReader, "attackRange");
       this.speed = DataUtil.getInt(dataReader, "speed");
       this.sailors = DataUtil.getInt(dataReader, "sailors");
       this.rarity = (Rarity.Type) DataUtil.getInt(dataReader, "rarity");
@@ -113,7 +117,7 @@ public class ShipInfo {
 
    public ShipInfo (int shipId, int userId, Ship.Type shipType,Ship.SkinType skinType, Ship.MastType mastType, Ship.SailType sailType, string shipName,
       ColorType color1, ColorType color2, ColorType sailColor1, ColorType sailColor2, int supplies, int suppliesMax, int cargoMax, int health, int maxHealth, int damage,
-      int speed, int sailors, Rarity.Type rarity) {
+      float attackRange, int speed, int sailors, Rarity.Type rarity) {
       this.shipId = shipId;
       this.userId = userId;
       this.shipType = shipType;
@@ -131,6 +135,7 @@ public class ShipInfo {
       this.health = health;
       this.maxHealth = maxHealth;
       this.damage = damage;
+      this.attackRange = attackRange;
       this.speed = speed;
       this.sailors = sailors;
       this.rarity = rarity;
