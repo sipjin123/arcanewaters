@@ -86,12 +86,12 @@ public class MonsterDataScene : MonoBehaviour {
       toolManager.loadAllDataFiles();
    }
 
-   public void updatePanelWithBattlerData (Dictionary<string, BattlerData> _BattlerData) {
+   public void updatePanelWithBattlerData (Dictionary<string, BattlerData> battlerData) {
       // Clear all the rows
       monsterTemplateParent.gameObject.DestroyChildren();
 
       // Create a row for each monster element
-      foreach (BattlerData battler in _BattlerData.Values) {
+      foreach (BattlerData battler in battlerData.Values) {
          EnemyDataTemplate template = Instantiate(monsterTemplate, monsterTemplateParent);
          template.updateItemDisplay(battler);
          template.editButton.onClick.AddListener(() => {

@@ -270,9 +270,9 @@ public class MonsterDataPanel : MonoBehaviour {
          }
       }
       newBattData.battlerAbilities = new AbilityDataRecord {
-         BasicAbilityDataList = basicAbilityList.ToArray(),
-         AttackAbilityDataList = attackAbilityList.ToArray(),
-         BuffAbilityDataList = buffAbilityList.ToArray()
+         basicAbilityDataList = basicAbilityList.ToArray(),
+         attackAbilityDataList = attackAbilityList.ToArray(),
+         buffAbilityDataList = buffAbilityList.ToArray()
       };
 
       return newBattData;
@@ -493,16 +493,16 @@ public class MonsterDataPanel : MonoBehaviour {
       AbilityDataRecord dataRecord = battlerData.battlerAbilities;
 
       if (dataRecord != null) {
-         if (dataRecord.AttackAbilityDataList != null) {
-            foreach (AttackAbilityData ability in dataRecord.AttackAbilityDataList) {
+         if (dataRecord.attackAbilityDataList != null) {
+            foreach (AttackAbilityData ability in dataRecord.attackAbilityDataList) {
                BattleItemData battleItemData = BattleItemData.CreateInstance(ability.itemID, ability.itemName, ability.itemDescription, ability.elementType, ability.hitAudioClipPath, ability.hitSpritesPath, ability.battleItemType, ability.classRequirement, ability.itemIconPath, ability.levelRequirement);
                BasicAbilityData basicData = BasicAbilityData.CreateInstance(battleItemData, ability.abilityCost, ability.castSpritesPath, ability.castAudioClipPath, ability.allowedStances, ability.abilityType, ability.abilityCooldown, ability.apChange, ability.FXTimePerFrame);
                AttackAbilityData attackAbility = AttackAbilityData.CreateInstance(basicData, ability.hasKnockup, ability.baseDamage, ability.hasShake, ability.abilityActionType, ability.canBeBlocked);
                finalizeAttackTemplate(attackAbility);
             }
          }
-         if (dataRecord.BuffAbilityDataList != null) {
-            foreach (BuffAbilityData ability in dataRecord.BuffAbilityDataList) {
+         if (dataRecord.buffAbilityDataList != null) {
+            foreach (BuffAbilityData ability in dataRecord.buffAbilityDataList) {
                BattleItemData battleItemData = BattleItemData.CreateInstance(ability.itemID, ability.itemName, ability.itemDescription, ability.elementType, ability.hitAudioClipPath, ability.hitSpritesPath, ability.battleItemType, ability.classRequirement, ability.itemIconPath, ability.levelRequirement);
                BasicAbilityData basicData = BasicAbilityData.CreateInstance(battleItemData, ability.abilityCost, ability.castSpritesPath, ability.castAudioClipPath, ability.allowedStances, ability.abilityType, ability.abilityCooldown, ability.apChange, ability.FXTimePerFrame);
                BuffAbilityData buffAbility = BuffAbilityData.CreateInstance(basicData, ability.duration, ability.buffType, ability.buffActionType, ability.iconPath, ability.value);

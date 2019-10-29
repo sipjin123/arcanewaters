@@ -25,7 +25,6 @@ public class ItemTypeTemplate : MonoBehaviour {
 
    #endregion
 
-
    #region Private Variables
 
    #endregion

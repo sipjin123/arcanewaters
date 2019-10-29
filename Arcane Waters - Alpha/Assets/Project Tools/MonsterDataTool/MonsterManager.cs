@@ -17,9 +17,9 @@ public class MonsterManager : MonoBehaviour {
    public bool hasInitialized;
 
    // Holds the list of the xml translated data
-   public List<BattlerData> rawMonsterDataList;
+   public List<BattlerData> monsterDataList;
 
-   // Direct reference to ability manage for enemy skills
+   // Direct reference to ability manager for enemy skills
    public AbilityManager abilityManager;
 
    // Direct reference to ability inventory for player skills
@@ -33,7 +33,7 @@ public class MonsterManager : MonoBehaviour {
    public void Awake () {
       self = this;
 
-#if IS_SERVER_BUILD// && !UNITY_EDITOR
+#if IS_SERVER_BUILD 
       initializeCraftCache();
 #else
       monsterDataAssets = null;
@@ -41,7 +41,7 @@ public class MonsterManager : MonoBehaviour {
    }
 
    public void translateRawDataToBattlerData (Enemy.Type enemyType, BattlerData mainData) {
-      BattlerData rawData = rawMonsterDataList.Find(_ => _.enemyType == enemyType);
+      BattlerData rawData = monsterDataList.Find(_ => _.enemyType == enemyType);
       if(rawData == null) {
          return;
       }
@@ -86,12 +86,12 @@ public class MonsterManager : MonoBehaviour {
       return _monsterData[enemyType];
    }
 
-   public void receiveListFromServer (BattlerData[] rawDataList) {
+   public void receiveListFromServer (BattlerData[] battlerDataList) {
       if (!hasInitialized) {
          hasInitialized = true;
-         rawMonsterDataList = new List<BattlerData>();
-         foreach (BattlerData rawData in rawDataList) {
-            rawMonsterDataList.Add(rawData);
+         monsterDataList = new List<BattlerData>();
+         foreach (BattlerData battlerData in battlerDataList) {
+            monsterDataList.Add(battlerData);
          }
       }
    }
@@ -113,12 +113,16 @@ public class MonsterManager : MonoBehaviour {
             BattlerData monsterData = Util.xmlLoad<BattlerData>(textAsset);
             Enemy.Type typeID = (Enemy.Type) monsterData.enemyType;
 
-            foreach(BasicAbilityData basicAbility in monsterData.battlerAbilities.BasicAbilityDataList) {
-               if (typeID == Enemy.Type.Humanoid) {
-                  abilityInventory.addPlayerAbility(basicAbility);
-               } else {
-                  abilityManager.addNewAbility(basicAbility);
+            if (monsterData.battlerAbilities.basicAbilityDataList != null) {
+               foreach (BasicAbilityData basicAbility in monsterData.battlerAbilities.basicAbilityDataList) {
+                  if (typeID == Enemy.Type.Humanoid) {
+                     abilityInventory.addPlayerAbility(basicAbility);
+                  } else {
+                     abilityManager.addNewAbility(basicAbility);
+                  }
                }
+            } else {
+               Debug.LogError("There is no Basic List for: " + typeID);
             }
 
             // Save the monster data in the memory cache
@@ -128,7 +132,7 @@ public class MonsterManager : MonoBehaviour {
             battleManager.registerBattler(monsterData);
          }
 
-         rawMonsterDataList = getAllMonsterData();
+         monsterDataList = getAllMonsterData();
       }
    }
 
