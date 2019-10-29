@@ -14,69 +14,9 @@
   <defensePerLevel>0</defensePerLevel>
   <healthPerlevel>0</healthPerlevel>
   <battlerAbilities>
-    <BasicAbilityDataList>
-      <BasicAbilityData xsi:type="AttackAbilityData">
-        <itemID>1</itemID>
-        <itemName>Name</itemName>
-        <itemDescription>Desc</itemDescription>
-        <itemIconPath>Assets/Sprites/Effects/gate_damage_1.png</itemIconPath>
-        <levelRequirement>1</levelRequirement>
-        <hitSpritesPath>
-          <string>Undefined</string>
-        </hitSpritesPath>
-        <elementType>ALL</elementType>
-        <hitAudioClipPath>Assets/Resources/Sound/Effects/Chomper_Attack.ogg</hitAudioClipPath>
-        <classRequirement>Any</classRequirement>
-        <battleItemType>UNDEFINED</battleItemType>
-        <castAudioClipPath>Assets/Resources/Sound/Effects/Character_Jump.wav</castAudioClipPath>
-        <allowedStances />
-        <abilityType>Stance</abilityType>
-        <abilityCooldown>1</abilityCooldown>
-        <apChange>1</apChange>
-        <abilityCost>1</abilityCost>
-        <castSpritesPath>
-          <string>Undefined</string>
-        </castSpritesPath>
-        <FXTimePerFrame>1</FXTimePerFrame>
-        <baseDamage>0</baseDamage>
-        <hasShake>false</hasShake>
-        <hasKnockup>false</hasKnockup>
-        <abilityActionType>Cancel</abilityActionType>
-        <canBeBlocked>false</canBeBlocked>
-      </BasicAbilityData>
-    </BasicAbilityDataList>
-    <AttackAbilityDataList>
-      <AttackAbilityData>
-        <itemID>1</itemID>
-        <itemName>Name</itemName>
-        <itemDescription>Desc</itemDescription>
-        <itemIconPath>Assets/Sprites/Effects/gate_damage_1.png</itemIconPath>
-        <levelRequirement>1</levelRequirement>
-        <hitSpritesPath>
-          <string>Undefined</string>
-        </hitSpritesPath>
-        <elementType>ALL</elementType>
-        <hitAudioClipPath>Assets/Resources/Sound/Effects/Chomper_Attack.ogg</hitAudioClipPath>
-        <classRequirement>Any</classRequirement>
-        <battleItemType>UNDEFINED</battleItemType>
-        <castAudioClipPath>Assets/Resources/Sound/Effects/Character_Jump.wav</castAudioClipPath>
-        <allowedStances />
-        <abilityType>Stance</abilityType>
-        <abilityCooldown>1</abilityCooldown>
-        <apChange>1</apChange>
-        <abilityCost>1</abilityCost>
-        <castSpritesPath>
-          <string>Undefined</string>
-        </castSpritesPath>
-        <FXTimePerFrame>1</FXTimePerFrame>
-        <baseDamage>0</baseDamage>
-        <hasShake>false</hasShake>
-        <hasKnockup>false</hasKnockup>
-        <abilityActionType>Cancel</abilityActionType>
-        <canBeBlocked>false</canBeBlocked>
-      </AttackAbilityData>
-    </AttackAbilityDataList>
-    <BuffAbilityDataList />
+    <basicAbilityDataList />
+    <attackAbilityDataList />
+    <buffAbilityDataList />
   </battlerAbilities>
   <battlerLootData>
     <lootList />

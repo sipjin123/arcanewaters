@@ -4,7 +4,7 @@
   <imagePath>Assets/Sprites/Enemies/SeaMonsters/reef_giant.png</imagePath>
   <currentXP>0</currentXP>
   <enemyType>Humanoid</enemyType>
-  <apGainWhenDamaged>10</apGainWhenDamaged>
+  <apGainWhenDamaged>0</apGainWhenDamaged>
   <baseHealth>155</baseHealth>
   <baseDefense>5</baseDefense>
   <baseDamage>5</baseDamage>
@@ -14,32 +14,28 @@
   <defensePerLevel>5</defensePerLevel>
   <healthPerlevel>5</healthPerlevel>
   <battlerAbilities>
-    <BasicAbilityDataList>
+    <basicAbilityDataList>
       <BasicAbilityData xsi:type="AttackAbilityData">
         <itemID>1</itemID>
-        <itemName>Normal Slash</itemName>
-        <itemDescription>slash</itemDescription>
-        <itemIconPath>Assets/Sprites/Effects/crop_harvest.png</itemIconPath>
+        <itemName>slash</itemName>
+        <itemDescription>desc</itemDescription>
+        <itemIconPath>Undefined</itemIconPath>
         <levelRequirement>1</levelRequirement>
         <hitSpritesPath>
-          <string>Assets/Sprites/Effects/gate_damage_1.png</string>
+          <string>Assets/Sprites/Effects/crop_dirt_small.png</string>
         </hitSpritesPath>
-        <elementType>Physical</elementType>
-        <hitAudioClipPath>Assets/Resources/Sound/Effects/Coin_XP_Gain.wav</hitAudioClipPath>
+        <elementType>ALL</elementType>
+        <hitAudioClipPath>Assets/Resources/Sound/Effects/Character_Jump.wav</hitAudioClipPath>
         <classRequirement>Any</classRequirement>
         <battleItemType>Ability</battleItemType>
-        <castAudioClipPath>Assets/Resources/Sound/Effects/Container_Opened.wav</castAudioClipPath>
-        <allowedStances>
-          <Stance>Balanced</Stance>
-          <Stance>Defense</Stance>
-          <Stance>Attack</Stance>
-        </allowedStances>
+        <castAudioClipPath>Assets/Resources/Sound/Effects/Character_Block.wav</castAudioClipPath>
+        <allowedStances />
         <abilityType>Standard</abilityType>
         <abilityCooldown>1</abilityCooldown>
         <apChange>0</apChange>
         <abilityCost>0</abilityCost>
         <castSpritesPath>
-          <string>Assets/Sprites/Effects/footprint.png</string>
+          <string>Assets/Sprites/Effects/chimney_smoke_1.png</string>
         </castSpritesPath>
         <FXTimePerFrame>1</FXTimePerFrame>
         <baseDamage>5</baseDamage>
@@ -48,33 +44,29 @@
         <abilityActionType>Melee</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
       </BasicAbilityData>
-    </BasicAbilityDataList>
-    <AttackAbilityDataList>
+    </basicAbilityDataList>
+    <attackAbilityDataList>
       <AttackAbilityData>
         <itemID>1</itemID>
-        <itemName>Normal Slash</itemName>
-        <itemDescription>slash</itemDescription>
-        <itemIconPath>Assets/Sprites/Effects/crop_harvest.png</itemIconPath>
+        <itemName>slash</itemName>
+        <itemDescription>desc</itemDescription>
+        <itemIconPath>Undefined</itemIconPath>
         <levelRequirement>1</levelRequirement>
         <hitSpritesPath>
-          <string>Assets/Sprites/Effects/gate_damage_1.png</string>
+          <string>Assets/Sprites/Effects/crop_dirt_small.png</string>
         </hitSpritesPath>
-        <elementType>Physical</elementType>
-        <hitAudioClipPath>Assets/Resources/Sound/Effects/Coin_XP_Gain.wav</hitAudioClipPath>
+        <elementType>ALL</elementType>
+        <hitAudioClipPath>Assets/Resources/Sound/Effects/Character_Jump.wav</hitAudioClipPath>
         <classRequirement>Any</classRequirement>
         <battleItemType>Ability</battleItemType>
-        <castAudioClipPath>Assets/Resources/Sound/Effects/Container_Opened.wav</castAudioClipPath>
-        <allowedStances>
-          <Stance>Balanced</Stance>
-          <Stance>Defense</Stance>
-          <Stance>Attack</Stance>
-        </allowedStances>
+        <castAudioClipPath>Assets/Resources/Sound/Effects/Character_Block.wav</castAudioClipPath>
+        <allowedStances />
         <abilityType>Standard</abilityType>
         <abilityCooldown>1</abilityCooldown>
-        <apChange>1</apChange>
-        <abilityCost>1</abilityCost>
+        <apChange>0</apChange>
+        <abilityCost>0</abilityCost>
         <castSpritesPath>
-          <string>Assets/Sprites/Effects/footprint.png</string>
+          <string>Assets/Sprites/Effects/chimney_smoke_1.png</string>
         </castSpritesPath>
         <FXTimePerFrame>1</FXTimePerFrame>
         <baseDamage>5</baseDamage>
@@ -83,8 +75,8 @@
         <abilityActionType>Melee</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
       </AttackAbilityData>
-    </AttackAbilityDataList>
-    <BuffAbilityDataList />
+    </attackAbilityDataList>
+    <buffAbilityDataList />
   </battlerAbilities>
   <battlerLootData>
     <lootList />
