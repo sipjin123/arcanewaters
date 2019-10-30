@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<AttackAbilityData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <itemID>1</itemID>
+  <itemName>Basic Attack</itemName>
+  <itemDescription>Attack with your weapon</itemDescription>
+  <itemIconPath>Assets/Sprites/Icons/Weapons/sword_6.png</itemIconPath>
+  <levelRequirement>1</levelRequirement>
+  <hitSpritesPath>
+    <string>Assets/Sprites/Effects/slash_ice.png</string>
+  </hitSpritesPath>
+  <elementType>Physical</elementType>
+  <hitAudioClipPath />
+  <classRequirement>Any</classRequirement>
+  <battleItemType>Ability</battleItemType>
+  <castAudioClipPath />
+  <allowedStances>
+    <Stance>Balanced</Stance>
+    <Stance>Attack</Stance>
+    <Stance>Defense</Stance>
+  </allowedStances>
+  <abilityType>Standard</abilityType>
+  <abilityCooldown>4</abilityCooldown>
+  <apChange>3</apChange>
+  <abilityCost>0</abilityCost>
+  <castSpritesPath>
+    <string>Undefined</string>
+  </castSpritesPath>
+  <FXTimePerFrame>0.08</FXTimePerFrame>
+  <baseDamage>0</baseDamage>
+  <hasShake>true</hasShake>
+  <hasKnockup>true</hasKnockup>
+  <abilityActionType>Melee</abilityActionType>
+  <canBeBlocked>true</canBeBlocked>
+</AttackAbilityData>

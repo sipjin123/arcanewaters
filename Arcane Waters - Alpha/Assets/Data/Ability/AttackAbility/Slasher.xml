@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<AttackAbilityData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <itemID>1</itemID>
+  <itemName>Slasher</itemName>
+  <itemDescription>Desc</itemDescription>
+  <itemIconPath>Assets/Sprites/Icons/Classes/class_marksman.png</itemIconPath>
+  <levelRequirement>1</levelRequirement>
+  <hitSpritesPath>
+    <string>Assets/Sprites/Effects/gate_damage_1.png</string>
+  </hitSpritesPath>
+  <elementType>ALL</elementType>
+  <hitAudioClipPath />
+  <classRequirement>Any</classRequirement>
+  <battleItemType>UNDEFINED</battleItemType>
+  <castAudioClipPath />
+  <allowedStances />
+  <abilityType>Standard</abilityType>
+  <abilityCooldown>1</abilityCooldown>
+  <apChange>1</apChange>
+  <abilityCost>1</abilityCost>
+  <castSpritesPath>
+    <string>Assets/Sprites/Effects/chimney_smoke_1.png</string>
+  </castSpritesPath>
+  <FXTimePerFrame>1</FXTimePerFrame>
+  <baseDamage>0</baseDamage>
+  <hasShake>false</hasShake>
+  <hasKnockup>false</hasKnockup>
+  <abilityActionType>UNDEFINED</abilityActionType>
+  <canBeBlocked>false</canBeBlocked>
+</AttackAbilityData>

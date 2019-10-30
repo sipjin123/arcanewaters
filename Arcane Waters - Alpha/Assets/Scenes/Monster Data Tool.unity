@@ -3271,6 +3271,7 @@ RectTransform:
   - {fileID: 1906541474}
   - {fileID: 569702570}
   - {fileID: 359276753}
+  - {fileID: 1939058110}
   m_Father: {fileID: 1165176779}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3737,6 +3738,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2a4e46d3e7920748846096dfb76ad0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  abilityManager: {fileID: 1199783814}
+  abilityToolManager: {fileID: 1967639681}
   monsterToolManager: {fileID: 1213454621}
   currentXMLTemplate: {fileID: 0}
   revertButton: {fileID: 252120167}
@@ -3787,6 +3790,7 @@ MonoBehaviour:
   emptySprite: {fileID: 21300000, guid: 3016ce2d5bd75a147aa3a66460e33058, type: 3}
   addATKSkillButton: {fileID: 569702572}
   addDEFSkillButton: {fileID: 359276755}
+  addTemplateSkillButton: {fileID: 1939058106}
   skillTemplateParent: {fileID: 1157192572}
   skillTemplatePrefab: {fileID: 2095715097}
   jumpClipPath: {fileID: 1147609486}
@@ -7295,6 +7299,20 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 9450d20867407f84cbff65bfcdc978b8, type: 3}
     sprites:
     - {fileID: 21300000, guid: 9450d20867407f84cbff65bfcdc978b8, type: 3}
+  - imageName: attack_circle_clamped
+    imagePath: Assets/Sprites/GUI/Cannon/attack_circle_clamped.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Cannon/attack_circle_clamped
+    texture2D: {fileID: 2800000, guid: 3529a4bb4cc759d4485bd32fb7d00557, type: 3}
+    sprite: {fileID: 21300000, guid: 3529a4bb4cc759d4485bd32fb7d00557, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 3529a4bb4cc759d4485bd32fb7d00557, type: 3}
+  - imageName: attack_circle_free
+    imagePath: Assets/Sprites/GUI/Cannon/attack_circle_free.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Cannon/attack_circle_free
+    texture2D: {fileID: 2800000, guid: 29650e2ec720900408b5b1214873e070, type: 3}
+    sprite: {fileID: 21300000, guid: 29650e2ec720900408b5b1214873e070, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 29650e2ec720900408b5b1214873e070, type: 3}
   - imageName: attack_circle_grey
     imagePath: Assets/Sprites/GUI/Cannon/attack_circle_grey.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Cannon/attack_circle_grey
@@ -7995,6 +8013,27 @@ MonoBehaviour:
     - {fileID: 2224067915447614445, guid: c467ab646cdeab8478f528eecc9a2f07, type: 3}
     - {fileID: 5639880075543441609, guid: c467ab646cdeab8478f528eecc9a2f07, type: 3}
     - {fileID: -3760966132396947883, guid: c467ab646cdeab8478f528eecc9a2f07, type: 3}
+  - imageName: bounce
+    imagePath: Assets/Sprites/Minimap/bounce.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/bounce
+    texture2D: {fileID: 2800000, guid: be0087f293f06fa47b49f23f1fd8cb99, type: 3}
+    sprite: {fileID: 21300000, guid: be0087f293f06fa47b49f23f1fd8cb99, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: be0087f293f06fa47b49f23f1fd8cb99, type: 3}
+  - imageName: bridge_horz
+    imagePath: Assets/Sprites/Minimap/bridge_horz.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/bridge_horz
+    texture2D: {fileID: 2800000, guid: adc3d0db218187a469ab89dfe95d5a44, type: 3}
+    sprite: {fileID: 21300000, guid: adc3d0db218187a469ab89dfe95d5a44, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: adc3d0db218187a469ab89dfe95d5a44, type: 3}
+  - imageName: bridge_vert
+    imagePath: Assets/Sprites/Minimap/bridge_vert.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/bridge_vert
+    texture2D: {fileID: 2800000, guid: 8a500890f1c59d64982299fbe05908eb, type: 3}
+    sprite: {fileID: 21300000, guid: 8a500890f1c59d64982299fbe05908eb, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 8a500890f1c59d64982299fbe05908eb, type: 3}
   - imageName: brigantine_1
     imagePath: Assets/Sprites/Ships/Brigantine/brigantine_1.png
     imagePathWithoutExtension: Assets/Sprites/Ships/Brigantine/brigantine_1
@@ -9582,6 +9621,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 9ffb58a32b86af14dbdb7389d31d8bff, type: 3}
     sprites:
     - {fileID: 21300000, guid: 9ffb58a32b86af14dbdb7389d31d8bff, type: 3}
+  - imageName: chest
+    imagePath: Assets/Sprites/Minimap/chest.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/chest
+    texture2D: {fileID: 2800000, guid: 5fc5ad74f95cbb34ca5c4196980f504e, type: 3}
+    sprite: {fileID: 21300000, guid: 5fc5ad74f95cbb34ca5c4196980f504e, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 5fc5ad74f95cbb34ca5c4196980f504e, type: 3}
   - imageName: chest_burst_sheet_01
     imagePath: Assets/Sprites/Treasure/chest_burst_sheet_01.png
     imagePathWithoutExtension: Assets/Sprites/Treasure/chest_burst_sheet_01
@@ -9702,6 +9748,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 40f8ff13b130cb74c8f00351db5b0ae5, type: 3}
     sprites:
     - {fileID: 21300000, guid: 40f8ff13b130cb74c8f00351db5b0ae5, type: 3}
+  - imageName: circle_placeholder
+    imagePath: Assets/Sprites/GUI/Cannon/circle_placeholder.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Cannon/circle_placeholder
+    texture2D: {fileID: 2800000, guid: 9e368f147ad3fa94d92bb8c629b58cea, type: 3}
+    sprite: {fileID: 21300000, guid: 9e368f147ad3fa94d92bb8c629b58cea, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 9e368f147ad3fa94d92bb8c629b58cea, type: 3}
   - imageName: circle_transparent
     imagePath: Assets/Sprites/GUI/circle_transparent.png
     imagePathWithoutExtension: Assets/Sprites/GUI/circle_transparent
@@ -15531,6 +15584,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 12a7132ec10d36a489ae284d418ab0b6, type: 3}
     sprites:
     - {fileID: 21300000, guid: 12a7132ec10d36a489ae284d418ab0b6, type: 3}
+  - imageName: house_desert
+    imagePath: Assets/Sprites/Minimap/house_desert.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/house_desert
+    texture2D: {fileID: 2800000, guid: ff2f17aac22d162428ce74913b3f6316, type: 3}
+    sprite: {fileID: 21300000, guid: ff2f17aac22d162428ce74913b3f6316, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: ff2f17aac22d162428ce74913b3f6316, type: 3}
   - imageName: House_Desert 1
     imagePath: Assets/Sprites/Towns/House_Desert 1.png
     imagePathWithoutExtension: Assets/Sprites/Towns/House_Desert 1
@@ -15538,6 +15598,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 90773de37215fd1429c25cf658ba6c59, type: 3}
     sprites:
     - {fileID: 21300000, guid: 90773de37215fd1429c25cf658ba6c59, type: 3}
+  - imageName: house_forest
+    imagePath: Assets/Sprites/Minimap/house_forest.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/house_forest
+    texture2D: {fileID: 2800000, guid: e65b23a586b60324a830c0418a07245c, type: 3}
+    sprite: {fileID: 21300000, guid: e65b23a586b60324a830c0418a07245c, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: e65b23a586b60324a830c0418a07245c, type: 3}
   - imageName: House_Forest 1
     imagePath: Assets/Sprites/Towns/House_Forest 1.png
     imagePathWithoutExtension: Assets/Sprites/Towns/House_Forest 1
@@ -15545,6 +15612,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: ff67b355cd3bb1a4b872cbccb3af72d0, type: 3}
     sprites:
     - {fileID: 21300000, guid: ff67b355cd3bb1a4b872cbccb3af72d0, type: 3}
+  - imageName: house_lava
+    imagePath: Assets/Sprites/Minimap/house_lava.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/house_lava
+    texture2D: {fileID: 2800000, guid: b8308c396f284774c9229d91479c73b3, type: 3}
+    sprite: {fileID: 21300000, guid: b8308c396f284774c9229d91479c73b3, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: b8308c396f284774c9229d91479c73b3, type: 3}
   - imageName: House_Lava 1
     imagePath: Assets/Sprites/Towns/House_Lava 1.png
     imagePathWithoutExtension: Assets/Sprites/Towns/House_Lava 1
@@ -15552,6 +15626,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 45f011bed59bb6f4aa3ea9056e8d084f, type: 3}
     sprites:
     - {fileID: 21300000, guid: 45f011bed59bb6f4aa3ea9056e8d084f, type: 3}
+  - imageName: house_mushroom
+    imagePath: Assets/Sprites/Minimap/house_mushroom.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/house_mushroom
+    texture2D: {fileID: 2800000, guid: 399f7e5ad190068489a439c0d408d1d2, type: 3}
+    sprite: {fileID: 21300000, guid: 399f7e5ad190068489a439c0d408d1d2, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 399f7e5ad190068489a439c0d408d1d2, type: 3}
   - imageName: House_Mushroom
     imagePath: Assets/Sprites/Towns/House_Mushroom.png
     imagePathWithoutExtension: Assets/Sprites/Towns/House_Mushroom
@@ -15559,6 +15640,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 7aafc31f358949740abb55c61c2e2c37, type: 3}
     sprites:
     - {fileID: 21300000, guid: 7aafc31f358949740abb55c61c2e2c37, type: 3}
+  - imageName: house_pine
+    imagePath: Assets/Sprites/Minimap/house_pine.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/house_pine
+    texture2D: {fileID: 2800000, guid: cc1437a77a69cfd499003aa8e49fea0d, type: 3}
+    sprite: {fileID: 21300000, guid: cc1437a77a69cfd499003aa8e49fea0d, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: cc1437a77a69cfd499003aa8e49fea0d, type: 3}
   - imageName: House_Pine 1
     imagePath: Assets/Sprites/Towns/House_Pine 1.png
     imagePathWithoutExtension: Assets/Sprites/Towns/House_Pine 1
@@ -15650,6 +15738,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: af3f248ae12870f4388d6cc6a0183e68, type: 3}
     sprites:
     - {fileID: 21300000, guid: af3f248ae12870f4388d6cc6a0183e68, type: 3}
+  - imageName: house_snow
+    imagePath: Assets/Sprites/Minimap/house_snow.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/house_snow
+    texture2D: {fileID: 2800000, guid: 4d59844a8823f244e8ce0d83b8ec44af, type: 3}
+    sprite: {fileID: 21300000, guid: 4d59844a8823f244e8ce0d83b8ec44af, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 4d59844a8823f244e8ce0d83b8ec44af, type: 3}
   - imageName: House_Snow 1
     imagePath: Assets/Sprites/Towns/House_Snow 1.png
     imagePathWithoutExtension: Assets/Sprites/Towns/House_Snow 1
@@ -19686,6 +19781,27 @@ MonoBehaviour:
     - {fileID: 21300042, guid: 92d5447b428a51242bdfb46f1b759bcd, type: 3}
     - {fileID: 21300044, guid: 92d5447b428a51242bdfb46f1b759bcd, type: 3}
     - {fileID: 21300046, guid: 92d5447b428a51242bdfb46f1b759bcd, type: 3}
+  - imageName: monster_boss
+    imagePath: Assets/Sprites/Minimap/monster_boss.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/monster_boss
+    texture2D: {fileID: 2800000, guid: 510747465e677274581b40a06c851e34, type: 3}
+    sprite: {fileID: 21300000, guid: 510747465e677274581b40a06c851e34, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 510747465e677274581b40a06c851e34, type: 3}
+  - imageName: monster_land
+    imagePath: Assets/Sprites/Minimap/monster_land.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/monster_land
+    texture2D: {fileID: 2800000, guid: 1d7ba7483a9b00846a6425c6d9c9582b, type: 3}
+    sprite: {fileID: 21300000, guid: 1d7ba7483a9b00846a6425c6d9c9582b, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 1d7ba7483a9b00846a6425c6d9c9582b, type: 3}
+  - imageName: monster_sea
+    imagePath: Assets/Sprites/Minimap/monster_sea.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/monster_sea
+    texture2D: {fileID: 2800000, guid: 5e7982719ab352640af8a880afc0ed58, type: 3}
+    sprite: {fileID: 21300000, guid: 5e7982719ab352640af8a880afc0ed58, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 5e7982719ab352640af8a880afc0ed58, type: 3}
   - imageName: month_tab_1x
     imagePath: Assets/Sprites/GUI/Leader Boards/month_tab_1x.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Leader Boards/month_tab_1x
@@ -20149,6 +20265,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 089566f1a605bda4d9eab174115807dc, type: 3}
     sprites:
     - {fileID: 21300000, guid: 089566f1a605bda4d9eab174115807dc, type: 3}
+  - imageName: npc
+    imagePath: Assets/Sprites/Minimap/npc.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/npc
+    texture2D: {fileID: 2800000, guid: dfe64902b9f82b04fa5bce9ef4d6ce0e, type: 3}
+    sprite: {fileID: 21300000, guid: dfe64902b9f82b04fa5bce9ef4d6ce0e, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: dfe64902b9f82b04fa5bce9ef4d6ce0e, type: 3}
   - imageName: ocean_current
     imagePath: Assets/Sprites/Map/ocean_current.png
     imagePathWithoutExtension: Assets/Sprites/Map/ocean_current
@@ -21126,6 +21249,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 17dce10cee7aa844da5557a6ad939c12, type: 3}
     sprites:
     - {fileID: 21300000, guid: 17dce10cee7aa844da5557a6ad939c12, type: 3}
+  - imageName: player
+    imagePath: Assets/Sprites/Minimap/player.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/player
+    texture2D: {fileID: 2800000, guid: 8a0ca9daf3357054d91ff29879ba0a67, type: 3}
+    sprite: {fileID: 21300000, guid: 8a0ca9daf3357054d91ff29879ba0a67, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 8a0ca9daf3357054d91ff29879ba0a67, type: 3}
   - imageName: player_arrow
     imagePath: Assets/Sprites/Minimap/player_arrow.png
     imagePathWithoutExtension: Assets/Sprites/Minimap/player_arrow
@@ -22113,6 +22243,34 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: a59beee689e78bb48bad928a1ac9852e, type: 3}
     sprites:
     - {fileID: 21300000, guid: a59beee689e78bb48bad928a1ac9852e, type: 3}
+  - imageName: ship_enemy
+    imagePath: Assets/Sprites/Minimap/ship_enemy.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/ship_enemy
+    texture2D: {fileID: 2800000, guid: 338c65dc6eb87ee4380646207494e73e, type: 3}
+    sprite: {fileID: 21300000, guid: 338c65dc6eb87ee4380646207494e73e, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 338c65dc6eb87ee4380646207494e73e, type: 3}
+  - imageName: ship_enemy_bot
+    imagePath: Assets/Sprites/Minimap/ship_enemy_bot.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/ship_enemy_bot
+    texture2D: {fileID: 2800000, guid: c5ce35f1cb609404495b90cf1430b9c2, type: 3}
+    sprite: {fileID: 21300000, guid: c5ce35f1cb609404495b90cf1430b9c2, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: c5ce35f1cb609404495b90cf1430b9c2, type: 3}
+  - imageName: ship_friendly
+    imagePath: Assets/Sprites/Minimap/ship_friendly.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/ship_friendly
+    texture2D: {fileID: 2800000, guid: 1149b8dbc9f8fab45b68014b5341e6da, type: 3}
+    sprite: {fileID: 21300000, guid: 1149b8dbc9f8fab45b68014b5341e6da, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 1149b8dbc9f8fab45b68014b5341e6da, type: 3}
+  - imageName: ship_friendly_bot
+    imagePath: Assets/Sprites/Minimap/ship_friendly_bot.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/ship_friendly_bot
+    texture2D: {fileID: 2800000, guid: bb96a4f788798474da33e754bfdbc9c6, type: 3}
+    sprite: {fileID: 21300000, guid: bb96a4f788798474da33e754bfdbc9c6, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: bb96a4f788798474da33e754bfdbc9c6, type: 3}
   - imageName: ship_health
     imagePath: Assets/Sprites/Icons/ship_health.png
     imagePathWithoutExtension: Assets/Sprites/Icons/ship_health
@@ -22120,6 +22278,20 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 7141b3ba3eae66343a58d086d70e844d, type: 3}
     sprites:
     - {fileID: 21300000, guid: 7141b3ba3eae66343a58d086d70e844d, type: 3}
+  - imageName: ship_neutral
+    imagePath: Assets/Sprites/Minimap/ship_neutral.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/ship_neutral
+    texture2D: {fileID: 2800000, guid: 3c6c26ea16822f14491d4c6ec6dfe628, type: 3}
+    sprite: {fileID: 21300000, guid: 3c6c26ea16822f14491d4c6ec6dfe628, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 3c6c26ea16822f14491d4c6ec6dfe628, type: 3}
+  - imageName: ship_neutral_bot
+    imagePath: Assets/Sprites/Minimap/ship_neutral_bot.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/ship_neutral_bot
+    texture2D: {fileID: 2800000, guid: fd6c6a7c7d76c1c47846005d41a1488d, type: 3}
+    sprite: {fileID: 21300000, guid: fd6c6a7c7d76c1c47846005d41a1488d, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: fd6c6a7c7d76c1c47846005d41a1488d, type: 3}
   - imageName: ship_sailors
     imagePath: Assets/Sprites/Icons/ship_sailors.png
     imagePathWithoutExtension: Assets/Sprites/Icons/ship_sailors
@@ -22805,6 +22977,27 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 4fd1f266ab33d8b4d8ae85d660ad19c6, type: 3}
     sprites:
     - {fileID: 21300000, guid: 4fd1f266ab33d8b4d8ae85d660ad19c6, type: 3}
+  - imageName: sign_shipyard
+    imagePath: Assets/Sprites/Minimap/sign_shipyard.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/sign_shipyard
+    texture2D: {fileID: 2800000, guid: f2a02196662995847a2495337bd288c0, type: 3}
+    sprite: {fileID: 21300000, guid: f2a02196662995847a2495337bd288c0, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: f2a02196662995847a2495337bd288c0, type: 3}
+  - imageName: sign_trader
+    imagePath: Assets/Sprites/Minimap/sign_trader.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/sign_trader
+    texture2D: {fileID: 2800000, guid: c4440381ab901b34297dd06ec127d76e, type: 3}
+    sprite: {fileID: 21300000, guid: c4440381ab901b34297dd06ec127d76e, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: c4440381ab901b34297dd06ec127d76e, type: 3}
+  - imageName: sign_weapons
+    imagePath: Assets/Sprites/Minimap/sign_weapons.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/sign_weapons
+    texture2D: {fileID: 2800000, guid: 5c49bd80e07c26c41bafc7f85b73a0bf, type: 3}
+    sprite: {fileID: 21300000, guid: 5c49bd80e07c26c41bafc7f85b73a0bf, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 5c49bd80e07c26c41bafc7f85b73a0bf, type: 3}
   - imageName: sign_weapons
     imagePath: Assets/Sprites/Map/sign_weapons.png
     imagePathWithoutExtension: Assets/Sprites/Map/sign_weapons
@@ -23608,6 +23801,13 @@ MonoBehaviour:
     - {fileID: 21300090, guid: 5a1e261f681bdee4eaa9a16cc79b089a, type: 3}
     - {fileID: 21300092, guid: 5a1e261f681bdee4eaa9a16cc79b089a, type: 3}
     - {fileID: 21300094, guid: 5a1e261f681bdee4eaa9a16cc79b089a, type: 3}
+  - imageName: stairway
+    imagePath: Assets/Sprites/Minimap/stairway.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/stairway
+    texture2D: {fileID: 2800000, guid: 5efcfc5d1b1e1c4449aed7e59f8e2adb, type: 3}
+    sprite: {fileID: 21300000, guid: 5efcfc5d1b1e1c4449aed7e59f8e2adb, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 5efcfc5d1b1e1c4449aed7e59f8e2adb, type: 3}
   - imageName: stance_balanced_lg
     imagePath: Assets/Sprites/Icons/Battle/Player/Stance/stance_balanced_lg.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Battle/Player/Stance/stance_balanced_lg
@@ -25813,6 +26013,13 @@ MonoBehaviour:
     - {fileID: 21300018, guid: 8ed9a751a6febd5489240e38ededbc6a, type: 3}
     - {fileID: 21300020, guid: 8ed9a751a6febd5489240e38ededbc6a, type: 3}
     - {fileID: 21300022, guid: 8ed9a751a6febd5489240e38ededbc6a, type: 3}
+  - imageName: treasure_site
+    imagePath: Assets/Sprites/Minimap/treasure_site.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/treasure_site
+    texture2D: {fileID: 2800000, guid: 1ec5e23a10db6ec4f9dfa6b3f9a89d5b, type: 3}
+    sprite: {fileID: 21300000, guid: 1ec5e23a10db6ec4f9dfa6b3f9a89d5b, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 1ec5e23a10db6ec4f9dfa6b3f9a89d5b, type: 3}
   - imageName: TreasurePine
     imagePath: Assets/Sprites/Minimaps/TreasurePine.png
     imagePathWithoutExtension: Assets/Sprites/Minimaps/TreasurePine
@@ -25938,6 +26145,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 6821596791cdbe44bb1de7566e0b50ea, type: 3}
     sprites:
     - {fileID: 21300000, guid: 6821596791cdbe44bb1de7566e0b50ea, type: 3}
+  - imageName: unknown_discovery
+    imagePath: Assets/Sprites/Minimap/unknown_discovery.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/unknown_discovery
+    texture2D: {fileID: 2800000, guid: b6fe567caa1fa914cb6e9a35624de8cd, type: 3}
+    sprite: {fileID: 21300000, guid: b6fe567caa1fa914cb6e9a35624de8cd, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: b6fe567caa1fa914cb6e9a35624de8cd, type: 3}
   - imageName: venom
     imagePath: Assets/Sprites/Enemies/SeaMonsters/venom.png
     imagePathWithoutExtension: Assets/Sprites/Enemies/SeaMonsters/venom
@@ -34557,11 +34771,11 @@ RectTransform:
   m_Father: {fileID: 542035989}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 150, y: 150}
-  m_Pivot: {x: 0, y: 1}
+  m_SizeDelta: {x: -30, y: -30}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &625023600
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -34904,6 +35118,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 271df24d64ceac24aaf6b3a68cba21ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  abilityToolManager: {fileID: 1967639681}
   toolManager: {fileID: 1213454621}
   monsterPanel: {fileID: 197409595}
   monsterTemplateParent: {fileID: 337465835}
@@ -40923,17 +41138,17 @@ PrefabInstance:
     - target: {fileID: 5890500984787708247, guid: cf247d87f846fb348af5e917ad74d094,
         type: 3}
       propertyPath: m_ContentType
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5890500984787708247, guid: cf247d87f846fb348af5e917ad74d094,
         type: 3}
       propertyPath: m_KeyboardType
-      value: 4
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5890500984787708247, guid: cf247d87f846fb348af5e917ad74d094,
         type: 3}
       propertyPath: m_CharacterValidation
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5890500984787708247, guid: cf247d87f846fb348af5e917ad74d094,
         type: 3}
@@ -40943,7 +41158,7 @@ PrefabInstance:
     - target: {fileID: 5890500984787708247, guid: cf247d87f846fb348af5e917ad74d094,
         type: 3}
       propertyPath: m_CharacterLimit
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 7774125496475325630, guid: cf247d87f846fb348af5e917ad74d094,
         type: 3}
@@ -48534,6 +48749,57 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1197106347}
   m_CullTransparentMesh: 0
+--- !u!1 &1199783813
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1199783815}
+  - component: {fileID: 1199783814}
+  m_Layer: 5
+  m_Name: Monster Scene Ability Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1199783814
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1199783813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb6078a3adc8f414fa53caba2cdd36fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  basicAbilityList: []
+  attackAbilityList: []
+  buffAbilityList: []
+--- !u!224 &1199783815
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1199783813}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1835145701}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1201814917
 GameObject:
   m_ObjectHideFlags: 0
@@ -56341,6 +56607,85 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1552834124}
   m_CullTransparentMesh: 0
+--- !u!1 &1559488779
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1559488780}
+  - component: {fileID: 1559488782}
+  - component: {fileID: 1559488781}
+  m_Layer: 5
+  m_Name: Text
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1559488780
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1559488779}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1939058110}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1559488781
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1559488779}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_FontData:
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_FontSize: 16
+    m_FontStyle: 1
+    m_BestFit: 0
+    m_MinSize: 1
+    m_MaxSize: 40
+    m_Alignment: 4
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 1
+    m_VerticalOverflow: 1
+    m_LineSpacing: 1
+  m_Text: ADD Existing Skill
+--- !u!222 &1559488782
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1559488779}
+  m_CullTransparentMesh: 0
 --- !u!1 &1560124060
 GameObject:
   m_ObjectHideFlags: 0
@@ -63026,6 +63371,7 @@ RectTransform:
   m_Children:
   - {fileID: 631334678}
   - {fileID: 197409590}
+  - {fileID: 1199783815}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -65025,6 +65371,160 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1935498298}
   m_CullTransparentMesh: 0
+--- !u!1 &1939058105
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1939058110}
+  - component: {fileID: 1939058109}
+  - component: {fileID: 1939058107}
+  - component: {fileID: 1939058106}
+  - component: {fileID: 1939058108}
+  m_Layer: 5
+  m_Name: Add Template Button
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1939058106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1939058105}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 1939058107}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_MethodName: createDeliveryQuestButtonClickedOn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+--- !u!114 &1939058107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1939058105}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.6509434, g: 0.6509434, b: 0.6509434, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!114 &1939058108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1939058105}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: 150
+  m_PreferredHeight: 30
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
+--- !u!222 &1939058109
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1939058105}
+  m_CullTransparentMesh: 0
+--- !u!224 &1939058110
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1939058105}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 1559488780}
+  m_Father: {fileID: 185488799}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 867.53, y: -17}
+  m_SizeDelta: {x: 150, y: 30}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1944899001
 GameObject:
   m_ObjectHideFlags: 0
@@ -65552,6 +66052,51 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d199490a83bb2b844b9695cbf13b01ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1967639679
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1967639680}
+  - component: {fileID: 1967639681}
+  m_Layer: 0
+  m_Name: Ability Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1967639680
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1967639679}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2132735011}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1967639681
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1967639679}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e34cef95b49634459c4570dea27de63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  abilityScene: {fileID: 0}
+  monsterAbilityScene: {fileID: 1199783814}
 --- !u!1001 &1973617871
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -67674,6 +68219,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   monsterDataPanel: {fileID: 197409595}
+  abilityDataScene: {fileID: 0}
   audioSource: {fileID: 2095715103}
   toggleSkillButton: {fileID: 2035038927}
   dropDownIndicator: {fileID: 1167471231}
@@ -68691,6 +69237,7 @@ Transform:
   - {fileID: 1213454620}
   - {fileID: 285221791}
   - {fileID: 926134837}
+  - {fileID: 1967639680}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
