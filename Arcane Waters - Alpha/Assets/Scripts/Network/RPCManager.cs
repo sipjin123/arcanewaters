@@ -1841,14 +1841,14 @@ public class RPCManager : NetworkBehaviour {
 
    [Command]
    public void Cmd_ProcessMonsterData (Enemy.Type[] enemyTypes) {
-      List<BattlerData> monsterList = new List<BattlerData>();
+      List<BattlerData> battlerDataList = new List<BattlerData>();
 
       BattlerData humanData = MonsterManager.self.monsterDataList.Find(_ => _.enemyType == Enemy.Type.Humanoid);
       if (humanData != null) {
          humanData.battlerAbilities.basicAbilityRawData = Util.serialize(new List<BasicAbilityData>(humanData.battlerAbilities.basicAbilityDataList));
          humanData.battlerAbilities.attackAbilityRawData = Util.serialize(new List<AttackAbilityData>(humanData.battlerAbilities.attackAbilityDataList));
          humanData.battlerAbilities.buffAbilityRawData = Util.serialize(new List<BuffAbilityData>(humanData.battlerAbilities.buffAbilityDataList));
-         monsterList.Add(humanData);
+         battlerDataList.Add(humanData);
       }
 
       foreach (Enemy.Type enemyType in enemyTypes) {
@@ -1857,16 +1857,16 @@ public class RPCManager : NetworkBehaviour {
             battData.battlerAbilities.basicAbilityRawData = Util.serialize(new List<BasicAbilityData>(battData.battlerAbilities.basicAbilityDataList));
             battData.battlerAbilities.attackAbilityRawData = Util.serialize(new List<AttackAbilityData>(battData.battlerAbilities.attackAbilityDataList));
             battData.battlerAbilities.buffAbilityRawData = Util.serialize(new List<BuffAbilityData>(battData.battlerAbilities.buffAbilityDataList));
-            monsterList.Add(battData);
+            battlerDataList.Add(battData);
          }
       }
 
-      if (monsterList.Count > 0) {
-         Target_ReceiveMonsterData(_player.connectionToClient, monsterList.ToArray());
+      if (battlerDataList.Count > 0) {
+         Target_ReceiveMonsterData(_player.connectionToClient, battlerDataList.ToArray());
       }
 
-      processEnemySkills(monsterList);
-      processPlayerSkills(monsterList);
+      processEnemySkills(battlerDataList);
+      processPlayerSkills(battlerDataList);
    }
 
    [Server]
@@ -1900,7 +1900,7 @@ public class RPCManager : NetworkBehaviour {
 
       foreach (BattlerData data in battleData) {
          List<BasicAbilityData> battlerAbilities = new List<BasicAbilityData>(data.battlerAbilities.basicAbilityDataList);
-         foreach(BasicAbilityData abilityData in battlerAbilities) {
+         foreach (BasicAbilityData abilityData in battlerAbilities) {
             if (serverAbilities.Exists(_=>_.itemName == abilityData.itemName)) {
                returnAbilityList.Add(abilityData);
             }

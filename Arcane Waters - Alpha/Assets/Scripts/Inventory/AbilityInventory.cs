@@ -7,8 +7,8 @@ using Mirror;
 public class AbilityInventory : MonoBehaviour{
    #region Public Variables
 
-   public List<BasicAbilityData> playerAbilities = new List<BasicAbilityData>();
-
+   public HashSet<BasicAbilityData> playerAbilities = new HashSet<BasicAbilityData>();
+  
    [Space(8)]
 
    public BasicAbilityData balancedStance;
@@ -30,10 +30,6 @@ public class AbilityInventory : MonoBehaviour{
 
    public void addNewAbilities (BasicAbilityData[] abilities) {
       foreach (BasicAbilityData ability in abilities) {
-         if (playerAbilities.Exists(_ => _.itemName == ability.itemName)) {
-            Debug.LogWarning("Duplicated ability name: " + ability.itemName);
-            return;
-         }
          playerAbilities.Add(ability);
       }
    }

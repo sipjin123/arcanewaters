@@ -273,7 +273,11 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
          // Extra cooldown time for AI controlled battlers, so they do not attack instantly
          this.cooldownEndTime = Util.netTime() + 5f;
       } else {
-         setBattlerAbilities(new AbilityDataRecord { basicAbilityDataList = AbilityInventory.self.playerAbilities.ToArray() , attackAbilityDataList = battlerData.battlerAbilities.attackAbilityDataList, buffAbilityDataList = battlerData.battlerAbilities.buffAbilityDataList});
+         setBattlerAbilities(new AbilityDataRecord {
+            basicAbilityDataList = new List<BasicAbilityData>(AbilityInventory.self.playerAbilities).ToArray(),
+            attackAbilityDataList = battlerData.battlerAbilities.attackAbilityDataList,
+            buffAbilityDataList = battlerData.battlerAbilities.buffAbilityDataList
+         });
       }
    }
 

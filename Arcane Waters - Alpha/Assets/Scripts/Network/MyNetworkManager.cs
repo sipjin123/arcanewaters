@@ -202,11 +202,7 @@ public class MyNetworkManager : NetworkManager {
 
             // Send any extra info as targeted RPCs
             player.cropManager.sendSiloInfo();
-
-            // Provides the clients with the list of monsters present in the area
-            Enemy.Type[] enemyTypes = InstanceManager.self.getEntityTypes(instance);
-            player.rpc.Cmd_ProcessMonsterData(enemyTypes);
-
+            
             TutorialManager.self.sendTutorialInfo(player, false);
          });
       });

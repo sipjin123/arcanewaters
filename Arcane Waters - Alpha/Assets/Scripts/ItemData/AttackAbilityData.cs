@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System;
 
+[Serializable]
 public class AttackAbilityData : BasicAbilityData {
    #region Public Variables
 

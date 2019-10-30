@@ -23,7 +23,7 @@ public class AbilityManager : MonoBehaviour
       // TODO ZERONEV: Instead of this method below, it would be better to grab all the files from the abilities folder.
       // This way we do not miss any ability and we have them in memory, in case we want to adjust an ability at runtime,
       // change an ability for an enemy at runtime, etc, and we can do that by grabbing their name or their ID. or even just an element.
-      init_allGameAbilities();
+      initAllGameAbilities();
    }
 
    public void addNewAbility(BasicAbilityData ability) {
@@ -134,16 +134,14 @@ public class AbilityManager : MonoBehaviour
    }
 
    // Prepares all game abilities
-   private void init_allGameAbilities () {
+   private void initAllGameAbilities () {
       foreach (BasicAbilityData ability in _allGameAbilities) {
          if (ability.abilityType == AbilityType.Standard) {
             AttackAbilityData newInstance = AttackAbilityData.CreateInstance((AttackAbilityData) ability);
             _attackAbilities.Add(newInstance);
-            _allGameAbilities.Add(newInstance);
          } else if (ability.abilityType == AbilityType.BuffDebuff) {
             BuffAbilityData newInstance = BuffAbilityData.CreateInstance((BuffAbilityData) ability);
             _buffAbilities.Add(newInstance);
-            _allGameAbilities.Add(newInstance);
          }
       }
    }

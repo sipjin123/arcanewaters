@@ -83,10 +83,17 @@ public class BattleManager : MonoBehaviour {
       // Check how many players are in the Instance
       int playersInInstance = instance.getPlayerCount();
 
+      // Hashset for enemy types in the battle sequence
+      HashSet<Enemy.Type> enemyTypes = new HashSet<Enemy.Type>();
+
       // Spawn an appropriate number of enemies based on the number of players in the instance
       for (int i = 0; i < getEnemyCount(enemy, playersInInstance); i++) {
+         enemyTypes.Add(enemy.enemyType);
          this.addEnemyToBattle(battle, enemy, Battle.TeamType.Defenders, playerBody);
       }
+
+      // Provides the clients with the list of monsters present in the battle sequence
+      playerBody.rpc.Cmd_ProcessMonsterData(new List<Enemy.Type>(enemyTypes).ToArray());
 
       return battle;
    }

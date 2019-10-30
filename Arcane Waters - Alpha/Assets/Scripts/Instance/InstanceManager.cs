@@ -116,21 +116,6 @@ public class InstanceManager : MonoBehaviour {
       return null;
    }
 
-   public Enemy.Type[] getEntityTypes(Instance instance) {
-      List<Enemy.Type> enemyTypes = new List<Enemy.Type>();
-      foreach(var netBehaviors in instance.entities) {
-         if (netBehaviors.GetComponent<Enemy>() != null)
-         {
-            Enemy enemy = netBehaviors.GetComponent<Enemy>();
-            if (!enemyTypes.Contains(enemy.enemyType)) {
-               enemyTypes.Add(enemy.enemyType);
-            } 
-         }
-      }
-
-      return enemyTypes.ToArray();
-   }
-
    public void removeEntityFromInstance (NetEntity entity) {
       if (entity == null || entity.instanceId == 0) {
          D.log("No need to remove entity from instance: " + entity);

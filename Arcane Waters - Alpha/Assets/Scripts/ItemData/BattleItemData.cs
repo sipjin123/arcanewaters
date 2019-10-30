@@ -27,7 +27,7 @@ public class BattleItemData
    // Main combat data that this item holds
    public Element elementType;
 
-   //Holds the path to the audio clip for hit effect
+   // Holds the path to the audio clip for hit effect
    public string hitAudioClipPath;
 
    // Player class required to be able to use this item
