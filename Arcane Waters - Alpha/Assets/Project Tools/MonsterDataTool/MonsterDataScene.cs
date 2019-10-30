@@ -8,6 +8,9 @@ using System;
 public class MonsterDataScene : MonoBehaviour {
    #region Public Variables
 
+   // Reference to the ability tool manager
+   public AbilityToolManager abilityToolManager;
+
    // Reference to the tool manager
    public MonsterToolManager toolManager;
 
@@ -60,6 +63,14 @@ public class MonsterDataScene : MonoBehaviour {
             Sprite sourceSprite = imgData.sprite;
             monsterPanel.castIconSpriteList.Add(imgData.imagePath, sourceSprite);
          }
+
+         string skillIconSpritePath = "Assets/Sprites/Icons/";
+         List<ImageManager.ImageData> skillIconSpriteFiles = ImageManager.getSpritesInDirectory(skillIconSpritePath);
+
+         foreach (ImageManager.ImageData imgData in skillIconSpriteFiles) {
+            Sprite sourceSprite = imgData.sprite;
+            monsterPanel.skillIconSpriteList.Add(imgData.imagePath, sourceSprite);
+         }
       }
    }
 
@@ -84,6 +95,7 @@ public class MonsterDataScene : MonoBehaviour {
 
    public void refreshXML () {
       toolManager.loadAllDataFiles();
+      abilityToolManager.loadAllDataFiles();
    }
 
    public void updatePanelWithBattlerData (Dictionary<string, BattlerData> battlerData) {
@@ -106,6 +118,7 @@ public class MonsterDataScene : MonoBehaviour {
             Enemy.Type type = (Enemy.Type) Enum.Parse(typeof(Enemy.Type), template.nameText.text);
             toolManager.deleteMonsterDataFile(new BattlerData { enemyType = type });
             toolManager.loadAllDataFiles();
+            abilityToolManager.loadAllDataFiles();
          });
 
          try {

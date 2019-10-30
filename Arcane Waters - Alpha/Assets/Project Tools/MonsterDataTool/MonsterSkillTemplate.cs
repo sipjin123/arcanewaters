@@ -12,6 +12,9 @@ public class MonsterSkillTemplate : MonoBehaviour {
    // Reference to the monster panel
    public MonsterDataPanel monsterDataPanel;
 
+   // Reference to the ability scene
+   public AbilityDataScene abilityDataScene;
+
    // Audio source to play the sample clips
    public AudioSource audioSource;
 
@@ -108,6 +111,8 @@ public class MonsterSkillTemplate : MonoBehaviour {
 
    #endregion
 
+   #region Init
+
    private void EnableListeners () {
       addStanceButton.onClick.AddListener(() => addStance());
       toggleSkillButton.onClick.AddListener(() => {
@@ -116,6 +121,7 @@ public class MonsterSkillTemplate : MonoBehaviour {
          }
          dropDownIndicator.SetActive(!skillContents[0].activeSelf);
       });
+      closeSpriteSelectionButton.onClick.AddListener(() => closeIconSelection());
       selectBuffIconButton.onClick.AddListener(() => toggleSpriteSelection(PathType.BuffIcon));
       selectCastSpriteButton.onClick.AddListener(() => toggleSpriteSelection(PathType.CastSprite));
       selectHitSpriteButton.onClick.AddListener(() => toggleSpriteSelection(PathType.HitSprite));
@@ -180,6 +186,8 @@ public class MonsterSkillTemplate : MonoBehaviour {
       buffActionType.onValueChanged.Invoke(buffActionType.value);
    }
 
+   #endregion
+
    #region Ability Stances
 
    private void addStance() {
@@ -197,18 +205,20 @@ public class MonsterSkillTemplate : MonoBehaviour {
 
    private void loadStance(BasicAbilityData ability) {
       stanceSlidierList = new List<StanceTemplate>();
-      foreach (BattlerBehaviour.Stance stance in ability.allowedStances) {
-         GameObject template = Instantiate(stanceTemplate, stanceTemplateParent.transform);
-         StanceTemplate stanceTemp = template.GetComponent<StanceTemplate>();
-         stanceTemp.Init();
-         stanceTemp.slider.value = (int)stance;
-         stanceTemp.deleteButton.onClick.AddListener(() => {
-            StanceTemplate currentTemp = stanceSlidierList.Find(_ => _ == stanceTemp);
-            stanceSlidierList.Remove(currentTemp);
-            Destroy(template);
-         });
-         stanceTemp.slider.onValueChanged.Invoke((int) stance);
-         stanceSlidierList.Add(stanceTemp);
+      if (ability.allowedStances != null) {
+         foreach (BattlerBehaviour.Stance stance in ability.allowedStances) {
+            GameObject template = Instantiate(stanceTemplate, stanceTemplateParent.transform);
+            StanceTemplate stanceTemp = template.GetComponent<StanceTemplate>();
+            stanceTemp.Init();
+            stanceTemp.slider.value = (int) stance;
+            stanceTemp.deleteButton.onClick.AddListener(() => {
+               StanceTemplate currentTemp = stanceSlidierList.Find(_ => _ == stanceTemp);
+               stanceSlidierList.Remove(currentTemp);
+               Destroy(template);
+            });
+            stanceTemp.slider.onValueChanged.Invoke((int) stance);
+            stanceSlidierList.Add(stanceTemp);
+         }
       }
    }
 
@@ -256,7 +266,7 @@ public class MonsterSkillTemplate : MonoBehaviour {
       initializeSliderValues();
    }
 
-   private void loadGenericData (BasicAbilityData abilityData) {
+   public void loadGenericData (BasicAbilityData abilityData) {
       EnableListeners();
       skillName.text = abilityData.itemName;
       levelRequirement.text = abilityData.levelRequirement.ToString();
@@ -282,7 +292,7 @@ public class MonsterSkillTemplate : MonoBehaviour {
          hitSpritePath.text = abilityData.hitSpritesPath[0];
          hitSprite.sprite = ImageManager.getSprite(abilityData.hitSpritesPath[0]);
       }
-      if (abilityData.itemIconPath != String.Empty) {
+      if (abilityData.itemIconPath != null) {
          itemIconPath.text = abilityData.itemIconPath;
          itemIcon.sprite = ImageManager.getSprite(abilityData.itemIconPath);
       }
@@ -317,7 +327,7 @@ public class MonsterSkillTemplate : MonoBehaviour {
          abilityType, 
          int.Parse(abilityCooldown.text), 
          int.Parse(apChange.text),
-         int.Parse(fxTimerPerFrame.text));
+         float.Parse(fxTimerPerFrame.text));
 
       AttackAbilityData attackData = AttackAbilityData.CreateInstance(basicData, hasKnockup.isOn, int.Parse(baseDamage.text), hasShake.isOn, (AbilityActionType) abilityActionType.value, canBeBlocked.isOn);
 
@@ -346,7 +356,7 @@ public class MonsterSkillTemplate : MonoBehaviour {
          abilityType,
          int.Parse(abilityCooldown.text),
          int.Parse(apChange.text),
-         int.Parse(fxTimerPerFrame.text));
+         float.Parse(fxTimerPerFrame.text));
 
       BuffType buffType = (BuffType) this.buffType.value;
       BuffActionType buffActionType = (BuffActionType) this.buffActionType.value;
@@ -361,8 +371,37 @@ public class MonsterSkillTemplate : MonoBehaviour {
       spriteSelectionPanel.SetActive(true);
       spriteSelectionParent.DestroyChildren();
 
-      previewSelectionIcon.sprite = monsterDataPanel.emptySprite;
-      foreach (KeyValuePair<string, Sprite> sourceSprite in monsterDataPanel.castIconSpriteList) {
+      Dictionary<string, Sprite> iconSpriteList = new Dictionary<string, Sprite>();
+      if (monsterDataPanel != null) {
+         previewSelectionIcon.sprite = monsterDataPanel.emptySprite;
+         switch (pathType) {
+            case PathType.ItemIcon:
+               iconSpriteList = monsterDataPanel.skillIconSpriteList;
+               break;
+            case PathType.CastSprite:
+               iconSpriteList = monsterDataPanel.castIconSpriteList;
+               break;
+            case PathType.HitSprite:
+               iconSpriteList = monsterDataPanel.hitIconSpriteList;
+               break;
+         }
+      }
+      if (abilityDataScene != null) {
+         previewSelectionIcon.sprite = abilityDataScene.emptySprite;
+         switch (pathType) {
+            case PathType.ItemIcon:
+               iconSpriteList = abilityDataScene.iconSpriteList;
+               break;
+            case PathType.CastSprite:
+               iconSpriteList = abilityDataScene.castIconSpriteList;
+               break;
+            case PathType.HitSprite:
+               iconSpriteList = abilityDataScene.hitIconSpriteList;
+               break;
+         }
+      }
+
+      foreach (KeyValuePair<string, Sprite> sourceSprite in iconSpriteList) {
          GameObject iconTempObj = Instantiate(spriteTemplate.gameObject, spriteSelectionParent.transform);
          ItemTypeTemplate iconTemp = iconTempObj.GetComponent<ItemTypeTemplate>();
          iconTemp.spriteIcon.sprite = sourceSprite.Value;
