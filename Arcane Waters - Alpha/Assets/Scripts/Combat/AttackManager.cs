@@ -19,6 +19,9 @@ public class AttackManager : ClientMonoBehaviour {
    // The circle that shows the zone were the attack is allowed
    public AttackRangeCircle attackRangeCircle;
 
+   // The line that shows the trajectory of the projectile
+   public AttackTrajectory trajectory;
+
    // The currently selected attack target point
    public Vector2 targetPoint;
 
@@ -39,9 +42,6 @@ public class AttackManager : ClientMonoBehaviour {
       // Initialize the attack range circle
       attackRangeCircle.initialize(5f);
       attackRangeCircle.hide();
-
-      // Continually create dots moving towards our current attack target
-      InvokeRepeating("createMovingDot", 0f, .2f);
    }
 
    void Update () {
@@ -50,6 +50,9 @@ public class AttackManager : ClientMonoBehaviour {
          attackCircleClampedIndicator.enabled = false;
          attackCircleFreeIndicator.enabled = false;
          attackRangeCircle.hide();
+         trajectory.hide();
+         aimCursor.deactivate();
+         Cursor.visible = true;
          return;
       }
 
@@ -61,9 +64,11 @@ public class AttackManager : ClientMonoBehaviour {
       attackCircleFreeIndicator.enabled = rightMouseDown;
       if (rightMouseDown) {
          attackRangeCircle.show();
+         trajectory.show();
          aimCursor.activate();
       } else {
          attackRangeCircle.hide();
+         trajectory.hide();
          aimCursor.deactivate();
       }
 
@@ -75,19 +80,21 @@ public class AttackManager : ClientMonoBehaviour {
          attackRangeCircle.show();
       }
 
+      // Only show the trajectory when the ship has reloaded
+      if (!shipEntity.hasReloaded()) {
+         trajectory.hide();
+      }
+
       // Move the range indicator to the player position
       Util.setXY(attackRangeCircle.transform, Global.player.transform.position);
 
-      // By default, show the cursor
-      Cursor.visible = true;
+      // Hide the cursor when the right mouse is down
+      Cursor.visible = !rightMouseDown;
 
       // If the mouse button isn't down, we don't have to do anything else
       if (!rightMouseDown) {
          return;
       }
-
-      // Hide the cursor when the right mouse is down
-      Cursor.visible = !rightMouseDown;
 
       // Figure out where the mouse is in world coordinates
       targetPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -99,8 +106,11 @@ public class AttackManager : ClientMonoBehaviour {
       Util.setXY(attackCircleClampedIndicator.transform,
          clampToRange(Global.player.transform.position, targetPoint, _attackRange));
 
-      // Update the sprite based on whether it's in position
-      //attackCircleClampedIndicator.sprite = isInValidSpot() ? enabledAttack : disabledAttack;
+      // Move the trajectory to the player position
+      Util.setXY(trajectory.transform, Global.player.transform.position);
+
+      // Draw the trajectory
+      trajectory.draw(Global.player.transform.position, attackCircleClampedIndicator.transform.position);
    }
 
    public bool isHoveringOver (NetEntity entity) {

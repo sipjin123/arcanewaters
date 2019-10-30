@@ -133,7 +133,6 @@ public class SeaEntity : NetEntity {
       attackCircle.endPos = endPos;
       attackCircle.startTime = startTime;
       attackCircle.endTime = endTime;
-      attackCircle.hasBeenPlaced = true;
    }
 
    [Server]
@@ -207,7 +206,6 @@ public class SeaEntity : NetEntity {
          attackCircle.endPos = endPos;
          attackCircle.startTime = startTime;
          attackCircle.endTime = endTime;
-         attackCircle.hasBeenPlaced = true;
       }
 
       if (attackType == Attack.Type.Shock_Ball) {
@@ -456,7 +454,7 @@ public class SeaEntity : NetEntity {
 
       // Tell all clients to display an attack circle at that position
       float distance = Vector2.Distance(this.transform.position, spot);
-      float delay = Mathf.Clamp(distance, .5f, 1.5f);
+      float delay = Mathf.Clamp(distance, .5f, 1.5f) * 1.1f;
 
       if (attackDelay <= 0) {
          serverFireProjectile(spot, attackType, spawnPosition, delay);
