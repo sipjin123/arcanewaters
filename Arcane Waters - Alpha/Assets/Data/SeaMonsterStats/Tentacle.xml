@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<SeaMonsterEntityDataCopy xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <monsterName>Tentacle</monsterName>
+  <seaMonsterType xmlns="SeaMonsterType">Tentacle</seaMonsterType>
+  <attackType xmlns="AttackType">Tentacle_Range</attackType>
+  <showDebugGizmo>false</showDebugGizmo>
+  <isAggressive>true</isAggressive>
+  <autoMove>true</autoMove>
+  <isMelee>false</isMelee>
+  <isRanged>true</isRanged>
+  <shouldDropTreasure>false</shouldDropTreasure>
+  <isInvulnerable>false</isInvulnerable>
+  <maxProjectileDistanceGap>1</maxProjectileDistanceGap>
+  <maxMeleeDistanceGap>0.35</maxMeleeDistanceGap>
+  <maxDistanceGap>1</maxDistanceGap>
+  <territoryRadius>1</territoryRadius>
+  <detectRadius>1.2</detectRadius>
+  <attackFrequency>1</attackFrequency>
+  <reloadDelay>3</reloadDelay>
+  <moveFrequency>2</moveFrequency>
+  <findTargetsFrequency>0.5</findTargetsFrequency>
+  <avatarSpritePath>Assets/Sprites/Enemies/SeaMonsters/tentacle_a.png</avatarSpritePath>
+  <defaultSpritePath>Assets/Sprites/Enemies/SeaMonsters/tentacle_a.png</defaultSpritePath>
+  <secondarySpritePath>Assets/Sprites/Enemies/SeaMonsters/tentacle_b.png</secondarySpritePath>
+  <defaultRippleTexturePath>Assets/Sprites/Enemies/SeaMonsters/worm_ripple.png</defaultRippleTexturePath>
+  <defaultRippleSpritePath>Assets/Sprites/Enemies/SeaMonsters/worm_ripple.png</defaultRippleSpritePath>
+  <corpseSpritePath>Assets/Sprites/Enemies/SeaMonsters/worm_ripple.png</corpseSpritePath>
+  <scaleOverride>0.5</scaleOverride>
+  <outlineScaleOverride>1.15</outlineScaleOverride>
+  <rippleScaleOverride>1.25</rippleScaleOverride>
+  <maxHealth>25</maxHealth>
+  <animGroup>Tentacle</animGroup>
+  <roleType>Minion</roleType>
+  <animationSpeedOverride>0.15</animationSpeedOverride>
+  <rippleAnimationSpeedOverride>0.17</rippleAnimationSpeedOverride>
+  <rippleLocOffset>
+    <x>0</x>
+    <y>0</y>
+    <z>0</z>
+  </rippleLocOffset>
+  <lootData>
+    <lootList>
+      <LootInfo>
+        <lootType xmlns="IngredientType">Coal</lootType>
+        <quantity>3</quantity>
+        <chanceRatio>100</chanceRatio>
+      </LootInfo>
+      <LootInfo>
+        <lootType xmlns="IngredientType">Ectoplasm</lootType>
+        <quantity>3</quantity>
+        <chanceRatio>37.00534</chanceRatio>
+      </LootInfo>
+    </lootList>
+    <defaultLoot xmlns="IngredientType">Ectoplasm</defaultLoot>
+    <minQuantity>3</minQuantity>
+    <maxQuantity>5</maxQuantity>
+  </lootData>
+</SeaMonsterEntityDataCopy>

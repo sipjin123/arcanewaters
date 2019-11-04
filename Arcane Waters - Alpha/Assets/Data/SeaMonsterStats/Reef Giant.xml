@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<SeaMonsterEntityDataCopy xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <monsterName>Reef Giant</monsterName>
+  <seaMonsterType xmlns="SeaMonsterType">Reef_Giant</seaMonsterType>
+  <attackType xmlns="AttackType">Boulder</attackType>
+  <showDebugGizmo>false</showDebugGizmo>
+  <isAggressive>true</isAggressive>
+  <autoMove>true</autoMove>
+  <isMelee>false</isMelee>
+  <isRanged>true</isRanged>
+  <shouldDropTreasure>true</shouldDropTreasure>
+  <isInvulnerable>false</isInvulnerable>
+  <maxProjectileDistanceGap>1</maxProjectileDistanceGap>
+  <maxMeleeDistanceGap>0.5</maxMeleeDistanceGap>
+  <maxDistanceGap>1.6</maxDistanceGap>
+  <territoryRadius>1.8</territoryRadius>
+  <detectRadius>1.2</detectRadius>
+  <attackFrequency>1</attackFrequency>
+  <reloadDelay>2</reloadDelay>
+  <moveFrequency>5</moveFrequency>
+  <findTargetsFrequency>0.5</findTargetsFrequency>
+  <avatarSpritePath>Assets/Sprites/Enemies/SeaMonsters/reef_giant.png</avatarSpritePath>
+  <defaultSpritePath>Assets/Sprites/Enemies/SeaMonsters/reef_giant.png</defaultSpritePath>
+  <secondarySpritePath>Assets/Sprites/Enemies/SeaMonsters/reef_giant.png</secondarySpritePath>
+  <defaultRippleTexturePath>Assets/Sprites/Enemies/SeaMonsters/reef_giant_ripple.png</defaultRippleTexturePath>
+  <defaultRippleSpritePath>Assets/Sprites/Enemies/SeaMonsters/reef_giant_ripple.png</defaultRippleSpritePath>
+  <corpseSpritePath />
+  <scaleOverride>0.3</scaleOverride>
+  <outlineScaleOverride>1.5</outlineScaleOverride>
+  <rippleScaleOverride>1</rippleScaleOverride>
+  <maxHealth>25</maxHealth>
+  <animGroup>ReefGiant</animGroup>
+  <roleType>Standalone</roleType>
+  <animationSpeedOverride>0.01</animationSpeedOverride>
+  <rippleAnimationSpeedOverride>-1</rippleAnimationSpeedOverride>
+  <rippleLocOffset>
+    <x>0</x>
+    <y>0</y>
+    <z>0</z>
+  </rippleLocOffset>
+  <lootData>
+    <lootList />
+    <defaultLoot xmlns="IngredientType">Ectoplasm</defaultLoot>
+    <minQuantity>2</minQuantity>
+    <maxQuantity>5</maxQuantity>
+  </lootData>
+</SeaMonsterEntityDataCopy>

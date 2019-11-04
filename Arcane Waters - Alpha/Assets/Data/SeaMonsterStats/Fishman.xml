@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<SeaMonsterEntityDataCopy xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <monsterName>Fishman</monsterName>
+  <seaMonsterType xmlns="SeaMonsterType">Fishman</seaMonsterType>
+  <attackType xmlns="AttackType">Shock_Ball</attackType>
+  <showDebugGizmo>false</showDebugGizmo>
+  <isAggressive>true</isAggressive>
+  <autoMove>true</autoMove>
+  <isMelee>false</isMelee>
+  <isRanged>true</isRanged>
+  <shouldDropTreasure>true</shouldDropTreasure>
+  <isInvulnerable>false</isInvulnerable>
+  <maxProjectileDistanceGap>1</maxProjectileDistanceGap>
+  <maxMeleeDistanceGap>0.5</maxMeleeDistanceGap>
+  <maxDistanceGap>1.6</maxDistanceGap>
+  <territoryRadius>1.8</territoryRadius>
+  <detectRadius>1.2</detectRadius>
+  <attackFrequency>1</attackFrequency>
+  <reloadDelay>2</reloadDelay>
+  <moveFrequency>5</moveFrequency>
+  <findTargetsFrequency>0.5</findTargetsFrequency>
+  <avatarSpritePath>Assets/Sprites/Enemies/SeaMonsters/fishman.png</avatarSpritePath>
+  <defaultSpritePath>Assets/Sprites/Enemies/SeaMonsters/fishman.png</defaultSpritePath>
+  <secondarySpritePath>Assets/Sprites/Enemies/SeaMonsters/fishman.png</secondarySpritePath>
+  <defaultRippleTexturePath>Assets/Sprites/Enemies/SeaMonsters/fishman_ripple.png</defaultRippleTexturePath>
+  <defaultRippleSpritePath>Assets/Sprites/Enemies/SeaMonsters/fishman_ripple.png</defaultRippleSpritePath>
+  <corpseSpritePath />
+  <scaleOverride>0.5</scaleOverride>
+  <outlineScaleOverride>1</outlineScaleOverride>
+  <rippleScaleOverride>2</rippleScaleOverride>
+  <maxHealth>50</maxHealth>
+  <animGroup>SeaMonster</animGroup>
+  <roleType>Standalone</roleType>
+  <animationSpeedOverride>-1</animationSpeedOverride>
+  <rippleAnimationSpeedOverride>-1</rippleAnimationSpeedOverride>
+  <rippleLocOffset>
+    <x>0</x>
+    <y>0</y>
+    <z>0</z>
+  </rippleLocOffset>
+  <lootData>
+    <lootList />
+    <defaultLoot xmlns="IngredientType">Broken_Fang</defaultLoot>
+    <minQuantity>0</minQuantity>
+    <maxQuantity>0</maxQuantity>
+  </lootData>
+</SeaMonsterEntityDataCopy>
