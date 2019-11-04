@@ -13,6 +13,9 @@ public class NetEntity : NetworkBehaviour
    // The amount of time that must pass between movement changes
    public static float MOVE_CHANGE_INTERVAL = .05f;
 
+   // The number of seconds after which an attacker stops being one
+   public static float ATTACKER_STATUS_DURATION = 10f;
+
    // The account ID for this entity
    [SyncVar]
    public int accountId;
@@ -189,6 +192,9 @@ public class NetEntity : NetworkBehaviour
             InvokeRepeating("requestServerTime", 0f, 1f);
          }
       }
+
+      // Routinely clean the attackers set
+      InvokeRepeating("cleanAttackers", 0f, 1f);
    }
 
    protected virtual void Update () {
@@ -402,6 +408,22 @@ public class NetEntity : NetworkBehaviour
       Cmd_RequestServerDateTime();
    }
 
+   protected void cleanAttackers () {
+      HashSet<NetEntity> oldAttackers = new HashSet<NetEntity>();
+
+      // Take note of all the attackers that must be removed
+      foreach (KeyValuePair<NetEntity, float> KV in _attackers) {
+         if (TimeManager.self.getSyncedTime() - KV.Value > ATTACKER_STATUS_DURATION) {
+            oldAttackers.Add(KV.Key);
+         }
+      }
+
+      // Remove the old attackers
+      foreach (NetEntity attacker in oldAttackers) {
+         _attackers.Remove(attacker);
+      }
+   }
+
    public bool isMoving () {
       // The velocity is handled differently for locally controlled and remotely controlled entities
       return getVelocity().magnitude > .01f;
@@ -416,7 +438,7 @@ public class NetEntity : NetworkBehaviour
          return false;
       }
 
-      return _attackers.Contains(otherEntity);
+      return _attackers.ContainsKey(otherEntity);
    }
 
    public bool isEnemyOf (NetEntity otherEntity) {
@@ -834,8 +856,8 @@ public class NetEntity : NetworkBehaviour
    // The nameText that follows us around
    protected Text _nameText;
 
-   // Entities that have attacked us
-   protected HashSet<NetEntity> _attackers = new HashSet<NetEntity>();
+   // Entities that have attacked us and the time when they attacked
+   protected Dictionary<NetEntity, float> _attackers = new Dictionary<NetEntity, float>();
 
    // Used by the server to keep track of which tutorial steps have already been processed
    protected Dictionary<Step, bool> _processedTutorialSteps = new Dictionary<Step, bool>();

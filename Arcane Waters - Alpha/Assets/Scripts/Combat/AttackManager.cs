@@ -38,12 +38,6 @@ public class AttackManager : ClientMonoBehaviour {
       self = this;
    }
 
-   private void Start() {
-      // Initialize the attack range circle
-      attackRangeCircle.initialize(5f);
-      attackRangeCircle.hide();
-   }
-
    void Update () {
       if (Global.player == null || Global.player.isDead() || !(Global.player is ShipEntity) ||
          SeaManager.combatMode != SeaManager.CombatMode.Circle || SeaManager.selectedAttackType == Attack.Type.Air) {
@@ -110,7 +104,7 @@ public class AttackManager : ClientMonoBehaviour {
       Util.setXY(trajectory.transform, Global.player.transform.position);
 
       // Draw the trajectory
-      trajectory.draw(Global.player.transform.position, attackCircleClampedIndicator.transform.position);
+      trajectory.draw(Global.player.transform.position, attackCircleClampedIndicator.transform.position, _attackRange);
    }
 
    public bool isHoveringOver (NetEntity entity) {

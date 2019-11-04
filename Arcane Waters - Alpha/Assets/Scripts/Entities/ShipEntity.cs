@@ -49,6 +49,14 @@ public class ShipEntity : SeaEntity {
       return this.shipType.ToString().ToLower().Contains(skinClass.ToLower());
    }
 
+   public bool isInRange(Vector2 spot) {
+      if (Vector2.SqrMagnitude(spot - (Vector2)transform.position) < attackRange * attackRange) {
+         return true;
+      } else {
+         return false;
+      }
+   }
+
    public override float getMoveSpeed () {
       // Start with the base speed for all sea entities
       float baseSpeed = base.getMoveSpeed();

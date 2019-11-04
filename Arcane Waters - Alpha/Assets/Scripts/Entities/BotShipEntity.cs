@@ -142,33 +142,33 @@ public class BotShipEntity : ShipEntity {
       this.waypoint = newWaypoint;
    }
 
-   //protected void checkForAttackers () {
-   //   if (isDead() || !isServer) {
-   //      return;
-   //   }
+   protected void checkForAttackers () {
+      if (isDead() || !isServer) {
+         return;
+      }
 
-   //   // If we haven't reloaded, we can't attack
-   //   if (!hasReloaded()) {
-   //      return;
-   //   }
+      // If we haven't reloaded, we can't attack
+      if (!hasReloaded()) {
+         return;
+      }
 
-   //   // Check if any of our attackers are within range
-   //   foreach (SeaEntity attacker in _attackers) {
-   //      if (attacker == null || attacker.isDead()) {
-   //         continue;
-   //      }
+      // Check if any of our attackers are within range
+      foreach (SeaEntity attacker in _attackers.Keys) {
+         if (attacker == null || attacker.isDead()) {
+            continue;
+         }
 
-   //      // Check where the attacker currently is
-   //      Vector2 spot = attacker.transform.position;
+         // Check where the attacker currently is
+         Vector2 spot = attacker.transform.position;
 
-   //      // If the requested spot is not in the allowed area, reject the request
-   //      if (isAttackableSpot(spot)) {
-   //         fireAtSpot(spot, Attack.Type.Cannon, 0, 0, transform.position);
+         // If the requested spot is not in the allowed area, reject the request
+         if (isInRange(spot)) {
+            fireAtSpot(spot, Attack.Type.Cannon, 0, 0, transform.position);
 
-   //         return;
-   //      }
-   //   }
-   //}
+            return;
+         }
+      }
+   }
 
    #region Private Variables
 

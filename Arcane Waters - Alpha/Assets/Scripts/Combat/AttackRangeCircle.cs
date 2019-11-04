@@ -1,68 +1,83 @@
 ﻿using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine.UI;
+using Mirror;
 
 public class AttackRangeCircle : MonoBehaviour
 {
    #region Public Variables
+   
+   // The maximum distance between two dots in the circle
+   public static float MAX_ARC_LENGTH = 0.2f;
 
-   // The line renderer component
-   public LineRenderer lineRenderer;
+   // The rotation speed
+   public static float ROTATION_SPEED = 3f;
+
+   // The prefab we use to create dots
+   public AttackRangeDot dotPrefab;
+
+   // The container for the dots
+   public GameObject dotContainer;
 
    #endregion
 
-   public void initialize (float angleStep) {
-      _angleStep = angleStep;
-
-      // Calculates the number of vertices
-      _vertexCount = (int) (360 / angleStep) + 1;
-
-      // Initialize the vertex array
-      _vertices = new Vector3[_vertexCount];
-
-      // Initialize the line renderer
-      lineRenderer.positionCount = _vertexCount;
-   }
-
    public void draw (float radius) {
-      // Set the first vertex
-      Vector2 vertex = new Vector2(0, radius);
+      // Calculate the circumference of the circle
+      float circumference = 2 * Mathf.PI * radius;
 
-      // The rotation to be performed at each step
-      Quaternion rotationStep = Quaternion.AngleAxis(_angleStep, Vector3.forward);
+      // Calculate the number of dots needed
+      int dotCount = Mathf.CeilToInt(circumference / MAX_ARC_LENGTH);
 
-      // Rotate the first vertex to determine the coordinates of all the others
-      for (int i = 0; i < _vertexCount; i++) {
-         _vertices[i] = new Vector2(vertex.x, vertex.y);
+      // Calculate the angle between each dot
+      float angleStep = 360f / dotCount;
 
-         // Apply the rotation for the next vertex
-         vertex = rotationStep * vertex;
-      }
+      // Destroy any existing dot
+      dotContainer.DestroyChildren();
+
+      // Clear the dot list
+      _dots.Clear();
 
       // Draw the circle
-      lineRenderer.SetPositions(_vertices);
+      float angle = 0f;
+      for (int i = 0; i < dotCount; i++) {
+         // Instantiate a new dot
+         AttackRangeDot dot = Instantiate(dotPrefab, dotContainer.transform);
+
+         // Set the dot position
+         dot.setPosition(angle, radius);
+
+         // Add the dot to the list
+         _dots.Add(dot);
+
+         // Increase the angle
+         angle += angleStep;
+      }
    }
 
-   public void setColor(Gradient gradient) {
-      lineRenderer.colorGradient = gradient;
+   public void Update () {
+      // Slowly rotate while active
+      transform.Rotate(Vector3.forward, ROTATION_SPEED * Time.deltaTime);
    }
 
    public void show () {
       gameObject.SetActive(true);
+      foreach(AttackRangeDot dot in _dots) {
+         dot.show();
+      }
    }
 
    public void hide () {
+      foreach (AttackRangeDot dot in _dots) {
+         dot.hide();
+      }
       gameObject.SetActive(false);
    }
 
    #region Private Variables
 
-   // The precision of the circle, in degrees
-   private float _angleStep;
-
-   // The array of vertices
-   private Vector3[] _vertices;
-
-   // The number of vertices
-   private int _vertexCount;
+   // A reference to all the dots
+   private List<AttackRangeDot> _dots = new List<AttackRangeDot>();
 
    #endregion
 }

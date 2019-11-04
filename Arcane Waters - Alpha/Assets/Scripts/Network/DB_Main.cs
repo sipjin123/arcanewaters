@@ -1244,8 +1244,8 @@ public class DB_Main : DB_MainStub {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO ships (usrId, shpType, color1, color2, mastType, sailType, shpName, sailColor1, sailColor2, supplies, suppliesMax, cargoMax, health, maxHealth, speed, sailors, rarity) " +
-            "VALUES(@usrId, @shpType, @color1, @color2, @mastType, @sailType, @shipName, @sailColor1, @sailColor2, @supplies, @suppliesMax, @cargoMax, @maxHealth, @maxHealth, @speed, @sailors, @rarity)", conn)) {
+            "INSERT INTO ships (usrId, shpType, color1, color2, mastType, sailType, shpName, sailColor1, sailColor2, supplies, suppliesMax, cargoMax, health, maxHealth, attackRange, speed, sailors, rarity) " +
+            "VALUES(@usrId, @shpType, @color1, @color2, @mastType, @sailType, @shipName, @sailColor1, @sailColor2, @supplies, @suppliesMax, @cargoMax, @maxHealth, @maxHealth, @attackRange, @speed, @sailors, @rarity)", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -1264,6 +1264,7 @@ public class DB_Main : DB_MainStub {
             cmd.Parameters.AddWithValue("@cargoMax", shipInfo.cargoMax);
             cmd.Parameters.AddWithValue("@health", shipInfo.maxHealth);
             cmd.Parameters.AddWithValue("@maxHealth", shipInfo.maxHealth);
+            cmd.Parameters.AddWithValue("@attackRange", shipInfo.attackRange);
             cmd.Parameters.AddWithValue("@speed", shipInfo.speed);
             cmd.Parameters.AddWithValue("@sailors", shipInfo.sailors);
             cmd.Parameters.AddWithValue("@rarity", (int) shipInfo.rarity);
@@ -1285,8 +1286,8 @@ public class DB_Main : DB_MainStub {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO ships (usrId, shpType, color1, color2, mastType, sailType, shpName, sailColor1, sailColor2, supplies, suppliesMax, cargoMax, health, maxHealth, damage, sailors, speed, rarity) " +
-            "VALUES(@usrId, @shpType, @color1, @color2, @mastType, @sailType, @shipName, @sailColor1, @sailColor2, @supplies, @suppliesMax, @cargoMax, @health, @maxHealth, @damage, @sailors, @speed, @rarity)", conn)) {
+            "INSERT INTO ships (usrId, shpType, color1, color2, mastType, sailType, shpName, sailColor1, sailColor2, supplies, suppliesMax, cargoMax, health, maxHealth, damage, sailors, attackRange, speed, rarity) " +
+            "VALUES(@usrId, @shpType, @color1, @color2, @mastType, @sailType, @shipName, @sailColor1, @sailColor2, @supplies, @suppliesMax, @cargoMax, @health, @maxHealth, @damage, @sailors, @attackRange, @speed, @rarity)", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -1305,6 +1306,7 @@ public class DB_Main : DB_MainStub {
             cmd.Parameters.AddWithValue("@cargoMax", shipyardInfo.cargoMax);
             cmd.Parameters.AddWithValue("@health", shipyardInfo.maxHealth);
             cmd.Parameters.AddWithValue("@maxHealth", shipyardInfo.maxHealth);
+            cmd.Parameters.AddWithValue("@attackRange", shipyardInfo.attackRange);
             cmd.Parameters.AddWithValue("@damage", shipyardInfo.damage);
             cmd.Parameters.AddWithValue("@sailors", shipyardInfo.sailors);
             cmd.Parameters.AddWithValue("@speed", shipyardInfo.speed);
