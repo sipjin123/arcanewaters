@@ -25,6 +25,26 @@ public class EnemyManager : MonoBehaviour {
       }
    }
 
+   public void Start () {
+#if IS_SERVER_BUILD
+      foreach (SeaMonsterEntityDataCopy dataCopy in SeaMonsterManager.self.monsterDataList) {
+         SeaMonsterDataPair seaMonsterData = seaMonsterDataList.Find(_ => _.seaMonsterType == dataCopy.seaMonsterType);
+         if (seaMonsterData != null) {
+            seaMonsterData.seaMonsterData = dataCopy;
+         }
+      }
+#endif
+   }
+
+   public void receiveDataFromServer (SeaMonsterEntityDataCopy[] dataList) {
+      foreach (SeaMonsterEntityDataCopy dataCopy in dataList) {
+         SeaMonsterDataPair seaMonsterData = seaMonsterDataList.Find(_ => _.seaMonsterType == dataCopy.seaMonsterType);
+         if (seaMonsterData != null) {
+            seaMonsterData.seaMonsterData = dataCopy;
+         }
+      }
+   }
+
    public void storeSpawner (Enemy_Spawner spawner, Area.Type areaType) {
       List<Enemy_Spawner> list = _spawners[areaType];
       list.Add(spawner);
@@ -66,5 +86,5 @@ public class SeaMonsterDataPair
    public Enemy.Type seaMonsterType;
    
    // The data to assign to the seamonster
-   public SeaMonsterEntityData seaMonsterData; 
+   public SeaMonsterEntityDataCopy seaMonsterData; 
 }

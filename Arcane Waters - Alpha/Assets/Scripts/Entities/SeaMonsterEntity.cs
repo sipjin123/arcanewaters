@@ -37,7 +37,7 @@ public class SeaMonsterEntity : SeaEntity
    public bool hasDied = false;
 
    // The unique data for each seamonster
-   public SeaMonsterEntityData seaMonsterData;
+   public SeaMonsterEntityDataCopy seaMonsterData;
 
    // The minimum magnitude to determine the movement of the unit
    public const float MIN_MOVEMENT_MAGNITUDE = .05f;
@@ -99,10 +99,18 @@ public class SeaMonsterEntity : SeaEntity
 
    #region Unity Lifecycle
 
-   public void initData (SeaMonsterEntityData entityData) {
+   public void initData (SeaMonsterEntityDataCopy entityData) {
       seaMonsterData = entityData;
-      ripplesContainer.GetComponent<SpriteRenderer>().sprite = seaMonsterData.defaultRippleSprite;
-      ripplesContainer.GetComponent<SpriteSwap>().newTexture = seaMonsterData.defaultRippleTexture;
+      ripplesContainer.GetComponent<SpriteRenderer>().sprite = ImageManager.getSprite(seaMonsterData.defaultRippleSpritePath);
+
+      Sprite sprite = ImageManager.getSprite(seaMonsterData.defaultRippleTexturePath);
+      Texture2D croppedTexture = new Texture2D((int) sprite.rect.width, (int) sprite.rect.height);
+      Color[] pixels = sprite.texture.GetPixels((int) sprite.textureRect.x,
+                                              (int) sprite.textureRect.y,
+                                              (int) sprite.textureRect.width,
+                                              (int) sprite.textureRect.height);
+      croppedTexture.SetPixels(pixels);
+      ripplesContainer.GetComponent<SpriteSwap>().newTexture = croppedTexture;
       ripplesContainer.transform.localPosition += seaMonsterData.rippleLocOffset;
 
       ripplesContainer.transform.localScale = new Vector3(seaMonsterData.rippleScaleOverride, seaMonsterData.rippleScaleOverride, seaMonsterData.rippleScaleOverride);
@@ -137,10 +145,10 @@ public class SeaMonsterEntity : SeaEntity
          spritesContainer.transform.GetChild(0).gameObject.SetActive(false);
       }
 
-      if (variety != 0 && seaMonsterData.secondarySprite != null) {
-         spritesContainer.GetComponent<SpriteRenderer>().sprite = seaMonsterData.secondarySprite;
+      if (variety != 0 && seaMonsterData.secondarySpritePath != null) {
+         spritesContainer.GetComponent<SpriteRenderer>().sprite = ImageManager.getSprite(seaMonsterData.secondarySpritePath);
       } else {
-         spritesContainer.GetComponent<SpriteRenderer>().sprite = seaMonsterData.defaultSprite;
+         spritesContainer.GetComponent<SpriteRenderer>().sprite = ImageManager.getSprite(seaMonsterData.defaultSpritePath);
       }
    }
 
@@ -311,7 +319,7 @@ public class SeaMonsterEntity : SeaEntity
                continue;
             }
             if (hit.GetComponent<PlayerShipEntity>() != null) {
-               if (!_attackers.Contains(hit.GetComponent<NetEntity>()) && !hit.GetComponent<PlayerShipEntity>().isDead()) {
+               if (!_attackers.ContainsKey(hit.GetComponent<NetEntity>()) && !hit.GetComponent<PlayerShipEntity>().isDead()) {
                   noteAttacker(hit.GetComponent<PlayerShipEntity>());
                }
             }
@@ -361,7 +369,7 @@ public class SeaMonsterEntity : SeaEntity
       NetEntity nearestEntity = null;
       float oldDistanceGap = 100;
 
-      foreach (NetEntity attacker in _attackers) {
+      foreach (NetEntity attacker in _attackers.Keys) {
          if (attacker == null) {
             continue;
          }
