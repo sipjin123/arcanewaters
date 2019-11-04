@@ -258,11 +258,13 @@ public class NPCEditScreen : MonoBehaviour
 
       List<NPCGiftData> newGiftDataList = new List<NPCGiftData>();
       foreach(ItemRewardRow itemRow in giftNode.cachedItemRowsList) {
-         NPCGiftData newGiftData = new NPCGiftData();
-         newGiftData.itemCategory = itemRow.getItem().category;
-         newGiftData.itemTypeId = itemRow.getItem().itemTypeId;
-         newGiftData.rewardedFriendship = int.Parse(itemRow.GetComponent<FriendshipField>().friendshipPts.text);
-         newGiftDataList.Add(newGiftData);
+         if (itemRow.isValidItem()) {
+            NPCGiftData newGiftData = new NPCGiftData();
+            newGiftData.itemCategory = itemRow.getItem().category;
+            newGiftData.itemTypeId = itemRow.getItem().itemTypeId;
+            newGiftData.rewardedFriendship = int.Parse(itemRow.GetComponent<FriendshipField>().friendshipPts.text);
+            newGiftDataList.Add(newGiftData);
+         }
       }
 
       // Create a new npcData object and initialize it with the values from the UI
@@ -284,6 +286,10 @@ public class NPCEditScreen : MonoBehaviour
       itemCategoryParent.gameObject.DestroyChildren();
 
       foreach (Item.Category category in Enum.GetValues(typeof(Item.Category))) {
+         if (category == Item.Category.Blueprint) {
+            continue;
+         }
+
          GameObject template = Instantiate(itemCategoryPrefab, itemCategoryParent);
          ItemCategoryTemplate categoryTemp = template.GetComponent<ItemCategoryTemplate>();
          categoryTemp.itemCategoryText.text = category.ToString();
@@ -293,7 +299,13 @@ public class NPCEditScreen : MonoBehaviour
             selectedCategory = category;
             updateTypeOptions(selectionType);
          });
-         template.SetActive(true);
+
+         if ((category == Item.Category.Helm || category == Item.Category.Potion)) {
+            categoryTemp.selectButton.interactable = false;
+            categoryTemp.selectButton.GetComponent<Image>().color = Color.gray;
+         } else {
+            template.SetActive(true);
+         }
       }
       updateTypeOptions(selectionType);
    }

@@ -13,7 +13,7 @@ public class AbilityToolManager : MonoBehaviour
    public AbilityDataScene abilityScene;
 
    // Reference to the tool for the monster scene
-   public MonsterSceneAbilityManager monsterAbilityScene;
+   public MonsterAbilityManager monsterAbilityScene;
 
    public enum DirectoryType
    {

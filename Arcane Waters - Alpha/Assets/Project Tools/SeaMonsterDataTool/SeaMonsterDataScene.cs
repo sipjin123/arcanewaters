@@ -6,29 +6,24 @@ using Mirror;
 using System;
 using UnityEngine.SceneManagement;
 
-public class MonsterDataScene : MonoBehaviour {
+public class SeaMonsterDataScene : MonoBehaviour
+{
    #region Public Variables
 
-   // Reference to the ability tool manager
-   public AbilityToolManager abilityToolManager;
-
    // Reference to the tool manager
-   public MonsterToolManager toolManager;
+   public SeaMonsterToolManager toolManager;
 
    // Reference to monster ingredient panel
-   public MonsterDataPanel monsterPanel;
+   public SeaMonsterDataPanel monsterPanel;
 
    // Parent holder of the monster templates
    public Transform monsterTemplateParent;
 
    // Monster template
-   public EnemyDataTemplate monsterTemplate;
+   public SeaMonsterDataTemplate monsterTemplate;
 
    // Button that generates a new monster template
    public Button createTemplateButton;
-
-   // Refreshes the file that is loaded in XML
-   public Button refreshButton;
 
    // Determines if the sprites have been initialized
    public bool hasBeenInitialized;
@@ -38,12 +33,12 @@ public class MonsterDataScene : MonoBehaviour {
 
    #endregion
 
-   private void Awake () {
+   private void Start () {
       monsterPanel.gameObject.SetActive(false);
       openMainTool.onClick.AddListener(() => {
          SceneManager.LoadScene(MasterToolScene.masterScene);
       });
-      createTemplateButton.onClick.AddListener(() => createNewTemplate(new BattlerData()));
+      createTemplateButton.onClick.AddListener(() => createNewTemplate(new SeaMonsterEntityDataCopy()));
 
       if (!hasBeenInitialized) {
          hasBeenInitialized = true;
@@ -81,41 +76,36 @@ public class MonsterDataScene : MonoBehaviour {
       }
    }
 
-   private void createNewTemplate (BattlerData monsterData) {
+   private void createNewTemplate (SeaMonsterEntityDataCopy monsterData) {
       string itemName = "Undefined";
-      monsterData.enemyType = Enemy.Type.Coralbow;
+      monsterData.seaMonsterType = Enemy.Type.Coralbow;
 
       if (!toolManager.ifExists(itemName)) {
-         EnemyDataTemplate template = Instantiate(monsterTemplate, monsterTemplateParent);
+         SeaMonsterDataTemplate template = Instantiate(monsterTemplate, monsterTemplateParent);
          template.editButton.onClick.AddListener(() => {
             monsterPanel.currentXMLTemplate = template;
             monsterPanel.loadData(monsterData);
             monsterPanel.gameObject.SetActive(true);
          });
          template.deleteButton.onClick.AddListener(() => {
-             toolManager.deleteMonsterDataFile(monsterData);
+            toolManager.deleteMonsterDataFile(monsterData);
          });
 
          template.gameObject.SetActive(true);
       }
    }
 
-   public void refreshXML () {
-      toolManager.loadAllDataFiles();
-      abilityToolManager.loadAllDataFiles();
-   }
-
-   public void updatePanelWithBattlerData (Dictionary<string, BattlerData> battlerData) {
+   public void updatePanelWithData (Dictionary<string, SeaMonsterEntityDataCopy> monsterData) {
       // Clear all the rows
       monsterTemplateParent.gameObject.DestroyChildren();
 
       // Create a row for each monster element
-      foreach (BattlerData battler in battlerData.Values) {
-         EnemyDataTemplate template = Instantiate(monsterTemplate, monsterTemplateParent);
-         template.updateItemDisplay(battler);
+      foreach (SeaMonsterEntityDataCopy seaMonsterData in monsterData.Values) {
+         SeaMonsterDataTemplate template = Instantiate(monsterTemplate, monsterTemplateParent);
+         template.updateItemDisplay(seaMonsterData);
          template.editButton.onClick.AddListener(() => {
             monsterPanel.currentXMLTemplate = template;
-            monsterPanel.loadData(battler);
+            monsterPanel.loadData(seaMonsterData);
             monsterPanel.gameObject.SetActive(true);
          });
 
@@ -123,13 +113,12 @@ public class MonsterDataScene : MonoBehaviour {
             Destroy(template.gameObject, .5f);
 
             Enemy.Type type = (Enemy.Type) Enum.Parse(typeof(Enemy.Type), template.nameText.text);
-            toolManager.deleteMonsterDataFile(new BattlerData { enemyType = type });
+            toolManager.deleteMonsterDataFile(new SeaMonsterEntityDataCopy { seaMonsterType = type });
             toolManager.loadAllDataFiles();
-            abilityToolManager.loadAllDataFiles();
          });
 
          try {
-            template.itemIcon.sprite = ImageManager.getSprite(battler.imagePath);
+            template.itemIcon.sprite = ImageManager.getSprite(seaMonsterData.avatarSpritePath);
          } catch {
             template.itemIcon.sprite = monsterPanel.emptySprite;
          }

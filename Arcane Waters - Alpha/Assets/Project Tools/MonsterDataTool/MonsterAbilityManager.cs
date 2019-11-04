@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class MonsterSceneAbilityManager : MonoBehaviour {
+public class MonsterAbilityManager : MonoBehaviour {
    #region Public Variables
 
    // Ability data list

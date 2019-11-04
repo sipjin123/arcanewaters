@@ -70,7 +70,7 @@ public class GiftNodeRow : MonoBehaviour
             cachedItemRowsList.Add(row);
          }
       }
-
+      createRewardButton.onClick.RemoveAllListeners();
       createRewardButton.onClick.AddListener(() => createGiftButtonClickedOn());
    }
 

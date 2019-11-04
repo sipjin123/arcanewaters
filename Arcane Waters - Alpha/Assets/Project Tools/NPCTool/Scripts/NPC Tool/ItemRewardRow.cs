@@ -55,7 +55,25 @@ public class ItemRewardRow : MonoBehaviour
       return itemReward;
    }
 
-   public Item getItem() {
+   public bool isValidItem () {
+      if (itemCategory.text.Length < 1)
+         return false;
+      if (itemTypeId.text.Length < 1)
+         return false;
+
+      try {
+         Item newItem = new Item {
+            category = (Item.Category) int.Parse(itemCategory.text),
+            itemTypeId = int.Parse(itemTypeId.text)
+         };
+      } catch {
+         return false;
+      }
+
+      return true;
+   }
+
+   public Item getItem () {
       return new Item {
          category = (Item.Category)int.Parse(itemCategory.text),
          itemTypeId = int.Parse(itemTypeId.text)

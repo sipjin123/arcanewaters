@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System.IO;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 public class NPCToolManager : MonoBehaviour {
 
@@ -16,10 +17,16 @@ public class NPCToolManager : MonoBehaviour {
    // The NPC Selection Screen
    public NPCSelectionScreen npcSelectionScreen;
 
+   // Opens the main tool
+   public Button openMainTool;
+
    #endregion
 
    public void Awake () {
       self = this;
+      openMainTool.onClick.AddListener(() => {
+         SceneManager.LoadScene(MasterToolScene.masterScene);
+      });
       loadAllDataFiles();
    }
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System;
+using UnityEngine.SceneManagement;
 
 public class AbilityDataScene : MonoBehaviour
 {
@@ -26,6 +27,9 @@ public class AbilityDataScene : MonoBehaviour
 
    // Button that cancels data setup
    public Button cancelButton;
+
+   // Opens the main tool
+   public Button openMainTool;
 
    // Skills Variables
    public Button addATKSkillButton, addDEFSkillButton;
@@ -56,6 +60,9 @@ public class AbilityDataScene : MonoBehaviour
       cancelButton.onClick.AddListener(() => {
          abilityPanel.SetActive(false);
          loadAllDataFiles();
+      });
+      openMainTool.onClick.AddListener(() => {
+         SceneManager.LoadScene(MasterToolScene.masterScene);
       });
       addATKSkillButton.onClick.AddListener(() => addSkillTemplate(AbilityType.Standard));
       addDEFSkillButton.onClick.AddListener(() => addSkillTemplate(AbilityType.BuffDebuff));

@@ -11,7 +11,7 @@ public class MonsterDataPanel : MonoBehaviour {
    #region Public Variables
 
    // Reference to the ability manager
-   public MonsterSceneAbilityManager abilityManager;
+   public MonsterAbilityManager abilityManager;
 
    // Reference to the ability tool manager
    public AbilityToolManager abilityToolManager;

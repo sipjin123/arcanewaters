@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using UnityEngine.SceneManagement;
 
 public class CraftingToolScene : MonoBehaviour {
    #region Public Variables
@@ -24,10 +25,16 @@ public class CraftingToolScene : MonoBehaviour {
 
    // Refreshes the file that is loaded in XML
    public Button refreshButton;
-   
+
+   // Opens the main tool
+   public Button openMainTool;
+
    #endregion
 
    private void Awake () {
+      openMainTool.onClick.AddListener(() => {
+         SceneManager.LoadScene(MasterToolScene.masterScene);
+      });
       craftingPanel.gameObject.SetActive(false);
       craftingPanel.popUpSelectionPanel.gameObject.SetActive(false);
       refreshButton.onClick.AddListener(() => refreshXML());
