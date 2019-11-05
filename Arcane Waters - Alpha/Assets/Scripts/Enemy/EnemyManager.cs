@@ -10,10 +10,7 @@ public class EnemyManager : MonoBehaviour {
 
    // Self
    public static EnemyManager self;
-
-   // The data of the seamonster by type
-   public List<SeaMonsterDataPair> seaMonsterDataList;
-
+   
    #endregion
 
    public void Awake () {
@@ -22,26 +19,6 @@ public class EnemyManager : MonoBehaviour {
       // Create empty lists for each Area Type
       foreach (Area.Type areaType in System.Enum.GetValues(typeof(Area.Type))) {
          _spawners[areaType] = new List<Enemy_Spawner>();
-      }
-   }
-
-   public void Start () {
-#if IS_SERVER_BUILD
-      foreach (SeaMonsterEntityDataCopy dataCopy in SeaMonsterManager.self.monsterDataList) {
-         SeaMonsterDataPair seaMonsterData = seaMonsterDataList.Find(_ => _.seaMonsterType == dataCopy.seaMonsterType);
-         if (seaMonsterData != null) {
-            seaMonsterData.seaMonsterData = dataCopy;
-         }
-      }
-#endif
-   }
-
-   public void receiveDataFromServer (SeaMonsterEntityDataCopy[] dataList) {
-      foreach (SeaMonsterEntityDataCopy dataCopy in dataList) {
-         SeaMonsterDataPair seaMonsterData = seaMonsterDataList.Find(_ => _.seaMonsterType == dataCopy.seaMonsterType);
-         if (seaMonsterData != null) {
-            seaMonsterData.seaMonsterData = dataCopy;
-         }
       }
    }
 
@@ -77,14 +54,4 @@ public class EnemyManager : MonoBehaviour {
    protected Dictionary<Area.Type, List<Enemy_Spawner>> _spawners = new Dictionary<Area.Type, List<Enemy_Spawner>>();
 
    #endregion
-}
-
-[Serializable]
-public class SeaMonsterDataPair
-{
-   // The type of seamonster
-   public Enemy.Type seaMonsterType;
-   
-   // The data to assign to the seamonster
-   public SeaMonsterEntityDataCopy seaMonsterData; 
 }

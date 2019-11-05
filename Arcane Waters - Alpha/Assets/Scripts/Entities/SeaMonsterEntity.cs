@@ -37,7 +37,7 @@ public class SeaMonsterEntity : SeaEntity
    public bool hasDied = false;
 
    // The unique data for each seamonster
-   public SeaMonsterEntityDataCopy seaMonsterData;
+   public SeaMonsterEntityData seaMonsterData;
 
    // The minimum magnitude to determine the movement of the unit
    public const float MIN_MOVEMENT_MAGNITUDE = .05f;
@@ -99,7 +99,7 @@ public class SeaMonsterEntity : SeaEntity
 
    #region Unity Lifecycle
 
-   public void initData (SeaMonsterEntityDataCopy entityData) {
+   public void initData (SeaMonsterEntityData entityData) {
       seaMonsterData = entityData;
       ripplesContainer.GetComponent<SpriteRenderer>().sprite = ImageManager.getSprite(seaMonsterData.defaultRippleSpritePath);
 
@@ -156,7 +156,7 @@ public class SeaMonsterEntity : SeaEntity
       base.Start();
 
       // Initializes the data from the scriptable object
-      initData(EnemyManager.self.seaMonsterDataList.Find(_ => _.seaMonsterType == monsterType).seaMonsterData);
+      initData(SeaMonsterManager.self.seaMonsterDataList.Find(_ => _.seaMonsterType == monsterType));
 
       if (isServer) {
          gridReference.displayGrid(transform.position, this.areaType);

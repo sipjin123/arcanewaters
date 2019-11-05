@@ -1447,7 +1447,7 @@ public class RPCManager : NetworkBehaviour {
    [Server]
    public void processEnemyRewards (Enemy.Type enemyType) {
       // Gets loots for enemy type
-      EnemyLootLibrary lootLibrary = RewardManager.self.enemyLootList.Find(_ => _.enemyType == enemyType);
+      EnemyLootLibrary lootLibrary = RewardManager.self.seaMonsterLootList.Find(_ => _.enemyType == enemyType);
       List<LootInfo> processedLoots = lootLibrary.dropTypes.requestLootList();
    
       // Registers list of ingredient types for data fetching

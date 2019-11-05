@@ -162,7 +162,7 @@ public class TreasureChest : NetworkBehaviour {
 
    public Item getEnemyContents () {
       // Gets loots for enemy type
-      EnemyLootLibrary lootLibrary = RewardManager.self.enemyLootList.Find(_ => _.enemyType == (Enemy.Type)enemyType);
+      EnemyLootLibrary lootLibrary = RewardManager.self.seaMonsterLootList.Find(_ => _.enemyType == (Enemy.Type)enemyType);
       List<LootInfo> processedLoots = lootLibrary.dropTypes.requestLootList();
 
       // Registers list of ingredient types for data fetching

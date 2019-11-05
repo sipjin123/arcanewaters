@@ -13,24 +13,20 @@ public class SeaMonsterManager : MonoBehaviour {
    // Sea monsters to spawn on random maps
    public Enemy.Type[] randomSeaMonsters;
 
-   // The files containing the crafting data
+   // The files containing the sea monster data
    public TextAsset[] monsterDataAssets;
 
    // Determines if the list is generated already
    public bool hasInitialized;
 
    // Holds the list of the xml translated data
-   public List<SeaMonsterEntityDataCopy> monsterDataList;
+   public List<SeaMonsterEntityData> seaMonsterDataList;
 
    #endregion
 
    public void Awake () {
       self = this;
-#if IS_SERVER_BUILD
-      initializeCraftCache();
-#else
-      monsterDataAssets = null;
-#endif
+      initializeSeaMonsterCache();
 
       // Create empty lists for each random sea map
       foreach (Area.Type areaType in System.Enum.GetValues(typeof(Area.Type))) {
@@ -74,45 +70,45 @@ public class SeaMonsterManager : MonoBehaviour {
 
    #region XML Features
 
-   private void initializeCraftCache () {
+   private void initializeSeaMonsterCache () {
       if (!hasInitialized) {
-         monsterDataList = new List<SeaMonsterEntityDataCopy>();
+         seaMonsterDataList = new List<SeaMonsterEntityData>();
          hasInitialized = true;
          // Iterate over the files
          foreach (TextAsset textAsset in monsterDataAssets) {
             // Read and deserialize the file
-            SeaMonsterEntityDataCopy monsterData = Util.xmlLoad<SeaMonsterEntityDataCopy>(textAsset);
+            SeaMonsterEntityData monsterData = Util.xmlLoad<SeaMonsterEntityData>(textAsset);
             Enemy.Type typeID = (Enemy.Type) monsterData.seaMonsterType;
             
             // Save the monster data in the memory cache
-            if (!_monsterData.ContainsKey(typeID)) {
-               _monsterData.Add(typeID, monsterData);
-               monsterDataList.Add(monsterData);
+            if (!_seaMonsterData.ContainsKey(typeID)) {
+               _seaMonsterData.Add(typeID, monsterData);
+               seaMonsterDataList.Add(monsterData);
             }
          }
       }
    }
    
-   public SeaMonsterEntityDataCopy getMonster (Enemy.Type enemyType, int itemType) {
-      return _monsterData[enemyType];
+   public SeaMonsterEntityData getMonster (Enemy.Type enemyType, int itemType) {
+      return _seaMonsterData[enemyType];
    }
 
-   public void receiveListFromServer (SeaMonsterEntityDataCopy[] battlerDataList) {
+   public void receiveListFromServer (SeaMonsterEntityData[] seamonsterDataList) {
       if (!hasInitialized) {
          hasInitialized = true;
-         monsterDataList = new List<SeaMonsterEntityDataCopy>();
-         foreach (SeaMonsterEntityDataCopy battlerData in battlerDataList) {
-            monsterDataList.Add(battlerData);
+         seaMonsterDataList = new List<SeaMonsterEntityData>();
+         foreach (SeaMonsterEntityData seaMonsterData in seamonsterDataList) {
+            seaMonsterDataList.Add(seaMonsterData);
          }
       }
    }
 
-   public List<SeaMonsterEntityDataCopy> getAllSeaMonsterData () {
-      List<SeaMonsterEntityDataCopy> monsterList = new List<SeaMonsterEntityDataCopy>();
-      foreach (KeyValuePair<Enemy.Type, SeaMonsterEntityDataCopy> item in _monsterData) {
-         monsterList.Add(item.Value);
+   public List<SeaMonsterEntityData> getAllSeaMonsterData () {
+      List<SeaMonsterEntityData> seaMonsterList = new List<SeaMonsterEntityData>();
+      foreach (KeyValuePair<Enemy.Type, SeaMonsterEntityData> item in _seaMonsterData) {
+         seaMonsterList.Add(item.Value);
       }
-      return monsterList;
+      return seaMonsterList;
    }
 
    #endregion
@@ -122,8 +118,8 @@ public class SeaMonsterManager : MonoBehaviour {
    // Stores a list of SeaMonster Spawners for each random sea map
    protected Dictionary<Area.Type, List<SeaMonsterSpawner>> _spawners = new Dictionary<Area.Type, List<SeaMonsterSpawner>>();
 
-   // The cached monster data 
-   private Dictionary<Enemy.Type, SeaMonsterEntityDataCopy> _monsterData = new Dictionary<Enemy.Type, SeaMonsterEntityDataCopy>();
+   // The cached seaa monster data 
+   private Dictionary<Enemy.Type, SeaMonsterEntityData> _seaMonsterData = new Dictionary<Enemy.Type, SeaMonsterEntityData>();
 
    #endregion
 }

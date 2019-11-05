@@ -15,7 +15,7 @@ public class RewardManager : MonoBehaviour {
    public static RewardManager self;
 
    // List of drops of enemies
-   public List<EnemyLootLibrary> enemyLootList;
+   public List<EnemyLootLibrary> seaMonsterLootList;
 
    // List of drops of ores
    public List<OreLootLibrary> oreLootList;
@@ -24,6 +24,17 @@ public class RewardManager : MonoBehaviour {
 
    private void Awake () {
       self = this;
+   }
+
+   private void Start () {
+      seaMonsterLootList = new List<EnemyLootLibrary>();
+      foreach (SeaMonsterEntityData lootData in SeaMonsterManager.self.seaMonsterDataList) {
+         EnemyLootLibrary newLibrary = new EnemyLootLibrary();
+         newLibrary.enemyType = lootData.seaMonsterType;
+         newLibrary.dropTypes = lootData.lootData;
+
+         seaMonsterLootList.Add(newLibrary);
+      }
    }
 
    public void receiveListFromServer (CraftableItemRequirements[] requirements) {
@@ -53,7 +64,7 @@ public class EnemyLootLibrary
 {
    public Enemy.Type enemyType;
 
-   public GenericLootData dropTypes;
+   public RawGenericLootData dropTypes;
 }
 
 [Serializable]
