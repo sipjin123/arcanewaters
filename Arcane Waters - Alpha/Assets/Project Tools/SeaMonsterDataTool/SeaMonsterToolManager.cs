@@ -19,7 +19,7 @@ public class SeaMonsterToolManager : MonoBehaviour
    }
 
    public void loadAllDataFiles () {
-      monsterDataList = new Dictionary<string, SeaMonsterEntityDataCopy>();
+      monsterDataList = new Dictionary<string, SeaMonsterEntityData>();
       // Build the path to the folder containing the Monster data XML files
       string directoryPath = Path.Combine(Application.dataPath, "Data", "SeaMonsterStats");
 
@@ -30,12 +30,12 @@ public class SeaMonsterToolManager : MonoBehaviour
          string[] fileNames = ToolsUtil.getFileNamesInFolder(directoryPath, "*.xml");
 
          // Iterate over the files
-         for (int i = 0; i < fileNames.Length; i++) {
+         foreach (string fileName in fileNames) { 
             // Build the path to a single file
-            string filePath = Path.Combine(directoryPath, fileNames[i]);
+            string filePath = Path.Combine(directoryPath, fileName);
 
             // Read and deserialize the file
-            SeaMonsterEntityDataCopy monsterData = ToolsUtil.xmlLoad<SeaMonsterEntityDataCopy>(filePath);
+            SeaMonsterEntityData monsterData = ToolsUtil.xmlLoad<SeaMonsterEntityData>(filePath);
 
             // Save the Monster data in the memory cache
             monsterDataList.Add(monsterData.monsterName, monsterData);
@@ -44,7 +44,7 @@ public class SeaMonsterToolManager : MonoBehaviour
       }
    }
 
-   public void deleteMonsterDataFile (SeaMonsterEntityDataCopy data) {
+   public void deleteMonsterDataFile (SeaMonsterEntityData data) {
       // Build the file name
       string fileName = data.monsterName;
 
@@ -59,7 +59,7 @@ public class SeaMonsterToolManager : MonoBehaviour
       return monsterDataList.ContainsKey(nameID);
    }
 
-   public void saveDataToFile (SeaMonsterEntityDataCopy data) {
+   public void saveDataToFile (SeaMonsterEntityData data) {
       string directoryPath = Path.Combine(Application.dataPath, "Data", "SeaMonsterStats");
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
@@ -75,9 +75,26 @@ public class SeaMonsterToolManager : MonoBehaviour
       ToolsUtil.xmlSave(data, path);
    }
 
+   public void duplicateFile (SeaMonsterEntityData data) {
+      string directoryPath = Path.Combine(Application.dataPath, "Data", "SeaMonsterStats");
+      if (!Directory.Exists(directoryPath)) {
+         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
+      }
+
+      // Build the file name
+      data.monsterName += "_copy";
+      string fileName = data.monsterName;
+
+      // Build the path to the file
+      string path = Path.Combine(Application.dataPath, "Data", "SeaMonsterStats", fileName + ".xml");
+
+      // Save the file
+      ToolsUtil.xmlSave(data, path);
+   }
+
    #region Private Variables
 
-   private Dictionary<string, SeaMonsterEntityDataCopy> monsterDataList = new Dictionary<string, SeaMonsterEntityDataCopy>();
+   private Dictionary<string, SeaMonsterEntityData> monsterDataList = new Dictionary<string, SeaMonsterEntityData>();
 
    #endregion
 }

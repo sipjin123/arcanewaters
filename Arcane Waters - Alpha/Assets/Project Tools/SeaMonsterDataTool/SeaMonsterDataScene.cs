@@ -38,7 +38,7 @@ public class SeaMonsterDataScene : MonoBehaviour
       openMainTool.onClick.AddListener(() => {
          SceneManager.LoadScene(MasterToolScene.masterScene);
       });
-      createTemplateButton.onClick.AddListener(() => createNewTemplate(new SeaMonsterEntityDataCopy()));
+      createTemplateButton.onClick.AddListener(() => createNewTemplate(new SeaMonsterEntityData()));
 
       if (!hasBeenInitialized) {
          hasBeenInitialized = true;
@@ -76,7 +76,7 @@ public class SeaMonsterDataScene : MonoBehaviour
       }
    }
 
-   private void createNewTemplate (SeaMonsterEntityDataCopy monsterData) {
+   private void createNewTemplate (SeaMonsterEntityData monsterData) {
       string itemName = "Undefined";
       monsterData.seaMonsterType = Enemy.Type.Coralbow;
 
@@ -90,17 +90,21 @@ public class SeaMonsterDataScene : MonoBehaviour
          template.deleteButton.onClick.AddListener(() => {
             toolManager.deleteMonsterDataFile(monsterData);
          });
+         template.duplicateButton.onClick.AddListener(() => {
+            toolManager.duplicateFile(monsterData);
+            toolManager.loadAllDataFiles();
+         });
 
          template.gameObject.SetActive(true);
       }
    }
 
-   public void updatePanelWithData (Dictionary<string, SeaMonsterEntityDataCopy> monsterData) {
+   public void updatePanelWithData (Dictionary<string, SeaMonsterEntityData> monsterData) {
       // Clear all the rows
       monsterTemplateParent.gameObject.DestroyChildren();
 
       // Create a row for each monster element
-      foreach (SeaMonsterEntityDataCopy seaMonsterData in monsterData.Values) {
+      foreach (SeaMonsterEntityData seaMonsterData in monsterData.Values) {
          SeaMonsterDataTemplate template = Instantiate(monsterTemplate, monsterTemplateParent);
          template.updateItemDisplay(seaMonsterData);
          template.editButton.onClick.AddListener(() => {
@@ -111,9 +115,13 @@ public class SeaMonsterDataScene : MonoBehaviour
 
          template.deleteButton.onClick.AddListener(() => {
             Destroy(template.gameObject, .5f);
+            
+            toolManager.deleteMonsterDataFile(new SeaMonsterEntityData { monsterName = seaMonsterData.monsterName, seaMonsterType = seaMonsterData.seaMonsterType });
+            toolManager.loadAllDataFiles();
+         });
 
-            Enemy.Type type = (Enemy.Type) Enum.Parse(typeof(Enemy.Type), template.nameText.text);
-            toolManager.deleteMonsterDataFile(new SeaMonsterEntityDataCopy { seaMonsterType = type });
+         template.duplicateButton.onClick.AddListener(() => {
+            toolManager.duplicateFile(seaMonsterData);
             toolManager.loadAllDataFiles();
          });
 

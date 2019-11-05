@@ -163,6 +163,11 @@ public class AbilityDataScene : MonoBehaviour
             loadAllDataFiles();
             Destroy(template.gameObject, .5f);
          });
+         template.duplicateButton.onClick.AddListener(() => {
+            AbilityToolManager.DirectoryType directoryType = AbilityToolManager.DirectoryType.BasicAbility;
+            abilityManager.duplicateFile(abilityData, directoryType);
+            abilityManager.loadAllDataFiles();
+         });
 
          finalizeTemplate(template, abilityData);
       }
@@ -178,6 +183,11 @@ public class AbilityDataScene : MonoBehaviour
             loadAllDataFiles();
             Destroy(template.gameObject, .5f);
          });
+         template.duplicateButton.onClick.AddListener(() => {
+            AbilityToolManager.DirectoryType directoryType = AbilityToolManager.DirectoryType.AttackAbility;
+            abilityManager.duplicateFile(abilityData, directoryType);
+            abilityManager.loadAllDataFiles();
+         });
 
          finalizeTemplate(template, abilityData);
       }
@@ -192,6 +202,11 @@ public class AbilityDataScene : MonoBehaviour
             deleteAbility(new BasicAbilityData { itemName = template.actualName, abilityType = AbilityType.BuffDebuff });
             loadAllDataFiles();
             Destroy(template.gameObject, .5f);
+         });
+         template.duplicateButton.onClick.AddListener(() => {
+            AbilityToolManager.DirectoryType directoryType = AbilityToolManager.DirectoryType.BuffAbility;
+            abilityManager.duplicateFile(abilityData, directoryType);
+            abilityManager.loadAllDataFiles();
          });
 
          finalizeTemplate(template, abilityData);

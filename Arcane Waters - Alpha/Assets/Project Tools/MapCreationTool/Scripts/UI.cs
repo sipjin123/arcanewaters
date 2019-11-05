@@ -3,6 +3,7 @@ using MapCreationTool.UndoSystem;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace MapCreationTool
@@ -29,6 +30,9 @@ namespace MapCreationTool
         private DrawBoard drawBoard;
         [SerializeField]
         private Overlord overlord;
+
+        // Opens the main tool
+        public Button openMainTool;
 
         private CanvasScaler canvasScaler;
 
@@ -78,6 +82,9 @@ namespace MapCreationTool
         }
         private void Awake()
         {
+            openMainTool.onClick.AddListener(() => {
+               SceneManager.LoadScene(MasterToolScene.masterScene);
+            });
             canvasScaler = GetComponent<CanvasScaler>();
         }
         private void Start()

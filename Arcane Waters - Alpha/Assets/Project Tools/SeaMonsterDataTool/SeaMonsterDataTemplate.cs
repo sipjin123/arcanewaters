@@ -23,9 +23,12 @@ public class SeaMonsterDataTemplate : MonoBehaviour
    // Icon of the item
    public Image itemIcon;
 
+   // Button for duplicating this template
+   public Button duplicateButton;
+
    #endregion
 
-   public void updateItemDisplay (SeaMonsterEntityDataCopy resultItem) {
+   public void updateItemDisplay (SeaMonsterEntityData resultItem) {
       string newName = "Undefined";
       try {
          newName = resultItem.monsterName + " (" + ((Enemy.Type) resultItem.seaMonsterType).ToString() + ")";

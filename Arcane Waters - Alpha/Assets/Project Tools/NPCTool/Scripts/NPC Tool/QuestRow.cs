@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public class QuestRow : MonoBehaviour
 {
@@ -10,7 +11,8 @@ public class QuestRow : MonoBehaviour
    // The components displaying the main quest parameters
    public Text questIdText;
    public InputField title;
-   public InputField friendshipRankRequired;
+   public Text friendshipRankRequiredText;
+   public Slider friendshipRankRequired;
    public Toggle isRepeatable;
 
    // The container for the quest nodes
@@ -37,11 +39,18 @@ public class QuestRow : MonoBehaviour
    #endregion
 
    public void setRowForQuest (Quest quest) {
+      friendshipRankRequired.maxValue = Enum.GetValues(typeof(NPCFriendship.Rank)).Length-1;
+      friendshipRankRequired.onValueChanged.RemoveAllListeners();
+      friendshipRankRequired.onValueChanged.AddListener(_ => {
+         friendshipRankRequiredText.text = ((NPCFriendship.Rank) _).ToString();
+      });
+
       _questId = quest.questId;
       _lastUsedNodeId = quest.lastUsedNodeId;
       questIdText.text = quest.questId.ToString();
       title.text = quest.title;
-      friendshipRankRequired.text = ((int) quest.friendshipRankRequired).ToString();
+      friendshipRankRequired.value = ((int) quest.friendshipRankRequired);
+      friendshipRankRequired.onValueChanged.Invoke((int) quest.friendshipRankRequired);
       isRepeatable.isOn = quest.isRepeatable;
 
       if (quest.nodes != null && quest.nodes.Length > 0) {
@@ -138,7 +147,7 @@ public class QuestRow : MonoBehaviour
       }
 
       // Create a new quest object
-      Quest quest = new Quest(_questId, title.text, (NPCFriendship.Rank) int.Parse(friendshipRankRequired.text),
+      Quest quest = new Quest(_questId, title.text, (NPCFriendship.Rank) friendshipRankRequired.value,
          isRepeatable.isOn, _lastUsedNodeId, questNodeList.ToArray());
 
       return quest;

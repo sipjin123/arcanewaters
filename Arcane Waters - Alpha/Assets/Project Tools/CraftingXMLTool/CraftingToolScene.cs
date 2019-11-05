@@ -52,6 +52,10 @@ public class CraftingToolScene : MonoBehaviour {
             craftingPanel.gameObject.SetActive(true);
             craftingPanel.setData(requirementData);
          });
+         template.duplicateButton.onClick.AddListener(() => {
+            toolManager.duplicateDataFile(requirementData);
+            toolManager.loadAllDataFiles();
+         });
          template.deleteButton.onClick.AddListener(() => {
             toolManager.deleteCraftingDataFile(requirementData);
          });
@@ -79,6 +83,10 @@ public class CraftingToolScene : MonoBehaviour {
             craftingPanel.currentXMLTemplate = template;
             craftingPanel.gameObject.SetActive(true);
             craftingPanel.setData(craftingRequirement);
+         });
+         template.duplicateButton.onClick.AddListener(() => {
+            toolManager.duplicateDataFile(craftingRequirement);
+            toolManager.loadAllDataFiles();
          });
          template.deleteButton.onClick.AddListener(() => {
             Destroy(template.gameObject, .5f);

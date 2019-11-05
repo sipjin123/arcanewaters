@@ -95,6 +95,10 @@ public class MonsterDataScene : MonoBehaviour {
          template.deleteButton.onClick.AddListener(() => {
              toolManager.deleteMonsterDataFile(monsterData);
          });
+         template.duplicateButton.onClick.AddListener(() => {
+            toolManager.duplicateData(monsterData);
+            toolManager.loadAllDataFiles();
+         });
 
          template.gameObject.SetActive(true);
       }
@@ -119,11 +123,16 @@ public class MonsterDataScene : MonoBehaviour {
             monsterPanel.gameObject.SetActive(true);
          });
 
+         template.duplicateButton.onClick.AddListener(() => {
+            toolManager.duplicateData(battler);
+            toolManager.loadAllDataFiles();
+         });
+
          template.deleteButton.onClick.AddListener(() => {
             Destroy(template.gameObject, .5f);
 
-            Enemy.Type type = (Enemy.Type) Enum.Parse(typeof(Enemy.Type), template.nameText.text);
-            toolManager.deleteMonsterDataFile(new BattlerData { enemyType = type });
+            Enemy.Type type = battler.enemyType;
+            toolManager.deleteMonsterDataFile(new BattlerData { enemyType = type, enemyName = battler.enemyName });
             toolManager.loadAllDataFiles();
             abilityToolManager.loadAllDataFiles();
          });

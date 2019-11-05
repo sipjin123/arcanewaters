@@ -12,8 +12,8 @@ public class AbilityToolManager : MonoBehaviour
    // Reference to the tool scene
    public AbilityDataScene abilityScene;
 
-   // Reference to the tool for the monster scene
-   public MonsterAbilityManager monsterAbilityScene;
+   // Reference to the tool for the monster ability manager
+   public MonsterAbilityManager monsterAbilityManager;
 
    public enum DirectoryType
    {
@@ -40,9 +40,28 @@ public class AbilityToolManager : MonoBehaviour
       if (abilityScene != null) {
          abilityScene.updateWithAbilityData(abilityDataList, attackAbilityList, buffAbilityList);
       }
-      if (monsterAbilityScene != null) {
-         monsterAbilityScene.updateWithAbilityData(abilityDataList, attackAbilityList, buffAbilityList);
+      if (monsterAbilityManager != null) {
+         monsterAbilityManager.updateWithAbilityData(abilityDataList, attackAbilityList, buffAbilityList);
       }
+   }
+
+   public void duplicateFile (BasicAbilityData data, DirectoryType directoryType) {
+      string directoryPath = "";
+      directoryPath = Path.Combine(Application.dataPath, "Data/Ability", getDirectory(directoryType));
+
+      if (!Directory.Exists(directoryPath)) {
+         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
+      }
+
+      // Build the file name
+      data.itemName += "_copy";
+      string fileName = data.itemName;
+
+      // Build the path to the file
+      string path = Path.Combine(Application.dataPath, "Data/Ability", getDirectory(directoryType), fileName + ".xml");
+
+      // Save the file
+      ToolsUtil.xmlSave(data, path);
    }
 
    private void loadBasicAbility(DirectoryType directoryType) {

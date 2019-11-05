@@ -10,7 +10,7 @@ public class MonsterManager : MonoBehaviour {
    // Self
    public static MonsterManager self;
 
-   // The files containing the crafting data
+   // The files containing the monster data
    public TextAsset[] monsterDataAssets;
 
    // Determines if the list is generated already
@@ -34,7 +34,7 @@ public class MonsterManager : MonoBehaviour {
       self = this;
 
 #if IS_SERVER_BUILD
-      initializeCraftCache();
+      initializeLandMonsterDataCache();
 #else
       monsterDataAssets = null;
 #endif
@@ -104,7 +104,7 @@ public class MonsterManager : MonoBehaviour {
       return monsterList;
    }
 
-   private void initializeCraftCache () {
+   private void initializeLandMonsterDataCache () {
       if (!hasInitialized) {
          hasInitialized = true;
          // Iterate over the files

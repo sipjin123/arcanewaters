@@ -6,6 +6,9 @@ public class NPCSelectionScreen : MonoBehaviour
 {
    #region Public Variables
 
+   // Reference to npc tool manager
+   public NPCToolManager npcToolManager;
+
    // Our associated Canvas Group
    public CanvasGroup canvasGroup;
 
@@ -38,13 +41,17 @@ public class NPCSelectionScreen : MonoBehaviour
          row.transform.SetParent(rowsContainer.transform, false);
          row.setRowForNPC(this, npcData.npcId, npcData.name);
          row.deleteButton.onClick.AddListener(() => deleteNPC(npcData.npcId));
+         row.duplicateButton.onClick.AddListener(() => {
+            npcData.npcId = 0;
+            npcToolManager.duplicateFile(npcData);
+         });
 
          if (npcData.iconPath != "") {
             try {
                row.npcIcon.sprite = ImageManager.getSprite(npcData.iconPath);
             } catch {
                // Should be an Error Icon
-               row.npcIcon.sprite = ImageManager.getSprite("Assets/Sprites/Icons/Stats/icon_vitality.png");
+               row.npcIcon.sprite = ImageManager.getSprite("Assets/Sprites/Icons/Stats/icon_precision.png");
             }
          } else {
             // Should be a NULL Icon

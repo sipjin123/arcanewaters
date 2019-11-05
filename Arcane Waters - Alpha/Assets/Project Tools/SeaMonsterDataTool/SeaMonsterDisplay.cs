@@ -29,7 +29,7 @@ public class SeaMonsterDisplay : MonoBehaviour {
    public Button toggleFlip;
 
    // Data cache
-   public SeaMonsterEntityDataCopy currentData;
+   public SeaMonsterEntityData currentData;
 
    // Spawn Indicator UI 
    public GameObject spawnPointIcon;
@@ -107,8 +107,12 @@ public class SeaMonsterDisplay : MonoBehaviour {
       overrideTransformParent.SetActive(false);
    }
 
-   public void setData (SeaMonsterEntityDataCopy monsterData) {
+   public void setData (SeaMonsterEntityData monsterData) {
       currentData = monsterData;
+      Destroy(simpleAnim);
+      Destroy(rippleSimpleAnim);
+      simpleAnim = defaultSprite.gameObject.AddComponent<SimpleAnimation>();
+      rippleSimpleAnim = rippleSprite.gameObject.AddComponent<SimpleAnimation>();
 
       animSlider.onValueChanged.RemoveAllListeners();
       animSlider.maxValue = Enum.GetValues(typeof(Anim.Type)).Length - 1;
@@ -129,6 +133,7 @@ public class SeaMonsterDisplay : MonoBehaviour {
 
       defaultSprite.sprite = ImageManager.getSprite(monsterData.defaultSpritePath);
       rippleSprite.sprite = ImageManager.getSprite(monsterData.defaultRippleSpritePath);
+      rippleSprite.transform.localPosition = monsterData.rippleLocOffset;
 
       outlineSprite.transform.localScale = new Vector3(monsterData.outlineScaleOverride, monsterData.outlineScaleOverride, monsterData.outlineScaleOverride);
       defaultSprite.transform.localScale = new Vector3(monsterData.scaleOverride, monsterData.scaleOverride, monsterData.scaleOverride);
@@ -200,6 +205,7 @@ public class SeaMonsterDisplay : MonoBehaviour {
 
    #region Private Variables
 
+   // Determines if the sprite is the primary or seconday (A needed feature for toggling alternate sprites)
    private bool _isPrimarySprite = true;
 
    #endregion

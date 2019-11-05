@@ -21,6 +21,9 @@ public class NPCSelectionRow : MonoBehaviour
    // Holds the button for the deletion of the npc
    public Button deleteButton;
 
+   // Button for duplicating this template
+   public Button duplicateButton;
+
    #endregion
 
    public void setRowForNPC(NPCSelectionScreen npcSelectionScreen, int npcId, string npcName) {

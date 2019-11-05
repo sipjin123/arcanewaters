@@ -74,6 +74,23 @@ public class MonsterToolManager : MonoBehaviour {
       ToolsUtil.xmlSave(data, path);
    }
 
+   public void duplicateData (BattlerData data) {
+      string directoryPath = Path.Combine(Application.dataPath, "Data", "MonsterStats");
+      if (!Directory.Exists(directoryPath)) {
+         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
+      }
+
+      // Build the file name
+      data.enemyName += "_copy";
+      string fileName = data.enemyName;
+
+      // Build the path to the file
+      string path = Path.Combine(Application.dataPath, "Data", "MonsterStats", fileName + ".xml");
+
+      // Save the file
+      ToolsUtil.xmlSave(data, path);
+   }
+
    #region Private Variables
 
    private Dictionary<string, BattlerData> monsterDataList = new Dictionary<string, BattlerData>();

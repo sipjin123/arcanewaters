@@ -19,6 +19,9 @@ public class CraftableItemTemplate : MonoBehaviour {
    // Button for deleting a craftable item
    public Button deleteButton;
 
+   // Button for duplicating a craftable item
+   public Button duplicateButton;
+
    // Icon of the item
    public Image itemIcon;
 

@@ -74,6 +74,25 @@ public class CraftingToolManager : MonoBehaviour {
       ToolsUtil.xmlSave(data, path);
    }
 
+   public void duplicateDataFile (CraftableItemRequirements data) {
+      string directoryPath = Path.Combine(Application.dataPath, "Data", "Crafting");
+      if (!Directory.Exists(directoryPath)) {
+         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
+      }
+
+      data.resultItem.category = Item.Category.None;
+      data.resultItem.itemTypeId = 0;
+
+      // Build the file name
+      string fileName = data.resultItem.category == Item.Category.None ? "Undefined" : data.resultItem.category.ToString() + "_" + data.resultItem.getCastItem().getName();
+
+      // Build the path to the file
+      string path = Path.Combine(Application.dataPath, "Data", "Crafting", fileName + ".xml");
+
+      // Save the file
+      ToolsUtil.xmlSave(data, path);
+   }
+
    #region Private Variables
 
    private Dictionary<string, CraftableItemRequirements> craftingDataList = new Dictionary<string, CraftableItemRequirements>();

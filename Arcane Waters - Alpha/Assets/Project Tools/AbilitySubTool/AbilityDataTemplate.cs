@@ -26,6 +26,9 @@ public class AbilityDataTemplate : MonoBehaviour
    // The raw name of the item
    public string actualName;
 
+   // Duplicate
+   public Button duplicateButton;
+
    #endregion
 
    public void updateItemDisplay (BasicAbilityData resultItem) {

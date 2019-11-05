@@ -15,9 +15,10 @@ public class MasterToolScene : MonoBehaviour {
    public const string seaMonsterScene = "Sea Monster Data Tool";
    public const string npcScene = "NPC Tool";
    public const string craftingScene = "CraftingScene";
+   public const string mapScene = "MapCreationTool";
 
    // Button triggers to open scene
-   public Button clickAbilityScene, clickMonsterScene, clickSeaMonsterScene, clickNPCScene, clickCraftingScene;
+   public Button clickAbilityScene, clickMonsterScene, clickSeaMonsterScene, clickNPCScene, clickCraftingScene, clickMapScene;
 
    #endregion
 
@@ -36,6 +37,9 @@ public class MasterToolScene : MonoBehaviour {
       });
       clickCraftingScene.onClick.AddListener(() => {
          SceneManager.LoadScene(craftingScene);
+      });
+      clickMapScene.onClick.AddListener(() => {
+         SceneManager.LoadScene(mapScene);
       });
    }
 

@@ -38,6 +38,7 @@ public class NPCToolManager : MonoBehaviour {
       // Build the path to the folder containing the NPC data XML files
       string directoryPath = Path.Combine(Application.dataPath, "Data", "NPC");
 
+      _npcData = new Dictionary<int, NPCData>();
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
       } else {
@@ -53,7 +54,9 @@ public class NPCToolManager : MonoBehaviour {
             NPCData npcData = ToolsUtil.xmlLoad<NPCData>(filePath);
 
             // Save the NPC data in the memory cache
-            _npcData.Add(npcData.npcId, npcData);
+            if (!_npcData.ContainsKey(npcData.npcId)) {
+               _npcData.Add(npcData.npcId, npcData);
+            }
          }
          npcSelectionScreen.updatePanelWithNPCs(_npcData);
       }
@@ -154,6 +157,33 @@ public class NPCToolManager : MonoBehaviour {
 
       // Save the file
       ToolsUtil.xmlSave(data, path);
+   }
+
+   public void duplicateFile (NPCData data) {
+      // Build the path to the folder containing the NPC data XML files
+      string directoryPath = Path.Combine(Application.dataPath, "Data", "NPC");
+
+      if (!Directory.Exists(directoryPath)) {
+         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
+      }
+
+      // Build the file name
+      data.name = "Duplicated File";
+      data.npcId = 0;
+      data.iconPath = null;
+
+      if (_npcData.ContainsKey(data.npcId)) {
+         return;
+      }
+
+      string fileName = data.npcId.ToString() + "_" + data.name;
+
+      // Build the path to the file
+      string path = Path.Combine(Application.dataPath, "Data", "NPC", fileName + ".xml");
+
+      // Save the file
+      ToolsUtil.xmlSave(data, path);
+      loadAllDataFiles();
    }
 
    #region Private Variables

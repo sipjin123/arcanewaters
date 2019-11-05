@@ -22,6 +22,9 @@ public class EnemyDataTemplate : MonoBehaviour {
    // Icon of the item
    public Image itemIcon;
 
+   // Button for duplicating this template
+   public Button duplicateButton;
+
    #endregion
 
    public void updateItemDisplay (BattlerData resultItem) {

@@ -23,7 +23,7 @@ public class ProjectileSpawnRow : MonoBehaviour {
    #endregion
 
    public void initData() {
-      directionSlider.maxValue = Enum.GetValues(typeof(Direction)).Length - 1;
+      directionSlider.maxValue = Enum.GetValues(typeof(Direction)).Length;
       directionSlider.onValueChanged.AddListener(_ => {
          directionText.text = ((Direction) directionSlider.value).ToString();
       });

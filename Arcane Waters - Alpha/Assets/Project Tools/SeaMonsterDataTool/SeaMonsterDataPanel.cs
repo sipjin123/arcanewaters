@@ -62,12 +62,12 @@ public class SeaMonsterDataPanel : MonoBehaviour
 
    public enum DirectoryType
    {
-      AvatarSprite,
-      PrimarySprite,
-      SecondarySprite,
-      RippleSprite,
-      RippleTexture,
-      CorpseSprite
+      AvatarSprite = 0,
+      PrimarySprite = 1,
+      SecondarySprite = 2,
+      RippleSprite = 3,
+      RippleTexture = 4,
+      CorpseSprite = 5
    }
 
    // Monster Loots
@@ -110,7 +110,7 @@ public class SeaMonsterDataPanel : MonoBehaviour
       });
 
       previewMonster.onClick.AddListener(() => {
-         SeaMonsterEntityDataCopy dataCopy = getSeaMonsterData();
+         SeaMonsterEntityData dataCopy = getSeaMonsterData();
 
          if (dataCopy.animGroup != Anim.Group.None && 
          dataCopy.defaultSpritePath != "" &&
@@ -177,7 +177,7 @@ public class SeaMonsterDataPanel : MonoBehaviour
 
    #region Save and Load Data
 
-   public void loadData (SeaMonsterEntityDataCopy seaMonsterData) {
+   public void loadData (SeaMonsterEntityData seaMonsterData) {
       monsterName.text = seaMonsterData.monsterName;
       seaMonsterType.text = seaMonsterData.seaMonsterType.ToString();
       isAggressive.isOn = seaMonsterData.isAggressive;
@@ -210,6 +210,8 @@ public class SeaMonsterDataPanel : MonoBehaviour
       animationSpeedOverride.text = seaMonsterData.animationSpeedOverride.ToString();
       rippleAnimationSpeedOverride.text = seaMonsterData.rippleAnimationSpeedOverride.ToString();
       avatarIconPath.text = seaMonsterData.avatarSpritePath;
+      rippleOffsetX.text = seaMonsterData.rippleLocOffset.x.ToString();
+      rippleOffsetY.text = seaMonsterData.rippleLocOffset.y.ToString();
 
       animGroup.onValueChanged.Invoke(animGroup.value);
       roleType.onValueChanged.Invoke(roleType.value);
@@ -239,8 +241,8 @@ public class SeaMonsterDataPanel : MonoBehaviour
       loadLootTemplates(seaMonsterData.lootData);
    }
 
-   private SeaMonsterEntityDataCopy getSeaMonsterData () {
-      SeaMonsterEntityDataCopy seaMonsterData = new SeaMonsterEntityDataCopy();
+   private SeaMonsterEntityData getSeaMonsterData () {
+      SeaMonsterEntityData seaMonsterData = new SeaMonsterEntityData();
 
       seaMonsterData.monsterName = monsterName.text;
       seaMonsterData.seaMonsterType = (Enemy.Type) Enum.Parse(typeof(Enemy.Type), seaMonsterType.text);
@@ -279,6 +281,7 @@ public class SeaMonsterDataPanel : MonoBehaviour
       seaMonsterData.roleType = (RoleType) roleType.value;
       seaMonsterData.animationSpeedOverride = float.Parse(animationSpeedOverride.text);
       seaMonsterData.rippleAnimationSpeedOverride = float.Parse(rippleAnimationSpeedOverride.text);
+      seaMonsterData.rippleLocOffset = new Vector3(float.Parse(rippleOffsetX.text), float.Parse(rippleOffsetY.text), 0);
 
       if (projectileSpawnRowList.Count > 0) {
          seaMonsterData.projectileSpawnLocations = new List<DirectionalPositions>();
@@ -297,9 +300,9 @@ public class SeaMonsterDataPanel : MonoBehaviour
    }
 
    public void saveData () {
-      SeaMonsterEntityDataCopy rawData = getSeaMonsterData();
+      SeaMonsterEntityData rawData = getSeaMonsterData();
       if (rawData.monsterName != startingName) {
-         deleteOldData(new SeaMonsterEntityDataCopy { monsterName = startingName });
+         deleteOldData(new SeaMonsterEntityData { monsterName = startingName });
       }
       rawData.lootData = getRawLootData();
 
@@ -308,7 +311,7 @@ public class SeaMonsterDataPanel : MonoBehaviour
       gameObject.SetActive(false);
    }
 
-   private void deleteOldData (SeaMonsterEntityDataCopy rawData) {
+   private void deleteOldData (SeaMonsterEntityData rawData) {
       monsterToolManager.deleteMonsterDataFile(rawData);
    }
 
@@ -529,7 +532,7 @@ public class SeaMonsterDataPanel : MonoBehaviour
       }
    }
 
-   public void loadProjectileSpawnRow (SeaMonsterEntityDataCopy data) {
+   public void loadProjectileSpawnRow (SeaMonsterEntityData data) {
       projectileSpawnParent.gameObject.DestroyChildren();
       projectileSpawnRowList = new List<ProjectileSpawnRow>();
 
@@ -619,6 +622,7 @@ public class SeaMonsterDataPanel : MonoBehaviour
    [SerializeField] private Text roleTypeText;
    [SerializeField] private InputField animationSpeedOverride;
    [SerializeField] private InputField rippleAnimationSpeedOverride;
+   [SerializeField] private InputField rippleOffsetX, rippleOffsetY;
 
 #pragma warning restore 0649 
 
