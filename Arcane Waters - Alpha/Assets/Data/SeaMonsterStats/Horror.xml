@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<SeaMonsterEntityDataCopy xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<SeaMonsterEntityData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <monsterName>Horror</monsterName>
   <seaMonsterType xmlns="SeaMonsterType">Horror</seaMonsterType>
   <attackType xmlns="AttackType">None</attackType>
@@ -18,7 +18,7 @@
   <attackFrequency>1</attackFrequency>
   <reloadDelay>1</reloadDelay>
   <moveFrequency>5</moveFrequency>
-  <findTargetsFrequency>0.5</findTargetsFrequency>
+  <findTargetsFrequency>2</findTargetsFrequency>
   <avatarSpritePath>Assets/Sprites/Enemies/SeaMonsters/horror.png</avatarSpritePath>
   <defaultSpritePath>Assets/Sprites/Enemies/SeaMonsters/boss_horror.png</defaultSpritePath>
   <secondarySpritePath>Assets/Sprites/Enemies/SeaMonsters/boss_horror.png</secondarySpritePath>
@@ -44,4 +44,4 @@
     <minQuantity>2</minQuantity>
     <maxQuantity>5</maxQuantity>
   </lootData>
-</SeaMonsterEntityDataCopy>
+</SeaMonsterEntityData>

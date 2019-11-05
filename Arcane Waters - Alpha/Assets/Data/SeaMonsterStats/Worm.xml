@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<SeaMonsterEntityDataCopy xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<SeaMonsterEntityData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <monsterName>Worm</monsterName>
   <seaMonsterType xmlns="SeaMonsterType">Worm</seaMonsterType>
   <attackType xmlns="AttackType">Venom</attackType>
@@ -33,40 +33,6 @@
   <roleType>Standalone</roleType>
   <animationSpeedOverride>-1</animationSpeedOverride>
   <rippleAnimationSpeedOverride>-1</rippleAnimationSpeedOverride>
-  <projectileSpawnLocations>
-    <DirectionalPositions>
-      <direction>North</direction>
-      <spawnTransform>
-        <x>0</x>
-        <y>0.26</y>
-        <z>0</z>
-      </spawnTransform>
-    </DirectionalPositions>
-    <DirectionalPositions>
-      <direction>East</direction>
-      <spawnTransform>
-        <x>0.16</x>
-        <y>0.11</y>
-        <z>0</z>
-      </spawnTransform>
-    </DirectionalPositions>
-    <DirectionalPositions>
-      <direction>West</direction>
-      <spawnTransform>
-        <x>-0.2</x>
-        <y>0.11</y>
-        <z>0</z>
-      </spawnTransform>
-    </DirectionalPositions>
-    <DirectionalPositions>
-      <direction>South</direction>
-      <spawnTransform>
-        <x>0</x>
-        <y>0.05</y>
-        <z>0</z>
-      </spawnTransform>
-    </DirectionalPositions>
-  </projectileSpawnLocations>
   <rippleLocOffset>
     <x>0</x>
     <y>0</y>
@@ -78,4 +44,4 @@
     <minQuantity>2</minQuantity>
     <maxQuantity>5</maxQuantity>
   </lootData>
-</SeaMonsterEntityDataCopy>
+</SeaMonsterEntityData>

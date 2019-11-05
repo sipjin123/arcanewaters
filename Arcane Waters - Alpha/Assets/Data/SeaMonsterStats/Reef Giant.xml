@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<SeaMonsterEntityDataCopy xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<SeaMonsterEntityData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <monsterName>Reef Giant</monsterName>
   <seaMonsterType xmlns="SeaMonsterType">Reef_Giant</seaMonsterType>
   <attackType xmlns="AttackType">Boulder</attackType>
@@ -31,7 +31,7 @@
   <maxHealth>25</maxHealth>
   <animGroup>ReefGiant</animGroup>
   <roleType>Standalone</roleType>
-  <animationSpeedOverride>0.01</animationSpeedOverride>
+  <animationSpeedOverride>0.1</animationSpeedOverride>
   <rippleAnimationSpeedOverride>-1</rippleAnimationSpeedOverride>
   <rippleLocOffset>
     <x>0</x>
@@ -44,4 +44,4 @@
     <minQuantity>2</minQuantity>
     <maxQuantity>5</maxQuantity>
   </lootData>
-</SeaMonsterEntityDataCopy>
+</SeaMonsterEntityData>

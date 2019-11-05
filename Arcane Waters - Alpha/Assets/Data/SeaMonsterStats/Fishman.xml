@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<SeaMonsterEntityDataCopy xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<SeaMonsterEntityData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <monsterName>Fishman</monsterName>
   <seaMonsterType xmlns="SeaMonsterType">Fishman</seaMonsterType>
   <attackType xmlns="AttackType">Shock_Ball</attackType>
@@ -44,4 +44,4 @@
     <minQuantity>0</minQuantity>
     <maxQuantity>0</maxQuantity>
   </lootData>
-</SeaMonsterEntityDataCopy>
+</SeaMonsterEntityData>

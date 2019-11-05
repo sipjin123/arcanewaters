@@ -76,7 +76,7 @@
           </FriendshipRewards>
         </Node>
       </Nodes>
-      <friendshipRankRequired>0</friendshipRankRequired>
+      <friendshipRankRequired>1</friendshipRankRequired>
     </Quest>
     <Quest>
       <questId>1</questId>
