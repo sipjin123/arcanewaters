@@ -118,7 +118,7 @@ public class SeaMonsterManager : MonoBehaviour {
    // Stores a list of SeaMonster Spawners for each random sea map
    protected Dictionary<Area.Type, List<SeaMonsterSpawner>> _spawners = new Dictionary<Area.Type, List<SeaMonsterSpawner>>();
 
-   // The cached seaa monster data 
+   // The cached sea monster data 
    private Dictionary<Enemy.Type, SeaMonsterEntityData> _seaMonsterData = new Dictionary<Enemy.Type, SeaMonsterEntityData>();
 
    #endregion

@@ -94,6 +94,7 @@ public class SeaMonsterToolManager : MonoBehaviour
 
    #region Private Variables
 
+   // Holds the list of sea monster data
    private Dictionary<string, SeaMonsterEntityData> monsterDataList = new Dictionary<string, SeaMonsterEntityData>();
 
    #endregion

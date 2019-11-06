@@ -98,6 +98,39 @@ public class AnimUtil : MonoBehaviour {
                   return new AnimInfo(animType, 14, 14);
             }
             break;
+
+         case Anim.Group.PlayerShip:
+            switch (animType) {
+               case Anim.Type.Attack_South:
+                  return new AnimInfo(animType, 0, 1);
+               case Anim.Type.Attack_East:
+                  return new AnimInfo(animType, 4, 5);
+               case Anim.Type.Attack_North:
+                  return new AnimInfo(animType, 8, 9);
+
+               case Anim.Type.Idle_South:
+                  return new AnimInfo(animType, 0, 1);
+               case Anim.Type.Idle_East:
+                  return new AnimInfo(animType, 4, 5);
+               case Anim.Type.Idle_North:
+                  return new AnimInfo(animType, 8, 9);
+
+               case Anim.Type.Battle_South:
+                  return new AnimInfo(animType, 0, 1);
+               case Anim.Type.Battle_East:
+                  return new AnimInfo(animType, 4, 5);
+               case Anim.Type.Battle_North:
+                  return new AnimInfo(animType, 8, 9);
+
+               case Anim.Type.Run_South:
+                  return new AnimInfo(animType, 0, 1);
+               case Anim.Type.Run_East:
+                  return new AnimInfo(animType, 4, 5);
+               case Anim.Type.Run_North:
+                  return new AnimInfo(animType, 8, 9);
+            }
+            break;
+
          case Anim.Group.Lizard:
             switch (animType) {
                case Anim.Type.Idle_East:

@@ -31,6 +31,7 @@ public class Anim : MonoBehaviour {
       ReefGiant = 5,
       Tentacle = 6,
       Horror = 7,
+      PlayerShip = 8
    }
       
    #endregion
