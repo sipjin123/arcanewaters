@@ -44,6 +44,35 @@
         <abilityActionType>Melee</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
       </BasicAbilityData>
+      <BasicAbilityData xsi:type="BuffAbilityData">
+        <itemID>1</itemID>
+        <itemName>bufffs</itemName>
+        <itemDescription>Desc</itemDescription>
+        <itemIconPath />
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Undefined</string>
+        </hitSpritesPath>
+        <elementType>ALL</elementType>
+        <hitAudioClipPath />
+        <classRequirement>Any</classRequirement>
+        <battleItemType>UNDEFINED</battleItemType>
+        <castAudioClipPath />
+        <allowedStances />
+        <abilityType>BuffDebuff</abilityType>
+        <abilityCooldown>1</abilityCooldown>
+        <apChange>1</apChange>
+        <abilityCost>1</abilityCost>
+        <castSpritesPath>
+          <string>Undefined</string>
+        </castSpritesPath>
+        <FXTimePerFrame>1</FXTimePerFrame>
+        <buffActionType>UNDEFINED</buffActionType>
+        <buffType>UNDEFINED</buffType>
+        <iconPath />
+        <duration>1</duration>
+        <value>0</value>
+      </BasicAbilityData>
     </basicAbilityDataList>
     <attackAbilityDataList>
       <AttackAbilityData>
@@ -76,7 +105,37 @@
         <canBeBlocked>true</canBeBlocked>
       </AttackAbilityData>
     </attackAbilityDataList>
-    <buffAbilityDataList />
+    <buffAbilityDataList>
+      <BuffAbilityData>
+        <itemID>1</itemID>
+        <itemName>bufffs</itemName>
+        <itemDescription>Desc</itemDescription>
+        <itemIconPath />
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Undefined</string>
+        </hitSpritesPath>
+        <elementType>ALL</elementType>
+        <hitAudioClipPath />
+        <classRequirement>Any</classRequirement>
+        <battleItemType>UNDEFINED</battleItemType>
+        <castAudioClipPath />
+        <allowedStances />
+        <abilityType>BuffDebuff</abilityType>
+        <abilityCooldown>1</abilityCooldown>
+        <apChange>1</apChange>
+        <abilityCost>1</abilityCost>
+        <castSpritesPath>
+          <string>Undefined</string>
+        </castSpritesPath>
+        <FXTimePerFrame>1</FXTimePerFrame>
+        <buffActionType>UNDEFINED</buffActionType>
+        <buffType>UNDEFINED</buffType>
+        <iconPath />
+        <duration>1</duration>
+        <value>0</value>
+      </BuffAbilityData>
+    </buffAbilityDataList>
   </battlerAbilities>
   <battlerLootData>
     <lootList />

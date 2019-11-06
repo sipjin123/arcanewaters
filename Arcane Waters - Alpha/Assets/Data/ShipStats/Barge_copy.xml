@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<ShipData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <shipType>Barge</shipType>
+  <shipName>Barge_copy</shipName>
+  <shipID>0</shipID>
+  <skinType>Caravel_Ice</skinType>
+  <baseHealth>4</baseHealth>
+  <baseRange>4</baseRange>
+  <baseDamage>4</baseDamage>
+  <baseSpeed>4</baseSpeed>
+  <basePrice>4</basePrice>
+  <baseSailors>4</baseSailors>
+  <baseCargoRoom>4</baseCargoRoom>
+  <baseSupplyRoom>4</baseSupplyRoom>
+  <sailType>Galleon_1</sailType>
+  <mastType>Galleon_1</mastType>
+  <spritePath>Assets/Sprites/Ships/Buss/buss_1.png</spritePath>
+  <rippleSpritePath>Assets/Sprites/Ship/ship_waves.png</rippleSpritePath>
+  <avatarIconPath>Assets/Sprites/Ships/Nao/nao_crimson.png</avatarIconPath>
+</ShipData>

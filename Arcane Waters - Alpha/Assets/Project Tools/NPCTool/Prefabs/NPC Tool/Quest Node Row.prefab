@@ -941,6 +941,8 @@ GameObject:
   - component: {fileID: 3522463627806789563}
   - component: {fileID: 8338410287657025911}
   - component: {fileID: 6983992970755770768}
+  - component: {fileID: 6956875616938239648}
+  - component: {fileID: 7235837248135862995}
   m_Layer: 5
   m_Name: Title Row
   m_TagString: Untagged
@@ -1035,6 +1037,32 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6956875616938239648
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2834271137570531582}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates: []
+--- !u!114 &7235837248135862995
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2834271137570531582}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  message: The item reward for completing the quest
 --- !u!1 &3196361856701022890
 GameObject:
   m_ObjectHideFlags: 0
@@ -1091,6 +1119,32 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &8948299124916868820
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3227788206890198564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates: []
+--- !u!114 &7731322135481627501
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3227788206890198564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  message: The player reply
 --- !u!1 &3364623872119734734
 GameObject:
   m_ObjectHideFlags: 0
@@ -1597,6 +1651,32 @@ MonoBehaviour:
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
+--- !u!114 &7117716820286648417
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5029769621865508666}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates: []
+--- !u!114 &4208743205104013694
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5029769621865508666}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  message: The npc dialogue
 --- !u!1 &5109439696317094445
 GameObject:
   m_ObjectHideFlags: 0
@@ -2474,6 +2554,8 @@ GameObject:
   - component: {fileID: 2333116258683214058}
   - component: {fileID: 7446078969034719018}
   - component: {fileID: 3355065715231579883}
+  - component: {fileID: 2850041993742935200}
+  - component: {fileID: 5884593039456146483}
   m_Layer: 5
   m_Name: Title Row
   m_TagString: Untagged
@@ -2568,6 +2650,32 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &2850041993742935200
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7766095418540978900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates: []
+--- !u!114 &5884593039456146483
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7766095418540978900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  message: The item delivery requirements
 --- !u!1 &7858321461853990458
 GameObject:
   m_ObjectHideFlags: 0
@@ -2909,6 +3017,32 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &29926119298291626
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8852880986290885438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates: []
+--- !u!114 &8773048715922709362
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8852880986290885438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  message: The friendship points earned for completing the quest
 --- !u!1 &9011348785597267507
 GameObject:
   m_ObjectHideFlags: 0
@@ -3174,6 +3308,12 @@ MonoBehaviour:
 --- !u!224 &1979116890429408146 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 570918169693933271, guid: a372bebbdf1aca0409e11e7eafe22535,
+    type: 3}
+  m_PrefabInstance: {fileID: 2061368108918574405}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3227788206890198564 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3481312311825378145, guid: a372bebbdf1aca0409e11e7eafe22535,
     type: 3}
   m_PrefabInstance: {fileID: 2061368108918574405}
   m_PrefabAsset: {fileID: 0}
@@ -3560,6 +3700,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d199490a83bb2b844b9695cbf13b01ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &8852880986290885438 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6656155208933961992, guid: cf247d87f846fb348af5e917ad74d094,
+    type: 3}
+  m_PrefabInstance: {fileID: 2775529911206699574}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8475017794995586139
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3744,6 +3890,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a372bebbdf1aca0409e11e7eafe22535, type: 3}
+--- !u!1 &5029769621865508666 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3481312311825378145, guid: a372bebbdf1aca0409e11e7eafe22535,
+    type: 3}
+  m_PrefabInstance: {fileID: 8475017794995586139}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &8246373237789805196 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 570918169693933271, guid: a372bebbdf1aca0409e11e7eafe22535,
