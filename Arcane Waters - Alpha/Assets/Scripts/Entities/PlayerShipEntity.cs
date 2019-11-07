@@ -7,9 +7,21 @@ using Mirror;
 public class PlayerShipEntity : ShipEntity {
    #region Public Variables
 
+   // The maximum number of scheduled shots at any time
+   public static int MAX_SCHEDULED_SHOTS = 1;
+
+   // The lower limit of the normal attack zone, in percentage of the max range
+   public static float LOWER_LIMIT_NORMAL_ATTACK = 0.3f;
+
+   // The lower limit of the strong attack zone, in percentage of the max range
+   public static float LOWER_LIMIT_STRONG_ATTACK = 0.80f;
+
    // The ID of this ship in the database
    [SyncVar]
    public int shipId;
+
+   // The coordinates of the schedules shots
+   public LinkedList<Vector2> scheduledShots = new LinkedList<Vector2>();
 
    #endregion
 
@@ -40,14 +52,33 @@ public class PlayerShipEntity : ShipEntity {
          _hasSentRespawnRequest = true;
       }
 
-      // While right-mouse is held down, we show the attack GUI
-      if (Input.GetMouseButtonDown(1)) {
-         showAttackInterface();
+      // If the reload is finished and a shot was scheduled, fire it
+      if (scheduledShots.Count > 0 && hasReloaded()) {
+         // Fire the scheduled shot
+         Cmd_FireAtSpot(scheduledShots.First.Value, SeaManager.selectedAttackType, 0, 0, transform.position);
+
+         // Delete the scheduled shot
+         scheduledShots.RemoveFirst();
       }
 
       // Right-click to attack in a circle
       if (Input.GetMouseButtonUp(1) && !isDead() && SeaManager.selectedAttackType != Attack.Type.Air) {
-         Cmd_FireAtSpot(Util.getMousePos(), SeaManager.selectedAttackType, 0, 0, transform.position);
+         // If the ship is reloading, add the shot to the scheduled shots
+         if (!hasReloaded()) {
+            // If we reached the maximum number of scheduled shots, the last one is replaced
+            if (scheduledShots.Count >= MAX_SCHEDULED_SHOTS) {
+               scheduledShots.RemoveLast();               
+            }
+            // Schedule the shot
+            scheduledShots.AddLast(clampToRange(Util.getMousePos()));
+         } else {
+            Cmd_FireAtSpot(Util.getMousePos(), SeaManager.selectedAttackType, 0, 0, transform.position);
+         }
+      }
+
+      // If the right mouse button is being held and the left mouse button is clicked, clear the scheduled shots
+      if (Input.GetMouseButton(1) && Input.GetMouseButtonDown(0)) {
+         scheduledShots.Clear();
       }
 
       // Space to fire at the selected ship
@@ -96,14 +127,10 @@ public class PlayerShipEntity : ShipEntity {
       this.shipId = shipInfo.shipId;
       this.currentHealth = shipInfo.health;
       this.maxHealth = shipInfo.maxHealth;
-      this.attackRange = shipInfo.attackRange;
+      this.attackRangeModifier = shipInfo.attackRange;
       this.speed = shipInfo.speed;
       this.sailors = shipInfo.sailors;
       this.rarity = shipInfo.rarity;
-   }
-
-   protected void showAttackInterface () {
-
    }
 
    protected void adjustMovementAudio() {
@@ -131,6 +158,36 @@ public class PlayerShipEntity : ShipEntity {
             return 5f;
          default:
             return 10f;
+      }
+   }
+
+   public AttackZone.Type getAttackZone (Vector2 spot) {
+      // Clamp the spot to the attack zone
+      spot = clampToRange(spot);
+
+      // Calculate the squared distance to the spot
+      float sqrDistance = Vector2.SqrMagnitude(spot - (Vector2) transform.position);
+
+      // Determine the attack zone of the spot
+      if (sqrDistance < (LOWER_LIMIT_NORMAL_ATTACK * getAttackRange()) * (LOWER_LIMIT_NORMAL_ATTACK * getAttackRange())) {
+         return AttackZone.Type.Weak;
+      } else if (sqrDistance < (LOWER_LIMIT_STRONG_ATTACK * getAttackRange()) * (LOWER_LIMIT_STRONG_ATTACK * getAttackRange())) {
+         return AttackZone.Type.Normal;
+      } else {
+         return AttackZone.Type.Strong;
+      }
+   }
+
+   public float getDamageModifierForAttackZone (AttackZone.Type attackZone) {
+      switch (attackZone) {
+         case AttackZone.Type.Weak:
+            return 0.5f;
+         case AttackZone.Type.Normal:
+            return 1f;
+         case AttackZone.Type.Strong:
+            return 1.5f;
+         default:
+            return 1f;
       }
    }
 
@@ -311,7 +368,7 @@ public class PlayerShipEntity : ShipEntity {
       Vector2 spot = target.transform.position;
 
       // The target point is clamped to the attack range
-      spot = AttackManager.clampToRange(transform.position, spot, attackRange);
+      spot = clampToRange(spot);
       
       // Note the time at which we last successfully attacked
       _lastAttackTime = Time.time;

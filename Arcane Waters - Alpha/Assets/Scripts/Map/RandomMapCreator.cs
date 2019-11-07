@@ -43,10 +43,37 @@ public static class RandomMapCreator {
       return RandomMapManager.self.presets.ChooseRandom();
    }
 
+   public static void tryGenerateRandomMap (MapConfig mapConfig) {
+      // Get last map config player was in
+      if (Global.player && PlayerPrefs.HasKey("MapConfigSeed")) {
+         MapConfig mapConfigToCompare = new MapConfig();
+         mapConfigToCompare.seed = PlayerPrefs.GetInt("MapConfigSeed");
+         mapConfigToCompare.persistance = PlayerPrefs.GetFloat("MapConfigPersistance");
+         mapConfigToCompare.lacunarity = PlayerPrefs.GetFloat("MapConfigLacunarity");
+         mapConfigToCompare.seedPath = PlayerPrefs.GetInt("MapConfigSeedPath");
+
+         // Compare with available map instances
+         Global.player.rpc.Cmd_CompareClientServerMapConfig(mapConfigToCompare);
+      } else {
+         // Generate new map if player haven't entered any map before
+         generateRandomMap(mapConfig);
+      }
+   }
+
    /// <summary>
    /// Generate and moves player to created map
    /// </summary>
    public static GameObject generateRandomMap (MapConfig mapConfig) {
+      // Save prefs only for client session
+      if (Global.player) {
+         PlayerPrefs.SetInt("MapConfigSeed", mapConfig.seed);
+         PlayerPrefs.SetFloat("MapConfigPersistance", mapConfig.persistance);
+         PlayerPrefs.SetFloat("MapConfigLacunarity", mapConfig.lacunarity);
+         PlayerPrefs.SetInt("MapConfigSeedPath", mapConfig.seedPath);
+
+         PlayerPrefs.Save();
+      }
+
       // If tiles are already generated for this client - do not spawn again
       if (_generatedAreas.Contains(mapConfig.areaType)) {
          return null;
@@ -94,6 +121,11 @@ public static class RandomMapCreator {
       // Set warp zone at spawn areas
       CreateWarpBack(true, preset, area);
       CreateWarpBack(false, preset, area);
+
+      // Update minimap after generating new map
+      if (Minimap.self) {
+         Minimap.self.updateMinimapForNewArea();
+      }
 
       return generatedMap;
    }

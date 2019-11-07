@@ -163,7 +163,7 @@ public class BotShipEntity : ShipEntity {
 
          // If the requested spot is not in the allowed area, reject the request
          if (isInRange(spot)) {
-            fireAtSpot(spot, Attack.Type.Cannon, 0, 0, transform.position);
+            fireAtSpot(spot, Attack.Type.Cannon, 0, 0, 1f, transform.position);
 
             return;
          }

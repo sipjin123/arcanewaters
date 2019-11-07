@@ -9,10 +9,7 @@ public class AttackRangeCircle : MonoBehaviour
    #region Public Variables
    
    // The maximum distance between two dots in the circle
-   public static float MAX_ARC_LENGTH = 0.2f;
-
-   // The rotation speed
-   public static float ROTATION_SPEED = 3f;
+   public static float MAX_ARC_LENGTH = 0.15f;
 
    // The prefab we use to create dots
    public AttackRangeDot dotPrefab;
@@ -55,15 +52,9 @@ public class AttackRangeCircle : MonoBehaviour
       }
    }
 
-   public void Update () {
-      // Slowly rotate while active
-      transform.Rotate(Vector3.forward, ROTATION_SPEED * Time.deltaTime);
-   }
-
-   public void show () {
-      gameObject.SetActive(true);
+   public void show (AttackZone.Type attackZone) {
       foreach(AttackRangeDot dot in _dots) {
-         dot.show();
+         dot.show(attackZone);
       }
    }
 
@@ -71,7 +62,6 @@ public class AttackRangeCircle : MonoBehaviour
       foreach (AttackRangeDot dot in _dots) {
          dot.hide();
       }
-      gameObject.SetActive(false);
    }
 
    #region Private Variables

@@ -95,26 +95,26 @@ public class Ship : SeaEntity {
       }
    }
 
-   public static float getBaseAttackRange (Ship.Type shipType) {
+   public static int getBaseAttackRange (Ship.Type shipType) {
       switch (shipType) {
          case Type.Caravel:
-            return 1.5f;
+            return 100;
          case Type.Brigantine:
-            return 1.5f;
+            return 105;
          case Type.Nao:
-            return 1.5f;
+            return 110;
          case Type.Carrack:
-            return 1.5f;
+            return 115;
          case Type.Cutter:
-            return 1.5f;
+            return 120;
          case Type.Buss:
-            return 1.5f;
+            return 125;
          case Type.Galleon:
-            return 1.5f;
+            return 130;
          case Type.Barge:
-            return 1.5f;
+            return 135;
          default:
-            return 1.5f;
+            return 100;
       }
    }
 

@@ -16,17 +16,20 @@ public class AttackManager : ClientMonoBehaviour {
    // The cursor that highlights enemies being targeted
    public AttackCircleAimCursor aimCursor;
 
-   // The circle that shows the zone were the attack is allowed
-   public AttackRangeCircle attackRangeCircle;
+   // The circles that shows the targeted zones
+   public AttackZoneCircles attackZoneCircles;
 
    // The line that shows the trajectory of the projectile
    public AttackTrajectory trajectory;
 
-   // The currently selected attack target point
-   public Vector2 targetPoint;
+   // The container for the scheduled shots indicators
+   public Transform scheduledShotIndicatorsContainer;
 
    // A prefab we use for creating moving dots
    public MovingDot dotPrefab;
+
+   // The prefab we use for creating sheduled shots indicators
+   public GameObject scheduledShotIndicatorPrefab;
 
    // Self
    public static AttackManager self;
@@ -36,6 +39,13 @@ public class AttackManager : ClientMonoBehaviour {
    protected override void Awake () {
       base.Awake();
       self = this;
+
+      // Create the scheduled shots indicators
+      for (int i = 0; i < PlayerShipEntity.MAX_SCHEDULED_SHOTS; i++) {
+         GameObject indicator = Instantiate(scheduledShotIndicatorPrefab, scheduledShotIndicatorsContainer);
+         _scheduledShotIndicators.Add(indicator);
+         indicator.SetActive(false);
+      }
    }
 
    void Update () {
@@ -43,78 +53,84 @@ public class AttackManager : ClientMonoBehaviour {
          SeaManager.combatMode != SeaManager.CombatMode.Circle || SeaManager.selectedAttackType == Attack.Type.Air) {
          attackCircleClampedIndicator.enabled = false;
          attackCircleFreeIndicator.enabled = false;
-         attackRangeCircle.hide();
+         attackZoneCircles.hide();
          trajectory.hide();
          aimCursor.deactivate();
          Cursor.visible = true;
          return;
       }
 
-      // Check if the right mouse is being held down
-      bool rightMouseDown = Input.GetMouseButton(1);
-
-      // Only show the indicators while the right mouse is down
-      attackCircleClampedIndicator.enabled = rightMouseDown;
-      attackCircleFreeIndicator.enabled = rightMouseDown;
-      if (rightMouseDown) {
-         attackRangeCircle.show();
-         trajectory.show();
-         aimCursor.activate();
-      } else {
-         attackRangeCircle.hide();
-         trajectory.hide();
-         aimCursor.deactivate();
+      // Update the range circles if the range has changed
+      PlayerShipEntity playerShipEntity = (PlayerShipEntity) Global.player;
+      if (playerShipEntity.getAttackRange() != _attackRange) {
+         _attackRange = playerShipEntity.getAttackRange();
+         attackZoneCircles.draw(_attackRange);
       }
 
-      // Update the range indicator if the range has changed
-      ShipEntity shipEntity = (ShipEntity) Global.player;
-      if (shipEntity.attackRange != _attackRange) {
-         _attackRange = shipEntity.attackRange;
-         attackRangeCircle.draw(_attackRange);
-         attackRangeCircle.show();
-      }
-
-      // Only show the trajectory when the ship has reloaded
-      if (!shipEntity.hasReloaded()) {
-         trajectory.hide();
-      }
-
-      // Move the range indicator to the player position
-      Util.setXY(attackRangeCircle.transform, Global.player.transform.position);
+      // Move the range circle to the player position
+      Util.setXY(attackZoneCircles.transform, Global.player.transform.position);
 
       // Hide the cursor when the right mouse is down
-      Cursor.visible = !rightMouseDown;
+      Cursor.visible = !Input.GetMouseButton(1);
 
-      // If the mouse button isn't down, we don't have to do anything else
-      if (!rightMouseDown) {
-         return;
+      // Hide all the indicators
+      attackCircleClampedIndicator.enabled = false;
+      attackCircleFreeIndicator.enabled = false;
+      trajectory.hide();
+      aimCursor.deactivate();
+
+      // Check if the mouse right button is pressed
+      if (Input.GetMouseButton(1)) {
+         // Move the clamped aim indicator to the mouse position - clamped inside the range zone
+         Util.setXY(attackCircleClampedIndicator.transform,
+            playerShipEntity.clampToRange(Util.getMousePos()));
+
+         // Determine the targeted attack zone
+         AttackZone.Type attackZone = playerShipEntity.getAttackZone(Util.getMousePos());
+
+         // Move the trajectory to the player position
+         Util.setXY(trajectory.transform, Global.player.transform.position);
+
+         // Draw the trajectory
+         trajectory.draw(Global.player.transform.position, attackCircleClampedIndicator.transform.position, attackZone);
+
+         // Move the free aim indicator to the mouse position
+         Util.setXY(attackCircleFreeIndicator.transform, Util.getMousePos());
+
+         // Display the range circles for the targeted attack zone
+         attackZoneCircles.show(attackZone);
+
+         // Display the relevant indicators
+         attackCircleClampedIndicator.enabled = true;
+         attackCircleFreeIndicator.enabled = true;
+         trajectory.show();
+         aimCursor.activate();
       }
 
-      // Figure out where the mouse is in world coordinates
-      targetPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+      // Hide all the scheduled shot indicators
+      foreach (GameObject indicator in _scheduledShotIndicators) {
+         indicator.SetActive(false);
+      }
 
-      // Move the free aim indicator to the mouse position
-      Util.setXY(attackCircleFreeIndicator.transform, targetPoint);
+      // Check if there are scheduled shots
+      if (playerShipEntity.scheduledShots.Count > 0) {
+         // Place an indicator at each scheduled shot position
+         int k = 0;
+         foreach (Vector2 position in playerShipEntity.scheduledShots) {
+            _scheduledShotIndicators[k].SetActive(true);
+            _scheduledShotIndicators[k].transform.position = position;
+            k++;
+         }
+      }
 
-      // Move the clamped aim indicator to the mouse position - clamped inside the range zone
-      Util.setXY(attackCircleClampedIndicator.transform,
-         clampToRange(Global.player.transform.position, targetPoint, _attackRange));
-
-      // Move the trajectory to the player position
-      Util.setXY(trajectory.transform, Global.player.transform.position);
-
-      // Draw the trajectory
-      trajectory.draw(Global.player.transform.position, attackCircleClampedIndicator.transform.position, _attackRange);
+      // Hide the attack range circles if not relevant
+      if (!Input.GetMouseButton(1)) {
+         attackZoneCircles.hide();
+      }
    }
 
    public bool isHoveringOver (NetEntity entity) {
       return aimCursor.isCursorHoveringOver(entity);
-   }
-
-   public static Vector2 clampToRange (Vector2 entityPosition, Vector2 targetPoint, float range) {
-      Vector2 relativePosition = (targetPoint - entityPosition);
-      Vector2 clampedRelativePosition = Vector2.ClampMagnitude(relativePosition, range);
-      return entityPosition + clampedRelativePosition;
    }
 
    protected void createMovingDot () {
@@ -142,7 +158,10 @@ public class AttackManager : ClientMonoBehaviour {
    #region Private Variables
 
    // The attack range of the player's ship entity
-   private float _attackRange = 0f;
+   private float _attackRange = 0;
+
+   // The list of target indicators for scheduled shots
+   private List<GameObject> _scheduledShotIndicators = new List<GameObject>();
 
    #endregion
 }

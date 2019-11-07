@@ -43,6 +43,30 @@ public struct MapConfig
       this.seedPath = seedPath;
    }
 
+   public override string ToString () {
+      return seed.ToString() + " : " + seedPath.ToString() + " : " + lacunarity.ToString() + " : " + persistance.ToString();
+   }
+
+   public override bool Equals (object obj) {
+      MapConfig mapConfig = (MapConfig) obj;
+      return mapConfig.seed == seed &&
+         mapConfig.seedPath == seedPath &&
+         mapConfig.lacunarity == lacunarity &&
+         mapConfig.persistance == persistance;
+   }
+
+   public override int GetHashCode () {
+      var hashCode = -1996336407;
+      hashCode = hashCode * -1521134295 + seed.GetHashCode();
+      hashCode = hashCode * -1521134295 + persistance.GetHashCode();
+      hashCode = hashCode * -1521134295 + lacunarity.GetHashCode();
+      hashCode = hashCode * -1521134295 + EqualityComparer<Vector2>.Default.GetHashCode(offset);
+      hashCode = hashCode * -1521134295 + areaType.GetHashCode();
+      hashCode = hashCode * -1521134295 + biomeType.GetHashCode();
+      hashCode = hashCode * -1521134295 + seedPath.GetHashCode();
+      return hashCode;
+   }
+
    #region Private Variables
 
    #endregion

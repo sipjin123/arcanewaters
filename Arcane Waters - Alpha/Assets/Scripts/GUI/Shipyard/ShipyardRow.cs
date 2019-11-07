@@ -28,6 +28,7 @@ public class ShipyardRow : MonoBehaviour {
    public Text suppliesText;
    public Text cargoText;
    public Text speedText;
+   public Text attackRangeText;
    public Text sailorsText;
 
    #endregion
@@ -47,6 +48,7 @@ public class ShipyardRow : MonoBehaviour {
       suppliesText.text = "" + shipInfo.suppliesMax;
       cargoText.text = "" + shipInfo.cargoMax;
       speedText.text = "" + shipInfo.speed;
+      attackRangeText.text = "" + shipInfo.attackRange;
       sailorsText.text = "" + shipInfo.sailors;
 
       // If it's already sold, update the button

@@ -430,7 +430,7 @@ public class SeaEntity : NetEntity {
       float delay = Mathf.Clamp(distance, .5f, 1.5f);
 
       // Have the server check for collisions after the attack reaches the target
-      StartCoroutine(CO_CheckCircleForCollisions(this, delay, spot, attackType, true));
+      StartCoroutine(CO_CheckCircleForCollisions(this, delay, spot, attackType, true, 1f));
 
       // Make note on the clients that the ship just attacked
       Rpc_NoteAttack();
@@ -438,12 +438,22 @@ public class SeaEntity : NetEntity {
 
    [Command]
    public void Cmd_FireAtSpot (Vector2 spot, Attack.Type attackType, float attackDelay, float launchDelay, Vector2 spawnPosition) {
+      float damageModifier = 1f;
+
+      if (this is PlayerShipEntity) {
+         // Get the player ship entity
+         PlayerShipEntity playerShipEntity = (PlayerShipEntity) this;
+
+         // Calculate the damage modifier for the targeted attack zone
+        damageModifier = playerShipEntity.getDamageModifierForAttackZone(playerShipEntity.getAttackZone(spot));
+      }
+
       // We handle the logic in a non-Cmd function so that it can be called directly on the server if needed
-      fireAtSpot(spot, attackType, attackDelay, launchDelay, spawnPosition);
+      fireAtSpot(spot, attackType, attackDelay, launchDelay, damageModifier, spawnPosition);
    }
 
    [Server]
-   public virtual void fireAtSpot (Vector2 spot, Attack.Type attackType, float attackDelay, float launchDelay, Vector2 spawnPosition = new Vector2(), bool isLastProjectile = true) {
+   public virtual void fireAtSpot (Vector2 spot, Attack.Type attackType, float attackDelay, float launchDelay, float damageModifier, Vector2 spawnPosition = new Vector2(), bool isLastProjectile = true) {
       // Last projectile will only be false if it is a barrage of projectiles, a single projectile attack will always be a Last Projectile
       if (isLastProjectile && (isDead() || !hasReloaded())) {
          return;
@@ -474,7 +484,7 @@ public class SeaEntity : NetEntity {
          bool targetPlayersOnly = this is SeaMonsterEntity;
 
          // Have the server check for collisions after the AOE projectile reaches the target
-         StartCoroutine(CO_CheckCircleForCollisions(this, launchDelay + delay, spot, attackType, targetPlayersOnly));
+         StartCoroutine(CO_CheckCircleForCollisions(this, launchDelay + delay, spot, attackType, targetPlayersOnly, damageModifier));
       }
 
       // Make note on the clients that the ship just attacked
@@ -530,7 +540,8 @@ public class SeaEntity : NetEntity {
    }
 
    [Server]
-   protected IEnumerator CO_CheckCircleForCollisions (SeaEntity attacker, float delay, Vector2 circleCenter, Attack.Type attackType, bool targetPlayersOnly) {
+   protected IEnumerator CO_CheckCircleForCollisions (SeaEntity attacker, float delay, Vector2 circleCenter, Attack.Type attackType, bool targetPlayersOnly,
+      float damageModifier) {
       // Wait until the cannon ball reaches the target
       yield return new WaitForSeconds(delay);
 
@@ -549,7 +560,7 @@ public class SeaEntity : NetEntity {
                // Make sure the target is in our same instance
                if (entity != null && entity.instanceId == this.instanceId) {
                   if (!entity.invulnerable) {
-                     int damage = (int) (this.damage * Attack.getDamageModifier(attackType));
+                     int damage = (int) (this.damage * Attack.getDamageModifier(attackType) * damageModifier);
                      entity.currentHealth -= damage;
                      entity.Rpc_ShowDamageText(damage, attacker.userId, attackType);
                      entity.Rpc_ShowExplosion(entity.transform.position, damage, attackType);
@@ -586,16 +597,16 @@ public class SeaEntity : NetEntity {
 
       if (attackCounter % 2 == 0) {
          // North East West South Attack Pattern
-         fireAtSpot(sourcePos + new Vector2(0, target), attackType, launchDelay, launchCollision, sourcePos + new Vector2(0, offset), false);
-         fireAtSpot(sourcePos + new Vector2(0, -target), attackType, launchDelay, launchCollision, sourcePos + new Vector2(0, -offset), false);
-         fireAtSpot(sourcePos + new Vector2(target, 0), attackType, launchDelay, launchCollision, sourcePos + new Vector2(offset, 0), false);
-         fireAtSpot(sourcePos + new Vector2(-target, 0), attackType, launchDelay, launchCollision, sourcePos + new Vector2(-offset, 0), true);
+         fireAtSpot(sourcePos + new Vector2(0, target), attackType, launchDelay, launchCollision, 1f, sourcePos + new Vector2(0, offset), false);
+         fireAtSpot(sourcePos + new Vector2(0, -target), attackType, launchDelay, launchCollision, 1f, sourcePos + new Vector2(0, -offset), false);
+         fireAtSpot(sourcePos + new Vector2(target, 0), attackType, launchDelay, launchCollision, 1f, sourcePos + new Vector2(offset, 0), false);
+         fireAtSpot(sourcePos + new Vector2(-target, 0), attackType, launchDelay, launchCollision, 1f, sourcePos + new Vector2(-offset, 0), true);
       } else {
          // Diagonal Attack Pattern
-         fireAtSpot(sourcePos + new Vector2(diagonalTargetValue, target), attackType, launchDelay, launchCollision, sourcePos + new Vector2(diagonalValue, offset), false);
-         fireAtSpot(sourcePos + new Vector2(diagonalTargetValue, -target), attackType, launchDelay, launchCollision, sourcePos + new Vector2(diagonalValue, -offset), false);
-         fireAtSpot(sourcePos + new Vector2(-target, diagonalTargetValue), attackType, launchDelay, launchCollision, sourcePos + new Vector2(-offset, diagonalValue), false);
-         fireAtSpot(sourcePos + new Vector2(-target, -diagonalTargetValue), attackType, launchDelay, launchCollision, sourcePos + new Vector2(-offset, -diagonalValue), true);
+         fireAtSpot(sourcePos + new Vector2(diagonalTargetValue, target), attackType, launchDelay, launchCollision, 1f, sourcePos + new Vector2(diagonalValue, offset), false);
+         fireAtSpot(sourcePos + new Vector2(diagonalTargetValue, -target), attackType, launchDelay, launchCollision, 1f, sourcePos + new Vector2(diagonalValue, -offset), false);
+         fireAtSpot(sourcePos + new Vector2(-target, diagonalTargetValue), attackType, launchDelay, launchCollision, 1f, sourcePos + new Vector2(-offset, diagonalValue), false);
+         fireAtSpot(sourcePos + new Vector2(-target, -diagonalTargetValue), attackType, launchDelay, launchCollision, 1f, sourcePos + new Vector2(-offset, -diagonalValue), true);
       }
    }
 

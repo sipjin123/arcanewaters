@@ -17,8 +17,10 @@ public class AttackTrajectory : MonoBehaviour
    // The animator component
    public Animator animator;
 
-   // The line color variation between the minimum range and the max range
-   public Gradient lineColorOverRange;
+   // The line color for each attack zone
+   public Gradient weakAttackZoneGradient;
+   public Gradient normalAttackZoneGradient;
+   public Gradient strongAttackZoneGradient;
 
    #endregion
 
@@ -32,21 +34,21 @@ public class AttackTrajectory : MonoBehaviour
       _positions = new Vector3[POSITIONS_COUNT + 1];
    }
 
-   public void draw (Vector2 startPos, Vector2 endPos, float maxRange) {
-      // Calculate the distance between the start and end position, in percentage of the maximum range
-      float distance = (endPos - startPos).magnitude;
-      float ratio = distance / maxRange;
-
-      // Set the color of the line by updating its gradient color keys
-      Color c = lineColorOverRange.Evaluate(ratio);
-      Gradient gradient = lineRenderer.colorGradient;
-      GradientColorKey[] colorKey = new GradientColorKey[2];
-      colorKey[0].color = c;
-      colorKey[0].time = 0.0f;
-      colorKey[1].color = c;
-      colorKey[1].time = 1.0f;
-      gradient.colorKeys = colorKey;
-      lineRenderer.colorGradient = gradient;
+   public void draw (Vector2 startPos, Vector2 endPos, AttackZone.Type attackZone) {
+      switch (attackZone) {
+         case AttackZone.Type.Weak:
+            lineRenderer.colorGradient = weakAttackZoneGradient;
+            break;
+         case AttackZone.Type.Normal:
+            lineRenderer.colorGradient = normalAttackZoneGradient;
+            break;
+         case AttackZone.Type.Strong:
+            lineRenderer.colorGradient = strongAttackZoneGradient;
+            break;
+         default:
+            lineRenderer.colorGradient = normalAttackZoneGradient;
+            break;
+      }
       
       // Calculate the positions relative to the start position
       endPos = endPos - startPos;

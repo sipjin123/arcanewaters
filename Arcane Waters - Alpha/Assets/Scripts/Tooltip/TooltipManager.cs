@@ -162,6 +162,8 @@ public class TooltipManager : ClientMonoBehaviour {
 
          case "ship_damage":
             return "How much <color=red>damage</color> is done by the cannons on this ship.";
+         case "ship_range":
+            return "The maximum <color=red>range</color> at which this ship can fire.";
          case "ship_health":
             return "How <color=red>durable</color> the ship's hull is. If this reaches 0, the ship sinks!";
          case "ship_supplies":

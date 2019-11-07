@@ -7,6 +7,9 @@ using Mirror;
 public class ShipEntity : SeaEntity {
    #region Public Variables
 
+   // The lower limit of the range zone
+   public static float MIN_RANGE = 0.2f;
+
    // The Type of ship this is
    [SyncVar]
    public Ship.Type shipType;
@@ -19,9 +22,9 @@ public class ShipEntity : SeaEntity {
    [SyncVar]
    public int speed = 100;
 
-   // The range of attack
+   // The range of attack - in percentage of the base range
    [SyncVar]
-   public float attackRange = 1.5f;
+   public int attackRangeModifier = 100;
 
    // The number of sailors it takes to run this ship
    [SyncVar]
@@ -50,11 +53,15 @@ public class ShipEntity : SeaEntity {
    }
 
    public bool isInRange(Vector2 spot) {
-      if (Vector2.SqrMagnitude(spot - (Vector2)transform.position) < attackRange * attackRange) {
+      if (Vector2.SqrMagnitude(spot - (Vector2)transform.position) < getAttackRange() * getAttackRange()) {
          return true;
       } else {
          return false;
       }
+   }
+
+   public float getAttackRange () {
+      return 1.5f * (attackRangeModifier / 100f);
    }
 
    public override float getMoveSpeed () {
@@ -88,13 +95,30 @@ public class ShipEntity : SeaEntity {
       }
    }
 
+   public Vector2 clampToRange (Vector2 targetPoint) {
+      // Compute the relative position
+      Vector2 relativePosition = (targetPoint - (Vector2)transform.position);
+
+      // Compute the magnitude
+      float magnitude = relativePosition.magnitude;
+
+      // Clamp the magnitude to the upper and lower limits
+      magnitude = Mathf.Clamp(magnitude, MIN_RANGE, getAttackRange());
+
+      // Calculate the new relative position using the clamped magnitude
+      Vector2 clampedRelativePosition = relativePosition.normalized * magnitude;
+
+      // Return the world space position
+      return (Vector2)transform.position + clampedRelativePosition;
+   }
+
    [Server]
-   public override void fireAtSpot (Vector2 spot, Attack.Type attackType, float attackDelay, float launchDelay, Vector2 spawnPosition = new Vector2(), bool isLastProjectile = true) {
+   public override void fireAtSpot (Vector2 spot, Attack.Type attackType, float attackDelay, float launchDelay, float damageModifier, Vector2 spawnPosition = new Vector2(), bool isLastProjectile = true) {
       // The target point is clamped to the attack range
-      spot = AttackManager.clampToRange(transform.position, spot, attackRange);
+      spot = clampToRange(spot);
 
       // Run the base function
-      base.fireAtSpot(spot, attackType, attackDelay, launchDelay, spawnPosition, isLastProjectile);
+      base.fireAtSpot(spot, attackType, attackDelay, launchDelay, damageModifier, spawnPosition, isLastProjectile);
    }
 
    #region Private Variables

@@ -44,7 +44,19 @@ public class InstanceManager : MonoBehaviour {
          player.cropManager.loadCrops();
       }
 
+      // Generated random map if we are spawned in it and it wasn't created before
+      if (Area.isRandom(areaType)) {
+         StartCoroutine(waitForPlayerSpawn(player, areaType));         
+      }
+
       return instance;
+   }
+
+   IEnumerator waitForPlayerSpawn (NetEntity player, Area.Type areaType) {
+      yield return new WaitUntil(() => player != null);
+      if (RandomMapManager.self && RandomMapManager.self.mapConfigs.ContainsKey(areaType)) {
+         player.rpc.Target_TrySpawnRandomMap(player.connectionToClient, RandomMapManager.self.mapConfigs[areaType]);
+      }
    }
 
    public void addEnemyToInstance (Enemy enemy, Instance instance) {

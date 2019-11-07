@@ -66,6 +66,15 @@ public class RandomMapManager : MonoBehaviour
       return _instances;
    }
 
+   public void tryGenerateRandomMap (MapConfig mapConfig) {
+      StartCoroutine(CO_TryGenerateRandomMap(mapConfig));
+   }
+
+   private IEnumerator CO_TryGenerateRandomMap (MapConfig mapConfig) {
+      yield return new WaitUntil(() => Global.player);
+      RandomMapCreator.tryGenerateRandomMap(mapConfig);
+   }
+
    private void createRandomMapsAndInstances () {
       // Cycle over each of the random area types
       foreach (Area.Type randomAreaType in Area.getRandomAreaTypes()) {

@@ -123,7 +123,10 @@ public class Minimap : ClientMonoBehaviour {
       return _rect.sizeDelta.x / 2f * SCALE;
    }
 
-   protected void updateMinimapForNewArea () {
+   public void updateMinimapForNewArea () {
+      if (Global.player == null) {
+         return;
+      }
       Area area = AreaManager.self.getArea(Global.player.areaType);
 
       // For random sea map - create new minimap

@@ -388,6 +388,12 @@ public class RPCManager : NetworkBehaviour {
       RandomMapCreator.generateRandomMap(mapConfig);
    }
 
+   [TargetRpc]
+   public void Target_TrySpawnRandomMap (NetworkConnection connection, MapConfig mapConfig) {
+      // Generate the random map tiles
+      RandomMapManager.self.tryGenerateRandomMap(mapConfig);
+   }
+
    [Command]
    public void Cmd_SendChat (string message, ChatInfo.Type chatType) {
       // Create a Chat Info for this message
@@ -936,6 +942,20 @@ public class RPCManager : NetworkBehaviour {
       if (RandomMapManager.self.mapConfigs.ContainsKey(areaType)) {
          Target_SpawnRandomMap(_player.connectionToClient, RandomMapManager.self.mapConfigs[areaType]);
       }
+   }
+
+   [Command]
+   public void Cmd_CompareClientServerMapConfig (MapConfig mapConfig) {
+      foreach (Area.Type areaType in Area.getRandomAreaTypes()) {
+         // If there is existing instance of desired random map - move player there
+         if (RandomMapManager.self.mapConfigs.ContainsKey(areaType) && RandomMapManager.self.mapConfigs[areaType].Equals(mapConfig)) {
+            Target_SpawnRandomMap(_player.connectionToClient, RandomMapManager.self.mapConfigs[areaType]);
+            return;
+         }
+      }
+
+      // Move player back to town if random sea map instance hasn't been found
+      _player.Cmd_SpawnInNewMap (Area.Type.StartingTown, Spawn.Type.ForestTownDock, Direction.North);
    }
 
    [Command]
