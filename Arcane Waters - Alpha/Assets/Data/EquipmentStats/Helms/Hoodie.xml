@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<HelmStatData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <equipmentName>Hoodie</equipmentName>
+  <equipmentDescription />
+  <equipmentID>0</equipmentID>
+  <equipmentIconPath>Assets/Sprites/Icons/Helm/hoodie.png</equipmentIconPath>
+  <equipmentPrice>0</equipmentPrice>
+  <canBeTrashed>false</canBeTrashed>
+  <rarityModifiers>
+    <RarityModifier>
+      <rarityType xmlns="RarityType">Common</rarityType>
+      <multiplier>1</multiplier>
+    </RarityModifier>
+  </rarityModifiers>
+  <elementModifiers>
+    <ElementModifier>
+      <elementType xmlns="Element">Earth</elementType>
+      <multiplier>1</multiplier>
+    </ElementModifier>
+  </elementModifiers>
+  <color1>None</color1>
+  <color2>None</color2>
+  <statsData>
+    <userId>0</userId>
+    <strength>2</strength>
+    <precision>2</precision>
+    <vitality>2</vitality>
+    <intelligence>2</intelligence>
+    <spirit>2</spirit>
+    <luck>2</luck>
+  </statsData>
+  <helmType xmlns="HelmType">Hoodie</helmType>
+  <helmBaseDefense>0</helmBaseDefense>
+</HelmStatData>

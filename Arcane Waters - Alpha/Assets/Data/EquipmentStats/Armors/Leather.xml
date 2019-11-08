@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<ArmorStatData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <equipmentName>Leather</equipmentName>
+  <equipmentDescription />
+  <equipmentID>0</equipmentID>
+  <equipmentIconPath>Assets/Sprites/Icons/Armor/leather.png</equipmentIconPath>
+  <equipmentPrice>0</equipmentPrice>
+  <canBeTrashed>false</canBeTrashed>
+  <rarityModifiers />
+  <elementModifiers>
+    <ElementModifier>
+      <elementType xmlns="Element">Fire</elementType>
+      <multiplier>1</multiplier>
+    </ElementModifier>
+    <ElementModifier>
+      <elementType xmlns="Element">Earth</elementType>
+      <multiplier>2</multiplier>
+    </ElementModifier>
+    <ElementModifier>
+      <elementType xmlns="Element">Air</elementType>
+      <multiplier>3</multiplier>
+    </ElementModifier>
+  </elementModifiers>
+  <color1>None</color1>
+  <color2>None</color2>
+  <statsData>
+    <userId>0</userId>
+    <strength>5</strength>
+    <precision>1</precision>
+    <vitality>1</vitality>
+    <intelligence>1</intelligence>
+    <spirit>1</spirit>
+    <luck>1</luck>
+  </statsData>
+  <armorType xmlns="ArmorType">Leather</armorType>
+  <armorBaseDefense>0</armorBaseDefense>
+</ArmorStatData>

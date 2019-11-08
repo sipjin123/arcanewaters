@@ -28,9 +28,13 @@ public class GenericSelectionPopup : MonoBehaviour {
    public Button exitButton;
 
    // Sprite dictionary
+   public Dictionary<string, Sprite> genericIconSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> iconSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> shipSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> shipRippleSpriteList = new Dictionary<string, Sprite>();
+   public Dictionary<string, Sprite> weaponSpriteList = new Dictionary<string, Sprite>();
+   public Dictionary<string, Sprite> armorSpriteList = new Dictionary<string, Sprite>();
+   public Dictionary<string, Sprite> helmSpriteList = new Dictionary<string, Sprite>();
 
    public enum selectionType
    {
@@ -41,7 +45,14 @@ public class GenericSelectionPopup : MonoBehaviour {
       ShipSkinType = 4,
       ShipAvatarIcon = 5,
       ShipSprite = 6,
-      ShipRippleSprite = 7 
+      ShipRippleSprite = 7,
+      WeaponType = 8,
+      Color = 9,
+      WeaponIcon = 10,
+      ArmorIcon = 11,
+      HelmIcon = 12,
+      ArmorType = 13,
+      HelmType = 14
    }
 
    #endregion
@@ -57,28 +68,34 @@ public class GenericSelectionPopup : MonoBehaviour {
    }
 
    private void initializeSpriteDictionary () {
+      string helmSpritePath = "Assets/Sprites/Icons/Helm/";
+      setupSpriteContent(helmSpriteList, helmSpritePath);
+
+      string armorSpritePath = "Assets/Sprites/Icons/Armor/";
+      setupSpriteContent(armorSpriteList, armorSpritePath);
+    
+      string weaponSpritePath = "Assets/Sprites/Icons/Weapons/";
+      setupSpriteContent(weaponSpriteList, weaponSpritePath);
+    
+      string genericspritePath = "Assets/Sprites/Icons/";
+      setupSpriteContent(genericIconSpriteList, genericspritePath);
+   
       string spritePath = "Assets/Sprites/Ships/";
+      setupSpriteContent(iconSpriteList, spritePath);
+
+      string shipsPath = "Assets/Sprites/Ships/";
+      setupSpriteContent(shipSpriteList, shipsPath);
+
+      string shipsRipplePath = "Assets/Sprites/Ship/";
+      setupSpriteContent(shipRippleSpriteList, shipsRipplePath);
+   }
+
+   private void setupSpriteContent (Dictionary<string, Sprite> spriteCollection, string spritePath) {
       List<ImageManager.ImageData> spriteIconFiles = ImageManager.getSpritesInDirectory(spritePath);
 
       foreach (ImageManager.ImageData imgData in spriteIconFiles) {
          Sprite sourceSprite = imgData.sprite;
-         iconSpriteList.Add(imgData.imagePath, sourceSprite);
-      }
-
-      string shipsPath = "Assets/Sprites/Ships/";
-      List<ImageManager.ImageData> shipIconFiles = ImageManager.getSpritesInDirectory(shipsPath);
-
-      foreach (ImageManager.ImageData imgData in shipIconFiles) {
-         Sprite sourceSprite = imgData.sprite;
-         shipSpriteList.Add(imgData.imagePath, sourceSprite);
-      }
-
-      string shipsRipplePath = "Assets/Sprites/Ship/";
-      List<ImageManager.ImageData> shipRippleIconFiles = ImageManager.getSpritesInDirectory(shipsRipplePath);
-
-      foreach (ImageManager.ImageData imgData in shipRippleIconFiles) {
-         Sprite sourceSprite = imgData.sprite;
-         shipRippleSpriteList.Add(imgData.imagePath, sourceSprite);
+         spriteCollection.Add(imgData.imagePath, sourceSprite);
       }
    }
 
@@ -103,6 +120,24 @@ public class GenericSelectionPopup : MonoBehaviour {
             string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
             Sprite shipSprite = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].sprites[3];
             createImageTemplate(sourceSprite.Key, shortName, shipSprite, imageIcon, textUI);
+         }
+      } else if (popupType == selectionType.WeaponIcon) {
+         foreach (KeyValuePair<string, Sprite> sourceSprite in weaponSpriteList) {
+            string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
+            Sprite weaponSprite = ImageManager.getSprite(sourceSprite.Key);
+            createImageTemplate(sourceSprite.Key, shortName, weaponSprite, imageIcon, textUI);
+         }
+      } else if (popupType == selectionType.ArmorIcon) {
+         foreach (KeyValuePair<string, Sprite> sourceSprite in armorSpriteList) {
+            string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
+            Sprite armorSprite = ImageManager.getSprite(sourceSprite.Key);
+            createImageTemplate(sourceSprite.Key, shortName, armorSprite, imageIcon, textUI);
+         }
+      } else if (popupType == selectionType.HelmIcon) {
+         foreach (KeyValuePair<string, Sprite> sourceSprite in helmSpriteList) {
+            string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
+            Sprite helmSprite = ImageManager.getSprite(sourceSprite.Key);
+            createImageTemplate(sourceSprite.Key, shortName, helmSprite, imageIcon, textUI);
          }
       }
    }
@@ -130,6 +165,26 @@ public class GenericSelectionPopup : MonoBehaviour {
          case selectionType.ShipSkinType:
             foreach (Ship.SkinType skinType in Enum.GetValues(typeof(Ship.SkinType))) {
                createTextTemplate(skinType.ToString(), textUI);
+            }
+            break;
+         case selectionType.WeaponType: 
+            foreach (Weapon.Type weaponType in Enum.GetValues(typeof(Weapon.Type))) {
+               createTextTemplate(weaponType.ToString(), textUI);
+            }
+            break;
+         case selectionType.Color:
+            foreach (ColorType colorType in Enum.GetValues(typeof(ColorType))) {
+               createTextTemplate(colorType.ToString(), textUI);
+            }
+            break;
+         case selectionType.ArmorType:
+            foreach (Armor.Type armorType in Enum.GetValues(typeof(Armor.Type))) {
+               createTextTemplate(armorType.ToString(), textUI);
+            }
+            break;
+         case selectionType.HelmType:
+            foreach (Helm.Type helmType in Enum.GetValues(typeof(Helm.Type))) {
+               createTextTemplate(helmType.ToString(), textUI);
             }
             break;
       }

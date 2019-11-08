@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<HelmStatData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <equipmentName>Cap</equipmentName>
+  <equipmentDescription />
+  <equipmentID>0</equipmentID>
+  <equipmentIconPath>Assets/Sprites/Icons/Helm/cap.png</equipmentIconPath>
+  <equipmentPrice>0</equipmentPrice>
+  <canBeTrashed>false</canBeTrashed>
+  <rarityModifiers />
+  <elementModifiers />
+  <color1>None</color1>
+  <color2>None</color2>
+  <statsData>
+    <userId>0</userId>
+    <strength>0</strength>
+    <precision>0</precision>
+    <vitality>0</vitality>
+    <intelligence>3</intelligence>
+    <spirit>0</spirit>
+    <luck>0</luck>
+  </statsData>
+  <helmType xmlns="HelmType">Cap</helmType>
+  <helmBaseDefense>0</helmBaseDefense>
+</HelmStatData>

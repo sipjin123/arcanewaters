@@ -62,7 +62,7 @@ public class ShipDataToolManager : MonoBehaviour {
    }
 
    public void loadXMLData () {
-      shipDataList = new Dictionary<string, ShipData>();
+      _shipDataList = new Dictionary<string, ShipData>();
       // Build the path to the folder containing the Ship data XML files
       string directoryPath = Path.Combine(Application.dataPath, "Data", "ShipStats");
 
@@ -81,10 +81,10 @@ public class ShipDataToolManager : MonoBehaviour {
             ShipData shipData = ToolsUtil.xmlLoad<ShipData>(filePath);
 
             // Save the Ship data in the memory cache
-            shipDataList.Add(shipData.shipName, shipData);
+            _shipDataList.Add(shipData.shipName, shipData);
          }
          if (fileNames.Length > 0) {
-            shipDataScene.loadShipData(shipDataList);
+            shipDataScene.loadShipData(_shipDataList);
          }
       }
    }
@@ -92,7 +92,7 @@ public class ShipDataToolManager : MonoBehaviour {
    #region Private Variables
 
    // Holds the list of ship data
-   private Dictionary<string, ShipData> shipDataList = new Dictionary<string, ShipData>();
+   private Dictionary<string, ShipData> _shipDataList = new Dictionary<string, ShipData>();
 
    #endregion
 }

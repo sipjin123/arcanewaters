@@ -150,9 +150,11 @@ public class ShipDataPanel : MonoBehaviour {
 
    #region Private Variables
 
-   // Input field variables for float and int values
+   // Name of the ship
    [SerializeField]
    private InputField _shipName;
+
+   // Input field variables for float and int values
    [SerializeField]
    private InputField _baseHealth;
    [SerializeField]
