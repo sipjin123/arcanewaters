@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ShipData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <shipType>Buss</shipType>
+  <shipName>Buss</shipName>
+  <shipID>0</shipID>
+  <skinType>Buss_Blue</skinType>
+  <baseHealth>450</baseHealth>
+  <baseRange>125</baseRange>
+  <baseDamage>90</baseDamage>
+  <baseSpeed>85</baseSpeed>
+  <basePrice>250000</basePrice>
+  <baseSailors>100</baseSailors>
+  <baseCargoRoom>30</baseCargoRoom>
+  <baseSupplyRoom>8</baseSupplyRoom>
+  <sailType>Caravel_1</sailType>
+  <mastType>Caravel_1</mastType>
+  <spritePath />
+  <rippleSpritePath />
+  <avatarIconPath>Assets/Sprites/Ships/Buss/buss_1.png</avatarIconPath>
+</ShipData>

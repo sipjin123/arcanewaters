@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ShipData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <shipType>Cutter</shipType>
+  <shipName>Cutter</shipName>
+  <shipID>0</shipID>
+  <skinType>Cutter_Dark</skinType>
+  <baseHealth>275</baseHealth>
+  <baseRange>120</baseRange>
+  <baseDamage>70</baseDamage>
+  <baseSpeed>115</baseSpeed>
+  <basePrice>150000</basePrice>
+  <baseSailors>45</baseSailors>
+  <baseCargoRoom>30</baseCargoRoom>
+  <baseSupplyRoom>15</baseSupplyRoom>
+  <sailType>Caravel_1</sailType>
+  <mastType>Caravel_1</mastType>
+  <spritePath />
+  <rippleSpritePath />
+  <avatarIconPath>Assets/Sprites/Ships/Cutter/cutter_1.png</avatarIconPath>
+</ShipData>

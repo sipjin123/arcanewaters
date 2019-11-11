@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ShipData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <shipType>Caravel</shipType>
+  <shipName>Caravel</shipName>
+  <shipID>0</shipID>
+  <skinType>Caravel_Ghost</skinType>
+  <baseHealth>100</baseHealth>
+  <baseRange>100</baseRange>
+  <baseDamage>10</baseDamage>
+  <baseSpeed>90</baseSpeed>
+  <basePrice>5000</basePrice>
+  <baseSailors>10</baseSailors>
+  <baseCargoRoom>18</baseCargoRoom>
+  <baseSupplyRoom>10</baseSupplyRoom>
+  <sailType>Caravel_1</sailType>
+  <mastType>Caravel_1</mastType>
+  <spritePath />
+  <rippleSpritePath />
+  <avatarIconPath>Assets/Sprites/Ships/Caravel/caravel_ghost.png</avatarIconPath>
+</ShipData>

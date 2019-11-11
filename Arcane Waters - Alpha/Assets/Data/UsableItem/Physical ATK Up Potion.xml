@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UsableItemData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <type>PHYS_ATK_Buff</type>
+  <itemName>Physical ATK Up Potion</itemName>
+  <description>Increase Physical ATK by 250.</description>
+  <itemIconPath>Assets/Sprites/Icons/UsableItems/PHYS_ATK_Buff.png</itemIconPath>
+  <addedHP>0</addedHP>
+  <addedAP>0</addedAP>
+  <bonusMaxHP>0</bonusMaxHP>
+  <bonusArmor>0</bonusArmor>
+  <bonusATK>0</bonusATK>
+  <bonusINT>0</bonusINT>
+  <bonusSTR>0</bonusSTR>
+  <bonusSPT>0</bonusSPT>
+  <bonusLUK>0</bonusLUK>
+  <bonusPRE>0</bonusPRE>
+  <bonusVIT>0</bonusVIT>
+  <bonusResistancePhys>0</bonusResistancePhys>
+  <bonusResistanceFire>0</bonusResistanceFire>
+  <bonusResistanceWater>0</bonusResistanceWater>
+  <bonusResistanceWind>0</bonusResistanceWind>
+  <bonusResistanceEarth>0</bonusResistanceEarth>
+  <bonusResistanceAll>0</bonusResistanceAll>
+  <bonusDamagePhys>250</bonusDamagePhys>
+  <bonusDamageFire>0</bonusDamageFire>
+  <bonusDamageWater>0</bonusDamageWater>
+  <bonusDamageWind>0</bonusDamageWind>
+  <bonusDamageEarth>0</bonusDamageEarth>
+  <bonusDamageAll>0</bonusDamageAll>
+  <expBonus>0</expBonus>
+  <goldBonus>0</goldBonus>
+  <cooldownReduce>0</cooldownReduce>
+</UsableItemData>

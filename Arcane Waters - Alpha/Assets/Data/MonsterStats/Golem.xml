@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<BattlerData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <enemyName>Golem</enemyName>
+  <imagePath>Assets/Sprites/Enemies/golem.png</imagePath>
+  <currentXP>0</currentXP>
+  <enemyType>Golem</enemyType>
+  <apGainWhenDamaged>0</apGainWhenDamaged>
+  <baseHealth>100</baseHealth>
+  <baseDefense>100</baseDefense>
+  <baseDamage>50</baseDamage>
+  <baseGoldReward>95</baseGoldReward>
+  <baseXPReward>150</baseXPReward>
+  <damagePerLevel>50</damagePerLevel>
+  <defensePerLevel>100</defensePerLevel>
+  <healthPerlevel>100</healthPerlevel>
+  <battlerAbilities>
+    <basicAbilityDataList />
+    <attackAbilityDataList />
+    <buffAbilityDataList />
+  </battlerAbilities>
+  <battlerLootData>
+    <lootList>
+      <LootInfo>
+        <lootType xmlns="IngredientType">Onyx</lootType>
+        <quantity>1</quantity>
+        <chanceRatio>69.65331</chanceRatio>
+      </LootInfo>
+      <LootInfo>
+        <lootType xmlns="IngredientType">Brimstone</lootType>
+        <quantity>1</quantity>
+        <chanceRatio>49.9533844</chanceRatio>
+      </LootInfo>
+      <LootInfo>
+        <lootType xmlns="IngredientType">Silver_Ore</lootType>
+        <quantity>1</quantity>
+        <chanceRatio>10.2017479</chanceRatio>
+      </LootInfo>
+      <LootInfo>
+        <lootType xmlns="IngredientType">Gold_Ore</lootType>
+        <quantity>1</quantity>
+        <chanceRatio>4.92498159</chanceRatio>
+      </LootInfo>
+      <LootInfo>
+        <lootType xmlns="IngredientType">None</lootType>
+        <quantity>1</quantity>
+        <chanceRatio>24.9766922</chanceRatio>
+      </LootInfo>
+    </lootList>
+    <defaultLoot xmlns="IngredientType">Onyx</defaultLoot>
+    <minQuantity>1</minQuantity>
+    <maxQuantity>5</maxQuantity>
+  </battlerLootData>
+  <physicalDefenseMultiplier>30</physicalDefenseMultiplier>
+  <fireDefenseMultiplier>50</fireDefenseMultiplier>
+  <earthDefenseMultiplier>50</earthDefenseMultiplier>
+  <airDefenseMultiplier>50</airDefenseMultiplier>
+  <waterDefenseMultiplier>50</waterDefenseMultiplier>
+  <allDefenseMultiplier>50</allDefenseMultiplier>
+  <physicalAttackMultiplier>40</physicalAttackMultiplier>
+  <fireAttackMultiplier>31</fireAttackMultiplier>
+  <earthAttackMultiplier>18</earthAttackMultiplier>
+  <airAttackMultiplier>10</airAttackMultiplier>
+  <waterAttackMultiplier>10</waterAttackMultiplier>
+  <allAttackMultiplier>0</allAttackMultiplier>
+  <deathSoundPath />
+  <attackJumpSoundPath />
+  <preContactLength>1</preContactLength>
+  <preMagicLength>1</preMagicLength>
+</BattlerData>

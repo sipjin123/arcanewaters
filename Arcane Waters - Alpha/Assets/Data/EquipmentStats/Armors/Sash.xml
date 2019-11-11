@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ArmorStatData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <equipmentName>Leather</equipmentName>
+  <equipmentName>Sash</equipmentName>
   <equipmentDescription />
   <equipmentID>0</equipmentID>
-  <equipmentIconPath>Assets/Sprites/Icons/Armor/leather.png</equipmentIconPath>
+  <equipmentIconPath>Assets/Sprites/Icons/Armor/sash.png</equipmentIconPath>
   <equipmentPrice>1000</equipmentPrice>
   <canBeTrashed>false</canBeTrashed>
   <rarityModifiers />
   <elementModifiers />
   <color1>Green</color1>
-  <color2>DarkGreen</color2>
+  <color2>Blue</color2>
   <statsData>
     <userId>0</userId>
     <strength>0</strength>
@@ -19,6 +19,6 @@
     <spirit>0</spirit>
     <luck>0</luck>
   </statsData>
-  <armorType xmlns="ArmorType">Leather</armorType>
+  <armorType xmlns="ArmorType">Sash</armorType>
   <armorBaseDefense>0</armorBaseDefense>
 </ArmorStatData>

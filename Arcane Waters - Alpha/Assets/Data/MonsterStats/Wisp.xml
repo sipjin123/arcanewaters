@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<BattlerData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <enemyName>Wisp</enemyName>
+  <imagePath>Assets/Sprites/Enemies/wisp.png</imagePath>
+  <currentXP>0</currentXP>
+  <enemyType>Wisp</enemyType>
+  <apGainWhenDamaged>0</apGainWhenDamaged>
+  <baseHealth>30</baseHealth>
+  <baseDefense>15</baseDefense>
+  <baseDamage>10</baseDamage>
+  <baseGoldReward>30</baseGoldReward>
+  <baseXPReward>30</baseXPReward>
+  <damagePerLevel>10</damagePerLevel>
+  <defensePerLevel>15</defensePerLevel>
+  <healthPerlevel>30</healthPerlevel>
+  <battlerAbilities>
+    <basicAbilityDataList />
+    <attackAbilityDataList />
+    <buffAbilityDataList />
+  </battlerAbilities>
+  <battlerLootData>
+    <lootList>
+      <LootInfo>
+        <lootType xmlns="IngredientType">Ectoplasm</lootType>
+        <quantity>1</quantity>
+        <chanceRatio>70.0051</chanceRatio>
+      </LootInfo>
+      <LootInfo>
+        <lootType xmlns="IngredientType">Brimstone</lootType>
+        <quantity>1</quantity>
+        <chanceRatio>49.9533844</chanceRatio>
+      </LootInfo>
+      <LootInfo>
+        <lootType xmlns="IngredientType">Spectral_Ash</lootType>
+        <quantity>1</quantity>
+        <chanceRatio>9.849963</chanceRatio>
+      </LootInfo>
+      <LootInfo>
+        <lootType xmlns="IngredientType">Luminous_Powder</lootType>
+        <quantity>1</quantity>
+        <chanceRatio>4.92498159</chanceRatio>
+      </LootInfo>
+      <LootInfo>
+        <lootType xmlns="IngredientType">Eldritch_Aura</lootType>
+        <quantity>1</quantity>
+        <chanceRatio>24.9766922</chanceRatio>
+      </LootInfo>
+    </lootList>
+    <defaultLoot xmlns="IngredientType">Ectoplasm</defaultLoot>
+    <minQuantity>1</minQuantity>
+    <maxQuantity>5</maxQuantity>
+  </battlerLootData>
+  <physicalDefenseMultiplier>3</physicalDefenseMultiplier>
+  <fireDefenseMultiplier>20</fireDefenseMultiplier>
+  <earthDefenseMultiplier>5</earthDefenseMultiplier>
+  <airDefenseMultiplier>15</airDefenseMultiplier>
+  <waterDefenseMultiplier>3</waterDefenseMultiplier>
+  <allDefenseMultiplier>0</allDefenseMultiplier>
+  <physicalAttackMultiplier>10</physicalAttackMultiplier>
+  <fireAttackMultiplier>20</fireAttackMultiplier>
+  <earthAttackMultiplier>3</earthAttackMultiplier>
+  <airAttackMultiplier>10</airAttackMultiplier>
+  <waterAttackMultiplier>5</waterAttackMultiplier>
+  <allAttackMultiplier>5</allAttackMultiplier>
+  <deathSoundPath />
+  <attackJumpSoundPath />
+  <preContactLength>1</preContactLength>
+  <preMagicLength>1</preMagicLength>
+</BattlerData>

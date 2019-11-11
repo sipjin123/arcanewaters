@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ShipData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <shipType>Galleon</shipType>
+  <shipName>Galleon</shipName>
+  <shipID>0</shipID>
+  <skinType>Galleon_Armored</skinType>
+  <baseHealth>800</baseHealth>
+  <baseRange>135</baseRange>
+  <baseDamage>150</baseDamage>
+  <baseSpeed>80</baseSpeed>
+  <basePrice>400000</basePrice>
+  <baseSailors>120</baseSailors>
+  <baseCargoRoom>30</baseCargoRoom>
+  <baseSupplyRoom>7</baseSupplyRoom>
+  <sailType>Galleon_1</sailType>
+  <mastType>Galleon_1</mastType>
+  <spritePath />
+  <rippleSpritePath />
+  <avatarIconPath>Assets/Sprites/Ships/Galleon/galleon_1.png</avatarIconPath>
+</ShipData>

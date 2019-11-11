@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<BattlerData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <enemyName>Mushroom</enemyName>
+  <imagePath>Assets/Sprites/Enemies/SeaMonsters/Effects/RockParticle.png</imagePath>
+  <currentXP>0</currentXP>
+  <enemyType>Shroom</enemyType>
+  <apGainWhenDamaged>0</apGainWhenDamaged>
+  <baseHealth>1</baseHealth>
+  <baseDefense>5</baseDefense>
+  <baseDamage>3</baseDamage>
+  <baseGoldReward>3</baseGoldReward>
+  <baseXPReward>3</baseXPReward>
+  <damagePerLevel>2</damagePerLevel>
+  <defensePerLevel>3</defensePerLevel>
+  <healthPerlevel>5</healthPerlevel>
+  <battlerAbilities>
+    <basicAbilityDataList />
+    <attackAbilityDataList />
+    <buffAbilityDataList />
+  </battlerAbilities>
+  <battlerLootData>
+    <lootList>
+      <LootInfo>
+        <lootType xmlns="IngredientType">Toadstool_Cap</lootType>
+        <quantity>1</quantity>
+        <chanceRatio>50.30517</chanceRatio>
+      </LootInfo>
+      <LootInfo>
+        <lootType xmlns="IngredientType">Spores</lootType>
+        <quantity>1</quantity>
+        <chanceRatio>70.0051</chanceRatio>
+      </LootInfo>
+      <LootInfo>
+        <lootType xmlns="IngredientType">Fungal_Chunk</lootType>
+        <quantity>1</quantity>
+        <chanceRatio>10.2017479</chanceRatio>
+      </LootInfo>
+      <LootInfo>
+        <lootType xmlns="IngredientType">Mycelium_Fiber</lootType>
+        <quantity>1</quantity>
+        <chanceRatio>4.92498159</chanceRatio>
+      </LootInfo>
+      <LootInfo>
+        <lootType xmlns="IngredientType">Grey_Slime</lootType>
+        <quantity>1</quantity>
+        <chanceRatio>24.9766922</chanceRatio>
+      </LootInfo>
+    </lootList>
+    <defaultLoot xmlns="IngredientType">Spores</defaultLoot>
+    <minQuantity>1</minQuantity>
+    <maxQuantity>5</maxQuantity>
+  </battlerLootData>
+  <physicalDefenseMultiplier>1</physicalDefenseMultiplier>
+  <fireDefenseMultiplier>1</fireDefenseMultiplier>
+  <earthDefenseMultiplier>10</earthDefenseMultiplier>
+  <airDefenseMultiplier>1</airDefenseMultiplier>
+  <waterDefenseMultiplier>3</waterDefenseMultiplier>
+  <allDefenseMultiplier>5</allDefenseMultiplier>
+  <physicalAttackMultiplier>1</physicalAttackMultiplier>
+  <fireAttackMultiplier>3</fireAttackMultiplier>
+  <earthAttackMultiplier>5</earthAttackMultiplier>
+  <airAttackMultiplier>0</airAttackMultiplier>
+  <waterAttackMultiplier>2</waterAttackMultiplier>
+  <allAttackMultiplier>5</allAttackMultiplier>
+  <deathSoundPath />
+  <attackJumpSoundPath />
+  <preContactLength>0</preContactLength>
+  <preMagicLength>0</preMagicLength>
+</BattlerData>

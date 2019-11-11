@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ShipData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <shipType>Carrack</shipType>
+  <shipName>Carrack</shipName>
+  <shipID>0</shipID>
+  <skinType>Carrack_Green</skinType>
+  <baseHealth>350</baseHealth>
+  <baseRange>115</baseRange>
+  <baseDamage>50</baseDamage>
+  <baseSpeed>95</baseSpeed>
+  <basePrice>100000</basePrice>
+  <baseSailors>35</baseSailors>
+  <baseCargoRoom>30</baseCargoRoom>
+  <baseSupplyRoom>20</baseSupplyRoom>
+  <sailType>Caravel_1</sailType>
+  <mastType>Caravel_1</mastType>
+  <spritePath />
+  <rippleSpritePath />
+  <avatarIconPath>Assets/Sprites/Ships/Carrack/carrack_1.png</avatarIconPath>
+</ShipData>

@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<BattlerData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <enemyName>Treeman</enemyName>
+  <imagePath>Assets/Sprites/Enemies/SeaMonsters/Tentacle_ProjectileOnly_SpriteSheet.png</imagePath>
+  <currentXP>0</currentXP>
+  <enemyType>Treeman</enemyType>
+  <apGainWhenDamaged>0</apGainWhenDamaged>
+  <baseHealth>50</baseHealth>
+  <baseDefense>50</baseDefense>
+  <baseDamage>10</baseDamage>
+  <baseGoldReward>50</baseGoldReward>
+  <baseXPReward>30</baseXPReward>
+  <damagePerLevel>50</damagePerLevel>
+  <defensePerLevel>50</defensePerLevel>
+  <healthPerlevel>50</healthPerlevel>
+  <battlerAbilities>
+    <basicAbilityDataList />
+    <attackAbilityDataList />
+    <buffAbilityDataList />
+  </battlerAbilities>
+  <battlerLootData>
+    <lootList>
+      <LootInfo>
+        <lootType xmlns="IngredientType">Bark</lootType>
+        <quantity>1</quantity>
+        <chanceRatio>70.0051</chanceRatio>
+      </LootInfo>
+      <LootInfo>
+        <lootType xmlns="IngredientType">Thorn</lootType>
+        <quantity>1</quantity>
+        <chanceRatio>49.9533844</chanceRatio>
+      </LootInfo>
+      <LootInfo>
+        <lootType xmlns="IngredientType">Wood_Louse</lootType>
+        <quantity>1</quantity>
+        <chanceRatio>10.2017479</chanceRatio>
+      </LootInfo>
+      <LootInfo>
+        <lootType xmlns="IngredientType">Polypore</lootType>
+        <quantity>1</quantity>
+        <chanceRatio>4.92498159</chanceRatio>
+      </LootInfo>
+      <LootInfo>
+        <lootType xmlns="IngredientType">Sap</lootType>
+        <quantity>1</quantity>
+        <chanceRatio>24.9766922</chanceRatio>
+      </LootInfo>
+    </lootList>
+    <defaultLoot xmlns="IngredientType">Bark</defaultLoot>
+    <minQuantity>1</minQuantity>
+    <maxQuantity>5</maxQuantity>
+  </battlerLootData>
+  <physicalDefenseMultiplier>10</physicalDefenseMultiplier>
+  <fireDefenseMultiplier>1</fireDefenseMultiplier>
+  <earthDefenseMultiplier>20</earthDefenseMultiplier>
+  <airDefenseMultiplier>15</airDefenseMultiplier>
+  <waterDefenseMultiplier>4</waterDefenseMultiplier>
+  <allDefenseMultiplier>3</allDefenseMultiplier>
+  <physicalAttackMultiplier>5</physicalAttackMultiplier>
+  <fireAttackMultiplier>2</fireAttackMultiplier>
+  <earthAttackMultiplier>10</earthAttackMultiplier>
+  <airAttackMultiplier>3</airAttackMultiplier>
+  <waterAttackMultiplier>2</waterAttackMultiplier>
+  <allAttackMultiplier>3</allAttackMultiplier>
+  <deathSoundPath />
+  <attackJumpSoundPath />
+  <preContactLength>0</preContactLength>
+  <preMagicLength>0</preMagicLength>
+</BattlerData>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ShipData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <shipType>Nao</shipType>
+  <shipName>Nao</shipName>
+  <shipID>0</shipID>
+  <skinType>Nao_Armored</skinType>
+  <baseHealth>200</baseHealth>
+  <baseRange>110</baseRange>
+  <baseDamage>35</baseDamage>
+  <baseSpeed>110</baseSpeed>
+  <basePrice>25000</basePrice>
+  <baseSailors>25</baseSailors>
+  <baseCargoRoom>25</baseCargoRoom>
+  <baseSupplyRoom>10</baseSupplyRoom>
+  <sailType>Caravel_1</sailType>
+  <mastType>Caravel_1</mastType>
+  <spritePath />
+  <rippleSpritePath />
+  <avatarIconPath>Assets/Sprites/Ships/Nao/nao_1.png</avatarIconPath>
+</ShipData>

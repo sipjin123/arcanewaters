@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ShipData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <shipType>Brigantine</shipType>
+  <shipName>Brigantine</shipName>
+  <shipID>0</shipID>
+  <skinType>Brigantine_Blue</skinType>
+  <baseHealth>150</baseHealth>
+  <baseRange>105</baseRange>
+  <baseDamage>25</baseDamage>
+  <baseSpeed>100</baseSpeed>
+  <basePrice>15000</basePrice>
+  <baseSailors>12</baseSailors>
+  <baseCargoRoom>0</baseCargoRoom>
+  <baseSupplyRoom>10</baseSupplyRoom>
+  <sailType>Caravel_1</sailType>
+  <mastType>Caravel_1</mastType>
+  <spritePath />
+  <rippleSpritePath />
+  <avatarIconPath>Assets/Sprites/Ships/Brigantine/brigantine_1.png</avatarIconPath>
+</ShipData>
