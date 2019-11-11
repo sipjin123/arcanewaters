@@ -35,6 +35,7 @@ public class GenericSelectionPopup : MonoBehaviour {
    public Dictionary<string, Sprite> weaponSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> armorSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> helmSpriteList = new Dictionary<string, Sprite>();
+   public Dictionary<string, Sprite> usableItemSpriteList = new Dictionary<string, Sprite>();
 
    public enum selectionType
    {
@@ -52,7 +53,9 @@ public class GenericSelectionPopup : MonoBehaviour {
       ArmorIcon = 11,
       HelmIcon = 12,
       ArmorType = 13,
-      HelmType = 14
+      HelmType = 14,
+      UsableItemType = 15,
+      UsableItemIcon = 16
    }
 
    #endregion
@@ -88,6 +91,9 @@ public class GenericSelectionPopup : MonoBehaviour {
 
       string shipsRipplePath = "Assets/Sprites/Ship/";
       setupSpriteContent(shipRippleSpriteList, shipsRipplePath);
+
+      string usableItemPath = "Assets/Sprites/Icons/UsableItems/";
+      setupSpriteContent(usableItemSpriteList, usableItemPath); 
    }
 
    private void setupSpriteContent (Dictionary<string, Sprite> spriteCollection, string spritePath) {
@@ -135,6 +141,12 @@ public class GenericSelectionPopup : MonoBehaviour {
          }
       } else if (popupType == selectionType.HelmIcon) {
          foreach (KeyValuePair<string, Sprite> sourceSprite in helmSpriteList) {
+            string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
+            Sprite helmSprite = ImageManager.getSprite(sourceSprite.Key);
+            createImageTemplate(sourceSprite.Key, shortName, helmSprite, imageIcon, textUI);
+         }
+      } else if (popupType == selectionType.UsableItemIcon) {
+         foreach (KeyValuePair<string, Sprite> sourceSprite in usableItemSpriteList) {
             string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
             Sprite helmSprite = ImageManager.getSprite(sourceSprite.Key);
             createImageTemplate(sourceSprite.Key, shortName, helmSprite, imageIcon, textUI);
@@ -187,6 +199,11 @@ public class GenericSelectionPopup : MonoBehaviour {
                createTextTemplate(helmType.ToString(), textUI);
             }
             break;
+         case selectionType.UsableItemType:
+            foreach (UsableItem.Type helmType in Enum.GetValues(typeof(UsableItem.Type))) {
+               createTextTemplate(helmType.ToString(), textUI);
+            }
+            break;
       }
    }
 
@@ -222,4 +239,24 @@ public class GenericSelectionPopup : MonoBehaviour {
    #region Private Variables
       
    #endregion
+}
+
+[Serializable]
+public class TogglerClass
+{
+   // Button to trigger the toggle
+   public Button buttonToggle;
+
+   // Items to hide
+   public GameObject gameObjToHide;
+
+   // Drop down icon for indication
+   public GameObject dropDownIcon;
+
+   public void initListeners () {
+      buttonToggle.onClick.AddListener(() => {
+         gameObjToHide.SetActive(!gameObjToHide.activeSelf);
+         dropDownIcon.SetActive(!gameObjToHide.activeSelf); 
+      });
+   }
 }

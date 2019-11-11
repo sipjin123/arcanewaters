@@ -18,6 +18,7 @@ public class MasterToolScene : MonoBehaviour {
    public const string mapScene = "MapCreationTool";
    public const string shipScene = "Ship Data Tool";
    public const string equipmentScene = "Equipment Data Tool";
+   public const string usableItemScene = "UsableItemData Tool";
 
    // Button triggers to open scene
    public Button clickAbilityScene, 
@@ -27,7 +28,8 @@ public class MasterToolScene : MonoBehaviour {
       clickCraftingScene, 
       clickMapScene, 
       clickShipScene,
-      clickEquipmentScene;
+      clickEquipmentScene,
+      clickUsableItemScene;
 
    #endregion
 
@@ -55,6 +57,9 @@ public class MasterToolScene : MonoBehaviour {
       });
       clickEquipmentScene.onClick.AddListener(() => {
          SceneManager.LoadScene(equipmentScene);
+      });
+      clickUsableItemScene.onClick.AddListener(() => {
+         SceneManager.LoadScene(usableItemScene);
       });
    }
 
