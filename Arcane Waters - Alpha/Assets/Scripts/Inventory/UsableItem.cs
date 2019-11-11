@@ -10,6 +10,10 @@ public class UsableItem : Item {
    // The Type
    public enum Type {
       None = 0, HairDye = 1, ShipSkin = 2, Haircut = 3,
+      STR_Buff = 4, VIT_Buff = 5, PRE_Buff = 6, SPT_Buff = 7, LUK_Buff = 8, INT_Buff = 9,
+      Healing_Low = 10, Healing_Mid = 11, Healing_High = 12,
+      ALL_ATK_Buff = 13, PHYS_ATK_Buff = 14, EARTH_ATK_Buff = 15, WATER_ATK_Buff = 16, WIND_ATK_Buff = 17, FIRE_ATK_Buff = 18,
+      ALL_DEF_Buff = 19, PHYS_DEF_Buff = 20, EARTH_DEF_Buff = 21, WATER_DEF_Buff = 22, WIND_DEF_Buff = 23, FIRE_DEF_Buff = 24
    }
 
    // The usable item type

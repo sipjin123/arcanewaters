@@ -73,181 +73,35 @@ public class Ship : SeaEntity {
    }
 
    public static int getBaseDamage (Ship.Type shipType) {
-      switch (shipType) {
-         case Type.Caravel:
-            return 10;
-         case Type.Brigantine:
-            return 25;
-         case Type.Nao:
-            return 35;
-         case Type.Carrack:
-            return 50;
-         case Type.Cutter:
-            return 70;
-         case Type.Buss:
-            return 90;
-         case Type.Galleon:
-            return 150;
-         case Type.Barge:
-            return 200;
-         default:
-            return 100;
-      }
+      return ShipDataManager.self.getShipData(shipType).baseDamage;
    }
 
    public static int getBaseAttackRange (Ship.Type shipType) {
-      switch (shipType) {
-         case Type.Caravel:
-            return 100;
-         case Type.Brigantine:
-            return 105;
-         case Type.Nao:
-            return 110;
-         case Type.Carrack:
-            return 115;
-         case Type.Cutter:
-            return 120;
-         case Type.Buss:
-            return 125;
-         case Type.Galleon:
-            return 130;
-         case Type.Barge:
-            return 135;
-         default:
-            return 100;
-      }
+      return ShipDataManager.self.getShipData(shipType).baseRange;
    }
 
    public static int getBaseHealth (Ship.Type shipType) {
-      switch (shipType) {
-         case Type.Caravel:
-            return 100;
-         case Type.Brigantine:
-            return 150;
-         case Type.Nao:
-            return 200;
-         case Type.Carrack:
-            return 350;
-         case Type.Cutter:
-            return 275;
-         case Type.Buss:
-            return 450;
-         case Type.Galleon:
-            return 800;
-         case Type.Barge:
-            return 1500;
-         default:
-            return 100;
-      }
+      return ShipDataManager.self.getShipData(shipType).baseHealth;
    }
 
    public static int getBaseSailors (Ship.Type shipType) {
-      switch (shipType) {
-         case Type.Caravel:
-            return 10;
-         case Type.Brigantine:
-            return 12;
-         case Type.Nao:
-            return 25;
-         case Type.Carrack:
-            return 35;
-         case Type.Cutter:
-            return 45;
-         case Type.Buss:
-            return 100;
-         case Type.Galleon:
-            return 120;
-         case Type.Barge:
-            return 250;
-         default:
-            return 100;
-      }
+      return ShipDataManager.self.getShipData(shipType).baseSailors;
    }
 
    public static int getBaseSuppliesRoom (Ship.Type shipType) {
-      switch (shipType) {
-         case Type.Cutter:
-            return getBaseSailors(shipType) * 15;
-         case Type.Carrack:
-            return getBaseSailors(shipType) * 20;
-         case Type.Buss:
-            return getBaseSailors(shipType) * 8;
-         case Type.Galleon:
-            return getBaseSailors(shipType) * 7;
-         case Type.Barge:
-            return getBaseSailors(shipType) * 6;
-         default:
-            return getBaseSailors(shipType) * 10;
-      }
+      return ShipDataManager.self.getShipData(shipType).baseSupplyRoom;
    }
 
    public static int getBaseSpeed (Ship.Type shipType) {
-      switch (shipType) {
-         case Type.Caravel:
-            return 90;
-         case Type.Brigantine:
-            return 100;
-         case Type.Nao:
-            return 110;
-         case Type.Carrack:
-            return 95;
-         case Type.Cutter:
-            return 115;
-         case Type.Buss:
-            return 85;
-         case Type.Galleon:
-            return 80;
-         case Type.Barge:
-            return 75;
-         default:
-            return 100;
-      }
+      return ShipDataManager.self.getShipData(shipType).baseSpeed;
    }
 
    public static int getBaseCargoRoom (Ship.Type shipType) {
-      switch (shipType) {
-         case Type.Caravel:
-            return 18;
-         case Type.Brigantine:
-            return 22;
-         case Type.Nao:
-            return 25;
-         case Type.Carrack:
-            return 30;
-         case Type.Cutter:
-            return 30;
-         case Type.Buss:
-            return 30;
-         case Type.Galleon:
-            return 30;
-         case Type.Barge:
-            return 30;
-         default:
-            return 30;
-      }
+      return ShipDataManager.self.getShipData(shipType).baseCargoRoom;
    }
 
    public static int getBasePrice (Ship.Type shipType) {
-      switch (shipType) {
-         case Type.Caravel:
-            return 5000;
-         case Type.Brigantine:
-            return 15000;
-         case Type.Nao:
-            return 25000;
-         case Type.Carrack:
-            return 100000;
-         case Type.Cutter:
-            return 150000;
-         case Type.Buss:
-            return 250000;
-         case Type.Galleon:
-            return 400000;
-         case Type.Barge:
-            return 600000;
-         default:
-            return 100000;
-      }
+      return ShipDataManager.self.getShipData(shipType).basePrice;
    }
 
    public static string getSkinPath (Ship.Type shipType, Ship.SkinType skinType=SkinType.None) {
@@ -263,8 +117,4 @@ public class Ship : SeaEntity {
 
       return basePath + shipType + "_ripples";
    }
-
-   #region Private Variables
-
-   #endregion
 }
