@@ -149,7 +149,7 @@ public class ShipDataPanel : MonoBehaviour {
    }
 
    #region Private Variables
-
+#pragma warning disable 0649
    // Name of the ship
    [SerializeField]
    private InputField _shipName;
@@ -185,6 +185,6 @@ public class ShipDataPanel : MonoBehaviour {
    private Image _spriteIcon, _rippleSpriteIcon, _avatarIcon;
    [SerializeField]
    private Text _spritePath, _ripplePath, _avatarPath;
-
+#pragma warning restore 0649
    #endregion
 }

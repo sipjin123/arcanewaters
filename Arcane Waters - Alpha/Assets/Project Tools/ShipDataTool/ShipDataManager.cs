@@ -52,7 +52,7 @@ public class ShipDataManager : MonoBehaviour {
 
    #region Private Variables
 
-   // The cached shup data 
+   // The cached ship data 
    private Dictionary<Ship.Type, ShipData> _shipData = new Dictionary<Ship.Type, ShipData>();
 
    #endregion

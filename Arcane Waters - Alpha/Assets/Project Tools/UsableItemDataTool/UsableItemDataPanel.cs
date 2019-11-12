@@ -134,7 +134,7 @@ public class UsableItemDataPanel : MonoBehaviour {
    }
 
    #region Private Variables
-
+#pragma warning disable 0649
    // Icon
    [SerializeField]
    private Button _changeAvatarSpriteButton;
@@ -191,6 +191,6 @@ public class UsableItemDataPanel : MonoBehaviour {
       _bonusSPT,
       _bonusLUK,
       _bonusSTR;
-
+#pragma warning restore 0649 
    #endregion
 }

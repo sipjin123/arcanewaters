@@ -402,7 +402,7 @@ public class EquipmentToolPanel : MonoBehaviour {
    #endregion
 
    #region Private Variables
-
+#pragma warning disable 0649
    // Enables/Disables Weapon class depending on equipment type
    [SerializeField]
    private GameObject _damageClassObj;
@@ -478,6 +478,6 @@ public class EquipmentToolPanel : MonoBehaviour {
    private InputField _spiritText;
    [SerializeField]
    private InputField _luckText;
-
+#pragma warning restore 0649
    #endregion
 }
