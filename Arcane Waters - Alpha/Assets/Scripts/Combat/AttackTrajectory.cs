@@ -17,11 +17,6 @@ public class AttackTrajectory : MonoBehaviour
    // The animator component
    public Animator animator;
 
-   // The line color for each attack zone
-   public Gradient weakAttackZoneGradient;
-   public Gradient normalAttackZoneGradient;
-   public Gradient strongAttackZoneGradient;
-
    #endregion
 
    private void Awake () {
@@ -32,24 +27,12 @@ public class AttackTrajectory : MonoBehaviour
       
       // Initialize the line points array
       _positions = new Vector3[POSITIONS_COUNT + 1];
+
+      // Save the base width
+      _baseLineWidth = lineRenderer.widthMultiplier;
    }
 
-   public void draw (Vector2 startPos, Vector2 endPos, AttackZone.Type attackZone) {
-      switch (attackZone) {
-         case AttackZone.Type.Weak:
-            lineRenderer.colorGradient = weakAttackZoneGradient;
-            break;
-         case AttackZone.Type.Normal:
-            lineRenderer.colorGradient = normalAttackZoneGradient;
-            break;
-         case AttackZone.Type.Strong:
-            lineRenderer.colorGradient = strongAttackZoneGradient;
-            break;
-         default:
-            lineRenderer.colorGradient = normalAttackZoneGradient;
-            break;
-      }
-      
+   public void draw (Vector2 startPos, Vector2 endPos, float widthModifier, Color lineColor) {
       // Calculate the positions relative to the start position
       endPos = endPos - startPos;
       startPos = new Vector2(0, 0);
@@ -60,11 +43,25 @@ public class AttackTrajectory : MonoBehaviour
       // Determine the position of each line point
       for (int i = 0; i < POSITIONS_COUNT; i++) {
          _positions[i] = Vector2.Lerp(startPos, endPos, step * i);
-         _positions[i].y += AttackManager.getArcHeight(startPos, endPos, step * i);
+         _positions[i].y += AttackManager.getArcHeight(startPos, endPos, step * i, true);
       }
 
       // Set the last position
       _positions[_positions.Length - 1] = endPos;
+
+      // Set the width
+      lineRenderer.widthMultiplier = _baseLineWidth * widthModifier;
+
+      // Set the color of the line by updating its gradient color keys
+      Color c = lineColor;
+      Gradient gradient = lineRenderer.colorGradient;
+      GradientColorKey[] colorKey = new GradientColorKey[2];
+      colorKey[0].color = c;
+      colorKey[0].time = 0.0f;
+      colorKey[1].color = c;
+      colorKey[1].time = 1.0f;
+      gradient.colorKeys = colorKey;
+      lineRenderer.colorGradient = gradient;
 
       // Draw the line
       lineRenderer.SetPositions(_positions);
@@ -82,6 +79,9 @@ public class AttackTrajectory : MonoBehaviour
 
    // The array of points
    private Vector3[] _positions;
+
+   // The base width of the line
+   private float _baseLineWidth;
 
    #endregion
 }

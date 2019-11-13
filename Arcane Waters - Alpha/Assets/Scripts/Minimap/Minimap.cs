@@ -1764,6 +1764,7 @@ public class Minimap : ClientMonoBehaviour {
    [SerializeField] TileIcon[] _tileIconLayers = new TileIcon[0];
    [SerializeField] Vector2Int _textureSize = new Vector2Int(512, 512);
 
+   #pragma warning disable
    [SerializeField] string _mapsPath = "Assets/Prefabs/Maps/";
    [SerializeField] string _minimapsPath = "/Sprites/Minimaps/";
 
@@ -1771,6 +1772,7 @@ public class Minimap : ClientMonoBehaviour {
    private string _shopShipyardIconPath = "Minimap/sign_shipyard";
    private string _shopTraderIconPath = "Minimap/sign_trader";
    private string _shopWeaponsIconPath = "Minimap/sign_weapons";
+   #pragma warning restore
 
    #endregion
 }

@@ -10,41 +10,42 @@ namespace MapCreationTool
 {
     public class UI : MonoBehaviour
     {
-        [SerializeField]
-        private Dropdown toolDropdown;
-        [SerializeField]
-        private Dropdown biomeDropdown;
-        [SerializeField]
-        private Toggle burrowedTreesToggle;
-        [SerializeField]
-        private Toggle tileModeToggle;
-        [SerializeField]
-        private Dropdown mountainLayerDropdown;
+        const string masterSceneName = "MasterTool";
 
         [SerializeField]
-        private Button undoButton;
+        private Dropdown toolDropdown = null;
         [SerializeField]
-        private Button redoButton;
+        private Dropdown biomeDropdown = null;
+        [SerializeField]
+        private Toggle burrowedTreesToggle = null;
+        [SerializeField]
+        private Dropdown mountainLayerDropdown = null;
+        [SerializeField]
+        private Dropdown fillBoundsDropdown = null;
 
         [SerializeField]
-        private DrawBoard drawBoard;
+        private Button undoButton = null;
         [SerializeField]
-        private Overlord overlord;
+        private Button redoButton = null;
 
-        // Opens the main tool
-        public Button openMainTool;
+        [SerializeField]
+        private DrawBoard drawBoard = null;
+        [SerializeField]
+        private Overlord overlord = null;
 
-        private CanvasScaler canvasScaler;
+        private CanvasScaler canvasScaler = null;
+
+        public YesNoDialog YesNoDialog { get; private set; }
 
         private Dictionary<string, BiomeType> optionsPacks = new Dictionary<string, BiomeType>
-    {
-        {"Forest", BiomeType.Forest },
-        {"Desert", BiomeType.Desert },
-        {"Lava", BiomeType.Lava },
-        {"Shroom", BiomeType.Shroom },
-        {"Pine", BiomeType.Pine },
-        {"Snow", BiomeType.Snow }
-    };
+        {
+            {"Forest", BiomeType.Forest },
+            {"Desert", BiomeType.Desert },
+            {"Lava", BiomeType.Lava },
+            {"Shroom", BiomeType.Shroom },
+            {"Pine", BiomeType.Pine },
+            {"Snow", BiomeType.Snow }
+        };
 
         private void OnEnable()
         {
@@ -73,7 +74,7 @@ namespace MapCreationTool
             burrowedTreesToggle.isOn = Tools.BurrowedTrees;
             toolDropdown.value = (int)Tools.ToolType;
             mountainLayerDropdown.value = Tools.MountainLayer;
-            tileModeToggle.isOn = Tools.IndividualTiles;
+            fillBoundsDropdown.value = (int)Tools.FillBounds;
             for (int i = 0; i < biomeDropdown.options.Count; i++)
                 if (optionsPacks[biomeDropdown.options[i].text] == Tools.Biome)
                     biomeDropdown.value = i;
@@ -82,10 +83,8 @@ namespace MapCreationTool
         }
         private void Awake()
         {
-            openMainTool.onClick.AddListener(() => {
-               SceneManager.LoadScene(MasterToolScene.masterScene);
-            });
             canvasScaler = GetComponent<CanvasScaler>();
+            YesNoDialog = GetComponentInChildren<YesNoDialog>();
         }
         private void Start()
         {
@@ -102,16 +101,13 @@ namespace MapCreationTool
             burrowedTreesToggle.gameObject.SetActive(
                 Tools.ToolType == ToolType.Brush &&
                 Tools.TileGroup != null && Tools.TileGroup.Type == TileGroupType.TreePrefab);
+
+            fillBoundsDropdown.gameObject.SetActive(Tools.ToolType == ToolType.Fill);
         }
         public void BiomeDropdown_Changes()
         {
             if (Tools.Biome != optionsPacks[biomeDropdown.options[biomeDropdown.value].text])
                 Tools.ChangeBiome(optionsPacks[biomeDropdown.options[biomeDropdown.value].text]);
-        }
-        public void TileModeToggle_Changes()
-        {
-            if (Tools.IndividualTiles != tileModeToggle.isOn)
-                Tools.ChangeIndividualTiles(tileModeToggle.isOn);
         }
         public void BurrowedTreesToggle_Changes()
         {
@@ -128,6 +124,11 @@ namespace MapCreationTool
             if (Tools.ToolType != (ToolType)toolDropdown.value)
                 Tools.ChangeTool((ToolType)toolDropdown.value);
         }
+        public void FillBoundsDropDown_ValueChanged()
+        {
+            if (Tools.FillBounds != (FillBounds)fillBoundsDropdown.value)
+                Tools.ChangeFillBounds((FillBounds)fillBoundsDropdown.value);
+        }
         public void UndoButton_Click()
         {
             Undo.DoUndo();
@@ -138,7 +139,11 @@ namespace MapCreationTool
         }
         public void NewButton_Click()
         {
-            drawBoard.ClearAll();
+            YesNoDialog.Display(
+                "New map", 
+                "Are you sure you want to start a new map?\nAll unsaved progress will be lost.", 
+                drawBoard.ClearAll, 
+                null);
         }
         public void OpenButton_Click()
         {
@@ -151,6 +156,13 @@ namespace MapCreationTool
         public void SaveButton_Click()
         {
             FileUtility.SaveFile(drawBoard.FormSerializedData());
+        }
+
+        public void MasterToolButton_Click()
+        {
+            YesNoDialog.Display("Exiting map editor",
+                "Are you sure you want to exit the map editor?\nAll unsaved progress will be lost.",
+                () => SceneManager.LoadScene(masterSceneName), null);
         }
     }
 }

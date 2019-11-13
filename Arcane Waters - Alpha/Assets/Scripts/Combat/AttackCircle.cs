@@ -23,17 +23,21 @@ public class AttackCircle : MonoBehaviour {
    // Our End Time
    public float endTime;
 
-   // The animator of the circle
-   public Animator animator;
+   // The color of the circle
+   public Color color;
+
+   // The alpha value of the sprite - set by the animator
+   public float alpha = 1f;
+
+   // The renderer
+   public SpriteRenderer imageRenderer;
 
    #endregion
 
-   public void Start () {
-      // Set the speed at which the circle shrinks
-      animator.SetFloat("speed", 1/(endTime - startTime));
-   }
-
    void Update () {
+      // Update the alpha of the sprite
+      imageRenderer.color = new Color(color.r, color.g, color.b, alpha);
+
       // If we've been alive long enough, destroy ourself
       if (TimeManager.self.getSyncedTime() > this.endTime) {
          Destroy(this.gameObject);

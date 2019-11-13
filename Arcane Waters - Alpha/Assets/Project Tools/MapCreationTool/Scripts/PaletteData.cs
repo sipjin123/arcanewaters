@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-namespace MapCreationTool.PaletteTilesData 
+namespace MapCreationTool.PaletteTilesData
 {
     public class PaletteData
     {
@@ -45,11 +45,11 @@ namespace MapCreationTool.PaletteTilesData
         public IEnumerable<TileGroup> GetTileGroupsEnumerator()
         {
             HashSet<TileGroup> proccessed = new HashSet<TileGroup>();
-            for(int i = 0; i < TileGroups.GetLength(0); i++)
+            for (int i = 0; i < TileGroups.GetLength(0); i++)
             {
-                for(int j = 0; j < TileGroups.GetLength(1); j++)
+                for (int j = 0; j < TileGroups.GetLength(1); j++)
                 {
-                    if(TileGroups[i, j] != null && !proccessed.Contains(TileGroups[i,j]))
+                    if (TileGroups[i, j] != null && !proccessed.Contains(TileGroups[i, j]))
                     {
                         proccessed.Add(TileGroups[i, j]);
                         yield return TileGroups[i, j];
@@ -83,7 +83,7 @@ namespace MapCreationTool.PaletteTilesData
             {
                 for (int j = 0; j < newG.GetLength(1); j++)
                 {
-                    if(newG[i, j] != null && newG[i, j] is PrefabGroup && !used.Contains(newG[i, j]))
+                    if (newG[i, j] != null && newG[i, j] is PrefabGroup && !used.Contains(newG[i, j]))
                     {
                         used.Add(newG[i, j]);
                         newPrefs.Add(newG[i, j] as PrefabGroup);
@@ -127,7 +127,7 @@ namespace MapCreationTool.PaletteTilesData
         }
     }
 
-    public class TreePrefabGroup : PrefabGroup 
+    public class TreePrefabGroup : PrefabGroup
     {
         public GameObject BurrowedPref { get; set; }
 
@@ -143,22 +143,73 @@ namespace MapCreationTool.PaletteTilesData
         public TileData[,] MainTiles { get; set; }
         public TileData[,] CornerTiles { get; set; }
         public int Layer { get; set; }
+        public bool SingleLayer { get; set; }
+        public bool InvertedCorners { get; set; }
 
         public NineFourGroup()
         {
             Type = TileGroupType.NineFour;
+        }
+
+        public override bool Contains(TileBase tile)
+        {
+            for (int i = 0; i < MainTiles.GetLength(0); i++)
+                for (int j = 0; j < MainTiles.GetLength(1); j++)
+                    if (MainTiles[i, j] != null && MainTiles[i, j].Tile == tile)
+                        return true;
+
+            for (int i = 0; i < CornerTiles.GetLength(0); i++)
+                for (int j = 0; j < CornerTiles.GetLength(1); j++)
+                    if (CornerTiles[i, j] != null && CornerTiles[i, j].Tile == tile)
+                        return true;
+
+            return false;
+        }
+    }
+
+    public class WallGroup : TileGroup
+    {
+        public TileData[,] AllTiles { get; set; }
+        public int Layer { get; set; }
+
+        public WallGroup()
+        {
+            Type = TileGroupType.Wall;
+        }
+
+        public override bool Contains(TileBase tile)
+        {
+            for (int i = 0; i < AllTiles.GetLength(0); i++)
+                for (int j = 0; j < AllTiles.GetLength(1); j++)
+                    if (AllTiles[i, j] != null && AllTiles[i, j].Tile == tile)
+                        return true;
+
+            return false;
         }
     }
 
     public class NineGroup : TileGroup
     {
         public int Layer { get; set; }
+        public int SubLayer { get; set; }
 
         public NineGroup() 
         {
             Type = TileGroupType.Nine;
         }
     }
+
+    public class DockGroup : TileGroup
+    {
+        public int Layer { get; set; }
+        public int SubLayer { get; set; }
+
+        public DockGroup()
+        {
+            Type = TileGroupType.Dock;
+        }
+    }
+
 
     public class TileGroup
     {
@@ -194,7 +245,7 @@ namespace MapCreationTool.PaletteTilesData
             return true;
         }
 
-        public bool Contains(TileBase tile)
+        public virtual bool Contains(TileBase tile)
         {
             for (int i = 0; i < Tiles.GetLength(0); i++)
             {
@@ -216,12 +267,15 @@ namespace MapCreationTool.PaletteTilesData
         Nine,
         TreePrefab,
         Mountain,
-        NineFour
+        NineFour,
+        Dock,
+        Wall
     }
 
     public class TileData
     {
         public TileBase Tile { get; set; }
         public int Layer { get; set; }
+        public int SubLayer { get; set; }
     }
 }

@@ -8,11 +8,21 @@ public class AttackCircleAimCursor : MonoBehaviour
 {
    #region Public Variables
 
+   // The value of the color alpha, set by the animator
+   public float animatedAlpha = 1f;
+
+   // The renderer of the cursor
+   public SpriteRenderer cursorRenderer;
+
+   // The renderer of the cursor aura
+   public SpriteRenderer auraRenderer;
+
    #endregion
 
    private void Awake () {
       _entitiesUnderCursor = new HashSet<NetEntity>();
       _collider = GetComponent<Collider2D>();
+      _animator = GetComponent<Animator>();
    }
 
    public void OnTriggerEnter2D (Collider2D other) {
@@ -36,12 +46,23 @@ public class AttackCircleAimCursor : MonoBehaviour
    }
 
    public void activate () {
+      gameObject.SetActive(true);
       _collider.enabled = true;
    }
 
    public void deactivate () {
       _collider.enabled = false;
       _entitiesUnderCursor.Clear();
+      gameObject.SetActive(false);
+   }
+
+   public void setColor(Color c) {
+      cursorRenderer.color = c;
+      auraRenderer.color = new Color(c.r, c.g, c.b, animatedAlpha);
+   }
+
+   public void setAnimationSpeed(float speed) {
+      _animator.SetFloat("speed", speed);
    }
 
    public bool isCursorHoveringOver(NetEntity entity) {
@@ -59,6 +80,9 @@ public class AttackCircleAimCursor : MonoBehaviour
 
    // The collider2D component
    private Collider2D _collider;
+
+   // The animator component
+   private Animator _animator;
 
    #endregion
 }

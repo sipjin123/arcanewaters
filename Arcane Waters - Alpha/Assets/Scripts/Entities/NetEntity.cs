@@ -346,7 +346,7 @@ public class NetEntity : NetworkBehaviour
       }
 
       // Draw the outline
-      if (AttackManager.self.isHoveringOver(this)) {
+      if (AttackManager.self.isHoveringOver(this) && Global.player != this) {
          // If the attack cursor is over us, draw a yellow outline
          _outline.setNewColor(Color.yellow);
          _outline.setVisibility(true);

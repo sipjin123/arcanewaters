@@ -1,6 +1,6 @@
 ﻿using MapCreationTool.PaletteTilesData;
-using MapCreationTool.UndoSystem;
 using MapCreationTool.Serialization;
+using MapCreationTool.UndoSystem;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -11,24 +11,27 @@ namespace MapCreationTool
 {
     public class DrawBoard : MonoBehaviour
     {
+        public static Vector2Int Size { get; private set; }
+        public static Vector2Int Origin { get; private set; }
+
         [SerializeField]
-        private Palette palette;
+        private Tilemap layerPref = null;
         [SerializeField]
-        private Tilemap layerPref;
+        private Transform prefabLayer = null;
         [SerializeField]
-        private Transform prefabLayer;
+        private LayerName[] layerDefinitions = new LayerName[0];
         [SerializeField]
-        private LayerName[] layerDefinitions;
+        private Transform layerContainer = null;
         [SerializeField]
-        private Transform layerContainer;
+        private SpriteRenderer brushOutline = null;
         [SerializeField]
-        private float minZoom;
+        private float minZoom = 0;
         [SerializeField]
-        private float maxZoom;
+        private float maxZoom = 0;
         [SerializeField]
-        private float zoomSpeed;
+        private AnimationCurve zoomSpeed = null;
         [SerializeField]
-        private TileBase transparentTile;
+        private TileBase transparentTile = null;
 
 
         private EventTrigger eventCanvas;
@@ -46,8 +49,12 @@ namespace MapCreationTool
 
         private List<PlacedPrefab> placedPrefabs = new List<PlacedPrefab>();
 
+        
         private void Awake()
         {
+            Size = new Vector2Int(2000, 2000);
+            Origin = new Vector2Int(-1000, -1000);
+
             eventCanvas = GetComponentInChildren<EventTrigger>();
             grid = GetComponentInChildren<Grid>();
             cam = GetComponentInChildren<Camera>();
@@ -63,14 +70,21 @@ namespace MapCreationTool
             Utilities.AddPointerListener(eventCanvas, EventTriggerType.PointerExit, PointerExit);
         }
 
+        private void Start()
+        {
+            brushOutline.enabled = Tools.ToolType == ToolType.Eraser;
+        }
+
         private void OnEnable()
         {
             MainCamera.SizeChanged += MainCamSizeChanged;
+            Tools.AnythingChanged += ToolsAnythingChanged;
         }
 
         private void OnDisable()
         {
             MainCamera.SizeChanged -= MainCamSizeChanged;
+            Tools.AnythingChanged -= ToolsAnythingChanged;
         }
 
         private void Update()
@@ -106,6 +120,12 @@ namespace MapCreationTool
             ClampCamPos();
         }
 
+        private void ToolsAnythingChanged()
+        {
+            brushOutline.enabled = Tools.ToolType == ToolType.Eraser;
+            brushOutline.transform.position = WorldToCell(MainCamera.STWP(Input.mousePosition));
+        }
+
         private void RecalculateCamBounds()
         {
             var canvasRectT = eventCanvas.GetComponent<RectTransform>();
@@ -119,59 +139,15 @@ namespace MapCreationTool
             layers = new Dictionary<int, Layer>();
             foreach (LayerName ln in layerDefinitions)
             {
-                if(ln.layer == PaletteData.PathLayer)
-                {
-                    Tilemap mainLayer = Instantiate(layerPref, Vector3.zero, Quaternion.identity, layerContainer);
-                    mainLayer.gameObject.name = ln.name;
-                    mainLayer.transform.localPosition = new Vector3(0, 0, LayerToZ(ln.layer, 0));
-
-                    Tilemap cornerLayer1 = Instantiate(layerPref, Vector3.zero, Quaternion.identity, layerContainer);
-                    cornerLayer1.gameObject.name = ln.name + " Corners " + " 1";
-                    cornerLayer1.transform.localPosition = new Vector3(0, 0, LayerToZ(ln.layer, 1));
-
-                    Tilemap cornerLayer2 = Instantiate(layerPref, Vector3.zero, Quaternion.identity, layerContainer);
-                    cornerLayer2.gameObject.name = ln.name + " Corners " + " 2";
-                    cornerLayer2.transform.localPosition = new Vector3(0, 0, LayerToZ(ln.layer, 2));
-
-                    layers.Add(ln.layer, new Layer(new Tilemap[] { mainLayer, cornerLayer1, cornerLayer2 }));
-                }
-                else if(ln.layer == PaletteData.WaterLayer)
-                {
-                    Tilemap mainLayer = Instantiate(layerPref, Vector3.zero, Quaternion.identity, layerContainer);
-                    mainLayer.gameObject.name = ln.name;
-                    mainLayer.transform.localPosition = new Vector3(0, 0, LayerToZ(ln.layer, 0));
-
-                    Tilemap cornerLayer1 = Instantiate(layerPref, Vector3.zero, Quaternion.identity, layerContainer);
-                    cornerLayer1.gameObject.name = ln.name + " Corners " + " 1";
-                    cornerLayer1.transform.localPosition = new Vector3(0, 0, LayerToZ(ln.layer, 1));
-
-                    Tilemap cornerLayer2 = Instantiate(layerPref, Vector3.zero, Quaternion.identity, layerContainer);
-                    cornerLayer2.gameObject.name = ln.name + " Corners " + " 2";
-                    cornerLayer2.transform.localPosition = new Vector3(0, 0, LayerToZ(ln.layer, 2));
-
-                    layers.Add(ln.layer, new Layer(new Tilemap[] { mainLayer, cornerLayer1, cornerLayer2 }));
-                }
-                else if (ln.layer == PaletteData.MountainLayer)
-                {
-                    Tilemap[] subLayers = new Tilemap[10];
-
-                    for (int i = 0; i < 10; i++)
-                    {
-                        Tilemap layer = Instantiate(layerPref, Vector3.zero, Quaternion.identity, layerContainer);
-                        layer.gameObject.name = ln.name + " " + i;
-                        layer.transform.localPosition = new Vector3(0, 0, LayerToZ(ln.layer, i));
-                        subLayers[i] = layer;
-                    }
-                    layers.Add(ln.layer, new Layer(subLayers));
-                }
-                else
+                Tilemap[] subLayers = new Tilemap[10];
+                for (int i = 0; i < 10; i++)
                 {
                     Tilemap layer = Instantiate(layerPref, Vector3.zero, Quaternion.identity, layerContainer);
-                    layer.gameObject.name = ln.name;
-                    layer.transform.localPosition = new Vector3(0, 0, LayerToZ(ln.layer));
-                    layers.Add(ln.layer, new Layer(layer));
+                    layer.gameObject.name = ln.name + " " + i;
+                    layer.transform.localPosition = new Vector3(0, 0, LayerToZ(ln.layer, i));
+                    subLayers[i] = layer;
                 }
-
+                layers.Add(ln.layer, new Layer(subLayers));
             }
 
             if (!layers.ContainsKey(0))
@@ -243,16 +219,13 @@ namespace MapCreationTool
         {
             BoardChange undoChange = new BoardChange();
 
-            foreach (var tc in change.TileChanges)
+            foreach(var group in change.TileChanges.GroupBy(tc => tc.Layer))
             {
-                TileBase curTile = tc.Layer.GetTile(tc.Position);
+                Vector3Int[] positions = group.Select(tc => tc.Position).ToArray();
+                TileBase[] tiles = group.Select(tc => tc.Tile).ToArray();
 
-                if (curTile != tc.Tile)
-                {
-                    undoChange.TileChanges.Add(new TileChange(curTile, tc.Position, tc.Layer));
-
-                    tc.Layer.SetTile(tc.Position, tc.Tile);
-                }
+                undoChange.Add(group.Key.CalculateUndoChange(positions, tiles));
+                group.Key.SetTiles(positions, tiles);
             }
 
             foreach (var pc in change.PrefabChanges)
@@ -313,7 +286,7 @@ namespace MapCreationTool
                     for (int j = layer.Origin.y; j < layer.Size.y; j++)
                     {
                         TileBase tile = layer.GetTile(new Vector3Int(i, j, 0));
-                        if (tile != null)
+                        if (tile != null && tile != transparentTile)
                         {
                             Vector2Int index = from.IndexOf(tile);
                             if (index.x == -1)
@@ -385,19 +358,19 @@ namespace MapCreationTool
             {
                 if (Tools.TileGroup != null)
                 {
-                    if (Tools.TileGroup.Type == TileGroupType.Regular || Tools.TileIndex != null)
+                    if (Tools.TileGroup.Type == TileGroupType.Regular)
                     {
                         result.Add(BoardChange.CalculateRegularTileGroupChanges(Tools.TileGroup, layers, pointerWorldPosition));
                     }
                     else if (Tools.TileGroup.Type == TileGroupType.NineFour)
                     {
                         NineFourGroup group = Tools.TileGroup as NineFourGroup;
-                        result.Add(BoardChange.CalculateNineFourGroupChanges(group, layers[group.Layer], pointerWorldPosition));
+                        result.Add(BoardChange.CalculateNineFourChanges(group, layers[group.Layer], pointerWorldPosition));
                     }
                     else if (Tools.TileGroup.Type == TileGroupType.Nine)
                     {
                         NineGroup group = Tools.TileGroup as NineGroup;
-                        result.Add(BoardChange.CalculateNineGroupChanges(group, layers[group.Layer].Default, pointerWorldPosition));
+                        result.Add(BoardChange.CalculateNineGroupChanges(group, layers[group.Layer].SubLayers[group.SubLayer], pointerWorldPosition));
                     }
                     else if ((Tools.TileGroup.Type == TileGroupType.Prefab ||
                         Tools.TileGroup.Type == TileGroupType.TreePrefab) && !excludePrefabs)
@@ -411,7 +384,10 @@ namespace MapCreationTool
                     else if (Tools.TileGroup.Type == TileGroupType.NineSliceInOut)
                     {
                         NineSliceInOutGroup group = Tools.TileGroup as NineSliceInOutGroup;
-                        result.Add(BoardChange.CalculateNineSliceInOutchanges(group, layers[group.Tiles[0, 0].Layer], pointerWorldPosition));
+                        result.Add(BoardChange.CalculateNineSliceInOutchanges(
+                            group,
+                            layers[group.Tiles[0, 0].Layer].SubLayers[group.Tiles[0, 0].SubLayer],
+                            pointerWorldPosition));
                     }
                     else if (Tools.TileGroup.Type == TileGroupType.Mountain)
                     {
@@ -419,6 +395,31 @@ namespace MapCreationTool
                             Tools.TileGroup as MountainGroup,
                             pointerWorldPosition,
                             layers[PaletteData.MountainLayer].SubLayers[Tools.MountainLayer]));
+                    }
+                    else if (Tools.TileGroup.Type == TileGroupType.Dock)
+                    {
+                        var group = Tools.TileGroup as DockGroup;
+                        result.Add(BoardChange.CalculateDockChanges(group, layers[group.Layer].SubLayers[group.SubLayer], pointerWorldPosition));
+                    }
+                    else if (Tools.TileGroup.Type == TileGroupType.Wall)
+                    {
+                        var group = Tools.TileGroup as WallGroup;
+                        result.Add(BoardChange.CalculateWallChanges(group, layers[group.Layer].SubLayers[0], pointerWorldPosition));
+                    }
+                }
+            }
+            else if(Tools.ToolType == ToolType.Fill)
+            {
+                if(Tools.TileGroup != null)
+                {
+                    if (Tools.TileGroup.MaxTileCount == 1)
+                    {
+                        PaletteTilesData.TileData tile = Tools.TileGroup.Tiles[0, 0];
+
+                        if (Tools.FillBounds == FillBounds.SingleLayer)
+                            result.Add(BoardChange.CalculateFillChanges(tile.Tile, layers[tile.Layer].SubLayers[tile.SubLayer], pointerWorldPosition));
+                        else
+                            result.Add(BoardChange.CalculateFillChanges(tile, layers, pointerWorldPosition));
                     }
                 }
             }
@@ -475,7 +476,12 @@ namespace MapCreationTool
         {
             EnsurePreviewCleared();
             Vector2 worldPos = cam.ScreenToWorldPoint(pointerScreenPos);
-            BoardChange change = GetPotentialBoardChange(worldPos);
+            BoardChange change = Tools.ToolType == ToolType.Brush
+                ? GetPotentialBoardChange(worldPos)
+                : new BoardChange();
+
+            if(Tools.ToolType == ToolType.Eraser)
+                brushOutline.transform.position = CellToWorldCenter(WorldToCell(MainCamera.STWP(pointerScreenPos)));
 
             //-------------------
             //Handle prefab to be placed
@@ -517,6 +523,21 @@ namespace MapCreationTool
                     tc.Layer.SetPreviewTile(tc.Position, tc.Tile);
                 preview.PreviewTilesSet = true;
             }
+        }
+
+        public static Vector3Int WorldToCell(Vector3 worldPosition)
+        {
+            return new Vector3Int(Mathf.FloorToInt(worldPosition.x), Mathf.FloorToInt(worldPosition.y), 0);
+        }
+
+        /// <summary>
+        /// Given a cell index, returns the center of that cell in world coordinates
+        /// </summary>
+        /// <param name="cellPosition"></param>
+        /// <returns></returns>
+        public static Vector3 CellToWorldCenter(Vector3Int cellPosition)
+        {
+            return new Vector3(cellPosition.x + 0.5f, cellPosition.y + 0.5f, 0);
         }
 
         #region Events
@@ -564,7 +585,7 @@ namespace MapCreationTool
         private void PointerScroll(float scroll)
         {
             cam.orthographicSize = Mathf.Clamp(
-                cam.orthographicSize + scroll * -zoomSpeed * Time.deltaTime,
+                cam.orthographicSize + scroll * -zoomSpeed.Evaluate(cam.orthographicSize) * Time.deltaTime,
                 minZoom,
                 maxZoom);
 

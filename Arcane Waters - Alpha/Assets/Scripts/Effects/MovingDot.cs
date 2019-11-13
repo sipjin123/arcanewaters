@@ -31,7 +31,7 @@ public class MovingDot : ClientMonoBehaviour
       }
 
       // Hide our sprite while the attack circle is hidden
-      this.dotSprite.enabled = this.dotShadow.enabled = AttackManager.self.attackCircleClampedIndicator.enabled;
+      this.dotSprite.enabled = this.dotShadow.enabled = AttackManager.self.clampedCursor.enabled;
 
       // Check how long it's been since we were created
       float timeSinceCreation = Time.time - _creationTime;
@@ -39,15 +39,15 @@ public class MovingDot : ClientMonoBehaviour
 
       // Move towards the attack circle indicator
       Vector2 startPos = Global.player.transform.position;
-      Vector2 endPos = AttackManager.self.attackCircleClampedIndicator.transform.position;
+      Vector2 endPos = AttackManager.self.clampedCursor.transform.position;
       Vector2 newPos = Vector2.Lerp(startPos, endPos, lerpTime);
       Util.setXY(this.transform, newPos);
 
       // Adjusts the height of the dot in an arch
-      Util.setLocalY(dotSprite.transform, AttackManager.getArcHeight(startPos, endPos, lerpTime));
+      Util.setLocalY(dotSprite.transform, AttackManager.getArcHeight(startPos, endPos, lerpTime, true));
 
       // If we're close enough, we're done
-      if (Vector2.Distance(this.transform.position, AttackManager.self.attackCircleClampedIndicator.transform.position) < .02f) {
+      if (Vector2.Distance(this.transform.position, AttackManager.self.clampedCursor.transform.position) < .02f) {
          Destroy(this.gameObject);
       }
    }

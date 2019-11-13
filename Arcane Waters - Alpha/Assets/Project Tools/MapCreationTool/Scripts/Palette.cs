@@ -1,32 +1,32 @@
-﻿using UnityEngine;
+﻿using MapCreationTool.PaletteTilesData;
+using MapCreationTool.UndoSystem;
+using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Tilemaps;
-using MapCreationTool.PaletteTilesData;
-using MapCreationTool.UndoSystem;
 
-namespace MapCreationTool 
+namespace MapCreationTool
 {
     public class Palette : MonoBehaviour
     {
         [SerializeField]
-        private float minZoom;
-        [SerializeField]
-        private float maxZoom;
-        [SerializeField]
-        private float zoomSpeed;
-        [SerializeField]
-        private UI ui;
+        private AnimationCurve zoomSpeed = null;
 
+        [SerializeField]
+        private TileBase transparentTile = null;
 
-        private RectTransform eventCanvas;
-        private Camera paletteCamera;
-        private Tilemap tilemap;
-        private SpriteRenderer selectionMarker;
+        private RectTransform eventCanvas = null;
+        private Camera paletteCamera = null;
+        private Tilemap tilemap = null;
+        private SpriteRenderer selectionMarker = null;
+        private List<GameObject> prefabs = new List<GameObject>();
 
         private PaletteData paletteData;
 
         private bool pointerHovering = false;
         private Rect camBounds = Rect.zero;
+        private Rect regularTileBounds = Rect.zero;
+        private Vector3Int? draggingFrom = null;
 
         private void Awake()
         {
@@ -43,6 +43,10 @@ namespace MapCreationTool
                 EventTriggerType.PointerExit, PointerExit);
             Utilities.AddPointerListener(eventCanvas.GetComponent<EventTrigger>(),
                 EventTriggerType.Drag, PointerDrag);
+            Utilities.AddPointerListener(eventCanvas.GetComponent<EventTrigger>(),
+                EventTriggerType.BeginDrag, PointerBeginDrag);
+            Utilities.AddPointerListener(eventCanvas.GetComponent<EventTrigger>(),
+                EventTriggerType.EndDrag, PointerEndDrag);
         }
 
         private void OnEnable()
@@ -77,15 +81,48 @@ namespace MapCreationTool
             Tools.ChangeTileGroup(null, registerUndo: false);
             tilemap.ClearAllTiles();
 
+            foreach (var pref in prefabs)
+                if (pref != null)
+                    Destroy(pref);
+            prefabs.Clear();
+
+
             for (int i = 0; i < data.TileGroups.GetLength(0); i++)
             {
                 for (int j = 0; j < data.TileGroups.GetLength(1); j++)
                 {
                     PaletteTilesData.TileData tileData = data.GetTile(i, j);
                     if (tileData != null)
-                        tilemap.SetTile(new Vector3Int(i, j, 0), tileData.Tile);
+                    {
+                        if (data.TileGroups[i, j] is PrefabGroup)
+                            tilemap.SetTile(new Vector3Int(i, j, 0), transparentTile);
+                        else
+                            tilemap.SetTile(new Vector3Int(i, j, 0), tileData.Tile);
+                    }
                 }
             }
+
+            foreach (var pref in data.PrefabGroups)
+            {
+                GameObject p = Instantiate(pref.RefPref, transform);
+                if (p.GetComponent<ZSnap>())
+                    p.GetComponent<ZSnap>().enabled = false;
+                p.layer = LayerMask.NameToLayer("MapEditor_Palette");
+                foreach (var child in p.GetComponentsInChildren<Transform>())
+                    child.gameObject.layer = LayerMask.NameToLayer("MapEditor_Palette");
+                p.transform.localPosition = pref.CenterPoint;
+
+                prefabs.Add(p);
+            }
+
+            //Calculate bounds, where regular tiles are placed and can be selected by dragging
+            Vector2 size = new Vector2(data.TileGroups.GetLength(0), 1000);
+            for(int i = 0; i < data.TileGroups.GetLength(0); i++)
+                for (int j = 0; j < data.TileGroups.GetLength(1); j++)
+                    if (data.TileGroups[i, j] != null && data.TileGroups[i, j].Type != TileGroupType.Regular && size.y > j)
+                        size.y = j;
+
+            regularTileBounds = new Rect(Vector2.zero, size);
 
             RecalculateCamBounds();
             ClampCamPos();
@@ -119,17 +156,87 @@ namespace MapCreationTool
 
         public void PointerScroll(float scroll)
         {
-            paletteCamera.orthographicSize = Mathf.Clamp(
-                paletteCamera.orthographicSize + scroll * -zoomSpeed * Time.deltaTime,
-                minZoom,
-                maxZoom);
-
+            paletteCamera.orthographicSize = paletteCamera.orthographicSize + 
+                scroll * -zoomSpeed.Evaluate(paletteCamera.orthographicSize) * Time.deltaTime;
             ClampCamPos();
+        }
+
+        private bool InBounds(Rect bounds, Vector3Int position)
+        {
+            return 
+                position.x >= bounds.xMin && 
+                position.x < bounds.xMax && 
+                position.y >= bounds.yMin && 
+                position.y < bounds.yMax;
+        }
+
+        private Vector3Int ClampToBounds(Rect bounds, Vector3Int position)
+        {
+            return new Vector3Int(
+                Mathf.Clamp(position.x, (int)bounds.min.x, (int)bounds.max.x - 1),
+                Mathf.Clamp(position.y, (int)bounds.min.y, (int)bounds.max.y - 1),
+                0);
+        }
+
+        public void PointerBeginDrag(PointerEventData data)
+        {
+            if(data.button == PointerEventData.InputButton.Left)
+            {
+                var pos = tilemap.WorldToCell(data.pointerPressRaycast.worldPosition);
+                if (InBounds(regularTileBounds, pos))
+                    draggingFrom = pos;
+            }
+        }
+
+        public void PointerEndDrag(PointerEventData data)
+        {
+            if (draggingFrom == null)
+                return;
+
+            Vector3Int curPos = tilemap.WorldToCell(data.pointerCurrentRaycast.worldPosition);
+            curPos = ClampToBounds(regularTileBounds, curPos);
+
+            Vector3Int from = new Vector3Int(Mathf.Min(curPos.x, draggingFrom.Value.x), Mathf.Min(curPos.y, draggingFrom.Value.y), 0);
+            Vector3Int to = new Vector3Int(Mathf.Max(curPos.x, draggingFrom.Value.x), Mathf.Max(curPos.y, draggingFrom.Value.y), 0);
+
+            var group = new TileGroup
+            {
+                Type = TileGroupType.Regular,
+                Start = from,
+                Tiles = new PaletteTilesData.TileData[to.x - from.x + 1, to.y - from.y + 1]
+            };
+
+            for (int i = 0; i < group.Tiles.GetLength(0); i++)
+                for (int j = 0; j < group.Tiles.GetLength(1); j++)
+                    group.Tiles[i, j] = paletteData.GetTile(from.x + i, from.y + j);
+
+            UpdateSelectionMarker(group);
+
+            Tools.ChangeTileGroup(group);
+
+            draggingFrom = null;
         }
 
         public void PointerDrag(PointerEventData data)
         {
-            if (data.button != PointerEventData.InputButton.Left)
+            if(data.button == PointerEventData.InputButton.Left && draggingFrom != null)
+            {
+                Vector3Int curPos = tilemap.WorldToCell(data.pointerCurrentRaycast.worldPosition);
+                curPos = ClampToBounds(regularTileBounds, curPos);
+
+                Vector3Int from = new Vector3Int(Mathf.Min(curPos.x, draggingFrom.Value.x), Mathf.Min(curPos.y, draggingFrom.Value.y), 0);
+                Vector3Int to = new Vector3Int(Mathf.Max(curPos.x, draggingFrom.Value.x), Mathf.Max(curPos.y, draggingFrom.Value.y), 0);
+
+                var group = new TileGroup
+                {
+                    Type = TileGroupType.Regular,
+                    Start = from,
+                    Tiles = new PaletteTilesData.TileData[to.x - from.x + 1, to.y - from.y + 1]
+                };
+
+                UpdateSelectionMarker(group);
+            }
+            else if(data.button != PointerEventData.InputButton.Left)
             {
                 Vector3 curPos = paletteCamera.ScreenToWorldPoint(data.position);
                 Vector3 prevPos = paletteCamera.ScreenToWorldPoint(data.position + data.delta);
@@ -141,39 +248,28 @@ namespace MapCreationTool
 
         public void PointerClick(PointerEventData data)
         {
-            if (data.button == PointerEventData.InputButton.Left)
+            if (data.button == PointerEventData.InputButton.Left && draggingFrom == null)
             {
                 Vector3Int cellCoors = tilemap.WorldToCell(data.pointerPressRaycast.worldPosition);
                 var group = paletteData.GetGroup(cellCoors.x, cellCoors.y);
-
-                Vector2Int? tile =
-                    group != null && Tools.IndividualTiles && group.Type != TileGroupType.Prefab && group.Type != TileGroupType.TreePrefab
-                        ? (Vector2Int?)(cellCoors - group.Start)
-                        : null;
-
-                if (group != Tools.TileGroup || Tools.TileIndex != tile)
-                {
-                    Tools.ChangeTileGroup(group, tile);
-                    UpdateSelectionMarker();
-                }
+            
+                if (group != Tools.TileGroup)
+                    Tools.ChangeTileGroup(group);
             }
         }
 
         private void UpdateSelectionMarker()
         {
-            selectionMarker.enabled = Tools.TileGroup != null;
+            UpdateSelectionMarker(Tools.TileGroup);
+        }
+
+        private void UpdateSelectionMarker(TileGroup selectedGroup)
+        {
+            selectionMarker.enabled = selectedGroup != null;
             if (selectionMarker.enabled)
             {
-                if (Tools.TileIndex == null)
-                {
-                    selectionMarker.size = Tools.TileGroup.Size;
-                    selectionMarker.transform.localPosition = Tools.TileGroup.CenterPoint;
-                }
-                else
-                {
-                    selectionMarker.size = Vector2.one;
-                    selectionMarker.transform.localPosition = Tools.TileGroup.Start + (Vector3Int)Tools.TileIndex.Value + new Vector3(0.5f, 0.5f, 0);
-                }
+                selectionMarker.size = selectedGroup.Size;
+                selectionMarker.transform.localPosition = selectedGroup.CenterPoint;
             }
         }
 
@@ -201,8 +297,17 @@ namespace MapCreationTool
                     camBounds.height * 0.5f);
 
                 camHalfSize = new Vector2(
-                cam.orthographicSize * cam.pixelWidth / cam.pixelHeight,
-                cam.orthographicSize);
+                    cam.orthographicSize * cam.pixelWidth / cam.pixelHeight,
+                    cam.orthographicSize);
+            }
+
+            else if(cam.orthographicSize < 1)
+            {
+                cam.orthographicSize = 1;
+
+                camHalfSize = new Vector2(
+                    cam.orthographicSize * cam.pixelWidth / cam.pixelHeight,
+                    cam.orthographicSize);
             }
 
             cam.transform.localPosition = new Vector3(

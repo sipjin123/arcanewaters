@@ -80,6 +80,7 @@ public class Instance : NetworkBehaviour
             bot.nationType = spot.nationType;
             bot.maxForceOverride = spot.maxForceOverride;
             bot.speed = Ship.getBaseSpeed(Ship.Type.Caravel);
+            bot.attackRangeModifier = Ship.getBaseAttackRange(Ship.Type.Caravel);
             bot.entityName = "Bot";
             this.entities.Add(bot);
 

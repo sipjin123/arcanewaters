@@ -21,8 +21,11 @@ public class SeaEntity : NetEntity {
    [SyncVar]
    public float attackCounter = 0f;
 
-   // The prefab we use for creating Attack Circles
-   public AttackCircle attackCirclePrefab;
+   // The prefab we use for creating Attack Circles, for self shots
+   public AttackCircle localAttackCirclePrefab;
+
+   // The prefab we use for creating Attack Circles, for other's shots
+   public AttackCircle defaultAttackCirclePrefab;
 
    // The container for our sprites
    public GameObject spritesContainer;
@@ -39,6 +42,9 @@ public class SeaEntity : NetEntity {
 
    // The position data where the projectile starts
    public List<DirectionalTransform> projectileSpawnLocations;
+
+   // Holds the list of colliders for this obj
+   public List<Collider2D> colliderList;
 
    #endregion
 
@@ -75,14 +81,14 @@ public class SeaEntity : NetEntity {
       }
 
       // If we've died, start slowing moving our sprites downward
-      if (currentHealth <= 0) {
+      if (isDead()) {
          _outline.Hide();
+         disableCollisions();
 
          if (this is SeaMonsterEntity) {
             SeaMonsterEntity monsterEntity = GetComponent<SeaMonsterEntity>();
             if(monsterEntity.seaMonsterData.roleType == RoleType.Minion) {
                monsterEntity.corpseHolder.SetActive(true);
-               monsterEntity.disableCollisions();
                spritesContainer.SetActive(false);
                return;
             }
@@ -124,10 +130,16 @@ public class SeaEntity : NetEntity {
       return (hasAttackers() || _lastAttackTime > 0f);
    }
 
+   public void disableCollisions () {
+      foreach (Collider2D col in colliderList) {
+         col.enabled = false;
+      }
+   }
+
    [TargetRpc]
    public void Target_CreateLocalAttackCircle (NetworkConnection connection, Vector2 startPos, Vector2 endPos, float startTime, float endTime) {
       // Create a new Attack Circle object from the prefab
-      AttackCircle attackCircle = Instantiate(attackCirclePrefab, endPos, Quaternion.identity);
+      AttackCircle attackCircle = Instantiate(localAttackCirclePrefab, endPos, Quaternion.identity);
       attackCircle.creator = this;
       attackCircle.startPos = startPos;
       attackCircle.endPos = endPos;
@@ -200,7 +212,7 @@ public class SeaEntity : NetEntity {
    public void Rpc_CreateAttackCircle (Vector2 startPos, Vector2 endPos, float startTime, float endTime, Attack.Type attackType, bool showCircle) {
       if (showCircle) {
          // Create a new Attack Circle object from the prefab
-         AttackCircle attackCircle = Instantiate(attackCirclePrefab, endPos, Quaternion.identity);
+         AttackCircle attackCircle = Instantiate(defaultAttackCirclePrefab, endPos, Quaternion.identity);
          attackCircle.creator = this;
          attackCircle.startPos = startPos;
          attackCircle.endPos = endPos;
@@ -225,7 +237,7 @@ public class SeaEntity : NetEntity {
          boulder.endPos = endPos;
          boulder.startTime = startTime;
          boulder.endTime = endTime;
-      } else if (attackType == Attack.Type.Tentacle) {
+      } else if (attackType == Attack.Type.Tentacle_Range) {
          // Create a tentacle projectile
          TentacleProjectile tentacleProjectile = Instantiate(PrefabsManager.self.getTentacleProjectilePrefab(attackType), startPos, Quaternion.identity);
          tentacleProjectile.creator = this;
@@ -389,6 +401,10 @@ public class SeaEntity : NetEntity {
       return timeSinceAttack > this.reloadDelay;
    }
 
+   public int getDamageForShot(Attack.Type attackType, float distanceModifier) {
+      return (int) (this.damage * Attack.getDamageModifier(attackType) * distanceModifier);
+   }
+
    protected IEnumerator CO_UpdateAllSprites () {
       // Wait until we receive data
       while (Util.isEmpty(this.entityName)) {
@@ -436,24 +452,8 @@ public class SeaEntity : NetEntity {
       Rpc_NoteAttack();
    }
 
-   [Command]
-   public void Cmd_FireAtSpot (Vector2 spot, Attack.Type attackType, float attackDelay, float launchDelay, Vector2 spawnPosition) {
-      float damageModifier = 1f;
-
-      if (this is PlayerShipEntity) {
-         // Get the player ship entity
-         PlayerShipEntity playerShipEntity = (PlayerShipEntity) this;
-
-         // Calculate the damage modifier for the targeted attack zone
-        damageModifier = playerShipEntity.getDamageModifierForAttackZone(playerShipEntity.getAttackZone(spot));
-      }
-
-      // We handle the logic in a non-Cmd function so that it can be called directly on the server if needed
-      fireAtSpot(spot, attackType, attackDelay, launchDelay, damageModifier, spawnPosition);
-   }
-
    [Server]
-   public virtual void fireAtSpot (Vector2 spot, Attack.Type attackType, float attackDelay, float launchDelay, float damageModifier, Vector2 spawnPosition = new Vector2(), bool isLastProjectile = true) {
+   public virtual void fireAtSpot (Vector2 spot, Attack.Type attackType, float attackDelay, float launchDelay, Vector2 spawnPosition = new Vector2(), bool isLastProjectile = true) {
       // Last projectile will only be false if it is a barrage of projectiles, a single projectile attack will always be a Last Projectile
       if (isLastProjectile && (isDead() || !hasReloaded())) {
          return;
@@ -484,7 +484,7 @@ public class SeaEntity : NetEntity {
          bool targetPlayersOnly = this is SeaMonsterEntity;
 
          // Have the server check for collisions after the AOE projectile reaches the target
-         StartCoroutine(CO_CheckCircleForCollisions(this, launchDelay + delay, spot, attackType, targetPlayersOnly, damageModifier));
+         StartCoroutine(CO_CheckCircleForCollisions(this, launchDelay + delay, spot, attackType, targetPlayersOnly, 1f));
       }
 
       // Make note on the clients that the ship just attacked
@@ -514,34 +514,33 @@ public class SeaEntity : NetEntity {
    [Server]
    protected void serverFireProjectile (Vector2 spot, Attack.Type attackType, Vector2 spawnPosition, float delay) {
       // Creates the projectile and the target circle
-      if (!(this is PlayerShipEntity)) {
-         if (attackType != Attack.Type.Venom && attackType != Attack.Type.Boulder) {
-            Rpc_CreateAttackCircle(spawnPosition, spot, Util.netTime(), Util.netTime() + delay, attackType, true);
-         } else {
-            switch (attackType) {
-               case Attack.Type.Venom:
-                  // Create network venom projectile
-                  fireTimedVenomProjectile(spawnPosition, spot);
-                  break;
-               case Attack.Type.Boulder:
-                  // Create network boulder projectile
-                  fireTimedGenericProjectile(spawnPosition, spot, (int) attackType);
-                  break;
-               case Attack.Type.Tentacle:
-                  // Create multiple tentacle projectile
-                  fireMultiDirectionalProjectile(transform.position, Attack.Type.Tentacle_Range);
-                  break;
-            }
-         }
-      } else {
+      if (this is PlayerShipEntity) {
          Target_CreateLocalAttackCircle(connectionToClient, this.transform.position, spot, Util.netTime(), Util.netTime() + delay);
          Rpc_CreateAttackCircle(spawnPosition, spot, Util.netTime(), Util.netTime() + delay, attackType, false);
+      } else {
+         switch (attackType) {
+            case Attack.Type.Venom:
+               // Create network venom projectile
+               fireTimedVenomProjectile(spawnPosition, spot);
+               break;
+            case Attack.Type.Boulder:
+               // Create network boulder projectile
+               fireTimedGenericProjectile(spawnPosition, spot, (int) attackType);
+               break;
+            case Attack.Type.Tentacle:
+               // Create multiple tentacle projectile
+               fireMultiDirectionalProjectile(transform.position, Attack.Type.Tentacle_Range);
+               break;
+            default:
+               Rpc_CreateAttackCircle(spawnPosition, spot, Util.netTime(), Util.netTime() + delay, attackType, true);
+               break;
+         }
       }
    }
 
    [Server]
    protected IEnumerator CO_CheckCircleForCollisions (SeaEntity attacker, float delay, Vector2 circleCenter, Attack.Type attackType, bool targetPlayersOnly,
-      float damageModifier) {
+      float distanceModifier) {
       // Wait until the cannon ball reaches the target
       yield return new WaitForSeconds(delay);
 
@@ -557,10 +556,15 @@ public class SeaEntity : NetEntity {
                   continue;
                }
 
+               // Make sure we don't hit ourselves
+               if (entity == this) {
+                  continue;
+               }
+
                // Make sure the target is in our same instance
                if (entity != null && entity.instanceId == this.instanceId) {
                   if (!entity.invulnerable) {
-                     int damage = (int) (this.damage * Attack.getDamageModifier(attackType) * damageModifier);
+                     int damage = getDamageForShot(attackType, distanceModifier);
                      entity.currentHealth -= damage;
                      entity.Rpc_ShowDamageText(damage, attacker.userId, attackType);
                      entity.Rpc_ShowExplosion(entity.transform.position, damage, attackType);
@@ -597,16 +601,16 @@ public class SeaEntity : NetEntity {
 
       if (attackCounter % 2 == 0) {
          // North East West South Attack Pattern
-         fireAtSpot(sourcePos + new Vector2(0, target), attackType, launchDelay, launchCollision, 1f, sourcePos + new Vector2(0, offset), false);
-         fireAtSpot(sourcePos + new Vector2(0, -target), attackType, launchDelay, launchCollision, 1f, sourcePos + new Vector2(0, -offset), false);
-         fireAtSpot(sourcePos + new Vector2(target, 0), attackType, launchDelay, launchCollision, 1f, sourcePos + new Vector2(offset, 0), false);
-         fireAtSpot(sourcePos + new Vector2(-target, 0), attackType, launchDelay, launchCollision, 1f, sourcePos + new Vector2(-offset, 0), true);
+         fireAtSpot(sourcePos + new Vector2(0, target), attackType, launchDelay, launchCollision, sourcePos + new Vector2(0, offset), false);
+         fireAtSpot(sourcePos + new Vector2(0, -target), attackType, launchDelay, launchCollision, sourcePos + new Vector2(0, -offset), false);
+         fireAtSpot(sourcePos + new Vector2(target, 0), attackType, launchDelay, launchCollision, sourcePos + new Vector2(offset, 0), false);
+         fireAtSpot(sourcePos + new Vector2(-target, 0), attackType, launchDelay, launchCollision, sourcePos + new Vector2(-offset, 0), true);
       } else {
          // Diagonal Attack Pattern
-         fireAtSpot(sourcePos + new Vector2(diagonalTargetValue, target), attackType, launchDelay, launchCollision, 1f, sourcePos + new Vector2(diagonalValue, offset), false);
-         fireAtSpot(sourcePos + new Vector2(diagonalTargetValue, -target), attackType, launchDelay, launchCollision, 1f, sourcePos + new Vector2(diagonalValue, -offset), false);
-         fireAtSpot(sourcePos + new Vector2(-target, diagonalTargetValue), attackType, launchDelay, launchCollision, 1f, sourcePos + new Vector2(-offset, diagonalValue), false);
-         fireAtSpot(sourcePos + new Vector2(-target, -diagonalTargetValue), attackType, launchDelay, launchCollision, 1f, sourcePos + new Vector2(-offset, -diagonalValue), true);
+         fireAtSpot(sourcePos + new Vector2(diagonalTargetValue, target), attackType, launchDelay, launchCollision, sourcePos + new Vector2(diagonalValue, offset), false);
+         fireAtSpot(sourcePos + new Vector2(diagonalTargetValue, -target), attackType, launchDelay, launchCollision, sourcePos + new Vector2(diagonalValue, -offset), false);
+         fireAtSpot(sourcePos + new Vector2(-target, diagonalTargetValue), attackType, launchDelay, launchCollision, sourcePos + new Vector2(-offset, diagonalValue), false);
+         fireAtSpot(sourcePos + new Vector2(-target, -diagonalTargetValue), attackType, launchDelay, launchCollision, sourcePos + new Vector2(-offset, -diagonalValue), true);
       }
    }
 

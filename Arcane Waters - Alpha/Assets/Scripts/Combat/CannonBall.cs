@@ -45,7 +45,7 @@ public class CannonBall : MonoBehaviour {
       Util.setXY(this.transform, Vector2.Lerp(startPos, endPos, lerpTime));
 
       // Adjusts the height of the cannon ball sprite based in an arch
-      Util.setLocalY(cannonBall.transform, AttackManager.getArcHeight(startPos, endPos, lerpTime));
+      Util.setLocalY(cannonBall.transform, AttackManager.getArcHeight(startPos, endPos, lerpTime, true));
 
       // If we've been alive long enough, destroy ourself
       if (TimeManager.self.getSyncedTime() > this.endTime) {
@@ -56,6 +56,11 @@ public class CannonBall : MonoBehaviour {
             foreach (Collider2D hit in SeaEntity.getHitColliders(this.transform.position)) {
                if (hit != null) {
                   NetEntity entity = hit.GetComponent<NetEntity>();
+
+                  // Make sure we don't hit the creator of the cannon ball
+                  if (entity == creator) {
+                     continue;
+                  }
 
                   // Make sure the target is in our same instance
                   if (entity != null && entity.instanceId == Global.player.instanceId) {

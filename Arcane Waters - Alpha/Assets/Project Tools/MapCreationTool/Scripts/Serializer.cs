@@ -59,7 +59,7 @@ namespace MapCreationTool.Serialization
                     {
                         index = layerkv.Key,
                         tiles = SerializeTiles(layerkv.Value, tileToIndex),
-                        sublayers = new Layer001[0]
+                        sublayers = new SubLayer001[0]
                     });
                 }
                 else
@@ -68,15 +68,14 @@ namespace MapCreationTool.Serialization
                     {
                         index = layerkv.Key,
                         tiles = new Tile001[0],
-                        sublayers = new Layer001[layerkv.Value.SubLayers.Length]
+                        sublayers = new SubLayer001[layerkv.Value.SubLayers.Length]
                     };
                     for(int i = 0; i < layerkv.Value.SubLayers.Length; i++)
                     {
-                        ls.sublayers[i] = new Layer001
+                        ls.sublayers[i] = new SubLayer001
                         {
                             index = i,
-                            tiles = SerializeTiles(layerkv.Value.SubLayers[i], tileToIndex),
-                            sublayers = new Layer001[0]
+                            tiles = SerializeTiles(layerkv.Value.SubLayers[i], tileToIndex)
                         };
                     }
                     layersSerialized.Add(ls);
@@ -89,7 +88,7 @@ namespace MapCreationTool.Serialization
                 layers = layersSerialized.ToArray(),
                 prefabs = prefabsSerialized
             };
-
+           
             return JsonUtility.ToJson(project, prettyPrint);
         }
 
@@ -203,7 +202,7 @@ namespace MapCreationTool.Serialization
         }
     }
 
-    [System.Serializable]
+    [Serializable]
     public class Project001
     {
         public string version;
@@ -212,15 +211,22 @@ namespace MapCreationTool.Serialization
         public Prefab001[] prefabs;
     }
 
-    [System.Serializable]
+    [Serializable]
     public class Layer001
     {
         public int index;
         public Tile001[] tiles;
-        public Layer001[] sublayers;
+        public SubLayer001[] sublayers;
     }
 
-    [System.Serializable]
+    [Serializable]
+    public class SubLayer001
+    {
+        public int index;
+        public Tile001[] tiles;
+    }
+
+    [Serializable]
     public class Tile001
     {
         public int i; //Tile index x
@@ -229,7 +235,7 @@ namespace MapCreationTool.Serialization
         public int y; //Tile position y
     }
 
-    [System.Serializable]
+    [Serializable]
     public class Prefab001
     {
         public int i; //Prefab index

@@ -6,6 +6,8 @@ namespace MapCreationTool
 {
     public class Tools
     {
+        public const int MaxFloodFillTileCount = 65536;
+
         public static event Action<ToolType, ToolType> ToolChanged;
         public static event Action<int, int> MountainLayerChanged;
         public static event Action<bool, bool> BurrowedTreesChanged;
@@ -13,6 +15,7 @@ namespace MapCreationTool
         public static event Action<BiomeType, BiomeType> BiomeChanged;
         public static event Action<EraserLayerMode, EraserLayerMode> EraserLayerModeChanged;
         public static event Action<TileGroup, TileGroup> TileGroupChanged;
+        public static event Action<FillBounds, FillBounds> FillBoundsChanged;
 
         public static event Action AnythingChanged;
 
@@ -22,9 +25,10 @@ namespace MapCreationTool
         public static bool IndividualTiles { get; private set; }
         public static BiomeType Biome { get; private set; }
         public static EraserLayerMode EraserLayerMode { get; private set; }
+        public static FillBounds FillBounds { get; private set; }
 
         public static TileGroup TileGroup { get; private set; }
-        public static Vector2Int? TileIndex { get; private set; }
+        //public static Vector2Int? TileIndex { get; private set; }
 
         public static GameObject SelectedPrefab
         {
@@ -62,6 +66,7 @@ namespace MapCreationTool
             MountainLayer = data.MountainLayer ?? MountainLayer;
             BurrowedTrees = data.BurrowedTrees ?? BurrowedTrees;
             IndividualTiles = data.IndividualTiles ?? IndividualTiles;
+            FillBounds = data.FillBounds ?? FillBounds;
 
             if (data.Biome != null)
             {
@@ -73,7 +78,6 @@ namespace MapCreationTool
             if (data.HasTileGroup)
             {
                 TileGroup = data.TileGroup;
-                TileIndex = data.TileIndex;
             }
 
             AnythingChanged?.Invoke();
@@ -86,11 +90,9 @@ namespace MapCreationTool
             ToolType = tool;
 
             TileGroup oldGroup = TileGroup;
-            Vector2Int? oldIndex = TileIndex;
-            if (oldTool != ToolType.Eraser && ToolType == ToolType.Eraser)
+            if (oldTool != ToolType && (ToolType == ToolType.Eraser || ToolType == ToolType.Fill))
             {
                 TileGroup = null;
-                TileIndex = null;
             }
 
             ToolChanged?.Invoke(oldTool, ToolType);
@@ -100,8 +102,8 @@ namespace MapCreationTool
             {
                 Undo.Register(
                     PerformUndoRedo,
-                    new ToolUndoRedoData { ToolType = oldTool, HasTileGroup = true, TileGroup = oldGroup, TileIndex = oldIndex },
-                    new ToolUndoRedoData { ToolType = ToolType, HasTileGroup = true, TileGroup = TileGroup, TileIndex = TileIndex });
+                    new ToolUndoRedoData { ToolType = oldTool, HasTileGroup = true, TileGroup = oldGroup },
+                    new ToolUndoRedoData { ToolType = ToolType, HasTileGroup = true, TileGroup = TileGroup });
             }
         }
 
@@ -155,8 +157,8 @@ namespace MapCreationTool
             {
                 Undo.Register(
                     PerformUndoRedo,
-                    new ToolUndoRedoData { IndividualTiles = old, HasTileGroup = true, TileGroup = oldTileGroup, TileIndex = TileIndex },
-                    new ToolUndoRedoData { IndividualTiles = IndividualTiles, HasTileGroup = true, TileGroup = TileGroup, TileIndex = null });
+                    new ToolUndoRedoData { IndividualTiles = old, HasTileGroup = true, TileGroup = oldTileGroup },
+                    new ToolUndoRedoData { IndividualTiles = IndividualTiles, HasTileGroup = true, TileGroup = TileGroup });
             }
         }
 
@@ -192,12 +194,30 @@ namespace MapCreationTool
             }
         }
 
-        public static void ChangeTileGroup(TileGroup group, Vector2Int? tile = null, bool registerUndo = true)
+        public static void ChangeFillBounds(FillBounds fillBounds, bool registerUndo = true)
         {
+            FillBounds old = FillBounds;
+            FillBounds = fillBounds;
+            FillBoundsChanged?.Invoke(old, FillBounds);
+            AnythingChanged?.Invoke();
+
+            if (registerUndo)
+            {
+                Undo.Register(
+                    PerformUndoRedo,
+                    new ToolUndoRedoData { FillBounds = old },
+                    new ToolUndoRedoData { FillBounds = FillBounds });
+            }
+        }
+
+        public static void ChangeTileGroup(TileGroup group, bool registerUndo = true)
+        {
+            //Check that if the tool if Fill, only 1 tile can be selected
+            if (ToolType == ToolType.Fill && group != null && group.MaxTileCount != 1)
+                return;
+
             TileGroup oldgroup = TileGroup;
             TileGroup = group;
-            Vector2Int? oldIndex = TileIndex;
-            TileIndex = tile;
 
             TileGroupChanged?.Invoke(oldgroup, TileGroup);
             AnythingChanged?.Invoke();
@@ -210,8 +230,8 @@ namespace MapCreationTool
             {
                 Undo.Register(
                     PerformUndoRedo,
-                    new ToolUndoRedoData { HasTileGroup = true, TileGroup = oldgroup, TileIndex = oldIndex, ToolType = oldTool },
-                    new ToolUndoRedoData { HasTileGroup = true, TileGroup = TileGroup, TileIndex = TileIndex, ToolType = ToolType });
+                    new ToolUndoRedoData { HasTileGroup = true, TileGroup = oldgroup, ToolType = oldTool },
+                    new ToolUndoRedoData { HasTileGroup = true, TileGroup = TileGroup, ToolType = ToolType });
             }
         }
     }
@@ -219,12 +239,19 @@ namespace MapCreationTool
     public enum ToolType
     {
         Brush = 0,
-        Eraser = 1
+        Eraser = 1,
+        Fill = 2
     }
 
     public enum EraserLayerMode
     {
         Top = 0,
         All = 1
+    }
+
+    public enum FillBounds
+    {
+        SingleLayer = 0,
+        AllLayers = 1
     }
 }

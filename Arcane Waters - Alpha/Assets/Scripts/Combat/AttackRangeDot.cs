@@ -17,17 +17,15 @@ public class AttackRangeDot : MonoBehaviour
    // The animator for the deploy animation
    public Animator animator;
 
-   // The collider of the dot
-   public Collider2D dotCollider;
-
-   // The colors for each attack zone
-   public Color weakZoneColor;
-   public Color normalZoneColor;
-   public Color strongZoneColor;
-
    #endregion
 
-   public void setPosition (float angle, float radius) {
+   public void Awake () {
+      gameObject.SetActive(false);
+   }
+
+   public void setPosition (AttackRangeCircle attackRangeCircle, float angle, float radius) {
+      gameObject.SetActive(true);
+      _attackRangeCircle = attackRangeCircle;
       transform.localPosition = Vector3.zero;
 
       // Move the image locally to the radius position
@@ -40,60 +38,32 @@ public class AttackRangeDot : MonoBehaviour
    public void Update () {
       // Keep the image horizontal
       imageRenderer.transform.rotation = Quaternion.identity;
-   }
 
-   public void OnTriggerEnter2D (Collider2D other) {
-      // Check if the other object is the grid terrain (land tiles)
-      Grid grid = other.transform.GetComponent<Grid>();
-
-      // Hide the dot if entering land
-      if (grid != null) {
+      // Hide the dot when over a land tile
+      if (_attackRangeCircle.isOverLandTile(imageRenderer.transform.position)) {
          imageRenderer.enabled = false;
-      }
-   }
-
-   public void OnTriggerExit2D (Collider2D other) {
-      // Check if the other object is the grid terrain (land tiles)
-      Grid grid = other.transform.GetComponent<Grid>();
-
-      // Show the dot when leaving the land
-      if (grid != null) {
+      } else {
          imageRenderer.enabled = true;
       }
    }
 
-   public void show (AttackZone.Type attackZone) {
-      dotCollider.enabled = true;
+   public void show () {
+      gameObject.SetActive(true);
       animator.SetBool("visible", true);
-      imageRenderer.enabled = true;
 
       // Slightly randomizes the animation speed
       animator.SetFloat("speed", Random.Range(0.75f, 1.25f));
-
-      // Set the color of the dot for the attack zone
-      switch (attackZone) {
-         case AttackZone.Type.Weak:
-            imageRenderer.color = weakZoneColor;
-            break;
-         case AttackZone.Type.Normal:
-            imageRenderer.color = normalZoneColor;
-            break;
-         case AttackZone.Type.Strong:
-            imageRenderer.color = strongZoneColor;
-            break;
-         default:
-            imageRenderer.color = Color.white;
-            break;
-      }
    }
 
    public void hide () {
-      dotCollider.enabled = false;
       animator.SetBool("visible", false);
-      imageRenderer.enabled = false;
+      gameObject.SetActive(false);
    }
 
    #region Private Variables
+
+   // A reference to the circle this dot is part of
+   private AttackRangeCircle _attackRangeCircle;
 
    #endregion
 }

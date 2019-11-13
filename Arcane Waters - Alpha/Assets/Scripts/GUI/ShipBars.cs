@@ -10,6 +10,9 @@ public class ShipBars : MonoBehaviour {
    // Our health bar image
    public Image healthBarImage;
 
+   // Our predicted damage bar image - the amount of damage the player shot will inflict
+   public Image predictedDamageBarImage;
+
    // Our reload bar image
    public Image reloadBarImage;
 
@@ -55,8 +58,16 @@ public class ShipBars : MonoBehaviour {
          return;
       }
 
-      // Set our health bar size based on our current health
+      // Set our health and predicted damage bar size based on our current health
       healthBarImage.fillAmount = (float) _entity.currentHealth / _entity.maxHealth;
+      predictedDamageBarImage.fillAmount = healthBarImage.fillAmount;
+
+      // Calculate the predicted damage from the aimed player shot
+      float predictedDamage = (float) AttackManager.self.getPredictedDamage(_entity);
+      predictedDamage = Mathf.Clamp(predictedDamage / _entity.maxHealth, 0, healthBarImage.fillAmount);
+
+      // Subtract the predicted damage from the health bar - this will reveal the predictive bar below
+      healthBarImage.fillAmount -= predictedDamage;
 
       // Update our reload bar when we recently fired
       reloadBarImage.fillAmount = (Time.time - _entity.getLastAttackTime()) / _entity.reloadDelay;
@@ -64,8 +75,8 @@ public class ShipBars : MonoBehaviour {
       // Only show the faction icon if we're in combat
       factionIcon.enabled = _entity.hasAnyCombat();
 
-      // Hide our bars if we haven't had a combat action
-      barsContainer.SetActive(_entity.hasAnyCombat());
+      // Hide our bars if we haven't had a combat action and if the player is not targetting this ship
+      barsContainer.SetActive(_entity.hasAnyCombat() || AttackManager.self.isHoveringOver(_entity));
 
       // Hide and show our status icons accordingly
       handleStatusIcons();

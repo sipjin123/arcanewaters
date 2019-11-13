@@ -57,7 +57,7 @@ public class ShockballProjectile : MonoBehaviour
       Util.setXY(this.transform, Vector2.Lerp(startPos, endPos, lerpTime));
 
       // Adjusts the height of the projectile sprite based in an arch
-      Util.setLocalY(shockballProjectile.transform, AttackManager.getArcHeight(startPos, endPos, lerpTime));
+      Util.setLocalY(shockballProjectile.transform, AttackManager.getArcHeight(startPos, endPos, lerpTime, false));
 
       // If we've been alive long enough, destroy ourself
       if (TimeManager.self.getSyncedTime() > this.endTime) {

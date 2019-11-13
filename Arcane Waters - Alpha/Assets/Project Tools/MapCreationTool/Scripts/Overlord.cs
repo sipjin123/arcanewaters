@@ -2,7 +2,6 @@
 using MapCreationTool.Serialization;
 using MapCreationTool.UndoSystem;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace MapCreationTool
@@ -10,27 +9,15 @@ namespace MapCreationTool
     public class Overlord : MonoBehaviour
     {
         [SerializeField]
-        private EditorConfig config;
+        private EditorConfig config = null;
 
         [Space(5)]
         [SerializeField]
-        private GameObject paletteDataContainers;
+        private PaletteResources paletteResources = null;
         [SerializeField]
-        private Palette palette;
+        private Palette palette = null;
         [SerializeField]
-        private DrawBoard drawBoard;
-        [SerializeField]
-        private UI ui;
-
-        private Dictionary<string, BiomeType> paletteContainerNames = new Dictionary<string, BiomeType>
-        {
-            { "forest_pack", BiomeType.Forest },
-            { "desert_pack", BiomeType.Desert },
-            { "lava_pack", BiomeType.Lava },
-            { "mushroom_pack", BiomeType.Shroom },
-            { "pine_pack", BiomeType.Pine },
-            { "snow_pack", BiomeType.Snow }
-        };
+        private DrawBoard drawBoard = null;
 
         private Dictionary<BiomeType, PaletteData> paletteDatas;
 
@@ -39,16 +26,7 @@ namespace MapCreationTool
             Tools.SetDefaultValues();
             Undo.Clear();
 
-            var containers = paletteDataContainers.GetComponentsInChildren<PaletteDataContainer>(true);
-
-            paletteDatas = containers
-                .Where(pdc => pdc.transform.name != "shared")
-                .Select(con => con.GatherData(config, paletteContainerNames[con.transform.name]))
-                .ToDictionary(data => data.Type.Value, data => data);
-
-            PaletteData sharedPalette = containers.First(p => p.transform.name == "shared").GatherData(config, null);
-            foreach (var palette in paletteDatas.Values)
-                palette.Merge(sharedPalette);
+            paletteDatas = paletteResources.GatherData(config);
 
             AssetSerializationMaps.Load();
         }

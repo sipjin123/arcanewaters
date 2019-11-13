@@ -7,29 +7,23 @@ using Mirror;
 public class AttackManager : ClientMonoBehaviour {
    #region Public Variables
 
-   // The Game Object that shows where we would attack - clamped to the attack zone
-   public SpriteRenderer attackCircleClampedIndicator;
+   // The cursor showing where we would attack - clamped to the max range
+   public AttackCircleAimCursor clampedCursor;
 
-   // The Game Object that shows where we would attack - free to move anywhere
-   public SpriteRenderer attackCircleFreeIndicator;
+   // The renderer of the cursor that shows where we would attack - free to move anywhere
+   public SpriteRenderer freeCursor;
 
-   // The cursor that highlights enemies being targeted
-   public AttackCircleAimCursor aimCursor;
-
-   // The circles that shows the targeted zones
-   public AttackZoneCircles attackZoneCircles;
+   // The max range dotted circle
+   public AttackRangeCircle maxRangeCircle;
 
    // The line that shows the trajectory of the projectile
    public AttackTrajectory trajectory;
 
-   // The container for the scheduled shots indicators
-   public Transform scheduledShotIndicatorsContainer;
+   // The next shot indicator
+   public GameObject nextShotIndicator;
 
-   // A prefab we use for creating moving dots
-   public MovingDot dotPrefab;
-
-   // The prefab we use for creating sheduled shots indicators
-   public GameObject scheduledShotIndicatorPrefab;
+   // The line color of the indicators over the target distance
+   public Gradient colorOverDistance;
 
    // Self
    public static AttackManager self;
@@ -39,23 +33,16 @@ public class AttackManager : ClientMonoBehaviour {
    protected override void Awake () {
       base.Awake();
       self = this;
-
-      // Create the scheduled shots indicators
-      for (int i = 0; i < PlayerShipEntity.MAX_SCHEDULED_SHOTS; i++) {
-         GameObject indicator = Instantiate(scheduledShotIndicatorPrefab, scheduledShotIndicatorsContainer);
-         _scheduledShotIndicators.Add(indicator);
-         indicator.SetActive(false);
-      }
+      nextShotIndicator.SetActive(false);
    }
 
    void Update () {
       if (Global.player == null || Global.player.isDead() || !(Global.player is ShipEntity) ||
          SeaManager.combatMode != SeaManager.CombatMode.Circle || SeaManager.selectedAttackType == Attack.Type.Air) {
-         attackCircleClampedIndicator.enabled = false;
-         attackCircleFreeIndicator.enabled = false;
-         attackZoneCircles.hide();
+         freeCursor.enabled = false;
+         maxRangeCircle.hide();
          trajectory.hide();
-         aimCursor.deactivate();
+         clampedCursor.deactivate();
          Cursor.visible = true;
          return;
       }
@@ -64,93 +51,99 @@ public class AttackManager : ClientMonoBehaviour {
       PlayerShipEntity playerShipEntity = (PlayerShipEntity) Global.player;
       if (playerShipEntity.getAttackRange() != _attackRange) {
          _attackRange = playerShipEntity.getAttackRange();
-         attackZoneCircles.draw(_attackRange);
+         maxRangeCircle.draw(_attackRange);
       }
 
       // Move the range circle to the player position
-      Util.setXY(attackZoneCircles.transform, Global.player.transform.position);
+      Util.setXY(maxRangeCircle.transform, Global.player.transform.position);
 
       // Hide the cursor when the right mouse is down
       Cursor.visible = !Input.GetMouseButton(1);
 
-      // Hide all the indicators
-      attackCircleClampedIndicator.enabled = false;
-      attackCircleFreeIndicator.enabled = false;
-      trajectory.hide();
-      aimCursor.deactivate();
+      // Get the mouse position
+      Vector2 mousePosition = Util.getMousePos();
 
       // Check if the mouse right button is pressed
       if (Input.GetMouseButton(1)) {
          // Move the clamped aim indicator to the mouse position - clamped inside the range zone
-         Util.setXY(attackCircleClampedIndicator.transform,
-            playerShipEntity.clampToRange(Util.getMousePos()));
+         Util.setXY(clampedCursor.transform, playerShipEntity.clampToRange(mousePosition));
 
-         // Determine the targeted attack zone
-         AttackZone.Type attackZone = playerShipEntity.getAttackZone(Util.getMousePos());
+         // Determine the modifier for the target
+         _normalizedDistanceToCursor = playerShipEntity.getNormalizedTargetDistance(mousePosition);
+
+         // Determine the color of the indicators
+         Color indicatorColor = getColorForDistance(_normalizedDistanceToCursor);
+
+         // Set the color of the cursors
+         clampedCursor.setColor(indicatorColor);
+         freeCursor.color = indicatorColor;
+
+         // Set the speed of the cursor animation
+         clampedCursor.setAnimationSpeed(1f / _normalizedDistanceToCursor);
 
          // Move the trajectory to the player position
          Util.setXY(trajectory.transform, Global.player.transform.position);
 
          // Draw the trajectory
-         trajectory.draw(Global.player.transform.position, attackCircleClampedIndicator.transform.position, attackZone);
+         trajectory.draw(Global.player.transform.position, clampedCursor.transform.position,
+            (1.2f / _normalizedDistanceToCursor), getColorForDistance(_normalizedDistanceToCursor));
 
          // Move the free aim indicator to the mouse position
-         Util.setXY(attackCircleFreeIndicator.transform, Util.getMousePos());
+         Util.setXY(freeCursor.transform, mousePosition);
 
-         // Display the range circles for the targeted attack zone
-         attackZoneCircles.show(attackZone);
+         // Display the range circle
+         maxRangeCircle.show();
 
          // Display the relevant indicators
-         attackCircleClampedIndicator.enabled = true;
-         attackCircleFreeIndicator.enabled = true;
+         freeCursor.enabled =true;
          trajectory.show();
-         aimCursor.activate();
+         clampedCursor.activate();
+      } else {
+         // Hide the indicators
+         freeCursor.enabled = false;
+         trajectory.hide();
+         clampedCursor.deactivate();
+         maxRangeCircle.hide();
       }
 
-      // Hide all the scheduled shot indicators
-      foreach (GameObject indicator in _scheduledShotIndicators) {
-         indicator.SetActive(false);
-      }
+      // Check if the next shot is defined
+      if (playerShipEntity.isNextShotDefined) {
+         nextShotIndicator.SetActive(true);
 
-      // Check if there are scheduled shots
-      if (playerShipEntity.scheduledShots.Count > 0) {
-         // Place an indicator at each scheduled shot position
-         int k = 0;
-         foreach (Vector2 position in playerShipEntity.scheduledShots) {
-            _scheduledShotIndicators[k].SetActive(true);
-            _scheduledShotIndicators[k].transform.position = position;
-            k++;
-         }
-      }
-
-      // Hide the attack range circles if not relevant
-      if (!Input.GetMouseButton(1)) {
-         attackZoneCircles.hide();
+         // Place the indicator at the next shot coordinates
+         Util.setXY(nextShotIndicator.transform, playerShipEntity.nextShotTarget);
+      } else {
+         nextShotIndicator.SetActive(false);
       }
    }
 
    public bool isHoveringOver (NetEntity entity) {
-      return aimCursor.isCursorHoveringOver(entity);
+      return clampedCursor.isCursorHoveringOver(entity);
    }
 
-   protected void createMovingDot () {
-      // We only do this when we have a player ship
-      if (Global.player == null || !(Global.player is SeaEntity) || SeaManager.selectedAttackType == Attack.Type.Air) {
-         return;
+   public int getPredictedDamage (SeaEntity enemy) {
+      if (Global.player == null || !(Global.player is SeaEntity) || SeaManager.selectedAttackType == Attack.Type.Air 
+         || Global.player == enemy || !isHoveringOver(enemy)) {
+         return 0;
+      } else {
+         return ((SeaEntity) Global.player).getDamageForShot(SeaManager.selectedAttackType, 
+            ShipEntity.getDamageModifierForDistance(_normalizedDistanceToCursor));
       }
-
-      // Create the dot
-      MovingDot dot = Instantiate(dotPrefab, this.transform);
-
-      // Start its position at the player ship
-      Util.setXY(dot.transform, Global.player.transform.position);
    }
 
-   public static float getArcHeight (Vector2 startPos, Vector2 endPos, float lerpTime) {
+   public Color getColorForDistance(float normalizedDistance) {
+      return colorOverDistance.Evaluate(normalizedDistance);
+   }
+
+   public static float getArcHeight (Vector2 startPos, Vector2 endPos, float lerpTime, bool applyHeightModifier) {
       float attackDistance = Vector2.Distance(startPos, endPos);
       float distanceModifier = Mathf.Clamp(attackDistance, .25f, 2f);
+      float heightModifier = 1f;
+      if (applyHeightModifier) {
+         heightModifier = Mathf.Clamp(attackDistance, PlayerShipEntity.MIN_RANGE, 1.5f) / 1.5f;
+      }
       float angleInDegrees = lerpTime * 180f;
-      float ballHeight = Util.getSinOfAngle(angleInDegrees) * distanceModifier * .5f;
+      float ballHeight = Util.getSinOfAngle(angleInDegrees) * distanceModifier * .5f * heightModifier;
 
       return ballHeight;
    }
@@ -160,8 +153,8 @@ public class AttackManager : ClientMonoBehaviour {
    // The attack range of the player's ship entity
    private float _attackRange = 0;
 
-   // The list of target indicators for scheduled shots
-   private List<GameObject> _scheduledShotIndicators = new List<GameObject>();
+   // The current distance between the player and the aiming cursor, normalized to the max range
+   private float _normalizedDistanceToCursor = 0f;
 
    #endregion
 }

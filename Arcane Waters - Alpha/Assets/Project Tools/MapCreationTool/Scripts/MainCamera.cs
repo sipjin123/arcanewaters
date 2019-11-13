@@ -27,5 +27,15 @@ namespace MapCreationTool
                 SizeChanged?.Invoke(Size);
             }
         }
+
+        /// <summary>
+        /// Screen to world point
+        /// </summary>
+        /// <param name="screenPoint"></param>
+        /// <returns></returns>
+        public static Vector3 STWP(Vector3 screenPoint)
+        {
+            return cam.ScreenToWorldPoint(screenPoint);
+        }
     }
 }

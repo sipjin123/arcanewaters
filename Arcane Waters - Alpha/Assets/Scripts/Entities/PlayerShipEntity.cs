@@ -10,18 +10,15 @@ public class PlayerShipEntity : ShipEntity {
    // The maximum number of scheduled shots at any time
    public static int MAX_SCHEDULED_SHOTS = 1;
 
-   // The lower limit of the normal attack zone, in percentage of the max range
-   public static float LOWER_LIMIT_NORMAL_ATTACK = 0.3f;
-
-   // The lower limit of the strong attack zone, in percentage of the max range
-   public static float LOWER_LIMIT_STRONG_ATTACK = 0.80f;
-
    // The ID of this ship in the database
    [SyncVar]
    public int shipId;
 
-   // The coordinates of the schedules shots
-   public LinkedList<Vector2> scheduledShots = new LinkedList<Vector2>();
+   // Gets set to true when the next shot is scheduled
+   public bool isNextShotDefined = false;
+
+   // The coordinates of the next shot
+   public Vector2 nextShotTarget = new Vector2(0, 0);
 
    #endregion
 
@@ -53,32 +50,26 @@ public class PlayerShipEntity : ShipEntity {
       }
 
       // If the reload is finished and a shot was scheduled, fire it
-      if (scheduledShots.Count > 0 && hasReloaded()) {
+      if (isNextShotDefined && hasReloaded()) {
          // Fire the scheduled shot
-         Cmd_FireAtSpot(scheduledShots.First.Value, SeaManager.selectedAttackType, 0, 0, transform.position);
-
-         // Delete the scheduled shot
-         scheduledShots.RemoveFirst();
+         Cmd_FireMainCannonAtSpot(nextShotTarget, SeaManager.selectedAttackType, transform.position);
+         isNextShotDefined = false;
       }
 
       // Right-click to attack in a circle
       if (Input.GetMouseButtonUp(1) && !isDead() && SeaManager.selectedAttackType != Attack.Type.Air) {
-         // If the ship is reloading, add the shot to the scheduled shots
+         // If the ship is reloading, set the next shot
          if (!hasReloaded()) {
-            // If we reached the maximum number of scheduled shots, the last one is replaced
-            if (scheduledShots.Count >= MAX_SCHEDULED_SHOTS) {
-               scheduledShots.RemoveLast();               
-            }
-            // Schedule the shot
-            scheduledShots.AddLast(clampToRange(Util.getMousePos()));
+            nextShotTarget = clampToRange(Util.getMousePos());
+            isNextShotDefined = true;
          } else {
-            Cmd_FireAtSpot(Util.getMousePos(), SeaManager.selectedAttackType, 0, 0, transform.position);
+            Cmd_FireMainCannonAtSpot(Util.getMousePos(), SeaManager.selectedAttackType, transform.position);
          }
       }
 
-      // If the right mouse button is being held and the left mouse button is clicked, clear the scheduled shots
+      // If the right mouse button is being held and the left mouse button is clicked, clear the next shot
       if (Input.GetMouseButton(1) && Input.GetMouseButtonDown(0)) {
-         scheduledShots.Clear();
+         isNextShotDefined = false;
       }
 
       // Space to fire at the selected ship
@@ -158,36 +149,6 @@ public class PlayerShipEntity : ShipEntity {
             return 5f;
          default:
             return 10f;
-      }
-   }
-
-   public AttackZone.Type getAttackZone (Vector2 spot) {
-      // Clamp the spot to the attack zone
-      spot = clampToRange(spot);
-
-      // Calculate the squared distance to the spot
-      float sqrDistance = Vector2.SqrMagnitude(spot - (Vector2) transform.position);
-
-      // Determine the attack zone of the spot
-      if (sqrDistance < (LOWER_LIMIT_NORMAL_ATTACK * getAttackRange()) * (LOWER_LIMIT_NORMAL_ATTACK * getAttackRange())) {
-         return AttackZone.Type.Weak;
-      } else if (sqrDistance < (LOWER_LIMIT_STRONG_ATTACK * getAttackRange()) * (LOWER_LIMIT_STRONG_ATTACK * getAttackRange())) {
-         return AttackZone.Type.Normal;
-      } else {
-         return AttackZone.Type.Strong;
-      }
-   }
-
-   public float getDamageModifierForAttackZone (AttackZone.Type attackZone) {
-      switch (attackZone) {
-         case AttackZone.Type.Weak:
-            return 0.5f;
-         case AttackZone.Type.Normal:
-            return 1f;
-         case AttackZone.Type.Strong:
-            return 1.5f;
-         default:
-            return 1f;
       }
    }
 

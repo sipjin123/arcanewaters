@@ -61,7 +61,7 @@ public class ShipEntity : SeaEntity {
    }
 
    public float getAttackRange () {
-      return 1.5f * (attackRangeModifier / 100f);
+      return 1.4f * (attackRangeModifier / 100f);
    }
 
    public override float getMoveSpeed () {
@@ -112,13 +112,89 @@ public class ShipEntity : SeaEntity {
       return (Vector2)transform.position + clampedRelativePosition;
    }
 
-   [Server]
-   public override void fireAtSpot (Vector2 spot, Attack.Type attackType, float attackDelay, float launchDelay, float damageModifier, Vector2 spawnPosition = new Vector2(), bool isLastProjectile = true) {
+   public float getNormalizedTargetDistance (Vector2 target) {
+      // Calculate the distance to the target
+      float distance = Vector2.Distance(transform.position, target);
+
+      // Clamps the distance to the limits
+      distance = Mathf.Clamp(distance, MIN_RANGE, getAttackRange());
+
+      // Calculate the ratio to the full range
+      return distance / getAttackRange();
+   }
+
+   public static float getDamageModifierForDistance (float normalizedDistanceToTarget) {
+      return 1f / normalizedDistanceToTarget;
+   }
+
+   [Command]
+   public void Cmd_FireMainCannonAtSpot (Vector2 spot, Attack.Type attackType, Vector2 spawnPosition) {
+      if (isDead() || !hasReloaded()) {
+         return;
+      }
+
+      // Note the time at which we last successfully attacked
+      _lastAttackTime = Time.time;
+
       // The target point is clamped to the attack range
       spot = clampToRange(spot);
 
-      // Run the base function
-      base.fireAtSpot(spot, attackType, attackDelay, launchDelay, damageModifier, spawnPosition, isLastProjectile);
+      // Calculate the distance to target, normalized to the max range
+      float normalizedDistance = getNormalizedTargetDistance(spot);
+
+      // Calculate shot parameters
+      float distanceModifier = getDamageModifierForDistance(normalizedDistance);
+      float projectileFlightDuration = normalizedDistance * 1f;
+
+      // Fire the cannon ball and display an attack circle in all the clients
+      Rpc_CreateCannonBall(spawnPosition, spot, Util.netTime(), Util.netTime() + projectileFlightDuration,
+         attackType, AttackManager.self.getColorForDistance(normalizedDistance));
+
+      // Have the server check for collisions after the AOE projectile reaches the target
+      StartCoroutine(CO_CheckCircleForCollisions(this, projectileFlightDuration, spot, attackType, false, distanceModifier));
+
+      // Make note on the clients that the ship just attacked
+      Rpc_NoteAttack();
+   }
+
+   [ClientRpc]
+   public void Rpc_CreateCannonBall (Vector2 startPos, Vector2 endPos, float startTime, float endTime, Attack.Type attackType, Color color) {
+      // Create a new Attack Circle object from the prefab
+      AttackCircle attackCircle;
+
+      // Use a different prefab for local shots
+      if (isLocalPlayer) {
+         attackCircle = Instantiate(localAttackCirclePrefab, endPos, Quaternion.identity);
+         attackCircle.color = color;
+      } else {
+         attackCircle = Instantiate(defaultAttackCirclePrefab, endPos, Quaternion.identity);
+      }
+      attackCircle.creator = this;
+      attackCircle.startPos = startPos;
+      attackCircle.endPos = endPos;
+      attackCircle.startTime = startTime;
+      attackCircle.endTime = startTime + 1f;
+
+      // Create a cannon smoke effect
+      Vector2 direction = endPos - startPos;
+      Vector2 offset = direction.normalized * .1f;
+      Instantiate(PrefabsManager.self.cannonSmokePrefab, startPos + offset, Quaternion.identity);
+
+      // Create a cannon ball
+      CannonBall ball = Instantiate(PrefabsManager.self.getCannonBallPrefab(attackType), startPos, Quaternion.identity);
+      ball.creator = this;
+      ball.startPos = startPos;
+      ball.endPos = endPos;
+      ball.startTime = startTime;
+      ball.endTime = endTime;
+
+      // Play an appropriate sound
+      playAttackSound();
+
+      // If it was our ship, shake the camera
+      if (isLocalPlayer) {
+         CameraManager.shakeCamera();
+      }
    }
 
    #region Private Variables

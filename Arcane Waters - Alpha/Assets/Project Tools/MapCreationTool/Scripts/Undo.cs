@@ -106,9 +106,9 @@ namespace MapCreationTool.UndoSystem
         public bool? IndividualTiles { get; set; }
         public BiomeType? Biome { get; set; }
         public EraserLayerMode? EraserLayerMode { get; set; }
+        public FillBounds? FillBounds { get; set; }
 
         public bool HasTileGroup { get; set; }
         public TileGroup TileGroup { get; set; }
-        public Vector2Int? TileIndex { get; set; }
     }
 }
