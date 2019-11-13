@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0"?>
 <WeaponStatData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <equipmentName>Gun 2</equipmentName>
   <equipmentDescription />
@@ -21,5 +21,5 @@
   </statsData>
   <weaponType xmlns="WeaponType">Gun_2</weaponType>
   <weaponClass xmlns="WeaponClass">Ranged</weaponClass>
-  <weaponBaseDamage>0</weaponBaseDamage>
+  <weaponBaseDamage>5</weaponBaseDamage>
 </WeaponStatData>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <AttackAbilityData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <itemID>1</itemID>
+  <itemID>15</itemID>
   <itemName>Air Slash</itemName>
   <itemDescription>An Air Slash</itemDescription>
   <itemIconPath>Assets/Sprites/Icons/Battle/enemy/icon_enemy_sword_thrust_click.png</itemIconPath>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0"?>
 <ShipData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <shipType>Nao</shipType>
   <shipName>Nao</shipName>
@@ -14,7 +14,7 @@
   <baseSupplyRoom>10</baseSupplyRoom>
   <sailType>Caravel_1</sailType>
   <mastType>Caravel_1</mastType>
-  <spritePath />
-  <rippleSpritePath />
+  <spritePath>Assets/Sprites/Ships/Nao/nao_purple.png</spritePath>
+  <rippleSpritePath>Assets/Sprites/Ship/water_wake.png</rippleSpritePath>
   <avatarIconPath>Assets/Sprites/Ships/Nao/nao_1.png</avatarIconPath>
 </ShipData>

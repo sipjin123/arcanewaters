@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0"?>
 <ShipData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <shipType>Galleon</shipType>
   <shipName>Galleon</shipName>
@@ -14,7 +14,7 @@
   <baseSupplyRoom>7</baseSupplyRoom>
   <sailType>Galleon_1</sailType>
   <mastType>Galleon_1</mastType>
-  <spritePath />
-  <rippleSpritePath />
+  <spritePath>Assets/Sprites/Ships/Galleon/galleon_light.png</spritePath>
+  <rippleSpritePath>Assets/Sprites/Ship/water_wake_2.png</rippleSpritePath>
   <avatarIconPath>Assets/Sprites/Ships/Galleon/galleon_1.png</avatarIconPath>
 </ShipData>

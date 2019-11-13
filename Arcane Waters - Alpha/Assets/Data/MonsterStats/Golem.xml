@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0"?>
 <BattlerData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <enemyName>Golem</enemyName>
   <imagePath>Assets/Sprites/Enemies/golem.png</imagePath>
@@ -23,12 +23,12 @@
       <LootInfo>
         <lootType xmlns="IngredientType">Onyx</lootType>
         <quantity>1</quantity>
-        <chanceRatio>69.65331</chanceRatio>
+        <chanceRatio>25</chanceRatio>
       </LootInfo>
       <LootInfo>
         <lootType xmlns="IngredientType">Brimstone</lootType>
         <quantity>1</quantity>
-        <chanceRatio>49.9533844</chanceRatio>
+        <chanceRatio>25.55</chanceRatio>
       </LootInfo>
       <LootInfo>
         <lootType xmlns="IngredientType">Silver_Ore</lootType>
@@ -41,7 +41,7 @@
         <chanceRatio>4.92498159</chanceRatio>
       </LootInfo>
       <LootInfo>
-        <lootType xmlns="IngredientType">None</lootType>
+        <lootType xmlns="IngredientType">Carapace</lootType>
         <quantity>1</quantity>
         <chanceRatio>24.9766922</chanceRatio>
       </LootInfo>

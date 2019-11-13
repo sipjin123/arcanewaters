@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <AttackAbilityData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <itemID>1</itemID>
+  <itemID>2</itemID>
   <itemName>Balanced Stance</itemName>
   <itemDescription>Changes into a balanced Stance</itemDescription>
   <itemIconPath>Assets/Sprites/Icons/Battle/Player/Stance/stance_balanced_lg.png</itemIconPath>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0"?>
 <ShipData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <shipType>Carrack</shipType>
   <shipName>Carrack</shipName>
@@ -14,7 +14,7 @@
   <baseSupplyRoom>20</baseSupplyRoom>
   <sailType>Caravel_1</sailType>
   <mastType>Caravel_1</mastType>
-  <spritePath />
-  <rippleSpritePath />
+  <spritePath>Assets/Sprites/Ships/Carrack/carrack_1.png</spritePath>
+  <rippleSpritePath>Assets/Sprites/Ship/water_wake_2.png</rippleSpritePath>
   <avatarIconPath>Assets/Sprites/Ships/Carrack/carrack_1.png</avatarIconPath>
 </ShipData>

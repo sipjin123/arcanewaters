@@ -12,8 +12,8 @@
   <isInvulnerable>false</isInvulnerable>
   <maxProjectileDistanceGap>1</maxProjectileDistanceGap>
   <maxMeleeDistanceGap>0.5</maxMeleeDistanceGap>
-  <maxDistanceGap>1.6</maxDistanceGap>
-  <territoryRadius>1.8</territoryRadius>
+  <maxDistanceGap>2</maxDistanceGap>
+  <territoryRadius>2.5</territoryRadius>
   <detectRadius>1.2</detectRadius>
   <attackFrequency>1</attackFrequency>
   <reloadDelay>2</reloadDelay>
@@ -39,7 +39,13 @@
     <z>0</z>
   </rippleLocOffset>
   <lootData>
-    <lootList />
+    <lootList>
+      <LootInfo>
+        <lootType xmlns="IngredientType">Eldritch_Aura</lootType>
+        <quantity>0</quantity>
+        <chanceRatio>41.9973564</chanceRatio>
+      </LootInfo>
+    </lootList>
     <defaultLoot xmlns="IngredientType">Broken_Fang</defaultLoot>
     <minQuantity>0</minQuantity>
     <maxQuantity>0</maxQuantity>
