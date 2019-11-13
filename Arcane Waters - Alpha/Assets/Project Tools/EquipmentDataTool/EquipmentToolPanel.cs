@@ -229,6 +229,7 @@ public class EquipmentToolPanel : MonoBehaviour {
    }
 
    private void loadEquipmentData (EquipmentStatData equipmentData) {
+      startingName = equipmentData.equipmentName;
       elementalModifierList = new List<DamageModifierTemplate>();
       rarityModifierList = new List<DamageModifierTemplate>();
       elementalModifierParent.DestroyChildren();

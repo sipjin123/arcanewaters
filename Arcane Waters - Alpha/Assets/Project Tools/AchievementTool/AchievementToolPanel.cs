@@ -34,7 +34,7 @@ public class AchievementToolPanel : MonoBehaviour {
          AchievementData itemData = getAchievementData();
          if (itemData != null) {
             if (itemData.achievementName != startingName) {
-               toolManager.deleteMonsterDataFile(new AchievementData { achievementName = startingName });
+               toolManager.deleteAchievementDataFile(new AchievementData { achievementName = startingName });
             }
             toolManager.saveXMLData(itemData);
             gameObject.SetActive(false);
@@ -66,18 +66,19 @@ public class AchievementToolPanel : MonoBehaviour {
    }
 
    public void loadData (AchievementData achievementData) {
-      Item.Category category = (Item.Category) achievementData.valueCategory;
-      string itemName = Util.getItemName(category, achievementData.valueType);
+      startingName = achievementData.achievementName;
+      Item.Category category = (Item.Category) achievementData.itemCategory;
+      string itemName = Util.getItemName(category, achievementData.itemType);
 
       _achievementTypeText.text = achievementData.achievementType.ToString();
       _itemTypeText.text = itemName;
-      _itemIndexText.text = achievementData.valueType.ToString();
+      _itemIndexText.text = achievementData.itemType.ToString();
       _itemCategoryText.text = category.ToString();
 
       _achievementIconPath.text = achievementData.iconPath;
       _achievementName.text = achievementData.achievementName;
       _achievementDescription.text = achievementData.achievementDescription;
-      _achievementKey.text = achievementData.achievementKey;
+      _achievementKey.text = achievementData.achievementUniqueID;
       _achievementValue.text = achievementData.value.ToString();
 
       if (achievementData.iconPath != null) {
@@ -87,7 +88,7 @@ public class AchievementToolPanel : MonoBehaviour {
       }
 
       try {
-         _itemIcon.sprite = ImageManager.getSprite(new Item { category = category, itemTypeId = achievementData.valueType }.getCastItem().getIconPath());
+         _itemIcon.sprite = ImageManager.getSprite(new Item { category = category, itemTypeId = achievementData.itemType }.getCastItem().getIconPath());
       } catch {
          _itemIcon.sprite = selectionPopup.emptySprite;
       }
@@ -108,12 +109,12 @@ public class AchievementToolPanel : MonoBehaviour {
 
       achievementData.achievementName = _achievementName.text;
       achievementData.achievementDescription = _achievementDescription.text;
-      achievementData.achievementKey = _achievementKey.text;
+      achievementData.achievementUniqueID = _achievementKey.text;
       achievementData.iconPath = _achievementIconPath.text;
 
       achievementData.value = int.Parse(_achievementValue.text);
-      achievementData.valueCategory = (int)(Item.Category) Enum.Parse(typeof(Item.Category), _itemCategoryText.text);
-      achievementData.valueType = int.Parse(_itemIndexText.text); 
+      achievementData.itemCategory = (int)(Item.Category) Enum.Parse(typeof(Item.Category), _itemCategoryText.text);
+      achievementData.itemType = int.Parse(_itemIndexText.text); 
       achievementData.achievementType = (AchievementData.ActionType) Enum.Parse(typeof(AchievementData.ActionType), _achievementTypeText.text);
 
       return achievementData;

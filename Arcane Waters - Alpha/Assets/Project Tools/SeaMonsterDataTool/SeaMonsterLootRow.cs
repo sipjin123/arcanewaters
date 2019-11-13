@@ -40,14 +40,16 @@ public class SeaMonsterLootRow : MonoBehaviour
    public Slider chanceRatio;
 
    // Percentage indicator of drop ratio
+   public InputField percentageField;
    public Text percentageText;
 
    #endregion
 
    public void initializeSetup () {
       if (chanceRatio != null) {
-         chanceRatio.onValueChanged.AddListener(_ => dropPercentageUpdate());
+         chanceRatio.onValueChanged.AddListener(_ => updateSlider());
          chanceRatio.onValueChanged.Invoke(chanceRatio.value);
+         percentageField.onValueChanged.AddListener(_ => { updateInputField(); });
       }
       deleteButton.onClick.AddListener(() => deleteData());
       changeItemTypeButton.onClick.AddListener(() => popupSelectionPanel());
@@ -82,8 +84,18 @@ public class SeaMonsterLootRow : MonoBehaviour
       Destroy(gameObject);
    }
 
-   public void dropPercentageUpdate () {
+   private void updateSlider () {
       percentageText.text = chanceRatio.value.ToString("f2") + "%";
+      percentageField.onValueChanged.RemoveAllListeners();
+      percentageField.text = percentageText.text.Replace("@","");
+      percentageField.onValueChanged.AddListener(_ => { updateInputField(); });
+   }
+
+   private void updateInputField () {
+      percentageText.text = percentageField.text +"%";
+      chanceRatio.onValueChanged.RemoveAllListeners();
+      chanceRatio.value = float.Parse(percentageField.text);
+      chanceRatio.onValueChanged.AddListener(_ => updateSlider());
    }
 
    #region Private Variables

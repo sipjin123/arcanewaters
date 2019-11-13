@@ -71,9 +71,6 @@ public class SeaMonsterEntity : SeaEntity
    // Holds the corpse object
    public GameObject corpseHolder;
 
-   // Holds the list of colliders for this obj
-   public List<Collider2D> colliderList;
-
    // Seamonster Animation
    public enum SeaMonsterAnimState
    {
@@ -101,25 +98,25 @@ public class SeaMonsterEntity : SeaEntity
 
    public void initData (SeaMonsterEntityData entityData) {
       seaMonsterData = entityData;
-      ripplesContainer.GetComponent<SpriteRenderer>().sprite = ImageManager.getSprite(seaMonsterData.defaultRippleSpritePath);
 
-      Sprite sprite = ImageManager.getSprite(seaMonsterData.defaultRippleTexturePath);
-      Texture2D croppedTexture = new Texture2D((int) sprite.rect.width, (int) sprite.rect.height);
-      Color[] pixels = sprite.texture.GetPixels((int) sprite.textureRect.x,
-                                              (int) sprite.textureRect.y,
-                                              (int) sprite.textureRect.width,
-                                              (int) sprite.textureRect.height);
+      _simpleAnim = spritesContainer.GetComponent<SimpleAnimation>();
+      _simpleAnimRipple = ripplesContainer.GetComponent<SimpleAnimation>();
+
+      ripplesContainer.GetComponent<SpriteRenderer>().sprite = ImageManager.getSprite(seaMonsterData.defaultRippleSpritePath);
+      
+      Sprite rippleTextureSprite = ImageManager.getSprite(seaMonsterData.defaultRippleTexturePath);
+      Texture2D croppedTexture = new Texture2D((int) rippleTextureSprite.rect.width, (int) rippleTextureSprite.rect.height);
+      Color[] pixels = rippleTextureSprite.texture.GetPixels((int) rippleTextureSprite.textureRect.x,
+                                              (int) rippleTextureSprite.textureRect.y,
+                                              (int) rippleTextureSprite.textureRect.width,
+                                              (int) rippleTextureSprite.textureRect.height);
       croppedTexture.SetPixels(pixels);
-      ripplesContainer.GetComponent<SpriteSwap>().newTexture = croppedTexture;
+      ripplesContainer.GetComponent<SpriteSwap>().newTexture = rippleTextureSprite == null ? ImageManager.self.blankTexture : croppedTexture;
       ripplesContainer.transform.localPosition += seaMonsterData.rippleLocOffset;
 
       ripplesContainer.transform.localScale = new Vector3(seaMonsterData.rippleScaleOverride, seaMonsterData.rippleScaleOverride, seaMonsterData.rippleScaleOverride);
       spritesContainer.transform.localScale = new Vector3(seaMonsterData.scaleOverride, seaMonsterData.scaleOverride, seaMonsterData.scaleOverride);
       spritesContainer.transform.GetChild(0).localScale = new Vector3(seaMonsterData.outlineScaleOverride, seaMonsterData.outlineScaleOverride, seaMonsterData.outlineScaleOverride);
-
-      _simpleAnim = spritesContainer.GetComponent<SimpleAnimation>();
-      
-      _simpleAnimRipple = ripplesContainer.GetComponent<SimpleAnimation>();
 
       _simpleAnimRipple.group = seaMonsterData.animGroup;
       _simpleAnimRipple.frameLengthOverride = seaMonsterData.rippleAnimationSpeedOverride;
@@ -156,7 +153,15 @@ public class SeaMonsterEntity : SeaEntity
       base.Start();
 
       // Initializes the data from the scriptable object
-      initData(SeaMonsterManager.self.seaMonsterDataList.Find(_ => _.seaMonsterType == monsterType));
+      SeaMonsterEntityData monsterData = SeaMonsterManager.self.seaMonsterDataList.Find(_ => _.seaMonsterType == monsterType);
+
+      if (monsterData == null) {
+         D.warning("Monster data is null for: " + monsterType);
+         Destroy(this.gameObject);
+         return;
+      }
+
+      initData(monsterData);
 
       if (isServer) {
          gridReference.displayGrid(transform.position, this.areaType);
@@ -381,7 +386,7 @@ public class SeaMonsterEntity : SeaEntity
          }
 
          float newDistanceGap = Vector2.Distance(attacker.transform.position, transform.position);
- 
+
          if (newDistanceGap < oldDistanceGap) {
             oldDistanceGap = newDistanceGap;
             nearestEntity = attacker;
@@ -482,7 +487,11 @@ public class SeaMonsterEntity : SeaEntity
                   }
                } else {
                   yield return new WaitForSeconds(seaMonsterData.moveFrequency * .5f);
-                  setWaypoint(targetEntity.transform);
+                  if (targetEntity != null) {
+                     setWaypoint(targetEntity.transform);
+                  } else {
+                     setWaypoint(null);
+                  }
                }
             } else {
                // Enemy is too far, keep moving around
@@ -565,12 +574,6 @@ public class SeaMonsterEntity : SeaEntity
       }
    }
 
-   public void disableCollisions () {
-      foreach (Collider2D col in colliderList) {
-         col.enabled = false;
-      }
-   }
-
    private void setWaypoint (Transform target, float moveDist = .5f) {
       if (seaMonsterData.roleType != RoleType.Minion) {
          if (target == null) {
@@ -612,7 +615,7 @@ public class SeaMonsterEntity : SeaEntity
    protected virtual void killUnit () {
       hasDied = true;
       handleAnimations();
-      
+
       _clickableBox.gameObject.SetActive(false);
       seaMonsterBars.gameObject.SetActive(false);
 
@@ -654,7 +657,7 @@ public class SeaMonsterEntity : SeaEntity
 
    [Server]
    protected void launchProjectile (Vector2 spot, SeaEntity attacker, Attack.Type attackType, float attackDelay, float launchDelay) {
-      this.facing = (Direction) SeaMonsterUtility.getDirectionToFace(attacker,transform.position);
+      this.facing = (Direction) SeaMonsterUtility.getDirectionToFace(attacker, transform.position);
 
       int accuracy = Random.Range(1, 4);
       Vector2 targetLoc = new Vector2(0, 0);
@@ -664,7 +667,7 @@ public class SeaMonsterEntity : SeaEntity
          targetLoc = spot;
       }
 
-      Vector2 spawnPosition = new Vector2(0,0);
+      Vector2 spawnPosition = new Vector2(0, 0);
       // Determines the origin of the projectile
       if (projectileSpawnLocations == null || projectileSpawnLocations.Count < 1) {
          spawnPosition = transform.position;
@@ -674,7 +677,7 @@ public class SeaMonsterEntity : SeaEntity
             spawnPosition = _projectileSpawnLocation.position;
          }
       }
-      fireAtSpot(targetLoc, attackType, attackDelay, launchDelay, 1f, spawnPosition);
+      fireAtSpot(targetLoc, attackType, attackDelay, launchDelay, spawnPosition);
 
       isEngaging = true;
 
@@ -721,7 +724,7 @@ public class SeaMonsterEntity : SeaEntity
          Gizmos.DrawWireSphere(transform.position, sizex);
       }
    }
-   
+
    protected bool isEnemyWithinMoveDistance () {
       if (targetEntity != null) {
          float distanceGap = Vector2.Distance(targetEntity.transform.position, transform.position);

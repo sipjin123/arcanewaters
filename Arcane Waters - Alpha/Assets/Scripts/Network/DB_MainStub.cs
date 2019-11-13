@@ -10,6 +10,22 @@ public class DB_MainStub : MonoBehaviour {
 
    #endregion
 
+   public static void updateAchievementData (AchievementData achievementData, int userID) {
+
+   }
+
+   public static void createAchievementData (AchievementData achievementData, int userID) {
+
+   }
+
+   public static AchievementData getAchievementData (int userID, string uniqueKey, AchievementData.ActionType actionType) {
+      return new AchievementData();
+   }
+
+   public static List<AchievementData> getAchievementDataList (int userID) {
+      return new List<AchievementData>();
+   }
+
    public static void readTest () {
       
    }

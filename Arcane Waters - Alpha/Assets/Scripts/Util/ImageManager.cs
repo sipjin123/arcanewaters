@@ -33,6 +33,12 @@ public class ImageManager : ClientMonoBehaviour {
    // An array of data on the image assets in our project
    public List<ImageData> imageDataList = new List<ImageData>();
 
+   // A reference to a blank sprite for null values
+   public Sprite blankSprite;
+
+   // A reference to a blank texture for null values
+   public Texture2D blankTexture;
+
    // Self
    public static ImageManager self;
 
@@ -41,7 +47,7 @@ public class ImageManager : ClientMonoBehaviour {
    protected override void Awake () {
       // The batchmode server doesn't need to waste memory on these images
       if (Application.isBatchMode) {
-         imageDataList.Clear();
+          imageDataList.Clear();
       }
 
       base.Awake();
@@ -51,15 +57,33 @@ public class ImageManager : ClientMonoBehaviour {
    }
 
    public static Sprite getSprite (string path) {
-      return self.getSpriteFromPath(path);
+      Sprite fetchedSprite = self.getSpriteFromPath(path);
+
+      // Returns a blank sprite if the fetched data from the path is null
+      if (fetchedSprite == null) {
+         return self.blankSprite;
+      }
+      return fetchedSprite;
    }
 
    public static Texture2D getTexture (string path, bool warnOnNull=true) {
-      return self.getTextureFromPath(path.ToLowerInvariant(), warnOnNull);
+      Texture2D fetchedTexture = self.getTextureFromPath(path.ToLowerInvariant(), warnOnNull);
+
+      // Returns a blank texture if the fetched data from the path is null
+      if (fetchedTexture == null) {
+         return self.blankTexture;
+      }
+      return fetchedTexture;
    }
 
    public static Sprite[] getSprites (Texture2D texture) {
-      return self.getSpritesFromTexture(texture);
+      Sprite[] fetchedSprites = self.getSpritesFromTexture(texture);
+
+      // Returns a blank sprite if the fetched data from the path is null
+      if (fetchedSprites == null) {
+         return new Sprite[] { self.blankSprite };
+      }
+      return fetchedSprites;
    }
 
    public static List<ImageData> getSpritesInDirectory (string path) {
@@ -69,12 +93,22 @@ public class ImageManager : ClientMonoBehaviour {
    }
 
    public static Sprite[] getSprites (string path) {
-      return self.getSpritesFromPath(path);
+      Sprite[] fetchedSprites = self.getSpritesFromPath(path);
+
+      // Returns a blank sprite if the fetched data from the path is null
+      if (fetchedSprites == null) {
+         return new Sprite[] { self.blankSprite };
+      }
+      return fetchedSprites;
    }
 
    protected Sprite getSpriteFromPath (string path) {
       ImageData imageData = getData(path);
 
+      // Returns blank sprite if the data fetch is null
+      if (imageData.sprite == null) {
+         return self.blankSprite;
+      }
       return imageData.sprite;
    }
 

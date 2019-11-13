@@ -1716,6 +1716,7 @@ public class RPCManager : NetworkBehaviour {
       bot.autoMove = true;
       bot.nationType = Nation.Type.Pirate;
       bot.speed = Ship.getBaseSpeed(Ship.Type.Caravel);
+      bot.attackRangeModifier = Ship.getBaseAttackRange(Ship.Type.Caravel);
       bot.entityName = "Pirate";
 
       // Set up the movement route
@@ -2147,6 +2148,17 @@ public class RPCManager : NetworkBehaviour {
             // Let the client know that we're done
             EquipMessage equipMessage = new EquipMessage(_player.netId, userObjects.armor.id, userObjects.weapon.id);
             NetworkServer.SendToClientOfPlayer(_player.netIdent, equipMessage);
+         });
+      });
+   }
+
+   [Server]
+   protected void registerAchievement (AchievementData.ActionType actionType, int value) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // INSERT DB MAIN FETCH AND UPDATE LOGIC HERE
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // INSERT UNITY LOGIC HERE
          });
       });
    }

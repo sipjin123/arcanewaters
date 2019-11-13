@@ -19,8 +19,108 @@ public class DB_Main : DB_MainStub {
 
    #endregion
 
-   public static new void createNPCRelationship (int npcId, int userId, int friendshipLevel) {
+   public static new AchievementData getAchievementData (int userID, string uniqueKey, AchievementData.ActionType actionType) {
+      AchievementData achievement = new AchievementData();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM achievement_data WHERE (userID=@userID AND achievementUniqueID=@achievementUniqueID)", conn)) {
 
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@userID", userID);
+            cmd.Parameters.AddWithValue("@achievementUniqueID", uniqueKey);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  achievement = new AchievementData(dataReader);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return achievement;
+   }
+
+   public static new void updateAchievementData (AchievementData achievementData, int userID) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "UPDATE achievement_data SET achievementValue=@achievementValue WHERE (achievementUniqueID=@achievementUniqueID AND achievementName=@achievementName AND userID=@userID)", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@userID", userID);
+            cmd.Parameters.AddWithValue("@achievementUniqueID", achievementData.achievementUniqueID);
+            cmd.Parameters.AddWithValue("@achievementName", achievementData.achievementName);
+            cmd.Parameters.AddWithValue("@achievementValue", achievementData.value);
+            
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         UnityEngine.Debug.LogError("Fail");
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void createAchievementData (AchievementData achievementData, int userID) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO achievement_data (userID, achievementTypeID, achievementName, achievementUniqueID, achievementDescription, achievementValue, achievementItemTypeID, achievementItemCategoryID) " +
+            "VALUES (@userID, @achievementTypeID, @achievementName, @achievementUniqueID, @achievementDescription, @achievementValue, @achievementItemTypeID, @achievementItemCategoryID)", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@userID", userID);
+            cmd.Parameters.AddWithValue("@achievementTypeID", (int)achievementData.achievementType);
+            cmd.Parameters.AddWithValue("@achievementName", achievementData.achievementName);
+            cmd.Parameters.AddWithValue("@achievementUniqueID", achievementData.achievementUniqueID);
+            cmd.Parameters.AddWithValue("@achievementDescription", achievementData.achievementDescription);
+            cmd.Parameters.AddWithValue("@achievementValue", achievementData.value);
+            cmd.Parameters.AddWithValue("@achievementItemTypeID", (int)achievementData.itemType);
+            cmd.Parameters.AddWithValue("@achievementItemCategoryID", (int)achievementData.itemCategory);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<AchievementData> getAchievementDataList (int userID) {
+      List<AchievementData> achievementList = new List<AchievementData>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM achievement_data WHERE userID=@userID", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@userID", userID);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  AchievementData quest = new AchievementData(dataReader);
+                  achievementList.Add(quest);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return achievementList;
+   }
+
+   public static new void createNPCRelationship (int npcId, int userId, int friendshipLevel) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(

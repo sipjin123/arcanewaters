@@ -24,16 +24,13 @@ public class AchievementToolScene : MonoBehaviour {
    public Sprite emptySprite;
 
    // Main menu Buttons
-   public Button createButton, exitButton, mainMenuButton;
+   public Button createButton, mainMenuButton;
 
    #endregion
 
    private void Awake () {
       createButton.onClick.AddListener(() => {
          createTemplate();
-      });
-      exitButton.onClick.AddListener(() => {
-         Application.Quit();
       });
       mainMenuButton.onClick.AddListener(() => {
          SceneManager.LoadScene(MasterToolScene.masterScene);
@@ -53,7 +50,7 @@ public class AchievementToolScene : MonoBehaviour {
 
       template.deleteButton.onClick.AddListener(() => {
          Destroy(template.gameObject, .5f);
-         toolManager.deleteMonsterDataFile(usableItemData);
+         toolManager.deleteAchievementDataFile(usableItemData);
          toolManager.loadXMLData();
       });
 
@@ -75,7 +72,7 @@ public class AchievementToolScene : MonoBehaviour {
    public void loadAchievementData (Dictionary<string, AchievementData> achievementDataList) {
       itemTemplateParent.gameObject.DestroyChildren();
       
-      // Create a row for each monster element
+      // Create a row for each achievement element
       foreach (AchievementData achievementData in achievementDataList.Values) {
          AchievementToolTemplate template = Instantiate(achievementTemplatePrefab, itemTemplateParent.transform);
          template.nameText.text = achievementData.achievementName;
@@ -86,7 +83,7 @@ public class AchievementToolScene : MonoBehaviour {
 
          template.deleteButton.onClick.AddListener(() => {
             Destroy(template.gameObject, .5f);
-            toolManager.deleteMonsterDataFile(achievementData);
+            toolManager.deleteAchievementDataFile(achievementData);
             toolManager.loadXMLData();
          });
 

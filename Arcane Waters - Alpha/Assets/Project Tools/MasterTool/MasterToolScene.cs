@@ -19,6 +19,7 @@ public class MasterToolScene : MonoBehaviour {
    public const string shipScene = "Ship Data Tool";
    public const string equipmentScene = "Equipment Data Tool";
    public const string usableItemScene = "UsableItemData Tool";
+   public const string achievementScene = "Achievement Tool";
 
    // Button triggers to open scene
    public Button clickAbilityScene, 
@@ -29,11 +30,17 @@ public class MasterToolScene : MonoBehaviour {
       clickMapScene, 
       clickShipScene,
       clickEquipmentScene,
-      clickUsableItemScene;
+      clickUsableItemScene,
+      clickAchievementScene,
+      exitButton;
 
    #endregion
 
    private void Awake () {
+      exitButton.onClick.AddListener(() => {
+         Application.Quit();
+      });
+
       clickAbilityScene.onClick.AddListener(() => {
          SceneManager.LoadScene(abilityScene);
       });
@@ -60,6 +67,9 @@ public class MasterToolScene : MonoBehaviour {
       });
       clickUsableItemScene.onClick.AddListener(() => {
          SceneManager.LoadScene(usableItemScene);
+      });
+      clickAchievementScene.onClick.AddListener(() => {
+         SceneManager.LoadScene(achievementScene);
       });
    }
 

@@ -24,16 +24,13 @@ public class ShipDataScene : MonoBehaviour {
    public Sprite emptySprite;
 
    // Main menu Buttons
-   public Button createButton, exitButton, mainMenuButton;
+   public Button createButton, mainMenuButton;
 
    #endregion
 
    private void Awake () {
       createButton.onClick.AddListener(() => {
          createTemplate();
-      });
-      exitButton.onClick.AddListener(() => {
-         Application.Quit();
       });
       mainMenuButton.onClick.AddListener(() => {
          SceneManager.LoadScene(MasterToolScene.masterScene);

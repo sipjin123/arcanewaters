@@ -153,14 +153,14 @@ public class GenericSelectionPopup : MonoBehaviour {
       } else if (popupType == selectionType.UsableItemIcon) {
          foreach (KeyValuePair<string, Sprite> sourceSprite in usableItemSpriteList) {
             string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
-            Sprite helmSprite = ImageManager.getSprite(sourceSprite.Key);
-            createImageTemplate(sourceSprite.Key, shortName, helmSprite, imageIcon, textUI);
+            Sprite itemSprite = ImageManager.getSprite(sourceSprite.Key);
+            createImageTemplate(sourceSprite.Key, shortName, itemSprite, imageIcon, textUI);
          }
       } else if (popupType == selectionType.AchievementIcon) {
          foreach (KeyValuePair<string, Sprite> sourceSprite in genericIconSpriteList) {
             string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
-            Sprite helmSprite = ImageManager.getSprite(sourceSprite.Key);
-            createImageTemplate(sourceSprite.Key, shortName, helmSprite, imageIcon, textUI);
+            Sprite achievementSprite = ImageManager.getSprite(sourceSprite.Key);
+            createImageTemplate(sourceSprite.Key, shortName, achievementSprite, imageIcon, textUI);
          }
       }
    }

@@ -33,6 +33,45 @@ public class DebugButtons : NetworkBehaviour
       if (!enableDebug) {
          return;
       }
+      if (GUILayout.Button("Create Achievement")) {
+         AchievementData newData = new AchievementData {
+            achievementName = "AName",
+            achievementDescription = "ADesc",
+            achievementUniqueID = "UniqueID",
+            achievementType = AchievementData.ActionType.ArmorBuy,
+            iconPath = "",
+            itemCategory = 0,
+            itemType = 0,
+            value = 1
+         };
+
+         DB_Main.createAchievementData(newData, Global.player.userId);
+      }
+      if (GUILayout.Button("Get Achievement")) {
+         List<AchievementData> newData = DB_Main.getAchievementDataList(Global.player.userId);
+
+         foreach (AchievementData achieveData in newData) {
+            Debug.LogError("----------------");
+            Debug.LogError(achieveData.achievementName);
+            Debug.LogError(achieveData.achievementUniqueID);
+            Debug.LogError(achieveData.achievementType);
+         }
+      }
+
+      if (GUILayout.Button("Update Achievement")) {
+         AchievementData newData = new AchievementData {
+            achievementName = "AName",
+            achievementDescription = "ADesc",
+            achievementUniqueID = "UniqueID",
+            achievementType = AchievementData.ActionType.ArmorBuy,
+            iconPath = "",
+            itemCategory = 0,
+            itemType = 0,
+            value = 15
+         };
+
+         DB_Main.updateAchievementData(newData, Global.player.userId);
+      }
 
       GUILayout.BeginHorizontal("box");
       {

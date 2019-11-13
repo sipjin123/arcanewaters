@@ -25,7 +25,7 @@ public class EquipmentToolScene : MonoBehaviour {
    public Sprite emptySprite;
 
    // Main menu Buttons
-   public Button createWeaponButton, createArmorButton, createHelmButton, exitButton, mainMenuButton;
+   public Button createWeaponButton, createArmorButton, createHelmButton, mainMenuButton;
 
    // Togglers
    public Toggle weaponToggle, armorToggle, helmToggle;
@@ -55,9 +55,6 @@ public class EquipmentToolScene : MonoBehaviour {
          createHelmTemplate();
       });
 
-      exitButton.onClick.AddListener(() => {
-         Application.Quit();
-      });
       mainMenuButton.onClick.AddListener(() => {
          SceneManager.LoadScene(MasterToolScene.masterScene);
       });

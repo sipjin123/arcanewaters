@@ -33,7 +33,7 @@ public class AchievementToolManager : MonoBehaviour {
       ToolsUtil.xmlSave(data, path);
    }
 
-   public void deleteMonsterDataFile (AchievementData data) {
+   public void deleteAchievementDataFile (AchievementData data) {
       // Build the file name
       string fileName = data.achievementName;
 
@@ -63,6 +63,7 @@ public class AchievementToolManager : MonoBehaviour {
 
    public void loadXMLData () {
       _achievementDataList = new Dictionary<string, AchievementData>();
+
       // Build the path to the folder containing the achievement data XML files
       string directoryPath = Path.Combine(Application.dataPath, "Data", "Achievement");
 
