@@ -8,6 +8,11 @@ public class SeaMonsterEntity : SeaEntity
 {
    #region Public Variables
 
+   public enum Type
+   {
+      None = 0, Tentacle = 1, Horror = 2, Worm = 3, Reef_Giant = 4, Fishman = 5,
+   }
+
    // List of children dependencies
    public List<SeaMonsterEntity> seaMonsterChildrenList = new List<SeaMonsterEntity>();
 
@@ -51,7 +56,7 @@ public class SeaMonsterEntity : SeaEntity
 
    // Determines the monster type index of this unit
    [SyncVar]
-   public Enemy.Type monsterType = 0;
+   public SeaMonsterEntity.Type monsterType = 0;
 
    // Determines the location of this unit in relation to its spawn point
    public Vector2 distanceFromSpawnPoint;

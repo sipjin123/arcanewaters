@@ -70,7 +70,7 @@ public class TreasureManager : MonoBehaviour {
       return chest;
    }
 
-   public TreasureChest createSeaMonsterChest (Instance instance, Vector3 spot, Enemy.Type enemyType) {
+   public TreasureChest createSeaMonsterChest (Instance instance, Vector3 spot, SeaMonsterEntity.Type enemyType) {
       // Instantiate a new Treasure Chest
       TreasureChest chest = null;
       chest = Instantiate(seaChestPrefab, spot, Quaternion.identity);

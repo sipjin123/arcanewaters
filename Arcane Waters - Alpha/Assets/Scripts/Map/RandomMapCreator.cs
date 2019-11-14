@@ -1447,7 +1447,7 @@ public static class RandomMapCreator {
       }
    }
 
-   static void SpawnSeaMonster(string name, Vector3 pos, Transform parent, Area.Type areaType, Enemy.Type seaMonsterType) {
+   static void SpawnSeaMonster(string name, Vector3 pos, Transform parent, Area.Type areaType, SeaMonsterEntity.Type seaMonsterType) {
       GameObject spawnObject = new GameObject(name);
       spawnObject.transform.SetParent(parent);
       spawnObject.transform.position = new Vector3(pos.x + 0.5f, pos.y + 0.5f, 0.0f);

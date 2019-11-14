@@ -33,6 +33,15 @@ public class DebugButtons : NetworkBehaviour
       if (!enableDebug) {
          return;
       }
+
+      if (GUILayout.Button("Trigger Loot Gain")) {
+         Global.player.rpc.Cmd_RegisterAchievement(Global.player.userId, AchievementData.ActionType.LootGainTotal, 1, 0, 0);
+      }
+
+      if (GUILayout.Button("Trigger Gather Wood")) {
+         Global.player.rpc.Cmd_RegisterAchievement(Global.player.userId, AchievementData.ActionType.GatherItem, 1, 6, 4);
+      }
+
       if (GUILayout.Button("Create Achievement")) {
          AchievementData newData = new AchievementData {
             achievementName = "AName",
@@ -42,7 +51,7 @@ public class DebugButtons : NetworkBehaviour
             iconPath = "",
             itemCategory = 0,
             itemType = 0,
-            value = 1
+            count = 1
          };
 
          DB_Main.createAchievementData(newData, Global.player.userId);
@@ -67,10 +76,10 @@ public class DebugButtons : NetworkBehaviour
             iconPath = "",
             itemCategory = 0,
             itemType = 0,
-            value = 15
+            count = 15
          };
 
-         DB_Main.updateAchievementData(newData, Global.player.userId);
+         //DB_Main.updateAchievementData(newData, Global.player.userId);
       }
 
       GUILayout.BeginHorizontal("box");

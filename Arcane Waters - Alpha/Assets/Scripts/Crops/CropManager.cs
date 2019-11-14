@@ -114,6 +114,8 @@ public class CropManager : NetworkBehaviour {
                // Store the result
                _crops.Add(cropInfo);
 
+               _player.rpc.registerAchievement(_player.userId, AchievementData.ActionType.PlantCrop, 1);
+
                // Send the new Crop to the player
                this.Target_ReceiveCrop(_player.connectionToClient, cropInfo, false);
 
@@ -174,6 +176,8 @@ public class CropManager : NetworkBehaviour {
             cropToWater.lastWaterTimestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             _crops.Add(cropToWater);
 
+            _player.rpc.registerAchievement(_player.userId, AchievementData.ActionType.WaterCrop, 1);
+
             // Send the update Crop to the player
             this.Target_ReceiveCrop(_player.connectionToClient, cropToWater, true);
 
@@ -230,6 +234,8 @@ public class CropManager : NetworkBehaviour {
             // Store the updated list
             _crops.Remove(cropToHarvest);
 
+            _player.rpc.registerAchievement(_player.userId, AchievementData.ActionType.HarvestCrop, 1);
+
             // Let the player see the crop go away
             this.Target_HarvestCrop(_player.connectionToClient, cropToHarvest);
 
@@ -280,6 +286,8 @@ public class CropManager : NetworkBehaviour {
       // Look up some stuff before we hop into the background thread
       float xpModifier = Rarity.getXPModifier(offer.rarity);
 
+      int earnedGold = 0;
+
       // To the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Grab their latest silo info
@@ -294,6 +302,7 @@ public class CropManager : NetworkBehaviour {
             amountToSell = amountToSell < offer.amount ? amountToSell : offer.amount;
 
             int goldForThisCrop = offer.pricePerUnit * amountToSell;
+            earnedGold = goldForThisCrop;
 
             // Add the gold to the database
             DB_Main.addGold(_player.userId, goldForThisCrop);
@@ -330,6 +339,8 @@ public class CropManager : NetworkBehaviour {
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             if (totalGoldMade > 0) {
                Target_JustSoldCrops(_player.connectionToClient, offer.cropType, totalGoldMade);
+               _player.rpc.registerAchievement(_player.userId, AchievementData.ActionType.SellCrop, amountToSell);
+               _player.rpc.registerAchievement(_player.userId, AchievementData.ActionType.EarnGold, earnedGold);
             } else {
                ErrorMessage errorMessage = new ErrorMessage(_player.netId, ErrorMessage.Type.NoCropsOfThatType);
                NetworkServer.SendToClientOfPlayer(_player.netIdentity, errorMessage);

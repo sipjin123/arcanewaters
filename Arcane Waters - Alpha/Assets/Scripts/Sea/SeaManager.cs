@@ -75,22 +75,22 @@ public class SeaManager : MonoBehaviour {
       if (Input.GetKey(KeyCode.Z)) {
          // Allow spawning a horror
          if (Input.GetKeyUp(KeyCode.F1) && Global.player is SeaEntity) {
-            Global.player.rpc.Cmd_SpawnBossParent(Util.getMousePos(), Enemy.Type.Horror);
+            Global.player.rpc.Cmd_SpawnBossParent(Util.getMousePos(), SeaMonsterEntity.Type.Horror);
          }
 
          // Allow spawning a Worm
          if (Input.GetKeyUp(KeyCode.F2) && Global.player is SeaEntity) {
-            Global.player.rpc.Cmd_SpawnSeaMonster(Util.getMousePos(), Enemy.Type.Worm);
+            Global.player.rpc.Cmd_SpawnSeaMonster(Util.getMousePos(), SeaMonsterEntity.Type.Worm);
          }
 
          // Allow spawning a Giant
          if (Input.GetKeyUp(KeyCode.F3) && Global.player is SeaEntity) {
-            Global.player.rpc.Cmd_SpawnSeaMonster(Util.getMousePos(), Enemy.Type.Reef_Giant);
+            Global.player.rpc.Cmd_SpawnSeaMonster(Util.getMousePos(), SeaMonsterEntity.Type.Reef_Giant);
          }
 
          // Allow spawning a Fishman
          if (Input.GetKeyUp(KeyCode.F4) && Global.player is SeaEntity) {
-            Global.player.rpc.Cmd_SpawnSeaMonster(Util.getMousePos(), Enemy.Type.Fishman);
+            Global.player.rpc.Cmd_SpawnSeaMonster(Util.getMousePos(), SeaMonsterEntity.Type.Fishman);
          }
       }
    }

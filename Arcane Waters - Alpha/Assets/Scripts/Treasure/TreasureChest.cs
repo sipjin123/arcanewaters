@@ -141,9 +141,9 @@ public class TreasureChest : NetworkBehaviour {
 
    public Item getContents () {
       if (chestType == ChestSpawnType.Sea) {
-         return getEnemyContents();
+         return getSeaMonsterLootContents();
       } else if (chestType == ChestSpawnType.Land) {
-         return getBattlerLootContents();
+         return getLandMonsterLootContents();
       }
 
       // Create a random item for now
@@ -160,9 +160,9 @@ public class TreasureChest : NetworkBehaviour {
       }
    }
 
-   public Item getEnemyContents () {
+   public Item getSeaMonsterLootContents () {
       // Gets loots for enemy type
-      EnemyLootLibrary lootLibrary = RewardManager.self.seaMonsterLootList.Find(_ => _.enemyType == (Enemy.Type)enemyType);
+      SeaMonsterLootLibrary lootLibrary = RewardManager.self.fetchSeaMonsterLootData((SeaMonsterEntity.Type) enemyType);
       List<LootInfo> processedLoots = lootLibrary.dropTypes.requestLootList();
 
       // Registers list of ingredient types for data fetching
@@ -175,7 +175,7 @@ public class TreasureChest : NetworkBehaviour {
       return itemToCreate;
    }
 
-   public Item getBattlerLootContents () {
+   public Item getLandMonsterLootContents () {
       // Gets loot
       BattlerData battlerData = BattleManager.self.getAllBattlersData().Find(x => (int)x.enemyType == enemyType);
       List<LootInfo> processedLoot = battlerData.battlerLootData.requestLootList();

@@ -19,22 +19,25 @@ public class DB_Main : DB_MainStub {
 
    #endregion
 
-   public static new AchievementData getAchievementData (int userID, string uniqueKey, AchievementData.ActionType actionType) {
-      AchievementData achievement = new AchievementData();
+   #region Achievements
+
+   public static new List<AchievementData> getAchievementData (int userID, AchievementData.ActionType actionType) {
+      List<AchievementData> achievementTypeList = new List<AchievementData>();
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM achievement_data WHERE (userID=@userID AND achievementUniqueID=@achievementUniqueID)", conn)) {
+            "SELECT * FROM achievement_data WHERE (userID=@userID AND achievementTypeID=@achievementTypeID)", conn)) {
 
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@userID", userID);
-            cmd.Parameters.AddWithValue("@achievementUniqueID", uniqueKey);
+            cmd.Parameters.AddWithValue("@achievementTypeID", (int)actionType);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  achievement = new AchievementData(dataReader);
+                  AchievementData achievement = new AchievementData(dataReader);
+                  achievementTypeList.Add(achievement);
                }
             }
          }
@@ -42,22 +45,27 @@ public class DB_Main : DB_MainStub {
          D.error("MySQL Error: " + e.ToString());
       }
 
-      return achievement;
+      if (achievementTypeList.Count < 1) {
+         return null;
+      }
+
+      return achievementTypeList;
    }
 
-   public static new void updateAchievementData (AchievementData achievementData, int userID) {
+   public static new void updateAchievementData (AchievementData achievementData, int userID, bool hasReached) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "UPDATE achievement_data SET achievementValue=@achievementValue WHERE (achievementUniqueID=@achievementUniqueID AND achievementName=@achievementName AND userID=@userID)", conn)) {
+            "UPDATE achievement_data SET achievementValue=@achievementValue, achievementReached=@achievementReached WHERE (achievementUniqueID=@achievementUniqueID AND achievementName=@achievementName AND userID=@userID)", conn)) {
 
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@userID", userID);
             cmd.Parameters.AddWithValue("@achievementUniqueID", achievementData.achievementUniqueID);
             cmd.Parameters.AddWithValue("@achievementName", achievementData.achievementName);
-            cmd.Parameters.AddWithValue("@achievementValue", achievementData.value);
-            
+            cmd.Parameters.AddWithValue("@achievementValue", achievementData.count);
+            cmd.Parameters.AddWithValue("@achievementReached", hasReached); 
+
             // Execute the command
             cmd.ExecuteNonQuery();
          }
@@ -71,8 +79,8 @@ public class DB_Main : DB_MainStub {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO achievement_data (userID, achievementTypeID, achievementName, achievementUniqueID, achievementDescription, achievementValue, achievementItemTypeID, achievementItemCategoryID) " +
-            "VALUES (@userID, @achievementTypeID, @achievementName, @achievementUniqueID, @achievementDescription, @achievementValue, @achievementItemTypeID, @achievementItemCategoryID)", conn)) {
+            "INSERT INTO achievement_data (userID, achievementTypeID, achievementName, achievementUniqueID, achievementDescription, achievementValue, achievementItemTypeID, achievementItemCategoryID, achievementReached) " +
+            "VALUES (@userID, @achievementTypeID, @achievementName, @achievementUniqueID, @achievementDescription, @achievementValue, @achievementItemTypeID, @achievementItemCategoryID, @achievementReached)", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -81,10 +89,11 @@ public class DB_Main : DB_MainStub {
             cmd.Parameters.AddWithValue("@achievementName", achievementData.achievementName);
             cmd.Parameters.AddWithValue("@achievementUniqueID", achievementData.achievementUniqueID);
             cmd.Parameters.AddWithValue("@achievementDescription", achievementData.achievementDescription);
-            cmd.Parameters.AddWithValue("@achievementValue", achievementData.value);
+            cmd.Parameters.AddWithValue("@achievementValue", achievementData.count);
             cmd.Parameters.AddWithValue("@achievementItemTypeID", (int)achievementData.itemType);
             cmd.Parameters.AddWithValue("@achievementItemCategoryID", (int)achievementData.itemCategory);
-
+            cmd.Parameters.AddWithValue("@achievementReached", 0);
+            
             // Execute the command
             cmd.ExecuteNonQuery();
          }
@@ -119,6 +128,8 @@ public class DB_Main : DB_MainStub {
 
       return achievementList;
    }
+
+   #endregion
 
    public static new void createNPCRelationship (int npcId, int userId, int friendshipLevel) {
       try {

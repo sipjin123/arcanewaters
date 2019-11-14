@@ -50,6 +50,8 @@ public class RPCManager : NetworkBehaviour {
       }
    }
 
+   #region NPC QUEST
+
    [TargetRpc]
    public void Target_ReceiveNPCQuestNode (NetworkConnection connection, int questId,
       QuestNode questNode, int friendshipLevel, bool areObjectivesCompleted, int[] objectivesProgress) {
@@ -123,6 +125,8 @@ public class RPCManager : NetworkBehaviour {
          PanelManager.self.popPanel();
       }
    }
+
+   #endregion
 
    [TargetRpc]
    public void Target_ReceiveItems (NetworkConnection connection, int gold, string[] itemArray) {
@@ -963,6 +967,8 @@ public class RPCManager : NetworkBehaviour {
       getShipsForArea();
    }
 
+   #region NPCQuest
+
    [Command]
    public void Cmd_RequestNPCQuestSelectionListFromServer (int npcId) {
       // Background thread
@@ -1172,6 +1178,7 @@ public class RPCManager : NetworkBehaviour {
 
             // If items have been rewarded, show the reward panel
             if (rewardedItems.Count > 0) {
+               registerAchievement(_player.userId, AchievementData.ActionType.QuestComple, 1);
                Target_ReceiveItemList(_player.connectionToClient, rewardedItems.ToArray());
             }
          });
@@ -1267,9 +1274,13 @@ public class RPCManager : NetworkBehaviour {
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Send the npc answer to the client
             Target_ReceiveNPCCustomDialogue(newFriendshipLevel, npcText, ClickableText.Type.YouAreWelcome, null);
+
+            registerAchievement(_player.userId, AchievementData.ActionType.NPCGift, 1);
          });
       });
    }
+
+   #endregion
 
    [Command]
    public void Cmd_BuyItem (int shopItemId) {
@@ -1312,6 +1323,20 @@ public class RPCManager : NetworkBehaviour {
             if (newItem.id <= 0) {
                D.warning("Couldn't create new item ID.");
                return;
+            }
+
+            registerAchievement(_player.userId, AchievementData.ActionType.BuyItem, 1, shopItem);
+
+            if (shopItem.category == Item.Category.Weapon) {
+               registerAchievement(_player.userId, AchievementData.ActionType.WeaponBuy, 1);
+            }
+
+            if (shopItem.category == Item.Category.Armor) {
+               registerAchievement(_player.userId, AchievementData.ActionType.ArmorBuy, 1);
+            }
+
+            if (shopItem.category == Item.Category.Helm) {
+               registerAchievement(_player.userId, AchievementData.ActionType.HeadgearBuy, 1);
             }
 
             // Decrease the item count
@@ -1368,6 +1393,8 @@ public class RPCManager : NetworkBehaviour {
             // Set it as their new flagship
             requestNewFlagship(newShipInfo.shipId);
 
+            registerAchievement(_player.userId, AchievementData.ActionType.BuyShip, 1);
+
             // Show a popup panel for the player
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.ShipBought, _player);
 
@@ -1376,6 +1403,8 @@ public class RPCManager : NetworkBehaviour {
          });
       });
    }
+
+   #region Guilds
 
    [Command]
    public void Cmd_CreateGuild (string requestedName, Faction.Type factionType) {
@@ -1453,6 +1482,8 @@ public class RPCManager : NetworkBehaviour {
       GuildManager.self.acceptInviteOnServer(_player, invite);
    }
 
+   #endregion
+
    [Command]
    public void Cmd_CraftItem (Item.Category category, int itemType) {
       validateCraftingRewards(_player.userId, category, itemType);
@@ -1464,10 +1495,12 @@ public class RPCManager : NetworkBehaviour {
       Instantiate(PrefabsManager.self.insufficientPrefab, npc.transform.position + new Vector3(0f, .24f), Quaternion.identity);
    }
 
+   #region Item Rewards for Combat and Crafting
+
    [Server]
    public void processEnemyRewards (Enemy.Type enemyType) {
       // Gets loots for enemy type
-      EnemyLootLibrary lootLibrary = RewardManager.self.seaMonsterLootList.Find(_ => _.enemyType == enemyType);
+      EnemyLootLibrary lootLibrary = RewardManager.self.fetchLandMonsterLootData(enemyType);
       List<LootInfo> processedLoots = lootLibrary.dropTypes.requestLootList();
    
       // Registers list of ingredient types for data fetching
@@ -1479,6 +1512,7 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<Item> databaseList = DB_Main.getRequiredIngredients(_player.userId, itemLoots);
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            registerAchievement(_player.userId, AchievementData.ActionType.OpenedLootBag, processedLoots.Count);
             processGroupRewards(_player.userId, databaseList, processedLoots, true);
          });
       });
@@ -1535,6 +1569,7 @@ public class RPCManager : NetworkBehaviour {
             rewardItem.id = rewardItemID;
             rewardItemList.Add(data.resultItem);
             finalizeRewards(userId, rewardItemList, databaseItems, requiredItems);
+            registerAchievement(userId, AchievementData.ActionType.Craft, 1, data.resultItem);
 
             // Let them know they gained experience
             _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Crafter, 0);
@@ -1579,6 +1614,8 @@ public class RPCManager : NetworkBehaviour {
       // Tells the user to update their inventory cache to retrieve the updated items
       InventoryCacheManager.self.fetchInventory();
    }
+
+   #endregion
 
    [TargetRpc]
    public void Target_UpdateInventory (NetworkConnection connection) {
@@ -1628,6 +1665,7 @@ public class RPCManager : NetworkBehaviour {
          Jobs newJobXP = DB_Main.getJobXP(_player.userId);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            registerAchievement(_player.userId, AchievementData.ActionType.MineOre, lootInfoList.Count);
             processGroupRewards(_player.userId, databaseList, lootInfoList, true);
 
             // Let them know they gained experience
@@ -1700,9 +1738,13 @@ public class RPCManager : NetworkBehaviour {
          item = DB_Main.createNewItem(_player.userId, item);
       });
 
+      registerAchievement(_player.userId, AchievementData.ActionType.OpenTreasureChest, 1);
+
       // Send it to the specific player that opened it
       Target_OpenChest(_player.connectionToClient, item, chest.id);
    }
+
+   #region Spawn Sea Entities
 
    [Command]
    public void Cmd_SpawnPirateShip (Vector2 spawnPosition) {
@@ -1731,7 +1773,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_SpawnBossChild (Vector2 spawnPosition, uint parentEntityID, int xVal, int yVal, int variety, Enemy.Type enemyType) {
+   public void Cmd_SpawnBossChild (Vector2 spawnPosition, uint parentEntityID, int xVal, int yVal, int variety, SeaMonsterEntity.Type enemyType) {
       SeaMonsterEntity bot = Instantiate(PrefabsManager.self.seaMonsterPrefab, spawnPosition, Quaternion.identity);
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
@@ -1761,7 +1803,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_SpawnBossParent (Vector2 spawnPosition, Enemy.Type enemyType) {
+   public void Cmd_SpawnBossParent (Vector2 spawnPosition, SeaMonsterEntity.Type enemyType) {
       SeaMonsterEntity bot = Instantiate(PrefabsManager.self.seaMonsterPrefab, spawnPosition, Quaternion.identity);
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
@@ -1779,18 +1821,18 @@ public class RPCManager : NetworkBehaviour {
       float diagonalDistanceGap = .35f;
       uint parentID = bot.netIdent.netId;
 
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(distanceGap, -distanceGap), parentID, 1, -1, 1, Enemy.Type.Tentacle);
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(-distanceGap, -distanceGap), parentID, -1, -1, 0, Enemy.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(distanceGap, -distanceGap), parentID, 1, -1, 1, SeaMonsterEntity.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(-distanceGap, -distanceGap), parentID, -1, -1, 0, SeaMonsterEntity.Type.Tentacle);
 
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(distanceGap, distanceGap), parentID, 1, 1, 1, Enemy.Type.Tentacle);
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(-distanceGap, distanceGap), parentID, -1, 1, 0, Enemy.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(distanceGap, distanceGap), parentID, 1, 1, 1, SeaMonsterEntity.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(-distanceGap, distanceGap), parentID, -1, 1, 0, SeaMonsterEntity.Type.Tentacle);
 
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(-diagonalDistanceGap, 0), parentID, -1, 0, 1, Enemy.Type.Tentacle);
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(diagonalDistanceGap, 0), parentID, 1, 0, 0, Enemy.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(-diagonalDistanceGap, 0), parentID, -1, 0, 1, SeaMonsterEntity.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(diagonalDistanceGap, 0), parentID, 1, 0, 0, SeaMonsterEntity.Type.Tentacle);
    }
 
    [Command]
-   public void Cmd_SpawnSeaMonster (Vector2 spawnPosition, Enemy.Type enemyType) {
+   public void Cmd_SpawnSeaMonster (Vector2 spawnPosition, SeaMonsterEntity.Type enemyType) {
       SeaMonsterEntity bot = Instantiate(PrefabsManager.self.seaMonsterPrefab, spawnPosition, Quaternion.identity);
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
@@ -1804,6 +1846,8 @@ public class RPCManager : NetworkBehaviour {
       Instance instance = InstanceManager.self.getInstance(_player.instanceId);
       instance.entities.Add(bot);
    }
+
+   #endregion
 
    [Command]
    public void Cmd_StartNewBattle (uint enemyNetId) {
@@ -1837,6 +1881,8 @@ public class RPCManager : NetworkBehaviour {
          ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "The battle is already full!");
          return;
       }
+
+      registerAchievement(_player.userId, AchievementData.ActionType.EnterCombat, 1);
 
       // Add the player to the Battle
       BattleManager.self.addPlayerToBattle(battle, playerBody, Battle.TeamType.Attackers);
@@ -1889,6 +1935,8 @@ public class RPCManager : NetworkBehaviour {
       processEnemySkills(battlerDataList);
       processPlayerSkills(battlerDataList);
    }
+
+   #region Skills and Abilities
 
    [Server]
    private void processEnemySkills (List<BattlerData> battleData) {
@@ -1945,6 +1993,8 @@ public class RPCManager : NetworkBehaviour {
       List<BasicAbilityData> abilityDataList = Util.unserialize<BasicAbilityData>(rawDataList);
       AbilityInventory.self.addNewAbilities(abilityDataList.ToArray());
    }
+
+   #endregion
 
    [TargetRpc]
    public void Target_ReceiveMonsterData (NetworkConnection connection, BattlerData[] dataList) {
@@ -2152,10 +2202,66 @@ public class RPCManager : NetworkBehaviour {
       });
    }
 
+   [Command]
+   public void Cmd_RegisterAchievement (int userID, AchievementData.ActionType actionType, int count, int categoryID, int typeID) {
+      if (categoryID == 0 && typeID == 0) {
+         registerAchievement(userID, actionType, count);
+      } else {
+         Item newItem = new Item();
+         newItem.category = (Item.Category) categoryID;
+         newItem.itemTypeId = typeID;
+         registerAchievement(userID, actionType, count, newItem);
+      }
+   }
+
    [Server]
-   protected void registerAchievement (AchievementData.ActionType actionType, int value) {
+   public void registerAchievement (int userID, AchievementData.ActionType actionType, int count, Item dependencyItem = null) {
+      Debug.LogError("Register Achievement: "+actionType);
+      List<AchievementData> castedData = AchievementDataManager.castData(actionType, count, dependencyItem);
+      if (castedData == null) {
+         Debug.LogWarning("Warning!: The XML does not exist yet, please create the data using the Achievement Tool Editor : ("+ actionType + ")");
+         return;
+      }
+
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // INSERT DB MAIN FETCH AND UPDATE LOGIC HERE
+         List<AchievementData> achievementDB = DB_Main.getAchievementData(userID, actionType);
+         bool existsInDatabase = true;
+
+         if (achievementDB == null) {
+            existsInDatabase = false;
+         }
+
+         if (existsInDatabase) {
+            // UPDATE EXISTING DATA
+            foreach (AchievementData rawData in achievementDB) {
+               rawData.count += count;
+               int requirementCount = 99;
+
+               if (rawData.itemCategory == 0 && rawData.itemType == 0) {
+                  requirementCount = castedData.Find(_ => _.achievementType == rawData.achievementType && _.achievementUniqueID == rawData.achievementUniqueID).count;
+               } else {
+                  requirementCount = castedData.Find(_ => _.achievementType == rawData.achievementType && 
+                  _.achievementUniqueID == rawData.achievementUniqueID &&
+                  _.itemCategory == rawData.itemCategory &&
+                  _.itemType == rawData.itemType).count;
+               }
+
+               bool hasReached = false;
+
+               // MARKS THE ACHIEVEMENT AS COMPLETE
+               if (rawData.count >= requirementCount) {
+                  hasReached = true;
+               }
+
+               DB_Main.updateAchievementData(rawData, userID, hasReached);
+            }
+         } else {
+            // CREATE NEW DATA
+            foreach (AchievementData rawData in castedData) {
+               rawData.count = 0;
+               DB_Main.createAchievementData(rawData, userID);
+            }
+         }
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // INSERT UNITY LOGIC HERE

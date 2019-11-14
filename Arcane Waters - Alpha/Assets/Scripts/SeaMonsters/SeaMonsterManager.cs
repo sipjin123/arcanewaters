@@ -11,7 +11,7 @@ public class SeaMonsterManager : MonoBehaviour {
    public static SeaMonsterManager self;
 
    // Sea monsters to spawn on random maps
-   public Enemy.Type[] randomSeaMonsters;
+   public SeaMonsterEntity.Type[] randomSeaMonsters;
 
    // The files containing the sea monster data
    public TextAsset[] monsterDataAssets;

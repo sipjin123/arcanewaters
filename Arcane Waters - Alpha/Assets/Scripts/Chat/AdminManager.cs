@@ -220,6 +220,7 @@ public class AdminManager : NetworkBehaviour {
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                // Send confirmation back to the player who issued the command
                string message = string.Format("Added {0} gold to {1}'s inventory.", gold, username);
+               _player.rpc.registerAchievement(_player.userId, AchievementData.ActionType.EarnGold, gold);
                ServerMessageManager.sendConfirmation(ConfirmMessage.Type.AddGold, _player, message);
             });
 

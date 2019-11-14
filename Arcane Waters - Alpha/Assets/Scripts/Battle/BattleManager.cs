@@ -566,12 +566,16 @@ public class BattleManager : MonoBehaviour {
             if (action is AttackAction) {
                AttackAction attackAction = (AttackAction) action;
 
+               source.player.rpc.registerAchievement(source.player.userId, AchievementData.ActionType.OffensiveSkillUse, 1);
+
                // Apply damage
                target.health -= attackAction.damage;
                target.health = Util.clamp<int>(target.health, 0, target.getStartingHealth());
 
             } else if (action is BuffAction) {
                BuffAction buffAction = (BuffAction) action;
+
+               source.player.rpc.registerAchievement(source.player.userId, AchievementData.ActionType.BuffSkillUse, 1);
 
                // Apply the Buff
                target.addBuff(buffAction.getBuffTimer());
@@ -617,12 +621,18 @@ public class BattleManager : MonoBehaviour {
       // Process monster type reward
       foreach (BattlerBehaviour battler in defeatedBattlers) {
          if (battler.isMonster()) {
-            int battlerEnemyID = (int)battler.getBattlerData().enemyType;
+            int battlerEnemyID = (int) battler.getBattlerData().enemyType;
             foreach (BattlerBehaviour participant in winningBattlers) {
                if (!participant.isMonster()) {
                   Vector3 chestPos = BodyManager.self.getBody(participant.player.userId).transform.position;
+                  participant.player.rpc.registerAchievement(participant.player.userId, AchievementData.ActionType.KillLandMonster, defeatedBattlers.Count);
+                  participant.player.rpc.registerAchievement(participant.player.userId, AchievementData.ActionType.EarnGold, goldWon);
                   participant.player.rpc.spawnBattlerMonsterChest(participant.player.instanceId, chestPos, battlerEnemyID);
                }
+            }
+         } else {
+            if (battler.player is PlayerBodyEntity) {
+               battler.player.rpc.registerAchievement(battler.player.userId, AchievementData.ActionType.CombatDie, 1);
             }
          }
       }

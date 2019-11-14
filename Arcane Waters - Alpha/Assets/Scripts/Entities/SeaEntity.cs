@@ -163,6 +163,8 @@ public class SeaEntity : NetEntity {
                   entity.currentHealth -= damage;
                   entity.Rpc_ShowExplosion(collidedEntity.transform.position, damage, Attack.Type.None);
 
+                  rpc.registerAchievement(entity.userId, AchievementData.ActionType.Electrocuted, 1);
+
                   collidedEntities.Add(entity, collidedEntity.transform);
                   targetIDList.Add(entity.userId);
                }
@@ -565,6 +567,29 @@ public class SeaEntity : NetEntity {
                if (entity != null && entity.instanceId == this.instanceId) {
                   if (!entity.invulnerable) {
                      int damage = getDamageForShot(attackType, distanceModifier);
+                     int healthAfterDamage = entity.currentHealth - damage;
+
+                     if (this is PlayerShipEntity) {
+                        if (entity is SeaMonsterEntity) {
+                           if (healthAfterDamage <= 0) {
+                              this.rpc.registerAchievement(userId, AchievementData.ActionType.KillSeaMonster, 1);
+                           }
+                        } else if (entity is BotShipEntity) {
+                           if (healthAfterDamage <= 0) {
+                              this.rpc.registerAchievement(userId, AchievementData.ActionType.SinkedShips, 1);
+                           }
+                        } else if (entity is PlayerShipEntity) {
+                           if (entity.userId != userId) {
+                              if (healthAfterDamage <= 0) {
+                                 this.rpc.registerAchievement(entity.userId, AchievementData.ActionType.ShipDie, 1);
+                              }
+                              this.rpc.registerAchievement(userId, AchievementData.ActionType.HitPlayerWithCannon, 1);
+                           }
+                        }
+
+                        this.rpc.registerAchievement(userId, AchievementData.ActionType.CannonHits, 1);
+                     }
+
                      entity.currentHealth -= damage;
                      entity.Rpc_ShowDamageText(damage, attacker.userId, attackType);
                      entity.Rpc_ShowExplosion(entity.transform.position, damage, attackType);
@@ -579,8 +604,22 @@ public class SeaEntity : NetEntity {
 
                   // Apply any status effects from the attack
                   if (attackType == Attack.Type.Ice) {
+                     // If enemy ship freezes a player ship
+                     if (this is BotShipEntity) {
+                        if (entity is PlayerShipEntity) {
+                           rpc.registerAchievement(entity.userId, AchievementData.ActionType.Frozen, 1);
+                        }
+                     }
+
                      StatusManager.self.create(Status.Type.Freeze, 2f, entity.userId);
                   } else if (attackType == Attack.Type.Venom) {
+                     // If enemy ship poisons a player ship
+                     if (this is BotShipEntity) {
+                        if (entity is PlayerShipEntity) {
+                           rpc.registerAchievement(entity.userId, AchievementData.ActionType.Poisoned, 1);
+                        }
+                     }
+
                      StatusManager.self.create(Status.Type.Slow, 1f, entity.userId);
                   }
                   enemyHitList.Add(entity);

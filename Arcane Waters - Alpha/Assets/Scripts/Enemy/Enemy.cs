@@ -11,8 +11,7 @@ public class Enemy : NetEntity {
    public enum Type {
       Plant = 100, Golem = 101, Slime = 102, GolemBoss = 103,
       Coralbow = 200, Entarcher = 201, Flower = 202, Muckspirit = 203, Treeman = 204,
-      Lizard = 205, Shroom = 206, Wisp = 207,
-      Tentacle = 300, Horror = 301, Worm = 302, Reef_Giant = 303, Fishman = 304, Humanoid = 305
+      Lizard = 205, Shroom = 206, Wisp = 207, Humanoid = 305
    }
 
    // The Type of Enemy

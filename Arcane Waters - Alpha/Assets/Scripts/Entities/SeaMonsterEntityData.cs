@@ -14,7 +14,7 @@ public class SeaMonsterEntityData
 
    // Determines the type of monster
    [XmlElement(Namespace = "SeaMonsterType")]
-   public Enemy.Type seaMonsterType;
+   public SeaMonsterEntity.Type seaMonsterType;
 
    // Determines the type of attack this unit does
    [XmlElement(Namespace = "AttackType")]
