@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementType>LootGainTotal</achievementType>
+  <achievementName>LoogGain10</achievementName>
+  <achievementDescription>LoogGain10</achievementDescription>
+  <count>10</count>
+  <achievementUniqueID>Loot10</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath>Assets/Sprites/Icons/Helm/cap.png</iconPath>
+</AchievementData>

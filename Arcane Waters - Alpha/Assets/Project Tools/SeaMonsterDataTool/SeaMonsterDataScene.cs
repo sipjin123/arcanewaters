@@ -46,8 +46,10 @@ public class SeaMonsterDataScene : MonoBehaviour
          List<ImageManager.ImageData> spriteIconFiles = ImageManager.getSpritesInDirectory(spritePath);
 
          foreach (ImageManager.ImageData imgData in spriteIconFiles) {
-            Sprite sourceSprite = imgData.sprite;
-            monsterPanel.iconSpriteList.Add(imgData.imagePath, sourceSprite);
+            if (imgData.imagePath.Contains("SeaMonsters")) {
+               Sprite sourceSprite = imgData.sprite;
+               monsterPanel.iconSpriteList.Add(imgData.imagePath, sourceSprite);
+            }
          }
 
          string hitSpritePath = "Assets/Sprites/Effects/";
@@ -78,7 +80,7 @@ public class SeaMonsterDataScene : MonoBehaviour
 
    private void createNewTemplate (SeaMonsterEntityData monsterData) {
       string itemName = "Undefined";
-      monsterData.seaMonsterType = Enemy.Type.Coralbow;
+      monsterData.seaMonsterType = SeaMonsterEntity.Type.Fishman;
 
       if (!toolManager.ifExists(itemName)) {
          SeaMonsterDataTemplate template = Instantiate(monsterTemplate, monsterTemplateParent);

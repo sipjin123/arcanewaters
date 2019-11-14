@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementType>GatherItem</achievementType>
+  <achievementName>Gather5Wood</achievementName>
+  <achievementDescription>Gather5Wood</achievementDescription>
+  <count>5</count>
+  <achievementUniqueID>Wood5</achievementUniqueID>
+  <itemType>4</itemType>
+  <itemCategory>6</itemCategory>
+  <iconPath>Assets/Sprites/Icons/Weapons/gun_2.png</iconPath>
+</AchievementData>

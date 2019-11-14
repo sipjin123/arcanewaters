@@ -9,10 +9,7 @@ using System.Linq;
 public class SeaMonsterDataPanel : MonoBehaviour
 {
    #region Public Variables
-
-   // Reference to type selection to avoid future bugs by selecting land monster for seamonster tool
-   public Enemy.Type[] seamonsterTypes = new Enemy.Type[] { Enemy.Type.Tentacle, Enemy.Type.Worm, Enemy.Type.Reef_Giant, Enemy.Type.Horror, Enemy.Type.Fishman };
-
+   
    // References the tool manager
    public SeaMonsterToolManager monsterToolManager;
 
@@ -249,7 +246,7 @@ public class SeaMonsterDataPanel : MonoBehaviour
       SeaMonsterEntityData seaMonsterData = new SeaMonsterEntityData();
 
       seaMonsterData.monsterName = monsterName.text;
-      seaMonsterData.seaMonsterType = (Enemy.Type) Enum.Parse(typeof(Enemy.Type), seaMonsterType.text);
+      seaMonsterData.seaMonsterType = (SeaMonsterEntity.Type) Enum.Parse(typeof(SeaMonsterEntity.Type), seaMonsterType.text);
       seaMonsterData.isAggressive = isAggressive.isOn;
 
       seaMonsterData.autoMove = autoMove.isOn;
@@ -495,7 +492,7 @@ public class SeaMonsterDataPanel : MonoBehaviour
       imageTemplateParent.DestroyChildren();
 
       previewSelectionIcon.sprite = emptySprite;
-      foreach (Enemy.Type enemyType in seamonsterTypes) {
+      foreach (SeaMonsterEntity.Type enemyType in Enum.GetValues(typeof(SeaMonsterEntity.Type))) {
          GameObject iconTempObj = Instantiate(imageTemplate.gameObject, imageTemplateParent.transform);
          ItemTypeTemplate iconTemp = iconTempObj.GetComponent<ItemTypeTemplate>();
          iconTemp.itemTypeText.text = enemyType.ToString();

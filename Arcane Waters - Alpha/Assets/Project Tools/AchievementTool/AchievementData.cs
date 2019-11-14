@@ -1,7 +1,9 @@
 ﻿#if IS_SERVER_BUILD
+using System;
 using MySql.Data.MySqlClient;
 #endif
 
+[Serializable]
 public class AchievementData
 {
    #region Public Variables
@@ -21,6 +23,22 @@ public class AchievementData
       PlantCrop = 41, EarnGold = 42, GatherItem = 43
    }
 
+   /*
+    * FINISHED INTEGRATION
+    * OpenedLootBag, Craft, MineOre, BuyItem, BuyShip
+    * WeaponBuy, ArmorBuy, SellCrop, HarvestCrop, WaterCrop
+    * PlantCrop, NPCGift, OpenTreasureChest, KillSeaMonster, Electrocuted 
+    * SinkedShips, CannonHits, EarnGold, KillLandMonster, HitPlayerWithCannon 
+    * Frozen, Poisoned, ShipDie, EnterCombat, HeadgearBuy 
+    * CombatDie, BuffSkillUse, OffensiveSkillUse, QuestComple, JumpOnBouncePad
+    * 
+    * 
+    * NEEDS INTEGRATION
+    * LootGainTotal = 1, LevelUp = 3, SellItem = 8,
+      TalkToNPC = 11, NPCAcquaintance = 12, NPCCasualFriend = 13, NPCCloseFriend = 14, NPCBestFriend = 15,
+      QuestDelivery = 17, UsePotion = 26, UseStatsBuff = 27, TrashItem = 28, GatherItem = 43, 
+   */
+
    // The type of action key
    public ActionType achievementType;
 
@@ -31,7 +49,7 @@ public class AchievementData
    public string achievementDescription;
 
    // The count needed for the achievement
-   public int value;
+   public int count;
 
    // The tier value of the achievement such as (Hoarder 100 / Hoarder 500 / Hoarder 1000)
    public string achievementUniqueID;
@@ -55,7 +73,7 @@ public class AchievementData
       this.achievementType = (ActionType) DataUtil.getInt(dataReader, "achievementTypeID");
       this.achievementName = DataUtil.getString(dataReader, "achievementName");
       this.achievementDescription = DataUtil.getString(dataReader, "achievementDescription");
-      this.value = DataUtil.getInt(dataReader, "achievementValue");
+      this.count = DataUtil.getInt(dataReader, "achievementValue");
       this.achievementUniqueID = DataUtil.getString(dataReader, "achievementUniqueID");
       this.itemType = DataUtil.getInt(dataReader, "achievementItemTypeID");
       this.itemCategory = DataUtil.getInt(dataReader, "achievementItemCategoryID");
@@ -63,11 +81,11 @@ public class AchievementData
 
 #endif
 
-   public AchievementData (ActionType actionType, string name, string description, string uniqueKey, int value, int typeId, int categoryId) {
+   public AchievementData (ActionType actionType, string name, string description, string uniqueKey, int count, int typeId, int categoryId) {
       this.achievementType = actionType;
       this.achievementName = name;
       this.achievementDescription = description;
-      this.value = value;
+      this.count = count;
       this.achievementUniqueID = uniqueKey;
       this.itemType = typeId;
       this.itemCategory = categoryId;

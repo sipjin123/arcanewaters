@@ -37,6 +37,7 @@ public class GenericSelectionPopup : MonoBehaviour {
    public Dictionary<string, Sprite> armorSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> helmSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> usableItemSpriteList = new Dictionary<string, Sprite>();
+   public Dictionary<string, Sprite> jobClassSpriteList = new Dictionary<string, Sprite>();
 
    public enum selectionType
    {
@@ -60,7 +61,9 @@ public class GenericSelectionPopup : MonoBehaviour {
       AchievementType = 17,
       AchievementIcon = 18,
       ItemType = 19,
-      ItemCategory = 20
+      ItemCategory = 20,
+      Jobclass = 21,
+      JobIcons = 22
    }
 
    #endregion
@@ -98,7 +101,10 @@ public class GenericSelectionPopup : MonoBehaviour {
       setupSpriteContent(shipRippleSpriteList, shipsRipplePath);
 
       string usableItemPath = "Assets/Sprites/Icons/UsableItems/";
-      setupSpriteContent(usableItemSpriteList, usableItemPath); 
+      setupSpriteContent(usableItemSpriteList, usableItemPath);
+
+      string jobPath = "Assets/Sprites/Icons/Classes/";
+      setupSpriteContent(jobClassSpriteList, jobPath);
    }
 
    private void setupSpriteContent (Dictionary<string, Sprite> spriteCollection, string spritePath) {
@@ -162,6 +168,12 @@ public class GenericSelectionPopup : MonoBehaviour {
             Sprite achievementSprite = ImageManager.getSprite(sourceSprite.Key);
             createImageTemplate(sourceSprite.Key, shortName, achievementSprite, imageIcon, textUI);
          }
+      } else if (popupType == selectionType.JobIcons) {
+         foreach (KeyValuePair<string, Sprite> sourceSprite in jobClassSpriteList) {
+            string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
+            Sprite classIcon = ImageManager.getSprite(sourceSprite.Key);
+            createImageTemplate(sourceSprite.Key, shortName, classIcon, imageIcon, textUI);
+         }
       }
    }
 
@@ -222,6 +234,11 @@ public class GenericSelectionPopup : MonoBehaviour {
             break;
          case selectionType.ItemCategory:
             foreach (Item.Category category in Enum.GetValues(typeof(Item.Category))) {
+               createTextTemplate(category.ToString(), textUI, changeEvent);
+            }
+            break;
+         case selectionType.Jobclass:
+            foreach (Jobs.Type category in Enum.GetValues(typeof(Jobs.Type))) {
                createTextTemplate(category.ToString(), textUI, changeEvent);
             }
             break;

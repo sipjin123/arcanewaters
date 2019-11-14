@@ -30,7 +30,7 @@ public class UsableItemDataPanel : MonoBehaviour {
          UsableItemData itemData = getItemData();
          if (itemData != null) {
             if (itemData.itemName != startingName) {
-               toolManager.deleteMonsterDataFile(new UsableItemData { itemName = startingName });
+               toolManager.deleteDataFile(new UsableItemData { itemName = startingName });
             }
             toolManager.saveXMLData(itemData);
             gameObject.SetActive(false);

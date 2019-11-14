@@ -33,7 +33,7 @@ public class UsableItemDataToolManager : MonoBehaviour {
       ToolsUtil.xmlSave(data, path);
    }
 
-   public void deleteMonsterDataFile (UsableItemData data) {
+   public void deleteDataFile (UsableItemData data) {
       // Build the file name
       string fileName = data.itemName;
 

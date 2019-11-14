@@ -51,8 +51,10 @@ public class MonsterDataScene : MonoBehaviour {
          List<ImageManager.ImageData> spriteIconFiles = ImageManager.getSpritesInDirectory(spritePath);
 
          foreach (ImageManager.ImageData imgData in spriteIconFiles) {
-            Sprite sourceSprite = imgData.sprite;
-            monsterPanel.iconSpriteList.Add(imgData.imagePath, sourceSprite);
+            if (!imgData.imagePath.Contains("SeaMonsters")) {
+               Sprite sourceSprite = imgData.sprite;
+               monsterPanel.iconSpriteList.Add(imgData.imagePath, sourceSprite);
+            }
          }
 
          string hitSpritePath = "Assets/Sprites/Effects/";

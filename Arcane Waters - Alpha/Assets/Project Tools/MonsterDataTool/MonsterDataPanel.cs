@@ -10,11 +10,6 @@ using static MonsterSkillTemplate;
 public class MonsterDataPanel : MonoBehaviour {
    #region Public Variables
 
-   // Reference to type selection to avoid future bugs caused by selecting sea monster for land monster tool
-   public Enemy.Type[] landmonsterTypes = new Enemy.Type[] { Enemy.Type.Lizard, Enemy.Type.GolemBoss, Enemy.Type.Muckspirit, Enemy.Type.Coralbow, Enemy.Type.Entarcher,
-      Enemy.Type.Flower, Enemy.Type.Golem, Enemy.Type.Plant, Enemy.Type.Shroom, Enemy.Type.Wisp, Enemy.Type.Treeman
-   };
-
    // Reference to the ability manager
    public MonsterAbilityManager abilityManager;
 
@@ -401,7 +396,7 @@ public class MonsterDataPanel : MonoBehaviour {
       selectionPanel.SetActive(true);
       monsterTypeParent.DestroyChildren();
 
-      foreach (Enemy.Type category in landmonsterTypes) {
+      foreach (Enemy.Type category in Enum.GetValues(typeof(Enemy.Type))) {
          GameObject template = Instantiate(monsterTypeTemplate.gameObject, monsterTypeParent.transform);
          ItemTypeTemplate itemTemp = template.GetComponent<ItemTypeTemplate>();
          itemTemp.itemTypeText.text = category.ToString();

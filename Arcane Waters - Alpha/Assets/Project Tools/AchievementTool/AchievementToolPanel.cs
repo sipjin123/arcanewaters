@@ -79,7 +79,7 @@ public class AchievementToolPanel : MonoBehaviour {
       _achievementName.text = achievementData.achievementName;
       _achievementDescription.text = achievementData.achievementDescription;
       _achievementKey.text = achievementData.achievementUniqueID;
-      _achievementValue.text = achievementData.value.ToString();
+      _achievementValue.text = achievementData.count.ToString();
 
       if (achievementData.iconPath != null) {
          _achievementIcon.sprite = ImageManager.getSprite(achievementData.iconPath);
@@ -112,7 +112,7 @@ public class AchievementToolPanel : MonoBehaviour {
       achievementData.achievementUniqueID = _achievementKey.text;
       achievementData.iconPath = _achievementIconPath.text;
 
-      achievementData.value = int.Parse(_achievementValue.text);
+      achievementData.count = int.Parse(_achievementValue.text);
       achievementData.itemCategory = (int)(Item.Category) Enum.Parse(typeof(Item.Category), _itemCategoryText.text);
       achievementData.itemType = int.Parse(_itemIndexText.text); 
       achievementData.achievementType = (AchievementData.ActionType) Enum.Parse(typeof(AchievementData.ActionType), _achievementTypeText.text);

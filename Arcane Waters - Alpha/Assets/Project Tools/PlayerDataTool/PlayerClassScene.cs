@@ -3,29 +3,28 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
-using System;
 using UnityEngine.SceneManagement;
 
-public class UsableItemDataScene : MonoBehaviour {
+public class PlayerClassScene : MonoBehaviour {
    #region Public Variables
 
    // Holds the prefab for item templates
-   public UsableItemDataTemplate itemTemplatePrefab;
+   public PlayerClassTemplate itemTemplatePrefab;
 
    // Holds the tool manager reference
-   public UsableItemDataToolManager toolManager;
+   public PlayerClassTool toolManager;
 
    // The parent holding the item template
    public GameObject itemTemplateParent;
 
    // Holds the item data panel
-   public UsableItemDataPanel UsableItemDataPanel;
-
-   // Holds the empty sprite for null values
-   public Sprite emptySprite;
-
+   public PlayerClassPanel playerClassPanel;
+   
    // Main menu Buttons
    public Button createButton, mainMenuButton;
+
+   // Reference to the empty sprite
+   public Sprite emptySprite;
 
    #endregion
 
@@ -39,30 +38,30 @@ public class UsableItemDataScene : MonoBehaviour {
    }
 
    private void createTemplate () {
-      UsableItemData usableItemData = new UsableItemData();
+      PlayerClassData classData = new PlayerClassData();
 
-      usableItemData.itemName = "Undefined";
-      usableItemData.type = UsableItem.Type.None;
+      classData.className = "Undefined";
+      classData.type = Jobs.Type.None;
 
-      UsableItemDataTemplate template = Instantiate(itemTemplatePrefab, itemTemplateParent.transform);
+      PlayerClassTemplate template = Instantiate(itemTemplatePrefab, itemTemplateParent.transform);
       template.editButton.onClick.AddListener(() => {
-         UsableItemDataPanel.loadUsableItemData(usableItemData);
-         UsableItemDataPanel.gameObject.SetActive(true);
+         playerClassPanel.loadPlayerClassData(classData);
+         playerClassPanel.gameObject.SetActive(true);
       });
 
       template.deleteButton.onClick.AddListener(() => {
          Destroy(template.gameObject, .5f);
-         toolManager.deleteDataFile(usableItemData);
+         toolManager.deleteDataFile(classData);
          toolManager.loadXMLData();
       });
 
       template.duplicateButton.onClick.AddListener(() => {
-         toolManager.duplicateXMLData(usableItemData);
+         toolManager.duplicateXMLData(classData);
          toolManager.loadXMLData();
       });
 
       try {
-         Sprite iconSprite = ImageManager.getSprite(usableItemData.itemIconPath);
+         Sprite iconSprite = ImageManager.getSprite(classData.itemIconPath);
          template.itemIcon.sprite = iconSprite;
       } catch {
          template.itemIcon.sprite = emptySprite;
@@ -71,31 +70,31 @@ public class UsableItemDataScene : MonoBehaviour {
       template.gameObject.SetActive(true);
    }
 
-   public void loadUsableItemData (Dictionary<string, UsableItemData> UsableItemDataList) {
+   public void loadPlayerClass (Dictionary<string, PlayerClassData> data) {
       itemTemplateParent.gameObject.DestroyChildren();
-      
-      // Create a row for each monster element
-      foreach (UsableItemData UsableItemData in UsableItemDataList.Values) {
-         UsableItemDataTemplate template = Instantiate(itemTemplatePrefab, itemTemplateParent.transform);
-         template.nameText.text = UsableItemData.itemName;
+
+      // Create a row for each player class
+      foreach (PlayerClassData playerClass in data.Values) {
+         PlayerClassTemplate template = Instantiate(itemTemplatePrefab, itemTemplateParent.transform);
+         template.nameText.text = playerClass.className;
          template.editButton.onClick.AddListener(() => {
-            UsableItemDataPanel.loadUsableItemData(UsableItemData);
-            UsableItemDataPanel.gameObject.SetActive(true);
+            playerClassPanel.loadPlayerClassData(playerClass);
+            playerClassPanel.gameObject.SetActive(true);
          });
 
          template.deleteButton.onClick.AddListener(() => {
             Destroy(template.gameObject, .5f);
-            toolManager.deleteDataFile(UsableItemData);
+            toolManager.deleteDataFile(playerClass);
             toolManager.loadXMLData();
          });
 
          template.duplicateButton.onClick.AddListener(() => {
-            toolManager.duplicateXMLData(UsableItemData);
+            toolManager.duplicateXMLData(playerClass);
             toolManager.loadXMLData();
          });
 
          try {
-            Sprite iconSprite = ImageManager.getSprite(UsableItemData.itemIconPath);
+            Sprite iconSprite = ImageManager.getSprite(playerClass.itemIconPath);
             template.itemIcon.sprite = iconSprite;
          } catch {
             template.itemIcon.sprite = emptySprite;
