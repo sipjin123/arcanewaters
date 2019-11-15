@@ -72,6 +72,10 @@ public class NetEntity : NetworkBehaviour
    [HideInInspector]
    public CropManager cropManager;
 
+   // Our Achievement Manager for handling achievement data
+   [HideInInspector]
+   public AchievementManager achievementManager;
+
    // Our Admin Manager for admin related messages
    [HideInInspector]
    public AdminManager admin;
@@ -132,6 +136,7 @@ public class NetEntity : NetworkBehaviour
       cropManager = GetComponent<CropManager>();
       admin = GetComponent<AdminManager>();
       netIdent = GetComponent<NetworkIdentity>();
+      achievementManager = GetComponent<AchievementManager>();
       _body = GetComponent<Rigidbody2D>();
       _outline = GetComponentInChildren<SpriteOutline>();
       _clickableBox = GetComponentInChildren<ClickableBox>();

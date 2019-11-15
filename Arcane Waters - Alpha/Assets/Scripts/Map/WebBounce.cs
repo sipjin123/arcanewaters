@@ -19,7 +19,8 @@ public class WebBounce : MonoBehaviour {
          return;
       }
 
-      player.rpc.registerAchievement(player.userId, AchievementData.ActionType.JumpOnBouncePad, 1);
+      // Registers the bounc pad action status to the achievementdata for recording
+      player.achievementManager.registerAchievement(player.userId, AchievementData.ActionType.JumpOnBouncePad, 1);
       Instantiate(webBouncePrefab, this.transform.position, Quaternion.identity);
    }
 

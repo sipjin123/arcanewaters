@@ -26,12 +26,12 @@ public class DB_Main : DB_MainStub {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM achievement_data WHERE (userID=@userID AND achievementTypeID=@achievementTypeID)", conn)) {
+            "SELECT * FROM achievement_data WHERE (userID=@userID AND actionTypeId=@actionTypeId)", conn)) {
 
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@userID", userID);
-            cmd.Parameters.AddWithValue("@achievementTypeID", (int)actionType);
+            cmd.Parameters.AddWithValue("@actionTypeId", (int)actionType);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -45,55 +45,30 @@ public class DB_Main : DB_MainStub {
          D.error("MySQL Error: " + e.ToString());
       }
 
-      if (achievementTypeList.Count < 1) {
-         return null;
-      }
-
       return achievementTypeList;
    }
 
-   public static new void updateAchievementData (AchievementData achievementData, int userID, bool hasReached) {
+   public static new void updateAchievementData (AchievementData achievementData, int userID, bool isCompleted, int addedCount = 0) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "UPDATE achievement_data SET achievementValue=@achievementValue, achievementReached=@achievementReached WHERE (achievementUniqueID=@achievementUniqueID AND achievementName=@achievementName AND userID=@userID)", conn)) {
+            "INSERT INTO achievement_data (userID, actionTypeId, achievementName, achievementUniqueID, achievementDescription, achievementCount, achievementItemTypeID, achievementItemCategoryID, isCompleted, combinationKey) " +
+            "VALUES(@userID, @actionTypeId, @achievementName, @achievementUniqueID, @achievementDescription, @achievementCount, @achievementItemTypeID, @achievementItemCategoryID, @isCompleted, @combinationKey) " +
+            "ON DUPLICATE KEY UPDATE achievementCount = achievementCount + " + addedCount + ", isCompleted = @isCompleted", conn)) {
 
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@userID", userID);
-            cmd.Parameters.AddWithValue("@achievementUniqueID", achievementData.achievementUniqueID);
-            cmd.Parameters.AddWithValue("@achievementName", achievementData.achievementName);
-            cmd.Parameters.AddWithValue("@achievementValue", achievementData.count);
-            cmd.Parameters.AddWithValue("@achievementReached", hasReached); 
-
-            // Execute the command
-            cmd.ExecuteNonQuery();
-         }
-      } catch (Exception e) {
-         UnityEngine.Debug.LogError("Fail");
-         D.error("MySQL Error: " + e.ToString());
-      }
-   }
-
-   public static new void createAchievementData (AchievementData achievementData, int userID) {
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO achievement_data (userID, achievementTypeID, achievementName, achievementUniqueID, achievementDescription, achievementValue, achievementItemTypeID, achievementItemCategoryID, achievementReached) " +
-            "VALUES (@userID, @achievementTypeID, @achievementName, @achievementUniqueID, @achievementDescription, @achievementValue, @achievementItemTypeID, @achievementItemCategoryID, @achievementReached)", conn)) {
-
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@userID", userID);
-            cmd.Parameters.AddWithValue("@achievementTypeID", (int)achievementData.achievementType);
+            cmd.Parameters.AddWithValue("@actionTypeId", (int) achievementData.actionType);
             cmd.Parameters.AddWithValue("@achievementName", achievementData.achievementName);
             cmd.Parameters.AddWithValue("@achievementUniqueID", achievementData.achievementUniqueID);
             cmd.Parameters.AddWithValue("@achievementDescription", achievementData.achievementDescription);
-            cmd.Parameters.AddWithValue("@achievementValue", achievementData.count);
-            cmd.Parameters.AddWithValue("@achievementItemTypeID", (int)achievementData.itemType);
-            cmd.Parameters.AddWithValue("@achievementItemCategoryID", (int)achievementData.itemCategory);
-            cmd.Parameters.AddWithValue("@achievementReached", 0);
-            
+            cmd.Parameters.AddWithValue("@achievementCount", achievementData.count);
+            cmd.Parameters.AddWithValue("@achievementItemTypeID", (int) achievementData.itemType);
+            cmd.Parameters.AddWithValue("@achievementItemCategoryID", (int) achievementData.itemCategory);
+            cmd.Parameters.AddWithValue("@isCompleted", isCompleted == true ? 1 : 0);
+            cmd.Parameters.AddWithValue("@combinationKey", userID+achievementData.achievementUniqueID);
+
             // Execute the command
             cmd.ExecuteNonQuery();
          }

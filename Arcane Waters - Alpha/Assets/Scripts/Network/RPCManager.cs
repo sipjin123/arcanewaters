@@ -1178,7 +1178,8 @@ public class RPCManager : NetworkBehaviour {
 
             // If items have been rewarded, show the reward panel
             if (rewardedItems.Count > 0) {
-               registerAchievement(_player.userId, AchievementData.ActionType.QuestComple, 1);
+               // Registers the quest completion to the achievement data
+               _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.QuestComplete, 1);
                Target_ReceiveItemList(_player.connectionToClient, rewardedItems.ToArray());
             }
          });
@@ -1275,7 +1276,8 @@ public class RPCManager : NetworkBehaviour {
             // Send the npc answer to the client
             Target_ReceiveNPCCustomDialogue(newFriendshipLevel, npcText, ClickableText.Type.YouAreWelcome, null);
 
-            registerAchievement(_player.userId, AchievementData.ActionType.NPCGift, 1);
+            // Registers the npc gift action to the achievement database for recording
+            _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.NPCGift, 1);
          });
       });
    }
@@ -1325,18 +1327,18 @@ public class RPCManager : NetworkBehaviour {
                return;
             }
 
-            registerAchievement(_player.userId, AchievementData.ActionType.BuyItem, 1, shopItem);
+            // Registers the purchasing of generic item action to the achievement database for recording
+            _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.BuyItem, 1, shopItem);
 
+            // Registers the purchasing of equipment action to the achievement database for recording
             if (shopItem.category == Item.Category.Weapon) {
-               registerAchievement(_player.userId, AchievementData.ActionType.WeaponBuy, 1);
+               _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.WeaponBuy, 1);
             }
-
             if (shopItem.category == Item.Category.Armor) {
-               registerAchievement(_player.userId, AchievementData.ActionType.ArmorBuy, 1);
+               _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.ArmorBuy, 1);
             }
-
             if (shopItem.category == Item.Category.Helm) {
-               registerAchievement(_player.userId, AchievementData.ActionType.HeadgearBuy, 1);
+               _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.HeadgearBuy, 1);
             }
 
             // Decrease the item count
@@ -1393,7 +1395,8 @@ public class RPCManager : NetworkBehaviour {
             // Set it as their new flagship
             requestNewFlagship(newShipInfo.shipId);
 
-            registerAchievement(_player.userId, AchievementData.ActionType.BuyShip, 1);
+            // Registers the purchasing of ship action to the achievement database for recording
+            _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.BuyShip, 1);
 
             // Show a popup panel for the player
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.ShipBought, _player);
@@ -1512,7 +1515,8 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<Item> databaseList = DB_Main.getRequiredIngredients(_player.userId, itemLoots);
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            registerAchievement(_player.userId, AchievementData.ActionType.OpenedLootBag, processedLoots.Count);
+            // Registers the interaction of loot bags to the achievement database for recording
+            _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.OpenedLootBag, processedLoots.Count);
             processGroupRewards(_player.userId, databaseList, processedLoots, true);
          });
       });
@@ -1569,7 +1573,9 @@ public class RPCManager : NetworkBehaviour {
             rewardItem.id = rewardItemID;
             rewardItemList.Add(data.resultItem);
             finalizeRewards(userId, rewardItemList, databaseItems, requiredItems);
-            registerAchievement(userId, AchievementData.ActionType.Craft, 1, data.resultItem);
+
+            // Registers the crafting action to the achievement database for recording
+            _player.achievementManager.registerAchievement(userId, AchievementData.ActionType.Craft, 1, data.resultItem);
 
             // Let them know they gained experience
             _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Crafter, 0);
@@ -1665,7 +1671,8 @@ public class RPCManager : NetworkBehaviour {
          Jobs newJobXP = DB_Main.getJobXP(_player.userId);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            registerAchievement(_player.userId, AchievementData.ActionType.MineOre, lootInfoList.Count);
+            // Registers the Ore mining success action to the achievement database for recording
+            _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.MineOre, lootInfoList.Count);
             processGroupRewards(_player.userId, databaseList, lootInfoList, true);
 
             // Let them know they gained experience
@@ -1738,7 +1745,8 @@ public class RPCManager : NetworkBehaviour {
          item = DB_Main.createNewItem(_player.userId, item);
       });
 
-      registerAchievement(_player.userId, AchievementData.ActionType.OpenTreasureChest, 1);
+      // Registers the interaction of treasure chests to the achievement database for recording
+      _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.OpenTreasureChest, 1);
 
       // Send it to the specific player that opened it
       Target_OpenChest(_player.connectionToClient, item, chest.id);
@@ -1882,7 +1890,8 @@ public class RPCManager : NetworkBehaviour {
          return;
       }
 
-      registerAchievement(_player.userId, AchievementData.ActionType.EnterCombat, 1);
+      // Registers the action of combat entry to the achievement database for recording
+      _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.EnterCombat, 1);
 
       // Add the player to the Battle
       BattleManager.self.addPlayerToBattle(battle, playerBody, Battle.TeamType.Attackers);
@@ -2198,73 +2207,6 @@ public class RPCManager : NetworkBehaviour {
             // Let the client know that we're done
             EquipMessage equipMessage = new EquipMessage(_player.netId, userObjects.armor.id, userObjects.weapon.id);
             NetworkServer.SendToClientOfPlayer(_player.netIdent, equipMessage);
-         });
-      });
-   }
-
-   [Command]
-   public void Cmd_RegisterAchievement (int userID, AchievementData.ActionType actionType, int count, int categoryID, int typeID) {
-      if (categoryID == 0 && typeID == 0) {
-         registerAchievement(userID, actionType, count);
-      } else {
-         Item newItem = new Item();
-         newItem.category = (Item.Category) categoryID;
-         newItem.itemTypeId = typeID;
-         registerAchievement(userID, actionType, count, newItem);
-      }
-   }
-
-   [Server]
-   public void registerAchievement (int userID, AchievementData.ActionType actionType, int count, Item dependencyItem = null) {
-      Debug.LogError("Register Achievement: "+actionType);
-      List<AchievementData> castedData = AchievementDataManager.castData(actionType, count, dependencyItem);
-      if (castedData == null) {
-         Debug.LogWarning("Warning!: The XML does not exist yet, please create the data using the Achievement Tool Editor : ("+ actionType + ")");
-         return;
-      }
-
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<AchievementData> achievementDB = DB_Main.getAchievementData(userID, actionType);
-         bool existsInDatabase = true;
-
-         if (achievementDB == null) {
-            existsInDatabase = false;
-         }
-
-         if (existsInDatabase) {
-            // UPDATE EXISTING DATA
-            foreach (AchievementData rawData in achievementDB) {
-               rawData.count += count;
-               int requirementCount = 99;
-
-               if (rawData.itemCategory == 0 && rawData.itemType == 0) {
-                  requirementCount = castedData.Find(_ => _.achievementType == rawData.achievementType && _.achievementUniqueID == rawData.achievementUniqueID).count;
-               } else {
-                  requirementCount = castedData.Find(_ => _.achievementType == rawData.achievementType && 
-                  _.achievementUniqueID == rawData.achievementUniqueID &&
-                  _.itemCategory == rawData.itemCategory &&
-                  _.itemType == rawData.itemType).count;
-               }
-
-               bool hasReached = false;
-
-               // MARKS THE ACHIEVEMENT AS COMPLETE
-               if (rawData.count >= requirementCount) {
-                  hasReached = true;
-               }
-
-               DB_Main.updateAchievementData(rawData, userID, hasReached);
-            }
-         } else {
-            // CREATE NEW DATA
-            foreach (AchievementData rawData in castedData) {
-               rawData.count = 0;
-               DB_Main.createAchievementData(rawData, userID);
-            }
-         }
-
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // INSERT UNITY LOGIC HERE
          });
       });
    }

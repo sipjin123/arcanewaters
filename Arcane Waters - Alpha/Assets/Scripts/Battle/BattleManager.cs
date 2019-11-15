@@ -566,7 +566,8 @@ public class BattleManager : MonoBehaviour {
             if (action is AttackAction) {
                AttackAction attackAction = (AttackAction) action;
 
-               source.player.rpc.registerAchievement(source.player.userId, AchievementData.ActionType.OffensiveSkillUse, 1);
+               // Registers the usage of the Offensive Skill for achievement recording
+               source.player.achievementManager.registerAchievement(source.player.userId, AchievementData.ActionType.OffensiveSkillUse, 1);
 
                // Apply damage
                target.health -= attackAction.damage;
@@ -575,7 +576,8 @@ public class BattleManager : MonoBehaviour {
             } else if (action is BuffAction) {
                BuffAction buffAction = (BuffAction) action;
 
-               source.player.rpc.registerAchievement(source.player.userId, AchievementData.ActionType.BuffSkillUse, 1);
+               // Registers the usage of the Buff Skill for achievement recording
+               source.player.achievementManager.registerAchievement(source.player.userId, AchievementData.ActionType.BuffSkillUse, 1);
 
                // Apply the Buff
                target.addBuff(buffAction.getBuffTimer());
@@ -625,14 +627,20 @@ public class BattleManager : MonoBehaviour {
             foreach (BattlerBehaviour participant in winningBattlers) {
                if (!participant.isMonster()) {
                   Vector3 chestPos = BodyManager.self.getBody(participant.player.userId).transform.position;
-                  participant.player.rpc.registerAchievement(participant.player.userId, AchievementData.ActionType.KillLandMonster, defeatedBattlers.Count);
-                  participant.player.rpc.registerAchievement(participant.player.userId, AchievementData.ActionType.EarnGold, goldWon);
+
+                  // Registers the kill count of the combat
+                  participant.player.achievementManager.registerAchievement(participant.player.userId, AchievementData.ActionType.KillLandMonster, defeatedBattlers.Count);
+
+                  // Registers the gold earned for achievement recording
+                  participant.player.achievementManager.registerAchievement(participant.player.userId, AchievementData.ActionType.EarnGold, goldWon);
+
                   participant.player.rpc.spawnBattlerMonsterChest(participant.player.instanceId, chestPos, battlerEnemyID);
                }
             }
          } else {
             if (battler.player is PlayerBodyEntity) {
-               battler.player.rpc.registerAchievement(battler.player.userId, AchievementData.ActionType.CombatDie, 1);
+               // Registers the death of the player in combat
+               battler.player.achievementManager.registerAchievement(battler.player.userId, AchievementData.ActionType.CombatDie, 1);
             }
          }
       }

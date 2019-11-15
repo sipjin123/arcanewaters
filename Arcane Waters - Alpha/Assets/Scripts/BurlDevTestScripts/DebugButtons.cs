@@ -35,11 +35,11 @@ public class DebugButtons : NetworkBehaviour
       }
 
       if (GUILayout.Button("Trigger Loot Gain")) {
-         Global.player.rpc.Cmd_RegisterAchievement(Global.player.userId, AchievementData.ActionType.LootGainTotal, 1, 0, 0);
+         //Global.player.achievementManager.Cmd_RegisterAchievement(Global.player.userId, AchievementData.ActionType.LootGainTotal, 1, 0, 0);
       }
 
       if (GUILayout.Button("Trigger Gather Wood")) {
-         Global.player.rpc.Cmd_RegisterAchievement(Global.player.userId, AchievementData.ActionType.GatherItem, 1, 6, 4);
+         //Global.player.achievementManager.Cmd_RegisterAchievement(Global.player.userId, AchievementData.ActionType.GatherItem, 1, 6, 4);
       }
 
       if (GUILayout.Button("Create Achievement")) {
@@ -47,14 +47,14 @@ public class DebugButtons : NetworkBehaviour
             achievementName = "AName",
             achievementDescription = "ADesc",
             achievementUniqueID = "UniqueID",
-            achievementType = AchievementData.ActionType.ArmorBuy,
+            actionType = AchievementData.ActionType.ArmorBuy,
             iconPath = "",
             itemCategory = 0,
             itemType = 0,
             count = 1
          };
 
-         DB_Main.createAchievementData(newData, Global.player.userId);
+        // DB_Main.createAchievementData(newData, Global.player.userId);
       }
       if (GUILayout.Button("Get Achievement")) {
          List<AchievementData> newData = DB_Main.getAchievementDataList(Global.player.userId);
@@ -63,7 +63,7 @@ public class DebugButtons : NetworkBehaviour
             Debug.LogError("----------------");
             Debug.LogError(achieveData.achievementName);
             Debug.LogError(achieveData.achievementUniqueID);
-            Debug.LogError(achieveData.achievementType);
+            Debug.LogError(achieveData.actionType);
          }
       }
 
@@ -72,7 +72,7 @@ public class DebugButtons : NetworkBehaviour
             achievementName = "AName",
             achievementDescription = "ADesc",
             achievementUniqueID = "UniqueID",
-            achievementType = AchievementData.ActionType.ArmorBuy,
+            actionType = AchievementData.ActionType.ArmorBuy,
             iconPath = "",
             itemCategory = 0,
             itemType = 0,

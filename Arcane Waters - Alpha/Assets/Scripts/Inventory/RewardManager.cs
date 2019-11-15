@@ -43,19 +43,19 @@ public class RewardManager : MonoBehaviour {
 
    private void Start () {
       _seaMonsterLootList = new List<SeaMonsterLootLibrary>();
-      foreach (SeaMonsterEntityData lootData in SeaMonsterManager.self.seaMonsterDataList) {
+      foreach (SeaMonsterEntityData seaMonsterData in SeaMonsterManager.self.seaMonsterDataList) {
          SeaMonsterLootLibrary newLibrary = new SeaMonsterLootLibrary();
-         newLibrary.enemyType = lootData.seaMonsterType;
-         newLibrary.dropTypes = lootData.lootData;
+         newLibrary.enemyType = seaMonsterData.seaMonsterType;
+         newLibrary.dropTypes = seaMonsterData.lootData;
 
          _seaMonsterLootList.Add(newLibrary);
       }
 
       _landMonsterLootList = new List<EnemyLootLibrary>();
-      foreach (BattlerData lootData in MonsterManager.self.monsterDataList) {
+      foreach (BattlerData monsterData in MonsterManager.self.monsterDataList) {
          EnemyLootLibrary newLibrary = new EnemyLootLibrary();
-         newLibrary.enemyType = lootData.enemyType;
-         newLibrary.dropTypes = lootData.battlerLootData;
+         newLibrary.enemyType = monsterData.enemyType;
+         newLibrary.dropTypes = monsterData.battlerLootData;
 
          _landMonsterLootList.Add(newLibrary);
       }
@@ -98,23 +98,29 @@ public class RewardManager : MonoBehaviour {
 [Serializable]
 public class EnemyLootLibrary
 {
+   // The type of land monster
    public Enemy.Type enemyType;
 
+   // The loot the land monster drops
    public RawGenericLootData dropTypes;
 }
 
 [Serializable]
 public class SeaMonsterLootLibrary
 {
+   // The type of seamonster
    public SeaMonsterEntity.Type enemyType;
 
+   // The loot the seamonster drops
    public RawGenericLootData dropTypes;
 }
 
 [Serializable]
 public class OreLootLibrary
 {
+   // The type of ore item
    public OreNode.Type oreType;
 
+   // The loots earned for mining the ore
    public GenericLootData dropTypes;
 }

@@ -114,7 +114,8 @@ public class CropManager : NetworkBehaviour {
                // Store the result
                _crops.Add(cropInfo);
 
-               _player.rpc.registerAchievement(_player.userId, AchievementData.ActionType.PlantCrop, 1);
+               // Registers the planting action to the achievement database for recording
+               _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.PlantCrop, 1);
 
                // Send the new Crop to the player
                this.Target_ReceiveCrop(_player.connectionToClient, cropInfo, false);
@@ -176,7 +177,8 @@ public class CropManager : NetworkBehaviour {
             cropToWater.lastWaterTimestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             _crops.Add(cropToWater);
 
-            _player.rpc.registerAchievement(_player.userId, AchievementData.ActionType.WaterCrop, 1);
+            // Registers the watering action to the achievement database for recording
+            _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.WaterCrop, 1);
 
             // Send the update Crop to the player
             this.Target_ReceiveCrop(_player.connectionToClient, cropToWater, true);
@@ -234,7 +236,8 @@ public class CropManager : NetworkBehaviour {
             // Store the updated list
             _crops.Remove(cropToHarvest);
 
-            _player.rpc.registerAchievement(_player.userId, AchievementData.ActionType.HarvestCrop, 1);
+            // Registers the harvesting action to the achievement database for recording
+            _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.HarvestCrop, 1);
 
             // Let the player see the crop go away
             this.Target_HarvestCrop(_player.connectionToClient, cropToHarvest);
@@ -339,8 +342,12 @@ public class CropManager : NetworkBehaviour {
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             if (totalGoldMade > 0) {
                Target_JustSoldCrops(_player.connectionToClient, offer.cropType, totalGoldMade);
-               _player.rpc.registerAchievement(_player.userId, AchievementData.ActionType.SellCrop, amountToSell);
-               _player.rpc.registerAchievement(_player.userId, AchievementData.ActionType.EarnGold, earnedGold);
+
+               // Registers the selling of crops action to the achievement database for recording
+               _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.SellCrop, amountToSell);
+
+               // Registers the gold gains to the achievement database for recording
+               _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.EarnGold, earnedGold);
             } else {
                ErrorMessage errorMessage = new ErrorMessage(_player.netId, ErrorMessage.Type.NoCropsOfThatType);
                NetworkServer.SendToClientOfPlayer(_player.netIdentity, errorMessage);
