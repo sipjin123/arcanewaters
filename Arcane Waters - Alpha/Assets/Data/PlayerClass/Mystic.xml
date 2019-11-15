@@ -1,28 +1,30 @@
 <?xml version="1.0"?>
 <PlayerClassData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <type>None</type>
+  <type>Mystic</type>
   <className>Mystic</className>
-  <description />
+  <description>A Caster Type</description>
   <itemIconPath>Assets/Sprites/Icons/Classes/class_mystic.png</itemIconPath>
-  <addedHP>0</addedHP>
-  <addedAP>0</addedAP>
+  <hpPerLevel>0</hpPerLevel>
+  <armorPerLevel>0</armorPerLevel>
+  <apPerLevel>0</apPerLevel>
+  <bonusAP>0</bonusAP>
   <bonusMaxHP>0</bonusMaxHP>
   <bonusArmor>0</bonusArmor>
   <bonusATK>0</bonusATK>
-  <bonusINT>0</bonusINT>
+  <bonusINT>10</bonusINT>
   <bonusSTR>0</bonusSTR>
-  <bonusSPT>0</bonusSPT>
+  <bonusSPT>5</bonusSPT>
   <bonusLUK>0</bonusLUK>
   <bonusPRE>0</bonusPRE>
   <bonusVIT>0</bonusVIT>
   <bonusResistancePhys>0</bonusResistancePhys>
-  <bonusResistanceFire>0</bonusResistanceFire>
-  <bonusResistanceWater>0</bonusResistanceWater>
-  <bonusResistanceWind>0</bonusResistanceWind>
-  <bonusResistanceEarth>0</bonusResistanceEarth>
+  <bonusResistanceFire>5</bonusResistanceFire>
+  <bonusResistanceWater>5</bonusResistanceWater>
+  <bonusResistanceWind>5</bonusResistanceWind>
+  <bonusResistanceEarth>5</bonusResistanceEarth>
   <bonusResistanceAll>0</bonusResistanceAll>
   <bonusDamagePhys>0</bonusDamagePhys>
-  <bonusDamageFire>0</bonusDamageFire>
+  <bonusDamageFire>10</bonusDamageFire>
   <bonusDamageWater>0</bonusDamageWater>
   <bonusDamageWind>0</bonusDamageWind>
   <bonusDamageEarth>0</bonusDamageEarth>

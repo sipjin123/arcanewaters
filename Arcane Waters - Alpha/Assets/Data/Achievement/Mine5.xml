@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <actionType>MineOre</actionType>
+  <achievementName>Mine5</achievementName>
+  <achievementDescription>Mining 5x</achievementDescription>
+  <count>5</count>
+  <achievementUniqueID>Mine5</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath>Assets/Sprites/Icons/Weapons/Pickaxe.png</iconPath>
+</AchievementData>

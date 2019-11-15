@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<PlayerClassData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <type>Marksman</type>
+  <className>Marksman</className>
+  <description>A Long range fighter</description>
+  <itemIconPath>Assets/Sprites/Icons/Classes/class_marksman.png</itemIconPath>
+  <hpPerLevel>0</hpPerLevel>
+  <armorPerLevel>0</armorPerLevel>
+  <apPerLevel>0</apPerLevel>
+  <bonusAP>0</bonusAP>
+  <bonusMaxHP>0</bonusMaxHP>
+  <bonusArmor>0</bonusArmor>
+  <bonusATK>10</bonusATK>
+  <bonusINT>0</bonusINT>
+  <bonusSTR>0</bonusSTR>
+  <bonusSPT>0</bonusSPT>
+  <bonusLUK>10</bonusLUK>
+  <bonusPRE>8</bonusPRE>
+  <bonusVIT>0</bonusVIT>
+  <bonusResistancePhys>0</bonusResistancePhys>
+  <bonusResistanceFire>0</bonusResistanceFire>
+  <bonusResistanceWater>0</bonusResistanceWater>
+  <bonusResistanceWind>0</bonusResistanceWind>
+  <bonusResistanceEarth>0</bonusResistanceEarth>
+  <bonusResistanceAll>0</bonusResistanceAll>
+  <bonusDamagePhys>15</bonusDamagePhys>
+  <bonusDamageFire>5</bonusDamageFire>
+  <bonusDamageWater>0</bonusDamageWater>
+  <bonusDamageWind>0</bonusDamageWind>
+  <bonusDamageEarth>0</bonusDamageEarth>
+  <bonusDamageAll>0</bonusDamageAll>
+</PlayerClassData>

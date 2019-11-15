@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <achievementType>GatherItem</achievementType>
+  <actionType>GatherItem</actionType>
   <achievementName>Gather10Wood</achievementName>
   <achievementDescription>Gather10Wood</achievementDescription>
   <count>10</count>
