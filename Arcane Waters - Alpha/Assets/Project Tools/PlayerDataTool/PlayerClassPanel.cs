@@ -43,10 +43,10 @@ public class PlayerClassPanel : MonoBehaviour {
       });
 
       _classTypeButton.onClick.AddListener(() => {
-         selectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.Jobclass, _classTypeText);
+         selectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.PlayerClassType, _classTypeText);
       });
       _changeAvatarSpriteButton.onClick.AddListener(() => {
-         selectionPopup.callImageTextSelectionPopup(GenericSelectionPopup.selectionType.JobIcons, _avatarIcon, _avatarSpritePath);
+         selectionPopup.callImageTextSelectionPopup(GenericSelectionPopup.selectionType.PlayerClassIcons, _avatarIcon, _avatarSpritePath);
       });
 
       foreach (TogglerClass toggler in togglerList) {
@@ -56,16 +56,22 @@ public class PlayerClassPanel : MonoBehaviour {
 
    private PlayerClassData getClassData () {
       PlayerClassData classData = new PlayerClassData();
-      classData.type = (Jobs.Type) Enum.Parse(typeof(Jobs.Type), _classTypeText.text);
+      classData.type = (Class.Type) Enum.Parse(typeof(Class.Type), _classTypeText.text);
       classData.className = _className.text;
       classData.description = _classDescription.text;
 
-      classData.addedHP = int.Parse(_addedHP.text);
-      classData.addedAP = int.Parse(_addedAP.text);
+      // Per Level stats
+      classData.hpPerLevel = int.Parse(_hpPerLevel.text);
+      classData.armorPerLevel = int.Parse(_armorPerLevel.text);
+      classData.apPerLevel = int.Parse(_apPerLevel.text);
+
+      // Base Stats
+      classData.bonusAP = int.Parse(_addedAP.text);
       classData.bonusMaxHP = int.Parse(_addedMaxHP.text);
       classData.bonusArmor = int.Parse(_addedArmor.text);
       classData.bonusATK = int.Parse(_addedATK.text);
 
+      // Special Stats
       classData.bonusINT = int.Parse(_bonusINT.text);
       classData.bonusVIT = int.Parse(_bonusVIT.text);
       classData.bonusPRE = int.Parse(_bonusPRE.text);
@@ -73,6 +79,7 @@ public class PlayerClassPanel : MonoBehaviour {
       classData.bonusLUK = int.Parse(_bonusLUK.text);
       classData.bonusSTR = int.Parse(_bonusSTR.text);
 
+      // Defenses Stats
       classData.bonusResistancePhys = int.Parse(_bonusDEFPhys.text);
       classData.bonusResistanceFire = int.Parse(_bonusDEFFire.text);
       classData.bonusResistanceEarth = int.Parse(_bonusDEFEarth.text);
@@ -80,6 +87,7 @@ public class PlayerClassPanel : MonoBehaviour {
       classData.bonusResistanceWater = int.Parse(_bonusDEFWater.text);
       classData.bonusResistanceAll = int.Parse(_bonusDEFAll.text);
 
+      // Damage Stats
       classData.bonusDamagePhys = int.Parse(_bonusATKPhys.text);
       classData.bonusDamageFire = int.Parse(_bonusATKFire.text);
       classData.bonusDamageEarth = int.Parse(_bonusATKEarth.text);
@@ -98,8 +106,11 @@ public class PlayerClassPanel : MonoBehaviour {
       _className.text = classData.className;
       _classDescription.text = classData.description;
 
-      _addedHP.text = classData.addedHP.ToString();
-      _addedAP.text = classData.addedAP.ToString();
+      _hpPerLevel.text = classData.hpPerLevel.ToString();
+      _armorPerLevel.text = classData.armorPerLevel.ToString();
+      _apPerLevel.text = classData.apPerLevel.ToString();
+
+      _addedAP.text = classData.bonusAP.ToString();
       _addedMaxHP.text = classData.bonusMaxHP.ToString();
       _addedArmor.text = classData.bonusArmor.ToString();
       _addedATK.text = classData.bonusATK.ToString();
@@ -159,7 +170,7 @@ public class PlayerClassPanel : MonoBehaviour {
 
    // Default stats
    [SerializeField]
-   private InputField _addedHP,
+   private InputField _hpPerLevel, _armorPerLevel, _apPerLevel,
       _addedAP,
       _addedMaxHP,
       _addedArmor,

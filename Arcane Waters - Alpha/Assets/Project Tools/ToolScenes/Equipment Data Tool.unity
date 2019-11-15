@@ -26738,7 +26738,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  message: The weapon type (Key Value Must be unique)
+  message: The equipment type (Key Value Must be unique)
 --- !u!114 &484669545
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28230,7 +28230,6 @@ MonoBehaviour:
   createWeaponButton: {fileID: 1397190815}
   createArmorButton: {fileID: 1762993793}
   createHelmButton: {fileID: 1540546311}
-  exitButton: {fileID: 0}
   mainMenuButton: {fileID: 38790337}
   weaponToggle: {fileID: 691001899}
   armorToggle: {fileID: 1112173493}
@@ -43849,15 +43848,15 @@ PrefabInstance:
       propertyPath: m_PreferredWidth
       value: 100
       objectReference: {fileID: 0}
-    - target: {fileID: 4863785721622878822, guid: cf247d87f846fb348af5e917ad74d094,
-        type: 3}
-      propertyPath: m_PreferredWidth
-      value: 60
-      objectReference: {fileID: 0}
     - target: {fileID: 5983400605501313272, guid: cf247d87f846fb348af5e917ad74d094,
         type: 3}
       propertyPath: m_PreferredWidth
       value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 4863785721622878822, guid: cf247d87f846fb348af5e917ad74d094,
+        type: 3}
+      propertyPath: m_PreferredWidth
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 4542952757453237902, guid: cf247d87f846fb348af5e917ad74d094,
         type: 3}
@@ -47368,7 +47367,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: 'WeaponType:'
+  m_Text: 'EquipmentType:'
 --- !u!114 &5983400605415551133
 MonoBehaviour:
   m_ObjectHideFlags: 0

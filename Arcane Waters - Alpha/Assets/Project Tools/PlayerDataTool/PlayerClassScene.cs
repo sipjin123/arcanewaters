@@ -35,13 +35,15 @@ public class PlayerClassScene : MonoBehaviour {
       mainMenuButton.onClick.AddListener(() => {
          SceneManager.LoadScene(MasterToolScene.masterScene);
       });
+
+      playerClassPanel.gameObject.SetActive(false);
    }
 
    private void createTemplate () {
       PlayerClassData classData = new PlayerClassData();
 
       classData.className = "Undefined";
-      classData.type = Jobs.Type.None;
+      classData.type = Class.Type.None;
 
       PlayerClassTemplate template = Instantiate(itemTemplatePrefab, itemTemplateParent.transform);
       template.editButton.onClick.AddListener(() => {

@@ -7,9 +7,9 @@ using Mirror;
 public class PlayerClassData
 {
    // The type
-   public Jobs.Type type;
+   public Class.Type type;
 
-   // Custom name of the Job
+   // Custom name of the class
    public string className;
 
    // Info of the data
@@ -19,8 +19,10 @@ public class PlayerClassData
    public string itemIconPath;
 
    // Base modifiers
-   public int addedHP;
-   public int addedAP;
+   public int hpPerLevel;
+   public int armorPerLevel;
+   public int apPerLevel;
+   public int bonusAP;
    public int bonusMaxHP;
    public int bonusArmor;
    public int bonusATK;

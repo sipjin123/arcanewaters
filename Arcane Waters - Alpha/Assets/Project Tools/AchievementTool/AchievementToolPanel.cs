@@ -70,7 +70,7 @@ public class AchievementToolPanel : MonoBehaviour {
       Item.Category category = (Item.Category) achievementData.itemCategory;
       string itemName = Util.getItemName(category, achievementData.itemType);
 
-      _achievementTypeText.text = achievementData.achievementType.ToString();
+      _achievementTypeText.text = achievementData.actionType.ToString();
       _itemTypeText.text = itemName;
       _itemIndexText.text = achievementData.itemType.ToString();
       _itemCategoryText.text = category.ToString();
@@ -115,7 +115,7 @@ public class AchievementToolPanel : MonoBehaviour {
       achievementData.count = int.Parse(_achievementValue.text);
       achievementData.itemCategory = (int)(Item.Category) Enum.Parse(typeof(Item.Category), _itemCategoryText.text);
       achievementData.itemType = int.Parse(_itemIndexText.text); 
-      achievementData.achievementType = (AchievementData.ActionType) Enum.Parse(typeof(AchievementData.ActionType), _achievementTypeText.text);
+      achievementData.actionType = (AchievementData.ActionType) Enum.Parse(typeof(AchievementData.ActionType), _achievementTypeText.text);
 
       return achievementData;
    }

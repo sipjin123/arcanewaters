@@ -62,8 +62,8 @@ public class GenericSelectionPopup : MonoBehaviour {
       AchievementIcon = 18,
       ItemType = 19,
       ItemCategory = 20,
-      Jobclass = 21,
-      JobIcons = 22
+      PlayerClassType = 21,
+      PlayerClassIcons = 22
    }
 
    #endregion
@@ -168,7 +168,7 @@ public class GenericSelectionPopup : MonoBehaviour {
             Sprite achievementSprite = ImageManager.getSprite(sourceSprite.Key);
             createImageTemplate(sourceSprite.Key, shortName, achievementSprite, imageIcon, textUI);
          }
-      } else if (popupType == selectionType.JobIcons) {
+      } else if (popupType == selectionType.PlayerClassIcons) {
          foreach (KeyValuePair<string, Sprite> sourceSprite in jobClassSpriteList) {
             string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
             Sprite classIcon = ImageManager.getSprite(sourceSprite.Key);
@@ -237,8 +237,8 @@ public class GenericSelectionPopup : MonoBehaviour {
                createTextTemplate(category.ToString(), textUI, changeEvent);
             }
             break;
-         case selectionType.Jobclass:
-            foreach (Jobs.Type category in Enum.GetValues(typeof(Jobs.Type))) {
+         case selectionType.PlayerClassType:
+            foreach (Class.Type category in Enum.GetValues(typeof(Class.Type))) {
                createTextTemplate(category.ToString(), textUI, changeEvent);
             }
             break;

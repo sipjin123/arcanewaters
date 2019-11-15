@@ -40,7 +40,7 @@ public class AchievementToolScene : MonoBehaviour {
    private void createTemplate () {
       AchievementData usableItemData = new AchievementData();
       usableItemData.achievementName = "Undefined";
-      usableItemData.achievementType = AchievementData.ActionType.None;
+      usableItemData.actionType = AchievementData.ActionType.None;
 
       AchievementToolTemplate template = Instantiate(achievementTemplatePrefab, itemTemplateParent.transform);
       template.editButton.onClick.AddListener(() => {

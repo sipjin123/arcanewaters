@@ -20,6 +20,7 @@ public class MasterToolScene : MonoBehaviour {
    public const string equipmentScene = "Equipment Data Tool";
    public const string usableItemScene = "UsableItemData Tool";
    public const string achievementScene = "Achievement Tool";
+   public const string playerClassScene = "PlayerClass Tool";
 
    // Button triggers to open scene
    public Button clickAbilityScene, 
@@ -32,6 +33,7 @@ public class MasterToolScene : MonoBehaviour {
       clickEquipmentScene,
       clickUsableItemScene,
       clickAchievementScene,
+      clickPlayerClassScene,
       exitButton;
 
    #endregion
@@ -70,6 +72,9 @@ public class MasterToolScene : MonoBehaviour {
       });
       clickAchievementScene.onClick.AddListener(() => {
          SceneManager.LoadScene(achievementScene);
+      });
+      clickPlayerClassScene.onClick.AddListener(() => {
+         SceneManager.LoadScene(playerClassScene);
       });
    }
 
