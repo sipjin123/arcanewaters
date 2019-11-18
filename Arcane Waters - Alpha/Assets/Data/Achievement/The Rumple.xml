@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <actionType>LootGainTotal</actionType>
+  <achievementName>The Rumple</achievementName>
+  <achievementDescription>Loot 100 Gold Ore. Here's a Gold star!</achievementDescription>
+  <count>100</count>
+  <achievementUniqueID>LGT</achievementUniqueID>
+  <itemType>1</itemType>
+  <itemCategory>6</itemCategory>
+  <iconPath />
+</AchievementData>

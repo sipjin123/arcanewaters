@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <actionType>Frozen</actionType>
+  <achievementName>Cold Never Bothered Me</achievementName>
+  <achievementDescription>So the cold really never bothered you? Wow.</achievementDescription>
+  <count>100</count>
+  <achievementUniqueID>EF100</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+</AchievementData>

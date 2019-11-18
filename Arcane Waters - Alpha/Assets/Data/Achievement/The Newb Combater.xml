@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <actionType>EnterCombat</actionType>
+  <achievementName>The Newb Combater</achievementName>
+  <achievementDescription>Oh nice! You just experienced your first combat! How was it?</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>EC01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+</AchievementData>

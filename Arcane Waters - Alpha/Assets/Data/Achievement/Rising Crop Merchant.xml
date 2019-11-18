@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <actionType>SellCrop</actionType>
+  <achievementName>Rising Crop Merchant</achievementName>
+  <achievementDescription>You just sold your first crop.</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>SC01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+</AchievementData>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <actionType>BuyItem</actionType>
+  <achievementName>The shopper</achievementName>
+  <achievementDescription>You have bought 50 times already? You shopper!</achievementDescription>
+  <count>50</count>
+  <achievementUniqueID>BI50</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+</AchievementData>

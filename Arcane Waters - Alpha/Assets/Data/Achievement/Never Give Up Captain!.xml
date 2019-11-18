@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <actionType>ShipDie</actionType>
+  <achievementName>Never Give Up Captain!</achievementName>
+  <achievementDescription>Your ship may have taken down 50 times but it will makes you stronger every time!</achievementDescription>
+  <count>50</count>
+  <achievementUniqueID>SD50</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+</AchievementData>

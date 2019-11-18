@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <actionType>SellItem</actionType>
+  <achievementName>The 500 merchant</achievementName>
+  <achievementDescription>You richman! You have sold a total of 500 times!</achievementDescription>
+  <count>500</count>
+  <achievementUniqueID>SI500</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+</AchievementData>

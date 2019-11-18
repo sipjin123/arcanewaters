@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <actionType>EnterCombat</actionType>
+  <achievementName>The Master of Combat</achievementName>
+  <achievementDescription>You sure love to combat huh? 100 times really?</achievementDescription>
+  <count>100</count>
+  <achievementUniqueID>EC100</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+</AchievementData>

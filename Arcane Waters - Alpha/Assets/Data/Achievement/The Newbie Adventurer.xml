@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <actionType>LevelUp</actionType>
+  <achievementName>The Newbie Adventurer</achievementName>
+  <achievementDescription>You have reached level 5! We are now officially welcoming you to the warriors community!</achievementDescription>
+  <count>5</count>
+  <achievementUniqueID>LU5</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+</AchievementData>

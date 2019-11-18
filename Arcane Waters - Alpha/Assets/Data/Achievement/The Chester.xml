@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <actionType>OpenTreasureChest</actionType>
+  <achievementName>The Chester</achievementName>
+  <achievementDescription>You just opened your very first treasure chest!</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>OTC01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+</AchievementData>

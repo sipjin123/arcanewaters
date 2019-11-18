@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <actionType>LevelUp</actionType>
+  <achievementName>The Senior</achievementName>
+  <achievementDescription>You have achieve the max level 99. You are now considered as one of the senior warrior here in Arcane Waters.</achievementDescription>
+  <count>99</count>
+  <achievementUniqueID>LU99</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+</AchievementData>

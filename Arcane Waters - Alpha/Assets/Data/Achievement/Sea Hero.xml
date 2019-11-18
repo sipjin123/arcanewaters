@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <actionType>KillSeaMonster</actionType>
+  <achievementName>Sea Hero</achievementName>
+  <achievementDescription>We can now sail the sea without worry</achievementDescription>
+  <count>250</count>
+  <achievementUniqueID>KSM250</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+</AchievementData>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <actionType>NPCBestFriend</actionType>
+  <achievementName>Bestie Horder</achievementName>
+  <achievementDescription>You bestfriend horder! This is good make more friends and you'll enjoy staying!</achievementDescription>
+  <count>5</count>
+  <achievementUniqueID>NBF05</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+</AchievementData>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <actionType>ArmorBuy</actionType>
+  <achievementName>The Protected Hero</achievementName>
+  <achievementDescription>You just bought your 50th armor! Go now and be safe!</achievementDescription>
+  <count>50</count>
+  <achievementUniqueID>AB50</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+</AchievementData>

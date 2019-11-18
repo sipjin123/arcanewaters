@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <actionType>WeaponBuy</actionType>
+  <achievementName>The Weapon Buyer</achievementName>
+  <achievementDescription>You sure love to kill don't cha?</achievementDescription>
+  <count>100</count>
+  <achievementUniqueID>WB100</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+</AchievementData>

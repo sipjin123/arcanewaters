@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <actionType>CannonHits</actionType>
+  <achievementName>Sea Cannon</achievementName>
+  <achievementDescription>You just made 50 hits on Sea! Are you starting to make foes or being a hero?</achievementDescription>
+  <count>50</count>
+  <achievementUniqueID>CH50</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+</AchievementData>

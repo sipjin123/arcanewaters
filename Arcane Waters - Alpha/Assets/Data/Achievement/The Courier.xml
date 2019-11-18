@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <actionType>QuestDelivery</actionType>
+  <achievementName>The Courier</achievementName>
+  <achievementDescription>You just delivered your 10th quest! You may now considered your self as the Courier.</achievementDescription>
+  <count>10</count>
+  <achievementUniqueID>QD10</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+</AchievementData>

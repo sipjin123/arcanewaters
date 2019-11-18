@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <actionType>CombatDie</actionType>
+  <achievementName>Number of death 13</achievementName>
+  <achievementDescription>Oh no no no, the number of bad luck.</achievementDescription>
+  <count>13</count>
+  <achievementUniqueID>CD13</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+</AchievementData>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <actionType>BuyItem</actionType>
+  <achievementName>The Shop a holic</achievementName>
+  <achievementDescription>You shopper! You just bought 250 times!</achievementDescription>
+  <count>250</count>
+  <achievementUniqueID>BI250</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+</AchievementData>

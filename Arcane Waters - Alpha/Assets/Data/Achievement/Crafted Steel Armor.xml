@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <actionType>Craft</actionType>
+  <achievementName>Crafted Steel Armor</achievementName>
+  <achievementDescription>You made your very first Steel Armor! Put up there warrior!</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>CA</achievementUniqueID>
+  <itemType>3</itemType>
+  <itemCategory>2</itemCategory>
+  <iconPath />
+</AchievementData>

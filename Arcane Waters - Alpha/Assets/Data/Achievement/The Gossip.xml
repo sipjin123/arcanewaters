@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <actionType>TalkToNPC</actionType>
+  <achievementName>The Gossip</achievementName>
+  <achievementDescription>Hello there adventurer! You have talked to total of 20 villagers!</achievementDescription>
+  <count>20</count>
+  <achievementUniqueID>TTN20</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+</AchievementData>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <actionType>NPCBestFriend</actionType>
+  <achievementName>First Bestie</achievementName>
+  <achievementDescription>NICE! That's what I'm talking about! You just made your very first best friend!</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>NBF01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+</AchievementData>

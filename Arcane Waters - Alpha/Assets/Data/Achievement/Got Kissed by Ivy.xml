@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <actionType>Poisoned</actionType>
+  <achievementName>Got Kissed by Ivy</achievementName>
+  <achievementDescription>You just experienced your first poined. Let's make sure you won't die okay?</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>EP01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+</AchievementData>

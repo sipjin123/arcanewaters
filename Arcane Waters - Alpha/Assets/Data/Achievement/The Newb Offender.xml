@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <actionType>OffensiveSkillUse</actionType>
+  <achievementName>The Newb Offender</achievementName>
+  <achievementDescription>Oh just wow! You just used your first offensive skill!</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>OSU01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+</AchievementData>

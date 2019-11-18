@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <actionType>UsePotion</actionType>
+  <achievementName>The Witch</achievementName>
+  <achievementDescription>Are you a witch? Why do you love potions that much!</achievementDescription>
+  <count>100</count>
+  <achievementUniqueID>UP100</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+</AchievementData>
