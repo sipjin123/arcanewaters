@@ -367,6 +367,21 @@ public class RPCManager : NetworkBehaviour {
       }
    }
 
+   [TargetRpc]
+   public void Target_ReceiveInventoryItemsForInventory (NetworkConnection connection, InventoryMessage msg) {
+      // Stores inventory data in cache for future reference
+      InventoryCacheManager.self.receiveItemsFromServer(msg.userObjects, msg.categories, msg.pageNumber, msg.gold, msg.gems, msg.totalItemCount, msg.equippedArmorId, msg.equippedWeaponId, msg.itemArray);
+
+      InventoryPanel panel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
+      if (!panel.isShowing()) {
+         // Make sure the inventory panel is showing
+         PanelManager.self.pushPanel(Panel.Type.Inventory);
+      }
+
+      // Update the Inventory Panel with the items we received from the server
+      panel.receiveItemsFromServer(msg.userObjects, msg.categories, msg.pageNumber, msg.gold, msg.gems, msg.totalItemCount, msg.equippedWeaponId, msg.equippedArmorId, msg.itemArray);
+   }
+
    [Command]
    public void Cmd_BugReport (string subject, string message) {
       // We need a player object
@@ -535,7 +550,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_RequestItemsFromServer (int pageNumber, int itemsPerPage, Item.Category[] category) {
+   public void Cmd_RequestItemsFromServer (int pageNumber, int itemsPerPage, Item.Category[] categories) {
       // Enforce a reasonable max here
       if (itemsPerPage > 200) {
          D.warning("Requesting too many items per page.");
@@ -549,7 +564,7 @@ public class RPCManager : NetworkBehaviour {
          int totalItemCount = DB_Main.getItemCount(_player.userId);
 
          // Get the items from the database
-         List<Item> items = DB_Main.getItems(_player.userId, category, pageNumber, itemsPerPage, 0, 0);
+         List<Item> items = DB_Main.getItems(_player.userId, categories, pageNumber, itemsPerPage, 0, 0);
 
          List<Item> craftableList = new List<Item>();
          foreach (Item item in items) {
@@ -561,11 +576,47 @@ public class RPCManager : NetworkBehaviour {
 
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            InventoryMessage inventoryMessage = new InventoryMessage(_player.netId, userObjects,
+            InventoryMessage inventoryMessage = new InventoryMessage(_player.netId, userObjects, categories,
                pageNumber, userInfo.gold, userInfo.gems, totalItemCount, userInfo.armorId, userInfo.weaponId, items.ToArray());
             NetworkServer.SendToClientOfPlayer(_player.netIdent, inventoryMessage);
 
             processCraftingItems(craftableList.ToArray());
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_RequestItemsFromServerForInventory (int pageNumber, int itemsPerPage, Item.Category[] categories) {
+      // Enforce a reasonable max here
+      if (itemsPerPage > 200) {
+         D.warning("Requesting too many items per page.");
+         return;
+      }
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
+         UserInfo userInfo = userObjects.userInfo;
+         int totalItemCount = DB_Main.getItemCount(_player.userId, categories, userInfo.weaponId, userInfo.armorId);
+
+         // Get the items from the database
+         List<Item> items = DB_Main.getItems(_player.userId, categories, pageNumber, itemsPerPage, userInfo.weaponId, userInfo.armorId);
+
+         // Get the equipped weapon, independently of the category filters
+         if (userInfo.weaponId != 0) {
+            items.Add(DB_Main.getItem(_player.userId, userInfo.weaponId));
+         }
+
+         // Get the equipped armor, independently of the category filters
+         if (userInfo.armorId != 0) {
+            items.Add(DB_Main.getItem(_player.userId, userInfo.armorId));
+         }
+
+         // Back to the Unity thread to send the results back to the client
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            InventoryMessage inventoryMessage = new InventoryMessage(_player.netId, userObjects, categories,
+               pageNumber, userInfo.gold, userInfo.gems, totalItemCount, userInfo.armorId, userInfo.weaponId, items.ToArray());
+            Target_ReceiveInventoryItemsForInventory(_player.connectionToClient, inventoryMessage);
          });
       });
    }
@@ -579,8 +630,8 @@ public class RPCManager : NetworkBehaviour {
          return;
       }
 
-      List<Item.Category> categoryList = new List<Item.Category>();
-      categoryList.Add(category);
+      Item.Category[] categoryArray = new Item.Category[1];
+      categoryArray[0] = category;
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -592,16 +643,16 @@ public class RPCManager : NetworkBehaviour {
 
          // Get the item count and item list from the database
          if (filterEquippedItems) {
-            totalItemCount = DB_Main.getItemCount(_player.userId, category, userInfo.weaponId, userInfo.armorId);
-            items = DB_Main.getItems(_player.userId, categoryList.ToArray(), pageNumber, itemsPerPage, userInfo.weaponId, userInfo.armorId);
+            totalItemCount = DB_Main.getItemCount(_player.userId, categoryArray, userInfo.weaponId, userInfo.armorId);
+            items = DB_Main.getItems(_player.userId, categoryArray, pageNumber, itemsPerPage, userInfo.weaponId, userInfo.armorId);
          } else {
-            totalItemCount = DB_Main.getItemCount(_player.userId, category, 0, 0);
-            items = DB_Main.getItems(_player.userId, categoryList.ToArray(), pageNumber, itemsPerPage, 0, 0);
+            totalItemCount = DB_Main.getItemCount(_player.userId, categoryArray, 0, 0);
+            items = DB_Main.getItems(_player.userId, categoryArray, pageNumber, itemsPerPage, 0, 0);
          }
 
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            InventoryMessage inventoryMessage = new InventoryMessage(_player.netId, userObjects,
+            InventoryMessage inventoryMessage = new InventoryMessage(_player.netId, userObjects, new Item.Category[] { category },
                pageNumber, userInfo.gold, userInfo.gems, totalItemCount, userInfo.armorId, userInfo.weaponId, items.ToArray());
             Target_ReceiveInventoryItemsForItemSelection(_player.connectionToClient, inventoryMessage);
          });

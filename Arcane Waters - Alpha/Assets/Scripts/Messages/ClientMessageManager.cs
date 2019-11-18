@@ -135,11 +135,11 @@ public class ClientMessageManager : MonoBehaviour {
             // Add the confirmation message in the chat panel
             ChatManager.self.addChat(chatMessage, msg.timestamp, ChatInfo.Type.System);
 
-            // Update the Inventory Panel if it's showing
-            Panel panel1 = PanelManager.self.get(Panel.Type.Inventory);
-            int itemId1 = System.Convert.ToInt32(msg.customMessage);
-            InventoryPanel inventoryPanel = (InventoryPanel) panel1;
-            inventoryPanel.removeDeletedItem(itemId1);
+            // Get a reference to the Inventory Panel
+            InventoryPanel panel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
+
+            // Refresh the panel
+            panel.refreshPanel();
 
             // Because the character appearance changed, let's just close the panel for now
             PanelManager.self.popPanel();
@@ -163,10 +163,11 @@ public class ClientMessageManager : MonoBehaviour {
             // Hide the confirm panel
             PanelManager.self.confirmScreen.hide();
 
-            // Update the Inventory Panel if it's showing
-            Panel panel = PanelManager.self.get(Panel.Type.Inventory);
-            int itemId = System.Convert.ToInt32(msg.customMessage);
-            ((InventoryPanel) panel).removeDeletedItem(itemId);
+            // Get a reference to the Inventory Panel
+            InventoryPanel panel2 = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
+
+            // Refresh the panel
+            panel2.refreshPanel();
             return;
 
             /*case ConfirmMessage.Type.SeaWarp:
@@ -234,17 +235,9 @@ public class ClientMessageManager : MonoBehaviour {
 
    public static void On_Inventory (NetworkConnection conn, InventoryMessage msg) {
       // Stores inventory data in cache for future reference
-      InventoryCacheManager.self.receiveItemsFromServer(msg.userObjects, msg.pageNumber, msg.gold, msg.gems, msg.totalItemCount, msg.equippedArmorId, msg.equippedWeaponId, msg.itemArray);
+      InventoryCacheManager.self.receiveItemsFromServer(msg.userObjects, msg.categories, msg.pageNumber, msg.gold, msg.gems, msg.totalItemCount, msg.equippedArmorId, msg.equippedWeaponId, msg.itemArray);
 
-      if (PanelManager.self.selectedPanel == Panel.Type.Inventory) {
-         InventoryPanel panel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
-         if (!panel.isShowing()) {
-            // Make sure the inventory panel is showing
-            PanelManager.self.pushPanel(Panel.Type.Inventory);
-         }
-         // Update the Inventory Panel with the items we received from the server
-         panel.receiveItemsFromServer(msg.userObjects, msg.pageNumber, msg.gold, msg.gems, msg.totalItemCount, msg.equippedArmorId, msg.equippedWeaponId, msg.itemArray);
-      } else if (PanelManager.self.selectedPanel == Panel.Type.Craft) {
+      if (PanelManager.self.selectedPanel == Panel.Type.Craft) {
          CraftingPanel craftPanel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);
          if (!craftPanel.isShowing()) {
             // Make sure the inventory panel is showing
@@ -265,11 +258,8 @@ public class ClientMessageManager : MonoBehaviour {
       // Get a reference to the Inventory Panel
       InventoryPanel panel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
 
-      // Update the Inventory Panel with the new equipped item IDs
-      panel.setEquippedIds(msg.newArmorId, msg.newWeaponId);
-
-      // Display our new stuff
-      panel.requestInventoryFromServer();
+      // Refresh the panel
+      panel.refreshPanel();
    }
 
    #region Private Variables

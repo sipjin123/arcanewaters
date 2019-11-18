@@ -29,7 +29,7 @@ public class BottomBar : MonoBehaviour {
 
       // If the panel is not showing, send a request to the server to get our items
       if (!panel.isShowing()) {
-         panel.requestInventoryFromServer(-1);
+         panel.refreshPanel();
       } else {
          PanelManager.self.togglePanel(Panel.Type.Inventory);
       }

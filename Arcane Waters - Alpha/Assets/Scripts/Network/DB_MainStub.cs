@@ -263,12 +263,12 @@ public class DB_MainStub : MonoBehaviour {
       return 0;
    }
 
-   public static int getItemCount (int userId, Item.Category category, int equippedWeaponId,
+   public static int getItemCount (int userId, Item.Category[] categories, int equippedWeaponId,
       int equippedArmorId) {
       return 0;
    }
 
-   public static List<Item> getItems (int userId, Item.Category[] category, int page, int itemsPerPage,
+   public static List<Item> getItems (int userId, Item.Category[] categories, int page, int itemsPerPage,
       int equippedWeaponId, int equippedArmorId) {
       return null;
    }

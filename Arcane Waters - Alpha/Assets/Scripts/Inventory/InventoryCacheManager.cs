@@ -30,7 +30,7 @@ public class InventoryCacheManager : MonoBehaviour
       }
    }
 
-   public void receiveItemsFromServer (UserObjects userObjects, int pageNumber, int gold, int gems, int totalItemCount, int equippedArmorId, int equippedWeaponId, Item[] itemArray) {
+   public void receiveItemsFromServer (UserObjects userObjects, Item.Category[] categories, int pageNumber, int gold, int gems, int totalItemCount, int equippedArmorId, int equippedWeaponId, Item[] itemArray) {
       hasInitialized = true;
       itemList = new List<Item>();
 

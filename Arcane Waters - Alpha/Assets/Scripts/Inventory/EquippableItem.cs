@@ -14,6 +14,10 @@ public abstract class EquippableItem : Item {
       return false;
    }
 
+   public override bool canBeEquipped () {
+      return true;
+   }
+
    public abstract bool isEquipped ();
 
    #region Private Variables

@@ -98,6 +98,11 @@ public class Item {
       return true;
    }
 
+   public virtual bool canBeEquipped () {
+      // By default, items will not be equippable
+      return false;
+   }
+
    public Rarity.Type getRarity () {
       foreach (string kvp in this.data.Replace(" ", "").Split(',')) {
          if (!kvp.Contains("=")) {

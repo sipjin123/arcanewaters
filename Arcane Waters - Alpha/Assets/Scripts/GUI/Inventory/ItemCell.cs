@@ -93,7 +93,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
       hideSelectedBox();
    }
 
-   public void OnPointerClick (PointerEventData eventData) {
+   public virtual void OnPointerClick (PointerEventData eventData) {
       if (_interactable) {
          // If this cell is clicked on, update the currently selected item
          PanelManager.self.itemSelectionScreen.setSelectedItem(this);

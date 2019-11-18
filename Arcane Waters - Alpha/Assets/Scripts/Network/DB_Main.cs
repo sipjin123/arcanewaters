@@ -1619,7 +1619,7 @@ public class DB_Main : DB_MainStub {
       return itemCount;
    }
 
-   public static new int getItemCount (int userId, Item.Category category, int equippedWeaponId,
+   public static new int getItemCount (int userId, Item.Category[] categories, int equippedWeaponId,
       int equippedArmorId) {
       // Initialize the count
       int itemCount = 0;
@@ -1628,9 +1628,14 @@ public class DB_Main : DB_MainStub {
       StringBuilder query = new StringBuilder();
       query.Append("SELECT count(*) AS itemCount FROM items WHERE usrId=@usrId ");
 
-      // Add the category filter, if defined
-      if (category != Item.Category.None) {
-         query.Append("AND itmCategory=@itmCategory ");
+      // Add the category filter only if the first is not 'none' or if there are many
+      if (categories[0] != Item.Category.None || categories.Length > 1) {
+         // Setup multiple categories
+         query.Append("AND (itmCategory=@itmCategory0");
+         for (int i = 1; i < categories.Length; i++) {
+            query.Append(" OR itmCategory=@itmCategory" + i);
+         }
+         query.Append(") ");
       }
 
       // Filter the equipped weapon and armor
@@ -1642,7 +1647,9 @@ public class DB_Main : DB_MainStub {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
-            cmd.Parameters.AddWithValue("@itmCategory", (int) category);
+            for (int i = 0; i < categories.Length; i++) {
+               cmd.Parameters.AddWithValue("@itmCategory" + i, (int) categories[i]);
+            }
             cmd.Parameters.AddWithValue("@equippedWeaponId", equippedWeaponId);
             cmd.Parameters.AddWithValue("@equippedArmorId", equippedArmorId);
 
@@ -1660,7 +1667,7 @@ public class DB_Main : DB_MainStub {
       return itemCount;
    }
 
-   public static new List<Item> getItems (int userId, Item.Category[] category, int page, int itemsPerPage,
+   public static new List<Item> getItems (int userId, Item.Category[] categories, int page, int itemsPerPage,
       int equippedWeaponId, int equippedArmorId) {
       // Initialize the list
       List<Item> itemList = new List<Item>();
@@ -1669,13 +1676,11 @@ public class DB_Main : DB_MainStub {
       StringBuilder query = new StringBuilder();
       query.Append("SELECT * FROM items WHERE usrId = @usrId ");
 
-      if (category.Length == 1 && category[0] != Item.Category.None) {
-         // Add the category filter, if defined
-         query.Append("AND itmCategory=@itmCategory ");
-      } else if (category.Length > 1) {
+      // Add the category filter only if the first is not 'none' or if there are many
+      if (categories[0] != Item.Category.None || categories.Length > 1) {
          // Setup multiple categories
          query.Append("AND (itmCategory=@itmCategory0");
-         for (int i = 1; i < category.Length; i++) {
+         for (int i = 1; i < categories.Length; i++) {
             query.Append(" OR itmCategory=@itmCategory" + i);
          }
          query.Append(") ");
@@ -1700,12 +1705,8 @@ public class DB_Main : DB_MainStub {
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@start", (page - 1) * itemsPerPage);
             cmd.Parameters.AddWithValue("@perPage", itemsPerPage);
-            if (category.Length == 1) {
-               cmd.Parameters.AddWithValue("@itmCategory", (int) category[0]);
-            } else {
-               for (int i = 0; i < category.Length; i++) {
-                  cmd.Parameters.AddWithValue("@itmCategory"+i, (int) category[i]);
-               }
+            for (int i = 0; i < categories.Length; i++) {
+               cmd.Parameters.AddWithValue("@itmCategory" + i, (int) categories[i]);
             }
             cmd.Parameters.AddWithValue("@equippedWeaponId", equippedWeaponId);
             cmd.Parameters.AddWithValue("@equippedArmorId", equippedArmorId);

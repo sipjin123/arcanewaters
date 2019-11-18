@@ -14,6 +14,9 @@ public class InventoryMessage : MessageBase {
    // The User Objects for this player
    public UserObjects userObjects;
 
+   // The selected categories
+   public Item.Category[] categories;
+
    // The page number that was requested
    public int pageNumber;
 
@@ -37,9 +40,10 @@ public class InventoryMessage : MessageBase {
 
    public InventoryMessage () { }
 
-   public InventoryMessage (uint netId, UserObjects userObjects, int pageNumber, int gold, int gems, int totalItemCount, int equippedArmorId, int equippedWeaponId, Item[] itemArray) {
+   public InventoryMessage (uint netId, UserObjects userObjects, Item.Category[] categories, int pageNumber, int gold, int gems, int totalItemCount, int equippedArmorId, int equippedWeaponId, Item[] itemArray) {
       this.netId = netId;
       this.userObjects = userObjects;
+      this.categories = categories;
       this.pageNumber = pageNumber;
       this.gold = gold;
       this.gems = gems;
