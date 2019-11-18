@@ -5,21 +5,22 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.SceneManagement;
 
-public class PlayerClassScene : MonoBehaviour {
+public class PlayerSpecialtyScene : MonoBehaviour
+{
    #region Public Variables
 
-   // Holds the prefab for item templates
+   // Holds the prefab for selection templates
    public PlayerClassTemplate itemTemplatePrefab;
 
    // Holds the tool manager reference
-   public PlayerClassTool toolManager;
+   public PlayerSpecialtyToolManager toolManager;
 
    // The parent holding the item template
    public GameObject itemTemplateParent;
 
-   // Holds the item data panel
-   public PlayerClassPanel playerClassPanel;
-   
+   // Holds the data panel
+   public PlayerSpecialtyPanel playerSpecialtyPanel;
+
    // Main menu Buttons
    public Button createButton, mainMenuButton;
 
@@ -36,34 +37,34 @@ public class PlayerClassScene : MonoBehaviour {
          SceneManager.LoadScene(MasterToolScene.masterScene);
       });
 
-      playerClassPanel.gameObject.SetActive(false);
+      playerSpecialtyPanel.gameObject.SetActive(false);
    }
 
    private void createTemplate () {
-      PlayerClassData classData = new PlayerClassData();
+      PlayerSpecialtyData specialtyData = new PlayerSpecialtyData();
 
-      classData.className = "Undefined";
-      classData.type = Class.Type.None;
+      specialtyData.specialtyName = "Undefined";
+      specialtyData.type = Specialty.Type.None;
 
       PlayerClassTemplate template = Instantiate(itemTemplatePrefab, itemTemplateParent.transform);
       template.editButton.onClick.AddListener(() => {
-         playerClassPanel.loadPlayerClassData(classData);
-         playerClassPanel.gameObject.SetActive(true);
+         playerSpecialtyPanel.loadPlayerSpecialtyData(specialtyData);
+         playerSpecialtyPanel.gameObject.SetActive(true);
       });
 
       template.deleteButton.onClick.AddListener(() => {
          Destroy(template.gameObject, .5f);
-         toolManager.deleteDataFile(classData);
+         toolManager.deleteDataFile(specialtyData);
          toolManager.loadXMLData();
       });
 
       template.duplicateButton.onClick.AddListener(() => {
-         toolManager.duplicateXMLData(classData);
+         toolManager.duplicateXMLData(specialtyData);
          toolManager.loadXMLData();
       });
 
       try {
-         Sprite iconSprite = ImageManager.getSprite(classData.itemIconPath);
+         Sprite iconSprite = ImageManager.getSprite(specialtyData.specialtyIconPath);
          template.itemIcon.sprite = iconSprite;
       } catch {
          template.itemIcon.sprite = emptySprite;
@@ -72,31 +73,31 @@ public class PlayerClassScene : MonoBehaviour {
       template.gameObject.SetActive(true);
    }
 
-   public void loadPlayerClass (Dictionary<string, PlayerClassData> data) {
+   public void loadPlayerSpecialtyData (Dictionary<string, PlayerSpecialtyData> data) {
       itemTemplateParent.gameObject.DestroyChildren();
 
-      // Create a row for each player class
-      foreach (PlayerClassData playerClass in data.Values) {
+      // Create a row for each player specialty
+      foreach (PlayerSpecialtyData specialty in data.Values) {
          PlayerClassTemplate template = Instantiate(itemTemplatePrefab, itemTemplateParent.transform);
-         template.nameText.text = playerClass.className;
+         template.nameText.text = specialty.specialtyName;
          template.editButton.onClick.AddListener(() => {
-            playerClassPanel.loadPlayerClassData(playerClass);
-            playerClassPanel.gameObject.SetActive(true);
+            playerSpecialtyPanel.loadPlayerSpecialtyData(specialty);
+            playerSpecialtyPanel.gameObject.SetActive(true);
          });
 
          template.deleteButton.onClick.AddListener(() => {
             Destroy(template.gameObject, .5f);
-            toolManager.deleteDataFile(playerClass);
+            toolManager.deleteDataFile(specialty);
             toolManager.loadXMLData();
          });
 
          template.duplicateButton.onClick.AddListener(() => {
-            toolManager.duplicateXMLData(playerClass);
+            toolManager.duplicateXMLData(specialty);
             toolManager.loadXMLData();
          });
 
          try {
-            Sprite iconSprite = ImageManager.getSprite(playerClass.itemIconPath);
+            Sprite iconSprite = ImageManager.getSprite(specialty.specialtyIconPath);
             template.itemIcon.sprite = iconSprite;
          } catch {
             template.itemIcon.sprite = emptySprite;

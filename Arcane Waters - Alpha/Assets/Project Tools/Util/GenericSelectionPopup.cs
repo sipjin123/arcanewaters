@@ -37,7 +37,10 @@ public class GenericSelectionPopup : MonoBehaviour {
    public Dictionary<string, Sprite> armorSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> helmSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> usableItemSpriteList = new Dictionary<string, Sprite>();
-   public Dictionary<string, Sprite> jobClassSpriteList = new Dictionary<string, Sprite>();
+   public Dictionary<string, Sprite> playerClassSpriteList = new Dictionary<string, Sprite>();
+   public Dictionary<string, Sprite> playerFactionSpriteList = new Dictionary<string, Sprite>();
+   public Dictionary<string, Sprite> playerSpecialtySpriteList = new Dictionary<string, Sprite>();
+   public Dictionary<string, Sprite> playerJobSpriteList = new Dictionary<string, Sprite>();
 
    public enum selectionType
    {
@@ -63,7 +66,13 @@ public class GenericSelectionPopup : MonoBehaviour {
       ItemType = 19,
       ItemCategory = 20,
       PlayerClassType = 21,
-      PlayerClassIcons = 22
+      PlayerClassIcons = 22,
+      PlayerFactionType = 23,
+      PlayerFactionIcons = 24,
+      PlayerSpecialtyType = 25,
+      PlayerSpecialtyIcons = 26,
+      PlayerJobType = 27,
+      PlayerJobIcons = 28
    }
 
    #endregion
@@ -103,8 +112,17 @@ public class GenericSelectionPopup : MonoBehaviour {
       string usableItemPath = "Assets/Sprites/Icons/UsableItems/";
       setupSpriteContent(usableItemSpriteList, usableItemPath);
 
-      string jobPath = "Assets/Sprites/Icons/Classes/";
-      setupSpriteContent(jobClassSpriteList, jobPath);
+      string classPath = "Assets/Sprites/Icons/Classes/";
+      setupSpriteContent(playerClassSpriteList, classPath);
+
+      string factionPath = "Assets/Sprites/Icons/Factions/";
+      setupSpriteContent(playerFactionSpriteList, factionPath);
+
+      string specialtyPath = "Assets/Sprites/Icons/Specialties/";
+      setupSpriteContent(playerSpecialtySpriteList, specialtyPath);
+
+      string jobPath = "Assets/Sprites/Icons/Jobs/";
+      setupSpriteContent(playerJobSpriteList, jobPath);
    }
 
    private void setupSpriteContent (Dictionary<string, Sprite> spriteCollection, string spritePath) {
@@ -169,10 +187,28 @@ public class GenericSelectionPopup : MonoBehaviour {
             createImageTemplate(sourceSprite.Key, shortName, achievementSprite, imageIcon, textUI);
          }
       } else if (popupType == selectionType.PlayerClassIcons) {
-         foreach (KeyValuePair<string, Sprite> sourceSprite in jobClassSpriteList) {
+         foreach (KeyValuePair<string, Sprite> sourceSprite in playerClassSpriteList) {
             string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
             Sprite classIcon = ImageManager.getSprite(sourceSprite.Key);
             createImageTemplate(sourceSprite.Key, shortName, classIcon, imageIcon, textUI);
+         }
+      } else if (popupType == selectionType.PlayerFactionIcons) {
+         foreach (KeyValuePair<string, Sprite> sourceSprite in playerFactionSpriteList) {
+            string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
+            Sprite factionIcon = ImageManager.getSprite(sourceSprite.Key);
+            createImageTemplate(sourceSprite.Key, shortName, factionIcon, imageIcon, textUI);
+         }
+      } else if (popupType == selectionType.PlayerSpecialtyIcons) {
+         foreach (KeyValuePair<string, Sprite> sourceSprite in playerSpecialtySpriteList) {
+            string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
+            Sprite icon = ImageManager.getSprite(sourceSprite.Key);
+            createImageTemplate(sourceSprite.Key, shortName, icon, imageIcon, textUI);
+         }
+      } else if (popupType == selectionType.PlayerJobIcons) {
+         foreach (KeyValuePair<string, Sprite> sourceSprite in playerJobSpriteList) {
+            string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
+            Sprite icon = ImageManager.getSprite(sourceSprite.Key);
+            createImageTemplate(sourceSprite.Key, shortName, icon, imageIcon, textUI);
          }
       }
    }
@@ -239,6 +275,21 @@ public class GenericSelectionPopup : MonoBehaviour {
             break;
          case selectionType.PlayerClassType:
             foreach (Class.Type category in Enum.GetValues(typeof(Class.Type))) {
+               createTextTemplate(category.ToString(), textUI, changeEvent);
+            }
+            break;
+         case selectionType.PlayerFactionType:
+            foreach (Faction.Type category in Enum.GetValues(typeof(Faction.Type))) {
+               createTextTemplate(category.ToString(), textUI, changeEvent);
+            }
+            break;
+         case selectionType.PlayerSpecialtyType:
+            foreach (Specialty.Type category in Enum.GetValues(typeof(Specialty.Type))) {
+               createTextTemplate(category.ToString(), textUI, changeEvent);
+            }
+            break;
+         case selectionType.PlayerJobType:
+            foreach (Jobs.Type category in Enum.GetValues(typeof(Jobs.Type))) {
                createTextTemplate(category.ToString(), textUI, changeEvent);
             }
             break;
