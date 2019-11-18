@@ -32,7 +32,7 @@ public class AchievementManager : NetworkBehaviour {
          }
 
          if (existsInDatabase) {
-            // UPDATE EXISTING DATA
+            // Update existing data
             foreach (AchievementData rawData in achievementDB) {
                int resultCount = rawData.count + count;
                int requirementCount = 99;
@@ -58,14 +58,14 @@ public class AchievementManager : NetworkBehaviour {
 
                bool isComplete = false;
 
-               // MARKS THE ACHIEVEMENT AS COMPLETE
+               // Marks the achievements as complete
                if (resultCount >= requirementCount) {
                   isComplete = true;
                }
                DB_Main.updateAchievementData(rawData, userID, isComplete, count);
             }
          } else {
-            // CREATE NEW DATA
+            // Creating new data
             foreach (AchievementData rawData in castedData) {
                bool isComplete = false;
 
@@ -107,15 +107,6 @@ public class AchievementManager : NetworkBehaviour {
 
    // Our associated Player object
    protected NetEntity _player;
-
-   // Gets set to true once we've loaded our crops on the server
-   protected bool _cropsDoneLoading = false;
-
-   // The crops for this player
-   protected List<CropInfo> _crops = new List<CropInfo>();
-
-   // The time at which the specified user ID last sold something
-   protected static Dictionary<int, float> _lastSellTime = new Dictionary<int, float>();
 
    #endregion
 }

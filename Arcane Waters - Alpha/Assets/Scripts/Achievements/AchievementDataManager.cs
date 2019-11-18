@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using static AchievementData;
+using System.Linq;
 
 public class AchievementDataManager : MonoBehaviour {
    #region Public Variables
@@ -18,38 +19,39 @@ public class AchievementDataManager : MonoBehaviour {
    public bool hasInitialized;
 
    // Holds the list of the xml translated data
-   public List<AchievementData> achievementDataList;
+   public HashSet<AchievementData> achievementDataList;
 
    #endregion
+
    public void Awake () {
       self = this;
       initializeDataCache();
    }
 
    public AchievementData getAchievementData (string uniqueID) {
-      AchievementData returnData = achievementDataList.Find(_ => _.achievementUniqueID == uniqueID);
+      AchievementData returnData = achievementDataList.ToList<AchievementData>().Find(_=>_.achievementUniqueID == uniqueID);
       return returnData;
    }
 
    public static List<AchievementData> castData (ActionType actionType, int count, Item item) {
       List<AchievementData> newDataList = new List<AchievementData>();
-
+      
       if (item == null) {
-         newDataList = self.achievementDataList.FindAll(_ => _.actionType == actionType);
+         newDataList = self.achievementDataList.ToList().FindAll(_ => _.actionType == actionType);
       } else {
-         newDataList = self.achievementDataList.FindAll(_ => _.actionType == actionType && _.itemCategory == (int)item.category && _.itemType == item.itemTypeId);
+         newDataList = self.achievementDataList.ToList().FindAll(_ => _.actionType == actionType && _.itemCategory == (int)item.category && _.itemType == item.itemTypeId);
       }
-      if (newDataList == null) {
+      if (newDataList.Count < 1) {
          Debug.LogWarning("Achievement data group does not exist");
          return null;
       }
 
-      return newDataList;
+      return new List<AchievementData>(newDataList);
    }
 
    private void initializeDataCache () {
       if (!hasInitialized) {
-         achievementDataList = new List<AchievementData>();
+         achievementDataList = new HashSet<AchievementData>();
          hasInitialized = true;
          // Iterate over the files
          foreach (TextAsset textAsset in rawDataAssets) {
@@ -58,18 +60,12 @@ public class AchievementDataManager : MonoBehaviour {
             string uniqueID = rawData.achievementUniqueID;
 
             // Save the achievement data in the memory cache
-            if (!_achievementData.ContainsKey(uniqueID)) {
-               _achievementData.Add(uniqueID, rawData);
-               achievementDataList.Add(rawData);
-            }
+            achievementDataList.Add(rawData);
          }
       }
    }
 
    #region Private Variables
-
-   // The cached achievement data 
-   private Dictionary<string, AchievementData> _achievementData = new Dictionary<string, AchievementData>();
 
    #endregion
 }

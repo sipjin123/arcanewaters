@@ -254,6 +254,15 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
       BattlerData battlerData = MonsterManager.self.monsterDataList.Find(_ => _.enemyType == enemyType);
       if (battlerType == BattlerType.PlayerControlled) {
          battlerData = MonsterManager.self.monsterDataList.Find(_ => _.enemyType == Enemy.Type.Humanoid);
+
+         BodyEntity playerBody = BodyManager.self.getBody(userId);
+         Faction.Type factionType = playerBody.faction;
+         Class.Type classType = playerBody.classType;
+         Specialty.Type specialtyType = playerBody.specialty;
+
+         // DO STAT MODIFICATION HERE
+         //
+         //
       } else {
          if (battlerData == null) {
             battlerData = MonsterManager.self.monsterDataList.Find(_ => _.enemyType == Enemy.Type.Coralbow);
@@ -274,9 +283,9 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
          this.cooldownEndTime = Util.netTime() + 5f;
       } else {
          setBattlerAbilities(new AbilityDataRecord {
-            basicAbilityDataList = new List<BasicAbilityData>(AbilityInventory.self.playerAbilities).ToArray(),
-            attackAbilityDataList = battlerData.battlerAbilities.attackAbilityDataList,
-            buffAbilityDataList = battlerData.battlerAbilities.buffAbilityDataList
+            basicAbilityDataList = battlerMainData.battlerAbilities.basicAbilityDataList,
+            attackAbilityDataList = battlerMainData.battlerAbilities.attackAbilityDataList,
+            buffAbilityDataList = battlerMainData.battlerAbilities.buffAbilityDataList
          });
       }
    }
