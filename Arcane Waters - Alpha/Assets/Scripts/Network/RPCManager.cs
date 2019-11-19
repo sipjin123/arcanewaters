@@ -277,6 +277,9 @@ public class RPCManager : NetworkBehaviour {
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             processGroupRewards(_player.userId, databaseList, lootInfoList, false);
 
+            // Registers the interaction of loot bags to the achievement database for recording
+            AchievementManager.registerUserAchievement(ActionType.OpenedLootBag, lootInfoList.Count);
+
             // Send it to the specific player that opened it
             Target_OpenChest(_player.connectionToClient, item, chest.id);
          });
@@ -1229,7 +1232,7 @@ public class RPCManager : NetworkBehaviour {
             // If items have been rewarded, show the reward panel
             if (rewardedItems.Count > 0) {
                // Registers the quest completion to the achievement data
-               _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.QuestComplete, 1);
+               AchievementManager.registerUserAchievement(ActionType.QuestComplete);
                Target_ReceiveItemList(_player.connectionToClient, rewardedItems.ToArray());
             }
          });
@@ -1327,7 +1330,7 @@ public class RPCManager : NetworkBehaviour {
             Target_ReceiveNPCCustomDialogue(newFriendshipLevel, npcText, ClickableText.Type.YouAreWelcome, null);
 
             // Registers the npc gift action to the achievement database for recording
-            _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.NPCGift, 1);
+            AchievementManager.registerUserAchievement(ActionType.NPCGift);
          });
       });
    }
@@ -1378,17 +1381,17 @@ public class RPCManager : NetworkBehaviour {
             }
 
             // Registers the purchasing of generic item action to the achievement database for recording
-            _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.BuyItem, 1, shopItem);
+            AchievementManager.registerUserAchievement(ActionType.BuyItem, 1, shopItem);
 
             // Registers the purchasing of equipment action to the achievement database for recording
             if (shopItem.category == Item.Category.Weapon) {
-               _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.WeaponBuy, 1);
+               AchievementManager.registerUserAchievement(ActionType.WeaponBuy);
             }
             if (shopItem.category == Item.Category.Armor) {
-               _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.ArmorBuy, 1);
+               AchievementManager.registerUserAchievement(ActionType.ArmorBuy);
             }
             if (shopItem.category == Item.Category.Helm) {
-               _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.HeadgearBuy, 1);
+               AchievementManager.registerUserAchievement(ActionType.HeadgearBuy);
             }
 
             // Decrease the item count
@@ -1446,7 +1449,7 @@ public class RPCManager : NetworkBehaviour {
             requestNewFlagship(newShipInfo.shipId);
 
             // Registers the purchasing of ship action to the achievement database for recording
-            _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.BuyShip, 1);
+            AchievementManager.registerUserAchievement(ActionType.BuyShip);
 
             // Show a popup panel for the player
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.ShipBought, _player);
@@ -1565,8 +1568,6 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<Item> databaseList = DB_Main.getRequiredIngredients(_player.userId, itemLoots);
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Registers the interaction of loot bags to the achievement database for recording
-            _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.OpenedLootBag, processedLoots.Count);
             processGroupRewards(_player.userId, databaseList, processedLoots, true);
          });
       });
@@ -1625,7 +1626,7 @@ public class RPCManager : NetworkBehaviour {
             finalizeRewards(userId, rewardItemList, databaseItems, requiredItems);
 
             // Registers the crafting action to the achievement database for recording
-            _player.achievementManager.registerAchievement(userId, AchievementData.ActionType.Craft, 1, data.resultItem);
+            AchievementManager.registerUserAchievement(ActionType.Craft, 1, data.resultItem);
 
             // Let them know they gained experience
             _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Crafter, 0);
@@ -1716,7 +1717,7 @@ public class RPCManager : NetworkBehaviour {
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Registers the Ore mining success action to the achievement database for recording
-            _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.MineOre, lootInfoList.Count);
+            AchievementManager.registerUserAchievement(ActionType.MineOre, lootInfoList.Count);
             processGroupRewards(_player.userId, databaseList, lootInfoList, true);
 
             // Let them know they gained experience
@@ -1790,7 +1791,7 @@ public class RPCManager : NetworkBehaviour {
       });
 
       // Registers the interaction of treasure chests to the achievement database for recording
-      _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.OpenTreasureChest, 1);
+      AchievementManager.registerUserAchievement(ActionType.OpenTreasureChest);
 
       // Send it to the specific player that opened it
       Target_OpenChest(_player.connectionToClient, item, chest.id);
@@ -1935,7 +1936,7 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Registers the action of combat entry to the achievement database for recording
-      _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.EnterCombat, 1);
+      AchievementManager.registerUserAchievement(ActionType.EnterCombat);
 
       // Add the player to the Battle
       BattleManager.self.addPlayerToBattle(battle, playerBody, Battle.TeamType.Attackers);
@@ -2071,14 +2072,14 @@ public class RPCManager : NetworkBehaviour {
       // Look up the player's Battle object
       PlayerBodyEntity playerBody = (PlayerBodyEntity) _player;
       Battle battle = BattleManager.self.getBattle(playerBody.battleId);
-      BattlerBehaviour sourceBattler = battle.getBattler(_player.userId);
+      Battler sourceBattler = battle.getBattler(_player.userId);
 
       // Get the ability from the battler abilities.
-      AttackAbilityData abilityData = sourceBattler.getAttackAbilities()[abilityInventoryIndex];
+      AttackAbilityData abilityData = sourceBattler.getAttackAbilities().Find(_=>_.itemID == abilityInventoryIndex);
 
-      BattlerBehaviour targetBattler = null;
+      Battler targetBattler = null;
 
-      foreach (BattlerBehaviour participant in battle.getParticipants()) {
+      foreach (Battler participant in battle.getParticipants()) {
          if (participant.netId == netId) {
             targetBattler = participant;
          }
@@ -2102,12 +2103,12 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Let the Battle Manager handle executing the attack
-      List<BattlerBehaviour> targetBattlers = new List<BattlerBehaviour>() { targetBattler };
+      List<Battler> targetBattlers = new List<Battler>() { targetBattler };
       BattleManager.self.executeBattleAction(battle, sourceBattler, targetBattlers, abilityInventoryIndex);
    }
 
    [Command]
-   public void Cmd_RequestStanceChange (BattlerBehaviour.Stance newStance) {
+   public void Cmd_RequestStanceChange (Battler.Stance newStance) {
       if (_player == null || !(_player is PlayerBodyEntity)) {
          return;
       }
@@ -2115,18 +2116,18 @@ public class RPCManager : NetworkBehaviour {
       // Look up the player's Battle object
       PlayerBodyEntity playerBody = (PlayerBodyEntity) _player;
       Battle battle = BattleManager.self.getBattle(playerBody.battleId);
-      BattlerBehaviour sourceBattler = battle.getBattler(_player.userId);
+      Battler sourceBattler = battle.getBattler(_player.userId);
       BasicAbilityData abilityData = null;
 
       // Get the correct stance ability data.
       switch (newStance) {
-         case BattlerBehaviour.Stance.Balanced:
+         case Battler.Stance.Balanced:
             abilityData = sourceBattler.getBalancedStance();
             break;
-         case BattlerBehaviour.Stance.Attack:
+         case Battler.Stance.Attack:
             abilityData = sourceBattler.getOffenseStance();
             break;
-         case BattlerBehaviour.Stance.Defense:
+         case Battler.Stance.Defense:
             abilityData = sourceBattler.getDefensiveStance();
             break;
       }

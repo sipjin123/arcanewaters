@@ -8,13 +8,13 @@ public class StanceAction : BattleAction
    #region Public Variables
 
    // The new stance type
-   public BattlerBehaviour.Stance newStance;
+   public Battler.Stance newStance;
 
    #endregion
 
    public StanceAction () { }
 
-   public StanceAction (int battleId, int sourceId, float actionEndTime, BattlerBehaviour.Stance newStance) {
+   public StanceAction (int battleId, int sourceId, float actionEndTime, Battler.Stance newStance) {
       this.battleId = battleId;
       this.sourceId = sourceId;
       this.actionEndTime = actionEndTime;
@@ -61,7 +61,7 @@ public class StanceAction : BattleAction
       action.battleId = Convert.ToInt32(stringArray[0]);
       action.sourceId = Convert.ToInt32(stringArray[1]);
       action.actionEndTime = Convert.ToSingle(stringArray[2]);
-      action.newStance = (BattlerBehaviour.Stance) Convert.ToInt32(stringArray[3]);
+      action.newStance = (Battler.Stance) Convert.ToInt32(stringArray[3]);
       action.battleActionType = (BattleActionType) Convert.ToInt32(stringArray[4]);
 
       return action;

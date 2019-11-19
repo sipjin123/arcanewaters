@@ -8,11 +8,8 @@ using System;
 using Random = UnityEngine.Random;
 
 // Will load Battler Data and use that accordingly in all actions.
-public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
+public class Battler : NetworkBehaviour, IAttackBehaviour {
    #region Public Variables
-
-   // A default Attack Ability   
-   public AttackAbilityData defaultAbilityData;
 
    // Will be used to fill all the information related to this battler, it is uninitialized. 
    public BattlerData battlerMainData;
@@ -238,6 +235,8 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
 
       // Flip sprites for the attackers
       checkIfSpritesShouldFlip();
+
+      setupPlayerStats();
    }
 
    private void Update () {
@@ -254,16 +253,8 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
       BattlerData battlerData = MonsterManager.self.monsterDataList.Find(_ => _.enemyType == enemyType);
       if (battlerType == BattlerType.PlayerControlled) {
          battlerData = MonsterManager.self.monsterDataList.Find(_ => _.enemyType == Enemy.Type.Humanoid);
-
-         BodyEntity playerBody = BodyManager.self.getBody(userId);
-         Faction.Type factionType = playerBody.faction;
-         Class.Type classType = playerBody.classType;
-         Specialty.Type specialtyType = playerBody.specialty;
-
-         // DO STAT MODIFICATION HERE
-         //
-         //
       } else {
+         // Sets the default monster if data is not yet created in xml editor
          if (battlerData == null) {
             battlerData = MonsterManager.self.monsterDataList.Find(_ => _.enemyType == Enemy.Type.Coralbow);
          } 
@@ -287,6 +278,24 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
             attackAbilityDataList = battlerMainData.battlerAbilities.attackAbilityDataList,
             buffAbilityDataList = battlerMainData.battlerAbilities.buffAbilityDataList
          });
+      }
+   }
+
+   void setupPlayerStats() {
+      if (battlerType == BattlerType.PlayerControlled) {
+         BodyEntity playerBody = BodyManager.self.getBody(userId);
+
+         Faction.Type factionType = playerBody.faction;
+         Class.Type classType = playerBody.classType;
+         Specialty.Type specialtyType = playerBody.specialty;
+
+         // INSERT STAT CALCULATION LOGIC HERE
+         //
+         //
+
+         Debug.LogError("Class: " + classType);
+         Debug.LogError("Faction: " + factionType);
+         Debug.LogError("Specialty: " + specialtyType);
       }
    }
 
@@ -340,7 +349,7 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
       _balancedInitializedStance = BasicAbilityData.CreateInstance(AbilityInventory.self.balancedStance);
       _offenseInitializedStance = BasicAbilityData.CreateInstance(AbilityInventory.self.offenseStance);
       _defensiveInitializedStance = BasicAbilityData.CreateInstance(AbilityInventory.self.defenseStance);
-
+      
       if (values.basicAbilityDataList != null) {
          foreach (BasicAbilityData item in values.basicAbilityDataList) {
             switch (item.abilityType) {
@@ -353,7 +362,7 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
                   _battlerBuffAbilities.Add(buffAbilityData);
                   break;
                default:
-                  Debug.LogError("UNCATEGORIZED ability: " + item.itemName);
+                  Debug.LogWarning("UNCATEGORIZED ability: " + item.itemName);
                   break;
             }
          }
@@ -504,7 +513,7 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
       // creating a lot of different scripts
       
       Battle battle = BattleManager.self.getBattle(battleAction.battleId);
-      BattlerBehaviour sourceBattler = battle.getBattler(battleAction.sourceId);
+      Battler sourceBattler = battle.getBattler(battleAction.sourceId);
 
       // I believe we must grab the index from this battler, since this will be the one executing the attack
       AttackAbilityData attackerAbility = null;
@@ -518,7 +527,7 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
       // we check if the ability we want to reference is a cancel ability
 
       if (!globalAbilityData.isCancel()) {
-         attackerAbility = _battlerAttackAbilities[battleAction.abilityInventoryIndex];
+         attackerAbility = _battlerAttackAbilities.Find(_=>_.itemID == battleAction.abilityInventoryIndex);
       }
 
       switch (globalAbilityData.abilityActionType) {
@@ -536,7 +545,7 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
             AttackAction action = (AttackAction) battleAction;
 
             // Look up our needed references
-            BattlerBehaviour targetBattler = battle.getBattler(action.targetId);
+            Battler targetBattler = battle.getBattler(action.targetId);
             Vector2 startPos = sourceBattler.battleSpot.transform.position;
 
             float jumpDuration = attackerAbility.getJumpDuration(sourceBattler, targetBattler);
@@ -820,7 +829,7 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
       transform.position = new Vector3(startPos.x, startPos.y, transform.position.z);
    }
 
-   private IEnumerator animateBlock (BattlerBehaviour attacker) {
+   private IEnumerator animateBlock (Battler attacker) {
       // Show the Block animation frame
       playAnim(Anim.Type.Block_East);
       EffectManager.playBlockEffect(attacker, this);
@@ -828,7 +837,7 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
       playAnim(Anim.Type.Battle_East);
    }
 
-   private IEnumerator animateHit (BattlerBehaviour attacker, AttackAction action) {
+   private IEnumerator animateHit (Battler attacker, AttackAction action) {
       // Display the Hit animation frame for a short period
       playAnim(Anim.Type.Hurt_East);
       yield return new WaitForSeconds(POST_CONTACT_LENGTH);
@@ -874,7 +883,7 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
       transform.position = new Vector3(startPos.x, startPos.y, transform.position.z);
    }
 
-   private IEnumerator removeBuffAfterDelay (float delay, BattlerBehaviour battler, BuffTimer buff) {
+   private IEnumerator removeBuffAfterDelay (float delay, Battler battler, BuffTimer buff) {
       yield return new WaitForSeconds(delay);
 
       battler.removeBuff(buff);
@@ -980,27 +989,37 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
       // Calculate our defense based on our base and gain per level
       float defense = getBattlerData().baseDefense + (getBattlerData().defensePerLevel * level);
 
-      // Add our armor's defense value, if we have any
+       // Add our armor's defense value, if we have any
       if (armorManager.hasArmor()) {
          defense += armorManager.getArmor().getDefense(element);
       }
 
+      float elementalMultiplier = 1;
       switch (element) {
          case Element.Physical:
-            defense *= getBattlerData().physicalDefenseMultiplier;
+            elementalMultiplier = getBattlerData().physicalDefenseMultiplier;
             break;
          case Element.Fire:
-            defense *= getBattlerData().fireDefenseMultiplier;
+            elementalMultiplier = getBattlerData().fireDefenseMultiplier;
             break;
          case Element.Earth:
-            defense *= getBattlerData().earthDefenseMultiplier;
+            elementalMultiplier = getBattlerData().earthDefenseMultiplier;
             break;
          case Element.Air:
-            defense *= getBattlerData().airDefenseMultiplier;
+            elementalMultiplier = getBattlerData().airDefenseMultiplier;
             break;
          case Element.Water:
-            defense *= getBattlerData().waterDefenseMultiplier;
+            elementalMultiplier = getBattlerData().waterDefenseMultiplier;
             break;
+      }
+
+      if (elementalMultiplier < 0) {
+         // Handles units that are weak to the element
+         float negativeValue = defense * Mathf.Abs(elementalMultiplier);
+         defense -= negativeValue;
+      } else {
+         // Handles units that are resistant to the element
+         defense *= elementalMultiplier;
       }
 
       // We will add as an additional the "All" multiplier with the base defense
@@ -1064,7 +1083,7 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
       }
 
       // Otherwise, we're protected if there's a living Battler on our team in that spot
-      foreach (BattlerBehaviour battler in getTeam()) {
+      foreach (Battler battler in getTeam()) {
          if (battler.boardPosition == spotInFront && !battler.isDead()) {
             return true;
          }
@@ -1116,10 +1135,10 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
    // Used for AI controlled battlers
    public BattlePlan getBattlePlan (Battle battle) {
       if (battlerType == BattlerType.AIEnemyControlled) {
-         BattlerBehaviour target = getRandomTargetFor(getBasicAttack(), battle);
+         Battler target = getRandomTargetFor(getBasicAttack(), battle);
 
          // Set up a list of targets
-         List<BattlerBehaviour> targets = new List<BattlerBehaviour>();
+         List<Battler> targets = new List<Battler>();
          if (target != null) {
             targets.Add(target);
          }
@@ -1132,11 +1151,11 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
       }
    }
 
-   protected BattlerBehaviour getRandomTargetFor (AttackAbilityData abilityData, Battle battle) {
-      List<BattlerBehaviour> options = new List<BattlerBehaviour>();
+   protected Battler getRandomTargetFor (AttackAbilityData abilityData, Battle battle) {
+      List<Battler> options = new List<Battler>();
 
       // Cycle over all of the participants in the battle
-      foreach (BattlerBehaviour targetBattler in battle.getParticipants()) {
+      foreach (Battler targetBattler in battle.getParticipants()) {
 
          // Check if the battler is on the other team and not dead
          if (targetBattler.teamType != this.teamType && !targetBattler.isDead()) {
@@ -1165,12 +1184,12 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
       }
    }
 
-   public List<BattlerBehaviour> getTeam () {
+   public List<Battler> getTeam () {
       Battle battle = BattleManager.self.getBattle(this.battleId);
 
       if (battle == null) {
          D.warning("Can't get team for null battle: " + this.battleId);
-         return new List<BattlerBehaviour>();
+         return new List<Battler>();
       }
 
       if (teamType == Battle.TeamType.Attackers) {
@@ -1182,7 +1201,7 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
       }
 
       D.warning("There is no team for battler: " + this);
-      return new List<BattlerBehaviour>();
+      return new List<Battler>();
    }
 
    // Initialized stances
@@ -1239,7 +1258,7 @@ public class BattlerBehaviour : NetworkBehaviour, IAttackBehaviour {
    #region Private Variables
 
    // Attack abilities that will be used in combat
-   private List<AttackAbilityData> _battlerAttackAbilities = new List<AttackAbilityData>();
+   [SerializeField] private List<AttackAbilityData> _battlerAttackAbilities = new List<AttackAbilityData>();
 
    // Buff abilities that will be used when buffing/debuffing a target in combat.
    private List<BuffAbilityData> _battlerBuffAbilities = new List<BuffAbilityData>();

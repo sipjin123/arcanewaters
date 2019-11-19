@@ -70,7 +70,7 @@ public class BuffAbilityData : BasicAbilityData
 
    #region Custom Helper Methods
 
-   public float getTotalAnimLength (BattlerBehaviour attacker, BattlerBehaviour target) {
+   public float getTotalAnimLength (Battler attacker, Battler target) {
       return 1;
    }
 

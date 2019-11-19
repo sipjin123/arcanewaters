@@ -21,7 +21,7 @@ public class DB_Main : DB_MainStub {
 
    #region Achievements
 
-   public static new List<AchievementData> getAchievementData (int userID, AchievementData.ActionType actionType) {
+   public static new List<AchievementData> getAchievementData (int userID, ActionType actionType) {
       List<AchievementData> achievementTypeList = new List<AchievementData>();
       try {
          using (MySqlConnection conn = getConnection())

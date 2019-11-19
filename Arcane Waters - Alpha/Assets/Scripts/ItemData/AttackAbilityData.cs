@@ -84,7 +84,7 @@ public class AttackAbilityData : BasicAbilityData {
    // No damage increase or decrease by default
    public float getModifier { get { return 1.0f; } }
 
-   public float getTotalAnimLength (BattlerBehaviour attacker, BattlerBehaviour target) {
+   public float getTotalAnimLength (Battler attacker, Battler target) {
 
       float shakeLength = 0;
       float knockupLength = 0;
@@ -95,19 +95,19 @@ public class AttackAbilityData : BasicAbilityData {
             float jumpDuration = getJumpDuration(attacker, target);
 
             // Add up the amount of time it takes to animate an entire melee action
-            return jumpDuration + BattlerBehaviour.PAUSE_LENGTH + attacker.getPreContactLength() +
-                BattlerBehaviour.POST_CONTACT_LENGTH + jumpDuration + BattlerBehaviour.PAUSE_LENGTH;
+            return jumpDuration + Battler.PAUSE_LENGTH + attacker.getPreContactLength() +
+                Battler.POST_CONTACT_LENGTH + jumpDuration + Battler.PAUSE_LENGTH;
 
          case AbilityActionType.Ranged:
-            shakeLength = hasShake ? BattlerBehaviour.SHAKE_LENGTH : 0f;
-            knockupLength = hasKnockup ? BattlerBehaviour.KNOCKUP_LENGTH : 0f;
+            shakeLength = hasShake ? Battler.SHAKE_LENGTH : 0f;
+            knockupLength = hasKnockup ? Battler.KNOCKUP_LENGTH : 0f;
 
             // Add up the amount of time it takes to animate an entire action
             return attacker.getPreMagicLength() + shakeLength + knockupLength + getPreDamageLength + getPostDamageLength;
 
          case AbilityActionType.Projectile:
-            shakeLength = hasShake ? BattlerBehaviour.SHAKE_LENGTH : 0f;
-            knockupLength = hasKnockup ? BattlerBehaviour.KNOCKUP_LENGTH : 0f;
+            shakeLength = hasShake ? Battler.SHAKE_LENGTH : 0f;
+            knockupLength = hasKnockup ? Battler.KNOCKUP_LENGTH : 0f;
 
             // Add up the amount of time it takes to animate an entire action
             return attacker.getPreMagicLength() + shakeLength + knockupLength + getPreDamageLength + getPostDamageLength;
@@ -118,10 +118,10 @@ public class AttackAbilityData : BasicAbilityData {
       }
    }
 
-   public float getJumpDuration (BattlerBehaviour source, BattlerBehaviour target) {
+   public float getJumpDuration (Battler source, Battler target) {
       // The animation length depends on the distance between attacker and target
       float distance = Battle.getDistance(source, target);
-      float jumpDuration = distance * BattlerBehaviour.JUMP_LENGTH;
+      float jumpDuration = distance * Battler.JUMP_LENGTH;
 
       return jumpDuration;
    }

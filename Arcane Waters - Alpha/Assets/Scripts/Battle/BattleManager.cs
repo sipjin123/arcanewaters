@@ -13,7 +13,7 @@ public class PrefabTypes
    public Enemy.Type enemyType;
 
    // Holds the prefab of the type
-   public BattlerBehaviour enemyPrefab;
+   public Battler enemyPrefab;
 }
 
 public class BattleManager : MonoBehaviour {
@@ -29,7 +29,7 @@ public class BattleManager : MonoBehaviour {
    public Battle battlePrefab;
 
    // The base battler behaviour that will be initialized depending on the type and data that the Scriptable Object includes
-   public BattlerBehaviour baseBattlerPrefab;
+   public Battler baseBattlerPrefab;
 
    // Self
    public static BattleManager self;
@@ -106,7 +106,7 @@ public class BattleManager : MonoBehaviour {
       return null;
    }
 
-   public BattlerBehaviour getBattler (int userId) {
+   public Battler getBattler (int userId) {
       if (_battlers.ContainsKey(userId)) {
          return _battlers[userId];
       }
@@ -130,7 +130,7 @@ public class BattleManager : MonoBehaviour {
       return null;
    }
 
-   public BattlerBehaviour getPlayerBattler () {
+   public Battler getPlayerBattler () {
       if (Global.player == null) {
          return null;
       }
@@ -150,7 +150,7 @@ public class BattleManager : MonoBehaviour {
       ServerNetwork.self.claimPlayer(player.userId);
 
       // Create a Battler for this Player
-      BattlerBehaviour battler = createBattlerForPlayer(battle, player, teamType);
+      Battler battler = createBattlerForPlayer(battle, player, teamType);
       BattleManager.self.storeBattler(battler);
 
       // Add the Battler to the Battle
@@ -163,13 +163,16 @@ public class BattleManager : MonoBehaviour {
       // Assign the Battle ID to the Sync Var
       player.battleId = battle.battleId;
 
+      // Sets up ability UI info such as icons and name
+      BattleUIManager.self.SetupAbilityUI();
+
       // Update the observers associated with the Battle and the associated players
       rebuildObservers(battler, battle);
    }
    
    public void addEnemyToBattle (Battle battle, Enemy enemy, Battle.TeamType teamType, PlayerBodyEntity aggressor) {
       // Create a Battler for this Enemy
-      BattlerBehaviour battler = createBattlerForEnemy(battle, enemy, teamType);
+      Battler battler = createBattlerForEnemy(battle, enemy, teamType);
       self.storeBattler(battler);
 
       // Add the Battler to the Battle
@@ -194,7 +197,7 @@ public class BattleManager : MonoBehaviour {
       battle.resetAllBattleIDs();
 
       // Cycle over each Battler in the Battle
-      foreach (BattlerBehaviour battler in battle.getParticipants()) {
+      foreach (Battler battler in battle.getParticipants()) {
          // Update our internal mapping of users to battles
          _activeBattles[battler.userId] = null;
 
@@ -226,7 +229,7 @@ public class BattleManager : MonoBehaviour {
       _battles[battle.battleId] = battle;
    }
    
-   public void storeBattler (BattlerBehaviour battler) {
+   public void storeBattler (Battler battler) {
       _battlers[battler.userId] = battler;
    }
 
@@ -245,9 +248,9 @@ public class BattleManager : MonoBehaviour {
       }
    }
 
-   protected BattlerBehaviour createBattlerForPlayer (Battle battle, PlayerBodyEntity player, Battle.TeamType teamType) {
+   protected Battler createBattlerForPlayer (Battle battle, PlayerBodyEntity player, Battle.TeamType teamType) {
       // We need to make a new one
-      BattlerBehaviour battler = Instantiate(baseBattlerPrefab);
+      Battler battler = Instantiate(baseBattlerPrefab);
       battler.battlerType = BattlerType.PlayerControlled;
 
       // Set up our initial data and position
@@ -299,11 +302,11 @@ public class BattleManager : MonoBehaviour {
       return battler;
    }
 
-   private BattlerBehaviour createBattlerForEnemy (Battle battle, Enemy enemy, Battle.TeamType teamType) {
+   private Battler createBattlerForEnemy (Battle battle, Enemy enemy, Battle.TeamType teamType) {
       BattlerData data = getAllBattlersData().Find(x => x.enemyType == enemy.enemyType);
-      BattlerBehaviour enemyPrefab = prefabTypes.Find(_ => _.enemyType == enemy.enemyType).enemyPrefab;
+      Battler enemyPrefab = prefabTypes.Find(_ => _.enemyType == enemy.enemyType).enemyPrefab;
 
-      BattlerBehaviour battler = Instantiate(enemyPrefab);
+      Battler battler = Instantiate(enemyPrefab);
 
       // Set up our initial data and position
       battler.playerNetId = enemy.netId;
@@ -330,13 +333,13 @@ public class BattleManager : MonoBehaviour {
       return battler;
    }
 
-   protected void rebuildObservers (BattlerBehaviour newBattler, Battle battle) {
+   protected void rebuildObservers (Battler newBattler, Battle battle) {
       // If this entity is a Bot and not a Player, then all it needs to do is make itself visible to clients in the Battle
       if (!(newBattler.player is PlayerBodyEntity)) {
          newBattler.netIdentity.RebuildObservers(false);
       } else {
          // Everything in the Battle needs to update its observer list to include the new Battler
-         foreach (BattlerBehaviour battler in battle.getParticipants()) {
+         foreach (Battler battler in battle.getParticipants()) {
             battler.netIdentity.RebuildObservers(false);
          }
 
@@ -375,10 +378,11 @@ public class BattleManager : MonoBehaviour {
    }
 
    #region Attack Execution
-   
-   public void executeBattleAction(Battle battle, BattlerBehaviour source, List<BattlerBehaviour> targets, int abilityInventoryIndex) {
+
+   public void executeBattleAction (Battle battle, Battler source, List<Battler> targets, int abilityInventoryIndex) {
       // Get ability reference from the source battler, cause the source battler is the one executing the ability
-      BasicAbilityData abilityData = source.getAttackAbilities()[abilityInventoryIndex];
+      BasicAbilityData abilityData = source.getAttackAbilities().Find(_ => _.itemID == abilityInventoryIndex);
+
       BattleActionType actionType = BattleActionType.UNDEFINED;
 
       bool wasBlocked = false;
@@ -391,6 +395,10 @@ public class BattleManager : MonoBehaviour {
       // String action list that will be sent to clients
       List<string> stringList = new List<string>();
 
+      if (abilityData == null) {
+         Debug.LogError("The Ability Data is NULL!! : "+ source.enemyType);
+         return;
+      }
       if (abilityData.abilityType == AbilityType.Standard) {
          AttackAbilityData attackAbilityData = abilityData as AttackAbilityData;
 
@@ -398,7 +406,7 @@ public class BattleManager : MonoBehaviour {
          int sourceApChange = abilityData.apChange;
          source.addAP(sourceApChange);
 
-         foreach (BattlerBehaviour target in targets) {
+         foreach (Battler target in targets) {
             // For now, players have a 50% chance of blocking monsters
             if (target.canBlock() && attackAbilityData.canBeBlocked) {
                wasBlocked = Random.Range(0f, 1f) > .50f;
@@ -411,19 +419,24 @@ public class BattleManager : MonoBehaviour {
 
             // Adjust the damage amount based on element, ability, and the target's armor
             Element element = abilityData.elementType;
-            float damage = source.getDamage(element) * attackAbilityData.getModifier;
-            damage *= (100f / (100f + target.getDefense(element)));
+
+            float sourceDamageElement = source.getDamage(element);
+            float damage = sourceDamageElement * attackAbilityData.getModifier;
+
+            float targetDefenseElement = target.getDefense(element);
+            damage *= (100f / (100f + targetDefenseElement));
+
             float increaseAdditive = 0f;
             float decreaseMultiply = 1f;
             decreaseMultiply *= wasBlocked ? .50f : 1f;
             increaseAdditive += wasCritical ? .50f : 0f;
 
             // Adjust the damage based on the source and target stances
-            increaseAdditive += (source.stance == BattlerBehaviour.Stance.Attack) ? .25f : 0f;
-            decreaseMultiply *= (source.stance == BattlerBehaviour.Stance.Defense) ? .75f : 1f;
+            increaseAdditive += (source.stance == Battler.Stance.Attack) ? .25f : 0f;
+            decreaseMultiply *= (source.stance == Battler.Stance.Defense) ? .75f : 1f;
             if (!attackAbilityData.isHeal()) {
-               increaseAdditive += (target.stance == BattlerBehaviour.Stance.Attack) ? .25f : 0f;
-               decreaseMultiply *= (target.stance == BattlerBehaviour.Stance.Defense) ? .75f : 1f;
+               increaseAdditive += (target.stance == Battler.Stance.Attack) ? .25f : 0f;
+               decreaseMultiply *= (target.stance == Battler.Stance.Defense) ? .75f : 1f;
             }
 
             // Decrease damage on protected targets
@@ -488,7 +501,7 @@ public class BattleManager : MonoBehaviour {
    }
 
    // Stance action does not requires another target or an ability inventory index, thus, being removed from executeBattleAction
-   public void executeStanceChangeAction (Battle battle, BattlerBehaviour source, BattlerBehaviour.Stance newStance) {
+   public void executeStanceChangeAction (Battle battle, Battler source, Battler.Stance newStance) {
       float timeActionEnds = Util.netTime() + source.getStanceCooldown(newStance);
       StanceAction stanceAction = new StanceAction(battle.battleId, source.userId, timeActionEnds, newStance);
 
@@ -500,22 +513,22 @@ public class BattleManager : MonoBehaviour {
 
    #endregion
 
-   protected int getGoldForDefeated (List<BattlerBehaviour> defeatedList) {
+   protected int getGoldForDefeated (List<Battler> defeatedList) {
       int totalGold = 0;
 
       // Get the value from each individual battler
-      foreach (BattlerBehaviour battler in defeatedList) {
+      foreach (Battler battler in defeatedList) {
          totalGold += battler.getGoldValue();
       }
 
       return totalGold;
    }
 
-   protected int getXPForDefeated (List<BattlerBehaviour> defeatedList) {
+   protected int getXPForDefeated (List<Battler> defeatedList) {
       int total = 0;
 
       // Get the value from each individual battler
-      foreach (BattlerBehaviour battler in defeatedList) {
+      foreach (Battler battler in defeatedList) {
          total += battler.getXPValue();
       }
 
@@ -532,15 +545,15 @@ public class BattleManager : MonoBehaviour {
       }
 
       // Get the Battler object
-      BattlerBehaviour source = battle.getBattler(actionToApply.sourceId);
+      Battler source = battle.getBattler(actionToApply.sourceId);
 
       if (actionToApply is AttackAction || actionToApply is BuffAction) {
          BattleAction action = (BattleAction) actionToApply;
-         BattlerBehaviour target = battle.getBattler(action.targetId);
+         Battler target = battle.getBattler(action.targetId);
 
          // ZERONEV-COMMENT: It is supossed we are still grabbing the ability from the source battler to apply it
          // So we will grab the source battler
-         AttackAbilityData abilityData = source.getAttackAbilities()[action.abilityInventoryIndex];
+         AttackAbilityData abilityData = source.getAttackAbilities().Find(_=>_.itemID == action.abilityInventoryIndex);
 
          // If the source or target is already dead, then send a Cancel Action
          if (source.isDead() || target.isDead()) {
@@ -567,7 +580,7 @@ public class BattleManager : MonoBehaviour {
                AttackAction attackAction = (AttackAction) action;
 
                // Registers the usage of the Offensive Skill for achievement recording
-               source.player.achievementManager.registerAchievement(source.player.userId, AchievementData.ActionType.OffensiveSkillUse, 1);
+               AchievementManager.registerTargetUserAchivement(source.player.userId, ActionType.OffensiveSkillUse);
 
                // Apply damage
                target.health -= attackAction.damage;
@@ -577,7 +590,7 @@ public class BattleManager : MonoBehaviour {
                BuffAction buffAction = (BuffAction) action;
 
                // Registers the usage of the Buff Skill for achievement recording
-               source.player.achievementManager.registerAchievement(source.player.userId, AchievementData.ActionType.BuffSkillUse, 1);
+               AchievementManager.registerTargetUserAchivement(source.player.userId, ActionType.BuffSkillUse);
 
                // Apply the Buff
                target.addBuff(buffAction.getBuffTimer());
@@ -588,8 +601,8 @@ public class BattleManager : MonoBehaviour {
 
    protected IEnumerator endBattleAfterDelay (Battle battle, float delay) {
       Battle.TeamType teamThatWon = battle.getTeamThatWon();
-      List<BattlerBehaviour> defeatedBattlers = (battle.teamThatWon == Battle.TeamType.Attackers) ? battle.getDefenders() : battle.getAttackers();
-      List<BattlerBehaviour> winningBattlers = (battle.teamThatWon == Battle.TeamType.Attackers) ? battle.getAttackers() : battle.getDefenders();
+      List<Battler> defeatedBattlers = (battle.teamThatWon == Battle.TeamType.Attackers) ? battle.getDefenders() : battle.getAttackers();
+      List<Battler> winningBattlers = (battle.teamThatWon == Battle.TeamType.Attackers) ? battle.getAttackers() : battle.getDefenders();
 
       // Wait a bit for the death animations to finish
       yield return new WaitForSeconds(delay);
@@ -603,7 +616,7 @@ public class BattleManager : MonoBehaviour {
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Update the gold and XP in the database for the winners
-         foreach (BattlerBehaviour participant in battle.getParticipants()) {
+         foreach (Battler participant in battle.getParticipants()) {
             if (participant.teamType == battle.teamThatWon) {
                DB_Main.addGoldAndXP(participant.userId, goldWon, xpWon);
             }
@@ -611,7 +624,7 @@ public class BattleManager : MonoBehaviour {
       });
 
       // Update the XP amount on the PlayerController objects for the connected players
-      foreach (BattlerBehaviour battler in winningBattlers) {
+      foreach (Battler battler in winningBattlers) {
          if (!battler.isMonster()) {
             if (battler.player is PlayerBodyEntity) {
                PlayerBodyEntity body = (PlayerBodyEntity) battler.player;
@@ -621,18 +634,18 @@ public class BattleManager : MonoBehaviour {
       }
 
       // Process monster type reward
-      foreach (BattlerBehaviour battler in defeatedBattlers) {
+      foreach (Battler battler in defeatedBattlers) {
          if (battler.isMonster()) {
             int battlerEnemyID = (int) battler.getBattlerData().enemyType;
-            foreach (BattlerBehaviour participant in winningBattlers) {
+            foreach (Battler participant in winningBattlers) {
                if (!participant.isMonster()) {
                   Vector3 chestPos = BodyManager.self.getBody(participant.player.userId).transform.position;
 
                   // Registers the kill count of the combat
-                  participant.player.achievementManager.registerAchievement(participant.player.userId, AchievementData.ActionType.KillLandMonster, defeatedBattlers.Count);
+                  AchievementManager.registerTargetUserAchivement(participant.player.userId, ActionType.KillLandMonster, defeatedBattlers.Count);
 
                   // Registers the gold earned for achievement recording
-                  participant.player.achievementManager.registerAchievement(participant.player.userId, AchievementData.ActionType.EarnGold, goldWon);
+                  AchievementManager.registerTargetUserAchivement(participant.player.userId, ActionType.EarnGold, goldWon);
 
                   participant.player.rpc.spawnBattlerMonsterChest(participant.player.instanceId, chestPos, battlerEnemyID);
                }
@@ -640,7 +653,7 @@ public class BattleManager : MonoBehaviour {
          } else {
             if (battler.player is PlayerBodyEntity) {
                // Registers the death of the player in combat
-               battler.player.achievementManager.registerAchievement(battler.player.userId, AchievementData.ActionType.CombatDie, 1);
+               AchievementManager.registerTargetUserAchivement(battler.player.userId, ActionType.CombatDie);
             }
          }
       }
@@ -660,7 +673,7 @@ public class BattleManager : MonoBehaviour {
    protected Dictionary<int, Battle> _battles = new Dictionary<int, Battle>();
    
    // Stored references of the battlers that are currently in a battle
-   private Dictionary<int, BattlerBehaviour> _battlers = new Dictionary<int, BattlerBehaviour>();
+   private Dictionary<int, Battler> _battlers = new Dictionary<int, Battler>();
 
    // Keeps track of which user IDs are associated with which Battles
    protected Dictionary<int, Battle> _activeBattles = new Dictionary<int, Battle>();

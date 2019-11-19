@@ -10,7 +10,7 @@ public class BattlerObserverManager : NetworkBehaviour {
    #endregion
 
    void Awake () {
-      _battler = GetComponent<BattlerBehaviour>();
+      _battler = GetComponent<Battler>();
    }
 
    // Called when a new player enters
@@ -23,7 +23,7 @@ public class BattlerObserverManager : NetworkBehaviour {
       // It seems this has to be cleared out at the start, or else it can contain unwanted connections
       connectionsToObserve.Clear();
 
-      foreach (BattlerBehaviour battler in _battler.battle.getParticipants()) {
+      foreach (Battler battler in _battler.battle.getParticipants()) {
          if (battler.player != null && battler.player.connectionToClient != null) {
             connectionsToObserve.Add(battler.player.connectionToClient);
          }
@@ -40,7 +40,7 @@ public class BattlerObserverManager : NetworkBehaviour {
    #region Private Variables
 
    // Our associated Battler
-   protected BattlerBehaviour _battler;
+   protected Battler _battler;
 
    #endregion
 }

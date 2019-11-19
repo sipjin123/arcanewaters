@@ -108,7 +108,7 @@ public class EffectManager : MonoBehaviour {
       }
    }
 
-   public static void playBlockEffect (BattlerBehaviour attacker, BattlerBehaviour target) {
+   public static void playBlockEffect (Battler attacker, Battler target) {
       SoundManager.playClipAtPoint(SoundManager.Type.Character_Block, target.transform.position);
 
       // Find a point at which to display the effect
@@ -128,7 +128,7 @@ public class EffectManager : MonoBehaviour {
       Util.setZ(effectInstance.transform, target.transform.position.z - 5f);
    }
 
-   public static void playPoofEffect (BattlerBehaviour deadBattler) {
+   public static void playPoofEffect (Battler deadBattler) {
       SoundManager.playClipAtPoint(SoundManager.Type.Death_Poof, deadBattler.transform.position);
 
       // Play a "Poof" effect on our head
@@ -141,10 +141,10 @@ public class EffectManager : MonoBehaviour {
    }
 
    // Used for executing a VFX in the target battler
-   public static void playCombatAbilityVFX (BattlerBehaviour attacker, BattlerBehaviour target, AttackAction action, Vector2 targetPos) {
+   public static void playCombatAbilityVFX (Battler attacker, Battler target, AttackAction action, Vector2 targetPos) {
       Weapon.Type attackerWeapon = attacker.weaponManager.weaponType;
 
-      AttackAbilityData ability = attacker.getAttackAbilities()[action.abilityInventoryIndex];
+      AttackAbilityData ability = attacker.getAttackAbilities().Find(_=>_.itemID == action.abilityInventoryIndex);
 
       List<Sprite> hitSprites = new List<Sprite>();
       foreach (string path in ability.hitSpritesPath) {
@@ -177,8 +177,8 @@ public class EffectManager : MonoBehaviour {
    }
 
    // Used for creating a VFX for casting a magic spell
-   public static void playCastAbilityVFX (BattlerBehaviour source, AttackAction action, Vector2 targetPos) {
-      AttackAbilityData ability = source.getAttackAbilities()[action.abilityInventoryIndex];
+   public static void playCastAbilityVFX (Battler source, AttackAction action, Vector2 targetPos) {
+      AttackAbilityData ability = source.getAttackAbilities().Find(_=>_.itemID == action.abilityInventoryIndex);
 
       List<Sprite> castSprites = new List<Sprite>();
       foreach (string path in ability.castSpritesPath) {

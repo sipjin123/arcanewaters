@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class SpecialyManager : MonoBehaviour {
+public class SpecialtyManager : MonoBehaviour {
    #region Public Variables
 
    // Self
-   public static SpecialyManager self;
+   public static SpecialtyManager self;
 
    // The files containing the specialty data
    public TextAsset[] specialtyDataAssets;

@@ -17,7 +17,7 @@ public class EquipmentManager : NetworkBehaviour {
 
    public virtual void Awake () {
       _body = GetComponent<BodyEntity>();
-      _battler = GetComponent<BattlerBehaviour>();
+      _battler = GetComponent<Battler>();
    }
 
    protected Gender.Type getGender () {
@@ -34,7 +34,7 @@ public class EquipmentManager : NetworkBehaviour {
    protected BodyEntity _body;
 
    // The Battler we're associated with, if any
-   protected BattlerBehaviour _battler;
+   protected Battler _battler;
 
    #endregion
 }

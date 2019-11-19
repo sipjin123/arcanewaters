@@ -135,6 +135,19 @@ public class BattleUIManager : MonoBehaviour {
       self = this;
    }
 
+   public void SetupAbilityUI () {
+      foreach (AbilityButton abilityButton in abilityTargetButtons) {
+         BasicAbilityData currentAbility = AbilityManager.self.allGameAbilities.Find(_ => _.itemID == abilityButton.abilityIndex);
+         if (currentAbility != null) {
+            string iconPath = currentAbility.itemIconPath;
+            Sprite skillSprite = ImageManager.getSprite(iconPath);
+            abilityButton.transform.GetChild(0).GetComponent<Image>().sprite = skillSprite;
+         } else {
+            Debug.LogWarning("Missing Ability: " + abilityButton.abilityIndex);
+         }
+      }
+   }
+
    private void Update () {
       // Normally I would only update these values when needed (updating when action timer var is not full, or when the player received damage)
       // But for now I will just update them every frame
@@ -160,7 +173,7 @@ public class BattleUIManager : MonoBehaviour {
       playerBattleCG.Show();
 
       // Battler stances are always reset to balanced when a new battle begins, so we reset the UI too.
-      setStanceGraphics(BattlerBehaviour.Stance.Balanced);
+      setStanceGraphics(Battler.Stance.Balanced);
 
       usernameText.text = Global.player.entityName;
 
@@ -186,21 +199,21 @@ public class BattleUIManager : MonoBehaviour {
 
    // Changes the icon that is at the right side of the player battle ring UI
    public void changeBattleStance (int newStance) {
-      switch ((BattlerBehaviour.Stance) newStance) {
-         case BattlerBehaviour.Stance.Balanced:
+      switch ((Battler.Stance) newStance) {
+         case Battler.Stance.Balanced:
             _playerLocalBattler.stanceCurrentCooldown = AbilityInventory.self.balancedStance.abilityCooldown;
             break;
-         case BattlerBehaviour.Stance.Attack:
+         case Battler.Stance.Attack:
             _playerLocalBattler.stanceCurrentCooldown = AbilityInventory.self.offenseStance.abilityCooldown;
             break;
-         case BattlerBehaviour.Stance.Defense:
+         case Battler.Stance.Defense:
             _playerLocalBattler.stanceCurrentCooldown = AbilityInventory.self.defenseStance.abilityCooldown;
             break;
       }
 
-      setStanceGraphics((BattlerBehaviour.Stance) newStance);
+      setStanceGraphics((Battler.Stance) newStance);
       
-      Global.player.rpc.Cmd_RequestStanceChange((BattlerBehaviour.Stance) newStance);
+      Global.player.rpc.Cmd_RequestStanceChange((Battler.Stance) newStance);
 
       // Whenever we have finished setting the new stance, we hide the frames
       hideActionStanceFrame();
@@ -276,13 +289,13 @@ public class BattleUIManager : MonoBehaviour {
       }
    }
 
-   public Sprite getStanceIcon (BattlerBehaviour.Stance stance) {
+   public Sprite getStanceIcon (Battler.Stance stance) {
       switch (stance) {
-         case BattlerBehaviour.Stance.Balanced:
+         case Battler.Stance.Balanced:
             return balancedSprite;
-         case BattlerBehaviour.Stance.Attack:
+         case Battler.Stance.Attack:
             return offenseSprite;
-         case BattlerBehaviour.Stance.Defense:
+         case Battler.Stance.Defense:
             return defenseSprite;
          default:
             return null;
@@ -291,7 +304,7 @@ public class BattleUIManager : MonoBehaviour {
 
    #endregion
 
-   public void triggerTargetUI (BattlerBehaviour target) {
+   public void triggerTargetUI (Battler target) {
       mainTargetRect.gameObject.SetActive(true);
 
       Vector2 viewportPosition = CameraManager.battleCamera.getCamera().WorldToViewportPoint(target.battleSpot.transform.position +
@@ -318,7 +331,7 @@ public class BattleUIManager : MonoBehaviour {
       // The transition takes 2 seconds
       yield return new WaitForSeconds(2);
 
-      BattlerBehaviour playerBattler = BattleManager.self.getPlayerBattler();
+      Battler playerBattler = BattleManager.self.getPlayerBattler();
       mainPlayerRectCG.Show();
 
       Vector3 pointOffset = new Vector3(playerBattler.clickBox.bounds.size.x / 4, playerBattler.clickBox.bounds.size.y * 1.75f);
@@ -368,17 +381,17 @@ public class BattleUIManager : MonoBehaviour {
       originRect.anchoredPosition = objectScreenPos;
    }
 
-   private void setStanceGraphics (BattlerBehaviour.Stance stance) {
+   private void setStanceGraphics (Battler.Stance stance) {
       switch (stance) {
-         case BattlerBehaviour.Stance.Balanced:
+         case Battler.Stance.Balanced:
             stanceMainIcon.sprite = balancedSprite;
             stanceButtonFrameIcon.sprite = balancedSprite;
             break;
-         case BattlerBehaviour.Stance.Attack:
+         case Battler.Stance.Attack:
             stanceMainIcon.sprite = offenseSprite;
             stanceButtonFrameIcon.sprite = offenseSprite;
             break;
-         case BattlerBehaviour.Stance.Defense:
+         case Battler.Stance.Defense:
             stanceMainIcon.sprite = defenseSprite;
             stanceButtonFrameIcon.sprite = defenseSprite;
             break;
@@ -387,7 +400,7 @@ public class BattleUIManager : MonoBehaviour {
 
    #region DamageText
    
-   public void showDamageText (AttackAction action, BattlerBehaviour damagedBattler) {
+   public void showDamageText (AttackAction action, Battler damagedBattler) {
       BattleSpot spot = damagedBattler.battleSpot;
 
       AttackAbilityData abilityData = AbilityManager.getAbility(action.abilityGlobalID, AbilityType.Standard) as AttackAbilityData;
@@ -424,13 +437,13 @@ public class BattleUIManager : MonoBehaviour {
       damagedBattler.lastDamagedTime = Time.time;
    }
 
-   private void createBlockBattleText (BattlerBehaviour battler) {
+   private void createBlockBattleText (Battler battler) {
       GameObject battleTextInstance = Instantiate(PrefabsManager.self.battleTextPrefab);
       battleTextInstance.transform.SetParent(battler.transform, false);
       battleTextInstance.GetComponentInChildren<BattleText>().customizeTextForBlock();
    }
 
-   private void createCriticalBattleText (BattlerBehaviour battler) {
+   private void createCriticalBattleText (Battler battler) {
       GameObject battleTextInstance = Instantiate(PrefabsManager.self.battleTextPrefab);
       battleTextInstance.transform.SetParent(battler.transform, false);
       battleTextInstance.GetComponentInChildren<BattleText>().customizeTextForCritical();
@@ -442,7 +455,7 @@ public class BattleUIManager : MonoBehaviour {
    #region Private Variables
 
    // Reference for the local player battler, used for setting the bars information only
-   private BattlerBehaviour _playerLocalBattler;
+   private Battler _playerLocalBattler;
 
    #endregion
 }

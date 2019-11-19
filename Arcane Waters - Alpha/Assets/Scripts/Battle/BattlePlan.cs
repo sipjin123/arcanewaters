@@ -14,7 +14,7 @@ public class BattlePlan {
    public BasicAbilityData ability;
 
    // The battlers we're going to target
-   public List<BattlerBehaviour> targets;
+   public List<Battler> targets;
 
    #endregion
 
@@ -25,10 +25,10 @@ public class BattlePlan {
    /// </summary>
    /// <param name="target"></param>
    /// <param name="ability"></param>
-   public BattlePlan (BattlerBehaviour target, BasicAbilityData ability) {
+   public BattlePlan (Battler target, BasicAbilityData ability) {
       this.ability = ability;
 
-      this.targets = new List<BattlerBehaviour>();
+      this.targets = new List<Battler>();
       this.targets.Add(target);
    }
 
@@ -37,7 +37,7 @@ public class BattlePlan {
    /// </summary>
    /// <param name="ability"></param>
    /// <param name="targets"></param>
-   public BattlePlan (BasicAbilityData ability, List<BattlerBehaviour> targets) {
+   public BattlePlan (BasicAbilityData ability, List<Battler> targets) {
       this.ability = ability;
       this.targets = targets;
    }

@@ -35,11 +35,11 @@ public class DebugButtons : NetworkBehaviour
       }
 
       if (GUILayout.Button("Trigger Loot Gain")) {
-         //Global.player.achievementManager.Cmd_RegisterAchievement(Global.player.userId, AchievementData.ActionType.LootGainTotal, 1, 0, 0);
+         //Global.player.achievementManager.Cmd_RegisterAchievement(Global.player.userId, ActionType.LootGainTotal, 1, 0, 0);
       }
 
       if (GUILayout.Button("Trigger Gather Wood")) {
-         //Global.player.achievementManager.Cmd_RegisterAchievement(Global.player.userId, AchievementData.ActionType.GatherItem, 1, 6, 4);
+         //Global.player.achievementManager.Cmd_RegisterAchievement(Global.player.userId, ActionType.GatherItem, 1, 6, 4);
       }
 
       if (GUILayout.Button("Create Achievement")) {
@@ -47,7 +47,7 @@ public class DebugButtons : NetworkBehaviour
             achievementName = "AName",
             achievementDescription = "ADesc",
             achievementUniqueID = "UniqueID",
-            actionType = AchievementData.ActionType.ArmorBuy,
+            actionType = ActionType.ArmorBuy,
             iconPath = "",
             itemCategory = 0,
             itemType = 0,
@@ -72,7 +72,7 @@ public class DebugButtons : NetworkBehaviour
             achievementName = "AName",
             achievementDescription = "ADesc",
             achievementUniqueID = "UniqueID",
-            actionType = AchievementData.ActionType.ArmorBuy,
+            actionType = ActionType.ArmorBuy,
             iconPath = "",
             itemCategory = 0,
             itemType = 0,

@@ -222,7 +222,7 @@ public class AdminManager : NetworkBehaviour {
                string message = string.Format("Added {0} gold to {1}'s inventory.", gold, username);
 
                // Registers the gold gains to achievement data for recording
-               _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.EarnGold, gold);
+               AchievementManager.registerUserAchievement(ActionType.EarnGold, gold);
                ServerMessageManager.sendConfirmation(ConfirmMessage.Type.AddGold, _player, message);
             });
 

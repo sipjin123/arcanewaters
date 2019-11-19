@@ -20,7 +20,7 @@ public class BattleBars : MonoBehaviour {
 
    private void Start () {
       // Look up components
-      _battler = GetComponentInParent<BattlerBehaviour>();
+      _battler = GetComponentInParent<Battler>();
       _canvasGroup = GetComponent<CanvasGroup>();
 
       // Only show the timer for our own player
@@ -75,7 +75,7 @@ public class BattleBars : MonoBehaviour {
    #region Private Variables
 
    // Our associated Battler
-   protected BattlerBehaviour _battler;
+   protected Battler _battler;
 
    // Our Canvas Group
    protected CanvasGroup _canvasGroup;

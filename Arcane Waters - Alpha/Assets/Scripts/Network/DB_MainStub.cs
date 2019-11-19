@@ -14,7 +14,7 @@ public class DB_MainStub : MonoBehaviour {
 
    }
 
-   public static AchievementData getAchievementData (int userID, AchievementData.ActionType actionType) {
+   public static AchievementData getAchievementData (int userID, ActionType actionType) {
       return new AchievementData();
    }
 

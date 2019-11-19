@@ -8,7 +8,7 @@ public class BattleSelectionManager : MonoBehaviour {
    #region Public Variables
 
    // The currently selected Battler, if any
-   public BattlerBehaviour selectedBattler;
+   public Battler selectedBattler;
 
    // The selection sprite
    public BattleSelectionSprite selectionSprite;
@@ -57,7 +57,7 @@ public class BattleSelectionManager : MonoBehaviour {
          bool clickedBattler = false;
 
          // Cycle over each of the Battlers in the Battle
-         foreach (BattlerBehaviour battler in playerBattle.getParticipants()) {
+         foreach (Battler battler in playerBattle.getParticipants()) {
             // Gets the Bounds of the sprite, but scale it down a bit since it contains a lot of transparent border
             Bounds bounds = battler.clickBox.bounds;
 

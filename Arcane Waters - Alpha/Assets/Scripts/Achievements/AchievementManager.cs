@@ -7,15 +7,19 @@ using System;
 
 public class AchievementManager : NetworkBehaviour {
    #region Public Variables
-   
+
+   // Self
+   public static AchievementManager self;
+
    #endregion
 
    void Awake () {
+      self = this;
       _player = GetComponent<NetEntity>();
    }
 
    [Server]
-   public void registerAchievement (int userID, AchievementData.ActionType actionType, int count, Item dependencyItem = null) {
+   private void processAchievement (int userID, ActionType actionType, int count, Item dependencyItem = null) {
       D.debug("Register Achievement: " + actionType);
       List<AchievementData> castedData = AchievementDataManager.castData(actionType, count, dependencyItem);
       if (castedData == null) {
@@ -91,8 +95,8 @@ public class AchievementManager : NetworkBehaviour {
 
                if (requirementCount == 1) {
                   isComplete = true;
-               } 
-
+               }
+               rawData.count = 1;
                DB_Main.updateAchievementData(rawData, userID, isComplete);
             }
          }
@@ -101,6 +105,14 @@ public class AchievementManager : NetworkBehaviour {
             // INSERT UNITY LOGIC HERE
          });
       });
+   }
+
+   public static void registerUserAchievement (ActionType action, int customCount = 1, Item dependencyItem = null) {
+      self.processAchievement(self._player.userId, action, customCount, dependencyItem);
+   }
+
+   public static void registerTargetUserAchivement (int userID, ActionType action, int customCount = 1, Item dependencyItem = null) {
+      self.processAchievement(userID, action, customCount, dependencyItem);
    }
 
    #region Private Variables

@@ -62,8 +62,8 @@ public class AbilityManager : MonoBehaviour
       foreach (BattleAction action in actions) {
          BattleAction actionToExecute = null;
          Battle battle = BattleManager.self.getBattle(action.battleId);
-         BattlerBehaviour sourceBattler = battle.getBattler(action.sourceId);
-         BattlerBehaviour targetBattler = battle.getBattler(action.targetId);
+         Battler sourceBattler = battle.getBattler(action.sourceId);
+         Battler targetBattler = battle.getBattler(action.targetId);
          float timeToWait = 0;
 
          // Update timestamps
@@ -75,7 +75,7 @@ public class AbilityManager : MonoBehaviour
          targetBattler.animatingUntil = action.actionEndTime;
 
          // Get the ability object for this action
-         AttackAbilityData abilityData = sourceBattler.getAttackAbilities()[action.abilityInventoryIndex];
+         AttackAbilityData abilityData = sourceBattler.getAttackAbilities().Find(_=>_.itemID == action.abilityInventoryIndex);
 
          switch (action.battleActionType) {
             case BattleActionType.Attack:
@@ -120,7 +120,7 @@ public class AbilityManager : MonoBehaviour
 
    public void execute (StanceAction action) {
       Battle battle = BattleManager.self.getBattle(action.battleId);
-      BattlerBehaviour sourceBattler = battle.getBattler(action.sourceId);
+      Battler sourceBattler = battle.getBattler(action.sourceId);
 
       // Make note of the time that this action is going to occur
       sourceBattler.lastStanceChange = action.actionEndTime;

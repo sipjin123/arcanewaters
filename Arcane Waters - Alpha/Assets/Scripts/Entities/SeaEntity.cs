@@ -164,7 +164,7 @@ public class SeaEntity : NetEntity {
                   entity.Rpc_ShowExplosion(collidedEntity.transform.position, damage, Attack.Type.None);
 
                   // Registers the action electrocuted to the userID to the achievement database for recording
-                  achievementManager.registerAchievement(entity.userId, AchievementData.ActionType.Electrocuted, 1);
+                  AchievementManager.registerTargetUserAchivement(entity.userId, ActionType.Electrocuted);
 
                   collidedEntities.Add(entity, collidedEntity.transform);
                   targetIDList.Add(entity.userId);
@@ -574,26 +574,26 @@ public class SeaEntity : NetEntity {
                         if (entity is SeaMonsterEntity) {
                            if (healthAfterDamage <= 0) {
                               // Registers the action Sea Monster Killed to the achievement database for recording
-                              this.achievementManager.registerAchievement(userId, AchievementData.ActionType.KillSeaMonster, 1);
+                              AchievementManager.registerUserAchievement(ActionType.KillSeaMonster);
                            }
                         } else if (entity is BotShipEntity) {
                            if (healthAfterDamage <= 0) {
                               // Registers the action Sunked Ships to the achievement database for recording
-                              this.achievementManager.registerAchievement(userId, AchievementData.ActionType.SinkedShips, 1);
+                              AchievementManager.registerUserAchievement(ActionType.SinkedShips);
                            }
                         } else if (entity is PlayerShipEntity) {
                            if (entity.userId != userId) {
                               if (healthAfterDamage <= 0) {
                                  // Registers the ship death action of the user to the achievement database for recording of death count
-                                 this.achievementManager.registerAchievement(entity.userId, AchievementData.ActionType.ShipDie, 1);
+                                 AchievementManager.registerTargetUserAchivement(entity.userId, ActionType.ShipDie);
                               }
                               // Registers the cannon hit action specifically for other player ship to the achievement database 
-                              this.achievementManager.registerAchievement(userId, AchievementData.ActionType.HitPlayerWithCannon, 1);
+                              AchievementManager.registerUserAchievement(ActionType.HitPlayerWithCannon);
                            }
                         }
 
                         // Registers the cannon hit action of the user to the achievement database for recording of accuracy
-                        this.achievementManager.registerAchievement(userId, AchievementData.ActionType.CannonHits, 1);
+                        AchievementManager.registerUserAchievement(ActionType.CannonHits);
                      }
 
                      entity.currentHealth -= damage;
@@ -614,7 +614,7 @@ public class SeaEntity : NetEntity {
                      if (this is BotShipEntity) {
                         if (entity is PlayerShipEntity) {
                            // Registers the frozen action status to the achievementdata for recording
-                           achievementManager.registerAchievement(entity.userId, AchievementData.ActionType.Frozen, 1);
+                           AchievementManager.registerTargetUserAchivement(entity.userId, ActionType.Frozen);
                         }
                      }
 
@@ -624,7 +624,7 @@ public class SeaEntity : NetEntity {
                      if (this is BotShipEntity) {
                         if (entity is PlayerShipEntity) {
                            // Registers the poison action status to the achievementdata for recording
-                           achievementManager.registerAchievement(entity.userId, AchievementData.ActionType.Poisoned, 1);
+                           AchievementManager.registerTargetUserAchivement(entity.userId,ActionType.Poisoned);
                         }
                      }
 

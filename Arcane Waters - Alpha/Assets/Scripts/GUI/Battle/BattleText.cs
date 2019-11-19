@@ -39,18 +39,18 @@ public class BattleText : MonoBehaviour {
         }
     }
 
-    public void customizeTextForStance(BattlerBehaviour.Stance stance) {
+    public void customizeTextForStance(Battler.Stance stance) {
         _text = GetComponent<Text>();
 
         // Start out scaled completely down
         transform.localScale = Vector3.zero;
 
         switch (stance) {
-            case BattlerBehaviour.Stance.Attack:
+            case Battler.Stance.Attack:
                 _text.color = Color.red;
                 _text.text = "Offense\nStance";
                 break;
-            case BattlerBehaviour.Stance.Defense:
+            case Battler.Stance.Defense:
                 _text.color = Color.green;
                 _text.text = "Defense\nStance";
                 break;

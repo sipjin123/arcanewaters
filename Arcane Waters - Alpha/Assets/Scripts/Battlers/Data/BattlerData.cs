@@ -82,7 +82,7 @@ public class BattlerData {
       float earthDefMultiplier, float airDefMultiplier, float waterDefMultiplier, float allDefMultiplier, float physicalAtkMultiplier,
       float fireAtkMultiplier, float earthAtkMultiplier, float airAtkMultiplier, float waterAtkMultiplier, float allAtkMultiplier,
       string deathSound, string jumpAtkSound, float preContactLength, float preMagicLength, int baseXPReward, RawGenericLootData lootData,
-      Enemy.Type enemyType, BattlerBehaviour battlerObject) {
+      Enemy.Type enemyType, Battler battlerObject) {
 
       BattlerData data = new BattlerData();
 
@@ -140,7 +140,7 @@ public class BattlerData {
       float earthDefMultiplier, float airDefMultiplier, float waterDefMultiplier, float allDefMultiplier, float physicalAtkMultiplier,
       float fireAtkMultiplier, float earthAtkMultiplier, float airAtkMultiplier, float waterAtkMultiplier, float allAtkMultiplier,
       string deathSound, string jumpAtkSound, float preContactLength, float preMagicLength, int baseXPReward, RawGenericLootData lootData,
-      Enemy.Type enemyType, BattlerBehaviour battlerObject) {
+      Enemy.Type enemyType, Battler battlerObject) {
 
       this.currentXP = xp;
       this.enemyType = enemyType;

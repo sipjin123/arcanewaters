@@ -61,7 +61,7 @@ public class Battle : NetworkBehaviour {
          transform.SetParent(BattleManager.self.transform, true);
       }
 
-      foreach (BattlerBehaviour battler in BattleManager.self.getBattle(battleId).getParticipants()) {
+      foreach (Battler battler in BattleManager.self.getBattle(battleId).getParticipants()) {
          if (battler.transform.parent == null) {
             battler.transform.SetParent(transform, false);
          }
@@ -75,7 +75,7 @@ public class Battle : NetworkBehaviour {
       }
 
       // Cycle over all of the participants in the battle
-      foreach (BattlerBehaviour battler in getParticipants()) {
+      foreach (Battler battler in getParticipants()) {
 
          if (battler.transform.parent == null) {
             battler.transform.SetParent(transform, false);
@@ -99,7 +99,7 @@ public class Battle : NetworkBehaviour {
             }
 
             // Handles the current and only attack a monster can do
-            BattleManager.self.executeBattleAction(this, battler, battlePlan.targets, 0);
+            BattleManager.self.executeBattleAction(this, battler, battlePlan.targets, battler.getAttackAbilities()[0].itemID);
          }
       }
 
@@ -114,8 +114,8 @@ public class Battle : NetworkBehaviour {
       return TickResult.None;
    }
 
-   public BattlerBehaviour getBattler (int userId) {
-      foreach (BattlerBehaviour battler in getParticipants()) {
+   public Battler getBattler (int userId) {
+      foreach (Battler battler in getParticipants()) {
          if (battler.userId == userId) {
             return battler;
          }
@@ -124,8 +124,8 @@ public class Battle : NetworkBehaviour {
       return null;
    }
 
-   public List<BattlerBehaviour> getParticipants () {
-      List<BattlerBehaviour> participants = new List<BattlerBehaviour>();
+   public List<Battler> getParticipants () {
+      List<Battler> participants = new List<Battler>();
 
       participants.AddRange(getAttackers());
       participants.AddRange(getDefenders());
@@ -133,8 +133,8 @@ public class Battle : NetworkBehaviour {
       return participants;
    }
 
-   public List<BattlerBehaviour> getAttackers () {
-      List<BattlerBehaviour> list = new List<BattlerBehaviour>();
+   public List<Battler> getAttackers () {
+      List<Battler> list = new List<Battler>();
 
       foreach (int userId in attackers) {
          list.Add(BattleManager.self.getBattler(userId));
@@ -143,8 +143,8 @@ public class Battle : NetworkBehaviour {
       return list;
    }
 
-   public List<BattlerBehaviour> getDefenders () {
-      List<BattlerBehaviour> list = new List<BattlerBehaviour>();
+   public List<Battler> getDefenders () {
+      List<Battler> list = new List<Battler>();
 
       foreach (int userId in defenders) {
          list.Add(BattleManager.self.getBattler(userId));
@@ -153,19 +153,19 @@ public class Battle : NetworkBehaviour {
       return list;
    }
 
-   public List<BattlerBehaviour> getTeam (TeamType teamType) {
+   public List<Battler> getTeam (TeamType teamType) {
       if (teamType == TeamType.Attackers) {
          return getAttackers();
       } else if (teamType == TeamType.Defenders) {
          return getDefenders();
       }
 
-      return new List<BattlerBehaviour>();
+      return new List<Battler>();
    }
 
    public void resetAllBattleIDs () {
       // Remove the Battle ID for any participants
-      foreach (BattlerBehaviour participant in this.getParticipants()) {
+      foreach (Battler participant in this.getParticipants()) {
          if (participant == null) {
             continue;
          }
@@ -175,7 +175,7 @@ public class Battle : NetworkBehaviour {
    }
 
    public bool hasRoomLeft (TeamType teamType) {
-      List<BattlerBehaviour> battlers = new List<BattlerBehaviour>();
+      List<Battler> battlers = new List<Battler>();
 
       if (teamType == TeamType.Attackers) {
          battlers.AddRange(getAttackers());
@@ -191,7 +191,7 @@ public class Battle : NetworkBehaviour {
    }
 
    public bool isTeamDead (TeamType teamType) {
-      List<BattlerBehaviour> battlers = new List<BattlerBehaviour>();
+      List<Battler> battlers = new List<Battler>();
 
       // Add the appropriate Battlers to our list
       if (teamType == TeamType.Attackers) {
@@ -201,7 +201,7 @@ public class Battle : NetworkBehaviour {
       }
 
       // Check if any of the Battlers are still alive
-      foreach (BattlerBehaviour battler in battlers) {
+      foreach (Battler battler in battlers) {
          if (!battler.isDead()) {
             return false;
          }
@@ -210,11 +210,11 @@ public class Battle : NetworkBehaviour {
       return true;
    }
 
-   public float getTimeToWait (BattlerBehaviour sourceBattler, List<BattlerBehaviour> targetBattlers) {
+   public float getTimeToWait (Battler sourceBattler, List<Battler> targetBattlers) {
       float timeToWait = 0f;
 
       // Check if our sprite or the target sprite is busy being animated
-      foreach (BattlerBehaviour targetBattler in targetBattlers) {
+      foreach (Battler targetBattler in targetBattlers) {
          if (sourceBattler.animatingUntil > Util.netTime() || targetBattler.animatingUntil > Util.netTime()) {
             // Check if the source or the target has the longer wait time
             float diff = Mathf.Max(sourceBattler.animatingUntil - Util.netTime(), targetBattler.animatingUntil - Util.netTime());
@@ -232,7 +232,7 @@ public class Battle : NetworkBehaviour {
       int defendersAlive = 0;
 
       // Check if there are any attackers alive
-      foreach (BattlerBehaviour attacker in getAttackers()) {
+      foreach (Battler attacker in getAttackers()) {
          if (!attacker.isDead()) {
             attackersAlive++;
             break;
@@ -244,7 +244,7 @@ public class Battle : NetworkBehaviour {
       }
 
       // Check if there are any defenders alive
-      foreach (BattlerBehaviour defender in getDefenders()) {
+      foreach (Battler defender in getDefenders()) {
          if (!defender.isDead()) {
             defendersAlive++;
             break;
@@ -258,7 +258,7 @@ public class Battle : NetworkBehaviour {
       return TeamType.None;
    }
 
-   public static float getDistance (BattlerBehaviour source, BattlerBehaviour target) {
+   public static float getDistance (Battler source, Battler target) {
       Vector2 sourcePosition = source.battleSpot.transform.position;
       Vector2 targetPosition = target.battleSpot.transform.position;
 

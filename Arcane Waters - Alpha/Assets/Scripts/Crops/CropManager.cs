@@ -115,7 +115,7 @@ public class CropManager : NetworkBehaviour {
                _crops.Add(cropInfo);
 
                // Registers the planting action to the achievement database for recording
-               _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.PlantCrop, 1);
+               AchievementManager.registerUserAchievement(ActionType.PlantCrop);
 
                // Send the new Crop to the player
                this.Target_ReceiveCrop(_player.connectionToClient, cropInfo, false);
@@ -178,7 +178,7 @@ public class CropManager : NetworkBehaviour {
             _crops.Add(cropToWater);
 
             // Registers the watering action to the achievement database for recording
-            _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.WaterCrop, 1);
+            AchievementManager.registerUserAchievement(ActionType.WaterCrop);
 
             // Send the update Crop to the player
             this.Target_ReceiveCrop(_player.connectionToClient, cropToWater, true);
@@ -237,7 +237,7 @@ public class CropManager : NetworkBehaviour {
             _crops.Remove(cropToHarvest);
 
             // Registers the harvesting action to the achievement database for recording
-            _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.HarvestCrop, 1);
+            AchievementManager.registerUserAchievement(ActionType.HarvestCrop);
 
             // Let the player see the crop go away
             this.Target_HarvestCrop(_player.connectionToClient, cropToHarvest);
@@ -344,10 +344,10 @@ public class CropManager : NetworkBehaviour {
                Target_JustSoldCrops(_player.connectionToClient, offer.cropType, totalGoldMade);
 
                // Registers the selling of crops action to the achievement database for recording
-               _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.SellCrop, amountToSell);
+               AchievementManager.registerUserAchievement(ActionType.SellCrop, amountToSell);
 
                // Registers the gold gains to the achievement database for recording
-               _player.achievementManager.registerAchievement(_player.userId, AchievementData.ActionType.EarnGold, earnedGold);
+               AchievementManager.registerUserAchievement(ActionType.EarnGold, earnedGold);
             } else {
                ErrorMessage errorMessage = new ErrorMessage(_player.netId, ErrorMessage.Type.NoCropsOfThatType);
                NetworkServer.SendToClientOfPlayer(_player.netIdentity, errorMessage);

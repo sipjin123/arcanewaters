@@ -15,7 +15,7 @@ public class BasicAbilityData : BattleItemData {
    public string castAudioClipPath;
 
    // Combat stances required to be able to use this ability
-   public BattlerBehaviour.Stance[] allowedStances;
+   public Battler.Stance[] allowedStances;
 
    // Type of the ability. (Standard or buff/debuff)
    public AbilityType abilityType;
@@ -52,7 +52,7 @@ public class BasicAbilityData : BattleItemData {
 
    // Builder for the ability data
    public static BasicAbilityData CreateInstance (BattleItemData basicData, int abCost, string[] castSprites,
-       string castClip, BattlerBehaviour.Stance[] _allowedStances, AbilityType abilityType, float cooldown,
+       string castClip, Battler.Stance[] _allowedStances, AbilityType abilityType, float cooldown,
        int apChange, float fxTimePerFrame) {
       BasicAbilityData data = new BasicAbilityData();
 
@@ -93,7 +93,7 @@ public class BasicAbilityData : BattleItemData {
 
    #region Helper Methods
 
-   public bool isReadyForUseBy (BattlerBehaviour sourceBattler) {
+   public bool isReadyForUseBy (Battler sourceBattler) {
       if (abilityType == AbilityType.Standard) {
 
          if (sourceBattler.AP < abilityCost) {

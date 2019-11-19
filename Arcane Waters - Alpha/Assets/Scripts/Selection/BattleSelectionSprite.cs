@@ -21,7 +21,7 @@ public class BattleSelectionSprite : MonoBehaviour {
    }
 
    void Update () {
-      BattlerBehaviour selectedBattler = BattleSelectionManager.self.selectedBattler;
+      Battler selectedBattler = BattleSelectionManager.self.selectedBattler;
 
       // Start out hidden if we don't have a selected entity
       if (selectedBattler == null) {
@@ -64,7 +64,7 @@ public class BattleSelectionSprite : MonoBehaviour {
       }
    }
 
-   protected void setDistances (BattlerBehaviour selectedBattler) {
+   protected void setDistances (Battler selectedBattler) {
       // Default distances
       float horizontalDistance = .20f;
       float verticalDistance = .20f;
@@ -83,8 +83,8 @@ public class BattleSelectionSprite : MonoBehaviour {
       west.transform.localPosition = new Vector3(-horizontalDistance - offset, 0f, west.transform.localPosition.z);
    }
 
-   protected void setColorsForTarget (BattlerBehaviour selectedBattler) {
-      BattlerBehaviour playerBattler = BattleManager.self.getPlayerBattler();
+   protected void setColorsForTarget (Battler selectedBattler) {
+      Battler playerBattler = BattleManager.self.getPlayerBattler();
 
       // Default color
       setColors(Color.gray);
@@ -103,7 +103,7 @@ public class BattleSelectionSprite : MonoBehaviour {
       }
    }
 
-   protected Vector3 getOffset (BattlerBehaviour selectedBattler) {
+   protected Vector3 getOffset (Battler selectedBattler) {
       /*if (selectedBattler is GolemBossBattler) {
          return new Vector2(0f, -.10f);
       }*/
