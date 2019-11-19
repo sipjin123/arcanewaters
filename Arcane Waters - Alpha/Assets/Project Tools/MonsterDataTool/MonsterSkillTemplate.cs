@@ -33,7 +33,7 @@ public class MonsterSkillTemplate : MonoBehaviour {
    public Text skillLabel;
 
    // Ability Stances
-   public List<BattlerBehaviour.Stance> stanceList = new List<BattlerBehaviour.Stance>();
+   public List<Battler.Stance> stanceList = new List<Battler.Stance>();
    public GameObject stanceTemplate;
    public GameObject stanceTemplateParent;
    public Button addStanceButton;
@@ -206,7 +206,7 @@ public class MonsterSkillTemplate : MonoBehaviour {
    private void loadStance(BasicAbilityData ability) {
       stanceSlidierList = new List<StanceTemplate>();
       if (ability.allowedStances != null) {
-         foreach (BattlerBehaviour.Stance stance in ability.allowedStances) {
+         foreach (Battler.Stance stance in ability.allowedStances) {
             GameObject template = Instantiate(stanceTemplate, stanceTemplateParent.transform);
             StanceTemplate stanceTemp = template.GetComponent<StanceTemplate>();
             stanceTemp.Init();
@@ -314,9 +314,9 @@ public class MonsterSkillTemplate : MonoBehaviour {
       BattleItemData battleItemData = BattleItemData.CreateInstance(int.Parse(itemID.text), itemName.text, itemDescription.text, element, hitClipPath.text,
         new string[]{ hitSpritePath.text }, battleItemType, weaponClass, itemIconPath.text, int.Parse(levelRequirement.text));
 
-      stanceList = new List<BattlerBehaviour.Stance>();
+      stanceList = new List<Battler.Stance>();
       foreach(StanceTemplate templateStance in stanceSlidierList) {
-         BattlerBehaviour.Stance stance = (BattlerBehaviour.Stance) System.Enum.Parse(typeof(BattlerBehaviour.Stance), templateStance.label.text);
+         Battler.Stance stance = (Battler.Stance) System.Enum.Parse(typeof(Battler.Stance), templateStance.label.text);
          stanceList.Add(stance);
       }
 
@@ -343,9 +343,9 @@ public class MonsterSkillTemplate : MonoBehaviour {
       BattleItemData battleItemData = BattleItemData.CreateInstance(int.Parse(itemID.text), itemName.text, itemDescription.text, element, hitClipPath.text,
         new string[] { hitSpritePath.text }, battleItemType, weaponClass, itemIconPath.text, int.Parse(levelRequirement.text));
 
-      stanceList = new List<BattlerBehaviour.Stance>();
+      stanceList = new List<Battler.Stance>();
       foreach (StanceTemplate templateStance in stanceSlidierList) {
-         BattlerBehaviour.Stance stance = (BattlerBehaviour.Stance) System.Enum.Parse(typeof(BattlerBehaviour.Stance), templateStance.label.text);
+         Battler.Stance stance = (Battler.Stance) System.Enum.Parse(typeof(Battler.Stance), templateStance.label.text);
          stanceList.Add(stance);
       }
 

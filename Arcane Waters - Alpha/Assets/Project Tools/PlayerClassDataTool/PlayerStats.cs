@@ -19,90 +19,90 @@ public class PlayerStats
 public class UserDefaultStats
 {
    // Base modifiers
-   public int hpPerLevel;
-   public int armorPerLevel;
-   public int apPerLevel;
-   public int bonusAP;
-   public int bonusMaxHP;
-   public int bonusArmor;
-   public int bonusATK;
-   public int bonusATKPerLevel;
+   public float hpPerLevel;
+   public float armorPerLevel;
+   public float apPerLevel;
+   public float bonusAP;
+   public float bonusMaxHP;
+   public float bonusArmor;
+   public float bonusATK;
+   public float bonusATKPerLevel;
 
    // Stat modifiers
-   public int bonusINT;
-   public int bonusSTR;
-   public int bonusSPT;
-   public int bonusLUK;
-   public int bonusPRE;
-   public int bonusVIT;
+   public float bonusINT;
+   public float bonusSTR;
+   public float bonusSPT;
+   public float bonusLUK;
+   public float bonusPRE;
+   public float bonusVIT;
 
    // Stat modifiers per Level
-   public int bonusINTperLevel;
-   public int bonusSTRperLevel;
-   public int bonusSPTperLevel;
-   public int bonusLUKperLevel;
-   public int bonusPREperLevel;
-   public int bonusVITperLevel;
+   public float bonusINTperLevel;
+   public float bonusSTRperLevel;
+   public float bonusSPTperLevel;
+   public float bonusLUKperLevel;
+   public float bonusPREperLevel;
+   public float bonusVITperLevel;
 }
 
 [Serializable]
 public class UserShipStats
 {
    // Ship Stats
-   public int bonusShipDamage;
-   public int bonusShipDamagePerLevel;
+   public float bonusShipDamage;
+   public float bonusShipDamagePerLevel;
 
-   public int bonusShipHealth;
-   public int bonusShipHealthPerLevel;
+   public float bonusShipHealth;
+   public float bonusShipHealthPerLevel;
 
-   public int bonusShipSpeed;
-   public int bonusShipSpeedPerLevel;
+   public float bonusShipSpeed;
+   public float bonusShipSpeedPerLevel;
 
-   public int bonusShipRange;
-   public int bonusShipRangePerLevel;
+   public float bonusShipRange;
+   public float bonusShipRangePerLevel;
 
-   public int bonusShipSailors;
-   public int bonusShipSailorsPerLevel;
+   public float bonusShipSailors;
+   public float bonusShipSailorsPerLevel;
 
-   public int bonusShipCargoRoom;
-   public int bonusShipCargoRoomPerLevel;
+   public float bonusShipCargoRoom;
+   public float bonusShipCargoRoomPerLevel;
 
-   public int bonusShipSupplyRoom;
-   public int bonusShipSupplyRoomPerLevel;
+   public float bonusShipSupplyRoom;
+   public float bonusShipSupplyRoomPerLevel;
 }
 
 [Serializable]
 public class UserCombatStats
 {
    // Defense modifiers
-   public int bonusResistancePhys;
-   public int bonusResistanceFire;
-   public int bonusResistanceWater;
-   public int bonusResistanceWind;
-   public int bonusResistanceEarth;
-   public int bonusResistanceAll;
+   public float bonusResistancePhys;
+   public float bonusResistanceFire;
+   public float bonusResistanceWater;
+   public float bonusResistanceWind;
+   public float bonusResistanceEarth;
+   public float bonusResistanceAll;
 
    // Damage modifiers
-   public int bonusDamagePhys;
-   public int bonusDamageFire;
-   public int bonusDamageWater;
-   public int bonusDamageWind;
-   public int bonusDamageEarth;
-   public int bonusDamageAll;
+   public float bonusDamagePhys;
+   public float bonusDamageFire;
+   public float bonusDamageWater;
+   public float bonusDamageWind;
+   public float bonusDamageEarth;
+   public float bonusDamageAll;
 
    // Defense modifiers per level
-   public int bonusResistancePhysPerLevel;
-   public int bonusResistanceFirePerLevel;
-   public int bonusResistanceWaterPerLevel;
-   public int bonusResistanceWindPerLevel;
-   public int bonusResistanceEarthPerLevel;
-   public int bonusResistanceAllPerLevel;
+   public float bonusResistancePhysPerLevel;
+   public float bonusResistanceFirePerLevel;
+   public float bonusResistanceWaterPerLevel;
+   public float bonusResistanceWindPerLevel;
+   public float bonusResistanceEarthPerLevel;
+   public float bonusResistanceAllPerLevel;
 
    // Damage modifiers per level
-   public int bonusDamagePhysPerLevel;
-   public int bonusDamageFirePerLevel;
-   public int bonusDamageWaterPerLevel;
-   public int bonusDamageWindPerLevel;
-   public int bonusDamageEarthPerLevel;
-   public int bonusDamageAllPerLevel;
+   public float bonusDamagePhysPerLevel;
+   public float bonusDamageFirePerLevel;
+   public float bonusDamageWaterPerLevel;
+   public float bonusDamageWindPerLevel;
+   public float bonusDamageEarthPerLevel;
+   public float bonusDamageAllPerLevel;
 }

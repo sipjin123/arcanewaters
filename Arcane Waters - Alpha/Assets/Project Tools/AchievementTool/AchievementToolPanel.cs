@@ -115,7 +115,7 @@ public class AchievementToolPanel : MonoBehaviour {
       achievementData.count = int.Parse(_achievementValue.text);
       achievementData.itemCategory = (int)(Item.Category) Enum.Parse(typeof(Item.Category), _itemCategoryText.text);
       achievementData.itemType = int.Parse(_itemIndexText.text); 
-      achievementData.actionType = (AchievementData.ActionType) Enum.Parse(typeof(AchievementData.ActionType), _achievementTypeText.text);
+      achievementData.actionType = (ActionType) Enum.Parse(typeof(ActionType), _achievementTypeText.text);
 
       return achievementData;
    }

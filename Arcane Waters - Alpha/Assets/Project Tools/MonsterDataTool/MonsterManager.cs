@@ -117,6 +117,7 @@ public class MonsterManager : MonoBehaviour {
                foreach (BasicAbilityData basicAbility in monsterData.battlerAbilities.basicAbilityDataList) {
                   if (typeID == Enemy.Type.Humanoid) {
                      abilityInventory.addPlayerAbility(basicAbility);
+                     abilityManager.addNewAbility(basicAbility);
                   } else {
                      abilityManager.addNewAbility(basicAbility);
                   }

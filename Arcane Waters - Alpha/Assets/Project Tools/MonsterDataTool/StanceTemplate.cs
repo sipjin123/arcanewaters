@@ -17,9 +17,9 @@ public class StanceTemplate : MonoBehaviour
    #endregion
 
    public void Init () {
-      slider.maxValue = Enum.GetValues(typeof(BattlerBehaviour.Stance)).Length - 1;
+      slider.maxValue = Enum.GetValues(typeof(Battler.Stance)).Length - 1;
       slider.onValueChanged.AddListener(_ => {
-         label.text = ((BattlerBehaviour.Stance) slider.value).ToString();
+         label.text = ((Battler.Stance) slider.value).ToString();
       });
    }
 }

@@ -264,7 +264,7 @@ public class GenericSelectionPopup : MonoBehaviour {
             }
             break;
          case selectionType.AchievementType:
-            foreach (AchievementData.ActionType actionType in Enum.GetValues(typeof(AchievementData.ActionType))) {
+            foreach (ActionType actionType in Enum.GetValues(typeof(ActionType))) {
                createTextTemplate(actionType.ToString(), textUI, changeEvent);
             }
             break;

@@ -251,7 +251,7 @@ public class AbilityDataScene : MonoBehaviour
          case AbilityType.Standard: {
                // Basic data set
                BattleItemData battleItemData = BattleItemData.CreateInstance(1, "Name", "Desc", Element.ALL, null, null, BattleItemType.UNDEFINED, Weapon.Class.Any, String.Empty, 1);
-               BasicAbilityData basicData = BasicAbilityData.CreateInstance(battleItemData, 1, null, "", new BattlerBehaviour.Stance[] { }, AbilityType.Standard, 1, 1, 1);
+               BasicAbilityData basicData = BasicAbilityData.CreateInstance(battleItemData, 1, null, "", new Battler.Stance[] { }, AbilityType.Standard, 1, 1, 1);
                AttackAbilityData attackData = AttackAbilityData.CreateInstance(basicData, false, 0, false, AbilityActionType.UNDEFINED, false);
                finalizeAttackTemplate(attackData);
             }
@@ -259,7 +259,7 @@ public class AbilityDataScene : MonoBehaviour
          case AbilityType.BuffDebuff: {
                // Basic data set
                BattleItemData battleItemData = BattleItemData.CreateInstance(1, "Name", "Desc", Element.ALL, null, null, BattleItemType.UNDEFINED, Weapon.Class.Any, String.Empty, 1);
-               BasicAbilityData basicData = BasicAbilityData.CreateInstance(battleItemData, 1, null, "", new BattlerBehaviour.Stance[] { }, AbilityType.BuffDebuff, 1, 1, 1);
+               BasicAbilityData basicData = BasicAbilityData.CreateInstance(battleItemData, 1, null, "", new Battler.Stance[] { }, AbilityType.BuffDebuff, 1, 1, 1);
                BuffAbilityData buffData = BuffAbilityData.CreateInstance(basicData, 1, BuffType.UNDEFINED, BuffActionType.UNDEFINED, string.Empty, 0);
                finalizeBuffTemplate(buffData);
             }
