@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <AttackAbilityData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <itemID>1</itemID>
+  <itemID>7</itemID>
   <itemName>Lizard Bash</itemName>
   <itemDescription>lizard</itemDescription>
   <itemIconPath>Assets/Sprites/Effects/footprint.png</itemIconPath>

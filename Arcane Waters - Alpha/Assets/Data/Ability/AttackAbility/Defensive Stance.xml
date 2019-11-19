@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <AttackAbilityData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <itemID>1</itemID>
+  <itemID>5</itemID>
   <itemName>Defensive Stance</itemName>
   <itemDescription>Changes into defensive stance</itemDescription>
   <itemIconPath>Assets/Sprites/Icons/Battle/Player/Stance/stance_defensive_lg.png</itemIconPath>

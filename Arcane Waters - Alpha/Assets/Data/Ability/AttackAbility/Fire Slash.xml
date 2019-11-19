@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <AttackAbilityData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <itemID>4</itemID>
+  <itemID>2</itemID>
   <itemName>Fire Slash</itemName>
   <itemDescription>Imbues your sword with fire to strike an enemy</itemDescription>
-  <itemIconPath>Assets/Sprites/Icons/Battle/enemy/icon_enemy_sword_slash.png</itemIconPath>
+  <itemIconPath>Assets/Sprites/Icons/Weapons/sword_7.png</itemIconPath>
   <levelRequirement>1</levelRequirement>
   <hitSpritesPath>
     <string>Undefined</string>

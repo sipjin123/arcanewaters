@@ -5,7 +5,7 @@
   <currentXP>0</currentXP>
   <enemyType>Lizard</enemyType>
   <apGainWhenDamaged>0</apGainWhenDamaged>
-  <baseHealth>1</baseHealth>
+  <baseHealth>100</baseHealth>
   <baseDefense>9</baseDefense>
   <baseDamage>2</baseDamage>
   <baseGoldReward>9</baseGoldReward>
@@ -16,7 +16,7 @@
   <battlerAbilities>
     <basicAbilityDataList>
       <BasicAbilityData xsi:type="AttackAbilityData">
-        <itemID>1</itemID>
+        <itemID>7</itemID>
         <itemName>Lizard Bash</itemName>
         <itemDescription>lizard</itemDescription>
         <itemIconPath>Assets/Sprites/Effects/footprint.png</itemIconPath>
@@ -47,7 +47,7 @@
     </basicAbilityDataList>
     <attackAbilityDataList>
       <AttackAbilityData>
-        <itemID>1</itemID>
+        <itemID>7</itemID>
         <itemName>Lizard Bash</itemName>
         <itemDescription>lizard</itemDescription>
         <itemIconPath>Assets/Sprites/Effects/footprint.png</itemIconPath>
@@ -96,9 +96,9 @@
     <maxQuantity>5</maxQuantity>
   </battlerLootData>
   <physicalDefenseMultiplier>1</physicalDefenseMultiplier>
-  <fireDefenseMultiplier>1</fireDefenseMultiplier>
+  <fireDefenseMultiplier>15</fireDefenseMultiplier>
   <earthDefenseMultiplier>1</earthDefenseMultiplier>
-  <airDefenseMultiplier>1</airDefenseMultiplier>
+  <airDefenseMultiplier>0</airDefenseMultiplier>
   <waterDefenseMultiplier>1</waterDefenseMultiplier>
   <allDefenseMultiplier>1</allDefenseMultiplier>
   <physicalAttackMultiplier>1</physicalAttackMultiplier>

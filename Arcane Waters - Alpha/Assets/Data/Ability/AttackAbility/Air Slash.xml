@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <AttackAbilityData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <itemID>15</itemID>
+  <itemID>3</itemID>
   <itemName>Air Slash</itemName>
   <itemDescription>An Air Slash</itemDescription>
-  <itemIconPath>Assets/Sprites/Icons/Battle/enemy/icon_enemy_sword_thrust_click.png</itemIconPath>
+  <itemIconPath>Assets/Sprites/Icons/Weapons/pitchfork.png</itemIconPath>
   <levelRequirement>1</levelRequirement>
   <hitSpritesPath>
     <string>Assets/Sprites/Effects/logo_twinkle_large.png</string>
@@ -26,7 +26,7 @@
     <string>Assets/Sprites/Effects/pickup_effect.png</string>
   </castSpritesPath>
   <FXTimePerFrame>0.08</FXTimePerFrame>
-  <baseDamage>200</baseDamage>
+  <baseDamage>20</baseDamage>
   <hasShake>true</hasShake>
   <hasKnockup>false</hasKnockup>
   <abilityActionType>Melee</abilityActionType>

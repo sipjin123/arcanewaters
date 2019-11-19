@@ -16,7 +16,7 @@
   <battlerAbilities>
     <basicAbilityDataList>
       <BasicAbilityData xsi:type="AttackAbilityData">
-        <itemID>1</itemID>
+        <itemID>6</itemID>
         <itemName>Balanced Stance</itemName>
         <itemDescription>Changes into a balanced Stance</itemDescription>
         <itemIconPath>Assets/Sprites/Icons/Battle/Player/Stance/stance_balanced_lg.png</itemIconPath>
@@ -24,7 +24,7 @@
         <hitSpritesPath>
           <string>Undefined</string>
         </hitSpritesPath>
-        <elementType>ALL</elementType>
+        <elementType>Fire</elementType>
         <hitAudioClipPath />
         <classRequirement>Any</classRequirement>
         <battleItemType>Ability</battleItemType>
@@ -52,12 +52,12 @@
         <itemID>1</itemID>
         <itemName>Basic Attack</itemName>
         <itemDescription>Attacks with your equipped weapon</itemDescription>
-        <itemIconPath>Assets/Sprites/Icons/Battle/enemy/icon_enemy_sword_slash.png</itemIconPath>
+        <itemIconPath>Assets/Sprites/Icons/Weapons/sword_rune.png</itemIconPath>
         <levelRequirement>1</levelRequirement>
         <hitSpritesPath>
           <string>Assets/Sprites/Effects/slash_physical.png</string>
         </hitSpritesPath>
-        <elementType>Physical</elementType>
+        <elementType>Fire</elementType>
         <hitAudioClipPath>Assets/Resources/Sound/Effects/Slash_Physical.ogg</hitAudioClipPath>
         <classRequirement>Any</classRequirement>
         <battleItemType>Ability</battleItemType>
@@ -82,7 +82,7 @@
         <canBeBlocked>true</canBeBlocked>
       </BasicAbilityData>
       <BasicAbilityData xsi:type="AttackAbilityData">
-        <itemID>1</itemID>
+        <itemID>5</itemID>
         <itemName>Defensive Stance</itemName>
         <itemDescription>Changes into defensive stance</itemDescription>
         <itemIconPath>Assets/Sprites/Icons/Battle/Player/Stance/stance_defensive_lg.png</itemIconPath>
@@ -115,7 +115,7 @@
         <canBeBlocked>false</canBeBlocked>
       </BasicAbilityData>
       <BasicAbilityData xsi:type="AttackAbilityData">
-        <itemID>2</itemID>
+        <itemID>4</itemID>
         <itemName>Offensive Stance</itemName>
         <itemDescription>Changes to offensive battle stance</itemDescription>
         <itemIconPath>Assets/Sprites/Icons/Battle/Player/Stance/stance_offensive_lg.png</itemIconPath>
@@ -142,11 +142,73 @@
         <hasKnockup>false</hasKnockup>
         <abilityActionType>StanceChange</abilityActionType>
         <canBeBlocked>false</canBeBlocked>
+      </BasicAbilityData>
+      <BasicAbilityData xsi:type="AttackAbilityData">
+        <itemID>2</itemID>
+        <itemName>Fire Slash</itemName>
+        <itemDescription>Imbues your sword with fire to strike an enemy</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Weapons/sword_7.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Undefined</string>
+        </hitSpritesPath>
+        <elementType>Fire</elementType>
+        <hitAudioClipPath />
+        <classRequirement>Any</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath />
+        <allowedStances />
+        <abilityType>Standard</abilityType>
+        <abilityCooldown>4</abilityCooldown>
+        <apChange>3</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Undefined</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.06</FXTimePerFrame>
+        <baseDamage>10</baseDamage>
+        <hasShake>true</hasShake>
+        <hasKnockup>true</hasKnockup>
+        <abilityActionType>Melee</abilityActionType>
+        <canBeBlocked>true</canBeBlocked>
+      </BasicAbilityData>
+      <BasicAbilityData xsi:type="AttackAbilityData">
+        <itemID>3</itemID>
+        <itemName>Air Slash</itemName>
+        <itemDescription>An Air Slash</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Weapons/pitchfork.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Assets/Sprites/Effects/logo_twinkle_large.png</string>
+        </hitSpritesPath>
+        <elementType>Air</elementType>
+        <hitAudioClipPath>Assets/Resources/Sound/Effects/Slash_Lightning.ogg</hitAudioClipPath>
+        <classRequirement>Any</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath />
+        <allowedStances>
+          <Stance>Balanced</Stance>
+          <Stance>Attack</Stance>
+          <Stance>Defense</Stance>
+        </allowedStances>
+        <abilityType>Standard</abilityType>
+        <abilityCooldown>4</abilityCooldown>
+        <apChange>3</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Assets/Sprites/Effects/pickup_effect.png</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.08</FXTimePerFrame>
+        <baseDamage>20</baseDamage>
+        <hasShake>true</hasShake>
+        <hasKnockup>false</hasKnockup>
+        <abilityActionType>Melee</abilityActionType>
+        <canBeBlocked>true</canBeBlocked>
       </BasicAbilityData>
     </basicAbilityDataList>
     <attackAbilityDataList>
       <AttackAbilityData>
-        <itemID>1</itemID>
+        <itemID>6</itemID>
         <itemName>Balanced Stance</itemName>
         <itemDescription>Changes into a balanced Stance</itemDescription>
         <itemIconPath>Assets/Sprites/Icons/Battle/Player/Stance/stance_balanced_lg.png</itemIconPath>
@@ -154,7 +216,7 @@
         <hitSpritesPath>
           <string>Undefined</string>
         </hitSpritesPath>
-        <elementType>ALL</elementType>
+        <elementType>Fire</elementType>
         <hitAudioClipPath />
         <classRequirement>Any</classRequirement>
         <battleItemType>Ability</battleItemType>
@@ -182,12 +244,12 @@
         <itemID>1</itemID>
         <itemName>Basic Attack</itemName>
         <itemDescription>Attacks with your equipped weapon</itemDescription>
-        <itemIconPath>Assets/Sprites/Icons/Battle/enemy/icon_enemy_sword_slash.png</itemIconPath>
+        <itemIconPath>Assets/Sprites/Icons/Weapons/sword_rune.png</itemIconPath>
         <levelRequirement>1</levelRequirement>
         <hitSpritesPath>
           <string>Assets/Sprites/Effects/slash_physical.png</string>
         </hitSpritesPath>
-        <elementType>Physical</elementType>
+        <elementType>Fire</elementType>
         <hitAudioClipPath>Assets/Resources/Sound/Effects/Slash_Physical.ogg</hitAudioClipPath>
         <classRequirement>Any</classRequirement>
         <battleItemType>Ability</battleItemType>
@@ -212,7 +274,7 @@
         <canBeBlocked>true</canBeBlocked>
       </AttackAbilityData>
       <AttackAbilityData>
-        <itemID>1</itemID>
+        <itemID>5</itemID>
         <itemName>Defensive Stance</itemName>
         <itemDescription>Changes into defensive stance</itemDescription>
         <itemIconPath>Assets/Sprites/Icons/Battle/Player/Stance/stance_defensive_lg.png</itemIconPath>
@@ -245,7 +307,7 @@
         <canBeBlocked>false</canBeBlocked>
       </AttackAbilityData>
       <AttackAbilityData>
-        <itemID>2</itemID>
+        <itemID>4</itemID>
         <itemName>Offensive Stance</itemName>
         <itemDescription>Changes to offensive battle stance</itemDescription>
         <itemIconPath>Assets/Sprites/Icons/Battle/Player/Stance/stance_offensive_lg.png</itemIconPath>
@@ -272,6 +334,68 @@
         <hasKnockup>false</hasKnockup>
         <abilityActionType>StanceChange</abilityActionType>
         <canBeBlocked>false</canBeBlocked>
+      </AttackAbilityData>
+      <AttackAbilityData>
+        <itemID>2</itemID>
+        <itemName>Fire Slash</itemName>
+        <itemDescription>Imbues your sword with fire to strike an enemy</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Weapons/sword_7.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Undefined</string>
+        </hitSpritesPath>
+        <elementType>Fire</elementType>
+        <hitAudioClipPath />
+        <classRequirement>Any</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath />
+        <allowedStances />
+        <abilityType>Standard</abilityType>
+        <abilityCooldown>4</abilityCooldown>
+        <apChange>3</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Undefined</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.06</FXTimePerFrame>
+        <baseDamage>10</baseDamage>
+        <hasShake>true</hasShake>
+        <hasKnockup>true</hasKnockup>
+        <abilityActionType>Melee</abilityActionType>
+        <canBeBlocked>true</canBeBlocked>
+      </AttackAbilityData>
+      <AttackAbilityData>
+        <itemID>3</itemID>
+        <itemName>Air Slash</itemName>
+        <itemDescription>An Air Slash</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Weapons/pitchfork.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Assets/Sprites/Effects/logo_twinkle_large.png</string>
+        </hitSpritesPath>
+        <elementType>Air</elementType>
+        <hitAudioClipPath>Assets/Resources/Sound/Effects/Slash_Lightning.ogg</hitAudioClipPath>
+        <classRequirement>Any</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath />
+        <allowedStances>
+          <Stance>Balanced</Stance>
+          <Stance>Attack</Stance>
+          <Stance>Defense</Stance>
+        </allowedStances>
+        <abilityType>Standard</abilityType>
+        <abilityCooldown>4</abilityCooldown>
+        <apChange>3</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Assets/Sprites/Effects/pickup_effect.png</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.08</FXTimePerFrame>
+        <baseDamage>20</baseDamage>
+        <hasShake>true</hasShake>
+        <hasKnockup>false</hasKnockup>
+        <abilityActionType>Melee</abilityActionType>
+        <canBeBlocked>true</canBeBlocked>
       </AttackAbilityData>
     </attackAbilityDataList>
     <buffAbilityDataList />

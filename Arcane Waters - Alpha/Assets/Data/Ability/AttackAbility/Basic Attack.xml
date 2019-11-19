@@ -3,12 +3,12 @@
   <itemID>1</itemID>
   <itemName>Basic Attack</itemName>
   <itemDescription>Attacks with your equipped weapon</itemDescription>
-  <itemIconPath>Assets/Sprites/Icons/Battle/enemy/icon_enemy_sword_slash.png</itemIconPath>
+  <itemIconPath>Assets/Sprites/Icons/Weapons/sword_rune.png</itemIconPath>
   <levelRequirement>1</levelRequirement>
   <hitSpritesPath>
-    <string>Assets/Sprites/Effects/slash_ice.png</string>
+    <string>Assets/Sprites/Effects/slash_physical.png</string>
   </hitSpritesPath>
-  <elementType>Physical</elementType>
+  <elementType>Fire</elementType>
   <hitAudioClipPath>Assets/Resources/Sound/Effects/Slash_Physical.ogg</hitAudioClipPath>
   <classRequirement>Any</classRequirement>
   <battleItemType>Ability</battleItemType>
@@ -25,7 +25,7 @@
   <castSpritesPath>
     <string>Assets/Sprites/Effects/chimney_smoke_1.png</string>
   </castSpritesPath>
-  <FXTimePerFrame>1</FXTimePerFrame>
+  <FXTimePerFrame>0.1</FXTimePerFrame>
   <baseDamage>0</baseDamage>
   <hasShake>true</hasShake>
   <hasKnockup>true</hasKnockup>
