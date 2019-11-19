@@ -3,7 +3,7 @@
   <itemID>1</itemID>
   <itemName>Defensive Stance</itemName>
   <itemDescription>Changes into defensive stance</itemDescription>
-  <itemIconPath>Assets/Sprites/Icons/Battle/Player/Stance/stance_balanced_sm.png</itemIconPath>
+  <itemIconPath>Assets/Sprites/Icons/Battle/Player/Stance/stance_defensive_lg.png</itemIconPath>
   <levelRequirement>1</levelRequirement>
   <hitSpritesPath>
     <string>Undefined</string>
@@ -18,7 +18,7 @@
     <Stance>Attack</Stance>
     <Stance>Defense</Stance>
   </allowedStances>
-  <abilityType>Standard</abilityType>
+  <abilityType>Stance</abilityType>
   <abilityCooldown>20</abilityCooldown>
   <apChange>0</apChange>
   <abilityCost>0</abilityCost>

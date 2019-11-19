@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <AttackAbilityData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <itemID>2</itemID>
+  <itemID>1</itemID>
   <itemName>Balanced Stance</itemName>
   <itemDescription>Changes into a balanced Stance</itemDescription>
   <itemIconPath>Assets/Sprites/Icons/Battle/Player/Stance/stance_balanced_lg.png</itemIconPath>
@@ -8,12 +8,16 @@
   <hitSpritesPath>
     <string>Undefined</string>
   </hitSpritesPath>
-  <elementType>ALL</elementType>
+  <elementType>Physical</elementType>
   <hitAudioClipPath />
   <classRequirement>Any</classRequirement>
   <battleItemType>Ability</battleItemType>
   <castAudioClipPath />
-  <allowedStances />
+  <allowedStances>
+    <Stance>Balanced</Stance>
+    <Stance>Attack</Stance>
+    <Stance>Defense</Stance>
+  </allowedStances>
   <abilityType>Stance</abilityType>
   <abilityCooldown>15</abilityCooldown>
   <apChange>0</apChange>

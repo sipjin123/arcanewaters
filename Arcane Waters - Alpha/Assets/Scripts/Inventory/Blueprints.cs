@@ -203,6 +203,22 @@ public class Blueprint : RecipeItem
    }
 
    public override string getIconPath () {
-      return "Icons/Blueprint/" + this.bpTypeID;
+      string stringID = bpTypeID.ToString();
+
+      if (stringID.StartsWith(WEAPON_PREFIX)) {
+         // Extract the typeId of the weapon
+         stringID = stringID.Substring(WEAPON_PREFIX.Length, (stringID.Length - WEAPON_PREFIX.Length));
+
+         // Get the icon path based on the weapon type
+         return "Icons/Blueprint/" + (Weapon.Type) int.Parse(stringID);
+      } else if (bpTypeID.ToString().StartsWith(ARMOR_PREFIX)) {
+         // Extract the typeId of the armor
+         stringID = stringID.Substring(ARMOR_PREFIX.Length, (stringID.Length - ARMOR_PREFIX.Length));
+
+         // Get the icon path based on the armor type
+         return "Icons/Blueprint/" + (Armor.Type) int.Parse(stringID);
+      } else {
+         return "Icons/Blueprint/" + this.bpTypeID;
+      }
    }
 }

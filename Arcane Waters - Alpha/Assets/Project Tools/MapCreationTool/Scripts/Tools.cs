@@ -11,7 +11,6 @@ namespace MapCreationTool
         public static event Action<ToolType, ToolType> ToolChanged;
         public static event Action<int, int> MountainLayerChanged;
         public static event Action<bool, bool> BurrowedTreesChanged;
-        public static event Action<bool, bool> IndividualTilesChanged;
         public static event Action<BiomeType, BiomeType> BiomeChanged;
         public static event Action<EraserLayerMode, EraserLayerMode> EraserLayerModeChanged;
         public static event Action<TileGroup, TileGroup> TileGroupChanged;
@@ -22,7 +21,6 @@ namespace MapCreationTool
         public static ToolType ToolType { get; private set; }
         public static int MountainLayer { get; private set; }
         public static bool BurrowedTrees { get; private set; }
-        public static bool IndividualTiles { get; private set; }
         public static BiomeType Biome { get; private set; }
         public static EraserLayerMode EraserLayerMode { get; private set; }
         public static FillBounds FillBounds { get; private set; }
@@ -53,7 +51,6 @@ namespace MapCreationTool
             ToolType = ToolType.Brush;
             MountainLayer = 4;
             BurrowedTrees = false;
-            IndividualTiles = false;
             Biome = BiomeType.Forest;
             EraserLayerMode = EraserLayerMode.Top;
         }
@@ -65,7 +62,6 @@ namespace MapCreationTool
             ToolType = data.ToolType ?? ToolType;
             MountainLayer = data.MountainLayer ?? MountainLayer;
             BurrowedTrees = data.BurrowedTrees ?? BurrowedTrees;
-            IndividualTiles = data.IndividualTiles ?? IndividualTiles;
             FillBounds = data.FillBounds ?? FillBounds;
 
             if (data.Biome != null)
@@ -138,27 +134,6 @@ namespace MapCreationTool
                     PerformUndoRedo,
                     new ToolUndoRedoData { BurrowedTrees = old },
                     new ToolUndoRedoData { BurrowedTrees = BurrowedTrees });
-            }
-        }
-
-        public static void ChangeIndividualTiles(bool individualTiles, bool registerUndo = true)
-        {
-            bool old = IndividualTiles;
-            IndividualTiles = individualTiles;
-
-            TileGroup oldTileGroup = TileGroup;
-            TileGroup = null;
-
-            IndividualTilesChanged?.Invoke(old, IndividualTiles);
-            AnythingChanged?.Invoke();
-
-
-            if (registerUndo)
-            {
-                Undo.Register(
-                    PerformUndoRedo,
-                    new ToolUndoRedoData { IndividualTiles = old, HasTileGroup = true, TileGroup = oldTileGroup },
-                    new ToolUndoRedoData { IndividualTiles = IndividualTiles, HasTileGroup = true, TileGroup = TileGroup });
             }
         }
 

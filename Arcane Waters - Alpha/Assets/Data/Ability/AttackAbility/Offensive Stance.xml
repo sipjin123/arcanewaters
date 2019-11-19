@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <AttackAbilityData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <itemID>1</itemID>
+  <itemID>2</itemID>
   <itemName>Offensive Stance</itemName>
-  <itemDescription>Changes into offensive stance</itemDescription>
-  <itemIconPath>Assets/Sprites/Icons/Battle/Player/Stance/stance_offensive_sm.png</itemIconPath>
+  <itemDescription>Changes to offensive battle stance</itemDescription>
+  <itemIconPath>Assets/Sprites/Icons/Battle/Player/Stance/stance_offensive_lg.png</itemIconPath>
   <levelRequirement>1</levelRequirement>
   <hitSpritesPath>
     <string>Undefined</string>
@@ -14,7 +14,7 @@
   <battleItemType>Ability</battleItemType>
   <castAudioClipPath />
   <allowedStances />
-  <abilityType>Standard</abilityType>
+  <abilityType>Stance</abilityType>
   <abilityCooldown>15</abilityCooldown>
   <apChange>0</apChange>
   <abilityCost>0</abilityCost>

@@ -25,13 +25,13 @@
           <string>Assets/Sprites/Effects/crop_harvest.png</string>
         </hitSpritesPath>
         <elementType>ALL</elementType>
-        <hitAudioClipPath>Assets/Resources/Sound/Effects/Character_Block.wav</hitAudioClipPath>
+        <hitAudioClipPath>Assets/Resources/Sound/Effects/Attack_Blunt.wav</hitAudioClipPath>
         <classRequirement>Melee</classRequirement>
         <battleItemType>Ability</battleItemType>
-        <castAudioClipPath>Assets/Resources/Sound/Effects/Attack_Fire.wav</castAudioClipPath>
+        <castAudioClipPath>Assets/Resources/Sound/Effects/Footstep_Muffled.wav</castAudioClipPath>
         <allowedStances />
         <abilityType>Standard</abilityType>
-        <abilityCooldown>0</abilityCooldown>
+        <abilityCooldown>5</abilityCooldown>
         <apChange>0</apChange>
         <abilityCost>0</abilityCost>
         <castSpritesPath>
@@ -56,13 +56,13 @@
           <string>Assets/Sprites/Effects/crop_harvest.png</string>
         </hitSpritesPath>
         <elementType>ALL</elementType>
-        <hitAudioClipPath>Assets/Resources/Sound/Effects/Character_Block.wav</hitAudioClipPath>
+        <hitAudioClipPath>Assets/Resources/Sound/Effects/Attack_Blunt.wav</hitAudioClipPath>
         <classRequirement>Melee</classRequirement>
         <battleItemType>Ability</battleItemType>
-        <castAudioClipPath>Assets/Resources/Sound/Effects/Attack_Fire.wav</castAudioClipPath>
+        <castAudioClipPath>Assets/Resources/Sound/Effects/Footstep_Muffled.wav</castAudioClipPath>
         <allowedStances />
         <abilityType>Standard</abilityType>
-        <abilityCooldown>0</abilityCooldown>
+        <abilityCooldown>5</abilityCooldown>
         <apChange>0</apChange>
         <abilityCost>0</abilityCost>
         <castSpritesPath>
@@ -96,19 +96,19 @@
     <maxQuantity>5</maxQuantity>
   </battlerLootData>
   <physicalDefenseMultiplier>1</physicalDefenseMultiplier>
-  <fireDefenseMultiplier>8</fireDefenseMultiplier>
-  <earthDefenseMultiplier>2</earthDefenseMultiplier>
-  <airDefenseMultiplier>8</airDefenseMultiplier>
-  <waterDefenseMultiplier>3</waterDefenseMultiplier>
-  <allDefenseMultiplier>8</allDefenseMultiplier>
+  <fireDefenseMultiplier>1</fireDefenseMultiplier>
+  <earthDefenseMultiplier>1</earthDefenseMultiplier>
+  <airDefenseMultiplier>1</airDefenseMultiplier>
+  <waterDefenseMultiplier>1</waterDefenseMultiplier>
+  <allDefenseMultiplier>1</allDefenseMultiplier>
   <physicalAttackMultiplier>1</physicalAttackMultiplier>
-  <fireAttackMultiplier>7</fireAttackMultiplier>
-  <earthAttackMultiplier>2</earthAttackMultiplier>
-  <airAttackMultiplier>7</airAttackMultiplier>
-  <waterAttackMultiplier>3</waterAttackMultiplier>
-  <allAttackMultiplier>7</allAttackMultiplier>
-  <deathSoundPath>Assets/Resources/Sound/Effects/Attack_Fire.wav</deathSoundPath>
-  <attackJumpSoundPath>Assets/Resources/Sound/Effects/Boulder.wav</attackJumpSoundPath>
-  <preContactLength>5</preContactLength>
-  <preMagicLength>9</preMagicLength>
+  <fireAttackMultiplier>1</fireAttackMultiplier>
+  <earthAttackMultiplier>1</earthAttackMultiplier>
+  <airAttackMultiplier>1</airAttackMultiplier>
+  <waterAttackMultiplier>1</waterAttackMultiplier>
+  <allAttackMultiplier>1</allAttackMultiplier>
+  <deathSoundPath>Assets/Resources/Sound/Effects/Chomper_Death.ogg</deathSoundPath>
+  <attackJumpSoundPath>Assets/Resources/Sound/Effects/Footstep_Muffled.wav</attackJumpSoundPath>
+  <preContactLength>3</preContactLength>
+  <preMagicLength>3</preMagicLength>
 </BattlerData>

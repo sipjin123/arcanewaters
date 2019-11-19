@@ -369,12 +369,11 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_ReceiveInventoryItemsForInventory (NetworkConnection connection, InventoryMessage msg) {
-      // Stores inventory data in cache for future reference
-      InventoryCacheManager.self.receiveItemsFromServer(msg.userObjects, msg.categories, msg.pageNumber, msg.gold, msg.gems, msg.totalItemCount, msg.equippedArmorId, msg.equippedWeaponId, msg.itemArray);
-
+      // Get the inventory panel
       InventoryPanel panel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
+
+      // Make sure the inventory panel is showing
       if (!panel.isShowing()) {
-         // Make sure the inventory panel is showing
          PanelManager.self.pushPanel(Panel.Type.Inventory);
       }
 
@@ -1659,24 +1658,18 @@ public class RPCManager : NetworkBehaviour {
    [TargetRpc]
    public void Target_ReceiveItemList(NetworkConnection connection, Item[] itemList) {
       RewardManager.self.showItemsInRewardPanel(itemList.ToList());
-
-      // Tells the user to update their inventory cache to retrieve the updated items
-      InventoryCacheManager.self.fetchInventory();
    }
 
    [TargetRpc]
    public void Target_ReceiveItem (NetworkConnection connection, Item item) {
       RewardManager.self.showItemInRewardPanel(item);
-
-      // Tells the user to update their inventory cache to retrieve the updated items
-      InventoryCacheManager.self.fetchInventory();
    }
 
    #endregion
 
    [TargetRpc]
    public void Target_UpdateInventory (NetworkConnection connection) {
-      InventoryCacheManager.self.fetchInventory();
+      InventoryPanel.self.refreshPanel();
    }
 
    [Command]
@@ -1999,12 +1992,12 @@ public class RPCManager : NetworkBehaviour {
    #region Skills and Abilities
 
    [Server]
-   private void processEnemySkills (List<BattlerData> battleData) {
+   private void processEnemySkills (List<BattlerData> battlersData) {
       List<BuffAbilityData> returnBuffAbilityList = new List<BuffAbilityData>();
       List<AttackAbilityData> returnAttackAbilityList = new List<AttackAbilityData>();
       List<BasicAbilityData> serverAbilities = new List<BasicAbilityData>(AbilityManager.self.allGameAbilities);
 
-      foreach (BattlerData data in battleData) {
+      foreach (BattlerData data in battlersData) {
          List<AttackAbilityData> attackAbilities = new List<AttackAbilityData>(data.battlerAbilities.attackAbilityDataList);
          foreach (AttackAbilityData abilityData in attackAbilities) {
             if (serverAbilities.Exists(_ => _.itemName == abilityData.itemName)) {
@@ -2050,8 +2043,11 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_ReceivePlayerAbilities (NetworkConnection connection, string[] rawDataList) {
-      List<BasicAbilityData> abilityDataList = Util.unserialize<BasicAbilityData>(rawDataList);
-      AbilityInventory.self.addNewAbilities(abilityDataList.ToArray());
+      List<AttackAbilityData> attackDataList = Util.unserialize<AttackAbilityData>(rawDataList);
+      List<BuffAbilityData> buffDataList = Util.unserialize<BuffAbilityData>(rawDataList);
+
+      AbilityInventory.self.addNewAbilities(attackDataList.ToArray());
+      AbilityInventory.self.addNewAbilities(buffDataList.ToArray());
    }
 
    #endregion
@@ -2060,7 +2056,6 @@ public class RPCManager : NetworkBehaviour {
    public void Target_ReceiveMonsterData (NetworkConnection connection, BattlerData[] dataList) {
       // Translates JSON Raw data into ability data for each monster
       foreach(BattlerData battlerData in dataList) {
-         battlerData.battlerAbilities.basicAbilityDataList = Util.unserialize<BasicAbilityData>(battlerData.battlerAbilities.basicAbilityRawData).ToArray();
          battlerData.battlerAbilities.attackAbilityDataList = Util.unserialize<AttackAbilityData>(battlerData.battlerAbilities.attackAbilityRawData).ToArray();
          battlerData.battlerAbilities.buffAbilityDataList = Util.unserialize<BuffAbilityData>(battlerData.battlerAbilities.buffAbilityRawData).ToArray();
       }

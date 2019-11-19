@@ -38,7 +38,8 @@ public class AttackManager : ClientMonoBehaviour {
 
    void Update () {
       if (Global.player == null || Global.player.isDead() || !(Global.player is ShipEntity) ||
-         SeaManager.combatMode != SeaManager.CombatMode.Circle || SeaManager.selectedAttackType == Attack.Type.Air) {
+         SeaManager.combatMode != SeaManager.CombatMode.Circle || SeaManager.selectedAttackType == Attack.Type.Air ||
+         PanelManager.self.hasPanelInStack()) {
          freeCursor.enabled = false;
          maxRangeCircle.hide();
          trajectory.hide();

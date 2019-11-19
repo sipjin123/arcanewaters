@@ -2,30 +2,30 @@
 <AttackAbilityData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <itemID>1</itemID>
   <itemName>Basic Attack</itemName>
-  <itemDescription>Attack with your weapon</itemDescription>
-  <itemIconPath>Assets/Sprites/Icons/Weapons/sword_6.png</itemIconPath>
+  <itemDescription>Attacks with your equipped weapon</itemDescription>
+  <itemIconPath>Assets/Sprites/Icons/Battle/enemy/icon_enemy_sword_slash.png</itemIconPath>
   <levelRequirement>1</levelRequirement>
   <hitSpritesPath>
     <string>Assets/Sprites/Effects/slash_ice.png</string>
   </hitSpritesPath>
   <elementType>Physical</elementType>
-  <hitAudioClipPath />
+  <hitAudioClipPath>Assets/Resources/Sound/Effects/Slash_Physical.ogg</hitAudioClipPath>
   <classRequirement>Any</classRequirement>
   <battleItemType>Ability</battleItemType>
-  <castAudioClipPath />
+  <castAudioClipPath>Assets/Resources/Sound/Effects/Footstep_Muffled.wav</castAudioClipPath>
   <allowedStances>
     <Stance>Balanced</Stance>
     <Stance>Attack</Stance>
     <Stance>Defense</Stance>
   </allowedStances>
   <abilityType>Standard</abilityType>
-  <abilityCooldown>4</abilityCooldown>
-  <apChange>3</apChange>
+  <abilityCooldown>1</abilityCooldown>
+  <apChange>0</apChange>
   <abilityCost>0</abilityCost>
   <castSpritesPath>
-    <string>Undefined</string>
+    <string>Assets/Sprites/Effects/chimney_smoke_1.png</string>
   </castSpritesPath>
-  <FXTimePerFrame>0.08</FXTimePerFrame>
+  <FXTimePerFrame>1</FXTimePerFrame>
   <baseDamage>0</baseDamage>
   <hasShake>true</hasShake>
   <hasKnockup>true</hasKnockup>

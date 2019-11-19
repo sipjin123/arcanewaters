@@ -36,7 +36,7 @@ public class PlayerShipEntity : ShipEntity {
    protected override void Update () {
       base.Update();
 
-      if (!isLocalPlayer || ChatPanel.self.inputField.isFocused) {
+      if (!isLocalPlayer) {
          return;
       }
 
@@ -54,6 +54,11 @@ public class PlayerShipEntity : ShipEntity {
          // Fire the scheduled shot
          Cmd_FireMainCannonAtSpot(nextShotTarget, SeaManager.selectedAttackType, transform.position);
          isNextShotDefined = false;
+      }
+
+      // Ignore any input if a panel is opened or the player is writing in chat
+      if (PanelManager.self.hasPanelInStack() || ChatPanel.self.inputField.isFocused) {
+         return;
       }
 
       // Right-click to attack in a circle

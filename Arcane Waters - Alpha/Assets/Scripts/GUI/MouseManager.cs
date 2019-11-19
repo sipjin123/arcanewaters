@@ -56,13 +56,16 @@ public class MouseManager : ClientMonoBehaviour {
       // Cycle over all of the things that mouse is over
       foreach (RaycastResult result in raycastMouse()) {
          if (result.isValid) {
-            // Check if we're hovering over a clickable box
-            ClickableBox clickableBox = result.gameObject.GetComponent<ClickableBox>();
+            // Only consider clickable boxes if no panel is opened
+            if (!PanelManager.self.hasPanelInStack()) {
+               // Check if we're hovering over a clickable box
+               ClickableBox clickableBox = result.gameObject.GetComponent<ClickableBox>();
 
-            // If so, keep track of it
-            if (clickableBox != null) {
-               _boxesBeingHovered.Add(clickableBox);
-               return true;
+               // If so, keep track of it
+               if (clickableBox != null) {
+                  _boxesBeingHovered.Add(clickableBox);
+                  return true;
+               }
             }
 
             // Otherwise, check if we're  hoving over a selectable or toggle

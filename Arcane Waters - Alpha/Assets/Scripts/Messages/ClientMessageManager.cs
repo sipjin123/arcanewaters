@@ -234,9 +234,6 @@ public class ClientMessageManager : MonoBehaviour {
    }
 
    public static void On_Inventory (NetworkConnection conn, InventoryMessage msg) {
-      // Stores inventory data in cache for future reference
-      InventoryCacheManager.self.receiveItemsFromServer(msg.userObjects, msg.categories, msg.pageNumber, msg.gold, msg.gems, msg.totalItemCount, msg.equippedArmorId, msg.equippedWeaponId, msg.itemArray);
-
       if (PanelManager.self.selectedPanel == Panel.Type.Craft) {
          CraftingPanel craftPanel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);
          if (!craftPanel.isShowing()) {

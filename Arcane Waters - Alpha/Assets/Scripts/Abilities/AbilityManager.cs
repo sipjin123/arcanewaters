@@ -11,19 +11,14 @@ public class AbilityManager : MonoBehaviour
    // A convenient self reference
    public static AbilityManager self;
 
-   // ZERONEV-COMMENT: For now I will just add them manually into the inspector, all the abilities in-game.
-   // I will load them later on from the resource folder and not make them public like this, it can be unsafe in the long run.
+   public TextAsset[] abilityDataAssets;
+
    public List<BasicAbilityData> allGameAbilities { get { return _allGameAbilities; } }
 
    #endregion
 
    void Awake () {
       self = this;
-
-      // TODO ZERONEV: Instead of this method below, it would be better to grab all the files from the abilities folder.
-      // This way we do not miss any ability and we have them in memory, in case we want to adjust an ability at runtime,
-      // change an ability for an enemy at runtime, etc, and we can do that by grabbing their name or their ID. or even just an element.
-      initAllGameAbilities();
    }
 
    public void addNewAbility(BasicAbilityData ability) {
@@ -46,7 +41,7 @@ public class AbilityManager : MonoBehaviour
    public void addNewAbilities (BasicAbilityData[] abilities) {
       foreach (BasicAbilityData ability in abilities) {
          if (_allGameAbilities.Exists(_ => _.itemName == ability.itemName)) {
-            Debug.LogWarning("Duplicated ability name: " + ability.itemName);
+            Debug.LogWarning("Duplicated ability name: " + ability.itemName + " will not add again");
             return;
          }
          if (ability.abilityType == AbilityType.Standard) {
@@ -133,24 +128,6 @@ public class AbilityManager : MonoBehaviour
       sourceBattler.stance = action.newStance;
    }
 
-   // Prepares all game abilities
-   private void initAllGameAbilities () {
-      foreach (BasicAbilityData ability in _allGameAbilities) {
-         if (ability.abilityType == AbilityType.Standard) {
-            AttackAbilityData newInstance = AttackAbilityData.CreateInstance((AttackAbilityData) ability);
-            _attackAbilities.Add(newInstance);
-         } else if (ability.abilityType == AbilityType.BuffDebuff) {
-            BuffAbilityData newInstance = BuffAbilityData.CreateInstance((BuffAbilityData) ability);
-            _buffAbilities.Add(newInstance);
-         }
-      }
-   }
-
-   /// <summary>
-   /// Gets UNINITIALIZED AbilityData, list only to be used for reading, do not modify values directly here.
-   /// </summary>
-   /// <param name="abilityGlobalID"></param>
-   /// <returns></returns>
    public static BasicAbilityData getAbility (int abilityGlobalID, AbilityType abilityType) {
       BasicAbilityData returnAbility = new BasicAbilityData();
       switch (abilityType) {

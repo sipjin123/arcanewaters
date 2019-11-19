@@ -17,19 +17,56 @@
     <basicAbilityDataList>
       <BasicAbilityData xsi:type="AttackAbilityData">
         <itemID>1</itemID>
-        <itemName>slash</itemName>
-        <itemDescription>desc</itemDescription>
-        <itemIconPath>Undefined</itemIconPath>
+        <itemName>Balanced Stance</itemName>
+        <itemDescription>Changes into a balanced Stance</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Battle/Player/Stance/stance_balanced_lg.png</itemIconPath>
         <levelRequirement>1</levelRequirement>
         <hitSpritesPath>
-          <string>Assets/Sprites/Effects/crop_dirt_small.png</string>
+          <string>Undefined</string>
         </hitSpritesPath>
         <elementType>ALL</elementType>
-        <hitAudioClipPath>Assets/Resources/Sound/Effects/Character_Jump.wav</hitAudioClipPath>
+        <hitAudioClipPath />
         <classRequirement>Any</classRequirement>
         <battleItemType>Ability</battleItemType>
-        <castAudioClipPath>Assets/Resources/Sound/Effects/Character_Block.wav</castAudioClipPath>
-        <allowedStances />
+        <castAudioClipPath />
+        <allowedStances>
+          <Stance>Balanced</Stance>
+          <Stance>Attack</Stance>
+          <Stance>Defense</Stance>
+        </allowedStances>
+        <abilityType>Stance</abilityType>
+        <abilityCooldown>15</abilityCooldown>
+        <apChange>0</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Undefined</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.1</FXTimePerFrame>
+        <baseDamage>0</baseDamage>
+        <hasShake>false</hasShake>
+        <hasKnockup>false</hasKnockup>
+        <abilityActionType>StanceChange</abilityActionType>
+        <canBeBlocked>false</canBeBlocked>
+      </BasicAbilityData>
+      <BasicAbilityData xsi:type="AttackAbilityData">
+        <itemID>1</itemID>
+        <itemName>Basic Attack</itemName>
+        <itemDescription>Attacks with your equipped weapon</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Battle/enemy/icon_enemy_sword_slash.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Assets/Sprites/Effects/slash_physical.png</string>
+        </hitSpritesPath>
+        <elementType>Physical</elementType>
+        <hitAudioClipPath>Assets/Resources/Sound/Effects/Slash_Physical.ogg</hitAudioClipPath>
+        <classRequirement>Any</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath>Assets/Resources/Sound/Effects/Footstep_Muffled.wav</castAudioClipPath>
+        <allowedStances>
+          <Stance>Balanced</Stance>
+          <Stance>Attack</Stance>
+          <Stance>Defense</Stance>
+        </allowedStances>
         <abilityType>Standard</abilityType>
         <abilityCooldown>1</abilityCooldown>
         <apChange>0</apChange>
@@ -37,30 +74,129 @@
         <castSpritesPath>
           <string>Assets/Sprites/Effects/chimney_smoke_1.png</string>
         </castSpritesPath>
-        <FXTimePerFrame>1</FXTimePerFrame>
-        <baseDamage>5</baseDamage>
+        <FXTimePerFrame>0.1</FXTimePerFrame>
+        <baseDamage>0</baseDamage>
         <hasShake>true</hasShake>
         <hasKnockup>true</hasKnockup>
         <abilityActionType>Melee</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
       </BasicAbilityData>
+      <BasicAbilityData xsi:type="AttackAbilityData">
+        <itemID>1</itemID>
+        <itemName>Defensive Stance</itemName>
+        <itemDescription>Changes into defensive stance</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Battle/Player/Stance/stance_defensive_lg.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Undefined</string>
+        </hitSpritesPath>
+        <elementType>Physical</elementType>
+        <hitAudioClipPath />
+        <classRequirement>Any</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath />
+        <allowedStances>
+          <Stance>Balanced</Stance>
+          <Stance>Attack</Stance>
+          <Stance>Defense</Stance>
+        </allowedStances>
+        <abilityType>Stance</abilityType>
+        <abilityCooldown>20</abilityCooldown>
+        <apChange>0</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Undefined</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.1</FXTimePerFrame>
+        <baseDamage>0</baseDamage>
+        <hasShake>false</hasShake>
+        <hasKnockup>false</hasKnockup>
+        <abilityActionType>StanceChange</abilityActionType>
+        <canBeBlocked>false</canBeBlocked>
+      </BasicAbilityData>
+      <BasicAbilityData xsi:type="AttackAbilityData">
+        <itemID>2</itemID>
+        <itemName>Offensive Stance</itemName>
+        <itemDescription>Changes to offensive battle stance</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Battle/Player/Stance/stance_offensive_lg.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Undefined</string>
+        </hitSpritesPath>
+        <elementType>Physical</elementType>
+        <hitAudioClipPath />
+        <classRequirement>Any</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath />
+        <allowedStances />
+        <abilityType>Stance</abilityType>
+        <abilityCooldown>15</abilityCooldown>
+        <apChange>0</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Undefined</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.1</FXTimePerFrame>
+        <baseDamage>0</baseDamage>
+        <hasShake>false</hasShake>
+        <hasKnockup>false</hasKnockup>
+        <abilityActionType>StanceChange</abilityActionType>
+        <canBeBlocked>false</canBeBlocked>
+      </BasicAbilityData>
     </basicAbilityDataList>
     <attackAbilityDataList>
       <AttackAbilityData>
         <itemID>1</itemID>
-        <itemName>slash</itemName>
-        <itemDescription>desc</itemDescription>
-        <itemIconPath>Undefined</itemIconPath>
+        <itemName>Balanced Stance</itemName>
+        <itemDescription>Changes into a balanced Stance</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Battle/Player/Stance/stance_balanced_lg.png</itemIconPath>
         <levelRequirement>1</levelRequirement>
         <hitSpritesPath>
-          <string>Assets/Sprites/Effects/crop_dirt_small.png</string>
+          <string>Undefined</string>
         </hitSpritesPath>
         <elementType>ALL</elementType>
-        <hitAudioClipPath>Assets/Resources/Sound/Effects/Character_Jump.wav</hitAudioClipPath>
+        <hitAudioClipPath />
         <classRequirement>Any</classRequirement>
         <battleItemType>Ability</battleItemType>
-        <castAudioClipPath>Assets/Resources/Sound/Effects/Character_Block.wav</castAudioClipPath>
-        <allowedStances />
+        <castAudioClipPath />
+        <allowedStances>
+          <Stance>Balanced</Stance>
+          <Stance>Attack</Stance>
+          <Stance>Defense</Stance>
+        </allowedStances>
+        <abilityType>Stance</abilityType>
+        <abilityCooldown>15</abilityCooldown>
+        <apChange>0</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Undefined</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.1</FXTimePerFrame>
+        <baseDamage>0</baseDamage>
+        <hasShake>false</hasShake>
+        <hasKnockup>false</hasKnockup>
+        <abilityActionType>StanceChange</abilityActionType>
+        <canBeBlocked>false</canBeBlocked>
+      </AttackAbilityData>
+      <AttackAbilityData>
+        <itemID>1</itemID>
+        <itemName>Basic Attack</itemName>
+        <itemDescription>Attacks with your equipped weapon</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Battle/enemy/icon_enemy_sword_slash.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Assets/Sprites/Effects/slash_physical.png</string>
+        </hitSpritesPath>
+        <elementType>Physical</elementType>
+        <hitAudioClipPath>Assets/Resources/Sound/Effects/Slash_Physical.ogg</hitAudioClipPath>
+        <classRequirement>Any</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath>Assets/Resources/Sound/Effects/Footstep_Muffled.wav</castAudioClipPath>
+        <allowedStances>
+          <Stance>Balanced</Stance>
+          <Stance>Attack</Stance>
+          <Stance>Defense</Stance>
+        </allowedStances>
         <abilityType>Standard</abilityType>
         <abilityCooldown>1</abilityCooldown>
         <apChange>0</apChange>
@@ -68,12 +204,74 @@
         <castSpritesPath>
           <string>Assets/Sprites/Effects/chimney_smoke_1.png</string>
         </castSpritesPath>
-        <FXTimePerFrame>1</FXTimePerFrame>
-        <baseDamage>5</baseDamage>
+        <FXTimePerFrame>0.1</FXTimePerFrame>
+        <baseDamage>0</baseDamage>
         <hasShake>true</hasShake>
         <hasKnockup>true</hasKnockup>
         <abilityActionType>Melee</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
+      </AttackAbilityData>
+      <AttackAbilityData>
+        <itemID>1</itemID>
+        <itemName>Defensive Stance</itemName>
+        <itemDescription>Changes into defensive stance</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Battle/Player/Stance/stance_defensive_lg.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Undefined</string>
+        </hitSpritesPath>
+        <elementType>Physical</elementType>
+        <hitAudioClipPath />
+        <classRequirement>Any</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath />
+        <allowedStances>
+          <Stance>Balanced</Stance>
+          <Stance>Attack</Stance>
+          <Stance>Defense</Stance>
+        </allowedStances>
+        <abilityType>Stance</abilityType>
+        <abilityCooldown>20</abilityCooldown>
+        <apChange>0</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Undefined</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.1</FXTimePerFrame>
+        <baseDamage>0</baseDamage>
+        <hasShake>false</hasShake>
+        <hasKnockup>false</hasKnockup>
+        <abilityActionType>StanceChange</abilityActionType>
+        <canBeBlocked>false</canBeBlocked>
+      </AttackAbilityData>
+      <AttackAbilityData>
+        <itemID>2</itemID>
+        <itemName>Offensive Stance</itemName>
+        <itemDescription>Changes to offensive battle stance</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Battle/Player/Stance/stance_offensive_lg.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Undefined</string>
+        </hitSpritesPath>
+        <elementType>Physical</elementType>
+        <hitAudioClipPath />
+        <classRequirement>Any</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath />
+        <allowedStances />
+        <abilityType>Stance</abilityType>
+        <abilityCooldown>15</abilityCooldown>
+        <apChange>0</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Undefined</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.1</FXTimePerFrame>
+        <baseDamage>0</baseDamage>
+        <hasShake>false</hasShake>
+        <hasKnockup>false</hasKnockup>
+        <abilityActionType>StanceChange</abilityActionType>
+        <canBeBlocked>false</canBeBlocked>
       </AttackAbilityData>
     </attackAbilityDataList>
     <buffAbilityDataList />
@@ -84,20 +282,20 @@
     <minQuantity>3</minQuantity>
     <maxQuantity>5</maxQuantity>
   </battlerLootData>
-  <physicalDefenseMultiplier>5</physicalDefenseMultiplier>
-  <fireDefenseMultiplier>5</fireDefenseMultiplier>
-  <earthDefenseMultiplier>5</earthDefenseMultiplier>
-  <airDefenseMultiplier>5</airDefenseMultiplier>
-  <waterDefenseMultiplier>5</waterDefenseMultiplier>
-  <allDefenseMultiplier>5</allDefenseMultiplier>
-  <physicalAttackMultiplier>5</physicalAttackMultiplier>
-  <fireAttackMultiplier>5</fireAttackMultiplier>
-  <earthAttackMultiplier>5</earthAttackMultiplier>
-  <airAttackMultiplier>5</airAttackMultiplier>
-  <waterAttackMultiplier>5</waterAttackMultiplier>
-  <allAttackMultiplier>5</allAttackMultiplier>
+  <physicalDefenseMultiplier>1</physicalDefenseMultiplier>
+  <fireDefenseMultiplier>1</fireDefenseMultiplier>
+  <earthDefenseMultiplier>1</earthDefenseMultiplier>
+  <airDefenseMultiplier>1</airDefenseMultiplier>
+  <waterDefenseMultiplier>1</waterDefenseMultiplier>
+  <allDefenseMultiplier>1</allDefenseMultiplier>
+  <physicalAttackMultiplier>1</physicalAttackMultiplier>
+  <fireAttackMultiplier>1</fireAttackMultiplier>
+  <earthAttackMultiplier>1</earthAttackMultiplier>
+  <airAttackMultiplier>1</airAttackMultiplier>
+  <waterAttackMultiplier>1</waterAttackMultiplier>
+  <allAttackMultiplier>1</allAttackMultiplier>
   <deathSoundPath>Assets/Resources/Sound/Effects/Death_Poof.wav</deathSoundPath>
-  <attackJumpSoundPath>Assets/Resources/Sound/Effects/Character_Jump.wav</attackJumpSoundPath>
-  <preContactLength>5</preContactLength>
-  <preMagicLength>5</preMagicLength>
+  <attackJumpSoundPath>Assets/Resources/Sound/Effects/Chomper_Attack.ogg</attackJumpSoundPath>
+  <preContactLength>3</preContactLength>
+  <preMagicLength>3</preMagicLength>
 </BattlerData>

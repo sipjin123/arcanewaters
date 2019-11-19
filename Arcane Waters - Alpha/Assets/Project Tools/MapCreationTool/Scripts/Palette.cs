@@ -27,6 +27,7 @@ namespace MapCreationTool
         private Rect camBounds = Rect.zero;
         private Rect regularTileBounds = Rect.zero;
         private Vector3Int? draggingFrom = null;
+        private Vector3Int lastDragPos = Vector3Int.zero;
 
         private void Awake()
         {
@@ -178,26 +179,10 @@ namespace MapCreationTool
                 0);
         }
 
-        public void PointerBeginDrag(PointerEventData data)
+        private TileGroup FormGroupBetweenPoints(Vector3Int p1, Vector3Int p2)
         {
-            if(data.button == PointerEventData.InputButton.Left)
-            {
-                var pos = tilemap.WorldToCell(data.pointerPressRaycast.worldPosition);
-                if (InBounds(regularTileBounds, pos))
-                    draggingFrom = pos;
-            }
-        }
-
-        public void PointerEndDrag(PointerEventData data)
-        {
-            if (draggingFrom == null)
-                return;
-
-            Vector3Int curPos = tilemap.WorldToCell(data.pointerCurrentRaycast.worldPosition);
-            curPos = ClampToBounds(regularTileBounds, curPos);
-
-            Vector3Int from = new Vector3Int(Mathf.Min(curPos.x, draggingFrom.Value.x), Mathf.Min(curPos.y, draggingFrom.Value.y), 0);
-            Vector3Int to = new Vector3Int(Mathf.Max(curPos.x, draggingFrom.Value.x), Mathf.Max(curPos.y, draggingFrom.Value.y), 0);
+            Vector3Int from = new Vector3Int(Mathf.Min(p1.x, p2.x), Mathf.Min(p1.y, p2.y), 0);
+            Vector3Int to = new Vector3Int(Mathf.Max(p1.x, p2.x), Mathf.Max(p1.y, p2.y), 0);
 
             var group = new TileGroup
             {
@@ -210,9 +195,34 @@ namespace MapCreationTool
                 for (int j = 0; j < group.Tiles.GetLength(1); j++)
                     group.Tiles[i, j] = paletteData.GetTile(from.x + i, from.y + j);
 
-            UpdateSelectionMarker(group);
+            return group;
+        }
 
-            Tools.ChangeTileGroup(group);
+        public void PointerBeginDrag(PointerEventData data)
+        {
+            if(data.button == PointerEventData.InputButton.Left)
+            {
+                var pos = tilemap.WorldToCell(data.pointerPressRaycast.worldPosition);
+                if (InBounds(regularTileBounds, pos))
+                {
+                    draggingFrom = pos;
+                    lastDragPos = pos;
+                }
+            }
+        }
+
+        public void PointerEndDrag(PointerEventData data)
+        {
+            if (draggingFrom == null)
+                return;
+
+            Vector3Int curPos = tilemap.WorldToCell(data.pointerCurrentRaycast.worldPosition);
+            curPos = ClampToBounds(regularTileBounds, curPos);
+
+            var g = FormGroupBetweenPoints(curPos, draggingFrom.Value);
+
+            UpdateSelectionMarker(g);
+            Tools.ChangeTileGroup(g);
 
             draggingFrom = null;
         }
@@ -221,20 +231,10 @@ namespace MapCreationTool
         {
             if(data.button == PointerEventData.InputButton.Left && draggingFrom != null)
             {
-                Vector3Int curPos = tilemap.WorldToCell(data.pointerCurrentRaycast.worldPosition);
-                curPos = ClampToBounds(regularTileBounds, curPos);
+                lastDragPos = tilemap.WorldToCell(data.pointerCurrentRaycast.worldPosition);
+                lastDragPos = ClampToBounds(regularTileBounds, lastDragPos);
 
-                Vector3Int from = new Vector3Int(Mathf.Min(curPos.x, draggingFrom.Value.x), Mathf.Min(curPos.y, draggingFrom.Value.y), 0);
-                Vector3Int to = new Vector3Int(Mathf.Max(curPos.x, draggingFrom.Value.x), Mathf.Max(curPos.y, draggingFrom.Value.y), 0);
-
-                var group = new TileGroup
-                {
-                    Type = TileGroupType.Regular,
-                    Start = from,
-                    Tiles = new PaletteTilesData.TileData[to.x - from.x + 1, to.y - from.y + 1]
-                };
-
-                UpdateSelectionMarker(group);
+                UpdateSelectionMarker(FormGroupBetweenPoints(lastDragPos, draggingFrom.Value));
             }
             else if(data.button != PointerEventData.InputButton.Left)
             {
@@ -281,6 +281,12 @@ namespace MapCreationTool
         public void PointerExit(PointerEventData data)
         {
             pointerHovering = false;
+
+            if(draggingFrom != null)
+            {
+                UpdateSelectionMarker();
+                draggingFrom = null;
+            }
         }
 
         private void ClampCamPos()

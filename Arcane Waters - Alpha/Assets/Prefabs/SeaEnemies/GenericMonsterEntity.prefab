@@ -280,7 +280,9 @@ MonoBehaviour:
   damage: 10
   reloadDelay: 1
   attackCounter: 0
-  attackCirclePrefab: {fileID: 114088976693073942, guid: f70aab4ab08e2424d8c89334e492291f,
+  localAttackCirclePrefab: {fileID: 2921645448827512062, guid: 351ed76644c9d96439cd9bec5632f6a1,
+    type: 3}
+  defaultAttackCirclePrefab: {fileID: 6992640745960014782, guid: acbd3dfe8fd842543991f926eb18891a,
     type: 3}
   spritesContainer: {fileID: 1013934132990528}
   ripplesContainer: {fileID: 1658159506029436}
@@ -304,6 +306,9 @@ MonoBehaviour:
     spawnTransform: {fileID: 8973144502682084800}
   - direction: 8
     spawnTransform: {fileID: 8973144502682084800}
+  colliderList:
+  - {fileID: 58256050713667648}
+  - {fileID: 6938392427603369774}
   seaMonsterChildrenList: []
   seaMonsterParentEntity: {fileID: 0}
   monsterBehavior: 0
@@ -313,7 +318,47 @@ MonoBehaviour:
   targetEntity: {fileID: 0}
   monsterName: 
   hasDied: 0
-  seaMonsterData: {fileID: 0}
+  seaMonsterData:
+    monsterName: 
+    seaMonsterType: 0
+    attackType: 0
+    showDebugGizmo: 0
+    isAggressive: 0
+    autoMove: 0
+    isMelee: 0
+    isRanged: 1
+    shouldDropTreasure: 1
+    isInvulnerable: 0
+    maxProjectileDistanceGap: 2
+    maxMeleeDistanceGap: 0.5
+    maxDistanceGap: 3
+    territoryRadius: 4.5
+    detectRadius: 4
+    attackFrequency: 1
+    reloadDelay: 1
+    moveFrequency: 1
+    findTargetsFrequency: 0.5
+    avatarSpritePath: 
+    defaultSpritePath: 
+    secondarySpritePath: 
+    defaultRippleTexturePath: 
+    defaultRippleSpritePath: 
+    corpseSpritePath: 
+    scaleOverride: 1
+    outlineScaleOverride: 1
+    rippleScaleOverride: 1
+    maxHealth: 25
+    animGroup: 0
+    roleType: 0
+    animationSpeedOverride: -1
+    rippleAnimationSpeedOverride: -1
+    projectileSpawnLocations: []
+    rippleLocOffset: {x: 0, y: 0, z: 0}
+    lootData:
+      lootList: []
+      defaultLoot: 0
+      minQuantity: 0
+      maxQuantity: 0
   isAttacking: 0
   variety: 0
   monsterType: 0
@@ -321,8 +366,6 @@ MonoBehaviour:
   seaMonsterBars: {fileID: 1576247974216057746}
   isMinionPlanning: 0
   corpseHolder: {fileID: 1428648646478705256}
-  colliderList:
-  - {fileID: 58256050713667648}
 --- !u!50 &50644847342071564
 Rigidbody2D:
   serializedVersion: 4
@@ -963,7 +1006,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2992091220482732669}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1500,6 +1543,81 @@ Transform:
   m_Father: {fileID: 4900218821786150}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5911193296146543648
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6043137302414536377}
+  - component: {fileID: 6629182886503544029}
+  - component: {fileID: 7065225821296255725}
+  m_Layer: 0
+  m_Name: Predicted Damage Bar
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &6043137302414536377
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5911193296146543648}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2992091220482732669}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -16.00001, y: -1}
+  m_SizeDelta: {x: 32, y: 4}
+  m_Pivot: {x: 0, y: 0.5}
+--- !u!222 &6629182886503544029
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5911193296146543648}
+  m_CullTransparentMesh: 0
+--- !u!114 &7065225821296255725
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5911193296146543648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_Sprite: {fileID: 21300000, guid: 1108d52a03ed1b94ca6f3e637bbfa2d1, type: 3}
+  m_Type: 3
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 0
+  m_FillAmount: 0.812
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &5997201932719016179
 GameObject:
   m_ObjectHideFlags: 0
@@ -2091,6 +2209,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 6043137302414536377}
   - {fileID: 382947623402490580}
   m_Father: {fileID: 8497341253838541607}
   m_RootOrder: 0
@@ -2301,7 +2420,6 @@ GameObject:
   - component: {fileID: 2274261359570599014}
   - component: {fileID: 4876185648244406187}
   - component: {fileID: 8033384075726895300}
-  - component: {fileID: 1100761021820896381}
   - component: {fileID: 3875529328221324806}
   m_Layer: 5
   m_Name: Button
@@ -2367,51 +2485,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &1100761021820896381
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8553265619735879506}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Navigation:
-    m_Mode: 0
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
-    m_SelectOnLeft: {fileID: 0}
-    m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
-  m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
-    m_ColorMultiplier: 1
-    m_FadeDuration: 0.1
-  m_SpriteState:
-    m_HighlightedSprite: {fileID: 0}
-    m_PressedSprite: {fileID: 0}
-    m_SelectedSprite: {fileID: 0}
-    m_DisabledSprite: {fileID: 0}
-  m_AnimationTriggers:
-    m_NormalTrigger: Normal
-    m_HighlightedTrigger: Highlighted
-    m_PressedTrigger: Pressed
-    m_SelectedTrigger: Highlighted
-    m_DisabledTrigger: Disabled
-  m_Interactable: 1
-  m_TargetGraphic: {fileID: 8033384075726895300}
-  m_OnClick:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!114 &3875529328221324806
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2532,6 +2605,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   healthBarImage: {fileID: 8883974460053842148}
+  predictedDamageBarImage: {fileID: 7065225821296255725}
   reloadBarImage: {fileID: 7592793172912617439}
   barsContainer: {fileID: 6865492803373229415}
   targetedIcon: {fileID: 7848742050529229825}

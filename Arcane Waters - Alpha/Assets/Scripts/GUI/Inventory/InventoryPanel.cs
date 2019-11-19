@@ -38,6 +38,13 @@ public class InventoryPanel : Panel, IPointerClickHandler {
    public Text goldText;
    public Text gemsText;
 
+   // The common object used to display any grabbed item
+   public GrabbedItem grabbedItem;
+
+   // The zone where grabbed items can be dropped
+   public ItemDropZone inventoryDropZone;
+   public ItemDropZone equipmentDropZone;
+
    // The context menu common to all cells
    public GameObject contextMenu;
 
@@ -77,6 +84,9 @@ public class InventoryPanel : Panel, IPointerClickHandler {
 
       // Hide the context menu
       contextMenu.SetActive(false);
+
+      // Deactivate the grabbed item
+      grabbedItem.deactivate();
 
       // Create a hashset with all the item categories
       HashSet<Item.Category> workSet = new HashSet<Item.Category>();
@@ -349,6 +359,59 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       }
    }
 
+   public void tryGrabItem(ItemCellInventory itemCell) {
+      Item castedItem = itemCell.getItem();
+
+      // Only equippable items can be grabbed
+      if (castedItem.canBeEquipped()) {
+         _grabbedItemCell = itemCell;
+
+         // Hide the cell being grabbed
+         _grabbedItemCell.hide();
+
+         // Initialize the common grabbed object
+         grabbedItem.activate(castedItem, itemCell.getItemSprite(), itemCell.getItemColorKey());
+      }
+   }
+
+   public void stopGrabbingItem () {
+      if (_grabbedItemCell != null) {
+         // Restore the grabbed cell
+         _grabbedItemCell.show();
+         _grabbedItemCell = null;
+
+         // Deactivate the grabbed item
+         grabbedItem.deactivate();
+      }
+   }
+
+   public void tryDropGrabbedItem (Vector2 screenPosition) {
+     if (_grabbedItemCell != null) {
+         // Determine which action was performed
+         bool equipped = isEquipped(_grabbedItemCell.getItem().id);
+         bool droppedInInventory = inventoryDropZone.isInZone(screenPosition);
+         bool droppedInEquipmentSlots = equipmentDropZone.isInZone(screenPosition);
+
+         // Items can be dragged from the equipment slots to the inventory or vice-versa
+         if ((equipped && droppedInInventory) ||
+            (!equipped && droppedInEquipmentSlots)) {
+
+            // Select the item
+            _selectedItem = _grabbedItemCell.getItem();
+
+            // Equip or unequip the item
+            equipOrUnequipSelected();
+
+            // Deactivate the grabbed item object
+            grabbedItem.deactivate();
+            _grabbedItemCell = null;
+         } else {
+            // Otherwise, simply stop grabbing
+            stopGrabbingItem();
+         }
+      }
+   }
+
    public void tryEquipOrUseItem(Item castedItem) {
       _selectedItem = castedItem;
 
@@ -509,6 +572,9 @@ public class InventoryPanel : Panel, IPointerClickHandler {
 
    // The item for which the context menu was activated
    private Item _selectedItem;
+
+   // The cell from which an item was grabbed
+   private ItemCellInventory _grabbedItemCell;
 
    // The currently equipped armor id
    protected static int _equippedArmorId;

@@ -1641,7 +1641,7 @@ MonoBehaviour:
   serverOnly: 0
   localPlayerAuthority: 0
   m_AssetId: 
-  m_SceneId: 3268718430
+  m_SceneId: 740665345
 --- !u!114 &6527673179465098255
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1656,12 +1656,35 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  defaultAbilityData: {fileID: 11400000, guid: 6bff8c131c37fa345951adcbcb780b8f, type: 2}
+  defaultAbilityData:
+    itemID: 0
+    itemName: 
+    itemDescription: 
+    itemIconPath: 
+    levelRequirement: 0
+    hitSpritesPath: []
+    elementType: 0
+    hitAudioClipPath: 
+    classRequirement: 0
+    battleItemType: 0
+    castAudioClipPath: 
+    allowedStances: 
+    abilityType: 0
+    abilityCooldown: 0
+    apChange: 0
+    abilityCost: 0
+    castSpritesPath: []
+    FXTimePerFrame: 0.1
+    baseDamage: 0
+    hasShake: 0
+    hasKnockup: 0
+    abilityActionType: 0
+    canBeBlocked: 0
   battlerMainData:
     enemyName: unknown
     imagePath: 
     currentXP: 0
-    battlerID: 0
+    enemyType: 305
     apGainWhenDamaged: 0
     baseHealth: 0
     baseDefense: 0
@@ -1672,7 +1695,12 @@ MonoBehaviour:
     defensePerLevel: 0
     healthPerlevel: 0
     battlerAbilities:
-    - {fileID: 11400000, guid: 6825c9d58f6dca3469d7f9853588e8b5, type: 2}
+      basicAbilityDataList: []
+      basicAbilityRawData: []
+      attackAbilityDataList: []
+      attackAbilityRawData: []
+      buffAbilityDataList: []
+      buffAbilityRawData: []
     battlerLootData:
       lootList: []
       defaultLoot: 0
@@ -1690,6 +1718,8 @@ MonoBehaviour:
     airAttackMultiplier: 0
     waterAttackMultiplier: 0
     allAttackMultiplier: 0
+    deathSoundPath: 
+    attackJumpSoundPath: 
     preContactLength: 0
     preMagicLength: 0
   battlerType: 2

@@ -72,7 +72,7 @@ namespace MapCreationTool
 
         private void Start()
         {
-            brushOutline.enabled = Tools.ToolType == ToolType.Eraser;
+            UpdateBrushOutline();
         }
 
         private void OnEnable()
@@ -122,8 +122,7 @@ namespace MapCreationTool
 
         private void ToolsAnythingChanged()
         {
-            brushOutline.enabled = Tools.ToolType == ToolType.Eraser;
-            brushOutline.transform.position = WorldToCell(MainCamera.STWP(Input.mousePosition));
+            UpdateBrushOutline();
         }
 
         private void RecalculateCamBounds()
@@ -480,8 +479,7 @@ namespace MapCreationTool
                 ? GetPotentialBoardChange(worldPos)
                 : new BoardChange();
 
-            if(Tools.ToolType == ToolType.Eraser)
-                brushOutline.transform.position = CellToWorldCenter(WorldToCell(MainCamera.STWP(pointerScreenPos)));
+            UpdateBrushOutline();
 
             //-------------------
             //Handle prefab to be placed
@@ -523,6 +521,29 @@ namespace MapCreationTool
                     tc.Layer.SetPreviewTile(tc.Position, tc.Tile);
                 preview.PreviewTilesSet = true;
             }
+        }
+
+        private void UpdateBrushOutline()
+        {
+            brushOutline.enabled = 
+                Tools.ToolType == ToolType.Eraser || 
+                (Tools.ToolType == ToolType.Brush && Tools.TileGroup != null);
+
+            brushOutline.transform.position = CellToWorldCenter(WorldToCell(MainCamera.STWP(Input.mousePosition)));
+
+            if (Tools.ToolType == ToolType.Eraser || Tools.TileGroup == null)
+                brushOutline.size = Vector2.one;
+            else
+            {
+                brushOutline.size = Tools.TileGroup.Size;
+                //Handle cases where the outline is offset on even number size groups
+                brushOutline.transform.position += new Vector3(
+                    Tools.TileGroup.Size.x % 2 == 0 ? -0.5f : 0, 
+                    Tools.TileGroup.Size.y % 2 == 0 ? -0.5f : 0, 
+                    0);
+            }
+
+            brushOutline.color = Tools.ToolType == ToolType.Eraser ? Color.red : Color.green;
         }
 
         public static Vector3Int WorldToCell(Vector3 worldPosition)

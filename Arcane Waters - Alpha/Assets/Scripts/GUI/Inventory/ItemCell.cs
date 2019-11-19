@@ -39,16 +39,16 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
 
    public void setCellForItem (Item item, int count) {
       // Retrieve the icon sprite and coloring depending on the type
-      ColorKey colorKey = null;
+      _colorKey = null;
       switch (item.category) {
          case Item.Category.Weapon:
             icon.sprite = ImageManager.getSprite(item.getIconPath());
-            colorKey = new ColorKey(Global.player.gender, (Weapon.Type) item.itemTypeId);
+            _colorKey = new ColorKey(Global.player.gender, (Weapon.Type) item.itemTypeId);
             break;
          case Item.Category.Armor:
          case Item.Category.Helm:
             icon.sprite = ImageManager.getSprite(item.getIconPath());
-            colorKey = new ColorKey(Global.player.gender, (Armor.Type) item.itemTypeId);
+            _colorKey = new ColorKey(Global.player.gender, (Armor.Type) item.itemTypeId);
             break;
          case Item.Category.Potion:
             icon.sprite = foodIcon;
@@ -72,8 +72,8 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
       }
 
       // Recolor
-      if (colorKey != null) {
-         recoloredSprite.recolor(colorKey, item.color1, item.color2);
+      if (_colorKey != null) {
+         recoloredSprite.recolor(_colorKey, item.color1, item.color2);
       }
 
       // Show the item count when relevant
@@ -116,6 +116,14 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
       return _item;
    }
 
+   public Sprite getItemSprite () {
+      return icon.sprite;
+   }
+
+   public ColorKey getItemColorKey () {
+      return _colorKey;
+   }
+
    #region Private Variables
 
    // A reference to the item being displayed
@@ -123,6 +131,9 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
 
    // Gets set to true when the text must react to pointer events
    protected bool _interactable = true;
+
+   // The item color key
+   private ColorKey _colorKey = null;
 
    #endregion
 

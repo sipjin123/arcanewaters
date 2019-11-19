@@ -1,5 +1,5 @@
-﻿#if IS_SERVER_BUILD
-using System;
+﻿using System;
+#if IS_SERVER_BUILD
 using MySql.Data.MySqlClient;
 #endif
 

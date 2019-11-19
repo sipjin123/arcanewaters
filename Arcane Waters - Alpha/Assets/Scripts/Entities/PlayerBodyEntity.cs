@@ -20,8 +20,8 @@ public class PlayerBodyEntity : BodyEntity {
          return;
       }
 
-      // Allow right clicking people to bring up their info
-      if (Input.GetMouseButtonUp(1)) {
+      // Allow right clicking people to bring up their info, only if no panel is opened
+      if (Input.GetMouseButtonUp(1) && !PanelManager.self.hasPanelInStack()) {
          PlayerBodyEntity body = getClickedBody();
          if (body != null) {
             this.rpc.Cmd_RequestCharacterInfoFromServer(body.userId);
