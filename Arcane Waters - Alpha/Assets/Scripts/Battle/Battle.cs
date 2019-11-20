@@ -99,7 +99,7 @@ public class Battle : NetworkBehaviour {
             }
 
             // Handles the current and only attack a monster can do
-            BattleManager.self.executeBattleAction(this, battler, battlePlan.targets, battler.getAttackAbilities()[0].itemID);
+            BattleManager.self.executeBattleAction(this, battler, battlePlan.targets, 0);
          }
       }
 
@@ -289,7 +289,6 @@ public class Battle : NetworkBehaviour {
                   break;
             }
          }
-
          AbilityManager.self.execute(actionList.ToArray());
       }
    }

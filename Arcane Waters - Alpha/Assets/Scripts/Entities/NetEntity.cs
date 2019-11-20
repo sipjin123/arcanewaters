@@ -72,10 +72,6 @@ public class NetEntity : NetworkBehaviour
    [HideInInspector]
    public CropManager cropManager;
 
-   // Our Achievement Manager for handling achievement data
-   [HideInInspector]
-   public AchievementManager achievementManager;
-
    // Our Admin Manager for admin related messages
    [HideInInspector]
    public AdminManager admin;
@@ -136,7 +132,6 @@ public class NetEntity : NetworkBehaviour
       cropManager = GetComponent<CropManager>();
       admin = GetComponent<AdminManager>();
       netIdent = GetComponent<NetworkIdentity>();
-      achievementManager = GetComponent<AchievementManager>();
       _body = GetComponent<Rigidbody2D>();
       _outline = GetComponentInChildren<SpriteOutline>();
       _clickableBox = GetComponentInChildren<ClickableBox>();
@@ -622,7 +617,7 @@ public class NetEntity : NetworkBehaviour
          SoundManager.create3dSound("tutorial_step", Global.player.transform.position);
 
          // Registers the achievement of leveling up for recording
-         AchievementManager.registerUserAchievement(ActionType.LevelUp);
+         AchievementDataManager.registerUserAchievement(userId, ActionType.LevelUp);
 
          // Show the level up in chat
          string levelsMsg = string.Format("You gained {0} {1} {2}!", levelsGained, jobType, levelsGained > 1 ? "levels" : "level");

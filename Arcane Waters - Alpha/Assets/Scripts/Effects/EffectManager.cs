@@ -144,7 +144,7 @@ public class EffectManager : MonoBehaviour {
    public static void playCombatAbilityVFX (Battler attacker, Battler target, AttackAction action, Vector2 targetPos) {
       Weapon.Type attackerWeapon = attacker.weaponManager.weaponType;
 
-      AttackAbilityData ability = attacker.getAttackAbilities().Find(_=>_.itemID == action.abilityInventoryIndex);
+      AttackAbilityData ability = attacker.getAttackAbilities()[action.abilityInventoryIndex];
 
       List<Sprite> hitSprites = new List<Sprite>();
       foreach (string path in ability.hitSpritesPath) {
@@ -178,7 +178,7 @@ public class EffectManager : MonoBehaviour {
 
    // Used for creating a VFX for casting a magic spell
    public static void playCastAbilityVFX (Battler source, AttackAction action, Vector2 targetPos) {
-      AttackAbilityData ability = source.getAttackAbilities().Find(_=>_.itemID == action.abilityInventoryIndex);
+      AttackAbilityData ability = source.getAttackAbilities()[action.abilityInventoryIndex];
 
       List<Sprite> castSprites = new List<Sprite>();
       foreach (string path in ability.castSpritesPath) {

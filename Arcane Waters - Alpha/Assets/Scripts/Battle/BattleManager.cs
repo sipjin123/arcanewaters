@@ -166,6 +166,9 @@ public class BattleManager : MonoBehaviour {
       // Sets up ability UI info such as icons and name
       BattleUIManager.self.SetupAbilityUI();
 
+      // Registers the action of combat entry to the achievement database for recording
+      AchievementDataManager.registerUserAchievement(player.userId ,ActionType.EnterCombat);
+
       // Update the observers associated with the Battle and the associated players
       rebuildObservers(battler, battle);
    }
@@ -381,7 +384,7 @@ public class BattleManager : MonoBehaviour {
 
    public void executeBattleAction (Battle battle, Battler source, List<Battler> targets, int abilityInventoryIndex) {
       // Get ability reference from the source battler, cause the source battler is the one executing the ability
-      BasicAbilityData abilityData = source.getAttackAbilities().Find(_ => _.itemID == abilityInventoryIndex);
+      BasicAbilityData abilityData = source.getAttackAbilities()[abilityInventoryIndex];
 
       BattleActionType actionType = BattleActionType.UNDEFINED;
 
@@ -396,7 +399,7 @@ public class BattleManager : MonoBehaviour {
       List<string> stringList = new List<string>();
 
       if (abilityData == null) {
-         Debug.LogError("The Ability Data is NULL!! : "+ source.enemyType);
+         D.error("The Ability Data is NULL!! : "+ source.enemyType);
          return;
       }
       if (abilityData.abilityType == AbilityType.Standard) {
@@ -553,7 +556,7 @@ public class BattleManager : MonoBehaviour {
 
          // ZERONEV-COMMENT: It is supossed we are still grabbing the ability from the source battler to apply it
          // So we will grab the source battler
-         AttackAbilityData abilityData = source.getAttackAbilities().Find(_=>_.itemID == action.abilityInventoryIndex);
+         AttackAbilityData abilityData = source.getAttackAbilities()[action.abilityInventoryIndex];
 
          // If the source or target is already dead, then send a Cancel Action
          if (source.isDead() || target.isDead()) {
@@ -580,7 +583,7 @@ public class BattleManager : MonoBehaviour {
                AttackAction attackAction = (AttackAction) action;
 
                // Registers the usage of the Offensive Skill for achievement recording
-               AchievementManager.registerTargetUserAchivement(source.player.userId, ActionType.OffensiveSkillUse);
+               AchievementDataManager.registerUserAchievement(source.player.userId, ActionType.OffensiveSkillUse);
 
                // Apply damage
                target.health -= attackAction.damage;
@@ -590,7 +593,7 @@ public class BattleManager : MonoBehaviour {
                BuffAction buffAction = (BuffAction) action;
 
                // Registers the usage of the Buff Skill for achievement recording
-               AchievementManager.registerTargetUserAchivement(source.player.userId, ActionType.BuffSkillUse);
+               AchievementDataManager.registerUserAchievement(source.player.userId, ActionType.BuffSkillUse);
 
                // Apply the Buff
                target.addBuff(buffAction.getBuffTimer());
@@ -642,10 +645,10 @@ public class BattleManager : MonoBehaviour {
                   Vector3 chestPos = BodyManager.self.getBody(participant.player.userId).transform.position;
 
                   // Registers the kill count of the combat
-                  AchievementManager.registerTargetUserAchivement(participant.player.userId, ActionType.KillLandMonster, defeatedBattlers.Count);
+                  AchievementDataManager.registerUserAchievement(participant.player.userId, ActionType.KillLandMonster, defeatedBattlers.Count);
 
                   // Registers the gold earned for achievement recording
-                  AchievementManager.registerTargetUserAchivement(participant.player.userId, ActionType.EarnGold, goldWon);
+                  AchievementDataManager.registerUserAchievement(participant.player.userId, ActionType.EarnGold, goldWon);
 
                   participant.player.rpc.spawnBattlerMonsterChest(participant.player.instanceId, chestPos, battlerEnemyID);
                }
@@ -653,7 +656,7 @@ public class BattleManager : MonoBehaviour {
          } else {
             if (battler.player is PlayerBodyEntity) {
                // Registers the death of the player in combat
-               AchievementManager.registerTargetUserAchivement(battler.player.userId, ActionType.CombatDie);
+               AchievementDataManager.registerUserAchievement(battler.player.userId, ActionType.CombatDie);
             }
          }
       }

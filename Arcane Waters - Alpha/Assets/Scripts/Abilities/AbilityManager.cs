@@ -75,7 +75,7 @@ public class AbilityManager : MonoBehaviour
          targetBattler.animatingUntil = action.actionEndTime;
 
          // Get the ability object for this action
-         AttackAbilityData abilityData = sourceBattler.getAttackAbilities().Find(_=>_.itemID == action.abilityInventoryIndex);
+         AttackAbilityData abilityData = sourceBattler.getAttackAbilities()[action.abilityInventoryIndex];
 
          switch (action.battleActionType) {
             case BattleActionType.Attack:

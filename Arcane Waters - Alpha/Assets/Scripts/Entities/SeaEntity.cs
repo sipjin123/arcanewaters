@@ -164,7 +164,7 @@ public class SeaEntity : NetEntity {
                   entity.Rpc_ShowExplosion(collidedEntity.transform.position, damage, Attack.Type.None);
 
                   // Registers the action electrocuted to the userID to the achievement database for recording
-                  AchievementManager.registerTargetUserAchivement(entity.userId, ActionType.Electrocuted);
+                  AchievementDataManager.registerUserAchievement(entity.userId, ActionType.Electrocuted);
 
                   collidedEntities.Add(entity, collidedEntity.transform);
                   targetIDList.Add(entity.userId);
@@ -552,85 +552,82 @@ public class SeaEntity : NetEntity {
       // Check for collisions inside the circle
       foreach (Collider2D hit in getColliders) {
          if (hit != null) {
-            SeaEntity entity = hit.GetComponent<SeaEntity>();
+            SeaEntity targetEntity = hit.GetComponent<SeaEntity>();
 
-            if (!enemyHitList.Contains(entity)) {
+            if (!enemyHitList.Contains(targetEntity)) {
                if (targetPlayersOnly && hit.GetComponent<ShipEntity>() == null) {
                   continue;
                }
 
                // Make sure we don't hit ourselves
-               if (entity == this) {
+               if (targetEntity == this) {
                   continue;
                }
 
                // Make sure the target is in our same instance
-               if (entity != null && entity.instanceId == this.instanceId) {
-                  if (!entity.invulnerable) {
+               if (targetEntity != null && targetEntity.instanceId == this.instanceId) {
+                  if (!targetEntity.invulnerable) {
                      int damage = getDamageForShot(attackType, distanceModifier);
-                     int healthAfterDamage = entity.currentHealth - damage;
+                     int targetHealthAfterDamage = targetEntity.currentHealth - damage;
 
                      if (this is PlayerShipEntity) {
-                        if (entity is SeaMonsterEntity) {
-                           if (healthAfterDamage <= 0) {
+                        if (targetEntity is SeaMonsterEntity) {
+                           if (targetHealthAfterDamage <= 0) {
                               // Registers the action Sea Monster Killed to the achievement database for recording
-                              AchievementManager.registerUserAchievement(ActionType.KillSeaMonster);
+                              AchievementDataManager.registerUserAchievement(userId, ActionType.KillSeaMonster);
                            }
-                        } else if (entity is BotShipEntity) {
-                           if (healthAfterDamage <= 0) {
+                        } else if (targetEntity is BotShipEntity) {
+                           if (targetHealthAfterDamage <= 0) {
                               // Registers the action Sunked Ships to the achievement database for recording
-                              AchievementManager.registerUserAchievement(ActionType.SinkedShips);
+                              AchievementDataManager.registerUserAchievement(userId, ActionType.SinkedShips);
                            }
-                        } else if (entity is PlayerShipEntity) {
-                           if (entity.userId != userId) {
-                              if (healthAfterDamage <= 0) {
-                                 // Registers the ship death action of the user to the achievement database for recording of death count
-                                 AchievementManager.registerTargetUserAchivement(entity.userId, ActionType.ShipDie);
-                              }
-                              // Registers the cannon hit action specifically for other player ship to the achievement database 
-                              AchievementManager.registerUserAchievement(ActionType.HitPlayerWithCannon);
+                        } else if (targetEntity is PlayerShipEntity) {
+                           if (targetHealthAfterDamage <= 0) {
+                              // Registers the ship death action of the user to the achievement database for recording of death count
+                              AchievementDataManager.registerUserAchievement(targetEntity.userId, ActionType.ShipDie);
                            }
+                           // Registers the cannon hit action specifically for other player ship to the achievement database 
+                           AchievementDataManager.registerUserAchievement(userId, ActionType.HitPlayerWithCannon);
                         }
 
                         // Registers the cannon hit action of the user to the achievement database for recording of accuracy
-                        AchievementManager.registerUserAchievement(ActionType.CannonHits);
+                        AchievementDataManager.registerUserAchievement(userId, ActionType.CannonHits);
                      }
 
-                     entity.currentHealth -= damage;
-                     entity.Rpc_ShowDamageText(damage, attacker.userId, attackType);
-                     entity.Rpc_ShowExplosion(entity.transform.position, damage, attackType);
+                     if (this is SeaMonsterEntity) {
+                        if (targetEntity is PlayerShipEntity && targetHealthAfterDamage <= 0) {
+                           // Registers the ship death action of the user to the achievement database for recording of death count
+                           AchievementDataManager.registerUserAchievement(targetEntity.userId, ActionType.ShipDie);
+                        }
+                     }
+
+                     targetEntity.currentHealth -= damage;
+                     targetEntity.Rpc_ShowDamageText(damage, attacker.userId, attackType);
+                     targetEntity.Rpc_ShowExplosion(targetEntity.transform.position, damage, attackType);
 
                      if (attackType == Attack.Type.Shock_Ball) {
-                        chainLightning(entity.transform.position, entity.userId);
+                        chainLightning(targetEntity.transform.position, targetEntity.userId);
                      } 
                   } else {
-                     entity.Rpc_ShowExplosion(entity.transform.position, damage, Attack.Type.None);
+                     targetEntity.Rpc_ShowExplosion(targetEntity.transform.position, damage, Attack.Type.None);
                   }
-                  entity.noteAttacker(attacker);
+                  targetEntity.noteAttacker(attacker);
 
                   // Apply any status effects from the attack
                   if (attackType == Attack.Type.Ice) {
                      // If enemy ship freezes a player ship
                      if (this is BotShipEntity) {
-                        if (entity is PlayerShipEntity) {
+                        if (targetEntity is PlayerShipEntity) {
                            // Registers the frozen action status to the achievementdata for recording
-                           AchievementManager.registerTargetUserAchivement(entity.userId, ActionType.Frozen);
+                           AchievementDataManager.registerUserAchievement(targetEntity.userId, ActionType.Frozen);
                         }
                      }
 
-                     StatusManager.self.create(Status.Type.Freeze, 2f, entity.userId);
+                     StatusManager.self.create(Status.Type.Freeze, 2f, targetEntity.userId);
                   } else if (attackType == Attack.Type.Venom) {
-                     // If enemy ship poisons a player ship
-                     if (this is BotShipEntity) {
-                        if (entity is PlayerShipEntity) {
-                           // Registers the poison action status to the achievementdata for recording
-                           AchievementManager.registerTargetUserAchivement(entity.userId,ActionType.Poisoned);
-                        }
-                     }
-
-                     StatusManager.self.create(Status.Type.Slow, 1f, entity.userId);
+                     StatusManager.self.create(Status.Type.Slow, 1f, targetEntity.userId);
                   }
-                  enemyHitList.Add(entity);
+                  enemyHitList.Add(targetEntity);
                }
             }
          }

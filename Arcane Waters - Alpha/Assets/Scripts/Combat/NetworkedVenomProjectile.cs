@@ -79,6 +79,9 @@ public class NetworkedVenomProjectile : MonoBehaviour
          int damage = (int) (sourceEntity.damage / 3f);
          hitEntity.currentHealth -= damage;
 
+         // Registers the poison action status to the achievementdata for recording
+         AchievementDataManager.registerUserAchievement(hitEntity.userId, ActionType.Poisoned);
+
          // Spawn Damage Per Second Residue
          hitEntity.Rpc_AttachEffect(damage, Attack.Type.Venom);
 

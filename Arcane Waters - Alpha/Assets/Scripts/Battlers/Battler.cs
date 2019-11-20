@@ -236,6 +236,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       // Flip sprites for the attackers
       checkIfSpritesShouldFlip();
 
+      // This function will handle the computed stats of the player depending on their Specialty/Faction/Job/Class
       setupPlayerStats();
    }
 
@@ -527,7 +528,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       // we check if the ability we want to reference is a cancel ability
 
       if (!globalAbilityData.isCancel()) {
-         attackerAbility = _battlerAttackAbilities.Find(_=>_.itemID == battleAction.abilityInventoryIndex);
+         attackerAbility = _battlerAttackAbilities[battleAction.abilityInventoryIndex];
       }
 
       switch (globalAbilityData.abilityActionType) {
@@ -989,7 +990,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       // Calculate our defense based on our base and gain per level
       float defense = getBattlerData().baseDefense + (getBattlerData().defensePerLevel * level);
 
-       // Add our armor's defense value, if we have any
+      // Add our armor's defense value, if we have any
       if (armorManager.hasArmor()) {
          defense += armorManager.getArmor().getDefense(element);
       }
@@ -1209,7 +1210,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    public BasicAbilityData getOffenseStance () { return _offenseInitializedStance; }
    public BasicAbilityData getDefensiveStance () { return _defensiveInitializedStance; }
 
-   public List<AttackAbilityData> getAttackAbilities () { return _battlerAttackAbilities; }
+   public List<AttackAbilityData> getAttackAbilities () { return _battlerAttackAbilities; } 
 
    public AttackAbilityData getBasicAttack () {
       // Safe check
