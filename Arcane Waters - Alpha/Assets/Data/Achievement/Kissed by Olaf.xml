@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0"?>
 <AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <actionType>Frozen</actionType>
   <achievementName>Kissed by Olaf</achievementName>
@@ -8,4 +8,5 @@
   <itemType>0</itemType>
   <itemCategory>0</itemCategory>
   <iconPath />
+  <tier>2</tier>
 </AchievementData>

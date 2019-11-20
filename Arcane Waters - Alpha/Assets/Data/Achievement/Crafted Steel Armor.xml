@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0"?>
 <AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <actionType>Craft</actionType>
   <achievementName>Crafted Steel Armor</achievementName>
@@ -8,4 +8,5 @@
   <itemType>3</itemType>
   <itemCategory>2</itemCategory>
   <iconPath />
+  <tier>1</tier>
 </AchievementData>

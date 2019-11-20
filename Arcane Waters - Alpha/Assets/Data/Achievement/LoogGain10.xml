@@ -8,4 +8,5 @@
   <itemType>0</itemType>
   <itemCategory>0</itemCategory>
   <iconPath>Assets/Sprites/Icons/Helm/cap.png</iconPath>
+  <tier>1</tier>
 </AchievementData>
