@@ -49586,6 +49586,7 @@ MonoBehaviour:
   allBiomesDefinition:
     tilemap: {fileID: 8031485923113696121}
     prefabs: []
+  collidableLayers: 04000000060000000700000008000000110000000a0000000b0000000c0000000d0000000e0000000f00000010000000
   transparentTile: {fileID: 11400000, guid: 6770d82dbc34c894eb30ee1fd5b3b937, type: 2}
   layerZMultiplier: -0.01
   sublayerZMultiplier: -0.0001

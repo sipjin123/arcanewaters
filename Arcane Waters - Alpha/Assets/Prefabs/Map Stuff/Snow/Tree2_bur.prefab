@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6806932410334279018}
   - component: {fileID: 8660743989469306672}
-  - component: {fileID: 8132579259589142763}
+  - component: {fileID: 633738313484705772}
   m_Layer: 0
   m_Name: bot
   m_TagString: Untagged
@@ -82,7 +82,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!60 &8132579259589142763
+--- !u!60 &633738313484705772
 PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -107,12 +107,14 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -1.375, y: 0.375}
-      - {x: -0.875, y: 0.125}
-      - {x: 0.75, y: 0.125}
-      - {x: 1.375, y: 0.3125}
-      - {x: 1.375, y: 1}
-      - {x: -1.375, y: 1}
+    - - {x: -0.6870308, y: 1.3503466}
+      - {x: -1.1986017, y: 1.1681949}
+      - {x: -1.1499872, y: 0.3787893}
+      - {x: -0.34120464, y: -0.10552597}
+      - {x: 0.39490414, y: -0.08582425}
+      - {x: 1.1047316, y: 0.2746303}
+      - {x: 1.2016497, y: 1.1073385}
+      - {x: 0.6749592, y: 1.3505312}
 --- !u!1 &5687582114102494761
 GameObject:
   m_ObjectHideFlags: 0
@@ -123,7 +125,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3741617878358019188}
   - component: {fileID: 5790441758489873589}
-  - component: {fileID: 9220466638271511144}
   m_Layer: 0
   m_Name: top
   m_TagString: Untagged
@@ -195,45 +196,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!60 &9220466638271511144
-PolygonCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5687582114102494761}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 4, y: 4}
-    newSize: {x: 4, y: 4}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Points:
-    m_Paths:
-    - - {x: 1.3125, y: 0.75}
-      - {x: 0.75, y: 1.5625}
-      - {x: 0.25, y: 2}
-      - {x: -0.25, y: 2}
-      - {x: -0.6875, y: 1.5625}
-      - {x: -1.25, y: 0.6875}
-      - {x: -2, y: -0.625}
-      - {x: -2, y: -1.375}
-      - {x: -1.9375, y: -1.9375}
-      - {x: -1.75, y: -2}
-      - {x: 1.6875, y: -2}
-      - {x: 1.875, y: -1.875}
-      - {x: 2, y: -1.1875}
-      - {x: 2, y: -0.5625}
 --- !u!1 &8896971119151267409
 GameObject:
   m_ObjectHideFlags: 0

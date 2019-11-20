@@ -16,6 +16,8 @@ public class Area : MonoBehaviour {
       MerchantShop_Forest = 11, AdventureShop_Forest = 12, AdventureShop_Desert = 13,
       Shipyard_Forest = 14,
 
+      TonyTest = 2001,
+
       // Each server can make up to 3 randomly generated maps
       SeaRandom_1 = 1001,
       SeaRandom_2 = 1002,

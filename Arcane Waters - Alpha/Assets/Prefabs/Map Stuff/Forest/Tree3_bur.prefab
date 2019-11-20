@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2945153204990123722}
   - component: {fileID: 5595261851731079897}
-  - component: {fileID: 827965770338252176}
+  - component: {fileID: 4343757171723768444}
   m_Layer: 0
   m_Name: bot
   m_TagString: Untagged
@@ -82,7 +82,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!60 &827965770338252176
+--- !u!60 &4343757171723768444
 PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -107,13 +107,14 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -0.9375, y: 1}
-      - {x: -0.9375, y: 0.6875}
-      - {x: -0.625, y: 0.25}
-      - {x: -0.3125, y: 0}
-      - {x: 0.5, y: 0}
-      - {x: 0.9375, y: 0.5625}
-      - {x: 0.9375, y: 1}
+    - - {x: -0.47925568, y: 0.909351}
+      - {x: -1.2416248, y: 0.48379576}
+      - {x: -1.203783, y: 0.09857738}
+      - {x: -0.5180092, y: -0.28104663}
+      - {x: 0.2745819, y: -0.2921605}
+      - {x: 1.2192917, y: 0.10152888}
+      - {x: 1.2140961, y: 0.49608696}
+      - {x: 0.6701393, y: 0.8739276}
 --- !u!1 &6635925670398460494
 GameObject:
   m_ObjectHideFlags: 0
@@ -172,7 +173,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3324393031516843980}
   - component: {fileID: 6121268497944082467}
-  - component: {fileID: 6937912843289513778}
   m_Layer: 0
   m_Name: top
   m_TagString: Untagged
@@ -244,43 +244,3 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!60 &6937912843289513778
-PolygonCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8096835985333093461}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 4, y: 4}
-    newSize: {x: 4, y: 4}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Points:
-    m_Paths:
-    - - {x: 2, y: -0.0625}
-      - {x: 1.75, y: 0.625}
-      - {x: 1.375, y: 1.25}
-      - {x: 0.5625, y: 1.9375}
-      - {x: 0.375, y: 2}
-      - {x: -0.375, y: 2}
-      - {x: -0.5625, y: 1.9375}
-      - {x: -1.375, y: 1.25}
-      - {x: -1.8125, y: 0.3125}
-      - {x: -2, y: -0.125}
-      - {x: -2, y: -1.5625}
-      - {x: -1.9375, y: -1.6875}
-      - {x: -1.5625, y: -2}
-      - {x: 1.5625, y: -2}
-      - {x: 2, y: -1.5625}

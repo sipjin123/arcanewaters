@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8837092637273490670}
   - component: {fileID: 3770903004561389079}
-  - component: {fileID: 3056301201715876200}
   m_Layer: 0
   m_Name: Top
   m_TagString: Untagged
@@ -82,58 +81,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!60 &3056301201715876200
-PolygonCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4813701093930696104}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 5, y: 4}
-    newSize: {x: 5, y: 4}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Points:
-    m_Paths:
-    - - {x: 0.7210451, y: -1.8047297}
-      - {x: 1.9375, y: -1.5625}
-      - {x: 1.8125, y: -1.25}
-      - {x: 2.0625, y: -0.1875}
-      - {x: 2.125, y: 0.25}
-      - {x: 2.125, y: 1.1875}
-      - {x: 2, y: 1.4375}
-      - {x: 1.25, y: 1.875}
-      - {x: 0.75, y: 1.8125}
-      - {x: 0.5, y: 1.8125}
-      - {x: 0.3125, y: 2}
-      - {x: 0.25, y: 2}
-      - {x: -0.125, y: 1.9375}
-      - {x: -0.6875, y: 1.875}
-      - {x: -1.1875, y: 1.875}
-      - {x: -1.375, y: 2}
-      - {x: -1.8125, y: 2}
-      - {x: -2.0625, y: 1.625}
-      - {x: -2.125, y: 1}
-      - {x: -2.125, y: -0.3125}
-      - {x: -2.0625, y: -0.875}
-      - {x: -2.125, y: -1.5625}
-      - {x: -2.125, y: -1.75}
-      - {x: -1.5625, y: -2}
-      - {x: -0.8125, y: -2}
-      - {x: -0.375, y: -2}
-      - {x: 0.375, y: -2}
 --- !u!1 &5923635663367246853
 GameObject:
   m_ObjectHideFlags: 0
@@ -192,7 +139,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6519170408139556979}
   - component: {fileID: 1260110588660034249}
-  - component: {fileID: 8283029326290281345}
+  - component: {fileID: 6827036359432274297}
   m_Layer: 0
   m_Name: Bot
   m_TagString: Untagged
@@ -264,7 +211,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!60 &8283029326290281345
+--- !u!60 &6827036359432274297
 PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -289,11 +236,12 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -0.4375, y: 0.5}
-      - {x: -0.8125, y: 0.375}
-      - {x: -0.8125, y: -0.5}
-      - {x: 0.4375, y: -0.5}
-      - {x: 0.6875, y: -0.4375}
-      - {x: 0.8125, y: -0.1875}
-      - {x: 0.8125, y: 0.3125}
-      - {x: 0.625, y: 0.5}
+    - - {x: -0.4717527, y: 0.87982285}
+      - {x: -1.2627302, y: 0.4916054}
+      - {x: -1.2304227, y: -0.27894258}
+      - {x: -0.47148615, y: -0.7454338}
+      - {x: 0.3468001, y: -0.76532364}
+      - {x: 0.7937162, y: -0.53389406}
+      - {x: 1.2518948, y: -0.24151373}
+      - {x: 1.3015369, y: 0.49477267}
+      - {x: 0.4894167, y: 0.8530872}

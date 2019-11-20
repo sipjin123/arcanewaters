@@ -16,6 +16,8 @@ public class Spawn : MonoBehaviour {
       ForestTownWeaponsOutside = 20, ForestWeaponsInside = 21, DesertWeaponsInside = 22, DesertWeaponsOutside = 23,
       ForestShipyardOutside = 24, ForestShipyardInside = 25,
 
+      TonyTest = 2001,
+
       RandomMap_1 = 1001,
       RandomMap_2 = 1002,
       RandomMap_3 = 1003,

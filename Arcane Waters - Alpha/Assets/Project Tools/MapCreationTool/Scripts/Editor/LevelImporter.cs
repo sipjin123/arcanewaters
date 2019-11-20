@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine.Tilemaps;
+using Cinemachine;
 
 namespace MapCreationTool
 {
@@ -32,11 +33,32 @@ namespace MapCreationTool
             Dictionary<int, Tilemap> layers = new Dictionary<int, Tilemap>();
 
             GameObject level = new GameObject();
-            level.AddComponent<Grid>();
+            var area = level.AddComponent<Area>();
+            area.areaType = Area.Type.TonyTest;
+
             Transform tilemaps = new GameObject("tilemaps").transform;
-            Transform prefabs = new GameObject("prefabs").transform;
             tilemaps.parent = level.transform;
+            tilemaps.transform.localScale = new Vector3(0.16f, 0.16f, 1f);
+            tilemaps.transform.position = new Vector3(0, 0, 100);
+
+            Grid grid = tilemaps.gameObject.AddComponent<Grid>();
+            grid.cellSize = new Vector3(1, 1, 0);
+
+            var rb = tilemaps.gameObject.AddComponent<Rigidbody2D>();
+            rb.bodyType = RigidbodyType2D.Static;
+
+            var col = tilemaps.gameObject.AddComponent<CompositeCollider2D>();
+            col.generationType = CompositeCollider2D.GenerationType.Manual;
+
+            Transform prefabs = new GameObject("prefabs").transform;
             prefabs.parent = level.transform;
+
+            Transform spawn = new GameObject("spawn").transform;
+            spawn.parent = level.transform;
+            spawn.transform.localPosition = Vector3.zero;
+
+            var sp = spawn.gameObject.AddComponent<Spawn>();
+            sp.spawnType = Spawn.Type.TonyTest;
 
             foreach(var tile in data.tiles)
             {
@@ -51,36 +73,57 @@ namespace MapCreationTool
                 else
                 {
                     GameObject l = new GameObject("Layer " + layerIndex);
-                    float posZ = tile.layer * AssetSerializationMaps.LayerZMultiplier +
+
+                    //Add water so water checker catches it
+                    if (tile.layer == PaletteTilesData.PaletteData.WaterLayer)
+                        l.name += " Water";
+
+                    float posZ = AssetSerializationMaps.LayerZStart + tile.layer * AssetSerializationMaps.LayerZMultiplier +
                         (tile.sublayer == null ? 0 : tile.sublayer.Value * AssetSerializationMaps.SublayerZMultiplier);
 
-                    l.transform.position = new Vector3(0, 0, posZ);
                     layer = l.AddComponent<Tilemap>();
-                    l.AddComponent<TilemapRenderer>();
+                    var tlRen = l.AddComponent<TilemapRenderer>();
+                    tlRen.sortOrder = TilemapRenderer.SortOrder.TopLeft;
+
                     layers.Add(layerIndex, layer);
                     l.transform.parent = tilemaps.transform;
+                    l.transform.localScale = Vector3.one;
+                    l.transform.localPosition = new Vector3(0, 0, posZ);
+
+                    if (AssetSerializationMaps.LayersWithColliders.Contains(tile.layer))
+                    {
+                        var tmCol = l.AddComponent<TilemapCollider2D>();
+                        tmCol.usedByComposite = true;
+                    }
+                        
                 }
 
                 layer.SetTile(tile.position, tile.tile);
             }
 
+
             foreach(var prefab in data.prefabs)
             {
-                var go = PrefabUtility.InstantiatePrefab(prefab.prefab) as GameObject;
+                var go = PrefabUtility.InstantiatePrefab(prefab.prefab, prefabs) as GameObject;
                 go.transform.parent = prefabs;
                 go.transform.position = prefab.position + Vector3.back * 10;
                 if (go.GetComponent<ZSnap>())
                     go.GetComponent<ZSnap>().snapZ();
             }
+            prefabs.localScale = new Vector3(0.16f, 0.16f, 1f);
 
+            var cam = (PrefabUtility.InstantiatePrefab(Resources.Load("Prefabs/StandardMapCamera"), level.transform) as GameObject).GetComponent<CinemachineVirtualCamera>();
+            area.vcam = cam;
 
+            level.transform.position = new Vector3(-500, -500, 0);
+            
             GameObject pref = PrefabUtility.SaveAsPrefabAsset(level, directory + @"\" + name + " Level" + ".prefab", out bool success);
             Object.DestroyImmediate(level);
         }
 
         static void EnsureSerializationMapsLoaded()
         {
-            if (AssetSerializationMaps.BiomeSpecific != null)
+            if (AssetSerializationMaps.Loaded)
                 return;
 
             AssetSerializationMaps.Load();

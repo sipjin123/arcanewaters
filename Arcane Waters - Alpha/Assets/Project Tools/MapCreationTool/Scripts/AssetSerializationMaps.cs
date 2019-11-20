@@ -9,9 +9,11 @@ namespace MapCreationTool
     {
         public BiomeMapsDefinition[] mapsDefinitions;
         public MapsDefinition allBiomesDefinition;
+        public int[] collidableLayers = new int[0];
         public TileBase transparentTile;
         public float layerZMultiplier = -0.01f;
         public float sublayerZMultiplier = -0.0001f;
+        public float layerZStart = 1f;
 
         private void OnValidate()
         {
@@ -26,6 +28,8 @@ namespace MapCreationTool
                 TransparentTile = transparentTile;
                 LayerZMultiplier = layerZMultiplier;
                 SublayerZMultiplier = sublayerZMultiplier;
+                LayersWithColliders = collidableLayers;
+                LayerZStart = layerZStart;
 
                 foreach (BiomeMapsDefinition definition in mapsDefinitions)
                 {
@@ -71,6 +75,8 @@ namespace MapCreationTool
                         }
                     }
                 }
+
+                Loaded = true;
             }
             catch(Exception ex)
             {
@@ -122,6 +128,9 @@ namespace MapCreationTool
         public static TileBase TransparentTile { get; set; }
         public static float LayerZMultiplier { get; set; }
         public static float SublayerZMultiplier { get; set; }
+        public static float LayerZStart { get; set; }
+        public static int[] LayersWithColliders { get; set; }
+        public static bool Loaded { get; private set; }
 
         public class BiomeMaps
         {

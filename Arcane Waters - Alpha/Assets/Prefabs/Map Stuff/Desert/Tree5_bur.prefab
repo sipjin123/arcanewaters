@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5231919281165128040}
   - component: {fileID: 1404137566717614384}
-  - component: {fileID: 8891780737487747949}
   m_Layer: 0
   m_Name: top
   m_TagString: Untagged
@@ -82,47 +81,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!60 &8891780737487747949
-PolygonCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 120097376667945066}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 4, y: 4}
-    newSize: {x: 4, y: 4}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Points:
-    m_Paths:
-    - - {x: 1.375, y: 1.9375}
-      - {x: 0.0625, y: 1.8125}
-      - {x: -0.375, y: 2}
-      - {x: -1.4375, y: 2}
-      - {x: -1.5625, y: 1.9375}
-      - {x: -1.875, y: 1.4375}
-      - {x: -2, y: 0.9375}
-      - {x: -2, y: -0.125}
-      - {x: -2, y: -0.375}
-      - {x: -2, y: -1.3125}
-      - {x: -1.6875, y: -1.4375}
-      - {x: -1.0625, y: -2}
-      - {x: 1.1875, y: -2}
-      - {x: 1.8125, y: -1.625}
-      - {x: 2, y: -1.5}
-      - {x: 2, y: 1.5625}
 --- !u!1 &2805644729190260592
 GameObject:
   m_ObjectHideFlags: 0
@@ -133,7 +91,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9079211845476011664}
   - component: {fileID: 76989249437480093}
-  - component: {fileID: 286749145944267637}
+  - component: {fileID: 4233763097333871039}
   m_Layer: 0
   m_Name: bot
   m_TagString: Untagged
@@ -205,7 +163,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!60 &286749145944267637
+--- !u!60 &4233763097333871039
 PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -230,13 +188,15 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -1.0625, y: 1}
-      - {x: -1.0625, y: 0.5}
-      - {x: -0.75, y: 0.125}
-      - {x: -0.375, y: -0.0625}
-      - {x: 0.5, y: -0.0625}
-      - {x: 1.0625, y: 0.375}
-      - {x: 1.0625, y: 1}
+    - - {x: -0.488914, y: 0.8762374}
+      - {x: -1.2321047, y: 0.26962686}
+      - {x: -1.1699436, y: -0.34693432}
+      - {x: -0.5509748, y: -0.7626028}
+      - {x: 0.2320101, y: -0.83664274}
+      - {x: 1.0015196, y: -0.45616484}
+      - {x: 1.3076348, y: -0.05041337}
+      - {x: 1.060692, y: 0.5329459}
+      - {x: 0.43756804, y: 0.8640535}
 --- !u!1 &3227070067462348364
 GameObject:
   m_ObjectHideFlags: 0
