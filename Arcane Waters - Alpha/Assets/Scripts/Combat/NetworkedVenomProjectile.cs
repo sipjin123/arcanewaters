@@ -80,7 +80,7 @@ public class NetworkedVenomProjectile : MonoBehaviour
          hitEntity.currentHealth -= damage;
 
          // Registers the poison action status to the achievementdata for recording
-         AchievementDataManager.registerUserAchievement(hitEntity.userId, ActionType.Poisoned);
+         AchievementManager.registerUserAchievement(hitEntity.userId, ActionType.Poisoned);
 
          // Spawn Damage Per Second Residue
          hitEntity.Rpc_AttachEffect(damage, Attack.Type.Venom);

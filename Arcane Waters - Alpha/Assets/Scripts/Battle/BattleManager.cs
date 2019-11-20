@@ -167,7 +167,7 @@ public class BattleManager : MonoBehaviour {
       BattleUIManager.self.SetupAbilityUI();
 
       // Registers the action of combat entry to the achievement database for recording
-      AchievementDataManager.registerUserAchievement(player.userId ,ActionType.EnterCombat);
+      AchievementManager.registerUserAchievement(player.userId, ActionType.EnterCombat);
 
       // Update the observers associated with the Battle and the associated players
       rebuildObservers(battler, battle);
@@ -583,7 +583,7 @@ public class BattleManager : MonoBehaviour {
                AttackAction attackAction = (AttackAction) action;
 
                // Registers the usage of the Offensive Skill for achievement recording
-               AchievementDataManager.registerUserAchievement(source.player.userId, ActionType.OffensiveSkillUse);
+               AchievementManager.registerUserAchievement(source.player.userId, ActionType.OffensiveSkillUse);
 
                // Apply damage
                target.health -= attackAction.damage;
@@ -593,7 +593,7 @@ public class BattleManager : MonoBehaviour {
                BuffAction buffAction = (BuffAction) action;
 
                // Registers the usage of the Buff Skill for achievement recording
-               AchievementDataManager.registerUserAchievement(source.player.userId, ActionType.BuffSkillUse);
+               AchievementManager.registerUserAchievement(source.player.userId, ActionType.BuffSkillUse);
 
                // Apply the Buff
                target.addBuff(buffAction.getBuffTimer());
@@ -645,10 +645,10 @@ public class BattleManager : MonoBehaviour {
                   Vector3 chestPos = BodyManager.self.getBody(participant.player.userId).transform.position;
 
                   // Registers the kill count of the combat
-                  AchievementDataManager.registerUserAchievement(participant.player.userId, ActionType.KillLandMonster, defeatedBattlers.Count);
+                  AchievementManager.registerUserAchievement(participant.player.userId, ActionType.KillLandMonster, defeatedBattlers.Count);
 
                   // Registers the gold earned for achievement recording
-                  AchievementDataManager.registerUserAchievement(participant.player.userId, ActionType.EarnGold, goldWon);
+                  AchievementManager.registerUserAchievement(participant.player.userId, ActionType.EarnGold, goldWon);
 
                   participant.player.rpc.spawnBattlerMonsterChest(participant.player.instanceId, chestPos, battlerEnemyID);
                }
@@ -656,7 +656,7 @@ public class BattleManager : MonoBehaviour {
          } else {
             if (battler.player is PlayerBodyEntity) {
                // Registers the death of the player in combat
-               AchievementDataManager.registerUserAchievement(battler.player.userId, ActionType.CombatDie);
+               AchievementManager.registerUserAchievement(battler.player.userId, ActionType.CombatDie);
             }
          }
       }

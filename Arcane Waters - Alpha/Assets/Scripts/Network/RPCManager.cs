@@ -271,19 +271,19 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Add it to their inventory
-      UnityThreadHelper.BackgroundDispatcher.Dispatch((Action) (() => {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<Item> databaseList = DB_Main.getRequiredIngredients(_player.userId, itemLoots);
 
-         UnityThreadHelper.UnityDispatcher.Dispatch((Action) (() => {
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             processGroupRewards(_player.userId, databaseList, lootInfoList, false);
 
             // Registers the interaction of loot bags to the achievement database for recording
-            AchievementDataManager.registerUserAchievement(_player.userId, ActionType.OpenedLootBag);
+            AchievementManager.registerUserAchievement(_player.userId, ActionType.OpenedLootBag);
 
             // Send it to the specific player that opened it
             Target_OpenChest(_player.connectionToClient, item, chest.id);
-         }));
-      }));
+         });
+      });
    }
 
    [Server]
@@ -1147,7 +1147,7 @@ public class RPCManager : NetworkBehaviour {
       Quest currentQuest = NPCManager.self.getQuest(npcId, questId);
 
       // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch((Action) (() => {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
 
          // Get the quest status
          QuestStatusInfo status = DB_Main.getQuestStatus(npcId, _player.userId, currentQuest.questId);
@@ -1218,7 +1218,7 @@ public class RPCManager : NetworkBehaviour {
          int friendshipLevel = DB_Main.getFriendshipLevel(npcId, _player.userId);
 
          // Back to the Unity thread
-         UnityThreadHelper.UnityDispatcher.Dispatch((Action) (() => {
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
 
             // If this is the end of the conversation, close the dialogue panel
             if (currentNode.nextNodeId == -1) {
@@ -1232,11 +1232,11 @@ public class RPCManager : NetworkBehaviour {
             // If items have been rewarded, show the reward panel
             if (rewardedItems.Count > 0) {
                // Registers the quest completion to the achievement data
-               AchievementDataManager.registerUserAchievement(_player.userId, ActionType.QuestComplete);
+               AchievementManager.registerUserAchievement(_player.userId, ActionType.QuestComplete);
                Target_ReceiveItemList(_player.connectionToClient, rewardedItems.ToArray());
             }
-         }));
-      }));
+         });
+      });
    }
 
    [Command]
@@ -1268,7 +1268,7 @@ public class RPCManager : NetworkBehaviour {
    [Command]
    public void Cmd_GiftItemToNPC (int npcId, int itemId, int count) {
       // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch((Action) (() => {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Retrieve the current friendship
          int currentFriendship = DB_Main.getFriendshipLevel(npcId, _player.userId);
 
@@ -1325,14 +1325,14 @@ public class RPCManager : NetworkBehaviour {
          }
 
          // Back to the Unity thread
-         UnityThreadHelper.UnityDispatcher.Dispatch((Action) (() => {
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Send the npc answer to the client
             Target_ReceiveNPCCustomDialogue(newFriendshipLevel, npcText, ClickableText.Type.YouAreWelcome, null);
 
             // Registers the npc gift action to the achievement database for recording
-            AchievementDataManager.registerUserAchievement(_player.userId, ActionType.NPCGift);
-         }));
-      }));
+            AchievementManager.registerUserAchievement(_player.userId, ActionType.NPCGift);
+         });
+      });
    }
 
    #endregion
@@ -1357,7 +1357,7 @@ public class RPCManager : NetworkBehaviour {
       int price = shopItem.getSellPrice();
 
       // Make sure the player has enough money
-      UnityThreadHelper.BackgroundDispatcher.Dispatch((Action) (() => {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          int gold = DB_Main.getGold(_player.userId);
 
          // Make sure they have enough gold
@@ -1369,7 +1369,7 @@ public class RPCManager : NetworkBehaviour {
          }
 
          // Back to Unity thread
-         UnityThreadHelper.UnityDispatcher.Dispatch((Action) (() => {
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             if (gold < shopItem.getSellPrice()) {
                ServerMessageManager.sendError(ErrorMessage.Type.NotEnoughGold, _player, "You don't have " + price + " gold!");
                return;
@@ -1381,17 +1381,17 @@ public class RPCManager : NetworkBehaviour {
             }
 
             // Registers the purchasing of generic item action to the achievement database for recording
-            AchievementDataManager.registerUserAchievement(_player.userId, ActionType.BuyItem);
+            AchievementManager.registerUserAchievement(_player.userId, ActionType.BuyItem);
 
             // Registers the purchasing of equipment action to the achievement database for recording
             if (shopItem.category == Item.Category.Weapon) {
-               AchievementDataManager.registerUserAchievement(_player.userId, ActionType.WeaponBuy);
+               AchievementManager.registerUserAchievement(_player.userId, ActionType.WeaponBuy);
             }
             if (shopItem.category == Item.Category.Armor) {
-               AchievementDataManager.registerUserAchievement(_player.userId, ActionType.ArmorBuy);
+               AchievementManager.registerUserAchievement(_player.userId, ActionType.ArmorBuy);
             }
             if (shopItem.category == Item.Category.Helm) {
-               AchievementDataManager.registerUserAchievement(_player.userId, ActionType.HeadgearBuy);
+               AchievementManager.registerUserAchievement(_player.userId, ActionType.HeadgearBuy);
             }
 
             // Decrease the item count
@@ -1402,8 +1402,8 @@ public class RPCManager : NetworkBehaviour {
 
             // Make sure their gold display gets updated
             getItemsForArea();
-         }));
-      }));
+         });
+      });
    }
 
    [Command]
@@ -1418,7 +1418,7 @@ public class RPCManager : NetworkBehaviour {
       int price = ship.price;
 
       // Make sure the player has enough money
-      UnityThreadHelper.BackgroundDispatcher.Dispatch((Action) (() => {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          int gold = DB_Main.getGold(_player.userId);
          ShipInfo newShipInfo = new ShipInfo();
 
@@ -1431,7 +1431,7 @@ public class RPCManager : NetworkBehaviour {
          }
 
          // Back to Unity thread
-         UnityThreadHelper.UnityDispatcher.Dispatch((Action) (() => {
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             if (gold < price) {
                ServerMessageManager.sendError(ErrorMessage.Type.NotEnoughGold, _player, "You don't have " + price + " gold!");
                return;
@@ -1449,15 +1449,15 @@ public class RPCManager : NetworkBehaviour {
             requestNewFlagship(newShipInfo.shipId);
 
             // Registers the purchasing of ship action to the achievement database for recording
-            AchievementDataManager.registerUserAchievement(_player.userId, ActionType.BuyShip);
+            AchievementManager.registerUserAchievement(_player.userId, ActionType.BuyShip);
 
             // Show a popup panel for the player
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.ShipBought, _player);
 
             // Make sure their gold display gets updated
             getShipsForArea();
-         }));
-      }));
+         });
+      });
    }
 
    #region Guilds
@@ -1611,7 +1611,7 @@ public class RPCManager : NetworkBehaviour {
       Item rewardItem = data.resultItem;
       List<Item> rewardItemList = new List<Item>();
 
-      UnityThreadHelper.BackgroundDispatcher.Dispatch((Action) (() => {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Fetches reward item id
          int rewardItemID = DB_Main.getItemID(userId, (int) rewardItem.category, rewardItem.itemTypeId);
 
@@ -1620,18 +1620,18 @@ public class RPCManager : NetworkBehaviour {
          DB_Main.addJobXP(_player.userId, Jobs.Type.Crafter, _player.faction, xp);
          Jobs newJobXP = DB_Main.getJobXP(_player.userId);
 
-         UnityThreadHelper.UnityDispatcher.Dispatch((Action) (() => {
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             rewardItem.id = rewardItemID;
             rewardItemList.Add(data.resultItem);
             finalizeRewards(userId, rewardItemList, databaseItems, requiredItems);
 
             // Registers the crafting action to the achievement database for recording
-            AchievementDataManager.registerUserAchievement(_player.userId, ActionType.Craft);
+            AchievementManager.registerUserAchievement(_player.userId, ActionType.Craft);
 
             // Let them know they gained experience
             _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Crafter, 0);
-         }));
-      }));
+         });
+      });
    }
 
    [Server]
@@ -1707,7 +1707,7 @@ public class RPCManager : NetworkBehaviour {
          itemLoots.Add(lootInfoList[i].lootType);
       }
 
-      UnityThreadHelper.BackgroundDispatcher.Dispatch((Action) (() => {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<Item> databaseList = DB_Main.getRequiredIngredients(_player.userId, itemLoots);
 
          // Add the mining xp
@@ -1715,15 +1715,15 @@ public class RPCManager : NetworkBehaviour {
          DB_Main.addJobXP(_player.userId, Jobs.Type.Miner, _player.faction, xp);
          Jobs newJobXP = DB_Main.getJobXP(_player.userId);
 
-         UnityThreadHelper.UnityDispatcher.Dispatch((Action) (() => {
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Registers the Ore mining success action to the achievement database for recording
-            AchievementDataManager.registerUserAchievement(_player.userId, ActionType.MineOre);
+            AchievementManager.registerUserAchievement(_player.userId, ActionType.MineOre);
             processGroupRewards(_player.userId, databaseList, lootInfoList, true);
 
             // Let them know they gained experience
             _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Miner, 0);
-         }));
-      }));
+         });
+      });
    }
 
    [Server]
@@ -1791,7 +1791,7 @@ public class RPCManager : NetworkBehaviour {
       });
 
       // Registers the interaction of treasure chests to the achievement database for recording
-      AchievementDataManager.registerUserAchievement(_player.userId, ActionType.OpenTreasureChest);
+      AchievementManager.registerUserAchievement(_player.userId, ActionType.OpenTreasureChest);
 
       // Send it to the specific player that opened it
       Target_OpenChest(_player.connectionToClient, item, chest.id);

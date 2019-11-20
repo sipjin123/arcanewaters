@@ -164,7 +164,7 @@ public class SeaEntity : NetEntity {
                   entity.Rpc_ShowExplosion(collidedEntity.transform.position, damage, Attack.Type.None);
 
                   // Registers the action electrocuted to the userID to the achievement database for recording
-                  AchievementDataManager.registerUserAchievement(entity.userId, ActionType.Electrocuted);
+                  AchievementManager.registerUserAchievement(entity.userId, ActionType.Electrocuted);
 
                   collidedEntities.Add(entity, collidedEntity.transform);
                   targetIDList.Add(entity.userId);
@@ -574,30 +574,30 @@ public class SeaEntity : NetEntity {
                         if (targetEntity is SeaMonsterEntity) {
                            if (targetHealthAfterDamage <= 0) {
                               // Registers the action Sea Monster Killed to the achievement database for recording
-                              AchievementDataManager.registerUserAchievement(userId, ActionType.KillSeaMonster);
+                              AchievementManager.registerUserAchievement(userId, ActionType.KillSeaMonster);
                            }
                         } else if (targetEntity is BotShipEntity) {
                            if (targetHealthAfterDamage <= 0) {
                               // Registers the action Sunked Ships to the achievement database for recording
-                              AchievementDataManager.registerUserAchievement(userId, ActionType.SinkedShips);
+                              AchievementManager.registerUserAchievement(userId, ActionType.SinkedShips);
                            }
                         } else if (targetEntity is PlayerShipEntity) {
                            if (targetHealthAfterDamage <= 0) {
                               // Registers the ship death action of the user to the achievement database for recording of death count
-                              AchievementDataManager.registerUserAchievement(targetEntity.userId, ActionType.ShipDie);
+                              AchievementManager.registerUserAchievement(targetEntity.userId, ActionType.ShipDie);
                            }
                            // Registers the cannon hit action specifically for other player ship to the achievement database 
-                           AchievementDataManager.registerUserAchievement(userId, ActionType.HitPlayerWithCannon);
+                           AchievementManager.registerUserAchievement(userId, ActionType.HitPlayerWithCannon);
                         }
 
                         // Registers the cannon hit action of the user to the achievement database for recording of accuracy
-                        AchievementDataManager.registerUserAchievement(userId, ActionType.CannonHits);
+                        AchievementManager.registerUserAchievement(userId, ActionType.CannonHits);
                      }
 
                      if (this is SeaMonsterEntity) {
                         if (targetEntity is PlayerShipEntity && targetHealthAfterDamage <= 0) {
                            // Registers the ship death action of the user to the achievement database for recording of death count
-                           AchievementDataManager.registerUserAchievement(targetEntity.userId, ActionType.ShipDie);
+                           AchievementManager.registerUserAchievement(targetEntity.userId, ActionType.ShipDie);
                         }
                      }
 
@@ -619,7 +619,7 @@ public class SeaEntity : NetEntity {
                      if (this is BotShipEntity) {
                         if (targetEntity is PlayerShipEntity) {
                            // Registers the frozen action status to the achievementdata for recording
-                           AchievementDataManager.registerUserAchievement(targetEntity.userId, ActionType.Frozen);
+                           AchievementManager.registerUserAchievement(targetEntity.userId, ActionType.Frozen);
                         }
                      }
 

@@ -3,15 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
-using static AchievementData;
 using System.Linq;
 
-public class AchievementDataManager : NetworkBehaviour
+public class AchievementManager : MonoBehaviour
 {
    #region Public Variables
 
    // Self
-   public static AchievementDataManager self;
+   public static AchievementManager self;
 
    // The files containing the achievement data
    public TextAsset[] rawDataAssets;
@@ -19,8 +18,8 @@ public class AchievementDataManager : NetworkBehaviour
    // Determines if the list is generated already
    public bool hasInitialized;
    
-   // Determines how many tiers will be setup for each achievement (Example: Bronze Minerx100, Silver Minerx500, Gold Minerx500, Platinum Minerx1000)
-   public const int TIER_COUNT = 4;
+   // Determines how many tiers will be setup for all the achievements (Example: Bronze Minerx100, Silver Minerx500, Gold Minerx500, Platinum Minerx1000)
+   public const int MAX_TIER_COUNT = 4;
 
    #endregion
 
@@ -38,7 +37,7 @@ public class AchievementDataManager : NetworkBehaviour
       List<AchievementData> newDataList = new List<AchievementData>();
 
       // Gathers all the achievement that uses the same Action Type such as ([ActionType.Mining]Mine1x, Mine10x, Mine100x)
-      for (int i = 1; i < TIER_COUNT; i++) {
+      for (int i = 1; i < MAX_TIER_COUNT; i++) {
          string actionKey = actionType.ToString() + i.ToString();
          if (self._achievementDataCollection.ContainsKey(actionKey)) {
             newDataList.Add(self._achievementDataCollection[actionKey]);
@@ -76,10 +75,10 @@ public class AchievementDataManager : NetworkBehaviour
       self.processAchievement(userID, action, customCount, dependencyItem);
    }
 
-   [Server]
+#if IS_SERVER_BUILD
    public void processAchievement (int userID, ActionType actionType, int count, Item dependencyItem = null) {
       D.debug("Register Achievement: " + actionType);
-      List<AchievementData> castedData = AchievementDataManager.castData(actionType, dependencyItem);
+      List<AchievementData> castedData = AchievementManager.castData(actionType, dependencyItem);
       if (castedData == null) {
          Debug.LogWarning("Warning!: The XML does not exist yet, please create the data using the Achievement Tool Editor : (" + actionType + ")");
          return;
@@ -167,6 +166,7 @@ public class AchievementDataManager : NetworkBehaviour
          });
       });
    }
+#endif
 
    #region Private Variables
 
