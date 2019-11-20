@@ -7,11 +7,12 @@ using MySql.Data.MySqlClient;
 public class AchievementData
 {
    #region Public Variables
-   // The type of action key
-   public ActionType actionType;
 
    // The name of the achievement
    public string achievementName;
+
+   // The type of action key
+   public ActionType actionType;
 
    // The info of the achievement
    public string achievementDescription;
@@ -30,6 +31,9 @@ public class AchievementData
 
    // The path of the icon
    public string iconPath;
+
+   // Dictates the level of achievement such as (Beginner Level x1 / Mid Level Achievement x5/ High level achievement 100x)
+   public int tier = 1;
 
    #endregion
 
@@ -58,6 +62,20 @@ public class AchievementData
       this.itemType = typeId;
       this.itemCategory = categoryId;
    }
+
+   public static AchievementData CreateAchievementData (AchievementData copy) {
+      AchievementData newData = new AchievementData();
+      newData.actionType = copy.actionType;
+      newData.achievementName = copy.achievementName;
+      newData.achievementDescription = copy.achievementDescription;
+      newData.count = copy.count;
+      newData.achievementUniqueID = copy.achievementUniqueID;
+      newData.itemType = copy.itemType;
+      newData.itemCategory = copy.itemCategory; ;
+      newData.iconPath = copy.iconPath;
+      newData.tier = copy.tier;
+      return newData;
+   }
 }
 
 // Key values that is relevant to the achievements
@@ -76,13 +94,31 @@ public enum ActionType
 }
 
 /*
+ * TESTED REALTIME
+ * JumpOnBouncePad
+ * SellCrop
+ * HarvestCrop
+ * WaterCrop
+ * WeaponBuy
+ * PlantCrop
+ * KillLandMonster
+ * KillSeaMonster
+ * Electrocuted
+ * EarnGold
+ * CombatDie
+ * OffensiveSkillUse
+ * MineOre
+ * OpenedLootBag
+ * 
+ * 
+ * 
  * FINISHED INTEGRATION
- * OpenedLootBag, Craft, MineOre, BuyItem, BuyShip
- * WeaponBuy, ArmorBuy, SellCrop, HarvestCrop, WaterCrop
- * PlantCrop, NPCGift, OpenTreasureChest, KillSeaMonster, Electrocuted 
- * SinkedShips, CannonHits, EarnGold, KillLandMonster, HitPlayerWithCannon 
+ * OpenedLootBag, Craft, , BuyItem, BuyShip
+ * , ArmorBuy, , , 
+ * , NPCGift, OpenTreasureChest, ,  
+ * SinkedShips, CannonHits, , , HitPlayerWithCannon 
  * Frozen, Poisoned, ShipDie, EnterCombat, HeadgearBuy 
- * CombatDie, BuffSkillUse, OffensiveSkillUse, QuestComple, JumpOnBouncePad
+ * , BuffSkillUse, , QuestComple, 
  * LevelUp, 
  * 
  * NEEDS INTEGRATION

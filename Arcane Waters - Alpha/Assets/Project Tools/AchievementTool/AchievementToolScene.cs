@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 public class AchievementToolScene : MonoBehaviour {
    #region Public Variables
@@ -26,6 +27,12 @@ public class AchievementToolScene : MonoBehaviour {
    // Main menu Buttons
    public Button createButton, mainMenuButton;
 
+   // Determines if ID details should be shown
+   public Toggle showDetails;
+
+   // Determines if details are being shown in the UI
+   public bool isShowingDetails;
+
    #endregion
 
    private void Awake () {
@@ -34,6 +41,10 @@ public class AchievementToolScene : MonoBehaviour {
       });
       mainMenuButton.onClick.AddListener(() => {
          SceneManager.LoadScene(MasterToolScene.masterScene);
+      });
+      showDetails.onValueChanged.AddListener(_ => {
+         isShowingDetails = _;
+         toolManager.loadXMLData();
       });
    }
 
@@ -69,13 +80,20 @@ public class AchievementToolScene : MonoBehaviour {
       template.gameObject.SetActive(true);
    }
 
-   public void loadAchievementData (Dictionary<string, AchievementData> achievementDataList) {
+   public void loadAchievementData (Dictionary<string, AchievementData> achievementDataCollection) {
       itemTemplateParent.gameObject.DestroyChildren();
-      
+
+      List<AchievementData> sortedList = achievementDataCollection.Values.ToList().OrderBy(w => w.actionType).ToList();
+
       // Create a row for each achievement element
-      foreach (AchievementData achievementData in achievementDataList.Values) {
+      foreach (AchievementData achievementData in sortedList) {
          AchievementToolTemplate template = Instantiate(achievementTemplatePrefab, itemTemplateParent.transform);
-         template.nameText.text = achievementData.achievementName;
+         if (isShowingDetails) {
+            template.nameText.text = achievementData.achievementName + "\n[" + achievementData.tier + "] (" + achievementData.actionType + ")";
+         } else {
+            template.nameText.text = achievementData.achievementName;
+         }
+
          template.editButton.onClick.AddListener(() => {
             achievementDataPanel.loadData(achievementData);
             achievementDataPanel.gameObject.SetActive(true);
