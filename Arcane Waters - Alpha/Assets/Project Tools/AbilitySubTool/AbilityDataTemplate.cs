@@ -40,7 +40,7 @@ public class AbilityDataTemplate : MonoBehaviour
       }
 
       nameText.text = newName;
-      indexText.text = "";
+      indexText.text = "ID:["+resultItem.itemID.ToString()+"]";
    }
 
    #region Private Variables

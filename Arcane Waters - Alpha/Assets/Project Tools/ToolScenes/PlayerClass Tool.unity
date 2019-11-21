@@ -1092,6 +1092,9 @@ MonoBehaviour:
   - buttonToggle: {fileID: 145724269}
     gameObjToHide: {fileID: 291173569}
     dropDownIcon: {fileID: 8548531858136460277}
+  - buttonToggle: {fileID: 8548531858136460281}
+    gameObjToHide: {fileID: 8548531858136460279}
+    dropDownIcon: {fileID: 8548531858136460280}
   statHolderpanel: {fileID: 8548531858136460278}
   _classTypeButton: {fileID: 4827268605559551881}
   _classTypeText: {fileID: 6904470103860139205}
@@ -30476,6 +30479,30 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 86f71154e29f71f40b7a6bdb4bc5526f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &8548531858136460279 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3298983635576444380, guid: dd319d4adfd03c245b1867e8480f840b,
+    type: 3}
+  m_PrefabInstance: {fileID: 8548531858136460276}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8548531858136460280 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 354614896426084186, guid: dd319d4adfd03c245b1867e8480f840b,
+    type: 3}
+  m_PrefabInstance: {fileID: 8548531858136460276}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8548531858136460281 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8690542452951557774, guid: dd319d4adfd03c245b1867e8480f840b,
+    type: 3}
+  m_PrefabInstance: {fileID: 8548531858136460276}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!222 &9094811822803127687

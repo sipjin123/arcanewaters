@@ -280,19 +280,19 @@ public class MonsterDataPanel : MonoBehaviour {
       newBattData.defensePerLevel = int.Parse(_defensePerLevel.text);
       newBattData.healthPerlevel = int.Parse(_healthPerlevel.text);
 
-      newBattData.physicalDefenseMultiplier = int.Parse(_physicalDefenseMultiplier.text);
-      newBattData.allDefenseMultiplier = int.Parse(_allDefenseMultiplier.text);
-      newBattData.fireDefenseMultiplier = int.Parse(_fireDefenseMultiplier.text);
-      newBattData.earthDefenseMultiplier = int.Parse(_earthDefenseMultiplier.text);
-      newBattData.waterDefenseMultiplier = int.Parse(_waterDefenseMultiplier.text);
-      newBattData.airDefenseMultiplier = int.Parse(_airDefenseMultiplier.text);
+      newBattData.physicalDefenseMultiplier = float.Parse(_physicalDefenseMultiplier.text);
+      newBattData.allDefenseMultiplier = float.Parse(_allDefenseMultiplier.text);
+      newBattData.fireDefenseMultiplier = float.Parse(_fireDefenseMultiplier.text);
+      newBattData.earthDefenseMultiplier = float.Parse(_earthDefenseMultiplier.text);
+      newBattData.waterDefenseMultiplier = float.Parse(_waterDefenseMultiplier.text);
+      newBattData.airDefenseMultiplier = float.Parse(_airDefenseMultiplier.text);
 
-      newBattData.physicalAttackMultiplier = int.Parse(_physicalAttackMultiplier.text);
-      newBattData.allAttackMultiplier = int.Parse(_allAttackMultiplier.text);
-      newBattData.fireAttackMultiplier = int.Parse(_fireAttackMultiplier.text);
-      newBattData.earthAttackMultiplier = int.Parse(_earthAttackMultiplier.text);
-      newBattData.waterAttackMultiplier = int.Parse(_waterAttackMultiplier.text);
-      newBattData.airAttackMultiplier = int.Parse(_airAttackMultiplier.text);
+      newBattData.physicalAttackMultiplier = float.Parse(_physicalAttackMultiplier.text);
+      newBattData.allAttackMultiplier = float.Parse(_allAttackMultiplier.text);
+      newBattData.fireAttackMultiplier = float.Parse(_fireAttackMultiplier.text);
+      newBattData.earthAttackMultiplier = float.Parse(_earthAttackMultiplier.text);
+      newBattData.waterAttackMultiplier = float.Parse(_waterAttackMultiplier.text);
+      newBattData.airAttackMultiplier = float.Parse(_airAttackMultiplier.text);
 
       newBattData.preContactLength = int.Parse(_preContactLength.text);
       newBattData.preMagicLength = int.Parse(_preMagicLength.text);

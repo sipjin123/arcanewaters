@@ -13,21 +13,23 @@ public class PlayerStats
    public UserCombatStats userCombatStats = new UserCombatStats();
 
    public UserShipStats userShipStats = new UserShipStats();
+
+   public UserSpecialStats userSpecialStats = new UserSpecialStats();
 }
 
 [Serializable]
 public class UserDefaultStats
 {
    // Base modifiers
-   public float hpPerLevel;
-   public float armorPerLevel;
-   public float apPerLevel;
+   public float hpPerLevel = 1;
+   public float armorPerLevel = 1;
+   public float apPerLevel = 1;
    public float bonusAP;
    public float bonusMaxHP;
    public float bonusArmor;
    public float bonusATK;
    public float bonusATKPerLevel;
-
+   
    // Stat modifiers
    public float bonusINT;
    public float bonusSTR;
@@ -75,23 +77,23 @@ public class UserShipStats
 public class UserCombatStats
 {
    // Defense modifiers
-   public float bonusResistancePhys;
-   public float bonusResistanceFire;
-   public float bonusResistanceWater;
-   public float bonusResistanceWind;
-   public float bonusResistanceEarth;
-   public float bonusResistanceAll;
+   public float bonusResistancePhys = 1;
+   public float bonusResistanceFire = 1;
+   public float bonusResistanceWater = 1;
+   public float bonusResistanceWind = 1;
+   public float bonusResistanceEarth = 1;
+   public float bonusResistanceAll = 1;
 
    // Damage modifiers
-   public float bonusDamagePhys;
-   public float bonusDamageFire;
-   public float bonusDamageWater;
-   public float bonusDamageWind;
-   public float bonusDamageEarth;
-   public float bonusDamageAll;
+   public float bonusDamagePhys = 1;
+   public float bonusDamageFire = 1;
+   public float bonusDamageWater = 1;
+   public float bonusDamageWind = 1;
+   public float bonusDamageEarth = 1;
+   public float bonusDamageAll = 1;
 
    // Defense modifiers per level
-   public float bonusResistancePhysPerLevel;
+   public float bonusResistancePhysPerLevel ;
    public float bonusResistanceFirePerLevel;
    public float bonusResistanceWaterPerLevel;
    public float bonusResistanceWindPerLevel;
@@ -105,4 +107,35 @@ public class UserCombatStats
    public float bonusDamageWindPerLevel;
    public float bonusDamageEarthPerLevel;
    public float bonusDamageAllPerLevel;
+}
+
+[Serializable]
+public class UserSpecialStats
+{
+   // Asks for discount from shops
+   public float shopDiscountMultiplier = 1;
+
+   // Added value to sellable items
+   public float shopSellBargainMultiplier = 1;
+
+   // Additional npc friendship rewards
+   public float friendshipRewardBonus = 1;
+
+   // Reduces cost of ships
+   public float shipDiscount = 1;
+
+   // Adds healing item and skill multiplier
+   public float healMultiplier = 1;
+
+   // Gains extra ores by chance
+   public float miningBonusChance = 1;
+
+   // Gains extra loots by chance
+   public float extraLootChance = 1;
+
+   // Adds crafting success rate
+   public float craftSuccessChance = 1;
+
+   // Adds crafting stat boost
+   public float craftQualityMultiplier = 1;
 }

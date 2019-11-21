@@ -91,6 +91,17 @@ public class StatHolderPanel : MonoBehaviour {
       statData.userShipStats.bonusShipSupplyRoom = float.Parse(_supplyRoomBase.text);
       statData.userShipStats.bonusShipSupplyRoomPerLevel = float.Parse(_supplyRoomPerLevel.text);
 
+      // Special Stats
+      statData.userSpecialStats.shopDiscountMultiplier = float.Parse(_shopDiscountMultiplier.text);
+      statData.userSpecialStats.shopSellBargainMultiplier = float.Parse(_shopSellBargainMultiplier.text);
+      statData.userSpecialStats.friendshipRewardBonus = float.Parse(_friendshipRewardBonus.text);
+      statData.userSpecialStats.shipDiscount = float.Parse(_shipDiscount.text);
+      statData.userSpecialStats.healMultiplier = float.Parse(_healMultiplier.text);
+      statData.userSpecialStats.miningBonusChance = float.Parse(_miningBonusChance.text);
+      statData.userSpecialStats.extraLootChance = float.Parse(_extraLootChance.text);
+      statData.userSpecialStats.craftSuccessChance = float.Parse(_craftSuccessChance.text);
+      statData.userSpecialStats.craftQualityMultiplier = float.Parse(_craftQualityMultiplier.text);
+
       return statData;
    }
 
@@ -170,6 +181,17 @@ public class StatHolderPanel : MonoBehaviour {
       _cargoRoomPerLevel.text = classData.userShipStats.bonusShipCargoRoomPerLevel.ToString();
       _supplyRoomBase.text = classData.userShipStats.bonusShipSupplyRoom.ToString();
       _supplyRoomPerLevel.text = classData.userShipStats.bonusShipSupplyRoomPerLevel.ToString();
+
+      // Special Stats
+      _shopDiscountMultiplier.text = classData.userSpecialStats.shopDiscountMultiplier.ToString(); 
+      _shopSellBargainMultiplier.text = classData.userSpecialStats.shopSellBargainMultiplier.ToString();
+      _friendshipRewardBonus.text = classData.userSpecialStats.friendshipRewardBonus.ToString();
+      _shipDiscount.text = classData.userSpecialStats.shipDiscount.ToString();
+      _healMultiplier.text = classData.userSpecialStats.healMultiplier.ToString();
+      _miningBonusChance.text = classData.userSpecialStats.miningBonusChance.ToString();
+      _extraLootChance.text = classData.userSpecialStats.extraLootChance.ToString();
+      _craftSuccessChance.text = classData.userSpecialStats.craftSuccessChance.ToString();
+      _craftQualityMultiplier.text = classData.userSpecialStats.craftQualityMultiplier.ToString();
    }
 
    #region Private Variables
@@ -252,6 +274,18 @@ public class StatHolderPanel : MonoBehaviour {
       _cargoRoomPerLevel,
       _supplyRoomBase,
       _supplyRoomPerLevel;
+
+   // Player Special stats 
+   [SerializeField]
+   private InputField _shopDiscountMultiplier, 
+      _shopSellBargainMultiplier, 
+      _friendshipRewardBonus, 
+      _shipDiscount, 
+      _healMultiplier, 
+      _miningBonusChance, 
+      _extraLootChance, 
+      _craftSuccessChance,
+      _craftQualityMultiplier;
 #pragma warning restore 0649 
    #endregion
 }
