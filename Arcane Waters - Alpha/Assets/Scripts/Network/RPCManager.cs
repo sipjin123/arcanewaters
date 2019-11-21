@@ -1939,6 +1939,13 @@ public class RPCManager : NetworkBehaviour {
       BattleManager.self.addPlayerToBattle(battle, playerBody, Battle.TeamType.Attackers);
    }
 
+   [TargetRpc]
+   public void Target_UpdateBattleAbilityUI (NetworkConnection connection,string[] rawAttackAbilities) {
+      List<AttackAbilityData> attackAbilityDataList = Util.unserialize<AttackAbilityData>(rawAttackAbilities);
+
+      BattleUIManager.self.SetupAbilityUI(attackAbilityDataList.ToArray());
+   }
+
    [Server]
    private void processCraftingItems (Item[] itemRequestList) {
       List<CraftableItemRequirements> itemReturnList = new List<CraftableItemRequirements>();

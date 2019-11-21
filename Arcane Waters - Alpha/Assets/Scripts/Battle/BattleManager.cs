@@ -156,15 +156,16 @@ public class BattleManager : MonoBehaviour {
       // Add the Battler to the Battle
       if (teamType == Battle.TeamType.Attackers) {
          battle.attackers.Add(battler.userId);
+
+         // Sets up ability UI info such as icons and name
+         BattleUIManager.self.SetupAbilityUI(battler.getAttackAbilities().ToArray());
+         player.rpc.Target_UpdateBattleAbilityUI(player.connectionToClient, Util.serialize(battler.getAttackAbilities()));
       } else if (teamType == Battle.TeamType.Defenders) {
          battle.defenders.Add(battler.userId);
       }
 
       // Assign the Battle ID to the Sync Var
       player.battleId = battle.battleId;
-
-      // Sets up ability UI info such as icons and name
-      BattleUIManager.self.SetupAbilityUI();
 
       // Registers the action of combat entry to the achievement database for recording
       AchievementManager.registerUserAchievement(player.userId, ActionType.EnterCombat);
@@ -306,8 +307,17 @@ public class BattleManager : MonoBehaviour {
    }
 
    private Battler createBattlerForEnemy (Battle battle, Enemy enemy, Battle.TeamType teamType) {
-      BattlerData data = getAllBattlersData().Find(x => x.enemyType == enemy.enemyType);
       Battler enemyPrefab = prefabTypes.Find(_ => _.enemyType == enemy.enemyType).enemyPrefab;
+
+      // For testing Purposes, adds a chance to spawn a Golem Monster
+      int golemSpawnChance = Random.Range(0, 4);
+      if (golemSpawnChance > 2) {
+         D.warning("Spawning a Debug Monster, Delete after feature completion!");
+         enemyPrefab = prefabTypes.Find(_ => _.enemyType == Enemy.Type.Golem).enemyPrefab;
+      }
+        
+      BattlerData data = getAllBattlersData().Find(x => x.enemyType == enemy.enemyType);
+      enemy.enemyType = data.enemyType;
 
       Battler battler = Instantiate(enemyPrefab);
 
@@ -356,7 +366,8 @@ public class BattleManager : MonoBehaviour {
       int enemyCount = playersInInstance;
 
       if (playersInInstance == 1) {
-         return 1;
+         D.warning("Spawning 3 Monsters by Default instead of 1, Delete after feature completion!");
+         return 3; // return 1;
       }
 
       // If it's a boss, we always have just 1
@@ -427,6 +438,9 @@ public class BattleManager : MonoBehaviour {
             float damage = sourceDamageElement * attackAbilityData.getModifier;
 
             float targetDefenseElement = target.getDefense(element);
+            // Computation Notes
+            // [ 25 *= (100 / 100 + 200) ] = Damage x .33
+            // [ 25 *= (100 / 100 + -90) ] = Damage x 10
             damage *= (100f / (100f + targetDefenseElement));
 
             float increaseAdditive = 0f;

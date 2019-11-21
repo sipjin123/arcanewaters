@@ -135,16 +135,22 @@ public class BattleUIManager : MonoBehaviour {
       self = this;
    }
 
-   public void SetupAbilityUI () {
+   public void SetupAbilityUI (AttackAbilityData[] battler) {
+      int indexCounter = 0;
       foreach (AbilityButton abilityButton in abilityTargetButtons) {
-         BasicAbilityData currentAbility = AbilityManager.self.allGameAbilities.Find(_ => _.itemID == abilityButton.abilityIndex);
-         if (currentAbility != null) {
-            string iconPath = currentAbility.itemIconPath;
-            Sprite skillSprite = ImageManager.getSprite(iconPath);
-            abilityButton.transform.GetChild(0).GetComponent<Image>().sprite = skillSprite;
+         if (indexCounter < battler.Length) {
+            BasicAbilityData currentAbility = battler[abilityButton.abilityIndex];//AbilityManager.self.allGameAbilities[abilityButton.abilityIndex];//.Find(_ => _.itemID == abilityButton.abilityIndex);
+            if (currentAbility != null) {
+               string iconPath = currentAbility.itemIconPath;
+               Sprite skillSprite = ImageManager.getSprite(iconPath);
+               abilityButton.transform.GetChild(0).GetComponent<Image>().sprite = skillSprite;
+            } else {
+               Debug.LogWarning("Missing Ability: " + abilityButton.abilityIndex);
+            }
          } else {
-            Debug.LogWarning("Missing Ability: " + abilityButton.abilityIndex);
+            break;
          }
+         indexCounter++;
       }
    }
 

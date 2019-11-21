@@ -290,14 +290,66 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
          Class.Type classType = playerBody.classType;
          Specialty.Type specialtyType = playerBody.specialty;
 
-         // INSERT STAT CALCULATION LOGIC HERE
-         //
-         //
+         // Faction Setup
+         PlayerFactionData factionStat = FactionManager.self.getFactionData(factionType);
+         if (factionStat == null) {
+            D.error("Faction is Missing: " + specialtyType);
+         } else {
+            UserDefaultStats factionStatDefault = factionStat.playerStats.userDefaultStats;
+            UserCombatStats factionStatCombat = factionStat.playerStats.userCombatStats;
+            addDefaultStats(factionStatDefault);
+            addCombatStats(factionStatCombat);
+         }
 
-         Debug.LogError("Class: " + classType);
-         Debug.LogError("Faction: " + factionType);
-         Debug.LogError("Specialty: " + specialtyType);
+         // Class Setup
+         PlayerClassData classStat = ClassManager.self.getClassData(classType);
+         if (classStat == null) {
+            D.error("Class is Missing: " + specialtyType);
+         } else {
+            UserDefaultStats classStatDefault = factionStat.playerStats.userDefaultStats;
+            UserCombatStats classStatCombat = factionStat.playerStats.userCombatStats;
+            addDefaultStats(classStatDefault);
+            addCombatStats(classStatCombat);
+         }
+
+         // Specialty Setup
+         PlayerSpecialtyData specialtyStat = SpecialtyManager.self.getSpecialtyData(specialtyType);
+         if (specialtyStat == null) {
+            D.error("Specialty is Missing: "+specialtyType);
+         } else {
+            UserDefaultStats specialtyStatDefault = factionStat.playerStats.userDefaultStats;
+            UserCombatStats specialtyStatCombat = factionStat.playerStats.userCombatStats;
+            addDefaultStats(specialtyStatDefault);
+            addCombatStats(specialtyStatCombat);
+         }
       }
+   }
+
+   private void addDefaultStats (UserDefaultStats stat) {
+      battlerMainData.baseHealth += (int) stat.bonusMaxHP;
+      battlerMainData.healthPerlevel += (int) stat.hpPerLevel;
+
+      battlerMainData.baseDamage += (int) stat.bonusATK;
+      battlerMainData.damagePerLevel += (int) stat.bonusATKPerLevel;
+
+      battlerMainData.baseDefense += (int) stat.armorPerLevel;
+      battlerMainData.defensePerLevel += (int) stat.armorPerLevel;
+   }
+
+   private void addCombatStats (UserCombatStats stat) {
+      battlerMainData.airAttackMultiplier += stat.bonusDamageWind;
+      battlerMainData.fireAttackMultiplier += stat.bonusDamageFire;
+      battlerMainData.earthAttackMultiplier += stat.bonusDamageEarth;
+      battlerMainData.waterAttackMultiplier += stat.bonusDamageWater;
+      battlerMainData.physicalAttackMultiplier += stat.bonusDamagePhys;
+      battlerMainData.allAttackMultiplier += stat.bonusDamageAll;
+
+      battlerMainData.airDefenseMultiplier += stat.bonusResistanceWind;
+      battlerMainData.fireDefenseMultiplier += stat.bonusResistanceFire;
+      battlerMainData.earthDefenseMultiplier += stat.bonusResistanceEarth;
+      battlerMainData.waterDefenseMultiplier += stat.bonusResistanceWater;
+      battlerMainData.physicalDefenseMultiplier += stat.bonusResistancePhys;
+      battlerMainData.allDefenseMultiplier += stat.bonusResistanceAll;
    }
 
    // Basic method that will handle the functionality for whenever we deselect this battler
@@ -1025,6 +1077,14 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
       // We will add as an additional the "All" multiplier with the base defense
       defense += getBattlerData().baseDefense + (getBattlerData().defensePerLevel * level);
+
+      // Based on the main computation Damage *= (100 / 100 + ( defense ))
+      // If defense is less than -100 it will cause the damage to Heal the enemy.
+      // Needs either stat computation revision or stat balancing
+      if (defense < -90) {
+         defense = -90;
+         D.error("Computation result exceeds x10 damage receive... Please balance the data in the xml editors");
+      }
 
       return defense;
    }
