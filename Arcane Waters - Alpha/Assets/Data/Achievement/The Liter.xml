@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <actionType>TrashItem</actionType>
   <achievementName>The Liter</achievementName>
+  <actionType>TrashItem</actionType>
   <achievementDescription>Oh you did not! Why you trash!? Have you tried recycling?</achievementDescription>
   <count>1</count>
-  <achievementUniqueID>TI01</achievementUniqueID>
+  <achievementUniqueID>TrashItem01</achievementUniqueID>
   <itemType>0</itemType>
   <itemCategory>0</itemCategory>
   <iconPath />
+  <tier>1</tier>
 </AchievementData>

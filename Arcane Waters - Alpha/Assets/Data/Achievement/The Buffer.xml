@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <actionType>BuffSkillUse</actionType>
   <achievementName>The Buffer</achievementName>
+  <actionType>BuffSkillUse</actionType>
   <achievementDescription>You sure love to use your buff skill huh?</achievementDescription>
-  <count>50</count>
-  <achievementUniqueID>BSU50</achievementUniqueID>
+  <count>1</count>
+  <achievementUniqueID>BuffSkillUse01</achievementUniqueID>
   <itemType>0</itemType>
   <itemCategory>0</itemCategory>
   <iconPath />
+  <tier>1</tier>
 </AchievementData>

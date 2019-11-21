@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<AttackAbilityData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <itemID>9</itemID>
+  <itemName>Water Slash</itemName>
+  <itemDescription>Imbues your sword with water to strike an enemy</itemDescription>
+  <itemIconPath>Assets/Sprites/Icons/Weapons/Sword_Water.png</itemIconPath>
+  <levelRequirement>1</levelRequirement>
+  <hitSpritesPath>
+    <string>Undefined</string>
+  </hitSpritesPath>
+  <elementType>Water</elementType>
+  <hitAudioClipPath />
+  <classRequirement>Any</classRequirement>
+  <battleItemType>Ability</battleItemType>
+  <castAudioClipPath />
+  <allowedStances />
+  <abilityType>Standard</abilityType>
+  <abilityCooldown>4</abilityCooldown>
+  <apChange>3</apChange>
+  <abilityCost>0</abilityCost>
+  <castSpritesPath>
+    <string>Undefined</string>
+  </castSpritesPath>
+  <FXTimePerFrame>0.06</FXTimePerFrame>
+  <baseDamage>10</baseDamage>
+  <hasShake>true</hasShake>
+  <hasKnockup>true</hasKnockup>
+  <abilityActionType>Melee</abilityActionType>
+  <canBeBlocked>true</canBeBlocked>
+</AttackAbilityData>

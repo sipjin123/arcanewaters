@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <actionType>OpenedLootBag</actionType>
   <achievementName>Mega Lootbag</achievementName>
+  <actionType>OpenedLootBag</actionType>
   <achievementDescription>You have served Arcane well, heres a reward</achievementDescription>
-  <count>500</count>
-  <achievementUniqueID>OLB500</achievementUniqueID>
+  <count>1</count>
+  <achievementUniqueID>OpenedLootBag01</achievementUniqueID>
   <itemType>0</itemType>
   <itemCategory>0</itemCategory>
   <iconPath />
+  <tier>1</tier>
 </AchievementData>

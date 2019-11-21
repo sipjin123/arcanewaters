@@ -1,10 +1,10 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <actionType>TalkToNPC</actionType>
   <achievementName>Welcome Villager</achievementName>
+  <actionType>TalkToNPC</actionType>
   <achievementDescription>Oh hello! You finally talk to one of the villagers!</achievementDescription>
-  <count>1</count>
-  <achievementUniqueID>TTN01</achievementUniqueID>
+  <count>2</count>
+  <achievementUniqueID>TalkToNPC02</achievementUniqueID>
   <itemType>0</itemType>
   <itemCategory>0</itemCategory>
   <iconPath />

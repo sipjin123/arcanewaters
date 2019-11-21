@@ -1,10 +1,10 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <actionType>HeadgearBuy</actionType>
   <achievementName>The Hatter</achievementName>
+  <actionType>HeadgearBuy</actionType>
   <achievementDescription>You just bought your 50th headgear!</achievementDescription>
-  <count>50</count>
-  <achievementUniqueID>HB50</achievementUniqueID>
+  <count>2</count>
+  <achievementUniqueID>HeadgearBuy02</achievementUniqueID>
   <itemType>0</itemType>
   <itemCategory>0</itemCategory>
   <iconPath />

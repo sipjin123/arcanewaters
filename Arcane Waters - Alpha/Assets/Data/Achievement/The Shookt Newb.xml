@@ -1,10 +1,10 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <actionType>ShipDie</actionType>
   <achievementName>The Shookt Newb</achievementName>
+  <actionType>ShipDie</actionType>
   <achievementDescription>You just experienced sinking for the first time!</achievementDescription>
-  <count>1</count>
-  <achievementUniqueID>SD01</achievementUniqueID>
+  <count>2</count>
+  <achievementUniqueID>ShipDie02</achievementUniqueID>
   <itemType>0</itemType>
   <itemCategory>0</itemCategory>
   <iconPath />

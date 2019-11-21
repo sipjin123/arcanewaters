@@ -1,10 +1,10 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <actionType>NPCAcquaintance</actionType>
   <achievementName>Very Acquainted</achievementName>
+  <actionType>NPCAcquaintance</actionType>
   <achievementDescription>You have acquainted with 20 villagers. Why not move to the next level?</achievementDescription>
-  <count>20</count>
-  <achievementUniqueID>NA20</achievementUniqueID>
+  <count>2</count>
+  <achievementUniqueID>NPCAcquaintance02</achievementUniqueID>
   <itemType>0</itemType>
   <itemCategory>0</itemCategory>
   <iconPath />

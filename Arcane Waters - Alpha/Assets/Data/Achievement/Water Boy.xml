@@ -1,10 +1,10 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <actionType>WaterCrop</actionType>
   <achievementName>Water Boy</achievementName>
+  <actionType>WaterCrop</actionType>
   <achievementDescription>First crop to water</achievementDescription>
-  <count>1</count>
-  <achievementUniqueID>WC01</achievementUniqueID>
+  <count>2</count>
+  <achievementUniqueID>WaterCrop02</achievementUniqueID>
   <itemType>0</itemType>
   <itemCategory>0</itemCategory>
   <iconPath />

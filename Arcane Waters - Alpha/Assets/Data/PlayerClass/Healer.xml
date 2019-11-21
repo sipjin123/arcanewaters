@@ -1,73 +1,84 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <PlayerClassData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <type>Healer</type>
   <className>Healer</className>
-  <description>heals</description>
-  <itemIconPath>Assets/Sprites/Icons/Classes/class_healer.png</itemIconPath>
+  <description>Healling people</description>
+  <itemIconPath />
   <playerStats>
     <userDefaultStats>
-      <hpPerLevel>4</hpPerLevel>
-      <armorPerLevel>3</armorPerLevel>
-      <apPerLevel>2</apPerLevel>
+      <hpPerLevel>50</hpPerLevel>
+      <armorPerLevel>10</armorPerLevel>
+      <apPerLevel>3</apPerLevel>
       <bonusAP>3</bonusAP>
-      <bonusMaxHP>1</bonusMaxHP>
-      <bonusArmor>2</bonusArmor>
-      <bonusATK>4</bonusATK>
+      <bonusMaxHP>150</bonusMaxHP>
+      <bonusArmor>10</bonusArmor>
+      <bonusATK>1</bonusATK>
       <bonusATKPerLevel>1</bonusATKPerLevel>
-      <bonusINT>6</bonusINT>
-      <bonusSTR>4</bonusSTR>
-      <bonusSPT>2</bonusSPT>
-      <bonusLUK>1</bonusLUK>
-      <bonusPRE>3</bonusPRE>
-      <bonusVIT>5</bonusVIT>
-      <bonusINTperLevel>1</bonusINTperLevel>
-      <bonusSTRperLevel>3</bonusSTRperLevel>
-      <bonusSPTperLevel>5</bonusSPTperLevel>
-      <bonusLUKperLevel>6</bonusLUKperLevel>
-      <bonusPREperLevel>4</bonusPREperLevel>
-      <bonusVITperLevel>2</bonusVITperLevel>
+      <bonusINT>10</bonusINT>
+      <bonusSTR>1</bonusSTR>
+      <bonusSPT>10</bonusSPT>
+      <bonusLUK>2</bonusLUK>
+      <bonusPRE>1</bonusPRE>
+      <bonusVIT>10</bonusVIT>
+      <bonusINTperLevel>10</bonusINTperLevel>
+      <bonusSTRperLevel>1</bonusSTRperLevel>
+      <bonusSPTperLevel>10</bonusSPTperLevel>
+      <bonusLUKperLevel>1</bonusLUKperLevel>
+      <bonusPREperLevel>1</bonusPREperLevel>
+      <bonusVITperLevel>10</bonusVITperLevel>
     </userDefaultStats>
     <userCombatStats>
-      <bonusResistancePhys>1</bonusResistancePhys>
-      <bonusResistanceFire>2</bonusResistanceFire>
+      <bonusResistancePhys>3</bonusResistancePhys>
+      <bonusResistanceFire>3</bonusResistanceFire>
       <bonusResistanceWater>3</bonusResistanceWater>
-      <bonusResistanceWind>2</bonusResistanceWind>
+      <bonusResistanceWind>3</bonusResistanceWind>
       <bonusResistanceEarth>3</bonusResistanceEarth>
-      <bonusResistanceAll>1</bonusResistanceAll>
-      <bonusDamagePhys>2</bonusDamagePhys>
-      <bonusDamageFire>3</bonusDamageFire>
+      <bonusResistanceAll>5</bonusResistanceAll>
+      <bonusDamagePhys>3</bonusDamagePhys>
+      <bonusDamageFire>1</bonusDamageFire>
       <bonusDamageWater>1</bonusDamageWater>
-      <bonusDamageWind>3</bonusDamageWind>
+      <bonusDamageWind>1</bonusDamageWind>
       <bonusDamageEarth>1</bonusDamageEarth>
-      <bonusDamageAll>2</bonusDamageAll>
-      <bonusResistancePhysPerLevel>2</bonusResistancePhysPerLevel>
-      <bonusResistanceFirePerLevel>4</bonusResistanceFirePerLevel>
-      <bonusResistanceWaterPerLevel>6</bonusResistanceWaterPerLevel>
+      <bonusDamageAll>3</bonusDamageAll>
+      <bonusResistancePhysPerLevel>3</bonusResistancePhysPerLevel>
+      <bonusResistanceFirePerLevel>3</bonusResistanceFirePerLevel>
+      <bonusResistanceWaterPerLevel>3</bonusResistanceWaterPerLevel>
       <bonusResistanceWindPerLevel>3</bonusResistanceWindPerLevel>
-      <bonusResistanceEarthPerLevel>5</bonusResistanceEarthPerLevel>
-      <bonusResistanceAllPerLevel>2</bonusResistanceAllPerLevel>
+      <bonusResistanceEarthPerLevel>3</bonusResistanceEarthPerLevel>
+      <bonusResistanceAllPerLevel>3</bonusResistanceAllPerLevel>
       <bonusDamagePhysPerLevel>1</bonusDamagePhysPerLevel>
-      <bonusDamageFirePerLevel>2</bonusDamageFirePerLevel>
-      <bonusDamageWaterPerLevel>3</bonusDamageWaterPerLevel>
-      <bonusDamageWindPerLevel>2</bonusDamageWindPerLevel>
-      <bonusDamageEarthPerLevel>3</bonusDamageEarthPerLevel>
-      <bonusDamageAllPerLevel>1</bonusDamageAllPerLevel>
+      <bonusDamageFirePerLevel>1</bonusDamageFirePerLevel>
+      <bonusDamageWaterPerLevel>1</bonusDamageWaterPerLevel>
+      <bonusDamageWindPerLevel>1</bonusDamageWindPerLevel>
+      <bonusDamageEarthPerLevel>1</bonusDamageEarthPerLevel>
+      <bonusDamageAllPerLevel>3</bonusDamageAllPerLevel>
     </userCombatStats>
     <userShipStats>
-      <bonusShipDamage>2</bonusShipDamage>
-      <bonusShipDamagePerLevel>4</bonusShipDamagePerLevel>
-      <bonusShipHealth>1</bonusShipHealth>
-      <bonusShipHealthPerLevel>3</bonusShipHealthPerLevel>
-      <bonusShipSpeed>2</bonusShipSpeed>
-      <bonusShipSpeedPerLevel>4</bonusShipSpeedPerLevel>
-      <bonusShipRange>1</bonusShipRange>
-      <bonusShipRangePerLevel>3</bonusShipRangePerLevel>
-      <bonusShipSailors>1</bonusShipSailors>
-      <bonusShipSailorsPerLevel>3</bonusShipSailorsPerLevel>
-      <bonusShipCargoRoom>1</bonusShipCargoRoom>
-      <bonusShipCargoRoomPerLevel>3</bonusShipCargoRoomPerLevel>
-      <bonusShipSupplyRoom>2</bonusShipSupplyRoom>
-      <bonusShipSupplyRoomPerLevel>4</bonusShipSupplyRoomPerLevel>
+      <bonusShipDamage>0</bonusShipDamage>
+      <bonusShipDamagePerLevel>0</bonusShipDamagePerLevel>
+      <bonusShipHealth>0</bonusShipHealth>
+      <bonusShipHealthPerLevel>0</bonusShipHealthPerLevel>
+      <bonusShipSpeed>0</bonusShipSpeed>
+      <bonusShipSpeedPerLevel>0</bonusShipSpeedPerLevel>
+      <bonusShipRange>0</bonusShipRange>
+      <bonusShipRangePerLevel>0</bonusShipRangePerLevel>
+      <bonusShipSailors>0</bonusShipSailors>
+      <bonusShipSailorsPerLevel>0</bonusShipSailorsPerLevel>
+      <bonusShipCargoRoom>0</bonusShipCargoRoom>
+      <bonusShipCargoRoomPerLevel>0</bonusShipCargoRoomPerLevel>
+      <bonusShipSupplyRoom>0</bonusShipSupplyRoom>
+      <bonusShipSupplyRoomPerLevel>0</bonusShipSupplyRoomPerLevel>
     </userShipStats>
+    <userSpecialStats>
+      <shopDiscountMultiplier>1</shopDiscountMultiplier>
+      <shopSellBargainMultiplier>1</shopSellBargainMultiplier>
+      <friendshipRewardBonus>1</friendshipRewardBonus>
+      <shipDiscount>1</shipDiscount>
+      <healMultiplier>1</healMultiplier>
+      <miningBonusChance>1</miningBonusChance>
+      <extraLootChance>1</extraLootChance>
+      <craftSuccessChance>1</craftSuccessChance>
+      <craftQualityMultiplier>1</craftQualityMultiplier>
+    </userSpecialStats>
   </playerStats>
 </PlayerClassData>

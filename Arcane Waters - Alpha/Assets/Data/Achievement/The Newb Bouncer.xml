@@ -1,10 +1,10 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <actionType>JumpOnBouncePad</actionType>
   <achievementName>The Newb Bouncer</achievementName>
+  <actionType>JumpOnBouncePad</actionType>
   <achievementDescription>Nice you just experienced your first Jump Pad! How was it?</achievementDescription>
-  <count>1</count>
-  <achievementUniqueID>JOBP01</achievementUniqueID>
+  <count>2</count>
+  <achievementUniqueID>JumpOnBouncePad02</achievementUniqueID>
   <itemType>0</itemType>
   <itemCategory>0</itemCategory>
   <iconPath />

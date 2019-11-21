@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>CombatDie02</achievementName>
+  <actionType>CombatDie</actionType>
+  <achievementDescription>CombatDie02</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>CombatDie02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>

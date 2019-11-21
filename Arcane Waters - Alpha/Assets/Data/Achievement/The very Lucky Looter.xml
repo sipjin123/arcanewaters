@@ -1,10 +1,10 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <actionType>LootGainTotal</actionType>
   <achievementName>The very Lucky Looter</achievementName>
-  <achievementDescription>You just looted x50 Luck Buff! Look how lucky you are!</achievementDescription>
-  <count>50</count>
-  <achievementUniqueID>LGTLUK50</achievementUniqueID>
+  <actionType>LootGainTotal</actionType>
+  <achievementDescription>LootGainTotal02</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>LootGainTotal02</achievementUniqueID>
   <itemType>8</itemType>
   <itemCategory>5</itemCategory>
   <iconPath />

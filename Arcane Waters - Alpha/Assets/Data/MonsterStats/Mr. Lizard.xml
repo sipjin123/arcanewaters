@@ -7,7 +7,7 @@
   <apGainWhenDamaged>0</apGainWhenDamaged>
   <baseHealth>100</baseHealth>
   <baseDefense>9</baseDefense>
-  <baseDamage>2</baseDamage>
+  <baseDamage>5</baseDamage>
   <baseGoldReward>9</baseGoldReward>
   <baseXPReward>3</baseXPReward>
   <damagePerLevel>9</damagePerLevel>
@@ -96,16 +96,16 @@
     <maxQuantity>5</maxQuantity>
   </battlerLootData>
   <physicalDefenseMultiplier>1</physicalDefenseMultiplier>
-  <fireDefenseMultiplier>15</fireDefenseMultiplier>
+  <fireDefenseMultiplier>-5</fireDefenseMultiplier>
   <earthDefenseMultiplier>1</earthDefenseMultiplier>
-  <airDefenseMultiplier>0</airDefenseMultiplier>
-  <waterDefenseMultiplier>1</waterDefenseMultiplier>
+  <airDefenseMultiplier>1</airDefenseMultiplier>
+  <waterDefenseMultiplier>25</waterDefenseMultiplier>
   <allDefenseMultiplier>1</allDefenseMultiplier>
   <physicalAttackMultiplier>1</physicalAttackMultiplier>
   <fireAttackMultiplier>1</fireAttackMultiplier>
   <earthAttackMultiplier>1</earthAttackMultiplier>
   <airAttackMultiplier>1</airAttackMultiplier>
-  <waterAttackMultiplier>1</waterAttackMultiplier>
+  <waterAttackMultiplier>25</waterAttackMultiplier>
   <allAttackMultiplier>1</allAttackMultiplier>
   <deathSoundPath>Assets/Resources/Sound/Effects/Chomper_Death.ogg</deathSoundPath>
   <attackJumpSoundPath>Assets/Resources/Sound/Effects/Footstep_Muffled.wav</attackJumpSoundPath>

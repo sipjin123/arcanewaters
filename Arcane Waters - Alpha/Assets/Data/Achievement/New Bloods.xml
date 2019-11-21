@@ -1,10 +1,10 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <actionType>SinkedShips</actionType>
   <achievementName>New Bloods</achievementName>
+  <actionType>SinkedShips</actionType>
   <achievementDescription>Oh no! You just sinked the ship of your first foe!</achievementDescription>
-  <count>1</count>
-  <achievementUniqueID>SS01</achievementUniqueID>
+  <count>2</count>
+  <achievementUniqueID>SinkedShips02</achievementUniqueID>
   <itemType>0</itemType>
   <itemCategory>0</itemCategory>
   <iconPath />

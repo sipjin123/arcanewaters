@@ -6,16 +6,76 @@
   <enemyType>Golem</enemyType>
   <apGainWhenDamaged>0</apGainWhenDamaged>
   <baseHealth>100</baseHealth>
-  <baseDefense>100</baseDefense>
-  <baseDamage>50</baseDamage>
-  <baseGoldReward>95</baseGoldReward>
-  <baseXPReward>150</baseXPReward>
-  <damagePerLevel>50</damagePerLevel>
-  <defensePerLevel>100</defensePerLevel>
-  <healthPerlevel>100</healthPerlevel>
+  <baseDefense>10</baseDefense>
+  <baseDamage>5</baseDamage>
+  <baseGoldReward>10</baseGoldReward>
+  <baseXPReward>5</baseXPReward>
+  <damagePerLevel>10</damagePerLevel>
+  <defensePerLevel>5</defensePerLevel>
+  <healthPerlevel>10</healthPerlevel>
   <battlerAbilities>
-    <basicAbilityDataList />
-    <attackAbilityDataList />
+    <basicAbilityDataList>
+      <BasicAbilityData xsi:type="AttackAbilityData">
+        <itemID>2</itemID>
+        <itemName>Fire Slash</itemName>
+        <itemDescription>Imbues your sword with fire to strike an enemy</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Weapons/sword_7.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Undefined</string>
+        </hitSpritesPath>
+        <elementType>Fire</elementType>
+        <hitAudioClipPath />
+        <classRequirement>Any</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath />
+        <allowedStances />
+        <abilityType>Standard</abilityType>
+        <abilityCooldown>4</abilityCooldown>
+        <apChange>3</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Undefined</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.06</FXTimePerFrame>
+        <baseDamage>10</baseDamage>
+        <hasShake>true</hasShake>
+        <hasKnockup>true</hasKnockup>
+        <abilityActionType>Melee</abilityActionType>
+        <canBeBlocked>true</canBeBlocked>
+      </BasicAbilityData>
+    </basicAbilityDataList>
+    <attackAbilityDataList>
+      <AttackAbilityData>
+        <itemID>2</itemID>
+        <itemName>Fire Slash</itemName>
+        <itemDescription>Imbues your sword with fire to strike an enemy</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Weapons/sword_7.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Undefined</string>
+        </hitSpritesPath>
+        <elementType>Fire</elementType>
+        <hitAudioClipPath />
+        <classRequirement>Any</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath />
+        <allowedStances />
+        <abilityType>Standard</abilityType>
+        <abilityCooldown>4</abilityCooldown>
+        <apChange>3</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Undefined</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.06</FXTimePerFrame>
+        <baseDamage>10</baseDamage>
+        <hasShake>true</hasShake>
+        <hasKnockup>true</hasKnockup>
+        <abilityActionType>Melee</abilityActionType>
+        <canBeBlocked>true</canBeBlocked>
+      </AttackAbilityData>
+    </attackAbilityDataList>
     <buffAbilityDataList />
   </battlerAbilities>
   <battlerLootData>
@@ -50,20 +110,20 @@
     <minQuantity>1</minQuantity>
     <maxQuantity>5</maxQuantity>
   </battlerLootData>
-  <physicalDefenseMultiplier>30</physicalDefenseMultiplier>
-  <fireDefenseMultiplier>50</fireDefenseMultiplier>
-  <earthDefenseMultiplier>50</earthDefenseMultiplier>
-  <airDefenseMultiplier>50</airDefenseMultiplier>
-  <waterDefenseMultiplier>50</waterDefenseMultiplier>
-  <allDefenseMultiplier>50</allDefenseMultiplier>
-  <physicalAttackMultiplier>40</physicalAttackMultiplier>
-  <fireAttackMultiplier>31</fireAttackMultiplier>
-  <earthAttackMultiplier>18</earthAttackMultiplier>
-  <airAttackMultiplier>10</airAttackMultiplier>
-  <waterAttackMultiplier>10</waterAttackMultiplier>
-  <allAttackMultiplier>0</allAttackMultiplier>
+  <physicalDefenseMultiplier>1</physicalDefenseMultiplier>
+  <fireDefenseMultiplier>1</fireDefenseMultiplier>
+  <earthDefenseMultiplier>25</earthDefenseMultiplier>
+  <airDefenseMultiplier>1</airDefenseMultiplier>
+  <waterDefenseMultiplier>-2.5</waterDefenseMultiplier>
+  <allDefenseMultiplier>1</allDefenseMultiplier>
+  <physicalAttackMultiplier>1</physicalAttackMultiplier>
+  <fireAttackMultiplier>1</fireAttackMultiplier>
+  <earthAttackMultiplier>25</earthAttackMultiplier>
+  <airAttackMultiplier>1</airAttackMultiplier>
+  <waterAttackMultiplier>1</waterAttackMultiplier>
+  <allAttackMultiplier>1</allAttackMultiplier>
   <deathSoundPath />
   <attackJumpSoundPath />
-  <preContactLength>1</preContactLength>
+  <preContactLength>5</preContactLength>
   <preMagicLength>1</preMagicLength>
 </BattlerData>

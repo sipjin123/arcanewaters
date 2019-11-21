@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <actionType>QuestComplete</actionType>
   <achievementName>The Quest Master</achievementName>
-  <achievementDescription>You have finished 100 Quests. You are now a Quest Master.</achievementDescription>
-  <count>100</count>
-  <achievementUniqueID>QC100</achievementUniqueID>
+  <actionType>QuestComplete</actionType>
+  <achievementDescription>You have finished 1 Quests. You are now a Quest Master.</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>QuestComplete01</achievementUniqueID>
   <itemType>0</itemType>
   <itemCategory>0</itemCategory>
   <iconPath />
+  <tier>1</tier>
 </AchievementData>

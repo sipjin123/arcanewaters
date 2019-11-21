@@ -147,7 +147,7 @@
         <itemID>2</itemID>
         <itemName>Fire Slash</itemName>
         <itemDescription>Imbues your sword with fire to strike an enemy</itemDescription>
-        <itemIconPath>Assets/Sprites/Icons/Weapons/sword_7.png</itemIconPath>
+        <itemIconPath>Assets/Sprites/Icons/Weapons/Sword_Fire.png</itemIconPath>
         <levelRequirement>1</levelRequirement>
         <hitSpritesPath>
           <string>Undefined</string>
@@ -176,7 +176,7 @@
         <itemID>3</itemID>
         <itemName>Air Slash</itemName>
         <itemDescription>An Air Slash</itemDescription>
-        <itemIconPath>Assets/Sprites/Icons/Weapons/pitchfork.png</itemIconPath>
+        <itemIconPath>Assets/Sprites/Icons/Weapons/Sword_Wind.png</itemIconPath>
         <levelRequirement>1</levelRequirement>
         <hitSpritesPath>
           <string>Assets/Sprites/Effects/logo_twinkle_large.png</string>
@@ -202,6 +202,64 @@
         <baseDamage>20</baseDamage>
         <hasShake>true</hasShake>
         <hasKnockup>false</hasKnockup>
+        <abilityActionType>Melee</abilityActionType>
+        <canBeBlocked>true</canBeBlocked>
+      </BasicAbilityData>
+      <BasicAbilityData xsi:type="AttackAbilityData">
+        <itemID>8</itemID>
+        <itemName>Earth Slash</itemName>
+        <itemDescription>Imbues your sword with water to strike an enemy</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Weapons/Sword_Earth.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Undefined</string>
+        </hitSpritesPath>
+        <elementType>Earth</elementType>
+        <hitAudioClipPath />
+        <classRequirement>Any</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath />
+        <allowedStances />
+        <abilityType>Standard</abilityType>
+        <abilityCooldown>4</abilityCooldown>
+        <apChange>3</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Undefined</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.06</FXTimePerFrame>
+        <baseDamage>10</baseDamage>
+        <hasShake>true</hasShake>
+        <hasKnockup>true</hasKnockup>
+        <abilityActionType>Melee</abilityActionType>
+        <canBeBlocked>true</canBeBlocked>
+      </BasicAbilityData>
+      <BasicAbilityData xsi:type="AttackAbilityData">
+        <itemID>9</itemID>
+        <itemName>Water Slash</itemName>
+        <itemDescription>Imbues your sword with water to strike an enemy</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Weapons/Sword_Water.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Undefined</string>
+        </hitSpritesPath>
+        <elementType>Water</elementType>
+        <hitAudioClipPath />
+        <classRequirement>Any</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath />
+        <allowedStances />
+        <abilityType>Standard</abilityType>
+        <abilityCooldown>4</abilityCooldown>
+        <apChange>3</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Undefined</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.06</FXTimePerFrame>
+        <baseDamage>10</baseDamage>
+        <hasShake>true</hasShake>
+        <hasKnockup>true</hasKnockup>
         <abilityActionType>Melee</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
       </BasicAbilityData>
@@ -339,7 +397,7 @@
         <itemID>2</itemID>
         <itemName>Fire Slash</itemName>
         <itemDescription>Imbues your sword with fire to strike an enemy</itemDescription>
-        <itemIconPath>Assets/Sprites/Icons/Weapons/sword_7.png</itemIconPath>
+        <itemIconPath>Assets/Sprites/Icons/Weapons/Sword_Fire.png</itemIconPath>
         <levelRequirement>1</levelRequirement>
         <hitSpritesPath>
           <string>Undefined</string>
@@ -368,7 +426,7 @@
         <itemID>3</itemID>
         <itemName>Air Slash</itemName>
         <itemDescription>An Air Slash</itemDescription>
-        <itemIconPath>Assets/Sprites/Icons/Weapons/pitchfork.png</itemIconPath>
+        <itemIconPath>Assets/Sprites/Icons/Weapons/Sword_Wind.png</itemIconPath>
         <levelRequirement>1</levelRequirement>
         <hitSpritesPath>
           <string>Assets/Sprites/Effects/logo_twinkle_large.png</string>
@@ -394,6 +452,64 @@
         <baseDamage>20</baseDamage>
         <hasShake>true</hasShake>
         <hasKnockup>false</hasKnockup>
+        <abilityActionType>Melee</abilityActionType>
+        <canBeBlocked>true</canBeBlocked>
+      </AttackAbilityData>
+      <AttackAbilityData>
+        <itemID>8</itemID>
+        <itemName>Earth Slash</itemName>
+        <itemDescription>Imbues your sword with water to strike an enemy</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Weapons/Sword_Earth.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Undefined</string>
+        </hitSpritesPath>
+        <elementType>Earth</elementType>
+        <hitAudioClipPath />
+        <classRequirement>Any</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath />
+        <allowedStances />
+        <abilityType>Standard</abilityType>
+        <abilityCooldown>4</abilityCooldown>
+        <apChange>3</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Undefined</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.06</FXTimePerFrame>
+        <baseDamage>10</baseDamage>
+        <hasShake>true</hasShake>
+        <hasKnockup>true</hasKnockup>
+        <abilityActionType>Melee</abilityActionType>
+        <canBeBlocked>true</canBeBlocked>
+      </AttackAbilityData>
+      <AttackAbilityData>
+        <itemID>9</itemID>
+        <itemName>Water Slash</itemName>
+        <itemDescription>Imbues your sword with water to strike an enemy</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Weapons/Sword_Water.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Undefined</string>
+        </hitSpritesPath>
+        <elementType>Water</elementType>
+        <hitAudioClipPath />
+        <classRequirement>Any</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath />
+        <allowedStances />
+        <abilityType>Standard</abilityType>
+        <abilityCooldown>4</abilityCooldown>
+        <apChange>3</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Undefined</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.06</FXTimePerFrame>
+        <baseDamage>10</baseDamage>
+        <hasShake>true</hasShake>
+        <hasKnockup>true</hasKnockup>
         <abilityActionType>Melee</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
       </AttackAbilityData>

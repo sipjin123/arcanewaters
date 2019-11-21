@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <actionType>KillLandMonster</actionType>
   <achievementName>Land Hero</achievementName>
+  <actionType>KillLandMonster</actionType>
   <achievementDescription>You have killed 500 monster in total! You truely are our savior.</achievementDescription>
-  <count>500</count>
-  <achievementUniqueID>KLM500</achievementUniqueID>
+  <count>1</count>
+  <achievementUniqueID>KillLandMonster1</achievementUniqueID>
   <itemType>0</itemType>
   <itemCategory>0</itemCategory>
   <iconPath />
+  <tier>1</tier>
 </AchievementData>

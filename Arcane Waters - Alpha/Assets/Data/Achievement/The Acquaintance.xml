@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <actionType>NPCAcquaintance</actionType>
   <achievementName>The Acquaintance</achievementName>
+  <actionType>NPCAcquaintance</actionType>
   <achievementDescription>You are now acquianted to one of the villager. You are now one of us!</achievementDescription>
   <count>1</count>
-  <achievementUniqueID>NA01</achievementUniqueID>
+  <achievementUniqueID>NPCAcquaintance01</achievementUniqueID>
   <itemType>0</itemType>
   <itemCategory>0</itemCategory>
   <iconPath />
+  <tier>1</tier>
 </AchievementData>

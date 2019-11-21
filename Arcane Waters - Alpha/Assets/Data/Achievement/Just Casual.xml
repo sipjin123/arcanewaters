@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <actionType>NPCCasualFriend</actionType>
   <achievementName>Just Casual</achievementName>
+  <actionType>NPCCasualFriend</actionType>
   <achievementDescription>Really? Just casual? you should try more! You can do better than 5 casual friends.</achievementDescription>
-  <count>5</count>
-  <achievementUniqueID>NCF05</achievementUniqueID>
+  <count>1</count>
+  <achievementUniqueID>NPCCasualFriend01</achievementUniqueID>
   <itemType>0</itemType>
   <itemCategory>0</itemCategory>
   <iconPath />
+  <tier>1</tier>
 </AchievementData>

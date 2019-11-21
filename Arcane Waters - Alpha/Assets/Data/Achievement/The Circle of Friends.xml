@@ -1,10 +1,10 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <actionType>NPCCloseFriend</actionType>
   <achievementName>The Circle of Friends</achievementName>
+  <actionType>NPCCloseFriend</actionType>
   <achievementDescription>Wow, your circle of friends is growing.</achievementDescription>
-  <count>5</count>
-  <achievementUniqueID>NCFclose05</achievementUniqueID>
+  <count>2</count>
+  <achievementUniqueID>NPCCloseFriend02</achievementUniqueID>
   <itemType>0</itemType>
   <itemCategory>0</itemCategory>
   <iconPath />

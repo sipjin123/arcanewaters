@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <actionType>OffensiveSkillUse</actionType>
   <achievementName>The Master Offender</achievementName>
+  <actionType>OffensiveSkillUse</actionType>
   <achievementDescription>You sure love to hurt people with your skills eh?</achievementDescription>
-  <count>100</count>
-  <achievementUniqueID>OSU100</achievementUniqueID>
+  <count>1</count>
+  <achievementUniqueID>OffensiveSkillUse01</achievementUniqueID>
   <itemType>0</itemType>
   <itemCategory>0</itemCategory>
   <iconPath />
+  <tier>1</tier>
 </AchievementData>

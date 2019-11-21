@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <actionType>JumpOnBouncePad</actionType>
   <achievementName>The Bouncing Adventurer</achievementName>
+  <actionType>JumpOnBouncePad</actionType>
   <achievementDescription>You sure love to bounce!</achievementDescription>
-  <count>50</count>
-  <achievementUniqueID>JOBP50</achievementUniqueID>
+  <count>1</count>
+  <achievementUniqueID>JumpOnBouncePad01</achievementUniqueID>
   <itemType>0</itemType>
   <itemCategory>0</itemCategory>
   <iconPath />
+  <tier>1</tier>
 </AchievementData>

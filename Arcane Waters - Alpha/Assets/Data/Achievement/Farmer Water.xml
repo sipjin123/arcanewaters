@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <actionType>WaterCrop</actionType>
   <achievementName>Farmer Water</achievementName>
+  <actionType>WaterCrop</actionType>
   <achievementDescription>Watered 100 Crop</achievementDescription>
-  <count>100</count>
-  <achievementUniqueID>WC100</achievementUniqueID>
+  <count>1</count>
+  <achievementUniqueID>WaterCrop01</achievementUniqueID>
   <itemType>0</itemType>
   <itemCategory>0</itemCategory>
   <iconPath />
+  <tier>1</tier>
 </AchievementData>

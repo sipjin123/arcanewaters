@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <actionType>HitPlayerWithCannon</actionType>
   <achievementName>Friend or Foe</achievementName>
+  <actionType>HitPlayerWithCannon</actionType>
   <achievementDescription>You sure are making foes than friends eh?</achievementDescription>
-  <count>50</count>
-  <achievementUniqueID>HPWC50</achievementUniqueID>
+  <count>1</count>
+  <achievementUniqueID>HitPlayerWithCannon01</achievementUniqueID>
   <itemType>0</itemType>
   <itemCategory>0</itemCategory>
   <iconPath />
+  <tier>1</tier>
 </AchievementData>

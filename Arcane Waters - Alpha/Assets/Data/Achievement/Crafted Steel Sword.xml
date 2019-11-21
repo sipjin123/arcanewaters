@@ -1,10 +1,10 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <actionType>Craft</actionType>
   <achievementName>Crafted Steel Sword</achievementName>
+  <actionType>Craft</actionType>
   <achievementDescription>Grats! You crafted your very first steel sword!</achievementDescription>
-  <count>1</count>
-  <achievementUniqueID>CS</achievementUniqueID>
+  <count>2</count>
+  <achievementUniqueID>Craft02</achievementUniqueID>
   <itemType>1</itemType>
   <itemCategory>1</itemCategory>
   <iconPath />

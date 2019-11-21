@@ -1,10 +1,10 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <actionType>EarnGold</actionType>
   <achievementName>Richie Rich</achievementName>
+  <actionType>EarnGold</actionType>
   <achievementDescription>You earned your first 500 gold, so rich!</achievementDescription>
-  <count>500</count>
-  <achievementUniqueID>EG500</achievementUniqueID>
+  <count>2</count>
+  <achievementUniqueID>EarnGold02</achievementUniqueID>
   <itemType>0</itemType>
   <itemCategory>0</itemCategory>
   <iconPath />

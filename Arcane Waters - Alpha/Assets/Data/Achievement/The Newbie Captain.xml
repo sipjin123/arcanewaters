@@ -1,12 +1,12 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <actionType>BuyShip</actionType>
   <achievementName>The Newbie Captain</achievementName>
+  <actionType>BuyShip</actionType>
   <achievementDescription>Congratulations adventurer! You just bought your very first ship!</achievementDescription>
   <count>1</count>
-  <achievementUniqueID>BS01</achievementUniqueID>
+  <achievementUniqueID>BuyShip01</achievementUniqueID>
   <itemType>0</itemType>
   <itemCategory>0</itemCategory>
   <iconPath />
-  <tier>2</tier>
+  <tier>1</tier>
 </AchievementData>

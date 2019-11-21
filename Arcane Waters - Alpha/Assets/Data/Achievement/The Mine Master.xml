@@ -1,10 +1,10 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <actionType>MineOre</actionType>
   <achievementName>The Mine Master</achievementName>
+  <actionType>MineOre</actionType>
   <achievementDescription>You sure love to mine!</achievementDescription>
-  <count>50</count>
-  <achievementUniqueID>MO50</achievementUniqueID>
+  <count>2</count>
+  <achievementUniqueID>MineOre02</achievementUniqueID>
   <itemType>0</itemType>
   <itemCategory>0</itemCategory>
   <iconPath />
