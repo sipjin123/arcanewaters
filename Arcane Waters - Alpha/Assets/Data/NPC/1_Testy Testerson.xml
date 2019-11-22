@@ -1,0 +1,124 @@
+<?xml version="1.0"?>
+<NPCData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <npcId>1</npcId>
+  <name>Testy Testerson</name>
+  <greetingTextStranger>Oh hai.</greetingTextStranger>
+  <greetingTextAcquaintance>I think I just farted.</greetingTextAcquaintance>
+  <greetingTextCasualFriend>We're totally casual friends.	</greetingTextCasualFriend>
+  <greetingTextCloseFriend />
+  <greetingTextBestFriend>I had no close friend greeting, but we are totally best friends now!</greetingTextBestFriend>
+  <giftOfferNPCText>For me?</giftOfferNPCText>
+  <giftLikedText>Nice.	</giftLikedText>
+  <giftNotLikedText>Ewwwwwww.</giftNotLikedText>
+  <hasTradeGossipDialogue>true</hasTradeGossipDialogue>
+  <hasGoodbyeDialogue>true</hasGoodbyeDialogue>
+  <lastUsedQuestId>1</lastUsedQuestId>
+  <Quests>
+    <Quest>
+      <questId>0</questId>
+      <title>This is the Quest Title</title>
+      <isRepeatable>true</isRepeatable>
+      <lastUsedNodeId>2</lastUsedNodeId>
+      <Nodes>
+        <Node>
+          <nodeId>0</nodeId>
+          <nextNodeId>1</nextNodeId>
+          <npcText>Hello. I would like you to bring me one handful of bees.</npcText>
+          <userText>That is a very strange request. I would be happy to.</userText>
+          <DeliverObjectives>
+            <Deliver>
+              <itemTypeId>101</itemTypeId>
+              <count>1</count>
+              <category>1</category>
+            </Deliver>
+          </DeliverObjectives>
+          <ItemRewards>
+            <Item>
+              <itemTypeId>101</itemTypeId>
+              <count>1</count>
+              <category>1</category>
+            </Item>
+            <Item>
+              <itemTypeId>27</itemTypeId>
+              <count>2</count>
+              <category>6</category>
+            </Item>
+          </ItemRewards>
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>500</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+        <Node>
+          <nodeId>1</nodeId>
+          <nextNodeId>2</nextNodeId>
+          <npcText>Quest node 2! What's that for, multi-part quests?</npcText>
+          <userText>I don't know but it sounds swell.</userText>
+          <DeliverObjectives />
+          <ItemRewards />
+        </Node>
+        <Node>
+          <nodeId>2</nodeId>
+          <nextNodeId>-1</nextNodeId>
+          <npcText>The bees you brought me were delicious I would like some more.</npcText>
+          <userText />
+          <DeliverObjectives>
+            <Deliver>
+              <itemTypeId>101</itemTypeId>
+              <count>1</count>
+              <category>1</category>
+            </Deliver>
+          </DeliverObjectives>
+          <ItemRewards />
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>50000</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+      </Nodes>
+      <friendshipRankRequired>0</friendshipRankRequired>
+    </Quest>
+    <Quest>
+      <questId>1</questId>
+      <title>This is also a quest title.</title>
+      <isRepeatable>false</isRepeatable>
+      <lastUsedNodeId>0</lastUsedNodeId>
+      <Nodes>
+        <Node>
+          <nodeId>0</nodeId>
+          <nextNodeId>-1</nextNodeId>
+          <npcText>I guess I have two quests at once.	What does that look like?</npcText>
+          <userText>Lets find out!</userText>
+          <DeliverObjectives>
+            <Deliver>
+              <itemTypeId>27</itemTypeId>
+              <count>1</count>
+              <category>6</category>
+            </Deliver>
+          </DeliverObjectives>
+          <ItemRewards />
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>5000</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+      </Nodes>
+      <friendshipRankRequired>1</friendshipRankRequired>
+    </Quest>
+  </Quests>
+  <Gifts>
+    <Gift>
+      <itemTypeId>3</itemTypeId>
+      <rewardedFriendship>0</rewardedFriendship>
+      <itemCategory>5</itemCategory>
+      <color1>0</color1>
+      <color2>0</color2>
+    </Gift>
+  </Gifts>
+  <iconPath />
+  <faction>6</faction>
+  <specialty>3</specialty>
+</NPCData>
