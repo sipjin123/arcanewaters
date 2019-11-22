@@ -306,8 +306,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
          if (classStat == null) {
             D.error("Class is Missing: " + specialtyType);
          } else {
-            UserDefaultStats classStatDefault = factionStat.playerStats.userDefaultStats;
-            UserCombatStats classStatCombat = factionStat.playerStats.userCombatStats;
+            UserDefaultStats classStatDefault = classStat.playerStats.userDefaultStats;
+            UserCombatStats classStatCombat = classStat.playerStats.userCombatStats;
             addDefaultStats(classStatDefault);
             addCombatStats(classStatCombat);
          }
@@ -317,8 +317,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
          if (specialtyStat == null) {
             D.error("Specialty is Missing: "+specialtyType);
          } else {
-            UserDefaultStats specialtyStatDefault = factionStat.playerStats.userDefaultStats;
-            UserCombatStats specialtyStatCombat = factionStat.playerStats.userCombatStats;
+            UserDefaultStats specialtyStatDefault = specialtyStat.playerStats.userDefaultStats;
+            UserCombatStats specialtyStatCombat = specialtyStat.playerStats.userCombatStats;
             addDefaultStats(specialtyStatDefault);
             addCombatStats(specialtyStatCombat);
          }

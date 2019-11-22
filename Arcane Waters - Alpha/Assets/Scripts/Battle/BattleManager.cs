@@ -312,7 +312,7 @@ public class BattleManager : MonoBehaviour {
       // For testing Purposes, adds a chance to spawn a Golem Monster
       int golemSpawnChance = Random.Range(0, 4);
       if (golemSpawnChance > 2) {
-         D.warning("Spawning a Debug Monster, Delete after feature completion!");
+         Debug.Log("Spawning a Debug Monster, Delete after feature completion!");
          enemyPrefab = prefabTypes.Find(_ => _.enemyType == Enemy.Type.Golem).enemyPrefab;
       }
         
@@ -366,7 +366,7 @@ public class BattleManager : MonoBehaviour {
       int enemyCount = playersInInstance;
 
       if (playersInInstance == 1) {
-         D.warning("Spawning 3 Monsters by Default instead of 1, Delete after feature completion!");
+         Debug.Log("Spawning 3 Monsters by Default instead of 1, Delete after feature completion!");
          return 3; // return 1;
       }
 

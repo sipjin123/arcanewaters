@@ -1944,7 +1944,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_UpdateBattleAbilityUI (NetworkConnection connection,string[] rawAttackAbilities) {
+   public void Target_UpdateBattleAbilityUI (NetworkConnection connection, string[] rawAttackAbilities) {
       List<AttackAbilityData> attackAbilityDataList = Util.unserialize<AttackAbilityData>(rawAttackAbilities);
 
       BattleUIManager.self.SetupAbilityUI(attackAbilityDataList.ToArray());

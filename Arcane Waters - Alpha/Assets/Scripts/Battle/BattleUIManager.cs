@@ -135,11 +135,11 @@ public class BattleUIManager : MonoBehaviour {
       self = this;
    }
 
-   public void SetupAbilityUI (AttackAbilityData[] battler) {
+   public void SetupAbilityUI (AttackAbilityData[] abilitydata) {
       int indexCounter = 0;
       foreach (AbilityButton abilityButton in abilityTargetButtons) {
-         if (indexCounter < battler.Length) {
-            BasicAbilityData currentAbility = battler[abilityButton.abilityIndex];//AbilityManager.self.allGameAbilities[abilityButton.abilityIndex];//.Find(_ => _.itemID == abilityButton.abilityIndex);
+         if (indexCounter < abilitydata.Length) {
+            BasicAbilityData currentAbility = abilitydata[abilityButton.abilityIndex];
             if (currentAbility != null) {
                string iconPath = currentAbility.itemIconPath;
                Sprite skillSprite = ImageManager.getSprite(iconPath);
