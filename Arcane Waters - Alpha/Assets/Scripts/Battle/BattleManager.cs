@@ -16,6 +16,14 @@ public class PrefabTypes
    public Battler enemyPrefab;
 }
 
+// Determines the damage effect effetiveness
+public enum DamageMagnitude
+{
+   Default = 0,
+   Resistant = 1,
+   Weakness = 2
+}
+
 public class BattleManager : MonoBehaviour {
    #region Public Variables
 
@@ -441,7 +449,16 @@ public class BattleManager : MonoBehaviour {
             // Computation Notes
             // [ 25 *= (100 / 100 + 200) ] = Damage x .33
             // [ 25 *= (100 / 100 + -90) ] = Damage x 10
-            damage *= (100f / (100f + targetDefenseElement));
+            float resistantModifier = (100f / (100f + targetDefenseElement));
+            damage *= resistantModifier;
+
+            // Determines the damage effectiveness
+            DamageMagnitude damageEffectMagnitude = DamageMagnitude.Default;
+            if (resistantModifier < .9f) {
+               damageEffectMagnitude = DamageMagnitude.Resistant;
+            } else if (resistantModifier > 1.1f) {
+               damageEffectMagnitude = DamageMagnitude.Weakness;
+            }
 
             float increaseAdditive = 0f;
             float decreaseMultiply = 1f;
@@ -477,7 +494,7 @@ public class BattleManager : MonoBehaviour {
             // Create the Action object
             AttackAction action = new AttackAction(battle.battleId, AttackAction.ActionType.Melee, source.userId, target.userId,
                 (int) damage, timeAttackEnds, abilityInventoryIndex, wasCritical, wasBlocked, cooldownDuration, sourceApChange,
-                targetApChange, abilityData.itemID);
+                targetApChange, abilityData.itemID, damageEffectMagnitude);
             actions.Add(action);
 
             // Make note how long the two Battler objects need in order to execute the attack/hit animations

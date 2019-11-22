@@ -19,6 +19,9 @@ public class NPCManager : MonoBehaviour {
 
    public void Awake () {
       self = this;
+
+      // Loads the NPC quest data
+      initializeQuestCache();
    }
 
    public void initializeQuestCache () {

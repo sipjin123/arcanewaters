@@ -18,13 +18,16 @@ public class AttackAction : BattleAction {
    // Whether or not the attack was a critical
    public bool wasCritical = false;
 
+   // Determines the effectiveness of the attack
+   public DamageMagnitude damageMagnitude = DamageMagnitude.Default;
+
    #endregion
 
    public AttackAction () { }
 
    public AttackAction (int battleId, ActionType actionType, int sourceId, int targetId, int damage, float actionEndTime,
            int abilityInventoryIndex, bool wasCritical, bool wasBlocked, float cooldownDuration,
-           int sourceApChange, int targetApChange, int abilityGlobalID) {
+           int sourceApChange, int targetApChange, int abilityGlobalID, DamageMagnitude damageMagnitude) {
       this.battleId = battleId;
       this.actionType = actionType;
       this.sourceId = sourceId;
@@ -39,6 +42,7 @@ public class AttackAction : BattleAction {
       this.targetApChange = targetApChange;
       this.abilityGlobalID = abilityGlobalID;
       this.battleActionType = BattleActionType.Attack;
+      this.damageMagnitude = damageMagnitude;
    }
 
    public override bool Equals (object rhs) {
@@ -81,6 +85,7 @@ public class AttackAction : BattleAction {
       serialized += this.targetApChange + ",";
       serialized += this.abilityGlobalID + ",";
       serialized += (int) this.battleActionType + ",";
+      serialized += (int) this.damageMagnitude + ",";
 
       return serialized;
    }
@@ -103,6 +108,7 @@ public class AttackAction : BattleAction {
       action.targetApChange = Convert.ToInt32(stringArray[12]);
       action.abilityGlobalID = Convert.ToInt32(stringArray[13]);
       action.battleActionType = (BattleActionType) Convert.ToInt32(stringArray[14]);
+      action.damageMagnitude = (DamageMagnitude) Convert.ToInt32(stringArray[15]);
 
       return action;
    }

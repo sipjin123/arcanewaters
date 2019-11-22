@@ -12,6 +12,9 @@ public class DamageText : MonoBehaviour {
    // The amount of time it takes the text to reach full size
    public static float SIZE_INCREASE_DURATION = .10f;
 
+   // The speed to reach full text size
+   public static float SIZE_INCREASE_SPEED = 4;
+
    // The Text component
    public Text text;
 
@@ -60,10 +63,18 @@ public class DamageText : MonoBehaviour {
          return;
       }
 
+      /* OLD SIZE INCREASE FORMULA
       // Increase in size initially
       if (timeSinceCreation < SIZE_INCREASE_DURATION) {
          float targetScale = timeSinceCreation / SIZE_INCREASE_DURATION;
-         _row.transform.localScale = new Vector3(targetScale, targetScale, 1f);
+        _row.transform.localScale = new Vector3(targetScale, targetScale, 1f);
+      }*/
+
+      // Increase in size initially
+      if (_row.transform.localScale.x < 1) {
+         float currentScale = _row.transform.localScale.x;
+         currentScale += Time.deltaTime * SIZE_INCREASE_SPEED;
+         _row.transform.localScale = new Vector3(currentScale, currentScale, 1f);
       }
 
       // Continually decrease our alpha
@@ -86,10 +97,10 @@ public class DamageText : MonoBehaviour {
       BasicAbilityData ability = AbilityManager.getAbility(action.abilityGlobalID, AbilityType.Undefined);
       Element element = ability.elementType;
 
-      customizeForAction(element, action.wasCritical);
+      customizeForAction(element, action.wasCritical, action.damageMagnitude);
    }
 
-   public void customizeForAction (Element element, bool wasCritical) {
+   public void customizeForAction (Element element, bool wasCritical, DamageMagnitude magnitude) {
       // Gradient gradient = text.GetComponent<Gradient>();
       text.font = Resources.Load<Font>("Fonts/");
       string fontString = "PhysicalDamage";
@@ -123,6 +134,14 @@ public class DamageText : MonoBehaviour {
 
       // Update the font
       text.font = Resources.Load<Font>("Fonts/" + fontString);
+
+      if (magnitude == DamageMagnitude.Weakness) {
+         text.transform.localScale = new Vector3(1.25f, 1.25f, 1.25f);
+      } else if (magnitude == DamageMagnitude.Resistant) {
+         text.transform.localScale = new Vector3(.8f, .8f, .8f);
+      } else {
+         text.transform.localScale = new Vector3(1, 1, 1);
+      }
 
       // Update the icon image based on the Elemental damage type
       // iconImage.sprite = Resources.Load<Sprite>("Icons/" + element);

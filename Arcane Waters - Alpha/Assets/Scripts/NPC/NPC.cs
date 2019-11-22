@@ -76,6 +76,9 @@ public class NPC : MonoBehaviour {
          _renderers.Add(GetComponent<SpriteRenderer>());
       }
 
+      // Initially hides name ui for npc name
+      Util.setAlpha(nameText, 0f);
+
       // Figure out our Type from our sprite
       this.npcType = getTypeFromSprite();
 
@@ -90,7 +93,6 @@ public class NPC : MonoBehaviour {
 
       // Default
       this.moveTarget = _startPosition;
-      Util.setAlpha(nameText, 0f);
 
       foreach (Animator animator in _animators) {
          animator.SetInteger("facing", (int) this.facing);
@@ -205,6 +207,14 @@ public class NPC : MonoBehaviour {
    }
 
    protected int getId () {
+      // Blocks the ID generation for Debug scenes, uses the custom ID setup for the npc instead
+      if (areaKey == "TonyTest") {
+         Debug.Log("Warning: NPC is not generated automatically, using custom ID instead for testing");
+         Util.setAlpha(nameText, 1f);
+         nameText.text = "ID: [" + this.npcId+"]\n"+this.getName();
+         return this.npcId;
+      }
+
       // We can make a unique id based on our area and NPC type
       int id = (Area.getAreaId(this.areaKey) * 100) + (int) this.npcType;
 

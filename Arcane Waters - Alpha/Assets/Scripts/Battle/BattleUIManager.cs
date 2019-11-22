@@ -421,7 +421,7 @@ public class BattleUIManager : MonoBehaviour {
           new Vector3(damagedBattler.transform.position.x, damagedBattler.transform.position.y + .25f, -3f);
       damageText.setDamageAmount(action.damage, action.wasCritical, action.wasBlocked);
       damageText.transform.SetParent(EffectManager.self.transform, false);
-      damageText.name = "DamageText";
+      damageText.name = "DamageText_"+ abilityData.elementType;
 
       // The damage text should be on the same layer as the target's Battle Spot
       damageText.gameObject.layer = spot.gameObject.layer;
