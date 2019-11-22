@@ -143,7 +143,10 @@ public class BattleUIManager : MonoBehaviour {
             if (currentAbility != null) {
                string iconPath = currentAbility.itemIconPath;
                Sprite skillSprite = ImageManager.getSprite(iconPath);
-               abilityButton.transform.GetChild(0).GetComponent<Image>().sprite = skillSprite;
+
+               if (abilityButton.abilityIcon != null) {
+                  abilityButton.abilityIcon.sprite = skillSprite;
+               }
             } else {
                Debug.LogWarning("Missing Ability: " + abilityButton.abilityIndex);
             }

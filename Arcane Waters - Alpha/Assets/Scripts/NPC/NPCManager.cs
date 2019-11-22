@@ -46,6 +46,14 @@ public class NPCManager : MonoBehaviour {
       return _npcs[npcId];
    }
 
+   public NPCData getNPCData (int npcID) {
+      if (_npcData.ContainsKey(npcID)) {
+         return _npcData[npcID];
+      } else {
+         return null;
+      }
+   }
+
    public List<Quest> getQuests (int npcId) {
       if (_npcData.ContainsKey(npcId)) {
          return _npcData[npcId].quests;

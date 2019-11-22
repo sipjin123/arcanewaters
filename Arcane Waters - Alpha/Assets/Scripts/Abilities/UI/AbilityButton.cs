@@ -15,6 +15,9 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
    // Where is this button coming from? (from the player battler or selected enemy battler?) 
    public AbilityOrigin abilityOrigin;
 
+   // The icon of the ability
+   public Image abilityIcon;
+
    #endregion
 
    public void OnPointerEnter (PointerEventData eventData) {

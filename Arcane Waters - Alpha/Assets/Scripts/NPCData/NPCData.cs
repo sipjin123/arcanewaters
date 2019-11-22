@@ -73,6 +73,9 @@ public class NPCData
    // Holds the address of the image icon
    public string iconPath;
 
+   // Holds the address of the image sprite within the game
+   public string spritePath;
+
    #endregion
 
    public NPCData () {
@@ -83,7 +86,7 @@ public class NPCData
       string greetingTextCasualFriend, string greetingTextCloseFriend, string greetingTextBestFriend,
       string giftOfferNPCText, string giftLikedText, string giftNotLikedText, string name,
       Faction.Type faction, Specialty.Type specialty, bool hasTradeGossipDialogue, bool hasGoodbyeDialogue,
-      int lastUsedQuestId, List<Quest> quests, List<NPCGiftData> gifts, string iconPath) {
+      int lastUsedQuestId, List<Quest> quests, List<NPCGiftData> gifts, string iconPath, string spritePath) {
       this.npcId = npcId;
       this.greetingTextStranger = greetingTextStranger;
       this.greetingTextAcquaintance = greetingTextAcquaintance;
@@ -102,6 +105,7 @@ public class NPCData
       this.quests = quests;
       this.gifts = gifts;
       this.iconPath = iconPath;
+      this.spritePath = spritePath;
    }
 
    #region Private Variables

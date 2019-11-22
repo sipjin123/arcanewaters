@@ -91,6 +91,9 @@ public class NPCEditScreen : MonoBehaviour
    // Holds the address of the image icon
    public string npcIconPath;
 
+   // Holds the address of the image sprite
+   public string npcSpritePath;
+
    // The panel that allows you to select an icon
    public GameObject iconSelectionPanel;
 
@@ -106,14 +109,23 @@ public class NPCEditScreen : MonoBehaviour
    // The icon of the NPC avatar
    public Image avatarIcon;
 
-   // Button that allows changing of avatar
-   public Button changeAvatarButton;
+   // The sprite of the NPC avatar
+   public Image avatarSprite;
+
+   // Image to preview selection Icon
+   public Image previewImage;
+
+   // Button that allows changing of avatar and sprites
+   public Button changeAvatarButton, changeGameSpriteButton;
 
    // Button that closes popup window of avatar selection
    public Button closeAvatarSelectionButton;
 
    // The cache list for avatar icon selection
    public Dictionary<string,Sprite> iconSpriteList = new Dictionary<string, Sprite>();
+
+   // The cache list for avatar sprite selection
+   public Dictionary<string, Sprite> avatarSpriteList = new Dictionary<string, Sprite>();
 
    // An image indicator for dropdown capabilities of quests
    public GameObject dropDownIndicatorQuest;
@@ -141,6 +153,9 @@ public class NPCEditScreen : MonoBehaviour
 
       changeAvatarButton.onClick.AddListener(() => {
          showIconSelector();
+      });
+      changeGameSpriteButton.onClick.AddListener(() => {
+         showSpriteSelector();
       });
       closeAvatarSelectionButton.onClick.AddListener(() => {
          iconSelectionPanel.SetActive(false);
@@ -172,10 +187,17 @@ public class NPCEditScreen : MonoBehaviour
       try {
          avatarIcon.sprite = iconSpriteList[npcData.iconPath];
       } catch {
+         avatarIcon.sprite = ImageManager.self.blankSprite;
+      }
 
+      try {
+         avatarSprite.sprite = avatarSpriteList[npcData.spritePath];
+      } catch {
+         avatarSprite.sprite = ImageManager.self.blankSprite;
       }
 
       npcIconPath = npcData.iconPath;
+      npcSpritePath = npcData.spritePath;
       _npcId = npcData.npcId;
       _lastUsedQuestId = npcData.lastUsedQuestId;
 
@@ -272,7 +294,7 @@ public class NPCEditScreen : MonoBehaviour
          greetingCasualFriend.text, greetingCloseFriend.text, greetingBestFriend.text, giftOfferText.text,
          giftLiked.text, giftNotLiked.text, npcName.text, (Faction.Type) faction.value,
          (Specialty.Type) specialty.value, hasTradeGossip.isOn, hasGoodbye.isOn, _lastUsedQuestId,
-         questList, newGiftDataList, npcIconPath);
+         questList, newGiftDataList, npcIconPath, npcSpritePath);
 
       // Save the data
       NPCToolManager.self.updateNPCData(npcData);
@@ -311,6 +333,7 @@ public class NPCEditScreen : MonoBehaviour
    }
 
    public void showIconSelector () {
+      previewImage.sprite = ImageManager.self.blankSprite;
       iconSelectionPanel.SetActive(true);
       iconTemplateParent.gameObject.DestroyChildren();
 
@@ -323,6 +346,32 @@ public class NPCEditScreen : MonoBehaviour
             npcIconPath = sourceSprite.Key;
             avatarIcon.sprite = sourceSprite.Value;
             closeAvatarSelectionButton.onClick.Invoke();
+         });
+
+         iconTemp.previewButton.onClick.AddListener(() => {
+            previewImage.sprite = sourceSprite.Value;
+         });
+      }
+   }
+
+   public void showSpriteSelector () {
+      previewImage.sprite = ImageManager.self.blankSprite;
+      iconSelectionPanel.SetActive(true);
+      iconTemplateParent.gameObject.DestroyChildren();
+
+      foreach (KeyValuePair<string, Sprite> sourceSprite in avatarSpriteList) {
+         GameObject iconTempObj = Instantiate(iconTemplatePrefab, iconTemplateParent);
+         ItemTypeTemplate iconTemp = iconTempObj.GetComponent<ItemTypeTemplate>();
+         iconTemp.spriteIcon.sprite = sourceSprite.Value;
+         iconTemp.itemTypeText.text = sourceSprite.Value.name;
+         iconTemp.selectButton.onClick.AddListener(() => {
+            npcSpritePath = sourceSprite.Key;
+            avatarSprite.sprite = sourceSprite.Value;
+            closeAvatarSelectionButton.onClick.Invoke();
+         });
+
+         iconTemp.previewButton.onClick.AddListener(() => {
+            previewImage.sprite = sourceSprite.Value;
          });
       }
    }

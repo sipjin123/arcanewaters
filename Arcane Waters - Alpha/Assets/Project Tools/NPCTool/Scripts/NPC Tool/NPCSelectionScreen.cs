@@ -63,12 +63,20 @@ public class NPCSelectionScreen : MonoBehaviour
 
       if (!_hasBeenInitialized) {
          _hasBeenInitialized = true;
-         string spritePath = "Assets/Sprites/Faces/";
-         List<ImageManager.ImageData> spriteIconFiles = ImageManager.getSpritesInDirectory(spritePath);
+         string iconPath = "Assets/Sprites/Faces/";
+         List<ImageManager.ImageData> spriteIconFiles = ImageManager.getSpritesInDirectory(iconPath);
 
          foreach (ImageManager.ImageData imgData in spriteIconFiles) {
             Sprite sourceSprite = imgData.sprite;
             npcEditScreen.iconSpriteList.Add(imgData.imagePath, sourceSprite);
+         }
+
+         string spritePath = "Assets/Sprites/NPCs/Bodies/";
+         List<ImageManager.ImageData> spriteFiles = ImageManager.getSpritesInDirectory(spritePath);
+
+         foreach (ImageManager.ImageData imgData in spriteFiles) {
+            Sprite sourceSprite = imgData.sprite;
+            npcEditScreen.avatarSpriteList.Add(imgData.imagePath, sourceSprite);
          }
       }
    }

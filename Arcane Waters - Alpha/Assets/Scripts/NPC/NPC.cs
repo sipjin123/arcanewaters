@@ -115,6 +115,16 @@ public class NPC : MonoBehaviour {
          // nameText.text = "[" + npcType + "]";
          // setNameColor(nameText, npcType);
       }
+
+      // SPRITE PATH INSERT HERE 
+      NPCData npcData = NPCManager.self.getNPCData(this.npcId);
+      if (npcData != null) {
+         try {
+            GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture(npcData.spritePath);
+         } catch {
+            D.log("Cant get Sprite for NPC: " + this.npcId);
+         }
+      }
    }
 
    private void Update () {
@@ -160,6 +170,12 @@ public class NPC : MonoBehaviour {
          float currentAlpha = Mathf.Clamp(nameText.color.a, 0f, 1f);
          Util.setAlpha(nameText, _isNearPlayer ? currentAlpha + Time.deltaTime * 3f : currentAlpha - Time.deltaTime * 3f);
       }*/
+      // Temporarily Sets alpha instantly, fade in fade out to be updated
+      if (MouseManager.self.isHoveringOver(_clickableBox)) {
+         Util.setAlpha(nameText, 1);
+      } else {
+         Util.setAlpha(nameText, 0);
+      }
 
       // Check if we're showing a West sprite
       bool isFacingWest = this.facing == Direction.West || this.facing == Direction.NorthWest || this.facing == Direction.SouthWest;
@@ -210,7 +226,6 @@ public class NPC : MonoBehaviour {
       // Blocks the ID generation for Debug scenes, uses the custom ID setup for the npc instead
       if (areaKey == "TonyTest") {
          Debug.Log("Warning: NPC is not generated automatically, using custom ID instead for testing");
-         Util.setAlpha(nameText, 1f);
          nameText.text = "ID: [" + this.npcId+"]\n"+this.getName();
          return this.npcId;
       }

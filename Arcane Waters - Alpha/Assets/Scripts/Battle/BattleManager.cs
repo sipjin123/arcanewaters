@@ -16,14 +16,6 @@ public class PrefabTypes
    public Battler enemyPrefab;
 }
 
-// Determines the damage effect effetiveness
-public enum DamageMagnitude
-{
-   Default = 0,
-   Resistant = 1,
-   Weakness = 2
-}
-
 public class BattleManager : MonoBehaviour {
    #region Public Variables
 
