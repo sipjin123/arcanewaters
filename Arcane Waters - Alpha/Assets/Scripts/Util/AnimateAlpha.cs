@@ -17,7 +17,7 @@ public class AnimateAlpha : ClientMonoBehaviour {
    public float animationSpeed = 1f;
 
    // The player area that this animation is intended for
-   public Area.Type enabledArea;
+   public string enabledArea;
 
    #endregion
 
@@ -26,7 +26,7 @@ public class AnimateAlpha : ClientMonoBehaviour {
    }
 
    void Update () {
-      if (Global.player == null || Global.player.areaType != enabledArea) {
+      if (Global.player == null || Global.player.areaKey != enabledArea) {
          return;
       }
 

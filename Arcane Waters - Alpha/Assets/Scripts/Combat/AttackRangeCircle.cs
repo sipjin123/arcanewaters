@@ -102,7 +102,7 @@ public class AttackRangeCircle : MonoBehaviour
    private void updateCurrentArea () {
       if (AreaManager.self != null && Global.player != null) {
          // Verify if the area has changed
-         Area area = AreaManager.self.getArea(Global.player.areaType);
+         Area area = AreaManager.self.getArea(Global.player.areaKey);
          if (area != _currentArea) {
             _currentArea = area;
             _currentGrid = area.GetComponentInChildren<Grid>();

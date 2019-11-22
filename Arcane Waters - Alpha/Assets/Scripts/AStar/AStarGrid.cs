@@ -35,8 +35,8 @@ namespace AStar
 
       #endregion
 
-      public void displayGrid (Vector3 pos, Area.Type areaType) {
-         Area area = AreaManager.self.getArea(areaType);
+      public void displayGrid (Vector3 pos, string areaKey) {
+         Area area = AreaManager.self.getArea(areaKey);
          Grid grid = area.GetComponentInChildren<Grid>();
 
          List<ANode> nodeList = new List<ANode>();

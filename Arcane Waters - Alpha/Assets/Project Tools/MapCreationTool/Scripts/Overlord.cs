@@ -6,85 +6,74 @@ using UnityEngine;
 
 namespace MapCreationTool
 {
-    public class Overlord : MonoBehaviour
-    {
-        [SerializeField]
-        private EditorConfig config = null;
+   public class Overlord : MonoBehaviour
+   {
+      [SerializeField]
+      private EditorConfig config = null;
 
-        [Space(5)]
-        [SerializeField]
-        private PaletteResources paletteResources = null;
-        [SerializeField]
-        private Palette palette = null;
-        [SerializeField]
-        private DrawBoard drawBoard = null;
+      [Space(5)]
+      [SerializeField]
+      private PaletteResources paletteResources = null;
+      [SerializeField]
+      private Palette palette = null;
+      [SerializeField]
+      private DrawBoard drawBoard = null;
 
-        private Dictionary<BiomeType, PaletteData> paletteDatas;
+      private Dictionary<BiomeType, PaletteData> paletteDatas;
 
-        private void Awake()
-        {
-            Tools.SetDefaultValues();
-            Undo.Clear();
+      private void Awake () {
+         Tools.setDefaultValues();
+         Undo.clear();
 
-            paletteDatas = paletteResources.GatherData(config);
+         AssetSerializationMaps.load();
 
-            AssetSerializationMaps.Load();
-        }
+         paletteDatas = paletteResources.gatherData(config);
+      }
 
-        private void OnEnable()
-        {
-            Tools.BiomeChanged += OnBiomeChanged;
+      private void OnEnable () {
+         Tools.BiomeChanged += onBiomeChanged;
 
-            Undo.UndoPerformed += EnsurePreviewCleared;
-            Undo.RedoPerformed += EnsurePreviewCleared;
+         Undo.UndoPerformed += ensurePreviewCleared;
+         Undo.RedoPerformed += ensurePreviewCleared;
 
-            Tools.AnythingChanged += EnsurePreviewCleared;
-        }
+         Tools.AnythingChanged += ensurePreviewCleared;
+      }
 
-        private void OnDisable()
-        {
-            Tools.BiomeChanged -= OnBiomeChanged;
+      private void OnDisable () {
+         Tools.BiomeChanged -= onBiomeChanged;
 
-            Undo.UndoPerformed -= EnsurePreviewCleared;
-            Undo.RedoPerformed -= EnsurePreviewCleared;
+         Undo.UndoPerformed -= ensurePreviewCleared;
+         Undo.RedoPerformed -= ensurePreviewCleared;
 
-            Tools.AnythingChanged -= EnsurePreviewCleared;
-        }
+         Tools.AnythingChanged -= ensurePreviewCleared;
+      }
 
-        private void Start()
-        {
-            palette.PopulatePalette(paletteDatas[Tools.Biome]);
-        }
+      private void Start () {
+         palette.populatePalette(paletteDatas[Tools.biome]);
+      }
 
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.Z) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)))
-            {
-                Undo.DoUndo();
-            }
-            else if (Input.GetKeyDown(KeyCode.Y) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)))
-            {
-                Undo.DoRedo();
-            }
-        }
+      private void Update () {
+         if (Input.GetKeyDown(KeyCode.Z) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))) {
+            Undo.doUndo();
+         } else if (Input.GetKeyDown(KeyCode.Y) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))) {
+            Undo.doRedo();
+         }
+      }
 
-        public void ApplyFileData(string data)
-        {
-            var dt = Serializer.Deserialize(data);
+      public void applyFileData (string data) {
+         var dt = Serializer.deserialize(data, true);
 
-            Tools.ChangeBiome(dt.biome);
-            drawBoard.ApplyDeserializedData(dt);
-            Undo.Clear();
-        }
+         Tools.changeBiome(dt.biome);
+         drawBoard.applyDeserializedData(dt);
+         Undo.clear();
+      }
 
-        private void EnsurePreviewCleared()
-        {
-            drawBoard.EnsurePreviewCleared();
-        }
-        private void OnBiomeChanged(BiomeType from, BiomeType to)
-        {
-            palette.PopulatePalette(paletteDatas[to]);
-            drawBoard.ChangeBiome(paletteDatas[from], paletteDatas[to]);
-        }
-    }
+      private void ensurePreviewCleared () {
+         drawBoard.ensurePreviewCleared();
+      }
+      private void onBiomeChanged (BiomeType from, BiomeType to) {
+         palette.populatePalette(paletteDatas[to]);
+         drawBoard.changeBiome(paletteDatas[from], paletteDatas[to]);
+      }
+   }
 }

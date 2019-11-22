@@ -96,7 +96,7 @@ public class MinimapCreator : EditorWindow {
 
             // Write the Texture into a PNG file in the project assets
             byte[] mapPng = map.EncodeToPNG();
-            string path = Application.dataPath + "/Sprites/Minimaps/" + area.areaType + ".png";
+            string path = Application.dataPath + "/Sprites/Minimaps/" + area.areaKey + ".png";
             File.WriteAllBytes(path, mapPng);
             AssetDatabase.Refresh();
          }

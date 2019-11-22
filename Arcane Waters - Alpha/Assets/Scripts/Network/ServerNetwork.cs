@@ -28,11 +28,11 @@ public class ServerNetwork : MonoBehaviour {
       InvokeRepeating("checkPhotonConnection", 10f, 5f);
    }
 
-   public Server findBestServerForConnectingPlayer (Area.Type areaType, string username, int userId, string address) {
+   public Server findBestServerForConnectingPlayer (string areaKey, string username, int userId, string address) {
       // Check if there's an open area already on one of the servers
       foreach (Server server in servers) {
-         List<Area.Type> openAreas = new List<Area.Type>(server.openAreas);
-         if (openAreas.Contains(areaType)) {
+         List<string> openAreas = new List<string>(server.openAreas);
+         if (openAreas.Contains(areaKey)) {
             return server;
          }
       }

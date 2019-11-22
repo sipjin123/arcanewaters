@@ -17,25 +17,25 @@ public class EnemyManager : MonoBehaviour {
       self = this;
 
       // Create empty lists for each Area Type
-      foreach (Area.Type areaType in System.Enum.GetValues(typeof(Area.Type))) {
-         _spawners[areaType] = new List<Enemy_Spawner>();
+      foreach (string areaKey in Area.getAllAreaKeys()) {
+         _spawners[areaKey] = new List<Enemy_Spawner>();
       }
    }
 
-   public void storeSpawner (Enemy_Spawner spawner, Area.Type areaType) {
-      List<Enemy_Spawner> list = _spawners[areaType];
+   public void storeSpawner (Enemy_Spawner spawner, string areaKey) {
+      List<Enemy_Spawner> list = _spawners[areaKey];
       list.Add(spawner);
-      _spawners[areaType] = list;
+      _spawners[areaKey] = list;
    }
 
    public void spawnEnemiesOnServerForInstance (Instance instance) {
       // If we don't have any spawners defined for this Area, then we're done
-      if (!_spawners.ContainsKey(instance.areaType)) {
-         D.log("No Enemy Spawners defined for Area Type: " + instance.areaType);
+      if (!_spawners.ContainsKey(instance.areaKey)) {
+         D.log("No Enemy Spawners defined for Area Key: " + instance.areaKey);
          return;
       }
 
-      foreach (Enemy_Spawner spawner in _spawners[instance.areaType]) {
+      foreach (Enemy_Spawner spawner in _spawners[instance.areaKey]) {
          // Create an Enemy in this instance
          Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab);
          enemy.enemyType = spawner.enemyType;
@@ -51,7 +51,7 @@ public class EnemyManager : MonoBehaviour {
    #region Private Variables
 
    // Stores a list of Enemy Spawners for each type of Site
-   protected Dictionary<Area.Type, List<Enemy_Spawner>> _spawners = new Dictionary<Area.Type, List<Enemy_Spawner>>();
+   protected Dictionary<string, List<Enemy_Spawner>> _spawners = new Dictionary<string, List<Enemy_Spawner>>();
 
    #endregion
 }

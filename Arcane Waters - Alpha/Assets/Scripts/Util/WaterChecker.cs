@@ -102,7 +102,7 @@ public class WaterChecker : ClientMonoBehaviour {
       }
 
       // Look up the Area and Grid that we're currently in
-      Area area = AreaManager.self.getArea(_player.areaType);
+      Area area = AreaManager.self.getArea(_player.areaKey);
       Grid grid = area.GetComponentInChildren<Grid>();
       Vector3Int cellPos = grid.WorldToCell(_player.sortPoint.transform.position);
 

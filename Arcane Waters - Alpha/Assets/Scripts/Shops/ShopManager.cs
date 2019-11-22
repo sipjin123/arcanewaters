@@ -51,11 +51,11 @@ public class ShopManager : MonoBehaviour {
       }
 
       // Generate items for each of the areas
-      foreach (Area.Type areaType in Enum.GetValues(typeof(Area.Type))) {
-         Biome.Type biomeType = Area.getBiome(areaType);
+      foreach (string areaKey in Area.getAllAreaKeys()) {
+         Biome.Type biomeType = Area.getBiome(areaKey);
 
          // Clear out the previous list
-         _itemsByArea[areaType] = new List<int>();
+         _itemsByArea[areaKey] = new List<int>();
 
          // Make 3 new items
          for (int i = 0; i < 3; i++) {
@@ -73,7 +73,7 @@ public class ShopManager : MonoBehaviour {
             _items[item.id] = item;
 
             // Add it to the list
-            _itemsByArea[areaType].Add(item.id);
+            _itemsByArea[areaKey].Add(item.id);
          }
       }
    }
@@ -85,9 +85,9 @@ public class ShopManager : MonoBehaviour {
       }
 
       // Generate ships for each of the areas
-      foreach (Area.Type areaType in Enum.GetValues(typeof(Area.Type))) {
+      foreach (string areaKey in Area.getAllAreaKeys()) {
          // Clear out the previous list
-         _shipsByArea[areaType] = new List<int>();
+         _shipsByArea[areaKey] = new List<int>();
 
          // Make 3 new ships
          for (int i = 1; i <= 3; i++) {
@@ -123,7 +123,7 @@ public class ShopManager : MonoBehaviour {
 
 
             // Add it to the list
-            _shipsByArea[areaType].Add(ship.shipId);
+            _shipsByArea[areaKey].Add(ship.shipId);
          }
       }
    }
@@ -138,11 +138,11 @@ public class ShopManager : MonoBehaviour {
       lastCropRegenTime = DateTime.UtcNow;
 
       // Generate offers for each of the areas
-      foreach (Area.Type areaType in Enum.GetValues(typeof(Area.Type))) {
-         Biome.Type biomeType = Area.getBiome(areaType);
+      foreach (string areaKey in Area.getAllAreaKeys()) {
+         Biome.Type biomeType = Area.getBiome(areaKey);
 
          // Clear out the previous list
-         _offersByArea[areaType] = new List<CropOffer>();
+         _offersByArea[areaKey] = new List<CropOffer>();
 
          // The types of crops that might show  up
          List<Crop.Type> cropList = Util.getAllEnumValues<Crop.Type>();
@@ -159,10 +159,10 @@ public class ShopManager : MonoBehaviour {
             stockCount = Util.roundToPrettyNumber(stockCount);
             int pricePerUnit = (int) (CropManager.getBasePrice(cropType) * Rarity.getCropSellPriceModifier(rarity));
             pricePerUnit = Util.roundToPrettyNumber(pricePerUnit);
-            CropOffer offer = new CropOffer(_offerId++, areaType, cropType, stockCount, pricePerUnit, rarity);
+            CropOffer offer = new CropOffer(_offerId++, areaKey, cropType, stockCount, pricePerUnit, rarity);
 
             // For the sake of the tutorial, there will always be an offer for the starting crop in the desert town
-            if (areaType == Area.Type.MerchantShop_Desert && i == 0) {
+            if (areaKey == Area.MERCHANT_SHOP_DESERT && i == 0) {
                offer.cropType = CropManager.STARTING_CROP;
                offer.rarity = Rarity.Type.Common;
                offer.pricePerUnit = 80;
@@ -173,7 +173,7 @@ public class ShopManager : MonoBehaviour {
             _offers[offer.id] = offer;
 
             // Add it to the list
-            _offersByArea[areaType].Add(offer);
+            _offersByArea[areaKey].Add(offer);
          }
       }
 
@@ -181,9 +181,9 @@ public class ShopManager : MonoBehaviour {
       TipManager.self.updateCropTips();
    }
 
-   public List<CropOffer> getOffers (Area.Type areaType) {
-      if (_offersByArea.ContainsKey(areaType)) {
-         return _offersByArea[areaType];
+   public List<CropOffer> getOffers (string areaKey) {
+      if (_offersByArea.ContainsKey(areaKey)) {
+         return _offersByArea[areaKey];
       }
 
       return new List<CropOffer>();
@@ -193,10 +193,10 @@ public class ShopManager : MonoBehaviour {
       return new List<CropOffer>(_offers.Values);
    }
 
-   public List<Item> getItems (Area.Type areaType) {
+   public List<Item> getItems (string areaKey) {
       List<Item> list = new List<Item>();
 
-      foreach (int itemId in _itemsByArea[areaType]) {
+      foreach (int itemId in _itemsByArea[areaKey]) {
          Item item = _items[itemId];
          list.Add(item);
       }
@@ -204,10 +204,10 @@ public class ShopManager : MonoBehaviour {
       return list;
    }
 
-   public List<ShipInfo> getShips (Area.Type areaType) {
+   public List<ShipInfo> getShips (string areaKey) {
       List<ShipInfo> list = new List<ShipInfo>();
 
-      foreach (int shipId in _shipsByArea[areaType]) {
+      foreach (int shipId in _shipsByArea[areaKey]) {
          ShipInfo ship = (ShipInfo) _ships[shipId];
          list.Add(ship);
       }
@@ -278,13 +278,13 @@ public class ShopManager : MonoBehaviour {
    protected Dictionary<int, CropOffer> _offers = new Dictionary<int, CropOffer>();
 
    // Keeps lists of items based on Area
-   protected Dictionary<Area.Type, List<int>> _itemsByArea = new Dictionary<Area.Type, List<int>>();
+   protected Dictionary<string, List<int>> _itemsByArea = new Dictionary<string, List<int>>();
 
    // Keeps lists of ships based on Area
-   protected Dictionary<Area.Type, List<int>> _shipsByArea = new Dictionary<Area.Type, List<int>>();
+   protected Dictionary<string, List<int>> _shipsByArea = new Dictionary<string, List<int>>();
 
    // Keeps lists of Crop Offers based on Area
-   protected Dictionary<Area.Type, List<CropOffer>> _offersByArea = new Dictionary<Area.Type, List<CropOffer>>();
+   protected Dictionary<string, List<CropOffer>> _offersByArea = new Dictionary<string, List<CropOffer>>();
 
    #endregion
 }

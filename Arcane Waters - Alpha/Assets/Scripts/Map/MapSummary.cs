@@ -20,8 +20,8 @@ public struct MapSummary
    // The port of the Server that this map is on
    public int serverPort;
 
-   // The Area.Type associated with this map
-   public Area.Type areaType;
+   // The Area Key associated with this map
+   public string areaKey;
 
    // The Biome.Type associated with this map
    public Biome.Type biomeType;
@@ -40,10 +40,10 @@ public struct MapSummary
 
    #endregion
 
-   public MapSummary (string serverAddress, int serverPort, Area.Type areaType, Biome.Type biomeType, int playersCount, int maxPlayersCount, MapDifficulty mapDifficulty, int seed) {
+   public MapSummary (string serverAddress, int serverPort, string areaKey, Biome.Type biomeType, int playersCount, int maxPlayersCount, MapDifficulty mapDifficulty, int seed) {
       this.serverAddress = serverAddress;
       this.serverPort = serverPort;
-      this.areaType = areaType;
+      this.areaKey = areaKey;
       this.biomeType = biomeType;
       this.playersCount = playersCount;
       this.maxPlayersCount = maxPlayersCount;

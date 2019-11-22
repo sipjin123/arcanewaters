@@ -28,9 +28,9 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public int instanceId;
 
-   // The Area type that we're in
+   // The key of the area we're in
    [SyncVar]
-   public Area.Type areaType;
+   public string areaKey;
 
    // The Gender of this entity
    [SyncVar]
@@ -179,10 +179,10 @@ public class NetEntity : NetworkBehaviour
          Global.isFastLogin = false;
 
          // Set the music according to our Area
-         SoundManager.setBackgroundMusic(this.areaType);
+         SoundManager.setBackgroundMusic(this.areaKey);
 
          // Show the Area name
-         LocationBanner.self.setText(Area.getName(this.areaType));
+         LocationBanner.self.setText(Area.getName(this.areaKey));
 
          // Have Gramps start telling us what to do
          GrampsManager.startTalkingToPlayerAfterDelay();
@@ -232,7 +232,7 @@ public class NetEntity : NetworkBehaviour
       }
 
       // If we changed areas, update our Camera
-      if (this.areaType != _previousAreaType) {
+      if (this.areaKey != _previousAreaKey) {
          updatePlayerCamera();
       }
 
@@ -240,7 +240,7 @@ public class NetEntity : NetworkBehaviour
       handleSpriteOutline();
 
       // Keep track of our previous area type
-      _previousAreaType = this.areaType;
+      _previousAreaKey = this.areaKey;
    }
 
    protected virtual void FixedUpdate () {
@@ -273,7 +273,7 @@ public class NetEntity : NetworkBehaviour
 
       // Make sure the server saves our position and health when a player is disconnected (by any means other than a warp)
       if (MyNetworkManager.wasServerStarted && !isAboutToWarpOnServer) {
-         Util.tryToRunInServerBackground(() => DB_Main.setNewPosition(this.userId, pos, this.facing, (int) this.areaType));
+         Util.tryToRunInServerBackground(() => DB_Main.setNewPosition(this.userId, pos, this.facing, this.areaKey));
       }
    }
 
@@ -398,7 +398,7 @@ public class NetEntity : NetworkBehaviour
          return;
       }
 
-      Area area = AreaManager.self.getArea(this.areaType);
+      Area area = AreaManager.self.getArea(this.areaKey);
       CinemachineVirtualCamera vcam = area.vcam;
       Util.activateVirtualCamera(vcam);
       vcam.Follow = this.transform;
@@ -549,7 +549,7 @@ public class NetEntity : NetworkBehaviour
    }
 
    [ClientRpc]
-   public void Rpc_WarpToArea (Area.Type areaType, Vector3 newPosition) {
+   public void Rpc_WarpToArea (string areaKey, Vector3 newPosition) {
       this.transform.position = newPosition;
    }
 
@@ -739,23 +739,23 @@ public class NetEntity : NetworkBehaviour
    [Command]
    public void Cmd_SpawnIntoGeneratedMap (MapSummary mapSummary) {
       // Look up the Spawn object and the server that is associated with this map data
-      Area area = AreaManager.self.getArea(mapSummary.areaType);
+      Area area = AreaManager.self.getArea(mapSummary.areaKey);
       Spawn spawn = area.GetComponentInChildren<Spawn>();
       Server server = ServerNetwork.self.getServer(mapSummary.serverAddress, mapSummary.serverPort);
 
       // Proceed to spawn onto the requested server
-      spawnOnSpecificServer(server, mapSummary.areaType, spawn, Direction.North);
+      spawnOnSpecificServer(server, mapSummary.areaKey, spawn, Direction.North);
    }
 
    [Command]
-   public void Cmd_SpawnInNewMap (Area.Type newArea, Spawn.Type spawnType, Direction newFacingDirection) {
+   public void Cmd_SpawnInNewMap (string newArea, Spawn.Type spawnType, Direction newFacingDirection) {
       Spawn spawn = SpawnManager.self.getSpawn(spawnType);
 
       spawnInNewMap(newArea, spawn, newFacingDirection);
    }
 
    [Server]
-   public void spawnInNewMap (Area.Type newArea, Spawn spawn, Direction newFacingDirection) {
+   public void spawnInNewMap (string newArea, Spawn spawn, Direction newFacingDirection) {
       // Check which server we're likely to redirect to
       Server bestServer = ServerNetwork.self.findBestServerForConnectingPlayer(newArea, this.entityName, this.userId, this.connectionToClient.address);
 
@@ -764,7 +764,7 @@ public class NetEntity : NetworkBehaviour
    }
 
    [Server]
-   public void spawnOnSpecificServer (Server newServer, Area.Type newArea, Spawn spawn, Direction newFacingDirection) {
+   public void spawnOnSpecificServer (Server newServer, string newArea, Spawn spawn, Direction newFacingDirection) {
       int connectionId = this.connectionToClient.connectionId;
       Vector2 newPosition = spawn.getSpawnPosition();
 
@@ -776,7 +776,7 @@ public class NetEntity : NetworkBehaviour
 
       // Update the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.setNewPosition(this.userId, newPosition, newFacingDirection, (int) newArea);
+         DB_Main.setNewPosition(this.userId, newPosition, newFacingDirection, newArea);
 
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -833,8 +833,8 @@ public class NetEntity : NetworkBehaviour
    // Whether we should automatically move around
    protected bool _autoMove = false;
 
-   // The previous type of area that we were in
-   protected Area.Type _previousAreaType;
+   // The key of the previous area that we were in
+   protected string _previousAreaKey;
 
    // Info on the crops in our silo
    protected List<SiloInfo> _siloInfo = new List<SiloInfo>();

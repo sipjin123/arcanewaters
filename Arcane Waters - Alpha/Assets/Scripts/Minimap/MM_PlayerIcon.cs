@@ -29,7 +29,7 @@ public class MM_PlayerIcon : ClientMonoBehaviour {
       }
 
       // Keep the icon in the right position
-      Area currentArea = AreaManager.self.getArea(Global.player.areaType);
+      Area currentArea = AreaManager.self.getArea(Global.player.areaKey);
       Vector3 relativePosition = Global.player.transform.position - currentArea.transform.position;
       relativePosition *= 12f;
       relativePosition += new Vector3(-128f, 0f);

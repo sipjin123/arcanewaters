@@ -12,9 +12,9 @@ public class Instance : NetworkBehaviour
    [SyncVar]
    public int id;
 
-   // The type of Area this Instance is
+   // The key determining the type of area this instance is
    [SyncVar]
-   public Area.Type areaType;
+   public string areaKey;
 
    // The type of Biome this Instance is
    [SyncVar]
@@ -60,8 +60,8 @@ public class Instance : NetworkBehaviour
    private void Start () {
       // We only spawn Bots on the Server
       if (NetworkServer.active) {
-         Area area = AreaManager.self.getArea(this.areaType);
-         List<BotSpot> spots = BotManager.self.getSpots(area.areaType);
+         Area area = AreaManager.self.getArea(this.areaKey);
+         List<BotSpot> spots = BotManager.self.getSpots(area.areaKey);
 
          foreach (BotSpot spot in spots) {
             Vector2 spawnPosition = spot.transform.position;
@@ -73,7 +73,7 @@ public class Instance : NetworkBehaviour
 
             BotShipEntity bot = Instantiate(spot.prefab, spawnPosition, Quaternion.identity);
             bot.instanceId = this.id;
-            bot.areaType = area.areaType;
+            bot.areaKey = area.areaKey;
             bot.npcType = spot.npcType;
             bot.faction = NPC.getFactionFromType(bot.npcType);
             bot.route = spot.route;
@@ -106,7 +106,7 @@ public class Instance : NetworkBehaviour
    }
 
    public int getMaxPlayers () {
-      if (areaType == Area.Type.Farm || areaType == Area.Type.House) {
+      if (areaKey == Area.FARM || areaKey == Area.HOUSE) {
          return 1;
       }
 
@@ -114,7 +114,7 @@ public class Instance : NetworkBehaviour
    }
 
    public MapSummary getMapSummary () {
-      return new MapSummary(this.serverAddress, this.serverPort, this.areaType, this.biomeType, getPlayerCount(), getMaxPlayers(), this.mapDifficulty, this.mapSeed);
+      return new MapSummary(this.serverAddress, this.serverPort, this.areaKey, this.biomeType, getPlayerCount(), getMaxPlayers(), this.mapDifficulty, this.mapSeed);
    }
 
    public void removeEntityFromInstance (NetworkBehaviour entity) {
@@ -130,7 +130,7 @@ public class Instance : NetworkBehaviour
       }
 
       // We don't worry about this for the Randomly generated maps
-      if (Area.isRandom(this.areaType)) {
+      if (Area.isRandom(this.areaKey)) {
          return;
       }
 

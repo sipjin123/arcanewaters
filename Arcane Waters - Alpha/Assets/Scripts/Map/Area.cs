@@ -4,31 +4,24 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.Tilemaps;
+using System;
 
 public class Area : MonoBehaviour {
    #region Public Variables
 
-   [System.Serializable]
-   // The types of area
-   public enum Type { None = 0,
-      StartingTown = 1, Farm = 2, Ocean1 = 3, House = 4, TreasurePine = 5,
-      DesertTown = 6, SeaBottom = 7, SeaMiddle = 8, SeaTop = 9, MerchantShop_Desert = 10,
-      MerchantShop_Forest = 11, AdventureShop_Forest = 12, AdventureShop_Desert = 13,
-      Shipyard_Forest = 14,
+   // Hardcoded area keys
+   public static string STARTING_TOWN = "StartingTown";
+   public static string FARM = "Farm";
+   public static string HOUSE = "House";
+   public static string TREASURE_PINE = "TreasurePine";
+   public static string DESERT_TOWN = "DesertTown";
+   public static string MERCHANT_SHOP_DESERT = "MerchantShop_Desert";
 
-      TonyTest = 2001,
-
-      // Each server can make up to 3 randomly generated maps
-      SeaRandom_1 = 1001,
-      SeaRandom_2 = 1002,
-      SeaRandom_3 = 1003,
-   }
-
-   // The type of area this is
-   public Type areaType;
+   // The key determining the type of area this is
+   public string areaKey;
 
    // When the area is a shop, keep also at hand the town's name
-   public Type townAreaType;
+   public string townAreaKey;
 
    // The Camera Bounds associated with this area
    public PolygonCollider2D cameraBounds;
@@ -56,7 +49,7 @@ public class Area : MonoBehaviour {
       }
 
       // If the area is a town, lists all the areas that can be accessed from it
-      if (isTown(this.areaType)) {
+      if (isTown(areaKey)) {
          foreach (Warp warp in GetComponentsInChildren<Warp>()) {
 
             // Finds the destination area for each warp
@@ -64,98 +57,193 @@ public class Area : MonoBehaviour {
             Area destinationArea = spawn.GetComponentInParent<Area>();
 
             // If the destination area is a shop, set its town as this area
-            if (destinationArea != null && isShop(destinationArea.areaType)) {
-               destinationArea.townAreaType = this.areaType;
+            if (destinationArea != null && isShop(areaKey)) {
+               destinationArea.townAreaKey = areaKey;
             }
          }
       } else {
          // Otherwise, the town area is the area itself
-         townAreaType = areaType;
+         townAreaKey = areaKey;
       }
    }
 
-   public static bool isSea (Type areaType) {
-      return (areaType.ToString().StartsWith("Ocean") || areaType.ToString().StartsWith("Sea"));
+   public static bool isSea (string areaKey) {
+      return (areaKey.StartsWith("Ocean") || areaKey.StartsWith("Sea"));
    }
 
-   public static bool isHouse (Type areaType) {
-      return areaType.ToString().Contains("House");
+   public static bool isHouse (string areaKey) {
+      return areaKey.Contains("House");
    }
 
-   public static bool isTown (Type areaType) {
-      return areaType.ToString().Contains("Town");
+   public static bool isTown (string areaKey) {
+      return areaKey.Contains("Town");
    }
 
-   public static bool isTreasureSite (Type areaType) {
-      return areaType.ToString().Contains("Treasure");
+   public static bool isTreasureSite (string areaKey) {
+      return areaKey.Contains("Treasure");
    }
 
-   public static bool isRandom (Type areaType) {
-      return getRandomAreaTypes().Contains(areaType);
+   public static bool isRandom (string areaKey) {
+      return getRandomAreaKeys().Contains(areaKey);
    }
 
-   public static bool isShop (Type areaType) {
-      return areaType.ToString().Contains("Shop");
+   public static bool isShop (string areaKey) {
+      return areaKey.Contains("Shop");
+   }
+
+   public static bool isMerchantShop(string areaKey) {
+      return areaKey.StartsWith("MerchantShop");
    }
 
    public List<Tilemap> getTilemaps () {
       return _tilemaps;
    }
 
-   public static List<Area.Type> getRandomAreaTypes () {
-      return new List<Type>() { Type.SeaRandom_1, Type.SeaRandom_2, Type.SeaRandom_3 };
+   public static List<string> getRandomAreaKeys () {
+      return new List<string>() { "SeaRandom_1", "SeaRandom_2", "SeaRandom_3" };
    }
 
-   public static string getName (Type areaType) {
-      if (areaType.ToString().StartsWith("Adventure")) {
+   public static string getName (string areaKey) {
+      if (areaKey.StartsWith("Adventure")) {
          return "Adventure Shop";
-      } else if (areaType.ToString().StartsWith("Merchant")) {
+      } else if (areaKey.StartsWith("Merchant")) {
          return "Merchant Shop";
-      } else if (areaType.ToString().StartsWith("Shipyard")) {
+      } else if (areaKey.StartsWith("Shipyard")) {
          return "Shipyard";
       }
 
-      switch (areaType) {
-         case Type.StartingTown:
+      switch (areaKey) {
+         case "StartingTown":
             return "Serenity Village";
-         case Type.DesertTown:
+         case "DesertTown":
             return "Desert Oasis";
-         case Type.Ocean1:
-         case Type.SeaBottom:
+         case "Ocean1":
+         case "SeaBottom":
             return "Emerald Shores";
-         case Type.SeaMiddle:
+         case "SeaMiddle":
             return "Desert Isles";
-         case Type.SeaTop:
+         case "SeaTop":
             return "Hidden Forest";
-         case Type.TreasurePine:
+         case "TreasurePine":
             return "Forest Treasure";
          default:
-            return areaType.ToString();
+            return areaKey;
       }
    }
 
-   public static Biome.Type getBiome (Type areaType) {
-      switch (areaType) {
-         case Type.AdventureShop_Forest:
-         case Type.Farm:
-         case Type.House:
-         case Type.MerchantShop_Forest:
-         case Type.Ocean1:
-         case Type.SeaBottom:
-         case Type.Shipyard_Forest:
-         case Type.StartingTown:
+   public static Biome.Type getBiome (string areaKey) {
+      switch (areaKey) {
+         case "AdventureShop_Forest":
+         case "Farm":
+         case "House":
+         case "MerchantShop_Forest":
+         case "Ocean1":
+         case "SeaBottom":
+         case "Shipyard_Forest":
+         case "StartingTown":
             return Biome.Type.Forest;
-         case Type.AdventureShop_Desert:
-         case Type.MerchantShop_Desert:
-         case Type.DesertTown:
-         case Type.SeaMiddle:
+         case "AdventureShop_Desert":
+         case "MerchantShop_Desert":
+         case "DesertTown":
+         case "SeaMiddle":
             return Biome.Type.Desert;
-         case Type.SeaTop:
-         case Type.TreasurePine:
+         case "SeaTop":
+         case "TreasurePine":
             return Biome.Type.Pine;
          default:
             return Biome.Type.None;
       }
+   }
+
+   public static SoundManager.Type getBackgroundMusic (string areaKey) {
+      switch (areaKey) {
+         case "House":
+         case "Farm":
+         case "StartingTown":
+            return SoundManager.Type.Town_Forest;
+         case "Ocean1":
+         case "SeaBottom":
+            return SoundManager.Type.Sea_Forest;
+         case "SeaMiddle":
+            return SoundManager.Type.Sea_Desert;
+         case "DesertTown":
+            return SoundManager.Type.Town_Desert;
+         case "SeaTop":
+            return SoundManager.Type.Sea_Pine;
+         case "TreasurePine":
+           return SoundManager.Type.Town_Pine;
+         default:
+            return SoundManager.Type.None;
+      }
+   }
+
+   public static int getAreaId (string areaKey) {
+      switch (areaKey) {
+         case "StartingTown":
+            return 1;
+         case "Farm":
+            return 2;
+         case "Ocean1":
+            return 3;
+         case "House":
+            return 4;
+         case "TreasurePine":
+            return 5;
+         case "DesertTown":
+            return 6;
+         case "SeaBottom":
+            return 7;
+         case "SeaMiddle":
+            return 8;
+         case "SeaTop":
+            return 9;
+         case "MerchantShop_Desert":
+            return 10;
+         case "MerchantShop_Forest":
+            return 11;
+         case "AdventureShop_Forest":
+            return 12;
+         case "AdventureShop_Desert":
+            return 13;
+         case "Shipyard_Forest":
+            return 14;
+         case "TonyTest":
+            return 2001;
+         case "CollisionTest":
+            return 2002;
+         case "SeaRandom_1":
+            return 1001;
+         case "SeaRandom_2":
+            return 1002;
+         case "SeaRandom_3":
+            return 1003;
+         default:
+            return 0;
+      }
+   }
+
+   public static List<string> getAllAreaKeys () {
+      return new List<string>() {
+         "StartingTown",
+         "Farm",
+         "Ocean1",
+         "House",
+         "TreasurePine",
+         "DesertTown",
+         "SeaBottom",
+         "SeaMiddle",
+         "SeaTop",
+         "MerchantShop_Desert",
+         "MerchantShop_Forest",
+         "AdventureShop_Forest",
+         "AdventureShop_Desert",
+         "Shipyard_Forest",
+         "TonyTest",
+         "CollisionTest",
+         "SeaRandom_1",
+         "SeaRandom_2",
+         "SeaRandom_3"
+      };
    }
 
    public void setColliders (bool newState) {

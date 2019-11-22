@@ -5,161 +5,176 @@ using UnityEngine.Tilemaps;
 
 namespace MapCreationTool
 {
-    public class AssetSerializationMaps : MonoBehaviour
-    {
-        public BiomeMapsDefinition[] mapsDefinitions;
-        public MapsDefinition allBiomesDefinition;
-        public int[] collidableLayers = new int[0];
-        public TileBase transparentTile;
-        public float layerZMultiplier = -0.01f;
-        public float sublayerZMultiplier = -0.0001f;
-        public float layerZStart = 1f;
+   public class AssetSerializationMaps : MonoBehaviour
+   {
+      private const int PrefabGroupSlots = 100;
 
-        private void OnValidate()
-        {
-            LoadLocal();
-        }
+      public BiomeMapsDefinition[] mapsDefinitions;
+      public MapsDefinition allBiomesDefinition;
+      public int[] collidableLayers = new int[0];
+      public TileBase transparentTile;
+      public float layerZMultiplier = -0.01f;
+      public float sublayerZMultiplier = -0.0001f;
+      public float layerZStart = 1f;
 
-        private void LoadLocal()
-        {
-            try
-            {
-                BiomeSpecific = new Dictionary<BiomeType, BiomeMaps>();
-                TransparentTile = transparentTile;
-                LayerZMultiplier = layerZMultiplier;
-                SublayerZMultiplier = sublayerZMultiplier;
-                LayersWithColliders = collidableLayers;
-                LayerZStart = layerZStart;
+      private void OnValidate () {
+         loadLocal();
+      }
 
-                foreach (BiomeMapsDefinition definition in mapsDefinitions)
-                {
-                    BiomeMaps bm = new BiomeMaps();
-                    BiomeSpecific.Add(definition.biome, bm);
+      private void loadLocal () {
+         try {
+            biomeSpecific = new Dictionary<BiomeType, BiomeMaps>();
+            transparentTileBase = transparentTile;
+            layerZMultip = layerZMultiplier;
+            sublayerZMultip = sublayerZMultiplier;
+            layersWithColliders = collidableLayers;
+            layerZFirst = layerZStart;
 
-                    //Map prefabs
-                    for (int i = 0; i < definition.prefabs.Length; i++)
-                    {
-                        bm.PrefabToIndex.Add(definition.prefabs[i], i);
-                        bm.IndexToPrefab.Add(i, definition.prefabs[i]);
-                    }
+            foreach (BiomeMapsDefinition definition in mapsDefinitions) {
+               BiomeMaps bm = new BiomeMaps();
+               biomeSpecific.Add(definition.biome, bm);
 
-                    //Map tiles
-                    for (int i = 0; i < definition.tilemap.size.x; i++)
-                    {
-                        for (int j = 0; j < definition.tilemap.size.y; j++)
-                        {
-                            var tile = definition.tilemap.GetTile(new Vector3Int(i, j, 0) + definition.tilemap.origin);
-                            if (tile != null)
-                            {
-                                bm.TileToIndex.Add(tile, new Vector2Int(i, j));
-                                bm.IndexToTile.Add(new Vector2Int(i, j), tile);
-                            }
-                        }
-                    }
+               //Map prefabs
+               foreach (var group in definition.prefabGroups) {
+                  for (int i = 0; i < group.toIndexPrefabs.Length; i++) {
+                     bm.prefabToIndex.Add(group.toIndexPrefabs[i], group.index * PrefabGroupSlots + i);
+                     bm.indexToEditorPrefab.Add(group.index * PrefabGroupSlots + i, group.toIndexPrefabs[i]);
+                  }
 
-                    //Map special tiles, that are not included in biome specific definitions
-                    bm.TileToIndex.Add(transparentTile, new Vector2Int(1000, 1000));
-                    bm.IndexToTile.Add(new Vector2Int(1000, 1000), transparentTile);
-                }
-                //Handle shared for all biomes
-                AllBiomes = new BiomeMaps();
-                for (int i = 0; i < allBiomesDefinition.tilemap.size.x; i++)
-                {
-                    for (int j = 0; j < allBiomesDefinition.tilemap.size.y; j++)
-                    {
-                        var tile = allBiomesDefinition.tilemap.GetTile(new Vector3Int(i, j, 0) + allBiomesDefinition.tilemap.origin);
-                        if (tile != null)
-                        {
-                            AllBiomes.TileToIndex.Add(tile, new Vector2Int(i, j));
-                            AllBiomes.IndexToTile.Add(new Vector2Int(i, j), tile);
-                        }
-                    }
-                }
+                  for (int i = 0; i < group.fromIndexPrefabs.Length; i++)
+                     bm.indexToPrefab.Add(group.index * PrefabGroupSlots + i, group.fromIndexPrefabs[i]);
+               }
 
-                Loaded = true;
+               //Map tiles
+               for (int i = 0; i < definition.tilemap.size.x; i++) {
+                  for (int j = 0; j < definition.tilemap.size.y; j++) {
+                     var tile = definition.tilemap.GetTile(new Vector3Int(i, j, 0) + definition.tilemap.origin);
+                     if (tile != null) {
+                        bm.tileToIndex.Add(tile, new Vector2Int(i, j));
+                        bm.indexToTile.Add(new Vector2Int(i, j), tile);
+                     }
+                  }
+               }
+
+               //Map special tiles, that are not included in biome specific definitions
+               bm.tileToIndex.Add(transparentTile, new Vector2Int(1000, 1000));
+               bm.indexToTile.Add(new Vector2Int(1000, 1000), transparentTile);
             }
-            catch(Exception ex)
-            {
-                BiomeSpecific = null;
-                Debug.LogError("Failed loading asset serialization maps");
-                throw ex;
+            //Handle shared for all biomes
+            allBiomes = new BiomeMaps();
+            for (int i = 0; i < allBiomesDefinition.tilemap.size.x; i++) {
+               for (int j = 0; j < allBiomesDefinition.tilemap.size.y; j++) {
+                  var tile = allBiomesDefinition.tilemap.GetTile(new Vector3Int(i, j, 0) + allBiomesDefinition.tilemap.origin);
+                  if (tile != null) {
+                     allBiomes.tileToIndex.Add(tile, new Vector2Int(i, j));
+                     allBiomes.indexToTile.Add(new Vector2Int(i, j), tile);
+                  }
+               }
             }
-        }
 
-        public static void Load()
-        {
-            var asm = Resources.Load<AssetSerializationMaps>("AssetSerializationMaps");
-            if (asm == null)
-                throw new System.MissingMemberException("Missing asset serialization maps");
-            asm.LoadLocal();
+            foreach (var group in allBiomesDefinition.prefabGroups) {
+               for (int i = 0; i < group.toIndexPrefabs.Length; i++) {
+                  allBiomes.prefabToIndex.Add(group.toIndexPrefabs[i], group.index * PrefabGroupSlots + i);
+                  allBiomes.indexToEditorPrefab.Add(group.index * PrefabGroupSlots + i, group.toIndexPrefabs[i]);
+               }
 
-        }
-
-        public static TileBase GetTile(Vector2Int index, BiomeType biome)
-        {
-            if (AllBiomes.IndexToTile.TryGetValue(index, out TileBase tile))
-                return tile;
-            return BiomeSpecific[biome].IndexToTile[index];
-        }
-
-        public static Vector2Int GetIndex(TileBase tile, BiomeType biome)
-        {
-            if (AllBiomes.TileToIndex.TryGetValue(tile, out Vector2Int index))
-                return index;
-            return BiomeSpecific[biome].TileToIndex[tile];
-        }
-
-        public static GameObject GetPrefab(int index, BiomeType biome)
-        {
-            if (AllBiomes.IndexToPrefab.TryGetValue(index, out GameObject prefab))
-                return prefab;
-            return BiomeSpecific[biome].IndexToPrefab[index];
-        }
-
-        public static int GetIndex(GameObject prefab, BiomeType biome)
-        {
-            if (AllBiomes.PrefabToIndex.TryGetValue(prefab, out int index))
-                return index;
-            return BiomeSpecific[biome].PrefabToIndex[prefab];
-        }
-
-        public static Dictionary<BiomeType, BiomeMaps> BiomeSpecific { get; set; }
-        public static BiomeMaps AllBiomes { get; set; }
-        public static TileBase TransparentTile { get; set; }
-        public static float LayerZMultiplier { get; set; }
-        public static float SublayerZMultiplier { get; set; }
-        public static float LayerZStart { get; set; }
-        public static int[] LayersWithColliders { get; set; }
-        public static bool Loaded { get; private set; }
-
-        public class BiomeMaps
-        {
-            public Dictionary<Vector2Int, TileBase> IndexToTile { get; set; }
-            public Dictionary<int, GameObject> IndexToPrefab { get; set; }
-            public Dictionary<TileBase, Vector2Int> TileToIndex { get; set; }
-            public Dictionary<GameObject, int> PrefabToIndex { get; set; }
-
-            public BiomeMaps()
-            {
-                IndexToTile = new Dictionary<Vector2Int, TileBase>();
-                IndexToPrefab = new Dictionary<int, GameObject>();
-                TileToIndex = new Dictionary<TileBase, Vector2Int>();
-                PrefabToIndex = new Dictionary<GameObject, int>();
+               for (int i = 0; i < group.fromIndexPrefabs.Length; i++)
+                  allBiomes.indexToPrefab.Add(group.index * PrefabGroupSlots + i, group.fromIndexPrefabs[i]);
             }
-        }
 
-        [Serializable]
-        public class MapsDefinition
-        {
-            public Tilemap tilemap;
-            public GameObject[] prefabs;
-        }
 
-        [Serializable]
-        public class BiomeMapsDefinition : MapsDefinition
-        {
-            public BiomeType biome;
-            
-        }
-    }
+            loaded = true;
+         } catch (Exception ex) {
+            biomeSpecific = null;
+            Debug.LogError("Failed loading asset serialization maps");
+            throw ex;
+         }
+      }
+
+      public static void load () {
+         var asm = Resources.Load<AssetSerializationMaps>("AssetSerializationMaps");
+         if (asm == null)
+            throw new System.MissingMemberException("Missing asset serialization maps");
+         asm.loadLocal();
+
+      }
+
+      public static TileBase getTile (Vector2Int index, BiomeType biome) {
+         if (allBiomes.indexToTile.TryGetValue(index, out TileBase tile))
+            return tile;
+         return biomeSpecific[biome].indexToTile[index];
+      }
+
+      public static Vector2Int getIndex (TileBase tile, BiomeType biome) {
+         if (allBiomes.tileToIndex.TryGetValue(tile, out Vector2Int index))
+            return index;
+         return biomeSpecific[biome].tileToIndex[tile];
+      }
+
+      public static GameObject getPrefab (int index, BiomeType biome, bool editorPrefab) {
+         if (editorPrefab) {
+            if (allBiomes.indexToEditorPrefab.TryGetValue(index, out GameObject prefab))
+               return prefab;
+            return biomeSpecific[biome].indexToEditorPrefab[index];
+         } else {
+            if (allBiomes.indexToPrefab.TryGetValue(index, out GameObject prefab))
+               return prefab;
+            return biomeSpecific[biome].indexToPrefab[index];
+         }
+      }
+
+      public static int getIndex (GameObject prefab, BiomeType biome) {
+         if (allBiomes.prefabToIndex.TryGetValue(prefab, out int index))
+            return index;
+         return biomeSpecific[biome].prefabToIndex[prefab];
+      }
+
+      public static Dictionary<BiomeType, BiomeMaps> biomeSpecific { get; set; }
+      public static BiomeMaps allBiomes { get; set; }
+      public static TileBase transparentTileBase { get; set; }
+      public static float layerZMultip { get; set; }
+      public static float sublayerZMultip { get; set; }
+      public static float layerZFirst { get; set; }
+      public static int[] layersWithColliders { get; set; }
+      public static bool loaded { get; private set; }
+
+      public class BiomeMaps
+      {
+         public Dictionary<Vector2Int, TileBase> indexToTile { get; set; }
+         public Dictionary<int, GameObject> indexToPrefab { get; set; }
+         public Dictionary<int, GameObject> indexToEditorPrefab { get; set; }
+         public Dictionary<TileBase, Vector2Int> tileToIndex { get; set; }
+         public Dictionary<GameObject, int> prefabToIndex { get; set; }
+
+         public BiomeMaps () {
+            indexToTile = new Dictionary<Vector2Int, TileBase>();
+            indexToPrefab = new Dictionary<int, GameObject>();
+            indexToEditorPrefab = new Dictionary<int, GameObject>();
+            tileToIndex = new Dictionary<TileBase, Vector2Int>();
+            prefabToIndex = new Dictionary<GameObject, int>();
+         }
+      }
+
+      [Serializable]
+      public class MapsDefinition
+      {
+         public Tilemap tilemap;
+         public PrefabGroup[] prefabGroups;
+      }
+
+      [Serializable]
+      public class BiomeMapsDefinition : MapsDefinition
+      {
+         public BiomeType biome;
+      }
+
+      [Serializable]
+      public class PrefabGroup
+      {
+         public string title;
+         public int index;
+         public GameObject[] toIndexPrefabs;
+         public GameObject[] fromIndexPrefabs;
+      }
+   }
 }

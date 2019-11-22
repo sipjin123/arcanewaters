@@ -169,7 +169,7 @@ public class SeaMonsterEntity : SeaEntity
       initData(monsterData);
 
       if (isServer) {
-         gridReference.displayGrid(transform.position, this.areaType);
+         gridReference.displayGrid(transform.position, this.areaKey);
          planNextMove();
       }
 

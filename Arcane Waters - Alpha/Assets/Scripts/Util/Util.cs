@@ -310,7 +310,7 @@ public class Util : MonoBehaviour {
          return false;
       }
 
-      Area area = AreaManager.self.getArea(Global.player.areaType);
+      Area area = AreaManager.self.getArea(Global.player.areaKey);
       Grid grid = area.GetComponentInChildren<Grid>();
 
       foreach (Tilemap tilemap in area.GetComponentsInChildren<Tilemap>()) {

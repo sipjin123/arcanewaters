@@ -114,7 +114,7 @@ public class Minimap : ClientMonoBehaviour {
       }
 
       // If our area changes, update the markers we've created
-      if (Global.player.areaType != _previousAreaType) {
+      if (Global.player.areaKey != _previousAreaKey) {
          updateMinimapForNewArea();
       }
    }
@@ -127,22 +127,22 @@ public class Minimap : ClientMonoBehaviour {
       if (Global.player == null) {
          return;
       }
-      Area area = AreaManager.self.getArea(Global.player.areaType);
+      Area area = AreaManager.self.getArea(Global.player.areaKey);
 
       // For random sea map - create new minimap
-      if (Area.isRandom(Global.player.areaType)) {
-         CreateSeaRandomMinimap(Global.player.areaType);
+      if (Area.isRandom(Global.player.areaKey)) {
+         CreateSeaRandomMinimap(Global.player.areaKey);
       } else {
          // Hide random sea map informations
          HideTreasureSites();
          HideSeaMonsters();
 
          // Dynamically generate minimap for base map player entered
-         if (Area.getBiome(area.areaType) != Biome.Type.None) {
+         if (Area.getBiome(area.areaKey) != Biome.Type.None) {
             TilemapToTextureColorsStatic(area, false);
          } else {
             // Change the background image
-            backgroundImage.sprite = ImageManager.getSprite("Minimaps/" + area.areaType);
+            backgroundImage.sprite = ImageManager.getSprite("Minimaps/" + area.areaKey);
          }
 
          // If we didn't find a background image, just use a black background
@@ -201,7 +201,7 @@ public class Minimap : ClientMonoBehaviour {
       }
 
       // Note the new area type
-      _previousAreaType = Global.player.areaType;
+      _previousAreaKey = Global.player.areaKey;
    }
 
    private Sprite getBuildingSprite(string buildingName) {
@@ -217,16 +217,16 @@ public class Minimap : ClientMonoBehaviour {
       }
    }
 
-   private void CreateSeaRandomMinimap (Area.Type areaType) {
-      TilemapToTextureColors(areaType);
+   private void CreateSeaRandomMinimap (string areaKey) {
+      TilemapToTextureColors(areaKey);
 
-      showTreasureSites(areaType);
+      showTreasureSites(areaKey);
 
-      showSeaMonsters(areaType);
+      showSeaMonsters(areaKey);
    }
 
-   void showTreasureSites (Area.Type areaType) {
-      GameObject area = AreaManager.self.getArea(areaType).gameObject;
+   void showTreasureSites (string areaKey) {
+      GameObject area = AreaManager.self.getArea(areaKey).gameObject;
       Grid gridLayer = area.GetComponentInChildren<Grid>();
 
       int treasureSiteCounter = 0;
@@ -255,15 +255,15 @@ public class Minimap : ClientMonoBehaviour {
       }
    }
 
-   void showSeaMonsters (Area.Type areaType) {
+   void showSeaMonsters (string areaKey) {
       HideSeaMonsters();
-      Area area = AreaManager.self.getArea(areaType);
+      Area area = AreaManager.self.getArea(areaKey);
 
       // Find monsters in chosen area
       int counter = 0;
       SeaMonsterEntity[] seaMonsters = GameObject.FindObjectsOfType<SeaMonsterEntity>();
       foreach (SeaMonsterEntity monster in seaMonsters) {
-         if (monster.areaType == areaType) {
+         if (monster.areaKey == areaKey) {
             if (seaMonsterIcons.Length <= counter) {
                D.error("Not enough sea monster icons prepared for minimap presentation");
                return;
@@ -330,7 +330,7 @@ public class Minimap : ClientMonoBehaviour {
       }
 
       MM_ShipEntityIcon[] shipIcons = this.playerShipIconContainer.transform.GetComponentsInChildren<MM_ShipEntityIcon>();
-      Area area = AreaManager.self.getArea(Global.player.areaType);
+      Area area = AreaManager.self.getArea(Global.player.areaKey);
       PlayerShipEntity[] shipsArray = GameObject.FindObjectsOfType<PlayerShipEntity>();
       foreach (PlayerShipEntity ship in shipsArray) {
          bool stopLoop = false;
@@ -371,7 +371,7 @@ public class Minimap : ClientMonoBehaviour {
       }
 
       MM_ShipEntityIcon[] shipIcons = this.botShipIconContainer.transform.GetComponentsInChildren<MM_ShipEntityIcon>();
-      Area area = AreaManager.self.getArea(Global.player.areaType);
+      Area area = AreaManager.self.getArea(Global.player.areaKey);
       BotShipEntity[] shipsArray = GameObject.FindObjectsOfType<BotShipEntity>();
       foreach (BotShipEntity ship in shipsArray) {
          bool stopLoop = false;
@@ -403,10 +403,10 @@ public class Minimap : ClientMonoBehaviour {
       }
    }
 
-   void TilemapToTextureColors (Area.Type areaType) {
+   void TilemapToTextureColors (string areaKey) {
       List<Texture2D> textureList = new List<Texture2D>();
       // Get the Area associated with the Map
-      GameObject area = AreaManager.self.getArea(areaType).gameObject;
+      GameObject area = AreaManager.self.getArea(areaKey).gameObject;
 
       //The layer will set the base image size
       int layerSizeX = 0;
@@ -872,12 +872,12 @@ public class Minimap : ClientMonoBehaviour {
    }
 
    private MinimapGeneratorPreset chooseSeaMapPreset (Area area) {
-      if (!area || !RandomMapManager.self.mapConfigs.ContainsKey(area.areaType)) {
+      if (!area || !RandomMapManager.self.mapConfigs.ContainsKey(area.areaKey)) {
          D.error("Couldn't get map instance!");
          return seaForestPreset;
       }
 
-      Biome.Type biomeType = RandomMapManager.self.mapConfigs[area.areaType].biomeType;
+      Biome.Type biomeType = RandomMapManager.self.mapConfigs[area.areaKey].biomeType;
       return lookUpSeaPreset(biomeType);
    }
 
@@ -887,9 +887,9 @@ public class Minimap : ClientMonoBehaviour {
          return baseForestPreset;
       }
 
-      Biome.Type biomeType = Area.getBiome(area.areaType);
+      Biome.Type biomeType = Area.getBiome(area.areaKey);
       
-      if (Area.isSea(area.areaType)) {
+      if (Area.isSea(area.areaKey)) {
          return lookUpSeaPreset(biomeType);
       } else {
          switch (biomeType) {
@@ -1638,14 +1638,14 @@ public class Minimap : ClientMonoBehaviour {
                   }
 
                   if (saveMap) {
-                     ExportTexture(TextureArrayToTexture(texArray), preset.imagePrefixName + area.GetComponent<Area>().areaType + preset.imageSuffixName);
+                     ExportTexture(TextureArrayToTexture(texArray), preset.imagePrefixName + area.GetComponent<Area>().areaKey + preset.imageSuffixName);
                   } else {
                      TextureScale.Point(tex, _textureSize.x, _textureSize.y);
                      PresentMap(tex);
                   }
                } else {
                   if (saveMap) {
-                     ExportTexture(tex, preset.imagePrefixName + area.GetComponent<Area>().areaType + preset.imageSuffixName);
+                     ExportTexture(tex, preset.imagePrefixName + area.GetComponent<Area>().areaKey + preset.imageSuffixName);
                   } else {
                      TextureScale.Point(tex, _textureSize.x, _textureSize.y);
                      PresentMap(tex);
@@ -1755,7 +1755,7 @@ public class Minimap : ClientMonoBehaviour {
    protected CanvasGroup _canvasGroup;
 
    // The previous area we were in
-   protected Area.Type _previousAreaType;
+   protected string _previousAreaKey;
 
    // Current list of chest icons
    private List<MM_Icon> _treasureChestIcons = new List<MM_Icon>();

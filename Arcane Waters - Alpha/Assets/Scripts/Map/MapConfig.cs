@@ -22,8 +22,8 @@ public struct MapConfig
    // Setting that affects the appearance of the generated map
    public Vector2 offset;
 
-   // The Area Type that's associated with this map configuration
-   public Area.Type areaType;
+   // The Area that's associated with this map configuration
+   public string areaKey;
 
    // The Type of Biome that's associated with this map configuration
    public Biome.Type biomeType;
@@ -33,12 +33,12 @@ public struct MapConfig
 
    #endregion
 
-   public MapConfig (int seed, float persistance, float lacunarity, Vector2 offset, Area.Type areaType, Biome.Type biomeType, int seedPath) {
+   public MapConfig (int seed, float persistance, float lacunarity, Vector2 offset, string areaKey, Biome.Type biomeType, int seedPath) {
       this.seed = seed;
       this.persistance = persistance;
       this.lacunarity = lacunarity;
       this.offset = offset;
-      this.areaType = areaType;
+      this.areaKey = areaKey;
       this.biomeType = biomeType;
       this.seedPath = seedPath;
    }
@@ -61,7 +61,7 @@ public struct MapConfig
       hashCode = hashCode * -1521134295 + persistance.GetHashCode();
       hashCode = hashCode * -1521134295 + lacunarity.GetHashCode();
       hashCode = hashCode * -1521134295 + EqualityComparer<Vector2>.Default.GetHashCode(offset);
-      hashCode = hashCode * -1521134295 + areaType.GetHashCode();
+      hashCode = hashCode * -1521134295 + areaKey.GetHashCode();
       hashCode = hashCode * -1521134295 + biomeType.GetHashCode();
       hashCode = hashCode * -1521134295 + seedPath.GetHashCode();
       return hashCode;

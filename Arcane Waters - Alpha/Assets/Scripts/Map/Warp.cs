@@ -26,8 +26,8 @@ public class Warp : MonoBehaviour {
       // If a player entered this warp on the server, move them
       if (player.isServer && player.connectionToClient != null) {
          Spawn spawn = SpawnManager.self.getSpawn(this.spawnTarget);
-         Debug.Log("Starting warp to target area: " + spawn.AreaType);
-         player.spawnInNewMap(spawn.AreaType, spawn, newFacingDirection);
+         Debug.Log("Starting warp to target area: " + spawn.AreaKey);
+         player.spawnInNewMap(spawn.AreaKey, spawn, newFacingDirection);
       }
    }
 
@@ -36,7 +36,7 @@ public class Warp : MonoBehaviour {
       int currentStep = TutorialManager.getHighestCompletedStep(player.userId) + 1;
 
       // We can't warp to the sea until we've gotten far enough into the tutorial
-      if (Area.isSea(spawn.AreaType) && currentStep < (int) Step.HeadToDocks) {
+      if (Area.isSea(spawn.AreaKey) && currentStep < (int) Step.HeadToDocks) {
          return false;
       }
       if (spawnTarget == Spawn.Type.HouseExit && currentStep == (int) Step.GetDressed) {
@@ -45,7 +45,7 @@ public class Warp : MonoBehaviour {
       }
 
       // We can't warp into the treasure site until we clear the gate
-      if (Area.isTreasureSite(spawn.AreaType) && currentStep < (int) Step.EnterTreasureSite) {
+      if (Area.isTreasureSite(spawn.AreaKey) && currentStep < (int) Step.EnterTreasureSite) {
          return false;
       }
 

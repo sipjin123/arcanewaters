@@ -27,17 +27,17 @@ public class AmbienceManager : ClientMonoBehaviour {
 
    protected void Update () {
       // Check if our area has changed
-      if (Global.player != null && Global.player.areaType != _lastArea) {
-         updateAmbienceForArea(Global.player.areaType);
+      if (Global.player != null && Global.player.areaKey != _lastArea) {
+         updateAmbienceForArea(Global.player.areaKey);
 
          // Make note of our current area
-         _lastArea = Global.player.areaType;
+         _lastArea = Global.player.areaKey;
       }
    }
 
-   protected void updateAmbienceForArea (Area.Type newAreaType) {
+   protected void updateAmbienceForArea (string newAreaKey) {
       // Figure out what type we should be playing
-      List<SoundManager.Type> ambienceTypes = getAmbienceTypeForArea(newAreaType);
+      List<SoundManager.Type> ambienceTypes = getAmbienceTypeForArea(newAreaKey);
 
       // Remove any currently playing ambience
       this.gameObject.DestroyChildren();
@@ -48,16 +48,16 @@ public class AmbienceManager : ClientMonoBehaviour {
       }
    }
 
-   protected List<SoundManager.Type> getAmbienceTypeForArea (Area.Type areaType) {
-      if (Area.isSea(areaType)) {
+   protected List<SoundManager.Type> getAmbienceTypeForArea (string areaKey) {
+      if (Area.isSea(areaKey)) {
          return new List<SoundManager.Type>() { SoundManager.Type.Ambience_Ocean };
       }
 
-      if (Area.isHouse(areaType)) {
+      if (Area.isHouse(areaKey)) {
          return new List<SoundManager.Type>() { SoundManager.Type.Ambience_Outdoor, SoundManager.Type.Ambience_House };
       }
 
-      if (Area.isTown(areaType)) {
+      if (Area.isTown(areaKey)) {
          return new List<SoundManager.Type>() { SoundManager.Type.Ambience_Outdoor, SoundManager.Type.Ambience_Town };
       }
 
@@ -73,7 +73,7 @@ public class AmbienceManager : ClientMonoBehaviour {
    #region Private Variables
 
    // The last area we were in
-   protected Area.Type _lastArea = Area.Type.None;
+   protected string _lastArea = "";
 
    #endregion
 }

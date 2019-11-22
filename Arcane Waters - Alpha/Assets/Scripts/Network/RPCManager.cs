@@ -480,7 +480,7 @@ public class RPCManager : NetworkBehaviour {
    public void Cmd_RequestOptionsInfoFromServer () {
       // Look up the info on the instances
       Instance instance = InstanceManager.self.getInstance(_player.instanceId);
-      int totalInstances = InstanceManager.self.getInstanceCount(_player.areaType);
+      int totalInstances = InstanceManager.self.getInstanceCount(_player.areaKey);
 
       // Send this along to the player
       _player.rpc.Target_ReceiveOptionsInfo(_player.connectionToClient, instance.numberInArea, totalInstances);
@@ -960,7 +960,7 @@ public class RPCManager : NetworkBehaviour {
    [Command]
    public void Cmd_GetOffersForArea () {
       // Get the current list of offers for the area
-      List<CropOffer> list = ShopManager.self.getOffers(_player.areaType);
+      List<CropOffer> list = ShopManager.self.getOffers(_player.areaKey);
 
       // Get the last offer regeneration time
       long lastCropRegenTime = ShopManager.self.lastCropRegenTime.ToBinary();
@@ -995,24 +995,24 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_GetMapConfigFromServer (Area.Type areaType) {
-      if (RandomMapManager.self.mapConfigs.ContainsKey(areaType)) {
-         Target_SpawnRandomMap(_player.connectionToClient, RandomMapManager.self.mapConfigs[areaType]);
+   public void Cmd_GetMapConfigFromServer (string areaKey) {
+      if (RandomMapManager.self.mapConfigs.ContainsKey(areaKey)) {
+         Target_SpawnRandomMap(_player.connectionToClient, RandomMapManager.self.mapConfigs[areaKey]);
       }
    }
 
    [Command]
    public void Cmd_CompareClientServerMapConfig (MapConfig mapConfig) {
-      foreach (Area.Type areaType in Area.getRandomAreaTypes()) {
+      foreach (string areaKey in Area.getRandomAreaKeys()) {
          // If there is existing instance of desired random map - move player there
-         if (RandomMapManager.self.mapConfigs.ContainsKey(areaType) && RandomMapManager.self.mapConfigs[areaType].Equals(mapConfig)) {
-            Target_SpawnRandomMap(_player.connectionToClient, RandomMapManager.self.mapConfigs[areaType]);
+         if (RandomMapManager.self.mapConfigs.ContainsKey(areaKey) && RandomMapManager.self.mapConfigs[areaKey].Equals(mapConfig)) {
+            Target_SpawnRandomMap(_player.connectionToClient, RandomMapManager.self.mapConfigs[areaKey]);
             return;
          }
       }
 
       // Move player back to town if random sea map instance hasn't been found
-      _player.Cmd_SpawnInNewMap (Area.Type.StartingTown, Spawn.Type.ForestTownDock, Direction.North);
+      _player.Cmd_SpawnInNewMap (Area.STARTING_TOWN, Spawn.Type.ForestTownDock, Direction.North);
    }
 
    [Command]
@@ -1364,8 +1364,12 @@ public class RPCManager : NetworkBehaviour {
          if (gold >= price) {
             DB_Main.addGold(_player.userId, -price);
 
+            // Create a copy of the shop item and set its count to 1
+            Item singleShopItem = shopItem.Clone();
+            singleShopItem.count = 1;
+
             // Create a new instance of the item
-            newItem = DB_Main.createNewItem(_player.userId, shopItem);
+            newItem = DB_Main.createNewItem(_player.userId, singleShopItem);
          }
 
          // Back to Unity thread
@@ -1804,7 +1808,7 @@ public class RPCManager : NetworkBehaviour {
       BotShipEntity bot = Instantiate(PrefabsManager.self.botShipPrefab, spawnPosition, Quaternion.identity);
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
-      bot.areaType = _player.areaType;
+      bot.areaKey = _player.areaKey;
       bot.npcType = NPC.Type.Blackbeard;
       bot.faction = NPC.getFactionFromType(bot.npcType);
       bot.route = null;
@@ -1830,7 +1834,7 @@ public class RPCManager : NetworkBehaviour {
       SeaMonsterEntity bot = Instantiate(PrefabsManager.self.seaMonsterPrefab, spawnPosition, Quaternion.identity);
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
-      bot.areaType = _player.areaType;
+      bot.areaKey = _player.areaKey;
       bot.entityName = enemyType.ToString();
       bot.monsterType = enemyType;
       bot.distanceFromSpawnPoint = new Vector2(xVal, yVal);
@@ -1860,7 +1864,7 @@ public class RPCManager : NetworkBehaviour {
       SeaMonsterEntity bot = Instantiate(PrefabsManager.self.seaMonsterPrefab, spawnPosition, Quaternion.identity);
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
-      bot.areaType = _player.areaType;
+      bot.areaKey = _player.areaKey;
       bot.entityName = enemyType.ToString();
       bot.monsterType = enemyType;
 
@@ -1889,7 +1893,7 @@ public class RPCManager : NetworkBehaviour {
       SeaMonsterEntity bot = Instantiate(PrefabsManager.self.seaMonsterPrefab, spawnPosition, Quaternion.identity);
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
-      bot.areaType = _player.areaType;
+      bot.areaKey = _player.areaKey;
       bot.monsterType = enemyType;
       bot.entityName = enemyType.ToString();
 
@@ -1923,7 +1927,7 @@ public class RPCManager : NetworkBehaviour {
       Instance instance = InstanceManager.self.getInstance(playerBody.instanceId);
 
       // Look up the player's Area
-      Area area = AreaManager.self.getArea(_player.areaType);
+      Area area = AreaManager.self.getArea(_player.areaKey);
 
       // Get or create the Battle instance
       Battle battle = (enemy.battleId > 0) ? BattleManager.self.getBattle(enemy.battleId) :
@@ -2153,7 +2157,7 @@ public class RPCManager : NetworkBehaviour {
    [Server]
    protected void getShipsForArea () {
       // Get the current list of ships for the area
-      List<ShipInfo> list = ShopManager.self.getShips(_player.areaType);
+      List<ShipInfo> list = ShopManager.self.getShips(_player.areaKey);
 
       // Look up their current gold in the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -2196,7 +2200,7 @@ public class RPCManager : NetworkBehaviour {
    [Server]
    protected void getItemsForArea () {
       // Get the current list of items for the area
-      List<Item> list = ShopManager.self.getItems(_player.areaType);
+      List<Item> list = ShopManager.self.getItems(_player.areaKey);
 
       // Sort by rarity
       List<Item> sortedList = list.OrderBy(x => x.getSellPrice()).ToList();

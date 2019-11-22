@@ -63,7 +63,7 @@ public class BattleManager : MonoBehaviour {
       Battle battle = Instantiate(battlePrefab);
 
       // Look up the Battle Board for this Area's tile type
-      Biome.Type biomeType = Area.getBiome(area.areaType);
+      Biome.Type biomeType = Area.getBiome(area.areaKey);
       BattleBoard battleBoard = _boards[biomeType];
 
       // Set up our initial data and position

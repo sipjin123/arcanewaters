@@ -18,7 +18,7 @@ public class PrefabSpawner : MonoBehaviour {
             // If it's a map that's already in the scene, don't duplicate it
             Area area = prefab.GetComponent<Area>();
 
-            if (area != null && isAreaAlreadyCreated(area.areaType)) {
+            if (area != null && isAreaAlreadyCreated(area.areaKey)) {
                continue;
             }
 
@@ -27,9 +27,9 @@ public class PrefabSpawner : MonoBehaviour {
       }
    }
 
-   protected bool isAreaAlreadyCreated (Area.Type areaType) {
+   protected bool isAreaAlreadyCreated (string areaKey) {
       foreach (Area area in FindObjectsOfType<Area>()) {
-         if (area.areaType == areaType) {
+         if (area.areaKey == areaKey) {
             return true;
          }
       }

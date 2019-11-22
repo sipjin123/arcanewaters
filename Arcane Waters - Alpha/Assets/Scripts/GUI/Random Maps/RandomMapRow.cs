@@ -47,7 +47,7 @@ public class RandomMapRow : MonoBehaviour {
       }
 
       // Create tiles for random map before moving player to map
-      Global.player.rpc.Cmd_GetMapConfigFromServer(mapSummary.areaType);
+      Global.player.rpc.Cmd_GetMapConfigFromServer(mapSummary.areaKey);
 
       // Send a request to the server to join the specified map
       Global.player.Cmd_SpawnIntoGeneratedMap(mapSummary);

@@ -29,35 +29,35 @@ public class SeaMonsterManager : MonoBehaviour {
       initializeSeaMonsterCache();
 
       // Create empty lists for each random sea map
-      foreach (Area.Type areaType in System.Enum.GetValues(typeof(Area.Type))) {
-         if (Area.isRandom(areaType)) {
-            _spawners[areaType] = new List<SeaMonsterSpawner>();
+      foreach (string areaKey in Area.getAllAreaKeys()) {
+         if (Area.isRandom(areaKey)) {
+            _spawners[areaKey] = new List<SeaMonsterSpawner>();
          }
       }
    }
 
    #region Spawn Features
 
-   public void storeSpawner (SeaMonsterSpawner spawner, Area.Type areaType) {
-      if (Area.isRandom(areaType)) {
-         List<SeaMonsterSpawner> list = _spawners[areaType];
+   public void storeSpawner (SeaMonsterSpawner spawner, string areaKey) {
+      if (Area.isRandom(areaKey)) {
+         List<SeaMonsterSpawner> list = _spawners[areaKey];
          list.Add(spawner);
-         _spawners[areaType] = list;
+         _spawners[areaKey] = list;
       }
    }
 
    public void spawnSeaMonstersOnServerForInstance (Instance instance) {
       // If we don't have any spawners defined for this Area, then we're done
-      if (!_spawners.ContainsKey(instance.areaType)) {
-         D.log("No SeaMonster Spawners defined for Area Type: " + instance.areaType);
+      if (!_spawners.ContainsKey(instance.areaKey)) {
+         D.log("No SeaMonster Spawners defined for Area Key: " + instance.areaKey);
          return;
       }
 
-      foreach (SeaMonsterSpawner spawner in _spawners[instance.areaType]) {
+      foreach (SeaMonsterSpawner spawner in _spawners[instance.areaKey]) {
          // Create an Enemy in this instance
          SeaMonsterEntity seaMonster = Instantiate(PrefabsManager.self.seaMonsterPrefab);
          seaMonster.monsterType = spawner.enemyType;
-         seaMonster.areaType = instance.areaType;
+         seaMonster.areaKey = instance.areaKey;
 
          // Add it to the Instance
          InstanceManager.self.addSeaMonsterToInstance(seaMonster, instance);
@@ -116,7 +116,7 @@ public class SeaMonsterManager : MonoBehaviour {
    #region Private Variables
 
    // Stores a list of SeaMonster Spawners for each random sea map
-   protected Dictionary<Area.Type, List<SeaMonsterSpawner>> _spawners = new Dictionary<Area.Type, List<SeaMonsterSpawner>>();
+   protected Dictionary<string, List<SeaMonsterSpawner>> _spawners = new Dictionary<string, List<SeaMonsterSpawner>>();
 
    // The cached sea monster data 
    private Dictionary<Enemy.Type, SeaMonsterEntityData> _seaMonsterData = new Dictionary<Enemy.Type, SeaMonsterEntityData>();

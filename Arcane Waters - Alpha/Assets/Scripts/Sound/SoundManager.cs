@@ -405,29 +405,10 @@ public class SoundManager : MonoBehaviour {
       return false;
    }
 
-   public static void setBackgroundMusic (Area.Type areaType) {
-      switch (areaType) {
-         case Area.Type.House:
-         case Area.Type.Farm:
-         case Area.Type.StartingTown:
-            setBackgroundMusic(Type.Town_Forest);
-            break;
-         case Area.Type.Ocean1:
-         case Area.Type.SeaBottom:
-            setBackgroundMusic(Type.Sea_Forest);
-            break;
-         case Area.Type.SeaMiddle:
-            setBackgroundMusic(Type.Sea_Desert);
-            break;
-         case Area.Type.DesertTown:
-            setBackgroundMusic(Type.Town_Desert);
-            break;
-         case Area.Type.SeaTop:
-            setBackgroundMusic(Type.Sea_Pine);
-            break;
-         case Area.Type.TreasurePine:
-            setBackgroundMusic(Type.Town_Pine);
-            break;
+   public static void setBackgroundMusic (string areaKey) {
+      Type areaMusic = Area.getBackgroundMusic(areaKey);
+      if (areaMusic != Type.None) {
+         setBackgroundMusic(areaMusic);
       }
    }
 

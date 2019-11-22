@@ -262,7 +262,7 @@ public class CropManager : NetworkBehaviour {
       // Make sure the offer exists at the current area
       CropOffer offer = new CropOffer();
 
-      foreach (CropOffer availableOffer in ShopManager.self.getOffers(_player.areaType)) {
+      foreach (CropOffer availableOffer in ShopManager.self.getOffers(_player.areaKey)) {
          if (availableOffer.id == offerId) {
             offer = availableOffer;
          }
@@ -330,7 +330,7 @@ public class CropManager : NetworkBehaviour {
             int flagshipId = DB_Main.getUserInfo(_player.userId).flagshipId;
 
             // Add the exchange to the trade history
-            TradeHistoryInfo tradeInfo = new TradeHistoryInfo(_player.userId, flagshipId, AreaManager.self.getArea(_player.areaType).townAreaType,
+            TradeHistoryInfo tradeInfo = new TradeHistoryInfo(_player.userId, flagshipId, AreaManager.self.getArea(_player.areaKey).townAreaKey,
                offer.cropType, amountToSell, offer.pricePerUnit, goldForThisCrop, Crop.getXP(offer.cropType), totalXP, DateTime.UtcNow);
             DB_Main.addToTradeHistory(_player.userId, tradeInfo);
          }
@@ -484,7 +484,7 @@ public class CropManager : NetworkBehaviour {
       }
    }
 
-   public static int getCropSellXP (Crop.Type cropType, Area.Type areaType, int cropCount, CropOffer offer) {
+   public static int getCropSellXP (Crop.Type cropType, string areaKey, int cropCount, CropOffer offer) {
       int baseXP = Crop.getXP(cropType) * cropCount;
 
       // For now, all Crops will be worth the same base XP, and the rarity of the offer will determine the final XP

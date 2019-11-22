@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 
-namespace MapCreationTool 
+namespace MapCreationTool
 {
-    public class TreePrafabConfig : MonoBehaviour
-    {
-        public GameObject regularPref;
-        public GameObject burrowedPref;
-    }
+   public class TreePrafabConfig : MonoBehaviour
+   {
+      public GameObject regularPref;
+      public GameObject burrowedPref;
+   }
 }

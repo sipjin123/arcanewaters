@@ -21,8 +21,8 @@ public class Tip {
    }
 
    public string getMessage () {
-      string areaName = Area.getName(area.areaType);
-      Biome.Type biomeType = Area.getBiome(area.areaType);
+      string areaName = Area.getName(area.areaKey);
+      Biome.Type biomeType = Area.getBiome(area.areaKey);
       string biomeName = Biome.getName(biomeType);
       string cropString = string.Format("<color={0}>{1}</color>", Rarity.getColor(offer.rarity), offer.cropType.ToString());
 

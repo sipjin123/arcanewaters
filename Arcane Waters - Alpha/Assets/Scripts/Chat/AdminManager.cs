@@ -353,7 +353,7 @@ public class AdminManager : NetworkBehaviour {
 
       Spawn spawn = SpawnManager.self.getSpawn(spawnType);
 
-      _player.spawnInNewMap(spawn.AreaType, spawn, Direction.South);
+      _player.spawnInNewMap(spawn.AreaKey, spawn, Direction.South);
    }
 
    [Command]

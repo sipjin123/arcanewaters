@@ -17,10 +17,6 @@ public class ItemCellInventory : ItemCell, IPointerDownHandler
 
    #endregion
 
-   public void Awake () {
-      _normalBackgroundSprite = backgroundImage.sprite;
-   }
-
    public override void OnPointerClick (PointerEventData eventData) {
       if (_interactable) {
          if (eventData.button == PointerEventData.InputButton.Left) {
@@ -80,9 +76,6 @@ public class ItemCellInventory : ItemCell, IPointerDownHandler
 
    // The time since the last left click on this cell
    private float _lastClickTime = float.MinValue;
-
-   // The background sprite when the cell is not highlighted
-   private Sprite _normalBackgroundSprite;
 
    // The delay between two clicks to be considered a double click
    private float DOUBLE_CLICK_DELAY = 0.5f;

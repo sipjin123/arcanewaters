@@ -23,7 +23,7 @@ public class TradeHistoryInfo
    public int shipId;
 
    // The area where the trade was made
-   public Area.Type areaType;
+   public string areaKey;
 
    // The cargo type that was traded (= crop type)
    public Crop.Type cargoType;
@@ -56,7 +56,7 @@ public class TradeHistoryInfo
       this.tradeId = DataUtil.getInt(dataReader, "traId");
       this.userId = DataUtil.getInt(dataReader, "usrId");
       this.shipId = DataUtil.getInt(dataReader, "shpId");
-      this.areaType = (Area.Type) DataUtil.getInt(dataReader, "areaId");
+      this.areaKey = DataUtil.getString(dataReader, "areaKey");
       this.cargoType = (Crop.Type) DataUtil.getInt(dataReader, "crgType");
       this.amount = DataUtil.getInt(dataReader, "amount");
       this.pricePerUnit = DataUtil.getInt(dataReader, "unitPrice");
@@ -68,12 +68,12 @@ public class TradeHistoryInfo
 
 #endif
 
-   public TradeHistoryInfo (int userId, int shipId, Area.Type areaType, Crop.Type cargoType, int amount, int pricePerUnit,
+   public TradeHistoryInfo (int userId, int shipId, string areaKey, Crop.Type cargoType, int amount, int pricePerUnit,
       int totalPrice, int xpPerUnit, int totalXP, DateTime tradeTime) {
 
       this.userId = userId;
       this.shipId = shipId;
-      this.areaType = areaType;
+      this.areaKey = areaKey;
       this.cargoType = cargoType;
       this.amount = amount;
       this.pricePerUnit = pricePerUnit;

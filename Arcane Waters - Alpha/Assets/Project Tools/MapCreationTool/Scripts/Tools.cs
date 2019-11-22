@@ -4,229 +4,210 @@ using MapCreationTool.UndoSystem;
 using UnityEngine;
 namespace MapCreationTool
 {
-    public class Tools
-    {
-        public const int MaxFloodFillTileCount = 65536;
+   public class Tools
+   {
+      public const int MaxFloodFillTileCount = 65536;
 
-        public static event Action<ToolType, ToolType> ToolChanged;
-        public static event Action<int, int> MountainLayerChanged;
-        public static event Action<bool, bool> BurrowedTreesChanged;
-        public static event Action<BiomeType, BiomeType> BiomeChanged;
-        public static event Action<EraserLayerMode, EraserLayerMode> EraserLayerModeChanged;
-        public static event Action<TileGroup, TileGroup> TileGroupChanged;
-        public static event Action<FillBounds, FillBounds> FillBoundsChanged;
+      public static event Action<ToolType, ToolType> ToolChanged;
+      public static event Action<int, int> MountainLayerChanged;
+      public static event Action<bool, bool> BurrowedTreesChanged;
+      public static event Action<BiomeType, BiomeType> BiomeChanged;
+      public static event Action<EraserLayerMode, EraserLayerMode> EraserLayerModeChanged;
+      public static event Action<TileGroup, TileGroup> TileGroupChanged;
+      public static event Action<FillBounds, FillBounds> FillBoundsChanged;
 
-        public static event Action AnythingChanged;
+      public static event Action AnythingChanged;
 
-        public static ToolType ToolType { get; private set; }
-        public static int MountainLayer { get; private set; }
-        public static bool BurrowedTrees { get; private set; }
-        public static BiomeType Biome { get; private set; }
-        public static EraserLayerMode EraserLayerMode { get; private set; }
-        public static FillBounds FillBounds { get; private set; }
+      public static ToolType toolType { get; private set; }
+      public static int mountainLayer { get; private set; }
+      public static bool burrowedTrees { get; private set; }
+      public static BiomeType biome { get; private set; }
+      public static EraserLayerMode eraserLayerMode { get; private set; }
+      public static FillBounds fillBounds { get; private set; }
 
-        public static TileGroup TileGroup { get; private set; }
-        //public static Vector2Int? TileIndex { get; private set; }
+      public static TileGroup tileGroup { get; private set; }
+      //public static Vector2Int? TileIndex { get; private set; }
 
-        public static GameObject SelectedPrefab
-        {
-            get
-            {
-                if (TileGroup == null)
-                    return null;
-                if (TileGroup.Type == TileGroupType.Prefab)
-                    return (TileGroup as PrefabGroup).RefPref;
-                if (TileGroup.Type == TileGroupType.TreePrefab)
-                {
-                    return BurrowedTrees
-                        ? (TileGroup as TreePrefabGroup).BurrowedPref
-                        : (TileGroup as TreePrefabGroup).RefPref;
-                }
-                return null;
+      public static GameObject selectedPrefab
+      {
+         get
+         {
+            if (tileGroup == null)
+               return null;
+            if (tileGroup.type == TileGroupType.Prefab)
+               return (tileGroup as PrefabGroup).refPref;
+            if (tileGroup.type == TileGroupType.TreePrefab) {
+               return burrowedTrees
+                   ? (tileGroup as TreePrefabGroup).burrowedPref
+                   : (tileGroup as TreePrefabGroup).refPref;
             }
-        }
+            return null;
+         }
+      }
 
-        public static void SetDefaultValues()
-        {
-            ToolType = ToolType.Brush;
-            MountainLayer = 4;
-            BurrowedTrees = false;
-            Biome = BiomeType.Forest;
-            EraserLayerMode = EraserLayerMode.Top;
-        }
+      public static void setDefaultValues () {
+         toolType = ToolType.Brush;
+         mountainLayer = 4;
+         burrowedTrees = false;
+         biome = BiomeType.Forest;
+         eraserLayerMode = EraserLayerMode.Top;
+      }
 
-        public static void PerformUndoRedo(UndoRedoData undoRedoData)
-        {
-            ToolUndoRedoData data = undoRedoData as ToolUndoRedoData;
+      public static void performUndoRedo (UndoRedoData undoRedoData) {
+         ToolUndoRedoData data = undoRedoData as ToolUndoRedoData;
 
-            ToolType = data.ToolType ?? ToolType;
-            MountainLayer = data.MountainLayer ?? MountainLayer;
-            BurrowedTrees = data.BurrowedTrees ?? BurrowedTrees;
-            FillBounds = data.FillBounds ?? FillBounds;
+         toolType = data.toolType ?? toolType;
+         mountainLayer = data.mountainLayer ?? mountainLayer;
+         burrowedTrees = data.burrowedTrees ?? burrowedTrees;
+         fillBounds = data.fillBounds ?? fillBounds;
 
-            if (data.Biome != null)
-            {
-                ChangeBiome(data.Biome.Value, false);
-            }
+         if (data.biome != null) {
+            changeBiome(data.biome.Value, false);
+         }
 
-            EraserLayerMode = data.EraserLayerMode ?? EraserLayerMode;
+         eraserLayerMode = data.eraserLayerMode ?? eraserLayerMode;
 
-            if (data.HasTileGroup)
-            {
-                TileGroup = data.TileGroup;
-            }
+         if (data.hasTileGroup) {
+            tileGroup = data.tileGroup;
+         }
 
-            AnythingChanged?.Invoke();
-        }
+         AnythingChanged?.Invoke();
+      }
 
 
-        public static void ChangeTool(ToolType tool, bool registerUndo = true)
-        {
-            ToolType oldTool = ToolType;
-            ToolType = tool;
+      public static void changeTool (ToolType tool, bool registerUndo = true) {
+         ToolType oldTool = toolType;
+         toolType = tool;
 
-            TileGroup oldGroup = TileGroup;
-            if (oldTool != ToolType && (ToolType == ToolType.Eraser || ToolType == ToolType.Fill))
-            {
-                TileGroup = null;
-            }
+         TileGroup oldGroup = tileGroup;
+         if (oldTool != toolType && (toolType == ToolType.Eraser || toolType == ToolType.Fill)) {
+            tileGroup = null;
+         }
 
-            ToolChanged?.Invoke(oldTool, ToolType);
-            AnythingChanged?.Invoke();
+         ToolChanged?.Invoke(oldTool, toolType);
+         AnythingChanged?.Invoke();
 
-            if (registerUndo)
-            {
-                Undo.Register(
-                    PerformUndoRedo,
-                    new ToolUndoRedoData { ToolType = oldTool, HasTileGroup = true, TileGroup = oldGroup },
-                    new ToolUndoRedoData { ToolType = ToolType, HasTileGroup = true, TileGroup = TileGroup });
-            }
-        }
+         if (registerUndo) {
+            Undo.register(
+                performUndoRedo,
+                new ToolUndoRedoData { toolType = oldTool, hasTileGroup = true, tileGroup = oldGroup },
+                new ToolUndoRedoData { toolType = toolType, hasTileGroup = true, tileGroup = tileGroup });
+         }
+      }
 
-        public static void ChangeMountainLayer(int layer, bool registerUndo = true)
-        {
-            int oldLayer = MountainLayer;
-            MountainLayer = layer;
+      public static void changeMountainLayer (int layer, bool registerUndo = true) {
+         int oldLayer = mountainLayer;
+         mountainLayer = layer;
 
-            MountainLayerChanged?.Invoke(oldLayer, MountainLayer);
-            AnythingChanged?.Invoke();
+         MountainLayerChanged?.Invoke(oldLayer, mountainLayer);
+         AnythingChanged?.Invoke();
 
-            if (registerUndo)
-            {
-                Undo.Register(
-                    PerformUndoRedo,
-                    new ToolUndoRedoData { MountainLayer = oldLayer },
-                    new ToolUndoRedoData { MountainLayer = MountainLayer });
-            }
-        }
+         if (registerUndo) {
+            Undo.register(
+                performUndoRedo,
+                new ToolUndoRedoData { mountainLayer = oldLayer },
+                new ToolUndoRedoData { mountainLayer = mountainLayer });
+         }
+      }
 
-        public static void ChangeBurrowedTrees(bool burrowedTrees, bool registerUndo = true)
-        {
-            bool old = BurrowedTrees;
-            BurrowedTrees = burrowedTrees;
+      public static void changeBurrowedTrees (bool burrowedTrees, bool registerUndo = true) {
+         bool old = Tools.burrowedTrees;
+         Tools.burrowedTrees = burrowedTrees;
 
-            BurrowedTreesChanged?.Invoke(old, BurrowedTrees);
-            AnythingChanged?.Invoke();
+         BurrowedTreesChanged?.Invoke(old, Tools.burrowedTrees);
+         AnythingChanged?.Invoke();
 
-            if (registerUndo)
-            {
-                Undo.Register(
-                    PerformUndoRedo,
-                    new ToolUndoRedoData { BurrowedTrees = old },
-                    new ToolUndoRedoData { BurrowedTrees = BurrowedTrees });
-            }
-        }
+         if (registerUndo) {
+            Undo.register(
+                performUndoRedo,
+                new ToolUndoRedoData { burrowedTrees = old },
+                new ToolUndoRedoData { burrowedTrees = Tools.burrowedTrees });
+         }
+      }
 
-        public static void ChangeBiome(BiomeType biome, bool registerUndo = true)
-        {
-            BiomeType old = Biome;
-            Biome = biome;
-            BiomeChanged?.Invoke(old, Biome);
-            AnythingChanged?.Invoke();
+      public static void changeBiome (BiomeType biome, bool registerUndo = true) {
+         BiomeType old = Tools.biome;
+         Tools.biome = biome;
+         BiomeChanged?.Invoke(old, Tools.biome);
+         AnythingChanged?.Invoke();
 
-            if (registerUndo)
-            {
-                Undo.Register(
-                    PerformUndoRedo,
-                    new ToolUndoRedoData { Biome = old },
-                    new ToolUndoRedoData { Biome = Biome });
-            }
-        }
+         if (registerUndo) {
+            Undo.register(
+                performUndoRedo,
+                new ToolUndoRedoData { biome = old },
+                new ToolUndoRedoData { biome = Tools.biome });
+         }
+      }
 
-        public static void ChangeEraserLayerMode(EraserLayerMode mode, bool registerUndo = true)
-        {
-            EraserLayerMode old = EraserLayerMode;
-            EraserLayerMode = mode;
-            EraserLayerModeChanged?.Invoke(old, EraserLayerMode);
-            AnythingChanged?.Invoke();
+      public static void changeEraserLayerMode (EraserLayerMode mode, bool registerUndo = true) {
+         EraserLayerMode old = eraserLayerMode;
+         eraserLayerMode = mode;
+         EraserLayerModeChanged?.Invoke(old, eraserLayerMode);
+         AnythingChanged?.Invoke();
 
-            if (registerUndo)
-            {
-                Undo.Register(
-                    PerformUndoRedo,
-                    new ToolUndoRedoData { EraserLayerMode = old },
-                    new ToolUndoRedoData { EraserLayerMode = EraserLayerMode });
-            }
-        }
+         if (registerUndo) {
+            Undo.register(
+                performUndoRedo,
+                new ToolUndoRedoData { eraserLayerMode = old },
+                new ToolUndoRedoData { eraserLayerMode = eraserLayerMode });
+         }
+      }
 
-        public static void ChangeFillBounds(FillBounds fillBounds, bool registerUndo = true)
-        {
-            FillBounds old = FillBounds;
-            FillBounds = fillBounds;
-            FillBoundsChanged?.Invoke(old, FillBounds);
-            AnythingChanged?.Invoke();
+      public static void changeFillBounds (FillBounds fillBounds, bool registerUndo = true) {
+         FillBounds old = Tools.fillBounds;
+         Tools.fillBounds = fillBounds;
+         FillBoundsChanged?.Invoke(old, Tools.fillBounds);
+         AnythingChanged?.Invoke();
 
-            if (registerUndo)
-            {
-                Undo.Register(
-                    PerformUndoRedo,
-                    new ToolUndoRedoData { FillBounds = old },
-                    new ToolUndoRedoData { FillBounds = FillBounds });
-            }
-        }
+         if (registerUndo) {
+            Undo.register(
+                performUndoRedo,
+                new ToolUndoRedoData { fillBounds = old },
+                new ToolUndoRedoData { fillBounds = Tools.fillBounds });
+         }
+      }
 
-        public static void ChangeTileGroup(TileGroup group, bool registerUndo = true)
-        {
-            //Check that if the tool if Fill, only 1 tile can be selected
-            if (ToolType == ToolType.Fill && group != null && group.MaxTileCount != 1)
-                return;
+      public static void changeTileGroup (TileGroup group, bool registerUndo = true) {
+         //Check that if the tool if Fill, only 1 tile can be selected
+         if (toolType == ToolType.Fill && group != null && group.maxTileCount != 1)
+            return;
 
-            TileGroup oldgroup = TileGroup;
-            TileGroup = group;
+         TileGroup oldgroup = tileGroup;
+         tileGroup = group;
 
-            TileGroupChanged?.Invoke(oldgroup, TileGroup);
-            AnythingChanged?.Invoke();
+         TileGroupChanged?.Invoke(oldgroup, tileGroup);
+         AnythingChanged?.Invoke();
 
-            ToolType oldTool = ToolType;
-            if (TileGroup != null && ToolType == ToolType.Eraser)
-                ToolType = ToolType.Brush;
+         ToolType oldTool = toolType;
+         if (tileGroup != null && toolType == ToolType.Eraser)
+            toolType = ToolType.Brush;
 
-            if (registerUndo)
-            {
-                Undo.Register(
-                    PerformUndoRedo,
-                    new ToolUndoRedoData { HasTileGroup = true, TileGroup = oldgroup, ToolType = oldTool },
-                    new ToolUndoRedoData { HasTileGroup = true, TileGroup = TileGroup, ToolType = ToolType });
-            }
-        }
-    }
+         if (registerUndo) {
+            Undo.register(
+                performUndoRedo,
+                new ToolUndoRedoData { hasTileGroup = true, tileGroup = oldgroup, toolType = oldTool },
+                new ToolUndoRedoData { hasTileGroup = true, tileGroup = tileGroup, toolType = toolType });
+         }
+      }
+   }
 
-    public enum ToolType
-    {
-        Brush = 0,
-        Eraser = 1,
-        Fill = 2
-    }
+   public enum ToolType
+   {
+      Brush = 0,
+      Eraser = 1,
+      Fill = 2,
+      Selection = 3
+   }
 
-    public enum EraserLayerMode
-    {
-        Top = 0,
-        All = 1
-    }
+   public enum EraserLayerMode
+   {
+      Top = 0,
+      All = 1
+   }
 
-    public enum FillBounds
-    {
-        SingleLayer = 0,
-        AllLayers = 1
-    }
+   public enum FillBounds
+   {
+      SingleLayer = 0,
+      AllLayers = 1
+   }
 }

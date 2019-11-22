@@ -514,11 +514,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
             // If they're still connected, we can warp them directly
             if (player != null && player.connectionToClient != null) {
-               player.spawnInNewMap(spawn.AreaType, spawn, Direction.North);
+               player.spawnInNewMap(spawn.AreaKey, spawn, Direction.North);
             } else {
                // The user might be offline, in which case we need to modify their position in the DB
                UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-                  DB_Main.setNewPosition(userId, spawn.transform.position, Direction.North, (int) spawn.AreaType);
+                  DB_Main.setNewPosition(userId, spawn.transform.position, Direction.North, spawn.AreaKey);
                });
             }
          }

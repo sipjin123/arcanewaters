@@ -21,10 +21,10 @@ public class Server : Photon.PunBehaviour {
    public PhotonView view;
 
    // A listing of open area types on this server
-   public Area.Type[] openAreas = new Area.Type[0];
+   public string[] openAreas = new string[0];
 
    // Keeps track of the random map summaries for this server
-   public MapSummary[] mapSummaries = new MapSummary[Area.getRandomAreaTypes().Count];
+   public MapSummary[] mapSummaries = new MapSummary[Area.getRandomAreaKeys().Count];
 
    #endregion
 
@@ -74,7 +74,7 @@ public class Server : Photon.PunBehaviour {
             MapSummary summary = this.mapSummaries[i];
             stream.SendNext(summary.serverAddress);
             stream.SendNext(summary.serverPort);
-            stream.SendNext(summary.areaType);
+            stream.SendNext(summary.areaKey);
             stream.SendNext(summary.biomeType);
             stream.SendNext(summary.playersCount);
             stream.SendNext(summary.maxPlayersCount);
@@ -86,13 +86,13 @@ public class Server : Photon.PunBehaviour {
          port = (int) stream.ReceiveNext();
          this.playerCount = (int) stream.ReceiveNext();
          this.name = (string) stream.ReceiveNext();
-         this.openAreas = (Area.Type[]) stream.ReceiveNext();
+         this.openAreas = (string[]) stream.ReceiveNext();
 
          for (int i = 0; i < this.mapSummaries.Length; i++) {
             MapSummary summary = new MapSummary();
             summary.serverAddress = (string) stream.ReceiveNext();
             summary.serverPort = (int) stream.ReceiveNext();
-            summary.areaType = (Area.Type) stream.ReceiveNext();
+            summary.areaKey = (string) stream.ReceiveNext();
             summary.biomeType = (Biome.Type) stream.ReceiveNext();
             summary.playersCount = (int) stream.ReceiveNext();
             summary.maxPlayersCount = (int) stream.ReceiveNext();

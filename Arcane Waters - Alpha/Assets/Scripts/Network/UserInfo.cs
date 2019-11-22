@@ -31,8 +31,8 @@ public class UserInfo {
    // The Facing direction
    public int facingDirection;
 
-   // The area ID we're in, if any
-   public int areaId;
+   // The area key we're in, if any
+   public string areaKey;
 
    // The id of our assigned ship
    public int flagshipId;
@@ -105,7 +105,7 @@ public class UserInfo {
       this.gender = (Gender.Type)dataReader.GetInt32("usrGender");
       this.bodyType = (BodyLayer.Type)dataReader.GetInt32("bodyType");
       this.facingDirection = dataReader.GetInt32("usrFacing");
-      this.areaId = dataReader.GetInt32("areaId");
+      this.areaKey = dataReader.GetString("areaKey");
       this.localPos = new Vector2(dataReader.GetFloat("localX"), dataReader.GetFloat("localY"));
       this.adminFlag = dataReader.GetInt32("usrAdminFlag");
       this.armorId = dataReader.GetInt32("armId");
@@ -150,7 +150,7 @@ public class UserInfo {
       serialized[3] = this.gender;
       serialized[4] = this.bodyType;
       serialized[5] = this.facingDirection;
-      serialized[6] = this.areaId;
+      serialized[6] = this.areaKey;
       serialized[7] = this.localPos;
       serialized[8] = this.adminFlag;
       serialized[9] = this.XP;
@@ -180,7 +180,7 @@ public class UserInfo {
       userInfo.gender = (Gender.Type) serialized[3];
       userInfo.bodyType = (BodyLayer.Type) serialized[4];
       userInfo.facingDirection = (int) serialized[5];
-      userInfo.areaId = (int) serialized[6];
+      userInfo.areaKey = (string) serialized[6];
       userInfo.localPos = (Vector2) serialized[7];
       userInfo.adminFlag = (int) serialized[8];
       userInfo.XP = (int) serialized[9];

@@ -16,7 +16,9 @@ public class Spawn : MonoBehaviour {
       ForestTownWeaponsOutside = 20, ForestWeaponsInside = 21, DesertWeaponsInside = 22, DesertWeaponsOutside = 23,
       ForestShipyardOutside = 24, ForestShipyardInside = 25,
 
+      //Added when testing the map creation tool
       TonyTest = 2001,
+      CollisionTest = 2002,
 
       RandomMap_1 = 1001,
       RandomMap_2 = 1002,
@@ -26,16 +28,16 @@ public class Spawn : MonoBehaviour {
    // The Type of Spawn this is
    public Type spawnType;
 
-   // Convenient area type property
-   public Area.Type AreaType {
-      get { return _areaType; }
+   // Convenient area key property
+   public string AreaKey {
+      get { return _areaKey; }
    }
 
    #endregion
 
    void Awake () {
       // Note the Area Type that we're in
-      _areaType = GetComponentInParent<Area>().areaType;
+      _areaKey = GetComponentInParent<Area>().areaKey;
 
       // If a spawn box was specified in the Editor, look it up now
       _spawnBox = GetComponent<BoxCollider2D>();
@@ -49,14 +51,14 @@ public class Spawn : MonoBehaviour {
       return (_spawnBox == null) ? this.transform.position : Util.RandomPointInBounds(_spawnBox.bounds);
    }
 
-   protected Area.Type getAreaType () {
-      return _areaType;
+   protected string getAreaKey () {
+      return _areaKey;
    }
 
    #region Private Variables
 
-   // The Area Type this spawn is in
-   protected Area.Type _areaType;
+   // The Area Key this spawn is in
+   protected string _areaKey;
 
    // The area in which objects will be spawned, which can be optionally included in the scene
    protected BoxCollider2D _spawnBox;

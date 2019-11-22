@@ -17,8 +17,8 @@ public class CropOffer {
    // The ID for this offer
    public int id;
 
-   // The Area type
-   public Area.Type areaType;
+   // The Area key
+   public string areaKey;
 
    // The Crop Type
    public Crop.Type cropType;
@@ -36,9 +36,9 @@ public class CropOffer {
 
    public CropOffer () { }
 
-   public CropOffer(int id, Area.Type areaType, Crop.Type cropType, int amount, int pricePerUnit, Rarity.Type rarity) {
+   public CropOffer(int id, string areaKey, Crop.Type cropType, int amount, int pricePerUnit, Rarity.Type rarity) {
       this.id = id;
-      this.areaType = areaType;
+      this.areaKey = areaKey;
       this.cropType = cropType;
       this.amount = amount;
       this.pricePerUnit = pricePerUnit;

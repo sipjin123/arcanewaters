@@ -28,8 +28,7 @@ public class ZSnap : MonoBehaviour {
       }
 
       // Avoid positions that are between pixel values
-      this.transform.position = new Vector2(
-         Util.Truncate(this.transform.position.x), Util.Truncate(this.transform.position.y));
+      roundoutPosition();
 
       // Check if an explicit offset was provided
       /*if (offsetZ == 0) {
@@ -44,6 +43,16 @@ public class ZSnap : MonoBehaviour {
       }*/
 
       snapZ();
+   }
+
+   /// <summary>
+   /// Makes the position of the gameobject have less numbers after point,
+   /// to avoid positions that are in-between pixel values
+   /// </summary>
+   public void roundoutPosition () {
+      this.transform.position = new Vector2(
+         Util.Truncate(this.transform.position.x), 
+         Util.Truncate(this.transform.position.y));
    }
 
    void FixedUpdate () {

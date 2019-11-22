@@ -15,13 +15,13 @@ public class Route : MonoBehaviour {
 
    // The Area this route is in
    [HideInInspector]
-   public Area.Type areaType;
+   public string areaKey;
 
    #endregion
 
    void Awake () {
       // Check which area we're in
-      this.areaType = GetComponentInParent<Area>().areaType;
+      this.areaKey = GetComponentInParent<Area>().areaKey;
 
       // Get our list of waypoints
       _waypoints = new List<Waypoint>(GetComponentsInChildren<Waypoint>());

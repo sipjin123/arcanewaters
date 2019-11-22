@@ -22,11 +22,11 @@ public class AreaManager : MonoBehaviour {
    void Start () {
       // Store references to all of our areas
       foreach (Area area in FindObjectsOfType<Area>()) {
-         _areas.Add(area.areaType, area);
+         _areas.Add(area.areaKey, area);
 
          // Store all of the Enemy Spawners in each area
          foreach (Enemy_Spawner spawner in area.GetComponentsInChildren<Enemy_Spawner>()) {
-            EnemyManager.self.storeSpawner(spawner, area.areaType);
+            EnemyManager.self.storeSpawner(spawner, area.areaKey);
          }
       }
 
@@ -34,8 +34,8 @@ public class AreaManager : MonoBehaviour {
       InvokeRepeating("toggleAreaCollidersForPerformanceImprovement", 0f, .25f);
    }
 
-   public Area getArea (Area.Type areaType) {
-      return _areas[areaType];
+   public Area getArea (string areaKey) {
+      return _areas[areaKey];
    }
 
    public List<Area> getAreas () {
@@ -45,12 +45,12 @@ public class AreaManager : MonoBehaviour {
    protected void toggleAreaCollidersForPerformanceImprovement () {
       foreach (Area area in _areas.Values) {
          // We don't do this for randomized maps
-         if (Area.isRandom(area.areaType)) {
+         if (Area.isRandom(area.areaKey)) {
             continue;
          }
 
-         // We only need collliders for the area that the player is in
-         bool needColliders = InstanceManager.self.hasActiveInstanceForArea(area.areaType);
+         // We only need colliders for the area that the player is in
+         bool needColliders = InstanceManager.self.hasActiveInstanceForArea(area.areaKey);
 
          // Toggle the grid layers accordingly
          area.setColliders(needColliders);
@@ -60,7 +60,7 @@ public class AreaManager : MonoBehaviour {
    #region Private Variables
 
    // The Areas we know about
-   protected Dictionary<Area.Type, Area> _areas = new Dictionary<Area.Type, Area>();
+   protected Dictionary<string, Area> _areas = new Dictionary<string, Area>();
 
    #endregion
 }

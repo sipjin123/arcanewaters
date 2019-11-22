@@ -32,9 +32,9 @@ public class NameManager : MonoBehaviour {
       _femaleNames = new List<string>(femaleSet);
    }
 
-   public string getRandomName (Gender.Type genderType, Area.Type areaType, NPC.Type npcType) {
+   public string getRandomName (Gender.Type genderType, string areaKey, NPC.Type npcType) {
       // Pick a random NPC name, in such a way that it won't change later on
-      int randomInt = ((int) areaType * 50) + (int) npcType;
+      int randomInt = (Area.getAreaId(areaKey) * 50) + (int) npcType;
 
       // Choose a unique name, and remove it from the list of available names
       if (genderType == Gender.Type.Male) {

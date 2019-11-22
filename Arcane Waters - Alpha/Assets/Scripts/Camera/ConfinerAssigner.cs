@@ -11,13 +11,13 @@ public class ConfinerAssigner : ClientMonoBehaviour {
    public Cinemachine.CinemachineConfiner confiner;
 
    // The Area we want our camera to be bounded by
-   public Area.Type areaType;
+   public string areaKey;
 
    #endregion
 
    private void Update () {
       if (confiner.m_BoundingShape2D == null) {
-         Area area = AreaManager.self.getArea(areaType);
+         Area area = AreaManager.self.getArea(areaKey);
 
          if (area != null) {
             confiner.m_BoundingShape2D = area.cameraBounds;

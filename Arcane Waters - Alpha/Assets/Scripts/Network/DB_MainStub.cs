@@ -110,7 +110,7 @@ public class DB_MainStub : MonoBehaviour {
       return false;
    }
 
-   public static void setNewPosition (int userId, Vector2 localPosition, Direction facingDirection, int areaId) {
+   public static void setNewPosition (int userId, Vector2 localPosition, Direction facingDirection, string areaKey) {
 
    }
 

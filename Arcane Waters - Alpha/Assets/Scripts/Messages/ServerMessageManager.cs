@@ -119,7 +119,7 @@ public class ServerMessageManager : MonoBehaviour {
       }*/
 
       // Look up the Area that we're going to place the users into
-      Area area = AreaManager.self.getArea(Area.Type.House);
+      Area area = AreaManager.self.getArea(Area.HOUSE);
 
       // Look up the Spawn position for the map associated with that area
       Spawn spawn = SpawnManager.self.getSpawn(SpawnManager.self.startingSpawnLocation);

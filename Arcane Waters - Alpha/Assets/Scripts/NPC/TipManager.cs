@@ -24,7 +24,7 @@ public class TipManager : MonoBehaviour {
       foreach (Area area in AreaManager.self.getAreas()) {
          // Loop over all of the NPCs in that Area
          foreach (NPC npc in area.GetComponentsInChildren<NPC>()) {
-            List<CropOffer> offers = ShopManager.self.getOffers(area.areaType);
+            List<CropOffer> offers = ShopManager.self.getOffers(area.areaKey);
             CropOffer offer = offers.ChooseRandom();
 
             // Create a new Random Tip for this NPC to share

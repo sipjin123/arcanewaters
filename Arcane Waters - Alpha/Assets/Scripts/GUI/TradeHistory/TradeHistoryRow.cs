@@ -37,7 +37,7 @@ public class TradeHistoryRow : MonoBehaviour
 
    public void setRowForItem (TradeHistoryInfo trade) {
       tradeId = trade.tradeId;
-      areaName.text = Area.getName(trade.areaType);
+      areaName.text = Area.getName(trade.areaKey);
       cropImage.sprite = ImageManager.getSprite("Cargo/" + trade.cargoType);
       cropName.text = Util.UppercaseFirst(trade.cargoType.ToString());
       goldAmount.text = trade.totalPrice + "";

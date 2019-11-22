@@ -22,7 +22,7 @@ public class RandomMapManager : MonoBehaviour
    public MapGeneratorPreset mushroomPreset;
 
    // The map configs that this server is going to use to create randomized maps
-   public Dictionary<Area.Type, MapConfig> mapConfigs = new Dictionary<Area.Type, MapConfig>();
+   public Dictionary<string, MapConfig> mapConfigs = new Dictionary<string, MapConfig>();
 
    // Self
    public static RandomMapManager self;
@@ -58,7 +58,7 @@ public class RandomMapManager : MonoBehaviour
          Global.player.rpc.Cmd_GetSummaryOfGeneratedMaps();
       }
       if (Input.GetKeyUp(KeyCode.F8)) {
-         Global.player.Cmd_SpawnInNewMap(Area.Type.StartingTown, Spawn.Type.ForestTownDock, Direction.North);
+         Global.player.Cmd_SpawnInNewMap(Area.STARTING_TOWN, Spawn.Type.ForestTownDock, Direction.North);
       }
    }
 
@@ -77,25 +77,25 @@ public class RandomMapManager : MonoBehaviour
 
    private void createRandomMapsAndInstances () {
       // Cycle over each of the random area types
-      foreach (Area.Type randomAreaType in Area.getRandomAreaTypes()) {
+      foreach (string randomAreaKey in Area.getRandomAreaKeys()) {
          // Create a randomized map config
-         MapConfig config = generateRandomMapConfig(randomAreaType);
+         MapConfig config = generateRandomMapConfig(randomAreaKey);
 
          // Keep track of the map config
-         mapConfigs[randomAreaType] = config;
+         mapConfigs[randomAreaKey] = config;
 
          // Generate the random map tiles
          RandomMapCreator.generateRandomMap(config);
 
          // Generate an Instance for the map
-         Instance instance = InstanceManager.self.createNewInstance(randomAreaType, config.biomeType);
+         Instance instance = InstanceManager.self.createNewInstance(randomAreaKey, config.biomeType);
 
          // Keep track of it locally
          _instances.Add(instance);
       }
    }
 
-   private MapConfig generateRandomMapConfig (Area.Type areaType) {
+   private MapConfig generateRandomMapConfig (string areaKey) {
       int seed = Random.Range(1, 1000);
       int seedPath = Random.Range(1, 1000);
       Biome.Type biomeType = Biome.getAllTypes().ChooseRandom();
@@ -103,7 +103,7 @@ public class RandomMapManager : MonoBehaviour
       Vector2 offset = new Vector2(5f, 5f);
       float persistence = Random.Range(.4f, .6f);
 
-      MapConfig config = new MapConfig(seed, persistence, lacunarity, offset, areaType, biomeType, seedPath);
+      MapConfig config = new MapConfig(seed, persistence, lacunarity, offset, areaKey, biomeType, seedPath);
 
       return config;
    }

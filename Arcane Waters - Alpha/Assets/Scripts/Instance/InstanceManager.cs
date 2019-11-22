@@ -19,13 +19,13 @@ public class InstanceManager : MonoBehaviour {
       self = this;
    }
 
-   public Instance addPlayerToInstance (NetEntity player, Area.Type areaType) {
+   public Instance addPlayerToInstance (NetEntity player, string areaKey) {
       // First, look for an open instance
-      Instance instance = getOpenInstance(areaType);
+      Instance instance = getOpenInstance(areaKey);
 
       // If there isn't one, we'll have to make it
       if (instance == null) {
-         instance = createNewInstance(areaType, Biome.Type.None);
+         instance = createNewInstance(areaKey, Biome.Type.None);
       }
 
       // Set the player's instance ID
@@ -40,22 +40,22 @@ public class InstanceManager : MonoBehaviour {
       }
 
       // IF they're entering their farm, send them their crops
-      if (areaType == Area.Type.Farm) {
+      if (areaKey == Area.FARM) {
          player.cropManager.loadCrops();
       }
 
       // Generated random map if we are spawned in it and it wasn't created before
-      if (Area.isRandom(areaType)) {
-         StartCoroutine(waitForPlayerSpawn(player, areaType));         
+      if (Area.isRandom(areaKey)) {
+         StartCoroutine(waitForPlayerSpawn(player, areaKey));         
       }
 
       return instance;
    }
 
-   IEnumerator waitForPlayerSpawn (NetEntity player, Area.Type areaType) {
+   IEnumerator waitForPlayerSpawn (NetEntity player, string areaKey) {
       yield return new WaitUntil(() => player != null);
-      if (RandomMapManager.self && RandomMapManager.self.mapConfigs.ContainsKey(areaType)) {
-         player.rpc.Target_TrySpawnRandomMap(player.connectionToClient, RandomMapManager.self.mapConfigs[areaType]);
+      if (RandomMapManager.self && RandomMapManager.self.mapConfigs.ContainsKey(areaKey)) {
+         player.rpc.Target_TrySpawnRandomMap(player.connectionToClient, RandomMapManager.self.mapConfigs[areaKey]);
       }
    }
 
@@ -77,16 +77,16 @@ public class InstanceManager : MonoBehaviour {
       return null;
    }
 
-   public Instance createNewInstance (Area.Type areaType, Biome.Type biomeType) {
+   public Instance createNewInstance (string areaKey, Biome.Type biomeType) {
       Instance instance = Instantiate(instancePrefab, this.transform);
       instance.id = _id++;
-      instance.areaType = areaType;
+      instance.areaKey = areaKey;
       instance.biomeType = biomeType;
-      instance.numberInArea = getInstanceCount(areaType) + 1;
+      instance.numberInArea = getInstanceCount(areaKey) + 1;
       instance.serverAddress = MyNetworkManager.self.networkAddress;
       instance.serverPort = MyNetworkManager.self.telepathy.port;
       instance.mapSeed = Random.Range(0, 1000000);
-      if (Area.isRandom(areaType)) {
+      if (Area.isRandom(areaKey)) {
          instance.mapDifficulty = (MapSummary.MapDifficulty) Random.Range((int) MapSummary.MapDifficulty.Easy, (int) MapSummary.MapDifficulty.Hard + 1);
       }
 
@@ -97,15 +97,15 @@ public class InstanceManager : MonoBehaviour {
       recalculateOpenAreas();
 
       // Create any treasure we might want in the instance
-      if (areaType == Area.Type.TreasurePine) {
+      if (areaKey == Area.TREASURE_PINE) {
          // Create any treasure and ore we might want in the instance
-         if (Area.isTreasureSite(areaType)) {
+         if (Area.isTreasureSite(areaKey)) {
             TreasureManager.self.createTreasureForInstance(instance);
             OreManager.self.createOreNodesForInstance(instance);
          }
       }
       
-      if (Area.isRandom(areaType)) {
+      if (Area.isRandom(areaKey)) {
          // Create any SeaMonsters that exist in this Sea Random Map instance
          SeaMonsterManager.self.spawnSeaMonstersOnServerForInstance(instance);
       } else {
@@ -118,9 +118,9 @@ public class InstanceManager : MonoBehaviour {
       return instance;
    }
 
-   public Instance getOpenInstance (Area.Type areaType) {
+   public Instance getOpenInstance (string areaKey) {
       foreach (Instance instance in _instances.Values) {
-         if (instance.areaType == areaType && instance.getPlayerCount() < instance.getMaxPlayers()) {
+         if (instance.areaKey == areaKey && instance.getPlayerCount() < instance.getMaxPlayers()) {
             return instance;
          }
       }
@@ -167,26 +167,26 @@ public class InstanceManager : MonoBehaviour {
       }
    }
 
-   public Area.Type[] getOpenAreas () {
-      HashSet<Area.Type> openAreas = new HashSet<Area.Type>();
+   public string[] getOpenAreas () {
+      HashSet<string> openAreas = new HashSet<string>();
 
       foreach (Instance instance in _instances.Values) {
          if (instance.getPlayerCount() < instance.getMaxPlayers()) {
-            openAreas.Add(instance.areaType);
+            openAreas.Add(instance.areaKey);
          }
       }
 
-      Area.Type[] areaArray = new Area.Type[openAreas.Count];
+      string[] areaArray = new string[openAreas.Count];
       openAreas.CopyTo(areaArray);
 
       return areaArray;
    }
 
-   public int getInstanceCount (Area.Type areaType) {
+   public int getInstanceCount (string areaKey) {
       int count = 0;
 
       foreach (Instance instance in _instances.Values) {
-         if (instance.areaType == areaType) {
+         if (instance.areaKey == areaKey) {
             count++;
          }
       }
@@ -204,9 +204,9 @@ public class InstanceManager : MonoBehaviour {
       _instances.Clear();
    }
 
-   public bool hasActiveInstanceForArea (Area.Type areaType) {
+   public bool hasActiveInstanceForArea (string areaKey) {
       foreach (Instance instance in _instances.Values) {
-         if (instance.areaType == areaType && instance.entityCount > 0) {
+         if (instance.areaKey == areaKey && instance.entityCount > 0) {
             return true;
          }
       }

@@ -30,7 +30,7 @@ public class TreasureManager : MonoBehaviour {
 
    public void createTreasureForInstance (Instance instance) {
       // Look up the Area associated with this intance
-      Area area = AreaManager.self.getArea(instance.areaType);
+      Area area = AreaManager.self.getArea(instance.areaKey);
 
       // Find all of the possible treasure spots in this Area
       foreach (TreasureSpot spot in area.GetComponentsInChildren<TreasureSpot>()) {

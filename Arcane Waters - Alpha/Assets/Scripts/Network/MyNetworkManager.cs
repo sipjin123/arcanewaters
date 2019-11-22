@@ -160,10 +160,10 @@ public class MyNetworkManager : NetworkManager {
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Area.Type previousAreaType = (Area.Type) userInfo.areaId;
+            string previousAreaKey = userInfo.areaKey;
 
             // Check if we need to redirect to a different server
-            Server bestServer = ServerNetwork.self.findBestServerForConnectingPlayer(previousAreaType, userInfo.username, userInfo.userId, conn.address);
+            Server bestServer = ServerNetwork.self.findBestServerForConnectingPlayer(previousAreaKey, userInfo.username, userInfo.userId, conn.address);
             if (bestServer != null && !bestServer.view.isMine) {
                // Send a Redirect message to the client
                RedirectMessage redirectMessage = new RedirectMessage(Global.netId, bestServer.ipAddress, bestServer.port);
@@ -173,16 +173,16 @@ public class MyNetworkManager : NetworkManager {
             }
 
             // Create the Player object
-            GameObject prefab = Area.isSea(previousAreaType) ? PrefabsManager.self.playerShipPrefab : PrefabsManager.self.playerBodyPrefab;
+            GameObject prefab = Area.isSea(previousAreaKey) ? PrefabsManager.self.playerShipPrefab : PrefabsManager.self.playerBodyPrefab;
             GameObject playerObject = Instantiate(prefab, userInfo.localPos, Quaternion.identity);
             NetEntity player = playerObject.GetComponent<NetEntity>();
-            player.areaType = previousAreaType;
+            player.areaKey = previousAreaKey;
             player.userId = userInfo.userId;
             player.accountId = userInfo.accountId;
             player.facing = (Direction) userInfo.facingDirection;
             player.desiredAngle = DirectionUtil.getAngle(player.facing);
             player.XP = userInfo.XP;
-            InstanceManager.self.addPlayerToInstance(player, previousAreaType);
+            InstanceManager.self.addPlayerToInstance(player, previousAreaKey);
             NetworkServer.AddPlayerForConnection(conn, player.gameObject);
 
             if (player is BodyEntity) {

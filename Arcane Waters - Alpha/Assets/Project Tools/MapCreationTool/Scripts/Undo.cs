@@ -5,110 +5,116 @@ using UnityEngine;
 
 namespace MapCreationTool.UndoSystem
 {
-    public class Undo
-    {
-        public static event Action UndoRegisterd;
-        public static event Action UndoPerformed;
-        public static event Action RedoPerformed;
-        public static event Action LogCleared;
+   public class Undo
+   {
+      public static event Action UndoRegisterd;
+      public static event Action UndoPerformed;
+      public static event Action RedoPerformed;
+      public static event Action LogCleared;
 
-        public const int LogLength = 10000;
-        private static List<Entry> Log = new List<Entry>();
-        
-        private static int head;
+      public const int LogLength = 10000;
+      private static List<Entry> Log = new List<Entry>();
 
-        public static void Register(Action<UndoRedoData> handler, UndoRedoData undoData, UndoRedoData redoData)
-        {
-            Register(new Action<UndoRedoData>[] { handler }, undoData, redoData);
-        }
+      private static int head;
 
-        public static void Register(Action<UndoRedoData>[] handlers, UndoRedoData undoData, UndoRedoData redoData)
-        {
-            Log.RemoveRange(head, Log.Count - head);
+      public static void register (Action<UndoRedoData> handler, UndoRedoData undoData, UndoRedoData redoData) {
+         register(new Action<UndoRedoData>[] { handler }, undoData, redoData);
+      }
 
-            if (Log.Count == LogLength)
-                Log.RemoveAt(0);
+      public static void register (Action<UndoRedoData>[] handlers, UndoRedoData undoData, UndoRedoData redoData) {
+         Log.RemoveRange(head, Log.Count - head);
 
-            Log.Add(new Entry
-            {
-                Handlers = handlers,
-                UndoData = undoData,
-                RedoData = redoData
-            });
+         if (Log.Count == LogLength)
+            Log.RemoveAt(0);
 
-            head = Log.Count;
+         Log.Add(new Entry {
+            handlers = handlers,
+            undoData = undoData,
+            redoData = redoData
+         });
 
-            UndoRegisterd?.Invoke();
-        }
+         head = Log.Count;
 
-        public static void DoUndo()
-        {
-            if(UndoCount > 0)
-            {
-                foreach (var handler in Log[head - 1].Handlers)
-                    handler(Log[head - 1].UndoData);
-                head--;
+         UndoRegisterd?.Invoke();
+      }
 
-                UndoPerformed?.Invoke();
-            }
-        }
+      public static void doUndo () {
+         if (undoCount > 0) {
+            foreach (var handler in Log[head - 1].handlers)
+               handler(Log[head - 1].undoData);
+            head--;
 
-        public static void DoRedo()
-        {
-            if(RedoCount > 0)
-            {
-                foreach (var handler in Log[head].Handlers)
-                    handler(Log[head].RedoData);
+            UndoPerformed?.Invoke();
+         }
+      }
 
-                head++;
+      public static void doRedo () {
+         if (redoCount > 0) {
+            foreach (var handler in Log[head].handlers)
+               handler(Log[head].redoData);
 
-                RedoPerformed?.Invoke();
-            }
-        }
+            head++;
 
-        public static int UndoCount
-        {
-            get { return head; }
-        }
+            RedoPerformed?.Invoke();
+         }
+      }
 
-        public static int RedoCount
-        {
-            get { return Log.Count - head; }
-        }
+      public static int undoCount
+      {
+         get { return head; }
+      }
 
-        public static void Clear()
-        {
-            Log.Clear();
-            head = 0;
-            LogCleared?.Invoke();
-        }
-    }
+      public static int redoCount
+      {
+         get { return Log.Count - head; }
+      }
 
-    public class Entry
-    {
-        public Action<UndoRedoData>[] Handlers { get; set; }
-        public UndoRedoData UndoData { get; set; }
-        public UndoRedoData RedoData { get; set; }
-    }
+      public static void clear () {
+         Log.Clear();
+         head = 0;
+         LogCleared?.Invoke();
+      }
+   }
 
-    public class UndoRedoData { }
+   public class Entry
+   {
+      public Action<UndoRedoData>[] handlers { get; set; }
+      public UndoRedoData undoData { get; set; }
+      public UndoRedoData redoData { get; set; }
+   }
 
-    public class BoardUndoRedoData : UndoRedoData 
-    { 
-        public BoardChange Change { get; set; }
-    }
+   public class UndoRedoData { }
 
-    public class ToolUndoRedoData : UndoRedoData 
-    {
-        public ToolType? ToolType { get; set; }
-        public int? MountainLayer { get; set; }
-        public bool? BurrowedTrees { get; set; }
-        public bool? IndividualTiles { get; set; }
-        public BiomeType? Biome { get; set; }
-        public EraserLayerMode? EraserLayerMode { get; set; }
-        public FillBounds? FillBounds { get; set; }
+   public class BoardUndoRedoData : UndoRedoData
+   {
+      public BoardChange change { get; set; }
+   }
 
-        public bool HasTileGroup { get; set; }
-        public TileGroup TileGroup { get; set; }
-    }
+   public class SelectedPrefabUndoRedoData : UndoRedoData
+   {
+      public GameObject prefab { get; set; }
+      public Vector3 position { get; set; }
+   }
+
+   public class PrefabDataUndoRedoData : UndoRedoData
+   {
+      public GameObject prefab { get; set; }
+      public Vector3 position { get; set; }
+      public string key { get; set; }
+      public string value { get; set; }
+   }
+
+   public class ToolUndoRedoData : UndoRedoData
+   {
+      public ToolType? toolType { get; set; }
+      public int? mountainLayer { get; set; }
+      public bool? burrowedTrees { get; set; }
+      public bool? individualTiles { get; set; }
+      public BiomeType? biome { get; set; }
+      public EraserLayerMode? eraserLayerMode { get; set; }
+      public FillBounds? fillBounds { get; set; }
+
+      public bool hasTileGroup { get; set; }
+      public TileGroup tileGroup { get; set; }
+   }
 }

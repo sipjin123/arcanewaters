@@ -18,16 +18,16 @@ public class BotManager : MonoBehaviour {
       // Store references to all of our spots
       foreach (BotSpot spot in FindObjectsOfType<BotSpot>()) {
          Area area = spot.GetComponentInParent<Area>();
-         Area.Type areaType = area.areaType;
-         List<BotSpot> list = _spots.ContainsKey(areaType) ? _spots[areaType] : new List<BotSpot>();
+         string areaKey = area.areaKey;
+         List<BotSpot> list = _spots.ContainsKey(areaKey) ? _spots[areaKey] : new List<BotSpot>();
          list.Add(spot);
-         _spots[areaType] = list;
+         _spots[areaKey] = list;
       }
    }
 
-   public List<BotSpot> getSpots (Area.Type areaType) {
-      if (_spots.ContainsKey(areaType)) {
-         return _spots[areaType];
+   public List<BotSpot> getSpots (string areaKey) {
+      if (_spots.ContainsKey(areaKey)) {
+         return _spots[areaKey];
       }
 
       return new List<BotSpot>();
@@ -35,8 +35,8 @@ public class BotManager : MonoBehaviour {
 
    #region Private Variables
 
-   // The spots we know about
-   protected Dictionary<Area.Type, List<BotSpot>> _spots = new Dictionary<Area.Type, List<BotSpot>>();
+   // The spots we know about in each area
+   protected Dictionary<string, List<BotSpot>> _spots = new Dictionary<string, List<BotSpot>>();
 
    #endregion
 }

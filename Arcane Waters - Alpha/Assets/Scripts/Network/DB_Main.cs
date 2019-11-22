@@ -656,11 +656,11 @@ public class DB_Main : DB_MainStub {
       return found;
    }
 
-   public static new void setNewPosition (int userId, Vector2 localPosition, Direction facingDirection, int areaId) {
+   public static new void setNewPosition (int userId, Vector2 localPosition, Direction facingDirection, string areaKey) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "UPDATE users SET localX=@localX, localY=@localY, usrFacing=@usrFacing, areaId=@areaId " +
+            "UPDATE users SET localX=@localX, localY=@localY, usrFacing=@usrFacing, areaKey=@areaKey " +
             "WHERE usrId=@usrId", conn)) {
             conn.Open();
             cmd.Prepare();
@@ -668,7 +668,7 @@ public class DB_Main : DB_MainStub {
             cmd.Parameters.AddWithValue("@localX", localPosition.x);
             cmd.Parameters.AddWithValue("@localY", localPosition.y);
             cmd.Parameters.AddWithValue("@usrFacing", (int) facingDirection);
-            cmd.Parameters.AddWithValue("@areaId", areaId);
+            cmd.Parameters.AddWithValue("@areaKey", areaKey);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1147,8 +1147,8 @@ public class DB_Main : DB_MainStub {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO users (accId, usrName, usrGender, localX, localY, bodyType, usrAdminFlag, usrFacing, hairType, hairColor1, hairColor2, eyesType, eyesColor1, eyesColor2, armId, areaId, charSpot, class, specialty, faction) VALUES " +
-             "(@accId, @usrName, @usrGender, @localX, @localY, @bodyType, @usrAdminFlag, @usrFacing, @hairType, @hairColor1, @hairColor2, @eyesType, @eyesColor1, @eyesColor2, @armId, @areaId, @charSpot, @class, @specialty, @faction);", conn)) {
+            "INSERT INTO users (accId, usrName, usrGender, localX, localY, bodyType, usrAdminFlag, usrFacing, hairType, hairColor1, hairColor2, eyesType, eyesColor1, eyesColor2, armId, areaKey, charSpot, class, specialty, faction) VALUES " +
+             "(@accId, @usrName, @usrGender, @localX, @localY, @bodyType, @usrAdminFlag, @usrFacing, @hairType, @hairColor1, @hairColor2, @eyesType, @eyesColor1, @eyesColor2, @armId, @areaKey, @charSpot, @class, @specialty, @faction);", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@accId", accountId);
@@ -1166,7 +1166,7 @@ public class DB_Main : DB_MainStub {
             cmd.Parameters.AddWithValue("@eyesColor1", (int) userInfo.eyesColor1);
             cmd.Parameters.AddWithValue("@eyesColor2", (int) userInfo.eyesColor2);
             cmd.Parameters.AddWithValue("@armId", userInfo.armorId);
-            cmd.Parameters.AddWithValue("@areaId", (int) area.areaType);
+            cmd.Parameters.AddWithValue("@areaKey", area.areaKey);
             cmd.Parameters.AddWithValue("@charSpot", userInfo.charSpot);
             cmd.Parameters.AddWithValue("@class", userInfo.classType);
             cmd.Parameters.AddWithValue("@specialty", userInfo.specialty);
@@ -2250,14 +2250,14 @@ public class DB_Main : DB_MainStub {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO trade_history (usrId, shpId, areaId, crgType, amount, unitPrice, totalPrice, unitXP, totalXP, tradeTime) " +
-            "VALUES(@usrId, @shpId, @areaId, @crgType, @amount, @unitPrice, @totalPrice, @unitXP, @totalXP, @tradeTime)", conn)) {
+            "INSERT INTO trade_history (usrId, shpId, areaKey, crgType, amount, unitPrice, totalPrice, unitXP, totalXP, tradeTime) " +
+            "VALUES(@usrId, @shpId, @areaKey, @crgType, @amount, @unitPrice, @totalPrice, @unitXP, @totalXP, @tradeTime)", conn)) {
 
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@shpId", tradeInfo.shipId);
-            cmd.Parameters.AddWithValue("@areaId", (int) tradeInfo.areaType);
+            cmd.Parameters.AddWithValue("@areaKey", tradeInfo.areaKey);
             cmd.Parameters.AddWithValue("@crgType", (int) tradeInfo.cargoType);
             cmd.Parameters.AddWithValue("@amount", tradeInfo.amount);
             cmd.Parameters.AddWithValue("@unitPrice", tradeInfo.pricePerUnit);

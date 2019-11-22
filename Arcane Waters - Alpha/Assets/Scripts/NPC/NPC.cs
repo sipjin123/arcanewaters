@@ -42,7 +42,7 @@ public class NPC : MonoBehaviour {
    public int npcId;
 
    // The area that this NPC is in
-   public Area.Type areaType;
+   public string areaKey;
 
    // The current trade gossip for this NPC, changes over time
    public string tradeGossip;
@@ -55,7 +55,7 @@ public class NPC : MonoBehaviour {
    private void Awake () {
       // Figure out our area id
       Area area = GetComponentInParent<Area>();
-      this.areaType = area.areaType;
+      this.areaKey = area.areaKey;
    }
 
    void Start () {
@@ -205,8 +205,8 @@ public class NPC : MonoBehaviour {
    }
 
    protected int getId () {
-      // We can make a unique idea based on our area and NPC type
-      int id = ((int) this.areaType * 100) + (int) this.npcType;
+      // We can make a unique id based on our area and NPC type
+      int id = (Area.getAreaId(this.areaKey) * 100) + (int) this.npcType;
 
       return id;
    }
@@ -310,7 +310,7 @@ public class NPC : MonoBehaviour {
    protected Specialty.Type getRandomSpecialty () {
       Area area = this.GetComponentInParent<Area>();
       List<Specialty.Type> specialties = getPossibleSpecialties(getFaction());
-      int randomIndex = ((int) area.areaType * 50) + (int) npcType;
+      int randomIndex = (Area.getAreaId(areaKey) * 50) + (int) npcType;
       randomIndex %= specialties.Count;
       return specialties[randomIndex];
    }
@@ -391,22 +391,22 @@ public class NPC : MonoBehaviour {
 
    protected string getRandomName () {
       Area area = this.GetComponentInParent<Area>();
-      return NameManager.self.getRandomName(getGender(this.npcType), area.areaType, this.npcType);
+      return NameManager.self.getRandomName(getGender(this.npcType), area.areaKey, this.npcType);
    }
 
    protected void updateTradeGossip () {
       // Get our current Biome
-      Biome.Type currentBiome = Area.getBiome(this.areaType);
+      Biome.Type currentBiome = Area.getBiome(this.areaKey);
 
       // Set up a list that will contain possible offer
       List<CropOffer> possibleOffers = new List<CropOffer>();
 
       // Cycle over all of the offers
       foreach (CropOffer offer in ShopManager.self.getAllOffers()) {
-         Biome.Type offerBiome = Area.getBiome(offer.areaType);
+         Biome.Type offerBiome = Area.getBiome(offer.areaKey);
 
          // We only care about the merchant shops
-         if (!offer.areaType.ToString().StartsWith("MerchantShop")) {
+         if (!Area.isMerchantShop(offer.areaKey)) {
             continue;
          }
 
@@ -436,7 +436,7 @@ public class NPC : MonoBehaviour {
       // Pick a random offer
       CropOffer offer = offers.ChooseRandom();
 
-      Biome.Type biome = Area.getBiome(offer.areaType);
+      Biome.Type biome = Area.getBiome(offer.areaKey);
       string tradeGossip = string.Format("I heard that there's a merchant over in {0} that was {1} looking for {2}.",
          Biome.getName(biome), "really", IconUtil.getCrop(offer.cropType));
 
