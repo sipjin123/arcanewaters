@@ -202,9 +202,10 @@ public class MyNetworkManager : NetworkManager {
 
             // Send any extra info as targeted RPCs
             player.cropManager.sendSiloInfo();
-            
-            // Server provides clients with basic info of the npc
-            player.rpc.Target_NPCInfoSetup(player.connectionToClient, NPCManager.self.getBasicDataList().ToArray());
+
+            // Server provides clients with info of the npc
+            string[] serializedNPCData = Util.serialize(NPCManager.self.getNPCDataList());
+            player.rpc.Target_ReceiveNPCsForCurrentArea(player.connectionToClient, serializedNPCData);
 
             TutorialManager.self.sendTutorialInfo(player, false);
          });

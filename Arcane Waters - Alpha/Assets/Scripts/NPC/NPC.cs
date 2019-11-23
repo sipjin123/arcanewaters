@@ -109,7 +109,7 @@ public class NPC : MonoBehaviour {
    }
 
    public void initData() {
-      NPCBasicData npcData = NPCManager.self.getNPCBasicData(this.npcId);
+      NPCData npcData = NPCManager.self.getNPCData(this.npcId);
 
       // Figure out our Type from our sprite
       this.npcType = getTypeFromSprite();

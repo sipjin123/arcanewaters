@@ -112,25 +112,3 @@ public class NPCData
 
    #endregion
 }
-
-[Serializable]
-public class NPCBasicData
-{
-   public NPCBasicData () {
-   }
-
-   // The NPC ID
-   public int npcId;
-
-   // The name of the NPC
-   public string name = "";
-
-   // The faction of the NPC
-   public Faction.Type faction = Faction.Type.None;
-
-   // The specialty of the NPC
-   public Specialty.Type specialty = Specialty.Type.None;
-
-   // Holds the address of the image sprite within the game
-   public string spritePath;
-}
