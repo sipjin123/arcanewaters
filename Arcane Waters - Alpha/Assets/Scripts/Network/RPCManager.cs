@@ -17,6 +17,11 @@ public class RPCManager : NetworkBehaviour {
       _player = GetComponent<NetEntity>();
    }
 
+   [TargetRpc]
+   public void Target_NPCInfoSetup (NetworkConnection connection, NPCBasicData[] npcData) {
+      NPCManager.self.initializeBasicData(npcData);
+   }
+
    [Command]
    public void Cmd_InteractAnimation (Anim.Type animType) {
       Rpc_InteractAnimation(animType);

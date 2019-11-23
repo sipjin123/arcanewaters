@@ -120,6 +120,9 @@ public class MyNetworkManager : NetworkManager {
       // Start up Photon so the servers can talk to each other
       connectToPhotonMaster();
 
+      // Loads the NPC quest data
+      NPCManager.self.initializeQuestCache();
+
       // Schedule the leader boards recalculation
       LeaderBoardsManager.self.scheduleLeaderBoardRecalculation();
 
@@ -200,6 +203,9 @@ public class MyNetworkManager : NetworkManager {
             // Send any extra info as targeted RPCs
             player.cropManager.sendSiloInfo();
             
+            // Server provides clients with basic info of the npc
+            player.rpc.Target_NPCInfoSetup(player.connectionToClient, NPCManager.self.getBasicDataList().ToArray());
+
             TutorialManager.self.sendTutorialInfo(player, false);
          });
       });

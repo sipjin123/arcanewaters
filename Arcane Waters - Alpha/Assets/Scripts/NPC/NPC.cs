@@ -78,16 +78,7 @@ public class NPC : MonoBehaviour {
 
       // Initially hides name ui for npc name
       Util.setAlpha(nameText, 0f);
-
-      // Figure out our Type from our sprite
-      this.npcType = getTypeFromSprite();
-
-      // Set our id and default name, faction, and specialty
-      this.npcId = getId();
-      _npcName = getRandomName();
-      _faction = getFactionFromType(this.npcType);
-      _specialty = getRandomSpecialty();
-
+      
       // Keep track of the NPC in the Manager
       NPCManager.self.storeNPC(this);
 
@@ -115,9 +106,21 @@ public class NPC : MonoBehaviour {
          // nameText.text = "[" + npcType + "]";
          // setNameColor(nameText, npcType);
       }
+   }
 
-      // SPRITE PATH INSERT HERE 
-      NPCData npcData = NPCManager.self.getNPCData(this.npcId);
+   public void initData() {
+      NPCBasicData npcData = NPCManager.self.getNPCBasicData(this.npcId);
+
+      // Figure out our Type from our sprite
+      this.npcType = getTypeFromSprite();
+
+      // Set our id and default name, faction, and specialty
+      this.npcId = getId();
+      _npcName = npcData.name;
+      _faction = getFactionFromType(this.npcType);
+      _specialty = npcData.specialty;
+
+      // Sprite path insert here
       if (npcData != null) {
          try {
             GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture(npcData.spritePath);

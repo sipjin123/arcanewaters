@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System.IO;
 using System;
+using System.Linq;
 
 public class NPCManager : MonoBehaviour {
    #region Public Variables
@@ -15,26 +16,63 @@ public class NPCManager : MonoBehaviour {
    // The files containing the NPC data
    public TextAsset[] npcDataAssets;
 
+   // Checks if basic data has been set
+   public bool basicDataInitialized;
+
+   // Returns the list of basic data
+   public List<NPCBasicData> getBasicDataList () {
+      return _npcBasicData.Values.ToList();
+   }
+
    #endregion
 
    public void Awake () {
       self = this;
-
-      // Loads the NPC quest data
-      initializeQuestCache();
    }
 
    public void initializeQuestCache () {
+      // Server translate npc data to xml
+      List<NPCBasicData> newDataList = new List<NPCBasicData>();
+
       // Iterate over the files
       foreach (TextAsset textAsset in npcDataAssets) {
-         // Deserialize the file
-         //NPCData npcData = JsonUtility.FromJson<NPCData>(textAsset.text);
-
          // Read and deserialize the file
          NPCData npcData = Util.xmlLoad<NPCData>(textAsset);
 
          // Save the NPC data in the memory cache
-         _npcData.Add(npcData.npcId, npcData);
+         _npcCompleteData.Add(npcData.npcId, npcData);
+
+         // Setup basic data to provide to clients
+         NPCBasicData basicData = new NPCBasicData {
+            npcId = npcData.npcId,
+            spritePath = npcData.spritePath,
+            name = npcData.name,
+            faction = npcData.faction,
+            specialty = npcData.specialty,
+         };
+         newDataList.Add(basicData);
+      }
+
+      // Server initializes basic data to send to clients
+      initializeBasicData(newDataList.ToArray());
+   }
+
+   public void initializeBasicData (NPCBasicData[] basicDataList) {
+      if (basicDataInitialized == false) {
+         basicDataInitialized = true;
+         foreach (NPCBasicData basicData in basicDataList) {
+            // Save the NPC data in the memory cache
+            if (_npcBasicData.ContainsKey(basicData.npcId)) {
+               D.log("Key already exists: " + basicData.npcId);
+            } else {
+               _npcBasicData.Add(basicData.npcId, basicData);
+            }
+
+            // Initializes basic info of the npc
+            if (_npcs.ContainsKey(basicData.npcId)) {
+               _npcs[basicData.npcId].initData();
+            }
+         }
       }
    }
 
@@ -46,17 +84,17 @@ public class NPCManager : MonoBehaviour {
       return _npcs[npcId];
    }
 
-   public NPCData getNPCData (int npcID) {
-      if (_npcData.ContainsKey(npcID)) {
-         return _npcData[npcID];
+   public NPCBasicData getNPCBasicData (int npcID) {
+      if (_npcBasicData.ContainsKey(npcID)) {
+         return _npcBasicData[npcID];
       } else {
          return null;
       }
    }
 
    public List<Quest> getQuests (int npcId) {
-      if (_npcData.ContainsKey(npcId)) {
-         return _npcData[npcId].quests;
+      if (_npcCompleteData.ContainsKey(npcId)) {
+         return _npcCompleteData[npcId].quests;
       } else {
          return new List<Quest>();
       }
@@ -64,7 +102,7 @@ public class NPCManager : MonoBehaviour {
 
    public Quest getQuest (int npcId, int questId) {
       NPCData npcData;
-      if (!_npcData.TryGetValue(npcId, out npcData)) {
+      if (!_npcCompleteData.TryGetValue(npcId, out npcData)) {
          D.error("The npc has no quest data: " + npcId);
          return null;
       }
@@ -99,20 +137,20 @@ public class NPCManager : MonoBehaviour {
    }
 
    public string getGreetingText (int npcId, int friendshipLevel) {
-      if (_npcData.ContainsKey(npcId)) {
+      if (_npcCompleteData.ContainsKey(npcId)) {
          switch (NPCFriendship.getRank(friendshipLevel)) {
             case NPCFriendship.Rank.Stranger:
-               return _npcData[npcId].greetingTextStranger;
+               return _npcCompleteData[npcId].greetingTextStranger;
             case NPCFriendship.Rank.Acquaintance:
-               return _npcData[npcId].greetingTextAcquaintance;
+               return _npcCompleteData[npcId].greetingTextAcquaintance;
             case NPCFriendship.Rank.CasualFriend:
-               return _npcData[npcId].greetingTextCasualFriend;
+               return _npcCompleteData[npcId].greetingTextCasualFriend;
             case NPCFriendship.Rank.CloseFriend:
-               return _npcData[npcId].greetingTextCloseFriend;
+               return _npcCompleteData[npcId].greetingTextCloseFriend;
             case NPCFriendship.Rank.BestFriend:
-               return _npcData[npcId].greetingTextBestFriend;
+               return _npcCompleteData[npcId].greetingTextBestFriend;
             default:
-               return _npcData[npcId].greetingTextStranger;
+               return _npcCompleteData[npcId].greetingTextStranger;
          }
       } else {
          return "Hello! How can I help you?";
@@ -120,24 +158,24 @@ public class NPCManager : MonoBehaviour {
    }
 
    public string getName (int npcId) {
-      if (_npcData.ContainsKey(npcId)) {
-         return _npcData[npcId].name;
+      if (_npcBasicData.ContainsKey(npcId)) {
+         return _npcBasicData[npcId].name;
       } else {
          return null;
       }
    }
 
    public Faction.Type getFaction (int npcId) {
-      if (_npcData.ContainsKey(npcId)) {
-         return _npcData[npcId].faction;
+      if (_npcBasicData.ContainsKey(npcId)) {
+         return _npcBasicData[npcId].faction;
       } else {
          return Faction.Type.None;
       }
    }
 
    public Specialty.Type getSpecialty (int npcId) {
-      if (_npcData.ContainsKey(npcId)) {
-         return _npcData[npcId].specialty;
+      if (_npcBasicData.ContainsKey(npcId)) {
+         return _npcBasicData[npcId].specialty;
       } else {
          return Specialty.Type.None;
      }
@@ -148,24 +186,24 @@ public class NPCManager : MonoBehaviour {
    }
 
    public string getGiftOfferNPCText (int npcId) {
-      if (_npcData.ContainsKey(npcId)) {
-         return _npcData[npcId].giftOfferNPCText;
+      if (_npcCompleteData.ContainsKey(npcId)) {
+         return _npcCompleteData[npcId].giftOfferNPCText;
       } else {
          return "";
       }
    }
 
    public string getGiftLikedText (int npcId) {
-      if (_npcData.ContainsKey(npcId)) {
-         return _npcData[npcId].giftLikedText;
+      if (_npcCompleteData.ContainsKey(npcId)) {
+         return _npcCompleteData[npcId].giftLikedText;
       } else {
          return "";
       }
    }
 
    public string getGiftNotLikedText (int npcId) {
-      if (_npcData.ContainsKey(npcId)) {
-         return _npcData[npcId].giftNotLikedText;
+      if (_npcCompleteData.ContainsKey(npcId)) {
+         return _npcCompleteData[npcId].giftNotLikedText;
       } else {
          return "";
       }
@@ -175,12 +213,12 @@ public class NPCManager : MonoBehaviour {
       int rewardedFriendship = 0;
 
       // Determine if the npc has data
-      if (!_npcData.ContainsKey(npcId)) {
+      if (!_npcCompleteData.ContainsKey(npcId)) {
          return 0;
       }
 
       // Look for a gift that the npc likes with the same category and type
-      foreach (NPCGiftData likedGift in _npcData[npcId].gifts) {
+      foreach (NPCGiftData likedGift in _npcCompleteData[npcId].gifts) {
          if (likedGift.itemCategory == gift.category && likedGift.itemTypeId == gift.itemTypeId) {
             
             // Compare the colors, if defined
@@ -209,16 +247,16 @@ public class NPCManager : MonoBehaviour {
    }
 
    public bool hasTradeGossipDialogue (int npcId) {
-      if (_npcData.ContainsKey(npcId)) {
-         return _npcData[npcId].hasTradeGossipDialogue;
+      if (_npcCompleteData.ContainsKey(npcId)) {
+         return _npcCompleteData[npcId].hasTradeGossipDialogue;
       } else {
          return true;
       }
    }
 
    public bool hasGoodbyeDialogue (int npcId) {
-      if (_npcData.ContainsKey(npcId)) {
-         return _npcData[npcId].hasGoodbyeDialogue;
+      if (_npcCompleteData.ContainsKey(npcId)) {
+         return _npcCompleteData[npcId].hasGoodbyeDialogue;
       } else {
          return true;
       }
@@ -230,7 +268,10 @@ public class NPCManager : MonoBehaviour {
    protected Dictionary<int, NPC> _npcs = new Dictionary<int, NPC>();
 
    // The cached NPC data for interactive NPCs
-   private Dictionary<int, NPCData> _npcData = new Dictionary<int, NPCData>();
+   private Dictionary<int, NPCData> _npcCompleteData = new Dictionary<int, NPCData>();
+
+   // The cached NPC data holding basic info of the npc
+   private Dictionary<int, NPCBasicData> _npcBasicData = new Dictionary<int, NPCBasicData>();
 
    #endregion
 }
