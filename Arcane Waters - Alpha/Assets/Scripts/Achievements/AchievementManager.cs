@@ -75,8 +75,9 @@ public class AchievementManager : MonoBehaviour
       self.processAchievement(userID, action, customCount, dependencyItem);
    }
 
-#if IS_SERVER_BUILD
+
    public void processAchievement (int userID, ActionType actionType, int count, Item dependencyItem = null) {
+      #if IS_SERVER_BUILD
       D.debug("Register Achievement: " + actionType);
       List<AchievementData> castedData = AchievementManager.castData(actionType, dependencyItem);
       if (castedData == null) {
@@ -165,8 +166,8 @@ public class AchievementManager : MonoBehaviour
             // INSERT UNITY LOGIC HERE
          });
       });
+      #endif
    }
-#endif
 
    #region Private Variables
 
