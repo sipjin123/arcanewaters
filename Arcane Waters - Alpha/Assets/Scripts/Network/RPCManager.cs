@@ -22,18 +22,8 @@ public class RPCManager : NetworkBehaviour {
       // Deserialize data
       NPCData[] npcDataList = Util.unserialize<NPCData>(npcDataRaw).ToArray();
 
-      // Clears out quests and gifts provided to the Clients
-      foreach (NPCData npcData in npcDataList) {
-         if (npcData.quests != null) {
-            npcData.quests.Clear();
-         }
-         if (npcData.gifts != null) {
-            npcData.gifts.Clear();
-         }
-      }
-
       // Cache to npc manager 
-      NPCManager.self.initializeClientNPCData(npcDataList);
+      NPCManager.self.initializeNPCClientData(npcDataList);
    }
 
    [Command]

@@ -19,11 +19,6 @@ public class NPCManager : MonoBehaviour {
    // Checks if npc data has been set
    public bool npcDataInitialized;
 
-   // Returns the list of npc data
-   public List<NPCData> getNPCDataList () {
-      return _npcData.Values.ToList();
-   }
-
    #endregion
 
    public void Awake () {
@@ -38,13 +33,18 @@ public class NPCManager : MonoBehaviour {
 
          // Save the NPC data in the memory cache
          _npcData.Add(npcData.npcId, npcData);
+
+         // Initializes info of the npc
+         if (_npcs.ContainsKey(npcData.npcId)) {
+            _npcs[npcData.npcId].initData();
+         }
       }
       npcDataInitialized = true;
    }
 
-   public void initializeClientNPCData (NPCData[] dataList) {
-      _npcData = new Dictionary<int, NPCData>();
+   public void initializeNPCClientData (NPCData[] dataList) {
       if (npcDataInitialized == false) {
+         _npcData = new Dictionary<int, NPCData>();
          npcDataInitialized = true;
          foreach (NPCData data in dataList) {
             // Save the NPC data in the memory cache
@@ -64,6 +64,35 @@ public class NPCManager : MonoBehaviour {
 
    public void storeNPC (NPC npc) {
       _npcs[npc.npcId] = npc;
+
+      // Server stores the npc's per area to be sent to the clients
+#if IS_SERVER_BUILD
+      string areaKey = npc.areaKey;
+
+      // Add data to area collection
+      if (_npcIDPerArea.ContainsKey(areaKey)) {
+         _npcIDPerArea[areaKey].Add(npc.npcId);
+      } else {
+         _npcIDPerArea[areaKey] = new List<int>();
+         _npcIDPerArea[areaKey].Add(npc.npcId);
+      }
+#endif
+   }
+
+   // Returns the list of npc data
+   public List<NPCData> getNPCDataInArea (string areaKey) {
+      if (_npcIDPerArea.ContainsKey(areaKey)) {
+         List<NPCData> returnList = new List<NPCData>();
+         foreach (int npcID in _npcIDPerArea[areaKey]) {
+            if (_npcData.ContainsKey(npcID)) {
+               returnList.Add(_npcData[npcID]);
+            }
+         }
+         return returnList;
+      } else {
+         D.log("NPC Data Does Not Exist");
+         return new List<NPCData>();
+      }
    }
 
    public NPC getNPC (int npcId) {
@@ -255,6 +284,9 @@ public class NPCManager : MonoBehaviour {
 
    // The cached NPC data for interactive NPCs
    private Dictionary<int, NPCData> _npcData = new Dictionary<int, NPCData>();
+
+   // The cached NPC data for interactive NPCs
+   private Dictionary<string, List<int>> _npcIDPerArea = new Dictionary<string, List<int>>();
 
    #endregion
 }

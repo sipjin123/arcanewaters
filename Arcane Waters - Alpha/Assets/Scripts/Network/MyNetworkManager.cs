@@ -204,7 +204,22 @@ public class MyNetworkManager : NetworkManager {
             player.cropManager.sendSiloInfo();
 
             // Server provides clients with info of the npc
-            string[] serializedNPCData = Util.serialize(NPCManager.self.getNPCDataList());
+            List<NPCData> referenceNPCData = NPCManager.self.getNPCDataInArea(previousAreaKey);
+            List<NPCData> clientNPCData = new List<NPCData>();
+
+            // Clears out quests and gifts provided to the Clients
+            foreach (NPCData npcData in referenceNPCData) {
+               // Creates a copy of the npc data with a cleared list of Quests and Gifts
+               NPCData newNPCData = new NPCData(npcData.npcId, npcData.greetingTextStranger, npcData.greetingTextAcquaintance,
+                  npcData.greetingTextCasualFriend, npcData.greetingTextCloseFriend, npcData.greetingTextBestFriend, npcData.giftOfferNPCText,
+                  npcData.giftLikedText, npcData.giftNotLikedText, npcData.name, npcData.faction, npcData.specialty,
+                  npcData.hasTradeGossipDialogue, npcData.hasGoodbyeDialogue, npcData.lastUsedQuestId, new List<Quest>(), new List<NPCGiftData>(),
+                  npcData.iconPath, npcData.spritePath);
+
+               clientNPCData.Add(newNPCData);
+            }
+
+            string[] serializedNPCData = Util.serialize(clientNPCData);
             player.rpc.Target_ReceiveNPCsForCurrentArea(player.connectionToClient, serializedNPCData);
 
             TutorialManager.self.sendTutorialInfo(player, false);
