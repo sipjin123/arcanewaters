@@ -303,47 +303,37 @@ public class GenericSelectionPopup : MonoBehaviour {
 
       switch (category) {
          case Item.Category.Armor: {
-               int index = 0;
                foreach (Armor.Type itemType in Enum.GetValues(typeof(Armor.Type))) {
                   string iconPath = new Item { category = Item.Category.Armor, itemTypeId = (int) itemType }.getCastItem().getIconPath();
-                  createItemTextTemplate(itemType.ToString(), index, textUI, indexUI, iconPath, icon, changeEvent);
-                  index++;
+                  createItemTextTemplate(itemType.ToString(), (int) itemType, textUI, indexUI, iconPath, icon, changeEvent);
                }
             }
             break;
          case Item.Category.Weapon: {
-               int index = 0;
                foreach (Weapon.Type itemType in Enum.GetValues(typeof(Weapon.Type))) {
                   string iconPath = new Item { category = Item.Category.Weapon, itemTypeId = (int) itemType }.getCastItem().getIconPath();
-                  createItemTextTemplate(itemType.ToString(), index, textUI, indexUI, iconPath, icon, changeEvent);
-                  index++;
+                  createItemTextTemplate(itemType.ToString(), (int) itemType, textUI, indexUI, iconPath, icon, changeEvent);
                }
             }
             break;
          case Item.Category.Helm: {
-               int index = 0;
                foreach (Helm.Type itemType in Enum.GetValues(typeof(Helm.Type))) {
                   string iconPath = new Item { category = Item.Category.Helm, itemTypeId = (int) itemType }.getCastItem().getIconPath();
-                  createItemTextTemplate(itemType.ToString(), index, textUI, indexUI, iconPath, icon, changeEvent);
-                  index++;
+                  createItemTextTemplate(itemType.ToString(), (int) itemType, textUI, indexUI, iconPath, icon, changeEvent);
                }
             }
             break;
          case Item.Category.CraftingIngredients: {
-               int index = 0;
                foreach (CraftingIngredients.Type itemType in Enum.GetValues(typeof(CraftingIngredients.Type))) {
                   string iconPath = new Item { category = Item.Category.CraftingIngredients, itemTypeId = (int) itemType }.getCastItem().getIconPath();
-                  createItemTextTemplate(itemType.ToString(), index, textUI, indexUI, iconPath, icon, changeEvent);
-                  index++;
+                  createItemTextTemplate(itemType.ToString(), (int) itemType, textUI, indexUI, iconPath, icon, changeEvent);
                }
             }
             break;
          case Item.Category.Usable: {
-               int index = 0;
                foreach (UsableItem.Type itemType in Enum.GetValues(typeof(UsableItem.Type))) {
                   string iconPath = new Item { category = Item.Category.Usable, itemTypeId = (int) itemType }.getCastItem().getIconPath();
-                  createItemTextTemplate(itemType.ToString(), index, textUI, indexUI, iconPath, icon, changeEvent);
-                  index++;
+                  createItemTextTemplate(itemType.ToString(), (int) itemType, textUI, indexUI, iconPath, icon, changeEvent);
                }
             }
             break;
@@ -367,6 +357,14 @@ public class GenericSelectionPopup : MonoBehaviour {
          closePopup();
       });
 
+      if (imageUI != null && imagePath != "") {
+         selectionTemplate.previewButton.onClick.AddListener(() => {
+            previewSelectionIcon.sprite = ImageManager.getSprite(imagePath);
+         });
+      } else {
+         selectionTemplate.previewButton.gameObject.SetActive(false);
+      }
+
       if (imagePath != "") {
          selectionTemplate.spriteIcon.sprite = ImageManager.getSprite(imagePath);
       }
@@ -376,6 +374,7 @@ public class GenericSelectionPopup : MonoBehaviour {
       GameObject selectionObj = Instantiate(templatePrefab.gameObject, templateParent.transform);
       ItemTypeTemplate selectionTemplate = selectionObj.GetComponent<ItemTypeTemplate>();
       selectionTemplate.itemTypeText.text = selectionName;
+      selectionTemplate.previewButton.gameObject.SetActive(false);
       selectionTemplate.selectButton.onClick.AddListener(() => {
          textUI.text = selectionName;
          if (imageUI != null && imagePath != "") {
