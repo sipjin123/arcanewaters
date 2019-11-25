@@ -10,6 +10,18 @@ public class DB_MainStub : MonoBehaviour {
 
    #endregion
 
+   public static void updateAbilitiesData (int userID, EquippedAbilitiesSQL equipedAbilities, AllAbilitiesSQL allAbilities) {
+
+   }
+
+   public static List<int> getEquipedAbilities (int userID) {
+      return new List<int>();
+   }
+
+   public static List<int> getAllAbilities (int userID) {
+      return new List<int>();
+   }
+
    public static void updateAchievementData (AchievementData achievementData, int userID, bool hasReached, int addedCount) {
 
    }

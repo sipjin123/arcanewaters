@@ -1981,14 +1981,6 @@ public class RPCManager : NetworkBehaviour {
    public void Cmd_ProcessMonsterData (Enemy.Type[] enemyTypes) {
       List<BattlerData> battlerDataList = new List<BattlerData>();
 
-      BattlerData humanData = MonsterManager.self.monsterDataList.Find(_ => _.enemyType == Enemy.Type.Humanoid);
-      if (humanData != null) {
-         humanData.battlerAbilities.basicAbilityRawData = Util.serialize(new List<BasicAbilityData>(humanData.battlerAbilities.basicAbilityDataList));
-         humanData.battlerAbilities.attackAbilityRawData = Util.serialize(new List<AttackAbilityData>(humanData.battlerAbilities.attackAbilityDataList));
-         humanData.battlerAbilities.buffAbilityRawData = Util.serialize(new List<BuffAbilityData>(humanData.battlerAbilities.buffAbilityDataList));
-         battlerDataList.Add(humanData);
-      }
-
       foreach (Enemy.Type enemyType in enemyTypes) {
          BattlerData battData = MonsterManager.self.monsterDataList.Find(_ => _.enemyType == enemyType);
          if (battData != null) {
@@ -2004,7 +1996,6 @@ public class RPCManager : NetworkBehaviour {
       }
 
       processEnemySkills(battlerDataList);
-      processPlayerSkills(battlerDataList);
    }
 
    #region Skills and Abilities
@@ -2033,23 +2024,6 @@ public class RPCManager : NetworkBehaviour {
       Target_ReceiveAbilities(_player.connectionToClient, Util.serialize(returnAttackAbilityList), Util.serialize(returnBuffAbilityList));
    }
 
-   [Server]
-   private void processPlayerSkills (List<BattlerData> battleData) {
-      List<BasicAbilityData> returnAbilityList = new List<BasicAbilityData>();
-      List<BasicAbilityData> serverAbilities = new List<BasicAbilityData>(AbilityInventory.self.playerAbilities);
-
-      foreach (BattlerData data in battleData) {
-         List<BasicAbilityData> battlerAbilities = new List<BasicAbilityData>(data.battlerAbilities.basicAbilityDataList);
-         foreach (BasicAbilityData abilityData in battlerAbilities) {
-            if (serverAbilities.Exists(_=>_.itemName == abilityData.itemName)) {
-               returnAbilityList.Add(abilityData);
-            }
-         }
-      }
-
-      Target_ReceivePlayerAbilities(_player.connectionToClient, Util.serialize(returnAbilityList));
-   }
-
    [TargetRpc]
    public void Target_ReceiveAbilities (NetworkConnection connection, string[] rawAttackAbilities, string[] rawDebuffAbilities) {
       List<AttackAbilityData> attackAbilityDataList = Util.unserialize<AttackAbilityData>(rawAttackAbilities);
@@ -2057,15 +2031,6 @@ public class RPCManager : NetworkBehaviour {
 
       AbilityManager.self.addNewAbilities(attackAbilityDataList.ToArray());
       AbilityManager.self.addNewAbilities(buffAbilityDataList.ToArray());
-   }
-
-   [TargetRpc]
-   public void Target_ReceivePlayerAbilities (NetworkConnection connection, string[] rawDataList) {
-      List<AttackAbilityData> attackDataList = Util.unserialize<AttackAbilityData>(rawDataList);
-      List<BuffAbilityData> buffDataList = Util.unserialize<BuffAbilityData>(rawDataList);
-
-      AbilityInventory.self.addNewAbilities(attackDataList.ToArray());
-      AbilityInventory.self.addNewAbilities(buffDataList.ToArray());
    }
 
    #endregion

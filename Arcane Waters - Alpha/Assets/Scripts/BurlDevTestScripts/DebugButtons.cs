@@ -14,75 +14,67 @@ public class DebugButtons : NetworkBehaviour
    public bool enableDebug;
 
    public string quantity;
-   public Item.Category categoryType;
+   public Item.Category categoryType = Item.Category.CraftingIngredients;
    public string itemType;
    public string outputItem;
    public string itemData;
 
+   public List<int> allSkills = new List<int>();
+   public List<int> equppedSkills = new List<int>();
+
    #endregion
-
-   private void processItem(Item item) {
-      RewardManager.self.showItemInRewardPanel(item);
-   }
-
-   private void Start () {
-      categoryType = Item.Category.CraftingIngredients;
-   }
 
    private void OnGUI () {
       if (!enableDebug) {
          return;
       }
 
-      if (GUILayout.Button("Trigger Loot Gain")) {
-         //Global.player.achievementManager.Cmd_RegisterAchievement(Global.player.userId, ActionType.LootGainTotal, 1, 0, 0);
-      }
+      simulateAbilityData();
 
-      if (GUILayout.Button("Trigger Gather Wood")) {
-         //Global.player.achievementManager.Cmd_RegisterAchievement(Global.player.userId, ActionType.GatherItem, 1, 6, 4);
-      }
+      simulateItemReceive();
+   }
 
-      if (GUILayout.Button("Create Achievement")) {
-         AchievementData newData = new AchievementData {
-            achievementName = "AName",
-            achievementDescription = "ADesc",
-            achievementUniqueID = "UniqueID",
-            actionType = ActionType.ArmorBuy,
-            iconPath = "",
-            itemCategory = 0,
-            itemType = 0,
-            count = 1
-         };
+   private void simulateAbilityData () {
+      GUILayout.BeginHorizontal("box");
+      {
+         if (GUILayout.Button("Create Skill List")) {
+            EquippedAbilitiesSQL newSQL = new EquippedAbilitiesSQL();
+            AllAbilitiesSQL allSQL = new AllAbilitiesSQL();
+            allSkills = new List<int>();
+            equppedSkills = new List<int>();
 
-        // DB_Main.createAchievementData(newData, Global.player.userId);
-      }
-      if (GUILayout.Button("Get Achievement")) {
-         List<AchievementData> newData = DB_Main.getAchievementDataList(Global.player.userId);
+            for (int i = 0; i < 50; i++) {
+               int randVal = Random.Range(1, 300);
+               allSkills.Add(randVal);
+               if (equppedSkills.Count < 5)
+                  equppedSkills.Add(randVal);
+            }
+            allSQL.allAbilities = allSkills.ToArray();
+            newSQL.equippedAbilities = equppedSkills.ToArray();
+            DB_Main.updateAbilitiesData(Global.player.userId, newSQL, allSQL);
+         }
 
-         foreach (AchievementData achieveData in newData) {
-            Debug.LogError("----------------");
-            Debug.LogError(achieveData.achievementName);
-            Debug.LogError(achieveData.achievementUniqueID);
-            Debug.LogError(achieveData.actionType);
+         if (GUILayout.Button("Load All Skill List")) {
+            List<int> newID = DB_Main.getAllAbilities(Global.player.userId);
+
+            foreach (int fetchedID in newID) {
+               Debug.LogError("ID: " + fetchedID);
+            }
+         }
+
+         if (GUILayout.Button("Load All Equipped Skill List")) {
+            List<int> newID = DB_Main.getEquipedAbilities(Global.player.userId);
+
+            foreach (int fetchedID in newID) {
+               Debug.LogError("ID: " + fetchedID);
+            }
          }
       }
+      GUILayout.EndHorizontal();
+   }
 
-      if (GUILayout.Button("Update Achievement")) {
-         AchievementData newData = new AchievementData {
-            achievementName = "AName",
-            achievementDescription = "ADesc",
-            achievementUniqueID = "UniqueID",
-            actionType = ActionType.ArmorBuy,
-            iconPath = "",
-            itemCategory = 0,
-            itemType = 0,
-            count = 15
-         };
-
-         //DB_Main.updateAchievementData(newData, Global.player.userId);
-      }
-
-      GUILayout.BeginHorizontal("box");
+   private void simulateItemReceive () {
+   GUILayout.BeginHorizontal("box");
       {
          GUILayout.BeginVertical("box");
          {
@@ -95,7 +87,6 @@ public class DebugButtons : NetworkBehaviour
             }
          }
          GUILayout.EndVertical();
-
          GUILayout.BeginVertical("box");
          {
             if (GUILayout.Button("GENERATE ITEM: " + categoryType.ToString(), GUILayout.Width(buttonSizeX), GUILayout.Height(buttonSizeY * 2))) {
@@ -108,17 +99,17 @@ public class DebugButtons : NetworkBehaviour
             }
 
             GUILayout.BeginHorizontal();
-            GUILayout.Box("Quantity: ", GUILayout.Width(buttonSizeX/2), GUILayout.Height(buttonSizeY));
-            quantity = GUILayout.TextField(quantity, GUILayout.Width(buttonSizeX/2), GUILayout.Height(buttonSizeY));
+            GUILayout.Box("Quantity: ", GUILayout.Width(buttonSizeX / 2), GUILayout.Height(buttonSizeY));
+            quantity = GUILayout.TextField(quantity, GUILayout.Width(buttonSizeX / 2), GUILayout.Height(buttonSizeY));
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
-            GUILayout.Box("ItemTypeID: ", GUILayout.Width(buttonSizeX/2), GUILayout.Height(buttonSizeY));
-            itemType = GUILayout.TextField(itemType, GUILayout.Width(buttonSizeX/2), GUILayout.Height(buttonSizeY));
+            GUILayout.Box("ItemTypeID: ", GUILayout.Width(buttonSizeX / 2), GUILayout.Height(buttonSizeY));
+            itemType = GUILayout.TextField(itemType, GUILayout.Width(buttonSizeX / 2), GUILayout.Height(buttonSizeY));
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
             GUILayout.Box("ItemData: ", GUILayout.Width(buttonSizeX / 2), GUILayout.Height(buttonSizeY));
             itemData = GUILayout.TextField(itemData, GUILayout.Width(buttonSizeX / 2), GUILayout.Height(buttonSizeY));
-            GUILayout.EndHorizontal(); 
+            GUILayout.EndHorizontal();
 
             if (GUILayout.Button("Check final output: ", GUILayout.Width(buttonSizeX), GUILayout.Height(buttonSizeY))) {
                string itemTypeName = "";
@@ -126,7 +117,7 @@ public class DebugButtons : NetworkBehaviour
                switch (categoryType) {
                   case Item.Category.CraftingIngredients:
                      itemTypeID = Mathf.Clamp(itemTypeID, 0, System.Enum.GetNames(typeof(CraftingIngredients.Type)).Length - 1);
-                     itemTypeName = "Item Type: "+(CraftingIngredients.Type) itemTypeID;
+                     itemTypeName = "Item Type: " + (CraftingIngredients.Type) itemTypeID;
                      break;
                   case Item.Category.Armor:
                      itemTypeID = Mathf.Clamp(itemTypeID, 0, System.Enum.GetNames(typeof(Armor.Type)).Length - 1);
@@ -146,9 +137,9 @@ public class DebugButtons : NetworkBehaviour
                      break;
 
                }
-               outputItem = "Category: "+categoryType.ToString() + "\nQuantity: " + quantity + "\n" + itemTypeName;
+               outputItem = "Category: " + categoryType.ToString() + "\nQuantity: " + quantity + "\n" + itemTypeName;
             }
-            GUILayout.Label("Final output is: \n"+outputItem, GUILayout.Width(buttonSizeX), GUILayout.Height(buttonSizeY * 2));
+            GUILayout.Label("Final output is: \n" + outputItem, GUILayout.Width(buttonSizeX), GUILayout.Height(buttonSizeY * 2));
          }
          GUILayout.EndVertical();
       }
@@ -171,19 +162,6 @@ public class DebugButtons : NetworkBehaviour
 
       if (Input.GetKeyDown(KeyCode.Q)) {
          enableDebug = !enableDebug;
-      }
-
-      if(Input.GetKeyDown(KeyCode.Tilde)) {
-         var temp = tempDrop.requestLootList();
-         List<Item> itemList = new List<Item>();
-         for(int i = 0; i < temp.Count; i++) {
-            CraftingIngredients craftingIngredients = new CraftingIngredients(0, (int) temp[i].lootType, ColorType.DarkGreen, ColorType.DarkPurple, "");
-            craftingIngredients.itemTypeId = (int) craftingIngredients.type;
-            Item item = craftingIngredients;
-            itemList.Add(item);
-         }
-
-         RewardManager.self.showItemsInRewardPanel(itemList);
       }
    }
 
@@ -212,3 +190,15 @@ public static class DebugCustom
 }
 
 #pragma warning restore
+
+public class EquippedAbilitiesSQL
+{
+   // Array for equipped abilities
+   public int[] equippedAbilities;
+}
+
+public class AllAbilitiesSQL
+{
+   // Array for all other abilities
+   public int[] allAbilities;
+}

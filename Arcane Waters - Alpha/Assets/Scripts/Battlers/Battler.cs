@@ -1068,8 +1068,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
       if (elementalMultiplier < 0) {
          // Handles units that are weak to the element
-         float negativeValue = defense * Mathf.Abs(elementalMultiplier);
-         defense -= negativeValue;
+         defense *= Mathf.Abs(elementalMultiplier);
       } else {
          // Handles units that are resistant to the element
          defense *= elementalMultiplier;
@@ -1077,14 +1076,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
       // We will add as an additional the "All" multiplier with the base defense
       defense += getBattlerData().baseDefense + (getBattlerData().defensePerLevel * level);
-
-      // Based on the main computation Damage *= (100 / 100 + ( defense ))
-      // If defense is less than -100 it will cause the damage to Heal the enemy.
-      // Needs either stat computation revision or stat balancing
-      if (defense < -90) {
-         defense = -90;
-         D.error("Computation result exceeds x10 damage receive... Please balance the data in the xml editors");
-      }
 
       return defense;
    }
