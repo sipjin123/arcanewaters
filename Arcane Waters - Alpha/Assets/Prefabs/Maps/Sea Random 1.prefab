@@ -270,16 +270,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4e53b85f632c6940a0e844768554e44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  areaType: 1001
-  townAreaType: 0
+  areaKey: SeaRandom_1
+  townAreaKey: 
   cameraBounds: {fileID: 60111555325190178}
   vcam: {fileID: 114946833734726054}
-  mapConfig:
-    seed: 1
-    persistance: 0.4
-    lacunarity: 3
-    offset: {x: 5, y: 5}
-    biomeType: 1
 --- !u!1 &1840642642700288
 GameObject:
   m_ObjectHideFlags: 0
@@ -1294,4 +1288,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: caf23303b8cbd09439cb58e421d8cc3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spawnKey: RandomMap_1
   spawnType: 1001

@@ -103,6 +103,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -260,6 +261,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -452,7 +454,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 1
+      m_ColliderType: 0
   - first: {x: 27, y: -25, z: 0}
     second:
       m_TileIndex: 1
@@ -470,7 +472,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 1
+      m_ColliderType: 0
   - first: {x: 27, y: -20, z: 0}
     second:
       m_TileIndex: 4
@@ -497,7 +499,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 1
+      m_ColliderType: 0
   - first: {x: 27, y: -18, z: 0}
     second:
       m_TileIndex: 1
@@ -515,7 +517,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 1
+      m_ColliderType: 0
   m_AnimatedTiles: {}
   m_TileAssetArray:
   - m_RefCount: 2
@@ -609,6 +611,7 @@ TilemapRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -643,6 +646,8 @@ TilemapCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 1
   m_Offset: {x: 0, y: 0}
+  m_MaximumTileChangeCount: 1000
+  m_ExtrusionFactor: 0.00001
 --- !u!1 &1082240240670304
 GameObject:
   m_ObjectHideFlags: 0
@@ -735,6 +740,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -770,7 +776,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59a9a98428d226e419fede1b7cdd5674, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  texture: {fileID: 2800000, guid: 714ae1811485a39409b4111c2bca5d77, type: 3}
   initialDelay: 0
   frameLengthOverride: 0.15
   delayStart: 0
@@ -780,6 +785,8 @@ MonoBehaviour:
   isPaused: 0
   minIndex: 0
   maxIndex: 1000
+  currentAnimation: 0
+  group: 0
 --- !u!1 &1095113043098404
 GameObject:
   m_ObjectHideFlags: 0
@@ -837,6 +844,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -945,6 +953,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -995,7 +1004,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59a9a98428d226e419fede1b7cdd5674, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  texture: {fileID: 2800000, guid: 20ff096e9514dc44ab496f2e5dc1f8fb, type: 3}
   initialDelay: 0
   frameLengthOverride: -1
   delayStart: 0
@@ -1005,6 +1013,8 @@ MonoBehaviour:
   isPaused: 0
   minIndex: 0
   maxIndex: 1000
+  currentAnimation: 0
+  group: 0
 --- !u!1 &1115800636300500
 GameObject:
   m_ObjectHideFlags: 0
@@ -1062,6 +1072,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -1319,6 +1330,7 @@ TilemapRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -1580,153 +1592,165 @@ CompositeCollider2D:
         Y: -44800000
   - m_Collider: {fileID: 2113883505109958882}
     m_ColliderPaths:
-    - - X: 38400000
-        Y: -22200000
-      - X: 38600000
+    - - X: 38399971
         Y: -22400000
-      - X: 39800000
+      - X: 38400062
+        Y: -22200061
+      - X: 38600012
         Y: -22400000
+      - X: 39800006
+        Y: -22399992
       - X: 40000000
-        Y: -22200000
-      - X: 40000000
+        Y: -22200086
+      - X: 40000029
         Y: -22400000
       - X: 43199996
-        Y: -22400000
-      - X: 43199996
+        Y: -22399971
+      - X: 43199967
         Y: -19799998
       - X: 40000000
-        Y: -19799998
-      - X: 40000000
-        Y: -21000000
-      - X: 39800000
+        Y: -19800027
+      - X: 39999938
+        Y: -20999939
+      - X: 39799988
         Y: -20800000
-      - X: 38600000
-        Y: -20800000
+      - X: 38599994
+        Y: -20800008
       - X: 38400000
-        Y: -21000000
-      - X: 38400000
+        Y: -20999914
+      - X: 38399971
         Y: -20800000
       - X: 36800000
-        Y: -20800000
-      - X: 36800000
+        Y: -20799971
+      - X: 36799971
         Y: -17600000
       - X: 33600000
-        Y: -17600000
-      - X: 33600000
+        Y: -17600029
+      - X: 33600029
         Y: -22400000
-      - X: 38400000
-        Y: -22400000
-    - - X: 54400000
-        Y: -25400000
-      - X: 54600000
+    - - X: 54199988
         Y: -25600000
-      - X: 55800000
+      - X: 54400021
+        Y: -25400020
+      - X: 54600012
         Y: -25600000
+      - X: 55800006
+        Y: -25599992
       - X: 56000000
-        Y: -25400000
-      - X: 56000000
-        Y: -24199998
-      - X: 55800000
+        Y: -25399988
+      - X: 55999992
+        Y: -24199992
+      - X: 55799988
         Y: -23999998
-      - X: 54600000
+      - X: 54599994
+        Y: -24000006
+      - X: 54399979
+        Y: -24199978
+      - X: 54199988
         Y: -23999998
-      - X: 54400000
-        Y: -24199998
-      - X: 54200000
-        Y: -23999998
-      - X: 52999996
-        Y: -23999998
+      - X: 52999990
+        Y: -24000006
       - X: 52799996
-        Y: -24199998
-      - X: 52799996
-        Y: -25400000
-      - X: 52999996
+        Y: -24200010
+      - X: 52800004
+        Y: -25400006
+      - X: 53000008
         Y: -25600000
-      - X: 54200000
-        Y: -25600000
-    - - X: 52799996
+    - - X: 52799967
+        Y: -33600000
+      - X: 52799967
         Y: -29099998
       - X: 49600000
-        Y: -29099998
-      - X: 49600000
+        Y: -29100027
+      - X: 49600029
         Y: -33600000
-      - X: 52799996
-        Y: -33600000
-    - - X: 56000000
-        Y: -46400000
-      - X: 56700000
-        Y: -46400000
-      - X: 56700000
-        Y: -47799996
-      - X: 56900000
-        Y: -47999996
-      - X: 57399996
-        Y: -47999996
-      - X: 57599996
-        Y: -47799996
-      - X: 57599996
-        Y: -46200000
-      - X: 57799996
-        Y: -46400000
-      - X: 59000000
-        Y: -46400000
-      - X: 59200000
-        Y: -46200000
-      - X: 59200000
-        Y: -45000000
-      - X: 59000000
-        Y: -44800000
-      - X: 57799996
-        Y: -44800000
-      - X: 57599996
-        Y: -45000000
-      - X: 57599996
-        Y: -43199996
-      - X: 52799996
-        Y: -43199996
-      - X: 52799996
+    - - X: 53500008
+        Y: -48000096
+      - X: 53700100
+        Y: -47800004
+      - X: 53700070
+        Y: -46399900
+      - X: 54400100
+        Y: -46399988
+      - X: 54400129
         Y: -47999996
       - X: 56000000
+        Y: -47999967
+      - X: 56000029
+        Y: -46400000
+      - X: 56700000
+        Y: -46400029
+      - X: 56700008
+        Y: -47800002
+      - X: 56900012
         Y: -47999996
-    - - X: 40899996
-        Y: -52599996
+      - X: 57400002
+        Y: -47999988
+      - X: 57599996
+        Y: -47799984
+      - X: 57600058
+        Y: -46200061
+      - X: 57800008
+        Y: -46400000
+      - X: 59000006
+        Y: -46399992
+      - X: 59200000
+        Y: -46199988
+      - X: 59199992
+        Y: -44999994
+      - X: 58999988
+        Y: -44800000
+      - X: 57799990
+        Y: -44800008
+      - X: 57599996
+        Y: -44999914
+      - X: 57599967
+        Y: -43199996
+      - X: 52799996
+        Y: -43200025
+      - X: 52799919
+        Y: -47800059
+      - X: 52999988
+        Y: -48000096
+    - - X: 40699984
+        Y: -52799996
       - X: 40899996
+        Y: -52599984
+      - X: 40900025
         Y: -51200000
       - X: 41600000
-        Y: -51200000
-      - X: 41600000
+        Y: -51200029
+      - X: 41600029
         Y: -52799996
       - X: 43199996
-        Y: -52799996
-      - X: 43199996
+        Y: -52799967
+      - X: 43200025
         Y: -51200000
       - X: 43900000
-        Y: -51200000
-      - X: 43900000
-        Y: -52599996
-      - X: 44100000
+        Y: -51200029
+      - X: 43900008
+        Y: -52600002
+      - X: 44100012
         Y: -52799996
-      - X: 44600000
-        Y: -52799996
+      - X: 44600006
+        Y: -52799988
       - X: 44800000
-        Y: -52599996
-      - X: 44800000
+        Y: -52599984
+      - X: 44799971
         Y: -47999996
       - X: 40000000
-        Y: -47999996
-      - X: 40000000
-        Y: -52599996
-      - X: 40200000
+        Y: -48000025
+      - X: 40000008
+        Y: -52600002
+      - X: 40200012
         Y: -52799996
-      - X: 40699996
-        Y: -52799996
-    - - X: 60800000
-        Y: -51800000
-      - X: 59200000
-        Y: -51800000
-      - X: 59200000
+    - - X: 60799971
         Y: -56000000
-      - X: 60800000
+      - X: 60799971
+        Y: -51800000
+      - X: 59200000
+        Y: -51800029
+      - X: 59200029
         Y: -56000000
   - m_Collider: {fileID: 2113883504213018904}
     m_ColliderPaths:
@@ -1791,39 +1815,7 @@ CompositeCollider2D:
       - X: 57599996
         Y: -59200000
   - m_Collider: {fileID: 2113883506605972940}
-    m_ColliderPaths:
-    - - X: 42399996
-        Y: -27200000
-      - X: 41600000
-        Y: -27200000
-      - X: 41600000
-        Y: -28799998
-      - X: 42399996
-        Y: -28799998
-    - - X: 46400000
-        Y: -27200000
-      - X: 45600000
-        Y: -27200000
-      - X: 45600000
-        Y: -28799998
-      - X: 46400000
-        Y: -28799998
-    - - X: 42399996
-        Y: -38400000
-      - X: 41600000
-        Y: -38400000
-      - X: 41600000
-        Y: -40000000
-      - X: 42399996
-        Y: -40000000
-    - - X: 46400000
-        Y: -38400000
-      - X: 45600000
-        Y: -38400000
-      - X: 45600000
-        Y: -40000000
-      - X: 46400000
-        Y: -40000000
+    m_ColliderPaths: []
   m_CompositePaths:
     m_Paths:
     - - {x: 10.24, y: 0}
@@ -1950,6 +1942,7 @@ CompositeCollider2D:
       - {x: 6.08, y: -4.64}
       - {x: 6.08, y: -5.18}
   m_VertexDistance: 0.0005
+  m_OffsetDistance: 0.000005
 --- !u!1 &1146166957123302
 GameObject:
   m_ObjectHideFlags: 0
@@ -2039,6 +2032,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0238d3a47487136468c7bb31c718f5cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  quakeEffect: {fileID: 0}
 --- !u!1 &1150036274778670
 GameObject:
   m_ObjectHideFlags: 0
@@ -2141,6 +2135,7 @@ SpriteMask:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -2819,6 +2814,7 @@ TilemapRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -2926,6 +2922,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -2961,7 +2958,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59a9a98428d226e419fede1b7cdd5674, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  texture: {fileID: 2800000, guid: b659f99464f0f6d4aa396709f9b3a370, type: 3}
   initialDelay: 0
   frameLengthOverride: 0.15
   delayStart: 0
@@ -2971,6 +2967,8 @@ MonoBehaviour:
   isPaused: 0
   minIndex: 0
   maxIndex: 1000
+  currentAnimation: 0
+  group: 0
 --- !u!1 &1269771697538938
 GameObject:
   m_ObjectHideFlags: 0
@@ -3030,6 +3028,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -3163,7 +3162,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1289393967520662}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1980459831, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_UiScaleMode: 0
@@ -3251,6 +3250,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -3286,7 +3286,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59a9a98428d226e419fede1b7cdd5674, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  texture: {fileID: 2800000, guid: 5b076568363a42747a72652b17551f05, type: 3}
   initialDelay: 0
   frameLengthOverride: 0.15
   delayStart: 0
@@ -3296,6 +3295,8 @@ MonoBehaviour:
   isPaused: 0
   minIndex: 0
   maxIndex: 1000
+  currentAnimation: 0
+  group: 0
 --- !u!114 &114349545924756834
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3459,6 +3460,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -3726,6 +3728,7 @@ TilemapRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -3802,7 +3805,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1405743842411134}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
@@ -3822,6 +3825,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!114 &114793306933284764
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3831,7 +3835,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1405743842411134}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -405508275, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
@@ -3845,6 +3849,8 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
 --- !u!1 &1412872251493818
 GameObject:
   m_ObjectHideFlags: 0
@@ -3932,6 +3938,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -3967,7 +3974,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59a9a98428d226e419fede1b7cdd5674, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  texture: {fileID: 2800000, guid: 004e2388b9f87d74491fe6595afc8b94, type: 3}
   initialDelay: 0
   frameLengthOverride: -1
   delayStart: 0
@@ -3977,6 +3983,8 @@ MonoBehaviour:
   isPaused: 0
   minIndex: 0
   maxIndex: 1000
+  currentAnimation: 0
+  group: 0
 --- !u!1 &1436764819584624
 GameObject:
   m_ObjectHideFlags: 0
@@ -4020,7 +4028,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: caf23303b8cbd09439cb58e421d8cc3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnType: 1
+  spawnKey: StartingLocation
 --- !u!1 &1438204543674924
 GameObject:
   m_ObjectHideFlags: 0
@@ -4148,7 +4156,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdc884480543aaf44b9df8dd4ad431ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnTarget: 4
+  spawnTarget: HouseExit
+  spawnKeyTarget: HouseExit
   newFacingDirection: 5
 --- !u!61 &61028340590062164
 BoxCollider2D:
@@ -4234,6 +4243,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -4329,6 +4339,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -4364,7 +4375,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59a9a98428d226e419fede1b7cdd5674, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  texture: {fileID: 2800000, guid: 7b1182f637b64e04195be1cfe5f39b0d, type: 3}
   initialDelay: 0
   frameLengthOverride: -1
   delayStart: 0
@@ -4374,6 +4384,8 @@ MonoBehaviour:
   isPaused: 0
   minIndex: 0
   maxIndex: 1000
+  currentAnimation: 0
+  group: 0
 --- !u!1 &1500647635535836
 GameObject:
   m_ObjectHideFlags: 0
@@ -5512,6 +5524,7 @@ TilemapRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -5546,6 +5559,8 @@ TilemapCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 1
   m_Offset: {x: 0, y: 0}
+  m_MaximumTileChangeCount: 1000
+  m_ExtrusionFactor: 0.00001
 --- !u!1 &1506355440274754
 GameObject:
   m_ObjectHideFlags: 0
@@ -5612,7 +5627,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4e53b85f632c6940a0e844768554e44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  areaType: 4
+  areaKey: House
+  townAreaKey: 
   cameraBounds: {fileID: 60204444603075042}
   vcam: {fileID: 114387967986593604}
 --- !u!1 &1514219934380146
@@ -5669,7 +5685,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1514219934380146}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 2100000, guid: 458cdc1e53b2c034e9bb76f64b4eaddb, type: 2}
@@ -5847,7 +5863,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: caf23303b8cbd09439cb58e421d8cc3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnType: 2
+  spawnKey: HouseEntrance
 --- !u!1 &1579658135073674
 GameObject:
   m_ObjectHideFlags: 0
@@ -5937,6 +5953,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -5972,7 +5989,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59a9a98428d226e419fede1b7cdd5674, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  texture: {fileID: 2800000, guid: 004e2388b9f87d74491fe6595afc8b94, type: 3}
   initialDelay: 0
   frameLengthOverride: -1
   delayStart: 0
@@ -5982,6 +5998,8 @@ MonoBehaviour:
   isPaused: 0
   minIndex: 0
   maxIndex: 1000
+  currentAnimation: 0
+  group: 0
 --- !u!1 &1603030692027214
 GameObject:
   m_ObjectHideFlags: 0
@@ -6041,6 +6059,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -6076,7 +6095,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59a9a98428d226e419fede1b7cdd5674, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  texture: {fileID: 2800000, guid: 85d0d26afc960de4b8decd6ab7428dbf, type: 3}
   initialDelay: 0
   frameLengthOverride: 0.15
   delayStart: 0
@@ -6086,6 +6104,8 @@ MonoBehaviour:
   isPaused: 0
   minIndex: 0
   maxIndex: 1000
+  currentAnimation: 0
+  group: 0
 --- !u!114 &114290438197420320
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6188,6 +6208,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -6223,7 +6244,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59a9a98428d226e419fede1b7cdd5674, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  texture: {fileID: 2800000, guid: 2ec5dfb3437a5d749b414b393f754c88, type: 3}
   initialDelay: 0
   frameLengthOverride: -1
   delayStart: 0
@@ -6233,6 +6253,8 @@ MonoBehaviour:
   isPaused: 0
   minIndex: 0
   maxIndex: 1000
+  currentAnimation: 0
+  group: 0
 --- !u!1 &1631675992326902
 GameObject:
   m_ObjectHideFlags: 0
@@ -6293,6 +6315,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -6427,6 +6450,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -6548,6 +6572,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -6583,7 +6608,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59a9a98428d226e419fede1b7cdd5674, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  texture: {fileID: 2800000, guid: b659f99464f0f6d4aa396709f9b3a370, type: 3}
   initialDelay: 0
   frameLengthOverride: 0.15
   delayStart: 0
@@ -6593,6 +6617,8 @@ MonoBehaviour:
   isPaused: 0
   minIndex: 0
   maxIndex: 1000
+  currentAnimation: 0
+  group: 0
 --- !u!1 &1645909023221188
 GameObject:
   m_ObjectHideFlags: 0
@@ -7044,6 +7070,7 @@ TilemapRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -7123,6 +7150,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -7244,6 +7272,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -7279,7 +7308,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59a9a98428d226e419fede1b7cdd5674, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  texture: {fileID: 2800000, guid: d85b48073acb7ce4f812290cb1645687, type: 3}
   initialDelay: 0.15
   frameLengthOverride: -1
   delayStart: 0
@@ -7289,6 +7317,8 @@ MonoBehaviour:
   isPaused: 0
   minIndex: 0
   maxIndex: 1000
+  currentAnimation: 0
+  group: 0
 --- !u!1 &1680214096800230
 GameObject:
   m_ObjectHideFlags: 0
@@ -7348,6 +7378,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -7383,7 +7414,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59a9a98428d226e419fede1b7cdd5674, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  texture: {fileID: 2800000, guid: 85d0d26afc960de4b8decd6ab7428dbf, type: 3}
   initialDelay: 0
   frameLengthOverride: 0.15
   delayStart: 0
@@ -7393,6 +7423,8 @@ MonoBehaviour:
   isPaused: 0
   minIndex: 0
   maxIndex: 1000
+  currentAnimation: 0
+  group: 0
 --- !u!114 &114846136269104980
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7566,7 +7598,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 2
+      m_ColliderType: 1
   - first: {x: 34, y: -30, z: 0}
     second:
       m_TileIndex: 36
@@ -8066,6 +8098,7 @@ TilemapRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -8100,6 +8133,8 @@ TilemapCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 1
   m_Offset: {x: 0, y: 0}
+  m_MaximumTileChangeCount: 1000
+  m_ExtrusionFactor: 0.00001
 --- !u!1 &1717730899605210
 GameObject:
   m_ObjectHideFlags: 0
@@ -8375,6 +8410,7 @@ TilemapRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -8452,6 +8488,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -8487,7 +8524,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59a9a98428d226e419fede1b7cdd5674, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  texture: {fileID: 2800000, guid: b659f99464f0f6d4aa396709f9b3a370, type: 3}
   initialDelay: 0
   frameLengthOverride: 0.15
   delayStart: 0
@@ -8497,6 +8533,8 @@ MonoBehaviour:
   isPaused: 0
   minIndex: 0
   maxIndex: 1000
+  currentAnimation: 0
+  group: 0
 --- !u!1 &1805418252947080
 GameObject:
   m_ObjectHideFlags: 0
@@ -9137,6 +9175,7 @@ TilemapRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -9171,6 +9210,8 @@ TilemapCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 1
   m_Offset: {x: 0, y: 0}
+  m_MaximumTileChangeCount: 1000
+  m_ExtrusionFactor: 0.00001
 --- !u!1 &1835885354872838
 GameObject:
   m_ObjectHideFlags: 0
@@ -9390,6 +9431,7 @@ TilemapRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -9467,6 +9509,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -9502,7 +9545,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59a9a98428d226e419fede1b7cdd5674, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  texture: {fileID: 2800000, guid: bfc3eb70279397243b8e0ca174bc88e0, type: 3}
   initialDelay: 0
   frameLengthOverride: 0.15
   delayStart: 0
@@ -9512,6 +9554,8 @@ MonoBehaviour:
   isPaused: 0
   minIndex: 0
   maxIndex: 1000
+  currentAnimation: 0
+  group: 0
 --- !u!1 &1891313108902604
 GameObject:
   m_ObjectHideFlags: 0
@@ -9684,6 +9728,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -12555,6 +12600,7 @@ TilemapRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -12664,6 +12710,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -12699,7 +12746,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59a9a98428d226e419fede1b7cdd5674, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  texture: {fileID: 2800000, guid: 85d0d26afc960de4b8decd6ab7428dbf, type: 3}
   initialDelay: 0
   frameLengthOverride: 0.15
   delayStart: 0
@@ -12709,6 +12755,8 @@ MonoBehaviour:
   isPaused: 0
   minIndex: 0
   maxIndex: 1000
+  currentAnimation: 0
+  group: 0
 --- !u!114 &114327257712348840
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -47289,6 +47337,7 @@ TilemapRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -47323,6 +47372,8 @@ TilemapCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 1
   m_Offset: {x: 0, y: 0}
+  m_MaximumTileChangeCount: 1000
+  m_ExtrusionFactor: 0.00001
 --- !u!1 &1943673831960666
 GameObject:
   m_ObjectHideFlags: 0
@@ -47380,6 +47431,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -47415,7 +47467,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59a9a98428d226e419fede1b7cdd5674, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  texture: {fileID: 2800000, guid: 95ea7b46fe8a574429a3bafedafd88e9, type: 3}
   initialDelay: 0
   frameLengthOverride: -1
   delayStart: 0
@@ -47425,6 +47476,8 @@ MonoBehaviour:
   isPaused: 0
   minIndex: 0
   maxIndex: 1000
+  currentAnimation: 0
+  group: 0
 --- !u!1 &1946525608630160
 GameObject:
   m_ObjectHideFlags: 0
@@ -47482,6 +47535,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -47517,7 +47571,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59a9a98428d226e419fede1b7cdd5674, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  texture: {fileID: 2800000, guid: 714ae1811485a39409b4111c2bca5d77, type: 3}
   initialDelay: 0
   frameLengthOverride: 0.15
   delayStart: 0
@@ -47527,6 +47580,8 @@ MonoBehaviour:
   isPaused: 0
   minIndex: 0
   maxIndex: 1000
+  currentAnimation: 0
+  group: 0
 --- !u!1 &1964373487111694
 GameObject:
   m_ObjectHideFlags: 0
@@ -48436,6 +48491,7 @@ TilemapRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0

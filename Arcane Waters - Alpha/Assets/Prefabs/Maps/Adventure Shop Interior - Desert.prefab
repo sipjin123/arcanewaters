@@ -140,6 +140,7 @@ TilemapRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -495,6 +496,7 @@ TilemapRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -609,6 +611,7 @@ TilemapRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -1310,6 +1313,7 @@ TilemapRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -1344,6 +1348,8 @@ TilemapCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 1
   m_Offset: {x: 0, y: 0}
+  m_MaximumTileChangeCount: 1000
+  m_ExtrusionFactor: 0.00001
 --- !u!1 &1329562857702654058
 GameObject:
   m_ObjectHideFlags: 0
@@ -1390,7 +1396,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1329562857702654058}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1297475563, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
@@ -1404,6 +1410,8 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
 --- !u!1 &1453220478986308039
 GameObject:
   m_ObjectHideFlags: 0
@@ -1461,6 +1469,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -1505,6 +1514,8 @@ MonoBehaviour:
   isPaused: 0
   minIndex: 0
   maxIndex: 1000
+  currentAnimation: 0
+  group: 0
 --- !u!1 &1545169226495238900
 GameObject:
   m_ObjectHideFlags: 0
@@ -1594,6 +1605,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0238d3a47487136468c7bb31c718f5cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  quakeEffect: {fileID: 0}
 --- !u!1 &1571475590121594155
 GameObject:
   m_ObjectHideFlags: 0
@@ -1664,7 +1676,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1571475590121594155}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1980459831, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_UiScaleMode: 0
@@ -1698,7 +1710,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1571475590121594155}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1301386320, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_IgnoreReversedGraphics: 1
@@ -1750,7 +1762,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdc884480543aaf44b9df8dd4ad431ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnTarget: 23
+  spawnTarget: DesertWeaponsOutside
+  spawnKeyTarget: DesertWeaponsOutside
   newFacingDirection: 5
 --- !u!61 &3542227133843090983
 BoxCollider2D:
@@ -1835,7 +1848,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1689359822683319359}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 2100000, guid: 458cdc1e53b2c034e9bb76f64b4eaddb, type: 2}
@@ -1869,7 +1882,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1689359822683319359}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1573420865, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
@@ -1884,7 +1897,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1689359822683319359}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -900027084, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
@@ -1899,7 +1912,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1689359822683319359}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1679637790, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_IgnoreLayout: 0
@@ -2126,6 +2139,7 @@ TilemapRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -2203,6 +2217,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -2434,6 +2449,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -2634,6 +2650,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -2678,6 +2695,8 @@ MonoBehaviour:
   isPaused: 0
   minIndex: 0
   maxIndex: 1000
+  currentAnimation: 0
+  group: 0
 --- !u!114 &5852290484881296164
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2913,6 +2932,7 @@ TilemapRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -2947,6 +2967,8 @@ TilemapCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 1
   m_Offset: {x: 0, y: 0}
+  m_MaximumTileChangeCount: 1000
+  m_ExtrusionFactor: 0.00001
 --- !u!1 &4707585519820215125
 GameObject:
   m_ObjectHideFlags: 0
@@ -3006,6 +3028,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -3050,6 +3073,8 @@ MonoBehaviour:
   isPaused: 0
   minIndex: 0
   maxIndex: 1000
+  currentAnimation: 0
+  group: 0
 --- !u!114 &7888390664659905865
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3122,6 +3147,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -3166,6 +3192,8 @@ MonoBehaviour:
   isPaused: 0
   minIndex: 0
   maxIndex: 1000
+  currentAnimation: 0
+  group: 0
 --- !u!1 &5132736858150036450
 GameObject:
   m_ObjectHideFlags: 0
@@ -5340,6 +5368,7 @@ TilemapRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -5694,6 +5723,7 @@ TilemapRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -5770,7 +5800,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5283953146128050140}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
@@ -5790,6 +5820,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!114 &5573386172290873172
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5799,7 +5830,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5283953146128050140}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1392445389, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -5813,17 +5844,20 @@ MonoBehaviour:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
     m_HighlightedSprite: {fileID: 0}
     m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
     m_DisabledSprite: {fileID: 0}
   m_AnimationTriggers:
     m_NormalTrigger: Normal
     m_HighlightedTrigger: Highlighted
     m_PressedTrigger: Pressed
+    m_SelectedTrigger: Highlighted
     m_DisabledTrigger: Disabled
   m_Interactable: 1
   m_TargetGraphic: {fileID: 40098557824753387}
@@ -5912,6 +5946,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -5956,6 +5991,8 @@ MonoBehaviour:
   isPaused: 0
   minIndex: 0
   maxIndex: 1000
+  currentAnimation: 0
+  group: 0
 --- !u!1 &5816452435368912667
 GameObject:
   m_ObjectHideFlags: 0
@@ -6012,6 +6049,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -6129,6 +6167,7 @@ TilemapRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -6217,6 +6256,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -6293,16 +6333,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   npcType: 3
-  faction: 1
-  specialty: 9
-  npcName: NPC
   autoMove: 0
   moveTarget: {x: 0, y: 0}
   moveSpeed: 8
   facing: 5
   hasDiagonals: 0
   npcId: 0
-  areaType: 0
+  areaKey: 
   tradeGossip: 
   nameText: {fileID: 4026684233128282657}
 --- !u!114 &1345669549585492461
@@ -6601,6 +6638,7 @@ TilemapRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -6678,6 +6716,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -7055,7 +7094,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 2
   - first: {x: 39, y: -27, z: 0}
     second:
       m_TileIndex: 42
@@ -7208,7 +7247,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 24, y: -23, z: 0}
     second:
       m_TileIndex: 19
@@ -7217,7 +7256,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 25, y: -23, z: 0}
     second:
       m_TileIndex: 20
@@ -7226,7 +7265,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 26, y: -23, z: 0}
     second:
       m_TileIndex: 21
@@ -7235,7 +7274,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 27, y: -23, z: 0}
     second:
       m_TileIndex: 22
@@ -7244,7 +7283,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 28, y: -23, z: 0}
     second:
       m_TileIndex: 23
@@ -7253,7 +7292,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 29, y: -23, z: 0}
     second:
       m_TileIndex: 14
@@ -7718,6 +7757,7 @@ TilemapRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -7752,6 +7792,8 @@ TilemapCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 1
   m_Offset: {x: 0, y: 0}
+  m_MaximumTileChangeCount: 1000
+  m_ExtrusionFactor: 0.00001
 --- !u!1 &6891160399425721950
 GameObject:
   m_ObjectHideFlags: 0
@@ -7881,197 +7923,251 @@ CompositeCollider2D:
         Y: -56000000
   - m_Collider: {fileID: 1953634371780380344}
     m_ColliderPaths:
-    - - X: 67200000
+    - - X: 67199971
+        Y: -35200000
+      - X: 67199971
         Y: -28799998
       - X: 63999996
-        Y: -28799998
-      - X: 63999996
-        Y: -33800000
-      - X: 63700000
+        Y: -28800027
+      - X: 63999944
+        Y: -33799964
+      - X: 63699993
         Y: -33600000
-      - X: 62799996
-        Y: -33600000
+      - X: 62799988
+        Y: -33600005
       - X: 62399996
-        Y: -33900000
-      - X: 62399996
-        Y: -33800000
-      - X: 62100000
+        Y: -33899931
+      - X: 62399984
+        Y: -33799991
+      - X: 62099993
         Y: -33600000
-      - X: 61200000
-        Y: -33600000
+      - X: 61199992
+        Y: -33600005
       - X: 60800000
-        Y: -33900000
-      - X: 60800000
+        Y: -33900013
+      - X: 60800029
         Y: -35200000
-      - X: 67200000
+    - - X: 57399984
         Y: -35200000
-    - - X: 57599996
-        Y: -35000000
       - X: 57599996
-        Y: -33800000
-      - X: 57399996
+        Y: -34999988
+      - X: 57599988
+        Y: -33799994
+      - X: 57399984
         Y: -33600000
-      - X: 56200000
-        Y: -33600000
+      - X: 56199994
+        Y: -33600008
       - X: 56000000
-        Y: -33800000
-      - X: 56000000
-        Y: -35000000
-      - X: 56200000
+        Y: -33800012
+      - X: 56000008
+        Y: -35000006
+      - X: 56200012
         Y: -35200000
-      - X: 57399996
-        Y: -35200000
-    - - X: 51200000
+    - - X: 51199971
+        Y: -44800000
+      - X: 51200029
         Y: -36800000
       - X: 52799996
-        Y: -36800000
-      - X: 52799996
+        Y: -36799971
+      - X: 52799967
         Y: -34200000
       - X: 51200000
-        Y: -34200000
-      - X: 51200000
+        Y: -34200029
+      - X: 51199971
         Y: -35200000
       - X: 49600000
+        Y: -35200029
+      - X: 49599938
+        Y: -35399939
+      - X: 49399988
         Y: -35200000
-      - X: 49600000
-        Y: -35400000
-      - X: 49400000
+      - X: 48199990
+        Y: -35200008
+      - X: 47999975
+        Y: -35399980
+      - X: 47799984
         Y: -35200000
-      - X: 48199996
-        Y: -35200000
-      - X: 47999996
-        Y: -35400000
-      - X: 47799996
-        Y: -35200000
-      - X: 46600000
-        Y: -35200000
+      - X: 46599994
+        Y: -35200008
       - X: 46400000
-        Y: -35400000
-      - X: 46400000
-        Y: -36600000
-      - X: 46600000
+        Y: -35400012
+      - X: 46400008
+        Y: -36600006
+      - X: 46600012
         Y: -36800000
-      - X: 47799996
+      - X: 47800002
+        Y: -36799992
+      - X: 48000017
+        Y: -36600020
+      - X: 48200008
         Y: -36800000
-      - X: 47999996
-        Y: -36600000
-      - X: 48199996
-        Y: -36800000
-      - X: 49400000
-        Y: -36800000
+      - X: 49400006
+        Y: -36799992
       - X: 49600000
-        Y: -36600000
-      - X: 49600000
+        Y: -36600086
+      - X: 49599971
         Y: -42199996
       - X: 36800000
-        Y: -42199996
-      - X: 36800000
+        Y: -42200025
+      - X: 36800029
         Y: -44800000
-      - X: 51200000
-        Y: -44800000
-    - - X: 60099996
-        Y: -42999996
+    - - X: 40000012
+        Y: -36800100
+      - X: 40000177
+        Y: -36300578
+      - X: 40099985
+        Y: -36500100
+      - X: 41200039
+        Y: -36500092
+      - X: 41599900
+        Y: -36300215
+      - X: 41599988
+        Y: -36800100
+      - X: 43000035
+        Y: -36800092
+      - X: 43200096
+        Y: -36700011
+      - X: 43200173
+        Y: -36600578
+      - X: 43299989
+        Y: -36800100
+      - X: 44800100
+        Y: -36800012
+      - X: 44800012
+        Y: -35199900
+      - X: 43199896
+        Y: -35199988
+      - X: 43199834
+        Y: -35299697
+      - X: 43100008
+        Y: -35199900
+      - X: 36799900
+        Y: -35199988
+      - X: 36799988
+        Y: -36800100
+    - - X: 46100008
+        Y: -36500100
+      - X: 46300100
+        Y: -36300008
+      - X: 46300012
+        Y: -35199900
+      - X: 44899896
+        Y: -35199988
+      - X: 44899919
+        Y: -36300063
+      - X: 45099988
+        Y: -36500100
+    - - X: 62400008
+        Y: -43200096
+      - X: 62400125
+        Y: -41600000
+      - X: 63100000
+        Y: -41600029
+      - X: 63100008
+        Y: -43000002
+      - X: 63300012
+        Y: -43199996
+      - X: 63800002
+        Y: -43199988
+      - X: 63999996
+        Y: -42999984
+      - X: 64000025
+        Y: -41600000
+      - X: 67200000
+        Y: -41599971
+      - X: 67199971
+        Y: -38400000
+      - X: 65600000
+        Y: -38400029
+      - X: 65599938
+        Y: -39299939
+      - X: 65299984
+        Y: -39000000
+      - X: 64299994
+        Y: -39000008
+      - X: 63999996
+        Y: -39299914
+      - X: 63999967
+        Y: -38400000
+      - X: 59200000
+        Y: -38400029
+      - X: 59200008
+        Y: -43000002
+      - X: 59400012
+        Y: -43199996
+      - X: 59900002
+        Y: -43199988
       - X: 60099996
+        Y: -42999984
+      - X: 60100025
         Y: -41600000
-      - X: 63100000
-        Y: -41600000
-      - X: 63100000
-        Y: -42999996
-      - X: 63300000
-        Y: -43199996
-      - X: 63799996
-        Y: -43199996
-      - X: 63999996
-        Y: -42999996
-      - X: 63999996
-        Y: -41600000
-      - X: 67200000
-        Y: -41600000
-      - X: 67200000
-        Y: -38400000
-      - X: 65600000
-        Y: -38400000
-      - X: 65600000
-        Y: -39300000
-      - X: 65299996
-        Y: -39000000
-      - X: 64300000
-        Y: -39000000
-      - X: 63999996
-        Y: -39300000
-      - X: 63999996
-        Y: -38400000
-      - X: 59200000
-        Y: -38400000
-      - X: 59200000
-        Y: -42999996
-      - X: 59400000
-        Y: -43199996
-      - X: 59899996
-        Y: -43199996
-    - - X: 62399996
-        Y: -52599996
+      - X: 60799900
+        Y: -41600029
+      - X: 60799988
+        Y: -43200096
+    - - X: 62199984
+        Y: -52799996
       - X: 62399996
+        Y: -52600082
+      - X: 62400025
         Y: -52799996
       - X: 67200000
-        Y: -52799996
-      - X: 67200000
+        Y: -52799967
+      - X: 67199971
         Y: -48599996
       - X: 63999996
-        Y: -48599996
-      - X: 63999996
+        Y: -48600025
+      - X: 63999967
         Y: -50200000
       - X: 62399996
-        Y: -50200000
-      - X: 62399996
-        Y: -51400000
-      - X: 62199996
+        Y: -50200029
+      - X: 62399934
+        Y: -51399939
+      - X: 62199984
         Y: -51200000
-      - X: 61000000
-        Y: -51200000
+      - X: 60999994
+        Y: -51200008
       - X: 60800000
-        Y: -51400000
-      - X: 60800000
-        Y: -52599996
-      - X: 61000000
+        Y: -51400012
+      - X: 60800008
+        Y: -52600002
+      - X: 61000012
         Y: -52799996
-      - X: 62199996
+    - - X: 38399971
         Y: -52799996
-    - - X: 38400000
-        Y: -52599996
-      - X: 38600000
+      - X: 38400062
+        Y: -52600057
+      - X: 38600012
         Y: -52799996
-      - X: 39800000
+      - X: 39800006
+        Y: -52799988
+      - X: 40000021
+        Y: -52600016
+      - X: 40200012
         Y: -52799996
-      - X: 40000000
-        Y: -52599996
-      - X: 40200000
-        Y: -52799996
-      - X: 41400000
-        Y: -52799996
+      - X: 41400006
+        Y: -52799988
       - X: 41600000
-        Y: -52599996
-      - X: 41600000
-        Y: -51400000
-      - X: 41400000
+        Y: -52599984
+      - X: 41599992
+        Y: -51399994
+      - X: 41399988
         Y: -51200000
-      - X: 40200000
+      - X: 40199994
+        Y: -51200008
+      - X: 39999979
+        Y: -51399980
+      - X: 39799988
         Y: -51200000
-      - X: 40000000
-        Y: -51400000
-      - X: 39800000
-        Y: -51200000
-      - X: 38600000
-        Y: -51200000
+      - X: 38599994
+        Y: -51200008
       - X: 38400000
-        Y: -51400000
-      - X: 38400000
+        Y: -51399914
+      - X: 38399971
         Y: -50200000
       - X: 36800000
-        Y: -50200000
-      - X: 36800000
-        Y: -52799996
-      - X: 38400000
+        Y: -50200029
+      - X: 36800029
         Y: -52799996
   - m_Collider: {fileID: 8447363950302969472}
     m_ColliderPaths:
@@ -8229,6 +8325,7 @@ CompositeCollider2D:
       - {x: 3.68, y: -5.02}
       - {x: 3.68, y: -4.48}
   m_VertexDistance: 0.0005
+  m_OffsetDistance: 0.000005
 --- !u!1 &6981415362139572204
 GameObject:
   m_ObjectHideFlags: 0
@@ -8298,7 +8395,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6981415362139572204}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1980459831, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_UiScaleMode: 0
@@ -8381,7 +8478,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4e53b85f632c6940a0e844768554e44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  areaType: 13
+  areaKey: AdventureShop_Desert
+  townAreaKey: 
   cameraBounds: {fileID: 8410172179619122201}
   vcam: {fileID: 6829143896149005788}
 --- !u!1 &7336866295685885108
@@ -8443,6 +8541,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -8487,6 +8586,8 @@ MonoBehaviour:
   isPaused: 0
   minIndex: 0
   maxIndex: 1000
+  currentAnimation: 0
+  group: 0
 --- !u!114 &1024204649080206632
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8546,7 +8647,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: caf23303b8cbd09439cb58e421d8cc3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnType: 22
+  spawnKey: DesertWeaponsInside
 --- !u!61 &6567495580906538983
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -8719,6 +8820,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -43420,6 +43522,7 @@ TilemapRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -43454,6 +43557,8 @@ TilemapCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 1
   m_Offset: {x: 0, y: 0}
+  m_MaximumTileChangeCount: 1000
+  m_ExtrusionFactor: 0.00001
 --- !u!1 &8854511313087110943
 GameObject:
   m_ObjectHideFlags: 0
@@ -43770,6 +43875,7 @@ TilemapRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0

@@ -147,7 +147,7 @@ MonoBehaviour:
   facing: 5
   hasDiagonals: 0
   npcId: 0
-  areaType: 0
+  areaKey: 
   tradeGossip: 
   nameText: {fileID: 8565973519796350107}
 --- !u!114 &114723917124009126
@@ -8749,7 +8749,7 @@ MonoBehaviour:
   facing: 5
   hasDiagonals: 0
   npcId: 0
-  areaType: 0
+  areaKey: 
   tradeGossip: 
   nameText: {fileID: 114131879518792728}
 --- !u!114 &114678645528987946
@@ -9172,7 +9172,7 @@ MonoBehaviour:
   facing: 5
   hasDiagonals: 0
   npcId: 0
-  areaType: 0
+  areaKey: 
   tradeGossip: 
   nameText: {fileID: 0}
 --- !u!114 &114057216395591106
@@ -9775,7 +9775,7 @@ MonoBehaviour:
   facing: 5
   hasDiagonals: 0
   npcId: 0
-  areaType: 0
+  areaKey: 
   tradeGossip: 
   nameText: {fileID: 8569626987224155073}
 --- !u!114 &114034369569164232
@@ -10574,7 +10574,7 @@ MonoBehaviour:
   facing: 5
   hasDiagonals: 0
   npcId: 0
-  areaType: 0
+  areaKey: 
   tradeGossip: 
   nameText: {fileID: 8565866068498165309}
 --- !u!114 &114180945161970768
@@ -29857,7 +29857,7 @@ MonoBehaviour:
   facing: 5
   hasDiagonals: 0
   npcId: 0
-  areaType: 0
+  areaKey: 
   tradeGossip: 
   nameText: {fileID: 8569791701147872319}
 --- !u!114 &114742760918604080
@@ -30601,7 +30601,7 @@ MonoBehaviour:
   facing: 5
   hasDiagonals: 0
   npcId: 0
-  areaType: 0
+  areaKey: 
   tradeGossip: 
   nameText: {fileID: 8569934337786968327}
 --- !u!114 &114007583573676436
@@ -31024,8 +31024,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4e53b85f632c6940a0e844768554e44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  areaType: 1
-  townAreaType: 0
+  areaKey: StartingTown
+  townAreaKey: 
   cameraBounds: {fileID: 60237641237775524}
   vcam: {fileID: 114586639988729030}
 --- !u!1 &1403498815364752
@@ -31175,7 +31175,7 @@ MonoBehaviour:
   facing: 7
   hasDiagonals: 0
   npcId: 0
-  areaType: 0
+  areaKey: 
   tradeGossip: 
   nameText: {fileID: 8570346914267506703}
 --- !u!114 &114408112769187678
@@ -31511,7 +31511,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdc884480543aaf44b9df8dd4ad431ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnTarget: 13
+  spawnTarget: SeaBottomForestTownExit
+  spawnKeyTarget: SeaBottomForestTownExit
   newFacingDirection: 5
 --- !u!61 &61719887667959424
 BoxCollider2D:
@@ -31731,7 +31732,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdc884480543aaf44b9df8dd4ad431ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnTarget: 3
+  spawnTarget: Farm
+  spawnKeyTarget: Farm
   newFacingDirection: 1
 --- !u!61 &61878857969371804
 BoxCollider2D:
@@ -77732,7 +77734,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: caf23303b8cbd09439cb58e421d8cc3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnType: 5
+  spawnKey: ForestTownTop
 --- !u!61 &4330357778156041013
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -78482,7 +78484,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: caf23303b8cbd09439cb58e421d8cc3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnType: 6
+  spawnKey: ForestTownDock
 --- !u!61 &1880557814174037481
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -78656,7 +78658,7 @@ MonoBehaviour:
   facing: 5
   hasDiagonals: 0
   npcId: 0
-  areaType: 0
+  areaKey: 
   tradeGossip: 
   nameText: {fileID: 8570171447932764115}
 --- !u!114 &114459047659323348
@@ -79874,7 +79876,7 @@ MonoBehaviour:
   facing: 5
   hasDiagonals: 0
   npcId: 0
-  areaType: 0
+  areaKey: 
   tradeGossip: 
   nameText: {fileID: 8570089504407909249}
 --- !u!114 &114388511517660826
@@ -80933,7 +80935,7 @@ MonoBehaviour:
   facing: 5
   hasDiagonals: 0
   npcId: 0
-  areaType: 0
+  areaKey: 
   tradeGossip: 
   nameText: {fileID: 8569764452935297281}
 --- !u!114 &114167541256564432
@@ -84973,7 +84975,7 @@ MonoBehaviour:
   facing: 5
   hasDiagonals: 0
   npcId: 0
-  areaType: 0
+  areaKey: 
   tradeGossip: 
   nameText: {fileID: 8569684982990368095}
 --- !u!114 &114114595725514592
@@ -86455,7 +86457,7 @@ MonoBehaviour:
   facing: 5
   hasDiagonals: 0
   npcId: 0
-  areaType: 0
+  areaKey: 
   tradeGossip: 
   nameText: {fileID: 8570078594174997031}
 --- !u!114 &114952020015086948
@@ -86667,7 +86669,7 @@ MonoBehaviour:
   facing: 5
   hasDiagonals: 0
   npcId: 0
-  areaType: 0
+  areaKey: 
   tradeGossip: 
   nameText: {fileID: 8570053457532850089}
 --- !u!114 &114971204664457286
@@ -86844,7 +86846,7 @@ MonoBehaviour:
   facing: 5
   hasDiagonals: 0
   npcId: 0
-  areaType: 0
+  areaKey: 
   tradeGossip: 
   nameText: {fileID: 0}
 --- !u!114 &114761747417456474
@@ -88346,7 +88348,7 @@ MonoBehaviour:
   facing: 5
   hasDiagonals: 0
   npcId: 0
-  areaType: 0
+  areaKey: 
   tradeGossip: 
   nameText: {fileID: 8570174760744221065}
 --- !u!114 &114998740096412804
@@ -93406,7 +93408,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: caf23303b8cbd09439cb58e421d8cc3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnType: 19
+  spawnKey: ForestTownMerchantOutside
 --- !u!61 &1756535833567560641
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -93477,7 +93479,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: caf23303b8cbd09439cb58e421d8cc3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnType: 20
+  spawnKey: ForestTownWeaponsOutside
 --- !u!61 &7039258371649359392
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -93548,7 +93550,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdc884480543aaf44b9df8dd4ad431ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnTarget: 21
+  spawnTarget: ForestWeaponsInside
+  spawnKeyTarget: ForestWeaponsInside
   newFacingDirection: 1
 --- !u!61 &2315785694450605115
 BoxCollider2D:
@@ -93664,7 +93667,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdc884480543aaf44b9df8dd4ad431ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnTarget: 25
+  spawnTarget: ForestShipyardInside
+  spawnKeyTarget: ForestShipyardInside
   newFacingDirection: 1
 --- !u!61 &8952889572686887120
 BoxCollider2D:
@@ -93736,7 +93740,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdc884480543aaf44b9df8dd4ad431ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnTarget: 18
+  spawnTarget: ForestMerchantInside
+  spawnKeyTarget: ForestMerchantInside
   newFacingDirection: 1
 --- !u!61 &6909347011949928032
 BoxCollider2D:
@@ -104855,7 +104860,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: caf23303b8cbd09439cb58e421d8cc3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnType: 24
+  spawnKey: ForestShipyardOutside
 --- !u!61 &4682852211854671529
 BoxCollider2D:
   m_ObjectHideFlags: 0
