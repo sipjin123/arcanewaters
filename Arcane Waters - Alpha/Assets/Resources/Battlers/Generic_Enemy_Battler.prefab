@@ -258,8 +258,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: 
-  m_SceneId: 3215995970
+  m_AssetId: 9a0ebc60ef6084b4b8756714c323a5d1
+  m_SceneId: 0
 --- !u!114 &968791618137461768
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -274,41 +274,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  defaultAbilityData: {fileID: 11400000, guid: 6bff8c131c37fa345951adcbcb780b8f, type: 2}
-  battlerMainData:
-    enemyName: unknown
-    imagePath: 
-    currentXP: 0
-    battlerID: 0
-    apGainWhenDamaged: 0
-    baseHealth: 0
-    baseDefense: 0
-    baseDamage: 0
-    baseGoldReward: 0
-    baseXPReward: 0
-    damagePerLevel: 0
-    defensePerLevel: 0
-    healthPerlevel: 0
-    battlerAbilities: []
-    battlerLootData:
-      lootList: []
-      defaultLoot: 0
-      minQuantity: 0
-      maxQuantity: 0
-    physicalDefenseMultiplier: 0
-    fireDefenseMultiplier: 0
-    earthDefenseMultiplier: 0
-    airDefenseMultiplier: 0
-    waterDefenseMultiplier: 0
-    allDefenseMultiplier: 0
-    physicalAttackMultiplier: 0
-    fireAttackMultiplier: 0
-    earthAttackMultiplier: 0
-    airAttackMultiplier: 0
-    waterAttackMultiplier: 0
-    allAttackMultiplier: 0
-    preContactLength: 0
-    preMagicLength: 0
   battlerType: 1
   mainSpriteRenderer: {fileID: 611476246701747520}
   userId: 0
@@ -345,6 +310,7 @@ MonoBehaviour:
   clickBox: {fileID: 611476246899368212}
   armorManager: {fileID: 1105042735985873217}
   weaponManager: {fileID: 7952027778979235707}
+  battlerBar: {fileID: 5419549324815599876}
   onBattlerSelect:
     m_PersistentCalls:
       m_Calls: []
@@ -365,6 +331,49 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
+  _battlerAttackAbilities: []
+  _initializedBattlerData:
+    enemyName: unknown
+    imagePath: 
+    currentXP: 0
+    enemyType: 0
+    apGainWhenDamaged: 0
+    baseHealth: 0
+    baseDefense: 0
+    baseDamage: 0
+    baseGoldReward: 0
+    baseXPReward: 0
+    damagePerLevel: 0
+    defensePerLevel: 0
+    healthPerlevel: 0
+    battlerAbilities:
+      basicAbilityDataList: []
+      basicAbilityRawData: []
+      attackAbilityDataList: []
+      attackAbilityRawData: []
+      buffAbilityDataList: []
+      buffAbilityRawData: []
+    battlerLootData:
+      lootList: []
+      defaultLoot: 0
+      minQuantity: 0
+      maxQuantity: 0
+    physicalDefenseMultiplier: 0
+    fireDefenseMultiplier: 0
+    earthDefenseMultiplier: 0
+    airDefenseMultiplier: 0
+    waterDefenseMultiplier: 0
+    allDefenseMultiplier: 0
+    physicalAttackMultiplier: 0
+    fireAttackMultiplier: 0
+    earthAttackMultiplier: 0
+    airAttackMultiplier: 0
+    waterAttackMultiplier: 0
+    allAttackMultiplier: 0
+    deathSoundPath: 
+    attackJumpSoundPath: 
+    preContactLength: 0
+    preMagicLength: 0
 --- !u!114 &611476247965537135
 MonoBehaviour:
   m_ObjectHideFlags: 0

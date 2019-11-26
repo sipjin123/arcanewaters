@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0"?>
 <NPCData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <npcId>451</npcId>
   <name>Merchy</name>
@@ -81,6 +81,7 @@
     </Gift>
   </Gifts>
   <iconPath>Assets/Sprites/Faces/monocle_1.png</iconPath>
+  <spritePath>Assets/Sprites/NPCs/Bodies/Shroom/shroom_7.png</spritePath>
   <faction>6</faction>
   <specialty>3</specialty>
 </NPCData>

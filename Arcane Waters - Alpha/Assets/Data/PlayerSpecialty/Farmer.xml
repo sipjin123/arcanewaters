@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0"?>
 <PlayerSpecialtyData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <type>Farmer</type>
   <specialtyName>Farmer</specialtyName>
@@ -34,12 +34,12 @@
       <bonusResistanceWind>1</bonusResistanceWind>
       <bonusResistanceEarth>5</bonusResistanceEarth>
       <bonusResistanceAll>5</bonusResistanceAll>
-      <bonusDamagePhys>3</bonusDamagePhys>
+      <bonusDamagePhys>1</bonusDamagePhys>
       <bonusDamageFire>1</bonusDamageFire>
-      <bonusDamageWater>1</bonusDamageWater>
+      <bonusDamageWater>1.25</bonusDamageWater>
       <bonusDamageWind>1</bonusDamageWind>
-      <bonusDamageEarth>5</bonusDamageEarth>
-      <bonusDamageAll>2</bonusDamageAll>
+      <bonusDamageEarth>1</bonusDamageEarth>
+      <bonusDamageAll>1</bonusDamageAll>
       <bonusResistancePhysPerLevel>1</bonusResistancePhysPerLevel>
       <bonusResistanceFirePerLevel>1</bonusResistanceFirePerLevel>
       <bonusResistanceWaterPerLevel>5</bonusResistanceWaterPerLevel>
@@ -50,7 +50,7 @@
       <bonusDamageFirePerLevel>1</bonusDamageFirePerLevel>
       <bonusDamageWaterPerLevel>1</bonusDamageWaterPerLevel>
       <bonusDamageWindPerLevel>1</bonusDamageWindPerLevel>
-      <bonusDamageEarthPerLevel>5</bonusDamageEarthPerLevel>
+      <bonusDamageEarthPerLevel>1</bonusDamageEarthPerLevel>
       <bonusDamageAllPerLevel>1</bonusDamageAllPerLevel>
     </userCombatStats>
     <userShipStats>

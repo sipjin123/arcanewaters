@@ -144,6 +144,7 @@
     </Gift>
   </Gifts>
   <iconPath>Assets/Sprites/Faces/fatty_1.png</iconPath>
+  <spritePath>Assets/Sprites/NPCs/Bodies/Shroom/shroom_7.png</spritePath>
   <faction>7</faction>
   <specialty>3</specialty>
 </NPCData>

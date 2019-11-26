@@ -85,7 +85,8 @@
       <color2>0</color2>
     </Gift>
   </Gifts>
-  <iconPath>Assets/Sprites/Faces/feather_1.png</iconPath>
+  <iconPath>Assets/Sprites/Faces/shroom_4.png</iconPath>
+  <spritePath>Assets/Sprites/NPCs/Bodies/Skullhat/skullhat_1.png</spritePath>
   <faction>1</faction>
   <specialty>2</specialty>
 </NPCData>

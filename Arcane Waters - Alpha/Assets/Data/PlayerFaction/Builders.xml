@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0"?>
 <PlayerFactionData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <type>Builders</type>
   <factionName>Builders</factionName>
   <description />
-  <factionIconPath />
+  <factionIconPath>Assets/Sprites/Icons/Factions/Ships/faction_ship_builders.png</factionIconPath>
   <playerStats>
     <userDefaultStats>
       <hpPerLevel>10</hpPerLevel>

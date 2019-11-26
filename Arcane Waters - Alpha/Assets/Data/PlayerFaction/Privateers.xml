@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0"?>
 <PlayerFactionData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <type>Privateers</type>
   <factionName>Privateers</factionName>
@@ -34,24 +34,24 @@
       <bonusResistanceWind>1</bonusResistanceWind>
       <bonusResistanceEarth>1</bonusResistanceEarth>
       <bonusResistanceAll>1</bonusResistanceAll>
-      <bonusDamagePhys>5</bonusDamagePhys>
-      <bonusDamageFire>3</bonusDamageFire>
-      <bonusDamageWater>3</bonusDamageWater>
-      <bonusDamageWind>3</bonusDamageWind>
-      <bonusDamageEarth>3</bonusDamageEarth>
-      <bonusDamageAll>10</bonusDamageAll>
+      <bonusDamagePhys>1</bonusDamagePhys>
+      <bonusDamageFire>1</bonusDamageFire>
+      <bonusDamageWater>1</bonusDamageWater>
+      <bonusDamageWind>1</bonusDamageWind>
+      <bonusDamageEarth>1</bonusDamageEarth>
+      <bonusDamageAll>1</bonusDamageAll>
       <bonusResistancePhysPerLevel>1</bonusResistancePhysPerLevel>
       <bonusResistanceFirePerLevel>1</bonusResistanceFirePerLevel>
       <bonusResistanceWaterPerLevel>1</bonusResistanceWaterPerLevel>
       <bonusResistanceWindPerLevel>1</bonusResistanceWindPerLevel>
       <bonusResistanceEarthPerLevel>1</bonusResistanceEarthPerLevel>
       <bonusResistanceAllPerLevel>1</bonusResistanceAllPerLevel>
-      <bonusDamagePhysPerLevel>5</bonusDamagePhysPerLevel>
-      <bonusDamageFirePerLevel>3</bonusDamageFirePerLevel>
-      <bonusDamageWaterPerLevel>3</bonusDamageWaterPerLevel>
-      <bonusDamageWindPerLevel>3</bonusDamageWindPerLevel>
-      <bonusDamageEarthPerLevel>3</bonusDamageEarthPerLevel>
-      <bonusDamageAllPerLevel>5</bonusDamageAllPerLevel>
+      <bonusDamagePhysPerLevel>1</bonusDamagePhysPerLevel>
+      <bonusDamageFirePerLevel>1</bonusDamageFirePerLevel>
+      <bonusDamageWaterPerLevel>1</bonusDamageWaterPerLevel>
+      <bonusDamageWindPerLevel>1</bonusDamageWindPerLevel>
+      <bonusDamageEarthPerLevel>1</bonusDamageEarthPerLevel>
+      <bonusDamageAllPerLevel>1</bonusDamageAllPerLevel>
     </userCombatStats>
     <userShipStats>
       <bonusShipDamage>0</bonusShipDamage>

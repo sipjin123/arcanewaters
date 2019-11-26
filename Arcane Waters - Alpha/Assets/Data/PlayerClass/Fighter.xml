@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0"?>
 <PlayerClassData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <type>Fighter</type>
   <className>Fighter</className>
   <description>Fight fight fight</description>
-  <itemIconPath />
+  <itemIconPath>Assets/Sprites/Icons/Classes/class_fighter.png</itemIconPath>
   <playerStats>
     <userDefaultStats>
       <hpPerLevel>25</hpPerLevel>

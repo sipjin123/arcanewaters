@@ -119,6 +119,7 @@
     </Gift>
   </Gifts>
   <iconPath />
+  <spritePath>Assets/Sprites/NPCs/Bodies/Vest/vest_1.png</spritePath>
   <faction>6</faction>
   <specialty>3</specialty>
 </NPCData>

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>OreGain5</achievementName>
+  <actionType>OreGain</actionType>
+  <achievementDescription>Gain ore once</achievementDescription>
+  <count>5</count>
+  <achievementUniqueID>OreGain15</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath>Assets/Sprites/Icons/Battle/enemy/icon_enemy_mystical_hover.png</iconPath>
+  <tier>2</tier>
+</AchievementData>

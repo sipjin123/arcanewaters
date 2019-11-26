@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0"?>
 <PlayerJobData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <type>Crafter</type>
   <jobName>CrafterJob</jobName>
   <description>CrafterJob</description>
-  <jobIconPath />
+  <jobIconPath>Assets/Sprites/Icons/Jobs/specialty_crafter.png</jobIconPath>
   <playerStats>
     <userDefaultStats>
       <hpPerLevel>1</hpPerLevel>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0"?>
 <PlayerClassData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <type>Healer</type>
   <className>Healer</className>
@@ -28,30 +28,30 @@
       <bonusVITperLevel>10</bonusVITperLevel>
     </userDefaultStats>
     <userCombatStats>
-      <bonusResistancePhys>3</bonusResistancePhys>
-      <bonusResistanceFire>3</bonusResistanceFire>
-      <bonusResistanceWater>3</bonusResistanceWater>
-      <bonusResistanceWind>3</bonusResistanceWind>
-      <bonusResistanceEarth>3</bonusResistanceEarth>
-      <bonusResistanceAll>5</bonusResistanceAll>
-      <bonusDamagePhys>3</bonusDamagePhys>
+      <bonusResistancePhys>1</bonusResistancePhys>
+      <bonusResistanceFire>1</bonusResistanceFire>
+      <bonusResistanceWater>1</bonusResistanceWater>
+      <bonusResistanceWind>1</bonusResistanceWind>
+      <bonusResistanceEarth>1</bonusResistanceEarth>
+      <bonusResistanceAll>1</bonusResistanceAll>
+      <bonusDamagePhys>1</bonusDamagePhys>
       <bonusDamageFire>1</bonusDamageFire>
       <bonusDamageWater>1</bonusDamageWater>
       <bonusDamageWind>1</bonusDamageWind>
       <bonusDamageEarth>1</bonusDamageEarth>
-      <bonusDamageAll>3</bonusDamageAll>
-      <bonusResistancePhysPerLevel>3</bonusResistancePhysPerLevel>
-      <bonusResistanceFirePerLevel>3</bonusResistanceFirePerLevel>
-      <bonusResistanceWaterPerLevel>3</bonusResistanceWaterPerLevel>
-      <bonusResistanceWindPerLevel>3</bonusResistanceWindPerLevel>
-      <bonusResistanceEarthPerLevel>3</bonusResistanceEarthPerLevel>
-      <bonusResistanceAllPerLevel>3</bonusResistanceAllPerLevel>
+      <bonusDamageAll>1</bonusDamageAll>
+      <bonusResistancePhysPerLevel>1</bonusResistancePhysPerLevel>
+      <bonusResistanceFirePerLevel>1</bonusResistanceFirePerLevel>
+      <bonusResistanceWaterPerLevel>1</bonusResistanceWaterPerLevel>
+      <bonusResistanceWindPerLevel>1</bonusResistanceWindPerLevel>
+      <bonusResistanceEarthPerLevel>1</bonusResistanceEarthPerLevel>
+      <bonusResistanceAllPerLevel>1</bonusResistanceAllPerLevel>
       <bonusDamagePhysPerLevel>1</bonusDamagePhysPerLevel>
       <bonusDamageFirePerLevel>1</bonusDamageFirePerLevel>
       <bonusDamageWaterPerLevel>1</bonusDamageWaterPerLevel>
       <bonusDamageWindPerLevel>1</bonusDamageWindPerLevel>
       <bonusDamageEarthPerLevel>1</bonusDamageEarthPerLevel>
-      <bonusDamageAllPerLevel>3</bonusDamageAllPerLevel>
+      <bonusDamageAllPerLevel>1</bonusDamageAllPerLevel>
     </userCombatStats>
     <userShipStats>
       <bonusShipDamage>0</bonusShipDamage>

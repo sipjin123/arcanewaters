@@ -212,6 +212,7 @@
     </Gift>
   </Gifts>
   <iconPath>Assets/Sprites/Faces/shroom_8.png</iconPath>
+  <spritePath>Assets/Sprites/NPCs/Bodies/Headband/headband_1.png</spritePath>
   <faction>2</faction>
   <specialty>6</specialty>
 </NPCData>

@@ -5,7 +5,7 @@
   <currentXP>0</currentXP>
   <enemyType>Lizard</enemyType>
   <apGainWhenDamaged>0</apGainWhenDamaged>
-  <baseHealth>100</baseHealth>
+  <baseHealth>90</baseHealth>
   <baseDefense>9</baseDefense>
   <baseDamage>5</baseDamage>
   <baseGoldReward>9</baseGoldReward>

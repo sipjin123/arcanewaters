@@ -16,5 +16,5 @@
   <mastType>Caravel_1</mastType>
   <spritePath>Assets/Sprites/Ships/Barge/barge_dragon.png</spritePath>
   <rippleSpritePath>Assets/Sprites/Ship/water_wake_2.png</rippleSpritePath>
-  <avatarIconPath>Assets/Sprites/Ships/Barge/barge_dragon.png</avatarIconPath>
+  <avatarIconPath>Assets/Sprites/Ships/Barge/barge_warlord.png</avatarIconPath>
 </ShipData>

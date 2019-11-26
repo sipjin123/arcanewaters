@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0"?>
 <PlayerSpecialtyData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <type>Brawler</type>
   <specialtyName>Brawler</specialtyName>
   <description>Brawler</description>
-  <specialtyIconPath />
+  <specialtyIconPath>Assets/Sprites/Icons/Specialties/specialty_brawler.png</specialtyIconPath>
   <playerStats>
     <userDefaultStats>
       <hpPerLevel>5</hpPerLevel>

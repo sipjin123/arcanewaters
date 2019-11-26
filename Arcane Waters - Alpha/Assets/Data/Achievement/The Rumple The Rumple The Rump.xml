@@ -1,12 +1,12 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0"?>
 <AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <achievementName>The Rumple</achievementName>
+  <achievementName>The Rumple The Rumple The Rump</achievementName>
   <actionType>LootGainTotal</actionType>
   <achievementDescription>LootGainTotal01</achievementDescription>
   <count>1</count>
   <achievementUniqueID>LootGainTotal01</achievementUniqueID>
-  <itemType>1</itemType>
-  <itemCategory>6</itemCategory>
-  <iconPath />
+  <itemType>3</itemType>
+  <itemCategory>3</itemCategory>
+  <iconPath>Assets/Sprites/Icons/Battle/Buffs/buff_elixir.png</iconPath>
   <tier>1</tier>
 </AchievementData>

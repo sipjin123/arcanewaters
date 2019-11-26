@@ -1640,8 +1640,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: 
-  m_SceneId: 740665345
+  m_AssetId: 46c2928bfded7a046b99eaee919556e1
+  m_SceneId: 0
 --- !u!114 &6527673179465098255
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1656,35 +1656,69 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  defaultAbilityData:
-    itemID: 0
-    itemName: 
-    itemDescription: 
-    itemIconPath: 
-    levelRequirement: 0
-    hitSpritesPath: []
-    elementType: 0
-    hitAudioClipPath: 
-    classRequirement: 0
-    battleItemType: 0
-    castAudioClipPath: 
-    allowedStances: 
-    abilityType: 0
-    abilityCooldown: 0
-    apChange: 0
-    abilityCost: 0
-    castSpritesPath: []
-    FXTimePerFrame: 0.1
-    baseDamage: 0
-    hasShake: 0
-    hasKnockup: 0
-    abilityActionType: 0
-    canBeBlocked: 0
-  battlerMainData:
+  battlerType: 2
+  mainSpriteRenderer: {fileID: 6527673177897736797}
+  userId: 0
+  battleId: 0
+  biomeType: 0
+  teamType: 0
+  gender: 1
+  health: 0
+  displayedHealth: 0
+  AP: 0
+  displayedAP: 0
+  XP: 0
+  boardPosition: 0
+  cooldownEndTime: 0
+  stanceCooldownEndTime: 0
+  stanceCurrentCooldown: 0
+  stance: 0
+  lastStanceChange: -3.4028235e+38
+  lastAbilityEndTime: 0
+  animatingUntil: 0
+  enemyType: 305
+  playerNetId: 0
+  player: {fileID: 0}
+  battle: {fileID: 0}
+  battleSpot: {fileID: 0}
+  isJumping: 0
+  bodyType: 0
+  eyesType: 0
+  hairType: 0
+  eyesColor1: 0
+  hairColor1: 0
+  hairColor2: 0
+  lastDamagedTime: -3.4028235e+38
+  clickBox: {fileID: 6527673178364909065}
+  armorManager: {fileID: 6527673179465098355}
+  weaponManager: {fileID: 6527673179465098356}
+  battlerBar: {fileID: 4897325508947964398}
+  onBattlerSelect:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onBattlerDeselect:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onBattlerAttackStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onBattlerAttackEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  _battlerAttackAbilities: []
+  _initializedBattlerData:
     enemyName: unknown
     imagePath: 
     currentXP: 0
-    enemyType: 305
+    enemyType: 0
     apGainWhenDamaged: 0
     baseHealth: 0
     baseDefense: 0
@@ -1722,62 +1756,6 @@ MonoBehaviour:
     attackJumpSoundPath: 
     preContactLength: 0
     preMagicLength: 0
-  battlerType: 2
-  mainSpriteRenderer: {fileID: 6527673177897736797}
-  userId: 0
-  battleId: 0
-  biomeType: 0
-  teamType: 0
-  gender: 1
-  health: 0
-  displayedHealth: 0
-  AP: 0
-  displayedAP: 0
-  XP: 0
-  boardPosition: 0
-  cooldownEndTime: 0
-  stanceCooldownEndTime: 0
-  stanceCurrentCooldown: 0
-  stance: 0
-  lastStanceChange: -3.4028235e+38
-  lastAbilityEndTime: 0
-  animatingUntil: 0
-  enemyType: 305
-  playerNetId: 0
-  player: {fileID: 0}
-  battle: {fileID: 0}
-  battleSpot: {fileID: 0}
-  isJumping: 0
-  bodyType: 0
-  eyesType: 0
-  hairType: 0
-  eyesColor1: 0
-  hairColor1: 0
-  hairColor2: 0
-  lastDamagedTime: -3.4028235e+38
-  clickBox: {fileID: 6527673178364909065}
-  armorManager: {fileID: 6527673179465098355}
-  weaponManager: {fileID: 6527673179465098356}
-  onBattlerSelect:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-  onBattlerDeselect:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-  onBattlerAttackStart:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-  onBattlerAttackEnd:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!114 &6527673179465098354
 MonoBehaviour:
   m_ObjectHideFlags: 0
