@@ -16,9 +16,6 @@ public class MonsterManager : MonoBehaviour {
    // Determines if the list is generated already
    public bool hasInitialized;
 
-   // Holds the list of the xml translated data
-   public List<BattlerData> monsterDataList;
-
    // Direct reference to ability manager for enemy skills
    public AbilityManager abilityManager;
 
@@ -27,6 +24,9 @@ public class MonsterManager : MonoBehaviour {
 
    // Direct reference to battleManager
    public BattleManager battleManager;
+
+   // Request access to monster data list
+   public List<BattlerData> monsterDataList { get { return _monsterDataList; } }
 
    #endregion
 
@@ -40,8 +40,12 @@ public class MonsterManager : MonoBehaviour {
 #endif
    }
 
+   public BattlerData requestBattler (Enemy.Type enemyType) {
+      return _monsterDataList.Find(_ => _.enemyType == enemyType);
+   }
+
    public void translateRawDataToBattlerData (Enemy.Type enemyType, BattlerData mainData) {
-      BattlerData rawData = monsterDataList.Find(_ => _.enemyType == enemyType);
+      BattlerData rawData = _monsterDataList.Find(_ => _.enemyType == enemyType);
       if(rawData == null) {
          return;
       }
@@ -89,9 +93,9 @@ public class MonsterManager : MonoBehaviour {
    public void receiveListFromServer (BattlerData[] battlerDataList) {
       if (!hasInitialized) {
          hasInitialized = true;
-         monsterDataList = new List<BattlerData>();
+         _monsterDataList = new List<BattlerData>();
          foreach (BattlerData battlerData in battlerDataList) {
-            monsterDataList.Add(battlerData);
+            _monsterDataList.Add(battlerData);
          }
       }
    }
@@ -132,7 +136,7 @@ public class MonsterManager : MonoBehaviour {
             battleManager.registerBattler(monsterData);
          }
 
-         monsterDataList = getAllMonsterData();
+         _monsterDataList = getAllMonsterData();
       }
    }
 
@@ -140,6 +144,9 @@ public class MonsterManager : MonoBehaviour {
 
    // The cached monster data 
    private Dictionary<Enemy.Type, BattlerData> _monsterData = new Dictionary<Enemy.Type, BattlerData>();
+
+   // Holds the list of the xml translated data
+   [SerializeField] protected List<BattlerData> _monsterDataList;
 
    #endregion
 }

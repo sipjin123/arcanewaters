@@ -90,39 +90,26 @@ public enum ActionType
    UsePotion = 26, UseStatsBuff = 27, TrashItem = 28, WeaponBuy = 29, ArmorBuy = 30,
    HeadgearBuy = 31, BuffSkillUse = 32, OffensiveSkillUse = 33, EnterCombat = 34, JumpOnBouncePad = 35,
    MineOre = 36, OpenTreasureChest = 37, HarvestCrop = 38, SellCrop = 39, WaterCrop = 40,
-   PlantCrop = 41, EarnGold = 42, GatherItem = 43
+   PlantCrop = 41, EarnGold = 42, GatherItem = 43, HealthGain = 44, OreGain = 45,
+   HitSeaMonster = 46, HitEnemyShips = 47
 }
 
 /*
  * TESTED REALTIME
- * JumpOnBouncePad
- * SellCrop
- * HarvestCrop
- * WaterCrop
- * WeaponBuy
- * PlantCrop
- * KillLandMonster
- * KillSeaMonster
- * Electrocuted
- * EarnGold
- * CombatDie
- * OffensiveSkillUse
- * MineOre
- * OpenedLootBag
- * 
- * 
+ * JumpOnBouncePad, SellCrop, LevelUp, CannonHits, Poisoned
+ * HarvestCrop, WaterCrop, WeaponBuy, PlantCrop, KillLandMonster
+ * KillSeaMonster, Electrocuted, EarnGold,  CombatDie, OffensiveSkillUse
+ * MineOre, OpenedLootBag, OreGain, HitSeaMonster, HitEnemyShips
+ * SinkedShips, HitPlayerWithCannon, ShipDie, EnterCombat, Craft
+ * OpenedLootBag, BuyShip, BuyItem
  * 
  * FINISHED INTEGRATION
- * OpenedLootBag, Craft, , BuyItem, BuyShip
- * , ArmorBuy, , , 
- * , NPCGift, OpenTreasureChest, ,  
- * SinkedShips, CannonHits, , , HitPlayerWithCannon 
- * Frozen, Poisoned, ShipDie, EnterCombat, HeadgearBuy 
- * , BuffSkillUse, , QuestComple, 
- * LevelUp, 
+ * ArmorBuy, NPCGift, OpenTreasureChest, 
+ * Frozen, HeadgearBuy 
+ * BuffSkillUse, QuestComple, 
  * 
  * NEEDS INTEGRATION
  * LootGainTotal = 1, SellItem = 8,
-   TalkToNPC = 11, NPCAcquaintance = 12, NPCCasualFriend = 13, NPCCloseFriend = 14, NPCBestFriend = 15,
-   QuestDelivery = 17, UsePotion = 26, UseStatsBuff = 27, TrashItem = 28, GatherItem = 43, 
+ * TalkToNPC = 11, NPCAcquaintance = 12, NPCCasualFriend = 13, NPCCloseFriend = 14, NPCBestFriend = 15,
+ * QuestDelivery = 17, UsePotion = 26, UseStatsBuff = 27, TrashItem = 28, GatherItem = 43,  HealthGain = 44,
 */
