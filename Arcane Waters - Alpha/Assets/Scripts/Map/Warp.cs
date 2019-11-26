@@ -8,7 +8,7 @@ public class Warp : MonoBehaviour {
    #region Public Variables
 
    // The spawn for this warp
-   public Spawn.Type spawnTarget;
+   public string spawnTarget;
 
    // The facing direction we should have after spawning
    public Direction newFacingDirection = Direction.South;
@@ -39,7 +39,7 @@ public class Warp : MonoBehaviour {
       if (Area.isSea(spawn.AreaKey) && currentStep < (int) Step.HeadToDocks) {
          return false;
       }
-      if (spawnTarget == Spawn.Type.HouseExit && currentStep == (int) Step.GetDressed) {
+      if (Spawn.HOUSE_EXIT.Equals(spawnTarget) && currentStep == (int) Step.GetDressed) {
          ServerMessageManager.sendError(ErrorMessage.Type.Misc, player, "You need to get dressed before leaving the house!");
          return false;
       }

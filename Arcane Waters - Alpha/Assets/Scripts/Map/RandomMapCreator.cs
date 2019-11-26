@@ -134,7 +134,7 @@ public static class RandomMapCreator {
       // Create warp object to docks
       Warp backWarp = new GameObject(bottom ? "Warp Back Bottom" : "Warp Back Top").AddComponent<Warp>();
       backWarp.gameObject.AddComponent<SpriteRenderer>();
-      backWarp.spawnTarget = Spawn.Type.ForestTownDock;
+      backWarp.spawnTarget = Spawn.FOREST_TOWN_DOCK;
       backWarp.transform.SetParent(area.transform);
       float localScale = (1 + (bottom ? _spawnEndsBottom[0] - _spawnStartsBottom[0] : _spawnEndsTop[0] - _spawnStartsTop[0])) / 64.0f * 10.25f;
       backWarp.transform.localScale = new Vector3(localScale, 1f, 1f);

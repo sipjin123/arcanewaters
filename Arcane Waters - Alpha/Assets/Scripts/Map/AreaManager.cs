@@ -8,7 +8,7 @@ public class AreaManager : MonoBehaviour {
    #region Public Variables
 
    // The place we spawn players after their ship sinks
-   public Spawn.Type spawnForSunkenPlayers;
+   public string spawnForSunkenPlayers;
 
    // Self
    public static AreaManager self;

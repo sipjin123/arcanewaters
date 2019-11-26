@@ -187,18 +187,10 @@ public class AdminManager : NetworkBehaviour {
 
    protected void requestWarp (string parameters) {
       string[] list = parameters.Split(' ');
-      Spawn.Type spawnType = Spawn.Type.None;
-
-      try {
-         spawnType = (Spawn.Type) int.Parse(list[0]);
-      } catch (System.Exception e) {
-         D.warning("Unable to parse from: " + parameters + ", exception: " + e);
-         ChatManager.self.addChat("Not a valid area", ChatInfo.Type.Error);
-         return;
-      }
+      string spawnKey = list[0];
 
       // Send the request to the server
-      Cmd_Warp(spawnType);
+      Cmd_Warp(spawnKey);
    }
 
    [Command]
@@ -340,18 +332,18 @@ public class AdminManager : NetworkBehaviour {
    }
 
    [Command]
-   protected void Cmd_Warp (Spawn.Type spawnType) {
+   protected void Cmd_Warp (string spawnKey) {
       // Make sure this is an admin
       if (!_player.isAdmin()) {
          D.warning("Received admin command from non-admin!");
          return;
       }
 
-      if (spawnType == Spawn.Type.None) {
+      if ("".Equals(spawnKey)) {
          return;
       }
 
-      Spawn spawn = SpawnManager.self.getSpawn(spawnType);
+      Spawn spawn = SpawnManager.self.getSpawn(spawnKey);
 
       _player.spawnInNewMap(spawn.AreaKey, spawn, Direction.South);
    }
@@ -413,9 +405,10 @@ public class AdminManager : NetworkBehaviour {
    }
 
    protected void warpRandomly () {
-      int num = Random.Range(1, 20);
+      List<string> allSpawnKeys = SpawnManager.get().getAllSpawnKeys();
+      string spawnKey = allSpawnKeys[Random.Range(0, allSpawnKeys.Count)];
 
-      handleAdminCommandString("warp " + num);
+      handleAdminCommandString("warp " + spawnKey);
    }
 
    #region Private Variables

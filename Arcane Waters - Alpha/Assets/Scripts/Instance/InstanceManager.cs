@@ -40,7 +40,7 @@ public class InstanceManager : MonoBehaviour {
       }
 
       // IF they're entering their farm, send them their crops
-      if (areaKey == Area.FARM) {
+      if (Area.FARM.Equals(areaKey)) {
          player.cropManager.loadCrops();
       }
 
@@ -97,7 +97,7 @@ public class InstanceManager : MonoBehaviour {
       recalculateOpenAreas();
 
       // Create any treasure we might want in the instance
-      if (areaKey == Area.TREASURE_PINE) {
+      if (Area.TREASURE_PINE.Equals(areaKey)) {
          // Create any treasure and ore we might want in the instance
          if (Area.isTreasureSite(areaKey)) {
             TreasureManager.self.createTreasureForInstance(instance);

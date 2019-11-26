@@ -184,7 +184,7 @@ public class Minimap : ClientMonoBehaviour {
       List<string> buildings = new List<string>() { "Shipyard", "Merchant", "Weapons" };
       foreach (Spawn spawn in area.GetComponentsInChildren<Spawn>()) {
          foreach (string building in buildings) {
-            if (spawn.spawnType.ToString().Contains(building)) {
+            if (spawn.spawnKey.Contains(building)) {
                MM_Icon icon = Instantiate(buildingIconPrefab, this.iconContainer.transform);
                icon.getImage().sprite = getBuildingSprite(building);
                icon.target = spawn.gameObject;

@@ -106,7 +106,7 @@ public class Instance : NetworkBehaviour
    }
 
    public int getMaxPlayers () {
-      if (areaKey == Area.FARM || areaKey == Area.HOUSE) {
+      if (Area.FARM.Equals(areaKey) || Area.HOUSE.Equals(areaKey)) {
          return 1;
       }
 

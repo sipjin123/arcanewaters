@@ -7,26 +7,12 @@ using Mirror;
 public class Spawn : MonoBehaviour {
    #region Public Variables
 
-   // The Type of Spawn this is
-   public enum Type { None = 0,
-      StartingLocation = 1, HouseEntrance = 2, Farm = 3, HouseExit = 4, ForestTownTop = 5,
-      ForestTownDock = 6, DesertTownDock = 7, DesertTownMerchantOutside = 8, SeaTopLower = 9, SeaMiddleDesertTownExit = 10,
-      SeaMiddleLower = 11, SeaMiddleUpper = 12, SeaBottomForestTownExit = 13, SeaBottomUpper = 14, DesertMerchantInside = 15,
-      TreasurePine = 16, OutsideTreasureSite = 17, ForestMerchantInside = 18, ForestTownMerchantOutside = 19,
-      ForestTownWeaponsOutside = 20, ForestWeaponsInside = 21, DesertWeaponsInside = 22, DesertWeaponsOutside = 23,
-      ForestShipyardOutside = 24, ForestShipyardInside = 25,
+   // Hardcoded spawn keys
+   public static string FOREST_TOWN_DOCK = "ForestTownDock";
+   public static string HOUSE_EXIT = "HouseExit";
 
-      //Added when testing the map creation tool
-      TonyTest = 2001,
-      CollisionTest = 2002,
-
-      RandomMap_1 = 1001,
-      RandomMap_2 = 1002,
-      RandomMap_3 = 1003,
-   }
-
-   // The Type of Spawn this is
-   public Type spawnType;
+   // The key determining the type of spawn this is
+   public string spawnKey;
 
    // Convenient area key property
    public string AreaKey {
@@ -43,7 +29,7 @@ public class Spawn : MonoBehaviour {
       _spawnBox = GetComponent<BoxCollider2D>();
 
       // Keep track of this spawn
-      SpawnManager.get().store(this.spawnType, this);
+      SpawnManager.get().store(this.spawnKey, this);
    }
 
    public Vector3 getSpawnPosition () {

@@ -8,7 +8,7 @@ public class SpawnManager : MonoBehaviour {
    #region Public Variables
 
    // The starting spawn location for new characters
-   public Spawn.Type startingSpawnLocation;
+   public string startingSpawnLocation;
 
    // Self
    public static SpawnManager self;
@@ -28,22 +28,26 @@ public class SpawnManager : MonoBehaviour {
       return self;
    }
 
-   public void store (Spawn.Type spawnType, Spawn spawn) {
-      if (_spawns.ContainsKey(spawnType)) {
-         D.warning("Storing multiple spawns of the same type: " + spawnType);
+   public void store (string spawnKey, Spawn spawn) {
+      if (_spawns.ContainsKey(spawnKey)) {
+         D.warning("Storing multiple spawns of the same type: " + spawnKey);
       }
 
-      _spawns[spawnType] = spawn;
+      _spawns[spawnKey] = spawn;
    }
 
-   public Spawn getSpawn (Spawn.Type spawnType) {
-      return _spawns[spawnType];
+   public Spawn getSpawn (string spawnKey) {
+      return _spawns[spawnKey];
+   }
+
+   public List<string> getAllSpawnKeys () {
+      return new List<string>(_spawns.Keys);
    }
 
    #region Private Variables
 
    // Keeps track of the Spawns that we know about
-   protected Dictionary<Spawn.Type, Spawn> _spawns = new Dictionary<Spawn.Type, Spawn>();
+   protected Dictionary<string, Spawn> _spawns = new Dictionary<string, Spawn>();
 
    #endregion
 }

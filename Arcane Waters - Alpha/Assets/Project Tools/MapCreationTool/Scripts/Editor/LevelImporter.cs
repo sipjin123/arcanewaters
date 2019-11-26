@@ -54,7 +54,7 @@ namespace MapCreationTool
          spawn.transform.localPosition = Vector3.zero;
 
          var sp = spawn.gameObject.AddComponent<Spawn>();
-         sp.spawnType = Spawn.Type.TonyTest;
+         sp.spawnKey = "TonyTest";
 
          foreach (var tile in data.tiles) {
             if (tile.tile == AssetSerializationMaps.transparentTileBase)

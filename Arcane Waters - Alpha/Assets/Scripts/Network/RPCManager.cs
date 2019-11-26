@@ -1021,7 +1021,7 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Move player back to town if random sea map instance hasn't been found
-      _player.Cmd_SpawnInNewMap (Area.STARTING_TOWN, Spawn.Type.ForestTownDock, Direction.North);
+      _player.Cmd_SpawnInNewMap (Area.STARTING_TOWN, Spawn.FOREST_TOWN_DOCK, Direction.North);
    }
 
    [Command]

@@ -23,7 +23,7 @@ public class TestMapManager : MonoBehaviour
             var player = Global.player;
             // If a player entered this warp on the server, move them
             if (player.isServer && player.connectionToClient != null) {
-               Spawn spawn = FindObjectsOfType<Spawn>().FirstOrDefault(s => s.spawnType == Spawn.Type.TonyTest);
+               Spawn spawn = FindObjectsOfType<Spawn>().FirstOrDefault(s => s.AreaKey == "TonyTest");
                if (spawn != null) {
                   Debug.Log("Starting warp to target area: " + spawn.AreaKey);
                   player.spawnInNewMap(spawn.AreaKey, spawn, Direction.South);
@@ -33,7 +33,17 @@ public class TestMapManager : MonoBehaviour
             var player = Global.player;
             // If a player entered this warp on the server, move them
             if (player.isServer && player.connectionToClient != null) {
-               Spawn spawn = FindObjectsOfType<Spawn>().FirstOrDefault(s => s.spawnType == Spawn.Type.CollisionTest);
+               Spawn spawn = FindObjectsOfType<Spawn>().FirstOrDefault(s => s.AreaKey == "CollisionTest");
+               if (spawn != null) {
+                  Debug.Log("Starting warp to target area: " + spawn.AreaKey);
+                  player.spawnInNewMap(spawn.AreaKey, spawn, Direction.South);
+               }
+            }
+         } else if (Input.GetKeyDown(KeyCode.Alpha4) || Input.GetKeyDown(KeyCode.Keypad4)) {
+            var player = Global.player;
+            // If a player entered this warp on the server, move them
+            if (player.isServer && player.connectionToClient != null) {
+               Spawn spawn = FindObjectsOfType<Spawn>().FirstOrDefault(s => s.AreaKey == "PogsideOasis");
                if (spawn != null) {
                   Debug.Log("Starting warp to target area: " + spawn.AreaKey);
                   player.spawnInNewMap(spawn.AreaKey, spawn, Direction.South);

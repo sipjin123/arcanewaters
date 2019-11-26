@@ -748,8 +748,8 @@ public class NetEntity : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_SpawnInNewMap (string newArea, Spawn.Type spawnType, Direction newFacingDirection) {
-      Spawn spawn = SpawnManager.self.getSpawn(spawnType);
+   public void Cmd_SpawnInNewMap (string newArea, string spawnKey, Direction newFacingDirection) {
+      Spawn spawn = SpawnManager.self.getSpawn(spawnKey);
 
       spawnInNewMap(newArea, spawn, newFacingDirection);
    }

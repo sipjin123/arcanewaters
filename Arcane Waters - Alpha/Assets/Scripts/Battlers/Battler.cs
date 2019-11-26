@@ -510,7 +510,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
             // Player battler
          } else {
-            Spawn spawn = SpawnManager.self.getSpawn(Spawn.Type.ForestTownDock);
+            Spawn spawn = SpawnManager.self.getSpawn(Spawn.FOREST_TOWN_DOCK);
 
             // If they're still connected, we can warp them directly
             if (player != null && player.connectionToClient != null) {
@@ -1147,6 +1147,91 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    public bool isMonster () {
       // Monsters have negative user IDs
       return (userId < 0);
+   }
+
+   public bool isWeakAgainst (Element outgoingElement) {
+      // Determines if the battler is weak against the element
+      switch (outgoingElement) {
+         case Element.Air:
+            if (getBattlerData().airDefenseMultiplier < 0) {
+               return true;
+            }
+            break;
+         case Element.Fire:
+            if (getBattlerData().fireDefenseMultiplier < 0) {
+               return true;
+            }
+            break;
+         case Element.Water:
+            if (getBattlerData().waterDefenseMultiplier < 0) {
+               return true;
+            }
+            break;
+         case Element.Earth:
+            if (getBattlerData().earthDefenseMultiplier < 0) {
+               return true;
+            }
+            break;
+      }
+      return false;
+   }
+
+   public static float getElementalMultiplier (Element outgoingElement, Element resistingElement) {
+      float neutralDamage = 1;
+      float weakDamage = 0;
+      float strongDamage = 1.5f;
+
+      switch (outgoingElement) {
+         case Element.Air: {
+               if (resistingElement == Element.Water) {
+                  // Amplifies damage if opposite is weak to it
+                  return strongDamage;
+               } else if (resistingElement == Element.Earth && resistingElement == Element.Air) {
+                  // Negates elements that are similar or opposite
+                  return weakDamage;
+               } else {
+                  // Neutral Damage
+                  return neutralDamage;
+               }
+            }
+         case Element.Water: {
+               if (resistingElement == Element.Fire) {
+                  // Amplifies damage if opposite is weak to it
+                  return strongDamage;
+               } else if (resistingElement == Element.Air && resistingElement == Element.Water) {
+                  // Negates elements that are similar or opposite
+                  return weakDamage;
+               } else {
+                  // Neutral Damage
+                  return neutralDamage;
+               }
+            }
+         case Element.Fire: {
+               if (resistingElement == Element.Earth) {
+                  // Amplifies damage if opposite is weak to it
+                  return strongDamage;
+               } else if (resistingElement == Element.Water && resistingElement == Element.Fire) {
+                  // Negates elements that are similar or opposite
+                  return weakDamage;
+               } else {
+                  // Neutral Damage
+                  return neutralDamage;
+               }
+            }
+         case Element.Earth: {
+               if (resistingElement == Element.Air) {
+                  // Amplifies damage if opposite is weak to it
+                  return strongDamage;
+               } else if (resistingElement == Element.Fire && resistingElement == Element.Earth) {
+                  // Negates elements that are similar or opposite
+                  return weakDamage;
+               } else {
+                  // Neutral Damage
+                  return neutralDamage;
+               }
+            }
+      }
+      return neutralDamage;
    }
 
    public bool canBlock () {

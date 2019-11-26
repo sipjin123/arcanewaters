@@ -451,7 +451,7 @@ public class BattleManager : MonoBehaviour {
 
             float targetDefenseElement = target.getDefense(element);
             float resistantModifier = 0;
-            if (Util.isWeakAgainst(element, target)) {
+            if (target.isWeakAgainst(element)) {
                resistantModifier = ((100f + targetDefenseElement) / 100);
             } else {
                resistantModifier = (100f / (100f + targetDefenseElement));

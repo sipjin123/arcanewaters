@@ -58,7 +58,7 @@ public class RandomMapManager : MonoBehaviour
          Global.player.rpc.Cmd_GetSummaryOfGeneratedMaps();
       }
       if (Input.GetKeyUp(KeyCode.F8)) {
-         Global.player.Cmd_SpawnInNewMap(Area.STARTING_TOWN, Spawn.Type.ForestTownDock, Direction.North);
+         Global.player.Cmd_SpawnInNewMap(Area.STARTING_TOWN, Spawn.FOREST_TOWN_DOCK, Direction.North);
       }
    }
 
