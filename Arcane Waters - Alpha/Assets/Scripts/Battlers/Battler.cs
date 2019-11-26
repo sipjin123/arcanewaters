@@ -11,9 +11,6 @@ using Random = UnityEngine.Random;
 public class Battler : NetworkBehaviour, IAttackBehaviour {
    #region Public Variables
 
-   // Will be used to fill all the information related to this battler, it is uninitialized. 
-   public BattlerData battlerMainData;
-
    // Battler type (AI controlled or player controlled)
    public BattlerType battlerType;
 
@@ -68,7 +65,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
    // The amount of health we currently have
    [SyncVar]
-   public int health;
+   public int health = 1;
 
    // The amount of health displayed by the client
    public int displayedHealth;
@@ -113,6 +110,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    public float animatingUntil;
 
    // Determines the enemy type which is used to retrieve enemy data from XML
+   [SyncVar]
    public Enemy.Type enemyType;
 
    // Our associated player net ID
@@ -162,6 +160,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    public ArmorManager armorManager;
    public WeaponManager weaponManager;
 
+   // Holds the reference to the battler bar
+   public BattleBars battlerBar;
+
    // Base select/deselect battlers events. Hidden from inspector to avoid untracked events.
    [HideInInspector] public UnityEvent onBattlerSelect = new UnityEvent();
    [HideInInspector] public UnityEvent onBattlerDeselect = new UnityEvent();
@@ -180,15 +181,15 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
       // Keep track of all of our Simple Animation components
       _anims = new List<SimpleAnimation>(GetComponentsInChildren<SimpleAnimation>());
-
-      mainInit();
    }
 
    private void Start () {
+      mainInit();
+
       // Look up our associated player object
       NetworkIdentity enemyIdent = NetworkIdentity.spawned[playerNetId];
       this.player = enemyIdent.GetComponent<NetEntity>();
-      
+
       // Set our sprite sheets according to our types
       if (battlerType == BattlerType.PlayerControlled) {
          updateSprites();
@@ -235,9 +236,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
       // Flip sprites for the attackers
       checkIfSpritesShouldFlip();
-
-      // This function will handle the computed stats of the player depending on their Specialty/Faction/Job/Class
-      setupPlayerStats();
    }
 
    private void Update () {
@@ -251,21 +249,27 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    }
 
    public void mainInit () {
-      BattlerData battlerData = MonsterManager.self.monsterDataList.Find(_ => _.enemyType == enemyType);
+      BattlerData battlerData = MonsterManager.self.requestBattler(enemyType);
       if (battlerType == BattlerType.PlayerControlled) {
-         battlerData = MonsterManager.self.monsterDataList.Find(_ => _.enemyType == Enemy.Type.Humanoid);
+         battlerData = MonsterManager.self.requestBattler(Enemy.Type.Humanoid);
       } else {
          // Sets the default monster if data is not yet created in xml editor
          if (battlerData == null) {
-            battlerData = MonsterManager.self.monsterDataList.Find(_ => _.enemyType == Enemy.Type.Coralbow);
+            battlerData = MonsterManager.self.requestBattler(Enemy.Type.Lizard);
          } 
       }
 
-      battlerMainData = battlerData;
-      if (battlerMainData != null) {
-         _initializedBattlerData = BattlerData.CreateInstance(battlerMainData);
+      if (battlerData != null) {
+         _initializedBattlerData = BattlerData.CreateInstance(battlerData);
+         _initializedBattlerData.enemyName = battlerData.enemyName;
       } else {
          Debug.LogError("DATA IS NULL");
+      }
+
+      // Change sprite fetched from battler data
+      Sprite fetchSprite = ImageManager.getSprite(battlerData.imagePath);
+      if (fetchSprite != null) {
+         mainSpriteRenderer.sprite = fetchSprite;
       }
 
       if (battlerType == BattlerType.AIEnemyControlled) {
@@ -275,20 +279,35 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
          this.cooldownEndTime = Util.netTime() + 5f;
       } else {
          setBattlerAbilities(new AbilityDataRecord {
-            basicAbilityDataList = battlerMainData.battlerAbilities.basicAbilityDataList,
-            attackAbilityDataList = battlerMainData.battlerAbilities.attackAbilityDataList,
-            buffAbilityDataList = battlerMainData.battlerAbilities.buffAbilityDataList
+            basicAbilityDataList = _initializedBattlerData.battlerAbilities.basicAbilityDataList,
+            attackAbilityDataList = _initializedBattlerData.battlerAbilities.attackAbilityDataList,
+            buffAbilityDataList = _initializedBattlerData.battlerAbilities.buffAbilityDataList
          });
       }
+
+      // This function will handle the computed stats of the player depending on their Specialty/Faction/Job/Class
+      setupPlayerStats();
    }
 
    void setupPlayerStats() {
       if (battlerType == BattlerType.PlayerControlled) {
          BodyEntity playerBody = BodyManager.self.getBody(userId);
 
+         if (playerBody == null) {
+            Debug.LogError("Couldnt find player: " + userId);
+            return;
+         }
+
          Faction.Type factionType = playerBody.faction;
          Class.Type classType = playerBody.classType;
          Specialty.Type specialtyType = playerBody.specialty;
+
+         Debug.LogError("Faction: " + factionType);
+         Debug.LogError("Class: " + classType);
+         Debug.LogError("Specialty: " + specialtyType);
+
+         // Temporary Disable
+         return;
 
          // Faction Setup
          PlayerFactionData factionStat = FactionManager.self.getFactionData(factionType);
@@ -326,30 +345,30 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    }
 
    private void addDefaultStats (UserDefaultStats stat) {
-      battlerMainData.baseHealth += (int) stat.bonusMaxHP;
-      battlerMainData.healthPerlevel += (int) stat.hpPerLevel;
+      _initializedBattlerData.baseHealth += (int) stat.bonusMaxHP;
+      _initializedBattlerData.healthPerlevel += (int) stat.hpPerLevel;
 
-      battlerMainData.baseDamage += (int) stat.bonusATK;
-      battlerMainData.damagePerLevel += (int) stat.bonusATKPerLevel;
+      _initializedBattlerData.baseDamage += (int) stat.bonusATK;
+      _initializedBattlerData.damagePerLevel += (int) stat.bonusATKPerLevel;
 
-      battlerMainData.baseDefense += (int) stat.armorPerLevel;
-      battlerMainData.defensePerLevel += (int) stat.armorPerLevel;
+      _initializedBattlerData.baseDefense += (int) stat.armorPerLevel;
+      _initializedBattlerData.defensePerLevel += (int) stat.armorPerLevel;
    }
 
    private void addCombatStats (UserCombatStats stat) {
-      battlerMainData.airAttackMultiplier += stat.bonusDamageWind;
-      battlerMainData.fireAttackMultiplier += stat.bonusDamageFire;
-      battlerMainData.earthAttackMultiplier += stat.bonusDamageEarth;
-      battlerMainData.waterAttackMultiplier += stat.bonusDamageWater;
-      battlerMainData.physicalAttackMultiplier += stat.bonusDamagePhys;
-      battlerMainData.allAttackMultiplier += stat.bonusDamageAll;
+      _initializedBattlerData.airAttackMultiplier += stat.bonusDamageWind;
+      _initializedBattlerData.fireAttackMultiplier += stat.bonusDamageFire;
+      _initializedBattlerData.earthAttackMultiplier += stat.bonusDamageEarth;
+      _initializedBattlerData.waterAttackMultiplier += stat.bonusDamageWater;
+      _initializedBattlerData.physicalAttackMultiplier += stat.bonusDamagePhys;
+      _initializedBattlerData.allAttackMultiplier += stat.bonusDamageAll;
 
-      battlerMainData.airDefenseMultiplier += stat.bonusResistanceWind;
-      battlerMainData.fireDefenseMultiplier += stat.bonusResistanceFire;
-      battlerMainData.earthDefenseMultiplier += stat.bonusResistanceEarth;
-      battlerMainData.waterDefenseMultiplier += stat.bonusResistanceWater;
-      battlerMainData.physicalDefenseMultiplier += stat.bonusResistancePhys;
-      battlerMainData.allDefenseMultiplier += stat.bonusResistanceAll;
+      _initializedBattlerData.airDefenseMultiplier += stat.bonusResistanceWind;
+      _initializedBattlerData.fireDefenseMultiplier += stat.bonusResistanceFire;
+      _initializedBattlerData.earthDefenseMultiplier += stat.bonusResistanceEarth;
+      _initializedBattlerData.waterDefenseMultiplier += stat.bonusResistanceWater;
+      _initializedBattlerData.physicalDefenseMultiplier += stat.bonusResistancePhys;
+      _initializedBattlerData.allDefenseMultiplier += stat.bonusResistanceAll;
    }
 
    // Basic method that will handle the functionality for whenever we deselect this battler
@@ -977,6 +996,16 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       return getBattlerData().apGainWhenDamaged;
    }
 
+   public int getStartingHealth (Enemy.Type enemyType) {
+      BattlerData battData = MonsterManager.self.requestBattler(enemyType);
+      int level = LevelUtil.levelForXp(XP);
+
+      // Calculate our health based on our base and gain per level
+      float health = battData.baseHealth + (battData.healthPerlevel * level);
+
+      return (int) health;
+   }
+
    public int getStartingHealth () {
       int level = LevelUtil.levelForXp(XP);
 
@@ -1091,23 +1120,25 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
          damage += weaponManager.getWeapon().getDamage(element);
       }
 
+      float multiplier = 1;
       switch (element) {
          case Element.Physical:
-            damage *= getBattlerData().physicalAttackMultiplier;
+            multiplier = getBattlerData().physicalAttackMultiplier;
             break;
          case Element.Fire:
-            damage *= getBattlerData().fireAttackMultiplier;
+            multiplier = getBattlerData().fireAttackMultiplier;
             break;
          case Element.Earth:
-            damage *= getBattlerData().earthAttackMultiplier;
+            multiplier = getBattlerData().earthAttackMultiplier;
             break;
          case Element.Air:
-            damage *= getBattlerData().airAttackMultiplier;
+            multiplier = getBattlerData().airAttackMultiplier;
             break;
          case Element.Water:
-            damage *= getBattlerData().waterAttackMultiplier;
+            multiplier = getBattlerData().waterAttackMultiplier;
             break;
       }
+      damage *= multiplier;
 
       // We will add as an additional the "All" multiplier with the base defense.
       damage += (getBattlerData().baseDamage * getBattlerData().allAttackMultiplier);
@@ -1401,7 +1432,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    private List<BuffAbilityData> _battlerBuffAbilities = new List<BuffAbilityData>();
 
    // Battler data reference that will be initialized (ready to be used, use getBattlerData() )
-   private BattlerData _initializedBattlerData;
+   [SerializeField] private BattlerData _initializedBattlerData;
 
    // Our Animators
    protected List<SimpleAnimation> _anims;

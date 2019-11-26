@@ -576,11 +576,15 @@ public class SeaEntity : NetEntity {
                               // Registers the action Sea Monster Killed to the achievement database for recording
                               AchievementManager.registerUserAchievement(userId, ActionType.KillSeaMonster);
                            }
+                           // Registers the sea monster cannon hit
+                           AchievementManager.registerUserAchievement(userId, ActionType.HitSeaMonster);
                         } else if (targetEntity is BotShipEntity) {
                            if (targetHealthAfterDamage <= 0) {
                               // Registers the action Sunked Ships to the achievement database for recording
                               AchievementManager.registerUserAchievement(userId, ActionType.SinkedShips);
                            }
+                           // Registers the cannon hit action specifically for other player ship to the achievement database 
+                           AchievementManager.registerUserAchievement(userId, ActionType.HitEnemyShips);
                         } else if (targetEntity is PlayerShipEntity) {
                            if (targetHealthAfterDamage <= 0) {
                               // Registers the ship death action of the user to the achievement database for recording of death count

@@ -21,34 +21,35 @@ public class DB_Main : DB_MainStub {
 
    #region Abilities
 
-   public static new void updateAbilitiesData (int userID, EquippedAbilitiesSQL equipedAbilities, AllAbilitiesSQL allAbilities) {
+   public static new void updateAbilitiesData (int userID, AbilitySQLData abilityData) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO ability_table (userID, ability_list, equipped_ability) " +
-            "VALUES(@userID, @ability_list, @equipped_ability) " +
-            "ON DUPLICATE KEY UPDATE ability_list = @ability_list, equipped_ability = @equipped_ability", conn)) {
+            "INSERT INTO ability_table (userID, ability_name, ability_id, ability_level, ability_description, ability_equip_slot) " +
+            "VALUES(@userID, @ability_name, @ability_id, @ability_level, @ability_description, @ability_equip_slot) " +
+            "ON DUPLICATE KEY UPDATE ability_level = @ability_level, ability_equip_slot = @ability_equip_slot", conn)) {
 
             conn.Open();
             cmd.Prepare();
 
-            string equippedAbilityJSON = JsonUtility.ToJson(equipedAbilities);
-            string allAbilityJSON = JsonUtility.ToJson(allAbilities);
-
             cmd.Parameters.AddWithValue("@userID", userID);
-            cmd.Parameters.AddWithValue("@ability_list", allAbilityJSON);
-            cmd.Parameters.AddWithValue("@equipped_ability", equippedAbilityJSON);
+            cmd.Parameters.AddWithValue("@ability_name", abilityData.name);
+            cmd.Parameters.AddWithValue("@ability_id", abilityData.abilityID);
+            cmd.Parameters.AddWithValue("@ability_level", abilityData.abilityLevel);
+            cmd.Parameters.AddWithValue("@ability_description", abilityData.description);
+            cmd.Parameters.AddWithValue("@ability_equip_slot", abilityData.equipSlotIndex);
 
             // Execute the command
             cmd.ExecuteNonQuery();
          }
       } catch (Exception e) {
+         UnityEngine.Debug.LogError("Error: " + e.ToString());
          D.error("MySQL Error: " + e.ToString());
       }
    }
 
-   public static new List<int> getAllAbilities (int userID) {
-      AllAbilitiesSQL idList = new AllAbilitiesSQL();
+   public static new List<AbilitySQLData> getAllAbilities (int userID) {
+      List<AbilitySQLData> abilityList = new List<AbilitySQLData>();
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
@@ -61,40 +62,15 @@ public class DB_Main : DB_MainStub {
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  string data = DataUtil.getString(dataReader, "ability_list");
-                  idList = JsonUtility.FromJson<AllAbilitiesSQL>(data);
+                  AbilitySQLData abilityData = new AbilitySQLData(dataReader);
+                  abilityList.Add(abilityData);
                }
             }
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
-      return new List<int>(idList.allAbilities);
-   }
-
-   public static new List<int> getEquipedAbilities (int userID) {
-      EquippedAbilitiesSQL idList = new EquippedAbilitiesSQL();
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM ability_table WHERE (userID=@userID)", conn)) {
-
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@userID", userID);
-
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  string data = DataUtil.getString(dataReader, "equipped_ability");
-                  idList = JsonUtility.FromJson<EquippedAbilitiesSQL>(data);
-               }
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-      return new List<int>(idList.equippedAbilities);
+      return new List<AbilitySQLData>(abilityList);
    }
 
    #endregion

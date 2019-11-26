@@ -1731,6 +1731,7 @@ public class RPCManager : NetworkBehaviour {
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Registers the Ore mining success action to the achievement database for recording
             AchievementManager.registerUserAchievement(_player.userId, ActionType.MineOre);
+            AchievementManager.registerUserAchievement(_player.userId, ActionType.OreGain, lootInfoList.Count);
             processGroupRewards(_player.userId, databaseList, lootInfoList, true);
 
             // Let them know they gained experience
@@ -1940,7 +1941,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Get or create the Battle instance
       Battle battle = (enemy.battleId > 0) ? BattleManager.self.getBattle(enemy.battleId) :
-         BattleManager.self.createBattle(area, instance, enemy, playerBody);
+      BattleManager.self.createBattle(area, instance, enemy, playerBody);
 
       // If the Battle is full, we can't proceed
       if (!battle.hasRoomLeft(Battle.TeamType.Attackers)) {
@@ -1950,6 +1951,30 @@ public class RPCManager : NetworkBehaviour {
 
       // Add the player to the Battle
       BattleManager.self.addPlayerToBattle(battle, playerBody, Battle.TeamType.Attackers);
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Will be used when SQL ability feature is fully functional
+         // List<AbilitySQLData> abilityDataList = DB_Main.getAllAbilities(playerBody.userId);
+         List<AbilitySQLData> abilityDataList = new List<AbilitySQLData>();
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            List<BasicAbilityData> abilityList = new List<BasicAbilityData>();
+            if (abilityDataList.Count < 1) {
+               // Manual integration of skills if database does not exist yet
+               abilityList.Add(AbilityManager.getAbility(1, AbilityType.Standard));
+               abilityList.Add(AbilityManager.getAbility(2, AbilityType.Standard));
+               abilityList.Add(AbilityManager.getAbility(3, AbilityType.Standard));
+               abilityList.Add(AbilityManager.getAbility(8, AbilityType.Standard));
+               abilityList.Add(AbilityManager.getAbility(9, AbilityType.Standard));
+            } else {
+               // Fetched the ability list from the ability manager using the ID fetched from the database
+               foreach (AbilitySQLData sqlData in abilityDataList) {
+                  abilityList.Add(AbilityManager.getAbility(sqlData.abilityID, AbilityType.Stance));
+               }
+            }
+            Target_UpdateBattleAbilityUI(playerBody.connectionToClient, Util.serialize(abilityList));
+         });
+      });
    }
 
    [TargetRpc]
@@ -1982,7 +2007,7 @@ public class RPCManager : NetworkBehaviour {
       List<BattlerData> battlerDataList = new List<BattlerData>();
 
       foreach (Enemy.Type enemyType in enemyTypes) {
-         BattlerData battData = MonsterManager.self.monsterDataList.Find(_ => _.enemyType == enemyType);
+         BattlerData battData = MonsterManager.self.requestBattler(enemyType);
          if (battData != null) {
             battData.battlerAbilities.basicAbilityRawData = Util.serialize(new List<BasicAbilityData>(battData.battlerAbilities.basicAbilityDataList));
             battData.battlerAbilities.attackAbilityRawData = Util.serialize(new List<AttackAbilityData>(battData.battlerAbilities.attackAbilityDataList));

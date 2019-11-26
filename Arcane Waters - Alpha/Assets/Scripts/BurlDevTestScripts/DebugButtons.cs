@@ -18,9 +18,7 @@ public class DebugButtons : NetworkBehaviour
    public string itemType;
    public string outputItem;
    public string itemData;
-
-   public List<int> allSkills = new List<int>();
-   public List<int> equppedSkills = new List<int>();
+   public string abilityIDData;
 
    #endregion
 
@@ -38,37 +36,49 @@ public class DebugButtons : NetworkBehaviour
       GUILayout.BeginHorizontal("box");
       {
          if (GUILayout.Button("Create Skill List")) {
-            EquippedAbilitiesSQL newSQL = new EquippedAbilitiesSQL();
-            AllAbilitiesSQL allSQL = new AllAbilitiesSQL();
-            allSkills = new List<int>();
-            equppedSkills = new List<int>();
+            List<AbilitySQLData> sqlList = new List<AbilitySQLData>();
 
-            for (int i = 0; i < 50; i++) {
-               int randVal = Random.Range(1, 300);
-               allSkills.Add(randVal);
-               if (equppedSkills.Count < 5)
-                  equppedSkills.Add(randVal);
+            for (int i = 0; i < 5; i++) {
+               AbilitySQLData newSQL = new AbilitySQLData();
+               newSQL.abilityID = i;
+               newSQL.name = "Name: " + Random.Range(0, 100);
+               newSQL.description = "test desc";
+               newSQL.equipSlotIndex = i;
+               newSQL.abilityLevel = 1;
+
+               sqlList.Add(newSQL);
             }
-            allSQL.allAbilities = allSkills.ToArray();
-            newSQL.equippedAbilities = equppedSkills.ToArray();
-            DB_Main.updateAbilitiesData(Global.player.userId, newSQL, allSQL);
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               foreach (AbilitySQLData sqlDat in sqlList) {
+                  DB_Main.updateAbilitiesData(Global.player.userId, sqlDat);
+               }
+            });
          }
-
+         
          if (GUILayout.Button("Load All Skill List")) {
-            List<int> newID = DB_Main.getAllAbilities(Global.player.userId);
+            List<AbilitySQLData> newID = DB_Main.getAllAbilities(Global.player.userId);
 
-            foreach (int fetchedID in newID) {
-               Debug.LogError("ID: " + fetchedID);
+            foreach (AbilitySQLData fetchedID in newID) {
+               Debug.LogError("ID: " + fetchedID.abilityID+" - "+fetchedID.name);
             }
          }
 
-         if (GUILayout.Button("Load All Equipped Skill List")) {
-            List<int> newID = DB_Main.getEquipedAbilities(Global.player.userId);
+         if (GUILayout.Button("Update Skill")) {
+            AbilitySQLData newSQL = new AbilitySQLData();
+            newSQL.abilityID = int.Parse( abilityIDData );
+            newSQL.name = "new name";
+            newSQL.description = "new desc";
+            newSQL.abilityLevel = 2;
+            newSQL.equipSlotIndex = 99;
 
-            foreach (int fetchedID in newID) {
-               Debug.LogError("ID: " + fetchedID);
-            }
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               DB_Main.updateAbilitiesData(Global.player.userId, newSQL);
+            });
          }
+         GUILayout.BeginHorizontal();
+         GUILayout.Box("ItemSkill: ", GUILayout.Width(buttonSizeX / 2), GUILayout.Height(buttonSizeY));
+         abilityIDData = GUILayout.TextField(abilityIDData, GUILayout.Width(buttonSizeX / 2), GUILayout.Height(buttonSizeY));
+         GUILayout.EndHorizontal();
       }
       GUILayout.EndHorizontal();
    }
@@ -191,14 +201,23 @@ public static class DebugCustom
 
 #pragma warning restore
 
-public class EquippedAbilitiesSQL
+public class AbilitySQLData
 {
-   // Array for equipped abilities
-   public int[] equippedAbilities;
-}
+   public string name;
+   public int abilityID;
+   public string description;
+   public int equipSlotIndex;
+   public int abilityLevel;
 
-public class AllAbilitiesSQL
-{
-   // Array for all other abilities
-   public int[] allAbilities;
+   public AbilitySQLData() {
+
+   }
+
+   public AbilitySQLData (MySql.Data.MySqlClient.MySqlDataReader dataReader) {
+      this.name = DataUtil.getString(dataReader, "ability_name");
+      this.abilityID = DataUtil.getInt(dataReader, "ability_id");
+      this.description = DataUtil.getString(dataReader, "ability_description");
+      this.equipSlotIndex = DataUtil.getInt(dataReader, "ability_equip_slot");
+      this.abilityLevel = DataUtil.getInt(dataReader, "ability_level");
+   }
 }

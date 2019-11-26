@@ -11,8 +11,10 @@ public class AbilityManager : MonoBehaviour
    // A convenient self reference
    public static AbilityManager self;
 
+   // Holds the xml data for all abilities
    public TextAsset[] abilityDataAssets;
 
+   // References to all the abilities
    public List<BasicAbilityData> allGameAbilities { get { return _allGameAbilities; } }
 
    #endregion
@@ -22,19 +24,16 @@ public class AbilityManager : MonoBehaviour
    }
 
    public void addNewAbility(BasicAbilityData ability) {
-      if (_allGameAbilities.Exists(_=>_.itemName == ability.itemName)) {
-         Debug.LogWarning("Duplicated ability name: "+ability.itemName);
-         return;
-      }
-
-      if (ability.abilityType == AbilityType.Standard) {
-         AttackAbilityData newInstance = AttackAbilityData.CreateInstance((AttackAbilityData) ability);
-         _attackAbilities.Add(newInstance);
-         _allGameAbilities.Add(newInstance);
-      } else if (ability.abilityType == AbilityType.BuffDebuff) {
-         BuffAbilityData newInstance = BuffAbilityData.CreateInstance((BuffAbilityData) ability);
-         _buffAbilities.Add(newInstance);
-         _allGameAbilities.Add(newInstance);
+      if (!_allGameAbilities.Exists(_ => _.itemName == ability.itemName)) {
+         if (ability.abilityType == AbilityType.Standard) {
+            AttackAbilityData newInstance = AttackAbilityData.CreateInstance((AttackAbilityData) ability);
+            _attackAbilities.Add(newInstance);
+            _allGameAbilities.Add(newInstance);
+         } else if (ability.abilityType == AbilityType.BuffDebuff) {
+            BuffAbilityData newInstance = BuffAbilityData.CreateInstance((BuffAbilityData) ability);
+            _buffAbilities.Add(newInstance);
+            _allGameAbilities.Add(newInstance);
+         }
       }
    }
 
@@ -149,13 +148,13 @@ public class AbilityManager : MonoBehaviour
    #region Private Variables
 
    // Stores the list of all abilities
-   private List<BasicAbilityData> _allGameAbilities = new List<BasicAbilityData>();
+   [SerializeField] private List<BasicAbilityData> _allGameAbilities = new List<BasicAbilityData>();
 
    // Stores the list of all attack abilities
-   private List<AttackAbilityData> _attackAbilities = new List<AttackAbilityData>();
+   [SerializeField] private List<AttackAbilityData> _attackAbilities = new List<AttackAbilityData>();
 
    // Stores the list of all buff abilities
-   private List<BuffAbilityData> _buffAbilities = new List<BuffAbilityData>();
+   [SerializeField] private List<BuffAbilityData> _buffAbilities = new List<BuffAbilityData>();
 
    #endregion
 }

@@ -159,7 +159,6 @@ public class BattleManager : MonoBehaviour {
 
          // Sets up ability UI info such as icons and name
          BattleUIManager.self.SetupAbilityUI(battler.getAttackAbilities().ToArray());
-         player.rpc.Target_UpdateBattleAbilityUI(player.connectionToClient, Util.serialize(battler.getAttackAbilities()));
       } else if (teamType == Battle.TeamType.Defenders) {
          battle.defenders.Add(battler.userId);
       }
@@ -257,6 +256,9 @@ public class BattleManager : MonoBehaviour {
       Battler battler = Instantiate(baseBattlerPrefab);
       battler.battlerType = BattlerType.PlayerControlled;
 
+      // Set starting stats
+      battler.health = battler.getStartingHealth(Enemy.Type.Humanoid);
+
       // Set up our initial data and position
       battler.playerNetId = player.netId;
       battler.player = player;
@@ -278,9 +280,6 @@ public class BattleManager : MonoBehaviour {
       battler.hairColor1 = player.hairColor1;
       battler.hairColor2 = player.hairColor2;
       battler.eyesColor1 = player.eyesColor1;
-
-      // Set starting stats
-      battler.health = battler.getStartingHealth();
 
       // Figure out which Battle Spot we should be placed in
       battler.boardPosition = battle.getTeam(teamType).Count + 1;
@@ -307,19 +306,23 @@ public class BattleManager : MonoBehaviour {
    }
 
    private Battler createBattlerForEnemy (Battle battle, Enemy enemy, Battle.TeamType teamType) {
-      Battler enemyPrefab = prefabTypes.Find(_ => _.enemyType == enemy.enemyType).enemyPrefab;
+      Enemy.Type overrideType = Enemy.Type.Lizard;
+      Battler enemyPrefab = prefabTypes.Find(_ => _.enemyType == Enemy.Type.Lizard).enemyPrefab;
+      enemyPrefab.enemyType = overrideType;
 
+      _spawnCounter++;
       // For testing Purposes, adds a chance to spawn a Golem Monster
-      int golemSpawnChance = Random.Range(0, 4);
-      if (golemSpawnChance > 2) {
+      if (_spawnCounter == 2) {
          Debug.Log("Spawning a Debug Monster, Delete after feature completion!");
-         enemyPrefab = prefabTypes.Find(_ => _.enemyType == Enemy.Type.Golem).enemyPrefab;
+         overrideType = Enemy.Type.Golem;
       }
-        
-      BattlerData data = getAllBattlersData().Find(x => x.enemyType == enemy.enemyType);
-      enemy.enemyType = data.enemyType;
-
+      BattlerData data = getAllBattlersData().Find(x => x.enemyType == overrideType);
       Battler battler = Instantiate(enemyPrefab);
+      battler.name = data.enemyName;
+      battler.enemyType = overrideType;
+
+      // Set starting stats
+      battler.health = battler.getStartingHealth(overrideType);
 
       // Set up our initial data and position
       battler.playerNetId = enemy.netId;
@@ -329,9 +332,6 @@ public class BattleManager : MonoBehaviour {
       battler.transform.SetParent(battle.transform);
       battler.teamType = teamType;
       battler.userId = _enemyId--;
-
-      // Set starting stats
-      battler.health = battler.getStartingHealth();
 
       // Figure out which Battle Spot we should be placed in
       battler.boardPosition = battle.getTeam(teamType).Count + 1;
@@ -487,7 +487,7 @@ public class BattleManager : MonoBehaviour {
             // Apply the adjustments to the damage
             damage *= (1f + increaseAdditive);
             damage *= decreaseMultiply;
-
+            
             // Make note of the time that this battle action is going to be fully completed, considering animation times
             float timeAttackEnds = Util.netTime() + timeToWait + attackAbilityData.getTotalAnimLength(source, target);
             float cooldownDuration = abilityData.abilityCooldown * source.getCooldownModifier();
@@ -723,6 +723,9 @@ public class BattleManager : MonoBehaviour {
 
    // The unique ID we assign to enemy Battlers that are created
    protected int _enemyId = -1;
+
+   // A Test variable only for spawning variety of monsters
+   protected int _spawnCounter = 0;
 
    // All battlers in the game
 #pragma warning disable

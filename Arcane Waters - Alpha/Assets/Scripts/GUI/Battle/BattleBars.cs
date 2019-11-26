@@ -16,6 +16,9 @@ public class BattleBars : MonoBehaviour {
    // Stance icon that will appear at the side of other player battlers.
    public Image stanceImage;
 
+   // Determines if this was initialized
+   public bool isInitialized;
+
    #endregion
 
    private void Start () {
@@ -35,6 +38,7 @@ public class BattleBars : MonoBehaviour {
             stanceImage.gameObject.SetActive(false);
          }
       }
+      isInitialized = true;
    }
 
    // ZERONEV-Comment: setting all these values in update are really inneficient
@@ -42,6 +46,10 @@ public class BattleBars : MonoBehaviour {
    // For example, I think it is important to only change the health bar whenever we have a health change.
    // Having callbacks for whenever we have a health change for a battler
    private void Update () {
+      if (!isInitialized) {
+         return;
+      }
+
       // Can't do anything until we have our battler
       if (_battler == null || _battler.player == null) {
          _canvasGroup.alpha = 0f;
@@ -50,7 +58,7 @@ public class BattleBars : MonoBehaviour {
 
       // Set our text values
       if (_battler.battlerType == BattlerType.AIEnemyControlled) {
-         nameText.text = _battler.battlerMainData.enemyName;
+         nameText.text = _battler.getBattlerData().enemyName;
       } else {
          nameText.text = _battler.player.entityName + "";
       }

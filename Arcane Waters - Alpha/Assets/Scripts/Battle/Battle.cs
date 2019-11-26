@@ -76,7 +76,6 @@ public class Battle : NetworkBehaviour {
 
       // Cycle over all of the participants in the battle
       foreach (Battler battler in getParticipants()) {
-
          if (battler.transform.parent == null) {
             battler.transform.SetParent(transform, false);
          }
