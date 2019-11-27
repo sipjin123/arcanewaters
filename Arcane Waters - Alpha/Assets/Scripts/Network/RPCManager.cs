@@ -1591,7 +1591,7 @@ public class RPCManager : NetworkBehaviour {
       CraftableItemRequirements data = RewardManager.self.craftableDataList.Find(_ => _.resultItem.category == category && _.resultItem.itemTypeId == itemType);
   
       List<CraftingIngredients.Type> requiredItemList = new List<CraftingIngredients.Type>();
-      foreach(Item item in data.combinationRequirements) {
+      foreach (Item item in data.combinationRequirements) {
          requiredItemList.Add((CraftingIngredients.Type) item.itemTypeId);
       }
 
@@ -1668,9 +1668,9 @@ public class RPCManager : NetworkBehaviour {
          });
       });
    }
-   
+
    [TargetRpc]
-   public void Target_ReceiveItemList(NetworkConnection connection, Item[] itemList) {
+   public void Target_ReceiveItemList (NetworkConnection connection, Item[] itemList) {
       RewardManager.self.showItemsInRewardPanel(itemList.ToList());
    }
 
@@ -1716,7 +1716,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Registers list of ingredient types for data fetching
       List<CraftingIngredients.Type> itemLoots = new List<CraftingIngredients.Type>();
-      for(int i = 0; i < lootInfoList.Count; i++) {
+      for (int i = 0; i < lootInfoList.Count; i++) {
          itemLoots.Add(lootInfoList[i].lootType);
       }
 
@@ -1741,13 +1741,13 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Server]
-   private void processGroupRewards(int userID, List<Item> databaseItems, List<LootInfo> rewardList, bool showPanel) {
+   private void processGroupRewards (int userID, List<Item> databaseItems, List<LootInfo> rewardList, bool showPanel) {
       // Generate Item List to show in popup after data writing
       List<Item> itemRewardList = new List<Item>();
       for (int i = 0; i < rewardList.Count; i++) {
          Item itemToCreate = new CraftingIngredients(0, rewardList[i].lootType, ColorType.Black, ColorType.Black);
          Item databaseItemType = databaseItems.Find(_ => _.category == Item.Category.CraftingIngredients && _.itemTypeId == (int) rewardList[i].lootType);
-         
+
          // Registers the quantity of each item
          itemToCreate.count = rewardList[i].quantity;
          if (databaseItemType != null) {
@@ -1857,7 +1857,7 @@ public class RPCManager : NetworkBehaviour {
             if (temp.netId == parentEntityID) {
                parentEntity = temp.GetComponent<SeaMonsterEntity>();
             }
-         } 
+         }
       }
 
       bot.seaMonsterParentEntity = parentEntity;
@@ -1941,7 +1941,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Get or create the Battle instance
       Battle battle = (enemy.battleId > 0) ? BattleManager.self.getBattle(enemy.battleId) :
-      BattleManager.self.createBattle(area, instance, enemy, playerBody);
+         BattleManager.self.createBattle(area, instance, enemy, playerBody);
 
       // If the Battle is full, we can't proceed
       if (!battle.hasRoomLeft(Battle.TeamType.Attackers)) {
@@ -1953,35 +1953,123 @@ public class RPCManager : NetworkBehaviour {
       BattleManager.self.addPlayerToBattle(battle, playerBody, Battle.TeamType.Attackers);
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Will be used when SQL ability feature is fully functional
-         // List<AbilitySQLData> abilityDataList = DB_Main.getAllAbilities(playerBody.userId);
-         List<AbilitySQLData> abilityDataList = new List<AbilitySQLData>();
+         // Retrieves skill list from database
+         List<AbilitySQLData> abilityDataList = DB_Main.getAllAbilities(playerBody.userId);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            List<BasicAbilityData> abilityList = new List<BasicAbilityData>();
             if (abilityDataList.Count < 1) {
                // Manual integration of skills if database does not exist yet
-               abilityList.Add(AbilityManager.getAbility(1, AbilityType.Standard));
-               abilityList.Add(AbilityManager.getAbility(2, AbilityType.Standard));
-               abilityList.Add(AbilityManager.getAbility(3, AbilityType.Standard));
-               abilityList.Add(AbilityManager.getAbility(8, AbilityType.Standard));
-               abilityList.Add(AbilityManager.getAbility(9, AbilityType.Standard));
-            } else {
-               // Fetched the ability list from the ability manager using the ID fetched from the database
-               foreach (AbilitySQLData sqlData in abilityDataList) {
-                  abilityList.Add(AbilityManager.getAbility(sqlData.abilityID, AbilityType.Stance));
-               }
+               AbilitySQLData newSQLData = new AbilitySQLData {
+                  abilityID = 1,
+                  abilityLevel = 1,
+                  description = AbilityManager.getAbility(1, AbilityType.Standard).itemDescription,
+                  equipSlotIndex = 0,
+                  name = AbilityManager.getAbility(1, AbilityType.Standard).itemName
+               };
+               abilityDataList.Add(newSQLData);
+               DB_Main.updateAbilitiesData(playerBody.userId, newSQLData);
             }
-            Target_UpdateBattleAbilityUI(playerBody.connectionToClient, Util.serialize(abilityList));
+
+            Target_UpdateBattleAbilityUI(playerBody.connectionToClient, Util.serialize(abilityDataList.FindAll(_=>_.equipSlotIndex >= 0)));
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_UpdateAbility (AbilitySQLData ability) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.updateAbilitiesData(_player.userId, ability);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            processAbilitiesUI();
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_UpdateAbilities (AbilitySQLData[] abilities) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         foreach (AbilitySQLData ability in abilities) {
+            DB_Main.updateAbilitiesData(_player.userId, ability);
+         }
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            processAbilitiesUI();
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_RequestAbility () {
+      processAbilitiesUI();
+   }
+
+   [Server]
+   public void requestAbilityForBattle (int userID) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Retrieves skill list from database
+         List<AbilitySQLData> abilityDataList = DB_Main.getAllAbilities(_player.userId);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            List<AbilitySQLData> equippedAbilityDataList = abilityDataList.FindAll(_ => _.equipSlotIndex >= 0);
+
+            Target_AbilityForBattle(_player.connectionToClient, equippedAbilityDataList.OrderBy(_=>_.equipSlotIndex).ToArray(), userID);
          });
       });
    }
 
    [TargetRpc]
-   public void Target_UpdateBattleAbilityUI (NetworkConnection connection, string[] rawAttackAbilities) {
-      List<AttackAbilityData> attackAbilityDataList = Util.unserialize<AttackAbilityData>(rawAttackAbilities);
+   protected void Target_AbilityForBattle (NetworkConnection connection, AbilitySQLData[] equippedAbilities, int userID) {
+      List<BasicAbilityData> basicAbilityList = new List<BasicAbilityData>();
+      List<AttackAbilityData> attackAbilityList = new List<AttackAbilityData>();
 
-      BattleUIManager.self.SetupAbilityUI(attackAbilityDataList.ToArray());
+      foreach (AbilitySQLData abilitySQL in equippedAbilities) {
+         BasicAbilityData abilityData = AbilityManager.getAbility(abilitySQL.abilityID, AbilityType.Standard);
+         AttackAbilityData attackAbilityData = AbilityManager.getAttackAbility(abilitySQL.abilityID);
+         if (abilityData != null) {
+            basicAbilityList.Add(abilityData);
+            attackAbilityList.Add(attackAbilityData);
+         }
+      }
+
+      AbilityDataRecord abilityRecord = new AbilityDataRecord {
+         basicAbilityDataList = basicAbilityList.ToArray(),
+         attackAbilityDataList = attackAbilityList.ToArray(),
+         buffAbilityDataList = new List<BuffAbilityData>().ToArray(),
+      };
+      Battler battler = BattleManager.self.getBattler(userID);
+      battler.setBattlerAbilities(abilityRecord);
+   }
+
+   [Server]
+   public void processAbilitiesUI () {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Retrieves skill list from database
+         List<AbilitySQLData> abilityDataList = DB_Main.getAllAbilities(_player.userId);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            List<AbilitySQLData> equippedAbilityDataList = abilityDataList.FindAll(_ => _.equipSlotIndex >= 0);
+
+            Target_ReceiveSkills(_player.connectionToClient, abilityDataList.ToArray(), equippedAbilityDataList.ToArray());
+         });
+      });
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveSkills (NetworkConnection connection, AbilitySQLData[] allAbilities, AbilitySQLData[] equippedAbilities) {
+      // Make sure the panel is showing
+      AbilityPanel panel = (AbilityPanel) PanelManager.self.get(Panel.Type.Skill_Panel);
+
+      if (!panel.isShowing()) {
+         PanelManager.self.pushPanel(Panel.Type.Skill_Panel);
+      }
+
+      // Update the Skill Panel with the abilities we received from the server
+      panel.receiveDataFromServer(allAbilities, new List<AbilitySQLData>(equippedAbilities));
+   }
+
+   [TargetRpc]
+   public void Target_UpdateBattleAbilityUI (NetworkConnection connection, string[] rawAttackAbilities) {
+      List<AbilitySQLData> attackAbilityDataList = Util.unserialize<AbilitySQLData>(rawAttackAbilities);
+
+      BattleUIManager.self.SetupAbilityUI(attackAbilityDataList.OrderBy(_ =>_.equipSlotIndex).ToArray());
    }
 
    [Server]
@@ -2083,7 +2171,6 @@ public class RPCManager : NetworkBehaviour {
 
       // Get the ability from the battler abilities.
       AttackAbilityData abilityData = sourceBattler.getAttackAbilities()[abilityInventoryIndex];
-
       Battler targetBattler = null;
 
       foreach (Battler participant in battle.getParticipants()) {

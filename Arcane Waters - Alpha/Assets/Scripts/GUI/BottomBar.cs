@@ -118,6 +118,16 @@ public class BottomBar : MonoBehaviour {
       }
    }
 
+   public void toggleSkillPanel () {
+      AbilityPanel panel = (AbilityPanel) PanelManager.self.get(Panel.Type.Skill_Panel);
+
+      if (!panel.isShowing()) {
+         Global.player.rpc.Cmd_RequestAbility();
+      } else {
+         PanelManager.self.togglePanel(Panel.Type.Skill_Panel);
+      }
+   }
+
    #region Private Variables
 
    #endregion

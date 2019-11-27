@@ -88,6 +88,8 @@ public class PanelManager : MonoBehaviour {
          BottomBar.self.toggleTradeHistoryPanel();
       } else if (Input.GetKeyUp(KeyCode.B)) {
          BottomBar.self.toggleLeaderBoardsPanel();
+      } else if (Input.GetKeyUp(KeyCode.U)) {
+         BottomBar.self.toggleSkillPanel();
       }
    }
 

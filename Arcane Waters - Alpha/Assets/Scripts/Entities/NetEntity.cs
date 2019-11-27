@@ -102,12 +102,15 @@ public class NetEntity : NetworkBehaviour
    public int adminFlag;
 
    // The Class that this player has chosen
+   [SyncVar]
    public Class.Type classType;
 
    // The Specialty that this player has chosen
+   [SyncVar]
    public Specialty.Type specialty;
 
    // The Faction that this player has chosen
+   [SyncVar]
    public Faction.Type faction;
 
    // The guild this user is in

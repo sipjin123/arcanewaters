@@ -156,9 +156,6 @@ public class BattleManager : MonoBehaviour {
       // Add the Battler to the Battle
       if (teamType == Battle.TeamType.Attackers) {
          battle.attackers.Add(battler.userId);
-
-         // Sets up ability UI info such as icons and name
-         BattleUIManager.self.SetupAbilityUI(battler.getAttackAbilities().ToArray());
       } else if (teamType == Battle.TeamType.Defenders) {
          battle.defenders.Add(battler.userId);
       }
@@ -169,8 +166,43 @@ public class BattleManager : MonoBehaviour {
       // Registers the action of combat entry to the achievement database for recording
       AchievementManager.registerUserAchievement(player.userId, ActionType.EnterCombat);
 
+      // Sets servers copy of the battler abilities
+      setServerPlayerAbilities(battler);
+
+      // Sets clients copy of the battler abilities 
+      player.rpc.requestAbilityForBattle(player.userId);
+
       // Update the observers associated with the Battle and the associated players
       rebuildObservers(battler, battle);
+   }
+
+   private void setServerPlayerAbilities (Battler battler) {
+      // WARNING! This is a duplicated code, this needs to be revised
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Retrieves skill list from database
+         List<AbilitySQLData> abilityDataList = DB_Main.getAllAbilities(battler.userId);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            List<AbilitySQLData> equippedAbilityDataList = abilityDataList.FindAll(_ => _.equipSlotIndex >= 0);
+            List<BasicAbilityData> basicAbilityList = new List<BasicAbilityData>();
+            List<AttackAbilityData> attackAbilityList = new List<AttackAbilityData>();
+
+            foreach (AbilitySQLData abilitySQL in equippedAbilityDataList) {
+               BasicAbilityData abilityData = AbilityManager.getAbility(abilitySQL.abilityID, AbilityType.Standard);
+               AttackAbilityData attackAbilityData = AbilityManager.getAttackAbility(abilitySQL.abilityID);
+               if (abilityData != null) {
+                  basicAbilityList.Add(abilityData);
+                  attackAbilityList.Add(attackAbilityData);
+               }
+            }
+
+            AbilityDataRecord abilityRecord = new AbilityDataRecord {
+               basicAbilityDataList = basicAbilityList.ToArray(),
+               attackAbilityDataList = attackAbilityList.ToArray(),
+               buffAbilityDataList = new List<BuffAbilityData>().ToArray(),
+            };
+            battler.setBattlerAbilities(abilityRecord);
+         });
+      });
    }
    
    public void addEnemyToBattle (Battle battle, Enemy enemy, Battle.TeamType teamType, PlayerBodyEntity aggressor) {
@@ -308,7 +340,6 @@ public class BattleManager : MonoBehaviour {
    private Battler createBattlerForEnemy (Battle battle, Enemy enemy, Battle.TeamType teamType) {
       Enemy.Type overrideType = Enemy.Type.Lizard;
       Battler enemyPrefab = prefabTypes.Find(_ => _.enemyType == Enemy.Type.Lizard).enemyPrefab;
-      enemyPrefab.enemyType = overrideType;
 
       _spawnCounter++;
       // For testing Purposes, adds a chance to spawn a Golem Monster
@@ -318,8 +349,8 @@ public class BattleManager : MonoBehaviour {
       }
       BattlerData data = getAllBattlersData().Find(x => x.enemyType == overrideType);
       Battler battler = Instantiate(enemyPrefab);
-      battler.name = data.enemyName;
       battler.enemyType = overrideType;
+      battler.name = data.enemyName;
 
       // Set starting stats
       battler.health = battler.getStartingHealth(overrideType);

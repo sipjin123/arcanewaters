@@ -135,11 +135,11 @@ public class BattleUIManager : MonoBehaviour {
       self = this;
    }
 
-   public void SetupAbilityUI (AttackAbilityData[] abilitydata) {
+   public void SetupAbilityUI (AbilitySQLData[] abilitydata) {
       int indexCounter = 0;
       foreach (AbilityButton abilityButton in abilityTargetButtons) {
          if (indexCounter < abilitydata.Length) {
-            BasicAbilityData currentAbility = abilitydata[abilityButton.abilityIndex];
+            BasicAbilityData currentAbility = AbilityManager.getAbility(abilitydata[indexCounter].abilityID, AbilityType.Standard);
             if (currentAbility != null) {
                string iconPath = currentAbility.itemIconPath;
                Sprite skillSprite = ImageManager.getSprite(iconPath);
@@ -151,7 +151,8 @@ public class BattleUIManager : MonoBehaviour {
                Debug.LogWarning("Missing Ability: " + abilityButton.abilityIndex);
             }
          } else {
-            break;
+            // Disable skill button if equipped abilities does not reach 5 (max abilities in combat)
+            abilityButton.gameObject.SetActive(false);
          }
          indexCounter++;
       }

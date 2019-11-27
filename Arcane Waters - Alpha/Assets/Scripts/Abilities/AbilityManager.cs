@@ -145,6 +145,12 @@ public class AbilityManager : MonoBehaviour
       }
    }
 
+   public static AttackAbilityData getAttackAbility (int abilityGlobalID) {
+      AttackAbilityData returnAbility = new AttackAbilityData();
+      returnAbility = self._attackAbilities.Find(_ => _.itemID == abilityGlobalID);
+      return returnAbility;
+   }
+
    #region Private Variables
 
    // Stores the list of all abilities

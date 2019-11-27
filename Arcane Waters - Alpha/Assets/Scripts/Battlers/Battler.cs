@@ -277,12 +277,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
          // Extra cooldown time for AI controlled battlers, so they do not attack instantly
          this.cooldownEndTime = Util.netTime() + 5f;
-      } else {
-         setBattlerAbilities(new AbilityDataRecord {
-            basicAbilityDataList = _initializedBattlerData.battlerAbilities.basicAbilityDataList,
-            attackAbilityDataList = _initializedBattlerData.battlerAbilities.attackAbilityDataList,
-            buffAbilityDataList = _initializedBattlerData.battlerAbilities.buffAbilityDataList
-         });
       }
 
       // This function will handle the computed stats of the player depending on their Specialty/Faction/Job/Class
@@ -301,13 +295,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
          Faction.Type factionType = playerBody.faction;
          Class.Type classType = playerBody.classType;
          Specialty.Type specialtyType = playerBody.specialty;
-
-         Debug.LogError("Faction: " + factionType);
-         Debug.LogError("Class: " + classType);
-         Debug.LogError("Specialty: " + specialtyType);
-
-         // Temporary Disable
-         return;
 
          // Faction Setup
          PlayerFactionData factionStat = FactionManager.self.getFactionData(factionType);
@@ -356,14 +343,14 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    }
 
    private void addCombatStats (UserCombatStats stat) {
-      _initializedBattlerData.airAttackMultiplier += stat.bonusDamageWind;
+      _initializedBattlerData.airAttackMultiplier += stat.bonusDamageAir;
       _initializedBattlerData.fireAttackMultiplier += stat.bonusDamageFire;
       _initializedBattlerData.earthAttackMultiplier += stat.bonusDamageEarth;
       _initializedBattlerData.waterAttackMultiplier += stat.bonusDamageWater;
       _initializedBattlerData.physicalAttackMultiplier += stat.bonusDamagePhys;
       _initializedBattlerData.allAttackMultiplier += stat.bonusDamageAll;
 
-      _initializedBattlerData.airDefenseMultiplier += stat.bonusResistanceWind;
+      _initializedBattlerData.airDefenseMultiplier += stat.bonusResistance;
       _initializedBattlerData.fireDefenseMultiplier += stat.bonusResistanceFire;
       _initializedBattlerData.earthDefenseMultiplier += stat.bonusResistanceEarth;
       _initializedBattlerData.waterDefenseMultiplier += stat.bonusResistanceWater;
@@ -421,7 +408,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       _balancedInitializedStance = BasicAbilityData.CreateInstance(AbilityInventory.self.balancedStance);
       _offenseInitializedStance = BasicAbilityData.CreateInstance(AbilityInventory.self.offenseStance);
       _defensiveInitializedStance = BasicAbilityData.CreateInstance(AbilityInventory.self.defenseStance);
-      
+
       if (values.basicAbilityDataList != null) {
          foreach (BasicAbilityData item in values.basicAbilityDataList) {
             switch (item.abilityType) {
