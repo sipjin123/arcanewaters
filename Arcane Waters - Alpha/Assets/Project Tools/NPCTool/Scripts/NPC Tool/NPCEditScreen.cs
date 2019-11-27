@@ -33,6 +33,10 @@ public class NPCEditScreen : MonoBehaviour
    public InputField giftLiked;
    public InputField giftNotLiked;
 
+   // Holds reference to the inputfields for character limit alterations
+   public List<InputField> longTextInputfields;
+   public List<InputField> shortTextInputfields;
+
    // Icons for the selected Faction/Specialty
    public Image factionImage;
    public Image specialtyImage;
@@ -145,6 +149,13 @@ public class NPCEditScreen : MonoBehaviour
    #endregion
 
    public void Awake () {
+      foreach (InputField inputField in longTextInputfields) {
+         inputField.characterLimit = 30;
+      }
+      foreach (InputField inputField in shortTextInputfields) {
+         inputField.characterLimit = 20;
+      }
+
       itemTypeSelectionPanel.SetActive(false);
       exitSelectionButton.onClick.AddListener(() => { itemTypeSelectionPanel.SetActive(false); });
       confirmSelectionButton.onClick.AddListener(() => {

@@ -45,7 +45,7 @@ public class StatHolderPanel : MonoBehaviour {
       statData.userCombatStats.bonusResistancePhys = float.Parse(_bonusDEFPhys.text);
       statData.userCombatStats.bonusResistanceFire = float.Parse(_bonusDEFFire.text);
       statData.userCombatStats.bonusResistanceEarth = float.Parse(_bonusDEFEarth.text);
-      statData.userCombatStats.bonusResistanceWind = float.Parse(_bonusDEFWind.text);
+      statData.userCombatStats.bonusResistance = float.Parse(_bonusDEFWind.text);
       statData.userCombatStats.bonusResistanceWater = float.Parse(_bonusDEFWater.text);
       statData.userCombatStats.bonusResistanceAll = float.Parse(_bonusDEFAll.text);
 
@@ -53,7 +53,7 @@ public class StatHolderPanel : MonoBehaviour {
       statData.userCombatStats.bonusResistancePhysPerLevel = float.Parse(_bonusDEFPhysPerLevel.text);
       statData.userCombatStats.bonusResistanceFirePerLevel = float.Parse(_bonusDEFFirePerLevel.text);
       statData.userCombatStats.bonusResistanceEarthPerLevel = float.Parse(_bonusDEFEarthPerLevel.text);
-      statData.userCombatStats.bonusResistanceWindPerLevel = float.Parse(_bonusDEFWindPerLevel.text);
+      statData.userCombatStats.bonusResistanceAirPerLevel = float.Parse(_bonusDEFWindPerLevel.text);
       statData.userCombatStats.bonusResistanceWaterPerLevel = float.Parse(_bonusDEFWaterPerLevel.text);
       statData.userCombatStats.bonusResistanceAllPerLevel = float.Parse(_bonusDEFAllPerLevel.text);
 
@@ -61,7 +61,7 @@ public class StatHolderPanel : MonoBehaviour {
       statData.userCombatStats.bonusDamagePhys = float.Parse(_bonusATKPhys.text);
       statData.userCombatStats.bonusDamageFire = float.Parse(_bonusATKFire.text);
       statData.userCombatStats.bonusDamageEarth = float.Parse(_bonusATKEarth.text);
-      statData.userCombatStats.bonusDamageWind = float.Parse(_bonusATKWind.text);
+      statData.userCombatStats.bonusDamageAir = float.Parse(_bonusATKWind.text);
       statData.userCombatStats.bonusDamageWater = float.Parse(_bonusATKWater.text);
       statData.userCombatStats.bonusDamageAll = float.Parse(_bonusATKAll.text);
 
@@ -69,7 +69,7 @@ public class StatHolderPanel : MonoBehaviour {
       statData.userCombatStats.bonusDamagePhysPerLevel = float.Parse(_bonusATKPhysPerLevel.text);
       statData.userCombatStats.bonusDamageFirePerLevel = float.Parse(_bonusATKFirePerLevel.text);
       statData.userCombatStats.bonusDamageEarthPerLevel = float.Parse(_bonusATKEarthPerLevel.text);
-      statData.userCombatStats.bonusDamageWindPerLevel = float.Parse(_bonusATKWindPerLevel.text);
+      statData.userCombatStats.bonusDamageAirPerLevel = float.Parse(_bonusATKWindPerLevel.text);
       statData.userCombatStats.bonusDamageWaterPerLevel = float.Parse(_bonusATKWaterPerLevel.text);
       statData.userCombatStats.bonusDamageAllPerLevel = float.Parse(_bonusATKAllPerLevel.text);
 
@@ -136,7 +136,7 @@ public class StatHolderPanel : MonoBehaviour {
       _bonusDEFPhys.text = classData.userCombatStats.bonusResistancePhys.ToString();
       _bonusDEFFire.text = classData.userCombatStats.bonusResistanceFire.ToString();
       _bonusDEFEarth.text = classData.userCombatStats.bonusResistanceEarth.ToString();
-      _bonusDEFWind.text = classData.userCombatStats.bonusResistanceWind.ToString();
+      _bonusDEFWind.text = classData.userCombatStats.bonusResistance.ToString();
       _bonusDEFWater.text = classData.userCombatStats.bonusResistanceWater.ToString();
       _bonusDEFAll.text = classData.userCombatStats.bonusResistanceAll.ToString();
 
@@ -144,7 +144,7 @@ public class StatHolderPanel : MonoBehaviour {
       _bonusATKPhys.text = classData.userCombatStats.bonusDamagePhys.ToString();
       _bonusATKFire.text = classData.userCombatStats.bonusDamageFire.ToString();
       _bonusATKEarth.text = classData.userCombatStats.bonusDamageEarth.ToString();
-      _bonusATKWind.text = classData.userCombatStats.bonusDamageWind.ToString();
+      _bonusATKWind.text = classData.userCombatStats.bonusDamageAir.ToString();
       _bonusATKWater.text = classData.userCombatStats.bonusDamageWater.ToString();
       _bonusATKAll.text = classData.userCombatStats.bonusDamageAll.ToString();
 
@@ -152,7 +152,7 @@ public class StatHolderPanel : MonoBehaviour {
       _bonusDEFPhysPerLevel.text = classData.userCombatStats.bonusResistancePhysPerLevel.ToString();
       _bonusDEFFirePerLevel.text = classData.userCombatStats.bonusResistanceFirePerLevel.ToString();
       _bonusDEFEarthPerLevel.text = classData.userCombatStats.bonusResistanceEarthPerLevel.ToString();
-      _bonusDEFWindPerLevel.text = classData.userCombatStats.bonusResistanceWindPerLevel.ToString();
+      _bonusDEFWindPerLevel.text = classData.userCombatStats.bonusResistanceAirPerLevel.ToString();
       _bonusDEFWaterPerLevel.text = classData.userCombatStats.bonusResistanceWaterPerLevel.ToString();
       _bonusDEFAllPerLevel.text = classData.userCombatStats.bonusResistanceAllPerLevel.ToString();
 
@@ -160,7 +160,7 @@ public class StatHolderPanel : MonoBehaviour {
       _bonusATKPhysPerLevel.text = classData.userCombatStats.bonusDamagePhysPerLevel.ToString();
       _bonusATKFirePerLevel.text = classData.userCombatStats.bonusDamageFirePerLevel.ToString();
       _bonusATKEarthPerLevel.text = classData.userCombatStats.bonusDamageEarthPerLevel.ToString();
-      _bonusATKWindPerLevel.text = classData.userCombatStats.bonusDamageWindPerLevel.ToString();
+      _bonusATKWindPerLevel.text = classData.userCombatStats.bonusDamageAirPerLevel.ToString();
       _bonusATKWaterPerLevel.text = classData.userCombatStats.bonusDamageWaterPerLevel.ToString();
       _bonusATKAllPerLevel.text = classData.userCombatStats.bonusDamageAllPerLevel.ToString();
 

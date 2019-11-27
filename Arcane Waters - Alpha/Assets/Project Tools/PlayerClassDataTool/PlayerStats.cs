@@ -80,7 +80,7 @@ public class UserCombatStats
    public float bonusResistancePhys = 1;
    public float bonusResistanceFire = 1;
    public float bonusResistanceWater = 1;
-   public float bonusResistanceWind = 1;
+   public float bonusResistance = 1;
    public float bonusResistanceEarth = 1;
    public float bonusResistanceAll = 1;
 
@@ -88,7 +88,7 @@ public class UserCombatStats
    public float bonusDamagePhys = 1;
    public float bonusDamageFire = 1;
    public float bonusDamageWater = 1;
-   public float bonusDamageWind = 1;
+   public float bonusDamageAir = 1;
    public float bonusDamageEarth = 1;
    public float bonusDamageAll = 1;
 
@@ -96,7 +96,7 @@ public class UserCombatStats
    public float bonusResistancePhysPerLevel ;
    public float bonusResistanceFirePerLevel;
    public float bonusResistanceWaterPerLevel;
-   public float bonusResistanceWindPerLevel;
+   public float bonusResistanceAirPerLevel;
    public float bonusResistanceEarthPerLevel;
    public float bonusResistanceAllPerLevel;
 
@@ -104,7 +104,7 @@ public class UserCombatStats
    public float bonusDamagePhysPerLevel;
    public float bonusDamageFirePerLevel;
    public float bonusDamageWaterPerLevel;
-   public float bonusDamageWindPerLevel;
+   public float bonusDamageAirPerLevel;
    public float bonusDamageEarthPerLevel;
    public float bonusDamageAllPerLevel;
 }
