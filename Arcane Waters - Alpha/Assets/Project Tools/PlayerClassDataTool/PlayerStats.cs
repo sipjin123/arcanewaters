@@ -80,7 +80,7 @@ public class UserCombatStats
    public float bonusResistancePhys = 1;
    public float bonusResistanceFire = 1;
    public float bonusResistanceWater = 1;
-   public float bonusResistance = 1;
+   public float bonusResistanceAir = 1;
    public float bonusResistanceEarth = 1;
    public float bonusResistanceAll = 1;
 

@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4392956902012883679
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4392956902012883678}
+  - component: {fileID: 4392956902012883649}
+  m_Layer: 0
+  m_Name: FactionManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4392956902012883678
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4392956902012883679}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4392956902012883649
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4392956902012883679}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d0ea4579da02df43970a549c928a292, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  factionDataAssets:
+  - {fileID: 4900000, guid: 9b2edeb36376c1d4b8e28cc2778fbe0c, type: 3}
+  - {fileID: 4900000, guid: 1520e738d023d924f89595d934b2e55f, type: 3}
+  - {fileID: 4900000, guid: b951355ed03706b48b1ecb3769eb50e9, type: 3}
+  - {fileID: 4900000, guid: 1bd24ccc2cbcc1348a35a33429cae409, type: 3}
+  - {fileID: 4900000, guid: c2c03bf647d39d7458f25e952b4d902a, type: 3}
+  - {fileID: 4900000, guid: 117e6d553291d6a428ab5ec343524b82, type: 3}
+  - {fileID: 4900000, guid: 22d698733d65d3943920dc22c81eec5d, type: 3}
+  hasInitialized: 0
+  factionDataList: []

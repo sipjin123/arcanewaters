@@ -45,7 +45,7 @@ public class StatHolderPanel : MonoBehaviour {
       statData.userCombatStats.bonusResistancePhys = float.Parse(_bonusDEFPhys.text);
       statData.userCombatStats.bonusResistanceFire = float.Parse(_bonusDEFFire.text);
       statData.userCombatStats.bonusResistanceEarth = float.Parse(_bonusDEFEarth.text);
-      statData.userCombatStats.bonusResistance = float.Parse(_bonusDEFWind.text);
+      statData.userCombatStats.bonusResistanceAir = float.Parse(_bonusDEFWind.text);
       statData.userCombatStats.bonusResistanceWater = float.Parse(_bonusDEFWater.text);
       statData.userCombatStats.bonusResistanceAll = float.Parse(_bonusDEFAll.text);
 
@@ -136,7 +136,7 @@ public class StatHolderPanel : MonoBehaviour {
       _bonusDEFPhys.text = classData.userCombatStats.bonusResistancePhys.ToString();
       _bonusDEFFire.text = classData.userCombatStats.bonusResistanceFire.ToString();
       _bonusDEFEarth.text = classData.userCombatStats.bonusResistanceEarth.ToString();
-      _bonusDEFWind.text = classData.userCombatStats.bonusResistance.ToString();
+      _bonusDEFWind.text = classData.userCombatStats.bonusResistanceAir.ToString();
       _bonusDEFWater.text = classData.userCombatStats.bonusResistanceWater.ToString();
       _bonusDEFAll.text = classData.userCombatStats.bonusResistanceAll.ToString();
 

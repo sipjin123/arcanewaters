@@ -72,7 +72,9 @@ public class GenericSelectionPopup : MonoBehaviour {
       PlayerSpecialtyType = 25,
       PlayerSpecialtyIcons = 26,
       PlayerJobType = 27,
-      PlayerJobIcons = 28
+      PlayerJobIcons = 28,
+      MonsterType = 29,
+      AbilityType = 30
    }
 
    #endregion
@@ -291,6 +293,20 @@ public class GenericSelectionPopup : MonoBehaviour {
          case selectionType.PlayerJobType:
             foreach (Jobs.Type category in Enum.GetValues(typeof(Jobs.Type))) {
                createTextTemplate(category.ToString(), textUI, changeEvent);
+            }
+            break;
+         case selectionType.MonsterType:
+            foreach (Enemy.Type enemyType in Enum.GetValues(typeof(Enemy.Type))) {
+               createTextTemplate(enemyType.ToString(), textUI, changeEvent);
+            }
+            break;
+         case selectionType.AbilityType:
+            if (AbilityManager.self != null) {
+               foreach (BasicAbilityData battleData in AbilityManager.self.allGameAbilities) {
+                  createTextTemplate(battleData.itemName.ToString(), textUI, changeEvent);
+               }
+            } else {
+               selectionPanel.SetActive(false);
             }
             break;
       }

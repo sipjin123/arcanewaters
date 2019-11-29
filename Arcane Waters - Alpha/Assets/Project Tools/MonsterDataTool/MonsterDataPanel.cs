@@ -251,6 +251,20 @@ public class MonsterDataPanel : MonoBehaviour {
       _waterAttackMultiplier.text = newBattleData.waterAttackMultiplier.ToString();
       _allAttackMultiplier.text = newBattleData.allAttackMultiplier.ToString();
 
+      _physicalDefenseMultiplierPerLevel.text = newBattleData.physicalDefenseMultiplierPerLevel.ToString();
+      _fireDefenseMultiplierPerLevel.text = newBattleData.fireDefenseMultiplierPerLevel.ToString();
+      _earthDefenseMultiplierPerLevel.text = newBattleData.earthDefenseMultiplierPerLevel.ToString();
+      _airDefenseMultiplierPerLevel.text = newBattleData.airDefenseMultiplierPerLevel.ToString();
+      _waterDefenseMultiplierPerLevel.text = newBattleData.waterDefenseMultiplierPerLevel.ToString();
+      _allDefenseMultiplierPerLevel.text = newBattleData.allDefenseMultiplierPerLevel.ToString();
+
+      _physicalAttackMultiplierPerLevel.text = newBattleData.physicalAttackMultiplierPerLevel.ToString();
+      _fireAttackMultiplierPerLevel.text = newBattleData.fireAttackMultiplierPerLevel.ToString();
+      _earthAttackMultiplierPerLevel.text = newBattleData.earthAttackMultiplierPerLevel.ToString();
+      _airAttackMultiplierPerLevel.text = newBattleData.airAttackMultiplierPerLevel.ToString();
+      _waterAttackMultiplierPerLevel.text = newBattleData.waterAttackMultiplierPerLevel.ToString();
+      _allAttackMultiplierPerLevel.text = newBattleData.allAttackMultiplierPerLevel.ToString();
+
       _preContactLength.text = newBattleData.preContactLength.ToString();
       _preMagicLength.text = newBattleData.preMagicLength.ToString();
 
@@ -293,6 +307,20 @@ public class MonsterDataPanel : MonoBehaviour {
       newBattData.earthAttackMultiplier = float.Parse(_earthAttackMultiplier.text);
       newBattData.waterAttackMultiplier = float.Parse(_waterAttackMultiplier.text);
       newBattData.airAttackMultiplier = float.Parse(_airAttackMultiplier.text);
+
+      newBattData.physicalDefenseMultiplierPerLevel = float.Parse(_physicalDefenseMultiplierPerLevel.text);
+      newBattData.allDefenseMultiplierPerLevel = float.Parse(_allDefenseMultiplierPerLevel.text);
+      newBattData.fireDefenseMultiplierPerLevel = float.Parse(_fireDefenseMultiplierPerLevel.text);
+      newBattData.earthDefenseMultiplierPerLevel = float.Parse(_earthDefenseMultiplierPerLevel.text);
+      newBattData.waterDefenseMultiplierPerLevel = float.Parse(_waterDefenseMultiplierPerLevel.text);
+      newBattData.airDefenseMultiplierPerLevel = float.Parse(_airDefenseMultiplierPerLevel.text);
+
+      newBattData.physicalAttackMultiplierPerLevel = float.Parse(_physicalAttackMultiplierPerLevel.text);
+      newBattData.allAttackMultiplierPerLevel = float.Parse(_allAttackMultiplierPerLevel.text);
+      newBattData.fireAttackMultiplierPerLevel = float.Parse(_fireAttackMultiplierPerLevel.text);
+      newBattData.earthAttackMultiplierPerLevel = float.Parse(_earthAttackMultiplierPerLevel.text);
+      newBattData.waterAttackMultiplierPerLevel = float.Parse(_waterAttackMultiplierPerLevel.text);
+      newBattData.airAttackMultiplierPerLevel = float.Parse(_airAttackMultiplierPerLevel.text);
 
       newBattData.preContactLength = int.Parse(_preContactLength.text);
       newBattData.preMagicLength = int.Parse(_preMagicLength.text);
@@ -658,6 +686,22 @@ public class MonsterDataPanel : MonoBehaviour {
    [SerializeField] private InputField _airAttackMultiplier;
    [SerializeField] private InputField _waterAttackMultiplier;
    [SerializeField] private InputField _allAttackMultiplier;
+
+   // Element defense multiplier values PerLevel
+   [SerializeField] private InputField _physicalDefenseMultiplierPerLevel;
+   [SerializeField] private InputField _fireDefenseMultiplierPerLevel;
+   [SerializeField] private InputField _earthDefenseMultiplierPerLevel;
+   [SerializeField] private InputField _airDefenseMultiplierPerLevel;
+   [SerializeField] private InputField _waterDefenseMultiplierPerLevel;
+   [SerializeField] private InputField _allDefenseMultiplierPerLevel;
+
+   // Element attack multiplier values PerLevel
+   [SerializeField] private InputField _physicalAttackMultiplierPerLevel;
+   [SerializeField] private InputField _fireAttackMultiplierPerLevel;
+   [SerializeField] private InputField _earthAttackMultiplierPerLevel;
+   [SerializeField] private InputField _airAttackMultiplierPerLevel;
+   [SerializeField] private InputField _waterAttackMultiplierPerLevel;
+   [SerializeField] private InputField _allAttackMultiplierPerLevel;
 #pragma warning restore 0649 
 
    #endregion

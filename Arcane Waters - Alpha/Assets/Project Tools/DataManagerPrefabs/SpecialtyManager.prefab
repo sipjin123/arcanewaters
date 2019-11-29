@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2054333104735564683
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2054333104735564682}
+  - component: {fileID: 2054333104735564677}
+  m_Layer: 0
+  m_Name: SpecialtyManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2054333104735564682
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2054333104735564683}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2054333104735564677
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2054333104735564683}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b89f480994657d46baa696216b29203, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  specialtyDataAssets:
+  - {fileID: 4900000, guid: 938adc8d19064e24a9cad11d525ec451, type: 3}
+  - {fileID: 4900000, guid: 8d2830b20d5041645a3df537896ff844, type: 3}
+  - {fileID: 4900000, guid: 6322abb5da8b5324ca8dacacedc13bed, type: 3}
+  - {fileID: 4900000, guid: 3e361e40d6e0757458fff8acf9eec5ac, type: 3}
+  - {fileID: 4900000, guid: 116aa286dfed88b479ee778134412b9d, type: 3}
+  - {fileID: 4900000, guid: d026fa168fceb614bb3e093e47ff88ec, type: 3}
+  - {fileID: 4900000, guid: 9e2d0949990cc0448a2e35b75eb72ae6, type: 3}
+  - {fileID: 4900000, guid: 4b47f45caea3b35499a6bd3cc902f363, type: 3}
+  - {fileID: 4900000, guid: 5a7b450f70e7e4b4cb8b4fd110efa862, type: 3}
+  - {fileID: 4900000, guid: 1d287f98a182a3142bdde406f06c49b6, type: 3}
+  hasInitialized: 0
+  specialtyDataList: []

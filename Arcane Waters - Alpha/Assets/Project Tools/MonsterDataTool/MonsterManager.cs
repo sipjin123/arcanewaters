@@ -133,7 +133,10 @@ public class MonsterManager : MonoBehaviour {
             if (!_monsterData.ContainsKey(typeID)) {
                _monsterData.Add(typeID, monsterData);
             }
-            battleManager.registerBattler(monsterData);
+
+            if (battleManager != null) {
+               battleManager.registerBattler(monsterData);
+            }
          }
 
          _monsterDataList = getAllMonsterData();
