@@ -86,7 +86,7 @@ public class RPCManager : NetworkBehaviour {
       NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
 
       // Pass the data to the panel
-      panel.updatePanelWithQuestSelection(npcId, npcName, faction, specialty, friendshipLevel, greetingText, 
+      panel.updatePanelWithQuestSelection(npcId, npcName, faction, specialty, friendshipLevel, greetingText,
          canOfferGift, hasTradeGossipDialogue, hasGoodbyeDialogue, quests);
 
       // Make sure the panel is showing
@@ -353,7 +353,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_ReceiveLeaderBoards (NetworkConnection connection, LeaderBoardsManager.Period period, 
+   public void Target_ReceiveLeaderBoards (NetworkConnection connection, LeaderBoardsManager.Period period,
       Faction.Type boardFaction, double secondsLeftUntilRecalculation, LeaderBoardInfo[] farmingEntries,
       LeaderBoardInfo[] sailingEntries, LeaderBoardInfo[] exploringEntries, LeaderBoardInfo[] tradingEntries,
       LeaderBoardInfo[] craftingEntries, LeaderBoardInfo[] miningEntries) {
@@ -366,7 +366,7 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Pass them along to the Leader Boards panel
-      panel.updatePanelWithLeaderBoardEntries(period, boardFaction, secondsLeftUntilRecalculation,  farmingEntries, sailingEntries,
+      panel.updatePanelWithLeaderBoardEntries(period, boardFaction, secondsLeftUntilRecalculation, farmingEntries, sailingEntries,
          exploringEntries, tradingEntries, craftingEntries, miningEntries);
    }
 
@@ -1021,7 +1021,7 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Move player back to town if random sea map instance hasn't been found
-      _player.Cmd_SpawnInNewMap (Area.STARTING_TOWN, Spawn.FOREST_TOWN_DOCK, Direction.North);
+      _player.Cmd_SpawnInNewMap(Area.STARTING_TOWN, Spawn.FOREST_TOWN_DOCK, Direction.North);
    }
 
    [Command]
@@ -1169,7 +1169,7 @@ public class RPCManager : NetworkBehaviour {
 
          // Get the last reached node in this conversation
          QuestNode currentNode = NPCManager.self.getQuestNode(npcId, questId, status.questNodeId);
-         
+
          // Make sure that the quest objectives can be completed
          foreach (QuestObjective objective in currentNode.getAllQuestObjectives()) {
             if (!objective.canObjectiveBeCompletedDB(_player.userId)) {
@@ -1571,7 +1571,7 @@ public class RPCManager : NetworkBehaviour {
       // Gets loots for enemy type
       EnemyLootLibrary lootLibrary = RewardManager.self.fetchLandMonsterLootData(enemyType);
       List<LootInfo> processedLoots = lootLibrary.dropTypes.requestLootList();
-   
+
       // Registers list of ingredient types for data fetching
       List<CraftingIngredients.Type> itemLoots = new List<CraftingIngredients.Type>();
       for (int i = 0; i < processedLoots.Count; i++) {
@@ -1589,7 +1589,7 @@ public class RPCManager : NetworkBehaviour {
    [Server]
    public void validateCraftingRewards (int userId, Item.Category category, int itemType) {
       CraftableItemRequirements data = RewardManager.self.craftableDataList.Find(_ => _.resultItem.category == category && _.resultItem.itemTypeId == itemType);
-  
+
       List<CraftingIngredients.Type> requiredItemList = new List<CraftingIngredients.Type>();
       foreach (Item item in data.combinationRequirements) {
          requiredItemList.Add((CraftingIngredients.Type) item.itemTypeId);
@@ -1940,8 +1940,7 @@ public class RPCManager : NetworkBehaviour {
       Area area = AreaManager.self.getArea(_player.areaKey);
 
       // Get or create the Battle instance
-      Battle battle = (enemy.battleId > 0) ? BattleManager.self.getBattle(enemy.battleId) :
-         BattleManager.self.createBattle(area, instance, enemy, playerBody);
+      Battle battle = (enemy.battleId > 0) ? BattleManager.self.getBattle(enemy.battleId) : BattleManager.self.createBattle(area, instance, enemy, playerBody);
 
       // If the Battle is full, we can't proceed
       if (!battle.hasRoomLeft(Battle.TeamType.Attackers)) {
@@ -1956,20 +1955,23 @@ public class RPCManager : NetworkBehaviour {
          // Retrieves skill list from database
          List<AbilitySQLData> abilityDataList = DB_Main.getAllAbilities(playerBody.userId);
 
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            if (abilityDataList.Count < 1) {
-               // Manual integration of skills if database does not exist yet
-               AbilitySQLData newSQLData = new AbilitySQLData {
-                  abilityID = 1,
-                  abilityLevel = 1,
-                  description = AbilityManager.getAbility(1, AbilityType.Standard).itemDescription,
-                  equipSlotIndex = 0,
-                  name = AbilityManager.getAbility(1, AbilityType.Standard).itemName
-               };
-               abilityDataList.Add(newSQLData);
-               DB_Main.updateAbilitiesData(playerBody.userId, newSQLData);
-            }
+         if (abilityDataList.Count < 1) {
+            // Manual integration of skills if database does not exist yet
+            AbilitySQLData newSQLData = new AbilitySQLData {
+               abilityID = 1,
+               abilityLevel = 1,
+               description = AbilityManager.getAbility(1, AbilityType.Standard).itemDescription,
+               equipSlotIndex = 0,
+               name = AbilityManager.getAbility(1, AbilityType.Standard).itemName
+            };
+            abilityDataList.Add(newSQLData);
 
+            // Updates the ability info in the SQL Database
+            DB_Main.updateAbilitiesData(playerBody.userId, newSQLData);
+         }
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Provides the client with the info of the Equipped Abilities
             Target_UpdateBattleAbilityUI(playerBody.connectionToClient, Util.serialize(abilityDataList.FindAll(_=>_.equipSlotIndex >= 0)));
          });
       });
@@ -1980,7 +1982,7 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.updateAbilitiesData(_player.userId, ability);
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            processAbilitiesUI();
+            fetchAbilitiesForUIPanel();
          });
       });
    }
@@ -1992,31 +1994,44 @@ public class RPCManager : NetworkBehaviour {
             DB_Main.updateAbilitiesData(_player.userId, ability);
          }
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            processAbilitiesUI();
+            fetchAbilitiesForUIPanel();
          });
       });
    }
 
    [Command]
    public void Cmd_RequestAbility () {
-      processAbilitiesUI();
+      fetchAbilitiesForUIPanel();
    }
 
    [Server]
-   public void requestAbilityForBattle (int userID) {
+   public void setupAbilityForBattle (int userID) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Retrieves skill list from database
          List<AbilitySQLData> abilityDataList = DB_Main.getAllAbilities(_player.userId);
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             List<AbilitySQLData> equippedAbilityDataList = abilityDataList.FindAll(_ => _.equipSlotIndex >= 0);
 
-            Target_AbilityForBattle(_player.connectionToClient, equippedAbilityDataList.OrderBy(_=>_.equipSlotIndex).ToArray(), userID);
+            // Sort by equipment slot index
+            equippedAbilityDataList = equippedAbilityDataList.OrderBy(_ => _.equipSlotIndex).ToList();
+
+            // Set server data
+            Battler battler = BattleManager.self.getBattler(userID);
+            battler.setBattlerAbilities(getAbilityRecord(equippedAbilityDataList.ToArray()));
+
+            // Set Client Data
+            Target_ReceiveEquippedAbilities(_player.connectionToClient, equippedAbilityDataList.ToArray(), userID);
          });
       });
    }
 
    [TargetRpc]
-   protected void Target_AbilityForBattle (NetworkConnection connection, AbilitySQLData[] equippedAbilities, int userID) {
+   protected void Target_ReceiveEquippedAbilities (NetworkConnection connection, AbilitySQLData[] equippedAbilities, int userID) {
+      Battler battler = BattleManager.self.getBattler(userID);
+      battler.setBattlerAbilities(getAbilityRecord(equippedAbilities));
+   }
+
+   protected AbilityDataRecord getAbilityRecord (AbilitySQLData[] equippedAbilities) {
       List<BasicAbilityData> basicAbilityList = new List<BasicAbilityData>();
       List<AttackAbilityData> attackAbilityList = new List<AttackAbilityData>();
 
@@ -2034,12 +2049,12 @@ public class RPCManager : NetworkBehaviour {
          attackAbilityDataList = attackAbilityList.ToArray(),
          buffAbilityDataList = new List<BuffAbilityData>().ToArray(),
       };
-      Battler battler = BattleManager.self.getBattler(userID);
-      battler.setBattlerAbilities(abilityRecord);
+
+      return abilityRecord;
    }
 
    [Server]
-   public void processAbilitiesUI () {
+   public void fetchAbilitiesForUIPanel () {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Retrieves skill list from database
          List<AbilitySQLData> abilityDataList = DB_Main.getAllAbilities(_player.userId);
@@ -2047,13 +2062,14 @@ public class RPCManager : NetworkBehaviour {
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             List<AbilitySQLData> equippedAbilityDataList = abilityDataList.FindAll(_ => _.equipSlotIndex >= 0);
 
-            Target_ReceiveSkills(_player.connectionToClient, abilityDataList.ToArray(), equippedAbilityDataList.ToArray());
+            // Provides skill panel with all the abilities of the player 
+            Target_ReceiveSkillsForSkillPanel(_player.connectionToClient, abilityDataList.ToArray(), equippedAbilityDataList.ToArray());
          });
       });
    }
 
    [TargetRpc]
-   public void Target_ReceiveSkills (NetworkConnection connection, AbilitySQLData[] allAbilities, AbilitySQLData[] equippedAbilities) {
+   public void Target_ReceiveSkillsForSkillPanel (NetworkConnection connection, AbilitySQLData[] allAbilities, AbilitySQLData[] equippedAbilities) {
       // Make sure the panel is showing
       AbilityPanel panel = (AbilityPanel) PanelManager.self.get(Panel.Type.Skill_Panel);
 
@@ -2067,8 +2083,10 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_UpdateBattleAbilityUI (NetworkConnection connection, string[] rawAttackAbilities) {
+      // Translate data
       List<AbilitySQLData> attackAbilityDataList = Util.unserialize<AbilitySQLData>(rawAttackAbilities);
 
+      // Updates the combat UI 
       BattleUIManager.self.SetupAbilityUI(attackAbilityDataList.OrderBy(_ =>_.equipSlotIndex).ToArray());
    }
 

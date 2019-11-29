@@ -55,6 +55,22 @@ public class BattlerData {
    public float waterAttackMultiplier;
    public float allAttackMultiplier;
 
+   // Element defense multiplier values PerLevel
+   public float physicalDefenseMultiplierPerLevel;
+   public float fireDefenseMultiplierPerLevel;
+   public float earthDefenseMultiplierPerLevel;
+   public float airDefenseMultiplierPerLevel;
+   public float waterDefenseMultiplierPerLevel;
+   public float allDefenseMultiplierPerLevel;
+
+   // Element attack multiplier values PerLevel
+   public float physicalAttackMultiplierPerLevel;
+   public float fireAttackMultiplierPerLevel;
+   public float earthAttackMultiplierPerLevel;
+   public float airAttackMultiplierPerLevel;
+   public float waterAttackMultiplierPerLevel;
+   public float allAttackMultiplierPerLevel;
+
    // Sounds
    public string deathSoundPath;
    public string attackJumpSoundPath;
@@ -76,7 +92,7 @@ public class BattlerData {
 
       return data;
    }
-
+  
    public static BattlerData BattleData (int xp, int apWhenDamaged, int baseHealth, int baseDef, int baseDmg, int baseGold, int dmgPerLevel,
       int defPerLevel, int healthPerLevel, AbilityDataRecord battlerAbilities, float physicalDefMultiplier, float fireDefMultiplier,
       float earthDefMultiplier, float airDefMultiplier, float waterDefMultiplier, float allDefMultiplier, float physicalAtkMultiplier,
@@ -120,6 +136,13 @@ public class BattlerData {
       airDefenseMultiplier = datacopy.airDefenseMultiplier;
       waterDefenseMultiplier = datacopy.waterDefenseMultiplier;
       allDefenseMultiplier = datacopy.allDefenseMultiplier;
+
+      physicalDefenseMultiplierPerLevel = datacopy.physicalDefenseMultiplierPerLevel;
+      fireDefenseMultiplierPerLevel = datacopy.fireDefenseMultiplierPerLevel;
+      earthDefenseMultiplierPerLevel = datacopy.earthDefenseMultiplierPerLevel;
+      airDefenseMultiplierPerLevel = datacopy.airDefenseMultiplierPerLevel;
+      waterDefenseMultiplierPerLevel = datacopy.waterDefenseMultiplierPerLevel;
+      allDefenseMultiplierPerLevel = datacopy.allDefenseMultiplierPerLevel;
 
       physicalAttackMultiplier = datacopy.physicalAttackMultiplier;
       fireAttackMultiplier = datacopy.fireAttackMultiplier;

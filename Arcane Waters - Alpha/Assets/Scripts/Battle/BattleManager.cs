@@ -166,43 +166,11 @@ public class BattleManager : MonoBehaviour {
       // Registers the action of combat entry to the achievement database for recording
       AchievementManager.registerUserAchievement(player.userId, ActionType.EnterCombat);
 
-      // Sets servers copy of the battler abilities
-      setServerPlayerAbilities(battler);
-
-      // Sets clients copy of the battler abilities 
-      player.rpc.requestAbilityForBattle(player.userId);
+      // Server will setup the abilities and send to clients what abilities to use
+      player.rpc.setupAbilityForBattle(player.userId);
 
       // Update the observers associated with the Battle and the associated players
       rebuildObservers(battler, battle);
-   }
-
-   private void setServerPlayerAbilities (Battler battler) {
-      // WARNING! This is a duplicated code, this needs to be revised
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Retrieves skill list from database
-         List<AbilitySQLData> abilityDataList = DB_Main.getAllAbilities(battler.userId);
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            List<AbilitySQLData> equippedAbilityDataList = abilityDataList.FindAll(_ => _.equipSlotIndex >= 0);
-            List<BasicAbilityData> basicAbilityList = new List<BasicAbilityData>();
-            List<AttackAbilityData> attackAbilityList = new List<AttackAbilityData>();
-
-            foreach (AbilitySQLData abilitySQL in equippedAbilityDataList) {
-               BasicAbilityData abilityData = AbilityManager.getAbility(abilitySQL.abilityID, AbilityType.Standard);
-               AttackAbilityData attackAbilityData = AbilityManager.getAttackAbility(abilitySQL.abilityID);
-               if (abilityData != null) {
-                  basicAbilityList.Add(abilityData);
-                  attackAbilityList.Add(attackAbilityData);
-               }
-            }
-
-            AbilityDataRecord abilityRecord = new AbilityDataRecord {
-               basicAbilityDataList = basicAbilityList.ToArray(),
-               attackAbilityDataList = attackAbilityList.ToArray(),
-               buffAbilityDataList = new List<BuffAbilityData>().ToArray(),
-            };
-            battler.setBattlerAbilities(abilityRecord);
-         });
-      });
    }
    
    public void addEnemyToBattle (Battle battle, Enemy enemy, Battle.TeamType teamType, PlayerBodyEntity aggressor) {
@@ -288,14 +256,15 @@ public class BattleManager : MonoBehaviour {
       Battler battler = Instantiate(baseBattlerPrefab);
       battler.battlerType = BattlerType.PlayerControlled;
 
-      // Set starting stats
-      battler.health = battler.getStartingHealth(Enemy.Type.Humanoid);
-
       // Set up our initial data and position
       battler.playerNetId = player.netId;
       battler.player = player;
       battler.battle = battle;
       battler.userId = player.userId;
+
+      // This function will handle the computed stats of the player depending on their Specialty/Faction/Job/Class
+      battler.mainInit();
+      battler.health = battler.getStartingHealth(Enemy.Type.Humanoid);
 
       // Zeronev: this will not sync the battle ID to all created battlers, a CMD is needed.
       battler.battleId = battle.battleId;
@@ -462,6 +431,9 @@ public class BattleManager : MonoBehaviour {
                wasCritical = Random.Range(0f, 1f) > .50f;
             }
 
+            // Warning!: Temporary remove critical possibilities
+            wasCritical = false;
+
             // Adjust the damage amount based on element, ability, and the target's armor
             Element element = abilityData.elementType;
 
@@ -514,6 +486,10 @@ public class BattleManager : MonoBehaviour {
             if (target.isProtected(battle)) {
                decreaseMultiply *= .70f;
             }
+
+            // Warning!: Temporary Remove additive for simplified computation
+            increaseAdditive = 0;
+            decreaseMultiply = 1;
 
             // Apply the adjustments to the damage
             damage *= (1f + increaseAdditive);

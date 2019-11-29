@@ -249,43 +249,47 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    }
 
    public void mainInit () {
-      BattlerData battlerData = MonsterManager.self.requestBattler(enemyType);
-      if (battlerType == BattlerType.PlayerControlled) {
-         battlerData = MonsterManager.self.requestBattler(Enemy.Type.Humanoid);
-      } else {
-         // Sets the default monster if data is not yet created in xml editor
-         if (battlerData == null) {
-            battlerData = MonsterManager.self.requestBattler(Enemy.Type.Lizard);
-         } 
+      if (!_hasInitializedStats) {
+         _hasInitializedStats = true;
+         BattlerData battlerData = MonsterManager.self.requestBattler(enemyType);
+         if (battlerType == BattlerType.PlayerControlled) {
+            battlerData = MonsterManager.self.requestBattler(Enemy.Type.Humanoid);
+         } else {
+            // Sets the default monster if data is not yet created in xml editor
+            if (battlerData == null) {
+               battlerData = MonsterManager.self.requestBattler(Enemy.Type.Lizard);
+            }
+         }
+
+         if (battlerData != null) {
+            _initializedBattlerData = BattlerData.CreateInstance(battlerData);
+            _initializedBattlerData.enemyName = battlerData.enemyName;
+         } else {
+            Debug.LogError("DATA IS NULL");
+         }
+
+         // Change sprite fetched from battler data
+         Sprite fetchSprite = ImageManager.getSprite(battlerData.imagePath);
+         if (fetchSprite != null) {
+            mainSpriteRenderer.sprite = fetchSprite;
+         }
+
+         if (battlerType == BattlerType.AIEnemyControlled) {
+            setBattlerAbilities(_initializedBattlerData.battlerAbilities);
+
+            // Extra cooldown time for AI controlled battlers, so they do not attack instantly
+            this.cooldownEndTime = Util.netTime() + 5f;
+         }
+
+         // This function will handle the computed stats of the player depending on their Specialty/Faction/Job/Class
+         setupPlayerStats();
       }
-
-      if (battlerData != null) {
-         _initializedBattlerData = BattlerData.CreateInstance(battlerData);
-         _initializedBattlerData.enemyName = battlerData.enemyName;
-      } else {
-         Debug.LogError("DATA IS NULL");
-      }
-
-      // Change sprite fetched from battler data
-      Sprite fetchSprite = ImageManager.getSprite(battlerData.imagePath);
-      if (fetchSprite != null) {
-         mainSpriteRenderer.sprite = fetchSprite;
-      }
-
-      if (battlerType == BattlerType.AIEnemyControlled) {
-         setBattlerAbilities(_initializedBattlerData.battlerAbilities);
-
-         // Extra cooldown time for AI controlled battlers, so they do not attack instantly
-         this.cooldownEndTime = Util.netTime() + 5f;
-      }
-
-      // This function will handle the computed stats of the player depending on their Specialty/Faction/Job/Class
-      setupPlayerStats();
    }
 
-   void setupPlayerStats() {
+   private void setupPlayerStats() {
       if (battlerType == BattlerType.PlayerControlled) {
-         BodyEntity playerBody = BodyManager.self.getBody(userId);
+         //BodyEntity playerBody = BodyManager.self.getBody(userId);
+         NetEntity playerBody = player;
 
          if (playerBody == null) {
             Debug.LogError("Couldnt find player: " + userId);
@@ -321,17 +325,18 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
          // Specialty Setup
          PlayerSpecialtyData specialtyStat = SpecialtyManager.self.getSpecialtyData(specialtyType);
          if (specialtyStat == null) {
-            D.error("Specialty is Missing: "+specialtyType);
+            D.error("Specialty is Missing: " + specialtyType);
          } else {
             UserDefaultStats specialtyStatDefault = specialtyStat.playerStats.userDefaultStats;
             UserCombatStats specialtyStatCombat = specialtyStat.playerStats.userCombatStats;
             addDefaultStats(specialtyStatDefault);
             addCombatStats(specialtyStatCombat);
          }
-      }
+      } 
    }
 
    private void addDefaultStats (UserDefaultStats stat) {
+      this.health += (int) stat.bonusMaxHP;
       _initializedBattlerData.baseHealth += (int) stat.bonusMaxHP;
       _initializedBattlerData.healthPerlevel += (int) stat.hpPerLevel;
 
@@ -343,6 +348,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    }
 
    private void addCombatStats (UserCombatStats stat) {
+      int level = LevelUtil.levelForXp(player.XP);
+
       _initializedBattlerData.airAttackMultiplier += stat.bonusDamageAir;
       _initializedBattlerData.fireAttackMultiplier += stat.bonusDamageFire;
       _initializedBattlerData.earthAttackMultiplier += stat.bonusDamageEarth;
@@ -350,7 +357,14 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       _initializedBattlerData.physicalAttackMultiplier += stat.bonusDamagePhys;
       _initializedBattlerData.allAttackMultiplier += stat.bonusDamageAll;
 
-      _initializedBattlerData.airDefenseMultiplier += stat.bonusResistance;
+      _initializedBattlerData.airAttackMultiplier += stat.bonusDamageAirPerLevel * level;
+      _initializedBattlerData.fireAttackMultiplier += stat.bonusDamageFirePerLevel * level;
+      _initializedBattlerData.earthAttackMultiplier += stat.bonusDamageEarthPerLevel * level;
+      _initializedBattlerData.waterAttackMultiplier += stat.bonusDamageWaterPerLevel * level;
+      _initializedBattlerData.physicalAttackMultiplier += stat.bonusDamagePhysPerLevel * level;
+      _initializedBattlerData.allAttackMultiplier += stat.bonusDamageAllPerLevel * level;
+
+      _initializedBattlerData.airDefenseMultiplier += stat.bonusResistanceAir;
       _initializedBattlerData.fireDefenseMultiplier += stat.bonusResistanceFire;
       _initializedBattlerData.earthDefenseMultiplier += stat.bonusResistanceEarth;
       _initializedBattlerData.waterDefenseMultiplier += stat.bonusResistanceWater;
@@ -1060,38 +1074,50 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
       // Add our armor's defense value, if we have any
       if (armorManager.hasArmor()) {
-         defense += armorManager.getArmor().getDefense(element);
+         // WARNING!: Temporary Disable until formula is finalized
+         // defense += armorManager.getArmor().getDefense(element);
       }
 
       float elementalMultiplier = 1;
+      float elementalMultiplierPerLevel = 0;
       switch (element) {
          case Element.Physical:
             elementalMultiplier = getBattlerData().physicalDefenseMultiplier;
+            elementalMultiplierPerLevel = getBattlerData().physicalDefenseMultiplierPerLevel;
             break;
          case Element.Fire:
             elementalMultiplier = getBattlerData().fireDefenseMultiplier;
+            elementalMultiplierPerLevel = getBattlerData().fireDefenseMultiplierPerLevel;
             break;
          case Element.Earth:
             elementalMultiplier = getBattlerData().earthDefenseMultiplier;
+            elementalMultiplierPerLevel = getBattlerData().earthDefenseMultiplierPerLevel;
             break;
          case Element.Air:
             elementalMultiplier = getBattlerData().airDefenseMultiplier;
+            elementalMultiplierPerLevel = getBattlerData().airDefenseMultiplierPerLevel;
             break;
          case Element.Water:
             elementalMultiplier = getBattlerData().waterDefenseMultiplier;
+            elementalMultiplierPerLevel = getBattlerData().waterDefenseMultiplierPerLevel;
             break;
       }
 
       if (elementalMultiplier < 0) {
          // Handles units that are weak to the element
-         defense *= Mathf.Abs(elementalMultiplier);
+         elementalMultiplier = Mathf.Abs(elementalMultiplier);
+         elementalMultiplier += (level * elementalMultiplierPerLevel);
+
+         defense *= elementalMultiplier;
       } else {
          // Handles units that are resistant to the element
+         elementalMultiplier += (level * elementalMultiplierPerLevel);
          defense *= elementalMultiplier;
       }
 
+      // WARNING!: Temporary Disable until formula is finalized
       // We will add as an additional the "All" multiplier with the base defense
-      defense += getBattlerData().baseDefense + (getBattlerData().defensePerLevel * level);
+      // defense += getBattlerData().baseDefense + (getBattlerData().defensePerLevel * level);
 
       return defense;
    }
@@ -1104,7 +1130,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
       // Add our weapon's damage value, if we have a weapon
       if (weaponManager.hasWeapon()) {
-         damage += weaponManager.getWeapon().getDamage(element);
+         // WARNING!: Temporary Disable until formula is finalized
+         // damage += weaponManager.getWeapon().getDamage(element);
       }
 
       float multiplier = 1;
@@ -1127,8 +1154,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       }
       damage *= multiplier;
 
+      // WARNING!: Temporary Disable until formula is finalized
       // We will add as an additional the "All" multiplier with the base defense.
-      damage += (getBattlerData().baseDamage * getBattlerData().allAttackMultiplier);
+      // damage += (getBattlerData().baseDamage * getBattlerData().allAttackMultiplier);
 
       return damage;
    }
@@ -1432,6 +1460,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
    // Our clickable box
    protected ClickableBox _clickableBox;
+
+   // Initialized stats
+   protected bool _hasInitializedStats;
 
    // Gets set to true if this is the Battler that the client owns
    protected bool _isClientBattler = false;
