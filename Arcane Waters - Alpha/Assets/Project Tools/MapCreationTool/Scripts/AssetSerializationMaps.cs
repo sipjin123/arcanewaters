@@ -16,6 +16,8 @@ namespace MapCreationTool
       public float layerZMultiplier = -0.01f;
       public float sublayerZMultiplier = -0.0001f;
       public float layerZStart = 1f;
+      public MapTemplate _mapTemplate;
+      public Tilemap _tilemapTemplate;
 
       private void OnValidate () {
          loadLocal();
@@ -29,6 +31,8 @@ namespace MapCreationTool
             sublayerZMultip = sublayerZMultiplier;
             layersWithColliders = collidableLayers;
             layerZFirst = layerZStart;
+            tilemapTemplate = _tilemapTemplate;
+            mapTemplate = _mapTemplate;
 
             foreach (BiomeMapsDefinition definition in mapsDefinitions) {
                BiomeMaps bm = new BiomeMaps();
@@ -137,6 +141,8 @@ namespace MapCreationTool
       public static float layerZFirst { get; set; }
       public static int[] layersWithColliders { get; set; }
       public static bool loaded { get; private set; }
+      public static MapTemplate mapTemplate { get; private set; }
+      public static Tilemap tilemapTemplate { get; private set; }
 
       public class BiomeMaps
       {

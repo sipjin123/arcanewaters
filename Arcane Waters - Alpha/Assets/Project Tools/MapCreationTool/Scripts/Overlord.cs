@@ -13,13 +13,19 @@ namespace MapCreationTool
 
       [Space(5)]
       [SerializeField]
-      private PaletteResources paletteResources = null;
+      private PaletteResources areaPaletteResources = null;
+      [SerializeField]
+      private PaletteResources interiorPaletteResources = null;
+      [SerializeField]
+      private PaletteResources seaPaletteResources = null;
       [SerializeField]
       private Palette palette = null;
       [SerializeField]
       private DrawBoard drawBoard = null;
 
-      private Dictionary<BiomeType, PaletteData> paletteDatas;
+      private Dictionary<BiomeType, PaletteData> areaPaletteDatas;
+      private Dictionary<BiomeType, PaletteData> interiorPaletteDatas;
+      private Dictionary<BiomeType, PaletteData> seaPaletteDatas;
 
       private void Awake () {
          Tools.setDefaultValues();
@@ -27,7 +33,9 @@ namespace MapCreationTool
 
          AssetSerializationMaps.load();
 
-         paletteDatas = paletteResources.gatherData(config);
+         areaPaletteDatas = areaPaletteResources.gatherData(config);
+         interiorPaletteDatas = interiorPaletteResources.gatherData(config);
+         seaPaletteDatas = seaPaletteResources.gatherData(config);
       }
 
       private void OnEnable () {
@@ -37,6 +45,8 @@ namespace MapCreationTool
          Undo.RedoPerformed += ensurePreviewCleared;
 
          Tools.AnythingChanged += ensurePreviewCleared;
+
+         Tools.EditorTypeChanged += editorTypeChanged;
       }
 
       private void OnDisable () {
@@ -46,10 +56,12 @@ namespace MapCreationTool
          Undo.RedoPerformed -= ensurePreviewCleared;
 
          Tools.AnythingChanged -= ensurePreviewCleared;
+
+         Tools.EditorTypeChanged -= editorTypeChanged;
       }
 
       private void Start () {
-         palette.populatePalette(paletteDatas[Tools.biome]);
+         palette.populatePalette(areaPaletteDatas[Tools.biome]);
       }
 
       private void Update () {
@@ -64,16 +76,40 @@ namespace MapCreationTool
          var dt = Serializer.deserialize(data, true);
 
          Tools.changeBiome(dt.biome);
+
+         if(dt.size != default) {
+            Tools.changeBoardSize(dt.size);
+         }
+
          drawBoard.applyDeserializedData(dt);
          Undo.clear();
+      }
+
+      private void editorTypeChanged(EditorType from, EditorType to) {
+         switch(to) {
+            case EditorType.Area:
+               palette.populatePalette(areaPaletteDatas[Tools.biome]);
+               break;
+            case EditorType.Interior:
+               palette.populatePalette(interiorPaletteDatas[Tools.biome]);
+               break;
+            case EditorType.Sea:
+               palette.populatePalette(seaPaletteDatas[Tools.biome]);
+               break;
+            default:
+               Debug.LogError("Unrecognized editor type.");
+               break;
+         }
       }
 
       private void ensurePreviewCleared () {
          drawBoard.ensurePreviewCleared();
       }
       private void onBiomeChanged (BiomeType from, BiomeType to) {
-         palette.populatePalette(paletteDatas[to]);
-         drawBoard.changeBiome(paletteDatas[from], paletteDatas[to]);
+         if(Tools.editorType == EditorType.Area) {
+            palette.populatePalette(areaPaletteDatas[to]);
+            drawBoard.changeBiome(areaPaletteDatas[from], areaPaletteDatas[to]);
+         }
       }
    }
 }

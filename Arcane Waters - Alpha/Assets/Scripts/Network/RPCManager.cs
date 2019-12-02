@@ -393,6 +393,35 @@ public class RPCManager : NetworkBehaviour {
       panel.receiveItemsFromServer(msg.userObjects, msg.categories, msg.pageNumber, msg.gold, msg.gems, msg.totalItemCount, msg.equippedWeaponId, msg.equippedArmorId, msg.itemArray);
    }
 
+   [TargetRpc]
+   public void Target_ReceiveFriendshipInfo (NetworkConnection connection, FriendshipInfo[] friendshipInfo,
+      Friendship.Status friendshipStatus, int pageNumber, int totalFriendInfoCount, int pendingRequestCount) {
+      List<FriendshipInfo> friendshipInfoList = new List<FriendshipInfo>(friendshipInfo);
+
+      // Make sure the panel is showing
+      FriendListPanel panel = (FriendListPanel) PanelManager.self.get(Panel.Type.FriendList);
+
+      if (!panel.isShowing()) {
+         PanelManager.self.pushPanel(panel.type);
+      }
+
+      // Pass the data to the panel
+      panel.updatePanelWithFriendshipInfo(friendshipInfoList, friendshipStatus, pageNumber, totalFriendInfoCount, pendingRequestCount);
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveUserIdForFriendshipInvite (NetworkConnection connection, int friendUserId, string friendName) {
+      // Make sure the panel is showing
+      FriendListPanel panel = (FriendListPanel) PanelManager.self.get(Panel.Type.FriendList);
+
+      if (!panel.isShowing()) {
+         PanelManager.self.pushPanel(panel.type);
+      }
+
+      // Pass the data to the panel
+      panel.receiveUserIdForFriendshipInvite(friendUserId, friendName);
+   }
+
    [Command]
    public void Cmd_BugReport (string subject, string message) {
       // We need a player object
@@ -609,6 +638,15 @@ public class RPCManager : NetworkBehaviour {
          UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
          UserInfo userInfo = userObjects.userInfo;
          int totalItemCount = DB_Main.getItemCount(_player.userId, categories, userInfo.weaponId, userInfo.armorId);
+
+         // Calculate the maximum page number
+         int maxPage = Mathf.CeilToInt((float) totalItemCount / itemsPerPage);
+         if (maxPage == 0) {
+            maxPage = 1;
+         }
+
+         // Clamp the requested page number to the max page - the number of items could have changed
+         pageNumber = Mathf.Clamp(pageNumber, 1, maxPage);
 
          // Get the items from the database
          List<Item> items = DB_Main.getItems(_player.userId, categories, pageNumber, itemsPerPage, userInfo.weaponId, userInfo.armorId);
@@ -1347,6 +1385,229 @@ public class RPCManager : NetworkBehaviour {
    #endregion
 
    [Command]
+   public void Cmd_RequestUserIdForFriendshipInvite (string friendUserName) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      string feedbackMessage = "";
+      bool success = true;
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+
+         // Try to retrieve the user info
+         UserInfo friendUserInfo = DB_Main.getUserInfo(friendUserName);
+         if (friendUserInfo == null) {
+            feedbackMessage = "The player " + friendUserName + " does not exist!";
+            success = false;
+         }
+
+         if (success) {
+            // Verify that there is no relationship with this friend
+            FriendshipInfo info = DB_Main.getFriendshipInfo(_player.userId, friendUserInfo.userId);
+            if (info != null) {
+               switch (info.friendshipStatus) {
+                  case Friendship.Status.InviteSent:
+                     feedbackMessage = "You have already sent an invitation to " + friendUserName + "!";
+                     break;
+                  case Friendship.Status.InviteReceived:
+                     feedbackMessage = "You already have a pending invitation from " + friendUserName + "!";
+                     break;
+                  case Friendship.Status.Friends:
+                     feedbackMessage = "You are already friends with " + friendUserName + "!";
+                     break;
+                  default:
+                     D.warning(string.Format("The case {0} is not managed.", info.friendshipStatus));
+                     break;
+               }
+               success = false;
+            }
+         }
+
+         // Back to Unity
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (success) {
+               // Send the user ID to the client
+               Target_ReceiveUserIdForFriendshipInvite(_player.connectionToClient, friendUserInfo.userId, friendUserInfo.username);
+            } else {
+               ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, feedbackMessage);
+            }
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_SendFriendshipInvite (int friendUserId) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+
+         // Retrieve the friend user info
+         UserInfo friendUserInfo = DB_Main.getUserInfo(friendUserId);
+         if (friendUserInfo == null) {
+            D.error(string.Format("The user {0} does not exist.", friendUserId));
+            return;
+         }
+
+         // Verify that there is no relationship: player -> friend
+         FriendshipInfo info = DB_Main.getFriendshipInfo(_player.userId, friendUserId);
+         if (info != null) {
+            D.error(string.Format("There is already a friendship relation between users {0} and {1}", _player.userId, friendUserId));
+            return;
+         }
+
+         // Verify that there is no relationship: friend -> player
+         info = DB_Main.getFriendshipInfo(friendUserId, _player.userId);
+         if (info != null) {
+            D.error(string.Format("There is already a friendship relation between users {1} and {0}", _player.userId, friendUserId));
+            return;
+         }
+
+         // Create the friendship in status 'invited', in both directions
+         DB_Main.createFriendship(_player.userId, friendUserId, Friendship.Status.InviteSent, DateTime.UtcNow);
+         DB_Main.createFriendship(friendUserId, _player.userId, Friendship.Status.InviteReceived, DateTime.UtcNow);
+
+         // Prepare a feedback message
+         string feedbackMessage = "A friendship invitation has been sent to " + friendUserInfo.username + "!";
+
+         // Back to Unity
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Let the player know that a friendship invitation has been sent
+            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.FriendshipInvitationSent, _player, feedbackMessage);
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_AcceptFriendshipInvite (int friendUserId) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      string feedbackMessage = "";
+      bool success = true;
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+
+         FriendshipInfo info;
+
+         // Verify that there is a pending invite
+         info = DB_Main.getFriendshipInfo(friendUserId, _player.userId);
+         if (info == null) {
+            feedbackMessage = "The friendship invitation does not exist.";
+            success = false;
+         }
+
+         if (success) {
+            // Verify that an invitation exists in the other direction
+            info = DB_Main.getFriendshipInfo(_player.userId, friendUserId);
+            if (info == null) {
+               D.error(string.Format("Inconsistency in the friendship table: invitation from user {1} to {0} doesn't have an opposite from {0} to {1}.", _player.userId, friendUserId));
+               return;
+            }
+
+            // Upgrade both existing records to a 'friend' status
+            DB_Main.updateFriendship(friendUserId, _player.userId, Friendship.Status.Friends, DateTime.UtcNow);
+            DB_Main.updateFriendship(_player.userId, friendUserId, Friendship.Status.Friends, DateTime.UtcNow);
+
+            // Retrieve the user info of the friend
+            UserInfo friendInfo = DB_Main.getUserInfo(friendUserId);
+
+            // Prepare a feedback message
+            feedbackMessage = "You are now friends with " + friendInfo.username + "!";
+         }
+
+         // Back to Unity
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (success) {
+               // Let the player know that he has a new friend
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.FriendshipInvitationAccepted, _player, feedbackMessage);
+            } else {
+               ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, feedbackMessage);
+            }
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_DeleteFriendship (int friendUserId) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+
+         // Delete the relationship: player -> friend
+         DB_Main.deleteFriendship(_player.userId, friendUserId);
+
+         // Delete the relationship: friend -> player
+         DB_Main.deleteFriendship(friendUserId, _player.userId);
+
+         // Back to Unity
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Send confirmation of the deletion to the client
+            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.FriendshipDeleted, _player);
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_RequestFriendshipInfoFromServer (int pageNumber, int itemsPerPage, Friendship.Status friendshipStatus) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Enforce a reasonable max here
+      if (itemsPerPage > 200) {
+         D.warning("Requesting too many items per page.");
+         return;
+      }
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+
+         // Gets the number of items
+         int totalFriendInfoCount = DB_Main.getFriendshipInfoCount(_player.userId, friendshipStatus);
+
+         // Calculate the maximum page number
+         int maxPage = Mathf.CeilToInt((float) totalFriendInfoCount / itemsPerPage);
+         if (maxPage == 0) {
+            maxPage = 1;
+         }
+
+         // Clamp the requested page number to the max page - the number of items could have changed
+         pageNumber = Mathf.Clamp(pageNumber, 1, maxPage);
+
+         // Get the items from the database
+         List<FriendshipInfo> friendshipInfoList = DB_Main.getFriendshipInfoList(_player.userId, friendshipStatus, pageNumber, itemsPerPage);
+
+         // Get the number of received (pending) friendship requests
+         int pendingRequestCount = 0;
+         if (friendshipStatus != Friendship.Status.InviteReceived) {
+            pendingRequestCount = DB_Main.getFriendshipInfoCount(_player.userId, Friendship.Status.InviteReceived);
+         } else {
+            pendingRequestCount = totalFriendInfoCount;
+         }
+
+         // Back to the Unity thread to send the results back to the client
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_ReceiveFriendshipInfo(_player.connectionToClient, friendshipInfoList.ToArray(), friendshipStatus, pageNumber, totalFriendInfoCount, pendingRequestCount);
+         });
+      });
+   }
+
+   [Command]
    public void Cmd_BuyItem (int shopItemId) {
       Item newItem = null;
       Item shopItem = ShopManager.self.getItem(shopItemId);
@@ -2071,10 +2332,10 @@ public class RPCManager : NetworkBehaviour {
    [TargetRpc]
    public void Target_ReceiveSkillsForSkillPanel (NetworkConnection connection, AbilitySQLData[] allAbilities, AbilitySQLData[] equippedAbilities) {
       // Make sure the panel is showing
-      AbilityPanel panel = (AbilityPanel) PanelManager.self.get(Panel.Type.Skill_Panel);
+      AbilityPanel panel = (AbilityPanel) PanelManager.self.get(Panel.Type.Ability_Panel);
 
       if (!panel.isShowing()) {
-         PanelManager.self.pushPanel(Panel.Type.Skill_Panel);
+         PanelManager.self.pushPanel(Panel.Type.Ability_Panel);
       }
 
       // Update the Skill Panel with the abilities we received from the server

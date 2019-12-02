@@ -302,7 +302,7 @@ public class PlayerShipEntity : ShipEntity {
 
    [Command]
    void Cmd_RequestRespawn () {
-      Spawn spawn = SpawnManager.self.getSpawn(AreaManager.self.spawnForSunkenPlayers);
+      Spawn spawn = SpawnManager.self.getSpawn(AreaManager.self.areaKeyForSunkenPlayers, AreaManager.self.spawnKeyForSunkenPlayers);
       this.spawnInNewMap(Area.STARTING_TOWN, spawn, Direction.North);
 
       // Set the ship health back to max

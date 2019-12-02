@@ -92,6 +92,9 @@ public class ItemSelectionScreen : MonoBehaviour
 
       // Calculate the maximum page number
       _maxPage = Mathf.CeilToInt((float) totalItemCount / ITEMS_PER_PAGE);
+      if (_maxPage == 0) {
+         _maxPage = 1;
+      }
 
       // Update the current page text
       pageNumberText.text = "Page " + _currentPage.ToString() + " of " + _maxPage.ToString();

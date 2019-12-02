@@ -15,9 +15,10 @@ namespace MapCreationTool.Serialization
           Dictionary<int, Layer> layers,
           List<PlacedPrefab> prefabs,
           BiomeType biome,
+          Vector2Int size,
           bool prettyPrint = false) {
          try {
-            return serialize001(layers, prefabs, biome, prettyPrint);
+            return serialize001(layers, prefabs, biome, size, prettyPrint);
          } catch (Exception ex) {
             Debug.LogError("Failed to serialize map.");
             throw ex;
@@ -28,6 +29,7 @@ namespace MapCreationTool.Serialization
           Dictionary<int, Layer> layers,
           List<PlacedPrefab> prefabs,
           BiomeType biome,
+          Vector2Int size,
           bool prettyPrint = false) {
          Func<GameObject, int> prefabToIndex = (go) => { return AssetSerializationMaps.getIndex(go, biome); };
          Func<TileBase, Vector2Int> tileToIndex = (tile) => { return AssetSerializationMaps.getIndex(tile, biome); };
@@ -73,7 +75,8 @@ namespace MapCreationTool.Serialization
             version = "0.0.1",
             biome = biome,
             layers = layersSerialized.ToArray(),
-            prefabs = prefabsSerialized
+            prefabs = prefabsSerialized,
+            size = size
          };
 
          return JsonUtility.ToJson(project, prettyPrint);
@@ -133,7 +136,8 @@ namespace MapCreationTool.Serialization
          return new DeserializedProject {
             prefabs = prefabs.ToArray(),
             tiles = tiles.ToArray(),
-            biome = dt.biome
+            biome = dt.biome,
+            size = dt.size
          };
       }
 
@@ -164,6 +168,8 @@ namespace MapCreationTool.Serialization
       public DeserializedPrefab[] prefabs;
       public DeserializedTile[] tiles;
       public BiomeType biome;
+      public Vector2Int size;
+
       public class DeserializedPrefab
       {
          public GameObject prefab;
@@ -187,6 +193,7 @@ namespace MapCreationTool.Serialization
       public BiomeType biome;
       public Layer001[] layers;
       public Prefab001[] prefabs;
+      public Vector2Int size;
    }
 
    [Serializable]

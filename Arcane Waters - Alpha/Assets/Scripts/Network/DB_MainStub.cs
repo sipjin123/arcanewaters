@@ -179,6 +179,10 @@ public class DB_MainStub : MonoBehaviour {
       return null;
    }
 
+   public static UserInfo getUserInfo (string userName) {
+      return null;
+   }
+
    public static ShipInfo getShipInfo (int userId) {
       return null;
    }
@@ -400,6 +404,27 @@ public class DB_MainStub : MonoBehaviour {
       tradingEntries = null;
       craftingEntries = null;
       miningEntries = null;
+   }
+
+   public static void createFriendship (int userId, int friendUserId, Friendship.Status friendshipStatus, DateTime lastContactDate) {
+   }
+
+   public static void updateFriendship (int userId, int friendUserId, Friendship.Status friendshipStatus, DateTime lastContactDate) {
+   }
+
+   public static void deleteFriendship (int userId, int friendUserId) {
+   }
+
+   public static FriendshipInfo getFriendshipInfo (int userId, int friendUserId) {
+      return null;
+   }
+
+   public static List<FriendshipInfo> getFriendshipInfoList (int userId, Friendship.Status friendshipStatus, int page, int friendsPerPage) {
+      return null;
+   }
+
+   public static int getFriendshipInfoCount (int userId, Friendship.Status friendshipStatus) {
+      return 0;
    }
 
    public static void setServer (string server) {

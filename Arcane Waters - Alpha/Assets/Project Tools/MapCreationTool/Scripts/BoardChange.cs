@@ -28,6 +28,17 @@ namespace MapCreationTool
          prefabChanges.AddRange(change.prefabChanges);
       }
 
+      private static BoundsInt getBoardBoundsInt() {
+         // We decrease the size by 1 because we want the 'max' vector to be inclusive
+         return new BoundsInt(
+            DrawBoard.origin.x, DrawBoard.origin.y, 0,
+            DrawBoard.size.x-1, DrawBoard.size.y-1, 0);
+      }
+
+      private static Bounds getBoardBoundsFloat() {
+         return new Bounds(Vector3.zero, (Vector3Int)DrawBoard.size);
+      }
+
       public static BoardChange calculateClearAllChange (Dictionary<int, Layer> layers, List<PlacedPrefab> prefabs) {
          BoardChange result = new BoardChange();
 
@@ -50,6 +61,19 @@ namespace MapCreationTool
          return result;
       }
 
+      public static BoardChange calculatePrefabChange(GameObject prefabToPlace, Vector3 positionToPlace) {
+         Bounds bounds = getBoardBoundsFloat();
+         if (positionToPlace.x < bounds.min.x || positionToPlace.x > bounds.max.x || positionToPlace.y < bounds.min.y || positionToPlace.y > bounds.max.y)
+            return new BoardChange();
+
+         return new BoardChange { prefabChanges = new List<PrefabChange> {
+            new PrefabChange {
+               prefabToPlace = prefabToPlace,
+               positionToPlace = positionToPlace
+            } 
+         }};
+      }
+
       public static BoardChange calculateClearAllChange (Layer layer) {
          BoardChange result = new BoardChange();
 
@@ -67,8 +91,14 @@ namespace MapCreationTool
 
       public static BoardChange calculateDeserializedDataChange (DeserializedProject data, Dictionary<int, Layer> layers, List<PlacedPrefab> prefabs) {
          BoardChange result = calculateClearAllChange(layers, prefabs);
+         BoundsInt boundsInt = getBoardBoundsInt();
+         Bounds boundsFloat = getBoardBoundsFloat();
 
          foreach (var tile in data.tiles) {
+            // Check if tile is in bounds of the board
+            if (tile.position.x < boundsInt.min.x || tile.position.x > boundsInt.max.x || tile.position.y < boundsInt.min.y || tile.position.y > boundsInt.max.y)
+               continue;
+
             Layer layer = layers[tile.layer];
             if (tile.sublayer == null)
                result.tileChanges.Add(new TileChange(tile.tile, tile.position, layers[tile.layer]));
@@ -79,6 +109,9 @@ namespace MapCreationTool
          }
 
          foreach (var prefab in data.prefabs) {
+            if (prefab.position.x < boundsFloat.min.x || prefab.position.x > boundsFloat.max.x || prefab.position.y < boundsFloat.min.y || prefab.position.y > boundsFloat.max.y)
+               continue;
+
             result.prefabChanges.Add(new PrefabChange {
                positionToPlace = prefab.position,
                prefabToPlace = prefab.prefab
@@ -140,14 +173,15 @@ namespace MapCreationTool
       public static BoardChange calculateFillChanges (TileBase tile, Layer layer, Vector3 worldPos) {
          BoardChange change = new BoardChange();
          Point2 boardSize = new Point2(DrawBoard.size.x, DrawBoard.size.y);
-         Point2 boardOrigin = new Point2(DrawBoard.origin.x, DrawBoard.origin.y);
+         Point2 boardMin = new Point2(DrawBoard.origin.x, DrawBoard.origin.y);
+         Point2 boardMax = new Point2(boardMin.x + boardSize.x - 1, boardMin.y + boardSize.y - 1);
 
          Func<Point2, IEnumerable<Point2>> getNeighbours = (p) => {
             return new Point2[] { new Point2(p.x, p.y + 1), new Point2(p.x, p.y - 1), new Point2(p.x + 1, p.y), new Point2(p.x - 1, p.y),
                     new Point2(p.x + 1, p.y + 1), new Point2(p.x - 1, p.y + 1), new Point2(p.x + 1, p.y - 1), new Point2(p.x - 1, p.y - 1) };
          };
 
-         Func<int, int, int> getUsedIndex = (x, y) => { return boardSize.y * (x - boardOrigin.x) + y - boardOrigin.y; };
+         Func<int, int, int> getUsedIndex = (x, y) => { return boardSize.y * (x - boardMin.x) + y - boardMin.y; };
 
          Vector3Int startCell = DrawBoard.worldToCell(worldPos);
          Point2 startPos = new Point2 { x = startCell.x, y = startCell.y };
@@ -166,35 +200,35 @@ namespace MapCreationTool
 
             change.tileChanges.Add(new TileChange { tile = tile, layer = layer, position = new Vector3Int(pos.x, pos.y, 0) });
 
-            if (!layer.hasTile(pos.x + 1, pos.y) && !used[getUsedIndex(pos.x + 1, pos.y)]) {
+            if (!layer.hasTile(pos.x + 1, pos.y) && pos.x < boardMax.x && !used[getUsedIndex(pos.x + 1, pos.y)]) {
                q.Enqueue(new Point2(pos.x + 1, pos.y));
                used[getUsedIndex(pos.x + 1, pos.y)] = true;
             }
-            if (!layer.hasTile(pos.x, pos.y + 1) && !used[getUsedIndex(pos.x, pos.y + 1)]) {
+            if (!layer.hasTile(pos.x, pos.y + 1) && pos.y < boardMax.y && !used[getUsedIndex(pos.x, pos.y + 1)]) {
                q.Enqueue(new Point2(pos.x, pos.y + 1));
                used[getUsedIndex(pos.x, pos.y + 1)] = true;
             }
-            if (!layer.hasTile(pos.x + 1, pos.y + 1) && !used[getUsedIndex(pos.x + 1, pos.y + 1)]) {
+            if (!layer.hasTile(pos.x + 1, pos.y + 1) && pos.x < boardMax.x && pos.y < boardMax.y && !used[getUsedIndex(pos.x + 1, pos.y + 1)]) {
                q.Enqueue(new Point2(pos.x + 1, pos.y + 1));
                used[getUsedIndex(pos.x + 1, pos.y + 1)] = true;
             }
-            if (!layer.hasTile(pos.x - 1, pos.y) && !used[getUsedIndex(pos.x - 1, pos.y)]) {
+            if (!layer.hasTile(pos.x - 1, pos.y) && pos.x > boardMin.x && !used[getUsedIndex(pos.x - 1, pos.y)]) {
                q.Enqueue(new Point2(pos.x - 1, pos.y));
                used[getUsedIndex(pos.x - 1, pos.y)] = true;
             }
-            if (!layer.hasTile(pos.x, pos.y - 1) && !used[getUsedIndex(pos.x, pos.y - 1)]) {
+            if (!layer.hasTile(pos.x, pos.y - 1) && pos.y > boardMin.y && !used[getUsedIndex(pos.x, pos.y - 1)]) {
                q.Enqueue(new Point2(pos.x, pos.y - 1));
                used[getUsedIndex(pos.x, pos.y - 1)] = true;
             }
-            if (!layer.hasTile(pos.x - 1, pos.y - 1) && !used[getUsedIndex(pos.x - 1, pos.y - 1)]) {
+            if (!layer.hasTile(pos.x - 1, pos.y - 1) && pos.x > boardMin.x && pos.y > boardMin.y && !used[getUsedIndex(pos.x - 1, pos.y - 1)]) {
                q.Enqueue(new Point2(pos.x - 1, pos.y - 1));
                used[getUsedIndex(pos.x - 1, pos.y - 1)] = true;
             }
-            if (!layer.hasTile(pos.x - 1, pos.y + 1) && !used[getUsedIndex(pos.x - 1, pos.y + 1)]) {
+            if (!layer.hasTile(pos.x - 1, pos.y + 1) && pos.x > boardMin.x && pos.y < boardMax.y && !used[getUsedIndex(pos.x - 1, pos.y + 1)]) {
                q.Enqueue(new Point2(pos.x - 1, pos.y + 1));
                used[getUsedIndex(pos.x - 1, pos.y + 1)] = true;
             }
-            if (!layer.hasTile(pos.x + 1, pos.y - 1) && !used[getUsedIndex(pos.x + 1, pos.y - 1)]) {
+            if (!layer.hasTile(pos.x + 1, pos.y - 1) && pos.x < boardMax.x && pos.y > boardMin.y && !used[getUsedIndex(pos.x + 1, pos.y - 1)]) {
                q.Enqueue(new Point2(pos.x + 1, pos.y - 1));
                used[getUsedIndex(pos.x + 1, pos.y - 1)] = true;
             }
@@ -216,14 +250,15 @@ namespace MapCreationTool
             return change;
 
          Point2 boardSize = new Point2(DrawBoard.size.x, DrawBoard.size.y);
-         Point2 boardOrigin = new Point2(DrawBoard.origin.x, DrawBoard.origin.y);
+         Point2 boardMin = new Point2(DrawBoard.origin.x, DrawBoard.origin.y);
+         Point2 boardMax = new Point2(boardMin.x + boardSize.x - 1, boardMin.y + boardSize.y - 1);
 
          Func<Point2, IEnumerable<Point2>> getNeighbours = (p) => {
             return new Point2[] { new Point2(p.x, p.y + 1), new Point2(p.x, p.y - 1), new Point2(p.x + 1, p.y), new Point2(p.x - 1, p.y),
                     new Point2(p.x + 1, p.y + 1), new Point2(p.x - 1, p.y + 1), new Point2(p.x + 1, p.y - 1), new Point2(p.x - 1, p.y - 1) };
          };
 
-         Func<int, int, int> getUsedIndex = (x, y) => { return boardSize.y * (x - boardOrigin.x) + y - boardOrigin.y; };
+         Func<int, int, int> getUsedIndex = (x, y) => { return boardSize.y * (x - boardMin.x) + y - boardMin.y; };
 
          Queue<Point2> q = new Queue<Point2>();
          bool[] used = new bool[boardSize.x * boardSize.y];
@@ -236,35 +271,35 @@ namespace MapCreationTool
 
             change.tileChanges.Add(new TileChange { tile = tile.tile, layer = placementLayer, position = new Vector3Int(pos.x, pos.y, 0) });
 
-            if (!sublayersToCheck.Any(l => l.hasTile(pos.x + 1, pos.y)) && !used[getUsedIndex(pos.x + 1, pos.y)]) {
+            if (!sublayersToCheck.Any(l => l.hasTile(pos.x + 1, pos.y)) && pos.x < boardMax.x && !used[getUsedIndex(pos.x + 1, pos.y)]) {
                q.Enqueue(new Point2(pos.x + 1, pos.y));
                used[getUsedIndex(pos.x + 1, pos.y)] = true;
             }
-            if (!sublayersToCheck.Any(l => l.hasTile(pos.x, pos.y + 1)) && !used[getUsedIndex(pos.x, pos.y + 1)]) {
+            if (!sublayersToCheck.Any(l => l.hasTile(pos.x, pos.y + 1)) && pos.y < boardMax.y && !used[getUsedIndex(pos.x, pos.y + 1)]) {
                q.Enqueue(new Point2(pos.x, pos.y + 1));
                used[getUsedIndex(pos.x, pos.y + 1)] = true;
             }
-            if (!sublayersToCheck.Any(l => l.hasTile(pos.x + 1, pos.y + 1)) && !used[getUsedIndex(pos.x + 1, pos.y + 1)]) {
+            if (!sublayersToCheck.Any(l => l.hasTile(pos.x + 1, pos.y + 1)) && pos.x < boardMax.x && pos.y < boardMax.y && !used[getUsedIndex(pos.x + 1, pos.y + 1)]) {
                q.Enqueue(new Point2(pos.x + 1, pos.y + 1));
                used[getUsedIndex(pos.x + 1, pos.y + 1)] = true;
             }
-            if (!sublayersToCheck.Any(l => l.hasTile(pos.x - 1, pos.y)) && !used[getUsedIndex(pos.x - 1, pos.y)]) {
+            if (!sublayersToCheck.Any(l => l.hasTile(pos.x - 1, pos.y)) && pos.x > boardMin.x && !used[getUsedIndex(pos.x - 1, pos.y)]) {
                q.Enqueue(new Point2(pos.x - 1, pos.y));
                used[getUsedIndex(pos.x - 1, pos.y)] = true;
             }
-            if (!sublayersToCheck.Any(l => l.hasTile(pos.x, pos.y - 1)) && !used[getUsedIndex(pos.x, pos.y - 1)]) {
+            if (!sublayersToCheck.Any(l => l.hasTile(pos.x, pos.y - 1)) && pos.y > boardMin.y && !used[getUsedIndex(pos.x, pos.y - 1)]) {
                q.Enqueue(new Point2(pos.x, pos.y - 1));
                used[getUsedIndex(pos.x, pos.y - 1)] = true;
             }
-            if (!sublayersToCheck.Any(l => l.hasTile(pos.x - 1, pos.y - 1)) && !used[getUsedIndex(pos.x - 1, pos.y - 1)]) {
+            if (!sublayersToCheck.Any(l => l.hasTile(pos.x - 1, pos.y - 1)) && pos.x > boardMin.x && pos.y > boardMin.y && !used[getUsedIndex(pos.x - 1, pos.y - 1)]) {
                q.Enqueue(new Point2(pos.x - 1, pos.y - 1));
                used[getUsedIndex(pos.x - 1, pos.y - 1)] = true;
             }
-            if (!sublayersToCheck.Any(l => l.hasTile(pos.x - 1, pos.y + 1)) && !used[getUsedIndex(pos.x - 1, pos.y + 1)]) {
+            if (!sublayersToCheck.Any(l => l.hasTile(pos.x - 1, pos.y + 1)) && pos.x > boardMin.x && pos.y < boardMax.y && !used[getUsedIndex(pos.x - 1, pos.y + 1)]) {
                q.Enqueue(new Point2(pos.x - 1, pos.y + 1));
                used[getUsedIndex(pos.x - 1, pos.y + 1)] = true;
             }
-            if (!sublayersToCheck.Any(l => l.hasTile(pos.x + 1, pos.y - 1)) && !used[getUsedIndex(pos.x + 1, pos.y - 1)]) {
+            if (!sublayersToCheck.Any(l => l.hasTile(pos.x + 1, pos.y - 1)) && pos.x < boardMax.x && pos.y > boardMin.y && !used[getUsedIndex(pos.x + 1, pos.y - 1)]) {
                q.Enqueue(new Point2(pos.x + 1, pos.y - 1));
                used[getUsedIndex(pos.x + 1, pos.y - 1)] = true;
             }
@@ -278,6 +313,8 @@ namespace MapCreationTool
 
          Vector3Int targetCenter = DrawBoard.worldToCell(worldPos - new Vector3(group.brushSize.x * 0.5f, group.brushSize.y * 0.5f));
 
+         BoundsInt bounds = getBoardBoundsInt();
+
          //Adjacency matrix where the target brush tile is at the center,
          //Tiles of the same group are set to true, null and other tiles false
          int n = 7; //Size of adjacency matrix
@@ -286,10 +323,14 @@ namespace MapCreationTool
          //Fill adjacency matrix according to relavent tile info
          for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-               TileBase tile = layer.getTile(
-                   new Vector3Int(targetCenter.x - (n / 2) + i, targetCenter.y - (n / 2) + j, 0));
+               Vector3Int index = new Vector3Int(targetCenter.x - (n / 2) + i, targetCenter.y - (n / 2) + j, 0);
+               TileBase tile = layer.getTile(index);
 
                adj[i, j] = tile != null; // && group.Contains(tile);
+
+               // If the position is outside of the map, we will treat this position as if it contains a tile
+               if (index.x < bounds.min.x || index.x > bounds.max.x || index.y < bounds.min.y || index.y > bounds.max.y)
+                  adj[i, j] = true;
             }
          }
 
@@ -301,6 +342,10 @@ namespace MapCreationTool
             for (int j = 1; j < n - 1; j++) {
                if (adj[i, j]) {
                   Vector3Int position = targetCenter + new Vector3Int(i - (n / 2), j - (n / 2), 0);
+
+                  // If the position is outside the map, continue
+                  if (position.x < bounds.min.x || position.x > bounds.max.x || position.y < bounds.min.y || position.y > bounds.max.y)
+                     continue;
 
                   Vector2Int tileIndex = new Vector2Int(1, 1);
                   if (adj[i - 1, j] && !adj[i + 1, j])
@@ -357,6 +402,7 @@ namespace MapCreationTool
          BoardChange change = new BoardChange();
 
          Vector3Int targetCenter = DrawBoard.worldToCell(worldPos - new Vector3(group.brushSize.x * 0.5f, group.brushSize.y * 0.5f));
+         BoundsInt bounds = getBoardBoundsInt();
 
          //Adjacency matrix where the target brush tile is at the center,
          //Tiles of the same group are set to true, null and other tiles false
@@ -366,10 +412,14 @@ namespace MapCreationTool
          //Fill adjacency matrix according to relavent tile info
          for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-               TileBase tile = layer.getTile(
-                   new Vector3Int(targetCenter.x - (n / 2) + i, targetCenter.y - (n / 2) + j, 0));
+               Vector3Int index = new Vector3Int(targetCenter.x - (n / 2) + i, targetCenter.y - (n / 2) + j, 0);
+               TileBase tile = layer.getTile(index);
 
                adj[i, j] = tile != null && group.contains(tile);
+
+               // If the position is outside of the map, we will treat this position as if it contains a tile
+               if (index.x < bounds.min.x || index.x > bounds.max.x || index.y < bounds.min.y || index.y > bounds.max.y)
+                  adj[i, j] = true;
             }
          }
 
@@ -384,6 +434,10 @@ namespace MapCreationTool
             for (int j = 1; j < n - 1; j++) {
                if (adj[i, j]) {
                   Vector3Int position = targetCenter + new Vector3Int(i - (n / 2), j - (n / 2), 0);
+
+                  // If the position is outside the map, continue
+                  if (position.x < bounds.min.x || position.x > bounds.max.x || position.y < bounds.min.y || position.y > bounds.max.y)
+                     continue;
 
                   Vector2Int tileIndex = new Vector2Int(1, 1);
                   if (adj[i - 1, j] && !adj[i + 1, j])
@@ -413,6 +467,7 @@ namespace MapCreationTool
       public static BoardChange calculateNineFourChanges (NineFourGroup group, Layer layer, Vector3 worldPos) {
          BoardChange change = new BoardChange();
 
+         BoundsInt bounds = getBoardBoundsInt();
          Vector3Int targetCenter = DrawBoard.worldToCell(worldPos - new Vector3(group.brushSize.x * 0.5f, group.brushSize.y * 0.5f));
          Vector3Int targetCorner = targetCenter - Vector3Int.one * 4;
          targetCorner.z = 0;
@@ -433,9 +488,10 @@ namespace MapCreationTool
       public static BoardChange calculateNineFourRearangementChanges (
           NineFourGroup group, List<Vector3Int> addedTiles, Layer layer, Vector3Int from, Vector3Int size, int depth) {
          if (depth > 1000)
-            throw new System.Exception("Potential infinite recursion!");
+            throw new Exception("Potential infinite recursion!");
 
          BoardChange change = new BoardChange();
+         BoundsInt bounds = getBoardBoundsInt();
 
          Layer mainLayer = layer.subLayers[group.mainTiles[0, 0].subLayer];
          Layer cornerLayer = layer.subLayers[group.cornerTiles[0, 0].subLayer];
@@ -445,8 +501,13 @@ namespace MapCreationTool
          //Fill adjacency matrix according to relavent tile info
          for (int i = 0; i < size.x; i++) {
             for (int j = 0; j < size.y; j++) {
-               TileBase tile = mainLayer.getTile(new Vector3Int(i, j, 0) + from);
+               Vector3Int index = new Vector3Int(i, j, 0) + from;
+               TileBase tile = mainLayer.getTile(index);
+
                adj[i, j] = tile != null && group.contains(tile);
+
+               if (index.x < bounds.min.x || index.x > bounds.max.x || index.y < bounds.min.y || index.y > bounds.max.y)
+                  adj[i, j] = true;
             }
          }
 
@@ -499,6 +560,10 @@ namespace MapCreationTool
             for (int j = 1; j < size.y - 1; j++) {
                if (adj[i, j]) {
                   Vector3Int position = from + new Vector3Int(i, j, 0);
+
+                  // If the position is outside the map, continue
+                  if (position.x < bounds.min.x || position.x > bounds.max.x || position.y < bounds.min.y || position.y > bounds.max.y)
+                     continue;
 
                   //-------------------------------------
                   //Main
@@ -558,6 +623,7 @@ namespace MapCreationTool
 
       public static BoardChange calculateDockChanges (DockGroup group, Layer layer, Vector3 worldPos) {
          BoardChange change = new BoardChange();
+         BoundsInt bounds = getBoardBoundsInt();
 
          Vector3Int targetCenter = DrawBoard.worldToCell(worldPos - new Vector3(group.brushSize.x * 0.5f, group.brushSize.y * 0.5f));
          Vector3Int targetCorner = targetCenter - Vector3Int.one * 4;
@@ -588,8 +654,14 @@ namespace MapCreationTool
          //Fill adjacency matrix according to relavent tile info
          for (int i = 0; i < size.x; i++) {
             for (int j = 0; j < size.y; j++) {
-               TileBase tile = layer.getTile(new Vector3Int(i, j, 0) + from);
+               Vector3Int index = new Vector3Int(i, j, 0) + from;
+
+               TileBase tile = layer.getTile(index);
                adj[i, j] = tile != null && group.contains(tile);
+
+               // If the position is outside of the map, we will treat this position as if it contains a tile
+               if (index.x < bounds.min.x || index.x > bounds.max.x || index.y < bounds.min.y || index.y > bounds.max.y)
+                  adj[i, j] = true;
             }
          }
 
@@ -602,6 +674,10 @@ namespace MapCreationTool
             for (int j = 1; j < size.y - 1; j++) {
                if (adj[i, j]) {
                   Vector3Int position = from + new Vector3Int(i, j, 0);
+
+                  // If the position is outside the map, continue
+                  if (position.x < bounds.min.x || position.x > bounds.max.x || position.y < bounds.min.y || position.y > bounds.max.y)
+                     continue;
 
                   Vector2Int tileIndex = new Vector2Int(1, 1);
                   if (adj[i - 1, j] && !adj[i + 1, j])
@@ -632,6 +708,7 @@ namespace MapCreationTool
 
       public static BoardChange calculateWallChanges (WallGroup group, Layer layer, Vector3 worldPos) {
          BoardChange change = new BoardChange();
+         BoundsInt bounds = getBoardBoundsInt();
 
          Vector3Int targetCenter = DrawBoard.worldToCell(worldPos - new Vector3(group.brushSize.x / 2, group.brushSize.y / 2));
          Vector3Int targetCorner = targetCenter - Vector3Int.one * 4;
@@ -662,8 +739,13 @@ namespace MapCreationTool
          //Fill adjacency matrix according to relavent tile info
          for (int i = 0; i < size.x; i++) {
             for (int j = 0; j < size.y; j++) {
-               TileBase tile = layer.getTile(new Vector3Int(i, j, 0) + from);
+               Vector3Int index = new Vector3Int(i, j, 0) + from;
+               TileBase tile = layer.getTile(index);
                adj[i, j] = tile != null && group.contains(tile);
+
+               // If the position is outside of the map, we will treat this position as if it contains a tile
+               if (index.x < bounds.min.x || index.x > bounds.max.x || index.y < bounds.min.y || index.y > bounds.max.y)
+                  adj[i, j] = true;
             }
          }
 
@@ -675,6 +757,12 @@ namespace MapCreationTool
          for (int i = 1; i < size.x - 1; i++) {
             for (int j = 2; j < size.y - 2; j++) {
                if (adj[i, j]) {
+                  Vector3Int position = from + new Vector3Int(i, j, 0);
+
+                  // If the position is outside the map, continue
+                  if (position.x < bounds.min.x || position.x > bounds.max.x || position.y < bounds.min.y || position.y > bounds.max.y)
+                     continue;
+
                   Vector2Int tileIndex = new Vector2Int(-1, -1);
 
                   bool left = adj[i - 1, j] && adj[i - 1, j - 1];
@@ -739,8 +827,6 @@ namespace MapCreationTool
                      else if (left && !right)
                         tileIndex.Set(3, 4);
                   }
-
-                  Vector3Int position = from + new Vector3Int(i, j, 0);
                   if (tileIndex.x == -1)
                      throw new Exception("Target index could not be found when placing wall tiles");
                   else
@@ -772,6 +858,7 @@ namespace MapCreationTool
       /// <returns></returns>
       public static BoardChange calculateRegularTileGroupChanges (TileGroup group, Dictionary<int, Layer> layers, Vector3 worldPos) {
          BoardChange change = new BoardChange();
+         BoundsInt bounds = getBoardBoundsInt();
 
          Vector3 originWorldPos = new Vector3(worldPos.x - group.size.x / 2, worldPos.y - group.size.y / 2, 0);
          Vector3Int originCellPos = DrawBoard.worldToCell(originWorldPos);
@@ -779,6 +866,12 @@ namespace MapCreationTool
          for (int i = 0; i < group.tiles.GetLength(0); i++) {
             for (int j = 0; j < group.tiles.GetLength(1); j++) {
                if (group.tiles[i, j] != null) {
+                  Vector3Int position = originCellPos + new Vector3Int(i, j, 0);
+
+                  // If the position is outside the map, continue
+                  if (position.x < bounds.min.x || position.x > bounds.max.x || position.y < bounds.min.y || position.y > bounds.max.y)
+                     continue;
+
                   Layer layer = layers[0].defaultLayer;
 
                   if (group.tiles[i, j].layer == PaletteData.MountainLayer)
@@ -788,7 +881,7 @@ namespace MapCreationTool
                   else
                      Debug.Log($"Layer {group.tiles[i, j].layer} not set up!");
 
-                  change.tileChanges.Add(new TileChange(group.tiles[i, j].tile, originCellPos + new Vector3Int(i, j, 0), layer));
+                  change.tileChanges.Add(new TileChange(group.tiles[i, j].tile, position, layer));
                }
             }
          }
@@ -828,9 +921,10 @@ namespace MapCreationTool
       public static BoardChange calculateMountainRearangementChanges (
           MountainGroup group, List<Vector3Int> addedTiles, Layer layer, Vector3Int from, Vector3Int size, SidesInt sides, int depth) {
          if (depth > 1000)
-            throw new System.Exception("Potential infinite recursion!");
+            throw new Exception("Potential infinite recursion!");
 
          BoardChange change = new BoardChange();
+         BoundsInt bounds = getBoardBoundsInt();
 
          //Adjacency matrix where the target brush tile is at the center,
          //Tiles of the same group are set to true, null and other tiles false
@@ -840,7 +934,8 @@ namespace MapCreationTool
          //Fill adjacency matrix according to relavent tile info
          for (int i = 0; i < size.x; i++) {
             for (int j = 0; j < size.y; j++) {
-               TileBase tile = layer.getTile(new Vector3Int(i, j, 0) + from);
+               Vector3Int index = new Vector3Int(i, j, 0) + from;
+               TileBase tile = layer.getTile(index);
                adj[i, j] = tile != null;// && group.Contains(tile);
             }
          }
@@ -988,11 +1083,26 @@ namespace MapCreationTool
 
          addedTiles.AddRange(added.Select(p => p + from));
 
+         for (int i = 0; i < size.x; i++) {
+            for (int j = 0; j < size.y; j++) {
+               Vector3Int index = new Vector3Int(i, j, 0) + from;
+
+               // If the position is outside of the map, we will treat this position as if it contains a tile
+               if (index.x < bounds.min.x || index.x > bounds.max.x || index.y < bounds.min.y || index.y > bounds.max.y)
+                  adj[i, j] = true;
+            }
+         }
+
          //Determine tiles based on the adjacency matrix
          for (int i = sides.left; i < size.x - sides.right; i++) {
             for (int j = sides.bot; j < size.y - sides.top; j++) {
                if (adj[i, j]) {
                   Vector3Int position = from + new Vector3Int(i, j, 0);
+
+                  // If the position is outside the map, continue
+                  if (position.x < bounds.min.x || position.x > bounds.max.x || position.y < bounds.min.y || position.y > bounds.max.y)
+                     continue;
+
                   SidesInt sur = surroundingCount(adj, new Vector2Int(i, j), new SidesInt {
                      left = 5,
                      right = 5,

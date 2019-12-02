@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System.Linq;
+using System;
 
 public class AdminManager : NetworkBehaviour {
    #region Public Variables
@@ -187,10 +188,11 @@ public class AdminManager : NetworkBehaviour {
 
    protected void requestWarp (string parameters) {
       string[] list = parameters.Split(' ');
-      string spawnKey = list[0];
+      string areaKey = list[0];
+      string spawnKey = list[1];
 
       // Send the request to the server
-      Cmd_Warp(spawnKey);
+      Cmd_Warp(areaKey, spawnKey);
    }
 
    [Command]
@@ -332,7 +334,7 @@ public class AdminManager : NetworkBehaviour {
    }
 
    [Command]
-   protected void Cmd_Warp (string spawnKey) {
+   protected void Cmd_Warp (string areaKey, string spawnKey) {
       // Make sure this is an admin
       if (!_player.isAdmin()) {
          D.warning("Received admin command from non-admin!");
@@ -343,7 +345,7 @@ public class AdminManager : NetworkBehaviour {
          return;
       }
 
-      Spawn spawn = SpawnManager.self.getSpawn(spawnKey);
+      Spawn spawn = SpawnManager.self.getSpawn(areaKey, spawnKey);
 
       _player.spawnInNewMap(spawn.AreaKey, spawn, Direction.South);
    }
@@ -405,10 +407,10 @@ public class AdminManager : NetworkBehaviour {
    }
 
    protected void warpRandomly () {
-      List<string> allSpawnKeys = SpawnManager.get().getAllSpawnKeys();
-      string spawnKey = allSpawnKeys[Random.Range(0, allSpawnKeys.Count)];
+      List<SpawnManager.SpawnID> allSpawnKeys = SpawnManager.get().getAllSpawnKeys();
+      SpawnManager.SpawnID spawnKey = allSpawnKeys[UnityEngine.Random.Range(0, allSpawnKeys.Count)];
 
-      handleAdminCommandString("warp " + spawnKey);
+      handleAdminCommandString("warp " + spawnKey.areaKey + " " + spawnKey.spawnKey);
    }
 
    #region Private Variables

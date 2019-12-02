@@ -26,7 +26,8 @@ namespace MapCreationTool
          Transform specialCon = transform.Find("special");
          Transform sharedPrefabCon = transform.Find("prefabs_shared");
 
-         BiomedTileData[,] tiles = gatherTiles(biomeDatas, layerMap, config);
+         BiomedTileData[,] tiles = gatherTiles(biomeDatas, layerMap, config, getTileMatrixSize(biomeDatas, new Tilemap[] { sharedTilemap }));
+
          addSharedTiles(
              tiles,
              sharedTilemap,
@@ -61,8 +62,16 @@ namespace MapCreationTool
          return result;
       }
 
-      private BiomedTileData[,] gatherTiles (PaletteDataContainer[] containers, Tilemap layerMap, EditorConfig config) {
-         BiomedTileData[,] result = new BiomedTileData[containers.Max(c => c.tilemap.size.x), containers.Max(c => c.tilemap.size.y)];
+      private Vector2Int getTileMatrixSize(PaletteDataContainer[] containers, Tilemap[] tilemaps) {
+         return new Vector2Int(
+            Mathf.Max(containers.Max(c => c.tilemap.size.x), tilemaps.Max(t => t.size.x)), 
+            Mathf.Max(containers.Max(c => c.tilemap.size.y), tilemaps.Max(t => t.size.x)));
+      }
+
+
+
+      private BiomedTileData[,] gatherTiles (PaletteDataContainer[] containers, Tilemap layerMap, EditorConfig config, Vector2Int matrixSize) {
+         BiomedTileData[,] result = new BiomedTileData[matrixSize.x, matrixSize.y];
 
          for (int i = 0; i < result.GetLength(0); i++) {
             for (int j = 0; j < result.GetLength(1); j++) {

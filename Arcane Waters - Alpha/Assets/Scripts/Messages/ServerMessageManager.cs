@@ -122,7 +122,7 @@ public class ServerMessageManager : MonoBehaviour {
       Area area = AreaManager.self.getArea(Area.HOUSE);
 
       // Look up the Spawn position for the map associated with that area
-      Spawn spawn = SpawnManager.self.getSpawn(SpawnManager.self.startingSpawnLocation);
+      Spawn spawn = SpawnManager.self.getSpawn(SpawnManager.self.startingLocationAreaKey, SpawnManager.self.startingLocationSpawnKey);
       userInfo.localPos = spawn.transform.position;
 
       // Make sure the name is available

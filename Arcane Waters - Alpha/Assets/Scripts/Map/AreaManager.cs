@@ -7,8 +7,11 @@ using Mirror;
 public class AreaManager : MonoBehaviour {
    #region Public Variables
 
-   // The place we spawn players after their ship sinks
-   public string spawnForSunkenPlayers;
+   // The area key of the place we spawn players after their ship sinks
+   public string areaKeyForSunkenPlayers;
+
+   // The spawn key of the place we spawn players after their ship sinks
+   public string spawnKeyForSunkenPlayers;
 
    // Self
    public static AreaManager self;

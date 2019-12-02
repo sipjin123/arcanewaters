@@ -22,6 +22,10 @@ namespace MapCreationTool
       private Dropdown mountainLayerDropdown = null;
       [SerializeField]
       private Dropdown fillBoundsDropdown = null;
+      [SerializeField]
+      private Dropdown editorTypeDropdown = null;
+      [SerializeField]
+      private Dropdown boardSizeDropdown = null;
 
       [SerializeField]
       private Button undoButton = null;
@@ -34,6 +38,8 @@ namespace MapCreationTool
       private Overlord overlord = null;
 
       private CanvasScaler canvasScaler = null;
+
+      private int[] boardSizes = { 32, 64, 128, 256 };
 
       public YesNoDialog yesNoDialog { get; private set; }
 
@@ -76,11 +82,20 @@ namespace MapCreationTool
             if (optionsPacks[biomeDropdown.options[i].text] == Tools.biome)
                biomeDropdown.value = i;
 
+         editorTypeDropdown.SetValueWithoutNotify((int) Tools.editorType);
+         
+         for(int i = 0; i < boardSizes.Length; i++) {
+            if (boardSizes[i] == Tools.boardSize.x)
+               boardSizeDropdown.SetValueWithoutNotify(i);
+         }
+
          updateShowedOptions();
       }
       private void Awake () {
          canvasScaler = GetComponent<CanvasScaler>();
          yesNoDialog = GetComponentInChildren<YesNoDialog>();
+
+         boardSizeDropdown.options = boardSizes.Select(size => new Dropdown.OptionData { text = "Size: " + size }).ToList();
       }
       private void Start () {
          biomeDropdown.options = optionsPacks.Keys.Select(k => new Dropdown.OptionData(k)).ToList();
@@ -114,29 +129,60 @@ namespace MapCreationTool
          if (Tools.toolType != (ToolType) toolDropdown.value)
             Tools.changeTool((ToolType) toolDropdown.value);
       }
+
+      public void editorTypeDropdown_ValueChanged () {
+         if (Tools.editorType != (EditorType) editorTypeDropdown.value)
+            yesNoDialog.display(
+             "Editor type change",
+             "Are you sure you want to change the editor type?\nAll unsaved progress will be permanently lost.",
+             () => Tools.changeEditorType((EditorType) editorTypeDropdown.value),
+             updateAllUI);
+      }
+
       public void fillBoundsDropDown_ValueChanged () {
          if (Tools.fillBounds != (FillBounds) fillBoundsDropdown.value)
             Tools.changeFillBounds((FillBounds) fillBoundsDropdown.value);
       }
+
+      public void boardSizeDropdown_ValueChanged () {
+         Vector2Int dropdownSize = new Vector2Int(boardSizes[boardSizeDropdown.value], boardSizes[boardSizeDropdown.value]);
+
+         if (Tools.boardSize != dropdownSize) {
+            yesNoDialog.display(
+             "Board size change",
+             "Are you sure you want to change the size of the board?\nAll unsaved progress will be permanently lost.",
+             () => Tools.changeBoardSize(dropdownSize),
+             updateAllUI);
+         }
+      }
+
       public void undoButton_Click () {
          Undo.doUndo();
       }
+
       public void redoButton_Click () {
          Undo.doRedo();
       }
+
       public void newButton_Click () {
          yesNoDialog.display(
              "New map",
              "Are you sure you want to start a new map?\nAll unsaved progress will be lost.",
-             drawBoard.clearAll,
+             drawBoard.newMap,
              null);
       }
+
       public void openButton_Click () {
          string data = FileUtility.openFile();
          if (data != null) {
-            overlord.applyFileData(data);
+            yesNoDialog.display(
+             "Opening a map",
+             "Are you sure you want to open a map?\nAll unsaved progress will be permanently lost.",
+             () => overlord.applyFileData(data),
+             null);
          }
       }
+
       public void saveButton_Click () {
          FileUtility.saveFile(drawBoard.formSerializedData());
       }

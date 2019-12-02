@@ -118,13 +118,23 @@ public class BottomBar : MonoBehaviour {
       }
    }
 
-   public void toggleSkillPanel () {
-      AbilityPanel panel = (AbilityPanel) PanelManager.self.get(Panel.Type.Skill_Panel);
+   public void toggleFriendListPanel () {
+      FriendListPanel panel = (FriendListPanel) PanelManager.self.get(Panel.Type.FriendList);
+
+      if (!panel.isShowing()) {
+         panel.refreshPanel();
+      } else {
+         PanelManager.self.togglePanel(Panel.Type.FriendList);
+      }
+   }
+
+   public void toggleAbilityPanel () {
+      AbilityPanel panel = (AbilityPanel) PanelManager.self.get(Panel.Type.Ability_Panel);
 
       if (!panel.isShowing()) {
          Global.player.rpc.Cmd_RequestAbility();
       } else {
-         PanelManager.self.togglePanel(Panel.Type.Skill_Panel);
+         PanelManager.self.togglePanel(Panel.Type.Ability_Panel);
       }
    }
 

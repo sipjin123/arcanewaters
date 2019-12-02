@@ -170,6 +170,24 @@ public class ClientMessageManager : MonoBehaviour {
             panel2.refreshPanel();
             return;
 
+         case ConfirmMessage.Type.FriendshipInvitationSent:
+         case ConfirmMessage.Type.FriendshipInvitationAccepted:
+         case ConfirmMessage.Type.FriendshipDeleted:
+            // Hide the confirm panel
+            PanelManager.self.confirmScreen.hide();
+
+            // Get a reference to the Friend List panel
+            FriendListPanel friendListPanel = (FriendListPanel) PanelManager.self.get(Panel.Type.FriendList);
+
+            // Refresh the panel
+            friendListPanel.refreshPanel();
+
+            // Show a confirmation panel if there is a custom message to display
+            if (!"".Equals(msg.customMessage)) {
+               PanelManager.self.noticeScreen.show(msg.customMessage);
+            }
+            return;
+
             /*case ConfirmMessage.Type.SeaWarp:
                // Pixelate the screen
                // PixelFadeEffect.self.fadeOut();

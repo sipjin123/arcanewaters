@@ -15,6 +15,8 @@ namespace MapCreationTool
       public static event Action<EraserLayerMode, EraserLayerMode> EraserLayerModeChanged;
       public static event Action<TileGroup, TileGroup> TileGroupChanged;
       public static event Action<FillBounds, FillBounds> FillBoundsChanged;
+      public static event Action<EditorType, EditorType> EditorTypeChanged;
+      public static event Action<Vector2Int, Vector2Int> BoardSizeChanged;
 
       public static event Action AnythingChanged;
 
@@ -25,8 +27,11 @@ namespace MapCreationTool
       public static EraserLayerMode eraserLayerMode { get; private set; }
       public static FillBounds fillBounds { get; private set; }
 
+      public static EditorType editorType { get; private set; }
+
       public static TileGroup tileGroup { get; private set; }
-      //public static Vector2Int? TileIndex { get; private set; }
+
+      public static Vector2Int boardSize { get; private set; }
 
       public static GameObject selectedPrefab
       {
@@ -51,6 +56,8 @@ namespace MapCreationTool
          burrowedTrees = false;
          biome = BiomeType.Forest;
          eraserLayerMode = EraserLayerMode.Top;
+         editorType = EditorType.Area;
+         boardSize = new Vector2Int(64, 64);
       }
 
       public static void performUndoRedo (UndoRedoData undoRedoData) {
@@ -189,6 +196,34 @@ namespace MapCreationTool
                 new ToolUndoRedoData { hasTileGroup = true, tileGroup = tileGroup, toolType = toolType });
          }
       }
+
+      public static void changeEditorType(EditorType type) {
+         EditorType oldType = editorType;
+         editorType = type;
+
+
+         if(tileGroup != null) {
+            TileGroup oldGroup = tileGroup;
+            tileGroup = null;
+
+            TileGroupChanged?.Invoke(oldGroup, tileGroup);
+         }
+
+         EditorTypeChanged?.Invoke(oldType, editorType);
+         AnythingChanged?.Invoke();
+
+         Undo.clear();
+      }
+
+      public static void changeBoardSize(Vector2Int size) {
+         Vector2Int oldSize = boardSize;
+         boardSize = size;
+
+         BoardSizeChanged?.Invoke(oldSize, boardSize);
+         AnythingChanged?.Invoke();
+
+         Undo.clear();
+      }
    }
 
    public enum ToolType
@@ -209,5 +244,12 @@ namespace MapCreationTool
    {
       SingleLayer = 0,
       AllLayers = 1
+   }
+
+   public enum EditorType
+   {
+      Area = 0,
+      Interior = 1,
+      Sea = 2
    }
 }

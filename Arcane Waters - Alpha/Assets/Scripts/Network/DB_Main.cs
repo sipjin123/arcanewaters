@@ -1117,6 +1117,30 @@ public class DB_Main : DB_MainStub {
       return userInfo;
    }
 
+   public static new UserInfo getUserInfo (string userName) {
+      UserInfo userInfo = null;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users JOIN accounts USING (accId) WHERE usrName=@usrName", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrName", userName);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  userInfo = new UserInfo(dataReader);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return userInfo;
+   }
+
    public static new ShipInfo getShipInfo (int shipId) {
       ShipInfo shipInfo = null;
 
@@ -2611,6 +2635,152 @@ public class DB_Main : DB_MainStub {
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
+   }
+
+   public static new void createFriendship (int userId, int friendUserId, Friendship.Status friendshipStatus, DateTime lastContactDate) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO friendship(usrId, friendUsrId, friendshipStatus, lastContactDate) " +
+            "VALUES (@usrId, @friendUsrId, @friendshipStatus, @lastContactDate)", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@friendUsrId", friendUserId);
+            cmd.Parameters.AddWithValue("@friendshipStatus", friendshipStatus);
+            cmd.Parameters.AddWithValue("@lastContactDate", lastContactDate);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void updateFriendship (int userId, int friendUserId, Friendship.Status friendshipStatus, DateTime lastContactDate) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "UPDATE friendship SET friendshipStatus=@friendshipStatus, lastContactDate=@lastContactDate " +
+            "WHERE usrId=@usrId AND friendUsrId=@friendUsrId", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@friendUsrId", friendUserId);
+            cmd.Parameters.AddWithValue("@friendshipStatus", friendshipStatus);
+            cmd.Parameters.AddWithValue("@lastContactDate", lastContactDate);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void deleteFriendship (int userId, int friendUserId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "DELETE FROM friendship WHERE usrId=@usrId AND friendUsrId=@friendUsrId", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@friendUsrId", friendUserId);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new FriendshipInfo getFriendshipInfo (int userId, int friendUserId) {
+      FriendshipInfo friendshipInfo = null;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM friendship JOIN users ON friendship.friendUsrId = users.usrId WHERE friendship.usrId=@usrId AND friendship.friendUsrId=@friendUsrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@friendUsrId", friendUserId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  friendshipInfo = new FriendshipInfo(dataReader);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return friendshipInfo;
+   }
+
+   public static new List<FriendshipInfo> getFriendshipInfoList (int userId, Friendship.Status friendshipStatus, int page, int friendsPerPage) {
+      List<FriendshipInfo> friendList = new List<FriendshipInfo>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM friendship JOIN users ON friendship.friendUsrId = users.usrId " +
+            "WHERE friendship.usrId=@usrId AND friendship.friendshipStatus=@friendshipStatus " +
+            "ORDER BY friendship.lastContactDate DESC LIMIT @start, @perPage", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@friendshipStatus", friendshipStatus);
+            cmd.Parameters.AddWithValue("@start", (page - 1) * friendsPerPage);
+            cmd.Parameters.AddWithValue("@perPage", friendsPerPage);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  FriendshipInfo friend = new FriendshipInfo(dataReader);
+                  friendList.Add(friend);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return friendList;
+   }
+
+   public static new int getFriendshipInfoCount (int userId, Friendship.Status friendshipStatus) {
+      int friendCount = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT count(*) as friendCount FROM friendship WHERE usrId=@usrId AND friendshipStatus=@friendshipStatus", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@friendshipStatus", friendshipStatus);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  friendCount = dataReader.GetInt32("friendCount");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return friendCount;
    }
 
    public static new void readTest () {

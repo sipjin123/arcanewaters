@@ -65,7 +65,6 @@ public class NPCManager : MonoBehaviour {
    public void storeNPC (NPC npc) {
       _npcs[npc.npcId] = npc;
 
-      // Server stores the npc's per area to be sent to the clients
 #if IS_SERVER_BUILD
       string areaKey = npc.areaKey;
 

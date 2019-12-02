@@ -35,6 +35,8 @@ namespace MapCreationTool
       private AnimationCurve zoomSpeed = null;
       [SerializeField]
       private TileBase transparentTile = null;
+      [SerializeField]
+      private SpriteRenderer sizeCover = null;
 
       private EventTrigger eventCanvas;
       private Camera cam;
@@ -55,8 +57,6 @@ namespace MapCreationTool
 
 
       private void Awake () {
-         size = new Vector2Int(2000, 2000);
-         origin = new Vector2Int(-1000, -1000);
 
          eventCanvas = GetComponentInChildren<EventTrigger>();
          grid = GetComponentInChildren<Grid>();
@@ -74,6 +74,7 @@ namespace MapCreationTool
       }
 
       private void Start () {
+         setBoardSize(Tools.boardSize);
          updateBrushOutline();
       }
 
@@ -81,12 +82,16 @@ namespace MapCreationTool
          MainCamera.SizeChanged += mainCamSizeChanged;
          Tools.AnythingChanged += toolsAnythingChanged;
          Tools.ToolChanged += toolChanged;
+         Tools.EditorTypeChanged += editorTypeChanged;
+         Tools.BoardSizeChanged += boardSizeChanged;
       }
 
       private void OnDisable () {
          MainCamera.SizeChanged -= mainCamSizeChanged;
          Tools.AnythingChanged -= toolsAnythingChanged;
          Tools.ToolChanged -= toolChanged;
+         Tools.EditorTypeChanged -= editorTypeChanged;
+         Tools.BoardSizeChanged -= boardSizeChanged;
       }
 
       private void Update () {
@@ -114,6 +119,15 @@ namespace MapCreationTool
          //}
       }
 
+      private void boardSizeChanged(Vector2Int from, Vector2Int to) {
+         changeBoard(BoardChange.calculateClearAllChange(layers, placedPrefabs));
+         setBoardSize(to);
+      }
+
+      private void editorTypeChanged(EditorType from, EditorType to) {
+         changeBoard(BoardChange.calculateClearAllChange(layers, placedPrefabs));
+      }
+
       private void toolChanged(ToolType from, ToolType to) {
          if (from == ToolType.Selection && selectedPrefab != null)
             selectPrefab(null, false);
@@ -133,6 +147,17 @@ namespace MapCreationTool
          camBounds = new Rect(
              new Vector2(-canvasRectT.sizeDelta.x * 0.5f, -canvasRectT.sizeDelta.y * 0.5f),
              canvasRectT.sizeDelta);
+      }
+
+      private void setBoardSize(Vector2Int size) {
+         DrawBoard.size = size;
+         origin = new Vector2Int(-size.x / 2, -size.y / 2);
+
+         sizeCover.transform.localScale = new Vector3(size.x, size.y, 1);
+         sizeCover.transform.position = new Vector3(
+            size.x % 2 == 0 ? 0 : 0.5f, 
+            size.y % 2 == 0 ? 0 : 0.5f, 
+            sizeCover.transform.position.z);
       }
 
       private void setUpLayers () {
@@ -214,6 +239,11 @@ namespace MapCreationTool
       public void clearAll () {
 
          changeBoard(BoardChange.calculateClearAllChange(layers, placedPrefabs));
+      }
+
+      public void newMap() {
+         clearAll();
+         Undo.clear();
       }
 
       public void applyDeserializedData (DeserializedProject data) {
@@ -417,12 +447,8 @@ namespace MapCreationTool
                } else if (Tools.tileGroup.type == TileGroupType.Nine) {
                   NineGroup group = Tools.tileGroup as NineGroup;
                   result.add(BoardChange.calculateNineGroupChanges(group, layers[group.layer].subLayers[group.subLayer], pointerWorldPosition));
-               } else if ((Tools.tileGroup.type == TileGroupType.Prefab ||
-                     Tools.tileGroup.type == TileGroupType.TreePrefab) && !excludePrefabs) {
-                  result.prefabChanges.Add(new PrefabChange {
-                     prefabToPlace = Tools.selectedPrefab,
-                     positionToPlace = pointerWorldPosition
-                  });
+               } else if ((Tools.tileGroup.type == TileGroupType.Prefab || Tools.tileGroup.type == TileGroupType.TreePrefab) && !excludePrefabs) {
+                  result.add(BoardChange.calculatePrefabChange(Tools.selectedPrefab, pointerWorldPosition));
                } else if (Tools.tileGroup.type == TileGroupType.NineSliceInOut) {
                   NineSliceInOutGroup group = Tools.tileGroup as NineSliceInOutGroup;
                   result.add(BoardChange.calculateNineSliceInOutchanges(
@@ -474,7 +500,7 @@ namespace MapCreationTool
          }
       }
       public string formSerializedData () {
-         return Serializer.serialize(layers, placedPrefabs, Tools.biome, false);
+         return Serializer.serialize(layers, placedPrefabs, Tools.biome, Tools.boardSize, false);
       }
 
       public void ensurePreviewCleared () {

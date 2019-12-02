@@ -16,6 +16,7 @@ public class Area : MonoBehaviour {
    public static string TREASURE_PINE = "TreasurePine";
    public static string DESERT_TOWN = "DesertTown";
    public static string MERCHANT_SHOP_DESERT = "MerchantShop_Desert";
+   public static string FOREST_TOWN = "ForestTown";
 
    // The key determining the type of area this is
    public string areaKey;
@@ -53,7 +54,7 @@ public class Area : MonoBehaviour {
          foreach (Warp warp in GetComponentsInChildren<Warp>()) {
 
             // Finds the destination area for each warp
-            Spawn spawn = SpawnManager.self.getSpawn(warp.spawnTarget);
+            Spawn spawn = SpawnManager.self.getSpawn(warp.areaTarget, warp.spawnTarget);
             Area destinationArea = spawn.GetComponentInParent<Area>();
 
             // If the destination area is a shop, set its town as this area

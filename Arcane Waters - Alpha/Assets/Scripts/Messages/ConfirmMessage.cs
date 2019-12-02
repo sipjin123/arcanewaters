@@ -16,7 +16,8 @@ public class ConfirmMessage : MessageBase {
       SeaWarp = 1, BoughtCargo = 2, BugReport = 3, AddGold = 4, General = 5,
       ConfirmDeleteItem = 6, ContainerOpened = 7, StoreItemBought = 8, UsedHairDye = 9,
       DeletedUser = 10, UsedShipSkin = 11, UsedHaircut = 12, CreatedGuild = 13,
-      ShipBought = 14
+      ShipBought = 14, FriendshipInvitationSent = 15, FriendshipInvitationAccepted = 16,
+      FriendshipDeleted = 17
    }
 
    // The Type of confirmation

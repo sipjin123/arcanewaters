@@ -1,10 +1,7 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
-using Mirror;
+using MapCreationTool.Serialization;
 
-public class Spawn : MonoBehaviour {
+public class Spawn : MonoBehaviour, MapCreationTool.IMapEditorDataReceiver {
    #region Public Variables
 
    // Hardcoded spawn keys
@@ -28,8 +25,10 @@ public class Spawn : MonoBehaviour {
       // If a spawn box was specified in the Editor, look it up now
       _spawnBox = GetComponent<BoxCollider2D>();
 
-      // Keep track of this spawn
-      SpawnManager.get().store(this.spawnKey, this);
+      // Keep track of this spawn if it is defined
+      if (!string.IsNullOrWhiteSpace(spawnKey)) {
+         SpawnManager.get().store(_areaKey, spawnKey, this);
+      }
    }
 
    public Vector3 getSpawnPosition () {
@@ -39,6 +38,26 @@ public class Spawn : MonoBehaviour {
 
    protected string getAreaKey () {
       return _areaKey;
+   }
+
+   public void receiveData (DataField[] dataFields) {
+      foreach (DataField field in dataFields) {
+         switch (field.k.ToLower()) {
+            case "name":
+               spawnKey = field.v.Trim(' ');
+               SpawnManager.get().store(_areaKey, spawnKey, this);
+               break;
+            case "width":
+               _spawnBox.size = new Vector2(float.Parse(field.v), _spawnBox.size.y);
+               break;
+            case "height":
+               _spawnBox.size = new Vector2(_spawnBox.size.x, float.Parse(field.v));
+               break;
+            default:
+               Debug.LogWarning($"Unrecognized data field key: {field.k}");
+               break;
+         }
+      }
    }
 
    #region Private Variables
