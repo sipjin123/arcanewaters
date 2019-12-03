@@ -37,6 +37,7 @@ public class AdminManager : NetworkBehaviour {
    protected static string SKIP_TUTORIAL = "skip_tutorial";
    protected static string WARP = "warp";
    protected static string ENEMY = "enemy";
+   protected static string ABILITY = "all_abilities";
 
    #endregion
 
@@ -110,6 +111,8 @@ public class AdminManager : NetworkBehaviour {
          requestSkipTutorial(parameters);
       } else if (WARP.Equals(adminCommand)) {
          requestWarp(parameters);
+      } else if (ABILITY.Equals(adminCommand)) {
+         requestAllAbilities(parameters);
       }
    }
 
@@ -168,6 +171,24 @@ public class AdminManager : NetworkBehaviour {
 
       // Send the request to the server
       Cmd_SkipTutorial(stepNumber);
+   }
+
+   protected void requestAllAbilities (string parameters) {
+      int stepNumber = 0;
+
+      if (!Util.isEmpty(parameters)) {
+         string[] list = parameters.Split(' ');
+
+         try {
+            stepNumber = System.Convert.ToInt32(list[0]);
+         } catch (System.Exception e) {
+            D.warning("Unable to parse step number int from: " + parameters + ", exception: " + e);
+            return;
+         }
+      }
+
+      List<BasicAbilityData> allAbilities = AbilityManager.self.allGameAbilities;
+      Global.player.rpc.Cmd_UpdateAbilities(AbilitySQLData.TranslateBasicAbility(allAbilities).ToArray());
    }
 
    protected void requestPlayerGo (string parameters) {

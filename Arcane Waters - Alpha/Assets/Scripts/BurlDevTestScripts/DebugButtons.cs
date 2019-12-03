@@ -200,24 +200,3 @@ public static class DebugCustom
 }
 
 #pragma warning restore
-
-public class AbilitySQLData
-{
-   public string name;
-   public int abilityID;
-   public string description;
-   public int equipSlotIndex;
-   public int abilityLevel;
-
-   public AbilitySQLData() {
-
-   }
-
-   public AbilitySQLData (MySql.Data.MySqlClient.MySqlDataReader dataReader) {
-      this.name = DataUtil.getString(dataReader, "ability_name");
-      this.abilityID = DataUtil.getInt(dataReader, "ability_id");
-      this.description = DataUtil.getString(dataReader, "ability_description");
-      this.equipSlotIndex = DataUtil.getInt(dataReader, "ability_equip_slot");
-      this.abilityLevel = DataUtil.getInt(dataReader, "ability_level");
-   }
-}

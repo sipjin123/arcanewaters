@@ -41,7 +41,13 @@ public class SpawnManager : MonoBehaviour {
    }
 
    public Spawn getSpawn (string areaKey, string spawnKey) {
-      return _spawns[new SpawnID(areaKey, spawnKey)];
+      SpawnID spawnID = new SpawnID(areaKey, spawnKey);
+      if (_spawns.ContainsKey(spawnID)) {
+         return _spawns[spawnID];
+      } else {
+         D.warning("Spawin ID is missing: " + areaKey+" - "+spawnKey);
+         return null;
+      }
    }
 
    public List<SpawnID> getAllSpawnKeys () {

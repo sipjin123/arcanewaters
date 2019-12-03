@@ -80,32 +80,13 @@ public class Armor : EquippableItem {
    }
 
    public override string getDescription () {
-      switch (type) {
-         case Type.Cloth:
-            return "Some comfortable cloth garments.";
-         case Type.Leather:
-            return "Some well made leather apparel.";
-         case Type.Steel:
-            return "Some sturdy steel armor.";
-         case Type.Sash:
-            return "Some loose-fitting cloth garments.";
-         case Type.Tunic:
-            return "A comfortable cloth tunic.";
-         case Type.Posh:
-            return "A rather posh and fashionable garment.";
-         case Type.Formal:
-            return "A formal jacket with some polished buttons.";
-         case Type.Casual:
-            return "A casual and loose-fitting outfit.";
-         case Type.Plate:
-            return "Some heavy plate armor.";
-         case Type.Wool:
-            return "A warm wool outfit.";
-         case Type.Strapped:
-            return "An explorer's outfit with a leather strap.";
-         default:
-            return "";
+      ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(this.type);
+      if (armorData == null) {
+         D.warning("Armor data does not exist! Go to Equipment Editor and make new data");
+         return "Undefined";
       }
+
+      return armorData.equipmentDescription;
    }
 
    public override string getTooltip () {
@@ -139,15 +120,33 @@ public class Armor : EquippableItem {
    }
 
    public virtual float getDefense (Element element) {
-      // Placeholder
-      return 10f;
+      ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(type);
+      if (armorData == null) {
+         D.warning("Armor data does not exist! Go to Equipment Editor and make new data");
+         return 5;
+      }
+
+      switch (element) {
+         case Element.Air:
+            return armorData.airResist;
+         case Element.Fire:
+            return armorData.fireResist;
+         case Element.Water:
+            return armorData.waterResist;
+         case Element.Earth:
+            return armorData.earthResist;
+      }
+      return armorData.armorBaseDefense;
    }
 
    public static int getBaseArmor (Type armorType) {
-      switch (armorType) {
-         default:
-            return 10;
+      ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(armorType);
+      if (armorData == null) {
+         D.warning("Armor data does not exist! Go to Equipment Editor and make new data");
+         return 5;
       }
+
+      return armorData.armorBaseDefense;
    }
 
    public static float getArmorModifier (Rarity.Type rarity) {
@@ -178,32 +177,13 @@ public class Armor : EquippableItem {
    }
 
    public static string getName (Armor.Type armorType) {
-      switch (armorType) {
-         case Type.Cloth:
-            return "Cloth Armor";
-         case Type.Leather:
-            return "Leather Armor";
-         case Type.Steel:
-            return "Steel Armor";
-         case Type.Sash:
-            return "Cloth Sash";
-         case Type.Tunic:
-            return "Cloth Tunic";
-         case Type.Posh:
-            return "Posh Garment";
-         case Type.Formal:
-            return "Formal Jacket";
-         case Type.Casual:
-            return "Casual Outfit";
-         case Type.Plate:
-            return "Plate Armor";
-         case Type.Wool:
-            return "Wool Outfit";
-         case Type.Strapped:
-            return "Explorer's Outfit";
-         default:
-            return "";
+      ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(armorType);
+      if (armorData == null) {
+         D.warning("Armor data does not exist! Go to Equipment Editor and make new data");
+         return "Undefined";
       }
+
+      return armorData.equipmentName;
    }
 
    public static List<Type> getTypes (bool includeNone = false) {

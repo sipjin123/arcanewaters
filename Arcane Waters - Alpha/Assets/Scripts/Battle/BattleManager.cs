@@ -440,19 +440,9 @@ public class BattleManager : MonoBehaviour {
             float sourceDamageElement = source.getDamage(element);
             float damage = sourceDamageElement * attackAbilityData.getModifier;
 
-            // Resistance Computation Notes
-            // [ 25 *= (100 / 100 + 400) ] = Damage x .25 = 25% damage goes through
-            // [ 25 *= (100 / 100 + 900) ] = Damage x .1 = 10% damage goes through
-
-            // Weakness OLD Computation Notes
-            // [ 25 *= (100 / 100 + -25) ] = Damage x 1.3
-            // [ 25 *= (100 / 100 + -75) ] = Damage x 4
-
-            // Weakness Alternate Computation Notes
-            // 25 *= [ 100 + 90 / 100 ] = x 1.9
-            // 25 *= [ 100 + 500 / 100 ] = x 6
-
             float targetDefenseElement = target.getDefense(element);
+
+            // Determines if the unit is resistant or weak against an element
             float resistantModifier = 0;
             if (target.isWeakAgainst(element)) {
                resistantModifier = ((100f + targetDefenseElement) / 100);

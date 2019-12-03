@@ -98,52 +98,13 @@ public class Weapon : EquippableItem {
    }
 
    public override string getDescription () {
-      switch (type) {
-         case Type.Sword_Steel:
-            return "A well-made steel sword.";
-         case Type.Lance_Steel:
-            return "A powerful lance.";
-         case Type.Staff_Mage:
-            return "A mage's crystal staff.";
-         case Type.Mace_Steel:
-            return "A mace with razor spikes.";
-         case Type.Mace_Star:
-            return "A magical Golden Star mace.";
-         case Type.Sword_Rune:
-            return "A mysterious sword with glowing runes.";
-         case Type.Sword_1:
-            return "A large sword with a broad blade.";
-         case Type.Sword_2:
-            return "A small sword made for a novice.";
-         case Type.Sword_3:
-            return "A lightweight and basic sword.";
-         case Type.Sword_4:
-            return "A large and heavy sword.";
-         case Type.Sword_5:
-            return "A massive sword with a broad blade.";
-         case Type.Sword_6:
-            return "A short but sturdy sword.";
-         case Type.Sword_7:
-            return "A scimitar with a curved blade.";
-         case Type.Sword_8:
-            return "A long and thin blade for piercing.";
-         case Type.Gun_6:
-            return "A long-barreled rifle for powerful shots.";
-         case Type.Gun_7:
-            return "A large and sturdy pistol.";
-         case Type.Gun_2:
-            return "A small but powerful blunderbuss.";
-         case Type.Gun_3:
-            return "A wide-barreled blunderbuss.";
-         case Type.Pitchfork:
-            return "A basic but functional pitchfork.";
-         case Type.Seeds:
-            return "A bag of seeds ready for planting.";
-         case Type.WateringPot:
-            return "A simple little watering pot.";
-         default:
-            return "";
+      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(this.type);
+      if (weaponData == null) {
+         D.warning("Weapon data does not exist! Go to Equipment Editor and make new data");
+         return "Undefined";
       }
+
+      return weaponData.equipmentDescription;
    }
 
    public override string getTooltip () {
@@ -169,52 +130,13 @@ public class Weapon : EquippableItem {
    }
 
    public static string getName (Weapon.Type weaponType) {
-      switch (weaponType) {
-         case Type.Sword_Steel:
-            return "Steel Sword";
-         case Type.Lance_Steel:
-            return "Steel Lance";
-         case Type.Staff_Mage:
-            return "Mage Staff";
-         case Type.Mace_Steel:
-            return "Steel Mace";
-         case Type.Mace_Star:
-            return "Golden Star";
-         case Type.Sword_Rune:
-            return "Rune Blade";
-         case Type.Sword_1:
-            return "Falchion";
-         case Type.Sword_2:
-            return "Novice Sword";
-         case Type.Sword_3:
-            return "Light Sword";
-         case Type.Sword_4:
-            return "Claymore";
-         case Type.Sword_5:
-            return "Broad Sword";
-         case Type.Sword_6:
-            return "Short Sword";
-         case Type.Sword_7:
-            return "Scimitar";
-         case Type.Sword_8:
-            return "Rapier";
-         case Type.Gun_2:
-            return "Small Blunderbuss";
-         case Type.Gun_3:
-            return "Large Blunderbuss";
-         case Type.Gun_6:
-            return "Powder Rifle";
-         case Type.Gun_7:
-            return "Modified Pistol";
-         case Type.Pitchfork:
-            return "Pitchfork";
-         case Type.Seeds:
-            return "Seed Bag";
-         case Type.WateringPot:
-            return "Watering Pot";
-         default:
-            return "";
+      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponType);
+      if (weaponData == null) {
+         D.warning("Weapon data does not exist! Go to Equipment Editor and make new data");
+         return "Undefined";
       }
+
+      return weaponData.equipmentName;
    }
 
    public int getDamage () {
@@ -236,15 +158,33 @@ public class Weapon : EquippableItem {
    }
 
    public virtual float getDamage (Element element) {
-      // Placeholder
-      return 10f;
+      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(this.type);
+      if (weaponData == null) {
+         D.warning("Weapon data does not exist! Go to Equipment Editor and make new data");
+         return 10;
+      }
+
+      switch (element) {
+         case Element.Air:
+            return weaponData.weaponDamageAir;
+         case Element.Fire:
+            return weaponData.weaponDamageFire;
+         case Element.Water:
+            return weaponData.weaponDamageWater;
+         case Element.Earth:
+            return weaponData.weaponDamageEarth;
+      }
+      return weaponData.weaponBaseDamage;
    }
 
    public static int getBaseDamage (Type weaponType) {
-      switch (weaponType) {
-         default:
-            return 10;
+      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponType);
+      if (weaponData == null) {
+         D.warning("Weapon data does not exist! Go to Equipment Editor and make new data");
+         return 10;
       }
+
+      return weaponData.weaponBaseDamage;
    }
 
    public static float getDamageModifier (Rarity.Type rarity) {

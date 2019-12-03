@@ -263,6 +263,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
          if (battlerData != null) {
             _initializedBattlerData = BattlerData.CreateInstance(battlerData);
+            _cachedBattlerData = BattlerData.CreateInstance(battlerData);
             _initializedBattlerData.enemyName = battlerData.enemyName;
          } else {
             Debug.LogError("DATA IS NULL");
@@ -283,12 +284,33 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
          // This function will handle the computed stats of the player depending on their Specialty/Faction/Job/Class
          setupPlayerStats();
+
+         // Enemy stat setup
+         setupEnemyStats();
+      }
+   }
+
+   private void setupEnemyStats () {
+      if (battlerType == BattlerType.AIEnemyControlled) {
+         this.health += (int) getBattlerData().baseHealth + ((int) getBattlerData().healthPerlevel * LevelUtil.levelForXp(XP));
+         int level = LevelUtil.levelForXp(XP);
+
+         getBattlerData().physicalAttackMultiplier += (level * getBattlerData().physicalAttackMultiplierPerLevel);
+         getBattlerData().fireAttackMultiplier += (level * getBattlerData().fireAttackMultiplierPerLevel);
+         getBattlerData().waterAttackMultiplier += (level * getBattlerData().waterAttackMultiplierPerLevel);
+         getBattlerData().airAttackMultiplier += (level * getBattlerData().airAttackMultiplierPerLevel);
+         getBattlerData().earthAttackMultiplier += (level * getBattlerData().earthAttackMultiplierPerLevel);
+
+         getBattlerData().physicalDefenseMultiplier = Mathf.Abs(getBattlerData().physicalDefenseMultiplier) + (level * getBattlerData().physicalDefenseMultiplierPerLevel);
+         getBattlerData().fireDefenseMultiplier = Mathf.Abs(getBattlerData().fireDefenseMultiplier) + (level * getBattlerData().fireDefenseMultiplierPerLevel);
+         getBattlerData().waterDefenseMultiplier = Mathf.Abs(getBattlerData().waterDefenseMultiplier) + (level * getBattlerData().waterDefenseMultiplierPerLevel);
+         getBattlerData().airDefenseMultiplier = Mathf.Abs(getBattlerData().airDefenseMultiplier) + (level * getBattlerData().airDefenseMultiplierPerLevel);
+         getBattlerData().earthDefenseMultiplier = Mathf.Abs(getBattlerData().earthDefenseMultiplier) + (level * getBattlerData().earthDefenseMultiplierPerLevel);
       }
    }
 
    private void setupPlayerStats() {
       if (battlerType == BattlerType.PlayerControlled) {
-         //BodyEntity playerBody = BodyManager.self.getBody(userId);
          NetEntity playerBody = player;
 
          if (playerBody == null) {
@@ -336,14 +358,15 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    }
 
    private void addDefaultStats (UserDefaultStats stat) {
-      this.health += (int) stat.bonusMaxHP;
       _initializedBattlerData.baseHealth += (int) stat.bonusMaxHP;
       _initializedBattlerData.healthPerlevel += (int) stat.hpPerLevel;
+
+      this.health += (int) stat.bonusMaxHP + ((int)stat.hpPerLevel * LevelUtil.levelForXp(XP));
 
       _initializedBattlerData.baseDamage += (int) stat.bonusATK;
       _initializedBattlerData.damagePerLevel += (int) stat.bonusATKPerLevel;
 
-      _initializedBattlerData.baseDefense += (int) stat.armorPerLevel;
+      _initializedBattlerData.baseDefense += (int) stat.bonusArmor;
       _initializedBattlerData.defensePerLevel += (int) stat.armorPerLevel;
    }
 
@@ -370,6 +393,13 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       _initializedBattlerData.waterDefenseMultiplier += stat.bonusResistanceWater;
       _initializedBattlerData.physicalDefenseMultiplier += stat.bonusResistancePhys;
       _initializedBattlerData.allDefenseMultiplier += stat.bonusResistanceAll;
+
+      _initializedBattlerData.airDefenseMultiplier += stat.bonusResistanceAirPerLevel * level;
+      _initializedBattlerData.fireDefenseMultiplier += stat.bonusResistanceFirePerLevel * level;
+      _initializedBattlerData.earthDefenseMultiplier += stat.bonusResistanceEarthPerLevel * level;
+      _initializedBattlerData.waterDefenseMultiplier += stat.bonusResistanceWaterPerLevel * level;
+      _initializedBattlerData.physicalDefenseMultiplier += stat.bonusResistancePhysPerLevel * level;
+      _initializedBattlerData.allDefenseMultiplier += stat.bonusResistanceAllPerLevel * level;
    }
 
    // Basic method that will handle the functionality for whenever we deselect this battler
@@ -1002,7 +1032,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       int level = LevelUtil.levelForXp(XP);
 
       // Calculate our health based on our base and gain per level
-      float health = battData.baseHealth + (battData.healthPerlevel * level);
+      int health = this.health;
 
       return (int) health;
    }
@@ -1011,7 +1041,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       int level = LevelUtil.levelForXp(XP);
 
       // Calculate our health based on our base and gain per level
-      float health = getBattlerData().baseHealth + (getBattlerData().healthPerlevel * level);
+      float health = this.health;
 
       return (int) health;
    }
@@ -1075,45 +1105,28 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       // Add our armor's defense value, if we have any
       if (armorManager.hasArmor()) {
          // WARNING!: Temporary Disable until formula is finalized
-         // defense += armorManager.getArmor().getDefense(element);
+         defense += armorManager.getArmor().getDefense(element);
       }
 
       float elementalMultiplier = 1;
-      float elementalMultiplierPerLevel = 0;
       switch (element) {
          case Element.Physical:
             elementalMultiplier = getBattlerData().physicalDefenseMultiplier;
-            elementalMultiplierPerLevel = getBattlerData().physicalDefenseMultiplierPerLevel;
             break;
          case Element.Fire:
             elementalMultiplier = getBattlerData().fireDefenseMultiplier;
-            elementalMultiplierPerLevel = getBattlerData().fireDefenseMultiplierPerLevel;
             break;
          case Element.Earth:
             elementalMultiplier = getBattlerData().earthDefenseMultiplier;
-            elementalMultiplierPerLevel = getBattlerData().earthDefenseMultiplierPerLevel;
             break;
          case Element.Air:
             elementalMultiplier = getBattlerData().airDefenseMultiplier;
-            elementalMultiplierPerLevel = getBattlerData().airDefenseMultiplierPerLevel;
             break;
          case Element.Water:
             elementalMultiplier = getBattlerData().waterDefenseMultiplier;
-            elementalMultiplierPerLevel = getBattlerData().waterDefenseMultiplierPerLevel;
             break;
       }
-
-      if (elementalMultiplier < 0) {
-         // Handles units that are weak to the element
-         elementalMultiplier = Mathf.Abs(elementalMultiplier);
-         elementalMultiplier += (level * elementalMultiplierPerLevel);
-
-         defense *= elementalMultiplier;
-      } else {
-         // Handles units that are resistant to the element
-         elementalMultiplier += (level * elementalMultiplierPerLevel);
-         defense *= elementalMultiplier;
-      }
+      defense *= Mathf.Abs(elementalMultiplier);
 
       // WARNING!: Temporary Disable until formula is finalized
       // We will add as an additional the "All" multiplier with the base defense
@@ -1130,8 +1143,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
       // Add our weapon's damage value, if we have a weapon
       if (weaponManager.hasWeapon()) {
-         // WARNING!: Temporary Disable until formula is finalized
-         // damage += weaponManager.getWeapon().getDamage(element);
+          damage += weaponManager.getWeapon().getDamage(element);
       }
 
       float multiplier = 1;
@@ -1197,24 +1209,25 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
    public bool isWeakAgainst (Element outgoingElement) {
       // Determines if the battler is weak against the element
+     
       switch (outgoingElement) {
          case Element.Air:
-            if (getBattlerData().airDefenseMultiplier < 0) {
+            if (_cachedBattlerData.airDefenseMultiplier < 0) {
                return true;
             }
             break;
          case Element.Fire:
-            if (getBattlerData().fireDefenseMultiplier < 0) {
+            if (_cachedBattlerData.fireDefenseMultiplier < 0) {
                return true;
             }
             break;
          case Element.Water:
-            if (getBattlerData().waterDefenseMultiplier < 0) {
+            if (_cachedBattlerData.waterDefenseMultiplier < 0) {
                return true;
             }
             break;
          case Element.Earth:
-            if (getBattlerData().earthDefenseMultiplier < 0) {
+            if (_cachedBattlerData.earthDefenseMultiplier < 0) {
                return true;
             }
             break;
@@ -1447,7 +1460,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    private List<BuffAbilityData> _battlerBuffAbilities = new List<BuffAbilityData>();
 
    // Battler data reference that will be initialized (ready to be used, use getBattlerData() )
-   [SerializeField] private BattlerData _initializedBattlerData;
+   [SerializeField] private BattlerData _initializedBattlerData, _cachedBattlerData;
 
    // Our Animators
    protected List<SimpleAnimation> _anims;

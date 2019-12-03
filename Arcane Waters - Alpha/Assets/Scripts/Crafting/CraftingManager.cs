@@ -47,7 +47,12 @@ public class CraftingManager : MonoBehaviour {
             CraftableItemRequirements craftingData = Util.xmlLoad<CraftableItemRequirements>(textAsset);
 
             // Save the Crafting data in the memory cache
-            _craftingData.Add(craftingData.resultItem.category == Item.Category.None ? "Undefined" : craftingData.resultItem.getCastItem().getName(), craftingData);
+            string keyName = craftingData.resultItem.category == Item.Category.None ? "Undefined" : craftingData.resultItem.getCastItem().getName();
+            if (_craftingData.ContainsKey(keyName)) {
+               _craftingData.Add(keyName, craftingData);
+            } else {
+               D.warning("Key already exists: " + keyName);
+            }
          }
 
          RewardManager.self.craftableDataList = getAllCraftableData();

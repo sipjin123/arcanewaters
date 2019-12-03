@@ -151,6 +151,13 @@ public class BattlerData {
       waterAttackMultiplier = datacopy.waterAttackMultiplier;
       allAttackMultiplier = datacopy.allAttackMultiplier;
 
+      physicalAttackMultiplierPerLevel = datacopy.physicalAttackMultiplierPerLevel;
+      fireAttackMultiplierPerLevel = datacopy.fireAttackMultiplierPerLevel;
+      earthAttackMultiplierPerLevel = datacopy.earthAttackMultiplierPerLevel;
+      airAttackMultiplierPerLevel = datacopy.airAttackMultiplierPerLevel;
+      waterAttackMultiplierPerLevel = datacopy.waterAttackMultiplierPerLevel;
+      allAttackMultiplierPerLevel = datacopy.allAttackMultiplierPerLevel;
+
       deathSoundPath = datacopy.deathSoundPath;
       attackJumpSoundPath = datacopy.attackJumpSoundPath;
 
