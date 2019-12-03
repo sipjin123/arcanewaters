@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0"?>
 <PlayerClassData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <type>Marksman</type>
   <className>Marksman</className>
@@ -31,27 +31,27 @@
       <bonusResistancePhys>1</bonusResistancePhys>
       <bonusResistanceFire>1</bonusResistanceFire>
       <bonusResistanceWater>1</bonusResistanceWater>
-      <bonusResistanceWind>1</bonusResistanceWind>
+      <bonusResistanceAir>1</bonusResistanceAir>
       <bonusResistanceEarth>1</bonusResistanceEarth>
       <bonusResistanceAll>1</bonusResistanceAll>
       <bonusDamagePhys>5</bonusDamagePhys>
       <bonusDamageFire>1</bonusDamageFire>
       <bonusDamageWater>1</bonusDamageWater>
-      <bonusDamageWind>1</bonusDamageWind>
+      <bonusDamageAir>1</bonusDamageAir>
       <bonusDamageEarth>1</bonusDamageEarth>
       <bonusDamageAll>5</bonusDamageAll>
-      <bonusResistancePhysPerLevel>1</bonusResistancePhysPerLevel>
-      <bonusResistanceFirePerLevel>1</bonusResistanceFirePerLevel>
-      <bonusResistanceWaterPerLevel>1</bonusResistanceWaterPerLevel>
-      <bonusResistanceWindPerLevel>1</bonusResistanceWindPerLevel>
-      <bonusResistanceEarthPerLevel>1</bonusResistanceEarthPerLevel>
-      <bonusResistanceAllPerLevel>1</bonusResistanceAllPerLevel>
-      <bonusDamagePhysPerLevel>1</bonusDamagePhysPerLevel>
-      <bonusDamageFirePerLevel>1</bonusDamageFirePerLevel>
-      <bonusDamageWaterPerLevel>1</bonusDamageWaterPerLevel>
-      <bonusDamageWindPerLevel>1</bonusDamageWindPerLevel>
-      <bonusDamageEarthPerLevel>1</bonusDamageEarthPerLevel>
-      <bonusDamageAllPerLevel>5</bonusDamageAllPerLevel>
+      <bonusResistancePhysPerLevel>0.25</bonusResistancePhysPerLevel>
+      <bonusResistanceFirePerLevel>0.25</bonusResistanceFirePerLevel>
+      <bonusResistanceWaterPerLevel>0.25</bonusResistanceWaterPerLevel>
+      <bonusResistanceAirPerLevel>0.25</bonusResistanceAirPerLevel>
+      <bonusResistanceEarthPerLevel>0.25</bonusResistanceEarthPerLevel>
+      <bonusResistanceAllPerLevel>0.25</bonusResistanceAllPerLevel>
+      <bonusDamagePhysPerLevel>0.25</bonusDamagePhysPerLevel>
+      <bonusDamageFirePerLevel>0.25</bonusDamageFirePerLevel>
+      <bonusDamageWaterPerLevel>0.25</bonusDamageWaterPerLevel>
+      <bonusDamageAirPerLevel>0.25</bonusDamageAirPerLevel>
+      <bonusDamageEarthPerLevel>0.25</bonusDamageEarthPerLevel>
+      <bonusDamageAllPerLevel>0.25</bonusDamageAllPerLevel>
     </userCombatStats>
     <userShipStats>
       <bonusShipDamage>0</bonusShipDamage>

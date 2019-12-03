@@ -20,38 +20,38 @@
       <bonusLUK>1</bonusLUK>
       <bonusPRE>5</bonusPRE>
       <bonusVIT>5</bonusVIT>
-      <bonusINTperLevel>1</bonusINTperLevel>
-      <bonusSTRperLevel>5</bonusSTRperLevel>
-      <bonusSPTperLevel>1</bonusSPTperLevel>
-      <bonusLUKperLevel>1</bonusLUKperLevel>
-      <bonusPREperLevel>5</bonusPREperLevel>
-      <bonusVITperLevel>5</bonusVITperLevel>
+      <bonusINTperLevel>0.1</bonusINTperLevel>
+      <bonusSTRperLevel>0.1</bonusSTRperLevel>
+      <bonusSPTperLevel>0.1</bonusSPTperLevel>
+      <bonusLUKperLevel>0.1</bonusLUKperLevel>
+      <bonusPREperLevel>0.1</bonusPREperLevel>
+      <bonusVITperLevel>0.1</bonusVITperLevel>
     </userDefaultStats>
     <userCombatStats>
       <bonusResistancePhys>3</bonusResistancePhys>
       <bonusResistanceFire>3</bonusResistanceFire>
       <bonusResistanceWater>3</bonusResistanceWater>
-      <bonusResistanceWind>3</bonusResistanceWind>
+      <bonusResistanceAir>1</bonusResistanceAir>
       <bonusResistanceEarth>3</bonusResistanceEarth>
       <bonusResistanceAll>3</bonusResistanceAll>
       <bonusDamagePhys>5</bonusDamagePhys>
       <bonusDamageFire>3</bonusDamageFire>
       <bonusDamageWater>3</bonusDamageWater>
-      <bonusDamageWind>3</bonusDamageWind>
+      <bonusDamageAir>1</bonusDamageAir>
       <bonusDamageEarth>3</bonusDamageEarth>
       <bonusDamageAll>5</bonusDamageAll>
-      <bonusResistancePhysPerLevel>3</bonusResistancePhysPerLevel>
-      <bonusResistanceFirePerLevel>3</bonusResistanceFirePerLevel>
-      <bonusResistanceWaterPerLevel>3</bonusResistanceWaterPerLevel>
-      <bonusResistanceWindPerLevel>3</bonusResistanceWindPerLevel>
-      <bonusResistanceEarthPerLevel>3</bonusResistanceEarthPerLevel>
-      <bonusResistanceAllPerLevel>3</bonusResistanceAllPerLevel>
-      <bonusDamagePhysPerLevel>5</bonusDamagePhysPerLevel>
-      <bonusDamageFirePerLevel>3</bonusDamageFirePerLevel>
-      <bonusDamageWaterPerLevel>3</bonusDamageWaterPerLevel>
-      <bonusDamageWindPerLevel>3</bonusDamageWindPerLevel>
-      <bonusDamageEarthPerLevel>3</bonusDamageEarthPerLevel>
-      <bonusDamageAllPerLevel>5</bonusDamageAllPerLevel>
+      <bonusResistancePhysPerLevel>0.1</bonusResistancePhysPerLevel>
+      <bonusResistanceFirePerLevel>0.1</bonusResistanceFirePerLevel>
+      <bonusResistanceWaterPerLevel>0.1</bonusResistanceWaterPerLevel>
+      <bonusResistanceAirPerLevel>0.1</bonusResistanceAirPerLevel>
+      <bonusResistanceEarthPerLevel>0.1</bonusResistanceEarthPerLevel>
+      <bonusResistanceAllPerLevel>0.1</bonusResistanceAllPerLevel>
+      <bonusDamagePhysPerLevel>0.1</bonusDamagePhysPerLevel>
+      <bonusDamageFirePerLevel>0.1</bonusDamageFirePerLevel>
+      <bonusDamageWaterPerLevel>0.1</bonusDamageWaterPerLevel>
+      <bonusDamageAirPerLevel>0.1</bonusDamageAirPerLevel>
+      <bonusDamageEarthPerLevel>0.1</bonusDamageEarthPerLevel>
+      <bonusDamageAllPerLevel>0.1</bonusDamageAllPerLevel>
     </userCombatStats>
     <userShipStats>
       <bonusShipDamage>0</bonusShipDamage>

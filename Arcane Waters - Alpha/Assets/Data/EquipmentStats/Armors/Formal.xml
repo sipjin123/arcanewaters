@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArmorStatData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <equipmentName>Formal</equipmentName>
+  <equipmentDescription>A formal jacket with some polished buttons.</equipmentDescription>
+  <equipmentID>7</equipmentID>
+  <equipmentIconPath>Assets/Sprites/Icons/Armor/formal.png</equipmentIconPath>
+  <equipmentPrice>5</equipmentPrice>
+  <canBeTrashed>false</canBeTrashed>
+  <rarityModifiers />
+  <elementModifiers />
+  <color1>Brown</color1>
+  <color2>Green</color2>
+  <statsData>
+    <userId>0</userId>
+    <strength>1</strength>
+    <precision>1</precision>
+    <vitality>2</vitality>
+    <intelligence>2</intelligence>
+    <spirit>2</spirit>
+    <luck>1</luck>
+  </statsData>
+  <armorType xmlns="ArmorType">Formal</armorType>
+  <armorBaseDefense>5</armorBaseDefense>
+  <fireResist>2</fireResist>
+  <waterResist>2</waterResist>
+  <airResist>2</airResist>
+  <earthResist>2</earthResist>
+</ArmorStatData>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WeaponStatData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <equipmentName>Novice Sword</equipmentName>
+  <equipmentDescription>A small sword made for a novice.</equipmentDescription>
+  <equipmentID>102</equipmentID>
+  <equipmentIconPath>Assets/Sprites/Icons/Weapons/sword_2.png</equipmentIconPath>
+  <equipmentPrice>5</equipmentPrice>
+  <canBeTrashed>false</canBeTrashed>
+  <rarityModifiers />
+  <elementModifiers />
+  <color1>Brown</color1>
+  <color2>Brown</color2>
+  <statsData>
+    <userId>0</userId>
+    <strength>1</strength>
+    <precision>1</precision>
+    <vitality>3</vitality>
+    <intelligence>1</intelligence>
+    <spirit>1</spirit>
+    <luck>1</luck>
+  </statsData>
+  <weaponType xmlns="WeaponType">Sword_2</weaponType>
+  <weaponClass xmlns="WeaponClass">Melee</weaponClass>
+  <weaponBaseDamage>3</weaponBaseDamage>
+  <weaponDamageFire>1</weaponDamageFire>
+  <weaponDamageWater>1</weaponDamageWater>
+  <weaponDamageAir>3</weaponDamageAir>
+  <weaponDamageEarth>1</weaponDamageEarth>
+</WeaponStatData>

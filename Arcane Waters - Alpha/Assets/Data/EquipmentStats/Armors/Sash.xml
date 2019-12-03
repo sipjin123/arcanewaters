@@ -1,24 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ArmorStatData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <equipmentName>Sash</equipmentName>
-  <equipmentDescription />
-  <equipmentID>0</equipmentID>
+  <equipmentDescription>Some loose-fitting cloth garments.</equipmentDescription>
+  <equipmentID>4</equipmentID>
   <equipmentIconPath>Assets/Sprites/Icons/Armor/sash.png</equipmentIconPath>
-  <equipmentPrice>1000</equipmentPrice>
+  <equipmentPrice>5</equipmentPrice>
   <canBeTrashed>false</canBeTrashed>
   <rarityModifiers />
   <elementModifiers />
-  <color1>Green</color1>
-  <color2>Blue</color2>
+  <color1>None</color1>
+  <color2>None</color2>
   <statsData>
     <userId>0</userId>
-    <strength>0</strength>
-    <precision>0</precision>
-    <vitality>0</vitality>
-    <intelligence>0</intelligence>
-    <spirit>0</spirit>
-    <luck>0</luck>
+    <strength>4</strength>
+    <precision>1</precision>
+    <vitality>4</vitality>
+    <intelligence>1</intelligence>
+    <spirit>1</spirit>
+    <luck>1</luck>
   </statsData>
   <armorType xmlns="ArmorType">Sash</armorType>
-  <armorBaseDefense>0</armorBaseDefense>
+  <armorBaseDefense>4</armorBaseDefense>
+  <fireResist>1</fireResist>
+  <waterResist>1</waterResist>
+  <airResist>1</airResist>
+  <earthResist>1</earthResist>
 </ArmorStatData>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WeaponStatData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <equipmentName>Claymore</equipmentName>
+  <equipmentDescription>A large and heavy sword.</equipmentDescription>
+  <equipmentID>104</equipmentID>
+  <equipmentIconPath>Assets/Sprites/Icons/Weapons/sword_4.png</equipmentIconPath>
+  <equipmentPrice>5</equipmentPrice>
+  <canBeTrashed>false</canBeTrashed>
+  <rarityModifiers />
+  <elementModifiers />
+  <color1>LightGray</color1>
+  <color2>LightBlue</color2>
+  <statsData>
+    <userId>0</userId>
+    <strength>2</strength>
+    <precision>2</precision>
+    <vitality>2</vitality>
+    <intelligence>2</intelligence>
+    <spirit>2</spirit>
+    <luck>2</luck>
+  </statsData>
+  <weaponType xmlns="WeaponType">Sword_4</weaponType>
+  <weaponClass xmlns="WeaponClass">Melee</weaponClass>
+  <weaponBaseDamage>2</weaponBaseDamage>
+  <weaponDamageFire>2</weaponDamageFire>
+  <weaponDamageWater>2</weaponDamageWater>
+  <weaponDamageAir>2</weaponDamageAir>
+  <weaponDamageEarth>2</weaponDamageEarth>
+</WeaponStatData>

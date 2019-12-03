@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WeaponStatData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <equipmentName>Modified Pistol</equipmentName>
+  <equipmentDescription>A large and sturdy pistol.</equipmentDescription>
+  <equipmentID>201</equipmentID>
+  <equipmentIconPath>Assets/Sprites/Icons/Weapons/gun_7.png</equipmentIconPath>
+  <equipmentPrice>5</equipmentPrice>
+  <canBeTrashed>false</canBeTrashed>
+  <rarityModifiers />
+  <elementModifiers />
+  <color1>Red</color1>
+  <color2>DarkGray</color2>
+  <statsData>
+    <userId>0</userId>
+    <strength>1</strength>
+    <precision>5</precision>
+    <vitality>1</vitality>
+    <intelligence>1</intelligence>
+    <spirit>5</spirit>
+    <luck>5</luck>
+  </statsData>
+  <weaponType xmlns="WeaponType">Gun_7</weaponType>
+  <weaponClass xmlns="WeaponClass">Ranged</weaponClass>
+  <weaponBaseDamage>5</weaponBaseDamage>
+  <weaponDamageFire>5</weaponDamageFire>
+  <weaponDamageWater>1</weaponDamageWater>
+  <weaponDamageAir>1</weaponDamageAir>
+  <weaponDamageEarth>1</weaponDamageEarth>
+</WeaponStatData>

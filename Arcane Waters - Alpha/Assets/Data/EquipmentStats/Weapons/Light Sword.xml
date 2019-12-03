@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WeaponStatData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <equipmentName>Light Sword</equipmentName>
+  <equipmentDescription>A lightweight and basic sword.</equipmentDescription>
+  <equipmentID>103</equipmentID>
+  <equipmentIconPath>Assets/Sprites/Icons/Weapons/sword_3.png</equipmentIconPath>
+  <equipmentPrice>5</equipmentPrice>
+  <canBeTrashed>false</canBeTrashed>
+  <rarityModifiers />
+  <elementModifiers />
+  <color1>LightGray</color1>
+  <color2>LightGray</color2>
+  <statsData>
+    <userId>0</userId>
+    <strength>4</strength>
+    <precision>4</precision>
+    <vitality>4</vitality>
+    <intelligence>2</intelligence>
+    <spirit>4</spirit>
+    <luck>4</luck>
+  </statsData>
+  <weaponType xmlns="WeaponType">Sword_3</weaponType>
+  <weaponClass xmlns="WeaponClass">Melee</weaponClass>
+  <weaponBaseDamage>3</weaponBaseDamage>
+  <weaponDamageFire>1</weaponDamageFire>
+  <weaponDamageWater>4</weaponDamageWater>
+  <weaponDamageAir>4</weaponDamageAir>
+  <weaponDamageEarth>1</weaponDamageEarth>
+</WeaponStatData>

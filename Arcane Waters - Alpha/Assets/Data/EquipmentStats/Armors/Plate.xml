@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArmorStatData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <equipmentName>Plate</equipmentName>
+  <equipmentDescription>Some heavy plate armor.</equipmentDescription>
+  <equipmentID>0</equipmentID>
+  <equipmentIconPath>Assets/Sprites/Icons/Armor/plate.png</equipmentIconPath>
+  <equipmentPrice>5</equipmentPrice>
+  <canBeTrashed>false</canBeTrashed>
+  <rarityModifiers />
+  <elementModifiers />
+  <color1>DarkGreen</color1>
+  <color2>DarkGray</color2>
+  <statsData>
+    <userId>0</userId>
+    <strength>4</strength>
+    <precision>1</precision>
+    <vitality>5</vitality>
+    <intelligence>2</intelligence>
+    <spirit>1</spirit>
+    <luck>1</luck>
+  </statsData>
+  <armorType xmlns="ArmorType">Plate</armorType>
+  <armorBaseDefense>5</armorBaseDefense>
+  <fireResist>3</fireResist>
+  <waterResist>3</waterResist>
+  <airResist>3</airResist>
+  <earthResist>3</earthResist>
+</ArmorStatData>

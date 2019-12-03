@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WeaponStatData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <equipmentName>Golden Star</equipmentName>
+  <equipmentDescription>A mace with razor spikes.</equipmentDescription>
+  <equipmentID>11</equipmentID>
+  <equipmentIconPath>Assets/Sprites/Icons/Weapons/mace_star.png</equipmentIconPath>
+  <equipmentPrice>5</equipmentPrice>
+  <canBeTrashed>false</canBeTrashed>
+  <rarityModifiers />
+  <elementModifiers />
+  <color1>DarkGreen</color1>
+  <color2>SourceRed</color2>
+  <statsData>
+    <userId>0</userId>
+    <strength>3</strength>
+    <precision>1</precision>
+    <vitality>1</vitality>
+    <intelligence>3</intelligence>
+    <spirit>3</spirit>
+    <luck>1</luck>
+  </statsData>
+  <weaponType xmlns="WeaponType">Mace_Star</weaponType>
+  <weaponClass xmlns="WeaponClass">Magic</weaponClass>
+  <weaponBaseDamage>3</weaponBaseDamage>
+  <weaponDamageFire>2</weaponDamageFire>
+  <weaponDamageWater>2</weaponDamageWater>
+  <weaponDamageAir>2</weaponDamageAir>
+  <weaponDamageEarth>2</weaponDamageEarth>
+</WeaponStatData>

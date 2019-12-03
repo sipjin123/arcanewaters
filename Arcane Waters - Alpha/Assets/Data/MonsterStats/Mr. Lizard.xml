@@ -24,7 +24,7 @@
         <hitSpritesPath>
           <string>Assets/Sprites/Effects/crop_harvest.png</string>
         </hitSpritesPath>
-        <elementType>ALL</elementType>
+        <elementType>Water</elementType>
         <hitAudioClipPath>Assets/Resources/Sound/Effects/Attack_Blunt.wav</hitAudioClipPath>
         <classRequirement>Melee</classRequirement>
         <battleItemType>Ability</battleItemType>
@@ -55,7 +55,7 @@
         <hitSpritesPath>
           <string>Assets/Sprites/Effects/crop_harvest.png</string>
         </hitSpritesPath>
-        <elementType>ALL</elementType>
+        <elementType>Water</elementType>
         <hitAudioClipPath>Assets/Resources/Sound/Effects/Attack_Blunt.wav</hitAudioClipPath>
         <classRequirement>Melee</classRequirement>
         <battleItemType>Ability</battleItemType>
@@ -107,6 +107,18 @@
   <airAttackMultiplier>1</airAttackMultiplier>
   <waterAttackMultiplier>25</waterAttackMultiplier>
   <allAttackMultiplier>1</allAttackMultiplier>
+  <physicalDefenseMultiplierPerLevel>0.1</physicalDefenseMultiplierPerLevel>
+  <fireDefenseMultiplierPerLevel>0.1</fireDefenseMultiplierPerLevel>
+  <earthDefenseMultiplierPerLevel>0.1</earthDefenseMultiplierPerLevel>
+  <airDefenseMultiplierPerLevel>0.1</airDefenseMultiplierPerLevel>
+  <waterDefenseMultiplierPerLevel>0.1</waterDefenseMultiplierPerLevel>
+  <allDefenseMultiplierPerLevel>0.1</allDefenseMultiplierPerLevel>
+  <physicalAttackMultiplierPerLevel>0.1</physicalAttackMultiplierPerLevel>
+  <fireAttackMultiplierPerLevel>0.1</fireAttackMultiplierPerLevel>
+  <earthAttackMultiplierPerLevel>0.1</earthAttackMultiplierPerLevel>
+  <airAttackMultiplierPerLevel>0.1</airAttackMultiplierPerLevel>
+  <waterAttackMultiplierPerLevel>0.1</waterAttackMultiplierPerLevel>
+  <allAttackMultiplierPerLevel>0.1</allAttackMultiplierPerLevel>
   <deathSoundPath>Assets/Resources/Sound/Effects/Chomper_Death.ogg</deathSoundPath>
   <attackJumpSoundPath>Assets/Resources/Sound/Effects/Footstep_Muffled.wav</attackJumpSoundPath>
   <preContactLength>3</preContactLength>

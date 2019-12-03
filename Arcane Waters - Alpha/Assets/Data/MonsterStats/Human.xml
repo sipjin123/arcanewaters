@@ -11,7 +11,7 @@
   <baseGoldReward>5</baseGoldReward>
   <baseXPReward>5</baseXPReward>
   <damagePerLevel>5</damagePerLevel>
-  <defensePerLevel>5</defensePerLevel>
+  <defensePerLevel>2</defensePerLevel>
   <healthPerlevel>5</healthPerlevel>
   <battlerAbilities>
     <basicAbilityDataList>
@@ -522,18 +522,30 @@
     <minQuantity>3</minQuantity>
     <maxQuantity>5</maxQuantity>
   </battlerLootData>
-  <physicalDefenseMultiplier>1</physicalDefenseMultiplier>
-  <fireDefenseMultiplier>1</fireDefenseMultiplier>
-  <earthDefenseMultiplier>1</earthDefenseMultiplier>
-  <airDefenseMultiplier>1</airDefenseMultiplier>
-  <waterDefenseMultiplier>1</waterDefenseMultiplier>
-  <allDefenseMultiplier>1</allDefenseMultiplier>
-  <physicalAttackMultiplier>1</physicalAttackMultiplier>
-  <fireAttackMultiplier>1</fireAttackMultiplier>
-  <earthAttackMultiplier>1</earthAttackMultiplier>
-  <airAttackMultiplier>1</airAttackMultiplier>
-  <waterAttackMultiplier>1</waterAttackMultiplier>
-  <allAttackMultiplier>1</allAttackMultiplier>
+  <physicalDefenseMultiplier>0</physicalDefenseMultiplier>
+  <fireDefenseMultiplier>0</fireDefenseMultiplier>
+  <earthDefenseMultiplier>0</earthDefenseMultiplier>
+  <airDefenseMultiplier>0</airDefenseMultiplier>
+  <waterDefenseMultiplier>0</waterDefenseMultiplier>
+  <allDefenseMultiplier>0</allDefenseMultiplier>
+  <physicalAttackMultiplier>0</physicalAttackMultiplier>
+  <fireAttackMultiplier>0</fireAttackMultiplier>
+  <earthAttackMultiplier>0</earthAttackMultiplier>
+  <airAttackMultiplier>0</airAttackMultiplier>
+  <waterAttackMultiplier>0</waterAttackMultiplier>
+  <allAttackMultiplier>0</allAttackMultiplier>
+  <physicalDefenseMultiplierPerLevel>0</physicalDefenseMultiplierPerLevel>
+  <fireDefenseMultiplierPerLevel>0</fireDefenseMultiplierPerLevel>
+  <earthDefenseMultiplierPerLevel>0</earthDefenseMultiplierPerLevel>
+  <airDefenseMultiplierPerLevel>0</airDefenseMultiplierPerLevel>
+  <waterDefenseMultiplierPerLevel>0</waterDefenseMultiplierPerLevel>
+  <allDefenseMultiplierPerLevel>0</allDefenseMultiplierPerLevel>
+  <physicalAttackMultiplierPerLevel>0</physicalAttackMultiplierPerLevel>
+  <fireAttackMultiplierPerLevel>0</fireAttackMultiplierPerLevel>
+  <earthAttackMultiplierPerLevel>0</earthAttackMultiplierPerLevel>
+  <airAttackMultiplierPerLevel>0</airAttackMultiplierPerLevel>
+  <waterAttackMultiplierPerLevel>0</waterAttackMultiplierPerLevel>
+  <allAttackMultiplierPerLevel>0</allAttackMultiplierPerLevel>
   <deathSoundPath>Assets/Resources/Sound/Effects/Death_Poof.wav</deathSoundPath>
   <attackJumpSoundPath>Assets/Resources/Sound/Effects/Chomper_Attack.ogg</attackJumpSoundPath>
   <preContactLength>3</preContactLength>

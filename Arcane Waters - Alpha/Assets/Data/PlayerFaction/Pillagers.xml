@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0"?>
 <PlayerFactionData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <type>Pillagers</type>
   <factionName>Pillagers</factionName>
@@ -20,7 +20,7 @@
       <bonusLUK>1</bonusLUK>
       <bonusPRE>10</bonusPRE>
       <bonusVIT>1</bonusVIT>
-      <bonusINTperLevel>1</bonusINTperLevel>
+      <bonusINTperLevel>0.29</bonusINTperLevel>
       <bonusSTRperLevel>1</bonusSTRperLevel>
       <bonusSPTperLevel>1</bonusSPTperLevel>
       <bonusLUKperLevel>1</bonusLUKperLevel>
@@ -31,27 +31,27 @@
       <bonusResistancePhys>1</bonusResistancePhys>
       <bonusResistanceFire>1</bonusResistanceFire>
       <bonusResistanceWater>1</bonusResistanceWater>
-      <bonusResistanceWind>1</bonusResistanceWind>
+      <bonusResistanceAir>1</bonusResistanceAir>
       <bonusResistanceEarth>1</bonusResistanceEarth>
       <bonusResistanceAll>1</bonusResistanceAll>
       <bonusDamagePhys>5</bonusDamagePhys>
       <bonusDamageFire>2</bonusDamageFire>
       <bonusDamageWater>2</bonusDamageWater>
-      <bonusDamageWind>2</bonusDamageWind>
+      <bonusDamageAir>1</bonusDamageAir>
       <bonusDamageEarth>2</bonusDamageEarth>
       <bonusDamageAll>5</bonusDamageAll>
-      <bonusResistancePhysPerLevel>1</bonusResistancePhysPerLevel>
-      <bonusResistanceFirePerLevel>1</bonusResistanceFirePerLevel>
-      <bonusResistanceWaterPerLevel>1</bonusResistanceWaterPerLevel>
-      <bonusResistanceWindPerLevel>1</bonusResistanceWindPerLevel>
-      <bonusResistanceEarthPerLevel>1</bonusResistanceEarthPerLevel>
-      <bonusResistanceAllPerLevel>1</bonusResistanceAllPerLevel>
-      <bonusDamagePhysPerLevel>5</bonusDamagePhysPerLevel>
-      <bonusDamageFirePerLevel>2</bonusDamageFirePerLevel>
-      <bonusDamageWaterPerLevel>2</bonusDamageWaterPerLevel>
-      <bonusDamageWindPerLevel>2</bonusDamageWindPerLevel>
-      <bonusDamageEarthPerLevel>2</bonusDamageEarthPerLevel>
-      <bonusDamageAllPerLevel>5</bonusDamageAllPerLevel>
+      <bonusResistancePhysPerLevel>0.29</bonusResistancePhysPerLevel>
+      <bonusResistanceFirePerLevel>0.29</bonusResistanceFirePerLevel>
+      <bonusResistanceWaterPerLevel>0.29</bonusResistanceWaterPerLevel>
+      <bonusResistanceAirPerLevel>0.29</bonusResistanceAirPerLevel>
+      <bonusResistanceEarthPerLevel>0.29</bonusResistanceEarthPerLevel>
+      <bonusResistanceAllPerLevel>0.29</bonusResistanceAllPerLevel>
+      <bonusDamagePhysPerLevel>0.29</bonusDamagePhysPerLevel>
+      <bonusDamageFirePerLevel>0.29</bonusDamageFirePerLevel>
+      <bonusDamageWaterPerLevel>0.29</bonusDamageWaterPerLevel>
+      <bonusDamageAirPerLevel>0.29</bonusDamageAirPerLevel>
+      <bonusDamageEarthPerLevel>0.29</bonusDamageEarthPerLevel>
+      <bonusDamageAllPerLevel>0.29</bonusDamageAllPerLevel>
     </userCombatStats>
     <userShipStats>
       <bonusShipDamage>0</bonusShipDamage>

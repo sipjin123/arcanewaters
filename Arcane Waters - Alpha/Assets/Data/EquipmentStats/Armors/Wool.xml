@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArmorStatData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <equipmentName>Wool</equipmentName>
+  <equipmentDescription>A warm wool outfit.</equipmentDescription>
+  <equipmentID>10</equipmentID>
+  <equipmentIconPath>Assets/Sprites/Icons/Armor/wool.png</equipmentIconPath>
+  <equipmentPrice>5</equipmentPrice>
+  <canBeTrashed>false</canBeTrashed>
+  <rarityModifiers />
+  <elementModifiers />
+  <color1>SourceGreen</color1>
+  <color2>SteelBlue</color2>
+  <statsData>
+    <userId>0</userId>
+    <strength>5</strength>
+    <precision>1</precision>
+    <vitality>1</vitality>
+    <intelligence>3</intelligence>
+    <spirit>3</spirit>
+    <luck>1</luck>
+  </statsData>
+  <armorType xmlns="ArmorType">Wool</armorType>
+  <armorBaseDefense>2</armorBaseDefense>
+  <fireResist>1</fireResist>
+  <waterResist>1</waterResist>
+  <airResist>3</airResist>
+  <earthResist>2</earthResist>
+</ArmorStatData>

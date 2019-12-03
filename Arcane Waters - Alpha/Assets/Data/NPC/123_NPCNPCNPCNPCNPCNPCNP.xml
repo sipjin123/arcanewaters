@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<NPCData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <npcId>123</npcId>
+  <name>NPCNPCNPCNPCNPCNPCNP</name>
+  <greetingTextStranger />
+  <greetingTextAcquaintance />
+  <greetingTextCasualFriend />
+  <greetingTextCloseFriend />
+  <greetingTextBestFriend />
+  <giftOfferNPCText />
+  <giftLikedText />
+  <giftNotLikedText />
+  <hasTradeGossipDialogue>true</hasTradeGossipDialogue>
+  <hasGoodbyeDialogue>true</hasGoodbyeDialogue>
+  <lastUsedQuestId>-1</lastUsedQuestId>
+  <Quests />
+  <Gifts />
+  <iconPath />
+  <spritePath />
+  <faction>1</faction>
+  <specialty>2</specialty>
+</NPCData>

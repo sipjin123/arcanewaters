@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WeaponStatData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <equipmentName>Watering Pot</equipmentName>
+  <equipmentDescription>A simple little watering pot.</equipmentDescription>
+  <equipmentID>152</equipmentID>
+  <equipmentIconPath>Assets/Sprites/Icons/Weapons/wateringPot.png</equipmentIconPath>
+  <equipmentPrice>5</equipmentPrice>
+  <canBeTrashed>false</canBeTrashed>
+  <rarityModifiers />
+  <elementModifiers />
+  <color1>DarkGray</color1>
+  <color2>SteelGrey</color2>
+  <statsData>
+    <userId>0</userId>
+    <strength>1</strength>
+    <precision>1</precision>
+    <vitality>1</vitality>
+    <intelligence>1</intelligence>
+    <spirit>1</spirit>
+    <luck>1</luck>
+  </statsData>
+  <weaponType xmlns="WeaponType">WateringPot</weaponType>
+  <weaponClass xmlns="WeaponClass">Melee</weaponClass>
+  <weaponBaseDamage>1</weaponBaseDamage>
+  <weaponDamageFire>1</weaponDamageFire>
+  <weaponDamageWater>1</weaponDamageWater>
+  <weaponDamageAir>1</weaponDamageAir>
+  <weaponDamageEarth>1</weaponDamageEarth>
+</WeaponStatData>

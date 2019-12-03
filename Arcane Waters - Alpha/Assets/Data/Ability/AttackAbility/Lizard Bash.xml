@@ -8,7 +8,7 @@
   <hitSpritesPath>
     <string>Assets/Sprites/Effects/crop_harvest.png</string>
   </hitSpritesPath>
-  <elementType>ALL</elementType>
+  <elementType>Water</elementType>
   <hitAudioClipPath>Assets/Resources/Sound/Effects/Attack_Blunt.wav</hitAudioClipPath>
   <classRequirement>Melee</classRequirement>
   <battleItemType>Ability</battleItemType>

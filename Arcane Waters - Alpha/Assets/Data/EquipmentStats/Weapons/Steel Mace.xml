@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WeaponStatData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <equipmentName>Steel Mace</equipmentName>
+  <equipmentDescription>A mace with razor spikes.</equipmentDescription>
+  <equipmentID>10</equipmentID>
+  <equipmentIconPath>Assets/Sprites/Icons/Weapons/mace_steel.png</equipmentIconPath>
+  <equipmentPrice>5</equipmentPrice>
+  <canBeTrashed>false</canBeTrashed>
+  <rarityModifiers />
+  <elementModifiers />
+  <color1>Green</color1>
+  <color2>DarkRed</color2>
+  <statsData>
+    <userId>0</userId>
+    <strength>1</strength>
+    <precision>1</precision>
+    <vitality>2</vitality>
+    <intelligence>3</intelligence>
+    <spirit>1</spirit>
+    <luck>1</luck>
+  </statsData>
+  <weaponType xmlns="WeaponType">Mace_Steel</weaponType>
+  <weaponClass xmlns="WeaponClass">Magic</weaponClass>
+  <weaponBaseDamage>3</weaponBaseDamage>
+  <weaponDamageFire>3</weaponDamageFire>
+  <weaponDamageWater>3</weaponDamageWater>
+  <weaponDamageAir>3</weaponDamageAir>
+  <weaponDamageEarth>3</weaponDamageEarth>
+</WeaponStatData>

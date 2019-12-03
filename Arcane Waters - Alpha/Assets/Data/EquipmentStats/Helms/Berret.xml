@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<HelmStatData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <equipmentName>Berret</equipmentName>
+  <equipmentDescription>Berret</equipmentDescription>
+  <equipmentID>0</equipmentID>
+  <equipmentIconPath>Assets/Sprites/Icons/Helm/berret.png</equipmentIconPath>
+  <equipmentPrice>5</equipmentPrice>
+  <canBeTrashed>false</canBeTrashed>
+  <rarityModifiers />
+  <elementModifiers />
+  <color1>LightGray</color1>
+  <color2>DarkGray</color2>
+  <statsData>
+    <userId>0</userId>
+    <strength>1</strength>
+    <precision>1</precision>
+    <vitality>2</vitality>
+    <intelligence>1</intelligence>
+    <spirit>1</spirit>
+    <luck>1</luck>
+  </statsData>
+  <helmType xmlns="HelmType">Berret</helmType>
+  <helmBaseDefense>2</helmBaseDefense>
+  <fireResist>1</fireResist>
+  <waterResist>1</waterResist>
+  <airResist>1</airResist>
+  <earthResist>1</earthResist>
+</HelmStatData>

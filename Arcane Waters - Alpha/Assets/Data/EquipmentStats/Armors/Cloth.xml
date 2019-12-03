@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArmorStatData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <equipmentName>Cloth</equipmentName>
+  <equipmentDescription>Some comfortable cloth garments.</equipmentDescription>
+  <equipmentID>1</equipmentID>
+  <equipmentIconPath>Assets/Sprites/Icons/Armor/cloth.png</equipmentIconPath>
+  <equipmentPrice>5</equipmentPrice>
+  <canBeTrashed>false</canBeTrashed>
+  <rarityModifiers />
+  <elementModifiers>
+    <ElementModifier>
+      <elementType xmlns="Element">Physical</elementType>
+      <multiplier>0</multiplier>
+    </ElementModifier>
+    <ElementModifier>
+      <elementType xmlns="Element">Physical</elementType>
+      <multiplier>0</multiplier>
+    </ElementModifier>
+  </elementModifiers>
+  <color1>Red</color1>
+  <color2>Green</color2>
+  <statsData>
+    <userId>0</userId>
+    <strength>1</strength>
+    <precision>1</precision>
+    <vitality>1</vitality>
+    <intelligence>1</intelligence>
+    <spirit>1</spirit>
+    <luck>1</luck>
+  </statsData>
+  <armorType xmlns="ArmorType">Cloth</armorType>
+  <armorBaseDefense>1</armorBaseDefense>
+  <fireResist>1</fireResist>
+  <waterResist>1</waterResist>
+  <airResist>1</airResist>
+  <earthResist>1</earthResist>
+</ArmorStatData>

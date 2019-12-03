@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArmorStatData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <equipmentName>Strapped</equipmentName>
+  <equipmentDescription>An explorer's outfit with a leather strap.</equipmentDescription>
+  <equipmentID>11</equipmentID>
+  <equipmentIconPath>Assets/Sprites/Icons/Armor/strapped.png</equipmentIconPath>
+  <equipmentPrice>5</equipmentPrice>
+  <canBeTrashed>false</canBeTrashed>
+  <rarityModifiers />
+  <elementModifiers />
+  <color1>DarkBlue</color1>
+  <color2>SteelGrey</color2>
+  <statsData>
+    <userId>0</userId>
+    <strength>1</strength>
+    <precision>1</precision>
+    <vitality>5</vitality>
+    <intelligence>5</intelligence>
+    <spirit>1</spirit>
+    <luck>5</luck>
+  </statsData>
+  <armorType xmlns="ArmorType">Strapped</armorType>
+  <armorBaseDefense>3</armorBaseDefense>
+  <fireResist>5</fireResist>
+  <waterResist>2</waterResist>
+  <airResist>1</airResist>
+  <earthResist>5</earthResist>
+</ArmorStatData>

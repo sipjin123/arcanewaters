@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WeaponStatData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <equipmentName>Short Sword</equipmentName>
+  <equipmentDescription>A short but sturdy sword.</equipmentDescription>
+  <equipmentID>106</equipmentID>
+  <equipmentIconPath>Assets/Sprites/Icons/Weapons/sword_6.png</equipmentIconPath>
+  <equipmentPrice>5</equipmentPrice>
+  <canBeTrashed>false</canBeTrashed>
+  <rarityModifiers />
+  <elementModifiers />
+  <color1>LightGray</color1>
+  <color2>Brown</color2>
+  <statsData>
+    <userId>0</userId>
+    <strength>2</strength>
+    <precision>2</precision>
+    <vitality>2</vitality>
+    <intelligence>2</intelligence>
+    <spirit>22</spirit>
+    <luck>2</luck>
+  </statsData>
+  <weaponType xmlns="WeaponType">Sword_6</weaponType>
+  <weaponClass xmlns="WeaponClass">Melee</weaponClass>
+  <weaponBaseDamage>4</weaponBaseDamage>
+  <weaponDamageFire>4</weaponDamageFire>
+  <weaponDamageWater>4</weaponDamageWater>
+  <weaponDamageAir>4</weaponDamageAir>
+  <weaponDamageEarth>4</weaponDamageEarth>
+</WeaponStatData>

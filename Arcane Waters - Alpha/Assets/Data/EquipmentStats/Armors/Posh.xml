@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArmorStatData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <equipmentName>Posh</equipmentName>
+  <equipmentDescription>A rather posh and fashionable garment.</equipmentDescription>
+  <equipmentID>6</equipmentID>
+  <equipmentIconPath>Assets/Sprites/Icons/Armor/posh.png</equipmentIconPath>
+  <equipmentPrice>5</equipmentPrice>
+  <canBeTrashed>false</canBeTrashed>
+  <rarityModifiers />
+  <elementModifiers />
+  <color1>Blue</color1>
+  <color2>Green</color2>
+  <statsData>
+    <userId>0</userId>
+    <strength>5</strength>
+    <precision>1</precision>
+    <vitality>5</vitality>
+    <intelligence>1</intelligence>
+    <spirit>1</spirit>
+    <luck>1</luck>
+  </statsData>
+  <armorType xmlns="ArmorType">Posh</armorType>
+  <armorBaseDefense>5</armorBaseDefense>
+  <fireResist>1</fireResist>
+  <waterResist>1</waterResist>
+  <airResist>1</airResist>
+  <earthResist>1</earthResist>
+</ArmorStatData>

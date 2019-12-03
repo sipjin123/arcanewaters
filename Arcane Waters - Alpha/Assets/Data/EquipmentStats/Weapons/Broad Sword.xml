@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WeaponStatData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <equipmentName>Broad Sword</equipmentName>
+  <equipmentDescription>A massive sword with a broad blade.</equipmentDescription>
+  <equipmentID>105</equipmentID>
+  <equipmentIconPath>Assets/Sprites/Icons/Weapons/sword_5.png</equipmentIconPath>
+  <equipmentPrice>5</equipmentPrice>
+  <canBeTrashed>false</canBeTrashed>
+  <rarityModifiers />
+  <elementModifiers />
+  <color1>LightGray</color1>
+  <color2>Brown</color2>
+  <statsData>
+    <userId>0</userId>
+    <strength>3</strength>
+    <precision>3</precision>
+    <vitality>3</vitality>
+    <intelligence>3</intelligence>
+    <spirit>3</spirit>
+    <luck>3</luck>
+  </statsData>
+  <weaponType xmlns="WeaponType">Sword_5</weaponType>
+  <weaponClass xmlns="WeaponClass">Melee</weaponClass>
+  <weaponBaseDamage>3</weaponBaseDamage>
+  <weaponDamageFire>3</weaponDamageFire>
+  <weaponDamageWater>3</weaponDamageWater>
+  <weaponDamageAir>3</weaponDamageAir>
+  <weaponDamageEarth>3</weaponDamageEarth>
+</WeaponStatData>
