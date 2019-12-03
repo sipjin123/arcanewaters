@@ -13,6 +13,12 @@ public class HelmStatData : EquipmentStatData
 
    // The defense of the helm
    public int helmBaseDefense;
+
+   // The elemental resistance of the helm
+   public int fireResist;
+   public int waterResist;
+   public int airResist;
+   public int earthResist;
 }
 
 public class Helm

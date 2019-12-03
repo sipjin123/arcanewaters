@@ -13,4 +13,10 @@ public class ArmorStatData : EquipmentStatData
    
    // The defense of the armor
    public int armorBaseDefense;
+
+   // The elemental defense of the armor
+   public int fireResist;
+   public int waterResist;
+   public int airResist;
+   public int earthResist;
 }

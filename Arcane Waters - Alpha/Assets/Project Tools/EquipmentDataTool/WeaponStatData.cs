@@ -19,4 +19,10 @@ public class WeaponStatData : EquipmentStatData
    
    // The damage of the weapon
    public int weaponBaseDamage;
+
+   // The elemental damage of the weapons
+   public int weaponDamageFire;
+   public int weaponDamageWater;
+   public int weaponDamageAir;
+   public int weaponDamageEarth;
 }
