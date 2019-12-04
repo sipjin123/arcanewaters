@@ -264,8 +264,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
          if (battlerData != null) {
             _alteredBattlerData = BattlerData.CreateInstance(battlerData);
             setElementalWeakness();
-
-            _alteredBattlerData.enemyName = battlerData.enemyName;
          } else {
             D.error("DATA IS NULL");
          }

@@ -14,9 +14,6 @@ public class SeaMonsterManager : XmlManager {
    // Sea monsters to spawn on random maps
    public SeaMonsterEntity.Type[] randomSeaMonsters;
 
-   // Holds the xml raw data
-   public List<TextAsset> textAssets;
-
    // Determines if the list is generated already
    public bool hasInitialized;
 
@@ -114,28 +111,7 @@ public class SeaMonsterManager : XmlManager {
 
    public override void loadAllXMLData () {
       base.loadAllXMLData();
-
-      textAssets = new List<TextAsset>();
-
-      // Build the path to the folder containing the data XML files
-      string directoryPath = Path.Combine("Assets", "Data", "SeaMonsterStats");
-
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
-      } else {
-         // Get the list of XML files in the folder
-         string[] fileNames = ToolsUtil.getFileNamesInFolder(directoryPath, "*.xml");
-
-         // Iterate over the files
-         foreach (string fileName in fileNames) {
-            // Build the path to a single file
-            string filePath = Path.Combine(directoryPath, fileName);
-
-            // Read and deserialize the file
-            TextAsset textAsset = (TextAsset) UnityEditor.AssetDatabase.LoadAssetAtPath(filePath, typeof(TextAsset));
-            textAssets.Add(textAsset);
-         }
-      }
+      loadXMLData(SeaMonsterToolManager.FOLDER_PATH);
    }
 
    public override void clearAllXMLData () {

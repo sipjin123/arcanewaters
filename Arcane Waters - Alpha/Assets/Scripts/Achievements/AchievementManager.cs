@@ -15,9 +15,6 @@ public class AchievementManager : XmlManager
    // Determines how many tiers will be setup for all the achievements (Example: Bronze Minerx100, Silver Minerx500, Gold Minerx500, Platinum Minerx1000)
    public const int MAX_TIER_COUNT = 4;
 
-   // Holds the xml raw data
-   public List<TextAsset> textAssets;
-
    #endregion
 
    public void Awake () {
@@ -69,27 +66,7 @@ public class AchievementManager : XmlManager
 
    public override void loadAllXMLData () {
       base.loadAllXMLData();
-      textAssets = new List<TextAsset>();
-
-      // Build the path to the folder containing the data XML files
-      string directoryPath = Path.Combine("Assets", "Data", "Achievement");
-
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
-      } else {
-         // Get the list of XML files in the folder
-         string[] fileNames = ToolsUtil.getFileNamesInFolder(directoryPath, "*.xml");
-
-         // Iterate over the files
-         foreach (string fileName in fileNames) {
-            // Build the path to a single file
-            string filePath = Path.Combine(directoryPath, fileName);
-            
-            // Read and deserialize the file
-            TextAsset textAsset = (TextAsset) UnityEditor.AssetDatabase.LoadAssetAtPath(filePath, typeof(TextAsset));
-            textAssets.Add(textAsset);
-         }
-      }
+      loadXMLData(AchievementToolManager.FOLDER_PATH);
    }
 
    public override void clearAllXMLData () {

@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System.Linq;
 using System.IO;
+using static EquipmentToolManager;
 
 public class EquipmentXMLManager : XmlManager {
    #region Public Variables
@@ -86,80 +87,28 @@ public class EquipmentXMLManager : XmlManager {
    
    public override void loadAllXMLData () {
       base.loadAllXMLData();
-      loadWeaponXMLData();
-      loadArmorXMLData();
-      loadHelmXMLData();
+      loadXMLData(EquipmentType.Weapon, FOLDER_PATH_WEAPON);
+      loadXMLData(EquipmentType.Armor, FOLDER_PATH_ARMOR);
+      loadXMLData(EquipmentType.Helm, FOLDER_PATH_HELM);
    }
 
-   private void loadWeaponXMLData () {
-      weaponTextAssets = new List<TextAsset>();
-
-      // Build the path to the folder containing the data XML files
-      string directoryPath = Path.Combine("Assets", "Data", "EquipmentStats/Weapons");
-
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
-      } else {
-         // Get the list of XML files in the folder
-         string[] fileNames = ToolsUtil.getFileNamesInFolder(directoryPath, "*.xml");
-
-         // Iterate over the files
-         foreach (string fileName in fileNames) {
-            // Build the path to a single file
-            string filePath = Path.Combine(directoryPath, fileName);
-
-            // Read and deserialize the file
-            TextAsset textAsset = (TextAsset) UnityEditor.AssetDatabase.LoadAssetAtPath(filePath, typeof(TextAsset));
-            weaponTextAssets.Add(textAsset);
-         }
-      }
-   }
-
-   private void loadArmorXMLData () {
-      armorTextAssets = new List<TextAsset>();
-
-      // Build the path to the folder containing the data XML files
-      string directoryPath = Path.Combine("Assets", "Data", "EquipmentStats/Armors");
-
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
-      } else {
-         // Get the list of XML files in the folder
-         string[] fileNames = ToolsUtil.getFileNamesInFolder(directoryPath, "*.xml");
-
-         // Iterate over the files
-         foreach (string fileName in fileNames) {
-            // Build the path to a single file
-            string filePath = Path.Combine(directoryPath, fileName);
-
-            // Read and deserialize the file
-            TextAsset textAsset = (TextAsset) UnityEditor.AssetDatabase.LoadAssetAtPath(filePath, typeof(TextAsset));
-            armorTextAssets.Add(textAsset);
-         }
-      }
-   }
-
-   private void loadHelmXMLData () {
-      helmTextAssets = new List<TextAsset>();
-
-      // Build the path to the folder containing the data XML files
-      string directoryPath = Path.Combine("Assets", "Data", "EquipmentStats/Helms");
-
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
-      } else {
-         // Get the list of XML files in the folder
-         string[] fileNames = ToolsUtil.getFileNamesInFolder(directoryPath, "*.xml");
-
-         // Iterate over the files
-         foreach (string fileName in fileNames) {
-            // Build the path to a single file
-            string filePath = Path.Combine(directoryPath, fileName);
-
-            // Read and deserialize the file
-            TextAsset textAsset = (TextAsset) UnityEditor.AssetDatabase.LoadAssetAtPath(filePath, typeof(TextAsset));
-            helmTextAssets.Add(textAsset);
-         }
+   private void loadXMLData (EquipmentType equipmentType, string folderName) {
+      switch (equipmentType) {
+         case EquipmentType.Weapon: {
+               TextAsset[] textArray = Resources.LoadAll("Data/" + folderName, typeof(TextAsset)).Cast<TextAsset>().ToArray();
+               weaponTextAssets = new List<TextAsset>(textArray);
+            }
+            break;
+         case EquipmentType.Armor: {
+               TextAsset[] textArray = Resources.LoadAll("Data/" + folderName, typeof(TextAsset)).Cast<TextAsset>().ToArray();
+               armorTextAssets = new List<TextAsset>(textArray);
+            }
+            break;
+         case EquipmentType.Helm: {
+               TextAsset[] textArray = Resources.LoadAll("Data/" + folderName, typeof(TextAsset)).Cast<TextAsset>().ToArray();
+               helmTextAssets = new List<TextAsset>(textArray);
+            }
+            break;
       }
    }
 

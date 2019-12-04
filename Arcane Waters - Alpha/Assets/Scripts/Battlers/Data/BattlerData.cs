@@ -116,6 +116,8 @@ public class BattlerData {
    }
 
    protected void setAllBattlerData (BattlerData datacopy) {
+      enemyName = datacopy.enemyName;
+
       currentXP = datacopy.currentXP;
       enemyType = datacopy.enemyType;
 

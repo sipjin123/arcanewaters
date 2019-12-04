@@ -13,9 +13,6 @@ public class NPCManager : XmlManager {
    // Self
    public static NPCManager self;
 
-   // Holds the xml raw data
-   public List<TextAsset> textAssets;
-
    // Checks if npc data has been set
    public bool npcDataInitialized;
 
@@ -278,28 +275,7 @@ public class NPCManager : XmlManager {
 
    public override void loadAllXMLData () {
       base.loadAllXMLData();
-
-      textAssets = new List<TextAsset>();
-
-      // Build the path to the folder containing the data XML files
-      string directoryPath = Path.Combine("Assets", "Data", "NPC");
-
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
-      } else {
-         // Get the list of XML files in the folder
-         string[] fileNames = ToolsUtil.getFileNamesInFolder(directoryPath, "*.xml");
-
-         // Iterate over the files
-         foreach (string fileName in fileNames) {
-            // Build the path to a single file
-            string filePath = Path.Combine(directoryPath, fileName);
-
-            // Read and deserialize the file
-            TextAsset textAsset = (TextAsset) UnityEditor.AssetDatabase.LoadAssetAtPath(filePath, typeof(TextAsset));
-            textAssets.Add(textAsset);
-         }
-      }
+      loadXMLData(NPCToolManager.FOLDER_PATH);
    }
 
    public override void clearAllXMLData () {
