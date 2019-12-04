@@ -2212,6 +2212,9 @@ public class RPCManager : NetworkBehaviour {
       // Add the player to the Battle
       BattleManager.self.addPlayerToBattle(battle, playerBody, Battle.TeamType.Attackers);
 
+      // Server will setup the abilities and send to clients what abilities to use
+      setupAbilityForBattle(_player.userId);
+
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Retrieves skill list from database
          List<AbilitySQLData> abilityDataList = DB_Main.getAllAbilities(playerBody.userId);
@@ -2239,9 +2242,21 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_UpdateAbility (AbilitySQLData ability) {
+   public void Cmd_UpdateAbility (int abilityID, int equipSlot) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateAbilitiesData(_player.userId, ability);
+         // Fetch abilities of the user from the database
+         List<AbilitySQLData> abilityDataList = DB_Main.getAllAbilities(_player.userId);
+
+         // Checks if the user actually has the ability
+         if (abilityDataList.Exists(_ => _.abilityID == abilityID)) {
+            AbilitySQLData sqlData = abilityDataList.Find(_ => _.abilityID == abilityID);
+
+            // Modifies equipment slot of the ability (Slots 0 -> 4 are Equipped and Slots -1 are Unequipped)
+            sqlData.equipSlotIndex = equipSlot;
+
+            // Updates the ability
+            DB_Main.updateAbilitiesData(_player.userId, sqlData);
+         }
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             fetchAbilitiesForUIPanel();
          });

@@ -19,7 +19,7 @@ public class AbilitySelectionTemplate : MonoBehaviour {
    // Button to select the skill
    public Button selectButton;
 
-   // Highligh indicator
+   // Highlight indicator
    public GameObject highlightObj;
 
    // Cached the ability sql data

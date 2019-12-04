@@ -166,9 +166,6 @@ public class BattleManager : MonoBehaviour {
       // Registers the action of combat entry to the achievement database for recording
       AchievementManager.registerUserAchievement(player.userId, ActionType.EnterCombat);
 
-      // Server will setup the abilities and send to clients what abilities to use
-      player.rpc.setupAbilityForBattle(player.userId);
-
       // Update the observers associated with the Battle and the associated players
       rebuildObservers(battler, battle);
    }
@@ -263,7 +260,7 @@ public class BattleManager : MonoBehaviour {
       battler.userId = player.userId;
 
       // This function will handle the computed stats of the player depending on their Specialty/Faction/Job/Class
-      battler.mainInit();
+      battler.initialize();
       battler.health = battler.getStartingHealth(Enemy.Type.Humanoid);
 
       // Zeronev: this will not sync the battle ID to all created battlers, a CMD is needed.
@@ -431,7 +428,7 @@ public class BattleManager : MonoBehaviour {
                wasCritical = Random.Range(0f, 1f) > .50f;
             }
 
-            // Warning!: Temporary remove critical possibilities
+            // TODO: Temporary remove critical possibilities
             wasCritical = false;
 
             // Adjust the damage amount based on element, ability, and the target's armor
@@ -477,7 +474,7 @@ public class BattleManager : MonoBehaviour {
                decreaseMultiply *= .70f;
             }
 
-            // Warning!: Temporary Remove additive for simplified computation
+            // TODO: Temporary Remove additive for simplified computation
             increaseAdditive = 0;
             decreaseMultiply = 1;
 

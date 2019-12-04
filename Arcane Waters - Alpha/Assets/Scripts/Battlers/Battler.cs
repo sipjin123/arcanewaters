@@ -184,7 +184,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    }
 
    private void Start () {
-      mainInit();
+      initialize();
 
       // Look up our associated player object
       NetworkIdentity enemyIdent = NetworkIdentity.spawned[playerNetId];
@@ -248,9 +248,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       onBattlerSelect.Invoke();
    }
 
-   public void mainInit () {
+   public void initialize () {
       if (!_hasInitializedStats) {
-         _hasInitializedStats = true;
          BattlerData battlerData = MonsterManager.self.requestBattler(enemyType);
          if (battlerType == BattlerType.PlayerControlled) {
             battlerData = MonsterManager.self.requestBattler(Enemy.Type.Humanoid);
@@ -266,7 +265,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             _cachedBattlerData = BattlerData.CreateInstance(battlerData);
             _initializedBattlerData.enemyName = battlerData.enemyName;
          } else {
-            Debug.LogError("DATA IS NULL");
+            D.error("DATA IS NULL");
          }
 
          // Change sprite fetched from battler data
@@ -287,6 +286,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
          // Enemy stat setup
          setupEnemyStats();
+
+         _hasInitializedStats = true;
       }
    }
 
@@ -384,7 +385,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       _initializedBattlerData.fireAttackMultiplier += stat.bonusDamageFirePerLevel * level;
       _initializedBattlerData.earthAttackMultiplier += stat.bonusDamageEarthPerLevel * level;
       _initializedBattlerData.waterAttackMultiplier += stat.bonusDamageWaterPerLevel * level;
-      _initializedBattlerData.physicalAttackMultiplier += stat.bonusDamagePhysPerLevel * level;
+      _initializedBattlerData.physicalAttackMultiplier += stat.bonusDamagePhysicalPerLevel * level;
       _initializedBattlerData.allAttackMultiplier += stat.bonusDamageAllPerLevel * level;
 
       _initializedBattlerData.airDefenseMultiplier += stat.bonusResistanceAir;
@@ -1104,7 +1105,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
       // Add our armor's defense value, if we have any
       if (armorManager.hasArmor()) {
-         // WARNING!: Temporary Disable until formula is finalized
          defense += armorManager.getArmor().getDefense(element);
       }
 
@@ -1128,7 +1128,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       }
       defense *= Mathf.Abs(elementalMultiplier);
 
-      // WARNING!: Temporary Disable until formula is finalized
+      // TODO: Temporary Disable until formula is finalized
       // We will add as an additional the "All" multiplier with the base defense
       // defense += getBattlerData().baseDefense + (getBattlerData().defensePerLevel * level);
 
@@ -1166,7 +1166,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       }
       damage *= multiplier;
 
-      // WARNING!: Temporary Disable until formula is finalized
+      // TODO: Temporary Disable until formula is finalized
       // We will add as an additional the "All" multiplier with the base defense.
       // damage += (getBattlerData().baseDamage * getBattlerData().allAttackMultiplier);
 

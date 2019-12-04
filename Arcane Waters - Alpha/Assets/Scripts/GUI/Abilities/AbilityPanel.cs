@@ -9,12 +9,6 @@ using System.Linq;
 public class AbilityPanel : Panel, IPointerClickHandler {
    #region Public Variables
 
-   public class AbilitySlot
-   {
-      public int abilitySlotID;
-      public int abilityID;
-   }
-
    // Row initialization for all abilities
    public AbilitySelectionTemplate abilityTemplate;
    public GameObject abilityParent;
@@ -31,9 +25,14 @@ public class AbilityPanel : Panel, IPointerClickHandler {
    // Cached abilities
    public AbilitySQLData currentInventoryAbility, currentEquippedInventoryAbility;
 
+   // Determines how many abilities have already been equipped 
    int equippedSkillCount = 0;
 
+   // The list of ability slots available
    public List<AbilitySlot> abilityslotList;
+
+   // The maximum skills that can be equipped in combat
+   public static int MAX_EQUIP_SKILL = 5;
 
    #endregion
 
@@ -69,7 +68,7 @@ public class AbilityPanel : Panel, IPointerClickHandler {
       foreach (AbilitySQLData ability in abilityLibrary) {
          AbilitySelectionTemplate template = Instantiate(abilityTemplate.gameObject, abilityParent.transform).GetComponent<AbilitySelectionTemplate>();
          BasicAbilityData abilityData = AbilityManager.getAbility(ability.abilityID, AbilityType.Standard);
-         bool ifEquipped = equippedAbilitList.Exists(_ => _.abilityID == ability.abilityID);
+         bool isEquipped = equippedAbilitList.Exists(_ => _.abilityID == ability.abilityID);
 
          template.abilityData = abilityData;
          template.abilitySQLData = ability;
@@ -77,7 +76,7 @@ public class AbilityPanel : Panel, IPointerClickHandler {
          template.skillIcon.sprite = ImageManager.getSprite(abilityData.itemIconPath);
          template.highlightObj.SetActive(false);
 
-         if (ifEquipped) {
+         if (isEquipped) {
             template.gameObject.SetActive(false);
          }
 
@@ -100,13 +99,13 @@ public class AbilityPanel : Panel, IPointerClickHandler {
       foreach (AbilitySQLData ability in equippedAbilitList) {
          AbilitySelectionTemplate template = Instantiate(equippedAbilityTemplate.gameObject, equippedAbilityParent.transform).GetComponent<AbilitySelectionTemplate>();
          BasicAbilityData abilityData = AbilityManager.getAbility(ability.abilityID, AbilityType.Standard);
-         bool ifEquipped = equippedAbilitList.Exists(_ => _.abilityID == ability.abilityID);
+         bool isEquipped = equippedAbilitList.Exists(_ => _.abilityID == ability.abilityID);
 
          template.abilityData = abilityData;
          template.abilitySQLData = ability;
          template.skillName.text = abilityData.itemName;
          template.skillIcon.sprite = ImageManager.getSprite(abilityData.itemIconPath);
-         template.skillSlot.text = ifEquipped ? equippedAbilitList.Find(_ => _.abilityID == ability.abilityID).equipSlotIndex.ToString() : "";
+         template.skillSlot.text = isEquipped ? equippedAbilitList.Find(_ => _.abilityID == ability.abilityID).equipSlotIndex.ToString() : "";
 
          if (template.skillSlot.text != "") {
             abilityslotList.Find(_ => _.abilitySlotID == int.Parse(template.skillSlot.text)).abilityID = ability.abilityID;
@@ -123,8 +122,8 @@ public class AbilityPanel : Panel, IPointerClickHandler {
       }
 
       // Fill out the blank skills
-      if (skillCounter < 5) {
-         for (int i = 0; i < 5 - skillCounter; i++) {
+      if (skillCounter < MAX_EQUIP_SKILL) {
+         for (int i = 0; i < MAX_EQUIP_SKILL - skillCounter; i++) {
             AbilitySelectionTemplate template = Instantiate(equippedAbilityTemplate.gameObject, equippedAbilityParent.transform).GetComponent<AbilitySelectionTemplate>();
             template.skillName.text = "Unassigned";
          }
@@ -136,11 +135,11 @@ public class AbilityPanel : Panel, IPointerClickHandler {
          return;
       }
 
-      if (equippedSkillCount < 5) {
+      if (equippedSkillCount < MAX_EQUIP_SKILL) {
          foreach (var temp in abilityslotList) {
             if (temp.abilityID == 0) {
                ability.equipSlotIndex = temp.abilitySlotID;
-               Global.player.rpc.Cmd_UpdateAbility(ability);
+               Global.player.rpc.Cmd_UpdateAbility(ability.abilityID, ability.equipSlotIndex);
                break;
             }
          }
@@ -153,7 +152,7 @@ public class AbilityPanel : Panel, IPointerClickHandler {
       }
       ability.equipSlotIndex = -1;
 
-      Global.player.rpc.Cmd_UpdateAbility(ability);
+      Global.player.rpc.Cmd_UpdateAbility(ability.abilityID, ability.equipSlotIndex);
    }
 
    private void unequipAbility (List<AbilitySQLData> abilities) {
