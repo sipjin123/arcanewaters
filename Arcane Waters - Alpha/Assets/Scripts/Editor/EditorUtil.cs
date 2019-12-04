@@ -9,6 +9,24 @@ public class EditorUtil : EditorWindow {
 
    #endregion
 
+   [MenuItem("Util/Update All XML Data")]
+   public static void updateAllXMLData () {
+      XmlManager[] xmlManagers = FindObjectsOfType<XmlManager>();
+      
+      foreach (XmlManager xmlManager in xmlManagers) {
+         xmlManager.loadAllXMLData();
+      }
+   }
+
+   [MenuItem("Util/Clear All XML Data")]
+   public static void clearAllXMLData () {
+      XmlManager[] xmlManagers = FindObjectsOfType<XmlManager>();
+
+      foreach (XmlManager xmlManager in xmlManagers) {
+         xmlManager.clearAllXMLData();
+      }
+   }
+
    [MenuItem("Util/Clear Image Manager")]
    public static void clearImagerManager () {
       // Find the Image Manager and clear out the stored paths

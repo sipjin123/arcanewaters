@@ -3201,11 +3201,11 @@ MonoBehaviour:
   _itemID: {fileID: 440574508}
   _itemPrice: {fileID: 69345282}
   _canBeTrashed: {fileID: 896379036}
-  _weaponDamage: {fileID: 1832659833}
-  _weaponDamageFire: {fileID: 1253752398}
-  _weaponDamageWater: {fileID: 766358197}
-  _weaponDamageAir: {fileID: 359933558}
-  _weaponDamageEarth: {fileID: 490833267}
+  _attributePhysical: {fileID: 1832659833}
+  _attributeFire: {fileID: 1253752398}
+  _attributeWater: {fileID: 766358197}
+  _attributeAir: {fileID: 359933558}
+  _attributeEarth: {fileID: 490833267}
   _weaponClass: {fileID: 1495675474}
   _weaponClassText: {fileID: 293801154}
   _weaponTypeText: {fileID: 6904470103860139205}

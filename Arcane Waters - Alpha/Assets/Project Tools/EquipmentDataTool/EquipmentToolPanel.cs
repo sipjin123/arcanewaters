@@ -196,11 +196,11 @@ public class EquipmentToolPanel : MonoBehaviour {
       loadGenericInfo();
       loadEquipmentData(statData);
 
-      _weaponDamage.text = statData.armorBaseDefense.ToString();
-      _weaponDamageFire.text = statData.fireResist.ToString();
-      _weaponDamageWater.text = statData.waterResist.ToString();
-      _weaponDamageAir.text = statData.airResist.ToString();
-      _weaponDamageEarth.text = statData.earthResist.ToString();
+      _attributePhysical.text = statData.armorBaseDefense.ToString();
+      _attributeFire.text = statData.fireResist.ToString();
+      _attributeWater.text = statData.waterResist.ToString();
+      _attributeAir.text = statData.airResist.ToString();
+      _attributeEarth.text = statData.earthResist.ToString();
 
       _weaponTypeText.text = statData.armorType.ToString();
 
@@ -213,11 +213,11 @@ public class EquipmentToolPanel : MonoBehaviour {
       loadGenericInfo();
       loadEquipmentData(statData);
 
-      _weaponDamage.text = statData.weaponBaseDamage.ToString();
-      _weaponDamageFire.text = statData.weaponDamageFire.ToString();
-      _weaponDamageWater.text = statData.weaponDamageWater.ToString();
-      _weaponDamageAir.text = statData.weaponDamageAir.ToString();
-      _weaponDamageEarth.text = statData.weaponDamageEarth.ToString();
+      _attributePhysical.text = statData.weaponBaseDamage.ToString();
+      _attributeFire.text = statData.weaponDamageFire.ToString();
+      _attributeWater.text = statData.weaponDamageWater.ToString();
+      _attributeAir.text = statData.weaponDamageAir.ToString();
+      _attributeEarth.text = statData.weaponDamageEarth.ToString();
 
       _weaponTypeText.text = statData.weaponType.ToString();
       _weaponClass.value = (int) statData.weaponClass;
@@ -232,11 +232,11 @@ public class EquipmentToolPanel : MonoBehaviour {
       loadGenericInfo();
       loadEquipmentData(statData);
 
-      _weaponDamage.text = statData.helmBaseDefense.ToString();
-      _weaponDamageFire.text = statData.fireResist.ToString();
-      _weaponDamageWater.text = statData.waterResist.ToString();
-      _weaponDamageAir.text = statData.airResist.ToString();
-      _weaponDamageEarth.text = statData.earthResist.ToString();
+      _attributePhysical.text = statData.helmBaseDefense.ToString();
+      _attributeFire.text = statData.fireResist.ToString();
+      _attributeWater.text = statData.waterResist.ToString();
+      _attributeAir.text = statData.airResist.ToString();
+      _attributeEarth.text = statData.earthResist.ToString();
       _weaponTypeText.text = statData.helmType.ToString();
 
       _weaponClass.onValueChanged.Invoke(_weaponClass.value);
@@ -336,11 +336,11 @@ public class EquipmentToolPanel : MonoBehaviour {
       setEquipmentStatData(weaponStatData);
 
       // Setup special data
-      weaponStatData.weaponBaseDamage = int.Parse(_weaponDamage.text);
-      weaponStatData.weaponDamageWater = int.Parse(_weaponDamageWater.text);
-      weaponStatData.weaponDamageEarth = int.Parse(_weaponDamageEarth.text);
-      weaponStatData.weaponDamageFire = int.Parse(_weaponDamageFire.text);
-      weaponStatData.weaponDamageAir = int.Parse(_weaponDamageAir.text);
+      weaponStatData.weaponBaseDamage = int.Parse(_attributePhysical.text);
+      weaponStatData.weaponDamageWater = int.Parse(_attributeWater.text);
+      weaponStatData.weaponDamageEarth = int.Parse(_attributeEarth.text);
+      weaponStatData.weaponDamageFire = int.Parse(_attributeFire.text);
+      weaponStatData.weaponDamageAir = int.Parse(_attributeAir.text);
       weaponStatData.weaponType = (Weapon.Type) Enum.Parse(typeof(Weapon.Type), _weaponTypeText.text);
       weaponStatData.weaponClass = (Weapon.Class) Enum.Parse(typeof(Weapon.Class), _weaponClassText.text);
       
@@ -352,11 +352,11 @@ public class EquipmentToolPanel : MonoBehaviour {
       setEquipmentStatData(armorStatData);
 
       // Setup special data
-      armorStatData.armorBaseDefense = int.Parse(_weaponDamage.text);
-      armorStatData.waterResist = int.Parse(_weaponDamageWater.text);
-      armorStatData.earthResist = int.Parse(_weaponDamageEarth.text);
-      armorStatData.fireResist = int.Parse(_weaponDamageFire.text);
-      armorStatData.airResist = int.Parse(_weaponDamageAir.text);
+      armorStatData.armorBaseDefense = int.Parse(_attributePhysical.text);
+      armorStatData.waterResist = int.Parse(_attributeWater.text);
+      armorStatData.earthResist = int.Parse(_attributeEarth.text);
+      armorStatData.fireResist = int.Parse(_attributeFire.text);
+      armorStatData.airResist = int.Parse(_attributeAir.text);
       armorStatData.armorType = (Armor.Type) Enum.Parse(typeof(Armor.Type), _weaponTypeText.text);
       
       return armorStatData;
@@ -367,11 +367,11 @@ public class EquipmentToolPanel : MonoBehaviour {
       setEquipmentStatData(helmStatData);
 
       // Setup special data
-      helmStatData.helmBaseDefense = int.Parse(_weaponDamage.text);
-      helmStatData.waterResist = int.Parse(_weaponDamageWater.text);
-      helmStatData.earthResist = int.Parse(_weaponDamageEarth.text);
-      helmStatData.fireResist = int.Parse(_weaponDamageFire.text);
-      helmStatData.airResist = int.Parse(_weaponDamageAir.text);
+      helmStatData.helmBaseDefense = int.Parse(_attributePhysical.text);
+      helmStatData.waterResist = int.Parse(_attributeWater.text);
+      helmStatData.earthResist = int.Parse(_attributeEarth.text);
+      helmStatData.fireResist = int.Parse(_attributeFire.text);
+      helmStatData.airResist = int.Parse(_attributeAir.text);
       helmStatData.helmType = (Helm.Type) Enum.Parse(typeof(Helm.Type), _weaponTypeText.text);
 
       return helmStatData;
@@ -464,7 +464,7 @@ public class EquipmentToolPanel : MonoBehaviour {
 
    // Input field variables for float and int values
    [SerializeField]
-   private InputField _weaponDamage, _weaponDamageFire, _weaponDamageWater, _weaponDamageAir, _weaponDamageEarth;
+   private InputField _attributePhysical, _attributeFire, _attributeWater, _attributeAir, _attributeEarth;
 
    // Sliders
    [SerializeField]

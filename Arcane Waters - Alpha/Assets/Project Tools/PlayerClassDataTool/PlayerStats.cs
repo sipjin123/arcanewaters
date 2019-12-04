@@ -101,7 +101,7 @@ public class UserCombatStats
    public float bonusResistanceAllPerLevel;
 
    // Damage modifiers per level
-   public float bonusDamagePhysPerLevel;
+   public float bonusDamagePhysicalPerLevel;
    public float bonusDamageFirePerLevel;
    public float bonusDamageWaterPerLevel;
    public float bonusDamageAirPerLevel;

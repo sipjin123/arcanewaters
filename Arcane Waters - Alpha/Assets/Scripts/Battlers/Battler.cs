@@ -6,6 +6,7 @@ using Mirror;
 using UnityEngine.Events;
 using System;
 using Random = UnityEngine.Random;
+using System.Linq;
 
 // Will load Battler Data and use that accordingly in all actions.
 public class Battler : NetworkBehaviour, IAttackBehaviour {
@@ -261,9 +262,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
          }
 
          if (battlerData != null) {
-            _initializedBattlerData = BattlerData.CreateInstance(battlerData);
-            _cachedBattlerData = BattlerData.CreateInstance(battlerData);
-            _initializedBattlerData.enemyName = battlerData.enemyName;
+            _alteredBattlerData = BattlerData.CreateInstance(battlerData);
+            setElementalWeakness();
+
+            _alteredBattlerData.enemyName = battlerData.enemyName;
          } else {
             D.error("DATA IS NULL");
          }
@@ -275,7 +277,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
          }
 
          if (battlerType == BattlerType.AIEnemyControlled) {
-            setBattlerAbilities(_initializedBattlerData.battlerAbilities);
+            setBattlerAbilities(_alteredBattlerData.battlerAbilities);
 
             // Extra cooldown time for AI controlled battlers, so they do not attack instantly
             this.cooldownEndTime = Util.netTime() + 5f;
@@ -293,20 +295,21 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
    private void setupEnemyStats () {
       if (battlerType == BattlerType.AIEnemyControlled) {
-         this.health += (int) getBattlerData().baseHealth + ((int) getBattlerData().healthPerlevel * LevelUtil.levelForXp(XP));
          int level = LevelUtil.levelForXp(XP);
 
-         getBattlerData().physicalAttackMultiplier += (level * getBattlerData().physicalAttackMultiplierPerLevel);
-         getBattlerData().fireAttackMultiplier += (level * getBattlerData().fireAttackMultiplierPerLevel);
-         getBattlerData().waterAttackMultiplier += (level * getBattlerData().waterAttackMultiplierPerLevel);
-         getBattlerData().airAttackMultiplier += (level * getBattlerData().airAttackMultiplierPerLevel);
-         getBattlerData().earthAttackMultiplier += (level * getBattlerData().earthAttackMultiplierPerLevel);
+         BattlerData battleData = getBattlerData();
 
-         getBattlerData().physicalDefenseMultiplier = Mathf.Abs(getBattlerData().physicalDefenseMultiplier) + (level * getBattlerData().physicalDefenseMultiplierPerLevel);
-         getBattlerData().fireDefenseMultiplier = Mathf.Abs(getBattlerData().fireDefenseMultiplier) + (level * getBattlerData().fireDefenseMultiplierPerLevel);
-         getBattlerData().waterDefenseMultiplier = Mathf.Abs(getBattlerData().waterDefenseMultiplier) + (level * getBattlerData().waterDefenseMultiplierPerLevel);
-         getBattlerData().airDefenseMultiplier = Mathf.Abs(getBattlerData().airDefenseMultiplier) + (level * getBattlerData().airDefenseMultiplierPerLevel);
-         getBattlerData().earthDefenseMultiplier = Mathf.Abs(getBattlerData().earthDefenseMultiplier) + (level * getBattlerData().earthDefenseMultiplierPerLevel);
+         battleData.physicalAttackMultiplier += (level * battleData.physicalAttackMultiplierPerLevel);
+         battleData.fireAttackMultiplier += (level * battleData.fireAttackMultiplierPerLevel);
+         battleData.waterAttackMultiplier += (level * battleData.waterAttackMultiplierPerLevel);
+         battleData.airAttackMultiplier += (level * battleData.airAttackMultiplierPerLevel);
+         battleData.earthAttackMultiplier += (level * battleData.earthAttackMultiplierPerLevel);
+
+         battleData.physicalDefenseMultiplier = Mathf.Abs(getBattlerData().physicalDefenseMultiplier) + (level * battleData.physicalDefenseMultiplierPerLevel);
+         battleData.fireDefenseMultiplier = Mathf.Abs(getBattlerData().fireDefenseMultiplier) + (level * battleData.fireDefenseMultiplierPerLevel);
+         battleData.waterDefenseMultiplier = Mathf.Abs(getBattlerData().waterDefenseMultiplier) + (level * battleData.waterDefenseMultiplierPerLevel);
+         battleData.airDefenseMultiplier = Mathf.Abs(getBattlerData().airDefenseMultiplier) + (level * battleData.airDefenseMultiplierPerLevel);
+         battleData.earthDefenseMultiplier = Mathf.Abs(getBattlerData().earthDefenseMultiplier) + (level * battleData.earthDefenseMultiplierPerLevel);
       }
    }
 
@@ -359,48 +362,48 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    }
 
    private void addDefaultStats (UserDefaultStats stat) {
-      _initializedBattlerData.baseHealth += (int) stat.bonusMaxHP;
-      _initializedBattlerData.healthPerlevel += (int) stat.hpPerLevel;
+      _alteredBattlerData.baseHealth += (int) stat.bonusMaxHP;
+      _alteredBattlerData.healthPerlevel += (int) stat.hpPerLevel;
 
       this.health += (int) stat.bonusMaxHP + ((int)stat.hpPerLevel * LevelUtil.levelForXp(XP));
 
-      _initializedBattlerData.baseDamage += (int) stat.bonusATK;
-      _initializedBattlerData.damagePerLevel += (int) stat.bonusATKPerLevel;
+      _alteredBattlerData.baseDamage += (int) stat.bonusATK;
+      _alteredBattlerData.damagePerLevel += (int) stat.bonusATKPerLevel;
 
-      _initializedBattlerData.baseDefense += (int) stat.bonusArmor;
-      _initializedBattlerData.defensePerLevel += (int) stat.armorPerLevel;
+      _alteredBattlerData.baseDefense += (int) stat.bonusArmor;
+      _alteredBattlerData.defensePerLevel += (int) stat.armorPerLevel;
    }
 
    private void addCombatStats (UserCombatStats stat) {
       int level = LevelUtil.levelForXp(player.XP);
 
-      _initializedBattlerData.airAttackMultiplier += stat.bonusDamageAir;
-      _initializedBattlerData.fireAttackMultiplier += stat.bonusDamageFire;
-      _initializedBattlerData.earthAttackMultiplier += stat.bonusDamageEarth;
-      _initializedBattlerData.waterAttackMultiplier += stat.bonusDamageWater;
-      _initializedBattlerData.physicalAttackMultiplier += stat.bonusDamagePhys;
-      _initializedBattlerData.allAttackMultiplier += stat.bonusDamageAll;
+      _alteredBattlerData.airAttackMultiplier += stat.bonusDamageAir;
+      _alteredBattlerData.fireAttackMultiplier += stat.bonusDamageFire;
+      _alteredBattlerData.earthAttackMultiplier += stat.bonusDamageEarth;
+      _alteredBattlerData.waterAttackMultiplier += stat.bonusDamageWater;
+      _alteredBattlerData.physicalAttackMultiplier += stat.bonusDamagePhys;
+      _alteredBattlerData.allAttackMultiplier += stat.bonusDamageAll;
 
-      _initializedBattlerData.airAttackMultiplier += stat.bonusDamageAirPerLevel * level;
-      _initializedBattlerData.fireAttackMultiplier += stat.bonusDamageFirePerLevel * level;
-      _initializedBattlerData.earthAttackMultiplier += stat.bonusDamageEarthPerLevel * level;
-      _initializedBattlerData.waterAttackMultiplier += stat.bonusDamageWaterPerLevel * level;
-      _initializedBattlerData.physicalAttackMultiplier += stat.bonusDamagePhysicalPerLevel * level;
-      _initializedBattlerData.allAttackMultiplier += stat.bonusDamageAllPerLevel * level;
+      _alteredBattlerData.airAttackMultiplier += stat.bonusDamageAirPerLevel * level;
+      _alteredBattlerData.fireAttackMultiplier += stat.bonusDamageFirePerLevel * level;
+      _alteredBattlerData.earthAttackMultiplier += stat.bonusDamageEarthPerLevel * level;
+      _alteredBattlerData.waterAttackMultiplier += stat.bonusDamageWaterPerLevel * level;
+      _alteredBattlerData.physicalAttackMultiplier += stat.bonusDamagePhysicalPerLevel * level;
+      _alteredBattlerData.allAttackMultiplier += stat.bonusDamageAllPerLevel * level;
 
-      _initializedBattlerData.airDefenseMultiplier += stat.bonusResistanceAir;
-      _initializedBattlerData.fireDefenseMultiplier += stat.bonusResistanceFire;
-      _initializedBattlerData.earthDefenseMultiplier += stat.bonusResistanceEarth;
-      _initializedBattlerData.waterDefenseMultiplier += stat.bonusResistanceWater;
-      _initializedBattlerData.physicalDefenseMultiplier += stat.bonusResistancePhys;
-      _initializedBattlerData.allDefenseMultiplier += stat.bonusResistanceAll;
+      _alteredBattlerData.airDefenseMultiplier += stat.bonusResistanceAir;
+      _alteredBattlerData.fireDefenseMultiplier += stat.bonusResistanceFire;
+      _alteredBattlerData.earthDefenseMultiplier += stat.bonusResistanceEarth;
+      _alteredBattlerData.waterDefenseMultiplier += stat.bonusResistanceWater;
+      _alteredBattlerData.physicalDefenseMultiplier += stat.bonusResistancePhys;
+      _alteredBattlerData.allDefenseMultiplier += stat.bonusResistanceAll;
 
-      _initializedBattlerData.airDefenseMultiplier += stat.bonusResistanceAirPerLevel * level;
-      _initializedBattlerData.fireDefenseMultiplier += stat.bonusResistanceFirePerLevel * level;
-      _initializedBattlerData.earthDefenseMultiplier += stat.bonusResistanceEarthPerLevel * level;
-      _initializedBattlerData.waterDefenseMultiplier += stat.bonusResistanceWaterPerLevel * level;
-      _initializedBattlerData.physicalDefenseMultiplier += stat.bonusResistancePhysPerLevel * level;
-      _initializedBattlerData.allDefenseMultiplier += stat.bonusResistanceAllPerLevel * level;
+      _alteredBattlerData.airDefenseMultiplier += stat.bonusResistanceAirPerLevel * level;
+      _alteredBattlerData.fireDefenseMultiplier += stat.bonusResistanceFirePerLevel * level;
+      _alteredBattlerData.earthDefenseMultiplier += stat.bonusResistanceEarthPerLevel * level;
+      _alteredBattlerData.waterDefenseMultiplier += stat.bonusResistanceWaterPerLevel * level;
+      _alteredBattlerData.physicalDefenseMultiplier += stat.bonusResistancePhysPerLevel * level;
+      _alteredBattlerData.allDefenseMultiplier += stat.bonusResistanceAllPerLevel * level;
    }
 
    // Basic method that will handle the functionality for whenever we deselect this battler
@@ -1033,16 +1036,17 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       int level = LevelUtil.levelForXp(XP);
 
       // Calculate our health based on our base and gain per level
-      int health = this.health;
+      int health = (int) battData.baseHealth + ((int) battData.healthPerlevel * LevelUtil.levelForXp(XP));
 
       return (int) health;
    }
 
    public int getStartingHealth () {
+      BattlerData battData = MonsterManager.self.requestBattler(enemyType);
       int level = LevelUtil.levelForXp(XP);
 
       // Calculate our health based on our base and gain per level
-      float health = this.health;
+      float health = (int) battData.baseHealth + ((int) battData.healthPerlevel * LevelUtil.levelForXp(XP));
 
       return (int) health;
    }
@@ -1207,32 +1211,43 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       return (userId < 0);
    }
 
+   private void setElementalWeakness () {
+      HashSet<Element> elementalWeakness = new HashSet<Element>();
+      HashSet<Element> elementalResistance = new HashSet<Element>();
+
+      BattlerData battleData = getBattlerData();
+
+      if (battleData.fireDefenseMultiplier < 0) {
+         elementalWeakness.Add(Element.Fire);
+      } else {
+         elementalResistance.Add(Element.Fire);
+      }
+
+      if (battleData.waterDefenseMultiplier < 0) {
+         elementalWeakness.Add(Element.Water);
+      } else {
+         elementalResistance.Add(Element.Water);
+      }
+
+      if (battleData.airDefenseMultiplier < 0) {
+         elementalWeakness.Add(Element.Air);
+      } else {
+         elementalResistance.Add(Element.Air);
+      }
+
+      if (battleData.earthDefenseMultiplier < 0) {
+         elementalWeakness.Add(Element.Earth);
+      } else {
+         elementalResistance.Add(Element.Earth);
+      }
+
+      battleData.elementalWeakness = elementalWeakness.ToArray();
+      battleData.elementalResistance = elementalResistance.ToArray();
+   }
+
    public bool isWeakAgainst (Element outgoingElement) {
       // Determines if the battler is weak against the element
-     
-      switch (outgoingElement) {
-         case Element.Air:
-            if (_cachedBattlerData.airDefenseMultiplier < 0) {
-               return true;
-            }
-            break;
-         case Element.Fire:
-            if (_cachedBattlerData.fireDefenseMultiplier < 0) {
-               return true;
-            }
-            break;
-         case Element.Water:
-            if (_cachedBattlerData.waterDefenseMultiplier < 0) {
-               return true;
-            }
-            break;
-         case Element.Earth:
-            if (_cachedBattlerData.earthDefenseMultiplier < 0) {
-               return true;
-            }
-            break;
-      }
-      return false;
+      return getBattlerData().elementalWeakness.Contains(outgoingElement);
    }
 
    public static float getElementalMultiplier (Element outgoingElement, Element resistingElement) {
@@ -1326,7 +1341,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    }
 
    // Gets the battler initialized data (health, ap, etc)
-   public BattlerData getBattlerData () { return _initializedBattlerData; }
+   public BattlerData getBattlerData () { return _alteredBattlerData; }
 
    // Used for AI controlled battlers
    public BattlePlan getBattlePlan (Battle battle) {
@@ -1460,7 +1475,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    private List<BuffAbilityData> _battlerBuffAbilities = new List<BuffAbilityData>();
 
    // Battler data reference that will be initialized (ready to be used, use getBattlerData() )
-   [SerializeField] private BattlerData _initializedBattlerData, _cachedBattlerData;
+   [SerializeField] private BattlerData _alteredBattlerData;
 
    // Our Animators
    protected List<SimpleAnimation> _anims;

@@ -7,14 +7,14 @@ using System.IO;
 using System;
 using System.Linq;
 
-public class NPCManager : MonoBehaviour {
+public class NPCManager : XmlManager {
    #region Public Variables
 
    // Self
    public static NPCManager self;
 
-   // The files containing the NPC data
-   public TextAsset[] npcDataAssets;
+   // Holds the xml raw data
+   public List<TextAsset> textAssets;
 
    // Checks if npc data has been set
    public bool npcDataInitialized;
@@ -27,7 +27,7 @@ public class NPCManager : MonoBehaviour {
 
    public void initializeQuestCache () {
       // Iterate over the files
-      foreach (TextAsset textAsset in npcDataAssets) {
+      foreach (TextAsset textAsset in textAssets) {
          // Read and deserialize the file
          NPCData npcData = Util.xmlLoad<NPCData>(textAsset);
 
@@ -274,6 +274,37 @@ public class NPCManager : MonoBehaviour {
       } else {
          return true;
       }
+   }
+
+   public override void loadAllXMLData () {
+      base.loadAllXMLData();
+
+      textAssets = new List<TextAsset>();
+
+      // Build the path to the folder containing the data XML files
+      string directoryPath = Path.Combine("Assets", "Data", "NPC");
+
+      if (!Directory.Exists(directoryPath)) {
+         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
+      } else {
+         // Get the list of XML files in the folder
+         string[] fileNames = ToolsUtil.getFileNamesInFolder(directoryPath, "*.xml");
+
+         // Iterate over the files
+         foreach (string fileName in fileNames) {
+            // Build the path to a single file
+            string filePath = Path.Combine(directoryPath, fileName);
+
+            // Read and deserialize the file
+            TextAsset textAsset = (TextAsset) UnityEditor.AssetDatabase.LoadAssetAtPath(filePath, typeof(TextAsset));
+            textAssets.Add(textAsset);
+         }
+      }
+   }
+
+   public override void clearAllXMLData () {
+      base.clearAllXMLData();
+      textAssets = new List<TextAsset>();
    }
 
    #region Private Variables

@@ -174,19 +174,6 @@ public class AdminManager : NetworkBehaviour {
    }
 
    protected void requestAllAbilities (string parameters) {
-      int stepNumber = 0;
-
-      if (!Util.isEmpty(parameters)) {
-         string[] list = parameters.Split(' ');
-
-         try {
-            stepNumber = System.Convert.ToInt32(list[0]);
-         } catch (System.Exception e) {
-            D.warning("Unable to parse step number int from: " + parameters + ", exception: " + e);
-            return;
-         }
-      }
-
       List<BasicAbilityData> allAbilities = AbilityManager.self.allGameAbilities;
       Global.player.rpc.Cmd_UpdateAbilities(AbilitySQLData.TranslateBasicAbility(allAbilities).ToArray());
    }

@@ -81,6 +81,10 @@ public class BattlerData {
    // The amount of time before the ground effect appears depends on the type of Battler
    public float preMagicLength;
 
+   // Contains the elemental resistance and weakness
+   [XmlIgnore] public Element[] elementalWeakness;
+   [XmlIgnore] public Element[] elementalResistance;
+
    #endregion
 
    public BattlerData () { }

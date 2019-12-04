@@ -3,21 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System.IO;
 
-public class ClassManager : MonoBehaviour {
+public class ClassManager : XmlManager {
    #region Public Variables
 
    // Self
    public static ClassManager self;
 
-   // The files containing the class data
-   public TextAsset[] classDataAssets;
-
-   // Determines if the list is generated already
-   public bool hasInitialized;
-
-   // Holds the list of the xml translated data [FOR EDITOR DISPLAY DATA REVIEW]
-   public List<PlayerClassData> classDataList;
+   // Holds the xml raw data
+   public List<TextAsset> textAssets;
 
    #endregion
 
@@ -35,22 +30,50 @@ public class ClassManager : MonoBehaviour {
    }
 
    private void initializeDataCache () {
-      if (!hasInitialized) {
-         classDataList = new List<PlayerClassData>();
-         hasInitialized = true;
-         // Iterate over the files
-         foreach (TextAsset textAsset in classDataAssets) {
-            // Read and deserialize the file
-            PlayerClassData classData = Util.xmlLoad<PlayerClassData>(textAsset);
-            Class.Type uniqueID = classData.type;
+      _classData = new Dictionary<Class.Type, PlayerClassData>();
 
-            // Save the data in the memory cache
-            if (!_classData.ContainsKey(uniqueID)) {
-               _classData.Add(uniqueID, classData);
-               classDataList.Add(classData);
-            }
+      // Iterate over the files
+      foreach (TextAsset textAsset in textAssets) {
+         // Read and deserialize the file
+         PlayerClassData classData = Util.xmlLoad<PlayerClassData>(textAsset);
+         Class.Type uniqueID = classData.type;
+
+         // Save the data in the memory cache
+         if (!_classData.ContainsKey(uniqueID)) {
+            _classData.Add(uniqueID, classData);
          }
       }
+   }
+
+   public override void loadAllXMLData () {
+      base.loadAllXMLData();
+
+      textAssets = new List<TextAsset>();
+
+      // Build the path to the folder containing the data XML files
+      string directoryPath = Path.Combine("Assets", "Data", "PlayerClass");
+
+      if (!Directory.Exists(directoryPath)) {
+         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
+      } else {
+         // Get the list of XML files in the folder
+         string[] fileNames = ToolsUtil.getFileNamesInFolder(directoryPath, "*.xml");
+
+         // Iterate over the files
+         foreach (string fileName in fileNames) {
+            // Build the path to a single file
+            string filePath = Path.Combine(directoryPath, fileName);
+
+            // Read and deserialize the file
+            TextAsset textAsset = (TextAsset) UnityEditor.AssetDatabase.LoadAssetAtPath(filePath, typeof(TextAsset));
+            textAssets.Add(textAsset);
+         }
+      }
+   }
+
+   public override void clearAllXMLData () {
+      base.clearAllXMLData();
+      textAssets = new List<TextAsset>();
    }
 
    #region Private Variables

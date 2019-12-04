@@ -3,29 +3,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
-using System.Linq;
+using System.IO;
 
-public class AchievementManager : MonoBehaviour
+public class AchievementManager : XmlManager
 {
    #region Public Variables
 
    // Self
    public static AchievementManager self;
-
-   // The files containing the achievement data
-   public TextAsset[] rawDataAssets;
-
-   // Determines if the list is generated already
-   public bool hasInitialized;
    
    // Determines how many tiers will be setup for all the achievements (Example: Bronze Minerx100, Silver Minerx500, Gold Minerx500, Platinum Minerx1000)
    public const int MAX_TIER_COUNT = 4;
+
+   // Holds the xml raw data
+   public List<TextAsset> textAssets;
 
    #endregion
 
    public void Awake () {
       self = this;
-      initializeDataCache();
+      translateXMLData();
    }
 
    public AchievementData getAchievementData (string uniqueID) {
@@ -52,29 +49,57 @@ public class AchievementManager : MonoBehaviour
       return new List<AchievementData>(newDataList);
    }
 
-   private void initializeDataCache () {
-      if (!hasInitialized) {
-         hasInitialized = true;
-         // Iterate over the files
-         foreach (TextAsset textAsset in rawDataAssets) {
-            // Read and deserialize the file
-            AchievementData rawData = Util.xmlLoad<AchievementData>(textAsset);
-            string actionKey = rawData.actionType.ToString() + rawData.tier.ToString();
+   private void translateXMLData () {
+      _achievementDataCollection = new Dictionary<string, AchievementData>();
 
-            // Save the achievement data in the memory cache
-            if (_achievementDataCollection.ContainsKey(actionKey)) {
-               Debug.LogWarning("Duplicated ID: " + actionKey +" : "+rawData.achievementName);
-            } else {
-               _achievementDataCollection.Add(actionKey, rawData);
-            }
+      // Iterate over the files
+      foreach (TextAsset textAsset in textAssets) {
+         // Read and deserialize the file
+         AchievementData rawData = Util.xmlLoad<AchievementData>(textAsset);
+         string actionKey = rawData.actionType.ToString() + rawData.tier.ToString();
+
+         // Save the achievement data in the memory cache
+         if (_achievementDataCollection.ContainsKey(actionKey)) {
+            Debug.LogWarning("Duplicated ID: " + actionKey + " : " + rawData.achievementName);
+         } else {
+            _achievementDataCollection.Add(actionKey, rawData);
          }
       }
+   }
+
+   public override void loadAllXMLData () {
+      base.loadAllXMLData();
+      textAssets = new List<TextAsset>();
+
+      // Build the path to the folder containing the data XML files
+      string directoryPath = Path.Combine("Assets", "Data", "Achievement");
+
+      if (!Directory.Exists(directoryPath)) {
+         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
+      } else {
+         // Get the list of XML files in the folder
+         string[] fileNames = ToolsUtil.getFileNamesInFolder(directoryPath, "*.xml");
+
+         // Iterate over the files
+         foreach (string fileName in fileNames) {
+            // Build the path to a single file
+            string filePath = Path.Combine(directoryPath, fileName);
+            
+            // Read and deserialize the file
+            TextAsset textAsset = (TextAsset) UnityEditor.AssetDatabase.LoadAssetAtPath(filePath, typeof(TextAsset));
+            textAssets.Add(textAsset);
+         }
+      }
+   }
+
+   public override void clearAllXMLData () {
+      base.clearAllXMLData();
+      textAssets = new List<TextAsset>();
    }
 
    public static void registerUserAchievement (int userID, ActionType action, int customCount = 1, Item dependencyItem = null) {
       self.processAchievement(userID, action, customCount, dependencyItem);
    }
-
 
    public void processAchievement (int userID, ActionType actionType, int count, Item dependencyItem = null) {
       #if IS_SERVER_BUILD
@@ -172,7 +197,7 @@ public class AchievementManager : MonoBehaviour
    #region Private Variables
 
    // Holds the collection of the xml translated data
-   public Dictionary<string, AchievementData> _achievementDataCollection = new Dictionary<string, AchievementData>();
+   private Dictionary<string, AchievementData> _achievementDataCollection;
 
    #endregion
 }

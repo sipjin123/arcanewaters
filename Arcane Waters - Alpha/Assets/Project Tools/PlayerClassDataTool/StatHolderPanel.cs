@@ -66,7 +66,7 @@ public class StatHolderPanel : MonoBehaviour {
       statData.userCombatStats.bonusDamageAll = float.Parse(_bonusATKAll.text);
 
       // Damage Stats per level
-      statData.userCombatStats.bonusDamagePhysPerLevel = float.Parse(_bonusATKPhysPerLevel.text);
+      statData.userCombatStats.bonusDamagePhysicalPerLevel = float.Parse(_bonusATKPhysPerLevel.text);
       statData.userCombatStats.bonusDamageFirePerLevel = float.Parse(_bonusATKFirePerLevel.text);
       statData.userCombatStats.bonusDamageEarthPerLevel = float.Parse(_bonusATKEarthPerLevel.text);
       statData.userCombatStats.bonusDamageAirPerLevel = float.Parse(_bonusATKWindPerLevel.text);
@@ -157,7 +157,7 @@ public class StatHolderPanel : MonoBehaviour {
       _bonusDEFAllPerLevel.text = classData.userCombatStats.bonusResistanceAllPerLevel.ToString();
 
       // Attack Stats per level
-      _bonusATKPhysPerLevel.text = classData.userCombatStats.bonusDamagePhysPerLevel.ToString();
+      _bonusATKPhysPerLevel.text = classData.userCombatStats.bonusDamagePhysicalPerLevel.ToString();
       _bonusATKFirePerLevel.text = classData.userCombatStats.bonusDamageFirePerLevel.ToString();
       _bonusATKEarthPerLevel.text = classData.userCombatStats.bonusDamageEarthPerLevel.ToString();
       _bonusATKWindPerLevel.text = classData.userCombatStats.bonusDamageAirPerLevel.ToString();

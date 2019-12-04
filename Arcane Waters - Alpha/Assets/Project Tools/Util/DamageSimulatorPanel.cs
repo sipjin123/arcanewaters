@@ -654,7 +654,7 @@ public class DamageSimulatorPanel : MonoBehaviour {
       playerDefenseUI.earthDefenseMultiplierBase += stat.bonusResistanceEarth;
 
       // Setup per level stats
-      playerAttackUI.physicalDamageMultiplierPerLvl += stat.bonusDamagePhysPerLevel * level;
+      playerAttackUI.physicalDamageMultiplierPerLvl += stat.bonusDamagePhysicalPerLevel * level;
       playerAttackUI.fireDamageMultiplierPerLvl += stat.bonusDamageFirePerLevel * level;
       playerAttackUI.waterDamageMultiplierPerLvl += stat.bonusDamageWaterPerLevel * level;
       playerAttackUI.earthDamageMultiplierPerLvl += stat.bonusDamageEarthPerLevel * level;
@@ -682,7 +682,7 @@ public class DamageSimulatorPanel : MonoBehaviour {
       playerDefenseUI.airDefenseMultiplier += stat.bonusResistanceAir;
 
       // Setup Output computation adding the per level stats
-      playerAttackUI.physicalDamageMultiplier += stat.bonusDamagePhysPerLevel * level;
+      playerAttackUI.physicalDamageMultiplier += stat.bonusDamagePhysicalPerLevel * level;
       playerAttackUI.fireDamageMultiplier += stat.bonusDamageFirePerLevel * level;
       playerAttackUI.waterDamageMultiplier += stat.bonusDamageWaterPerLevel * level;
       playerAttackUI.earthDamageMultiplier += stat.bonusDamageEarthPerLevel * level;
@@ -710,7 +710,7 @@ public class DamageSimulatorPanel : MonoBehaviour {
       string additiveText = level + " * ";
 
       // Registers the total multipliers for per level stats
-      playerAttackUI.physicalDmgBreakdown.damagePerLevelText[classStatIndex].text = additiveText + (stat.bonusDamagePhysPerLevel * level).ToString(decimalVal);
+      playerAttackUI.physicalDmgBreakdown.damagePerLevelText[classStatIndex].text = additiveText + (stat.bonusDamagePhysicalPerLevel * level).ToString(decimalVal);
       playerAttackUI.fireDmgBreakdown.damagePerLevelText[classStatIndex].text = additiveText + (stat.bonusDamageFirePerLevel * level).ToString(decimalVal);
       playerAttackUI.waterDmgBreakdown.damagePerLevelText[classStatIndex].text = additiveText + (stat.bonusDamageWaterPerLevel * level).ToString(decimalVal);
       playerAttackUI.airDmgBreakdown.damagePerLevelText[classStatIndex].text = additiveText + (stat.bonusDamageAirPerLevel * level).ToString(decimalVal);

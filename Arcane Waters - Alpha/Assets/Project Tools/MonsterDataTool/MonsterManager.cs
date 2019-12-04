@@ -3,15 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System.IO;
 
-public class MonsterManager : MonoBehaviour {
+public class MonsterManager : XmlManager {
    #region Public Variables
 
    // Self
    public static MonsterManager self;
 
-   // The files containing the monster data
-   public TextAsset[] monsterDataAssets;
+   // Holds the xml raw data
+   public List<TextAsset> textAssets;
 
    // Determines if the list is generated already
    public bool hasInitialized;
@@ -87,7 +88,7 @@ public class MonsterManager : MonoBehaviour {
    }
 
    public BattlerData getMonster (Enemy.Type enemyType, int itemType) {
-      return _monsterData[enemyType];
+      return _monsterDataDict[enemyType];
    }
 
    public void receiveListFromServer (BattlerData[] battlerDataList) {
@@ -102,17 +103,19 @@ public class MonsterManager : MonoBehaviour {
 
    public List<BattlerData> getAllMonsterData () {
       List<BattlerData> monsterList = new List<BattlerData>();
-      foreach (KeyValuePair<Enemy.Type, BattlerData> item in _monsterData) {
+      foreach (KeyValuePair<Enemy.Type, BattlerData> item in _monsterDataDict) {
          monsterList.Add(item.Value);
       }
       return monsterList;
    }
 
    private void initializeLandMonsterDataCache () {
+      _monsterDataDict = new Dictionary<Enemy.Type, BattlerData>();
+
       if (!hasInitialized) {
          hasInitialized = true;
          // Iterate over the files
-         foreach (TextAsset textAsset in monsterDataAssets) {
+         foreach (TextAsset textAsset in textAssets) {
             // Read and deserialize the file
             BattlerData monsterData = Util.xmlLoad<BattlerData>(textAsset);
             Enemy.Type typeID = (Enemy.Type) monsterData.enemyType;
@@ -130,8 +133,8 @@ public class MonsterManager : MonoBehaviour {
             }
 
             // Save the monster data in the memory cache
-            if (!_monsterData.ContainsKey(typeID)) {
-               _monsterData.Add(typeID, monsterData);
+            if (!_monsterDataDict.ContainsKey(typeID)) {
+               _monsterDataDict.Add(typeID, monsterData);
             }
 
             if (battleManager != null) {
@@ -143,10 +146,41 @@ public class MonsterManager : MonoBehaviour {
       }
    }
 
+   public override void loadAllXMLData () {
+      base.loadAllXMLData();
+
+      textAssets = new List<TextAsset>();
+
+      // Build the path to the folder containing the data XML files
+      string directoryPath = Path.Combine("Assets", "Data", "MonsterStats");
+
+      if (!Directory.Exists(directoryPath)) {
+         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
+      } else {
+         // Get the list of XML files in the folder
+         string[] fileNames = ToolsUtil.getFileNamesInFolder(directoryPath, "*.xml");
+
+         // Iterate over the files
+         foreach (string fileName in fileNames) {
+            // Build the path to a single file
+            string filePath = Path.Combine(directoryPath, fileName);
+
+            // Read and deserialize the file
+            TextAsset textAsset = (TextAsset) UnityEditor.AssetDatabase.LoadAssetAtPath(filePath, typeof(TextAsset));
+            textAssets.Add(textAsset);
+         }
+      }
+   }
+
+   public override void clearAllXMLData () {
+      base.clearAllXMLData();
+      textAssets = new List<TextAsset>();
+   }
+
    #region Private Variables
 
    // The cached monster data 
-   private Dictionary<Enemy.Type, BattlerData> _monsterData = new Dictionary<Enemy.Type, BattlerData>();
+   private Dictionary<Enemy.Type, BattlerData> _monsterDataDict = new Dictionary<Enemy.Type, BattlerData>();
 
    // Holds the list of the xml translated data
    [SerializeField] protected List<BattlerData> _monsterDataList;
