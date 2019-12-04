@@ -11,6 +11,9 @@ public class PlayerSpecialtyToolManager : MonoBehaviour {
    // Holds the main scene for the player specialty
    public PlayerSpecialtyScene specialtySceneScene;
 
+   // Holds the path of the folder
+   public const string FOLDER_PATH = "PlayerSpecialty";
+
    #endregion
 
    private void Start () {
@@ -18,7 +21,7 @@ public class PlayerSpecialtyToolManager : MonoBehaviour {
    }
 
    public void saveXMLData (PlayerSpecialtyData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "PlayerSpecialty");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
       }
@@ -27,7 +30,7 @@ public class PlayerSpecialtyToolManager : MonoBehaviour {
       string fileName = data.specialtyName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "PlayerSpecialty", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
 
       // Save the file
       ToolsUtil.xmlSave(data, path);
@@ -38,14 +41,14 @@ public class PlayerSpecialtyToolManager : MonoBehaviour {
       string fileName = data.specialtyName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "PlayerSpecialty", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
 
       // Save the file
       ToolsUtil.deleteFile(path);
    }
 
    public void duplicateXMLData (PlayerSpecialtyData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "PlayerSpecialty");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
       }
@@ -55,7 +58,7 @@ public class PlayerSpecialtyToolManager : MonoBehaviour {
       string fileName = data.specialtyName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "PlayerSpecialty", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
 
       // Save the file
       ToolsUtil.xmlSave(data, path);
@@ -64,7 +67,7 @@ public class PlayerSpecialtyToolManager : MonoBehaviour {
    public void loadXMLData () {
       _playerSpecialtyData = new Dictionary<string, PlayerSpecialtyData>();
       // Build the path to the folder containing the data XML files
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "PlayerSpecialty");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
 
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);

@@ -11,6 +11,9 @@ public class PlayerJobToolManager : MonoBehaviour {
    // Holds the main scene for the player job
    public PlayerJobScene jobSceneScene;
 
+   // Holds the path of the folder
+   public const string FOLDER_PATH = "PlayerJob";
+
    #endregion
 
    private void Start () {
@@ -18,7 +21,7 @@ public class PlayerJobToolManager : MonoBehaviour {
    }
 
    public void saveXMLData (PlayerJobData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "PlayerJob");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
       }
@@ -27,7 +30,7 @@ public class PlayerJobToolManager : MonoBehaviour {
       string fileName = data.jobName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "PlayerJob", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
 
       // Save the file
       ToolsUtil.xmlSave(data, path);
@@ -38,14 +41,14 @@ public class PlayerJobToolManager : MonoBehaviour {
       string fileName = data.jobName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "PlayerJob", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
 
       // Save the file
       ToolsUtil.deleteFile(path);
    }
 
    public void duplicateXMLData (PlayerJobData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "PlayerJob");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
       }
@@ -55,7 +58,7 @@ public class PlayerJobToolManager : MonoBehaviour {
       string fileName = data.jobName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "PlayerJob", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
 
       // Save the file
       ToolsUtil.xmlSave(data, path);
@@ -64,7 +67,7 @@ public class PlayerJobToolManager : MonoBehaviour {
    public void loadXMLData () {
       _playerJobData = new Dictionary<string, PlayerJobData>();
       // Build the path to the folder containing the data XML files
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "PlayerJob");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
 
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);

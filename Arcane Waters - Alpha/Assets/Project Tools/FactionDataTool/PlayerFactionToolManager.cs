@@ -12,6 +12,9 @@ public class PlayerFactionToolManager : MonoBehaviour
    // Holds the main scene for the player faction
    public PlayerFactionScene factionScene;
 
+   // Holds the path of the folder
+   public const string FOLDER_PATH = "PlayerFaction";
+
    #endregion
 
    private void Start () {
@@ -19,7 +22,7 @@ public class PlayerFactionToolManager : MonoBehaviour
    }
 
    public void saveXMLData (PlayerFactionData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "PlayerFaction");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
       }
@@ -28,7 +31,7 @@ public class PlayerFactionToolManager : MonoBehaviour
       string fileName = data.factionName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "PlayerFaction", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
 
       // Save the file
       ToolsUtil.xmlSave(data, path);
@@ -39,14 +42,14 @@ public class PlayerFactionToolManager : MonoBehaviour
       string fileName = data.factionName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "PlayerFaction", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
 
       // Save the file
       ToolsUtil.deleteFile(path);
    }
 
    public void duplicateXMLData (PlayerFactionData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "PlayerFaction");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
       }
@@ -56,7 +59,7 @@ public class PlayerFactionToolManager : MonoBehaviour
       string fileName = data.factionName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "PlayerFaction", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
 
       // Save the file
       ToolsUtil.xmlSave(data, path);
@@ -65,7 +68,7 @@ public class PlayerFactionToolManager : MonoBehaviour
    public void loadXMLData () {
       _playerFactionData = new Dictionary<string, PlayerFactionData>();
       // Build the path to the folder containing the data XML files
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "PlayerFaction");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
 
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);

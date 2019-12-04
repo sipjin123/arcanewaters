@@ -12,6 +12,9 @@ public class PlayerClassTool : MonoBehaviour
    // Holds the main scene for the player class
    public PlayerClassScene classScene;
 
+   // Holds the path of the folder
+   public const string FOLDER_PATH = "PlayerClass";
+
    #endregion
 
    private void Start () {
@@ -19,7 +22,7 @@ public class PlayerClassTool : MonoBehaviour
    }
 
    public void saveXMLData (PlayerClassData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "PlayerClass");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
       }
@@ -28,7 +31,7 @@ public class PlayerClassTool : MonoBehaviour
       string fileName = data.className;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "PlayerClass", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
 
       // Save the file
       ToolsUtil.xmlSave(data, path);
@@ -39,14 +42,14 @@ public class PlayerClassTool : MonoBehaviour
       string fileName = data.className;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "PlayerClass", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
 
       // Save the file
       ToolsUtil.deleteFile(path);
    }
 
    public void duplicateXMLData (PlayerClassData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "PlayerClass");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
       }
@@ -56,7 +59,7 @@ public class PlayerClassTool : MonoBehaviour
       string fileName = data.className;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "PlayerClass", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
 
       // Save the file
       ToolsUtil.xmlSave(data, path);
@@ -65,7 +68,7 @@ public class PlayerClassTool : MonoBehaviour
    public void loadXMLData () {
       _playerClassData = new Dictionary<string, PlayerClassData>();
       // Build the path to the folder containing the data XML files
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "PlayerClass");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
 
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);

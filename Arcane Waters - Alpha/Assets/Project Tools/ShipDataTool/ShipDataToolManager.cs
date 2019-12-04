@@ -11,6 +11,9 @@ public class ShipDataToolManager : MonoBehaviour {
    // Holds the main scene for the ship data
    public ShipDataScene shipDataScene;
 
+   // Holds the path of the folder
+   public const string FOLDER_PATH = "ShipStats";
+
    #endregion
 
    private void Start () {
@@ -18,7 +21,7 @@ public class ShipDataToolManager : MonoBehaviour {
    }
 
    public void saveXMLData (ShipData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "ShipStats");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
       }
@@ -27,7 +30,7 @@ public class ShipDataToolManager : MonoBehaviour {
       string fileName = data.shipName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "ShipStats", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
 
       // Save the file
       ToolsUtil.xmlSave(data, path);
@@ -38,14 +41,14 @@ public class ShipDataToolManager : MonoBehaviour {
       string fileName = data.shipName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "ShipStats", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
 
       // Save the file
       ToolsUtil.deleteFile(path);
    }
 
    public void duplicateXMLData (ShipData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "ShipStats");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
       }
@@ -55,7 +58,7 @@ public class ShipDataToolManager : MonoBehaviour {
       string fileName = data.shipName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "ShipStats", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
 
       // Save the file
       ToolsUtil.xmlSave(data, path);
@@ -64,7 +67,7 @@ public class ShipDataToolManager : MonoBehaviour {
    public void loadXMLData () {
       _shipDataList = new Dictionary<string, ShipData>();
       // Build the path to the folder containing the Ship data XML files
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "ShipStats");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
 
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);

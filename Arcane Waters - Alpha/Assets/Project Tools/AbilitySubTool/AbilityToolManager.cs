@@ -15,6 +15,9 @@ public class AbilityToolManager : MonoBehaviour
    // Reference to the tool for the monster ability manager
    public MonsterAbilityManager monsterAbilityManager;
 
+   // Holds the path of the folder
+   public const string FOLDER_PATH = "Ability";
+
    public enum DirectoryType
    {
       BasicAbility,
@@ -47,7 +50,7 @@ public class AbilityToolManager : MonoBehaviour
 
    public void duplicateFile (BasicAbilityData data, DirectoryType directoryType) {
       string directoryPath = "";
-      directoryPath = Path.Combine(Application.dataPath, "Data/Ability", getDirectory(directoryType));
+      directoryPath = Path.Combine(Application.dataPath, "Data/" + FOLDER_PATH, getDirectory(directoryType));
 
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
@@ -58,7 +61,7 @@ public class AbilityToolManager : MonoBehaviour
       string fileName = data.itemName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data/Ability", getDirectory(directoryType), fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data/" + FOLDER_PATH, getDirectory(directoryType), fileName + ".xml");
 
       // Save the file
       ToolsUtil.xmlSave(data, path);
@@ -67,7 +70,7 @@ public class AbilityToolManager : MonoBehaviour
    private void loadBasicAbility(DirectoryType directoryType) {
       // Build the path to the folder containing the ability data XML files
       string directoryPath = "";
-      directoryPath = Path.Combine(Application.dataPath, "Data/Ability", getDirectory(directoryType));
+      directoryPath = Path.Combine(Application.dataPath, "Data/" + FOLDER_PATH, getDirectory(directoryType));
 
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
@@ -107,7 +110,7 @@ public class AbilityToolManager : MonoBehaviour
       string fileName = data.itemName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data/Ability", getDirectory(directoryType), fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data/" + FOLDER_PATH, getDirectory(directoryType), fileName + ".xml");
 
       // Delete the file
       ToolsUtil.deleteFile(path);
@@ -119,7 +122,7 @@ public class AbilityToolManager : MonoBehaviour
 
    public void saveAbility (BasicAbilityData data, DirectoryType directoryType) {
       string directoryPath = "";
-      directoryPath = Path.Combine(Application.dataPath, "Data/Ability", getDirectory(directoryType));
+      directoryPath = Path.Combine(Application.dataPath, "Data/" + FOLDER_PATH, getDirectory(directoryType));
 
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
@@ -129,7 +132,7 @@ public class AbilityToolManager : MonoBehaviour
       string fileName = data.itemName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data/Ability", getDirectory(directoryType), fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data/" + FOLDER_PATH, getDirectory(directoryType), fileName + ".xml");
 
       // Save the file
       ToolsUtil.xmlSave(data, path);

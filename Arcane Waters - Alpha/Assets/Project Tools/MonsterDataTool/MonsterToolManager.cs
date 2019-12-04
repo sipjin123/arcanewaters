@@ -11,6 +11,9 @@ public class MonsterToolManager : MonoBehaviour {
    // Reference to the tool scene
    public MonsterDataScene monsterToolScreen;
 
+   // Holds the path of the folder
+   public const string FOLDER_PATH = "MonsterStats";
+
    #endregion
 
    private void Awake () {
@@ -20,7 +23,7 @@ public class MonsterToolManager : MonoBehaviour {
    public void loadAllDataFiles () {
       monsterDataList = new Dictionary<string, BattlerData>();
       // Build the path to the folder containing the Monster data XML files
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "MonsterStats");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
 
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
@@ -48,7 +51,7 @@ public class MonsterToolManager : MonoBehaviour {
       string fileName = data.enemyName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "MonsterStats", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
 
       // Save the file
       ToolsUtil.deleteFile(path);
@@ -59,7 +62,7 @@ public class MonsterToolManager : MonoBehaviour {
    }
    
    public void saveDataToFile (BattlerData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "MonsterStats");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
       }
@@ -68,14 +71,14 @@ public class MonsterToolManager : MonoBehaviour {
       string fileName = data.enemyName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "MonsterStats", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
 
       // Save the file
       ToolsUtil.xmlSave(data, path);
    }
 
    public void duplicateData (BattlerData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "MonsterStats");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
       }
@@ -85,7 +88,7 @@ public class MonsterToolManager : MonoBehaviour {
       string fileName = data.enemyName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "MonsterStats", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
 
       // Save the file
       ToolsUtil.xmlSave(data, path);

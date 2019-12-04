@@ -11,6 +11,11 @@ public class EquipmentToolManager : MonoBehaviour {
    // Holds the main scene for the equipment data
    public EquipmentToolScene equipmentDataScene;
 
+   // Holds the path of the folder
+   public const string FOLDER_PATH_WEAPON = "EquipmentStats/Weapons";
+   public const string FOLDER_PATH_ARMOR = "EquipmentStats/Armors";
+   public const string FOLDER_PATH_HELM = "EquipmentStats/Helms";
+
    public enum EquipmentType
    {
       None = 0,
@@ -28,7 +33,7 @@ public class EquipmentToolManager : MonoBehaviour {
    #region Save 
 
    public void saveWeapon (WeaponStatData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "EquipmentStats/Weapons");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_WEAPON);
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
       } 
@@ -37,14 +42,14 @@ public class EquipmentToolManager : MonoBehaviour {
       string fileName = data.equipmentName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "EquipmentStats/Weapons", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_WEAPON, fileName + ".xml");
 
       // Save the file
       ToolsUtil.xmlSave(data, path);
    }
 
    public void saveArmor (ArmorStatData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "EquipmentStats/Armors");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_ARMOR);
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
       }
@@ -53,14 +58,14 @@ public class EquipmentToolManager : MonoBehaviour {
       string fileName = data.equipmentName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "EquipmentStats/Armors", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_ARMOR, fileName + ".xml");
 
       // Save the file
       ToolsUtil.xmlSave(data, path);
    }
 
    public void saveHelm (HelmStatData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "EquipmentStats/Helms");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_HELM);
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
       }
@@ -69,7 +74,7 @@ public class EquipmentToolManager : MonoBehaviour {
       string fileName = data.equipmentName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "EquipmentStats/Helms", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_HELM, fileName + ".xml");
 
       // Save the file
       ToolsUtil.xmlSave(data, path);
@@ -84,7 +89,7 @@ public class EquipmentToolManager : MonoBehaviour {
       string fileName = data.equipmentName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "EquipmentStats/Weapons", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_WEAPON, fileName + ".xml");
 
       // Save the file
       ToolsUtil.deleteFile(path);
@@ -95,7 +100,7 @@ public class EquipmentToolManager : MonoBehaviour {
       string fileName = data.equipmentName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "EquipmentStats/Armors", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_ARMOR, fileName + ".xml");
 
       // Save the file
       ToolsUtil.deleteFile(path);
@@ -106,7 +111,7 @@ public class EquipmentToolManager : MonoBehaviour {
       string fileName = data.equipmentName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "EquipmentStats/Helms", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_HELM, fileName + ".xml");
 
       // Save the file
       ToolsUtil.deleteFile(path);
@@ -117,7 +122,7 @@ public class EquipmentToolManager : MonoBehaviour {
    #region Duplicate
 
    public void duplicateWeapon (WeaponStatData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "EquipmentStats/Weapons");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_WEAPON);
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
       }
@@ -127,14 +132,14 @@ public class EquipmentToolManager : MonoBehaviour {
       string fileName = data.equipmentName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "EquipmentStats/Weapons", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_WEAPON, fileName + ".xml");
 
       // Save the file
       ToolsUtil.xmlSave(data, path);
    }
 
    public void duplicateArmor (ArmorStatData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "EquipmentStats/Armors");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_ARMOR);
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
       }
@@ -144,14 +149,14 @@ public class EquipmentToolManager : MonoBehaviour {
       string fileName = data.equipmentName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "EquipmentStats/Armors", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_ARMOR, fileName + ".xml");
 
       // Save the file
       ToolsUtil.xmlSave(data, path);
    }
 
    public void duplicateHelm (HelmStatData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "EquipmentStats/Helms");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_HELM);
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
       }
@@ -161,7 +166,7 @@ public class EquipmentToolManager : MonoBehaviour {
       string fileName = data.equipmentName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "EquipmentStats/Helms", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_HELM, fileName + ".xml");
 
       // Save the file
       ToolsUtil.xmlSave(data, path);
@@ -180,7 +185,7 @@ public class EquipmentToolManager : MonoBehaviour {
    private void loadWeapons () {
       _weaponStatData = new Dictionary<string, WeaponStatData>();
       // Build the path to the folder containing the data XML files
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "EquipmentStats/Weapons");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_WEAPON);
 
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
@@ -208,7 +213,7 @@ public class EquipmentToolManager : MonoBehaviour {
    private void loadArmors () {
       _armorStatData = new Dictionary<string, ArmorStatData>();
       // Build the path to the folder containing the data XML files
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "EquipmentStats/Armors");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_ARMOR);
 
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
@@ -236,7 +241,7 @@ public class EquipmentToolManager : MonoBehaviour {
    private void loadHelms () {
       _helmStatData = new Dictionary<string, HelmStatData>();
       // Build the path to the folder containing the data XML files
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "EquipmentStats/Helms");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_HELM);
 
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);

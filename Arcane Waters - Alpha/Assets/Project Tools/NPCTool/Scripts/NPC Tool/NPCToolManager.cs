@@ -20,6 +20,9 @@ public class NPCToolManager : MonoBehaviour {
    // Opens the main tool
    public Button openMainTool;
 
+   // Holds the path of the folder
+   public const string FOLDER_PATH = "NPC";
+
    #endregion
 
    public void Awake () {
@@ -36,7 +39,7 @@ public class NPCToolManager : MonoBehaviour {
 
    public void loadAllDataFiles () {
       // Build the path to the folder containing the NPC data XML files
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "NPC");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
 
       _npcData = new Dictionary<int, NPCData>();
       if (!Directory.Exists(directoryPath)) {
@@ -129,7 +132,7 @@ public class NPCToolManager : MonoBehaviour {
       string fileName = data.npcId.ToString() + "_" + data.name;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "NPC", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
 
       // Save the file
       ToolsUtil.deleteFile(path);
@@ -143,7 +146,7 @@ public class NPCToolManager : MonoBehaviour {
 
    private void saveNPCDataToFile (NPCData data) {
       // Build the path to the folder containing the NPC data XML files
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "NPC");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
 
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
@@ -153,7 +156,7 @@ public class NPCToolManager : MonoBehaviour {
       string fileName = data.npcId.ToString() + "_" + data.name;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "NPC", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
 
       // Save the file
       ToolsUtil.xmlSave(data, path);
@@ -161,7 +164,7 @@ public class NPCToolManager : MonoBehaviour {
 
    public void duplicateFile (NPCData data) {
       // Build the path to the folder containing the NPC data XML files
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "NPC");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
 
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
@@ -180,7 +183,7 @@ public class NPCToolManager : MonoBehaviour {
       string fileName = data.npcId.ToString() + "_" + data.name;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "NPC", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
 
       // Save the file
       ToolsUtil.xmlSave(data, path);

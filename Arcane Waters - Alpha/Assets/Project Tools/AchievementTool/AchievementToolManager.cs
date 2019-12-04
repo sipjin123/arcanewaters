@@ -11,6 +11,9 @@ public class AchievementToolManager : MonoBehaviour {
    // Holds the main scene for the data templates
    public AchievementToolScene achievementToolScene;
 
+   // Holds the path of the folder
+   public const string FOLDER_PATH = "Achievement";
+
    #endregion
 
    private void Start () {
@@ -18,7 +21,7 @@ public class AchievementToolManager : MonoBehaviour {
    }
 
    public void saveXMLData (AchievementData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "Achievement");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
       }
@@ -27,7 +30,7 @@ public class AchievementToolManager : MonoBehaviour {
       string fileName = data.achievementName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "Achievement", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
 
       // Save the file
       ToolsUtil.xmlSave(data, path);
@@ -38,14 +41,14 @@ public class AchievementToolManager : MonoBehaviour {
       string fileName = data.achievementName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "Achievement", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
 
       // Save the file
       ToolsUtil.deleteFile(path);
    }
 
    public void duplicateXMLData (AchievementData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "Achievement");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
       }
@@ -55,7 +58,7 @@ public class AchievementToolManager : MonoBehaviour {
       string fileName = data.achievementName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "Achievement", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
 
       // Save the file
       ToolsUtil.xmlSave(data, path);
@@ -65,7 +68,7 @@ public class AchievementToolManager : MonoBehaviour {
       _achievementDataList = new Dictionary<string, AchievementData>();
 
       // Build the path to the folder containing the achievement data XML files
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "Achievement");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
 
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);

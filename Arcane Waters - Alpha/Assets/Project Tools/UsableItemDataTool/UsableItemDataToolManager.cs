@@ -11,6 +11,9 @@ public class UsableItemDataToolManager : MonoBehaviour {
    // Holds the main scene for the usable item data
    public UsableItemDataScene usableItemDataScene;
 
+   // Holds the path of the folder
+   public const string FOLDER_PATH = "UsableItem";
+
    #endregion
 
    private void Start () {
@@ -18,7 +21,7 @@ public class UsableItemDataToolManager : MonoBehaviour {
    }
 
    public void saveXMLData (UsableItemData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "UsableItem");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
       }
@@ -27,7 +30,7 @@ public class UsableItemDataToolManager : MonoBehaviour {
       string fileName = data.itemName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "UsableItem", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
 
       // Save the file
       ToolsUtil.xmlSave(data, path);
@@ -38,14 +41,14 @@ public class UsableItemDataToolManager : MonoBehaviour {
       string fileName = data.itemName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "UsableItem", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
 
       // Save the file
       ToolsUtil.deleteFile(path);
    }
 
    public void duplicateXMLData (UsableItemData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "UsableItem");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
       }
@@ -55,7 +58,7 @@ public class UsableItemDataToolManager : MonoBehaviour {
       string fileName = data.itemName;
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "UsableItem", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
 
       // Save the file
       ToolsUtil.xmlSave(data, path);
@@ -64,7 +67,7 @@ public class UsableItemDataToolManager : MonoBehaviour {
    public void loadXMLData () {
       _usableItemDataList = new Dictionary<string, UsableItemData>();
       // Build the path to the folder containing the usable item data XML files
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "UsableItem");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
 
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);

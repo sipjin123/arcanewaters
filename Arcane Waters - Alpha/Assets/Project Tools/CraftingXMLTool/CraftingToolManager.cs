@@ -11,6 +11,9 @@ public class CraftingToolManager : MonoBehaviour {
    // Reference to the tool scene
    public CraftingToolScene craftingToolScreen;
 
+   // Holds the path of the folder
+   public const string FOLDER_PATH = "Crafting";
+
    #endregion
 
    private void Awake () {
@@ -20,7 +23,7 @@ public class CraftingToolManager : MonoBehaviour {
    public void loadAllDataFiles () {
       craftingDataList = new Dictionary<string, CraftableItemRequirements>();
       // Build the path to the folder containing the Crafting data XML files
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "Crafting");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
 
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
@@ -48,7 +51,7 @@ public class CraftingToolManager : MonoBehaviour {
       string fileName = data.resultItem.category == Item.Category.None ? "Undefined" : data.resultItem.category.ToString() + "_" + data.resultItem.getCastItem().getName();
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "Crafting", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
 
       // Save the file
       ToolsUtil.deleteFile(path);
@@ -59,7 +62,7 @@ public class CraftingToolManager : MonoBehaviour {
    }
 
    public void saveDataToFile (CraftableItemRequirements data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "Crafting");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
       }
@@ -68,14 +71,14 @@ public class CraftingToolManager : MonoBehaviour {
       string fileName = data.resultItem.category == Item.Category.None ? "Undefined" : data.resultItem.category.ToString() + "_" + data.resultItem.getCastItem().getName();
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "Crafting", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
 
       // Save the file
       ToolsUtil.xmlSave(data, path);
    }
 
    public void duplicateDataFile (CraftableItemRequirements data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", "Crafting");
+      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
       if (!Directory.Exists(directoryPath)) {
          DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
       }
@@ -87,7 +90,7 @@ public class CraftingToolManager : MonoBehaviour {
       string fileName = data.resultItem.category == Item.Category.None ? "Undefined" : data.resultItem.category.ToString() + "_" + data.resultItem.getCastItem().getName();
 
       // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", "Crafting", fileName + ".xml");
+      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
 
       // Save the file
       ToolsUtil.xmlSave(data, path);
