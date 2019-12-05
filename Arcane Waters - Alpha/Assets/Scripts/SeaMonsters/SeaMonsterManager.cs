@@ -24,7 +24,6 @@ public class SeaMonsterManager : XmlManager {
 
    public void Awake () {
       self = this;
-      initializeSeaMonsterCache();
 
       // Create empty lists for each random sea map
       foreach (string areaKey in Area.getAllAreaKeys()) {
@@ -32,6 +31,10 @@ public class SeaMonsterManager : XmlManager {
             _spawners[areaKey] = new List<SeaMonsterSpawner>();
          }
       }
+   }
+   
+   private void Start () {
+      initializeSeaMonsterCache();
    }
 
    #region Spawn Features

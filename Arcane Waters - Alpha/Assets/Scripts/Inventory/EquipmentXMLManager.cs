@@ -26,6 +26,9 @@ public class EquipmentXMLManager : XmlManager {
 
    private void Awake () {
       self = this;
+   }
+
+   private void Start () {
       initializeDataCache();
    }
 

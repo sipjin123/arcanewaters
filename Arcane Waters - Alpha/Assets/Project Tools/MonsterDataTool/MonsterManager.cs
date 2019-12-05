@@ -30,7 +30,9 @@ public class MonsterManager : XmlManager {
 
    public void Awake () {
       self = this;
+   }
 
+   private void Start () {
 #if IS_SERVER_BUILD
       initializeLandMonsterDataCache();
 #else
@@ -119,11 +121,7 @@ public class MonsterManager : XmlManager {
 
             if (monsterData.battlerAbilities.basicAbilityDataList != null) {
                foreach (BasicAbilityData basicAbility in monsterData.battlerAbilities.basicAbilityDataList) {
-                  if (typeID == Enemy.Type.Humanoid) {
-                     abilityManager.addNewAbility(basicAbility);
-                  } else {
-                     abilityManager.addNewAbility(basicAbility);
-                  }
+                  abilityManager.addNewAbility(basicAbility);
                }
             } else {
                Debug.LogError("There is no Basic List for: " + typeID);

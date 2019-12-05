@@ -15,6 +15,9 @@ public class SpecialtyManager : XmlManager {
 
    public void Awake () {
       self = this;
+   }
+
+   private void Start () {
       initializeDataCache();
    }
 

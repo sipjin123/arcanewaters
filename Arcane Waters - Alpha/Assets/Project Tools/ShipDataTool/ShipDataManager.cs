@@ -21,6 +21,9 @@ public class ShipDataManager : XmlManager {
 
    public void Awake () {
       self = this;
+   }
+
+   private void Start () {
       initializeDataCache();
    }
 

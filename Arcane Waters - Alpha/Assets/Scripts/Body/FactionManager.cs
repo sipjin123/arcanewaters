@@ -15,6 +15,9 @@ public class FactionManager : XmlManager {
 
    public void Awake () {
       self = this;
+   }
+
+   private void Start () {
       translateXMLData();
    }
 

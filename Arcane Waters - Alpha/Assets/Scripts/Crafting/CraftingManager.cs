@@ -13,10 +13,12 @@ public class CraftingManager : XmlManager {
 
    #endregion
 
-   public void Awake () {
+   private void Awake () {
       self = this;
+   }
 
-#if IS_SERVER_BUILD 
+   private void Start () {
+#if IS_SERVER_BUILD
       translateXMLData();
 #endif
    }
