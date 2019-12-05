@@ -39,7 +39,7 @@ namespace MapCreationTool
 
       private CanvasScaler canvasScaler = null;
 
-      private int[] boardSizes = { 32, 64, 128, 256 };
+      private int[] boardSizes = { 64, 128, 256 };
 
       public YesNoDialog yesNoDialog { get; private set; }
 

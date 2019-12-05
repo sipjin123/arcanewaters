@@ -106,9 +106,28 @@ namespace MapCreationTool
          drawBoard.ensurePreviewCleared();
       }
       private void onBiomeChanged (BiomeType from, BiomeType to) {
-         if(Tools.editorType == EditorType.Area) {
-            palette.populatePalette(areaPaletteDatas[to]);
-            drawBoard.changeBiome(areaPaletteDatas[from], areaPaletteDatas[to]);
+         Dictionary<BiomeType, PaletteData> currentPalettes = currentEditorPalettes;
+
+         palette.populatePalette(currentPalettes[to]);
+         drawBoard.changeBiome(currentPalettes[from], currentPalettes[to]);
+      }
+
+      /// <summary>
+      /// Returns a dictionary of palettes that the current type of editor uses
+      /// </summary>
+      private Dictionary<BiomeType, PaletteData> currentEditorPalettes
+      {
+         get {
+            switch(Tools.editorType) {
+               case EditorType.Area:
+                  return areaPaletteDatas;
+               case EditorType.Interior:
+                  return interiorPaletteDatas;
+               case EditorType.Sea:
+                  return seaPaletteDatas;
+               default:
+                  throw new System.Exception($"Unrecognized editor type {Tools.editorType.ToString()}");
+            }
          }
       }
    }

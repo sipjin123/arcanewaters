@@ -415,8 +415,8 @@ public class AdminManager : NetworkBehaviour {
    }
 
    protected void warpRandomly () {
-      List<SpawnManager.SpawnID> allSpawnKeys = SpawnManager.get().getAllSpawnKeys();
-      SpawnManager.SpawnID spawnKey = allSpawnKeys[UnityEngine.Random.Range(0, allSpawnKeys.Count)];
+      List<SpawnID> allSpawnKeys = SpawnManager.get().getAllSpawnKeys();
+      SpawnID spawnKey = allSpawnKeys[UnityEngine.Random.Range(0, allSpawnKeys.Count)];
 
       handleAdminCommandString("warp " + spawnKey.areaKey + " " + spawnKey.spawnKey);
    }

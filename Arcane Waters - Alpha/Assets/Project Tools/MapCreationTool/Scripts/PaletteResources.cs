@@ -65,7 +65,7 @@ namespace MapCreationTool
       private Vector2Int getTileMatrixSize(PaletteDataContainer[] containers, Tilemap[] tilemaps) {
          return new Vector2Int(
             Mathf.Max(containers.Max(c => c.tilemap.size.x), tilemaps.Max(t => t.size.x)), 
-            Mathf.Max(containers.Max(c => c.tilemap.size.y), tilemaps.Max(t => t.size.x)));
+            Mathf.Max(containers.Max(c => c.tilemap.size.y), tilemaps.Max(t => t.size.y)));
       }
 
 

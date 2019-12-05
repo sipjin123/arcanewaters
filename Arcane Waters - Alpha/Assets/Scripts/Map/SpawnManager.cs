@@ -1,11 +1,8 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
-using Mirror;
-using System;
 
-public class SpawnManager : MonoBehaviour {
+
+public partial class SpawnManager : MonoBehaviour {
    #region Public Variables
 
    // New character starting location area key 
@@ -61,21 +58,4 @@ public class SpawnManager : MonoBehaviour {
    protected Dictionary<SpawnID, Spawn> _spawns = new Dictionary<SpawnID, Spawn>();
 
    #endregion
-
-   /// <summary>
-   /// Defines the identification of a spawn within the SpawnManager
-   /// </summary>
-   public struct SpawnID
-   {
-      // The key of the area that the spawn is placed in
-      public string areaKey;
-
-      // The key of a specific spawn
-      public string spawnKey;
-
-      public SpawnID (string areaKey, string spawnKey) {
-         this.areaKey = areaKey;
-         this.spawnKey = spawnKey;
-      }
-   }
 }

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 491dc37150c522b4aaf30926d55dbd4f, type: 3}
-  m_Name: MainConfig
+  m_Name: MapEditorConfig
   m_EditorClassIdentifier: 
   layerTiles:
   - {fileID: 11400000, guid: 49aaf5c311a25ed419a10334a042d260, type: 2}
@@ -37,3 +37,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 15551267f8d51dc46be8ee806e5162d5, type: 2}
   - {fileID: 11400000, guid: 288b8229d1866244594e56f28b688e89, type: 2}
   transparentTile: {fileID: 11400000, guid: 6770d82dbc34c894eb30ee1fd5b3b937, type: 2}
+  areaLayerTitleIndexes:
+  - layer: ground
+    index: 2
+  - layer: path
+    index: 4
+  - layer: dock
+    index: 6
