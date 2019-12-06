@@ -35,7 +35,7 @@
       <bonusResistanceEarth>1</bonusResistanceEarth>
       <bonusResistanceAll>1</bonusResistanceAll>
       <bonusDamagePhys>1</bonusDamagePhys>
-      <bonusDamageFire>1</bonusDamageFire>
+      <bonusDamageFire>.25</bonusDamageFire>
       <bonusDamageWater>1</bonusDamageWater>
       <bonusDamageAir>1</bonusDamageAir>
       <bonusDamageEarth>1</bonusDamageEarth>

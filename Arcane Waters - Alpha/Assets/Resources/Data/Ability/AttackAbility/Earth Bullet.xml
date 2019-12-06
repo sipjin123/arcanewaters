@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<AttackAbilityData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <itemID>23</itemID>
+  <itemName>Earth Bullet</itemName>
+  <itemDescription>Ranged attack</itemDescription>
+  <itemIconPath>Assets/Sprites/Icons/Weapons/gun_5.png</itemIconPath>
+  <levelRequirement>1</levelRequirement>
+  <hitSpritesPath>
+    <string>Assets/Sprites/Effects/ranged_earth.png</string>
+  </hitSpritesPath>
+  <elementType>Earth</elementType>
+  <hitAudioClipPath />
+  <classRequirement>Ranged</classRequirement>
+  <battleItemType>Ability</battleItemType>
+  <castAudioClipPath />
+  <allowedStances />
+  <abilityType>Standard</abilityType>
+  <abilityCooldown>2</abilityCooldown>
+  <apChange>3</apChange>
+  <abilityCost>0</abilityCost>
+  <castSpritesPath>
+    <string>Undefined</string>
+  </castSpritesPath>
+  <FXTimePerFrame>0.06</FXTimePerFrame>
+  <baseDamage>10</baseDamage>
+  <hasShake>false</hasShake>
+  <hasKnockup>false</hasKnockup>
+  <abilityActionType>Ranged</abilityActionType>
+  <canBeBlocked>true</canBeBlocked>
+</AttackAbilityData>

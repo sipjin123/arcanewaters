@@ -5,7 +5,7 @@
   <currentXP>0</currentXP>
   <enemyType>Humanoid</enemyType>
   <apGainWhenDamaged>0</apGainWhenDamaged>
-  <baseHealth>155</baseHealth>
+  <baseHealth>355</baseHealth>
   <baseDefense>5</baseDefense>
   <baseDamage>5</baseDamage>
   <baseGoldReward>5</baseGoldReward>
@@ -263,6 +263,151 @@
         <abilityActionType>Melee</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
       </BasicAbilityData>
+      <BasicAbilityData xsi:type="AttackAbilityData">
+        <itemID>21</itemID>
+        <itemName>Head Shot</itemName>
+        <itemDescription>Ranged attack</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Weapons/gun_2.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Undefined</string>
+        </hitSpritesPath>
+        <elementType>Fire</elementType>
+        <hitAudioClipPath />
+        <classRequirement>Ranged</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath />
+        <allowedStances />
+        <abilityType>Standard</abilityType>
+        <abilityCooldown>4</abilityCooldown>
+        <apChange>3</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Undefined</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.06</FXTimePerFrame>
+        <baseDamage>10</baseDamage>
+        <hasShake>true</hasShake>
+        <hasKnockup>true</hasKnockup>
+        <abilityActionType>Ranged</abilityActionType>
+        <canBeBlocked>true</canBeBlocked>
+      </BasicAbilityData>
+      <BasicAbilityData xsi:type="AttackAbilityData">
+        <itemID>22</itemID>
+        <itemName>Fire Bullet</itemName>
+        <itemDescription>Ranged attack</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Weapons/gun_7.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Assets/Sprites/Effects/ranged_fire.png</string>
+        </hitSpritesPath>
+        <elementType>Fire</elementType>
+        <hitAudioClipPath />
+        <classRequirement>Ranged</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath />
+        <allowedStances />
+        <abilityType>Standard</abilityType>
+        <abilityCooldown>2</abilityCooldown>
+        <apChange>3</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Undefined</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.06</FXTimePerFrame>
+        <baseDamage>10</baseDamage>
+        <hasShake>false</hasShake>
+        <hasKnockup>false</hasKnockup>
+        <abilityActionType>Ranged</abilityActionType>
+        <canBeBlocked>true</canBeBlocked>
+      </BasicAbilityData>
+      <BasicAbilityData xsi:type="AttackAbilityData">
+        <itemID>23</itemID>
+        <itemName>Earth Bullet</itemName>
+        <itemDescription>Ranged attack</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Weapons/gun_5.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Assets/Sprites/Effects/ranged_earth.png</string>
+        </hitSpritesPath>
+        <elementType>Earth</elementType>
+        <hitAudioClipPath />
+        <classRequirement>Ranged</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath />
+        <allowedStances />
+        <abilityType>Standard</abilityType>
+        <abilityCooldown>2</abilityCooldown>
+        <apChange>3</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Undefined</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.06</FXTimePerFrame>
+        <baseDamage>10</baseDamage>
+        <hasShake>false</hasShake>
+        <hasKnockup>true</hasKnockup>
+        <abilityActionType>Ranged</abilityActionType>
+        <canBeBlocked>true</canBeBlocked>
+      </BasicAbilityData>
+      <BasicAbilityData xsi:type="AttackAbilityData">
+        <itemID>24</itemID>
+        <itemName>Water Bullet</itemName>
+        <itemDescription>Ranged attack</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Weapons/gun_5.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Assets/Sprites/Effects/ranged_water.png</string>
+        </hitSpritesPath>
+        <elementType>Water</elementType>
+        <hitAudioClipPath />
+        <classRequirement>Ranged</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath />
+        <allowedStances />
+        <abilityType>Standard</abilityType>
+        <abilityCooldown>2</abilityCooldown>
+        <apChange>3</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Undefined</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.06</FXTimePerFrame>
+        <baseDamage>10</baseDamage>
+        <hasShake>false</hasShake>
+        <hasKnockup>false</hasKnockup>
+        <abilityActionType>Ranged</abilityActionType>
+        <canBeBlocked>true</canBeBlocked>
+      </BasicAbilityData>
+      <BasicAbilityData xsi:type="AttackAbilityData">
+        <itemID>25</itemID>
+        <itemName>Wind Bullet</itemName>
+        <itemDescription>Ranged attack</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Weapons/gun_6.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Assets/Sprites/Effects/ranged_air.png</string>
+        </hitSpritesPath>
+        <elementType>Air</elementType>
+        <hitAudioClipPath />
+        <classRequirement>Ranged</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath />
+        <allowedStances />
+        <abilityType>Standard</abilityType>
+        <abilityCooldown>2</abilityCooldown>
+        <apChange>3</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Undefined</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.06</FXTimePerFrame>
+        <baseDamage>10</baseDamage>
+        <hasShake>true</hasShake>
+        <hasKnockup>false</hasKnockup>
+        <abilityActionType>Ranged</abilityActionType>
+        <canBeBlocked>true</canBeBlocked>
+      </BasicAbilityData>
     </basicAbilityDataList>
     <attackAbilityDataList>
       <AttackAbilityData>
@@ -511,6 +656,151 @@
         <hasShake>true</hasShake>
         <hasKnockup>true</hasKnockup>
         <abilityActionType>Melee</abilityActionType>
+        <canBeBlocked>true</canBeBlocked>
+      </AttackAbilityData>
+      <AttackAbilityData>
+        <itemID>22</itemID>
+        <itemName>Head Shot</itemName>
+        <itemDescription>Ranged attack</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Weapons/gun_2.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Undefined</string>
+        </hitSpritesPath>
+        <elementType>Fire</elementType>
+        <hitAudioClipPath />
+        <classRequirement>Ranged</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath />
+        <allowedStances />
+        <abilityType>Standard</abilityType>
+        <abilityCooldown>4</abilityCooldown>
+        <apChange>3</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Undefined</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.06</FXTimePerFrame>
+        <baseDamage>10</baseDamage>
+        <hasShake>true</hasShake>
+        <hasKnockup>true</hasKnockup>
+        <abilityActionType>Ranged</abilityActionType>
+        <canBeBlocked>true</canBeBlocked>
+      </AttackAbilityData>
+      <AttackAbilityData>
+        <itemID>23</itemID>
+        <itemName>Fire Bullet</itemName>
+        <itemDescription>Ranged attack</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Weapons/gun_7.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Assets/Sprites/Effects/ranged_fire.png</string>
+        </hitSpritesPath>
+        <elementType>Fire</elementType>
+        <hitAudioClipPath />
+        <classRequirement>Ranged</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath />
+        <allowedStances />
+        <abilityType>Standard</abilityType>
+        <abilityCooldown>2</abilityCooldown>
+        <apChange>3</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Undefined</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.06</FXTimePerFrame>
+        <baseDamage>10</baseDamage>
+        <hasShake>false</hasShake>
+        <hasKnockup>false</hasKnockup>
+        <abilityActionType>Ranged</abilityActionType>
+        <canBeBlocked>true</canBeBlocked>
+      </AttackAbilityData>
+      <AttackAbilityData>
+        <itemID>24</itemID>
+        <itemName>Earth Bullet</itemName>
+        <itemDescription>Ranged attack</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Weapons/gun_5.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Assets/Sprites/Effects/ranged_earth.png</string>
+        </hitSpritesPath>
+        <elementType>Earth</elementType>
+        <hitAudioClipPath />
+        <classRequirement>Ranged</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath />
+        <allowedStances />
+        <abilityType>Standard</abilityType>
+        <abilityCooldown>2</abilityCooldown>
+        <apChange>3</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Undefined</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.06</FXTimePerFrame>
+        <baseDamage>10</baseDamage>
+        <hasShake>false</hasShake>
+        <hasKnockup>false</hasKnockup>
+        <abilityActionType>Ranged</abilityActionType>
+        <canBeBlocked>true</canBeBlocked>
+      </AttackAbilityData>
+      <AttackAbilityData>
+        <itemID>22</itemID>
+        <itemName>Water Bullet</itemName>
+        <itemDescription>Ranged attack</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Weapons/gun_5.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Assets/Sprites/Effects/ranged_water.png</string>
+        </hitSpritesPath>
+        <elementType>Water</elementType>
+        <hitAudioClipPath />
+        <classRequirement>Ranged</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath />
+        <allowedStances />
+        <abilityType>Standard</abilityType>
+        <abilityCooldown>2</abilityCooldown>
+        <apChange>3</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Undefined</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.06</FXTimePerFrame>
+        <baseDamage>10</baseDamage>
+        <hasShake>false</hasShake>
+        <hasKnockup>false</hasKnockup>
+        <abilityActionType>Ranged</abilityActionType>
+        <canBeBlocked>true</canBeBlocked>
+      </AttackAbilityData>
+      <AttackAbilityData>
+        <itemID>22</itemID>
+        <itemName>Wind Bullet</itemName>
+        <itemDescription>Ranged attack</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Weapons/gun_6.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Assets/Sprites/Effects/ranged_air.png</string>
+        </hitSpritesPath>
+        <elementType>Air</elementType>
+        <hitAudioClipPath />
+        <classRequirement>Ranged</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath />
+        <allowedStances />
+        <abilityType>Standard</abilityType>
+        <abilityCooldown>2</abilityCooldown>
+        <apChange>3</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Undefined</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.06</FXTimePerFrame>
+        <baseDamage>10</baseDamage>
+        <hasShake>false</hasShake>
+        <hasKnockup>false</hasKnockup>
+        <abilityActionType>Ranged</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
       </AttackAbilityData>
     </attackAbilityDataList>
