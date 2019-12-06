@@ -10,6 +10,9 @@ public class EffectManager : MonoBehaviour {
    // The Generic Effect prefab
    public Effect effectPrefab;
 
+   // The Generic Projectile prefab
+   public BattlerProjectile projectilePrefab;
+
    // Generic effect prefab for use in combat actions
    public CombatEffect combatVFXPrefab;
 
@@ -148,7 +151,9 @@ public class EffectManager : MonoBehaviour {
 
       List<Sprite> hitSprites = new List<Sprite>();
       foreach (string path in ability.hitSpritesPath) {
-         hitSprites.Add(ImageManager.getSprite(path));
+         foreach (Sprite sprite in ImageManager.getSprites(path)) {
+            hitSprites.Add(sprite);
+         }
       }
 
       CombatEffect effectInstance = self.createCombatEffect(hitSprites.ToArray(), targetPos, ability.FXTimePerFrame);
@@ -207,6 +212,11 @@ public class EffectManager : MonoBehaviour {
              effectInstance.transform.localScale.z
          );
       }
+   }
+   public static void playCastProjectile (Battler source, AttackAction action, Vector2 sourcePos, Vector2 targetPos, float impactTime) {
+      GameObject genericEffect = Instantiate(self.projectilePrefab.gameObject, sourcePos, Quaternion.identity);
+      genericEffect.transform.position = sourcePos;
+      genericEffect.GetComponent<BattlerProjectile>().setTrajectory(sourcePos, targetPos, impactTime);
    }
 
    #region Private Variables

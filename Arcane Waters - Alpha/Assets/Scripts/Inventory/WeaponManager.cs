@@ -64,6 +64,9 @@ public class WeaponManager : EquipmentManager {
    public bool isHoldingSword () {
       return weaponType.ToString().ToLowerInvariant().Contains("sword");
    }
+   public bool isHoldingGun () {
+      return weaponType.ToString().ToLowerInvariant().Contains("gun");
+   }
 
    [ClientRpc]
    public void Rpc_EquipWeapon (Weapon newWeapon, ColorType color1, ColorType color2) {

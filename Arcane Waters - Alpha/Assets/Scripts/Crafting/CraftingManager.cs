@@ -43,7 +43,7 @@ public class CraftingManager : XmlManager {
          CraftableItemRequirements craftingData = Util.xmlLoad<CraftableItemRequirements>(textAsset);
 
          // Save the Crafting data in the memory cache
-         string keyName = craftingData.resultItem.category == Item.Category.None ? "Undefined" : craftingData.resultItem.getCastItem().getName();
+         string keyName = craftingData.resultItem.category == Item.Category.None ? "Undefined" : craftingData.resultItem.category+"_"+craftingData.resultItem.itemTypeId;
          if (_craftingData.ContainsKey(keyName)) {
             _craftingData.Add(keyName, craftingData);
          } else {

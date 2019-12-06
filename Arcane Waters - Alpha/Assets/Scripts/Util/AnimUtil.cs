@@ -96,6 +96,12 @@ public class AnimUtil : MonoBehaviour {
 
                case Anim.Type.Jump_East:
                   return new AnimInfo(animType, 14, 14);
+
+               case Anim.Type.Aim_Gun:
+                  return new AnimInfo(animType, 32, 33);
+
+               case Anim.Type.Shoot_Gun:
+                  return new AnimInfo(animType, 33, 34);
             }
             break;
 

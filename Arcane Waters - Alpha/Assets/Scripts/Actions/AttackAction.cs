@@ -4,7 +4,7 @@ public class AttackAction : BattleAction {
    #region Public Variables
 
    // The type of action this is
-   public enum ActionType { Melee = 1 }
+   public enum ActionType { Melee = 1, Range = 1 }
 
    // The type of action this is
    public ActionType actionType;

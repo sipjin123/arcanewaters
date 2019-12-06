@@ -33,6 +33,9 @@ public class EquipmentXMLManager : XmlManager {
    }
 
    public WeaponStatData getWeaponData (Weapon.Type weaponType) {
+      if (_weaponStatList == null) {
+         return null;
+      }
       if (_weaponStatList.ContainsKey(weaponType)) {
          return _weaponStatList[weaponType];
       }
@@ -40,6 +43,9 @@ public class EquipmentXMLManager : XmlManager {
    }
 
    public ArmorStatData getArmorData (Armor.Type armorType) {
+      if (_armorStatList == null) {
+         return null;
+      }
       if (_armorStatList.ContainsKey(armorType)) {
          return _armorStatList[armorType];
       }

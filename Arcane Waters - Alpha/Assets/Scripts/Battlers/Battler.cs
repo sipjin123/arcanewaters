@@ -172,6 +172,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
    [HideInInspector] public BattlerDamagedEvent onBattlerDamaged = new BattlerDamagedEvent();
 
+   // Determines the cast time for the aim animation
+   public const float AIM_CAST_TIME = .75f;
+
    #endregion
 
    private void Awake () {
@@ -594,6 +597,13 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       }
    }
 
+   public void pauseAnim (bool isPaused) {
+      // Make all of our Simple Animation components play the animation
+      foreach (SimpleAnimation anim in _anims) {
+         anim.isPaused = isPaused;
+      }
+   }
+
    public IEnumerator animateDeath () {
       playAnim(Anim.Type.Death_East);
 
@@ -636,6 +646,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       }
 
       switch (globalAbilityData.abilityActionType) {
+         case AbilityActionType.CastSelf:
+            // TODO: INSERT BUFF LOGIC HERE
+            break;
          case AbilityActionType.Melee:
 
             onBattlerAttackStart.Invoke();
@@ -767,7 +780,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
             break;
          case AbilityActionType.Ranged:
-
             // Cast version of the Attack Action
             action = (AttackAction) battleAction;
             targetBattler = battle.getBattler(action.targetId);
@@ -777,18 +789,30 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
             // The unused code is on the MagicAbility script
             // Make sure the battlers are still alive at this point
-            if (sourceBattler.isDead() || targetBattler.isDead()) {
+            if (sourceBattler.isDead()) {
                yield break;
             }
 
+            float offsetX = -.35f;
+            float offsetY = .36f;
+            Vector2 sourcePos = getMagicGroundPosition() + new Vector2(offsetX, offsetY);
+            Vector2 targetPos = targetBattler.getMagicGroundPosition() + new Vector2(0, offsetY);
+
             // Start the attack animation that will eventually create the magic effect
             if (isFirstAction) {
-               sourceBattler.playAnim(attackerAbility.getAnimation());
+               sourceBattler.playAnim(Anim.Type.Aim_Gun);
+               yield return new WaitForSeconds(AIM_CAST_TIME);
+               sourceBattler.pauseAnim(false);
+               sourceBattler.playAnim(Anim.Type.Shoot_Gun);
+
                AudioClip clip = AudioClipManager.self.getAudioClipData(abilityDataReference.castAudioClipPath).audioClip;
                SoundManager.playClipOneShotAtPoint(clip, sourceBattler.transform.position);
                Vector2 castEffectPosition = new Vector2(transform.position.x, transform.position.y - (mainSpriteRenderer.bounds.extents.y / 2));
-               EffectManager.playCastAbilityVFX(sourceBattler, action, getMagicGroundPosition());
-            }
+
+               EffectManager.playCastAbilityVFX(sourceBattler, action, sourcePos);
+               EffectManager.playCastProjectile(sourceBattler, action, sourcePos, targetPos, abilityDataReference.getPreDamageLength - .1f);
+               EffectManager.show(Effect.Type.Cannon_Smoke, sourcePos);
+            } 
 
             // Wait the appropriate amount of time before creating the magic effect
             yield return new WaitForSeconds(sourceBattler.getPreMagicLength());
@@ -811,8 +835,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
                targetBattler.StartCoroutine(targetBattler.animateShake());
                yield return new WaitForSeconds(SHAKE_LENGTH);
             }
-
             BattleUIManager.self.showDamageText(action, targetBattler);
+
             // Wait until the animation gets to the point that it deals damage
             yield return new WaitForSeconds(abilityDataReference.getPreDamageLength);
 
