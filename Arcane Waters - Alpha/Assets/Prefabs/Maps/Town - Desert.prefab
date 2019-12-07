@@ -4498,8 +4498,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdc884480543aaf44b9df8dd4ad431ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  areaTarget: SeaMiddle
   spawnTarget: SeaMiddleDesertTownExit
-  spawnKeyTarget: SeaMiddleDesertTownExit
   newFacingDirection: 5
 --- !u!61 &61078209314607314
 BoxCollider2D:
@@ -89091,8 +89091,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdc884480543aaf44b9df8dd4ad431ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  areaTarget: MerchantShop_Desert
   spawnTarget: DesertMerchantInside
-  spawnKeyTarget: DesertMerchantInside
   newFacingDirection: 1
 --- !u!61 &61706093978386054
 BoxCollider2D:
@@ -101213,8 +101213,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdc884480543aaf44b9df8dd4ad431ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  areaTarget: AdventureShop_Desert
   spawnTarget: DesertWeaponsInside
-  spawnKeyTarget: DesertWeaponsInside
   newFacingDirection: 1
 --- !u!61 &1372161612842146488
 BoxCollider2D:

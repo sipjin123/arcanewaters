@@ -31,6 +31,15 @@ public class FriendshipInfo
    // The area key where the friend is located
    public string friendAreaKey;
 
+   // Gets set to true when the user is online
+   public bool isOnline;
+
+   // The XP of the friend
+   public int friendXP;
+
+   // The faction of the friend
+   public Faction.Type friendFaction;
+
    #endregion
 
    public FriendshipInfo () { }
@@ -44,6 +53,8 @@ public class FriendshipInfo
       this.lastContactDate = DataUtil.getDateTime(dataReader, "lastContactDate").ToBinary();
       this.friendName = DataUtil.getString(dataReader, "usrName");
       this.friendAreaKey = DataUtil.getString(dataReader, "areaKey");
+      this.friendXP = DataUtil.getInt(dataReader, "usrXP");
+      this.friendFaction = (Faction.Type) DataUtil.getInt(dataReader, "faction");
    }
 
 #endif

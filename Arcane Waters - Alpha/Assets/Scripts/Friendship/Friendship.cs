@@ -8,6 +8,10 @@ public class Friendship
 {
    #region Public Variables
 
+   // The maximum number of friends
+   public static int MAX_FRIENDS = 100;
+
+   // The different friendship statuses
    public enum Status
    {
       None = 0,

@@ -4362,8 +4362,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdc884480543aaf44b9df8dd4ad431ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  areaTarget: StartingTown
   spawnTarget: ForestShipyardOutside
-  spawnKeyTarget: ForestShipyardOutside
   newFacingDirection: 5
 --- !u!61 &7321770130646269322
 BoxCollider2D:

@@ -28,15 +28,15 @@ namespace MapCreationTool
          prefabChanges.AddRange(change.prefabChanges);
       }
 
-      private static BoundsInt getBoardBoundsInt() {
+      private static BoundsInt getBoardBoundsInt () {
          // We decrease the size by 1 because we want the 'max' vector to be inclusive
          return new BoundsInt(
             DrawBoard.origin.x, DrawBoard.origin.y, 0,
-            DrawBoard.size.x-1, DrawBoard.size.y-1, 0);
+            DrawBoard.size.x - 1, DrawBoard.size.y - 1, 0);
       }
 
-      private static Bounds getBoardBoundsFloat() {
-         return new Bounds(Vector3.zero, (Vector3Int)DrawBoard.size);
+      private static Bounds getBoardBoundsFloat () {
+         return new Bounds(Vector3.zero, (Vector3Int) DrawBoard.size);
       }
 
       public static BoardChange calculateClearAllChange (Dictionary<int, Layer> layers, List<PlacedPrefab> prefabs) {
@@ -61,17 +61,19 @@ namespace MapCreationTool
          return result;
       }
 
-      public static BoardChange calculatePrefabChange(GameObject prefabToPlace, Vector3 positionToPlace) {
+      public static BoardChange calculatePrefabChange (GameObject prefabToPlace, Vector3 positionToPlace) {
          Bounds bounds = getBoardBoundsFloat();
          if (positionToPlace.x < bounds.min.x || positionToPlace.x > bounds.max.x || positionToPlace.y < bounds.min.y || positionToPlace.y > bounds.max.y)
             return new BoardChange();
 
-         return new BoardChange { prefabChanges = new List<PrefabChange> {
+         return new BoardChange {
+            prefabChanges = new List<PrefabChange> {
             new PrefabChange {
                prefabToPlace = prefabToPlace,
                positionToPlace = positionToPlace
-            } 
-         }};
+            }
+         }
+         };
       }
 
       public static BoardChange calculateClearAllChange (Layer layer) {
@@ -699,6 +701,73 @@ namespace MapCreationTool
                   }
 
                   change.tileChanges.Add(new TileChange(group.tiles[tileIndex.x, tileIndex.y].tile, position, layer));
+               }
+            }
+         }
+
+         return change;
+      }
+
+      public static BoardChange calculateSeaMountainChanges (SeaMountainGroup group, Vector3 worldPos, Layer layer) {
+         BoardChange change = new BoardChange();
+         BoundsInt bounds = getBoardBoundsInt();
+
+         Vector3Int targetCenter = DrawBoard.worldToCell(worldPos - new Vector3(group.brushSize.x / 2, group.brushSize.y / 2));
+         int n = 3;
+
+         List<Vector3Int> addedTiles = new List<Vector3Int>();
+
+         for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++)
+               addedTiles.Add(new Vector3Int(i + targetCenter.x, j + targetCenter.y, 0));
+
+         //Ensure no edge cases are present
+         addedTiles = tilesToRemoveThinParts(layer, addedTiles, 3);
+
+         //Get bounds in which to check for rearangements
+         BoundsInt rearrangeBounds = encapsulate(addedTiles);
+
+         //Expand bounds include border and edge tiles to check
+         rearrangeBounds.min += new Vector3Int(1, 1, 0) * -4;
+         rearrangeBounds.max += new Vector3Int(1, 1, 0) * 4;
+
+         Vector3Int from = rearrangeBounds.min;
+         Vector3Int size = rearrangeBounds.size;
+
+         bool[,] adj = new bool[size.x, size.y];
+
+         //Fill adjacency matrix according to relavent tile info
+         for (int i = 0; i < size.x; i++) {
+            for (int j = 0; j < size.y; j++) {
+               Vector3Int index = new Vector3Int(i, j, 0) + from;
+
+               TileBase tile = layer.getTile(index);
+               adj[i, j] = tile != null && group.contains(tile);
+
+               // If the position is outside of the map, we will treat this position as if it contains a tile
+               if (index.x < bounds.min.x || index.x > bounds.max.x || index.y < bounds.min.y || index.y > bounds.max.y)
+                  adj[i, j] = true;
+            }
+         }
+
+         //Fill in tiles that will be added
+         foreach (Vector3Int pos in addedTiles)
+            adj[pos.x - from.x, pos.y - from.y] = true;
+
+         //Determine tiles based on the adjacency matrix
+         for (int i = 2; i < size.x - 2; i++) {
+            for (int j = 2; j < size.y - 2; j++) {
+               if (adj[i, j]) {
+                  Vector3Int position = from + new Vector3Int(i, j, 0);
+
+                  // If the position is outside the map, continue
+                  if (position.x < bounds.min.x || position.x > bounds.max.x || position.y < bounds.min.y || position.y > bounds.max.y)
+                     continue;
+
+                  change.tileChanges.Add(new TileChange(
+                     group.pickTile(adj, surroundingCount(adj, new Vector2Int(i, j), SidesInt.uniform(2)), i, j), 
+                     position, 
+                     layer));
                }
             }
          }

@@ -76,6 +76,7 @@ namespace MapCreationTool
          var dt = Serializer.deserialize(data, true);
 
          Tools.changeBiome(dt.biome);
+         Tools.changeEditorType(dt.editorType);
 
          if(dt.size != default) {
             Tools.changeBoardSize(dt.size);

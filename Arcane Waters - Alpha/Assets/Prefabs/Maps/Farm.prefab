@@ -21870,7 +21870,7 @@ Tilemap:
       - {fileID: 21300242, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300244, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300246, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 55, y: -19, z: 0}
@@ -35663,8 +35663,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdc884480543aaf44b9df8dd4ad431ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  areaTarget: House
   spawnTarget: HouseEntrance
-  spawnKeyTarget: HouseEntrance
   newFacingDirection: 1
 --- !u!61 &61975703492810596
 BoxCollider2D:
@@ -112243,8 +112243,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdc884480543aaf44b9df8dd4ad431ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  areaTarget: StartingTown
   spawnTarget: ForestTownTop
-  spawnKeyTarget: ForestTownTop
   newFacingDirection: 5
 --- !u!61 &61804868813882758
 BoxCollider2D:

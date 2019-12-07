@@ -15,10 +15,11 @@ namespace MapCreationTool.Serialization
           Dictionary<int, Layer> layers,
           List<PlacedPrefab> prefabs,
           BiomeType biome,
+          EditorType editorType,
           Vector2Int size,
           bool prettyPrint = false) {
          try {
-            return serialize001(layers, prefabs, biome, size, prettyPrint);
+            return serialize001(layers, prefabs, biome, editorType, size, prettyPrint);
          } catch (Exception ex) {
             Debug.LogError("Failed to serialize map.");
             throw ex;
@@ -29,6 +30,7 @@ namespace MapCreationTool.Serialization
           Dictionary<int, Layer> layers,
           List<PlacedPrefab> prefabs,
           BiomeType biome,
+          EditorType editorType,
           Vector2Int size,
           bool prettyPrint = false) {
          Func<GameObject, int> prefabToIndex = (go) => { return AssetSerializationMaps.getIndex(go, biome); };
@@ -76,6 +78,7 @@ namespace MapCreationTool.Serialization
             biome = biome,
             layers = layersSerialized.ToArray(),
             prefabs = prefabsSerialized,
+            editorType = editorType,
             size = size
          };
 
@@ -137,7 +140,8 @@ namespace MapCreationTool.Serialization
             prefabs = prefabs.ToArray(),
             tiles = tiles.ToArray(),
             biome = dt.biome,
-            size = dt.size
+            size = dt.size,
+            editorType = dt.editorType
          };
       }
 
@@ -168,6 +172,7 @@ namespace MapCreationTool.Serialization
       public DeserializedPrefab[] prefabs;
       public DeserializedTile[] tiles;
       public BiomeType biome;
+      public EditorType editorType;
       public Vector2Int size;
 
       public class DeserializedPrefab
@@ -191,6 +196,7 @@ namespace MapCreationTool.Serialization
    {
       public string version;
       public BiomeType biome;
+      public EditorType editorType;
       public Layer001[] layers;
       public Prefab001[] prefabs;
       public Vector2Int size;

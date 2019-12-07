@@ -51463,7 +51463,7 @@ GameObject:
   - component: {fileID: 6003827098852396583}
   - component: {fileID: 4246388028022757321}
   m_Layer: 0
-  m_Name: Palettes Resources
+  m_Name: Area Palette Resources
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -57791,7 +57791,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 5
+  m_SortingOrder: 2
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
   m_MaxChunkCount: 16
@@ -62448,7 +62448,7 @@ Tilemap:
       - {fileID: 21300510, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300516, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300522, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 18, y: 8, z: 0}
@@ -62558,7 +62558,7 @@ Tilemap:
       - {fileID: 21300554, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300556, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300558, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 12, y: 10, z: 0}

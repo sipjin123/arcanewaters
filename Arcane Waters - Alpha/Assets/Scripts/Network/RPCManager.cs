@@ -395,7 +395,7 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_ReceiveFriendshipInfo (NetworkConnection connection, FriendshipInfo[] friendshipInfo,
-      Friendship.Status friendshipStatus, int pageNumber, int totalFriendInfoCount, int pendingRequestCount) {
+      Friendship.Status friendshipStatus, int pageNumber, int totalFriendInfoCount, int friendCount, int pendingRequestCount) {
       List<FriendshipInfo> friendshipInfoList = new List<FriendshipInfo>(friendshipInfo);
 
       // Make sure the panel is showing
@@ -406,7 +406,7 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Pass the data to the panel
-      panel.updatePanelWithFriendshipInfo(friendshipInfoList, friendshipStatus, pageNumber, totalFriendInfoCount, pendingRequestCount);
+      panel.updatePanelWithFriendshipInfo(friendshipInfoList, friendshipStatus, pageNumber, totalFriendInfoCount, friendCount, pendingRequestCount);
    }
 
    [TargetRpc]
@@ -1404,26 +1404,9 @@ public class RPCManager : NetworkBehaviour {
             success = false;
          }
 
+         // Check the request validity
          if (success) {
-            // Verify that there is no relationship with this friend
-            FriendshipInfo info = DB_Main.getFriendshipInfo(_player.userId, friendUserInfo.userId);
-            if (info != null) {
-               switch (info.friendshipStatus) {
-                  case Friendship.Status.InviteSent:
-                     feedbackMessage = "You have already sent an invitation to " + friendUserName + "!";
-                     break;
-                  case Friendship.Status.InviteReceived:
-                     feedbackMessage = "You already have a pending invitation from " + friendUserName + "!";
-                     break;
-                  case Friendship.Status.Friends:
-                     feedbackMessage = "You are already friends with " + friendUserName + "!";
-                     break;
-                  default:
-                     D.warning(string.Format("The case {0} is not managed.", info.friendshipStatus));
-                     break;
-               }
-               success = false;
-            }
+            success = isFriendshipRequestValid(friendUserInfo, ref feedbackMessage);
          }
 
          // Back to Unity
@@ -1445,6 +1428,9 @@ public class RPCManager : NetworkBehaviour {
          return;
       }
 
+      string feedbackMessage = "";
+      bool success = true;
+
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
 
@@ -1455,33 +1441,66 @@ public class RPCManager : NetworkBehaviour {
             return;
          }
 
-         // Verify that there is no relationship: player -> friend
-         FriendshipInfo info = DB_Main.getFriendshipInfo(_player.userId, friendUserId);
-         if (info != null) {
-            D.error(string.Format("There is already a friendship relation between users {0} and {1}", _player.userId, friendUserId));
-            return;
+         // Check the request validity
+         success = isFriendshipRequestValid(friendUserInfo, ref feedbackMessage);
+
+         if (success) {
+            // Create the friendship in status 'invited', in both directions
+            DB_Main.createFriendship(_player.userId, friendUserId, Friendship.Status.InviteSent, DateTime.UtcNow);
+            DB_Main.createFriendship(friendUserId, _player.userId, Friendship.Status.InviteReceived, DateTime.UtcNow);
+
+            // Prepare a feedback message
+            feedbackMessage = "A friendship invitation has been sent to " + friendUserInfo.username + "!";
          }
-
-         // Verify that there is no relationship: friend -> player
-         info = DB_Main.getFriendshipInfo(friendUserId, _player.userId);
-         if (info != null) {
-            D.error(string.Format("There is already a friendship relation between users {1} and {0}", _player.userId, friendUserId));
-            return;
-         }
-
-         // Create the friendship in status 'invited', in both directions
-         DB_Main.createFriendship(_player.userId, friendUserId, Friendship.Status.InviteSent, DateTime.UtcNow);
-         DB_Main.createFriendship(friendUserId, _player.userId, Friendship.Status.InviteReceived, DateTime.UtcNow);
-
-         // Prepare a feedback message
-         string feedbackMessage = "A friendship invitation has been sent to " + friendUserInfo.username + "!";
 
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Let the player know that a friendship invitation has been sent
-            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.FriendshipInvitationSent, _player, feedbackMessage);
+            if (success) {
+               // Let the player know that a friendship invitation has been sent
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.FriendshipInvitationSent, _player, feedbackMessage);
+            } else {
+               ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, feedbackMessage);
+            }
          });
       });
+   }
+
+   [Server]
+   public bool isFriendshipRequestValid (UserInfo friendUserInfo, ref string feedbackMessage) {
+      feedbackMessage = "";
+
+      // Verify that the friend is not the user himself
+      if (friendUserInfo.userId == _player.userId) {
+         feedbackMessage = "You cannot invite yourself!";
+         return false;
+      }
+
+      // Verify that there is no relationship with this friend
+      FriendshipInfo info = DB_Main.getFriendshipInfo(_player.userId, friendUserInfo.userId);
+      if (info != null) {
+         switch (info.friendshipStatus) {
+            case Friendship.Status.InviteSent:
+               feedbackMessage = "You have already sent an invitation to " + friendUserInfo.username + "!";
+               break;
+            case Friendship.Status.InviteReceived:
+               feedbackMessage = "You already have a pending invitation from " + friendUserInfo.username + "!";
+               break;
+            case Friendship.Status.Friends:
+               feedbackMessage = "You are already friends with " + friendUserInfo.username + "!";
+               break;
+            default:
+               D.warning(string.Format("The case {0} is not managed.", info.friendshipStatus));
+               break;
+         }
+         return false;
+      }
+
+      // Verify that the number of friends is below the maximum
+      if (!hasFreeFriendSlot(ref feedbackMessage)) {
+         return false;
+      }
+
+      return true;
    }
 
    [Command]
@@ -1497,19 +1516,25 @@ public class RPCManager : NetworkBehaviour {
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
 
-         FriendshipInfo info;
+         // Retrieve the user info of the friend
+         UserInfo friendInfo = DB_Main.getUserInfo(friendUserId);
 
          // Verify that there is a pending invite
-         info = DB_Main.getFriendshipInfo(friendUserId, _player.userId);
-         if (info == null) {
+         FriendshipInfo friendshipInfo = DB_Main.getFriendshipInfo(friendUserId, _player.userId);
+         if (friendshipInfo == null) {
             feedbackMessage = "The friendship invitation does not exist.";
             success = false;
          }
 
+         // Verify that the number of friends is below the maximum
+         if (success) {
+            success = hasFreeFriendSlot(ref feedbackMessage);
+         }
+
          if (success) {
             // Verify that an invitation exists in the other direction
-            info = DB_Main.getFriendshipInfo(_player.userId, friendUserId);
-            if (info == null) {
+            friendshipInfo = DB_Main.getFriendshipInfo(_player.userId, friendUserId);
+            if (friendshipInfo == null) {
                D.error(string.Format("Inconsistency in the friendship table: invitation from user {1} to {0} doesn't have an opposite from {0} to {1}.", _player.userId, friendUserId));
                return;
             }
@@ -1517,9 +1542,6 @@ public class RPCManager : NetworkBehaviour {
             // Upgrade both existing records to a 'friend' status
             DB_Main.updateFriendship(friendUserId, _player.userId, Friendship.Status.Friends, DateTime.UtcNow);
             DB_Main.updateFriendship(_player.userId, friendUserId, Friendship.Status.Friends, DateTime.UtcNow);
-
-            // Retrieve the user info of the friend
-            UserInfo friendInfo = DB_Main.getUserInfo(friendUserId);
 
             // Prepare a feedback message
             feedbackMessage = "You are now friends with " + friendInfo.username + "!";
@@ -1535,6 +1557,23 @@ public class RPCManager : NetworkBehaviour {
             }
          });
       });
+   }
+
+   [Server]
+   public bool hasFreeFriendSlot (ref string feedbackMessage) {
+      feedbackMessage = "";
+      int friendCount;
+
+      // Get the number of current friends for the user
+      friendCount = DB_Main.getFriendshipInfoCount(_player.userId, Friendship.Status.Friends);
+
+      // Verify if the user has reached the friend count limit
+      if (friendCount >= Friendship.MAX_FRIENDS) {
+         feedbackMessage = "You have reached the maximum number of friends!";
+         return false;
+      }
+
+      return true;
    }
 
    [Command]
@@ -1577,7 +1616,7 @@ public class RPCManager : NetworkBehaviour {
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
 
-         // Gets the number of items
+         // Get the number of items
          int totalFriendInfoCount = DB_Main.getFriendshipInfoCount(_player.userId, friendshipStatus);
 
          // Calculate the maximum page number
@@ -1592,6 +1631,19 @@ public class RPCManager : NetworkBehaviour {
          // Get the items from the database
          List<FriendshipInfo> friendshipInfoList = DB_Main.getFriendshipInfoList(_player.userId, friendshipStatus, pageNumber, itemsPerPage);
 
+         // Determine if the friends are online
+         foreach (FriendshipInfo friend in friendshipInfoList) {
+            friend.isOnline = ServerNetwork.self.isUserOnline(friend.friendUserId);
+         }
+
+         // Get the number of friends
+         int friendCount = 0;
+         if (friendshipStatus != Friendship.Status.Friends) {
+            friendCount = DB_Main.getFriendshipInfoCount(_player.userId, Friendship.Status.Friends);
+         } else {
+            friendCount = totalFriendInfoCount;
+         }
+
          // Get the number of received (pending) friendship requests
          int pendingRequestCount = 0;
          if (friendshipStatus != Friendship.Status.InviteReceived) {
@@ -1602,7 +1654,7 @@ public class RPCManager : NetworkBehaviour {
 
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_ReceiveFriendshipInfo(_player.connectionToClient, friendshipInfoList.ToArray(), friendshipStatus, pageNumber, totalFriendInfoCount, pendingRequestCount);
+            Target_ReceiveFriendshipInfo(_player.connectionToClient, friendshipInfoList.ToArray(), friendshipStatus, pageNumber, totalFriendInfoCount, friendCount, pendingRequestCount);
          });
       });
    }

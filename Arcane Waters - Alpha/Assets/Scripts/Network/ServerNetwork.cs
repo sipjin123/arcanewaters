@@ -125,6 +125,19 @@ public class ServerNetwork : MonoBehaviour {
       return mapSummaries;
    }
 
+   public bool isUserOnline (int userId) {
+      bool isOnline = false;
+
+      foreach (Server server in servers) {
+         if (server.connectedUserIds.Contains(userId)) {
+            isOnline = true;
+            break;
+         }
+      }
+
+      return isOnline;
+   }
+
    protected IEnumerator CO_checkPhotonConnection () {
       // If we're not running a server, or already in a Photon room, we're done
       if (!NetworkServer.active || PhotonNetwork.room != null) {

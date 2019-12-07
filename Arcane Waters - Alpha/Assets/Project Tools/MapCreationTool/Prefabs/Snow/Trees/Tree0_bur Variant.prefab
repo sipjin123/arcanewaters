@@ -111,6 +111,7 @@ MonoBehaviour:
   title: Tree
   dataFields: []
   selectDataFields: []
+  customDataFields: []
 --- !u!1 &6979110954130830000
 GameObject:
   m_ObjectHideFlags: 0

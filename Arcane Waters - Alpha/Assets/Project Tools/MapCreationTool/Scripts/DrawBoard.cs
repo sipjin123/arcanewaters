@@ -55,7 +55,6 @@ namespace MapCreationTool
 
       private PlacedPrefab selectedPrefab;
 
-
       private void Awake () {
 
          eventCanvas = GetComponentInChildren<EventTrigger>();
@@ -466,6 +465,9 @@ namespace MapCreationTool
                } else if (Tools.tileGroup.type == TileGroupType.Wall) {
                   var group = Tools.tileGroup as WallGroup;
                   result.add(BoardChange.calculateWallChanges(group, layers[group.layer].subLayers[0], pointerWorldPosition));
+               } else if(Tools.tileGroup.type == TileGroupType.SeaMountain) {
+                  var group = Tools.tileGroup as SeaMountainGroup;
+                  result.add(BoardChange.calculateSeaMountainChanges(group, pointerWorldPosition, layers[PaletteData.MountainLayer].subLayers[Tools.mountainLayer]));
                }
             }
          } else if (Tools.toolType == ToolType.Fill) {
@@ -500,7 +502,7 @@ namespace MapCreationTool
          }
       }
       public string formSerializedData () {
-         return Serializer.serialize(layers, placedPrefabs, Tools.biome, Tools.boardSize, false);
+         return Serializer.serialize(layers, placedPrefabs, Tools.biome, Tools.editorType, Tools.boardSize, false);
       }
 
       public void ensurePreviewCleared () {
@@ -782,6 +784,15 @@ namespace MapCreationTool
             bot = offsetMin.y,
             right = offsetMax.x,
             top = offsetMax.y
+         };
+      }
+
+      public static SidesInt uniform(int n) {
+         return new SidesInt {
+            left = n,
+            bot = n,
+            right = n,
+            top = n
          };
       }
       public override string ToString () {

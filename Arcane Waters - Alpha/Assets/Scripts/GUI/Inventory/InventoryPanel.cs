@@ -9,7 +9,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
    #region Public Variables
 
    // The number of items to display per page
-   public static int ITEMS_PER_PAGE = 35;
+   public static int ITEMS_PER_PAGE = 42;
 
    // The container of the item cells
    public GameObject itemCellsContainer;

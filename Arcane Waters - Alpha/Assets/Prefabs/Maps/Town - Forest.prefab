@@ -31511,8 +31511,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdc884480543aaf44b9df8dd4ad431ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  areaTarget: SeaBottom
   spawnTarget: SeaBottomForestTownExit
-  spawnKeyTarget: SeaBottomForestTownExit
   newFacingDirection: 5
 --- !u!61 &61719887667959424
 BoxCollider2D:
@@ -31732,8 +31732,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdc884480543aaf44b9df8dd4ad431ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  areaTarget: Farm
   spawnTarget: Farm
-  spawnKeyTarget: Farm
   newFacingDirection: 1
 --- !u!61 &61878857969371804
 BoxCollider2D:
@@ -93550,8 +93550,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdc884480543aaf44b9df8dd4ad431ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  areaTarget: AdventureShop_Forest
   spawnTarget: ForestWeaponsInside
-  spawnKeyTarget: ForestWeaponsInside
   newFacingDirection: 1
 --- !u!61 &2315785694450605115
 BoxCollider2D:
@@ -93667,8 +93667,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdc884480543aaf44b9df8dd4ad431ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  areaTarget: Shipyard_Forest
   spawnTarget: ForestShipyardInside
-  spawnKeyTarget: ForestShipyardInside
   newFacingDirection: 1
 --- !u!61 &8952889572686887120
 BoxCollider2D:
@@ -93740,8 +93740,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdc884480543aaf44b9df8dd4ad431ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  areaTarget: MerchantShop_Forest
   spawnTarget: ForestMerchantInside
-  spawnKeyTarget: ForestMerchantInside
   newFacingDirection: 1
 --- !u!61 &6909347011949928032
 BoxCollider2D:

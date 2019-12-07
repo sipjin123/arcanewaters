@@ -3,17 +3,21 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
+using System.Linq;
 
 public class FriendListPanel : Panel
 {
 
    #region Public Variables
 
-   // The number of rows to display per page
-   public static int ROWS_PER_PAGE = 9;
+   // The number of rows to display per page, when displaying friendship requests
+   public static int ROWS_PER_PAGE_FOR_REQUESTS = 11;
 
    // The container of the friend rows
    public GameObject friendRowsContainer;
+
+   // The container of the friend rows
+   public GameObject friendRequestRowsContainer;
 
    // The prefab we use for creating friend rows
    public FriendListRow friendRowPrefab;
@@ -24,8 +28,18 @@ public class FriendListPanel : Panel
    // The prefab we use for creating sent friend request rows
    public FriendshipRequestSentRow friendshipRequestSentRowPrefab;
 
+   // The object wrapping the list used to display friends
+   public GameObject friendList;
+
+   // The object wrapping the list used to display friendship requests
+   public GameObject requestList;
+
    // The input field holding the name of the user to send a friendship invitation
    public InputField inviteInputField;
+
+   // Both texts of the 'Friends' tab
+   public Text friendsTabText;
+   public Text friendsTabUnderText;
 
    // Both texts of the 'Pending' tab
    public Text requestReceivedTabText;
@@ -61,34 +75,51 @@ public class FriendListPanel : Panel
    }
 
    public void refreshPanel () {
-      Global.player.rpc.Cmd_RequestFriendshipInfoFromServer(_currentPage, ROWS_PER_PAGE, _friendshipStatusFilter);
+      Global.player.rpc.Cmd_RequestFriendshipInfoFromServer(_currentPage, _rowsPerPage, _friendshipStatusFilter);
    }
 
    public void updatePanelWithFriendshipInfo (List<FriendshipInfo> friendshipInfoList, Friendship.Status friendshipStatus,
-      int pageNumber, int totalFriendInfoCount, int pendingRequestCount) {
+      int pageNumber, int totalFriendInfoCount, int friendCount, int pendingRequestCount) {
       _friendshipStatusFilter = friendshipStatus;
 
-      // Update the current page number
-      _currentPage = pageNumber;
+      // Check if the list is for friends or friendship requests
+      if (friendshipStatus == Friendship.Status.Friends) {
+         // Sort the list by online status
+         friendshipInfoList = friendshipInfoList.OrderByDescending(f => f.isOnline).ToList();
 
-      // Calculate the maximum page number
-      _maxPage = Mathf.CeilToInt((float) totalFriendInfoCount / ROWS_PER_PAGE);
-      if (_maxPage == 0) {
-         _maxPage = 1;
+         // Update the rows per page
+         _rowsPerPage = Friendship.MAX_FRIENDS;
+      } else {
+         // Update the current page number
+         _currentPage = pageNumber;
+
+         // Update the rows per page
+         _rowsPerPage = ROWS_PER_PAGE_FOR_REQUESTS;
+
+         // Calculate the maximum page number
+         _maxPage = Mathf.CeilToInt((float) totalFriendInfoCount / _rowsPerPage);
+         if (_maxPage == 0) {
+            _maxPage = 1;
+         }
+
+         // Update the current page text
+         pageNumberText.text = "Page " + _currentPage.ToString() + " of " + _maxPage.ToString();
+
+         // Update the navigation buttons
+         updateNavigationButtons();
       }
 
-      // Update the current page text
-      pageNumberText.text = "Page " + _currentPage.ToString() + " of " + _maxPage.ToString();
+      // Update the friends tab text
+      friendsTabText.text = "Friends * " + friendCount.ToString() + "/" + Friendship.MAX_FRIENDS.ToString();
+      friendsTabUnderText.text = friendsTabText.text;
 
       // Update the pending tab text
-      requestReceivedTabText.text = "Pending (" + pendingRequestCount.ToString() + ")";
+      requestReceivedTabText.text = "Pending * " + pendingRequestCount.ToString();
       requestReceivedTabUnderText.text = requestReceivedTabText.text;
-
-      // Update the navigation buttons
-      updateNavigationButtons();
 
       // Clear out any current items
       friendRowsContainer.DestroyChildren();
+      friendRequestRowsContainer.DestroyChildren();
 
       // Create the friend rows
       foreach (FriendshipInfo friend in friendshipInfoList) {
@@ -96,12 +127,12 @@ public class FriendListPanel : Panel
          switch (friendshipStatus) {
             case Friendship.Status.InviteSent:
                // Instantiate and initialize the row
-               FriendshipRequestSentRow rowSent = Instantiate(friendshipRequestSentRowPrefab, friendRowsContainer.transform, false);
+               FriendshipRequestSentRow rowSent = Instantiate(friendshipRequestSentRowPrefab, friendRequestRowsContainer.transform, false);
                rowSent.setRowForFriendshipInfo(friend);
                break;
             case Friendship.Status.InviteReceived:
                // Instantiate and initialize the row
-               FriendshipRequestReceivedRow rowReceived = Instantiate(friendshipRequestReceivedRowPrefab, friendRowsContainer.transform, false);
+               FriendshipRequestReceivedRow rowReceived = Instantiate(friendshipRequestReceivedRowPrefab, friendRequestRowsContainer.transform, false);
                rowReceived.setRowForFriendshipInfo(friend);
                break;
             case Friendship.Status.Friends:
@@ -123,6 +154,8 @@ public class FriendListPanel : Panel
             friendListTabButton.interactable = true;
             requestReceivedTabButton.interactable = true;
             requestSentTabButton.interactable = false;
+            friendList.SetActive(false);
+            requestList.SetActive(true);
             break;
          case Friendship.Status.InviteReceived:
             friendListTabCanvasGroup.alpha = 0f;
@@ -131,6 +164,8 @@ public class FriendListPanel : Panel
             friendListTabButton.interactable = true;
             requestReceivedTabButton.interactable = false;
             requestSentTabButton.interactable = true;
+            friendList.SetActive(false);
+            requestList.SetActive(true);
             break;
          case Friendship.Status.Friends:
             friendListTabCanvasGroup.alpha = 1f;
@@ -139,6 +174,8 @@ public class FriendListPanel : Panel
             friendListTabButton.interactable = false;
             requestReceivedTabButton.interactable = true;
             requestSentTabButton.interactable = true;
+            friendList.SetActive(true);
+            requestList.SetActive(false);
             break;
          default:
             break;
@@ -159,18 +196,21 @@ public class FriendListPanel : Panel
    public void onFriendListTabButtonPress () {
       _friendshipStatusFilter = Friendship.Status.Friends;
       _currentPage = 1;
+      _rowsPerPage = Friendship.MAX_FRIENDS;
       refreshPanel();
    }
 
    public void onInvitesReceivedTabButtonPress () {
       _friendshipStatusFilter = Friendship.Status.InviteReceived;
       _currentPage = 1;
+      _rowsPerPage = ROWS_PER_PAGE_FOR_REQUESTS;
       refreshPanel();
    }
 
    public void onInvitesSentTabButtonPress () {
       _friendshipStatusFilter = Friendship.Status.InviteSent;
       _currentPage = 1;
+      _rowsPerPage = ROWS_PER_PAGE_FOR_REQUESTS;
       refreshPanel();
    }
 
@@ -270,6 +310,9 @@ public class FriendListPanel : Panel
 
    // The maximum page index (starting at 1)
    private int _maxPage = 1;
+
+   // The number of rows per page
+   private int _rowsPerPage = Friendship.MAX_FRIENDS;
 
    // The ID of the selected friend
    private int _selectedFriendUserId;

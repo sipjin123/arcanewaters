@@ -65,6 +65,7 @@ public class AbilityPanel : Panel, IPointerClickHandler {
       equippedSkillCount = 0;
       abilityParent.DestroyChildren();
       abilityTemplateList = new List<AbilitySelectionTemplate>();
+
       foreach (AbilitySQLData ability in abilityLibrary) {
          AbilitySelectionTemplate template = Instantiate(abilityTemplate.gameObject, abilityParent.transform).GetComponent<AbilitySelectionTemplate>();
          BasicAbilityData abilityData = AbilityManager.getAbility(ability.abilityID, AbilityType.Standard);

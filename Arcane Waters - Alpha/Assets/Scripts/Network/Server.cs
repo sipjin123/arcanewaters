@@ -26,6 +26,9 @@ public class Server : Photon.PunBehaviour {
    // Keeps track of the random map summaries for this server
    public MapSummary[] mapSummaries = new MapSummary[Area.getRandomAreaKeys().Count];
 
+   // Keeps track of the users connected to this server
+   public HashSet<int> connectedUserIds = new HashSet<int>();
+
    #endregion
 
    private void Awake () {
@@ -50,6 +53,9 @@ public class Server : Photon.PunBehaviour {
    private void Start () {
       // Update our map summaries with the latest number of players
       InvokeRepeating("updateMapSummariesForThisServer", 5f, 5f);
+
+      // Update the online users
+      InvokeRepeating("checkOnlineUsers", 5.5f, 5f);
    }
 
    private void Update () {
@@ -79,6 +85,10 @@ public class Server : Photon.PunBehaviour {
             stream.SendNext(summary.playersCount);
             stream.SendNext(summary.maxPlayersCount);
          }
+
+         int[] connectedUserIdsArray = new int[connectedUserIds.Count];
+         connectedUserIds.CopyTo(connectedUserIdsArray);
+         stream.SendNext(connectedUserIdsArray);
       } else {
          // Someone else's object, receive data 
          id = (int) stream.ReceiveNext();
@@ -98,6 +108,12 @@ public class Server : Photon.PunBehaviour {
             summary.maxPlayersCount = (int) stream.ReceiveNext();
 
             this.mapSummaries[i] = summary;
+         }
+
+         int[] connectedUserIdsArray = (int[]) stream.ReceiveNext();
+         connectedUserIds.Clear();
+         foreach (int userId in connectedUserIdsArray) {
+            connectedUserIds.Add(userId);
          }
       }
    }
@@ -123,6 +139,19 @@ public class Server : Photon.PunBehaviour {
          }
 
          this.mapSummaries = mapSummaryList.ToArray();
+      }
+   }
+
+   protected void checkOnlineUsers () {
+      // Rebuilds the list of online users connected to this server
+      if (this.photonView.isMine) {
+         connectedUserIds.Clear();
+
+         foreach (NetEntity entity in MyNetworkManager.getPlayers().Values) {
+            if (entity != null && entity.connectionToClient != null) {
+               connectedUserIds.Add(entity.userId);
+            }
+         }
       }
    }
 

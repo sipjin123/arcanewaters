@@ -12,8 +12,8 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
    // The icon of the item
    public Image icon;
 
-   // The layout element component on the icon
-   public LayoutElement iconLayoutElement;
+   // The shadow of the icon
+   public Image iconShadow;
 
    // The text containing the amount of stacked items
    public TextMeshProUGUI itemCountText;
@@ -57,11 +57,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
             icon.sprite = defaultItemIcon;
             break;
          case Item.Category.CraftingIngredients:
-            icon.sprite = ImageManager.getSprite(item.getIconPath());
-
-            // Expand the size of the icon to fill the cell
-            iconLayoutElement.preferredHeight = 60;
-            iconLayoutElement.preferredWidth = 60;
+            icon.sprite = ImageManager.getSprite(item.getBorderlessIconPath());
             break;
          case Item.Category.Blueprint:
             icon.sprite = ImageManager.getSprite(item.getIconPath());
@@ -70,6 +66,9 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
             icon.sprite = defaultItemIcon;
             break;
       }
+
+      // Set the sprite of the shadow
+      iconShadow.sprite = icon.sprite;
 
       // Recolor
       if (_colorKey != null) {

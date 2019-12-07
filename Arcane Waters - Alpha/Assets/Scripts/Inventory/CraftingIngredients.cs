@@ -357,4 +357,8 @@ public class CraftingIngredients : RecipeItem
    public override string getIconPath () {
       return "Icons/CraftingIngredients/ingredient_" + this.type;
    }
+
+   public override string getBorderlessIconPath () {
+      return "Icons/CraftingIngredients/NoBorder/ingredient_" + this.type;
+   }
 }

@@ -176,6 +176,11 @@ public class Item {
       return "Icons/Weapons/" + itemTypeId;
    }
 
+   public virtual string getBorderlessIconPath () {
+      // Subclasses will override this
+      return getIconPath();
+   }
+
    public virtual ColorKey getColorKey () {
       // Subclasses will override this
       return new ColorKey(Global.player.gender, "" + itemTypeId);

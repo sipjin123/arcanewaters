@@ -16117,8 +16117,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdc884480543aaf44b9df8dd4ad431ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  areaTarget: SeaTop
   spawnTarget: OutsideTreasureSite
-  spawnKeyTarget: OutsideTreasureSite
   newFacingDirection: 7
 --- !u!61 &61849339849863044
 BoxCollider2D:

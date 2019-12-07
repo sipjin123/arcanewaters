@@ -14,12 +14,33 @@ public class FriendListRow : MonoBehaviour
    // The name of the area where the friend is located
    public Text friendAreaName;
 
+   // The online icon
+   public GameObject onlineIcon;
+
+   // The offline icon
+   public GameObject offlineIcon;
+
+   // The faction icon
+   public Image factionIcon;
+
+   // The level text
+   public Text level;
+
    #endregion
 
    public void setRowForFriendshipInfo (FriendshipInfo entry) {
       _friendUserId = entry.friendUserId;
       friendName.text = entry.friendName;
       friendAreaName.text = Area.getName(entry.friendAreaKey);
+      if (entry.isOnline) {
+         onlineIcon.SetActive(true);
+         offlineIcon.SetActive(false);
+      } else {
+         onlineIcon.SetActive(false);
+         offlineIcon.SetActive(true);
+      }
+      level.text = LevelUtil.levelForXp(entry.friendXP).ToString();
+      factionIcon.sprite = Faction.getShipIcon(entry.friendFaction);
    }
 
    public void onChatButtonPress () {

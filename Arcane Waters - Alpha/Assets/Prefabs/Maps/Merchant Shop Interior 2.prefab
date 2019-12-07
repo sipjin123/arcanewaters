@@ -645,8 +645,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdc884480543aaf44b9df8dd4ad431ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  areaTarget: StartingTown
   spawnTarget: ForestTownMerchantOutside
-  spawnKeyTarget: ForestTownMerchantOutside
   newFacingDirection: 5
 --- !u!61 &3863608298465093327
 BoxCollider2D:

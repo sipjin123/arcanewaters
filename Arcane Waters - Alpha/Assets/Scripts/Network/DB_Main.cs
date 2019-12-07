@@ -2735,7 +2735,7 @@ public class DB_Main : DB_MainStub {
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM friendship JOIN users ON friendship.friendUsrId = users.usrId " +
             "WHERE friendship.usrId=@usrId AND friendship.friendshipStatus=@friendshipStatus " +
-            "ORDER BY friendship.lastContactDate DESC LIMIT @start, @perPage", conn)) {
+            "ORDER BY users.usrName LIMIT @start, @perPage", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
