@@ -139,8 +139,8 @@ public class Enemy : NetEntity {
 
       // For now, require a sword to be equipped
       PlayerBodyEntity body = (PlayerBodyEntity) Global.player;
-      if (!body.weaponManager.isHoldingSword() && !body.weaponManager.isHoldingGun()) {
-         PanelManager.self.noticeScreen.show("You need to equip a sword to attack this enemy!");
+      if (!body.weaponManager.isHoldingWeapon()) {
+         PanelManager.self.noticeScreen.show("You need to equip a weapon to attack this enemy!");
          return;
       }
       

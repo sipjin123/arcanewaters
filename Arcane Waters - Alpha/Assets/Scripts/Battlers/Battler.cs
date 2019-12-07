@@ -33,7 +33,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    public static float KNOCKUP_LENGTH = .45f;
 
    // The amount of time it takes to animate a shake effect
-   public static float SHAKE_LENGTH = 1.3f;
+   public static float SHAKE_LENGTH = .75f;
 
    // The amount of time a projectile takes to reach its target
    public static float PROJECTILE_LENGTH = .35f;
@@ -173,7 +173,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    [HideInInspector] public BattlerDamagedEvent onBattlerDamaged = new BattlerDamagedEvent();
 
    // Determines the cast time for the aim animation
-   public const float AIM_CAST_TIME = .75f;
+   public const float AIM_CAST_TIME = 1.5f;
 
    #endregion
 
@@ -271,13 +271,13 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             D.error("DATA IS NULL");
          }
 
-         // Change sprite fetched from battler data
-         Sprite fetchSprite = ImageManager.getSprite(battlerData.imagePath);
-         if (fetchSprite != null) {
-            mainSpriteRenderer.sprite = fetchSprite;
-         }
-
          if (battlerType == BattlerType.AIEnemyControlled) {
+            // Change sprite fetched from battler data
+            Sprite fetchSprite = ImageManager.getSprite(battlerData.imagePath);
+            if (fetchSprite != null) {
+               mainSpriteRenderer.sprite = fetchSprite;
+            }
+            
             setBattlerAbilities(_alteredBattlerData.battlerAbilities);
 
             // Extra cooldown time for AI controlled battlers, so they do not attack instantly
@@ -604,6 +604,13 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       }
    }
 
+   public void modifyAnimSpeed (float speed) {
+      // Make all of our Simple Animation components play the animation
+      foreach (SimpleAnimation anim in _anims) {
+         anim.modifyAnimSpeed(speed);
+      }
+   }
+
    public IEnumerator animateDeath () {
       playAnim(Anim.Type.Death_East);
 
@@ -646,7 +653,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       }
 
       switch (globalAbilityData.abilityActionType) {
-         case AbilityActionType.CastSelf:
+         case AbilityActionType.CastToTarget:
             // TODO: INSERT BUFF LOGIC HERE
             break;
          case AbilityActionType.Melee:
@@ -798,24 +805,41 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             Vector2 sourcePos = getMagicGroundPosition() + new Vector2(offsetX, offsetY);
             Vector2 targetPos = targetBattler.getMagicGroundPosition() + new Vector2(0, offsetY);
 
+            // Determines the animation speed modification when playing shoot animation
+            float shootAnimSpeed = 1.5f;
+
+            // TODO: Setup a function to optimize this variable ideally on the function [getPreMagicLength]
+            // Determines the cast reduction
+            float castReduction = .4f;
+
             // Start the attack animation that will eventually create the magic effect
             if (isFirstAction) {
+               // Aim gun animation
                sourceBattler.playAnim(Anim.Type.Aim_Gun);
                yield return new WaitForSeconds(AIM_CAST_TIME);
                sourceBattler.pauseAnim(false);
+
+               // Speed up animation then Animate Shoot clip for a Recoil Effect
+               sourceBattler.modifyAnimSpeed(shootAnimSpeed);
                sourceBattler.playAnim(Anim.Type.Shoot_Gun);
+               yield return new WaitForSeconds(.15f);
+
+               // Return to battle stance
+               sourceBattler.pauseAnim(false);
+               sourceBattler.playAnim(Anim.Type.Battle_East);
 
                AudioClip clip = AudioClipManager.self.getAudioClipData(abilityDataReference.castAudioClipPath).audioClip;
                SoundManager.playClipOneShotAtPoint(clip, sourceBattler.transform.position);
                Vector2 castEffectPosition = new Vector2(transform.position.x, transform.position.y - (mainSpriteRenderer.bounds.extents.y / 2));
 
                EffectManager.playCastAbilityVFX(sourceBattler, action, sourcePos);
-               EffectManager.playCastProjectile(sourceBattler, action, sourcePos, targetPos, abilityDataReference.getPreDamageLength - .1f);
+               EffectManager.playCastProjectile(sourceBattler, action, sourcePos, targetPos, sourceBattler.getPreMagicLength() - castReduction);
                EffectManager.show(Effect.Type.Cannon_Smoke, sourcePos);
             } 
 
             // Wait the appropriate amount of time before creating the magic effect
-            yield return new WaitForSeconds(sourceBattler.getPreMagicLength());
+            yield return new WaitForSeconds(sourceBattler.getPreMagicLength() - castReduction);
+            sourceBattler.modifyAnimSpeed(-1);
 
             // Play the sound associated with the magic efect
             AudioClip hitclip = AudioClipManager.self.getAudioClipData(abilityDataReference.hitAudioClipPath).audioClip;
@@ -832,8 +856,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
                targetBattler.StartCoroutine(targetBattler.animateKnockup());
                yield return new WaitForSeconds(KNOCKUP_LENGTH);
             } else if (abilityDataReference.hasShake) {
-               targetBattler.StartCoroutine(targetBattler.animateShake());
+               Coroutine shakeCoroutine = targetBattler.StartCoroutine(targetBattler.animateShake());
                yield return new WaitForSeconds(SHAKE_LENGTH);
+               targetBattler.StopCoroutine(shakeCoroutine);
+               targetBattler.playAnim(Anim.Type.Battle_East);
             }
             BattleUIManager.self.showDamageText(action, targetBattler);
 
@@ -942,7 +968,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
          // We want the offset to be 0 at the beginning and end, and 1 at the middle
          float degrees = (timePassed / KNOCKUP_LENGTH) * 180;
          float radians = degrees * Mathf.Deg2Rad;
-         float yOffset = Mathf.Sin(radians) * .8f;
+         float yOffset = Mathf.Sin(radians) * .4f;
 
          // Add a positional offset to our starting position
          transform.position = new Vector3(
@@ -1409,12 +1435,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
       // There weren't any available targets still alive
       return null;
-   }
-
-   public void unPauseAnims () {
-      for (int i = 0; i < _anims.Count; i++) {
-         _anims[i].isPaused = false;
-      }
    }
 
    public List<Battler> getTeam () {

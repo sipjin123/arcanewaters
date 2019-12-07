@@ -161,5 +161,5 @@ public enum AbilityActionType
    Projectile = 3,       // Created just in case, replace if ranged can do anything projectile does
    Cancel = 4,
    StanceChange = 5,
-   CastSelf = 6
+   CastToTarget = 6
 }

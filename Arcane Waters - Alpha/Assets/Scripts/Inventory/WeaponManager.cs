@@ -61,11 +61,11 @@ public class WeaponManager : EquipmentManager {
       }
    }
 
-   public bool isHoldingSword () {
-      return weaponType.ToString().ToLowerInvariant().Contains("sword");
-   }
-   public bool isHoldingGun () {
-      return weaponType.ToString().ToLowerInvariant().Contains("gun");
+   public bool isHoldingWeapon () {
+      if (weaponType.ToString().ToLowerInvariant().Contains("sword") || weaponType.ToString().ToLowerInvariant().Contains("gun")) {
+         return true;
+      }
+      return false;
    }
 
    [ClientRpc]

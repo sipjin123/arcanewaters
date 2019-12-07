@@ -51,6 +51,12 @@ public class SimpleAnimation : ClientMonoBehaviour {
       _image = GetComponent<Image>();
    }
 
+   public void modifyAnimSpeed (float speed) {
+      CancelInvoke();
+      frameLengthOverride = speed;
+      Start();
+   }
+
    private void Start () {
       if (!Application.isBatchMode) {
          // Load our sprites

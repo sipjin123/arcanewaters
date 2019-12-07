@@ -8,10 +8,10 @@ public class BattlerProjectile : MonoBehaviour {
    #region Public Variables
 
    // If projectile has initialized
-   public bool init;
+   public bool isInitialized;
 
    // The original position of the projectile
-   public Vector2 originPosition; 
+   public Vector2 startPosition; 
 
    // The target position of the projectile
    public Vector2 targetPosition;
@@ -19,27 +19,27 @@ public class BattlerProjectile : MonoBehaviour {
    // The time before the projectile reaches target
    public float timeToReachTarget;
 
-   // The timer of the object
-   public float time;
+   // The life time of the object
+   public float timeAlive;
 
-   // The magnitude target before the projectile is destroyed
-   public const float STOP_MAGNITUDE = .95f;
+   // Distance to the target before stopping
+   public const float STOP_DISTANCE = .1f;
 
    #endregion
 
-   public void setTrajectory (Vector2 originPosition, Vector2 targetPosition, float targetTime) {
-      init = true;
-      this.originPosition = originPosition;
+   public void setTrajectory (Vector2 startPos, Vector2 targetPosition, float targetTime) {
+      isInitialized = true;
+      this.startPosition = startPos;
       this.targetPosition = targetPosition;
-      time = 0;
+      timeAlive = 0;
       timeToReachTarget = targetTime;
    }
 
    private void Update () {
-      if (init) {
-         time += Time.deltaTime / timeToReachTarget;
-         transform.position = Vector2.Lerp(originPosition, targetPosition, time);
-         if (time >= STOP_MAGNITUDE) {
+      if (isInitialized) {
+         timeAlive += Time.deltaTime / timeToReachTarget;
+         transform.position = Vector2.Lerp(startPosition, targetPosition, timeAlive);
+         if (Vector2.Distance(transform.position, targetPosition) < STOP_DISTANCE) {
             gameObject.SetActive(false);
             Destroy(this.gameObject);
          }

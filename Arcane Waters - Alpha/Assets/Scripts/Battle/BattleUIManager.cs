@@ -359,7 +359,7 @@ public class BattleUIManager : MonoBehaviour {
          targetEnemyCG.Show();
          mainPlayerRectCG.Show();
 
-         playerBattler.unPauseAnims();
+         playerBattler.pauseAnim(false);
       });
 
       // Whenever we select our local battler, we prepare UI positioning of the ring
