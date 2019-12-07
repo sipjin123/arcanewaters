@@ -23,7 +23,7 @@
   </castSpritesPath>
   <FXTimePerFrame>0.06</FXTimePerFrame>
   <baseDamage>10</baseDamage>
-  <hasShake>false</hasShake>
+  <hasShake>true</hasShake>
   <hasKnockup>false</hasKnockup>
   <abilityActionType>Ranged</abilityActionType>
   <canBeBlocked>true</canBeBlocked>

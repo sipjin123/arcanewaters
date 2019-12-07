@@ -6,7 +6,7 @@
   <itemIconPath>Assets/Sprites/Icons/Weapons/Sword_Wind.png</itemIconPath>
   <levelRequirement>1</levelRequirement>
   <hitSpritesPath>
-    <string>Assets/Sprites/Effects/logo_twinkle_large.png</string>
+    <string>Assets/Sprites/Effects/slash_air.png</string>
   </hitSpritesPath>
   <elementType>Air</elementType>
   <hitAudioClipPath>Assets/Resources/Sound/Effects/Slash_Lightning.ogg</hitAudioClipPath>

@@ -119,10 +119,10 @@ TextureImporter:
       name: ranged_water_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 40
-        width: 32
-        height: 40
+        x: 96
+        y: 0
+        width: 48
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -130,7 +130,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 341c3c503666d5a4a89b8a44caf86154
+      spriteID: 185bf6300cb7e64409ecc5f465e68b29
       internalID: 1902115522178204598
       vertices: []
       indices: 
@@ -140,10 +140,10 @@ TextureImporter:
       name: ranged_water_1
       rect:
         serializedVersion: 2
-        x: 32
-        y: 40
-        width: 32
-        height: 40
+        x: 144
+        y: 0
+        width: 48
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -151,7 +151,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 058e723256502f34b8ffacb763880e54
+      spriteID: 7ba77c3c7c3c862489a2e9382faa4017
       internalID: -7780661676867157472
       vertices: []
       indices: 
@@ -161,10 +161,10 @@ TextureImporter:
       name: ranged_water_2
       rect:
         serializedVersion: 2
-        x: 64
-        y: 40
-        width: 32
-        height: 40
+        x: 192
+        y: 0
+        width: 48
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -172,7 +172,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fc805052cfd976f4bb9ba6186a7d53c1
+      spriteID: 3ce85d9935f360041b9f22919af3acfa
       internalID: 1073609008051949189
       vertices: []
       indices: 
@@ -182,10 +182,10 @@ TextureImporter:
       name: ranged_water_3
       rect:
         serializedVersion: 2
-        x: 96
-        y: 40
-        width: 32
-        height: 40
+        x: 240
+        y: 0
+        width: 48
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -193,7 +193,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5efbe5100ffdede4ea330fd4645e480e
+      spriteID: b653de45ccb41bc4ab59d0770170db1e
       internalID: -8760271226851236408
       vertices: []
       indices: 
@@ -203,10 +203,10 @@ TextureImporter:
       name: ranged_water_4
       rect:
         serializedVersion: 2
-        x: 0
+        x: 288
         y: 0
-        width: 32
-        height: 40
+        width: 48
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -214,7 +214,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b8afee95556e3134cb7a490a8e1e4ed9
+      spriteID: 552fe1f4672b21e46ae3cfa8bf1fc0da
       internalID: -5980092935874100411
       vertices: []
       indices: 
@@ -224,10 +224,10 @@ TextureImporter:
       name: ranged_water_5
       rect:
         serializedVersion: 2
-        x: 32
+        x: 336
         y: 0
-        width: 32
-        height: 40
+        width: 48
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -235,29 +235,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d99dcfcd6e06b5140ab2cdfd103c859f
+      spriteID: 66020dd190cfe8e4497e44e6a4cfea0b
       internalID: -2286997113129270962
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ranged_water_6
-      rect:
-        serializedVersion: 2
-        x: 64
-        y: 0
-        width: 32
-        height: 40
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: d0345449c28abfb45a3a947f36efe001
-      internalID: 4847667156251096448
       vertices: []
       indices: 
       edges: []

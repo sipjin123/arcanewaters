@@ -24,7 +24,7 @@
   <FXTimePerFrame>0.06</FXTimePerFrame>
   <baseDamage>10</baseDamage>
   <hasShake>false</hasShake>
-  <hasKnockup>false</hasKnockup>
+  <hasKnockup>true</hasKnockup>
   <abilityActionType>Ranged</abilityActionType>
   <canBeBlocked>true</canBeBlocked>
 </AttackAbilityData>

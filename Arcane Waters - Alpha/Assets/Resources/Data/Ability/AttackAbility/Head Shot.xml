@@ -6,7 +6,7 @@
   <itemIconPath>Assets/Sprites/Icons/Weapons/gun_2.png</itemIconPath>
   <levelRequirement>1</levelRequirement>
   <hitSpritesPath>
-    <string>Undefined</string>
+    <string>Assets/Sprites/Effects/ranged_physical.png</string>
   </hitSpritesPath>
   <elementType>Fire</elementType>
   <hitAudioClipPath />

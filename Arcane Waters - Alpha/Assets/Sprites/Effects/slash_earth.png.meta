@@ -1,40 +1,25 @@
 fileFormatVersion: 2
-guid: 44772565958ebd94e97ad1557d832ef9
+guid: 7cb1894078acd5c4a968b1dcb0233852
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3990867382008751699
-    second: LightningEffect_0
+      213: -180191895081226029
+    second: slash_earth_0
   - first:
-      213: -383448099949969785
-    second: LightningEffect_1
+      213: 357665128399432525
+    second: slash_earth_1
   - first:
-      213: -4180183747161733719
-    second: LightningEffect_2
+      213: 1758175835615983637
+    second: slash_earth_2
   - first:
-      213: 1036609945976456190
-    second: LightningEffect_3
+      213: 6705379910424713724
+    second: slash_earth_3
   - first:
-      213: 4054432977817172626
-    second: LightningEffect_4
+      213: 6507689537362698775
+    second: slash_earth_4
   - first:
-      213: 2091744689886580150
-    second: ranged_air_0
-  - first:
-      213: 712301218537259732
-    second: ranged_air_1
-  - first:
-      213: -7985333410613771358
-    second: ranged_air_2
-  - first:
-      213: 5831212497030095170
-    second: ranged_air_3
-  - first:
-      213: 1809746579243243085
-    second: ranged_air_4
-  - first:
-      213: -2060489452124992129
-    second: ranged_air_5
+      213: 3776145049212344507
+    second: slash_earth_5
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -102,7 +87,7 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
     maxTextureSize: 2048
@@ -114,12 +99,12 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ranged_air_0
+      name: slash_earth_0
       rect:
         serializedVersion: 2
         x: 96
@@ -133,14 +118,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c846feeb656de0a489b38538fad8581a
-      internalID: 2091744689886580150
+      spriteID: 7d2e14e5f4548f9449c6975c2922b872
+      internalID: -180191895081226029
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ranged_air_1
+      name: slash_earth_1
       rect:
         serializedVersion: 2
         x: 144
@@ -154,14 +139,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: aeda93a5582c3c74db399a071bf7da88
-      internalID: 712301218537259732
+      spriteID: c93d7dc639bea4047b40a37de0d7f933
+      internalID: 357665128399432525
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ranged_air_2
+      name: slash_earth_2
       rect:
         serializedVersion: 2
         x: 192
@@ -175,14 +160,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f84c7c93a49813f418d2e9079d4ccf9e
-      internalID: -7985333410613771358
+      spriteID: 8ff1e886b2d5fc342ac431b434158ba4
+      internalID: 1758175835615983637
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ranged_air_3
+      name: slash_earth_3
       rect:
         serializedVersion: 2
         x: 240
@@ -196,14 +181,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ed975d5007cdc4f48b74d6a0669a12fa
-      internalID: 5831212497030095170
+      spriteID: 3538e0722a9528849950d3dce5ffd118
+      internalID: 6705379910424713724
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ranged_air_4
+      name: slash_earth_4
       rect:
         serializedVersion: 2
         x: 288
@@ -217,14 +202,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 94faf8edf901d82408e524b02477fb24
-      internalID: 1809746579243243085
+      spriteID: 79734066e9c4ef240b2909aed3d61298
+      internalID: 6507689537362698775
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ranged_air_5
+      name: slash_earth_5
       rect:
         serializedVersion: 2
         x: 336
@@ -238,8 +223,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a6d1a916e32fa1845a244caa11b86f9f
-      internalID: -2060489452124992129
+      spriteID: 9f16629488523b442a9ca0e55acb34ec
+      internalID: 3776145049212344507
       vertices: []
       indices: 
       edges: []
@@ -247,7 +232,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 4207260f28928494eb750fae9656fffe
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 

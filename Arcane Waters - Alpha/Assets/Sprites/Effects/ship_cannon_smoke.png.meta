@@ -1,40 +1,37 @@
 fileFormatVersion: 2
-guid: 44772565958ebd94e97ad1557d832ef9
+guid: d62a0c6eb12a0f74fbe3ad6bf5f1d1c1
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3990867382008751699
-    second: LightningEffect_0
+      213: 8034157354613793373
+    second: ship_cannon_smoke_0
   - first:
-      213: -383448099949969785
-    second: LightningEffect_1
+      213: -2506609352556278295
+    second: ship_cannon_smoke_1
   - first:
-      213: -4180183747161733719
-    second: LightningEffect_2
+      213: -292677544661613902
+    second: ship_cannon_smoke_2
   - first:
-      213: 1036609945976456190
-    second: LightningEffect_3
+      213: 6177949120929376970
+    second: ship_cannon_smoke_3
   - first:
-      213: 4054432977817172626
-    second: LightningEffect_4
+      213: -6566189794750989421
+    second: ship_cannon_smoke_4
   - first:
-      213: 2091744689886580150
-    second: ranged_air_0
+      213: -6252488294997535426
+    second: ship_cannon_smoke_5
   - first:
-      213: 712301218537259732
-    second: ranged_air_1
+      213: -4545099116908837479
+    second: ship_cannon_smoke_6
   - first:
-      213: -7985333410613771358
-    second: ranged_air_2
+      213: -2422718957842139106
+    second: ship_cannon_smoke_7
   - first:
-      213: 5831212497030095170
-    second: ranged_air_3
+      213: 8632113401562722033
+    second: ship_cannon_smoke_8
   - first:
-      213: 1809746579243243085
-    second: ranged_air_4
-  - first:
-      213: -2060489452124992129
-    second: ranged_air_5
+      213: -2957431509244692772
+    second: ship_cannon_smoke_9
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -102,7 +99,7 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
     maxTextureSize: 2048
@@ -114,12 +111,54 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ranged_air_0
+      name: ship_cannon_smoke_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 15c12af6afda1214eb8873a05d142266
+      internalID: 8034157354613793373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ship_cannon_smoke_1
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 0
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 797a67295d8128246b15ce94b0c32dc7
+      internalID: -2506609352556278295
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ship_cannon_smoke_2
       rect:
         serializedVersion: 2
         x: 96
@@ -133,14 +172,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c846feeb656de0a489b38538fad8581a
-      internalID: 2091744689886580150
+      spriteID: d7444f7b91788e34c81f8b0e4c989b16
+      internalID: -292677544661613902
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ranged_air_1
+      name: ship_cannon_smoke_3
       rect:
         serializedVersion: 2
         x: 144
@@ -154,14 +193,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: aeda93a5582c3c74db399a071bf7da88
-      internalID: 712301218537259732
+      spriteID: 74131d6095398af4ca889f22b7eccad8
+      internalID: 6177949120929376970
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ranged_air_2
+      name: ship_cannon_smoke_4
       rect:
         serializedVersion: 2
         x: 192
@@ -175,14 +214,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f84c7c93a49813f418d2e9079d4ccf9e
-      internalID: -7985333410613771358
+      spriteID: be62b71738476af4eb653b8221b35608
+      internalID: -6566189794750989421
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ranged_air_3
+      name: ship_cannon_smoke_5
       rect:
         serializedVersion: 2
         x: 240
@@ -196,14 +235,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ed975d5007cdc4f48b74d6a0669a12fa
-      internalID: 5831212497030095170
+      spriteID: 05762f08d7f45264e81f12a78ecc2588
+      internalID: -6252488294997535426
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ranged_air_4
+      name: ship_cannon_smoke_6
       rect:
         serializedVersion: 2
         x: 288
@@ -217,14 +256,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 94faf8edf901d82408e524b02477fb24
-      internalID: 1809746579243243085
+      spriteID: 391b664defdd79046a5c6343bccddf02
+      internalID: -4545099116908837479
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ranged_air_5
+      name: ship_cannon_smoke_7
       rect:
         serializedVersion: 2
         x: 336
@@ -238,8 +277,50 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a6d1a916e32fa1845a244caa11b86f9f
-      internalID: -2060489452124992129
+      spriteID: 765ce638fa486c941a37e0ab76b01cbb
+      internalID: -2422718957842139106
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ship_cannon_smoke_8
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 12434448a741cb94da7a8505f93d5598
+      internalID: 8632113401562722033
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ship_cannon_smoke_9
+      rect:
+        serializedVersion: 2
+        x: 432
+        y: 0
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9053681acb0d03f46a45e05e4c5165c6
+      internalID: -2957431509244692772
       vertices: []
       indices: 
       edges: []
@@ -247,7 +328,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 4207260f28928494eb750fae9656fffe
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 

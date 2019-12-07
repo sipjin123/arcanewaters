@@ -1,40 +1,25 @@
 fileFormatVersion: 2
-guid: 44772565958ebd94e97ad1557d832ef9
+guid: dab477cb4647dd140a35fa5a8cdc5ae9
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3990867382008751699
-    second: LightningEffect_0
+      213: -1256475784142631459
+    second: slash_water_0
   - first:
-      213: -383448099949969785
-    second: LightningEffect_1
+      213: -6143998035736074632
+    second: slash_water_1
   - first:
-      213: -4180183747161733719
-    second: LightningEffect_2
+      213: -6182864727728417370
+    second: slash_water_2
   - first:
-      213: 1036609945976456190
-    second: LightningEffect_3
+      213: 1104813814861779527
+    second: slash_water_3
   - first:
-      213: 4054432977817172626
-    second: LightningEffect_4
+      213: -2829123744551397451
+    second: slash_water_4
   - first:
-      213: 2091744689886580150
-    second: ranged_air_0
-  - first:
-      213: 712301218537259732
-    second: ranged_air_1
-  - first:
-      213: -7985333410613771358
-    second: ranged_air_2
-  - first:
-      213: 5831212497030095170
-    second: ranged_air_3
-  - first:
-      213: 1809746579243243085
-    second: ranged_air_4
-  - first:
-      213: -2060489452124992129
-    second: ranged_air_5
+      213: 5886821378278727062
+    second: slash_water_5
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -102,7 +87,7 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
     maxTextureSize: 2048
@@ -114,12 +99,12 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ranged_air_0
+      name: slash_water_0
       rect:
         serializedVersion: 2
         x: 96
@@ -133,14 +118,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c846feeb656de0a489b38538fad8581a
-      internalID: 2091744689886580150
+      spriteID: b82056940998ba74c9d22b479d355725
+      internalID: -1256475784142631459
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ranged_air_1
+      name: slash_water_1
       rect:
         serializedVersion: 2
         x: 144
@@ -154,14 +139,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: aeda93a5582c3c74db399a071bf7da88
-      internalID: 712301218537259732
+      spriteID: 8eb3378bd86ed52448ed6fd01e63c3b7
+      internalID: -6143998035736074632
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ranged_air_2
+      name: slash_water_2
       rect:
         serializedVersion: 2
         x: 192
@@ -175,14 +160,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f84c7c93a49813f418d2e9079d4ccf9e
-      internalID: -7985333410613771358
+      spriteID: 48951fdcdb66d8d438d46ef643730527
+      internalID: -6182864727728417370
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ranged_air_3
+      name: slash_water_3
       rect:
         serializedVersion: 2
         x: 240
@@ -196,14 +181,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ed975d5007cdc4f48b74d6a0669a12fa
-      internalID: 5831212497030095170
+      spriteID: ce89e702427019e4a9ffab49c92c641a
+      internalID: 1104813814861779527
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ranged_air_4
+      name: slash_water_4
       rect:
         serializedVersion: 2
         x: 288
@@ -217,14 +202,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 94faf8edf901d82408e524b02477fb24
-      internalID: 1809746579243243085
+      spriteID: 46f9d6bea7f5eca43a65a11b6b171891
+      internalID: -2829123744551397451
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ranged_air_5
+      name: slash_water_5
       rect:
         serializedVersion: 2
         x: 336
@@ -238,8 +223,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a6d1a916e32fa1845a244caa11b86f9f
-      internalID: -2060489452124992129
+      spriteID: a2011aa502d2bfc498df5ef75ab7a795
+      internalID: 5886821378278727062
       vertices: []
       indices: 
       edges: []
@@ -247,7 +232,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 4207260f28928494eb750fae9656fffe
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
