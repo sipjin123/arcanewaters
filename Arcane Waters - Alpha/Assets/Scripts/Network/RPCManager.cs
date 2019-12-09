@@ -2306,7 +2306,22 @@ public class RPCManager : NetworkBehaviour {
             // Modifies equipment slot of the ability (Slots 0 -> 4 are Equipped and Slots -1 are Unequipped)
             sqlData.equipSlotIndex = equipSlot;
 
-            // Updates the ability
+            // Reorder the abilities by equipment slot
+            abilityDataList = abilityDataList.OrderBy(a => a.equipSlotIndex).ToList();
+
+            // Reassign the equipment slot to remove gaps
+            int slotIndex = 0;
+            foreach(AbilitySQLData data in abilityDataList) {
+               if (data.equipSlotIndex != -1) {
+                  data.equipSlotIndex = slotIndex;
+                  slotIndex++;
+
+                  // Save the slot change
+                  DB_Main.updateAbilitiesData(_player.userId, data);
+               }
+            }
+
+            // Make sure that the requested ability update is saved
             DB_Main.updateAbilitiesData(_player.userId, sqlData);
          }
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -2388,16 +2403,14 @@ public class RPCManager : NetworkBehaviour {
          List<AbilitySQLData> abilityDataList = DB_Main.getAllAbilities(_player.userId);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            List<AbilitySQLData> equippedAbilityDataList = abilityDataList.FindAll(_ => _.equipSlotIndex >= 0);
-
             // Provides skill panel with all the abilities of the player 
-            Target_ReceiveSkillsForSkillPanel(_player.connectionToClient, abilityDataList.ToArray(), equippedAbilityDataList.ToArray());
+            Target_ReceiveSkillsForSkillPanel(_player.connectionToClient, abilityDataList.ToArray());
          });
       });
    }
 
    [TargetRpc]
-   public void Target_ReceiveSkillsForSkillPanel (NetworkConnection connection, AbilitySQLData[] allAbilities, AbilitySQLData[] equippedAbilities) {
+   public void Target_ReceiveSkillsForSkillPanel (NetworkConnection connection, AbilitySQLData[] abilityList) {
       // Make sure the panel is showing
       AbilityPanel panel = (AbilityPanel) PanelManager.self.get(Panel.Type.Ability_Panel);
 
@@ -2406,7 +2419,7 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Update the Skill Panel with the abilities we received from the server
-      panel.receiveDataFromServer(allAbilities, new List<AbilitySQLData>(equippedAbilities));
+      panel.receiveDataFromServer(abilityList);
    }
 
    [TargetRpc]

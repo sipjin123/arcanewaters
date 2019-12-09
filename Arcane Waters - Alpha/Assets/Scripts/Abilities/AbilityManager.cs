@@ -8,6 +8,9 @@ public class AbilityManager : MonoBehaviour
 {
    #region Public Variables
 
+   // The maximum number of abilities that can be equipped in combat
+   public static int MAX_EQUIPPED_ABILITIES = 5;
+
    // A convenient self reference
    public static AbilityManager self;
 
