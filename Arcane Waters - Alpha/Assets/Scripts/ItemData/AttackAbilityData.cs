@@ -18,6 +18,9 @@ public class AttackAbilityData : BasicAbilityData {
    // Has knockup?
    public bool hasKnockup;
 
+   // Has knockBack?
+   public bool hasKnockBack;
+
    // Determines the action type
    public AbilityActionType abilityActionType;
 
@@ -44,6 +47,7 @@ public class AttackAbilityData : BasicAbilityData {
       data.hasShake = datacopy.hasShake;
       data.baseDamage = datacopy.baseDamage;
       data.canBeBlocked = datacopy.canBeBlocked;
+      data.hasKnockBack = datacopy.hasKnockBack;
       data.abilityActionType = datacopy.abilityActionType;
 
       return data;
@@ -51,7 +55,7 @@ public class AttackAbilityData : BasicAbilityData {
 
    // Builder for the Item creation window
    public static AttackAbilityData CreateInstance (BasicAbilityData basicAbilityData, bool _hasKnockup, int _damage, bool _hasShake,
-      AbilityActionType abilityActionType, bool _canBeBlocked) {
+      AbilityActionType abilityActionType, bool _canBeBlocked, bool _hasKnockBack) {
 
       AttackAbilityData data = new AttackAbilityData();
 
@@ -64,6 +68,7 @@ public class AttackAbilityData : BasicAbilityData {
       data.hasShake = _hasShake;
       data.baseDamage = _damage;
       data.canBeBlocked = _canBeBlocked;
+      data.hasKnockBack = _hasKnockBack;
       data.abilityActionType = abilityActionType;
 
       return data;

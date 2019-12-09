@@ -428,8 +428,9 @@ public class BattleManager : MonoBehaviour {
                wasCritical = Random.Range(0f, 1f) > .50f;
             }
 
-            // TODO: Temporary remove critical possibilities
+            // TODO: Temporary remove critical and block possibilities
             wasCritical = false;
+            wasBlocked = false;
 
             // Adjust the damage amount based on element, ability, and the target's armor
             Element element = abilityData.elementType;

@@ -187,7 +187,9 @@ public class EffectManager : MonoBehaviour {
 
       List<Sprite> castSprites = new List<Sprite>();
       foreach (string path in ability.castSpritesPath) {
-         castSprites.Add(ImageManager.getSprite(path));
+         foreach (Sprite sprite in ImageManager.getSprites(path)) {
+            castSprites.Add(sprite);
+         }
       }
       
       CombatEffect effectInstance = self.createCombatEffect(castSprites.ToArray(), targetPos, ability.FXTimePerFrame);

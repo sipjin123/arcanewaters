@@ -29,6 +29,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    // The amount of time left after a melee attack makes contact
    public static float POST_CONTACT_LENGTH = .25f;
 
+   // The amount of time it takes to animate a knock back effect
+   public static float KNOCKBACK_LENGTH = .45f;
+
    // The amount of time it takes to animate a knockup effect
    public static float KNOCKUP_LENGTH = .45f;
 
@@ -173,7 +176,16 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    [HideInInspector] public BattlerDamagedEvent onBattlerDamaged = new BattlerDamagedEvent();
 
    // Determines the cast time for the aim animation
-   public const float AIM_CAST_TIME = 1.5f;
+   public const float AIM_CAST_DELAY = .2f;
+
+   // Determines the cast time for the aim animation
+   public const float AIM_CAST_TIME = 1.0f;
+
+   // Determines the delay before animation the Shoot clip
+   public const float PRE_SHOOT_DELAY = .1f;
+
+   // Determines the delay before ending Shoot Pose
+   public const float POST_SHOOT_DELAY = .25f;
 
    #endregion
 
@@ -730,7 +742,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             // If the action was blocked, animate that
             if (action.wasBlocked) {
                targetBattler.StartCoroutine(targetBattler.animateBlock(sourceBattler));
-
             } else {
                // Play an appropriate attack animation effect
                effectPosition = targetBattler.getMagicGroundPosition() + new Vector2(0f, .25f);
@@ -800,51 +811,53 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
                yield break;
             }
 
-            float offsetX = -.35f;
-            float offsetY = .36f;
+            float offsetX = -.38f;
+            float offsetY = .28f;
             Vector2 sourcePos = getMagicGroundPosition() + new Vector2(offsetX, offsetY);
             Vector2 targetPos = targetBattler.getMagicGroundPosition() + new Vector2(0, offsetY);
 
             // Determines the animation speed modification when playing shoot animation
             float shootAnimSpeed = 1.5f;
 
-            // TODO: Setup a function to optimize this variable ideally on the function [getPreMagicLength]
-            // Determines the cast reduction
-            float castReduction = .4f;
-
             // Start the attack animation that will eventually create the magic effect
             if (isFirstAction) {
                // Aim gun animation
                sourceBattler.playAnim(Anim.Type.Aim_Gun);
-               yield return new WaitForSeconds(AIM_CAST_TIME);
-               sourceBattler.pauseAnim(false);
 
-               // Speed up animation then Animate Shoot clip for a Recoil Effect
-               sourceBattler.modifyAnimSpeed(shootAnimSpeed);
-               sourceBattler.playAnim(Anim.Type.Shoot_Gun);
-               yield return new WaitForSeconds(.15f);
-
-               // Return to battle stance
-               sourceBattler.pauseAnim(false);
-               sourceBattler.playAnim(Anim.Type.Battle_East);
+               yield return new WaitForSeconds(AIM_CAST_DELAY);
 
                AudioClip clip = AudioClipManager.self.getAudioClipData(abilityDataReference.castAudioClipPath).audioClip;
                SoundManager.playClipOneShotAtPoint(clip, sourceBattler.transform.position);
                Vector2 castEffectPosition = new Vector2(transform.position.x, transform.position.y - (mainSpriteRenderer.bounds.extents.y / 2));
-
                EffectManager.playCastAbilityVFX(sourceBattler, action, sourcePos);
-               EffectManager.playCastProjectile(sourceBattler, action, sourcePos, targetPos, sourceBattler.getPreMagicLength() - castReduction);
-               EffectManager.show(Effect.Type.Cannon_Smoke, sourcePos);
-            } 
+
+               yield return new WaitForSeconds(AIM_CAST_TIME);
+            }
+
+            // Shoot the projectile after playing cast time
+            EffectManager.playCastProjectile(sourceBattler, action, sourcePos, targetPos, sourceBattler.getProjectileTravelLength());
+            EffectManager.show(Effect.Type.Cannon_Smoke, sourcePos);
+            yield return new WaitForSeconds(PRE_SHOOT_DELAY);
+
+            // Speed up animation then Animate Shoot clip for a Recoil Effect
+            sourceBattler.modifyAnimSpeed(shootAnimSpeed);
+            sourceBattler.pauseAnim(false);
+            sourceBattler.playAnim(Anim.Type.Shoot_Gun);
+            yield return new WaitForSeconds(POST_SHOOT_DELAY);
+
+            // Return to battle stance
+            sourceBattler.pauseAnim(false);
+            sourceBattler.playAnim(Anim.Type.Battle_East);
 
             // Wait the appropriate amount of time before creating the magic effect
-            yield return new WaitForSeconds(sourceBattler.getPreMagicLength() - castReduction);
+            yield return new WaitForSeconds(sourceBattler.getProjectileTravelLength() - POST_SHOOT_DELAY - PRE_SHOOT_DELAY);
             sourceBattler.modifyAnimSpeed(-1);
 
-            // Play the sound associated with the magic efect
+            // Play the sound associated
             AudioClip hitclip = AudioClipManager.self.getAudioClipData(abilityDataReference.hitAudioClipPath).audioClip;
             SoundManager.playClipOneShotAtPoint(hitclip, targetBattler.transform.position);
 
+            // Play the magic vfx such as (Flame effect on fire element attacks)
             effectPosition = targetBattler.mainSpriteRenderer.bounds.center;
             EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, action, effectPosition);
 
@@ -860,6 +873,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
                yield return new WaitForSeconds(SHAKE_LENGTH);
                targetBattler.StopCoroutine(shakeCoroutine);
                targetBattler.playAnim(Anim.Type.Battle_East);
+            } else if (abilityDataReference.hasKnockBack) {
+               // Move the sprite back and forward to simulate knockback
+               targetBattler.StartCoroutine(targetBattler.animateKnockback());
+               yield return new WaitForSeconds(KNOCKBACK_LENGTH);
             }
             BattleUIManager.self.showDamageText(action, targetBattler);
 
@@ -1147,6 +1164,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    public float getPreMagicLength () {
       // The amount of time before the ground effect appears depends on the type of Battler
       return .6f;
+   }
+
+   public float getProjectileTravelLength () {
+      // The amount of time before the projectile reaches its target battler
+      return .2f;
    }
 
    public float getDefense (Element element) {
