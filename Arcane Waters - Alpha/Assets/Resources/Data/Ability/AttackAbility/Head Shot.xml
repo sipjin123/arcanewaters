@@ -25,6 +25,7 @@
   <baseDamage>10</baseDamage>
   <hasShake>true</hasShake>
   <hasKnockup>true</hasKnockup>
+  <hasKnockBack>false</hasKnockBack>
   <abilityActionType>Ranged</abilityActionType>
   <canBeBlocked>true</canBeBlocked>
 </AttackAbilityData>

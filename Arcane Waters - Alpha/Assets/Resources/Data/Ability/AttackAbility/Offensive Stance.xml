@@ -25,6 +25,7 @@
   <baseDamage>0</baseDamage>
   <hasShake>false</hasShake>
   <hasKnockup>false</hasKnockup>
+  <hasKnockBack>false</hasKnockBack>
   <abilityActionType>StanceChange</abilityActionType>
   <canBeBlocked>false</canBeBlocked>
 </AttackAbilityData>

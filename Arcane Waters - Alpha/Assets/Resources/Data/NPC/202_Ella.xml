@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<NPCData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <npcId>202</npcId>
+  <name>Ella</name>
+  <greetingTextStranger>Hey, stranger.</greetingTextStranger>
+  <greetingTextAcquaintance>Greetings.</greetingTextAcquaintance>
+  <greetingTextCasualFriend>We meet once again.</greetingTextCasualFriend>
+  <greetingTextCloseFriend>Hello again, good to see you.</greetingTextCloseFriend>
+  <greetingTextBestFriend>You are a great friend to me, and this town.</greetingTextBestFriend>
+  <giftOfferNPCText>What's this?</giftOfferNPCText>
+  <giftLikedText>Why thank you, that's very kind.</giftLikedText>
+  <giftNotLikedText>No, thank you.</giftNotLikedText>
+  <hasTradeGossipDialogue>true</hasTradeGossipDialogue>
+  <hasGoodbyeDialogue>true</hasGoodbyeDialogue>
+  <lastUsedQuestId>1</lastUsedQuestId>
+  <Quests>
+    <Quest>
+      <questId>0</questId>
+      <title>What do you think of the new mayor?</title>
+      <isRepeatable>false</isRepeatable>
+      <lastUsedNodeId>0</lastUsedNodeId>
+      <Nodes>
+        <Node>
+          <nodeId>0</nodeId>
+          <nextNodeId>-1</nextNodeId>
+          <npcText>He spends more time looking at himself in the mirror than helping this town.</npcText>
+          <userText>I'm sure he's doing his best.</userText>
+          <DeliverObjectives />
+          <ItemRewards />
+        </Node>
+      </Nodes>
+      <friendshipRankRequired>1</friendshipRankRequired>
+    </Quest>
+    <Quest>
+      <questId>1</questId>
+      <title>So, you're the mayor now?</title>
+      <isRepeatable>false</isRepeatable>
+      <lastUsedNodeId>1</lastUsedNodeId>
+      <Nodes>
+        <Node>
+          <nodeId>0</nodeId>
+          <nextNodeId>1</nextNodeId>
+          <npcText>Yes. Harnold would do nothing but strut around in his finery. Where did he even get those clothes from?</npcText>
+          <userText>I have absolutely no idea.</userText>
+          <DeliverObjectives />
+          <ItemRewards />
+        </Node>
+        <Node>
+          <nodeId>1</nodeId>
+          <nextNodeId>-1</nextNodeId>
+          <npcText>Anyway, this town has real problems to sort out. Bandits to the [east]  keep raiding us. Perhaps you could take care of them?</npcText>
+          <userText>Those bandits won't be a problem any more.</userText>
+          <DeliverObjectives>
+            <Deliver>
+              <itemTypeId>101</itemTypeId>
+              <count>5</count>
+              <category>1</category>
+            </Deliver>
+          </DeliverObjectives>
+          <ItemRewards>
+            <Item>
+              <itemTypeId>2</itemTypeId>
+              <count>4</count>
+              <category>6</category>
+            </Item>
+          </ItemRewards>
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>10</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+      </Nodes>
+      <friendshipRankRequired>2</friendshipRankRequired>
+    </Quest>
+  </Quests>
+  <Gifts>
+    <Gift>
+      <itemTypeId>6</itemTypeId>
+      <rewardedFriendship>2</rewardedFriendship>
+      <itemCategory>6</itemCategory>
+      <color1>0</color1>
+      <color2>0</color2>
+    </Gift>
+    <Gift>
+      <itemTypeId>150</itemTypeId>
+      <rewardedFriendship>5</rewardedFriendship>
+      <itemCategory>1</itemCategory>
+      <color1>0</color1>
+      <color2>0</color2>
+    </Gift>
+  </Gifts>
+  <iconPath />
+  <spritePath>Assets/Sprites/NPCs/Bodies/Gardener/gardener_1.png</spritePath>
+  <faction>8</faction>
+  <specialty>4</specialty>
+</NPCData>

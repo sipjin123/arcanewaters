@@ -45,6 +45,7 @@
         <baseDamage>0</baseDamage>
         <hasShake>false</hasShake>
         <hasKnockup>false</hasKnockup>
+        <hasKnockBack>false</hasKnockBack>
         <abilityActionType>StanceChange</abilityActionType>
         <canBeBlocked>false</canBeBlocked>
       </BasicAbilityData>
@@ -78,6 +79,7 @@
         <baseDamage>0</baseDamage>
         <hasShake>true</hasShake>
         <hasKnockup>true</hasKnockup>
+        <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Melee</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
       </BasicAbilityData>
@@ -111,6 +113,7 @@
         <baseDamage>0</baseDamage>
         <hasShake>false</hasShake>
         <hasKnockup>false</hasKnockup>
+        <hasKnockBack>false</hasKnockBack>
         <abilityActionType>StanceChange</abilityActionType>
         <canBeBlocked>false</canBeBlocked>
       </BasicAbilityData>
@@ -140,6 +143,7 @@
         <baseDamage>0</baseDamage>
         <hasShake>false</hasShake>
         <hasKnockup>false</hasKnockup>
+        <hasKnockBack>false</hasKnockBack>
         <abilityActionType>StanceChange</abilityActionType>
         <canBeBlocked>false</canBeBlocked>
       </BasicAbilityData>
@@ -169,6 +173,7 @@
         <baseDamage>10</baseDamage>
         <hasShake>true</hasShake>
         <hasKnockup>true</hasKnockup>
+        <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Melee</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
       </BasicAbilityData>
@@ -202,6 +207,7 @@
         <baseDamage>20</baseDamage>
         <hasShake>true</hasShake>
         <hasKnockup>false</hasKnockup>
+        <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Melee</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
       </BasicAbilityData>
@@ -231,6 +237,7 @@
         <baseDamage>10</baseDamage>
         <hasShake>true</hasShake>
         <hasKnockup>true</hasKnockup>
+        <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Melee</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
       </BasicAbilityData>
@@ -260,6 +267,7 @@
         <baseDamage>10</baseDamage>
         <hasShake>true</hasShake>
         <hasKnockup>true</hasKnockup>
+        <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Melee</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
       </BasicAbilityData>
@@ -289,6 +297,7 @@
         <baseDamage>10</baseDamage>
         <hasShake>true</hasShake>
         <hasKnockup>true</hasKnockup>
+        <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Ranged</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
       </BasicAbilityData>
@@ -312,12 +321,13 @@
         <apChange>3</apChange>
         <abilityCost>0</abilityCost>
         <castSpritesPath>
-          <string>Undefined</string>
+          <string>Assets/Sprites/Effects/pickup_effect.png</string>
         </castSpritesPath>
         <FXTimePerFrame>0.06</FXTimePerFrame>
         <baseDamage>10</baseDamage>
         <hasShake>false</hasShake>
         <hasKnockup>false</hasKnockup>
+        <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Ranged</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
       </BasicAbilityData>
@@ -341,12 +351,13 @@
         <apChange>3</apChange>
         <abilityCost>0</abilityCost>
         <castSpritesPath>
-          <string>Undefined</string>
+          <string>Assets/Sprites/Effects/block.png</string>
         </castSpritesPath>
         <FXTimePerFrame>0.06</FXTimePerFrame>
         <baseDamage>10</baseDamage>
         <hasShake>false</hasShake>
         <hasKnockup>true</hasKnockup>
+        <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Ranged</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
       </BasicAbilityData>
@@ -370,12 +381,13 @@
         <apChange>3</apChange>
         <abilityCost>0</abilityCost>
         <castSpritesPath>
-          <string>Undefined</string>
+          <string>Assets/Sprites/Effects/crop_water.png</string>
         </castSpritesPath>
         <FXTimePerFrame>0.06</FXTimePerFrame>
         <baseDamage>10</baseDamage>
         <hasShake>false</hasShake>
         <hasKnockup>false</hasKnockup>
+        <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Ranged</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
       </BasicAbilityData>
@@ -399,12 +411,13 @@
         <apChange>3</apChange>
         <abilityCost>0</abilityCost>
         <castSpritesPath>
-          <string>Undefined</string>
+          <string>Assets/Sprites/Effects/shock_collision.png</string>
         </castSpritesPath>
         <FXTimePerFrame>0.06</FXTimePerFrame>
         <baseDamage>10</baseDamage>
-        <hasShake>true</hasShake>
+        <hasShake>false</hasShake>
         <hasKnockup>false</hasKnockup>
+        <hasKnockBack>true</hasKnockBack>
         <abilityActionType>Ranged</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
       </BasicAbilityData>
@@ -440,6 +453,7 @@
         <baseDamage>0</baseDamage>
         <hasShake>false</hasShake>
         <hasKnockup>false</hasKnockup>
+        <hasKnockBack>false</hasKnockBack>
         <abilityActionType>StanceChange</abilityActionType>
         <canBeBlocked>false</canBeBlocked>
       </AttackAbilityData>
@@ -473,6 +487,7 @@
         <baseDamage>0</baseDamage>
         <hasShake>true</hasShake>
         <hasKnockup>true</hasKnockup>
+        <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Melee</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
       </AttackAbilityData>
@@ -506,6 +521,7 @@
         <baseDamage>0</baseDamage>
         <hasShake>false</hasShake>
         <hasKnockup>false</hasKnockup>
+        <hasKnockBack>false</hasKnockBack>
         <abilityActionType>StanceChange</abilityActionType>
         <canBeBlocked>false</canBeBlocked>
       </AttackAbilityData>
@@ -535,6 +551,7 @@
         <baseDamage>0</baseDamage>
         <hasShake>false</hasShake>
         <hasKnockup>false</hasKnockup>
+        <hasKnockBack>false</hasKnockBack>
         <abilityActionType>StanceChange</abilityActionType>
         <canBeBlocked>false</canBeBlocked>
       </AttackAbilityData>
@@ -564,6 +581,7 @@
         <baseDamage>10</baseDamage>
         <hasShake>true</hasShake>
         <hasKnockup>true</hasKnockup>
+        <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Melee</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
       </AttackAbilityData>
@@ -597,6 +615,7 @@
         <baseDamage>20</baseDamage>
         <hasShake>true</hasShake>
         <hasKnockup>false</hasKnockup>
+        <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Melee</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
       </AttackAbilityData>
@@ -626,6 +645,7 @@
         <baseDamage>10</baseDamage>
         <hasShake>true</hasShake>
         <hasKnockup>true</hasKnockup>
+        <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Melee</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
       </AttackAbilityData>
@@ -655,6 +675,7 @@
         <baseDamage>10</baseDamage>
         <hasShake>true</hasShake>
         <hasKnockup>true</hasKnockup>
+        <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Melee</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
       </AttackAbilityData>
@@ -684,6 +705,7 @@
         <baseDamage>10</baseDamage>
         <hasShake>true</hasShake>
         <hasKnockup>true</hasKnockup>
+        <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Ranged</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
       </AttackAbilityData>
@@ -707,12 +729,13 @@
         <apChange>3</apChange>
         <abilityCost>0</abilityCost>
         <castSpritesPath>
-          <string>Undefined</string>
+          <string>Assets/Sprites/Effects/pickup_effect.png</string>
         </castSpritesPath>
         <FXTimePerFrame>0.06</FXTimePerFrame>
         <baseDamage>10</baseDamage>
         <hasShake>false</hasShake>
         <hasKnockup>false</hasKnockup>
+        <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Ranged</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
       </AttackAbilityData>
@@ -736,12 +759,13 @@
         <apChange>3</apChange>
         <abilityCost>0</abilityCost>
         <castSpritesPath>
-          <string>Undefined</string>
+          <string>Assets/Sprites/Effects/block.png</string>
         </castSpritesPath>
         <FXTimePerFrame>0.06</FXTimePerFrame>
         <baseDamage>10</baseDamage>
         <hasShake>false</hasShake>
         <hasKnockup>true</hasKnockup>
+        <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Ranged</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
       </AttackAbilityData>
@@ -765,12 +789,13 @@
         <apChange>3</apChange>
         <abilityCost>0</abilityCost>
         <castSpritesPath>
-          <string>Undefined</string>
+          <string>Assets/Sprites/Effects/crop_water.png</string>
         </castSpritesPath>
         <FXTimePerFrame>0.06</FXTimePerFrame>
         <baseDamage>10</baseDamage>
         <hasShake>false</hasShake>
         <hasKnockup>false</hasKnockup>
+        <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Ranged</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
       </AttackAbilityData>
@@ -794,12 +819,13 @@
         <apChange>3</apChange>
         <abilityCost>0</abilityCost>
         <castSpritesPath>
-          <string>Undefined</string>
+          <string>Assets/Sprites/Effects/shock_collision.png</string>
         </castSpritesPath>
         <FXTimePerFrame>0.06</FXTimePerFrame>
         <baseDamage>10</baseDamage>
-        <hasShake>true</hasShake>
+        <hasShake>false</hasShake>
         <hasKnockup>false</hasKnockup>
+        <hasKnockBack>true</hasKnockBack>
         <abilityActionType>Ranged</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
       </AttackAbilityData>

@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<NPCData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <npcId>204</npcId>
+  <name>Thomas</name>
+  <greetingTextStranger>Hello. I love plants!</greetingTextStranger>
+  <greetingTextAcquaintance>Which plants are your favourites?</greetingTextAcquaintance>
+  <greetingTextCasualFriend>Plants are so interesting, aren't they?</greetingTextCasualFriend>
+  <greetingTextCloseFriend>Look at this flower I discovered!</greetingTextCloseFriend>
+  <greetingTextBestFriend>We both love plants so much!</greetingTextBestFriend>
+  <giftOfferNPCText>Are these...?</giftOfferNPCText>
+  <giftLikedText>Plants! Oh thank you.</giftLikedText>
+  <giftNotLikedText>Such a shame...</giftNotLikedText>
+  <hasTradeGossipDialogue>true</hasTradeGossipDialogue>
+  <hasGoodbyeDialogue>true</hasGoodbyeDialogue>
+  <lastUsedQuestId>1</lastUsedQuestId>
+  <Quests>
+    <Quest>
+      <questId>0</questId>
+      <title>Have you lost something in the grass?</title>
+      <isRepeatable>false</isRepeatable>
+      <lastUsedNodeId>0</lastUsedNodeId>
+      <Nodes>
+        <Node>
+          <nodeId>0</nodeId>
+          <nextNodeId>-1</nextNodeId>
+          <npcText>No, I'm trying to grow a hardier strain of corn. If you find any wild seeds in the lands [south] of here, I would be very grateful.</npcText>
+          <userText>I brought you those seeds you were looking for.</userText>
+          <DeliverObjectives>
+            <Deliver>
+              <itemTypeId>150</itemTypeId>
+              <count>3</count>
+              <category>1</category>
+            </Deliver>
+          </DeliverObjectives>
+          <ItemRewards />
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>20</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+      </Nodes>
+      <friendshipRankRequired>1</friendshipRankRequired>
+    </Quest>
+    <Quest>
+      <questId>1</questId>
+      <title>How are the new plants doing?</title>
+      <isRepeatable>false</isRepeatable>
+      <lastUsedNodeId>0</lastUsedNodeId>
+      <Nodes>
+        <Node>
+          <nodeId>0</nodeId>
+          <nextNodeId>-1</nextNodeId>
+          <npcText>Oh, they are much better suited to this environment. Although, they are a little... 'bitey'.</npcText>
+          <userText>The wildlife is certainly hardier down there.</userText>
+          <DeliverObjectives />
+          <ItemRewards />
+        </Node>
+      </Nodes>
+      <friendshipRankRequired>2</friendshipRankRequired>
+    </Quest>
+  </Quests>
+  <Gifts>
+    <Gift>
+      <itemTypeId>150</itemTypeId>
+      <rewardedFriendship>5</rewardedFriendship>
+      <itemCategory>1</itemCategory>
+      <color1>0</color1>
+      <color2>0</color2>
+    </Gift>
+    <Gift>
+      <itemTypeId>33</itemTypeId>
+      <rewardedFriendship>1</rewardedFriendship>
+      <itemCategory>6</itemCategory>
+      <color1>0</color1>
+      <color2>0</color2>
+    </Gift>
+    <Gift>
+      <itemTypeId>30</itemTypeId>
+      <rewardedFriendship>2</rewardedFriendship>
+      <itemCategory>6</itemCategory>
+      <color1>0</color1>
+      <color2>0</color2>
+    </Gift>
+    <Gift>
+      <itemTypeId>34</itemTypeId>
+      <rewardedFriendship>1</rewardedFriendship>
+      <itemCategory>6</itemCategory>
+      <color1>0</color1>
+      <color2>0</color2>
+    </Gift>
+  </Gifts>
+  <iconPath />
+  <spritePath>Assets/Sprites/NPCs/Bodies/Fisherman/fisherman_1.png</spritePath>
+  <faction>8</faction>
+  <specialty>2</specialty>
+</NPCData>

@@ -19,12 +19,13 @@
   <apChange>3</apChange>
   <abilityCost>0</abilityCost>
   <castSpritesPath>
-    <string>Undefined</string>
+    <string>Assets/Sprites/Effects/shock_collision.png</string>
   </castSpritesPath>
   <FXTimePerFrame>0.06</FXTimePerFrame>
   <baseDamage>10</baseDamage>
-  <hasShake>true</hasShake>
+  <hasShake>false</hasShake>
   <hasKnockup>false</hasKnockup>
+  <hasKnockBack>true</hasKnockBack>
   <abilityActionType>Ranged</abilityActionType>
   <canBeBlocked>true</canBeBlocked>
 </AttackAbilityData>

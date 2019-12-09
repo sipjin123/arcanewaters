@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+<NPCData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <npcId>201</npcId>
+  <name>Harnold</name>
+  <greetingTextStranger>And you are?</greetingTextStranger>
+  <greetingTextAcquaintance>Well met.</greetingTextAcquaintance>
+  <greetingTextCasualFriend>Hello again &lt;player_name&gt;.</greetingTextCasualFriend>
+  <greetingTextCloseFriend>Ah, we meet once more!</greetingTextCloseFriend>
+  <greetingTextBestFriend>Good to see you again!</greetingTextBestFriend>
+  <giftOfferNPCText>A gift, for me?</giftOfferNPCText>
+  <giftLikedText>This suits a man of my stature.</giftLikedText>
+  <giftNotLikedText>Well, this is quite terrible.</giftNotLikedText>
+  <hasTradeGossipDialogue>true</hasTradeGossipDialogue>
+  <hasGoodbyeDialogue>true</hasGoodbyeDialogue>
+  <lastUsedQuestId>1</lastUsedQuestId>
+  <Quests>
+    <Quest>
+      <questId>0</questId>
+      <title>Anything I can do for you, Mayor?</title>
+      <isRepeatable>false</isRepeatable>
+      <lastUsedNodeId>3</lastUsedNodeId>
+      <Nodes>
+        <Node>
+          <nodeId>0</nodeId>
+          <nextNodeId>1</nextNodeId>
+          <npcText>As the new town Mayor, my highest priority is to look the part. Bring me some good quality cloth - I need a proper gown after all!</npcText>
+          <userText>Here is the cloth you wanted.</userText>
+          <DeliverObjectives>
+            <Deliver>
+              <itemTypeId>7</itemTypeId>
+              <count>2</count>
+              <category>6</category>
+            </Deliver>
+          </DeliverObjectives>
+          <ItemRewards />
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>1</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+        <Node>
+          <nodeId>1</nodeId>
+          <nextNodeId>2</nextNodeId>
+          <npcText>Not wanted, needed! You must understand, I have to look my best. To that end, fetch me some furs. I shall have some new boots made.</npcText>
+          <userText>I have your furs. Lovely and warm!</userText>
+          <DeliverObjectives>
+            <Deliver>
+              <itemTypeId>10</itemTypeId>
+              <count>3</count>
+              <category>6</category>
+            </Deliver>
+          </DeliverObjectives>
+          <ItemRewards />
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>1</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+        <Node>
+          <nodeId>2</nodeId>
+          <nextNodeId>3</nextNodeId>
+          <npcText>It's not about warmth, it's about appearance! Now, all that remains is some onyx. I must have some matching jewellery fashioned.</npcText>
+          <userText>I found your precious stones.</userText>
+          <DeliverObjectives>
+            <Deliver>
+              <itemTypeId>11</itemTypeId>
+              <count>2</count>
+              <category>6</category>
+            </Deliver>
+          </DeliverObjectives>
+          <ItemRewards />
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>1</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+        <Node>
+          <nodeId>3</nodeId>
+          <nextNodeId>-1</nextNodeId>
+          <npcText>Finally! I now have everything I need to be a proper Mayor. Take this for your troubles.	</npcText>
+          <userText>Good luck!</userText>
+          <DeliverObjectives />
+          <ItemRewards>
+            <Item>
+              <itemTypeId>1</itemTypeId>
+              <count>5</count>
+              <category>6</category>
+            </Item>
+          </ItemRewards>
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>7</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+      </Nodes>
+      <friendshipRankRequired>1</friendshipRankRequired>
+    </Quest>
+    <Quest>
+      <questId>1</questId>
+      <title>Is everything all right?</title>
+      <isRepeatable>false</isRepeatable>
+      <lastUsedNodeId>0</lastUsedNodeId>
+      <Nodes>
+        <Node>
+          <nodeId>0</nodeId>
+          <nextNodeId>-1</nextNodeId>
+          <npcText>No - the people threw me out of office! I am mayor no longer. I don't understand. Maybe I needed a nice hat?</npcText>
+          <userText>Never mind, at least you look good.</userText>
+          <DeliverObjectives />
+          <ItemRewards />
+        </Node>
+      </Nodes>
+      <friendshipRankRequired>1</friendshipRankRequired>
+    </Quest>
+  </Quests>
+  <Gifts />
+  <iconPath />
+  <spritePath>Assets/Sprites/NPCs/Bodies/Glasses/glasses_1.png</spritePath>
+  <faction>1</faction>
+  <specialty>2</specialty>
+</NPCData>

@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<NPCData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <npcId>203</npcId>
+  <name>Marcus</name>
+  <greetingTextStranger>Good day.</greetingTextStranger>
+  <greetingTextAcquaintance>Welcome.</greetingTextAcquaintance>
+  <greetingTextCasualFriend>Hello again.</greetingTextCasualFriend>
+  <greetingTextCloseFriend>Happy to see you.</greetingTextCloseFriend>
+  <greetingTextBestFriend>Ah, my good friend!</greetingTextBestFriend>
+  <giftOfferNPCText>Oh...</giftOfferNPCText>
+  <giftLikedText>Very kind of you.</giftLikedText>
+  <giftNotLikedText>I don't need this.</giftNotLikedText>
+  <hasTradeGossipDialogue>false</hasTradeGossipDialogue>
+  <hasGoodbyeDialogue>true</hasGoodbyeDialogue>
+  <lastUsedQuestId>0</lastUsedQuestId>
+  <Quests>
+    <Quest>
+      <questId>0</questId>
+      <title>Is everything all right? You look worried.</title>
+      <isRepeatable>false</isRepeatable>
+      <lastUsedNodeId>2</lastUsedNodeId>
+      <Nodes>
+        <Node>
+          <nodeId>0</nodeId>
+          <nextNodeId>1</nextNodeId>
+          <npcText>My son, Luke, went with our goods on a trade ship last month, but I haven't heard from him since. I don't know what's happened.</npcText>
+          <userText>Is there anything I can do?</userText>
+          <DeliverObjectives />
+          <ItemRewards />
+        </Node>
+        <Node>
+          <nodeId>1</nodeId>
+          <nextNodeId>2</nextNodeId>
+          <npcText>The ship's last known location was by the [name/description of place]. Could you find him for me?</npcText>
+          <userText>I'm sorry, this is all that was left.</userText>
+          <DeliverObjectives>
+            <Deliver>
+              <itemTypeId>5</itemTypeId>
+              <count>1</count>
+              <category>2</category>
+            </Deliver>
+          </DeliverObjectives>
+          <ItemRewards />
+        </Node>
+        <Node>
+          <nodeId>2</nodeId>
+          <nextNodeId>-1</nextNodeId>
+          <npcText>Oh, my son... Thank you &lt;player_name&gt;. At least I can be at peace knowing what happened to him.</npcText>
+          <userText>Take care.</userText>
+          <DeliverObjectives />
+          <ItemRewards />
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>50</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+      </Nodes>
+      <friendshipRankRequired>1</friendshipRankRequired>
+    </Quest>
+  </Quests>
+  <Gifts>
+    <Gift>
+      <itemTypeId>3</itemTypeId>
+      <rewardedFriendship>1</rewardedFriendship>
+      <itemCategory>6</itemCategory>
+      <color1>0</color1>
+      <color2>0</color2>
+    </Gift>
+    <Gift>
+      <itemTypeId>5</itemTypeId>
+      <rewardedFriendship>1</rewardedFriendship>
+      <itemCategory>6</itemCategory>
+      <color1>0</color1>
+      <color2>0</color2>
+    </Gift>
+    <Gift>
+      <itemTypeId>2</itemTypeId>
+      <rewardedFriendship>2</rewardedFriendship>
+      <itemCategory>6</itemCategory>
+      <color1>0</color1>
+      <color2>0</color2>
+    </Gift>
+    <Gift>
+      <itemTypeId>1</itemTypeId>
+      <rewardedFriendship>5</rewardedFriendship>
+      <itemCategory>6</itemCategory>
+      <color1>0</color1>
+      <color2>0</color2>
+    </Gift>
+  </Gifts>
+  <iconPath />
+  <spritePath>Assets/Sprites/NPCs/Bodies/Hammer/hammer_1.png</spritePath>
+  <faction>6</faction>
+  <specialty>5</specialty>
+</NPCData>

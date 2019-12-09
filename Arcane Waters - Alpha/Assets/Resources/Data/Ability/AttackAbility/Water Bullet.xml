@@ -19,12 +19,13 @@
   <apChange>3</apChange>
   <abilityCost>0</abilityCost>
   <castSpritesPath>
-    <string>Undefined</string>
+    <string>Assets/Sprites/Effects/crop_water.png</string>
   </castSpritesPath>
   <FXTimePerFrame>0.06</FXTimePerFrame>
   <baseDamage>10</baseDamage>
   <hasShake>false</hasShake>
   <hasKnockup>false</hasKnockup>
+  <hasKnockBack>false</hasKnockBack>
   <abilityActionType>Ranged</abilityActionType>
   <canBeBlocked>true</canBeBlocked>
 </AttackAbilityData>
