@@ -30,14 +30,13 @@ public class MonsterManager : XmlManager {
 
    public void Awake () {
       self = this;
+
    }
 
    private void Start () {
-#if IS_SERVER_BUILD
+      #if IS_SERVER_BUILD
       initializeLandMonsterDataCache();
-#else
-      monsterDataAssets = null;
-#endif
+      #endif
    }
 
    public BattlerData requestBattler (Enemy.Type enemyType) {

@@ -67,6 +67,7 @@ public class MonsterSkillTemplate : MonoBehaviour {
    public Toggle hasShake;
    public Toggle hasKnockup;
    public Toggle canBeBlocked;
+   public Toggle hasKnockBack;
    public GameObject attackStatHolder;
 
    // Buff related stats
@@ -237,6 +238,7 @@ public class MonsterSkillTemplate : MonoBehaviour {
       hasShake.isOn = attackData.hasShake;
       hasKnockup.isOn = attackData.hasKnockup;
       canBeBlocked.isOn = attackData.canBeBlocked;
+      hasKnockBack.isOn = attackData.hasKnockBack;
 
       attackStatHolder.SetActive(true);
       buffStatHolder.SetActive(false);
@@ -329,7 +331,7 @@ public class MonsterSkillTemplate : MonoBehaviour {
          int.Parse(apChange.text),
          float.Parse(fxTimerPerFrame.text));
 
-      AttackAbilityData attackData = AttackAbilityData.CreateInstance(basicData, hasKnockup.isOn, int.Parse(baseDamage.text), hasShake.isOn, (AbilityActionType) abilityActionType.value, canBeBlocked.isOn);
+      AttackAbilityData attackData = AttackAbilityData.CreateInstance(basicData, hasKnockup.isOn, int.Parse(baseDamage.text), hasShake.isOn, (AbilityActionType) abilityActionType.value, canBeBlocked.isOn, hasKnockBack.isOn);
 
       return attackData;
    }
