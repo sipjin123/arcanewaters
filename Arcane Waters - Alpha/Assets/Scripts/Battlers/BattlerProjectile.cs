@@ -16,29 +16,27 @@ public class BattlerProjectile : MonoBehaviour {
    // The target position of the projectile
    public Vector2 targetPosition;
 
-   // The time before the projectile reaches target
-   public float timeToReachTarget;
-
-   // The life time of the object
-   public float timeAlive;
+   // The Speed of the projectile
+   public float projectileSpeed;
 
    // Distance to the target before stopping
    public const float STOP_DISTANCE = .1f;
 
+   // Reference to the sprite
+   public SpriteRenderer renderer;
+
    #endregion
 
-   public void setTrajectory (Vector2 startPos, Vector2 targetPosition, float targetTime) {
+   public void setTrajectory (Vector2 startPos, Vector2 targetPosition, float projectileSpeed) {
       isInitialized = true;
       this.startPosition = startPos;
       this.targetPosition = targetPosition;
-      timeAlive = 0;
-      timeToReachTarget = targetTime;
+      this.projectileSpeed = projectileSpeed;
    }
 
    private void Update () {
       if (isInitialized) {
-         timeAlive += Time.deltaTime / timeToReachTarget;
-         transform.position = Vector2.Lerp(startPosition, targetPosition, timeAlive);
+         transform.position = Vector2.MoveTowards(transform.position, targetPosition, projectileSpeed * Time.fixedDeltaTime);
          if (Vector2.Distance(transform.position, targetPosition) < STOP_DISTANCE) {
             gameObject.SetActive(false);
             Destroy(this.gameObject);

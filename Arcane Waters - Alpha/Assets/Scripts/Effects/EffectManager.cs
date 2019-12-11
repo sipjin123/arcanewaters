@@ -19,6 +19,9 @@ public class EffectManager : MonoBehaviour {
    // Self
    public static EffectManager self;
 
+   // The list of projectile info for associating sprites
+   public List<ProjectileInfo> projectileInfoList;
+
    #endregion
 
    public void Awake () {
@@ -144,10 +147,15 @@ public class EffectManager : MonoBehaviour {
    }
 
    // Used for executing a VFX in the target battler
-   public static void playCombatAbilityVFX (Battler attacker, Battler target, AttackAction action, Vector2 targetPos) {
+   public static void playCombatAbilityVFX (Battler attacker, Battler target, BattleAction action, Vector2 targetPos, BattleActionType actionType) {
       Weapon.Type attackerWeapon = attacker.weaponManager.weaponType;
 
-      AttackAbilityData ability = attacker.getAttackAbilities()[action.abilityInventoryIndex];
+      BasicAbilityData ability = new BasicAbilityData();
+      if (actionType == BattleActionType.Attack) {
+         ability = attacker.getAttackAbilities()[action.abilityInventoryIndex];
+      } else if (actionType == BattleActionType.BuffDebuff) {
+         ability = attacker.getBuffbilities()[action.abilityInventoryIndex];
+      }
 
       List<Sprite> hitSprites = new List<Sprite>();
       foreach (string path in ability.hitSpritesPath) {
@@ -182,8 +190,14 @@ public class EffectManager : MonoBehaviour {
    }
 
    // Used for creating a VFX for casting a magic spell
-   public static void playCastAbilityVFX (Battler source, AttackAction action, Vector2 targetPos) {
-      AttackAbilityData ability = source.getAttackAbilities()[action.abilityInventoryIndex];
+   public static void playCastAbilityVFX (Battler source, BattleAction action, Vector2 targetPos, BattleActionType actionType) {
+      BasicAbilityData ability = new BasicAbilityData();
+
+      if (actionType == BattleActionType.Attack) {
+         ability = source.getAttackAbilities()[action.abilityInventoryIndex];
+      } else if (actionType == BattleActionType.BuffDebuff) {
+         ability = source.getBuffbilities()[action.abilityInventoryIndex];
+      }
 
       List<Sprite> castSprites = new List<Sprite>();
       foreach (string path in ability.castSpritesPath) {
@@ -215,10 +229,13 @@ public class EffectManager : MonoBehaviour {
          );
       }
    }
-   public static void playCastProjectile (Battler source, AttackAction action, Vector2 sourcePos, Vector2 targetPos, float impactTime) {
+   public static void castProjectile (Battler source, AttackAction action, Vector2 sourcePos, Vector2 targetPos, float projectileSpeed, ProjectileType projectileType, float scale) {
       GameObject genericEffect = Instantiate(self.projectilePrefab.gameObject, sourcePos, Quaternion.identity);
       genericEffect.transform.position = sourcePos;
-      genericEffect.GetComponent<BattlerProjectile>().setTrajectory(sourcePos, targetPos, impactTime);
+      BattlerProjectile battlerProjectile = genericEffect.GetComponent<BattlerProjectile>();
+      battlerProjectile.setTrajectory(sourcePos, targetPos, projectileSpeed);
+      battlerProjectile.renderer.sprite = self.projectileInfoList.Find(_ => _.projectileType == projectileType).sprite;
+      genericEffect.transform.localScale = new Vector3(scale, scale, scale);
    }
 
    #region Private Variables

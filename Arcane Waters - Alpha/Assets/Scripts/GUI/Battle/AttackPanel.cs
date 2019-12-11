@@ -28,6 +28,19 @@ public class AttackPanel : MonoBehaviour {
       Global.player.rpc.Cmd_RequestAttack(target.netId, abilityIndex);
    }
 
+   // Currently only used in the UI for the local client
+   public void requestBuffTarget (int abilityIndex) {
+      Battler target = BattleSelectionManager.self.selectedBattler;
+
+      // We have to have a target to attack
+      if (target == null) {
+         return;
+      }
+
+      // Send the request to the server
+      Global.player.rpc.Cmd_RequestBuff(target.netId, abilityIndex);
+   }
+
    protected Battler getBattler () {
       // If we're not in a battle, there isn't one
       if (!Global.isInBattle()) {

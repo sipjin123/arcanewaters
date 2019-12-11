@@ -390,9 +390,15 @@ public class BattleManager : MonoBehaviour {
 
    #region Attack Execution
 
-   public void executeBattleAction (Battle battle, Battler source, List<Battler> targets, int abilityInventoryIndex) {
+   public void executeBattleAction (Battle battle, Battler source, List<Battler> targets, int abilityInventoryIndex, AbilityType abilityType) {
       // Get ability reference from the source battler, cause the source battler is the one executing the ability
-      BasicAbilityData abilityData = source.getAttackAbilities()[abilityInventoryIndex];
+      BasicAbilityData abilityData = new BasicAbilityData();
+
+      if (abilityType == AbilityType.Standard) {
+         abilityData = source.getAttackAbilities()[abilityInventoryIndex];
+      } else if (abilityType == AbilityType.BuffDebuff) {
+         abilityData = source.getBuffbilities()[abilityInventoryIndex];
+      }
 
       BattleActionType actionType = BattleActionType.UNDEFINED;
 
@@ -517,16 +523,48 @@ public class BattleManager : MonoBehaviour {
             case AbilityActionType.Ranged:
                actionType = BattleActionType.Attack;
                break;
+            case AbilityActionType.CastToTarget:
+               actionType = BattleActionType.Attack;
+               break;
             case AbilityActionType.Cancel:
                actionType = BattleActionType.Cancel;
                break;
          }
 
       } else if (abilityData.abilityType == AbilityType.BuffDebuff) {
-         BuffAbilityData buffAbilityData = abilityData as BuffAbilityData;
-
-         // TODO ZERONEV: Fill the buff and debuff information here now, when finished with the new battler data
          actionType = BattleActionType.BuffDebuff;
+         BuffAbilityData buffAbility = abilityData as BuffAbilityData;
+
+         // Apply the AP change
+         int sourceApChange = abilityData.apChange;
+         source.addAP(sourceApChange);
+
+         foreach (Battler target in targets) {
+            // Make note of the time that this battle action is going to be fully completed, considering animation times
+            float timeBuffEnds = Util.netTime() + timeToWait + buffAbility.getTotalAnimLength(source, target);
+            float cooldownDuration = abilityData.abilityCooldown * source.getCooldownModifier();
+            source.cooldownEndTime = timeBuffEnds + cooldownDuration;
+
+            // Apply the target's AP change
+            int targetApChange = target.getApWhenDamaged();
+            target.addAP(targetApChange);
+
+            // Create the Action object
+            BuffAction action = new BuffAction(battle.battleId, 0, source.userId, target.userId, timeBuffEnds, timeBuffEnds + 10, cooldownDuration, timeBuffEnds, sourceApChange, targetApChange, abilityData.itemID, buffAbility.value);
+            
+            actions.Add(action);
+
+            // Make note how long the two Battler objects need in order to execute the cast effect animations
+            source.animatingUntil = timeBuffEnds;
+            target.animatingUntil = timeBuffEnds;
+
+            // Wait to apply the effects of the action here on the server until the appointed time
+            StartCoroutine(applyActionAfterDelay(timeToWait, action, isMultiTarget));
+
+            foreach (BuffAction buffAction in actions) {
+               stringList.Add(action.serialize());
+            }
+         }
       } else {
          D.log("Battle action was not prepared correctly");
       }

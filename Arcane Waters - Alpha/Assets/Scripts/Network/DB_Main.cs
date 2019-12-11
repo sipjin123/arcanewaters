@@ -25,8 +25,8 @@ public class DB_Main : DB_MainStub {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO ability_table (userID, ability_name, ability_id, ability_level, ability_description, ability_equip_slot) " +
-            "VALUES(@userID, @ability_name, @ability_id, @ability_level, @ability_description, @ability_equip_slot) " +
+            "INSERT INTO ability_table (userID, ability_name, ability_id, ability_level, ability_description, ability_equip_slot, ability_type) " +
+            "VALUES(@userID, @ability_name, @ability_id, @ability_level, @ability_description, @ability_equip_slot, @ability_type) " +
             "ON DUPLICATE KEY UPDATE ability_level = @ability_level, ability_equip_slot = @ability_equip_slot", conn)) {
 
             conn.Open();
@@ -38,6 +38,7 @@ public class DB_Main : DB_MainStub {
             cmd.Parameters.AddWithValue("@ability_level", abilityData.abilityLevel);
             cmd.Parameters.AddWithValue("@ability_description", abilityData.description);
             cmd.Parameters.AddWithValue("@ability_equip_slot", abilityData.equipSlotIndex);
+            cmd.Parameters.AddWithValue("@ability_type", abilityData.abilityType);
 
             // Execute the command
             cmd.ExecuteNonQuery();

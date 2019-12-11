@@ -29,8 +29,11 @@ public class BattleUIManager : MonoBehaviour {
    // Ring that holds the abilities for attacking
    public Image enemyRing;
 
-   // Abilities icon that appears throughout the UI Ring
+   // Abilities icon that appears throughout the UI Ring for enemy
    public AbilityButton[] abilityTargetButtons;
+
+   // Abilities icon that appears throughout the UI Ring for player
+   public AbilityButton[] buffPlayerButtons;
 
    [Space(4)]
    [Header("Player")]
@@ -136,16 +139,48 @@ public class BattleUIManager : MonoBehaviour {
    }
 
    public void SetupAbilityUI (AbilitySQLData[] abilitydata) {
+      List<AbilitySQLData> attackList = new List<AbilitySQLData>(abilitydata).FindAll(_ => _.abilityType == AbilityType.Standard);
+      List<AbilitySQLData> buffList = new List<AbilitySQLData>(abilitydata).FindAll(_ => _.abilityType == AbilityType.BuffDebuff);
+
       int indexCounter = 0;
       foreach (AbilityButton abilityButton in abilityTargetButtons) {
-         if (indexCounter < abilitydata.Length) {
-            BasicAbilityData currentAbility = AbilityManager.getAbility(abilitydata[indexCounter].abilityID, AbilityType.Standard);
+         if (indexCounter < attackList.Count) {
+            BasicAbilityData currentAbility = AbilityManager.getAbility(attackList[indexCounter].abilityID, attackList[indexCounter].abilityType);
             if (currentAbility != null) {
-               string iconPath = currentAbility.itemIconPath;
-               Sprite skillSprite = ImageManager.getSprite(iconPath);
+               if (currentAbility.abilityType != AbilityType.Standard) {
+                  abilityButton.gameObject.SetActive(false);
+               } else {
+                  string iconPath = currentAbility.itemIconPath;
+                  Sprite skillSprite = ImageManager.getSprite(iconPath);
 
-               if (abilityButton.abilityIcon != null) {
-                  abilityButton.abilityIcon.sprite = skillSprite;
+                  if (abilityButton.abilityIcon != null) {
+                     abilityButton.abilityIcon.sprite = skillSprite;
+                  }
+               }
+            } else {
+               Debug.LogWarning("Missing Ability: " + abilityButton.abilityIndex);
+            }
+         } else {
+            // Disable skill button if equipped abilities does not reach 5 (max abilities in combat)
+            abilityButton.gameObject.SetActive(false);
+         }
+         indexCounter++;
+      }
+
+      indexCounter = 0;
+      foreach (AbilityButton abilityButton in buffPlayerButtons) {
+         if (indexCounter < buffList.Count) {
+            BasicAbilityData currentAbility = AbilityManager.getAbility(buffList[indexCounter].abilityID, buffList[indexCounter].abilityType);
+            if (currentAbility != null) {
+               if (currentAbility.abilityType != AbilityType.BuffDebuff) {
+                  abilityButton.gameObject.SetActive(false);
+               } else {
+                  string iconPath = currentAbility.itemIconPath;
+                  Sprite skillSprite = ImageManager.getSprite(iconPath);
+
+                  if (abilityButton.abilityIcon != null) {
+                     abilityButton.abilityIcon.sprite = skillSprite;
+                  }
                }
             } else {
                Debug.LogWarning("Missing Ability: " + abilityButton.abilityIndex);
@@ -445,6 +480,29 @@ public class BattleUIManager : MonoBehaviour {
 
       // Make note of the time at which we were last damaged
       damagedBattler.lastDamagedTime = Time.time;
+   }
+
+   public void showHealText (BuffAction action, Battler buffedBattler) {
+      BattleSpot spot = buffedBattler.battleSpot;
+
+      BuffAbilityData abilityData = AbilityManager.getAbility(action.abilityGlobalID, AbilityType.BuffDebuff) as BuffAbilityData;
+
+      // Create the Text instance from the prefab
+      GameObject regenTextObject = (GameObject) Instantiate(PrefabsManager.self.damageTextPrefab);
+      DamageText regenText = regenTextObject.GetComponent<DamageText>();
+
+      // Place the heal value just above where the impact occurred for the given ability
+      regenText.transform.position = new Vector3(buffedBattler.transform.position.x, buffedBattler.transform.position.y + .25f, -3f);
+      regenText.setDamageAmount(action.buffValue, false, false);
+      regenText.transform.SetParent(EffectManager.self.transform, false);
+      regenText.name = "HealText_" + abilityData.elementType;
+      regenText.customizeForAction(Element.Heal, false, DamageMagnitude.Default);
+
+      // The regen text should be on the same layer as the target's Battle Spot
+      regenText.gameObject.layer = spot.gameObject.layer;
+
+      // Make note of the time at which we were last healed
+      buffedBattler.lastDamagedTime = Time.time;
    }
 
    private void createBlockBattleText (Battler battler) {

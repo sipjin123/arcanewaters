@@ -24,6 +24,9 @@ public class AbilitySQLData
    // The level of the ability
    public int abilityLevel;
 
+   // The type of ability
+   public AbilityType abilityType;
+
    public AbilitySQLData () {
 
    }
@@ -34,7 +37,8 @@ public class AbilitySQLData
          abilityLevel = 1,
          description = data.itemDescription,
          equipSlotIndex = -1,
-         name = data.itemName
+         name = data.itemName,
+         abilityType = data.abilityType
       };
 
       return newSQLData;
@@ -48,7 +52,8 @@ public class AbilitySQLData
             abilityLevel = 1,
             description = data.itemDescription,
             equipSlotIndex = -1,
-            name = data.itemName
+            name = data.itemName,
+            abilityType = data.abilityType
          };
          newDataList.Add(newSQLData);
       }
@@ -63,6 +68,7 @@ public class AbilitySQLData
       this.description = DataUtil.getString(dataReader, "ability_description");
       this.equipSlotIndex = DataUtil.getInt(dataReader, "ability_equip_slot");
       this.abilityLevel = DataUtil.getInt(dataReader, "ability_level");
+      this.abilityType = (AbilityType)DataUtil.getInt(dataReader, "ability_type");
    }
 
    #endif

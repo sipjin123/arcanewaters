@@ -117,6 +117,13 @@ public class AttackAbilityData : BasicAbilityData {
             // Add up the amount of time it takes to animate an entire action
             return attacker.getPreMagicLength() + shakeLength + knockupLength + getPreDamageLength + getPostDamageLength;
 
+         case AbilityActionType.CastToTarget:
+            shakeLength = hasShake ? Battler.SHAKE_LENGTH : 0f;
+            knockupLength = hasKnockup ? Battler.KNOCKUP_LENGTH : 0f;
+
+            // Add up the amount of time it takes to animate an entire action
+            return attacker.getPreMagicLength() + shakeLength + knockupLength + getPreDamageLength + getPostDamageLength;
+
          default:
             Debug.LogWarning("Ability type is not defined for getting anim length");
             return 0;

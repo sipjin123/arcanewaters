@@ -57,7 +57,7 @@ public class AbilityPanel : Panel {
       // Create the ability rows
       foreach (AbilitySQLData ability in abilityList) {
          // Get the base data for the ability
-         BasicAbilityData basicAbilityData = AbilityManager.getAbility(ability.abilityID, AbilityType.Standard);
+         BasicAbilityData basicAbilityData = AbilityManager.getAbility(ability.abilityID, ability.abilityType);
 
          // Builds the ability description
          StringBuilder builder = new StringBuilder();

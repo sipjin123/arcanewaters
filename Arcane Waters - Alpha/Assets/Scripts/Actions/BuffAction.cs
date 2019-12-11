@@ -15,12 +15,15 @@ public class BuffAction : BattleAction {
    // The time at which the buff ends
    public float buffEndTime;
 
+   // The value of the buff is there is one
+   public int buffValue;
+
    #endregion
 
    public BuffAction () { }
 
    public BuffAction (int battleId, int abilityInventoryIndex, int sourceId, int targetId, float buffStartTime, float buffEndTime,
-           float cooldownDuration, float actionEndTime, int sourceApChange, int targetApChange, int abilityGlobalID) {
+           float cooldownDuration, float actionEndTime, int sourceApChange, int targetApChange, int abilityGlobalID, int buffVal) {
       this.battleId = battleId;
       this.abilityInventoryIndex = abilityInventoryIndex;
       this.sourceId = sourceId;
@@ -33,6 +36,7 @@ public class BuffAction : BattleAction {
       this.targetApChange = targetApChange;
       this.abilityGlobalID = abilityGlobalID;
       this.battleActionType = BattleActionType.BuffDebuff;
+      this.buffValue = buffVal;
    }
 
    public override bool Equals (object rhs) {
@@ -82,6 +86,7 @@ public class BuffAction : BattleAction {
       serialized += this.targetApChange + ",";
       serialized += this.abilityGlobalID + ",";
       serialized += (int) this.battleActionType + ",";
+      serialized += this.buffValue + ",";
 
       return serialized;
    }
@@ -102,6 +107,7 @@ public class BuffAction : BattleAction {
       action.targetApChange = Convert.ToInt32(stringArray[10]);
       action.abilityGlobalID = Convert.ToInt32(stringArray[11]);
       action.battleActionType = (BattleActionType) Convert.ToInt32(stringArray[12]);
+      action.buffValue = Convert.ToInt32(stringArray[13]);
 
       return action;
    }

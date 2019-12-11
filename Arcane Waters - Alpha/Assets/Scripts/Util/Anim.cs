@@ -20,8 +20,8 @@ public class Anim : MonoBehaviour {
       Mining = 15,
       Attack_North = 16,
       Attack_South = 17,
-      Aim_Gun = 18,
-      Shoot_Gun = 19
+      Ready_Attack = 18,
+      Finish_Attack = 19
    }
 
    // The different animation groups
@@ -48,9 +48,9 @@ public class Anim : MonoBehaviour {
             return true;
          case Type.Attack_South:
             return true;
-         case Type.Aim_Gun:
+         case Type.Ready_Attack:
             return true;
-         case Type.Shoot_Gun:
+         case Type.Finish_Attack:
             return true;
          default:
             return false;

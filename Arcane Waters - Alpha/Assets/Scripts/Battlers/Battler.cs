@@ -176,16 +176,25 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    [HideInInspector] public BattlerDamagedEvent onBattlerDamaged = new BattlerDamagedEvent();
 
    // Determines the cast time for the aim animation
-   public const float AIM_CAST_DELAY = .2f;
+   public const float PRE_AIM_DELAY = .15f;
 
-   // Determines the cast time for the aim animation
-   public const float AIM_CAST_TIME = 1.0f;
+   // Determines the aiming duration
+   public const float AIM_DELAY = 1;
 
    // Determines the delay before animation the Shoot clip
    public const float PRE_SHOOT_DELAY = .1f;
 
    // Determines the delay before ending Shoot Pose
-   public const float POST_SHOOT_DELAY = .25f;
+   public const float POST_SHOOT_DELAY = .15f;
+
+   // Determines the delay before animation the cast clip
+   public const float PRE_CAST_DELAY = .08f;
+
+   // Determines the delay before ending cast Pose
+   public const float POST_CAST_DELAY = .13f;
+
+   // Determines if the abilities have been initialized
+   public bool battlerAbilitiesInitialized = false;
 
    #endregion
 
@@ -465,6 +474,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    }
 
    public void setBattlerAbilities (AbilityDataRecord values) {
+      if (battlerAbilitiesInitialized) {
+         return;
+      }
+
       // Create initialized copies of the stances data.
       _balancedInitializedStance = BasicAbilityData.CreateInstance(AbilityInventory.self.balancedStance);
       _offenseInitializedStance = BasicAbilityData.CreateInstance(AbilityInventory.self.offenseStance);
@@ -476,16 +489,19 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
                case AbilityType.Standard:
                   AttackAbilityData atkAbilityData = AttackAbilityData.CreateInstance(Array.Find<AttackAbilityData>(values.attackAbilityDataList, element => element.itemName == item.itemName));
                   _battlerAttackAbilities.Add(atkAbilityData);
+                  _battlerBasicAbilities.Add(atkAbilityData);
                   break;
                case AbilityType.BuffDebuff:
                   BuffAbilityData buffAbilityData = BuffAbilityData.CreateInstance(Array.Find<BuffAbilityData>(values.buffAbilityDataList, element => element.itemName == item.itemName));
                   _battlerBuffAbilities.Add(buffAbilityData);
+                  _battlerBasicAbilities.Add(buffAbilityData);
                   break;
                default:
                   Debug.LogWarning("UNCATEGORIZED ability: " + item.itemName);
                   break;
             }
          }
+         battlerAbilitiesInitialized = true;
       } else {
          Debug.LogError("There is no ability");
       }
@@ -638,6 +654,73 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       }
    }
 
+   public IEnumerator buffDisplay (float timeToWait, BattleAction battleAction, bool isFirstAction) {
+      // This feature handles all possible buffs such as Healing, Attack Buff etc etc
+      Battle battle = BattleManager.self.getBattle(battleAction.battleId);
+      Battler sourceBattler = battle.getBattler(battleAction.sourceId);
+
+      BuffAbilityData abilityDataReference = (BuffAbilityData) AbilityManager.getAbility(battleAction.abilityGlobalID, AbilityType.BuffDebuff);
+      BuffAbilityData globalAbilityData = BuffAbilityData.CreateInstance(abilityDataReference);
+
+      switch (globalAbilityData.buffActionType) {
+         case BuffActionType.Regeneration: {
+               // Cast version of the Buff Action
+               BuffAction buffAction = (BuffAction) battleAction;
+               Battler targetBattler = battle.getBattler(buffAction.targetId);
+
+               // Don't start animating until both sprites are available
+               yield return new WaitForSeconds(timeToWait);
+
+               // Make sure the battlers are still alive at this point
+               if (sourceBattler.isDead()) {
+                  yield break;
+               }
+
+               // Start the buff animation that will eventually create the magic effect
+               if (isFirstAction) {
+                  // Cast Animation
+                  sourceBattler.playAnim(Anim.Type.Attack_East);
+               }
+
+               // Play Audio
+               AudioClip clip = AudioClipManager.self.getAudioClipData(abilityDataReference.castAudioClipPath).audioClip;
+               SoundManager.playClipOneShotAtPoint(clip, sourceBattler.transform.position);
+
+               // Play The effect of the buff
+               EffectManager.playCastAbilityVFX(sourceBattler, buffAction, targetBattler.getMagicGroundPosition(), BattleActionType.BuffDebuff);
+
+               yield return new WaitForSeconds(sourceBattler.getPreContactLength());
+
+               // Play the magic vfx such as (VFX for Heal, VFX for Attack Boost, etc etc)
+               Vector2 effectPosition = targetBattler.mainSpriteRenderer.bounds.center;
+               EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, buffAction, effectPosition, BattleActionType.BuffDebuff);
+
+               // Shows how much health is being restored
+               BattleUIManager.self.showHealText(buffAction, targetBattler);
+
+               // Add the healing value
+               targetBattler.displayedHealth += buffAction.buffValue;
+               targetBattler.displayedHealth = Util.clamp<int>(targetBattler.displayedHealth, 0, targetBattler.getStartingHealth());
+
+               yield return new WaitForSeconds(POST_CONTACT_LENGTH);
+
+               if (isFirstAction) {
+                  // Switch back to our battle stance
+                  sourceBattler.playAnim(Anim.Type.Battle_East);
+
+                  // Add any AP we earned
+                  sourceBattler.addAP(buffAction.sourceApChange);
+               }
+
+               onBattlerAttackEnd.Invoke();
+            }
+            break;
+         default:
+            D.warning("Ability doesn't know how to handle action: " + battleAction + ", ability: " + this);
+            yield break;
+      }
+   }
+
    public IEnumerator attackDisplay (float timeToWait, BattleAction battleAction, bool isFirstAction) {
       // In here we will check all the information related to the ability we want to execute
       // If it is a melee attack, then normally we will get close to the target battler and execute an animation
@@ -665,11 +748,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       }
 
       switch (globalAbilityData.abilityActionType) {
-         case AbilityActionType.CastToTarget:
-            // TODO: INSERT BUFF LOGIC HERE
-            break;
          case AbilityActionType.Melee:
-
             onBattlerAttackStart.Invoke();
 
             // Default all abilities to display as attacks
@@ -745,7 +824,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             } else {
                // Play an appropriate attack animation effect
                effectPosition = targetBattler.getMagicGroundPosition() + new Vector2(0f, .25f);
-               EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, action, effectPosition);
+               EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, action, effectPosition, BattleActionType.Attack);
 
                // Make the target sprite display its "Hit" animation
                targetBattler.StartCoroutine(targetBattler.animateHit(sourceBattler, action));
@@ -795,9 +874,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             }
 
             onBattlerAttackEnd.Invoke();
-
+            
             break;
-         case AbilityActionType.Ranged:
+         case AbilityActionType.Ranged: 
             // Cast version of the Attack Action
             action = (AttackAction) battleAction;
             targetBattler = battle.getBattler(action.targetId);
@@ -822,27 +901,26 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             // Start the attack animation that will eventually create the magic effect
             if (isFirstAction) {
                // Aim gun animation
-               sourceBattler.playAnim(Anim.Type.Aim_Gun);
+               sourceBattler.playAnim(Anim.Type.Ready_Attack);
 
-               yield return new WaitForSeconds(AIM_CAST_DELAY);
+               yield return new WaitForSeconds(PRE_AIM_DELAY);
 
                AudioClip clip = AudioClipManager.self.getAudioClipData(abilityDataReference.castAudioClipPath).audioClip;
                SoundManager.playClipOneShotAtPoint(clip, sourceBattler.transform.position);
-               Vector2 castEffectPosition = new Vector2(transform.position.x, transform.position.y - (mainSpriteRenderer.bounds.extents.y / 2));
-               EffectManager.playCastAbilityVFX(sourceBattler, action, sourcePos);
 
-               yield return new WaitForSeconds(AIM_CAST_TIME);
+               yield return new WaitForSeconds(AIM_DELAY);
             }
 
             // Shoot the projectile after playing cast time
-            EffectManager.playCastProjectile(sourceBattler, action, sourcePos, targetPos, sourceBattler.getProjectileTravelLength());
+            float projectileSpeed = 5;
+            EffectManager.castProjectile(sourceBattler, action, sourcePos, targetPos, projectileSpeed, ProjectileType.Bullet, 1);
             EffectManager.show(Effect.Type.Cannon_Smoke, sourcePos);
             yield return new WaitForSeconds(PRE_SHOOT_DELAY);
 
             // Speed up animation then Animate Shoot clip for a Recoil Effect
             sourceBattler.modifyAnimSpeed(shootAnimSpeed);
             sourceBattler.pauseAnim(false);
-            sourceBattler.playAnim(Anim.Type.Shoot_Gun);
+            sourceBattler.playAnim(Anim.Type.Finish_Attack);
             yield return new WaitForSeconds(POST_SHOOT_DELAY);
 
             // Return to battle stance
@@ -850,7 +928,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             sourceBattler.playAnim(Anim.Type.Battle_East);
 
             // Wait the appropriate amount of time before creating the magic effect
-            yield return new WaitForSeconds(sourceBattler.getProjectileTravelLength() - POST_SHOOT_DELAY - PRE_SHOOT_DELAY);
+            float timeBeforeCollision = Vector2.Distance(sourcePos, targetPos) / projectileSpeed;
+            yield return new WaitForSeconds(timeBeforeCollision);
             sourceBattler.modifyAnimSpeed(-1);
 
             // Play the sound associated
@@ -859,7 +938,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
             // Play the magic vfx such as (Flame effect on fire element attacks)
             effectPosition = targetBattler.mainSpriteRenderer.bounds.center;
-            EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, action, effectPosition);
+            EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, action, effectPosition, BattleActionType.Attack);
 
             // Make the target sprite display its "Hit" animation
             targetBattler.StartCoroutine(targetBattler.animateHit(sourceBattler, action));
@@ -906,6 +985,115 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             }
 
             onBattlerAttackEnd.Invoke();
+            
+            break;
+
+         case AbilityActionType.CastToTarget: 
+            // Cast version of the Attack Action
+            action = (AttackAction) battleAction;
+            targetBattler = battle.getBattler(action.targetId);
+
+            // Don't start animating until both sprites are available
+            yield return new WaitForSeconds(timeToWait);
+
+            // Make sure the battlers are still alive at this point
+            if (sourceBattler.isDead()) {
+               yield break;
+            }
+
+            float castAnimSpeed = 1.5f;
+            offsetX = 0;
+            offsetY = 1.28f;
+            sourcePos = getMagicGroundPosition() + new Vector2(offsetX, offsetY);
+            targetPos = targetBattler.getMagicGroundPosition() + new Vector2(0, 0);
+
+            // Start the attack animation that will eventually create the magic effect
+            if (isFirstAction) {
+               // Aim gun animation
+               sourceBattler.playAnim(Anim.Type.Ready_Attack);
+
+               yield return new WaitForSeconds(sourceBattler.getPreMagicLength());
+
+               AudioClip clip = AudioClipManager.self.getAudioClipData(abilityDataReference.castAudioClipPath).audioClip;
+               SoundManager.playClipOneShotAtPoint(clip, sourceBattler.transform.position);
+               EffectManager.playCastAbilityVFX(sourceBattler, action, sourcePos, BattleActionType.Attack);
+            }
+            yield return new WaitForSeconds(PRE_CAST_DELAY);
+
+            // Shoot the projectile after playing cast time
+            projectileSpeed = 2f;
+            EffectManager.castProjectile(sourceBattler, action, sourcePos, targetPos, projectileSpeed, ProjectileType.FireBall, 2);
+
+            // Speed up animation then Animate Shoot clip for a Recoil Effect
+            sourceBattler.modifyAnimSpeed(castAnimSpeed);
+            sourceBattler.pauseAnim(false);
+            sourceBattler.playAnim(Anim.Type.Finish_Attack);
+            yield return new WaitForSeconds(POST_CAST_DELAY);
+
+            // Return to battle stance
+            sourceBattler.pauseAnim(false);
+            sourceBattler.playAnim(Anim.Type.Battle_East);
+
+            // Wait the appropriate amount of time before creating the magic effect
+            timeBeforeCollision = Vector2.Distance(sourcePos, targetPos) / projectileSpeed;
+            float effectOffset = .1f;
+            yield return new WaitForSeconds(timeBeforeCollision - effectOffset - POST_CAST_DELAY);
+            sourceBattler.modifyAnimSpeed(-1);
+
+            // Play the sound associated
+            hitclip = AudioClipManager.self.getAudioClipData(abilityDataReference.hitAudioClipPath).audioClip;
+            SoundManager.playClipOneShotAtPoint(hitclip, targetBattler.transform.position);
+
+            // Play the magic vfx such as (Flame effect on fire element attacks)
+            effectPosition = targetBattler.mainSpriteRenderer.bounds.center;
+            EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, action, effectPosition, BattleActionType.Attack);
+
+            // Make the target sprite display its "Hit" animation
+            targetBattler.StartCoroutine(targetBattler.animateHit(sourceBattler, action));
+
+            // If this magic ability has knockup, then start it now
+            if (abilityDataReference.hasKnockup) {
+               targetBattler.StartCoroutine(targetBattler.animateKnockup());
+               yield return new WaitForSeconds(KNOCKUP_LENGTH);
+            } else if (abilityDataReference.hasShake) {
+               Coroutine shakeCoroutine = targetBattler.StartCoroutine(targetBattler.animateShake());
+               yield return new WaitForSeconds(SHAKE_LENGTH);
+               targetBattler.StopCoroutine(shakeCoroutine);
+               targetBattler.playAnim(Anim.Type.Battle_East);
+            } else if (abilityDataReference.hasKnockBack) {
+               // Move the sprite back and forward to simulate knockback
+               targetBattler.StartCoroutine(targetBattler.animateKnockback());
+               yield return new WaitForSeconds(KNOCKBACK_LENGTH);
+            }
+            BattleUIManager.self.showDamageText(action, targetBattler);
+
+            // Wait until the animation gets to the point that it deals damage
+            yield return new WaitForSeconds(abilityDataReference.getPreDamageLength);
+
+            targetBattler.displayedHealth -= action.damage;
+            targetBattler.displayedHealth = Util.clamp<int>(targetBattler.displayedHealth, 0, targetBattler.getStartingHealth());
+
+            // Now wait the specified amount of time before switching back to our battle stance
+            yield return new WaitForSeconds(POST_CONTACT_LENGTH);
+
+            if (isFirstAction) {
+               // Switch back to our battle stance
+               sourceBattler.playAnim(Anim.Type.Battle_East);
+
+               // Add any AP we earned
+               sourceBattler.addAP(action.sourceApChange);
+            }
+
+            // Add any AP the target earned
+            targetBattler.addAP(action.targetApChange);
+
+            // If the target died, animate that death now
+            if (targetBattler.isDead()) {
+               targetBattler.StartCoroutine(targetBattler.animateDeath());
+            }
+
+            onBattlerAttackEnd.Invoke();
+            
             break;
 
          case AbilityActionType.Cancel:
@@ -1166,8 +1354,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       return .6f;
    }
 
-   public float getProjectileTravelLength () {
-      // The amount of time before the projectile reaches its target battler
+   public float getProjectileSpeed () {
+      // The speed of the projectile
       return .2f;
    }
 
@@ -1484,7 +1672,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    public BasicAbilityData getOffenseStance () { return _offenseInitializedStance; }
    public BasicAbilityData getDefensiveStance () { return _defensiveInitializedStance; }
 
-   public List<AttackAbilityData> getAttackAbilities () { return _battlerAttackAbilities; } 
+   // Ability Getters
+   public List<BasicAbilityData> getBasicAbilities () { return _battlerBasicAbilities; }
+   public List<AttackAbilityData> getAttackAbilities () { return _battlerAttackAbilities; }
+   public List<BuffAbilityData> getBuffbilities () { return _battlerBuffAbilities; }
 
    public AttackAbilityData getBasicAttack () {
       // Safe check
@@ -1533,10 +1724,13 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    #region Private Variables
 
    // Attack abilities that will be used in combat
+   [SerializeField] private List<BasicAbilityData> _battlerBasicAbilities = new List<BasicAbilityData>();
+
+   // Attack abilities that will be used in combat
    [SerializeField] private List<AttackAbilityData> _battlerAttackAbilities = new List<AttackAbilityData>();
 
    // Buff abilities that will be used when buffing/debuffing a target in combat.
-   private List<BuffAbilityData> _battlerBuffAbilities = new List<BuffAbilityData>();
+   [SerializeField] private List<BuffAbilityData> _battlerBuffAbilities = new List<BuffAbilityData>();
 
    // Battler data reference that will be initialized (ready to be used, use getBattlerData() )
    [SerializeField] private BattlerData _alteredBattlerData;

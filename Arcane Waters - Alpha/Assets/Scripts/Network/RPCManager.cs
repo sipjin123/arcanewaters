@@ -2377,20 +2377,34 @@ public class RPCManager : NetworkBehaviour {
    protected AbilityDataRecord getAbilityRecord (AbilitySQLData[] equippedAbilities) {
       List<BasicAbilityData> basicAbilityList = new List<BasicAbilityData>();
       List<AttackAbilityData> attackAbilityList = new List<AttackAbilityData>();
+      List<BuffAbilityData> buffAbilityList = new List<BuffAbilityData>();
 
       foreach (AbilitySQLData abilitySQL in equippedAbilities) {
-         BasicAbilityData abilityData = AbilityManager.getAbility(abilitySQL.abilityID, AbilityType.Standard);
-         AttackAbilityData attackAbilityData = AbilityManager.getAttackAbility(abilitySQL.abilityID);
-         if (abilityData != null) {
-            basicAbilityList.Add(abilityData);
-            attackAbilityList.Add(attackAbilityData);
+         if (abilitySQL.abilityType == AbilityType.Standard) {
+            BasicAbilityData abilityData = AbilityManager.getAbility(abilitySQL.abilityID, AbilityType.Standard);
+            AttackAbilityData attackAbilityData = AbilityManager.getAttackAbility(abilitySQL.abilityID);
+            if (abilityData != null) {
+               basicAbilityList.Add(abilityData);
+               attackAbilityList.Add(attackAbilityData);
+            }
+         }
+      }
+
+      foreach (AbilitySQLData abilitySQL in equippedAbilities) {
+         if (abilitySQL.abilityType == AbilityType.BuffDebuff) {
+            BasicAbilityData abilityData = AbilityManager.getAbility(abilitySQL.abilityID, AbilityType.BuffDebuff);
+            BuffAbilityData buffAbilityData = AbilityManager.getBuffAbility(abilitySQL.abilityID);
+            if (abilityData != null) {
+               basicAbilityList.Add(abilityData);
+               buffAbilityList.Add(buffAbilityData);
+            }
          }
       }
 
       AbilityDataRecord abilityRecord = new AbilityDataRecord {
          basicAbilityDataList = basicAbilityList.ToArray(),
          attackAbilityDataList = attackAbilityList.ToArray(),
-         buffAbilityDataList = new List<BuffAbilityData>().ToArray(),
+         buffAbilityDataList = buffAbilityList.ToArray(),
       };
 
       return abilityRecord;
@@ -2518,6 +2532,37 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
+   public void Cmd_RequestBuff (uint netId, int abilityInventoryIndex) {
+      if (_player == null || !(_player is PlayerBodyEntity)) {
+         return;
+      }
+      
+      // Look up the player's Battle object
+      PlayerBodyEntity playerBody = (PlayerBodyEntity) _player;
+      Battle battle = BattleManager.self.getBattle(playerBody.battleId);
+      Battler sourceBattler = battle.getBattler(_player.userId);
+
+      // Get the ability from the battler abilities.
+      BuffAbilityData abilityData = sourceBattler.getBuffbilities()[abilityInventoryIndex];
+      Battler targetBattler = null;
+
+      foreach (Battler participant in battle.getParticipants()) {
+         if (participant.netId == netId) {
+            targetBattler = participant;
+         }
+      }
+
+      // Ignore invalid or dead sources and targets
+      if (sourceBattler == null || targetBattler == null || sourceBattler.isDead() || targetBattler.isDead()) {
+         return;
+      }
+
+      // Let the Battle Manager handle executing the buff
+      List<Battler> targetBattlers = new List<Battler>() { targetBattler };
+      BattleManager.self.executeBattleAction(battle, sourceBattler, targetBattlers, abilityInventoryIndex, AbilityType.BuffDebuff);
+   }
+
+   [Command]
    public void Cmd_RequestAttack (uint netId, int abilityInventoryIndex) {
       if (_player == null || !(_player is PlayerBodyEntity)) {
          return;
@@ -2557,7 +2602,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Let the Battle Manager handle executing the attack
       List<Battler> targetBattlers = new List<Battler>() { targetBattler };
-      BattleManager.self.executeBattleAction(battle, sourceBattler, targetBattlers, abilityInventoryIndex);
+      BattleManager.self.executeBattleAction(battle, sourceBattler, targetBattlers, abilityInventoryIndex, AbilityType.Standard);
    }
 
    [Command]

@@ -98,7 +98,7 @@ public class Battle : NetworkBehaviour {
             }
 
             // Handles the current and only attack a monster can do
-            BattleManager.self.executeBattleAction(this, battler, battlePlan.targets, 0);
+            BattleManager.self.executeBattleAction(this, battler, battlePlan.targets, 0, AbilityType.Standard);
          }
       }
 
