@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<AttackAbilityData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <itemID>41</itemID>
+  <itemName>Fire Bolt</itemName>
+  <itemDescription>Desc</itemDescription>
+  <itemIconPath>Assets/Sprites/Icons/Battle/Debuffs/debuff_skull.png</itemIconPath>
+  <levelRequirement>1</levelRequirement>
+  <hitSpritesPath>
+    <string>Assets/Sprites/Effects/ranged_fire.png</string>
+  </hitSpritesPath>
+  <elementType>Fire</elementType>
+  <hitAudioClipPath />
+  <classRequirement>Magic</classRequirement>
+  <battleItemType>Ability</battleItemType>
+  <castAudioClipPath />
+  <allowedStances />
+  <abilityType>Standard</abilityType>
+  <abilityCooldown>1</abilityCooldown>
+  <apChange>1</apChange>
+  <abilityCost>0</abilityCost>
+  <castSpritesPath>
+    <string>Assets/Sprites/Effects/ranged_fire.png</string>
+  </castSpritesPath>
+  <FXTimePerFrame>0.06</FXTimePerFrame>
+  <baseDamage>25</baseDamage>
+  <hasShake>false</hasShake>
+  <hasKnockup>true</hasKnockup>
+  <hasKnockBack>false</hasKnockBack>
+  <abilityActionType>CastToTarget</abilityActionType>
+  <canBeBlocked>false</canBeBlocked>
+</AttackAbilityData>

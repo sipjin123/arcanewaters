@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<BuffAbilityData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <itemID>31</itemID>
+  <itemName>Heal 50</itemName>
+  <itemDescription>Heals for 50 Pts</itemDescription>
+  <itemIconPath>Assets/Sprites/Icons/UsableItems/FIRE_ATK_Buff.png</itemIconPath>
+  <levelRequirement>1</levelRequirement>
+  <hitSpritesPath>
+    <string>Assets/Sprites/Effects/slash_earth.png</string>
+  </hitSpritesPath>
+  <elementType>Heal</elementType>
+  <hitAudioClipPath />
+  <classRequirement>Magic</classRequirement>
+  <battleItemType>Ability</battleItemType>
+  <castAudioClipPath />
+  <allowedStances>
+    <Stance>Balanced</Stance>
+    <Stance>Attack</Stance>
+    <Stance>Defense</Stance>
+  </allowedStances>
+  <abilityType>BuffDebuff</abilityType>
+  <abilityCooldown>3</abilityCooldown>
+  <apChange>1</apChange>
+  <abilityCost>0</abilityCost>
+  <castSpritesPath>
+    <string>Assets/Sprites/Effects/logo_twinkle_large.png</string>
+  </castSpritesPath>
+  <FXTimePerFrame>0.06</FXTimePerFrame>
+  <buffActionType>Regeneration</buffActionType>
+  <buffType>Buff</buffType>
+  <iconPath>Assets/Sprites/Icons/Battle/Buffs/buff_elixir.png</iconPath>
+  <duration>1</duration>
+  <value>50</value>
+</BuffAbilityData>

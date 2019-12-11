@@ -45,11 +45,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea4f0ceff049819418ea3e6220cfd227, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  init: 0
-  originPosition: {x: 0, y: 0}
+  isInitialized: 0
+  startPosition: {x: 0, y: 0}
   targetPosition: {x: 0, y: 0}
   timeToReachTarget: 0
-  time: 0
+  timeAlive: 0
+  renderer: {fileID: 6741503060635277830}
 --- !u!1 &1308094845865132502
 GameObject:
   m_ObjectHideFlags: 0

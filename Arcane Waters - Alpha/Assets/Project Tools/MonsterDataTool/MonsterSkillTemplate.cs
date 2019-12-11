@@ -383,6 +383,9 @@ public class MonsterSkillTemplate : MonoBehaviour {
             case PathType.CastSprite:
                iconSpriteList = monsterDataPanel.castIconSpriteList;
                break;
+            case PathType.BuffIcon:
+               iconSpriteList = monsterDataPanel.iconSpriteList;
+               break;
             case PathType.HitSprite:
                iconSpriteList = monsterDataPanel.hitIconSpriteList;
                break;
@@ -396,6 +399,9 @@ public class MonsterSkillTemplate : MonoBehaviour {
                break;
             case PathType.CastSprite:
                iconSpriteList = abilityDataScene.castIconSpriteList;
+               break;
+            case PathType.BuffIcon:
+               iconSpriteList = abilityDataScene.iconSpriteList;
                break;
             case PathType.HitSprite:
                iconSpriteList = abilityDataScene.hitIconSpriteList;

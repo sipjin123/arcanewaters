@@ -421,6 +421,69 @@
         <abilityActionType>Ranged</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
       </BasicAbilityData>
+      <BasicAbilityData xsi:type="BuffAbilityData">
+        <itemID>31</itemID>
+        <itemName>Heal 50</itemName>
+        <itemDescription>Heals for 50 Pts</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/UsableItems/FIRE_ATK_Buff.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Assets/Sprites/Effects/slash_earth.png</string>
+        </hitSpritesPath>
+        <elementType>Heal</elementType>
+        <hitAudioClipPath />
+        <classRequirement>Magic</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath />
+        <allowedStances>
+          <Stance>Balanced</Stance>
+          <Stance>Attack</Stance>
+          <Stance>Defense</Stance>
+        </allowedStances>
+        <abilityType>BuffDebuff</abilityType>
+        <abilityCooldown>3</abilityCooldown>
+        <apChange>1</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Assets/Sprites/Effects/logo_twinkle_large.png</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.06</FXTimePerFrame>
+        <buffActionType>Regeneration</buffActionType>
+        <buffType>Buff</buffType>
+        <iconPath>Assets/Sprites/Icons/Battle/Buffs/buff_elixir.png</iconPath>
+        <duration>1</duration>
+        <value>50</value>
+      </BasicAbilityData>
+      <BasicAbilityData xsi:type="AttackAbilityData">
+        <itemID>41</itemID>
+        <itemName>Fire Bolt</itemName>
+        <itemDescription>Desc</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Battle/Debuffs/debuff_skull.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Assets/Sprites/Effects/ranged_fire.png</string>
+        </hitSpritesPath>
+        <elementType>Fire</elementType>
+        <hitAudioClipPath />
+        <classRequirement>Magic</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath />
+        <allowedStances />
+        <abilityType>Standard</abilityType>
+        <abilityCooldown>1</abilityCooldown>
+        <apChange>1</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Assets/Sprites/Effects/ranged_fire.png</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.06</FXTimePerFrame>
+        <baseDamage>25</baseDamage>
+        <hasShake>false</hasShake>
+        <hasKnockup>true</hasKnockup>
+        <hasKnockBack>false</hasKnockBack>
+        <abilityActionType>CastToTarget</abilityActionType>
+        <canBeBlocked>false</canBeBlocked>
+      </BasicAbilityData>
     </basicAbilityDataList>
     <attackAbilityDataList>
       <AttackAbilityData>
@@ -829,8 +892,72 @@
         <abilityActionType>Ranged</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
       </AttackAbilityData>
+      <AttackAbilityData>
+        <itemID>41</itemID>
+        <itemName>Fire Bolt</itemName>
+        <itemDescription>Desc</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Battle/Debuffs/debuff_skull.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Assets/Sprites/Effects/ranged_fire.png</string>
+        </hitSpritesPath>
+        <elementType>Fire</elementType>
+        <hitAudioClipPath />
+        <classRequirement>Magic</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath />
+        <allowedStances />
+        <abilityType>Standard</abilityType>
+        <abilityCooldown>1</abilityCooldown>
+        <apChange>1</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Assets/Sprites/Effects/ranged_fire.png</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.06</FXTimePerFrame>
+        <baseDamage>25</baseDamage>
+        <hasShake>false</hasShake>
+        <hasKnockup>true</hasKnockup>
+        <hasKnockBack>false</hasKnockBack>
+        <abilityActionType>CastToTarget</abilityActionType>
+        <canBeBlocked>false</canBeBlocked>
+      </AttackAbilityData>
     </attackAbilityDataList>
-    <buffAbilityDataList />
+    <buffAbilityDataList>
+      <BuffAbilityData>
+        <itemID>31</itemID>
+        <itemName>Heal 50</itemName>
+        <itemDescription>Heals for 50 Pts</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/UsableItems/FIRE_ATK_Buff.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Assets/Sprites/Effects/slash_earth.png</string>
+        </hitSpritesPath>
+        <elementType>Heal</elementType>
+        <hitAudioClipPath />
+        <classRequirement>Magic</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath />
+        <allowedStances>
+          <Stance>Balanced</Stance>
+          <Stance>Attack</Stance>
+          <Stance>Defense</Stance>
+        </allowedStances>
+        <abilityType>BuffDebuff</abilityType>
+        <abilityCooldown>3</abilityCooldown>
+        <apChange>1</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Assets/Sprites/Effects/logo_twinkle_large.png</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.06</FXTimePerFrame>
+        <buffActionType>Regeneration</buffActionType>
+        <buffType>Buff</buffType>
+        <iconPath>Assets/Sprites/Icons/Battle/Buffs/buff_elixir.png</iconPath>
+        <duration>1</duration>
+        <value>50</value>
+      </BuffAbilityData>
+    </buffAbilityDataList>
   </battlerAbilities>
   <battlerLootData>
     <lootList />

@@ -16,14 +16,14 @@
   <Quests>
     <Quest>
       <questId>0</questId>
-      <title>Bring Merchy four of the fines</title>
+      <title>Bring Merchy four of the finest pieces of leather you can find.</title>
       <isRepeatable>true</isRepeatable>
       <lastUsedNodeId>1</lastUsedNodeId>
       <Nodes>
         <Node>
           <nodeId>0</nodeId>
           <nextNodeId>1</nextNodeId>
-          <npcText>Whilst I overflow with silk, I am in dire need of some good </npcText>
+          <npcText>Whilst I overflow with silk, I am in dire need of some good quality leather for a customer. Can you bring me four pieces?</npcText>
           <userText>Of course I can.</userText>
           <DeliverObjectives />
           <ItemRewards />
@@ -31,7 +31,7 @@
         <Node>
           <nodeId>1</nodeId>
           <nextNodeId>-1</nextNodeId>
-          <npcText>Oh, these are perfect! You have done me a great service, so </npcText>
+          <npcText>Oh, these are perfect! You have done me a great service, so now do me another and unburden me of these silks.</npcText>
           <userText />
           <DeliverObjectives>
             <Deliver>
@@ -81,7 +81,6 @@
     </Gift>
   </Gifts>
   <iconPath>Assets/Sprites/Faces/monocle_1.png</iconPath>
-  <spritePath>Assets/Sprites/NPCs/Bodies/Shroom/shroom_7.png</spritePath>
   <faction>6</faction>
   <specialty>3</specialty>
 </NPCData>
