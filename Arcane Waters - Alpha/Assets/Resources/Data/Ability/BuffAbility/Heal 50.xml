@@ -28,6 +28,7 @@
   <FXTimePerFrame>0.06</FXTimePerFrame>
   <buffActionType>Regeneration</buffActionType>
   <buffType>Buff</buffType>
+  <bonusStatType>None</bonusStatType>
   <iconPath>Assets/Sprites/Icons/Battle/Buffs/buff_elixir.png</iconPath>
   <duration>1</duration>
   <value>50</value>

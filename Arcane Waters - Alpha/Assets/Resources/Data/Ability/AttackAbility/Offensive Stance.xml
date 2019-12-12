@@ -28,4 +28,7 @@
   <hasKnockBack>false</hasKnockBack>
   <abilityActionType>StanceChange</abilityActionType>
   <canBeBlocked>false</canBeBlocked>
+  <projectileSpeed>0</projectileSpeed>
+  <projectileSpritePath />
+  <projectileScale>1</projectileScale>
 </AttackAbilityData>

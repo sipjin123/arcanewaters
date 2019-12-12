@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<BuffAbilityData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <itemID>32</itemID>
+  <itemName>Add 50 Attack</itemName>
+  <itemDescription>Desc</itemDescription>
+  <itemIconPath>Assets/Sprites/Icons/Classes/class_fighter.png</itemIconPath>
+  <levelRequirement>1</levelRequirement>
+  <hitSpritesPath>
+    <string>Assets/Sprites/Effects/chimney_smoke_1.png</string>
+  </hitSpritesPath>
+  <elementType>Fire</elementType>
+  <hitAudioClipPath />
+  <classRequirement>Magic</classRequirement>
+  <battleItemType>Ability</battleItemType>
+  <castAudioClipPath />
+  <allowedStances />
+  <abilityType>BuffDebuff</abilityType>
+  <abilityCooldown>1</abilityCooldown>
+  <apChange>1</apChange>
+  <abilityCost>0</abilityCost>
+  <castSpritesPath>
+    <string>Assets/Sprites/Effects/chimney_smoke_1.png</string>
+  </castSpritesPath>
+  <FXTimePerFrame>0.06</FXTimePerFrame>
+  <buffActionType>BonusStat</buffActionType>
+  <buffType>Buff</buffType>
+  <bonusStatType>Attack</bonusStatType>
+  <iconPath>Assets/Sprites/Icons/Classes/class_healer.png</iconPath>
+  <duration>1</duration>
+  <value>25</value>
+</BuffAbilityData>

@@ -28,4 +28,7 @@
   <hasKnockBack>false</hasKnockBack>
   <abilityActionType>Melee</abilityActionType>
   <canBeBlocked>true</canBeBlocked>
+  <projectileSpeed>0</projectileSpeed>
+  <projectileSpritePath />
+  <projectileScale>1</projectileScale>
 </AttackAbilityData>

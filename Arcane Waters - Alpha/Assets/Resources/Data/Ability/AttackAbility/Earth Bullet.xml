@@ -28,4 +28,7 @@
   <hasKnockBack>false</hasKnockBack>
   <abilityActionType>Ranged</abilityActionType>
   <canBeBlocked>true</canBeBlocked>
+  <projectileSpeed>5</projectileSpeed>
+  <projectileSpritePath>Assets/Sprites/Cannon/cannonball_freeze.png</projectileSpritePath>
+  <projectileScale>1</projectileScale>
 </AttackAbilityData>

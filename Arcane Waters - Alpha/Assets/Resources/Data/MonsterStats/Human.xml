@@ -48,6 +48,9 @@
         <hasKnockBack>false</hasKnockBack>
         <abilityActionType>StanceChange</abilityActionType>
         <canBeBlocked>false</canBeBlocked>
+        <projectileSpeed>0</projectileSpeed>
+        <projectileSpritePath />
+        <projectileScale>1</projectileScale>
       </BasicAbilityData>
       <BasicAbilityData xsi:type="AttackAbilityData">
         <itemID>1</itemID>
@@ -82,6 +85,9 @@
         <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Melee</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
+        <projectileSpeed>0</projectileSpeed>
+        <projectileSpritePath />
+        <projectileScale>1</projectileScale>
       </BasicAbilityData>
       <BasicAbilityData xsi:type="AttackAbilityData">
         <itemID>5</itemID>
@@ -116,6 +122,9 @@
         <hasKnockBack>false</hasKnockBack>
         <abilityActionType>StanceChange</abilityActionType>
         <canBeBlocked>false</canBeBlocked>
+        <projectileSpeed>0</projectileSpeed>
+        <projectileSpritePath />
+        <projectileScale>1</projectileScale>
       </BasicAbilityData>
       <BasicAbilityData xsi:type="AttackAbilityData">
         <itemID>4</itemID>
@@ -146,6 +155,9 @@
         <hasKnockBack>false</hasKnockBack>
         <abilityActionType>StanceChange</abilityActionType>
         <canBeBlocked>false</canBeBlocked>
+        <projectileSpeed>0</projectileSpeed>
+        <projectileSpritePath />
+        <projectileScale>1</projectileScale>
       </BasicAbilityData>
       <BasicAbilityData xsi:type="AttackAbilityData">
         <itemID>2</itemID>
@@ -176,6 +188,9 @@
         <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Melee</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
+        <projectileSpeed>0</projectileSpeed>
+        <projectileSpritePath />
+        <projectileScale>1</projectileScale>
       </BasicAbilityData>
       <BasicAbilityData xsi:type="AttackAbilityData">
         <itemID>3</itemID>
@@ -210,6 +225,9 @@
         <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Melee</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
+        <projectileSpeed>0</projectileSpeed>
+        <projectileSpritePath />
+        <projectileScale>1</projectileScale>
       </BasicAbilityData>
       <BasicAbilityData xsi:type="AttackAbilityData">
         <itemID>8</itemID>
@@ -240,6 +258,9 @@
         <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Melee</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
+        <projectileSpeed>0</projectileSpeed>
+        <projectileSpritePath />
+        <projectileScale>1</projectileScale>
       </BasicAbilityData>
       <BasicAbilityData xsi:type="AttackAbilityData">
         <itemID>9</itemID>
@@ -270,6 +291,9 @@
         <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Melee</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
+        <projectileSpeed>0</projectileSpeed>
+        <projectileSpritePath />
+        <projectileScale>1</projectileScale>
       </BasicAbilityData>
       <BasicAbilityData xsi:type="AttackAbilityData">
         <itemID>21</itemID>
@@ -300,6 +324,9 @@
         <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Ranged</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
+        <projectileSpeed>5</projectileSpeed>
+        <projectileSpritePath>Assets/Sprites/Cannon/cannonball_burn.png</projectileSpritePath>
+        <projectileScale>1</projectileScale>
       </BasicAbilityData>
       <BasicAbilityData xsi:type="AttackAbilityData">
         <itemID>22</itemID>
@@ -330,6 +357,9 @@
         <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Ranged</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
+        <projectileSpeed>5</projectileSpeed>
+        <projectileSpritePath>Assets/Sprites/Cannon/cannonball_8x8.PNG</projectileSpritePath>
+        <projectileScale>1</projectileScale>
       </BasicAbilityData>
       <BasicAbilityData xsi:type="AttackAbilityData">
         <itemID>23</itemID>
@@ -360,6 +390,9 @@
         <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Ranged</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
+        <projectileSpeed>5</projectileSpeed>
+        <projectileSpritePath>Assets/Sprites/Cannon/cannonball_freeze.png</projectileSpritePath>
+        <projectileScale>1</projectileScale>
       </BasicAbilityData>
       <BasicAbilityData xsi:type="AttackAbilityData">
         <itemID>24</itemID>
@@ -390,6 +423,9 @@
         <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Ranged</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
+        <projectileSpeed>5</projectileSpeed>
+        <projectileSpritePath>Assets/Sprites/Cannon/cannonball_air.png</projectileSpritePath>
+        <projectileScale>0.75</projectileScale>
       </BasicAbilityData>
       <BasicAbilityData xsi:type="AttackAbilityData">
         <itemID>25</itemID>
@@ -420,39 +456,9 @@
         <hasKnockBack>true</hasKnockBack>
         <abilityActionType>Ranged</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
-      </BasicAbilityData>
-      <BasicAbilityData xsi:type="BuffAbilityData">
-        <itemID>31</itemID>
-        <itemName>Heal 50</itemName>
-        <itemDescription>Heals for 50 Pts</itemDescription>
-        <itemIconPath>Assets/Sprites/Icons/UsableItems/FIRE_ATK_Buff.png</itemIconPath>
-        <levelRequirement>1</levelRequirement>
-        <hitSpritesPath>
-          <string>Assets/Sprites/Effects/slash_earth.png</string>
-        </hitSpritesPath>
-        <elementType>Heal</elementType>
-        <hitAudioClipPath />
-        <classRequirement>Magic</classRequirement>
-        <battleItemType>Ability</battleItemType>
-        <castAudioClipPath />
-        <allowedStances>
-          <Stance>Balanced</Stance>
-          <Stance>Attack</Stance>
-          <Stance>Defense</Stance>
-        </allowedStances>
-        <abilityType>BuffDebuff</abilityType>
-        <abilityCooldown>3</abilityCooldown>
-        <apChange>1</apChange>
-        <abilityCost>0</abilityCost>
-        <castSpritesPath>
-          <string>Assets/Sprites/Effects/logo_twinkle_large.png</string>
-        </castSpritesPath>
-        <FXTimePerFrame>0.06</FXTimePerFrame>
-        <buffActionType>Regeneration</buffActionType>
-        <buffType>Buff</buffType>
-        <iconPath>Assets/Sprites/Icons/Battle/Buffs/buff_elixir.png</iconPath>
-        <duration>1</duration>
-        <value>50</value>
+        <projectileSpeed>5</projectileSpeed>
+        <projectileSpritePath>Assets/Sprites/Cannon/cannonball_8x8.PNG</projectileSpritePath>
+        <projectileScale>1.25</projectileScale>
       </BasicAbilityData>
       <BasicAbilityData xsi:type="AttackAbilityData">
         <itemID>41</itemID>
@@ -483,6 +489,73 @@
         <hasKnockBack>false</hasKnockBack>
         <abilityActionType>CastToTarget</abilityActionType>
         <canBeBlocked>false</canBeBlocked>
+        <projectileSpeed>4</projectileSpeed>
+        <projectileSpritePath>Assets/Sprites/Cannon/cannonball_burn.png</projectileSpritePath>
+        <projectileScale>2</projectileScale>
+      </BasicAbilityData>
+      <BasicAbilityData xsi:type="BuffAbilityData">
+        <itemID>31</itemID>
+        <itemName>Heal 50</itemName>
+        <itemDescription>Heals for 50 Pts</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/UsableItems/FIRE_ATK_Buff.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Assets/Sprites/Effects/slash_earth.png</string>
+        </hitSpritesPath>
+        <elementType>Heal</elementType>
+        <hitAudioClipPath />
+        <classRequirement>Magic</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath />
+        <allowedStances>
+          <Stance>Balanced</Stance>
+          <Stance>Attack</Stance>
+          <Stance>Defense</Stance>
+        </allowedStances>
+        <abilityType>BuffDebuff</abilityType>
+        <abilityCooldown>3</abilityCooldown>
+        <apChange>1</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Assets/Sprites/Effects/logo_twinkle_large.png</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.06</FXTimePerFrame>
+        <buffActionType>Regeneration</buffActionType>
+        <buffType>Buff</buffType>
+        <bonusStatType>None</bonusStatType>
+        <iconPath>Assets/Sprites/Icons/Battle/Buffs/buff_elixir.png</iconPath>
+        <duration>1</duration>
+        <value>50</value>
+      </BasicAbilityData>
+      <BasicAbilityData xsi:type="BuffAbilityData">
+        <itemID>32</itemID>
+        <itemName>Add 50 Attack</itemName>
+        <itemDescription>Desc</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Classes/class_fighter.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Assets/Sprites/Effects/chimney_smoke_1.png</string>
+        </hitSpritesPath>
+        <elementType>Fire</elementType>
+        <hitAudioClipPath />
+        <classRequirement>Magic</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath />
+        <allowedStances />
+        <abilityType>BuffDebuff</abilityType>
+        <abilityCooldown>1</abilityCooldown>
+        <apChange>1</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Assets/Sprites/Effects/chimney_smoke_1.png</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.06</FXTimePerFrame>
+        <buffActionType>BonusStat</buffActionType>
+        <buffType>Buff</buffType>
+        <bonusStatType>Attack</bonusStatType>
+        <iconPath>Assets/Sprites/Icons/Classes/class_healer.png</iconPath>
+        <duration>1</duration>
+        <value>25</value>
       </BasicAbilityData>
     </basicAbilityDataList>
     <attackAbilityDataList>
@@ -519,6 +592,9 @@
         <hasKnockBack>false</hasKnockBack>
         <abilityActionType>StanceChange</abilityActionType>
         <canBeBlocked>false</canBeBlocked>
+        <projectileSpeed>0</projectileSpeed>
+        <projectileSpritePath />
+        <projectileScale>1</projectileScale>
       </AttackAbilityData>
       <AttackAbilityData>
         <itemID>1</itemID>
@@ -553,6 +629,9 @@
         <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Melee</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
+        <projectileSpeed>0</projectileSpeed>
+        <projectileSpritePath />
+        <projectileScale>1</projectileScale>
       </AttackAbilityData>
       <AttackAbilityData>
         <itemID>5</itemID>
@@ -587,6 +666,9 @@
         <hasKnockBack>false</hasKnockBack>
         <abilityActionType>StanceChange</abilityActionType>
         <canBeBlocked>false</canBeBlocked>
+        <projectileSpeed>0</projectileSpeed>
+        <projectileSpritePath />
+        <projectileScale>1</projectileScale>
       </AttackAbilityData>
       <AttackAbilityData>
         <itemID>4</itemID>
@@ -617,6 +699,9 @@
         <hasKnockBack>false</hasKnockBack>
         <abilityActionType>StanceChange</abilityActionType>
         <canBeBlocked>false</canBeBlocked>
+        <projectileSpeed>0</projectileSpeed>
+        <projectileSpritePath />
+        <projectileScale>1</projectileScale>
       </AttackAbilityData>
       <AttackAbilityData>
         <itemID>2</itemID>
@@ -647,6 +732,9 @@
         <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Melee</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
+        <projectileSpeed>0</projectileSpeed>
+        <projectileSpritePath />
+        <projectileScale>1</projectileScale>
       </AttackAbilityData>
       <AttackAbilityData>
         <itemID>3</itemID>
@@ -681,6 +769,9 @@
         <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Melee</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
+        <projectileSpeed>0</projectileSpeed>
+        <projectileSpritePath />
+        <projectileScale>1</projectileScale>
       </AttackAbilityData>
       <AttackAbilityData>
         <itemID>8</itemID>
@@ -711,6 +802,9 @@
         <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Melee</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
+        <projectileSpeed>0</projectileSpeed>
+        <projectileSpritePath />
+        <projectileScale>1</projectileScale>
       </AttackAbilityData>
       <AttackAbilityData>
         <itemID>9</itemID>
@@ -741,6 +835,9 @@
         <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Melee</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
+        <projectileSpeed>0</projectileSpeed>
+        <projectileSpritePath />
+        <projectileScale>1</projectileScale>
       </AttackAbilityData>
       <AttackAbilityData>
         <itemID>21</itemID>
@@ -771,6 +868,9 @@
         <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Ranged</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
+        <projectileSpeed>5</projectileSpeed>
+        <projectileSpritePath>Assets/Sprites/Cannon/cannonball_burn.png</projectileSpritePath>
+        <projectileScale>1</projectileScale>
       </AttackAbilityData>
       <AttackAbilityData>
         <itemID>22</itemID>
@@ -801,6 +901,9 @@
         <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Ranged</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
+        <projectileSpeed>5</projectileSpeed>
+        <projectileSpritePath>Assets/Sprites/Cannon/cannonball_8x8.PNG</projectileSpritePath>
+        <projectileScale>1</projectileScale>
       </AttackAbilityData>
       <AttackAbilityData>
         <itemID>23</itemID>
@@ -831,6 +934,9 @@
         <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Ranged</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
+        <projectileSpeed>5</projectileSpeed>
+        <projectileSpritePath>Assets/Sprites/Cannon/cannonball_freeze.png</projectileSpritePath>
+        <projectileScale>1</projectileScale>
       </AttackAbilityData>
       <AttackAbilityData>
         <itemID>24</itemID>
@@ -861,6 +967,9 @@
         <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Ranged</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
+        <projectileSpeed>5</projectileSpeed>
+        <projectileSpritePath>Assets/Sprites/Cannon/cannonball_air.png</projectileSpritePath>
+        <projectileScale>0.75</projectileScale>
       </AttackAbilityData>
       <AttackAbilityData>
         <itemID>25</itemID>
@@ -891,6 +1000,9 @@
         <hasKnockBack>true</hasKnockBack>
         <abilityActionType>Ranged</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
+        <projectileSpeed>5</projectileSpeed>
+        <projectileSpritePath>Assets/Sprites/Cannon/cannonball_8x8.PNG</projectileSpritePath>
+        <projectileScale>1.25</projectileScale>
       </AttackAbilityData>
       <AttackAbilityData>
         <itemID>41</itemID>
@@ -921,6 +1033,9 @@
         <hasKnockBack>false</hasKnockBack>
         <abilityActionType>CastToTarget</abilityActionType>
         <canBeBlocked>false</canBeBlocked>
+        <projectileSpeed>4</projectileSpeed>
+        <projectileSpritePath>Assets/Sprites/Cannon/cannonball_burn.png</projectileSpritePath>
+        <projectileScale>2</projectileScale>
       </AttackAbilityData>
     </attackAbilityDataList>
     <buffAbilityDataList>
@@ -953,9 +1068,40 @@
         <FXTimePerFrame>0.06</FXTimePerFrame>
         <buffActionType>Regeneration</buffActionType>
         <buffType>Buff</buffType>
+        <bonusStatType>None</bonusStatType>
         <iconPath>Assets/Sprites/Icons/Battle/Buffs/buff_elixir.png</iconPath>
         <duration>1</duration>
         <value>50</value>
+      </BuffAbilityData>
+      <BuffAbilityData>
+        <itemID>32</itemID>
+        <itemName>Add 50 Attack</itemName>
+        <itemDescription>Desc</itemDescription>
+        <itemIconPath>Assets/Sprites/Icons/Classes/class_fighter.png</itemIconPath>
+        <levelRequirement>1</levelRequirement>
+        <hitSpritesPath>
+          <string>Assets/Sprites/Effects/chimney_smoke_1.png</string>
+        </hitSpritesPath>
+        <elementType>Fire</elementType>
+        <hitAudioClipPath />
+        <classRequirement>Magic</classRequirement>
+        <battleItemType>Ability</battleItemType>
+        <castAudioClipPath />
+        <allowedStances />
+        <abilityType>BuffDebuff</abilityType>
+        <abilityCooldown>1</abilityCooldown>
+        <apChange>1</apChange>
+        <abilityCost>0</abilityCost>
+        <castSpritesPath>
+          <string>Assets/Sprites/Effects/chimney_smoke_1.png</string>
+        </castSpritesPath>
+        <FXTimePerFrame>0.06</FXTimePerFrame>
+        <buffActionType>BonusStat</buffActionType>
+        <buffType>Buff</buffType>
+        <bonusStatType>Attack</bonusStatType>
+        <iconPath>Assets/Sprites/Icons/Classes/class_healer.png</iconPath>
+        <duration>1</duration>
+        <value>25</value>
       </BuffAbilityData>
     </buffAbilityDataList>
   </battlerAbilities>

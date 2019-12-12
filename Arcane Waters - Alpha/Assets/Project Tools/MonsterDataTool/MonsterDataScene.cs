@@ -80,6 +80,14 @@ public class MonsterDataScene : MonoBehaviour {
             Sprite sourceSprite = imgData.sprite;
             monsterPanel.skillIconSpriteList.Add(imgData.imagePath, sourceSprite);
          }
+
+         string projectileSpritePath = "Assets/Sprites/Cannon/";
+         List<ImageManager.ImageData> projectileSpriteFiles = ImageManager.getSpritesInDirectory(projectileSpritePath);
+
+         foreach (ImageManager.ImageData imgData in projectileSpriteFiles) {
+            Sprite sourceSprite = imgData.sprite;
+            monsterPanel.projectileSpriteList.Add(imgData.imagePath, sourceSprite);
+         }
       }
    }
 

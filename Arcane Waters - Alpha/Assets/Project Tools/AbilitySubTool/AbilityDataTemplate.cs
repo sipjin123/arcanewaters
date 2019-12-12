@@ -35,12 +35,12 @@ public class AbilityDataTemplate : MonoBehaviour
       string newName = "Undefined";
       try {
          actualName = resultItem.itemName;
-         newName = resultItem.itemName + " (" + resultItem.abilityType + ")";
+         newName = resultItem.itemName + "\n(" + resultItem.abilityType + ")";
       } catch {
       }
 
       nameText.text = newName;
-      indexText.text = "ID:["+resultItem.itemID.ToString()+"]";
+      indexText.text = "["+resultItem.itemID.ToString()+"]";
    }
 
    #region Private Variables

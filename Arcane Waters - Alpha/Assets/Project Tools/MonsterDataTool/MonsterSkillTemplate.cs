@@ -64,6 +64,11 @@ public class MonsterSkillTemplate : MonoBehaviour {
 
    // Attack related stats
    public InputField baseDamage;
+   public InputField projectileSpeed;
+   public InputField projectileScale;
+   public Image projectileSprite;
+   public Text projectileSpritePath;
+   public Button projectileSpriteButton;
    public Toggle hasShake;
    public Toggle hasKnockup;
    public Toggle canBeBlocked;
@@ -76,6 +81,8 @@ public class MonsterSkillTemplate : MonoBehaviour {
    public Text buffTypeText;
    public Slider buffActionType;
    public Text buffActionTypeText;
+   public Slider bonusStatType;
+   public Text bonusStatText;
    public Text buffIconPath;
    public InputField buffValue;
    public GameObject buffStatHolder;
@@ -100,6 +107,9 @@ public class MonsterSkillTemplate : MonoBehaviour {
    public Button playCastAudioButton;
    public AudioClip hitAudio, castAudio;
 
+   // Holds the variables only available to ability types with projectile
+   public GameObject[] projectileVariables;
+   
    public enum PathType
    {
       HitSprite,
@@ -107,7 +117,8 @@ public class MonsterSkillTemplate : MonoBehaviour {
       ItemIcon,
       BuffIcon,
       DeathSfx,
-      JumpSfx
+      JumpSfx,
+      ProjectileSprite
    }
 
    #endregion
@@ -123,6 +134,7 @@ public class MonsterSkillTemplate : MonoBehaviour {
          dropDownIndicator.SetActive(!skillContents[0].activeSelf);
       });
       closeSpriteSelectionButton.onClick.AddListener(() => closeIconSelection());
+      projectileSpriteButton.onClick.AddListener(() => toggleSpriteSelection(PathType.ProjectileSprite));
       selectBuffIconButton.onClick.AddListener(() => toggleSpriteSelection(PathType.BuffIcon));
       selectCastSpriteButton.onClick.AddListener(() => toggleSpriteSelection(PathType.CastSprite));
       selectHitSpriteButton.onClick.AddListener(() => toggleSpriteSelection(PathType.HitSprite));
@@ -141,15 +153,15 @@ public class MonsterSkillTemplate : MonoBehaviour {
             audioSource.Play();
          }
       });
-
+   
       elements.maxValue = Enum.GetValues(typeof(Element)).Length - 1;
       battleItemType.maxValue = Enum.GetValues(typeof(BattleItemType)).Length - 1;
       weaponClass.maxValue = Enum.GetValues(typeof(Weapon.Class)).Length - 1;
       abilityType.maxValue = Enum.GetValues(typeof(AbilityType)).Length - 1;
       abilityActionType.maxValue = Enum.GetValues(typeof(AbilityActionType)).Length - 1;
-
       buffType.maxValue = Enum.GetValues(typeof(BuffType)).Length - 1;
       buffActionType.maxValue = Enum.GetValues(typeof(BuffActionType)).Length - 1;
+      bonusStatType.maxValue = Enum.GetValues(typeof(BonusStatType)).Length - 1;
 
       itemName.onValueChanged.AddListener(_ => {
          skillName.text = itemName.text;
@@ -166,8 +178,20 @@ public class MonsterSkillTemplate : MonoBehaviour {
       abilityType.onValueChanged.AddListener(_ => {
          abilityTypeText.text = ((AbilityType) abilityType.value).ToString() + countSliderValue(abilityType);
       });
+      bonusStatType.onValueChanged.AddListener(_ => {
+         bonusStatText.text = ((BonusStatType) bonusStatType.value).ToString() + countSliderValue(bonusStatType);
+      });
       abilityActionType.onValueChanged.AddListener(_ => {
          abilityActionTypeText.text = ((AbilityActionType) abilityActionType.value).ToString() + countSliderValue(abilityActionType);
+         if ((AbilityActionType) abilityActionType.value == AbilityActionType.CastToTarget || (AbilityActionType) abilityActionType.value == AbilityActionType.Ranged) { 
+            foreach (GameObject obj in projectileVariables) {
+               obj.SetActive(true);
+            }
+         } else {
+            foreach (GameObject obj in projectileVariables) {
+               obj.SetActive(false);
+            }
+         }
       });
       buffType.onValueChanged.AddListener(_ => {
          buffTypeText.text = ((BuffType) buffType.value).ToString() + countSliderValue(buffType);
@@ -239,6 +263,12 @@ public class MonsterSkillTemplate : MonoBehaviour {
       hasKnockup.isOn = attackData.hasKnockup;
       canBeBlocked.isOn = attackData.canBeBlocked;
       hasKnockBack.isOn = attackData.hasKnockBack;
+      projectileSpeed.text = attackData.projectileSpeed.ToString();
+      projectileScale.text = attackData.projectileScale.ToString();
+      projectileSpritePath.text = attackData.projectileSpritePath;
+      if (attackData.projectileSpritePath != null) {
+         projectileSprite.sprite = ImageManager.getSprite(attackData.projectileSpritePath);
+      }
 
       attackStatHolder.SetActive(true);
       buffStatHolder.SetActive(false);
@@ -255,6 +285,7 @@ public class MonsterSkillTemplate : MonoBehaviour {
       buffDuration.text = buffData.duration.ToString();
       buffType.value = (int)buffData.buffType;
       buffActionType.value = (int) buffData.buffActionType;
+      bonusStatType.value = (int) buffData.bonusStatType;
 
       if (buffData.iconPath != null) {
          buffIconPath.text = buffData.iconPath;
@@ -331,7 +362,14 @@ public class MonsterSkillTemplate : MonoBehaviour {
          int.Parse(apChange.text),
          float.Parse(fxTimerPerFrame.text));
 
-      AttackAbilityData attackData = AttackAbilityData.CreateInstance(basicData, hasKnockup.isOn, int.Parse(baseDamage.text), hasShake.isOn, (AbilityActionType) abilityActionType.value, canBeBlocked.isOn, hasKnockBack.isOn);
+      AttackAbilityData attackData = AttackAbilityData.CreateInstance(basicData, 
+         hasKnockup.isOn, 
+         int.Parse(baseDamage.text), 
+         hasShake.isOn, (AbilityActionType) abilityActionType.value, 
+         canBeBlocked.isOn, hasKnockBack.isOn, 
+         float.Parse(projectileSpeed.text), 
+         projectileSpritePath.text,
+         float.Parse(projectileScale.text));
 
       return attackData;
    }
@@ -362,7 +400,8 @@ public class MonsterSkillTemplate : MonoBehaviour {
 
       BuffType buffType = (BuffType) this.buffType.value;
       BuffActionType buffActionType = (BuffActionType) this.buffActionType.value;
-      BuffAbilityData buffData = BuffAbilityData.CreateInstance(basicData, float.Parse(buffDuration.text), buffType, buffActionType, buffIconPath.text, int.Parse(buffValue.text));
+      BonusStatType bonusStatType = (BonusStatType) this.bonusStatType.value;
+      BuffAbilityData buffData = BuffAbilityData.CreateInstance(basicData, float.Parse(buffDuration.text), buffType, buffActionType, buffIconPath.text, int.Parse(buffValue.text), bonusStatType);
 
       return buffData;
    }
@@ -389,6 +428,9 @@ public class MonsterSkillTemplate : MonoBehaviour {
             case PathType.HitSprite:
                iconSpriteList = monsterDataPanel.hitIconSpriteList;
                break;
+            case PathType.ProjectileSprite:
+               iconSpriteList = monsterDataPanel.projectileSpriteList;
+               break;
          }
       }
       if (abilityDataScene != null) {
@@ -405,6 +447,9 @@ public class MonsterSkillTemplate : MonoBehaviour {
                break;
             case PathType.HitSprite:
                iconSpriteList = abilityDataScene.hitIconSpriteList;
+               break;
+            case PathType.ProjectileSprite:
+               iconSpriteList = abilityDataScene.projectileSpriteList;
                break;
          }
       }
@@ -434,6 +479,10 @@ public class MonsterSkillTemplate : MonoBehaviour {
                case PathType.BuffIcon:
                   buffIcon.sprite = sourceSprite.Value;
                   buffIconPath.text = sourceSprite.Key;
+                  break;
+               case PathType.ProjectileSprite:
+                  projectileSprite.sprite = sourceSprite.Value;
+                  projectileSpritePath.text = sourceSprite.Key;
                   break;
             }
             closeSpriteSelectionButton.onClick.Invoke();

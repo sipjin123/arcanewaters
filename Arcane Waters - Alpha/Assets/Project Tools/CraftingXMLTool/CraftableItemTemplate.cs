@@ -30,7 +30,7 @@ public class CraftableItemTemplate : MonoBehaviour {
    public void updateItemDisplay(Item resultItem) {
       string newName = "Undefined";
       try {
-         newName = resultItem.getCastItem().getName();
+         newName = Util.getItemName(resultItem.category, resultItem.itemTypeId);
       } catch {
       }
 

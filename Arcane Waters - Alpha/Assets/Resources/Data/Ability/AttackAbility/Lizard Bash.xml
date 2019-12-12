@@ -6,9 +6,9 @@
   <itemIconPath>Assets/Sprites/Effects/footprint.png</itemIconPath>
   <levelRequirement>1</levelRequirement>
   <hitSpritesPath>
-    <string>Assets/Sprites/Effects/slash_water.png</string>
+    <string>Assets/Sprites/Effects/slash_physical.png</string>
   </hitSpritesPath>
-  <elementType>Water</elementType>
+  <elementType>Physical</elementType>
   <hitAudioClipPath>Assets/Resources/Sound/Effects/Attack_Blunt.wav</hitAudioClipPath>
   <classRequirement>Melee</classRequirement>
   <battleItemType>Ability</battleItemType>
@@ -22,7 +22,7 @@
     <string>Assets/Sprites/Effects/crop_dirt_small.png</string>
   </castSpritesPath>
   <FXTimePerFrame>0.1</FXTimePerFrame>
-  <baseDamage>5</baseDamage>
+  <baseDamage>15</baseDamage>
   <hasShake>true</hasShake>
   <hasKnockup>true</hasKnockup>
   <abilityActionType>Melee</abilityActionType>

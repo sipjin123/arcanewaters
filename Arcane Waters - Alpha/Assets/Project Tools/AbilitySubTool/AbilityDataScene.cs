@@ -51,6 +51,7 @@ public class AbilityDataScene : MonoBehaviour
    public Dictionary<string, Sprite> iconSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> castIconSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> hitIconSpriteList = new Dictionary<string, Sprite>();
+   public Dictionary<string, Sprite> projectileSpriteList = new Dictionary<string, Sprite>();
 
    #endregion
 
@@ -93,6 +94,14 @@ public class AbilityDataScene : MonoBehaviour
          foreach (ImageManager.ImageData imgData in castSpriteIconFiles) {
             Sprite sourceSprite = imgData.sprite;
             castIconSpriteList.Add(imgData.imagePath, sourceSprite);
+         }
+
+         string projectileSpritePath = "Assets/Sprites/Cannon/";
+         List<ImageManager.ImageData> projecitleSpriteIconFiles = ImageManager.getSpritesInDirectory(projectileSpritePath);
+
+         foreach (ImageManager.ImageData imgData in projecitleSpriteIconFiles) {
+            Sprite sourceSprite = imgData.sprite;
+            projectileSpriteList.Add(imgData.imagePath, sourceSprite);
          }
       }
    }
@@ -234,7 +243,7 @@ public class AbilityDataScene : MonoBehaviour
       skillTemplateParent.gameObject.DestroyChildren();
       BattleItemData battleItemData = BattleItemData.CreateInstance(ability.itemID, ability.itemName, ability.itemDescription, ability.elementType, ability.hitAudioClipPath, ability.hitSpritesPath, ability.battleItemType, ability.classRequirement, ability.itemIconPath, ability.levelRequirement);
       BasicAbilityData basicData = BasicAbilityData.CreateInstance(battleItemData, ability.abilityCost, ability.castSpritesPath, ability.castAudioClipPath, ability.allowedStances, ability.abilityType, ability.abilityCooldown, ability.apChange, ability.FXTimePerFrame);
-      AttackAbilityData attackAbility = AttackAbilityData.CreateInstance(basicData, ability.hasKnockup, ability.baseDamage, ability.hasShake, ability.abilityActionType, ability.canBeBlocked, ability.hasKnockBack);
+      AttackAbilityData attackAbility = AttackAbilityData.CreateInstance(basicData, ability.hasKnockup, ability.baseDamage, ability.hasShake, ability.abilityActionType, ability.canBeBlocked, ability.hasKnockBack, ability.projectileSpeed, ability.projectileSpritePath, ability.projectileScale);
       finalizeAttackTemplate(attackAbility);
    }
 
@@ -242,7 +251,7 @@ public class AbilityDataScene : MonoBehaviour
       skillTemplateParent.gameObject.DestroyChildren();
       BattleItemData battleItemData = BattleItemData.CreateInstance(ability.itemID, ability.itemName, ability.itemDescription, ability.elementType, ability.hitAudioClipPath, ability.hitSpritesPath, ability.battleItemType, ability.classRequirement, ability.itemIconPath, ability.levelRequirement);
       BasicAbilityData basicData = BasicAbilityData.CreateInstance(battleItemData, ability.abilityCost, ability.castSpritesPath, ability.castAudioClipPath, ability.allowedStances, ability.abilityType, ability.abilityCooldown, ability.apChange, ability.FXTimePerFrame);
-      BuffAbilityData buffAbility = BuffAbilityData.CreateInstance(basicData, ability.duration, ability.buffType, ability.buffActionType, ability.iconPath, ability.value);
+      BuffAbilityData buffAbility = BuffAbilityData.CreateInstance(basicData, ability.duration, ability.buffType, ability.buffActionType, ability.iconPath, ability.value, ability.bonusStatType);
       finalizeBuffTemplate(buffAbility);
    }
 
@@ -252,7 +261,7 @@ public class AbilityDataScene : MonoBehaviour
                // Basic data set
                BattleItemData battleItemData = BattleItemData.CreateInstance(1, "Name", "Desc", Element.ALL, null, null, BattleItemType.UNDEFINED, Weapon.Class.Any, String.Empty, 1);
                BasicAbilityData basicData = BasicAbilityData.CreateInstance(battleItemData, 1, null, "", new Battler.Stance[] { }, AbilityType.Standard, 1, 1, 1);
-               AttackAbilityData attackData = AttackAbilityData.CreateInstance(basicData, false, 0, false, AbilityActionType.UNDEFINED, false, false);
+               AttackAbilityData attackData = AttackAbilityData.CreateInstance(basicData, false, 0, false, AbilityActionType.UNDEFINED, false, false, 2, null, 1);
                finalizeAttackTemplate(attackData);
             }
             break;
@@ -260,7 +269,7 @@ public class AbilityDataScene : MonoBehaviour
                // Basic data set
                BattleItemData battleItemData = BattleItemData.CreateInstance(1, "Name", "Desc", Element.ALL, null, null, BattleItemType.UNDEFINED, Weapon.Class.Any, String.Empty, 1);
                BasicAbilityData basicData = BasicAbilityData.CreateInstance(battleItemData, 1, null, "", new Battler.Stance[] { }, AbilityType.BuffDebuff, 1, 1, 1);
-               BuffAbilityData buffData = BuffAbilityData.CreateInstance(basicData, 1, BuffType.UNDEFINED, BuffActionType.UNDEFINED, string.Empty, 0);
+               BuffAbilityData buffData = BuffAbilityData.CreateInstance(basicData, 1, BuffType.UNDEFINED, BuffActionType.UNDEFINED, string.Empty, 0, BonusStatType.None);
                finalizeBuffTemplate(buffData);
             }
             break;

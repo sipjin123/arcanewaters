@@ -28,4 +28,7 @@
   <hasKnockBack>false</hasKnockBack>
   <abilityActionType>CastToTarget</abilityActionType>
   <canBeBlocked>false</canBeBlocked>
+  <projectileSpeed>4</projectileSpeed>
+  <projectileSpritePath>Assets/Sprites/Cannon/cannonball_burn.png</projectileSpritePath>
+  <projectileScale>2</projectileScale>
 </AttackAbilityData>

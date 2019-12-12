@@ -40,7 +40,9 @@ public class CraftingToolManager : MonoBehaviour {
             CraftableItemRequirements craftingData = ToolsUtil.xmlLoad<CraftableItemRequirements>(filePath);
 
             // Save the Crafting data in the memory cache
-            craftingDataList.Add(craftingData.resultItem.category == Item.Category.None ? "Undefined" : craftingData.resultItem.getCastItem().getName(), craftingData);
+            string craftingID = craftingData.resultItem.category == Item.Category.None ? "Undefined" : Util.getItemName(craftingData.resultItem.category, craftingData.resultItem.itemTypeId);
+            Debug.LogError("Adding crafting: " + craftingID);
+            craftingDataList.Add(craftingID, craftingData);
          }
          craftingToolScreen.updatePanelWithCraftingIngredients(craftingDataList);
       }
@@ -48,7 +50,7 @@ public class CraftingToolManager : MonoBehaviour {
 
    public void deleteCraftingDataFile (CraftableItemRequirements data) {
       // Build the file name
-      string fileName = data.resultItem.category == Item.Category.None ? "Undefined" : data.resultItem.category.ToString() + "_" + data.resultItem.getCastItem().getName();
+      string fileName = data.resultItem.category == Item.Category.None ? "Undefined" : Util.getItemName(data.resultItem.category, data.resultItem.itemTypeId);
 
       // Build the path to the file
       string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
@@ -68,7 +70,7 @@ public class CraftingToolManager : MonoBehaviour {
       }
 
       // Build the file name
-      string fileName = data.resultItem.category == Item.Category.None ? "Undefined" : data.resultItem.category.ToString() + "_" + data.resultItem.getCastItem().getName();
+      string fileName = data.resultItem.category == Item.Category.None ? "Undefined" : Util.getItemName(data.resultItem.category, data.resultItem.itemTypeId);
 
       // Build the path to the file
       string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
@@ -87,7 +89,7 @@ public class CraftingToolManager : MonoBehaviour {
       data.resultItem.itemTypeId = 0;
 
       // Build the file name
-      string fileName = data.resultItem.category == Item.Category.None ? "Undefined" : data.resultItem.category.ToString() + "_" + data.resultItem.getCastItem().getName();
+      string fileName = data.resultItem.category == Item.Category.None ? "Undefined" : Util.getItemName(data.resultItem.category, data.resultItem.itemTypeId);
 
       // Build the path to the file
       string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");

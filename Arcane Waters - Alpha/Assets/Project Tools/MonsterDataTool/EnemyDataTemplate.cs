@@ -30,7 +30,7 @@ public class EnemyDataTemplate : MonoBehaviour {
    public void updateItemDisplay (BattlerData resultItem) {
       string newName = "Undefined";
       try {
-         newName = resultItem.enemyName + " (" + ((Enemy.Type) resultItem.enemyType).ToString() + ")";
+         newName = resultItem.enemyName + "\n(" + ((Enemy.Type) resultItem.enemyType).ToString() + ")";
       } catch {
       }
 
