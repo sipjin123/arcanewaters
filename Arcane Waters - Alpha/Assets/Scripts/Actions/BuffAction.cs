@@ -18,12 +18,18 @@ public class BuffAction : BattleAction {
    // The value of the buff is there is one
    public int buffValue;
 
+   // Determines the element to attribute 
+   public Element buffElement;
+
+   // Determines the stat attribute to be added
+   public BonusStatType bonusStatType;
+
    #endregion
 
    public BuffAction () { }
 
    public BuffAction (int battleId, int abilityInventoryIndex, int sourceId, int targetId, float buffStartTime, float buffEndTime,
-           float cooldownDuration, float actionEndTime, int sourceApChange, int targetApChange, int abilityGlobalID, int buffVal) {
+           float cooldownDuration, float actionEndTime, int sourceApChange, int targetApChange, int abilityGlobalID, int buffVal, Element buffElement, BonusStatType bonusStatType) {
       this.battleId = battleId;
       this.abilityInventoryIndex = abilityInventoryIndex;
       this.sourceId = sourceId;
@@ -37,6 +43,8 @@ public class BuffAction : BattleAction {
       this.abilityGlobalID = abilityGlobalID;
       this.battleActionType = BattleActionType.BuffDebuff;
       this.buffValue = buffVal;
+      this.buffElement = buffElement;
+      this.bonusStatType = bonusStatType;
    }
 
    public override bool Equals (object rhs) {
@@ -87,6 +95,8 @@ public class BuffAction : BattleAction {
       serialized += this.abilityGlobalID + ",";
       serialized += (int) this.battleActionType + ",";
       serialized += this.buffValue + ",";
+      serialized += (int) this.buffElement + ",";
+      serialized += (int) this.bonusStatType + ",";
 
       return serialized;
    }
@@ -108,6 +118,8 @@ public class BuffAction : BattleAction {
       action.abilityGlobalID = Convert.ToInt32(stringArray[11]);
       action.battleActionType = (BattleActionType) Convert.ToInt32(stringArray[12]);
       action.buffValue = Convert.ToInt32(stringArray[13]);
+      action.buffElement = (Element) Convert.ToInt32(stringArray[14]);
+      action.bonusStatType = (BonusStatType) Convert.ToInt32(stringArray[15]);
 
       return action;
    }

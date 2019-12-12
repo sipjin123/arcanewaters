@@ -229,12 +229,12 @@ public class EffectManager : MonoBehaviour {
          );
       }
    }
-   public static void spawnProjectile (Battler source, AttackAction action, Vector2 sourcePos, Vector2 targetPos, float projectileSpeed, ProjectileType projectileType, float scale) {
+   public static void spawnProjectile (Battler source, AttackAction action, Vector2 sourcePos, Vector2 targetPos, float projectileSpeed, string projectileSpritePath, float scale) {
       GameObject genericEffect = Instantiate(self.projectilePrefab.gameObject, sourcePos, Quaternion.identity);
       genericEffect.transform.position = sourcePos;
       BattlerProjectile battlerProjectile = genericEffect.GetComponent<BattlerProjectile>();
       battlerProjectile.setTrajectory(sourcePos, targetPos, projectileSpeed);
-      battlerProjectile.renderer.sprite = self.projectileInfoList.Find(_ => _.projectileType == projectileType).sprite;
+      battlerProjectile.renderer.sprite = ImageManager.getSprite(projectileSpritePath);
       genericEffect.transform.localScale = new Vector3(scale, scale, scale);
    }
 

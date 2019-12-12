@@ -27,6 +27,16 @@ public class AttackAbilityData : BasicAbilityData {
    // Can this ability be blocked?
    public bool canBeBlocked;
 
+   // The projectile speed
+   public float projectileSpeed = 3;
+
+   // The path location of the projectile sprite
+   public string projectileSpritePath = null;
+
+   // The projectile scale
+   public float projectileScale = 1;
+
+
    #endregion
 
    public AttackAbilityData () { }
@@ -49,13 +59,16 @@ public class AttackAbilityData : BasicAbilityData {
       data.canBeBlocked = datacopy.canBeBlocked;
       data.hasKnockBack = datacopy.hasKnockBack;
       data.abilityActionType = datacopy.abilityActionType;
+      data.projectileSpeed = datacopy.projectileSpeed;
+      data.projectileSpritePath = datacopy.projectileSpritePath;
+      data.projectileScale = datacopy.projectileScale;
 
       return data;
    }
 
    // Builder for the Item creation window
    public static AttackAbilityData CreateInstance (BasicAbilityData basicAbilityData, bool _hasKnockup, int _damage, bool _hasShake,
-      AbilityActionType abilityActionType, bool _canBeBlocked, bool _hasKnockBack) {
+      AbilityActionType _abilityActionType, bool _canBeBlocked, bool _hasKnockBack, float _projectileSpeed, string _projectileSpritePath, float _projectileScale) {
 
       AttackAbilityData data = new AttackAbilityData();
 
@@ -69,7 +82,10 @@ public class AttackAbilityData : BasicAbilityData {
       data.baseDamage = _damage;
       data.canBeBlocked = _canBeBlocked;
       data.hasKnockBack = _hasKnockBack;
-      data.abilityActionType = abilityActionType;
+      data.abilityActionType = _abilityActionType;
+      data.projectileSpeed = _projectileSpeed;
+      data.projectileSpritePath = _projectileSpritePath;
+      data.projectileScale = _projectileScale;
 
       return data;
    }

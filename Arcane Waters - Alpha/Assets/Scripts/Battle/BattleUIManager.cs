@@ -130,7 +130,11 @@ public class BattleUIManager : MonoBehaviour {
    // Reference to the battle board to enable it whenever we want to enter a battle
    public GameObject battleBoard;
 
+   // Self
    public static BattleUIManager self;
+
+   // Reference to the attack panel
+   public AttackPanel attackPanel;
 
    #endregion
 
@@ -139,55 +143,73 @@ public class BattleUIManager : MonoBehaviour {
    }
 
    public void SetupAbilityUI (AbilitySQLData[] abilitydata) {
-      List<AbilitySQLData> attackList = new List<AbilitySQLData>(abilitydata).FindAll(_ => _.abilityType == AbilityType.Standard);
-      List<AbilitySQLData> buffList = new List<AbilitySQLData>(abilitydata).FindAll(_ => _.abilityType == AbilityType.BuffDebuff);
-
       int indexCounter = 0;
+      int attackAbilityIndex = 0;
+      int buffAbilityIndex = 0;
       foreach (AbilityButton abilityButton in abilityTargetButtons) {
-         if (indexCounter < attackList.Count) {
-            BasicAbilityData currentAbility = AbilityManager.getAbility(attackList[indexCounter].abilityID, attackList[indexCounter].abilityType);
-            if (currentAbility != null) {
-               if (currentAbility.abilityType != AbilityType.Standard) {
-                  abilityButton.gameObject.SetActive(false);
-               } else {
+         if (indexCounter < abilitydata.Length) {
+            if (abilitydata[indexCounter].abilityType == AbilityType.Standard) {
+               BasicAbilityData currentAbility = AbilityManager.getAbility(abilitydata[indexCounter].abilityID, abilitydata[indexCounter].abilityType);
+               if (currentAbility != null) {
                   string iconPath = currentAbility.itemIconPath;
                   Sprite skillSprite = ImageManager.getSprite(iconPath);
 
                   if (abilityButton.abilityIcon != null) {
                      abilityButton.abilityIcon.sprite = skillSprite;
+                     buffPlayerButtons[indexCounter].abilityIcon.sprite = skillSprite;
                   }
-               }
-            } else {
-               Debug.LogWarning("Missing Ability: " + abilityButton.abilityIndex);
-            }
-         } else {
-            // Disable skill button if equipped abilities does not reach 5 (max abilities in combat)
-            abilityButton.gameObject.SetActive(false);
-         }
-         indexCounter++;
-      }
 
-      indexCounter = 0;
-      foreach (AbilityButton abilityButton in buffPlayerButtons) {
-         if (indexCounter < buffList.Count) {
-            BasicAbilityData currentAbility = AbilityManager.getAbility(buffList[indexCounter].abilityID, buffList[indexCounter].abilityType);
-            if (currentAbility != null) {
-               if (currentAbility.abilityType != AbilityType.BuffDebuff) {
-                  abilityButton.gameObject.SetActive(false);
-               } else {
+                  abilityButton.GetComponent<Button>().interactable = true;
+                  buffPlayerButtons[indexCounter].GetComponent<Button>().interactable = false;
+
+                  int indexToSet = attackAbilityIndex;
+                  abilityButton.GetComponent<Button>().onClick.RemoveAllListeners();
+                  abilityButton.GetComponent<Button>().onClick.AddListener(() => {
+                     attackPanel.requestAttackTarget(indexToSet);
+                  });
+
+                  abilityButton.abilityIndex = indexCounter;
+                  attackAbilityIndex++;
+               }
+            } else if (abilitydata[indexCounter].abilityType == AbilityType.BuffDebuff) {
+               BasicAbilityData currentAbility = AbilityManager.getAbility(abilitydata[indexCounter].abilityID, abilitydata[indexCounter].abilityType);
+               if (currentAbility != null) {
                   string iconPath = currentAbility.itemIconPath;
                   Sprite skillSprite = ImageManager.getSprite(iconPath);
 
                   if (abilityButton.abilityIcon != null) {
                      abilityButton.abilityIcon.sprite = skillSprite;
+                     buffPlayerButtons[indexCounter].abilityIcon.sprite = skillSprite;
                   }
+
+                  abilityButton.GetComponent<Button>().interactable = false;
+                  buffPlayerButtons[indexCounter].GetComponent<Button>().interactable = true;
+
+                  int indexToSet = buffAbilityIndex;
+                  buffPlayerButtons[indexCounter].GetComponent<Button>().onClick.RemoveAllListeners();
+                  buffPlayerButtons[indexCounter].GetComponent<Button>().onClick.AddListener(() => {
+                     attackPanel.requestBuffTarget(indexToSet);
+                  });
+
+                  abilityButton.abilityIndex = indexCounter;
+                  buffAbilityIndex++;
                }
             } else {
                Debug.LogWarning("Missing Ability: " + abilityButton.abilityIndex);
             }
+
+            abilityButton.enabled = true;
+            buffPlayerButtons[indexCounter].enabled = true;
          } else {
             // Disable skill button if equipped abilities does not reach 5 (max abilities in combat)
-            abilityButton.gameObject.SetActive(false);
+            abilityButton.abilityIcon = null;
+            buffPlayerButtons[indexCounter].abilityIcon = null;
+
+            abilityButton.GetComponent<Button>().interactable = false;
+            buffPlayerButtons[indexCounter].GetComponent<Button>().interactable = false;
+
+            abilityButton.enabled = false;
+            buffPlayerButtons[indexCounter].enabled = false;
          }
          indexCounter++;
       }
@@ -496,7 +518,7 @@ public class BattleUIManager : MonoBehaviour {
       regenText.setDamageAmount(action.buffValue, false, false);
       regenText.transform.SetParent(EffectManager.self.transform, false);
       regenText.name = "HealText_" + abilityData.elementType;
-      regenText.customizeForAction(Element.Heal, false, DamageMagnitude.Default);
+      regenText.customizeForAction(abilityData.elementType, false, DamageMagnitude.Default);
 
       // The regen text should be on the same layer as the target's Battle Spot
       regenText.gameObject.layer = spot.gameObject.layer;

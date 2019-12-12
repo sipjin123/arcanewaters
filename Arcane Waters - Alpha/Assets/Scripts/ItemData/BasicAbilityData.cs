@@ -106,6 +106,19 @@ public class BasicAbilityData : BattleItemData {
 
          return (sourceBattler.AP >= abilityCost) && (Util.netTime() >= sourceBattler.cooldownEndTime);
 
+      } else if (abilityType == AbilityType.BuffDebuff) {
+
+         if (sourceBattler.AP < abilityCost) {
+            Debug.Log("not enough ap");
+            Debug.LogError("Curr: " + sourceBattler.AP + " AP Cost: " + abilityCost);
+         }
+
+         if (Util.netTime() < sourceBattler.cooldownEndTime) {
+            Debug.Log("Time on cooldown");
+         }
+
+         return (sourceBattler.AP >= abilityCost) && (Util.netTime() >= sourceBattler.cooldownEndTime);
+
       } else if (abilityType == AbilityType.Stance) {
          return Util.netTime() >= sourceBattler.stanceCooldownEndTime;
 

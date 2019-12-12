@@ -2388,9 +2388,6 @@ public class RPCManager : NetworkBehaviour {
                attackAbilityList.Add(attackAbilityData);
             }
          }
-      }
-
-      foreach (AbilitySQLData abilitySQL in equippedAbilities) {
          if (abilitySQL.abilityType == AbilityType.BuffDebuff) {
             BasicAbilityData abilityData = AbilityManager.getAbility(abilitySQL.abilityID, AbilityType.BuffDebuff);
             BuffAbilityData buffAbilityData = AbilityManager.getBuffAbility(abilitySQL.abilityID);
@@ -2554,6 +2551,12 @@ public class RPCManager : NetworkBehaviour {
 
       // Ignore invalid or dead sources and targets
       if (sourceBattler == null || targetBattler == null || sourceBattler.isDead() || targetBattler.isDead()) {
+         return;
+      }
+
+      // Make sure the source battler can use that ability type
+      if (!abilityData.isReadyForUseBy(sourceBattler)) {
+         D.debug("Battler requested to use ability they're not allowed: " + playerBody.entityName + ", " + abilityData.itemName);
          return;
       }
 

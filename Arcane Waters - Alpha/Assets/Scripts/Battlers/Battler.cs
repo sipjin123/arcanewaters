@@ -71,6 +71,22 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    [SyncVar]
    public int health = 1;
 
+   // The bonus attack stats provided by buffs
+   [SyncVar]
+   public int bonusFireAttack = 0,
+      bonusWaterAttack = 0,
+      bonusAirAttack = 0,
+      bonusEarthAttack = 0,
+      bonusPhysicalAttack = 0;
+
+   // The bonus defense stats provided by buffs
+   [SyncVar]
+   public int bonusFireDefense = 0,
+      bonusWaterDefense = 0,
+      bonusAirDefense = 0,
+      bonusEarthDefense = 0,
+      bonusPhysicalDefense = 0;
+
    // The amount of health displayed by the client
    public int displayedHealth;
 
@@ -663,10 +679,61 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       BuffAbilityData globalAbilityData = BuffAbilityData.CreateInstance(abilityDataReference);
 
       switch (globalAbilityData.buffActionType) {
-         case BuffActionType.Regeneration: {
+         case BuffActionType.Regeneration: 
+            // Cast version of the Buff Action
+            BuffAction buffAction = (BuffAction) battleAction;
+            Battler targetBattler = battle.getBattler(buffAction.targetId);
+
+            // Don't start animating until both sprites are available
+            yield return new WaitForSeconds(timeToWait);
+
+            // Make sure the battlers are still alive at this point
+            if (sourceBattler.isDead()) {
+               yield break;
+            }
+
+            // Start the buff animation that will eventually create the magic effect
+            if (isFirstAction) {
+               // Cast Animation
+               sourceBattler.playAnim(Anim.Type.Attack_East);
+            }
+
+            // Play Audio
+            AudioClip clip = AudioClipManager.self.getAudioClipData(abilityDataReference.castAudioClipPath).audioClip;
+            SoundManager.playClipOneShotAtPoint(clip, sourceBattler.transform.position);
+
+            // Play The effect of the buff
+            EffectManager.playCastAbilityVFX(sourceBattler, buffAction, targetBattler.getMagicGroundPosition(), BattleActionType.BuffDebuff);
+
+            yield return new WaitForSeconds(sourceBattler.getPreContactLength());
+
+            // Play the magic vfx such as (VFX for Heal, VFX for Attack Boost, etc etc)
+            Vector2 effectPosition = targetBattler.mainSpriteRenderer.bounds.center;
+            EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, buffAction, effectPosition, BattleActionType.BuffDebuff);
+
+            // Shows how much health is being restored
+            BattleUIManager.self.showHealText(buffAction, targetBattler);
+
+            // Add the healing value
+            targetBattler.displayedHealth += buffAction.buffValue;
+            targetBattler.displayedHealth = Util.clamp<int>(targetBattler.displayedHealth, 0, targetBattler.getStartingHealth());
+
+            yield return new WaitForSeconds(POST_CONTACT_LENGTH);
+
+            if (isFirstAction) {
+               // Switch back to our battle stance
+               sourceBattler.playAnim(Anim.Type.Battle_East);
+
+               // Add any AP we earned
+               sourceBattler.addAP(buffAction.sourceApChange);
+            }
+
+            onBattlerAttackEnd.Invoke();
+            break;
+         case BuffActionType.BonusStat: {
                // Cast version of the Buff Action
-               BuffAction buffAction = (BuffAction) battleAction;
-               Battler targetBattler = battle.getBattler(buffAction.targetId);
+               buffAction = (BuffAction) battleAction;
+               targetBattler = battle.getBattler(buffAction.targetId);
 
                // Don't start animating until both sprites are available
                yield return new WaitForSeconds(timeToWait);
@@ -683,7 +750,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
                }
 
                // Play Audio
-               AudioClip clip = AudioClipManager.self.getAudioClipData(abilityDataReference.castAudioClipPath).audioClip;
+               clip = AudioClipManager.self.getAudioClipData(abilityDataReference.castAudioClipPath).audioClip;
                SoundManager.playClipOneShotAtPoint(clip, sourceBattler.transform.position);
 
                // Play The effect of the buff
@@ -692,15 +759,32 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
                yield return new WaitForSeconds(sourceBattler.getPreContactLength());
 
                // Play the magic vfx such as (VFX for Heal, VFX for Attack Boost, etc etc)
-               Vector2 effectPosition = targetBattler.mainSpriteRenderer.bounds.center;
+               effectPosition = targetBattler.mainSpriteRenderer.bounds.center;
                EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, buffAction, effectPosition, BattleActionType.BuffDebuff);
 
                // Shows how much health is being restored
                BattleUIManager.self.showHealText(buffAction, targetBattler);
 
-               // Add the healing value
-               targetBattler.displayedHealth += buffAction.buffValue;
-               targetBattler.displayedHealth = Util.clamp<int>(targetBattler.displayedHealth, 0, targetBattler.getStartingHealth());
+               // Add the stat value
+               if (globalAbilityData.bonusStatType == BonusStatType.Attack) {
+                  switch (globalAbilityData.elementType) {
+                     case Element.Fire:
+                        targetBattler.bonusFireAttack += buffAction.buffValue;
+                        break;
+                     case Element.Water:
+                        targetBattler.bonusWaterAttack += buffAction.buffValue;
+                        break;
+                     case Element.Air:
+                        targetBattler.bonusAirAttack += buffAction.buffValue;
+                        break;
+                     case Element.Earth:
+                        targetBattler.bonusEarthAttack += buffAction.buffValue;
+                        break;
+                     case Element.Physical:
+                        targetBattler.bonusPhysicalAttack += buffAction.buffValue;
+                        break;
+                  }
+               }
 
                yield return new WaitForSeconds(POST_CONTACT_LENGTH);
 
@@ -912,8 +996,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             }
 
             // Shoot the projectile after playing cast time
-            float projectileSpeed = 5;
-            EffectManager.spawnProjectile(sourceBattler, action, sourcePos, targetPos, projectileSpeed, ProjectileType.Bullet, 1);
+            EffectManager.spawnProjectile(sourceBattler, action, sourcePos, targetPos, attackerAbility.projectileSpeed, attackerAbility.projectileSpritePath, attackerAbility.projectileScale);
             EffectManager.show(Effect.Type.Cannon_Smoke, sourcePos);
             yield return new WaitForSeconds(PRE_SHOOT_DELAY);
 
@@ -928,7 +1011,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             sourceBattler.playAnim(Anim.Type.Battle_East);
 
             // Wait the appropriate amount of time before creating the magic effect
-            float timeBeforeCollision = Vector2.Distance(sourcePos, targetPos) / projectileSpeed;
+            float timeBeforeCollision = Vector2.Distance(sourcePos, targetPos) / attackerAbility.projectileSpeed;
             yield return new WaitForSeconds(timeBeforeCollision);
             sourceBattler.modifyAnimSpeed(-1);
 
@@ -1002,10 +1085,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             }
 
             float castAnimSpeed = 1.5f;
-            offsetX = 0;
-            offsetY = 1.28f;
+            offsetX = -.38f;
+            offsetY = .28f;
             sourcePos = getMagicGroundPosition() + new Vector2(offsetX, offsetY);
-            targetPos = targetBattler.getMagicGroundPosition() + new Vector2(0, 0);
+            targetPos = targetBattler.getMagicGroundPosition() + new Vector2(0, offsetY);
 
             // Start the attack animation that will eventually create the magic effect
             if (isFirstAction) {
@@ -1021,8 +1104,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             yield return new WaitForSeconds(PRE_CAST_DELAY);
 
             // Shoot the projectile after playing cast time
-            projectileSpeed = 2f;
-            EffectManager.spawnProjectile(sourceBattler, action, sourcePos, targetPos, projectileSpeed, ProjectileType.FireBall, 2);
+            EffectManager.spawnProjectile(sourceBattler, action, sourcePos, targetPos, attackerAbility.projectileSpeed, attackerAbility.projectileSpritePath, attackerAbility.projectileScale);
 
             // Speed up animation then Animate Shoot clip for a Recoil Effect
             sourceBattler.modifyAnimSpeed(castAnimSpeed);
@@ -1035,7 +1117,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             sourceBattler.playAnim(Anim.Type.Battle_East);
 
             // Wait the appropriate amount of time before creating the magic effect
-            timeBeforeCollision = Vector2.Distance(sourcePos, targetPos) / projectileSpeed;
+            timeBeforeCollision = Vector2.Distance(sourcePos, targetPos) / attackerAbility.projectileSpeed;
             float effectOffset = .1f;
             yield return new WaitForSeconds(timeBeforeCollision - effectOffset - POST_CAST_DELAY);
             sourceBattler.modifyAnimSpeed(-1);
@@ -1373,18 +1455,23 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       float elementalMultiplier = 1;
       switch (element) {
          case Element.Physical:
+            defense += bonusPhysicalDefense;
             elementalMultiplier = getBattlerData().physicalDefenseMultiplier;
             break;
          case Element.Fire:
+            defense += bonusFireDefense;
             elementalMultiplier = getBattlerData().fireDefenseMultiplier;
             break;
          case Element.Earth:
+            defense += bonusEarthDefense;
             elementalMultiplier = getBattlerData().earthDefenseMultiplier;
             break;
          case Element.Air:
+            defense += bonusAirDefense;
             elementalMultiplier = getBattlerData().airDefenseMultiplier;
             break;
          case Element.Water:
+            defense += bonusWaterDefense;
             elementalMultiplier = getBattlerData().waterDefenseMultiplier;
             break;
       }
@@ -1411,18 +1498,23 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       float multiplier = 1;
       switch (element) {
          case Element.Physical:
+            damage += bonusPhysicalAttack;
             multiplier = getBattlerData().physicalAttackMultiplier;
             break;
          case Element.Fire:
+            damage += bonusFireAttack;
             multiplier = getBattlerData().fireAttackMultiplier;
             break;
          case Element.Earth:
+            damage += bonusEarthAttack;
             multiplier = getBattlerData().earthAttackMultiplier;
             break;
          case Element.Air:
+            damage += bonusAirAttack;
             multiplier = getBattlerData().airAttackMultiplier;
             break;
          case Element.Water:
+            damage += bonusWaterAttack;
             multiplier = getBattlerData().waterAttackMultiplier;
             break;
       }

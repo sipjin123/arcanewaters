@@ -100,16 +100,12 @@ public class AbilityManager : MonoBehaviour
                // Check how long we need to wait before displaying this action
                timeToWait = actionToExecute.actionEndTime - Util.netTime();
 
-
                StartCoroutine(sourceBattler.attackDisplay(timeToWait, action, isFirst));
                break;
 
             case BattleActionType.BuffDebuff: 
                BuffAction buffAction = action as BuffAction;
                actionToExecute = buffAction;
-
-               // Make note of the time that this action is going to occur
-               sourceBattler.lastStanceChange = actionToExecute.actionEndTime;
 
                // Check how long we need to wait before displaying this action
                timeToWait = actionToExecute.actionEndTime - Util.netTime();

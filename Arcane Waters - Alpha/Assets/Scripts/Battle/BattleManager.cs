@@ -491,6 +491,13 @@ public class BattleManager : MonoBehaviour {
             
             // Make note of the time that this battle action is going to be fully completed, considering animation times
             float timeAttackEnds = Util.netTime() + timeToWait + attackAbilityData.getTotalAnimLength(source, target);
+            if (attackAbilityData.abilityActionType == AbilityActionType.Ranged) {
+               timeAttackEnds += Battler.AIM_DURATION + Battler.PRE_AIM_DELAY + Battler.POST_SHOOT_DELAY + Battler.PRE_SHOOT_DELAY;
+            }
+            if (attackAbilityData.abilityActionType == AbilityActionType.CastToTarget) {
+               timeAttackEnds += Battler.POST_CAST_DELAY + Battler.PRE_CAST_DELAY;
+            }
+
             float cooldownDuration = abilityData.abilityCooldown * source.getCooldownModifier();
             source.cooldownEndTime = timeAttackEnds + cooldownDuration;
 
@@ -498,8 +505,13 @@ public class BattleManager : MonoBehaviour {
             int targetApChange = target.getApWhenDamaged();
             target.addAP(targetApChange);
 
+            AttackAction.ActionType currentActionType = AttackAction.ActionType.Melee;
+            if (attackAbilityData.abilityActionType == AbilityActionType.Ranged) {
+               currentActionType = AttackAction.ActionType.Range;
+            }
+
             // Create the Action object
-            AttackAction action = new AttackAction(battle.battleId, AttackAction.ActionType.Melee, source.userId, target.userId,
+            AttackAction action = new AttackAction(battle.battleId, currentActionType, source.userId, target.userId,
                 (int) damage, timeAttackEnds, abilityInventoryIndex, wasCritical, wasBlocked, cooldownDuration, sourceApChange,
                 targetApChange, abilityData.itemID, damageEffectMagnitude);
             actions.Add(action);
@@ -550,7 +562,7 @@ public class BattleManager : MonoBehaviour {
             target.addAP(targetApChange);
 
             // Create the Action object
-            BuffAction action = new BuffAction(battle.battleId, 0, source.userId, target.userId, timeBuffEnds, timeBuffEnds + 10, cooldownDuration, timeBuffEnds, sourceApChange, targetApChange, abilityData.itemID, buffAbility.value);
+            BuffAction action = new BuffAction(battle.battleId, 0, source.userId, target.userId, timeBuffEnds, timeBuffEnds + 10, cooldownDuration, timeBuffEnds, sourceApChange, targetApChange, abilityData.itemID, buffAbility.value, buffAbility.elementType, buffAbility.bonusStatType);
             
             actions.Add(action);
 

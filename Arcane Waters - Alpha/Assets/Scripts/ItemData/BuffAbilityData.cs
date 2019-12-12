@@ -12,6 +12,9 @@ public class BuffAbilityData : BasicAbilityData
    // Determines the buff type
    public BuffType buffType;
 
+   // Determines the type of stat the buff will attribute to
+   public BonusStatType bonusStatType;
+
    // The image path of the icon
    public string iconPath;
 
@@ -43,6 +46,7 @@ public class BuffAbilityData : BasicAbilityData
       data.buffActionType = datacopy.buffActionType;
       data.iconPath = datacopy.iconPath;
       data.value = datacopy.value;
+      data.bonusStatType = datacopy.bonusStatType;
 
       return data;
    }
@@ -51,7 +55,7 @@ public class BuffAbilityData : BasicAbilityData
    /// Used for creating a BuffAbilityData, only on item creation window
    /// </summary>
    public static BuffAbilityData CreateInstance (BasicAbilityData basicAbilityData, float buffDuration, BuffType buffType,
-      BuffActionType buffActionType, string buffIcon, int buffValue) {
+      BuffActionType buffActionType, string buffIcon, int buffValue, BonusStatType bonusStatType) {
       BuffAbilityData data = new BuffAbilityData();
 
       // Sets base ability data
@@ -64,6 +68,7 @@ public class BuffAbilityData : BasicAbilityData
       data.buffActionType = buffActionType;
       data.iconPath = buffIcon;
       data.value = buffValue;
+      data.bonusStatType = bonusStatType;
 
       return data;
    }
@@ -84,10 +89,18 @@ public enum BuffType
    Debuff = 2
 }
 
+public enum BonusStatType
+{
+   None = 0,
+   Attack = 1,
+   Defense = 2, 
+}
+
 public enum BuffActionType
 {
    UNDEFINED = 0,
    Defense = 1,      // If debuff, this will reduce defense instead of increasing it.
    Haste = 2,        // If debuff, this will increase the cooldown instead of reducing it
-   Regeneration = 3  // If debuff, this will decrease health overtime, instead of increasing it
+   Regeneration = 3,  // If debuff, this will decrease health overtime, instead of increasing it
+   BonusStat = 4
 }
