@@ -17,8 +17,8 @@ public class ProjectileInfo
 
 public enum ProjectileType
 {
-   Bullet,
-   ElectricBall,
-   FireBall,
-   WaterBall
+   Bullet = 0,
+   ElectricBall = 1,
+   FireBall = 2,
+   WaterBall = 3
 }

@@ -36,7 +36,7 @@ public class BattlerProjectile : MonoBehaviour {
 
    private void Update () {
       if (isInitialized) {
-         transform.position = Vector2.MoveTowards(transform.position, targetPosition, projectileSpeed * Time.fixedDeltaTime);
+         transform.position = Vector2.MoveTowards(transform.position, targetPosition, projectileSpeed * Time.deltaTime);
          if (Vector2.Distance(transform.position, targetPosition) < STOP_DISTANCE) {
             gameObject.SetActive(false);
             Destroy(this.gameObject);

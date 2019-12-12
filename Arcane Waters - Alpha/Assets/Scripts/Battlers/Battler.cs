@@ -179,7 +179,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    public const float PRE_AIM_DELAY = .15f;
 
    // Determines the aiming duration
-   public const float AIM_DELAY = 1;
+   public const float AIM_DURATION = 1;
 
    // Determines the delay before animation the Shoot clip
    public const float PRE_SHOOT_DELAY = .1f;
@@ -908,12 +908,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
                AudioClip clip = AudioClipManager.self.getAudioClipData(abilityDataReference.castAudioClipPath).audioClip;
                SoundManager.playClipOneShotAtPoint(clip, sourceBattler.transform.position);
 
-               yield return new WaitForSeconds(AIM_DELAY);
+               yield return new WaitForSeconds(AIM_DURATION);
             }
 
             // Shoot the projectile after playing cast time
             float projectileSpeed = 5;
-            EffectManager.castProjectile(sourceBattler, action, sourcePos, targetPos, projectileSpeed, ProjectileType.Bullet, 1);
+            EffectManager.spawnProjectile(sourceBattler, action, sourcePos, targetPos, projectileSpeed, ProjectileType.Bullet, 1);
             EffectManager.show(Effect.Type.Cannon_Smoke, sourcePos);
             yield return new WaitForSeconds(PRE_SHOOT_DELAY);
 
@@ -1022,7 +1022,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
             // Shoot the projectile after playing cast time
             projectileSpeed = 2f;
-            EffectManager.castProjectile(sourceBattler, action, sourcePos, targetPos, projectileSpeed, ProjectileType.FireBall, 2);
+            EffectManager.spawnProjectile(sourceBattler, action, sourcePos, targetPos, projectileSpeed, ProjectileType.FireBall, 2);
 
             // Speed up animation then Animate Shoot clip for a Recoil Effect
             sourceBattler.modifyAnimSpeed(castAnimSpeed);
@@ -1675,7 +1675,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    // Ability Getters
    public List<BasicAbilityData> getBasicAbilities () { return _battlerBasicAbilities; }
    public List<AttackAbilityData> getAttackAbilities () { return _battlerAttackAbilities; }
-   public List<BuffAbilityData> getBuffbilities () { return _battlerBuffAbilities; }
+   public List<BuffAbilityData> getBuffAbilities () { return _battlerBuffAbilities; }
 
    public AttackAbilityData getBasicAttack () {
       // Safe check

@@ -397,7 +397,7 @@ public class BattleManager : MonoBehaviour {
       if (abilityType == AbilityType.Standard) {
          abilityData = source.getAttackAbilities()[abilityInventoryIndex];
       } else if (abilityType == AbilityType.BuffDebuff) {
-         abilityData = source.getBuffbilities()[abilityInventoryIndex];
+         abilityData = source.getBuffAbilities()[abilityInventoryIndex];
       }
 
       BattleActionType actionType = BattleActionType.UNDEFINED;

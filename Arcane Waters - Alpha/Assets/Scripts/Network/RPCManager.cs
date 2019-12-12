@@ -2543,7 +2543,7 @@ public class RPCManager : NetworkBehaviour {
       Battler sourceBattler = battle.getBattler(_player.userId);
 
       // Get the ability from the battler abilities.
-      BuffAbilityData abilityData = sourceBattler.getBuffbilities()[abilityInventoryIndex];
+      BuffAbilityData abilityData = sourceBattler.getBuffAbilities()[abilityInventoryIndex];
       Battler targetBattler = null;
 
       foreach (Battler participant in battle.getParticipants()) {

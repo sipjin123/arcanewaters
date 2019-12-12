@@ -80,53 +80,51 @@ public class AbilityManager : MonoBehaviour
          AttackAbilityData abilityData = sourceBattler.getAttackAbilities()[action.abilityInventoryIndex];
 
          switch (action.battleActionType) {
-            case BattleActionType.Attack: {
-                  AttackAction attackAction = action as AttackAction;
-                  actionToExecute = attackAction;
+            case BattleActionType.Attack: 
+               AttackAction attackAction = action as AttackAction;
+               actionToExecute = attackAction;
 
-                  // Check how long we need to wait before displaying this action
-                  timeToWait = actionToExecute.actionEndTime - Util.netTime() - abilityData.getTotalAnimLength(sourceBattler, targetBattler);
+               // Check how long we need to wait before displaying this action
+               timeToWait = actionToExecute.actionEndTime - Util.netTime() - abilityData.getTotalAnimLength(sourceBattler, targetBattler);
 
-                  StartCoroutine(sourceBattler.attackDisplay(timeToWait, action, isFirst));
-               }
+               StartCoroutine(sourceBattler.attackDisplay(timeToWait, action, isFirst));
                break;
 
-            case BattleActionType.Stance: {
-                  StanceAction stanceAction = action as StanceAction;
-                  actionToExecute = stanceAction;
+            case BattleActionType.Stance: 
+               StanceAction stanceAction = action as StanceAction;
+               actionToExecute = stanceAction;
 
-                  // Make note of the time that this action is going to occur
-                  sourceBattler.lastStanceChange = actionToExecute.actionEndTime;
+               // Make note of the time that this action is going to occur
+               sourceBattler.lastStanceChange = actionToExecute.actionEndTime;
 
-                  // Check how long we need to wait before displaying this action
-                  timeToWait = actionToExecute.actionEndTime - Util.netTime();
+               // Check how long we need to wait before displaying this action
+               timeToWait = actionToExecute.actionEndTime - Util.netTime();
 
 
-                  StartCoroutine(sourceBattler.attackDisplay(timeToWait, action, isFirst));
-               }
+               StartCoroutine(sourceBattler.attackDisplay(timeToWait, action, isFirst));
                break;
 
-            case BattleActionType.BuffDebuff: {
-                  BuffAction buffAction = action as BuffAction;
-                  actionToExecute = buffAction;
+            case BattleActionType.BuffDebuff: 
+               BuffAction buffAction = action as BuffAction;
+               actionToExecute = buffAction;
 
-                  // Make note of the time that this action is going to occur
-                  sourceBattler.lastStanceChange = actionToExecute.actionEndTime;
+               // Make note of the time that this action is going to occur
+               sourceBattler.lastStanceChange = actionToExecute.actionEndTime;
 
-                  // Check how long we need to wait before displaying this action
-                  timeToWait = actionToExecute.actionEndTime - Util.netTime();
+               // Check how long we need to wait before displaying this action
+               timeToWait = actionToExecute.actionEndTime - Util.netTime();
 
-                  StartCoroutine(sourceBattler.buffDisplay(timeToWait, action, isFirst));
-               }
+               StartCoroutine(sourceBattler.buffDisplay(timeToWait, action, isFirst));
+               
                break;
 
-            case BattleActionType.Cancel: {
-                  CancelAction cancelAction = action as CancelAction;
-                  actionToExecute = cancelAction;
+            case BattleActionType.Cancel: 
+               CancelAction cancelAction = action as CancelAction;
+               actionToExecute = cancelAction;
 
-                  // Update the battler's action timestamps
-                  sourceBattler.cooldownEndTime -= cancelAction.timeToSubtract;
-               }
+               // Update the battler's action timestamps
+               sourceBattler.cooldownEndTime -= cancelAction.timeToSubtract;
+               
                break;
          }
 

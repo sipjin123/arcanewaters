@@ -154,7 +154,7 @@ public class EffectManager : MonoBehaviour {
       if (actionType == BattleActionType.Attack) {
          ability = attacker.getAttackAbilities()[action.abilityInventoryIndex];
       } else if (actionType == BattleActionType.BuffDebuff) {
-         ability = attacker.getBuffbilities()[action.abilityInventoryIndex];
+         ability = attacker.getBuffAbilities()[action.abilityInventoryIndex];
       }
 
       List<Sprite> hitSprites = new List<Sprite>();
@@ -196,7 +196,7 @@ public class EffectManager : MonoBehaviour {
       if (actionType == BattleActionType.Attack) {
          ability = source.getAttackAbilities()[action.abilityInventoryIndex];
       } else if (actionType == BattleActionType.BuffDebuff) {
-         ability = source.getBuffbilities()[action.abilityInventoryIndex];
+         ability = source.getBuffAbilities()[action.abilityInventoryIndex];
       }
 
       List<Sprite> castSprites = new List<Sprite>();
@@ -229,7 +229,7 @@ public class EffectManager : MonoBehaviour {
          );
       }
    }
-   public static void castProjectile (Battler source, AttackAction action, Vector2 sourcePos, Vector2 targetPos, float projectileSpeed, ProjectileType projectileType, float scale) {
+   public static void spawnProjectile (Battler source, AttackAction action, Vector2 sourcePos, Vector2 targetPos, float projectileSpeed, ProjectileType projectileType, float scale) {
       GameObject genericEffect = Instantiate(self.projectilePrefab.gameObject, sourcePos, Quaternion.identity);
       genericEffect.transform.position = sourcePos;
       BattlerProjectile battlerProjectile = genericEffect.GetComponent<BattlerProjectile>();
