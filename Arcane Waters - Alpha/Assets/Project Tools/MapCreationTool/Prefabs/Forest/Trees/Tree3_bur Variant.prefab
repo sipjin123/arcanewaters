@@ -109,6 +109,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: Tree
+  dataFields: []
+  selectDataFields: []
+  customDataFields: []
 --- !u!1 &1919633691798920223
 GameObject:
   m_ObjectHideFlags: 0
@@ -196,11 +199,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 6635925670398460494, guid: 7cff545d48c5cbe4396913dca802a4e6,
-        type: 3}
-      propertyPath: m_Name
-      value: Tree3_bur Variant
-      objectReference: {fileID: 0}
     - target: {fileID: 549206140759641777, guid: 7cff545d48c5cbe4396913dca802a4e6,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -255,6 +253,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6635925670398460494, guid: 7cff545d48c5cbe4396913dca802a4e6,
+        type: 3}
+      propertyPath: m_Name
+      value: Tree3_bur Variant
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 4343757171723768444, guid: 7cff545d48c5cbe4396913dca802a4e6, type: 3}

@@ -61,7 +61,7 @@ namespace MapCreationTool
       }
 
       private void Start () {
-         palette.populatePalette(areaPaletteDatas[Tools.biome]);
+         palette.populatePalette(currentEditorPalettes[Tools.biome]);
       }
 
       private void Update () {

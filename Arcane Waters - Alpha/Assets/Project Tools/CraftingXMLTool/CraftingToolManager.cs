@@ -41,7 +41,6 @@ public class CraftingToolManager : MonoBehaviour {
 
             // Save the Crafting data in the memory cache
             string craftingID = craftingData.resultItem.category == Item.Category.None ? "Undefined" : Util.getItemName(craftingData.resultItem.category, craftingData.resultItem.itemTypeId);
-            Debug.LogError("Adding crafting: " + craftingID);
             craftingDataList.Add(craftingID, craftingData);
          }
          craftingToolScreen.updatePanelWithCraftingIngredients(craftingDataList);

@@ -189,6 +189,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: Tree
+  dataFields: []
+  selectDataFields: []
+  customDataFields: []
 --- !u!1001 &6359631200299114628
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -713,7 +713,7 @@ namespace MapCreationTool
          BoundsInt bounds = getBoardBoundsInt();
 
          Vector3Int targetCenter = DrawBoard.worldToCell(worldPos - new Vector3(group.brushSize.x / 2, group.brushSize.y / 2));
-         int n = 3;
+         int n = 5;
 
          List<Vector3Int> addedTiles = new List<Vector3Int>();
 
@@ -722,14 +722,15 @@ namespace MapCreationTool
                addedTiles.Add(new Vector3Int(i + targetCenter.x, j + targetCenter.y, 0));
 
          //Ensure no edge cases are present
-         addedTiles = tilesToRemoveThinParts(layer, addedTiles, 3);
+         addedTiles = tilesToRemoveThinParts(layer, addedTiles, 5);
+         addedTiles = tilesToRoundOutCorners(layer, addedTiles);
 
          //Get bounds in which to check for rearangements
          BoundsInt rearrangeBounds = encapsulate(addedTiles);
 
          //Expand bounds include border and edge tiles to check
-         rearrangeBounds.min += new Vector3Int(1, 1, 0) * -4;
-         rearrangeBounds.max += new Vector3Int(1, 1, 0) * 4;
+         rearrangeBounds.min += new Vector3Int(1, 1, 0) * -6;
+         rearrangeBounds.max += new Vector3Int(1, 1, 0) * 6;
 
          Vector3Int from = rearrangeBounds.min;
          Vector3Int size = rearrangeBounds.size;
@@ -755,8 +756,8 @@ namespace MapCreationTool
             adj[pos.x - from.x, pos.y - from.y] = true;
 
          //Determine tiles based on the adjacency matrix
-         for (int i = 2; i < size.x - 2; i++) {
-            for (int j = 2; j < size.y - 2; j++) {
+         for (int i = 3; i < size.x - 3; i++) {
+            for (int j = 3; j < size.y - 3; j++) {
                if (adj[i, j]) {
                   Vector3Int position = from + new Vector3Int(i, j, 0);
 
@@ -765,8 +766,65 @@ namespace MapCreationTool
                      continue;
 
                   change.tileChanges.Add(new TileChange(
-                     group.pickTile(adj, surroundingCount(adj, new Vector2Int(i, j), SidesInt.uniform(2)), i, j), 
+                     group.pickTile(adj, surroundingCount(adj, new Vector2Int(i, j), SidesInt.uniform(3)), i, j), 
                      position, 
+                     layer));
+               }
+            }
+         }
+
+         return change;
+      }
+
+      public static BoardChange calculateRiverChanges (RiverGroup group, Vector3 worldPos, Layer layer) {
+         BoardChange change = new BoardChange();
+         BoundsInt bounds = getBoardBoundsInt();
+
+         Vector3Int targetCenter = DrawBoard.worldToCell(worldPos);
+
+         //Get bounds in which to check for rearangements
+         BoundsInt rearrangeBounds = encapsulate(new List<Vector3Int> { targetCenter });
+
+         //Expand bounds include border and edge tiles to check
+         rearrangeBounds.min += new Vector3Int(1, 1, 0) * -2;
+         rearrangeBounds.max += new Vector3Int(1, 1, 0) * 2;
+
+         Vector3Int from = rearrangeBounds.min;
+         Vector3Int size = rearrangeBounds.size;
+
+         bool[,] adj = new bool[size.x, size.y];
+
+         //Fill adjacency matrix according to relavent tile info
+         for (int i = 0; i < size.x; i++) {
+            for (int j = 0; j < size.y; j++) {
+               Vector3Int index = new Vector3Int(i, j, 0) + from;
+
+               TileBase tile = layer.getTile(index);
+               adj[i, j] = tile != null && group.contains(tile);
+
+               // If the position is outside of the map, we will treat this position as if it contains a tile
+               if (index.x < bounds.min.x || index.x > bounds.max.x || index.y < bounds.min.y || index.y > bounds.max.y)
+                  adj[i, j] = true;
+            }
+         }
+
+         //Fill in tiles that will be added
+         adj[targetCenter.x - from.x, targetCenter.y - from.y] = true;
+
+
+         //Determine tiles based on the adjacency matrix
+         for (int i = 1; i < size.x - 1; i++) {
+            for (int j = 1; j < size.y - 1; j++) {
+               if (adj[i, j]) {
+                  Vector3Int position = from + new Vector3Int(i, j, 0);
+
+                  // If the position is outside the map, continue
+                  if (position.x < bounds.min.x || position.x > bounds.max.x || position.y < bounds.min.y || position.y > bounds.max.y)
+                     continue;
+
+                  change.tileChanges.Add(new TileChange(
+                     group.pickTile(adj, surroundingCount(adj, new Vector2Int(i, j), SidesInt.uniform(1)), i, j),
+                     position,
                      layer));
                }
             }
@@ -1339,6 +1397,95 @@ namespace MapCreationTool
          return change;
       }
 
+      private static List<Vector3Int> tilesToRoundOutCorners(Layer layer, List<Vector3Int> placed) {
+         HashSet<Vector3Int> result = new HashSet<Vector3Int>();
+         foreach (var p in placed)
+            result.Add(p);
+
+         BoundsInt bounds = getBoardBoundsInt();
+
+         Func<Vector3Int, bool> has = (p) => {
+            return result.Contains(p) || layer.hasTile(p) || 
+               p.x < bounds.min.x || p.x > bounds.max.x || p.y < bounds.min.y || p.y > bounds.max.y;
+         };
+
+         Func<Vector3Int, Vector3Int[]> getNeighbours = (p) => {
+            return new Vector3Int[] { p + Vector3Int.up, p + Vector3Int.down, p + Vector3Int.left, p + Vector3Int.right,
+             p + new Vector3Int(1, 1, 0), p + new Vector3Int(-1, 1, 0), p + new Vector3Int(1, -1, 0), p + new Vector3Int(-1, -1, 0)};
+         };
+
+         bool[,] aj = new bool[3, 3];
+
+         Queue<Vector3Int> queue = new Queue<Vector3Int>(result.SelectMany(p => getNeighbours(p)));
+
+         for (int i = 0; i < 100000; i++) {
+            if (queue.Count == 0) {
+               return result.ToList();
+            }
+
+            Vector3Int p = queue.Dequeue();
+
+            //Check if already added
+            if (result.Contains(p))
+               continue;
+
+            //Check if not empty
+            if (has(p))
+               continue;
+
+            bool add = false;
+
+            for (int ii = 0; ii < 3; ii++)
+               for (int jj = 0; jj < 3; jj++)
+                  aj[ii, jj] = has(p + new Vector3Int(ii - 1, jj - 1, 0));
+
+            if (!aj[0, 1] && !aj[1, 0] &&
+             aj[0, 2] && aj[1, 2] && aj[2, 2] && aj[2, 1] && aj[2, 0])
+               add = true;
+
+            //bottom right
+            else if (!aj[2, 1] && !aj[1, 0] &&
+                aj[2, 2] && aj[1, 2] && aj[0, 2] && aj[0, 1] && aj[0, 0])
+               add = true;
+
+            //top right
+            else if (!aj[2, 1] && !aj[1, 2] &&
+                aj[2, 0] && aj[1, 0] && aj[0, 0] && aj[0, 1] && aj[0, 2])
+               add = true;
+
+            //top left
+            else if (!aj[0, 1] && !aj[0, 1] &&
+                aj[0, 0] && aj[1, 0] && aj[2, 0] && aj[2, 1] && aj[2, 2])
+               add = true;
+
+            //single tile, bound by 3 sides
+            //bound from bottom
+            else if (aj[0, 1] && aj[2, 1] && aj[1, 0])
+               add = true;
+            //bound from bottom left
+            else if (aj[0, 1] && aj[1, 2] && aj[1, 0] && aj[2, 0])
+               add = true;
+
+            //bound from right
+            else if (aj[2, 1] && aj[1, 2] && aj[1, 0] && aj[0, 0])
+               add = true;
+
+            //bound from top
+            else if (aj[0, 1] && aj[2, 1] && aj[1, 2])
+               add = true;
+
+            if (add) {
+               result.Add(p);
+               foreach (var n in getNeighbours(p))
+                  if (!has(n))
+                     queue.Enqueue(n);
+            }
+         }
+
+         Debug.LogError("Exceded maximum iteration count. Potential infinite cycle.");
+         return result.ToList();
+      }
+
       /// <summary>
       /// Finds the aditional positions that must be placed to make sure no 'thin' parts are present
       /// </summary>
@@ -1366,13 +1513,16 @@ namespace MapCreationTool
             return new Vector3Int[] { p + Vector3Int.up, p + Vector3Int.down, p + Vector3Int.left, p + Vector3Int.right };
          };
 
+         BoundsInt bounds = getBoardBoundsInt();
+
          Func<Vector3Int, bool> has = (p) => {
-            return result.Contains(p) || layer.hasTile(p);
+            return result.Contains(p) || layer.hasTile(p) ||
+               p.x < bounds.min.x || p.x > bounds.max.x || p.y < bounds.min.y || p.y > bounds.max.y;
          };
 
-         Queue<Vector3Int> queue = new Queue<Vector3Int>(placed.SelectMany(p => getNeighbours(p)));
+         Queue<Vector3Int> queue = new Queue<Vector3Int>(result.SelectMany(p => getNeighbours(p)));
 
-         for (int i = 0; i < 10000; i++) {
+         for (int j = 0; j < 100000; j++) {
             if (queue.Count == 0)
                return result.ToList();
 
@@ -1457,7 +1607,6 @@ namespace MapCreationTool
 
                continue;
             }
-
          }
 
          Debug.LogError("Exceded maximum iteration count. Potential infinite cycle.");

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Linq;
 using System;
+using System.Collections;
 
 namespace MapCreationTool
 {
@@ -11,13 +12,22 @@ namespace MapCreationTool
       public SelectDataField[] selectDataFields = new SelectDataField[0];
       public CustomDataField[] customDataFields = new CustomDataField[0];
 
-      private void Awake () {
+      /// <summary>
+      /// Turns all custom fields into regular data fields
+      /// </summary>
+      public void restructureCustomFields() {
          foreach (var customData in customDataFields) {
             if (customData.type == CustomFieldType.Direction) {
                Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
                selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
                   name = customData.name,
                   options = new string[] { "North", "NorthEast", "East", "SouthEast", "South", "SouthWest", "West", "NorthWest" }
+               };
+            } else if (customData.type == CustomFieldType.NPC) {
+               Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
+               selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
+                  name = customData.name,
+                  options = NPCManager.instance.formSelectionOptions()
                };
             }
          }
@@ -56,6 +66,7 @@ namespace MapCreationTool
 
    public enum CustomFieldType
    {
-      Direction
+      Direction,
+      NPC
    }
 }

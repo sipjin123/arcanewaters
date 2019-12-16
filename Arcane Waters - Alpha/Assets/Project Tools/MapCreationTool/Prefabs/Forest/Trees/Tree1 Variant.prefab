@@ -158,6 +158,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: Tree
+  dataFields: []
+  selectDataFields: []
+  customDataFields: []
 --- !u!114 &7334979971553596672
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -196,11 +199,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 6836209022429192626, guid: c7b2effce4320f84b9bd0dec06f7e16e,
-        type: 3}
-      propertyPath: m_Name
-      value: Tree1 Variant
-      objectReference: {fileID: 0}
     - target: {fileID: 384970685727403341, guid: c7b2effce4320f84b9bd0dec06f7e16e,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -255,6 +253,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6836209022429192626, guid: c7b2effce4320f84b9bd0dec06f7e16e,
+        type: 3}
+      propertyPath: m_Name
+      value: Tree1 Variant
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7891101598374403395, guid: c7b2effce4320f84b9bd0dec06f7e16e, type: 3}

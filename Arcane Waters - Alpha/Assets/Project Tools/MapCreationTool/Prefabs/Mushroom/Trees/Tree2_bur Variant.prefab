@@ -160,6 +160,7 @@ MonoBehaviour:
   title: Tree
   dataFields: []
   selectDataFields: []
+  customDataFields: []
 --- !u!114 &7384303530648363392
 MonoBehaviour:
   m_ObjectHideFlags: 0

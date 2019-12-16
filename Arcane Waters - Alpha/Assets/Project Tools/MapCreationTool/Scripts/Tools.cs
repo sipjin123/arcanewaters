@@ -231,7 +231,7 @@ namespace MapCreationTool
       Brush = 0,
       Eraser = 1,
       Fill = 2,
-      Selection = 3
+      PrefabData = 3
    }
 
    public enum EraserLayerMode

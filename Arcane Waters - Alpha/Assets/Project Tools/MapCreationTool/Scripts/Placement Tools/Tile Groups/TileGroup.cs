@@ -71,6 +71,7 @@ namespace MapCreationTool
       SeaMountain,
       NineFour,
       Dock,
-      Wall
+      Wall,
+      River
    }
 }

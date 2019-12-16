@@ -191,6 +191,7 @@ MonoBehaviour:
   title: Tree
   dataFields: []
   selectDataFields: []
+  customDataFields: []
 --- !u!1001 &1801111758586981993
 PrefabInstance:
   m_ObjectHideFlags: 0

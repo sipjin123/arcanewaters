@@ -103,32 +103,27 @@ namespace MapCreationTool
          }
 
          //Generates a random mountainy area
-         //if(Input.GetKeyDown(KeyCode.P))
-         //{
-         //    layers[PaletteData.MountainLayer].Default.ClearAllTiles();
-         //
-         //    for(int i = 0; i < 1000; i++)
-         //    {
-         //        ChangeBoard(BoardChange.CalculateMountainChanges(
-         //            palette.SelectedGroup as MountainGroup, 
-         //            new Vector3(Random.Range(-100, 100), Random.Range(-100, 100), 0), 
-         //            layers[PaletteData.MountainLayer].Default));
-         //    }
-         //    
+         //if (Input.GetKeyDown(KeyCode.P)) {
+         //   for (int i = 0; i < 1000; i++) {
+         //      changeBoard(BoardChange.calculateSeaMountainChanges(
+         //          Tools.tileGroup as SeaMountainGroup,
+         //          new Vector3(Random.Range(-126, 126), Random.Range(-126, 126), 0),
+         //          layers[PaletteData.MountainLayer].defaultLayer));
+         //   }
          //}
       }
 
-      private void boardSizeChanged(Vector2Int from, Vector2Int to) {
+      private void boardSizeChanged (Vector2Int from, Vector2Int to) {
          changeBoard(BoardChange.calculateClearAllChange(layers, placedPrefabs));
          setBoardSize(to);
       }
 
-      private void editorTypeChanged(EditorType from, EditorType to) {
+      private void editorTypeChanged (EditorType from, EditorType to) {
          changeBoard(BoardChange.calculateClearAllChange(layers, placedPrefabs));
       }
 
-      private void toolChanged(ToolType from, ToolType to) {
-         if (from == ToolType.Selection && selectedPrefab != null)
+      private void toolChanged (ToolType from, ToolType to) {
+         if (from == ToolType.PrefabData && selectedPrefab != null)
             selectPrefab(null, false);
       }
 
@@ -148,14 +143,14 @@ namespace MapCreationTool
              canvasRectT.sizeDelta);
       }
 
-      private void setBoardSize(Vector2Int size) {
+      private void setBoardSize (Vector2Int size) {
          DrawBoard.size = size;
          origin = new Vector2Int(-size.x / 2, -size.y / 2);
 
          sizeCover.transform.localScale = new Vector3(size.x, size.y, 1);
          sizeCover.transform.position = new Vector3(
-            size.x % 2 == 0 ? 0 : 0.5f, 
-            size.y % 2 == 0 ? 0 : 0.5f, 
+            size.x % 2 == 0 ? 0 : 0.5f,
+            size.y % 2 == 0 ? 0 : 0.5f,
             sizeCover.transform.position.z);
       }
 
@@ -240,7 +235,7 @@ namespace MapCreationTool
          changeBoard(BoardChange.calculateClearAllChange(layers, placedPrefabs));
       }
 
-      public void newMap() {
+      public void newMap () {
          clearAll();
          Undo.clear();
       }
@@ -291,6 +286,8 @@ namespace MapCreationTool
                      setPrefabData(newPref, d.Key, d.Value, false);
                } else {
                   var pdd = pref.GetComponent<PrefabDataDefinition>();
+                  pdd.restructureCustomFields();
+
                   if (pdd != null) {
                      foreach (var kv in pdd.dataFields)
                         setPrefabData(newPref, kv.name, kv.defaultValue, false);
@@ -465,9 +462,12 @@ namespace MapCreationTool
                } else if (Tools.tileGroup.type == TileGroupType.Wall) {
                   var group = Tools.tileGroup as WallGroup;
                   result.add(BoardChange.calculateWallChanges(group, layers[group.layer].subLayers[0], pointerWorldPosition));
-               } else if(Tools.tileGroup.type == TileGroupType.SeaMountain) {
+               } else if (Tools.tileGroup.type == TileGroupType.SeaMountain) {
                   var group = Tools.tileGroup as SeaMountainGroup;
                   result.add(BoardChange.calculateSeaMountainChanges(group, pointerWorldPosition, layers[PaletteData.MountainLayer].subLayers[Tools.mountainLayer]));
+               } else if (Tools.tileGroup.type == TileGroupType.River) {
+                  var group = Tools.tileGroup as RiverGroup;
+                  result.add(BoardChange.calculateRiverChanges(group, pointerWorldPosition, layers[group.layer].subLayers[group.subLayer]));
                }
             }
          } else if (Tools.toolType == ToolType.Fill) {
@@ -576,7 +576,7 @@ namespace MapCreationTool
 
          //--------------------------------
          //Handle prefab selection
-         if (Tools.toolType == ToolType.Selection) {
+         if (Tools.toolType == ToolType.PrefabData) {
             var target = getHoveredPrefab();
 
             if (target != null && target != selectedPrefab) {
@@ -678,7 +678,7 @@ namespace MapCreationTool
          if (data.button == PointerEventData.InputButton.Left) {
             if (Tools.toolType == ToolType.Brush || Tools.toolType == ToolType.Eraser || Tools.toolType == ToolType.Fill)
                changeBoard(getPotentialBoardChange(data.pointerCurrentRaycast.worldPosition));
-            else if (Tools.toolType == ToolType.Selection)
+            else if (Tools.toolType == ToolType.PrefabData)
                selectPrefab(getHoveredPrefab());
          }
          updatePreview(data.position);
@@ -739,6 +739,7 @@ namespace MapCreationTool
       public void setHighlight (bool hovered, bool selected) {
          var outline = placedInstance.GetComponent<SpriteOutline>();
          var highlight = placedInstance.GetComponent<PrefabHighlight>();
+         var highlightable = placedInstance.GetComponent<IHighlightable>();
 
          if (outline != null) {
             if (!hovered && !selected) {
@@ -756,6 +757,9 @@ namespace MapCreationTool
 
          if (highlight != null)
             highlight.setHighlight(hovered, selected);
+
+         if (highlightable != null)
+            highlightable.setHighlight(hovered, selected);
       }
 
       public void setData (string key, string value) {
@@ -787,7 +791,7 @@ namespace MapCreationTool
          };
       }
 
-      public static SidesInt uniform(int n) {
+      public static SidesInt uniform (int n) {
          return new SidesInt {
             left = n,
             bot = n,

@@ -105,7 +105,8 @@ namespace MapCreationTool
       private void updateShowedOptions () {
          mountainLayerDropdown.gameObject.SetActive(
              Tools.toolType == ToolType.Brush &&
-             Tools.tileGroup != null && Tools.tileGroup.type == TileGroupType.Mountain);
+             Tools.tileGroup != null && 
+             (Tools.tileGroup.type == TileGroupType.Mountain || Tools.tileGroup.type == TileGroupType.SeaMountain));
 
          burrowedTreesToggle.gameObject.SetActive(
              Tools.toolType == ToolType.Brush &&

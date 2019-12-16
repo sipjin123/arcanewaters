@@ -1,4 +1,7 @@
-﻿public interface IPrefabDataListener
+﻿namespace MapCreationTool
 {
-   void dataFieldChanged (string key, string value);
+   public interface IPrefabDataListener
+   {
+      void dataFieldChanged (string key, string value);
+   }
 }

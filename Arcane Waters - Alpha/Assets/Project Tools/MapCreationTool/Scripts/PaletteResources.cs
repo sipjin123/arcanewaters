@@ -182,6 +182,8 @@ namespace MapCreationTool
                   result.Add(formSpecialGroup(group, tileMatrix, t.GetComponent<WallGroupConfig>(), biome));
                } else if (t.GetComponent<SeaMountainConfig>()) {
                   result.Add(formSpecialGroup(group, tileMatrix, t.GetComponent<SeaMountainConfig>(), biome));
+               } else if (t.GetComponent<RiverGroupConfig>()) {
+                  result.Add(formSpecialGroup(group, tileMatrix, t.GetComponent<RiverGroupConfig>(), biome));
                }
                continue;
 
@@ -222,6 +224,37 @@ namespace MapCreationTool
                break;
             }
          }
+         return newGroup;
+      }
+
+      private RiverGroup formSpecialGroup (BiomedTileGroup from, BiomedTileData[,] tileMatrix, RiverGroupConfig config, BiomeType biome) {
+
+         BoundsInt bounds = config.mainBounds;
+         bounds.position += Vector3Int.RoundToInt(config.transform.position);
+
+         RiverGroup newGroup = new RiverGroup {
+            tiles = extractBiome(from.tiles, biome),
+            start = from.start,
+            allTiles = new TileBase[bounds.size.x, bounds.size.y]
+         };
+
+         for (int i = 0; i < bounds.size.x; i++) {
+            for (int j = 0; j < bounds.size.y; j++) {
+               Vector2Int index = new Vector2Int(bounds.position.x + i, bounds.position.y + j);
+               if (tileMatrix[index.x, index.y] != null) {
+                  newGroup.allTiles[i, j] = tileMatrix[index.x, index.y].tile[biome];
+               }
+            }
+         }
+
+         foreach (var data in newGroup.tiles) {
+            if (data != null) {
+               newGroup.layer = data.layer;
+               newGroup.subLayer = data.subLayer;
+               break;
+            }
+         }
+
          return newGroup;
       }
 
