@@ -299,7 +299,7 @@ public class Battle : NetworkBehaviour {
    #region Private Variables
 
    // A small buffer time we use to make monsters wait slightly longer than their attack cooldowns
-   protected static float MONSTER_ATTACK_BUFFER = 1.0f;
+   protected static float MONSTER_ATTACK_BUFFER = 1.5f;
 
    #endregion
 }

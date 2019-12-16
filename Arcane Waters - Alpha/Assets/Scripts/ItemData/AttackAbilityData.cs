@@ -106,7 +106,6 @@ public class AttackAbilityData : BasicAbilityData {
    public float getModifier { get { return 1.0f; } }
 
    public float getTotalAnimLength (Battler attacker, Battler target) {
-
       float shakeLength = 0;
       float knockupLength = 0;
 
@@ -124,7 +123,7 @@ public class AttackAbilityData : BasicAbilityData {
             knockupLength = hasKnockup ? Battler.KNOCKUP_LENGTH : 0f;
 
             // Add up the amount of time it takes to animate an entire action
-            return attacker.getPreMagicLength() + shakeLength + knockupLength + getPreDamageLength + getPostDamageLength;
+            return attacker.getPreMagicLength() + shakeLength + knockupLength + getPreDamageLength + getPostDamageLength + Battler.AIM_DURATION + Battler.PRE_AIM_DELAY + Battler.POST_SHOOT_DELAY + Battler.PRE_SHOOT_DELAY;
 
          case AbilityActionType.Projectile:
             shakeLength = hasShake ? Battler.SHAKE_LENGTH : 0f;
@@ -138,7 +137,7 @@ public class AttackAbilityData : BasicAbilityData {
             knockupLength = hasKnockup ? Battler.KNOCKUP_LENGTH : 0f;
 
             // Add up the amount of time it takes to animate an entire action
-            return attacker.getPreMagicLength() + shakeLength + knockupLength + getPreDamageLength + getPostDamageLength;
+            return attacker.getPreMagicLength() + shakeLength + knockupLength + getPreDamageLength + getPostDamageLength + Battler.POST_CAST_DELAY + Battler.PRE_CAST_DELAY; ;
 
          default:
             Debug.LogWarning("Ability type is not defined for getting anim length");

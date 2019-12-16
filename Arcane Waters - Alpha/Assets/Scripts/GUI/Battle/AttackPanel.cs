@@ -24,6 +24,8 @@ public class AttackPanel : MonoBehaviour {
          return;
       }
 
+      BattleUIManager.self.hideTargetGameobjectUI();
+
       // Send the request to the server
       Global.player.rpc.Cmd_RequestAttack(target.netId, abilityIndex);
    }
@@ -36,6 +38,8 @@ public class AttackPanel : MonoBehaviour {
       if (target == null) {
          return;
       }
+
+      BattleUIManager.self.hidePlayerGameobjectUI();
 
       // Send the request to the server
       Global.player.rpc.Cmd_RequestBuff(target.netId, abilityIndex);

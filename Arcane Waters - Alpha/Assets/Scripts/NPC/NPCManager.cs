@@ -13,8 +13,11 @@ public class NPCManager : XmlManager {
    // Self
    public static NPCManager self;
 
-   // Checks if npc data has been set
-   public bool npcDataInitialized;
+   // Returns the list of npc data
+   public List<NPCData> npcDataList { get { return _npcData.Values.ToList(); } }
+
+   // If the server finished the initialization of data
+   public bool serverInitialized; 
 
    #endregion
 
@@ -36,27 +39,30 @@ public class NPCManager : XmlManager {
             _npcs[npcData.npcId].initData();
          }
       }
-      npcDataInitialized = true;
+    
+      serverInitialized = true;
    }
 
    public void initializeNPCClientData (NPCData[] dataList) {
-      if (npcDataInitialized == false) {
-         _npcData = new Dictionary<int, NPCData>();
-         npcDataInitialized = true;
-         foreach (NPCData data in dataList) {
-            // Save the NPC data in the memory cache
-            if (_npcData.ContainsKey(data.npcId)) {
-               D.log("Key already exists: " + data.npcId);
-            } else {
-               _npcData.Add(data.npcId, data);
-            }
+      if (serverInitialized) {
+         return;
+      }
 
-            // Initializes info of the npc
-            if (_npcs.ContainsKey(data.npcId)) {
-               _npcs[data.npcId].initData();
-            }
+      _npcData = new Dictionary<int, NPCData>();
+      foreach (NPCData data in dataList) {
+         // Save the NPC data in the memory cache
+         if (_npcData.ContainsKey(data.npcId)) {
+            D.log("Key already exists: " + data.npcId);
+         } else {
+            _npcData.Add(data.npcId, data);
+         }
+
+         // Initializes info of the npc
+         if (_npcs.ContainsKey(data.npcId)) {
+            _npcs[data.npcId].initData();
          }
       }
+
    }
 
    public void storeNPC (NPC npc) {
@@ -92,7 +98,10 @@ public class NPCManager : XmlManager {
    }
 
    public NPC getNPC (int npcId) {
-      return _npcs[npcId];
+      if (_npcs.ContainsKey(npcId)) {
+         return _npcs[npcId];
+      }
+      return null;
    }
 
    public NPCData getNPCData (int npcID) {

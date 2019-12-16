@@ -140,6 +140,9 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab we use for creating Status effects
    public Status statusPrefab;
 
+   // The prefab for spawning an npc
+   public NPC npcPrefab;
+
    // Self
    public static PrefabsManager self;
 

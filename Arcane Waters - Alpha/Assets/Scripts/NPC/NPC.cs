@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
+using MapCreationTool;
 
-public class NPC : MonoBehaviour {
+public class NPC : MonoBehaviour, IMapEditorDataReceiver {
    #region Public Variables
 
    // How close we have to be in order to talk to the NPC
@@ -50,15 +51,16 @@ public class NPC : MonoBehaviour {
    // Our name text
    public Text nameText;
 
+   // Determines if this npc is spawned at debug mode
+   public bool isDebug = false;
+
    #endregion
 
    private void Awake () {
       // Figure out our area id
       Area area = GetComponentInParent<Area>();
       this.areaKey = area.areaKey;
-   }
 
-   void Start () {
       // Look up components
       _body = GetComponent<Rigidbody2D>();
       _startPosition = this.transform.position;
@@ -75,6 +77,20 @@ public class NPC : MonoBehaviour {
       if (this.gameObject.HasComponent<SpriteRenderer>()) {
          _renderers.Add(GetComponent<SpriteRenderer>());
       }
+   }
+
+   void Start () {
+      // Faction and Type are prerequisites for generating NPC ID
+      // NPC ID is a requirement to gather xml data
+
+      // Figure out our Type from our sprite
+      this.npcType = getTypeFromSprite();
+
+      // Get faction from type
+      this._faction = getFactionFromType(this.npcType);
+
+      // ID is the first data to be initialized
+      this.npcId = getId();
 
       // Initially hides name ui for npc name
       Util.setAlpha(nameText, 0f);
@@ -111,22 +127,19 @@ public class NPC : MonoBehaviour {
    public void initData() {
       NPCData npcData = NPCManager.self.getNPCData(this.npcId);
 
-      // Figure out our Type from our sprite
-      this.npcType = getTypeFromSprite();
-
-      // Set our id and default name, faction, and specialty
-      this.npcId = getId();
-      _npcName = npcData.name;
-      _faction = getFactionFromType(this.npcType);
-      _specialty = npcData.specialty;
-
       // Sprite path insert here
       if (npcData != null) {
+         // Set npc name and specialty
+         _npcName = npcData.name;
+         _specialty = npcData.specialty;
+
          try {
             GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture(npcData.spritePath);
          } catch {
             D.log("Cant get Sprite for NPC: " + this.npcId);
          }
+      } else {
+         D.log("Cant get Data for NPC: " + this.npcId);
       }
    }
 
@@ -227,7 +240,7 @@ public class NPC : MonoBehaviour {
 
    protected int getId () {
       // Blocks the ID generation for Debug scenes, uses the custom ID setup for the npc instead
-      if (areaKey == "TonyTest") {
+      if (isDebug) {
          Debug.Log("Warning: NPC is not generated automatically, using custom ID instead for testing");
          nameText.text = "ID: [" + this.npcId+"]\n"+this.getName();
          return this.npcId;

@@ -205,26 +205,31 @@ public class MyNetworkManager : NetworkManager {
 
             // Server provides clients with info of the npc
             List<NPCData> referenceNPCData = NPCManager.self.getNPCDataInArea(previousAreaKey);
-            List<NPCData> clientNPCData = new List<NPCData>();
 
-            // Clears out quests and gifts provided to the Clients
-            foreach (NPCData npcData in referenceNPCData) {
-               // Creates a copy of the npc data with a cleared list of Quests and Gifts
-               NPCData newNPCData = new NPCData(npcData.npcId, npcData.greetingTextStranger, npcData.greetingTextAcquaintance,
-                  npcData.greetingTextCasualFriend, npcData.greetingTextCloseFriend, npcData.greetingTextBestFriend, npcData.giftOfferNPCText,
-                  npcData.giftLikedText, npcData.giftNotLikedText, npcData.name, npcData.faction, npcData.specialty,
-                  npcData.hasTradeGossipDialogue, npcData.hasGoodbyeDialogue, npcData.lastUsedQuestId, new List<Quest>(), new List<NPCGiftData>(),
-                  npcData.iconPath, npcData.spritePath);
-
-               clientNPCData.Add(newNPCData);
-            }
-
-            string[] serializedNPCData = Util.serialize(clientNPCData);
-            player.rpc.Target_ReceiveNPCsForCurrentArea(player.connectionToClient, serializedNPCData);
+            // Sends npc data of the area to the client
+            player.rpc.Target_ReceiveNPCsForCurrentArea(player.connectionToClient, serializedNPCData(referenceNPCData));
 
             TutorialManager.self.sendTutorialInfo(player, false);
          });
       });
+   }
+
+   public string[] serializedNPCData (List<NPCData> referenceNPCData) {
+      List<NPCData> newNPCDataList = new List<NPCData>();
+
+      // Clears out quests and gifts provided to the Clients
+      foreach (NPCData npcData in referenceNPCData) {
+         // Creates a copy of the npc data with a cleared list of Quests and Gifts
+         NPCData newNPCData = new NPCData(npcData.npcId, npcData.greetingTextStranger, npcData.greetingTextAcquaintance,
+            npcData.greetingTextCasualFriend, npcData.greetingTextCloseFriend, npcData.greetingTextBestFriend, npcData.giftOfferNPCText,
+            npcData.giftLikedText, npcData.giftNotLikedText, npcData.name, npcData.faction, npcData.specialty,
+            npcData.hasTradeGossipDialogue, npcData.hasGoodbyeDialogue, npcData.lastUsedQuestId, new List<Quest>(), new List<NPCGiftData>(),
+            npcData.iconPath, npcData.spritePath);
+
+         newNPCDataList.Add(newNPCData);
+      }
+
+      return Util.serialize(newNPCDataList);
    }
 
    public override void OnStartHost () {

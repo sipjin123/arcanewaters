@@ -38,6 +38,7 @@ public class AdminManager : NetworkBehaviour {
    protected static string WARP = "warp";
    protected static string ENEMY = "enemy";
    protected static string ABILITY = "all_abilities";
+   protected static string NPC = "test_npc";
 
    #endregion
 
@@ -113,6 +114,8 @@ public class AdminManager : NetworkBehaviour {
          requestWarp(parameters);
       } else if (ABILITY.Equals(adminCommand)) {
          requestAllAbilities(parameters);
+      } else if (NPC.Equals(adminCommand)) {
+         Cmd_NpcTest(parameters);
       }
    }
 
@@ -419,6 +422,65 @@ public class AdminManager : NetworkBehaviour {
       SpawnID spawnKey = allSpawnKeys[UnityEngine.Random.Range(0, allSpawnKeys.Count)];
 
       handleAdminCommandString("warp " + spawnKey.areaKey + " " + spawnKey.spawnKey);
+   }
+
+   [Command]
+   public void Cmd_NpcTest(string messg)
+   {
+      spawnNPCs();
+      string[] serialize = MyNetworkManager.self.serializedNPCData(NPCManager.self.npcDataList);
+      Rpc_NpcTestReceive(serialize);
+   }
+
+   [ClientRpc]
+   public void Rpc_NpcTestReceive(string[] npcDataSerialized)
+   {
+      NPCData[] npcDataList = Util.unserialize<NPCData>(npcDataSerialized).ToArray();
+      NPCManager.self.initializeNPCClientData(npcDataList);
+      spawnNPCs();
+   }
+
+   private void spawnNPCs()
+   {
+      PrefabsManager.self.npcPrefab.gameObject.SetActive(false);
+
+      Vector3 playerPos = _player.transform.position;
+      int indexCounter = 0;
+      float offsetMagnitude = .3f;
+      int gridCount = 5;
+      float xOffset = -(2 * offsetMagnitude);
+      float yOffset = 0;
+
+      foreach (NPCData npcData in NPCManager.self.npcDataList) {
+         if (NPCManager.self.getNPC(npcData.npcId) != null) {
+            continue;
+         }
+
+         if (npcData.spritePath != null && npcData.spritePath != "") {
+            Sprite npcSprite = ImageManager.getSprite(npcData.spritePath);
+            if (npcSprite != null) {
+               // Object Setup
+               GameObject npcPref = Instantiate(PrefabsManager.self.npcPrefab.gameObject, AreaManager.self.getArea(_player.areaKey).transform);
+               npcPref.transform.position = new Vector3(playerPos.x + xOffset, playerPos.y + yOffset, playerPos.z);
+
+               // Data Setup
+               NPC npc = npcPref.GetComponent<NPC>();
+               npc.isDebug = true;
+               npc.npcId = npcData.npcId;
+               npc.GetComponent<SpriteSwap>().newTexture = npcSprite.texture;
+               npc.gameObject.SetActive(true);
+               npc.initData();
+
+               // Spawn Grid Setup
+               if (indexCounter % gridCount != 0) {
+                  xOffset += offsetMagnitude;
+               } else {
+                  yOffset += offsetMagnitude;
+               }
+               indexCounter++;
+            }
+         }
+      }
    }
 
    #region Private Variables

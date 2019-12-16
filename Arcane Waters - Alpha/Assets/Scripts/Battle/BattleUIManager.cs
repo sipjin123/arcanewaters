@@ -159,8 +159,10 @@ public class BattleUIManager : MonoBehaviour {
                      buffPlayerButtons[indexCounter].abilityIcon.sprite = skillSprite;
                   }
 
-                  abilityButton.GetComponent<Button>().interactable = true;
-                  buffPlayerButtons[indexCounter].GetComponent<Button>().interactable = false;
+                  abilityButton.GetComponent<Image>().raycastTarget = true;
+                  buffPlayerButtons[indexCounter].GetComponent<Image>().raycastTarget = false;
+                  abilityButton.GetComponent<Image>().color = Color.white;
+                  buffPlayerButtons[indexCounter].GetComponent<Image>().color = Color.gray;
 
                   int indexToSet = attackAbilityIndex;
                   abilityButton.GetComponent<Button>().onClick.RemoveAllListeners();
@@ -182,8 +184,10 @@ public class BattleUIManager : MonoBehaviour {
                      buffPlayerButtons[indexCounter].abilityIcon.sprite = skillSprite;
                   }
 
-                  abilityButton.GetComponent<Button>().interactable = false;
-                  buffPlayerButtons[indexCounter].GetComponent<Button>().interactable = true;
+                  abilityButton.GetComponent<Image>().raycastTarget = false;
+                  buffPlayerButtons[indexCounter].GetComponent<Image>().raycastTarget = true;
+                  abilityButton.GetComponent<Image>().color = Color.gray;
+                  buffPlayerButtons[indexCounter].GetComponent<Image>().color = Color.white;
 
                   int indexToSet = buffAbilityIndex;
                   buffPlayerButtons[indexCounter].GetComponent<Button>().onClick.RemoveAllListeners();
@@ -205,8 +209,10 @@ public class BattleUIManager : MonoBehaviour {
             abilityButton.abilityIcon = null;
             buffPlayerButtons[indexCounter].abilityIcon = null;
 
-            abilityButton.GetComponent<Button>().interactable = false;
-            buffPlayerButtons[indexCounter].GetComponent<Button>().interactable = false;
+            abilityButton.GetComponent<Image>().raycastTarget = false;
+            buffPlayerButtons[indexCounter].GetComponent<Image>().raycastTarget = false;
+            abilityButton.GetComponent<Image>().color = Color.gray;
+            buffPlayerButtons[indexCounter].GetComponent<Image>().color = Color.gray;
 
             abilityButton.enabled = false;
             buffPlayerButtons[indexCounter].enabled = false;
@@ -385,6 +391,10 @@ public class BattleUIManager : MonoBehaviour {
 
    public void hideTargetGameobjectUI () {
       mainTargetRect.gameObject.SetActive(false);
+   }
+
+   public void hidePlayerGameobjectUI () {
+      mainPlayerRect.gameObject.SetActive(false);
    }
 
    // Prepares main listener for preparing the onAbilityHover event

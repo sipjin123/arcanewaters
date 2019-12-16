@@ -97,11 +97,11 @@ public class BasicAbilityData : BattleItemData {
       if (abilityType == AbilityType.Standard) {
 
          if (sourceBattler.AP < abilityCost) {
-            Debug.Log("not enough ap");
+            // TODO: Insert Logic Here (Could be spawn effect prefab indicating low AP)
          }
 
          if (Util.netTime() < sourceBattler.cooldownEndTime) {
-            Debug.Log("Time on cooldown");
+            // TODO: Insert Logic Here (Could be spawn effect prefab indicating ability is on cooldown)
          }
 
          return (sourceBattler.AP >= abilityCost) && (Util.netTime() >= sourceBattler.cooldownEndTime);
@@ -109,12 +109,11 @@ public class BasicAbilityData : BattleItemData {
       } else if (abilityType == AbilityType.BuffDebuff) {
 
          if (sourceBattler.AP < abilityCost) {
-            Debug.Log("not enough ap");
-            Debug.LogError("Curr: " + sourceBattler.AP + " AP Cost: " + abilityCost);
+            // TODO: Insert Logic Here (Could be spawn effect prefab indicating low AP)
          }
 
          if (Util.netTime() < sourceBattler.cooldownEndTime) {
-            Debug.Log("Time on cooldown");
+            // TODO: Insert Logic Here (Could be spawn effect prefab indicating ability is on cooldown)
          }
 
          return (sourceBattler.AP >= abilityCost) && (Util.netTime() >= sourceBattler.cooldownEndTime);

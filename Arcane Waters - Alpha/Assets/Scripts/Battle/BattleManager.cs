@@ -20,7 +20,7 @@ public class BattleManager : MonoBehaviour {
    #region Public Variables
 
    // The amount of time we wait after a battle ends before moving players out of the battle view
-   public static float END_BATTLE_DELAY = 3f;
+   public static float END_BATTLE_DELAY = 5f;
 
    // How long we wait between consecutive battle ticks
    public static float TICK_INTERVAL = .5f;
@@ -364,7 +364,7 @@ public class BattleManager : MonoBehaviour {
 
       if (playersInInstance == 1) {
          Debug.Log("Spawning 3 Monsters by Default instead of 1, Delete after feature completion!");
-         return 3; // return 1;
+         return 1; // return 1;
       }
 
       // If it's a boss, we always have just 1
@@ -491,12 +491,6 @@ public class BattleManager : MonoBehaviour {
             
             // Make note of the time that this battle action is going to be fully completed, considering animation times
             float timeAttackEnds = Util.netTime() + timeToWait + attackAbilityData.getTotalAnimLength(source, target);
-            if (attackAbilityData.abilityActionType == AbilityActionType.Ranged) {
-               timeAttackEnds += Battler.AIM_DURATION + Battler.PRE_AIM_DELAY + Battler.POST_SHOOT_DELAY + Battler.PRE_SHOOT_DELAY;
-            }
-            if (attackAbilityData.abilityActionType == AbilityActionType.CastToTarget) {
-               timeAttackEnds += Battler.POST_CAST_DELAY + Battler.PRE_CAST_DELAY;
-            }
 
             float cooldownDuration = abilityData.abilityCooldown * source.getCooldownModifier();
             source.cooldownEndTime = timeAttackEnds + cooldownDuration;
@@ -666,6 +660,16 @@ public class BattleManager : MonoBehaviour {
 
                // Registers the usage of the Offensive Skill for achievement recording
                AchievementManager.registerUserAchievement(source.player.userId, ActionType.OffensiveSkillUse);
+
+               // Applies damage delay for abilities with extra animation durations such as casting and aiming
+               float delayMagnitude = .5f;
+               float attackApplyDelay = 0;
+               AttackAbilityData abilityDataReference = (AttackAbilityData) AbilityManager.getAbility(action.abilityGlobalID, AbilityType.Standard);
+               if (abilityDataReference.abilityActionType == AbilityActionType.Ranged || abilityDataReference.abilityActionType == AbilityActionType.CastToTarget) {
+                  attackApplyDelay += abilityDataReference.getTotalAnimLength(source, target) % delayMagnitude;
+               }
+
+               yield return new WaitForSeconds(attackApplyDelay);
 
                // Apply damage
                target.health -= attackAction.damage;
