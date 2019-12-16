@@ -16,7 +16,7 @@ public class PlayerBodyEntity : BodyEntity {
       // Any time out sprite changes, we need to regenerate our outline
       _outline.recreateOutlineIfVisible();
 
-      if (!isLocalPlayer || ChatPanel.self.inputField.isFocused) {
+      if (!isLocalPlayer || !Util.isGeneralInputAllowed()) {
          return;
       }
 

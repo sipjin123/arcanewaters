@@ -50,9 +50,10 @@ public class ItemSelectionScreen : MonoBehaviour
 
    #endregion
 
-   public void show (Item.Category categoryFilter = Item.Category.None) {
-      // Set the category filter to be used every time the items are listed
+   public void show (List<int> itemIdsToFilter, Item.Category categoryFilter = Item.Category.None) {
+      // Set the filters to be used every time the items are listed
       _categoryFilter = categoryFilter;
+      _itemIdsToFilter = itemIdsToFilter;
 
       // Clear out any current items
       itemCellsContainer.DestroyChildren();
@@ -62,7 +63,7 @@ public class ItemSelectionScreen : MonoBehaviour
       clearSelectedItem();
 
       // Request the data from the server
-      Global.player.rpc.Cmd_RequestItemsFromServerForItemSelection(_categoryFilter, _currentPage, ITEMS_PER_PAGE, true);
+      Global.player.rpc.Cmd_RequestItemsFromServerForItemSelection(_categoryFilter, _currentPage, ITEMS_PER_PAGE, true, _itemIdsToFilter.ToArray());
 
       // Removes the page number text
       pageNumberText.text = "";
@@ -121,6 +122,12 @@ public class ItemSelectionScreen : MonoBehaviour
          // Initializes the cell
          cell.setCellForItem(castedItem);
 
+         // Set the cell click events
+         cell.leftClickEvent.RemoveAllListeners();
+         cell.rightClickEvent.RemoveAllListeners();
+         cell.doubleClickEvent.RemoveAllListeners();
+         cell.leftClickEvent.AddListener(() => setSelectedItem(cell));
+
          // Saves the cell in a list for easy access
          _cells.Add(cell);
       }
@@ -152,14 +159,14 @@ public class ItemSelectionScreen : MonoBehaviour
    public void nextPage () {
       if (_currentPage < _maxPage) {
          _currentPage++;
-         Global.player.rpc.Cmd_RequestItemsFromServerForItemSelection(_categoryFilter, _currentPage, ITEMS_PER_PAGE, true);
+         Global.player.rpc.Cmd_RequestItemsFromServerForItemSelection(_categoryFilter, _currentPage, ITEMS_PER_PAGE, true, _itemIdsToFilter.ToArray());
       }
    }
 
    public void previousPage () {
       if (_currentPage > 1) {
          _currentPage--;
-         Global.player.rpc.Cmd_RequestItemsFromServerForItemSelection(_categoryFilter, _currentPage, ITEMS_PER_PAGE, true);
+         Global.player.rpc.Cmd_RequestItemsFromServerForItemSelection(_categoryFilter, _currentPage, ITEMS_PER_PAGE, true, _itemIdsToFilter.ToArray());
       }
    }
 
@@ -202,6 +209,9 @@ public class ItemSelectionScreen : MonoBehaviour
 
    // The category used to filter the displayed items
    private Item.Category _categoryFilter;
+
+   // The list of items that must not be displayed in the item selection
+   private List<int> _itemIdsToFilter = new List<int>();
 
    // The list of item cells
    private List<ItemCell> _cells = new List<ItemCell>();

@@ -138,6 +138,16 @@ public class BottomBar : MonoBehaviour {
       }
    }
 
+   public void toggleMailPanel () {
+      MailPanel panel = (MailPanel) PanelManager.self.get(Panel.Type.Mail);
+
+      if (!panel.isShowing()) {
+         panel.refreshMailList();
+      } else {
+         PanelManager.self.togglePanel(Panel.Type.Mail);
+      }
+   }
+
    #region Private Variables
 
    #endregion

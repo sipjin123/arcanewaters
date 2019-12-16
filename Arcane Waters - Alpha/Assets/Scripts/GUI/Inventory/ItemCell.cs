@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 using UnityEngine.EventSystems;
+using UnityEngine.Events;
 
 public class ItemCell : MonoBehaviour, IPointerClickHandler
 {
@@ -30,6 +31,11 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
    // The default icons, used when it is not defined by the item type
    public Sprite foodIcon;
    public Sprite defaultItemIcon;
+
+   // The click events
+   public UnityEvent leftClickEvent;
+   public UnityEvent rightClickEvent;
+   public UnityEvent doubleClickEvent;
 
    #endregion
 
@@ -93,9 +99,19 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
    }
 
    public virtual void OnPointerClick (PointerEventData eventData) {
+      // Invoke the click events
       if (_interactable) {
-         // If this cell is clicked on, update the currently selected item
-         PanelManager.self.itemSelectionScreen.setSelectedItem(this);
+         if (eventData.button == PointerEventData.InputButton.Left) {
+            // Determine if two clicks where close enough in time to be considered a double click
+            if (Time.time - _lastClickTime < DOUBLE_CLICK_DELAY) {
+               doubleClickEvent.Invoke();
+            } else {
+               leftClickEvent.Invoke();
+            }
+            _lastClickTime = Time.time;
+         } else if (eventData.button == PointerEventData.InputButton.Right) {
+            rightClickEvent.Invoke();
+         }
       }
    }
 
@@ -126,7 +142,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
    #region Private Variables
 
    // A reference to the item being displayed
-   private Item _item;
+   protected Item _item;
 
    // Gets set to true when the text must react to pointer events
    protected bool _interactable = true;
@@ -134,6 +150,13 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
    // The item color key
    private ColorKey _colorKey = null;
 
+   // The time since the last left click on this cell
+   private float _lastClickTime = float.MinValue;
+
+   // The delay between two clicks to be considered a double click
+   private float DOUBLE_CLICK_DELAY = 0.5f;
+
    #endregion
 
 }
+ 

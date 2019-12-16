@@ -1707,8 +1707,7 @@ public class DB_Main : DB_MainStub {
       return itemCount;
    }
 
-   public static new int getItemCount (int userId, Item.Category[] categories, int equippedWeaponId,
-      int equippedArmorId) {
+   public static new int getItemCount (int userId, Item.Category[] categories, List<int> itemIdsToFilter) {
       // Initialize the count
       int itemCount = 0;
 
@@ -1726,8 +1725,18 @@ public class DB_Main : DB_MainStub {
          query.Append(") ");
       }
 
-      // Filter the equipped weapon and armor
-      query.Append("AND itmId NOT IN (@equippedWeaponId, @equippedArmorId) ");
+      // Filter given item ids
+      if (itemIdsToFilter != null && itemIdsToFilter.Count > 0) {
+         query.Append("AND itmId NOT IN (");
+         for (int i = 0; i < itemIdsToFilter.Count; i++) {
+            query.Append("@filteredItemId" + i + ", ");
+         }
+
+         // Delete the last ", "
+         query.Length = query.Length - 2;
+
+         query.Append(") ");
+      }
 
       try {
          using (MySqlConnection conn = getConnection())
@@ -1735,11 +1744,14 @@ public class DB_Main : DB_MainStub {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
+
             for (int i = 0; i < categories.Length; i++) {
                cmd.Parameters.AddWithValue("@itmCategory" + i, (int) categories[i]);
             }
-            cmd.Parameters.AddWithValue("@equippedWeaponId", equippedWeaponId);
-            cmd.Parameters.AddWithValue("@equippedArmorId", equippedArmorId);
+
+            for (int i = 0; i < itemIdsToFilter.Count; i++) {
+               cmd.Parameters.AddWithValue("@filteredItemId" + i, itemIdsToFilter[i]);
+            }
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -1756,7 +1768,7 @@ public class DB_Main : DB_MainStub {
    }
 
    public static new List<Item> getItems (int userId, Item.Category[] categories, int page, int itemsPerPage,
-      int equippedWeaponId, int equippedArmorId) {
+      List<int> itemIdsToFilter) {
       // Initialize the list
       List<Item> itemList = new List<Item>();
 
@@ -1774,8 +1786,18 @@ public class DB_Main : DB_MainStub {
          query.Append(") ");
       }
 
-      // Filter the equipped weapon and armor
-      query.Append("AND itmId NOT IN (@equippedWeaponId, @equippedArmorId) ");
+      // Filter given item ids
+      if (itemIdsToFilter.Count > 0) {
+         query.Append("AND itmId NOT IN (");
+         for (int i = 0; i < itemIdsToFilter.Count; i++) {
+            query.Append("@filteredItemId" + i + ", ");
+         }
+
+         // Delete the last ", "
+         query.Length = query.Length - 2;
+
+         query.Append(") ");
+      }
 
       // Sorts the item ID
       query.Append("ORDER BY itmId");
@@ -1796,8 +1818,9 @@ public class DB_Main : DB_MainStub {
             for (int i = 0; i < categories.Length; i++) {
                cmd.Parameters.AddWithValue("@itmCategory" + i, (int) categories[i]);
             }
-            cmd.Parameters.AddWithValue("@equippedWeaponId", equippedWeaponId);
-            cmd.Parameters.AddWithValue("@equippedArmorId", equippedArmorId);
+            for (int i = 0; i < itemIdsToFilter.Count; i++) {
+               cmd.Parameters.AddWithValue("@filteredItemId" + i, itemIdsToFilter[i]);
+            }
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -2782,6 +2805,151 @@ public class DB_Main : DB_MainStub {
       }
 
       return friendCount;
+   }
+
+   public static new int createMail (MailInfo mailInfo) {
+      int mailId = -1;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO mails(recipientUsrId, senderUsrId, receptionDate, isRead, mailSubject, message) " +
+            "VALUES (@recipientUsrId, @senderUsrId, @receptionDate, @isRead, @mailSubject, @message)", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@recipientUsrId", mailInfo.recipientUserId);
+            cmd.Parameters.AddWithValue("@senderUsrId", mailInfo.senderUserId);
+            cmd.Parameters.AddWithValue("@receptionDate", DateTime.FromBinary(mailInfo.receptionDate));
+            cmd.Parameters.AddWithValue("@isRead", mailInfo.isRead);
+            cmd.Parameters.AddWithValue("@mailSubject", mailInfo.mailSubject);
+            cmd.Parameters.AddWithValue("@message", mailInfo.message);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+            mailId = (int) cmd.LastInsertedId;
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return mailId;
+   }
+
+   public static new void updateMailReadStatus (int mailId, bool isRead) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "UPDATE mails SET isRead=@isRead WHERE mailId=@mailId", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@mailId", mailId);
+            cmd.Parameters.AddWithValue("@isRead", isRead);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void deleteMail (int mailId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "DELETE FROM mails WHERE mailId=@mailId", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@mailId", mailId);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new MailInfo getMailInfo (int mailId) {
+      MailInfo mailInfo = null;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM mails JOIN users ON mails.senderUsrId = users.usrId WHERE mails.mailId=@mailId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@mailId", mailId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  mailInfo = new MailInfo(dataReader, true);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return mailInfo;
+   }
+
+   public static new List<MailInfo> getMailInfoList (int recipientUserId, int page, int mailsPerPage) {
+      List<MailInfo> mailList = new List<MailInfo>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM mails JOIN users ON mails.senderUsrId = users.usrId " +
+            "WHERE mails.recipientUsrId=@recipientUsrId " +
+            "ORDER BY mails.receptionDate DESC LIMIT @start, @perPage", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@recipientUsrId", recipientUserId);
+            cmd.Parameters.AddWithValue("@start", (page - 1) * mailsPerPage);
+            cmd.Parameters.AddWithValue("@perPage", mailsPerPage);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  MailInfo mail = new MailInfo(dataReader, false);
+                  mailList.Add(mail);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return mailList;
+   }
+
+   public static new int getMailInfoCount (int recipientUserId) {
+      int mailCount = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT count(*) AS mailCount FROM mails WHERE mails.recipientUsrId=@recipientUsrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@recipientUsrId", recipientUserId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  mailCount = dataReader.GetInt32("mailCount");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return mailCount;
    }
 
    public static new void readTest () {

@@ -92,6 +92,8 @@ public class PanelManager : MonoBehaviour {
          BottomBar.self.toggleFriendListPanel();
       } else if (Input.GetKeyUp(KeyCode.U)) {
          BottomBar.self.toggleAbilityPanel();
+      } else if (Input.GetKeyUp(KeyCode.K)) {
+         BottomBar.self.toggleMailPanel();
       }
    }
 

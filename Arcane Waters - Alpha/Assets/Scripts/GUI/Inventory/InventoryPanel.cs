@@ -161,6 +161,14 @@ public class InventoryPanel : Panel, IPointerClickHandler {
          } else if (castedItem.id == equippedArmorId) {
             cell.transform.SetParent(equippedArmorCellContainer.transform, false);
          }
+
+         // Set the cell click events
+         cell.leftClickEvent.RemoveAllListeners();
+         cell.rightClickEvent.RemoveAllListeners();
+         cell.doubleClickEvent.RemoveAllListeners();
+         cell.leftClickEvent.AddListener(() => hideContextMenu());
+         cell.rightClickEvent.AddListener(() => showContextMenu(cell));
+         cell.doubleClickEvent.AddListener(() => tryEquipOrUseItem(cell.getItem()));
       }
 
       // Insert the player's name

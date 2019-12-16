@@ -268,7 +268,7 @@ public class NPCPanel : Panel {
       PanelManager.self.itemSelectionScreen.cancelButton.onClick.AddListener(() => hideItemSelectionScreen());
 
       // Show the item selection screen
-      PanelManager.self.itemSelectionScreen.show(Item.Category.None);
+      PanelManager.self.itemSelectionScreen.show(new List<int>(), Item.Category.None);
    }
 
    public void confirmOfferGiftButtonClickedOn () {

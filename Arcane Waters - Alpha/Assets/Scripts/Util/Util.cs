@@ -13,6 +13,7 @@ using UnityEngine.UI;
 using System.Linq;
 using System.IO;
 using System.Xml.Serialization;
+using TMPro;
 
 public class Util : MonoBehaviour {
    public static NetEntity getPlayer () {
@@ -721,6 +722,14 @@ public class Util : MonoBehaviour {
       }
    }
 
+   public static bool hasInputField (GameObject obj) {
+      return (obj.HasComponent<InputField>() || obj.HasComponent<TMP_InputField>());
+   }
+
+   public static bool isGeneralInputAllowed () {
+      return !(ChatPanel.self.inputField.isFocused || ((MailPanel) PanelManager.self.get(Panel.Type.Mail)).isWritingMail());
+   }
+   
    // Loads an XML text asset and deserializes it into an object
    public static T xmlLoad<T> (TextAsset textAsset) {
       StringReader reader = null;

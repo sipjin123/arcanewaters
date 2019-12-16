@@ -107,8 +107,9 @@ public class ChatPanel : MonoBehaviour {
          inputField.text = "";
       }
 
-      // Activate the input field when enter is pressed and the field is unfocused
-      if (Input.GetKeyDown(KeyCode.Return)) {
+      // Activate the input field when enter is pressed and the field is unfocused, except if the
+      // player is writing a mail      
+      if (Input.GetKeyDown(KeyCode.Return) && !MailPanel.self.isWritingMail()) {
          if (!wasJustFocused()) {
             // Activate the input field in the next frame to avoid weird interactions
             StartCoroutine(activateAfterDelay());

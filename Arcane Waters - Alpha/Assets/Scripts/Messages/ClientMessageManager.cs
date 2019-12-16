@@ -188,6 +188,33 @@ public class ClientMessageManager : MonoBehaviour {
             }
             return;
 
+         case ConfirmMessage.Type.MailSent:
+            // Hide the confirm panel
+            PanelManager.self.confirmScreen.hide();
+
+            // Get a reference to the Mail Panel
+            MailPanel mailPanel = (MailPanel) PanelManager.self.get(Panel.Type.Mail);
+
+            // Update the panel after the successful operation
+            mailPanel.confirmMailSent();
+
+            // Show a confirmation panel if there is a custom message to display
+            if (!"".Equals(msg.customMessage)) {
+               PanelManager.self.noticeScreen.show(msg.customMessage);
+            }
+            return;
+
+         case ConfirmMessage.Type.MailDeleted:
+            // Hide the confirm panel
+            PanelManager.self.confirmScreen.hide();
+
+            // Get a reference to the Mail Panel
+            MailPanel mailPanel2 = (MailPanel) PanelManager.self.get(Panel.Type.Mail);
+
+            // Refresh the panel
+            mailPanel2.refreshMailList();
+            return;
+
             /*case ConfirmMessage.Type.SeaWarp:
                // Pixelate the screen
                // PixelFadeEffect.self.fadeOut();

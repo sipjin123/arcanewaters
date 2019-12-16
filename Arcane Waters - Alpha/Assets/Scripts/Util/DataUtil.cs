@@ -24,6 +24,17 @@ public class DataUtil {
       return dataReader.GetInt32(key);
    }
 
+   public static bool getBoolean (MySqlDataReader dataReader, string key) {
+      var ordinal = dataReader.GetOrdinal(key);
+
+      // Default to false
+      if (dataReader.IsDBNull(ordinal)) {
+         return false;
+      }
+
+      return dataReader.GetInt32(key) > 0 ? true : false;
+   }
+
    public static float getFloat (MySqlDataReader dataReader, string key) {
       var ordinal = dataReader.GetOrdinal(key);
 

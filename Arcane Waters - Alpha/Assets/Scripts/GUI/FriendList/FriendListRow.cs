@@ -48,7 +48,7 @@ public class FriendListRow : MonoBehaviour
    }
 
    public void onSendMessageButtonPress () {
-      FriendListPanel.self.onSendMessageButtonPress(_friendUserId, friendName.text);
+      FriendListPanel.self.onSendMessageButtonPress(friendName.text);
    }
 
    public void onDeleteFriendButtonPress () {

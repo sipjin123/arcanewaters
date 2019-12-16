@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
+using TMPro;
 
 public class ChatManager : MonoBehaviour {
    #region Public Variables
@@ -160,7 +161,7 @@ public class ChatManager : MonoBehaviour {
       GameObject currentSelection = EventSystem.current.currentSelectedGameObject;
 
       // Check if we're typing in an input field
-      if (currentSelection != null && currentSelection.HasComponent<InputField>()) {
+      if (currentSelection != null && Util.hasInputField(currentSelection)) {
          return true;
       }
 

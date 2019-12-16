@@ -422,6 +422,37 @@ public class RPCManager : NetworkBehaviour {
       panel.receiveUserIdForFriendshipInvite(friendUserId, friendName);
    }
 
+   [TargetRpc]
+   public void Target_ReceiveSingleMail (NetworkConnection connection, MailInfo mail, Item[] attachedItems) {
+      List<Item> attachedItemList = new List<Item>(attachedItems);
+
+      // Make sure the panel is showing
+      MailPanel panel = (MailPanel) PanelManager.self.get(Panel.Type.Mail);
+
+      if (!panel.isShowing()) {
+         PanelManager.self.pushPanel(panel.type);
+      }
+
+      // Pass the data to the panel
+      panel.updatePanelWithSingleMail(mail, attachedItemList);
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveMailList (NetworkConnection connection,
+      MailInfo[] mailArray, int pageNumber, int totalMailCount) {
+      List<MailInfo> mailList = new List<MailInfo>(mailArray);
+
+      // Make sure the panel is showing
+      MailPanel panel = (MailPanel) PanelManager.self.get(Panel.Type.Mail);
+
+      if (!panel.isShowing()) {
+         PanelManager.self.pushPanel(panel.type);
+      }
+
+      // Pass the data to the panel
+      panel.updatePanelWithMailList(mailList, pageNumber, totalMailCount);
+   }
+
    [Command]
    public void Cmd_BugReport (string subject, string message) {
       // We need a player object
@@ -604,7 +635,7 @@ public class RPCManager : NetworkBehaviour {
          int totalItemCount = DB_Main.getItemCount(_player.userId);
 
          // Get the items from the database
-         List<Item> items = DB_Main.getItems(_player.userId, categories, pageNumber, itemsPerPage, 0, 0);
+         List<Item> items = DB_Main.getItems(_player.userId, categories, pageNumber, itemsPerPage, new List<int>());
 
          List<Item> craftableList = new List<Item>();
          foreach (Item item in items) {
@@ -637,7 +668,7 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
          UserInfo userInfo = userObjects.userInfo;
-         int totalItemCount = DB_Main.getItemCount(_player.userId, categories, userInfo.weaponId, userInfo.armorId);
+         int totalItemCount = DB_Main.getItemCount(_player.userId, categories, new List<int> { userInfo.weaponId, userInfo.armorId });
 
          // Calculate the maximum page number
          int maxPage = Mathf.CeilToInt((float) totalItemCount / itemsPerPage);
@@ -649,7 +680,7 @@ public class RPCManager : NetworkBehaviour {
          pageNumber = Mathf.Clamp(pageNumber, 1, maxPage);
 
          // Get the items from the database
-         List<Item> items = DB_Main.getItems(_player.userId, categories, pageNumber, itemsPerPage, userInfo.weaponId, userInfo.armorId);
+         List<Item> items = DB_Main.getItems(_player.userId, categories, pageNumber, itemsPerPage, new List<int> { userInfo.weaponId, userInfo.armorId });
 
          // Get the equipped weapon, independently of the category filters
          if (userInfo.weaponId != 0) {
@@ -672,7 +703,7 @@ public class RPCManager : NetworkBehaviour {
 
    [Command]
    public void Cmd_RequestItemsFromServerForItemSelection (Item.Category category, int pageNumber, int itemsPerPage,
-      bool filterEquippedItems) {
+      bool filterEquippedItems, int[] itemIdsToFilterArray) {
       // Enforce a reasonable max here
       if (itemsPerPage > 200) {
          D.warning("Requesting too many items per page.");
@@ -690,14 +721,16 @@ public class RPCManager : NetworkBehaviour {
          int totalItemCount;
          List<Item> items;
 
-         // Get the item count and item list from the database
+         // Add equipped items to the list of item ids to filter
+         List<int> itemIdsToFilter = itemIdsToFilterArray.ToList();
          if (filterEquippedItems) {
-            totalItemCount = DB_Main.getItemCount(_player.userId, categoryArray, userInfo.weaponId, userInfo.armorId);
-            items = DB_Main.getItems(_player.userId, categoryArray, pageNumber, itemsPerPage, userInfo.weaponId, userInfo.armorId);
-         } else {
-            totalItemCount = DB_Main.getItemCount(_player.userId, categoryArray, 0, 0);
-            items = DB_Main.getItems(_player.userId, categoryArray, pageNumber, itemsPerPage, 0, 0);
+            itemIdsToFilter.Add(userInfo.weaponId);
+            itemIdsToFilter.Add(userInfo.armorId);
          }
+
+         // Get the item count and item list from the database
+         totalItemCount = DB_Main.getItemCount(_player.userId, categoryArray, itemIdsToFilter);
+         items = DB_Main.getItems(_player.userId, categoryArray, pageNumber, itemsPerPage, itemIdsToFilter);
 
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -1655,6 +1688,260 @@ public class RPCManager : NetworkBehaviour {
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             Target_ReceiveFriendshipInfo(_player.connectionToClient, friendshipInfoList.ToArray(), friendshipStatus, pageNumber, totalFriendInfoCount, friendCount, pendingRequestCount);
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_CreateMail (string recipientName, string mailSubject, string message, int[] attachedItemsIds, int[] attachedItemsCount) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      string feedbackMessage = "";
+      bool success = true;
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+
+         // Try to retrieve the recipient info
+         UserInfo recipientUserInfo = DB_Main.getUserInfo(recipientName);
+         if (recipientUserInfo == null) {
+            feedbackMessage = "The player " + recipientName + " does not exist!";
+            success = false;
+         }
+
+         // Verify the attached items validity
+         if (success) {
+            // Verify that the number of attached items is below the maximum
+            if (attachedItemsIds.Length > MailManager.MAX_ATTACHED_ITEMS) {
+               D.error(string.Format("The mail from user {0} to recipient {1} has too many attached items ({2}).", _player.userId, recipientUserInfo.userId, attachedItemsIds.Length));
+               return;
+            }
+
+            for (int i = 0; i < attachedItemsIds.Length; i++) {
+               // Retrieve the item from the player's inventory
+               Item item = DB_Main.getItem(_player.userId, attachedItemsIds[i]);
+
+               // Verify if the player has the item in his inventory
+               if (item == null) {
+                  feedbackMessage = "One of the items is not present in your inventory!";
+                  success = false;
+                  break;
+               }
+
+               // Verify that there are enough items in the stack
+               if (item.count < attachedItemsCount[i]) {
+                  feedbackMessage = "You don't have enough " + item.getName() + " to send!";
+                  success = false;
+                  break;
+               }
+
+               // Verify that the item is not equipped
+               UserInfo userInfo = DB_Main.getUserInfo(_player.userId);
+
+               if (userInfo.armorId == item.id || userInfo.weaponId == item.id) {
+                  feedbackMessage = "You cannot send an equipped item!";
+                  success = false;
+                  break;
+               }
+            }
+         }
+
+         MailInfo mail = null;
+
+         if (success) {
+            // Create the mail object
+            mail = new MailInfo(-1, recipientUserInfo.userId, _player.userId, DateTime.UtcNow,
+               false, mailSubject, message);
+
+            // Write the mail in the database
+            mail.mailId = DB_Main.createMail(mail);
+
+            if (mail.mailId == -1) {
+               D.error(string.Format("Error when creating a mail from sender {0} to recipient {1}.", _player.userId, recipientUserInfo.userId));
+               feedbackMessage = "An error occurred when sending the mail!";
+               success = false;
+            }
+         }
+
+         if (success) {
+            // Attach the items
+            for (int i = 0; i < attachedItemsIds.Length; i++) {
+               // Retrieve the item from the player's inventory
+               Item item = DB_Main.getItem(_player.userId, attachedItemsIds[i]);
+
+               // Check if the item was correctly retrieved
+               if (item == null) {
+                  D.warning(string.Format("Could not retrieve the item {0} attached to mail {1} of user {2}.", attachedItemsIds[i], mail.mailId, _player.userId));
+                  continue;
+               }
+
+               // Set the item count
+               item.count = attachedItemsCount[i];
+
+               // Remove the item from the player's inventory
+               DB_Main.decreaseQuantityOrDeleteItem(_player.userId, item.id, attachedItemsCount[i]);
+
+               // Create a new item, attached to the mail
+               DB_Main.createNewItem(-mail.mailId, item);
+            }
+
+            // Prepare a feedback message
+            feedbackMessage = "The mail has been successfully sent to " + recipientName + "!";
+         }
+
+         // Back to Unity
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (success) {
+               // Let the player know that the mail was sent
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.MailSent, _player, feedbackMessage);
+            } else {
+               ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, feedbackMessage);
+            }
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_SetMailAsRead (int mailId) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+
+         // Update the mail in the database
+         DB_Main.updateMailReadStatus(mailId, true);
+      });
+   }
+
+   [Command]
+   public void Cmd_RequestSingleMailFromServer (int mailId) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+
+         // Get the mail content
+         MailInfo mail = DB_Main.getMailInfo(mailId);
+
+         // Get the attached items
+         List<Item> attachedItems = DB_Main.getItems(-mail.mailId, new Item.Category[] { Item.Category.None }, 1, MailManager.MAX_ATTACHED_ITEMS, new List<int>());
+
+         // Back to the Unity thread to send the results back to the client
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_ReceiveSingleMail(_player.connectionToClient, mail, attachedItems.ToArray());
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_PickUpAttachedItemFromMail (int mailId, int itemId) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+
+         // Verify that the mail has that item attached
+         Item attachedItem = DB_Main.getItem(-mailId, itemId);
+
+         if (attachedItem == null) {
+            D.error(string.Format("Could not retrieve the item {0} from mail {1} for user {2}.", itemId, mailId, _player.userId));
+            return;
+         }
+
+         // Delete the attached item
+         DB_Main.deleteItem(-mailId, itemId);
+
+         // Add the item to the user inventory
+         DB_Main.createItemOrUpdateItemCount(_player.userId, attachedItem);
+
+         // Get the mail content
+         MailInfo mail = DB_Main.getMailInfo(mailId);
+
+         // Get the attached items
+         List<Item> attachedItems = DB_Main.getItems(-mail.mailId, new Item.Category[] { Item.Category.None }, 1, MailManager.MAX_ATTACHED_ITEMS, new List<int>());
+
+         // Back to the Unity thread to send the results back to the client
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_ReceiveSingleMail(_player.connectionToClient, mail, attachedItems.ToArray());
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_DeleteMail (int mailId) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+
+         // Delete the mail
+         DB_Main.deleteMail(mailId);
+
+         // Get the attached items
+         List<Item> attachedItems = DB_Main.getItems(-mailId, new Item.Category[] { Item.Category.None }, 1, MailManager.MAX_ATTACHED_ITEMS, new List<int>());
+
+         // Delete the attached items
+         foreach(Item item in attachedItems) {
+            DB_Main.deleteItem(-mailId, item.id);
+         }
+
+         // Back to Unity
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Send confirmation of the deletion to the client
+            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.MailDeleted, _player);
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_RequestMailListFromServer (int pageNumber, int itemsPerPage) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Enforce a reasonable max here
+      if (itemsPerPage > 200) {
+         D.warning("Requesting too many items per page.");
+         return;
+      }
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+
+         // Get the number of items
+         int totalMailCount = DB_Main.getMailInfoCount(_player.userId);
+
+         // Calculate the maximum page number
+         int maxPage = Mathf.CeilToInt((float) totalMailCount / itemsPerPage);
+         if (maxPage == 0) {
+            maxPage = 1;
+         }
+
+         // Clamp the requested page number to the max page - the number of items could have changed
+         pageNumber = Mathf.Clamp(pageNumber, 1, maxPage);
+
+         // Get the items from the database
+         List<MailInfo> mailList = DB_Main.getMailInfoList(_player.userId, pageNumber, itemsPerPage);
+
+         // Back to the Unity thread to send the results back to the client
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_ReceiveMailList(_player.connectionToClient, mailList.ToArray(), pageNumber, totalMailCount);
          });
       });
    }
