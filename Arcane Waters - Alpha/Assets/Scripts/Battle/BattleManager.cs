@@ -363,8 +363,7 @@ public class BattleManager : MonoBehaviour {
       int enemyCount = playersInInstance;
 
       if (playersInInstance == 1) {
-         Debug.Log("Spawning 3 Monsters by Default instead of 1, Delete after feature completion!");
-         return 1; // return 1;
+         return 1; 
       }
 
       // If it's a boss, we always have just 1
@@ -666,7 +665,8 @@ public class BattleManager : MonoBehaviour {
                float attackApplyDelay = 0;
                AttackAbilityData abilityDataReference = (AttackAbilityData) AbilityManager.getAbility(action.abilityGlobalID, AbilityType.Standard);
                if (abilityDataReference.abilityActionType == AbilityActionType.Ranged || abilityDataReference.abilityActionType == AbilityActionType.CastToTarget) {
-                  attackApplyDelay += abilityDataReference.getTotalAnimLength(source, target) % delayMagnitude;
+                  // Apply Delay percentage 
+                  attackApplyDelay += abilityDataReference.getTotalAnimLength(source, target) * delayMagnitude;
                }
 
                yield return new WaitForSeconds(attackApplyDelay);

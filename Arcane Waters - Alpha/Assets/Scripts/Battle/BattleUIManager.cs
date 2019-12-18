@@ -29,6 +29,9 @@ public class BattleUIManager : MonoBehaviour {
    // Ring that holds the abilities for attacking
    public Image enemyRing;
 
+   // Ring that holds the abilities for buffing
+   public Image playerRing;
+
    // Abilities icon that appears throughout the UI Ring for enemy
    public AbilityButton[] abilityTargetButtons;
 
@@ -136,6 +139,9 @@ public class BattleUIManager : MonoBehaviour {
    // Reference to the attack panel
    public AttackPanel attackPanel;
 
+   // Holds the value of the ring depending on ability count
+   public float[] abilityRingFillValue;
+
    #endregion
 
    private void Awake () {
@@ -159,10 +165,8 @@ public class BattleUIManager : MonoBehaviour {
                      buffPlayerButtons[indexCounter].abilityIcon.sprite = skillSprite;
                   }
 
-                  abilityButton.GetComponent<Image>().raycastTarget = true;
-                  buffPlayerButtons[indexCounter].GetComponent<Image>().raycastTarget = false;
-                  abilityButton.GetComponent<Image>().color = Color.white;
-                  buffPlayerButtons[indexCounter].GetComponent<Image>().color = Color.gray;
+                  abilityButton.enableButton();
+                  buffPlayerButtons[indexCounter].disableButton();
 
                   int indexToSet = attackAbilityIndex;
                   abilityButton.GetComponent<Button>().onClick.RemoveAllListeners();
@@ -184,10 +188,8 @@ public class BattleUIManager : MonoBehaviour {
                      buffPlayerButtons[indexCounter].abilityIcon.sprite = skillSprite;
                   }
 
-                  abilityButton.GetComponent<Image>().raycastTarget = false;
-                  buffPlayerButtons[indexCounter].GetComponent<Image>().raycastTarget = true;
-                  abilityButton.GetComponent<Image>().color = Color.gray;
-                  buffPlayerButtons[indexCounter].GetComponent<Image>().color = Color.white;
+                  abilityButton.disableButton();
+                  buffPlayerButtons[indexCounter].enableButton();
 
                   int indexToSet = buffAbilityIndex;
                   buffPlayerButtons[indexCounter].GetComponent<Button>().onClick.RemoveAllListeners();
@@ -206,19 +208,23 @@ public class BattleUIManager : MonoBehaviour {
             buffPlayerButtons[indexCounter].enabled = true;
          } else {
             // Disable skill button if equipped abilities does not reach 5 (max abilities in combat)
-            abilityButton.abilityIcon = null;
-            buffPlayerButtons[indexCounter].abilityIcon = null;
+            abilityButton.abilityIcon.sprite = null;
+            buffPlayerButtons[indexCounter].abilityIcon.sprite = null;
 
-            abilityButton.GetComponent<Image>().raycastTarget = false;
-            buffPlayerButtons[indexCounter].GetComponent<Image>().raycastTarget = false;
-            abilityButton.GetComponent<Image>().color = Color.gray;
-            buffPlayerButtons[indexCounter].GetComponent<Image>().color = Color.gray;
+            abilityButton.disableButton();
+            buffPlayerButtons[indexCounter].disableButton();
 
             abilityButton.enabled = false;
             buffPlayerButtons[indexCounter].enabled = false;
+
+            abilityButton.gameObject.SetActive(false);
+            buffPlayerButtons[indexCounter].gameObject.SetActive(false);
          }
          indexCounter++;
       }
+
+      playerRing.fillAmount = abilityRingFillValue[abilitydata.Length-1];
+      enemyRing.fillAmount = abilityRingFillValue[abilitydata.Length-1];
    }
 
    private void Update () {
@@ -258,7 +264,6 @@ public class BattleUIManager : MonoBehaviour {
    public void disableBattleUI () {
       mainPlayerRectCG.Hide();
       targetEnemyCG.Hide();
-      mainPlayerRectCG.Hide();
 
       // If any of these are null, then we do not call anything.
       if (playerStanceFrame != null) {
@@ -394,7 +399,7 @@ public class BattleUIManager : MonoBehaviour {
    }
 
    public void hidePlayerGameobjectUI () {
-      mainPlayerRect.gameObject.SetActive(false);
+      playerBattleCG.Hide();
    }
 
    // Prepares main listener for preparing the onAbilityHover event
@@ -432,6 +437,7 @@ public class BattleUIManager : MonoBehaviour {
       // Whenever we select our local battler, we prepare UI positioning of the ring
       playerBattler.onBattlerSelect.AddListener(() => {
          playerMainUIHolder.gameObject.SetActive(true);
+         playerBattleCG.Show();
       });
 
       // Remove world space local battler canvas

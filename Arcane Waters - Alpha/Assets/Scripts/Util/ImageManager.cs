@@ -42,6 +42,9 @@ public class ImageManager : ClientMonoBehaviour {
    // Self
    public static ImageManager self;
 
+   // Throws a default npc avatar sprite
+   public const string DEFAULT_NPC_PATH = "Assets/Sprites/NPCs/Bodies/Headband/headband_1.png";
+
    #endregion
 
    protected override void Awake () {
@@ -177,11 +180,16 @@ public class ImageManager : ClientMonoBehaviour {
    }
 
    protected string getSimplePath (string path) {
-      string editedPath = path.ToLowerInvariant();
-      editedPath = editedPath.Replace("assets/sprites/", "");
-      editedPath = System.IO.Path.ChangeExtension(editedPath, null);
+      try {
+         string editedPath = path.ToLowerInvariant();
+         editedPath = editedPath.Replace("assets/sprites/", "");
+         editedPath = System.IO.Path.ChangeExtension(editedPath, null);
 
-      return editedPath;
+         return editedPath;
+      } catch {
+         D.log("Failed to return path: (" + path + ")");
+         return "";
+      }
    }
 
    protected void cacheFiles () {

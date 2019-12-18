@@ -18,6 +18,12 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
    // The icon of the ability
    public Image abilityIcon;
 
+   // The button of this ability
+   public Button abilityButton;
+
+   // Holds the grayscale holder
+   public GameObject grayScaleObj;
+
    #endregion
 
    public void OnPointerEnter (PointerEventData eventData) {
@@ -114,6 +120,18 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
             BattleUIManager.self.hideActionStanceFrame();
             break;
       }
+   }
+
+   public void enableButton () {
+      GetComponent<Image>().raycastTarget = true;
+      abilityIcon.color = Color.white;
+      grayScaleObj.SetActive(false);
+   }
+
+   public void disableButton() {
+      GetComponent<Image>().raycastTarget = false;
+      abilityIcon.color = Color.gray;
+      grayScaleObj.SetActive(true);
    }
 
    private void OnDisable () {

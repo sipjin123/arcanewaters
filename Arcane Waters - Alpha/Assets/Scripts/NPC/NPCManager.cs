@@ -67,6 +67,7 @@ public class NPCManager : XmlManager {
 
    public void storeNPC (NPC npc) {
       _npcs[npc.npcId] = npc;
+      npc.gameObject.name += " : " + _npcs[npc.npcId].name + " " + npc.npcId;
 
 #if IS_SERVER_BUILD
       string areaKey = npc.areaKey;

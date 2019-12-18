@@ -16,6 +16,9 @@ public class BattleSelectionManager : MonoBehaviour {
    // Self reference
    public static BattleSelectionManager self;
 
+   // Sprites that is determined by the selected battler if is an ally or enemy
+   public GameObject enemySelection, allySelection;
+
    #endregion
 
    void Awake () {
@@ -79,6 +82,13 @@ public class BattleSelectionManager : MonoBehaviour {
                   }
                   
                   selectedBattler = battler;
+                  if (selectedBattler.enemyType != Enemy.Type.Humanoid) {
+                     enemySelection.SetActive(true);
+                     allySelection.SetActive(false);
+                  } else {
+                     enemySelection.SetActive(false);
+                     allySelection.SetActive(true);
+                  }
                   selectedBattler.selectThis();
                }
 

@@ -440,10 +440,7 @@ public class AdminManager : NetworkBehaviour {
       spawnNPCs();
    }
 
-   private void spawnNPCs()
-   {
-      PrefabsManager.self.npcPrefab.gameObject.SetActive(false);
-
+   private void spawnNPCs () {
       Vector3 playerPos = _player.transform.position;
       int indexCounter = 0;
       float offsetMagnitude = .3f;
@@ -452,33 +449,39 @@ public class AdminManager : NetworkBehaviour {
       float yOffset = 0;
 
       foreach (NPCData npcData in NPCManager.self.npcDataList) {
-         if (NPCManager.self.getNPC(npcData.npcId) != null) {
-            continue;
-         }
-
-         if (npcData.spritePath != null && npcData.spritePath != "") {
-            Sprite npcSprite = ImageManager.getSprite(npcData.spritePath);
-            if (npcSprite != null) {
-               // Object Setup
-               GameObject npcPref = Instantiate(PrefabsManager.self.npcPrefab.gameObject, AreaManager.self.getArea(_player.areaKey).transform);
-               npcPref.transform.position = new Vector3(playerPos.x + xOffset, playerPos.y + yOffset, playerPos.z);
-
-               // Data Setup
-               NPC npc = npcPref.GetComponent<NPC>();
-               npc.isDebug = true;
-               npc.npcId = npcData.npcId;
-               npc.GetComponent<SpriteSwap>().newTexture = npcSprite.texture;
-               npc.gameObject.SetActive(true);
-               npc.initData();
-
-               // Spawn Grid Setup
-               if (indexCounter % gridCount != 0) {
-                  xOffset += offsetMagnitude;
-               } else {
-                  yOffset += offsetMagnitude;
+         if (NPCManager.self.getNPC(npcData.npcId) == null) {
+            Sprite npcSprite = null;
+            
+            if (npcData.spritePath != null && npcData.spritePath != "") {
+               npcSprite = ImageManager.getSprite(npcData.spritePath);
+               if (npcSprite == null || npcSprite.name.Contains("empty")) {
+                  D.log("Invalid NPC Path, please complete details in NPC Editor");
+                  npcSprite = ImageManager.getSprite(ImageManager.DEFAULT_NPC_PATH);
                }
-               indexCounter++;
+            } else {
+               D.log("Invalid NPC Path, please complete details in NPC Editor");
+               npcSprite = ImageManager.getSprite(ImageManager.DEFAULT_NPC_PATH);
             }
+
+            // Object Setup
+            GameObject npcPref = Instantiate(PrefabsManager.self.npcPrefab.gameObject, AreaManager.self.getArea(_player.areaKey).transform);
+            npcPref.transform.position = new Vector3(playerPos.x + xOffset, playerPos.y + yOffset, playerPos.z);
+
+            // Data Setup
+            NPC npc = npcPref.GetComponent<NPC>();
+            npc.isDebug = true;
+            npc.npcId = npcData.npcId;
+            npc.GetComponent<SpriteSwap>().newTexture = npcSprite.texture;
+            npc.gameObject.SetActive(true);
+            npc.initData();
+
+            // Spawn Grid Setup
+            if (indexCounter % gridCount != 0) {
+               xOffset += offsetMagnitude;
+            } else {
+               yOffset += offsetMagnitude;
+            }
+            indexCounter++;
          }
       }
    }

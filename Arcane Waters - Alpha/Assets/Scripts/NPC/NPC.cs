@@ -87,7 +87,7 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
       this.npcType = getTypeFromSprite();
 
       // Get faction from type
-      this._faction = getFactionFromType(this.npcType);
+      _faction = getFactionFromType(this.npcType);
 
       // ID is the first data to be initialized
       this.npcId = getId();
@@ -132,14 +132,20 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
          // Set npc name and specialty
          _npcName = npcData.name;
          _specialty = npcData.specialty;
-
+         nameText.text = _npcName;
          try {
             GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture(npcData.spritePath);
          } catch {
             D.log("Cant get Sprite for NPC: " + this.npcId);
+            GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture(ImageManager.DEFAULT_NPC_PATH);
          }
       } else {
          D.log("Cant get Data for NPC: " + this.npcId);
+      }
+
+      if (GetComponent<SpriteSwap>().newTexture.name.Contains("empty")) {
+         D.log("Invalid NPC Path, please complete details in NPC Editor");
+         GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture(ImageManager.DEFAULT_NPC_PATH);
       }
    }
 
