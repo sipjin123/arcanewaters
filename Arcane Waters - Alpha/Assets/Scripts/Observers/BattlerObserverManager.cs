@@ -33,7 +33,7 @@ public class BattlerObserverManager : NetworkBehaviour {
    }
 
    // Called hiding and showing objects on the host
-   public override void OnSetLocalVisibility (bool vis) {
+   public override void OnSetHostVisibility (bool vis) {
 
    }
 

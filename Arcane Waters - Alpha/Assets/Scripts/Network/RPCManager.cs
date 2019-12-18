@@ -1778,14 +1778,8 @@ public class RPCManager : NetworkBehaviour {
                   continue;
                }
 
-               // Set the item count
-               item.count = attachedItemsCount[i];
-
-               // Remove the item from the player's inventory
-               DB_Main.decreaseQuantityOrDeleteItem(_player.userId, item.id, attachedItemsCount[i]);
-
-               // Create a new item, attached to the mail
-               DB_Main.createNewItem(-mail.mailId, item);
+               // Transfer the item from the user inventory to the mail
+               DB_Main.transferItem(item, _player.userId, -mail.mailId, attachedItemsCount[i]);
             }
 
             // Prepare a feedback message
@@ -1805,21 +1799,6 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_SetMailAsRead (int mailId) {
-      if (_player == null) {
-         D.warning("No player object found.");
-         return;
-      }
-
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-
-         // Update the mail in the database
-         DB_Main.updateMailReadStatus(mailId, true);
-      });
-   }
-
-   [Command]
    public void Cmd_RequestSingleMailFromServer (int mailId) {
       if (_player == null) {
          D.warning("No player object found.");
@@ -1834,6 +1813,11 @@ public class RPCManager : NetworkBehaviour {
 
          // Get the attached items
          List<Item> attachedItems = DB_Main.getItems(-mail.mailId, new Item.Category[] { Item.Category.None }, 1, MailManager.MAX_ATTACHED_ITEMS, new List<int>());
+
+         // If the mail had not been read before, set it as read
+         if (!mail.isRead) {
+            DB_Main.updateMailReadStatus(mailId, true);
+         }
 
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -1860,11 +1844,8 @@ public class RPCManager : NetworkBehaviour {
             return;
          }
 
-         // Delete the attached item
-         DB_Main.deleteItem(-mailId, itemId);
-
-         // Add the item to the user inventory
-         DB_Main.createItemOrUpdateItemCount(_player.userId, attachedItem);
+         // Transfer the item from the mail to the user inventory
+         DB_Main.transferItem(attachedItem, -mailId, _player.userId, attachedItem.count);
 
          // Get the mail content
          MailInfo mail = DB_Main.getMailInfo(mailId);
@@ -2283,7 +2264,7 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_UpdateInventory (NetworkConnection connection) {
-      InventoryPanel.self.refreshPanel();
+      ((InventoryPanel) PanelManager.self.get(Panel.Type.Inventory)).refreshPanel();
    }
 
    [Command]

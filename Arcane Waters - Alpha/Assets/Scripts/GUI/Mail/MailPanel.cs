@@ -12,10 +12,10 @@ public class MailPanel : Panel
    #region Public Variables
 
    // The number of rows to display per page, when displaying friendship requests
-   public static int ROWS_PER_PAGE = 11;
+   public static int ROWS_PER_PAGE = 7;
 
    // The mode of the panel
-   public enum Mode { MailList = 1, ReadMail = 2, WriteMail = 3 }
+   public enum Mode { None = 0, NoMailSelected = 1, ReadMail = 2, WriteMail = 3 }
 
    // The container for the mail rows
    public GameObject mailRowsContainer;
@@ -33,13 +33,13 @@ public class MailPanel : Panel
    public ItemCell itemCellPrefab;
 
    // The section displayed when reading a mail
-   public GameObject mailListSection;
-
-   // The section displayed when reading a mail
    public GameObject readMailSection;
 
    // The section displayed when composing a mail
    public GameObject writeMailSection;
+
+   // The section displayed when no mail is selected
+   public GameObject noMailSelectedSection;
 
    // The mail reception date
    public Text receptionDateText;
@@ -89,7 +89,7 @@ public class MailPanel : Panel
       base.Awake();
       self = this;
       messageInput.characterLimit = MailManager.MAX_MESSAGE_LENGTH;
-      clearWriteMailSection();
+      updateMessageWordCount();
    }
 
    public void refreshMailList () {
@@ -98,6 +98,11 @@ public class MailPanel : Panel
 
    public void displayMail (int mailId) {
       Global.player.rpc.Cmd_RequestSingleMailFromServer(mailId);
+   }
+
+   public void clearSelectedMail () {
+      _displayedMailId = -1;
+      configurePanelForMode(Mode.NoMailSelected);
    }
 
    public void confirmMailSent () {
@@ -113,9 +118,6 @@ public class MailPanel : Panel
    }
 
    public void updatePanelWithMailList (List<MailInfo> mailList, int pageNumber, int totalMailCount) {
-      // Configure the panel
-      configurePanelForMode(Mode.MailList);
-
       // Update the current page number
       _currentPage = pageNumber;
 
@@ -137,11 +139,18 @@ public class MailPanel : Panel
       // Instantiate the rows
       foreach (MailInfo mail in mailList) {
          MailRow row = Instantiate(mailRowPrefab, mailRowsContainer.transform, false);
-         row.setRowForMail(mail);
+         row.setRowForMail(mail, mail.mailId == _displayedMailId);
+      }
+
+      // Set the panel mode if it has not been initialized yet
+      if (_currentMode == Mode.None) {
+         configurePanelForMode(Mode.NoMailSelected);
       }
    }
 
    public void updatePanelWithSingleMail (MailInfo mail, List<Item> attachedItems) {
+      _displayedMailId = mail.mailId;
+
       // Configure the panel
       configurePanelForMode(Mode.ReadMail);
 
@@ -179,15 +188,19 @@ public class MailPanel : Panel
          cell.rightClickEvent.AddListener(() => pickUpAttachedItem(mailIdForCell, cell.getItem()));
       }
 
-      // If the mail had not been read before, set it as read
-      if (!mail.isRead) {
-         Global.player.rpc.Cmd_SetMailAsRead(mail.mailId);
-      }
+      // Refresh the mail list
+      refreshMailList();
    }
 
    public void composeNewMail () {
       // Configure the panel
       configurePanelForMode(Mode.WriteMail);
+
+      // Clear the displayed mail id
+      _displayedMailId = -1;
+
+      // Refresh the mail list
+      refreshMailList();
    }
 
    public void onAddAttachedItemButtonPress () {
@@ -310,24 +323,25 @@ public class MailPanel : Panel
 
    private void configurePanelForMode (Mode mode) {
       switch (mode) {
-         case Mode.MailList:
-            mailListSection.SetActive(true);
+         case Mode.NoMailSelected:
+            noMailSelectedSection.SetActive(true);
             readMailSection.SetActive(false);
             writeMailSection.SetActive(false);
             break;
          case Mode.ReadMail:
-            mailListSection.SetActive(false);
+            noMailSelectedSection.SetActive(false);
             readMailSection.SetActive(true);
             writeMailSection.SetActive(false);
             break;
          case Mode.WriteMail:
-            mailListSection.SetActive(false);
+            noMailSelectedSection.SetActive(false);
             readMailSection.SetActive(false);
             writeMailSection.SetActive(true);
             break;
          default:
             break;
       }
+      _currentMode = mode;
    }
 
    private void clearWriteMailSection () {
@@ -410,6 +424,12 @@ public class MailPanel : Panel
 
    // The maximum page index (starting at 1)
    private int _maxPage = 1;
+
+   // The id of the currently displayed mail
+   private int _displayedMailId = -1;
+
+   // The current panel mode
+   private Mode _currentMode = Mode.None;
 
    // The list of attached items when writing a mail
    private LinkedList<Item> _attachedItems = new LinkedList<Item>();

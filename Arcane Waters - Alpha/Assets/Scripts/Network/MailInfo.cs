@@ -37,13 +37,16 @@ public class MailInfo
    // The message text
    public string message;
 
+   // The number of attached items
+   public int attachedItemsCount;
+
    #endregion
 
    public MailInfo () { }
 
 #if IS_SERVER_BUILD
 
-   public MailInfo (MySqlDataReader dataReader, bool retrieveMessage) {
+   public MailInfo (MySqlDataReader dataReader, bool isForList) {
       this.mailId = DataUtil.getInt(dataReader, "mailId");
       this.recipientUserId = DataUtil.getInt(dataReader, "recipientUsrId");
       this.senderUserId = DataUtil.getInt(dataReader, "senderUsrId");
@@ -51,7 +54,9 @@ public class MailInfo
       this.receptionDate = DataUtil.getDateTime(dataReader, "receptionDate").ToBinary();
       this.isRead = DataUtil.getBoolean(dataReader, "isRead");
       this.mailSubject = DataUtil.getString(dataReader, "mailSubject");
-      if (retrieveMessage) {
+      if (isForList) {
+         this.attachedItemsCount = DataUtil.getInt(dataReader, "attachedItemCount");
+      } else {
          this.message = DataUtil.getString(dataReader, "message");
       }
    }

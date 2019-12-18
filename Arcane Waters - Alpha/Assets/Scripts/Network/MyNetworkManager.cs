@@ -139,7 +139,7 @@ public class MyNetworkManager : NetworkManager {
    }
 
    [ServerOnly]
-   public override void OnServerAddPlayer (NetworkConnection conn, AddPlayerMessage extraMessage) {
+   public override void OnServerAddPlayer (NetworkConnection conn) {
       int authenicatedAccountId = _accountsForConnections[conn];
       int authenticatedUserId = _userIdForConnection[conn];
 
@@ -167,7 +167,7 @@ public class MyNetworkManager : NetworkManager {
             if (bestServer != null && !bestServer.view.isMine) {
                // Send a Redirect message to the client
                RedirectMessage redirectMessage = new RedirectMessage(Global.netId, bestServer.ipAddress, bestServer.port);
-               NetworkServer.SendToClient(conn.connectionId, redirectMessage);
+               conn.Send(redirectMessage);
 
                return;
             }
@@ -210,6 +210,9 @@ public class MyNetworkManager : NetworkManager {
             player.rpc.Target_ReceiveNPCsForCurrentArea(player.connectionToClient, serializedNPCData(referenceNPCData));
 
             TutorialManager.self.sendTutorialInfo(player, false);
+
+            // Give the player local authority so that movement feels instantaneous
+            player.netIdent.AssignClientAuthority(conn);
          });
       });
    }

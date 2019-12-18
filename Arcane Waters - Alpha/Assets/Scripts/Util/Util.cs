@@ -668,7 +668,9 @@ public class Util : MonoBehaviour {
                   // Database server - not mandatory
                   line = reader.ReadLine();
                   if (line != null) {
+                     #if IS_SERVER_BUILD
                      DB_Main.setServer(line);
+                     #endif
                   }
                }
 

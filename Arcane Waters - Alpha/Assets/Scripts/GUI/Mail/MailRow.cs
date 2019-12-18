@@ -13,6 +13,9 @@ public class MailRow : MonoBehaviour
    // The icon displayed when the mail has not yet been read
    public GameObject newMailIcon;
 
+   // The icon displayed when the mail has attached items
+   public GameObject attachedItemsIcon;
+
    // The name of the sender
    public TextMeshProUGUI senderName;
 
@@ -22,15 +25,15 @@ public class MailRow : MonoBehaviour
    // The mail subject
    public TextMeshProUGUI subjectText;
 
-   // The row sprite to use when the mail has been read
-   public Sprite mailReadRowSprite;
+   // The row sprite to use when the mail is selected
+   public Sprite mailSelectedSprite;
 
    // The row image
    public Image rowImage;
 
    #endregion
 
-   public void setRowForMail (MailInfo mail) {
+   public void setRowForMail (MailInfo mail, bool isSelected) {
       _mailId = mail.mailId;
       senderName.SetText(mail.senderUserName);
       subjectText.SetText(mail.mailSubject);
@@ -38,9 +41,20 @@ public class MailRow : MonoBehaviour
       // Set the new mail icon
       if (mail.isRead) {
          newMailIcon.SetActive(false);
-         rowImage.sprite = mailReadRowSprite;
       } else {
          newMailIcon.SetActive(true);
+      }
+
+      // Set the attached items icon
+      if (mail.attachedItemsCount > 0) {
+         attachedItemsIcon.SetActive(true);
+      } else {
+         attachedItemsIcon.SetActive(false);
+      }
+
+      // Set the mail selected background
+      if (isSelected) {
+         rowImage.sprite = mailSelectedSprite;
       }
 
       // Get the reception date in local time

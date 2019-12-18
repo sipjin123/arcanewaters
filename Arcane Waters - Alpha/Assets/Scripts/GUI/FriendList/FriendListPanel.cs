@@ -231,15 +231,8 @@ public class FriendListPanel : Panel
    }
 
    public void onSendMessageButtonPress (string friendName) {
-      // Show the mail panel
-      MailPanel panel = (MailPanel) PanelManager.self.get(Panel.Type.Mail);
-
-      if (!panel.isShowing()) {
-         PanelManager.self.pushPanel(panel.type);
-      }
-
-      // Set the panel mode to write mail
-      panel.composeMailTo(friendName);
+      // Enables the mail panel in mode 'write mail'
+      ((MailPanel) PanelManager.self.get(Panel.Type.Mail)).composeMailTo(friendName);
    }
 
    public void onAcceptFriendshipRequestButtonPress (int friendUserId) {

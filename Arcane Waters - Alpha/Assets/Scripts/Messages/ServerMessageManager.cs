@@ -56,7 +56,7 @@ public class ServerMessageManager : MonoBehaviour {
                // Now tell the client to move forward with the login process
                LogInCompleteMessage msg = new LogInCompleteMessage(Global.netId, (Direction) users[0].facingDirection,
                   userObjects.accountEmail, userObjects.accountCreationTime);
-               NetworkServer.SendToClient(conn.connectionId, msg);
+               conn.Send(msg);
 
             } else if (accountId > 0 && logInUserMessage.selectedUserId == 0) {
                // We have to deal with these separately because of a bug in Unity
@@ -69,7 +69,7 @@ public class ServerMessageManager : MonoBehaviour {
 
                // If there was an account ID but not user ID, send the info on all of their characters for display on the Character screen
                CharacterListMessage msg = new CharacterListMessage(Global.netId, users.ToArray(), armorList.ToArray(), weaponList.ToArray(), armorColors1, armorColors2);
-               NetworkServer.SendToClient(conn.connectionId, msg);
+               conn.Send(msg);
 
             } else {
                sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);
@@ -85,7 +85,7 @@ public class ServerMessageManager : MonoBehaviour {
 
    public static void sendConfirmation (ConfirmMessage.Type confirmType, int connectionId, string customMessage = "") {
       ConfirmMessage confirmMessage = new ConfirmMessage(Global.netId, confirmType, System.DateTime.UtcNow.ToBinary(), customMessage);
-      NetworkServer.SendToClient(connectionId, confirmMessage);
+      NetworkServer.connections[connectionId].Send(confirmMessage);
    }
 
    public static void sendError (ErrorMessage.Type errorType, NetEntity player, string customMessage = "") {
@@ -95,7 +95,7 @@ public class ServerMessageManager : MonoBehaviour {
 
    public static void sendError (ErrorMessage.Type errorType, int connectionId) {
       ErrorMessage errorMessage = new ErrorMessage(Global.netId, errorType);
-      NetworkServer.SendToClient(connectionId, errorMessage);
+      NetworkServer.connections[connectionId].Send(errorMessage);
    }
 
    [ServerOnly]
@@ -235,7 +235,7 @@ public class ServerMessageManager : MonoBehaviour {
             // Now tell the client to move forward with the login process
             LogInCompleteMessage loginCompleteMsg = new LogInCompleteMessage(Global.netId, (Direction) userInfo.facingDirection,
                userObjects.accountEmail, userObjects.accountCreationTime);
-            NetworkServer.SendToClient(conn.connectionId, loginCompleteMsg);
+            conn.Send(loginCompleteMsg);
          } else {
             sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);
             return;

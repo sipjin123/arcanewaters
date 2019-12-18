@@ -490,6 +490,17 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
       return tradeGossip;
    }
 
+   public void receiveData (MapCreationTool.Serialization.DataField[] dataFields) {
+      foreach (MapCreationTool.Serialization.DataField field in dataFields) {
+         if (field.k.CompareTo("npc data") == 0) {
+            // Get ID from npc data field
+            // Field arrives in format <npc id>: <npc name>
+            int id = int.Parse(field.v.Split(':')[0]);
+            //npcId = id;
+         }
+      }
+   }
+
    #region Private Variables
 
    // Our start position

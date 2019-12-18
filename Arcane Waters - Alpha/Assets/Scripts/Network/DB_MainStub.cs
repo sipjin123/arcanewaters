@@ -259,6 +259,10 @@ public class DB_MainStub : MonoBehaviour {
       return null;
    }
 
+   public static void transferItem (Item item, int fromUserId, int toUserId, int amount) {
+
+   }
+
    public static void updateItemQuantity (int userId, int itmId, int itmCount) { 
 
    }

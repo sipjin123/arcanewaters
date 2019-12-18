@@ -1584,15 +1584,15 @@ public class DB_Main : DB_MainStub {
       return 0;
    }
 
-   public static new void updateItemQuantity (int userId, int itmId, int itmCount) {
+   public static new void updateItemQuantity (int userId, int itemId, int itemCount) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("UPDATE items SET itmCount=@itmCount WHERE usrId=@usrId and itmId=@itmId", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
-            cmd.Parameters.AddWithValue("@itmId", itmId);
-            cmd.Parameters.AddWithValue("@itmCount", itmCount);
+            cmd.Parameters.AddWithValue("@itmId", itemId);
+            cmd.Parameters.AddWithValue("@itmCount", itemCount);
             // Execute the command
             cmd.ExecuteNonQuery();
          }
@@ -1601,7 +1601,7 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static new void decreaseQuantityOrDeleteItem (int userId, int itmId, int deductedValue) {
+   public static new void decreaseQuantityOrDeleteItem (int userId, int itemId, int deductedValue) {
       int currentCount = 0;
       try {
          using (MySqlConnection conn = getConnection())
@@ -1609,7 +1609,7 @@ public class DB_Main : DB_MainStub {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
-            cmd.Parameters.AddWithValue("@itmId", itmId);
+            cmd.Parameters.AddWithValue("@itmId", itemId);
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
@@ -1626,10 +1626,10 @@ public class DB_Main : DB_MainStub {
 
       if (computedValue <= 0) {
          // Deletes item from the database if count hits zero
-         deleteItem(userId, itmId);
+         deleteItem(userId, itemId);
       } else {
          // Updates item count
-         updateItemQuantity(userId, itmId, computedValue);
+         updateItemQuantity(userId, itemId, computedValue);
       }
    }
 
@@ -1653,6 +1653,105 @@ public class DB_Main : DB_MainStub {
       
       // Create the item
       return createNewItem(userId, castedItem).getCastItem();
+   }
+
+   public static new void transferItem(Item item, int fromUserId, int toUserId, int amount) {
+      // Make sure that we have the right class
+      Item fromItem = item.getCastItem();
+
+      // If the item is not stackable, simply update its user id
+      if (!fromItem.canBeStacked()) {
+         updateItemUserId(item.id, fromUserId, toUserId);
+      } else {
+         // Determine if the sender has enough items in his stack
+         if (fromItem.count < amount) {
+            D.error(string.Format("Not enough items in the stack ({0}) to transfer the requested amount ({1})", item.count, amount));
+            return;
+         }
+
+         // Group the queries in a single atomic transaction    
+         StringBuilder query = new StringBuilder();
+         query.Append("BEGIN;");
+
+         // Determine how the sender user inventory is updated         
+         if (fromItem.count == amount) {
+            // If the whole stack must be transferred, the item of fromUser must be deleted
+            query.Append("DELETE FROM items WHERE itmId=@fromItmId AND usrId=@fromUsrId;");
+         } else {
+            // If part of the stack must be transferred, the item count must be updated
+            query.Append("UPDATE items SET itmCount=@fromItmCount WHERE itmId=@fromItmId AND usrId=@fromUsrId;");
+         }
+
+         // Get the same item type from the recipient inventory, if it exists
+         Item toItem = getFirstItem(toUserId, fromItem.category, fromItem.itemTypeId);
+
+         // Determine how the recipient user inventory is updated
+         if (toItem != null) {
+            // If the recipient has a stack, the item count must be updated
+            query.Append("UPDATE items SET itmCount=@toItmCount WHERE usrId=@toUsrId and itmId=@toItmId;");
+         } else {
+            // If the recipient has no stack, the item must be created
+            query.Append("INSERT INTO items (usrId, itmCategory, itmType, itmColor1, itmColor2, itmData, itmCount) ");
+            query.Append("VALUES(@toUsrId, @itmCategory, @itmType, @itmColor1, @itmColor2, @itmData, @toItmCount);");
+         }
+
+         // Close the transaction
+         query.Append("COMMIT;");
+
+         // Run the query
+         try {
+            using (MySqlConnection conn = getConnection())
+            using (MySqlCommand cmd = new MySqlCommand(query.ToString(), conn)) {
+
+               conn.Open();
+               cmd.Prepare();
+
+               // Item parameters
+               cmd.Parameters.AddWithValue("@itmCategory", (int) fromItem.category);
+               cmd.Parameters.AddWithValue("@itmType", (int) fromItem.itemTypeId);
+               cmd.Parameters.AddWithValue("@itmColor1", (int) fromItem.color1);
+               cmd.Parameters.AddWithValue("@itmColor2", (int) fromItem.color2);
+               cmd.Parameters.AddWithValue("@itmData", fromItem.data);
+
+               // From
+               cmd.Parameters.AddWithValue("@fromItmId", fromItem.id);
+               cmd.Parameters.AddWithValue("@fromUsrId", fromUserId);
+               cmd.Parameters.AddWithValue("@fromItmCount", fromItem.count - amount);
+
+               // To
+               if (toItem != null) {
+                  cmd.Parameters.AddWithValue("@toItmId", toItem.id);
+                  cmd.Parameters.AddWithValue("@toItmCount", toItem.count + amount);
+               } else {
+                  cmd.Parameters.AddWithValue("@toItmCount", amount);
+               }
+               cmd.Parameters.AddWithValue("@toUsrId", toUserId);
+
+               // Execute the command
+               cmd.ExecuteNonQuery();
+            }
+         } catch (Exception e) {
+            D.error("MySQL Error: " + e.ToString());
+         }
+      }
+   }
+
+   // Prefer using transferItem() to change an item user id
+   private static void updateItemUserId(int itemId, int fromUserId, int toUserId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("UPDATE items SET usrId=@toUsrId WHERE usrId=@fromUsrId AND itmId=@itmId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@toUsrId", toUserId);
+            cmd.Parameters.AddWithValue("@fromUsrId", fromUserId);
+            cmd.Parameters.AddWithValue("@itmId", itemId);
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
    }
 
    public static new int getItemCount (int userId) {
@@ -2887,7 +2986,7 @@ public class DB_Main : DB_MainStub {
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  mailInfo = new MailInfo(dataReader, true);
+                  mailInfo = new MailInfo(dataReader, false);
                }
             }
          }
@@ -2904,7 +3003,8 @@ public class DB_Main : DB_MainStub {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM mails JOIN users ON mails.senderUsrId = users.usrId " +
+            "SELECT *, (SELECT COUNT(*) FROM items WHERE items.usrId = -mails.mailId) AS attachedItemCount " +
+            "FROM mails JOIN users ON mails.senderUsrId = users.usrId " +
             "WHERE mails.recipientUsrId=@recipientUsrId " +
             "ORDER BY mails.receptionDate DESC LIMIT @start, @perPage", conn)) {
             conn.Open();
@@ -2916,7 +3016,7 @@ public class DB_Main : DB_MainStub {
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  MailInfo mail = new MailInfo(dataReader, false);
+                  MailInfo mail = new MailInfo(dataReader, true);
                   mailList.Add(mail);
                }
             }
@@ -2978,7 +3078,7 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static new void setServer(string server) {
+   public static void setServer(string server) {
       _connectionString = buildConnectionString(server);
    }
 

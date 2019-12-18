@@ -213,6 +213,7 @@ public class ClientMessageManager : MonoBehaviour {
 
             // Refresh the panel
             mailPanel2.refreshMailList();
+            mailPanel2.clearSelectedMail();
             return;
 
             /*case ConfirmMessage.Type.SeaWarp:

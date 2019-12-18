@@ -768,7 +768,6 @@ public class NetEntity : NetworkBehaviour
 
    [Server]
    public void spawnOnSpecificServer (Server newServer, string newArea, Spawn spawn, Direction newFacingDirection) {
-      int connectionId = this.connectionToClient.connectionId;
       Vector2 newPosition = spawn.getSpawnPosition();
 
       // Make a note that we're about to proceed with a warp
@@ -792,7 +791,7 @@ public class NetEntity : NetworkBehaviour
 
             // Send a Redirect message to the client
             RedirectMessage redirectMessage = new RedirectMessage(this.netId, newServer.ipAddress, newServer.port);
-            NetworkServer.SendToClient(connectionId, redirectMessage);
+            this.connectionToClient.Send(redirectMessage);
          });
       });
    }
