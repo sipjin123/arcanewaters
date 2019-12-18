@@ -531,7 +531,7 @@
         <itemID>32</itemID>
         <itemName>Add 50 Attack</itemName>
         <itemDescription>Desc</itemDescription>
-        <itemIconPath>Assets/Sprites/Icons/Classes/class_fighter.png</itemIconPath>
+        <itemIconPath>Assets/Sprites/Icons/Battle/Player/icon_player_figure.png</itemIconPath>
         <levelRequirement>1</levelRequirement>
         <hitSpritesPath>
           <string>Assets/Sprites/Effects/chimney_smoke_1.png</string>
@@ -1077,7 +1077,7 @@
         <itemID>32</itemID>
         <itemName>Add 50 Attack</itemName>
         <itemDescription>Desc</itemDescription>
-        <itemIconPath>Assets/Sprites/Icons/Classes/class_fighter.png</itemIconPath>
+        <itemIconPath>Assets/Sprites//Battle/Player/icon_player_figure.png</itemIconPath>
         <levelRequirement>1</levelRequirement>
         <hitSpritesPath>
           <string>Assets/Sprites/Effects/chimney_smoke_1.png</string>

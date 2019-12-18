@@ -227,12 +227,12 @@ GameObject:
   - component: {fileID: 6365375267159312614}
   - component: {fileID: 5575320467910960297}
   m_Layer: 0
-  m_Name: NPC
+  m_Name: NPCTester
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4420619915159614
 Transform:
   m_ObjectHideFlags: 0
