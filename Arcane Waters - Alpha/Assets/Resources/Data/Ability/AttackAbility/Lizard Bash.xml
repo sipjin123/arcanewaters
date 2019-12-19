@@ -25,6 +25,10 @@
   <baseDamage>15</baseDamage>
   <hasShake>true</hasShake>
   <hasKnockup>true</hasKnockup>
+  <hasKnockBack>false</hasKnockBack>
   <abilityActionType>Melee</abilityActionType>
   <canBeBlocked>true</canBeBlocked>
+  <projectileSpeed>3</projectileSpeed>
+  <projectileSpritePath />
+  <projectileScale>1</projectileScale>
 </AttackAbilityData>

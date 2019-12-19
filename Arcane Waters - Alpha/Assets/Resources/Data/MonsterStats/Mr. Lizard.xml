@@ -41,8 +41,12 @@
         <baseDamage>15</baseDamage>
         <hasShake>true</hasShake>
         <hasKnockup>true</hasKnockup>
+        <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Melee</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
+        <projectileSpeed>3</projectileSpeed>
+        <projectileSpritePath />
+        <projectileScale>1</projectileScale>
       </BasicAbilityData>
     </basicAbilityDataList>
     <attackAbilityDataList>
@@ -72,8 +76,12 @@
         <baseDamage>15</baseDamage>
         <hasShake>true</hasShake>
         <hasKnockup>true</hasKnockup>
+        <hasKnockBack>false</hasKnockBack>
         <abilityActionType>Melee</abilityActionType>
         <canBeBlocked>true</canBeBlocked>
+        <projectileSpeed>3</projectileSpeed>
+        <projectileSpritePath />
+        <projectileScale>1</projectileScale>
       </AttackAbilityData>
     </attackAbilityDataList>
     <buffAbilityDataList />
@@ -95,30 +103,38 @@
     <minQuantity>1</minQuantity>
     <maxQuantity>5</maxQuantity>
   </battlerLootData>
-  <physicalDefenseMultiplier>1</physicalDefenseMultiplier>
-  <fireDefenseMultiplier>-5</fireDefenseMultiplier>
-  <earthDefenseMultiplier>1</earthDefenseMultiplier>
-  <airDefenseMultiplier>1</airDefenseMultiplier>
-  <waterDefenseMultiplier>25</waterDefenseMultiplier>
-  <allDefenseMultiplier>1</allDefenseMultiplier>
-  <physicalAttackMultiplier>5</physicalAttackMultiplier>
-  <fireAttackMultiplier>1</fireAttackMultiplier>
-  <earthAttackMultiplier>1</earthAttackMultiplier>
-  <airAttackMultiplier>1</airAttackMultiplier>
-  <waterAttackMultiplier>2</waterAttackMultiplier>
-  <allAttackMultiplier>1</allAttackMultiplier>
-  <physicalDefenseMultiplierPerLevel>0.1</physicalDefenseMultiplierPerLevel>
-  <fireDefenseMultiplierPerLevel>0.1</fireDefenseMultiplierPerLevel>
-  <earthDefenseMultiplierPerLevel>0.1</earthDefenseMultiplierPerLevel>
-  <airDefenseMultiplierPerLevel>0.1</airDefenseMultiplierPerLevel>
-  <waterDefenseMultiplierPerLevel>0.1</waterDefenseMultiplierPerLevel>
-  <allDefenseMultiplierPerLevel>0.1</allDefenseMultiplierPerLevel>
-  <physicalAttackMultiplierPerLevel>0.1</physicalAttackMultiplierPerLevel>
-  <fireAttackMultiplierPerLevel>0.1</fireAttackMultiplierPerLevel>
-  <earthAttackMultiplierPerLevel>0.1</earthAttackMultiplierPerLevel>
-  <airAttackMultiplierPerLevel>0.1</airAttackMultiplierPerLevel>
-  <waterAttackMultiplierPerLevel>0.1</waterAttackMultiplierPerLevel>
-  <allAttackMultiplierPerLevel>0.1</allAttackMultiplierPerLevel>
+  <baseDamageMultiplierSet>
+    <physicalAttackMultiplier>1</physicalAttackMultiplier>
+    <fireAttackMultiplier>1</fireAttackMultiplier>
+    <earthAttackMultiplier>1</earthAttackMultiplier>
+    <airAttackMultiplier>1</airAttackMultiplier>
+    <waterAttackMultiplier>1</waterAttackMultiplier>
+    <allAttackMultiplier>1</allAttackMultiplier>
+  </baseDamageMultiplierSet>
+  <perLevelDamageMultiplierSet>
+    <physicalAttackMultiplierPerLevel>0.1</physicalAttackMultiplierPerLevel>
+    <fireAttackMultiplierPerLevel>0.1</fireAttackMultiplierPerLevel>
+    <earthAttackMultiplierPerLevel>0.1</earthAttackMultiplierPerLevel>
+    <airAttackMultiplierPerLevel>0.1</airAttackMultiplierPerLevel>
+    <waterAttackMultiplierPerLevel>0.1</waterAttackMultiplierPerLevel>
+    <allAttackMultiplierPerLevel>0.1</allAttackMultiplierPerLevel>
+  </perLevelDamageMultiplierSet>
+  <baseDefenseMultiplierSet>
+    <physicalDefenseMultiplier>1</physicalDefenseMultiplier>
+    <fireDefenseMultiplier>-2</fireDefenseMultiplier>
+    <earthDefenseMultiplier>1</earthDefenseMultiplier>
+    <airDefenseMultiplier>1</airDefenseMultiplier>
+    <waterDefenseMultiplier>2</waterDefenseMultiplier>
+    <allDefenseMultiplier>1</allDefenseMultiplier>
+  </baseDefenseMultiplierSet>
+  <perLevelDefenseMultiplierSet>
+    <physicalDefenseMultiplierPerLevel>0.1</physicalDefenseMultiplierPerLevel>
+    <fireDefenseMultiplierPerLevel>0.1</fireDefenseMultiplierPerLevel>
+    <earthDefenseMultiplierPerLevel>0.1</earthDefenseMultiplierPerLevel>
+    <airDefenseMultiplierPerLevel>0.1</airDefenseMultiplierPerLevel>
+    <waterDefenseMultiplierPerLevel>0.1</waterDefenseMultiplierPerLevel>
+    <allDefenseMultiplierPerLevel>0.1</allDefenseMultiplierPerLevel>
+  </perLevelDefenseMultiplierSet>
   <deathSoundPath>Assets/Resources/Sound/Effects/Chomper_Death.ogg</deathSoundPath>
   <attackJumpSoundPath>Assets/Resources/Sound/Effects/Footstep_Muffled.wav</attackJumpSoundPath>
   <preContactLength>3</preContactLength>
