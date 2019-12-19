@@ -82,13 +82,15 @@ public class BattleSelectionManager : MonoBehaviour {
                   }
                   
                   selectedBattler = battler;
-                  if (selectedBattler.enemyType != Enemy.Type.Humanoid) {
+                  if (selectedBattler.enemyType != Enemy.Type.PlayerBattler) {
                      enemySelection.SetActive(true);
                      allySelection.SetActive(false);
                   } else {
                      enemySelection.SetActive(false);
                      allySelection.SetActive(true);
                   }
+                  selectionSprite.initialYaxis = selectedBattler.transform.position.y;
+
                   selectedBattler.selectThis();
                }
 

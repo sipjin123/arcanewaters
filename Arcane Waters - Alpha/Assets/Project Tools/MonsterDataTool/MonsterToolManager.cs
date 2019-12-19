@@ -22,28 +22,22 @@ public class MonsterToolManager : MonoBehaviour {
 
    public void loadAllDataFiles () {
       monsterDataList = new Dictionary<string, BattlerData>();
-      // Build the path to the folder containing the Monster data XML files
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
 
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
-      } else {
-         // Get the list of XML files in the folder
-         string[] fileNames = ToolsUtil.getFileNamesInFolder(directoryPath, "*.xml");
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<BattlerData> battlerList = DB_Main.getLandMonsterXML();
 
          // Iterate over the files
-         for (int i = 0; i < fileNames.Length; i++) {
-            // Build the path to a single file
-            string filePath = Path.Combine(directoryPath, fileNames[i]);
-
+         for (int i = 0; i < battlerList.Count; i++) {
             // Read and deserialize the file
-            BattlerData monsterData = ToolsUtil.xmlLoad<BattlerData>(filePath);
+            BattlerData monsterData = battlerList[i];
 
             // Save the Monster data in the memory cache
             monsterDataList.Add(monsterData.enemyName, monsterData);
          }
-         monsterToolScreen.updatePanelWithBattlerData(monsterDataList);
-      }
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            monsterToolScreen.updatePanelWithBattlerData(monsterDataList);
+         });
+      });
    }
 
    public void deleteMonsterDataFile (BattlerData data) {
@@ -62,19 +56,9 @@ public class MonsterToolManager : MonoBehaviour {
    }
    
    public void saveDataToFile (BattlerData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
-      }
-
-      // Build the file name
-      string fileName = data.enemyName;
-
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
-
-      // Save the file
-      ToolsUtil.xmlSave(data, path);
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.updateMonsterXML(data);
+      });
    }
 
    public void duplicateData (BattlerData data) {

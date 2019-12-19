@@ -103,18 +103,18 @@ public class DamageSimulatorPanel : MonoBehaviour {
       enemyAttackUI.airDamageMultiplier = defaultValue;
 
       // Setup base attack
-      enemyAttackUI.physicalDamageMultiplierBase = fetchedMonsterData.physicalAttackMultiplier;
-      enemyAttackUI.fireDamageMultiplierBase = fetchedMonsterData.fireAttackMultiplier;
-      enemyAttackUI.earthDamageMultiplierBase = fetchedMonsterData.earthAttackMultiplier;
-      enemyAttackUI.airDamageMultiplierBase = fetchedMonsterData.airAttackMultiplier;
-      enemyAttackUI.waterDamageMultiplierBase = fetchedMonsterData.waterAttackMultiplier;
+      enemyAttackUI.physicalDamageMultiplierBase = fetchedMonsterData.baseDamageMultiplierSet.physicalAttackMultiplier;
+      enemyAttackUI.fireDamageMultiplierBase = fetchedMonsterData.baseDamageMultiplierSet.fireAttackMultiplier;
+      enemyAttackUI.earthDamageMultiplierBase = fetchedMonsterData.baseDamageMultiplierSet.earthAttackMultiplier;
+      enemyAttackUI.airDamageMultiplierBase = fetchedMonsterData.baseDamageMultiplierSet.airAttackMultiplier;
+      enemyAttackUI.waterDamageMultiplierBase = fetchedMonsterData.baseDamageMultiplierSet.waterAttackMultiplier;
 
       // Setup initial attack per level
-      enemyAttackUI.physicalDamageMultiplierPerLvl = fetchedMonsterData.physicalDefenseMultiplierPerLevel;
-      enemyAttackUI.fireDamageMultiplierPerLvl = fetchedMonsterData.fireAttackMultiplierPerLevel;
-      enemyAttackUI.earthDamageMultiplierPerLvl = fetchedMonsterData.earthAttackMultiplierPerLevel;
-      enemyAttackUI.airDamageMultiplierPerLvl = fetchedMonsterData.airAttackMultiplierPerLevel;
-      enemyAttackUI.waterDamageMultiplierPerLvl = fetchedMonsterData.waterAttackMultiplierPerLevel;
+      enemyAttackUI.physicalDamageMultiplierPerLvl = fetchedMonsterData.perLevelDamageMultiplierSet.physicalAttackMultiplierPerLevel;
+      enemyAttackUI.fireDamageMultiplierPerLvl = fetchedMonsterData.perLevelDamageMultiplierSet.fireAttackMultiplierPerLevel;
+      enemyAttackUI.earthDamageMultiplierPerLvl = fetchedMonsterData.perLevelDamageMultiplierSet.earthAttackMultiplierPerLevel;
+      enemyAttackUI.airDamageMultiplierPerLvl = fetchedMonsterData.perLevelDamageMultiplierSet.airAttackMultiplierPerLevel;
+      enemyAttackUI.waterDamageMultiplierPerLvl = fetchedMonsterData.perLevelDamageMultiplierSet.waterAttackMultiplierPerLevel;
 
       // Compute total attack considering (base attack and attack per level)
       enemyAttackUI.physicalDamageMultiplier = (level * enemyAttackUI.physicalDamageMultiplierPerLvl) + Mathf.Abs(enemyAttackUI.physicalDamageMultiplierBase);
@@ -179,18 +179,18 @@ public class DamageSimulatorPanel : MonoBehaviour {
       enemyDefenseUI.waterDefenseMultiplier = defaultValue;
 
       // Setup base defense
-      enemyDefenseUI.physicalDefenseMultiplierBase = fetchedMonsterData.physicalDefenseMultiplier;
-      enemyDefenseUI.fireDefenseMultiplierBase = fetchedMonsterData.fireDefenseMultiplier;
-      enemyDefenseUI.earthDefenseMultiplierBase = fetchedMonsterData.earthDefenseMultiplier;
-      enemyDefenseUI.airDefenseMultiplierBase = fetchedMonsterData.airDefenseMultiplier;
-      enemyDefenseUI.waterDefenseMultiplierBase = fetchedMonsterData.waterDefenseMultiplier;
+      enemyDefenseUI.physicalDefenseMultiplierBase = fetchedMonsterData.baseDefenseMultiplierSet.physicalDefenseMultiplier;
+      enemyDefenseUI.fireDefenseMultiplierBase = fetchedMonsterData.baseDefenseMultiplierSet.fireDefenseMultiplier;
+      enemyDefenseUI.earthDefenseMultiplierBase = fetchedMonsterData.baseDefenseMultiplierSet.earthDefenseMultiplier;
+      enemyDefenseUI.airDefenseMultiplierBase = fetchedMonsterData.baseDefenseMultiplierSet.airDefenseMultiplier;
+      enemyDefenseUI.waterDefenseMultiplierBase = fetchedMonsterData.baseDefenseMultiplierSet.waterDefenseMultiplier;
 
       // Setup initial defense per level
-      enemyDefenseUI.physicalDefenseMultiplierPerLvl = fetchedMonsterData.physicalDefenseMultiplierPerLevel;
-      enemyDefenseUI.fireDefenseMultiplierPerLvl = fetchedMonsterData.fireDefenseMultiplierPerLevel;
-      enemyDefenseUI.earthDefenseMultiplierPerLvl = fetchedMonsterData.earthDefenseMultiplierPerLevel;
-      enemyDefenseUI.airDefenseMultiplierPerLvl = fetchedMonsterData.airDefenseMultiplierPerLevel;
-      enemyDefenseUI.waterDefenseMultiplierPerLvl = fetchedMonsterData.waterDefenseMultiplierPerLevel;
+      enemyDefenseUI.physicalDefenseMultiplierPerLvl = fetchedMonsterData.perLevelDefenseMultiplierSet.physicalDefenseMultiplierPerLevel;
+      enemyDefenseUI.fireDefenseMultiplierPerLvl = fetchedMonsterData.perLevelDefenseMultiplierSet.fireDefenseMultiplierPerLevel;
+      enemyDefenseUI.earthDefenseMultiplierPerLvl = fetchedMonsterData.perLevelDefenseMultiplierSet.earthDefenseMultiplierPerLevel;
+      enemyDefenseUI.airDefenseMultiplierPerLvl = fetchedMonsterData.perLevelDefenseMultiplierSet.airDefenseMultiplierPerLevel;
+      enemyDefenseUI.waterDefenseMultiplierPerLvl = fetchedMonsterData.perLevelDefenseMultiplierSet.waterDefenseMultiplierPerLevel;
 
       // Compute total defense considering (base defense and defense per level)
       enemyDefenseUI.physicalDefenseMultiplier = (level * enemyDefenseUI.physicalDefenseMultiplierPerLvl) + Mathf.Abs(enemyDefenseUI.physicalDefenseMultiplierBase);
@@ -283,7 +283,7 @@ public class DamageSimulatorPanel : MonoBehaviour {
 
    private void processPlayerOutputDamage () {
       AttackAbilityData fetchedAbility = AbilityManager.self.allGameAbilities.Find(_ => _.itemName == abilityText.text) as AttackAbilityData;
-      BattlerData battleData = MonsterManager.self.getMonster(Enemy.Type.Humanoid, 0);
+      BattlerData battleData = MonsterManager.self.getMonster(Enemy.Type.PlayerBattler, 0);
       int level = int.Parse(playerLevel.text);
 
       baseDamage = battleData.baseDamage;
@@ -318,7 +318,7 @@ public class DamageSimulatorPanel : MonoBehaviour {
    }
 
    private void processPlayerOutputDefense () {
-      BattlerData battleData = MonsterManager.self.getMonster(Enemy.Type.Humanoid, 0);
+      BattlerData battleData = MonsterManager.self.getMonster(Enemy.Type.PlayerBattler, 0);
       int level = int.Parse(playerLevel.text);
 
       baseDefense = battleData.baseDefense;

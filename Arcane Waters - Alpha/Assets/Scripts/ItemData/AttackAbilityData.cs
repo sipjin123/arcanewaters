@@ -93,13 +93,23 @@ public class AttackAbilityData : BasicAbilityData {
    #region Custom Helper Methods
 
    public void playCastClipAtTarget (Vector3 targetPosition) {
-      AudioClip clip = AudioClipManager.self.getAudioClipData(castAudioClipPath).audioClip; 
-      SoundManager.playClipOneShotAtPoint(clip, targetPosition);
+      if (castAudioClipPath != "") {
+         AudioClip castClip = AudioClipManager.self.getAudioClipData(castAudioClipPath).audioClip;
+         SoundManager.playClipOneShotAtPoint(castClip, targetPosition);
+      } else {
+         AudioClip castClip = AudioClipManager.self.getAudioClipData(AudioClipManager.self.defaultCastAudio).audioClip;
+         SoundManager.playClipOneShotAtPoint(castClip, targetPosition);
+      }
    }
 
    public void playHitClipAtTarget (Vector3 targetPosition) {
-      AudioClip clip = AudioClipManager.self.getAudioClipData(hitAudioClipPath).audioClip;
-      SoundManager.playClipOneShotAtPoint(clip, targetPosition);
+      if (hitAudioClipPath != "") {
+         AudioClip hitclip = AudioClipManager.self.getAudioClipData(hitAudioClipPath).audioClip;
+         SoundManager.playClipOneShotAtPoint(hitclip, targetPosition);
+      } else {
+         AudioClip hitclip = AudioClipManager.self.getAudioClipData(AudioClipManager.self.defaultHitAudio).audioClip;
+         SoundManager.playClipOneShotAtPoint(hitclip, targetPosition);
+      }
    }
 
    // No damage increase or decrease by default

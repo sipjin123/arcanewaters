@@ -67,19 +67,19 @@ public class MonsterManager : XmlManager {
       newLootData.minQuantity = rawData.battlerLootData.minQuantity;
       mainData.battlerLootData = (newLootData);
 
-      mainData.physicalDefenseMultiplier = rawData.physicalDefenseMultiplier;
-      mainData.fireDefenseMultiplier = rawData.fireDefenseMultiplier;
-      mainData.earthDefenseMultiplier = rawData.earthDefenseMultiplier;
-      mainData.airDefenseMultiplier = rawData.airDefenseMultiplier;
-      mainData.waterDefenseMultiplier = rawData.waterDefenseMultiplier;
-      mainData.allDefenseMultiplier = rawData.allDefenseMultiplier;
+      mainData.baseDefenseMultiplierSet.physicalDefenseMultiplier = rawData.baseDefenseMultiplierSet.physicalDefenseMultiplier;
+      mainData.baseDefenseMultiplierSet.fireDefenseMultiplier = rawData.baseDefenseMultiplierSet.fireDefenseMultiplier;
+      mainData.baseDefenseMultiplierSet.earthDefenseMultiplier = rawData.baseDefenseMultiplierSet.earthDefenseMultiplier;
+      mainData.baseDefenseMultiplierSet.airDefenseMultiplier = rawData.baseDefenseMultiplierSet.airDefenseMultiplier;
+      mainData.baseDefenseMultiplierSet.waterDefenseMultiplier = rawData.baseDefenseMultiplierSet.waterDefenseMultiplier;
+      mainData.baseDefenseMultiplierSet.allDefenseMultiplier = rawData.baseDefenseMultiplierSet.allDefenseMultiplier;
 
-      mainData.physicalAttackMultiplier = rawData.physicalAttackMultiplier;
-      mainData.fireAttackMultiplier = rawData.fireAttackMultiplier;
-      mainData.earthAttackMultiplier = rawData.earthAttackMultiplier;
-      mainData.airAttackMultiplier = rawData.airAttackMultiplier;
-      mainData.waterAttackMultiplier = rawData.waterAttackMultiplier;
-      mainData.allAttackMultiplier = rawData.allAttackMultiplier;
+      mainData.baseDamageMultiplierSet.physicalAttackMultiplier = rawData.baseDamageMultiplierSet.physicalAttackMultiplier;
+      mainData.baseDamageMultiplierSet.fireAttackMultiplier = rawData.baseDamageMultiplierSet.fireAttackMultiplier;
+      mainData.baseDamageMultiplierSet.earthAttackMultiplier = rawData.baseDamageMultiplierSet.earthAttackMultiplier;
+      mainData.baseDamageMultiplierSet.airAttackMultiplier = rawData.baseDamageMultiplierSet.airAttackMultiplier;
+      mainData.baseDamageMultiplierSet.waterAttackMultiplier = rawData.baseDamageMultiplierSet.waterAttackMultiplier;
+      mainData.baseDamageMultiplierSet.allAttackMultiplier = rawData.baseDamageMultiplierSet.allAttackMultiplier;
 
       mainData.preContactLength = rawData.preContactLength;
       mainData.preMagicLength = rawData.preMagicLength;

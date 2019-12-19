@@ -238,33 +238,33 @@ public class MonsterDataPanel : MonoBehaviour {
       _defensePerLevel.text = newBattleData.defensePerLevel.ToString();
       _healthPerlevel.text = newBattleData.healthPerlevel.ToString();
 
-      _physicalDefenseMultiplier.text = newBattleData.physicalDefenseMultiplier.ToString();
-      _fireDefenseMultiplier.text = newBattleData.fireDefenseMultiplier.ToString();
-      _earthDefenseMultiplier.text = newBattleData.earthDefenseMultiplier.ToString();
-      _airDefenseMultiplier.text = newBattleData.airDefenseMultiplier.ToString();
-      _waterDefenseMultiplier.text = newBattleData.waterDefenseMultiplier.ToString();
-      _allDefenseMultiplier.text = newBattleData.allDefenseMultiplier.ToString();
+      _physicalDefenseMultiplier.text = newBattleData.baseDefenseMultiplierSet.physicalDefenseMultiplier.ToString();
+      _fireDefenseMultiplier.text = newBattleData.baseDefenseMultiplierSet.fireDefenseMultiplier.ToString();
+      _earthDefenseMultiplier.text = newBattleData.baseDefenseMultiplierSet.earthDefenseMultiplier.ToString();
+      _airDefenseMultiplier.text = newBattleData.baseDefenseMultiplierSet.airDefenseMultiplier.ToString();
+      _waterDefenseMultiplier.text = newBattleData.baseDefenseMultiplierSet.waterDefenseMultiplier.ToString();
+      _allDefenseMultiplier.text = newBattleData.baseDefenseMultiplierSet.allDefenseMultiplier.ToString();
 
-      _physicalAttackMultiplier.text = newBattleData.physicalAttackMultiplier.ToString();
-      _fireAttackMultiplier.text = newBattleData.fireAttackMultiplier.ToString();
-      _earthAttackMultiplier.text = newBattleData.earthAttackMultiplier.ToString();
-      _airAttackMultiplier.text = newBattleData.airAttackMultiplier.ToString();
-      _waterAttackMultiplier.text = newBattleData.waterAttackMultiplier.ToString();
-      _allAttackMultiplier.text = newBattleData.allAttackMultiplier.ToString();
+      _physicalAttackMultiplier.text = newBattleData.baseDamageMultiplierSet.physicalAttackMultiplier.ToString();
+      _fireAttackMultiplier.text = newBattleData.baseDamageMultiplierSet.fireAttackMultiplier.ToString();
+      _earthAttackMultiplier.text = newBattleData.baseDamageMultiplierSet.earthAttackMultiplier.ToString();
+      _airAttackMultiplier.text = newBattleData.baseDamageMultiplierSet.airAttackMultiplier.ToString();
+      _waterAttackMultiplier.text = newBattleData.baseDamageMultiplierSet.waterAttackMultiplier.ToString();
+      _allAttackMultiplier.text = newBattleData.baseDamageMultiplierSet.allAttackMultiplier.ToString();
 
-      _physicalDefenseMultiplierPerLevel.text = newBattleData.physicalDefenseMultiplierPerLevel.ToString();
-      _fireDefenseMultiplierPerLevel.text = newBattleData.fireDefenseMultiplierPerLevel.ToString();
-      _earthDefenseMultiplierPerLevel.text = newBattleData.earthDefenseMultiplierPerLevel.ToString();
-      _airDefenseMultiplierPerLevel.text = newBattleData.airDefenseMultiplierPerLevel.ToString();
-      _waterDefenseMultiplierPerLevel.text = newBattleData.waterDefenseMultiplierPerLevel.ToString();
-      _allDefenseMultiplierPerLevel.text = newBattleData.allDefenseMultiplierPerLevel.ToString();
+      _physicalDefenseMultiplierPerLevel.text = newBattleData.perLevelDefenseMultiplierSet.physicalDefenseMultiplierPerLevel.ToString();
+      _fireDefenseMultiplierPerLevel.text = newBattleData.perLevelDefenseMultiplierSet.fireDefenseMultiplierPerLevel.ToString();
+      _earthDefenseMultiplierPerLevel.text = newBattleData.perLevelDefenseMultiplierSet.earthDefenseMultiplierPerLevel.ToString();
+      _airDefenseMultiplierPerLevel.text = newBattleData.perLevelDefenseMultiplierSet.airDefenseMultiplierPerLevel.ToString();
+      _waterDefenseMultiplierPerLevel.text = newBattleData.perLevelDefenseMultiplierSet.waterDefenseMultiplierPerLevel.ToString();
+      _allDefenseMultiplierPerLevel.text = newBattleData.perLevelDefenseMultiplierSet.allDefenseMultiplierPerLevel.ToString();
 
-      _physicalAttackMultiplierPerLevel.text = newBattleData.physicalAttackMultiplierPerLevel.ToString();
-      _fireAttackMultiplierPerLevel.text = newBattleData.fireAttackMultiplierPerLevel.ToString();
-      _earthAttackMultiplierPerLevel.text = newBattleData.earthAttackMultiplierPerLevel.ToString();
-      _airAttackMultiplierPerLevel.text = newBattleData.airAttackMultiplierPerLevel.ToString();
-      _waterAttackMultiplierPerLevel.text = newBattleData.waterAttackMultiplierPerLevel.ToString();
-      _allAttackMultiplierPerLevel.text = newBattleData.allAttackMultiplierPerLevel.ToString();
+      _physicalAttackMultiplierPerLevel.text = newBattleData.perLevelDamageMultiplierSet.physicalAttackMultiplierPerLevel.ToString();
+      _fireAttackMultiplierPerLevel.text = newBattleData.perLevelDamageMultiplierSet.fireAttackMultiplierPerLevel.ToString();
+      _earthAttackMultiplierPerLevel.text = newBattleData.perLevelDamageMultiplierSet.earthAttackMultiplierPerLevel.ToString();
+      _airAttackMultiplierPerLevel.text = newBattleData.perLevelDamageMultiplierSet.airAttackMultiplierPerLevel.ToString();
+      _waterAttackMultiplierPerLevel.text = newBattleData.perLevelDamageMultiplierSet.waterAttackMultiplierPerLevel.ToString();
+      _allAttackMultiplierPerLevel.text = newBattleData.perLevelDamageMultiplierSet.allAttackMultiplierPerLevel.ToString();
 
       _preContactLength.text = newBattleData.preContactLength.ToString();
       _preMagicLength.text = newBattleData.preMagicLength.ToString();
@@ -295,33 +295,33 @@ public class MonsterDataPanel : MonoBehaviour {
       newBattData.defensePerLevel = int.Parse(_defensePerLevel.text);
       newBattData.healthPerlevel = int.Parse(_healthPerlevel.text);
 
-      newBattData.physicalDefenseMultiplier = float.Parse(_physicalDefenseMultiplier.text);
-      newBattData.allDefenseMultiplier = float.Parse(_allDefenseMultiplier.text);
-      newBattData.fireDefenseMultiplier = float.Parse(_fireDefenseMultiplier.text);
-      newBattData.earthDefenseMultiplier = float.Parse(_earthDefenseMultiplier.text);
-      newBattData.waterDefenseMultiplier = float.Parse(_waterDefenseMultiplier.text);
-      newBattData.airDefenseMultiplier = float.Parse(_airDefenseMultiplier.text);
+      newBattData.baseDefenseMultiplierSet.physicalDefenseMultiplier = float.Parse(_physicalDefenseMultiplier.text);
+      newBattData.baseDefenseMultiplierSet.allDefenseMultiplier = float.Parse(_allDefenseMultiplier.text);
+      newBattData.baseDefenseMultiplierSet.fireDefenseMultiplier = float.Parse(_fireDefenseMultiplier.text);
+      newBattData.baseDefenseMultiplierSet.earthDefenseMultiplier = float.Parse(_earthDefenseMultiplier.text);
+      newBattData.baseDefenseMultiplierSet.waterDefenseMultiplier = float.Parse(_waterDefenseMultiplier.text);
+      newBattData.baseDefenseMultiplierSet.airDefenseMultiplier = float.Parse(_airDefenseMultiplier.text);
 
-      newBattData.physicalAttackMultiplier = float.Parse(_physicalAttackMultiplier.text);
-      newBattData.allAttackMultiplier = float.Parse(_allAttackMultiplier.text);
-      newBattData.fireAttackMultiplier = float.Parse(_fireAttackMultiplier.text);
-      newBattData.earthAttackMultiplier = float.Parse(_earthAttackMultiplier.text);
-      newBattData.waterAttackMultiplier = float.Parse(_waterAttackMultiplier.text);
-      newBattData.airAttackMultiplier = float.Parse(_airAttackMultiplier.text);
+      newBattData.baseDamageMultiplierSet.physicalAttackMultiplier = float.Parse(_physicalAttackMultiplier.text);
+      newBattData.baseDamageMultiplierSet.allAttackMultiplier = float.Parse(_allAttackMultiplier.text);
+      newBattData.baseDamageMultiplierSet.fireAttackMultiplier = float.Parse(_fireAttackMultiplier.text);
+      newBattData.baseDamageMultiplierSet.earthAttackMultiplier = float.Parse(_earthAttackMultiplier.text);
+      newBattData.baseDamageMultiplierSet.waterAttackMultiplier = float.Parse(_waterAttackMultiplier.text);
+      newBattData.baseDamageMultiplierSet.airAttackMultiplier = float.Parse(_airAttackMultiplier.text);
 
-      newBattData.physicalDefenseMultiplierPerLevel = float.Parse(_physicalDefenseMultiplierPerLevel.text);
-      newBattData.allDefenseMultiplierPerLevel = float.Parse(_allDefenseMultiplierPerLevel.text);
-      newBattData.fireDefenseMultiplierPerLevel = float.Parse(_fireDefenseMultiplierPerLevel.text);
-      newBattData.earthDefenseMultiplierPerLevel = float.Parse(_earthDefenseMultiplierPerLevel.text);
-      newBattData.waterDefenseMultiplierPerLevel = float.Parse(_waterDefenseMultiplierPerLevel.text);
-      newBattData.airDefenseMultiplierPerLevel = float.Parse(_airDefenseMultiplierPerLevel.text);
+      newBattData.perLevelDefenseMultiplierSet.physicalDefenseMultiplierPerLevel = float.Parse(_physicalDefenseMultiplierPerLevel.text);
+      newBattData.perLevelDefenseMultiplierSet.allDefenseMultiplierPerLevel = float.Parse(_allDefenseMultiplierPerLevel.text);
+      newBattData.perLevelDefenseMultiplierSet.fireDefenseMultiplierPerLevel = float.Parse(_fireDefenseMultiplierPerLevel.text);
+      newBattData.perLevelDefenseMultiplierSet.earthDefenseMultiplierPerLevel = float.Parse(_earthDefenseMultiplierPerLevel.text);
+      newBattData.perLevelDefenseMultiplierSet.waterDefenseMultiplierPerLevel = float.Parse(_waterDefenseMultiplierPerLevel.text);
+      newBattData.perLevelDefenseMultiplierSet.airDefenseMultiplierPerLevel = float.Parse(_airDefenseMultiplierPerLevel.text);
 
-      newBattData.physicalAttackMultiplierPerLevel = float.Parse(_physicalAttackMultiplierPerLevel.text);
-      newBattData.allAttackMultiplierPerLevel = float.Parse(_allAttackMultiplierPerLevel.text);
-      newBattData.fireAttackMultiplierPerLevel = float.Parse(_fireAttackMultiplierPerLevel.text);
-      newBattData.earthAttackMultiplierPerLevel = float.Parse(_earthAttackMultiplierPerLevel.text);
-      newBattData.waterAttackMultiplierPerLevel = float.Parse(_waterAttackMultiplierPerLevel.text);
-      newBattData.airAttackMultiplierPerLevel = float.Parse(_airAttackMultiplierPerLevel.text);
+      newBattData.perLevelDamageMultiplierSet.physicalAttackMultiplierPerLevel = float.Parse(_physicalAttackMultiplierPerLevel.text);
+      newBattData.perLevelDamageMultiplierSet.allAttackMultiplierPerLevel = float.Parse(_allAttackMultiplierPerLevel.text);
+      newBattData.perLevelDamageMultiplierSet.fireAttackMultiplierPerLevel = float.Parse(_fireAttackMultiplierPerLevel.text);
+      newBattData.perLevelDamageMultiplierSet.earthAttackMultiplierPerLevel = float.Parse(_earthAttackMultiplierPerLevel.text);
+      newBattData.perLevelDamageMultiplierSet.waterAttackMultiplierPerLevel = float.Parse(_waterAttackMultiplierPerLevel.text);
+      newBattData.perLevelDamageMultiplierSet.airAttackMultiplierPerLevel = float.Parse(_airAttackMultiplierPerLevel.text);
 
       newBattData.preContactLength = int.Parse(_preContactLength.text);
       newBattData.preMagicLength = int.Parse(_preMagicLength.text);
@@ -354,10 +354,6 @@ public class MonsterDataPanel : MonoBehaviour {
 
    public void saveData() {
       BattlerData rawData = getBattlerData();
-      if (rawData.enemyName != startingName) {
-         deleteOldData(new BattlerData { enemyName = startingName });
-      }
-
       rawData.battlerLootData = getRawLootData();
 
       foreach (AttackAbilityData attackAbility in rawData.battlerAbilities.attackAbilityDataList) {
@@ -390,10 +386,6 @@ public class MonsterDataPanel : MonoBehaviour {
       rawData.maxQuantity = int.Parse(rewardItemMax.text);
 
       return rawData;
-   }
-
-   private void deleteOldData(BattlerData rawData) {
-      monsterToolManager.deleteMonsterDataFile(rawData);
    }
 
    #endregion

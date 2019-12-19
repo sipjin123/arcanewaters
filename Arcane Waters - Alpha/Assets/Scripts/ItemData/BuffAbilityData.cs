@@ -75,6 +75,26 @@ public class BuffAbilityData : BasicAbilityData
 
    #region Custom Helper Methods
 
+   public void playCastClipAtTarget (Vector3 targetPosition) {
+      if (castAudioClipPath != "") {
+         AudioClip castClip = AudioClipManager.self.getAudioClipData(castAudioClipPath).audioClip;
+         SoundManager.playClipOneShotAtPoint(castClip, targetPosition);
+      } else {
+         AudioClip castClip = AudioClipManager.self.getAudioClipData(AudioClipManager.self.defaultCastAudio).audioClip;
+         SoundManager.playClipOneShotAtPoint(castClip, targetPosition);
+      }
+   }
+
+   public void playHitClipAtTarget (Vector3 targetPosition) {
+      if (hitAudioClipPath != "") {
+         AudioClip hitclip = AudioClipManager.self.getAudioClipData(hitAudioClipPath).audioClip;
+         SoundManager.playClipOneShotAtPoint(hitclip, targetPosition);
+      } else {
+         AudioClip hitclip = AudioClipManager.self.getAudioClipData(AudioClipManager.self.defaultHitAudio).audioClip;
+         SoundManager.playClipOneShotAtPoint(hitclip, targetPosition);
+      }
+   }
+
    public float getTotalAnimLength (Battler attacker, Battler target) {
       return 1;
    }

@@ -261,7 +261,7 @@ public class BattleManager : MonoBehaviour {
 
       // This function will handle the computed stats of the player depending on their Specialty/Faction/Job/Class
       battler.initialize();
-      battler.health = battler.getStartingHealth(Enemy.Type.Humanoid);
+      battler.health = battler.getStartingHealth(Enemy.Type.PlayerBattler);
 
       // Zeronev: this will not sync the battle ID to all created battlers, a CMD is needed.
       battler.battleId = battle.battleId;

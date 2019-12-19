@@ -454,7 +454,7 @@ public class AdminManager : NetworkBehaviour {
             
             if (npcData.spritePath != null && npcData.spritePath != "") {
                npcSprite = ImageManager.getSprite(npcData.spritePath);
-               if (npcSprite == null || npcSprite.name.Contains("empty")) {
+               if (npcSprite == null || npcSprite.name.Contains("empty_layer")) {
                   D.log("Invalid NPC Path, please complete details in NPC Editor");
                   npcSprite = ImageManager.getSprite(ImageManager.DEFAULT_NPC_PATH);
                }

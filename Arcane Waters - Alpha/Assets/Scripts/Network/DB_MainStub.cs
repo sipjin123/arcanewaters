@@ -10,6 +10,14 @@ public class DB_MainStub : MonoBehaviour {
 
    #endregion
 
+   public static List<BattlerData> getLandMonsterXML () {
+      return new List<BattlerData>();
+   }
+
+   public static void updateMonsterXML (BattlerData battleData) {
+
+   }
+
    public static void updateAbilitiesData (int userID, AbilitySQLData abilityData) {
 
    }

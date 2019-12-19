@@ -38,9 +38,17 @@ public class BattlerProjectile : MonoBehaviour {
       if (isInitialized) {
          transform.position = Vector2.MoveTowards(transform.position, targetPosition, projectileSpeed * Time.deltaTime);
          if (Vector2.Distance(transform.position, targetPosition) < STOP_DISTANCE) {
-            gameObject.SetActive(false);
-            Destroy(this.gameObject);
+            isInitialized = false;
+            StartCoroutine(CO_StopProjectile());
          }
       }
+   }
+
+   IEnumerator CO_StopProjectile () {
+      EffectManager.show(Effect.Type.Cannon_Smoke, transform.position);
+      yield return new WaitForSeconds(.1f);
+
+      gameObject.SetActive(false);
+      Destroy(this.gameObject);
    }
 }

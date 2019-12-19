@@ -1,6 +1,10 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Xml.Serialization;
+using System;
+#if IS_SERVER_BUILD
+using MySql.Data.MySqlClient;
+#endif
 
 // Data that a battler will hold, max health, xp, sounds, etc.
 [System.Serializable]
@@ -39,37 +43,11 @@ public class BattlerData {
    public AbilityDataRecord battlerAbilities;
    public RawGenericLootData battlerLootData;
 
-   // Element defense multiplier values
-   public float physicalDefenseMultiplier;
-   public float fireDefenseMultiplier;
-   public float earthDefenseMultiplier;
-   public float airDefenseMultiplier;
-   public float waterDefenseMultiplier;
-   public float allDefenseMultiplier;
-
-   // Element attack multiplier values
-   public float physicalAttackMultiplier;
-   public float fireAttackMultiplier;
-   public float earthAttackMultiplier;
-   public float airAttackMultiplier;
-   public float waterAttackMultiplier;
-   public float allAttackMultiplier;
-
-   // Element defense multiplier values PerLevel
-   public float physicalDefenseMultiplierPerLevel;
-   public float fireDefenseMultiplierPerLevel;
-   public float earthDefenseMultiplierPerLevel;
-   public float airDefenseMultiplierPerLevel;
-   public float waterDefenseMultiplierPerLevel;
-   public float allDefenseMultiplierPerLevel;
-
-   // Element attack multiplier values PerLevel
-   public float physicalAttackMultiplierPerLevel;
-   public float fireAttackMultiplierPerLevel;
-   public float earthAttackMultiplierPerLevel;
-   public float airAttackMultiplierPerLevel;
-   public float waterAttackMultiplierPerLevel;
-   public float allAttackMultiplierPerLevel;
+   // Multiplier Sets
+   public BaseDamageMultiplierSet baseDamageMultiplierSet = new BaseDamageMultiplierSet();
+   public PerLevelDamageMultiplierSet perLevelDamageMultiplierSet = new PerLevelDamageMultiplierSet();
+   public BaseDefenseMultiplierSet baseDefenseMultiplierSet = new BaseDefenseMultiplierSet();
+   public PerLevelDefenseMultiplierSet perLevelDefenseMultiplierSet = new PerLevelDefenseMultiplierSet();
 
    // Sounds
    public string deathSoundPath;
@@ -89,6 +67,46 @@ public class BattlerData {
 
    public BattlerData () { }
 
+#if IS_SERVER_BUILD
+
+   public BattlerData (MySqlDataReader dataReader) {
+      this.enemyName = dataReader.GetString("enemyName");
+      this.enemyType = (Enemy.Type) dataReader.GetInt32("enemyType");
+
+      this.baseHealth = dataReader.GetInt32("baseHealth");
+      this.baseDefense = dataReader.GetInt32("baseDefense");
+      this.baseDamage = dataReader.GetInt32("baseDamage");
+      this.baseGoldReward = dataReader.GetInt32("baseGoldReward");
+      this.baseXPReward = dataReader.GetInt32("baseXPReward");
+
+      this.damagePerLevel = dataReader.GetInt32("damagePerLevel");
+      this.defensePerLevel = dataReader.GetInt32("defensePerLevel");
+      this.healthPerlevel = dataReader.GetInt32("healthPerlevel");
+      this.preContactLength = dataReader.GetFloat("preContactLength");
+      this.preMagicLength = dataReader.GetFloat("preMagicLength");
+
+      this.deathSoundPath = dataReader.GetString("deathSoundPath");
+      this.attackJumpSoundPath = dataReader.GetString("attackJumpSoundPath");
+      this.imagePath = dataReader.GetString("imagePath");
+
+      string baseDmg = dataReader.GetString("baseDamageMultiplierSet");
+      string perlvlDmg = dataReader.GetString("perLevelDamageMultiplierSet");
+      string baseDef = dataReader.GetString("baseDefenseMultiplierSet");
+      string perlvlDef = dataReader.GetString("perLevelDefenseMultiplierSet");
+
+      this.baseDamageMultiplierSet.stringTranslation = JsonUtility.FromJson<StringTranslation>(baseDmg);
+      this.perLevelDamageMultiplierSet.stringTranslation = JsonUtility.FromJson<StringTranslation>(perlvlDmg);
+      this.baseDefenseMultiplierSet.stringTranslation = JsonUtility.FromJson<StringTranslation>(baseDef);
+      this.perLevelDefenseMultiplierSet.stringTranslation = JsonUtility.FromJson<StringTranslation>(perlvlDef);
+
+      this.baseDamageMultiplierSet.translateStringValues();
+      this.perLevelDamageMultiplierSet.translateStringValues();
+      this.baseDefenseMultiplierSet.translateStringValues();
+      this.perLevelDefenseMultiplierSet.translateStringValues();
+   }
+
+#endif
+
    public static BattlerData CreateInstance (BattlerData datacopy) {
       BattlerData data = new BattlerData();
 
@@ -96,7 +114,7 @@ public class BattlerData {
 
       return data;
    }
-  
+
    public static BattlerData BattleData (int xp, int apWhenDamaged, int baseHealth, int baseDef, int baseDmg, int baseGold, int dmgPerLevel,
       int defPerLevel, int healthPerLevel, AbilityDataRecord battlerAbilities, float physicalDefMultiplier, float fireDefMultiplier,
       float earthDefMultiplier, float airDefMultiplier, float waterDefMultiplier, float allDefMultiplier, float physicalAtkMultiplier,
@@ -136,33 +154,33 @@ public class BattlerData {
       battlerAbilities = datacopy.battlerAbilities;
       battlerLootData = datacopy.battlerLootData;
 
-      physicalDefenseMultiplier = datacopy.physicalDefenseMultiplier;
-      fireDefenseMultiplier = datacopy.fireDefenseMultiplier;
-      earthDefenseMultiplier = datacopy.earthDefenseMultiplier;
-      airDefenseMultiplier = datacopy.airDefenseMultiplier;
-      waterDefenseMultiplier = datacopy.waterDefenseMultiplier;
-      allDefenseMultiplier = datacopy.allDefenseMultiplier;
+      baseDefenseMultiplierSet.physicalDefenseMultiplier = datacopy.baseDefenseMultiplierSet.physicalDefenseMultiplier;
+      baseDefenseMultiplierSet.fireDefenseMultiplier = datacopy.baseDefenseMultiplierSet.fireDefenseMultiplier;
+      baseDefenseMultiplierSet.earthDefenseMultiplier = datacopy.baseDefenseMultiplierSet.earthDefenseMultiplier;
+      baseDefenseMultiplierSet.airDefenseMultiplier = datacopy.baseDefenseMultiplierSet.airDefenseMultiplier;
+      baseDefenseMultiplierSet.waterDefenseMultiplier = datacopy.baseDefenseMultiplierSet.waterDefenseMultiplier;
+      baseDefenseMultiplierSet.allDefenseMultiplier = datacopy.baseDefenseMultiplierSet.allDefenseMultiplier;
 
-      physicalDefenseMultiplierPerLevel = datacopy.physicalDefenseMultiplierPerLevel;
-      fireDefenseMultiplierPerLevel = datacopy.fireDefenseMultiplierPerLevel;
-      earthDefenseMultiplierPerLevel = datacopy.earthDefenseMultiplierPerLevel;
-      airDefenseMultiplierPerLevel = datacopy.airDefenseMultiplierPerLevel;
-      waterDefenseMultiplierPerLevel = datacopy.waterDefenseMultiplierPerLevel;
-      allDefenseMultiplierPerLevel = datacopy.allDefenseMultiplierPerLevel;
+      perLevelDefenseMultiplierSet.physicalDefenseMultiplierPerLevel = datacopy.perLevelDefenseMultiplierSet.physicalDefenseMultiplierPerLevel;
+      perLevelDefenseMultiplierSet.fireDefenseMultiplierPerLevel = datacopy.perLevelDefenseMultiplierSet.fireDefenseMultiplierPerLevel;
+      perLevelDefenseMultiplierSet.earthDefenseMultiplierPerLevel = datacopy.perLevelDefenseMultiplierSet.earthDefenseMultiplierPerLevel;
+      perLevelDefenseMultiplierSet.airDefenseMultiplierPerLevel = datacopy.perLevelDefenseMultiplierSet.airDefenseMultiplierPerLevel;
+      perLevelDefenseMultiplierSet.waterDefenseMultiplierPerLevel = datacopy.perLevelDefenseMultiplierSet.waterDefenseMultiplierPerLevel;
+      perLevelDefenseMultiplierSet.allDefenseMultiplierPerLevel = datacopy.perLevelDefenseMultiplierSet.allDefenseMultiplierPerLevel;
 
-      physicalAttackMultiplier = datacopy.physicalAttackMultiplier;
-      fireAttackMultiplier = datacopy.fireAttackMultiplier;
-      earthAttackMultiplier = datacopy.earthAttackMultiplier;
-      airAttackMultiplier = datacopy.airAttackMultiplier;
-      waterAttackMultiplier = datacopy.waterAttackMultiplier;
-      allAttackMultiplier = datacopy.allAttackMultiplier;
+      baseDamageMultiplierSet.physicalAttackMultiplier = datacopy.baseDamageMultiplierSet.physicalAttackMultiplier;
+      baseDamageMultiplierSet.fireAttackMultiplier = datacopy.baseDamageMultiplierSet.fireAttackMultiplier;
+      baseDamageMultiplierSet.earthAttackMultiplier = datacopy.baseDamageMultiplierSet.earthAttackMultiplier;
+      baseDamageMultiplierSet.airAttackMultiplier = datacopy.baseDamageMultiplierSet.airAttackMultiplier;
+      baseDamageMultiplierSet.waterAttackMultiplier = datacopy.baseDamageMultiplierSet.waterAttackMultiplier;
+      baseDamageMultiplierSet.allAttackMultiplier = datacopy.baseDamageMultiplierSet.allAttackMultiplier;
 
-      physicalAttackMultiplierPerLevel = datacopy.physicalAttackMultiplierPerLevel;
-      fireAttackMultiplierPerLevel = datacopy.fireAttackMultiplierPerLevel;
-      earthAttackMultiplierPerLevel = datacopy.earthAttackMultiplierPerLevel;
-      airAttackMultiplierPerLevel = datacopy.airAttackMultiplierPerLevel;
-      waterAttackMultiplierPerLevel = datacopy.waterAttackMultiplierPerLevel;
-      allAttackMultiplierPerLevel = datacopy.allAttackMultiplierPerLevel;
+      perLevelDamageMultiplierSet.physicalAttackMultiplierPerLevel = datacopy.perLevelDamageMultiplierSet.physicalAttackMultiplierPerLevel;
+      perLevelDamageMultiplierSet.fireAttackMultiplierPerLevel = datacopy.perLevelDamageMultiplierSet.fireAttackMultiplierPerLevel;
+      perLevelDamageMultiplierSet.earthAttackMultiplierPerLevel = datacopy.perLevelDamageMultiplierSet.earthAttackMultiplierPerLevel;
+      perLevelDamageMultiplierSet.airAttackMultiplierPerLevel = datacopy.perLevelDamageMultiplierSet.airAttackMultiplierPerLevel;
+      perLevelDamageMultiplierSet.waterAttackMultiplierPerLevel = datacopy.perLevelDamageMultiplierSet.waterAttackMultiplierPerLevel;
+      perLevelDamageMultiplierSet.allAttackMultiplierPerLevel = datacopy.perLevelDamageMultiplierSet.allAttackMultiplierPerLevel;
 
       deathSoundPath = datacopy.deathSoundPath;
       attackJumpSoundPath = datacopy.attackJumpSoundPath;
@@ -196,19 +214,19 @@ public class BattlerData {
       this.battlerAbilities = battlerAbilities;
       this.battlerLootData = lootData;
 
-      this.physicalDefenseMultiplier = physicalDefMultiplier;
-      this.fireDefenseMultiplier = fireDefMultiplier;
-      this.earthDefenseMultiplier = earthDefMultiplier;
-      this.airDefenseMultiplier = airDefMultiplier;
-      this.waterDefenseMultiplier = waterDefMultiplier;
-      this.allDefenseMultiplier = allDefMultiplier;
+      this.baseDefenseMultiplierSet.physicalDefenseMultiplier = physicalDefMultiplier;
+      this.baseDefenseMultiplierSet.fireDefenseMultiplier = fireDefMultiplier;
+      this.baseDefenseMultiplierSet.earthDefenseMultiplier = earthDefMultiplier;
+      this.baseDefenseMultiplierSet.airDefenseMultiplier = airDefMultiplier;
+      this.baseDefenseMultiplierSet.waterDefenseMultiplier = waterDefMultiplier;
+      this.baseDefenseMultiplierSet.allDefenseMultiplier = allDefMultiplier;
 
-      this.physicalAttackMultiplier = physicalAtkMultiplier;
-      this.fireAttackMultiplier = fireAtkMultiplier;
-      this.earthAttackMultiplier = earthAtkMultiplier;
-      this.airAttackMultiplier = airAtkMultiplier;
-      this.waterAttackMultiplier = waterAtkMultiplier;
-      this.allAttackMultiplier = allAtkMultiplier;
+      this.baseDamageMultiplierSet.physicalAttackMultiplier = physicalAtkMultiplier;
+      this.baseDamageMultiplierSet.fireAttackMultiplier = fireAtkMultiplier;
+      this.baseDamageMultiplierSet.earthAttackMultiplier = earthAtkMultiplier;
+      this.baseDamageMultiplierSet.airAttackMultiplier = airAtkMultiplier;
+      this.baseDamageMultiplierSet.waterAttackMultiplier = waterAtkMultiplier;
+      this.baseDamageMultiplierSet.allAttackMultiplier = allAtkMultiplier;
 
       this.deathSoundPath = deathSound;
       this.attackJumpSoundPath = jumpAtkSound;
@@ -216,4 +234,138 @@ public class BattlerData {
       this.preContactLength = preContactLength;
       this.preMagicLength = preMagicLength;
    }
+
+   #region Helper Class
+
+   [Serializable]
+   public class BaseDamageMultiplierSet
+   {
+      // Element attack multiplier values
+      public float physicalAttackMultiplier;
+      public float fireAttackMultiplier;
+      public float earthAttackMultiplier;
+      public float airAttackMultiplier;
+      public float waterAttackMultiplier;
+      public float allAttackMultiplier;
+
+      public StringTranslation stringTranslation = new StringTranslation();
+
+      public void updateStringValues () {
+         stringTranslation.updateStringValues(physicalAttackMultiplier, fireAttackMultiplier,
+            earthAttackMultiplier, airAttackMultiplier,
+            waterAttackMultiplier, allAttackMultiplier);
+      }
+
+      public void translateStringValues () {
+         physicalAttackMultiplier = float.Parse(stringTranslation.attributeValue[0]);
+         fireAttackMultiplier = float.Parse(stringTranslation.attributeValue[1]);
+         earthAttackMultiplier = float.Parse(stringTranslation.attributeValue[2]);
+         airAttackMultiplier = float.Parse(stringTranslation.attributeValue[3]);
+         waterAttackMultiplier = float.Parse(stringTranslation.attributeValue[4]);
+         allAttackMultiplier = float.Parse(stringTranslation.attributeValue[5]);
+      }
+   }
+
+   [Serializable]
+   public class PerLevelDamageMultiplierSet {
+      // Element attack multiplier values PerLevel
+      public float physicalAttackMultiplierPerLevel;
+      public float fireAttackMultiplierPerLevel;
+      public float earthAttackMultiplierPerLevel;
+      public float airAttackMultiplierPerLevel;
+      public float waterAttackMultiplierPerLevel;
+      public float allAttackMultiplierPerLevel;
+
+      public StringTranslation stringTranslation = new StringTranslation();
+
+      public void updateStringValues () {
+         stringTranslation.updateStringValues(physicalAttackMultiplierPerLevel, fireAttackMultiplierPerLevel,
+            earthAttackMultiplierPerLevel, airAttackMultiplierPerLevel,
+            waterAttackMultiplierPerLevel, allAttackMultiplierPerLevel);
+      }
+
+      public void translateStringValues () {
+         physicalAttackMultiplierPerLevel = float.Parse(stringTranslation.attributeValue[0]);
+         fireAttackMultiplierPerLevel = float.Parse(stringTranslation.attributeValue[1]);
+         earthAttackMultiplierPerLevel = float.Parse(stringTranslation.attributeValue[2]);
+         airAttackMultiplierPerLevel = float.Parse(stringTranslation.attributeValue[3]);
+         waterAttackMultiplierPerLevel = float.Parse(stringTranslation.attributeValue[4]);
+         allAttackMultiplierPerLevel = float.Parse(stringTranslation.attributeValue[5]); 
+      }
+   }
+
+   [Serializable]
+   public class BaseDefenseMultiplierSet {
+      // Element defense multiplier values
+      public float physicalDefenseMultiplier;
+      public float fireDefenseMultiplier;
+      public float earthDefenseMultiplier;
+      public float airDefenseMultiplier;
+      public float waterDefenseMultiplier;
+      public float allDefenseMultiplier;
+
+      public StringTranslation stringTranslation = new StringTranslation();
+
+      public void updateStringValues () {
+         stringTranslation.updateStringValues(physicalDefenseMultiplier, fireDefenseMultiplier,
+            earthDefenseMultiplier, airDefenseMultiplier,
+            waterDefenseMultiplier, allDefenseMultiplier);
+      }
+
+      public void translateStringValues () {
+         physicalDefenseMultiplier = float.Parse(stringTranslation.attributeValue[0]);
+         fireDefenseMultiplier = float.Parse(stringTranslation.attributeValue[1]);
+         earthDefenseMultiplier = float.Parse(stringTranslation.attributeValue[2]);
+         airDefenseMultiplier = float.Parse(stringTranslation.attributeValue[3]);
+         waterDefenseMultiplier = float.Parse(stringTranslation.attributeValue[4]);
+         allDefenseMultiplier = float.Parse(stringTranslation.attributeValue[5]);
+      }
+   }
+
+   [Serializable]
+   public class PerLevelDefenseMultiplierSet {
+      // Element defense multiplier values PerLevel
+      public float physicalDefenseMultiplierPerLevel;
+      public float fireDefenseMultiplierPerLevel;
+      public float earthDefenseMultiplierPerLevel;
+      public float airDefenseMultiplierPerLevel;
+      public float waterDefenseMultiplierPerLevel;
+      public float allDefenseMultiplierPerLevel;
+
+      public StringTranslation stringTranslation = new StringTranslation();
+
+      public void updateStringValues () {
+         stringTranslation.updateStringValues(physicalDefenseMultiplierPerLevel, fireDefenseMultiplierPerLevel,
+            earthDefenseMultiplierPerLevel, airDefenseMultiplierPerLevel,
+            waterDefenseMultiplierPerLevel, allDefenseMultiplierPerLevel);
+      }
+
+      public void translateStringValues () {
+         physicalDefenseMultiplierPerLevel = float.Parse(stringTranslation.attributeValue[0]);
+         fireDefenseMultiplierPerLevel = float.Parse(stringTranslation.attributeValue[1]);
+         earthDefenseMultiplierPerLevel = float.Parse(stringTranslation.attributeValue[2]);
+         airDefenseMultiplierPerLevel = float.Parse(stringTranslation.attributeValue[3]);
+         waterDefenseMultiplierPerLevel = float.Parse(stringTranslation.attributeValue[4]);
+         allDefenseMultiplierPerLevel = float.Parse(stringTranslation.attributeValue[5]);
+      }
+   }
+
+   public class StringTranslation
+   {
+      public string[] attributeValue;
+
+      public void updateStringValues (float physical, float fire, float earth, float air, float water, float all) {
+         List<string> stringList = new List<string>();
+         stringList.Add(physical.ToString("f2"));
+         stringList.Add(fire.ToString("f2"));
+         stringList.Add(earth.ToString("f2"));
+         stringList.Add(air.ToString("f2"));
+         stringList.Add(water.ToString("f2"));
+         stringList.Add(all.ToString("f2"));
+
+         attributeValue = stringList.ToArray();
+      }
+   }
+
+   #endregion
 }

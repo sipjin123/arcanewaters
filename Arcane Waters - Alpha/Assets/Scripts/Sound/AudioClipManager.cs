@@ -30,6 +30,10 @@ public class AudioClipManager : MonoBehaviour {
    // List of the audio data
    public List<AudioClipData> audioDataList;
 
+   // Holds the default values of audio clip paths
+   public string defaultHitAudio;
+   public string defaultCastAudio;
+
    #endregion
 
    private void Awake () {

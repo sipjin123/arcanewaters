@@ -337,6 +337,102 @@ public class DB_Main : DB_MainStub {
 
    #endregion
 
+   #region Monster XML Data
+
+   public static new void updateMonsterXML (BattlerData battleData) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "INSERT INTO land_monster_xml (enemyType, enemyName, damagePerLevel, defensePerLevel, healthPerlevel, preMagicLength, preContactLength," +
+            " baseHealth, baseDefense, baseDamage, baseGoldReward, baseXPReward," +
+            " deathSoundPath, attackJumpSoundPath, imagePath," +
+            " baseDamageMultiplierSet, perLevelDamageMultiplierSet, baseDefenseMultiplierSet, perLevelDefenseMultiplierSet) " +
+
+            // Values setup
+            "VALUES(@enemyType, @enemyName, @damagePerLevel, @defensePerLevel, @healthPerlevel, @preMagicLength, @preContactLength, " +
+            "@baseHealth, @baseDefense, @baseDamage, @baseGoldReward, @baseXPReward, " +
+            "@deathSoundPath, @attackJumpSoundPath, @imagePath, " +
+            "@baseDamageMultiplierSet, @perLevelDamageMultiplierSet, @baseDefenseMultiplierSet, @perLevelDefenseMultiplierSet) " +
+
+            // Values overwritting
+            "ON DUPLICATE KEY UPDATE " +
+            "enemyName = @enemyName, " +
+            "damagePerLevel = @damagePerLevel, defensePerLevel = @defensePerLevel, healthPerlevel = @healthPerlevel, preMagicLength = @preMagicLength, preContactLength = @preContactLength, " +
+            "baseHealth = @baseHealth, baseDefense = @baseDefense, baseDamage = @baseDamage, baseGoldReward = @baseGoldReward, baseXPReward = @baseXPReward, " +
+            "deathSoundPath = @deathSoundPath, attackJumpSoundPath = @attackJumpSoundPath, imagePath = @imagePath, " +
+            "baseDamageMultiplierSet = @baseDamageMultiplierSet, perLevelDamageMultiplierSet = @perLevelDamageMultiplierSet, " +
+            "baseDefenseMultiplierSet = @baseDefenseMultiplierSet, perLevelDefenseMultiplierSet = @perLevelDefenseMultiplierSet"
+            , conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@enemyType", (int) battleData.enemyType);
+            cmd.Parameters.AddWithValue("@enemyName", battleData.enemyName);
+
+            cmd.Parameters.AddWithValue("@baseHealth", battleData.baseHealth);
+            cmd.Parameters.AddWithValue("@baseDefense", battleData.baseDefense);
+            cmd.Parameters.AddWithValue("@baseDamage", battleData.baseDamage);
+            cmd.Parameters.AddWithValue("@baseGoldReward", battleData.baseGoldReward);
+            cmd.Parameters.AddWithValue("@baseXPReward", battleData.baseXPReward);
+
+            cmd.Parameters.AddWithValue("@damagePerLevel", battleData.damagePerLevel);
+            cmd.Parameters.AddWithValue("@defensePerLevel", battleData.defensePerLevel);
+            cmd.Parameters.AddWithValue("@healthPerlevel", battleData.healthPerlevel);
+            cmd.Parameters.AddWithValue("@preContactLength", battleData.preContactLength);
+            cmd.Parameters.AddWithValue("@preMagicLength", battleData.preMagicLength);
+
+            cmd.Parameters.AddWithValue("@deathSoundPath", battleData.deathSoundPath);
+            cmd.Parameters.AddWithValue("@attackJumpSoundPath", battleData.attackJumpSoundPath);
+            cmd.Parameters.AddWithValue("@imagePath", battleData.imagePath);
+
+            battleData.baseDamageMultiplierSet.updateStringValues();
+            battleData.perLevelDamageMultiplierSet.updateStringValues();
+            battleData.baseDefenseMultiplierSet.updateStringValues();
+            battleData.perLevelDefenseMultiplierSet.updateStringValues();
+
+            cmd.Parameters.AddWithValue("@baseDamageMultiplierSet", JsonUtility.ToJson(battleData.baseDamageMultiplierSet.stringTranslation));
+            cmd.Parameters.AddWithValue("@perLevelDamageMultiplierSet", JsonUtility.ToJson(battleData.perLevelDamageMultiplierSet.stringTranslation));
+            cmd.Parameters.AddWithValue("@baseDefenseMultiplierSet", JsonUtility.ToJson(battleData.baseDefenseMultiplierSet.stringTranslation));
+            cmd.Parameters.AddWithValue("@perLevelDefenseMultiplierSet", JsonUtility.ToJson(battleData.perLevelDefenseMultiplierSet.stringTranslation));
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         UnityEngine.Debug.LogError("Error: " + e.ToString());
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<BattlerData> getLandMonsterXML () {
+      List<BattlerData> monsterList = new List<BattlerData>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane.land_monster_xml where enemyType != @enemyType", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@enemyType", 0);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  BattlerData monsterData = new BattlerData(dataReader);
+                  monsterList.Add(monsterData);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return new List<BattlerData>(monsterList);
+   }
+
+   #endregion
+
    public static new List<Item> getRequiredIngredients (int usrId, List<CraftingIngredients.Type> itemList) {
       int itmCategory = (int) Item.Category.CraftingIngredients;
       List<Item> newItemList = new List<Item>();

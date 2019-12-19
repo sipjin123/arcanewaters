@@ -293,7 +293,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       if (!_hasInitializedStats) {
          BattlerData battlerData = MonsterManager.self.requestBattler(enemyType);
          if (battlerType == BattlerType.PlayerControlled) {
-            battlerData = MonsterManager.self.requestBattler(Enemy.Type.Humanoid);
+            battlerData = MonsterManager.self.requestBattler(Enemy.Type.PlayerBattler);
          } else {
             // Sets the default monster if data is not yet created in xml editor
             if (battlerData == null) {
@@ -337,17 +337,17 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
          BattlerData battleData = getBattlerData();
 
-         battleData.physicalAttackMultiplier += (level * battleData.physicalAttackMultiplierPerLevel);
-         battleData.fireAttackMultiplier += (level * battleData.fireAttackMultiplierPerLevel);
-         battleData.waterAttackMultiplier += (level * battleData.waterAttackMultiplierPerLevel);
-         battleData.airAttackMultiplier += (level * battleData.airAttackMultiplierPerLevel);
-         battleData.earthAttackMultiplier += (level * battleData.earthAttackMultiplierPerLevel);
+         battleData.baseDamageMultiplierSet.physicalAttackMultiplier += (level * battleData.perLevelDamageMultiplierSet.physicalAttackMultiplierPerLevel);
+         battleData.baseDamageMultiplierSet.fireAttackMultiplier += (level * battleData.perLevelDamageMultiplierSet.fireAttackMultiplierPerLevel);
+         battleData.baseDamageMultiplierSet.waterAttackMultiplier += (level * battleData.perLevelDamageMultiplierSet.waterAttackMultiplierPerLevel);
+         battleData.baseDamageMultiplierSet.airAttackMultiplier += (level * battleData.perLevelDamageMultiplierSet.airAttackMultiplierPerLevel);
+         battleData.baseDamageMultiplierSet.earthAttackMultiplier += (level * battleData.perLevelDamageMultiplierSet.earthAttackMultiplierPerLevel);
 
-         battleData.physicalDefenseMultiplier = Mathf.Abs(getBattlerData().physicalDefenseMultiplier) + (level * battleData.physicalDefenseMultiplierPerLevel);
-         battleData.fireDefenseMultiplier = Mathf.Abs(getBattlerData().fireDefenseMultiplier) + (level * battleData.fireDefenseMultiplierPerLevel);
-         battleData.waterDefenseMultiplier = Mathf.Abs(getBattlerData().waterDefenseMultiplier) + (level * battleData.waterDefenseMultiplierPerLevel);
-         battleData.airDefenseMultiplier = Mathf.Abs(getBattlerData().airDefenseMultiplier) + (level * battleData.airDefenseMultiplierPerLevel);
-         battleData.earthDefenseMultiplier = Mathf.Abs(getBattlerData().earthDefenseMultiplier) + (level * battleData.earthDefenseMultiplierPerLevel);
+         battleData.baseDefenseMultiplierSet.physicalDefenseMultiplier = Mathf.Abs(getBattlerData().baseDefenseMultiplierSet.physicalDefenseMultiplier) + (level * battleData.perLevelDefenseMultiplierSet.physicalDefenseMultiplierPerLevel);
+         battleData.baseDefenseMultiplierSet.fireDefenseMultiplier = Mathf.Abs(getBattlerData().baseDefenseMultiplierSet.fireDefenseMultiplier) + (level * battleData.perLevelDefenseMultiplierSet.fireDefenseMultiplierPerLevel);
+         battleData.baseDefenseMultiplierSet.waterDefenseMultiplier = Mathf.Abs(getBattlerData().baseDefenseMultiplierSet.waterDefenseMultiplier) + (level * battleData.perLevelDefenseMultiplierSet.waterDefenseMultiplierPerLevel);
+         battleData.baseDefenseMultiplierSet.airDefenseMultiplier = Mathf.Abs(getBattlerData().baseDefenseMultiplierSet.airDefenseMultiplier) + (level * battleData.perLevelDefenseMultiplierSet.airDefenseMultiplierPerLevel);
+         battleData.baseDefenseMultiplierSet.earthDefenseMultiplier = Mathf.Abs(getBattlerData().baseDefenseMultiplierSet.earthDefenseMultiplier) + (level * battleData.perLevelDefenseMultiplierSet.earthDefenseMultiplierPerLevel);
       }
    }
 
@@ -415,33 +415,33 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    private void addCombatStats (UserCombatStats stat) {
       int level = LevelUtil.levelForXp(player.XP);
 
-      _alteredBattlerData.airAttackMultiplier += stat.bonusDamageAir;
-      _alteredBattlerData.fireAttackMultiplier += stat.bonusDamageFire;
-      _alteredBattlerData.earthAttackMultiplier += stat.bonusDamageEarth;
-      _alteredBattlerData.waterAttackMultiplier += stat.bonusDamageWater;
-      _alteredBattlerData.physicalAttackMultiplier += stat.bonusDamagePhys;
-      _alteredBattlerData.allAttackMultiplier += stat.bonusDamageAll;
+      _alteredBattlerData.baseDamageMultiplierSet.airAttackMultiplier += stat.bonusDamageAir;
+      _alteredBattlerData.baseDamageMultiplierSet.fireAttackMultiplier += stat.bonusDamageFire;
+      _alteredBattlerData.baseDamageMultiplierSet.earthAttackMultiplier += stat.bonusDamageEarth;
+      _alteredBattlerData.baseDamageMultiplierSet.waterAttackMultiplier += stat.bonusDamageWater;
+      _alteredBattlerData.baseDamageMultiplierSet.physicalAttackMultiplier += stat.bonusDamagePhys;
+      _alteredBattlerData.baseDamageMultiplierSet.allAttackMultiplier += stat.bonusDamageAll;
 
-      _alteredBattlerData.airAttackMultiplier += stat.bonusDamageAirPerLevel * level;
-      _alteredBattlerData.fireAttackMultiplier += stat.bonusDamageFirePerLevel * level;
-      _alteredBattlerData.earthAttackMultiplier += stat.bonusDamageEarthPerLevel * level;
-      _alteredBattlerData.waterAttackMultiplier += stat.bonusDamageWaterPerLevel * level;
-      _alteredBattlerData.physicalAttackMultiplier += stat.bonusDamagePhysicalPerLevel * level;
-      _alteredBattlerData.allAttackMultiplier += stat.bonusDamageAllPerLevel * level;
+      _alteredBattlerData.baseDamageMultiplierSet.airAttackMultiplier += stat.bonusDamageAirPerLevel * level;
+      _alteredBattlerData.baseDamageMultiplierSet.fireAttackMultiplier += stat.bonusDamageFirePerLevel * level;
+      _alteredBattlerData.baseDamageMultiplierSet.earthAttackMultiplier += stat.bonusDamageEarthPerLevel * level;
+      _alteredBattlerData.baseDamageMultiplierSet.waterAttackMultiplier += stat.bonusDamageWaterPerLevel * level;
+      _alteredBattlerData.baseDamageMultiplierSet.physicalAttackMultiplier += stat.bonusDamagePhysicalPerLevel * level;
+      _alteredBattlerData.baseDamageMultiplierSet.allAttackMultiplier += stat.bonusDamageAllPerLevel * level;
 
-      _alteredBattlerData.airDefenseMultiplier += stat.bonusResistanceAir;
-      _alteredBattlerData.fireDefenseMultiplier += stat.bonusResistanceFire;
-      _alteredBattlerData.earthDefenseMultiplier += stat.bonusResistanceEarth;
-      _alteredBattlerData.waterDefenseMultiplier += stat.bonusResistanceWater;
-      _alteredBattlerData.physicalDefenseMultiplier += stat.bonusResistancePhys;
-      _alteredBattlerData.allDefenseMultiplier += stat.bonusResistanceAll;
+      _alteredBattlerData.baseDefenseMultiplierSet.airDefenseMultiplier += stat.bonusResistanceAir;
+      _alteredBattlerData.baseDefenseMultiplierSet.fireDefenseMultiplier += stat.bonusResistanceFire;
+      _alteredBattlerData.baseDefenseMultiplierSet.earthDefenseMultiplier += stat.bonusResistanceEarth;
+      _alteredBattlerData.baseDefenseMultiplierSet.waterDefenseMultiplier += stat.bonusResistanceWater;
+      _alteredBattlerData.baseDefenseMultiplierSet.physicalDefenseMultiplier += stat.bonusResistancePhys;
+      _alteredBattlerData.baseDefenseMultiplierSet.allDefenseMultiplier += stat.bonusResistanceAll;
 
-      _alteredBattlerData.airDefenseMultiplier += stat.bonusResistanceAirPerLevel * level;
-      _alteredBattlerData.fireDefenseMultiplier += stat.bonusResistanceFirePerLevel * level;
-      _alteredBattlerData.earthDefenseMultiplier += stat.bonusResistanceEarthPerLevel * level;
-      _alteredBattlerData.waterDefenseMultiplier += stat.bonusResistanceWaterPerLevel * level;
-      _alteredBattlerData.physicalDefenseMultiplier += stat.bonusResistancePhysPerLevel * level;
-      _alteredBattlerData.allDefenseMultiplier += stat.bonusResistanceAllPerLevel * level;
+      _alteredBattlerData.baseDefenseMultiplierSet.airDefenseMultiplier += stat.bonusResistanceAirPerLevel * level;
+      _alteredBattlerData.baseDefenseMultiplierSet.fireDefenseMultiplier += stat.bonusResistanceFirePerLevel * level;
+      _alteredBattlerData.baseDefenseMultiplierSet.earthDefenseMultiplier += stat.bonusResistanceEarthPerLevel * level;
+      _alteredBattlerData.baseDefenseMultiplierSet.waterDefenseMultiplier += stat.bonusResistanceWaterPerLevel * level;
+      _alteredBattlerData.baseDefenseMultiplierSet.physicalDefenseMultiplier += stat.bonusResistancePhysPerLevel * level;
+      _alteredBattlerData.baseDefenseMultiplierSet.allDefenseMultiplier += stat.bonusResistanceAllPerLevel * level;
    }
 
    // Basic method that will handle the functionality for whenever we deselect this battler
@@ -698,9 +698,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
                sourceBattler.playAnim(Anim.Type.Attack_East);
             }
 
-            // Play Audio
-            AudioClip clip = AudioClipManager.self.getAudioClipData(abilityDataReference.castAudioClipPath).audioClip;
-            SoundManager.playClipOneShotAtPoint(clip, sourceBattler.transform.position);
+            // Play any sounds that go along with the ability casting
+            abilityDataReference.playCastClipAtTarget(targetBattler.transform.position);
 
             // Play The effect of the buff
             EffectManager.playCastAbilityVFX(sourceBattler, buffAction, targetBattler.getMagicGroundPosition(), BattleActionType.BuffDebuff);
@@ -710,6 +709,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             // Play the magic vfx such as (VFX for Heal, VFX for Attack Boost, etc etc)
             Vector2 effectPosition = targetBattler.mainSpriteRenderer.bounds.center;
             EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, buffAction, effectPosition, BattleActionType.BuffDebuff);
+
+            // Play any sounds that go along with the ability taking effect
+            abilityDataReference.playHitClipAtTarget(targetBattler.transform.position);
 
             // Shows how much health is being restored
             BattleUIManager.self.showHealText(buffAction, targetBattler);
@@ -749,14 +751,16 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
                   sourceBattler.playAnim(Anim.Type.Attack_East);
                }
 
-               // Play Audio
-               clip = AudioClipManager.self.getAudioClipData(abilityDataReference.castAudioClipPath).audioClip;
-               SoundManager.playClipOneShotAtPoint(clip, sourceBattler.transform.position);
+               // Play any sounds that go along with the ability being cast
+               abilityDataReference.playCastClipAtTarget(targetBattler.transform.position);
 
                // Play The effect of the buff
                EffectManager.playCastAbilityVFX(sourceBattler, buffAction, targetBattler.getMagicGroundPosition(), BattleActionType.BuffDebuff);
 
                yield return new WaitForSeconds(sourceBattler.getPreContactLength());
+
+               // Play any sounds that go along with the ability taking effect
+               abilityDataReference.playHitClipAtTarget(targetBattler.transform.position);
 
                // Play the magic vfx such as (VFX for Heal, VFX for Attack Boost, etc etc)
                effectPosition = targetBattler.mainSpriteRenderer.bounds.center;
@@ -884,9 +888,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             sourceBattler.playAnim(attackerAbility.getAnimation());
 
             // Play any sounds that go along with the ability being cast
-
-            // We want to play the cast clip at our battler position
-            attackerAbility.playCastClipAtTarget(transform.position);
+            attackerAbility.playCastClipAtTarget(targetBattler.transform.position);
 
             // Apply the damage at the correct time in the swing animation
             yield return new WaitForSeconds(sourceBattler.getPreContactLength());
@@ -896,7 +898,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             // Note that the contact is happening right now
             BattleUIManager.self.showDamageText(action, targetBattler);
 
-            // Play an impact sound appropriate for the ability
+            // Play the sound associated for hit
             attackerAbility.playHitClipAtTarget(targetBattler.transform.position);
 
             // Move the sprite back and forward to simulate knockback
@@ -989,8 +991,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
                yield return new WaitForSeconds(PRE_AIM_DELAY);
 
-               AudioClip clip = AudioClipManager.self.getAudioClipData(abilityDataReference.castAudioClipPath).audioClip;
-               SoundManager.playClipOneShotAtPoint(clip, sourceBattler.transform.position);
+               // Play the sound associated for casting
+               attackerAbility.playCastClipAtTarget(targetBattler.transform.position);
 
                yield return new WaitForSeconds(AIM_DURATION);
             }
@@ -1015,9 +1017,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             yield return new WaitForSeconds(timeBeforeCollision);
             sourceBattler.modifyAnimSpeed(-1);
 
-            // Play the sound associated
-            AudioClip hitclip = AudioClipManager.self.getAudioClipData(abilityDataReference.hitAudioClipPath).audioClip;
-            SoundManager.playClipOneShotAtPoint(hitclip, targetBattler.transform.position);
+            // Play the sound associated for hit
+            attackerAbility.playHitClipAtTarget(targetBattler.transform.position);
 
             // Play the magic vfx such as (Flame effect on fire element attacks)
             effectPosition = targetBattler.mainSpriteRenderer.bounds.center;
@@ -1097,8 +1098,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
                yield return new WaitForSeconds(sourceBattler.getPreMagicLength());
 
-               AudioClip clip = AudioClipManager.self.getAudioClipData(abilityDataReference.castAudioClipPath).audioClip;
-               SoundManager.playClipOneShotAtPoint(clip, sourceBattler.transform.position);
+               // Play any sounds that go along with the ability being cast
+               attackerAbility.playCastClipAtTarget(targetBattler.transform.position);
+
                EffectManager.playCastAbilityVFX(sourceBattler, action, sourcePos, BattleActionType.Attack);
             }
             yield return new WaitForSeconds(PRE_CAST_DELAY);
@@ -1122,9 +1124,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             yield return new WaitForSeconds(timeBeforeCollision - effectOffset - POST_CAST_DELAY);
             sourceBattler.modifyAnimSpeed(-1);
 
-            // Play the sound associated
-            hitclip = AudioClipManager.self.getAudioClipData(abilityDataReference.hitAudioClipPath).audioClip;
-            SoundManager.playClipOneShotAtPoint(hitclip, targetBattler.transform.position);
+            // Play the sound associated for hit
+            attackerAbility.playHitClipAtTarget(targetBattler.transform.position);
 
             // Play the magic vfx such as (Flame effect on fire element attacks)
             effectPosition = targetBattler.mainSpriteRenderer.bounds.center;
@@ -1456,23 +1457,23 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       switch (element) {
          case Element.Physical:
             defense += bonusPhysicalDefense;
-            elementalMultiplier = getBattlerData().physicalDefenseMultiplier;
+            elementalMultiplier = getBattlerData().baseDefenseMultiplierSet.physicalDefenseMultiplier;
             break;
          case Element.Fire:
             defense += bonusFireDefense;
-            elementalMultiplier = getBattlerData().fireDefenseMultiplier;
+            elementalMultiplier = getBattlerData().baseDefenseMultiplierSet.fireDefenseMultiplier;
             break;
          case Element.Earth:
             defense += bonusEarthDefense;
-            elementalMultiplier = getBattlerData().earthDefenseMultiplier;
+            elementalMultiplier = getBattlerData().baseDefenseMultiplierSet.earthDefenseMultiplier;
             break;
          case Element.Air:
             defense += bonusAirDefense;
-            elementalMultiplier = getBattlerData().airDefenseMultiplier;
+            elementalMultiplier = getBattlerData().baseDefenseMultiplierSet.airDefenseMultiplier;
             break;
          case Element.Water:
             defense += bonusWaterDefense;
-            elementalMultiplier = getBattlerData().waterDefenseMultiplier;
+            elementalMultiplier = getBattlerData().baseDefenseMultiplierSet.waterDefenseMultiplier;
             break;
       }
       defense *= Mathf.Abs(elementalMultiplier);
@@ -1499,23 +1500,23 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       switch (element) {
          case Element.Physical:
             damage += bonusPhysicalAttack;
-            multiplier = getBattlerData().physicalAttackMultiplier;
+            multiplier = getBattlerData().baseDamageMultiplierSet.physicalAttackMultiplier;
             break;
          case Element.Fire:
             damage += bonusFireAttack;
-            multiplier = getBattlerData().fireAttackMultiplier;
+            multiplier = getBattlerData().baseDamageMultiplierSet.fireAttackMultiplier;
             break;
          case Element.Earth:
             damage += bonusEarthAttack;
-            multiplier = getBattlerData().earthAttackMultiplier;
+            multiplier = getBattlerData().baseDamageMultiplierSet.earthAttackMultiplier;
             break;
          case Element.Air:
             damage += bonusAirAttack;
-            multiplier = getBattlerData().airAttackMultiplier;
+            multiplier = getBattlerData().baseDamageMultiplierSet.airAttackMultiplier;
             break;
          case Element.Water:
             damage += bonusWaterAttack;
-            multiplier = getBattlerData().waterAttackMultiplier;
+            multiplier = getBattlerData().baseDamageMultiplierSet.waterAttackMultiplier;
             break;
       }
       damage *= multiplier;
@@ -1567,25 +1568,25 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
       BattlerData battleData = getBattlerData();
 
-      if (battleData.fireDefenseMultiplier < 0) {
+      if (battleData.baseDefenseMultiplierSet.fireDefenseMultiplier < 0) {
          elementalWeakness.Add(Element.Fire);
       } else {
          elementalResistance.Add(Element.Fire);
       }
 
-      if (battleData.waterDefenseMultiplier < 0) {
+      if (battleData.baseDefenseMultiplierSet.waterDefenseMultiplier < 0) {
          elementalWeakness.Add(Element.Water);
       } else {
          elementalResistance.Add(Element.Water);
       }
 
-      if (battleData.airDefenseMultiplier < 0) {
+      if (battleData.baseDefenseMultiplierSet.airDefenseMultiplier < 0) {
          elementalWeakness.Add(Element.Air);
       } else {
          elementalResistance.Add(Element.Air);
       }
 
-      if (battleData.earthDefenseMultiplier < 0) {
+      if (battleData.baseDefenseMultiplierSet.earthDefenseMultiplier < 0) {
          elementalWeakness.Add(Element.Earth);
       } else {
          elementalResistance.Add(Element.Earth);
