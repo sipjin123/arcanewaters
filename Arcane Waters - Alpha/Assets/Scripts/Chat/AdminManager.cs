@@ -39,6 +39,8 @@ public class AdminManager : NetworkBehaviour {
    protected static string ENEMY = "enemy";
    protected static string ABILITY = "all_abilities";
    protected static string NPC = "test_npc";
+   protected static string GET_ITEM = "get_item";
+   protected static string GET_ALL_ITEMS = "get_all_items";
 
    #endregion
 
@@ -116,6 +118,10 @@ public class AdminManager : NetworkBehaviour {
          requestAllAbilities(parameters);
       } else if (NPC.Equals(adminCommand)) {
          Cmd_NpcTest(parameters);
+      } else if (GET_ITEM.Equals(adminCommand)) {
+         requestGetItem(parameters);
+      } else if (GET_ALL_ITEMS.Equals(adminCommand)) {
+         requestGetAllItems(parameters);
       }
    }
 
@@ -204,6 +210,134 @@ public class AdminManager : NetworkBehaviour {
 
       // Send the request to the server
       Cmd_Warp(areaKey, spawnKey);
+   }
+
+   protected void requestGetItem (string parameters) {
+      string[] list = parameters.Split(' ');
+      string categoryStr = "";
+      string itemTypeStr = "";
+      int count = 1;
+
+      // Parse the parameters
+      try {
+         categoryStr = list[0];
+         itemTypeStr = list[1];
+         if (list.Length > 2) {
+            count = int.Parse(list[2]);
+         }
+      } catch (System.Exception e) {
+         D.warning("Unable to parse from: " + parameters + ", exception: " + e);
+         return;
+      }
+
+      // Get the category
+      Item.Category category;
+      switch (categoryStr.Substring(0, 1).ToLower()) {
+         case "w":
+            category = Item.Category.Weapon;
+            break;
+         case "a":
+            category = Item.Category.Armor;
+            break;
+         case "c":
+            category = Item.Category.CraftingIngredients;
+            break;
+         case "u":
+            category = Item.Category.Usable;
+            break;
+         case "b":
+            category = Item.Category.Blueprint;
+            break;
+         default:
+            D.error("Could not parse the item category " + categoryStr);
+            return;
+      }
+
+      // Get the item type
+      int itemTypeId;
+      switch (category) {
+         case Item.Category.Weapon:
+            try {
+               itemTypeId = (int) Enum.Parse(typeof(Weapon.Type), itemTypeStr);
+            } catch (Exception e) {
+               D.error("Could not parse the weapon type " + itemTypeStr + ", exception: " + e);
+               return;
+            }
+            break;
+         case Item.Category.Armor:
+            try {
+               itemTypeId = (int) Enum.Parse(typeof(Armor.Type), itemTypeStr);
+            } catch (Exception e) {
+               D.error("Could not parse the armor type " + itemTypeStr + ", exception: " + e);
+               return;
+            }
+            break;
+         case Item.Category.Usable:
+            try {
+               itemTypeId = (int) Enum.Parse(typeof(UsableItem.Type), itemTypeStr);
+            } catch (Exception e) {
+               D.error("Could not parse the usable item type " + itemTypeStr + ", exception: " + e);
+               return;
+            }
+            break;
+         case Item.Category.CraftingIngredients:
+            try {
+               itemTypeId = (int) Enum.Parse(typeof(CraftingIngredients.Type), itemTypeStr);
+            } catch (Exception e) {
+               D.error("Could not parse the crafting ingredient type " + itemTypeStr + ", exception: " + e);
+               return;
+            }
+            break;
+         case Item.Category.Blueprint:
+            string prefix = "";
+
+            try {
+               // Try to parse a weapon with the given type
+               itemTypeId = (int) Enum.Parse(typeof(Weapon.Type), itemTypeStr);
+               prefix = Blueprint.WEAPON_PREFIX;
+            } catch (Exception e1) {
+               try {
+                  // Try to parse an armor with the given type
+                  itemTypeId = (int) Enum.Parse(typeof(Armor.Type), itemTypeStr);
+                  prefix = Blueprint.ARMOR_PREFIX;
+               } catch (Exception e2) {
+                  D.error("Could not parse the blueprint type " + itemTypeStr + "\n" + e1.ToString() + "\n" + e2.ToString());
+                  return;
+               }
+            }
+
+            // Convert the type id to a string
+            string itemTypeIdStr = itemTypeId.ToString();
+
+            // Add the prefix
+            itemTypeIdStr = prefix + itemTypeIdStr;
+
+            // Convert back to an integer
+            itemTypeId = int.Parse(itemTypeIdStr);
+            break;
+         default:
+            D.error("Could not parse the item type " + itemTypeStr + " of category " + category.ToString());
+            return;
+      }
+
+      // Send the request to the server
+      Cmd_CreateItem(category, itemTypeId, count);
+   }
+
+   protected void requestGetAllItems (string parameters) {
+      string[] list = parameters.Split(' ');
+      int count = 100;
+
+      // Parse the optional item count (for stacks)
+      try {
+         if (list.Length > 0) {
+            count = int.Parse(list[0]);
+         }
+      } catch (System.Exception e) {
+      }
+
+      // Send the request to the server
+      Cmd_CreateAllItems(count);
    }
 
    [Command]
@@ -459,7 +593,7 @@ public class AdminManager : NetworkBehaviour {
                   npcSprite = ImageManager.getSprite(ImageManager.DEFAULT_NPC_PATH);
                }
             } else {
-               D.log("Invalid NPC Path, please complete details in NPC Editor");
+               D.log("Invalid NPC Sprite Path, please complete details in NPC Editor");
                npcSprite = ImageManager.getSprite(ImageManager.DEFAULT_NPC_PATH);
             }
 
@@ -484,6 +618,157 @@ public class AdminManager : NetworkBehaviour {
             indexCounter++;
          }
       }
+   }
+
+   [Command]
+   protected void Cmd_CreateItem (Item.Category category, int itemTypeId, int count) {
+      // Make sure this is an admin
+      if (!_player.isAdmin()) {
+         D.warning("Received admin command from non-admin!");
+         return;
+      }
+
+      // Go to the background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+
+         // Create the item object
+         Item item = new Item(-1, category, itemTypeId, count, Util.randomEnum<ColorType>(), Util.randomEnum<ColorType>(), "");
+
+         // Write the item in the DB
+         Item databaseItem = DB_Main.createItemOrUpdateItemCount(_player.userId, item);
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Send confirmation back to the player who issued the command
+            int createdItemCount = databaseItem.count < count ? databaseItem.count : count;
+            string message = string.Format("Added {0} {1} to the inventory.", createdItemCount, databaseItem.getName());
+            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.ItemsAddedToInventory, _player, message);
+         });
+      });
+   }
+
+   [Command]
+   protected void Cmd_CreateAllItems (int count) {
+      // Make sure this is an admin
+      if (!_player.isAdmin()) {
+         D.warning("Received admin command from non-admin!");
+         return;
+      }
+
+      int weaponsCount = 0;
+      int armorCount = 0;
+      int usableCount = 0;
+      int ingredientsCount = 0;
+      int blueprintCount = 0;
+
+      // Go to the background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+
+         // Create all the usable
+         foreach (UsableItem.Type usableType in Enum.GetValues(typeof(UsableItem.Type))) {
+            if (usableType != UsableItem.Type.None) {
+               if (createItemIfNotExistOrReplenishStack(Item.Category.Usable, (int) usableType, count)) {
+                  usableCount++;
+               }
+            }
+         }
+
+         // Create all the crafting ingredients
+         foreach (CraftingIngredients.Type craftingIngredientsType in Enum.GetValues(typeof(CraftingIngredients.Type))) {
+            if (craftingIngredientsType != CraftingIngredients.Type.None) {
+               if (createItemIfNotExistOrReplenishStack(Item.Category.CraftingIngredients, (int) craftingIngredientsType, count)) {
+                  ingredientsCount++;
+               }
+            }
+         }
+
+         // Create all the weapon blueprints
+         foreach (Weapon.Type weaponType in Enum.GetValues(typeof(Weapon.Type))) {
+            if (weaponType != Weapon.Type.None) {
+               // Get the item type id
+               int itemTypeId = (int) weaponType;
+
+               // Convert the type id into a string and add the weapon prefix
+               string itemTypeIdStr = Blueprint.WEAPON_PREFIX + itemTypeId.ToString();
+
+               // Reconvert the type id into an integer
+               itemTypeId = int.Parse(itemTypeIdStr);
+
+               // Create the item
+               if (createItemIfNotExistOrReplenishStack(Item.Category.Blueprint, (int) itemTypeId, count)) {
+                  blueprintCount++;
+               }
+            }
+         }
+
+         // Create all the armor blueprints
+         foreach (Armor.Type armorType in Enum.GetValues(typeof(Armor.Type))) {
+            if (armorType != Armor.Type.None) {
+               // Get the item type id
+               int itemTypeId = (int) armorType;
+
+               // Convert the type id into a string and add the weapon prefix
+               string itemTypeIdStr = Blueprint.ARMOR_PREFIX + itemTypeId.ToString();
+
+               // Reconvert the type id into an integer
+               itemTypeId = int.Parse(itemTypeIdStr);
+
+               // Create the item
+               if (createItemIfNotExistOrReplenishStack(Item.Category.Blueprint, (int) itemTypeId, count)) {
+                  blueprintCount++;
+               }
+            }
+         }
+
+         // Create all the armors
+         foreach (Armor.Type armorType in Enum.GetValues(typeof(Armor.Type))) {
+            if (armorType != Armor.Type.None) {
+               if (createItemIfNotExistOrReplenishStack(Item.Category.Armor, (int) armorType, 1)) {
+                  armorCount++;
+               }
+            }
+         }
+
+         // Create all the weapons
+         foreach (Weapon.Type weaponType in Enum.GetValues(typeof(Weapon.Type))) {
+            if (weaponType != Weapon.Type.None) {
+               if (createItemIfNotExistOrReplenishStack(Item.Category.Weapon, (int) weaponType, 1)) {
+                  weaponsCount++;
+               }
+            }
+         }
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Send confirmation back to the player who issued the command
+            string message = string.Format("Added {0} weapons, {1} armors, {2} usable items, {3} ingredients and {4} blueprints to the inventory.",
+               weaponsCount, armorCount, usableCount, ingredientsCount, blueprintCount);
+            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.ItemsAddedToInventory, _player, message);
+         });
+      });
+   }
+
+   [Server]
+   private bool createItemIfNotExistOrReplenishStack (Item.Category category, int itemTypeId, int count) {
+      bool wasItemCreated = false;
+
+      // Retrieve the item from the user inventory, if it exists
+      Item existingItem = DB_Main.getFirstItem(_player.userId, category, itemTypeId);
+
+      if (existingItem == null) {
+         // If the item does not exist, create a new one
+         Item baseItem = new Item(-1, category, itemTypeId, count, Util.randomEnum<ColorType>(), Util.randomEnum<ColorType>(), "").getCastItem();
+         DB_Main.createItemOrUpdateItemCount(_player.userId, baseItem);
+         wasItemCreated = true;
+      } else {
+         // If the item can be stacked and there are less items than what is requested, replenish the stack
+         if (existingItem.canBeStacked() && existingItem.count < count) {
+            DB_Main.updateItemQuantity(_player.userId, existingItem.id, count);
+            wasItemCreated = true;
+         }
+      }
+
+      return wasItemCreated;
    }
 
    #region Private Variables

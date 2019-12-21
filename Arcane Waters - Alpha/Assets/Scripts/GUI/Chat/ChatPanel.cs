@@ -99,22 +99,26 @@ public class ChatPanel : MonoBehaviour {
 
    void OnGUI () {
       // Submit the field when enter is pressed and the field is focused
-      if (inputField.isFocused && inputField.text != "" && Input.GetKeyDown(KeyCode.Return)) {
-         // Send the message off to the server for processing
-         ChatManager.self.processChatInput(inputField.text);
+      if (inputField.isFocused && Input.GetKeyDown(KeyCode.Return)) {
 
-         // Clear out the text now that it's been used
-         inputField.text = "";
+         if (inputField.text != "") {
+            // Send the message off to the server for processing
+            ChatManager.self.processChatInput(inputField.text);
+
+            // Clear out the text now that it's been used
+            inputField.text = "";
+         }
+
+         // Unselect the input field
+         EventSystem.current.SetSelectedGameObject(null);
       }
 
       // Activate the input field when enter is pressed and the field is unfocused, except if the
       // player is writing a mail      
-      if (MailPanel.self) {
-         if (Input.GetKeyDown(KeyCode.Return) && !MailPanel.self.isWritingMail()) {
-            if (!wasJustFocused()) {
-               // Activate the input field in the next frame to avoid weird interactions
-               StartCoroutine(activateAfterDelay());
-            }
+      if (Input.GetKeyDown(KeyCode.Return) && !((MailPanel) PanelManager.self.get(Panel.Type.Mail)).isWritingMail()) {
+         if (!wasJustFocused()) {
+            // Activate the input field in the next frame to avoid weird interactions
+            StartCoroutine(activateAfterDelay());
          }
       }
    }

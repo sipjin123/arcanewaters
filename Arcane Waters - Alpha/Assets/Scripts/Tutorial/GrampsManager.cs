@@ -55,7 +55,7 @@ public class GrampsManager : ClientMonoBehaviour {
       }
 
       // Allow pressing certain keys, instead of clicking, to move the text forward
-      if (Input.GetKeyUp(KeyCode.Space) && !ChatPanel.self.inputField.isFocused && !MailPanel.self.isWritingMail()) {
+      if (Input.GetKeyUp(KeyCode.Space) && Util.isGeneralInputAllowed()) {
          wasClicked();
       }
 

@@ -39,10 +39,8 @@ public class QuestRewardItem : QuestReward
    // Must be called from the background thread!
    public override Item giveRewardToUser (int npcId, int userId) {
       // Generate random colors for the item
-      Array values = Enum.GetValues(typeof(ColorType));
-      System.Random random = new System.Random();
-      ColorType c1 = (ColorType) values.GetValue(random.Next(values.Length));
-      ColorType c2 = (ColorType) values.GetValue(random.Next(values.Length));
+      ColorType c1 = Util.randomEnum<ColorType>();
+      ColorType c2 = Util.randomEnum<ColorType>();
 
       // Create the item
       Item item = new Item(-1, category, itemTypeId, count, c1, c2, "");

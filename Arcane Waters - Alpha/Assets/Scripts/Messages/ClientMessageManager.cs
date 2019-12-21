@@ -216,6 +216,19 @@ public class ClientMessageManager : MonoBehaviour {
             mailPanel2.clearSelectedMail();
             return;
 
+         case ConfirmMessage.Type.ItemsAddedToInventory:
+            // Add the confirmation message in the chat panel
+            ChatManager.self.addChat(msg.customMessage, msg.timestamp, ChatInfo.Type.System);
+
+            // Get a reference to the Inventory Panel
+            InventoryPanel inventoryPanel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
+
+            // If the panel is visible, refresh it
+            if (inventoryPanel.isShowing()) {
+               inventoryPanel.refreshPanel();
+            }
+            return;
+
             /*case ConfirmMessage.Type.SeaWarp:
                // Pixelate the screen
                // PixelFadeEffect.self.fadeOut();
