@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System.IO;
+using System.Xml.Serialization;
+using System.Text;
+using System.Xml;
 
 public class EquipmentToolManager : MonoBehaviour {
    #region Public Variables
@@ -33,51 +36,54 @@ public class EquipmentToolManager : MonoBehaviour {
    #region Save 
 
    public void saveWeapon (WeaponStatData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_WEAPON);
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
-      } 
+      XmlSerializer ser = new XmlSerializer(data.GetType());
+      var sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, data);
+      }
 
-      // Build the file name
-      string fileName = data.equipmentName;
+      string longString = sb.ToString();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.updateEquipmentXML(longString, (int)data.weaponType, EquipmentType.Weapon);
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_WEAPON, fileName + ".xml");
-
-      // Save the file
-      ToolsUtil.xmlSave(data, path);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadXMLData();
+         });
+      });
    }
 
    public void saveArmor (ArmorStatData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_ARMOR);
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
+      XmlSerializer ser = new XmlSerializer(data.GetType());
+      var sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, data);
       }
 
-      // Build the file name
-      string fileName = data.equipmentName;
+      string longString = sb.ToString();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.updateEquipmentXML(longString, (int) data.armorType, EquipmentType.Armor);
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_ARMOR, fileName + ".xml");
-
-      // Save the file
-      ToolsUtil.xmlSave(data, path);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadXMLData();
+         });
+      });
    }
 
    public void saveHelm (HelmStatData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_HELM);
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
+      XmlSerializer ser = new XmlSerializer(data.GetType());
+      var sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, data);
       }
 
-      // Build the file name
-      string fileName = data.equipmentName;
+      string longString = sb.ToString();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.updateEquipmentXML(longString, (int) data.helmType, EquipmentType.Helm);
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_HELM, fileName + ".xml");
-
-      // Save the file
-      ToolsUtil.xmlSave(data, path);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadXMLData();
+         });
+      });
    }
 
    #endregion
@@ -85,36 +91,33 @@ public class EquipmentToolManager : MonoBehaviour {
    #region Delete
 
    public void deleteWeapon (WeaponStatData data) {
-      // Build the file name
-      string fileName = data.equipmentName;
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.deleteEquipmentXML((int)data.weaponType, EquipmentType.Weapon);
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_WEAPON, fileName + ".xml");
-
-      // Save the file
-      ToolsUtil.deleteFile(path);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadXMLData();
+         });
+      });
    }
 
    public void deleteArmor (ArmorStatData data) {
-      // Build the file name
-      string fileName = data.equipmentName;
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.deleteEquipmentXML((int) data.armorType, EquipmentType.Armor);
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_ARMOR, fileName + ".xml");
-
-      // Save the file
-      ToolsUtil.deleteFile(path);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadXMLData();
+         });
+      });
    }
 
    public void deleteHelm (HelmStatData data) {
-      // Build the file name
-      string fileName = data.equipmentName;
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.deleteEquipmentXML((int) data.helmType, EquipmentType.Helm);
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_HELM, fileName + ".xml");
-
-      // Save the file
-      ToolsUtil.deleteFile(path);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadXMLData();
+         });
+      });
    }
 
    #endregion
@@ -122,54 +125,60 @@ public class EquipmentToolManager : MonoBehaviour {
    #region Duplicate
 
    public void duplicateWeapon (WeaponStatData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_WEAPON);
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
+      data.weaponType = 0;
+      data.equipmentName = "Undefined Weapon";
+      XmlSerializer ser = new XmlSerializer(data.GetType());
+      var sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, data);
       }
 
-      // Build the file name
-      data.equipmentName += "_copy";
-      string fileName = data.equipmentName;
+      string longString = sb.ToString();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.updateEquipmentXML(longString, (int)data.weaponType, EquipmentType.Weapon);
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_WEAPON, fileName + ".xml");
-
-      // Save the file
-      ToolsUtil.xmlSave(data, path);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadXMLData();
+         });
+      });
    }
 
    public void duplicateArmor (ArmorStatData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_ARMOR);
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
+      data.armorType = 0;
+      data.equipmentName = "Undefined Armor";
+      XmlSerializer ser = new XmlSerializer(data.GetType());
+      var sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, data);
       }
 
-      // Build the file name
-      data.equipmentName += "_copy";
-      string fileName = data.equipmentName;
+      string longString = sb.ToString();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.updateEquipmentXML(longString, (int) data.armorType, EquipmentType.Armor);
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_ARMOR, fileName + ".xml");
-
-      // Save the file
-      ToolsUtil.xmlSave(data, path);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadXMLData();
+         });
+      });
    }
 
    public void duplicateHelm (HelmStatData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_HELM);
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
+      data.helmType = 0;
+      data.equipmentName = "Undefined Helmet";
+      XmlSerializer ser = new XmlSerializer(data.GetType());
+      var sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, data);
       }
 
-      // Build the file name
-      data.equipmentName += "_copy";
-      string fileName = data.equipmentName;
+      string longString = sb.ToString();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.updateEquipmentXML(longString, (int) data.helmType, EquipmentType.Helm);
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_HELM, fileName + ".xml");
-
-      // Save the file
-      ToolsUtil.xmlSave(data, path);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadXMLData();
+         });
+      });
    }
 
    #endregion
@@ -177,92 +186,87 @@ public class EquipmentToolManager : MonoBehaviour {
    #region Loading
 
    public void loadXMLData () {
+      loadCounter = 0;
+      XmlLoadingPanel.self.startLoading();
       loadWeapons();
       loadArmors();
       loadHelms();
    }
 
    private void loadWeapons () {
-      _weaponStatData = new Dictionary<string, WeaponStatData>();
-      // Build the path to the folder containing the data XML files
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_WEAPON);
+      _weaponStatData = new Dictionary<Weapon.Type, WeaponStatData>();
 
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
-      } else {
-         // Get the list of XML files in the folder
-         string[] fileNames = ToolsUtil.getFileNamesInFolder(directoryPath, "*.xml");
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<string> rawXMLData = DB_Main.getEquipmentXML(EquipmentType.Weapon);
 
-         // Iterate over the files
-         foreach (string fileName in fileNames) {
-            // Build the path to a single file
-            string filePath = Path.Combine(directoryPath, fileName);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (string rawText in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(rawText);
+               WeaponStatData rawData = Util.xmlLoad<WeaponStatData>(newTextAsset);
 
-            // Read and deserialize the file
-            WeaponStatData weaponData = ToolsUtil.xmlLoad<WeaponStatData>(filePath);
-
-            // Save the Data in the memory cache
-            _weaponStatData.Add(weaponData.equipmentName, weaponData);
-         }
-         if (fileNames.Length > 0) {
+               // Save the data in the memory cache
+               if (!_weaponStatData.ContainsKey(rawData.weaponType)) {
+                  // Save the Data in the memory cache
+                  _weaponStatData.Add(rawData.weaponType, rawData);
+               }
+            }
             equipmentDataScene.loadWeaponData(_weaponStatData);
-         }
-      }
+            finishLoading();
+         });
+      });
    }
 
    private void loadArmors () {
-      _armorStatData = new Dictionary<string, ArmorStatData>();
-      // Build the path to the folder containing the data XML files
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_ARMOR);
+      _armorStatData = new Dictionary<Armor.Type, ArmorStatData>();
 
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
-      } else {
-         // Get the list of XML files in the folder
-         string[] fileNames = ToolsUtil.getFileNamesInFolder(directoryPath, "*.xml");
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<string> rawXMLData = DB_Main.getEquipmentXML(EquipmentType.Armor);
 
-         // Iterate over the files
-         foreach (string fileName in fileNames) {
-            // Build the path to a single file
-            string filePath = Path.Combine(directoryPath, fileName);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (string rawText in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(rawText);
+               ArmorStatData rawData = Util.xmlLoad<ArmorStatData>(newTextAsset);
+               Armor.Type uniqueID = rawData.armorType;
 
-            // Read and deserialize the file
-            ArmorStatData armorData = ToolsUtil.xmlLoad<ArmorStatData>(filePath);
-
-            // Save the Data in the memory cache
-            _armorStatData.Add(armorData.equipmentName, armorData);
-         }
-         if (fileNames.Length > 0) {
+               // Save the data in the memory cache
+               if (!_armorStatData.ContainsKey(rawData.armorType)) {
+                  _armorStatData.Add(rawData.armorType, rawData);
+               }
+            }
             equipmentDataScene.loadArmorData(_armorStatData);
-         }
-      }
+            finishLoading();
+         });
+      });
    }
 
    private void loadHelms () {
-      _helmStatData = new Dictionary<string, HelmStatData>();
-      // Build the path to the folder containing the data XML files
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH_HELM);
+      _helmStatData = new Dictionary<Helm.Type, HelmStatData>();
 
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
-      } else {
-         // Get the list of XML files in the folder
-         string[] fileNames = ToolsUtil.getFileNamesInFolder(directoryPath, "*.xml");
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<string> rawXMLData = DB_Main.getEquipmentXML(EquipmentType.Helm);
 
-         // Iterate over the files
-         foreach (string fileName in fileNames) {
-            // Build the path to a single file
-            string filePath = Path.Combine(directoryPath, fileName);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (string rawText in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(rawText);
+               HelmStatData rawData = Util.xmlLoad<HelmStatData>(newTextAsset);
+               Helm.Type uniqueID = rawData.helmType;
 
-            // Read and deserialize the file
-            HelmStatData helmData = ToolsUtil.xmlLoad<HelmStatData>(filePath);
-
-            // Save the Data in the memory cache
-            _helmStatData.Add(helmData.equipmentName, helmData);
-         }
-         if (fileNames.Length > 0) {
+               // Save the data in the memory cache
+               if (!_helmStatData.ContainsKey(rawData.helmType)) {
+                  _helmStatData.Add(rawData.helmType, rawData);
+               }
+            }
             equipmentDataScene.loadHelmData(_helmStatData);
-         }
+            finishLoading();
+         });
+      });
+   }
+
+   private void finishLoading () {
+      loadCounter++;
+      if (loadCounter == 3) {
+         XmlLoadingPanel.self.finishLoading();
+         loadCounter = 0;
       }
    }
 
@@ -271,13 +275,16 @@ public class EquipmentToolManager : MonoBehaviour {
    #region Private Variables
 
    // Holds the list of loaded weapon data
-   private Dictionary<string, WeaponStatData> _weaponStatData = new Dictionary<string, WeaponStatData>();
+   private Dictionary<Weapon.Type, WeaponStatData> _weaponStatData = new Dictionary<Weapon.Type, WeaponStatData>();
 
    // Holds the list of loaded armor data
-   private Dictionary<string, ArmorStatData> _armorStatData = new Dictionary<string, ArmorStatData>();
+   private Dictionary<Armor.Type, ArmorStatData> _armorStatData = new Dictionary<Armor.Type, ArmorStatData>();
 
    // Holds the list of loaded helm data
-   private Dictionary<string, HelmStatData> _helmStatData = new Dictionary<string, HelmStatData>();
+   private Dictionary<Helm.Type, HelmStatData> _helmStatData = new Dictionary<Helm.Type, HelmStatData>();
+
+   // Counts how many equipment set has been loaded
+   private float loadCounter = 0;
 
    #endregion
 }

@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System.IO;
+using System.Xml.Serialization;
+using System.Text;
+using System.Xml;
 
 public class CraftingToolManager : MonoBehaviour {
    #region Public Variables
@@ -22,40 +25,41 @@ public class CraftingToolManager : MonoBehaviour {
 
    public void loadAllDataFiles () {
       craftingDataList = new Dictionary<string, CraftableItemRequirements>();
-      // Build the path to the folder containing the Crafting data XML files
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
+      XmlLoadingPanel.self.startLoading();
 
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
-      } else {
-         // Get the list of XML files in the folder
-         string[] fileNames = ToolsUtil.getFileNamesInFolder(directoryPath, "*.xml");
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<string> rawXMLData = DB_Main.getCraftingXML();
 
-         // Iterate over the files
-         for (int i = 0; i < fileNames.Length; i++) {
-            // Build the path to a single file
-            string filePath = Path.Combine(directoryPath, fileNames[i]);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (string rawText in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(rawText);
+               CraftableItemRequirements craftingData = Util.xmlLoad<CraftableItemRequirements>(newTextAsset);
+               string craftingID = craftingData.resultItem.category == Item.Category.None ? "Undefined" : Util.getItemName(craftingData.resultItem.category, craftingData.resultItem.itemTypeId);
 
-            // Read and deserialize the file
-            CraftableItemRequirements craftingData = ToolsUtil.xmlLoad<CraftableItemRequirements>(filePath);
-
-            // Save the Crafting data in the memory cache
-            string craftingID = craftingData.resultItem.category == Item.Category.None ? "Undefined" : Util.getItemName(craftingData.resultItem.category, craftingData.resultItem.itemTypeId);
-            craftingDataList.Add(craftingID, craftingData);
-         }
-         craftingToolScreen.updatePanelWithCraftingIngredients(craftingDataList);
-      }
+               // Save the Crafting data in the memory cache
+               if (!craftingDataList.ContainsKey(craftingID)) {
+                  craftingDataList.Add(craftingID, craftingData);
+               } else {
+                  craftingID += "_copy";
+                  craftingDataList.Add(craftingID, craftingData);
+               }
+            }
+            craftingToolScreen.updatePanelWithCraftingIngredients(craftingDataList);
+            XmlLoadingPanel.self.finishLoading();
+         });
+      });
    }
 
    public void deleteCraftingDataFile (CraftableItemRequirements data) {
-      // Build the file name
-      string fileName = data.resultItem.category == Item.Category.None ? "Undefined" : Util.getItemName(data.resultItem.category, data.resultItem.itemTypeId);
+      string craftingID = data.resultItem.category == Item.Category.None ? "Undefined" : Util.getItemName(data.resultItem.category, data.resultItem.itemTypeId);
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.deleteCraftingXML(craftingID);
 
-      // Save the file
-      ToolsUtil.deleteFile(path);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadAllDataFiles();
+         });
+      });
    }
 
    public bool ifExists (string nameID) {
@@ -63,38 +67,22 @@ public class CraftingToolManager : MonoBehaviour {
    }
 
    public void saveDataToFile (CraftableItemRequirements data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
-      }
-
-      // Build the file name
       string fileName = data.resultItem.category == Item.Category.None ? "Undefined" : Util.getItemName(data.resultItem.category, data.resultItem.itemTypeId);
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
-
-      // Save the file
-      ToolsUtil.xmlSave(data, path);
-   }
-
-   public void duplicateDataFile (CraftableItemRequirements data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
+      XmlSerializer ser = new XmlSerializer(data.GetType());
+      var sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, data);
       }
 
-      data.resultItem.category = Item.Category.None;
-      data.resultItem.itemTypeId = 0;
+      string longString = sb.ToString();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.updateCraftingXML(longString, fileName);
 
-      // Build the file name
-      string fileName = data.resultItem.category == Item.Category.None ? "Undefined" : Util.getItemName(data.resultItem.category, data.resultItem.itemTypeId);
-
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
-
-      // Save the file
-      ToolsUtil.xmlSave(data, path);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadAllDataFiles();
+         });
+      });
    }
 
    #region Private Variables

@@ -55,12 +55,10 @@ public class ShipDataScene : MonoBehaviour {
       template.deleteButton.onClick.AddListener(() => {
          Destroy(template.gameObject, .5f);
          shipToolManager.deleteMonsterDataFile(shipData);
-         shipToolManager.loadXMLData();
       });
 
       template.duplicateButton.onClick.AddListener(() => {
          shipToolManager.duplicateXMLData(shipData);
-         shipToolManager.loadXMLData();
       });
 
       try {
@@ -88,12 +86,10 @@ public class ShipDataScene : MonoBehaviour {
          template.deleteButton.onClick.AddListener(() => {
             Destroy(template.gameObject, .5f);
             shipToolManager.deleteMonsterDataFile(shipData);
-            shipToolManager.loadXMLData();
          });
 
          template.duplicateButton.onClick.AddListener(() => {
             shipToolManager.duplicateXMLData(shipData);
-            shipToolManager.loadXMLData();
          });
 
          try {

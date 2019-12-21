@@ -21,14 +21,14 @@ public class ShipDataManager : XmlManager {
 
    public void Awake () {
       self = this;
-   }
-
-   private void Start () {
       initializeDataCache();
    }
 
    public ShipData getShipData (Ship.Type shipType) {
       ShipData returnData = shipDataList.Find(_ => _.shipType == shipType);
+      if (returnData == null) {
+         return new ShipData();
+      }
       return returnData;
    }
 
@@ -36,18 +36,26 @@ public class ShipDataManager : XmlManager {
       if (!hasInitialized) {
          shipDataList = new List<ShipData>();
          hasInitialized = true;
-         // Iterate over the files
-         foreach (TextAsset textAsset in textAssets) {
-            // Read and deserialize the file
-            ShipData shipData = Util.xmlLoad<ShipData>(textAsset);
-            Ship.Type uniqueID = shipData.shipType;
 
-            // Save the ship data in the memory cache
-            if (!_shipData.ContainsKey(uniqueID)) {
-               _shipData.Add(uniqueID, shipData);
-               shipDataList.Add(shipData);
-            }
-         }
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            List<string> rawXMLData = DB_Main.getShipXML();
+
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               foreach (string rawText in rawXMLData) {
+                  TextAsset newTextAsset = new TextAsset(rawText);
+                  ShipData shipData = Util.xmlLoad<ShipData>(newTextAsset);
+                  Ship.Type uniqueID = shipData.shipType;
+
+                  // Save the ship data in the memory cache
+                  if (!_shipData.ContainsKey(uniqueID)) {
+                     _shipData.Add(uniqueID, shipData);
+                     shipDataList.Add(shipData);
+                  }
+               }
+
+               ShopManager.self.initializeRandomGeneratedShips();
+            });
+         });
       }
    }
 

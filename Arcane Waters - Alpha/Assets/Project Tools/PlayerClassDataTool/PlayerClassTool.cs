@@ -4,6 +4,10 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System.IO;
+using static ClassManager;
+using System.Xml.Serialization;
+using System.Text;
+using System.Xml;
 
 public class PlayerClassTool : MonoBehaviour
 {
@@ -22,75 +26,74 @@ public class PlayerClassTool : MonoBehaviour
    }
 
    public void saveXMLData (PlayerClassData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
+      XmlSerializer ser = new XmlSerializer(data.GetType());
+      var sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, data);
       }
 
-      // Build the file name
-      string fileName = data.className;
+      string longString = sb.ToString();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.updatePlayerClassXML(longString, (int) data.type, PlayerStatType.Class);
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
-
-      // Save the file
-      ToolsUtil.xmlSave(data, path);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadXMLData();
+         });
+      });
    }
 
    public void deleteDataFile (PlayerClassData data) {
-      // Build the file name
-      string fileName = data.className;
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.deletePlayerClassXML(PlayerStatType.Class, (int) data.type);
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
-
-      // Save the file
-      ToolsUtil.deleteFile(path);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadXMLData();
+         });
+      });
    }
 
    public void duplicateXMLData (PlayerClassData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
+      data.type = 0;
+      data.className = "Undefined Class";
+      data.itemIconPath = "";
+      XmlSerializer ser = new XmlSerializer(data.GetType());
+      var sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, data);
       }
 
-      // Build the file name
-      data.className += "_copy";
-      string fileName = data.className;
+      string longString = sb.ToString();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.updatePlayerClassXML(longString, (int)data.type, PlayerStatType.Class);
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
-
-      // Save the file
-      ToolsUtil.xmlSave(data, path);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadXMLData();
+         });
+      });
    }
 
    public void loadXMLData () {
+      XmlLoadingPanel.self.startLoading();
       _playerClassData = new Dictionary<string, PlayerClassData>();
-      // Build the path to the folder containing the data XML files
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
 
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
-      } else {
-         // Get the list of XML files in the folder
-         string[] fileNames = ToolsUtil.getFileNamesInFolder(directoryPath, "*.xml");
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<string> rawXMLData = DB_Main.getPlayerClassXML(PlayerStatType.Class);
 
-         // Iterate over the files
-         foreach (string fileName in fileNames) {
-            // Build the path to a single file
-            string filePath = Path.Combine(directoryPath, fileName);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (string rawText in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(rawText);
+               PlayerClassData classData = Util.xmlLoad<PlayerClassData>(newTextAsset);
 
-            // Read and deserialize the file
-            PlayerClassData playerClassData = ToolsUtil.xmlLoad<PlayerClassData>(filePath);
+               // Save the data in the memory cache
+               if (!_playerClassData.ContainsKey(classData.className)) {
+                  _playerClassData.Add(classData.className, classData);
+               }
+            }
 
-            // Save the data in the memory cache
-            _playerClassData.Add(playerClassData.className, playerClassData);
-         }
-         if (fileNames.Length > 0) {
             classScene.loadPlayerClass(_playerClassData);
-         }
-      }
+            XmlLoadingPanel.self.finishLoading();
+         });
+      });
    }
 
    #region Private Variables

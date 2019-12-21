@@ -94,7 +94,6 @@ public class SeaMonsterDataScene : MonoBehaviour
          });
          template.duplicateButton.onClick.AddListener(() => {
             toolManager.duplicateFile(monsterData);
-            toolManager.loadAllDataFiles();
          });
 
          template.gameObject.SetActive(true);
@@ -119,12 +118,10 @@ public class SeaMonsterDataScene : MonoBehaviour
             Destroy(template.gameObject, .5f);
             
             toolManager.deleteMonsterDataFile(new SeaMonsterEntityData { monsterName = seaMonsterData.monsterName, seaMonsterType = seaMonsterData.seaMonsterType });
-            toolManager.loadAllDataFiles();
          });
 
          template.duplicateButton.onClick.AddListener(() => {
             toolManager.duplicateFile(seaMonsterData);
-            toolManager.loadAllDataFiles();
          });
 
          try {

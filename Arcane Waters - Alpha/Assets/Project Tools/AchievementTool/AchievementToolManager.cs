@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System.IO;
+using System.Xml.Serialization;
+using System.Text;
+using System.Xml;
 
 public class AchievementToolManager : MonoBehaviour {
    #region Public Variables
@@ -21,76 +24,90 @@ public class AchievementToolManager : MonoBehaviour {
    }
 
    public void saveXMLData (AchievementData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
+      XmlSerializer ser = new XmlSerializer(data.GetType());
+      var sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, data);
       }
 
-      // Build the file name
-      string fileName = data.achievementName;
+      string longString = sb.ToString();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.updateAchievementXML(longString, data.achievementName);
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadXMLData();
+         });
+      });
+   }
 
-      // Save the file
-      ToolsUtil.xmlSave(data, path);
+   public void overwriteData (AchievementData data, string nameToDelete) {
+      XmlSerializer ser = new XmlSerializer(data.GetType());
+      var sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, data);
+      }
+
+      string longString = sb.ToString();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.updateAchievementXML(longString, data.achievementName);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            deleteAchievementDataFile(new AchievementData { achievementName = nameToDelete });
+         });
+      });
    }
 
    public void deleteAchievementDataFile (AchievementData data) {
-      // Build the file name
-      string fileName = data.achievementName;
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.deleteAchievementXML(data.achievementName);
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
-
-      // Save the file
-      ToolsUtil.deleteFile(path);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadXMLData();
+         });
+      });
    }
 
    public void duplicateXMLData (AchievementData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
+      data.achievementName += "_copy";
+      XmlSerializer ser = new XmlSerializer(data.GetType());
+      var sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, data);
       }
 
-      // Build the file name
-      data.achievementName += "_copy";
-      string fileName = data.achievementName;
+      string longString = sb.ToString();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.updateAchievementXML(longString, data.achievementName);
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
-
-      // Save the file
-      ToolsUtil.xmlSave(data, path);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadXMLData ();
+         });
+      });
    }
 
    public void loadXMLData () {
       _achievementDataList = new Dictionary<string, AchievementData>();
 
-      // Build the path to the folder containing the achievement data XML files
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
+      XmlLoadingPanel.self.startLoading();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<string> rawXMLData = DB_Main.getAchievementXML();
 
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
-      } else {
-         // Get the list of XML files in the folder
-         string[] fileNames = ToolsUtil.getFileNamesInFolder(directoryPath, "*.xml");
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (string rawText in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(rawText);
+               AchievementData achievementData = Util.xmlLoad<AchievementData>(newTextAsset);
 
-         // Iterate over the files
-         foreach (string fileName in fileNames) {
-            // Build the path to a single file
-            string filePath = Path.Combine(directoryPath, fileName);
-
-            // Read and deserialize the file
-            AchievementData achievementData = ToolsUtil.xmlLoad<AchievementData>(filePath);
-
-            // Save the achievement data in the memory cache
-            _achievementDataList.Add(achievementData.achievementName, achievementData);
-         }
-         if (fileNames.Length > 0) {
+               // Save the achievement data in the memory cache
+               if (_achievementDataList.ContainsKey(achievementData.achievementName)) {
+                  Debug.LogWarning("Duplicated ID: " + achievementData.achievementName + " : " + achievementData.achievementName);
+               } else {
+                  _achievementDataList.Add(achievementData.achievementName, achievementData);
+               }
+            }
             achievementToolScene.loadAchievementData(_achievementDataList);
-         }
-      }
+            XmlLoadingPanel.self.finishLoading();
+         });
+      });
    }
 
    #region Private Variables

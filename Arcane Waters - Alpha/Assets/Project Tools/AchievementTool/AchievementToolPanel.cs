@@ -34,11 +34,12 @@ public class AchievementToolPanel : MonoBehaviour {
          AchievementData itemData = getAchievementData();
          if (itemData != null) {
             if (itemData.achievementName != startingName) {
-               toolManager.deleteAchievementDataFile(new AchievementData { achievementName = startingName });
+               toolManager.overwriteData(itemData, startingName);
+               gameObject.SetActive(false);
+            } else {
+               toolManager.saveXMLData(itemData);
+               gameObject.SetActive(false);
             }
-            toolManager.saveXMLData(itemData);
-            gameObject.SetActive(false);
-            toolManager.loadXMLData();
          }
       });
       cancelButton.onClick.AddListener(() => {

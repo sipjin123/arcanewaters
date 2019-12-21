@@ -31,7 +31,7 @@ public class EquipmentToolPanel : MonoBehaviour {
    public Button saveButton, cancelButton;
 
    // Caches the initial type incase it is changed
-   public string startingName;
+   public int startingType;
 
    // Generic popup selection
    public GenericSelectionPopup genericSelectionPopup;
@@ -54,32 +54,29 @@ public class EquipmentToolPanel : MonoBehaviour {
          if (equipmentType == EquipmentType.Weapon) {
             WeaponStatData newStatData = getWeaponStatData();
             if (newStatData != null) {
-               if (newStatData.equipmentName != startingName) {
-                  equipmentToolManager.deleteWeapon(new WeaponStatData { equipmentName = startingName });
+               if ((int) newStatData.weaponType != startingType) {
+                  equipmentToolManager.deleteWeapon(new WeaponStatData { weaponType = (Weapon.Type) startingType });
                }
                equipmentToolManager.saveWeapon(newStatData);
                gameObject.SetActive(false);
-               equipmentToolManager.loadXMLData();
             }
          } else if (equipmentType == EquipmentType.Armor) {
             ArmorStatData newStatData = getArmorStatData();
             if (newStatData != null) {
-               if (newStatData.equipmentName != startingName) {
-                  equipmentToolManager.deleteArmor(new ArmorStatData { equipmentName = startingName });
+               if ((int) newStatData.armorType != startingType) {
+                  equipmentToolManager.deleteArmor(new ArmorStatData { armorType = (Armor.Type) startingType });
                }
                equipmentToolManager.saveArmor(newStatData);
                gameObject.SetActive(false);
-               equipmentToolManager.loadXMLData();
             }
          } else if (equipmentType == EquipmentType.Helm) {
             HelmStatData newStatData = getHelmStatData();
             if (newStatData != null) {
-               if (newStatData.equipmentName != startingName) {
-                  equipmentToolManager.deleteHelm(new HelmStatData { equipmentName = startingName });
+               if ((int) newStatData.helmType != startingType) {
+                  equipmentToolManager.deleteHelm(new HelmStatData { helmType = (Helm.Type) startingType });
                }
                equipmentToolManager.saveHelm(newStatData);
                gameObject.SetActive(false);
-               equipmentToolManager.loadXMLData();
             }
          }
       });
@@ -191,6 +188,7 @@ public class EquipmentToolPanel : MonoBehaviour {
    }
 
    public void loadArmorData (ArmorStatData statData) {
+      startingType = (int) statData.armorType;
       equipmentType = EquipmentType.Armor;
 
       loadGenericInfo();
@@ -208,6 +206,7 @@ public class EquipmentToolPanel : MonoBehaviour {
    }
 
    public void loadWeaponData (WeaponStatData statData) {
+      startingType = (int)statData.weaponType;
       equipmentType = EquipmentType.Weapon;
 
       loadGenericInfo();
@@ -227,6 +226,7 @@ public class EquipmentToolPanel : MonoBehaviour {
    }
 
    public void loadHelmData (HelmStatData statData) {
+      startingType = (int) statData.helmType;
       equipmentType = EquipmentType.Helm;
 
       loadGenericInfo();
@@ -243,7 +243,6 @@ public class EquipmentToolPanel : MonoBehaviour {
    }
 
    private void loadEquipmentData (EquipmentStatData equipmentData) {
-      startingName = equipmentData.equipmentName;
       elementalModifierList = new List<DamageModifierTemplate>();
       rarityModifierList = new List<DamageModifierTemplate>();
       elementalModifierParent.DestroyChildren();

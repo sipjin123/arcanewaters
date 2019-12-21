@@ -19,7 +19,7 @@ public class PlayerSpecialtyPanel : MonoBehaviour
    public Button saveButton, cancelButton;
 
    // Caches the initial type incase it is changed
-   public string startingName;
+   public int startingType;
 
    // List for toggle able tabs
    public List<TogglerClass> togglerList;
@@ -33,12 +33,11 @@ public class PlayerSpecialtyPanel : MonoBehaviour
       saveButton.onClick.AddListener(() => {
          PlayerSpecialtyData itemData = getSpecialtyData();
          if (itemData != null) {
-            if (itemData.specialtyName != startingName) {
-               toolManager.deleteDataFile(new PlayerSpecialtyData { specialtyName = startingName });
+            if ((int)itemData.type != startingType) {
+               toolManager.deleteDataFile(new PlayerSpecialtyData { type = (Specialty.Type)startingType });
             }
             toolManager.saveXMLData(itemData);
             gameObject.SetActive(false);
-            toolManager.loadXMLData();
          }
       });
       cancelButton.onClick.AddListener(() => {
@@ -71,7 +70,7 @@ public class PlayerSpecialtyPanel : MonoBehaviour
    }
 
    public void loadPlayerSpecialtyData (PlayerSpecialtyData specialtyData) {
-      startingName = specialtyData.specialtyName;
+      startingType = (int)specialtyData.type;
       _specialtyTypeText.text = specialtyData.type.ToString();
       _specialtyName.text = specialtyData.specialtyName;
       _specialtyDescription.text = specialtyData.description;

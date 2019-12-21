@@ -4,6 +4,10 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System.IO;
+using static ClassManager;
+using System.Text;
+using System.Xml.Serialization;
+using System.Xml;
 
 public class PlayerJobToolManager : MonoBehaviour {
    #region Public Variables
@@ -21,81 +25,80 @@ public class PlayerJobToolManager : MonoBehaviour {
    }
 
    public void saveXMLData (PlayerJobData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
+      XmlSerializer ser = new XmlSerializer(data.GetType());
+      var sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, data);
       }
 
-      // Build the file name
-      string fileName = data.jobName;
+      string longString = sb.ToString();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.updatePlayerClassXML(longString, (int) data.type, PlayerStatType.Job);
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
-
-      // Save the file
-      ToolsUtil.xmlSave(data, path);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadXMLData();
+         });
+      });
    }
 
    public void deleteDataFile (PlayerJobData data) {
-      // Build the file name
-      string fileName = data.jobName;
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.deletePlayerClassXML(PlayerStatType.Job, (int) data.type);
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
-
-      // Save the file
-      ToolsUtil.deleteFile(path);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadXMLData();
+         });
+      });
    }
 
    public void duplicateXMLData (PlayerJobData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
+      data.type = 0;
+      data.jobName = "Undefined Job";
+      data.jobIconPath = "";
+      XmlSerializer ser = new XmlSerializer(data.GetType());
+      var sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, data);
       }
 
-      // Build the file name
-      data.jobName += "_copy";
-      string fileName = data.jobName;
+      string longString = sb.ToString();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.updatePlayerClassXML(longString, (int) data.type, PlayerStatType.Job);
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
-
-      // Save the file
-      ToolsUtil.xmlSave(data, path);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadXMLData();
+         });
+      });
    }
 
    public void loadXMLData () {
-      _playerJobData = new Dictionary<string, PlayerJobData>();
-      // Build the path to the folder containing the data XML files
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
+      _playerJobData = new Dictionary<Jobs.Type, PlayerJobData>();
+      XmlLoadingPanel.self.startLoading();
 
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
-      } else {
-         // Get the list of XML files in the folder
-         string[] fileNames = ToolsUtil.getFileNamesInFolder(directoryPath, "*.xml");
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<string> rawXMLData = DB_Main.getPlayerClassXML(PlayerStatType.Job);
 
-         // Iterate over the files
-         foreach (string fileName in fileNames) {
-            // Build the path to a single file
-            string filePath = Path.Combine(directoryPath, fileName);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (string rawText in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(rawText);
+               PlayerJobData jobData = Util.xmlLoad<PlayerJobData>(newTextAsset);
 
-            // Read and deserialize the file
-            PlayerJobData jobData = ToolsUtil.xmlLoad<PlayerJobData>(filePath);
+               // Save the data in the memory cache
+               if (!_playerJobData.ContainsKey(jobData.type)) {
+                  _playerJobData.Add(jobData.type, jobData);
+               }
+            }
 
-            // Save the data in the memory cache
-            _playerJobData.Add(jobData.jobName, jobData);
-         }
-         if (fileNames.Length > 0) {
             jobSceneScene.loadPlayerJobData(_playerJobData);
-         }
-      }
+            XmlLoadingPanel.self.finishLoading();
+         });
+      });
    }
 
    #region Private Variables
 
    // Holds the list of player job data
-   private Dictionary<string, PlayerJobData> _playerJobData = new Dictionary<string, PlayerJobData>();
+   private Dictionary<Jobs.Type, PlayerJobData> _playerJobData = new Dictionary<Jobs.Type, PlayerJobData>();
 
    #endregion
 }

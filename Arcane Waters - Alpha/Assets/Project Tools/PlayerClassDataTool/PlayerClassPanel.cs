@@ -18,7 +18,7 @@ public class PlayerClassPanel : MonoBehaviour {
    public Button saveButton, cancelButton;
 
    // Caches the initial type incase it is changed
-   public string startingName;
+   public int startingType;
 
    // List for toggle able tabs
    public List<TogglerClass> togglerList;
@@ -32,12 +32,11 @@ public class PlayerClassPanel : MonoBehaviour {
       saveButton.onClick.AddListener(() => {
          PlayerClassData itemData = getClassData();
          if (itemData != null) {
-            if (itemData.className != startingName) {
-               toolManager.deleteDataFile(new PlayerClassData { className = startingName });
+            if ((int)itemData.type != startingType) {
+               toolManager.deleteDataFile(new PlayerClassData { type = (Class.Type)startingType });
             }
             toolManager.saveXMLData(itemData);
             gameObject.SetActive(false);
-            toolManager.loadXMLData();
          }
       });
       cancelButton.onClick.AddListener(() => {
@@ -70,7 +69,7 @@ public class PlayerClassPanel : MonoBehaviour {
    }
 
    public void loadPlayerClassData (PlayerClassData classData) {
-      startingName = classData.className;
+      startingType = (int)classData.type;
       _classTypeText.text = classData.type.ToString();
       _className.text = classData.className;
       _classDescription.text = classData.description;

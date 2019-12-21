@@ -6,6 +6,9 @@ using Mirror;
 using System.IO;
 using System.Linq;
 using UnityEngine.SceneManagement;
+using System.Xml.Serialization;
+using System.Text;
+using System.Xml;
 
 public class NPCToolManager : MonoBehaviour {
 
@@ -38,31 +41,27 @@ public class NPCToolManager : MonoBehaviour {
    }
 
    public void loadAllDataFiles () {
-      // Build the path to the folder containing the NPC data XML files
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
-
       _npcData = new Dictionary<int, NPCData>();
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
-      } else {
-         // Get the list of XML files in the folder
-         string[] fileNames = ToolsUtil.getFileNamesInFolder(directoryPath, "*.xml");
+      XmlLoadingPanel.self.startLoading();
 
-         // Iterate over the files
-         for (int i = 0; i < fileNames.Length; i++) {
-            // Build the path to a single file
-            string filePath = Path.Combine(directoryPath, fileNames[i]);
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<string> rawXMLData = DB_Main.getNPCXML();
 
-            // Read and deserialize the file
-            NPCData npcData = ToolsUtil.xmlLoad<NPCData>(filePath);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (string rawText in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(rawText);
+               NPCData npcData = Util.xmlLoad<NPCData>(newTextAsset);
 
-            // Save the NPC data in the memory cache
-            if (!_npcData.ContainsKey(npcData.npcId)) {
-               _npcData.Add(npcData.npcId, npcData);
+               // Save the NPC data in the memory cache
+               if (!_npcData.ContainsKey(npcData.npcId)) {
+                  _npcData.Add(npcData.npcId, npcData);
+               }
             }
-         }
-         npcSelectionScreen.updatePanelWithNPCs(_npcData);
-      }
+
+            npcSelectionScreen.updatePanelWithNPCs(_npcData);
+            XmlLoadingPanel.self.finishLoading();
+         });
+      });
    }
 
    public void createNewNPC(int npcId) {
@@ -87,26 +86,6 @@ public class NPCToolManager : MonoBehaviour {
       npcSelectionScreen.updatePanelWithNPCs(_npcData);
    }
 
-   public void updateNPCData (NPCData data) {
-      // Verify that the npc exist
-      if (!_npcData.ContainsKey(data.npcId)) {
-         Debug.LogError(string.Format("The NPC {0} does not exist.", data.npcId));
-         return;
-      }
-
-      // Delete the old file
-      deleteNPCDataFile(_npcData[data.npcId]);
-
-      // Update the data in the dictionary
-      _npcData[data.npcId] = data;
-
-      // Create a new file with the data
-      saveNPCDataToFile(data);
-
-      // Refresh the list of npcs
-      npcSelectionScreen.updatePanelWithNPCs(_npcData);
-   }
-
    public bool isNPCIdFree (int npcId) {
       bool free = true;
       foreach (NPCData npcData in _npcData.Values) {
@@ -127,67 +106,68 @@ public class NPCToolManager : MonoBehaviour {
       }
    }
 
-   private void deleteNPCDataFile (NPCData data) {
-      // Build the file name
-      string fileName = data.npcId.ToString() + "_" + data.name;
-
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
-
-      // Save the file
-      ToolsUtil.deleteFile(path);
-   }
-
-   public void deleteEntireNPCData (NPCData data) {
-      deleteNPCDataFile(data);
-      var myKey = _npcData.FirstOrDefault(x => x.Value == data).Key;
-      _npcData.Remove(myKey);
-   }
-
-   private void saveNPCDataToFile (NPCData data) {
-      // Build the path to the folder containing the NPC data XML files
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
-
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
+   public void overWriteNPC (NPCData data, int toDeleteID) {
+      XmlSerializer ser = new XmlSerializer(data.GetType());
+      var sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, data);
       }
 
-      // Build the file name
-      string fileName = data.npcId.ToString() + "_" + data.name;
+      string longString = sb.ToString();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.updateNPCXML(longString, data.npcId);
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            deleteNPCDataFile(new NPCData { npcId = toDeleteID });
+         });
+      });
+   }
 
-      // Save the file
-      ToolsUtil.xmlSave(data, path);
+   public void deleteNPCDataFile (NPCData data) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.deleteNPCXML(data.npcId);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadAllDataFiles();
+         });
+      });
+   }
+
+   public void saveNPCDataToFile (NPCData data) {
+      XmlSerializer ser = new XmlSerializer(data.GetType());
+      var sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, data);
+      }
+
+      string longString = sb.ToString();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.updateNPCXML(longString, data.npcId);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadAllDataFiles();
+         });
+      });
    }
 
    public void duplicateFile (NPCData data) {
-      // Build the path to the folder containing the NPC data XML files
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
-
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
-      }
-
-      // Build the file name
-      data.name = "Duplicated File";
       data.npcId = 0;
-      data.iconPath = null;
-      data.spritePath = null;
-
-      if (_npcData.ContainsKey(data.npcId)) {
-         return;
+      data.name = "Undefined NPC";
+      data.iconPath = "";
+      XmlSerializer ser = new XmlSerializer(data.GetType());
+      var sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, data);
       }
 
-      string fileName = data.npcId.ToString() + "_" + data.name;
+      string longString = sb.ToString();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.updateNPCXML(longString, data.npcId);
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
-
-      // Save the file
-      ToolsUtil.xmlSave(data, path);
-      loadAllDataFiles();
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadAllDataFiles();
+         });
+      });
    }
 
    #region Private Variables

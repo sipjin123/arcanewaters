@@ -18,7 +18,7 @@ public class PlayerFactionPanel : MonoBehaviour {
    public Button saveButton, cancelButton;
 
    // Caches the initial type incase it is changed
-   public string startingName;
+   public int startingType;
 
    // List for toggle able tabs
    public List<TogglerClass> togglerList;
@@ -32,12 +32,11 @@ public class PlayerFactionPanel : MonoBehaviour {
       saveButton.onClick.AddListener(() => {
          PlayerFactionData itemData = getFactionData();
          if (itemData != null) {
-            if (itemData.factionName != startingName) {
-               toolManager.deleteDataFile(new PlayerFactionData { factionName = startingName });
+            if ((int)itemData.type != startingType) {
+               toolManager.deleteDataFile(new PlayerFactionData { type = (Faction.Type)startingType });
             }
             toolManager.saveXMLData(itemData);
             gameObject.SetActive(false);
-            toolManager.loadXMLData();
          }
       });
       cancelButton.onClick.AddListener(() => {
@@ -70,7 +69,7 @@ public class PlayerFactionPanel : MonoBehaviour {
    }
 
    public void loadPlayerFactionData (PlayerFactionData factionData) {
-      startingName = factionData.factionName;
+      startingType = (int)factionData.type;
       _factionTypeText.text = factionData.type.ToString();
       _factionName.text = factionData.factionName;
       _factionDescription.text = factionData.description;

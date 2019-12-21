@@ -102,7 +102,7 @@ public class NPCSelectionScreen : MonoBehaviour
       NPCData data = NPCToolManager.self.getNPCData(npcId);
 
       // Initialize the NPC edition screen with the data
-      NPCToolManager.self.deleteEntireNPCData(data);
+      NPCToolManager.self.deleteNPCDataFile(data);
    }
 
    public void createNewNPCButtonClickedOn () {

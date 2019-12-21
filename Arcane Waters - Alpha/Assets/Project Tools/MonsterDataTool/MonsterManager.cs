@@ -112,31 +112,35 @@ public class MonsterManager : XmlManager {
 
       if (!hasInitialized) {
          hasInitialized = true;
-         // Iterate over the files
-         foreach (TextAsset textAsset in textAssets) {
-            // Read and deserialize the file
-            BattlerData monsterData = Util.xmlLoad<BattlerData>(textAsset);
-            Enemy.Type typeID = (Enemy.Type) monsterData.enemyType;
 
-            if (monsterData.battlerAbilities.basicAbilityDataList != null) {
-               foreach (BasicAbilityData basicAbility in monsterData.battlerAbilities.basicAbilityDataList) {
-                  abilityManager.addNewAbility(basicAbility);
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            List<string> rawXMLData = DB_Main.getLandMonsterXML();
+
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               foreach (string rawText in rawXMLData) {
+                  TextAsset newTextAsset = new TextAsset(rawText);
+                  BattlerData monsterData = Util.xmlLoad<BattlerData>(newTextAsset);
+                  Enemy.Type typeID = (Enemy.Type) monsterData.enemyType;
+
+                  if (monsterData.battlerAbilities.basicAbilityDataList != null) {
+                     foreach (BasicAbilityData basicAbility in monsterData.battlerAbilities.basicAbilityDataList) {
+                        abilityManager.addNewAbility(basicAbility);
+                     }
+                  }
+
+                  // Save the monster data in the memory cache
+                  if (!_monsterDataDict.ContainsKey(typeID)) {
+                     _monsterDataDict.Add(typeID, monsterData);
+                  }
+
+                  if (battleManager != null) {
+                     battleManager.registerBattler(monsterData);
+                  }
                }
-            } else {
-               Debug.LogError("There is no Basic List for: " + typeID);
-            }
 
-            // Save the monster data in the memory cache
-            if (!_monsterDataDict.ContainsKey(typeID)) {
-               _monsterDataDict.Add(typeID, monsterData);
-            }
-
-            if (battleManager != null) {
-               battleManager.registerBattler(monsterData);
-            }
-         }
-
-         _monsterDataList = getAllMonsterData();
+               _monsterDataList = getAllMonsterData();
+            });
+         });
       }
    }
 

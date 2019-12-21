@@ -4,6 +4,11 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System.IO;
+using System.Xml.Serialization;
+using System.Text;
+using System.Xml;
+using System;
+using System.Linq;
 
 public class ShipDataToolManager : MonoBehaviour {
    #region Public Variables
@@ -21,75 +26,85 @@ public class ShipDataToolManager : MonoBehaviour {
    }
 
    public void saveXMLData (ShipData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
+      XmlSerializer ser = new XmlSerializer(data.GetType());
+      var sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, data);
       }
 
-      // Build the file name
-      string fileName = data.shipName;
+      string longString = sb.ToString();
+      Ship.Type uniqueID = data.shipType;
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.updateShipXML(longString, (int) uniqueID);
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
-
-      // Save the file
-      ToolsUtil.xmlSave(data, path);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadXMLData();
+         });
+      });
    }
 
    public void deleteMonsterDataFile (ShipData data) {
-      // Build the file name
-      string fileName = data.shipName;
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.deleteShipXML((int) data.shipType);
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
-
-      // Save the file
-      ToolsUtil.deleteFile(path);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadXMLData();
+         });
+      });
    }
 
    public void duplicateXMLData (ShipData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
+      int uniqueID = 0;
+      foreach (Ship.Type shipType in Enum.GetValues(typeof(Ship.Type))) {
+         if (!_shipDataList.Values.ToList().Exists(_ => _.shipType == shipType)) {
+            uniqueID = (int)shipType;
+            break;
+         }
+      }
+      if (uniqueID == 0) {
+         Debug.LogWarning("All ID is accounted for, please edit data instead");
+         return;
       }
 
-      // Build the file name
       data.shipName += "_copy";
-      string fileName = data.shipName;
+      XmlSerializer ser = new XmlSerializer(data.GetType());
+      var sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, data);
+      }
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
+      string longString = sb.ToString();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.updateShipXML(longString, uniqueID);
 
-      // Save the file
-      ToolsUtil.xmlSave(data, path);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadXMLData();
+         });
+      });
    }
 
    public void loadXMLData () {
+      XmlLoadingPanel.self.startLoading();
       _shipDataList = new Dictionary<string, ShipData>();
-      // Build the path to the folder containing the Ship data XML files
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
 
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
-      } else {
-         // Get the list of XML files in the folder
-         string[] fileNames = ToolsUtil.getFileNamesInFolder(directoryPath, "*.xml");
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<string> rawXMLData = DB_Main.getShipXML();
 
-         // Iterate over the files
-         foreach (string fileName in fileNames) {
-            // Build the path to a single file
-            string filePath = Path.Combine(directoryPath, fileName);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (string rawText in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(rawText);
+               ShipData shipData = Util.xmlLoad<ShipData>(newTextAsset);
 
-            // Read and deserialize the file
-            ShipData shipData = ToolsUtil.xmlLoad<ShipData>(filePath);
+               // Save the Ship data in the memory cache
+               if (!_shipDataList.ContainsKey(shipData.shipName)) {
+                  _shipDataList.Add(shipData.shipName, shipData);
+               }
+            }
 
-            // Save the Ship data in the memory cache
-            _shipDataList.Add(shipData.shipName, shipData);
-         }
-         if (fileNames.Length > 0) {
             shipDataScene.loadShipData(_shipDataList);
-         }
-      }
+            XmlLoadingPanel.self.finishLoading();
+         });
+      });
    }
 
    #region Private Variables

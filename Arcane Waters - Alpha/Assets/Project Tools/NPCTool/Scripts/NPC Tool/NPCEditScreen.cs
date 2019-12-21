@@ -32,6 +32,7 @@ public class NPCEditScreen : MonoBehaviour
    public InputField giftOfferText;
    public InputField giftLiked;
    public InputField giftNotLiked;
+   public InputField npcID;
 
    // Holds reference to the inputfields for character limit alterations
    public List<InputField> longTextInputfields;
@@ -137,6 +138,9 @@ public class NPCEditScreen : MonoBehaviour
    // An image indicator for dropdown capabilities of gifts
    public GameObject dropDownIndicatorGifts;
 
+   // The starting id of the npc
+   public int startingID;
+
    // Enum to determine the current item category
    public enum ItemSelectionType
    {
@@ -211,6 +215,7 @@ public class NPCEditScreen : MonoBehaviour
       npcSpritePath = npcData.spritePath;
       _npcId = npcData.npcId;
       _lastUsedQuestId = npcData.lastUsedQuestId;
+      startingID = npcData.npcId;
 
       // Fill all the fields with the values from the data file
       npcIdText.text = npcData.npcId.ToString();
@@ -227,6 +232,7 @@ public class NPCEditScreen : MonoBehaviour
       giftOfferText.text = npcData.giftOfferNPCText;
       giftLiked.text = npcData.giftLikedText;
       giftNotLiked.text = npcData.giftNotLikedText;
+      npcID.text = npcData.npcId.ToString();
 
       // Clear all the rows
       questRowsContainer.DestroyChildren();
@@ -301,14 +307,19 @@ public class NPCEditScreen : MonoBehaviour
       }
 
       // Create a new npcData object and initialize it with the values from the UI
-      NPCData npcData = new NPCData(_npcId, greetingStranger.text, greetingAcquaintance.text,
+      NPCData npcData = new NPCData(int.Parse(npcID.text), greetingStranger.text, greetingAcquaintance.text,
          greetingCasualFriend.text, greetingCloseFriend.text, greetingBestFriend.text, giftOfferText.text,
          giftLiked.text, giftNotLiked.text, npcName.text, (Faction.Type) faction.value,
          (Specialty.Type) specialty.value, hasTradeGossip.isOn, hasGoodbye.isOn, _lastUsedQuestId,
          questList, newGiftDataList, npcIconPath, npcSpritePath);
 
-      // Save the data
-      NPCToolManager.self.updateNPCData(npcData);
+      if (startingID != int.Parse(npcID.text)) {
+         // Delete overwritten npc
+         NPCToolManager.self.overWriteNPC(npcData, startingID);
+      } else {
+         // Save the new data
+         NPCToolManager.self.saveNPCDataToFile(npcData);
+      }
 
       // Hide the screen
       hide();

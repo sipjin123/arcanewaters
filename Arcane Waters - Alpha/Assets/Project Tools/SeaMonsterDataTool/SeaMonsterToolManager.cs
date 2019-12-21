@@ -4,6 +4,11 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System.IO;
+using System.Xml.Serialization;
+using System.Text;
+using System.Xml;
+using System.Linq;
+using System;
 
 public class SeaMonsterToolManager : MonoBehaviour
 {
@@ -22,40 +27,37 @@ public class SeaMonsterToolManager : MonoBehaviour
    }
 
    public void loadAllDataFiles () {
+      XmlLoadingPanel.self.startLoading();
       monsterDataList = new Dictionary<string, SeaMonsterEntityData>();
-      // Build the path to the folder containing the Monster data XML files
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
 
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
-      } else {
-         // Get the list of XML files in the folder
-         string[] fileNames = ToolsUtil.getFileNamesInFolder(directoryPath, "*.xml");
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<string> rawXMLData = DB_Main.getSeaMonsterXML();
 
-         // Iterate over the files
-         foreach (string fileName in fileNames) { 
-            // Build the path to a single file
-            string filePath = Path.Combine(directoryPath, fileName);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (string rawText in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(rawText);
+               SeaMonsterEntityData newSeaData = Util.xmlLoad<SeaMonsterEntityData>(newTextAsset);
+               SeaMonsterEntity.Type typeID = (SeaMonsterEntity.Type) newSeaData.seaMonsterType;
 
-            // Read and deserialize the file
-            SeaMonsterEntityData monsterData = ToolsUtil.xmlLoad<SeaMonsterEntityData>(filePath);
-
-            // Save the Monster data in the memory cache
-            monsterDataList.Add(monsterData.monsterName, monsterData);
-         }
-         monsterToolScreen.updatePanelWithData(monsterDataList);
-      }
+               // Save the Monster data in the memory cache
+               if (!monsterDataList.ContainsKey(newSeaData.monsterName)) {
+                  monsterDataList.Add(newSeaData.monsterName, newSeaData);
+               }
+            }
+            monsterToolScreen.updatePanelWithData(monsterDataList);
+            XmlLoadingPanel.self.finishLoading();
+         });
+      });
    }
 
    public void deleteMonsterDataFile (SeaMonsterEntityData data) {
-      // Build the file name
-      string fileName = data.monsterName;
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.deleteSeamonsterXML((int) data.seaMonsterType);
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
-
-      // Save the file
-      ToolsUtil.deleteFile(path);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadAllDataFiles();
+         });
+      });
    }
 
    public bool ifExists (string nameID) {
@@ -63,36 +65,51 @@ public class SeaMonsterToolManager : MonoBehaviour
    }
 
    public void saveDataToFile (SeaMonsterEntityData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
+      XmlSerializer ser = new XmlSerializer(data.GetType());
+      var sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, data);
       }
 
-      // Build the file name
-      string fileName = data.monsterName;
+      string longString = sb.ToString();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.updateSeaMonsterXML(longString, (int) data.seaMonsterType);
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
-
-      // Save the file
-      ToolsUtil.xmlSave(data, path);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadAllDataFiles();
+         });
+      });
    }
 
    public void duplicateFile (SeaMonsterEntityData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
+      int uniqueID = 0;
+      foreach (SeaMonsterEntity.Type seaMonsterType in Enum.GetValues(typeof(SeaMonsterEntity.Type))) {
+         if (!monsterDataList.Values.ToList().Exists(_ => _.seaMonsterType == seaMonsterType) && seaMonsterType != SeaMonsterEntity.Type.None) {
+            uniqueID = (int) seaMonsterType;
+            break;
+         } 
+      }
+      if (uniqueID == 0) {
+         Debug.LogWarning("All ID is accounted for, please edit data instead");
+         return;
       }
 
-      // Build the file name
+      data.seaMonsterType = (SeaMonsterEntity.Type) uniqueID;
       data.monsterName += "_copy";
-      string fileName = data.monsterName;
+      XmlSerializer ser = new XmlSerializer(data.GetType());
+      var sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, data);
+      }
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
+      string longString = sb.ToString();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.updateSeaMonsterXML(longString, uniqueID);
 
-      // Save the file
-      ToolsUtil.xmlSave(data, path);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadAllDataFiles();
+         });
+      });
    }
 
    #region Private Variables

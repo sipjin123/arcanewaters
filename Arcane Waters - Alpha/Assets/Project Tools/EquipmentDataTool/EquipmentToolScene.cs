@@ -78,12 +78,10 @@ public class EquipmentToolScene : MonoBehaviour {
       template.deleteButton.onClick.AddListener(() => {
          Destroy(template.gameObject, .5f);
          equipmentToolManager.deleteWeapon(weaponData);
-         equipmentToolManager.loadXMLData();
       });
 
       template.duplicateButton.onClick.AddListener(() => {
          equipmentToolManager.duplicateWeapon(weaponData);
-         equipmentToolManager.loadXMLData();
       });
 
       try {
@@ -113,12 +111,10 @@ public class EquipmentToolScene : MonoBehaviour {
       template.deleteButton.onClick.AddListener(() => {
          Destroy(template.gameObject, .5f);
          equipmentToolManager.deleteArmor(armorData);
-         equipmentToolManager.loadXMLData();
       });
 
       template.duplicateButton.onClick.AddListener(() => {
          equipmentToolManager.duplicateArmor(armorData);
-         equipmentToolManager.loadXMLData();
       });
 
       try {
@@ -148,12 +144,10 @@ public class EquipmentToolScene : MonoBehaviour {
       template.deleteButton.onClick.AddListener(() => {
          Destroy(template.gameObject, .5f);
          equipmentToolManager.deleteHelm(helmData);
-         equipmentToolManager.loadXMLData();
       });
 
       template.duplicateButton.onClick.AddListener(() => {
          equipmentToolManager.duplicateHelm(helmData);
-         equipmentToolManager.loadXMLData();
       });
 
       try {
@@ -166,7 +160,7 @@ public class EquipmentToolScene : MonoBehaviour {
       template.gameObject.SetActive(true);
    }
 
-   public void loadHelmData (Dictionary<string, HelmStatData> helmStats) {
+   public void loadHelmData (Dictionary<Helm.Type, HelmStatData> helmStats) {
       helmTemplateParent.gameObject.DestroyChildren();
 
       // Create a row for each weapon data element
@@ -183,12 +177,10 @@ public class EquipmentToolScene : MonoBehaviour {
          template.deleteButton.onClick.AddListener(() => {
             Destroy(template.gameObject, .5f);
             equipmentToolManager.deleteHelm(helmData);
-            equipmentToolManager.loadXMLData();
          });
 
          template.duplicateButton.onClick.AddListener(() => {
             equipmentToolManager.duplicateHelm(helmData);
-            equipmentToolManager.loadXMLData();
          });
 
          try {
@@ -203,7 +195,7 @@ public class EquipmentToolScene : MonoBehaviour {
    }
 
 
-   public void loadArmorData (Dictionary<string, ArmorStatData> armorStats) {
+   public void loadArmorData (Dictionary<Armor.Type, ArmorStatData> armorStats) {
       armorTemplateParent.gameObject.DestroyChildren();
 
       // Create a row for each weapon data element
@@ -220,12 +212,10 @@ public class EquipmentToolScene : MonoBehaviour {
          template.deleteButton.onClick.AddListener(() => {
             Destroy(template.gameObject, .5f);
             equipmentToolManager.deleteArmor(armorData);
-            equipmentToolManager.loadXMLData();
          });
 
          template.duplicateButton.onClick.AddListener(() => {
             equipmentToolManager.duplicateArmor(armorData);
-            equipmentToolManager.loadXMLData();
          });
 
          try {
@@ -239,7 +229,7 @@ public class EquipmentToolScene : MonoBehaviour {
       }
    }
 
-   public void loadWeaponData (Dictionary<string, WeaponStatData> weaponStats) {
+   public void loadWeaponData (Dictionary<Weapon.Type, WeaponStatData> weaponStats) {
       weaponTemplateParent.gameObject.DestroyChildren();
 
       // Create a row for each weapon data element
@@ -256,12 +246,10 @@ public class EquipmentToolScene : MonoBehaviour {
          template.deleteButton.onClick.AddListener(() => {
             Destroy(template.gameObject, .5f);
             equipmentToolManager.deleteWeapon(weaponData);
-            equipmentToolManager.loadXMLData();
          });
 
          template.duplicateButton.onClick.AddListener(() => {
             equipmentToolManager.duplicateWeapon(weaponData);
-            equipmentToolManager.loadXMLData();
          });
 
          try {

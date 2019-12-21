@@ -55,12 +55,10 @@ public class PlayerJobScene : MonoBehaviour
       template.deleteButton.onClick.AddListener(() => {
          Destroy(template.gameObject, .5f);
          toolManager.deleteDataFile(jobData);
-         toolManager.loadXMLData();
       });
 
       template.duplicateButton.onClick.AddListener(() => {
          toolManager.duplicateXMLData(jobData);
-         toolManager.loadXMLData();
       });
 
       try {
@@ -73,7 +71,7 @@ public class PlayerJobScene : MonoBehaviour
       template.gameObject.SetActive(true);
    }
 
-   public void loadPlayerJobData (Dictionary<string, PlayerJobData> data) {
+   public void loadPlayerJobData (Dictionary<Jobs.Type, PlayerJobData> data) {
       itemTemplateParent.gameObject.DestroyChildren();
 
       // Create a row for each player job
@@ -88,12 +86,10 @@ public class PlayerJobScene : MonoBehaviour
          template.deleteButton.onClick.AddListener(() => {
             Destroy(template.gameObject, .5f);
             toolManager.deleteDataFile(job);
-            toolManager.loadXMLData();
          });
 
          template.duplicateButton.onClick.AddListener(() => {
             toolManager.duplicateXMLData(job);
-            toolManager.loadXMLData();
          });
 
          try {

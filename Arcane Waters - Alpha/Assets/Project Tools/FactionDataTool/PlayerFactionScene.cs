@@ -54,12 +54,10 @@ public class PlayerFactionScene : MonoBehaviour {
       template.deleteButton.onClick.AddListener(() => {
          Destroy(template.gameObject, .5f);
          toolManager.deleteDataFile(factionData);
-         toolManager.loadXMLData();
       });
 
       template.duplicateButton.onClick.AddListener(() => {
          toolManager.duplicateXMLData(factionData);
-         toolManager.loadXMLData();
       });
 
       try {
@@ -72,7 +70,7 @@ public class PlayerFactionScene : MonoBehaviour {
       template.gameObject.SetActive(true);
    }
 
-   public void loadPlayerFaction (Dictionary<string, PlayerFactionData> data) {
+   public void loadPlayerFaction (Dictionary<Faction.Type, PlayerFactionData> data) {
       itemTemplateParent.gameObject.DestroyChildren();
 
       // Create a row for each player faction
@@ -87,12 +85,10 @@ public class PlayerFactionScene : MonoBehaviour {
          template.deleteButton.onClick.AddListener(() => {
             Destroy(template.gameObject, .5f);
             toolManager.deleteDataFile(faction);
-            toolManager.loadXMLData();
          });
 
          template.duplicateButton.onClick.AddListener(() => {
             toolManager.duplicateXMLData(faction);
-            toolManager.loadXMLData();
          });
 
          try {

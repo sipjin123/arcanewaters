@@ -54,12 +54,10 @@ public class PlayerClassScene : MonoBehaviour {
       template.deleteButton.onClick.AddListener(() => {
          Destroy(template.gameObject, .5f);
          toolManager.deleteDataFile(classData);
-         toolManager.loadXMLData();
       });
 
       template.duplicateButton.onClick.AddListener(() => {
          toolManager.duplicateXMLData(classData);
-         toolManager.loadXMLData();
       });
 
       try {
@@ -87,12 +85,10 @@ public class PlayerClassScene : MonoBehaviour {
          template.deleteButton.onClick.AddListener(() => {
             Destroy(template.gameObject, .5f);
             toolManager.deleteDataFile(playerClass);
-            toolManager.loadXMLData();
          });
 
          template.duplicateButton.onClick.AddListener(() => {
             toolManager.duplicateXMLData(playerClass);
-            toolManager.loadXMLData();
          });
 
          try {

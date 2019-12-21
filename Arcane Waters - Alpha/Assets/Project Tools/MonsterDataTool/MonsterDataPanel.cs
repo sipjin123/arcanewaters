@@ -365,7 +365,6 @@ public class MonsterDataPanel : MonoBehaviour {
 
       monsterToolManager.saveDataToFile(rawData);
       abilityToolManager.loadAllDataFiles();
-      monsterToolManager.loadAllDataFiles();
       gameObject.SetActive(false);
    }
 

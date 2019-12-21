@@ -18,7 +18,7 @@ public class PlayerJobPanel : MonoBehaviour {
    public Button saveButton, cancelButton;
 
    // Caches the initial type incase it is changed
-   public string startingName;
+   public int startingType;
 
    // List for toggle able tabs
    public List<TogglerClass> togglerList;
@@ -32,12 +32,11 @@ public class PlayerJobPanel : MonoBehaviour {
       saveButton.onClick.AddListener(() => {
          PlayerJobData itemData = getJobData();
          if (itemData != null) {
-            if (itemData.jobName != startingName) {
-               toolManager.deleteDataFile(new PlayerJobData { jobName = startingName });
+            if ((int)itemData.type != startingType) {
+               toolManager.deleteDataFile(new PlayerJobData { type = (Jobs.Type)startingType });
             }
             toolManager.saveXMLData(itemData);
             gameObject.SetActive(false);
-            toolManager.loadXMLData();
          }
       });
       cancelButton.onClick.AddListener(() => {
@@ -70,7 +69,7 @@ public class PlayerJobPanel : MonoBehaviour {
    }
 
    public void loadPlayerJobData (PlayerJobData jobData) {
-      startingName = jobData.jobName;
+      startingType = (int)jobData.type;
       _jobTypeText.text = jobData.type.ToString();
       _jobName.text = jobData.jobName;
       _jobDescription.text = jobData.description;

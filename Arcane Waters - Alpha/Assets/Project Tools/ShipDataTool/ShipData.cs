@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System;
 
+[Serializable]
 public class ShipData
 {
    // Type of ship, key value
@@ -16,7 +18,7 @@ public class ShipData
    public int shipID = 0;
 
    // Type of skin the ship uses
-   public Ship.SkinType skinType;
+   public Ship.SkinType skinType = Ship.SkinType.Barge_Dragon;
 
    // Base hp of the ship
    public int baseHealth = 100;

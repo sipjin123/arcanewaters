@@ -62,12 +62,10 @@ public class AchievementToolScene : MonoBehaviour {
       template.deleteButton.onClick.AddListener(() => {
          Destroy(template.gameObject, .5f);
          toolManager.deleteAchievementDataFile(usableItemData);
-         toolManager.loadXMLData();
       });
 
       template.duplicateButton.onClick.AddListener(() => {
          toolManager.duplicateXMLData(usableItemData);
-         toolManager.loadXMLData();
       });
 
       try {
@@ -102,12 +100,10 @@ public class AchievementToolScene : MonoBehaviour {
          template.deleteButton.onClick.AddListener(() => {
             Destroy(template.gameObject, .5f);
             toolManager.deleteAchievementDataFile(achievementData);
-            toolManager.loadXMLData();
          });
 
          template.duplicateButton.onClick.AddListener(() => {
             toolManager.duplicateXMLData(achievementData);
-            toolManager.loadXMLData();
          });
 
          try {

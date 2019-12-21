@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System.Xml.Serialization;
+using System;
 
+[Serializable]
 public class HelmStatData : EquipmentStatData
 {
    // Armor Type

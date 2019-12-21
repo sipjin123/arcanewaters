@@ -4,6 +4,11 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System.IO;
+using System.Xml.Serialization;
+using System.Text;
+using System.Xml;
+using System.Linq;
+using System;
 
 public class MonsterToolManager : MonoBehaviour {
    #region Public Variables
@@ -21,34 +26,37 @@ public class MonsterToolManager : MonoBehaviour {
    }
 
    public void loadAllDataFiles () {
+      XmlLoadingPanel.self.startLoading();
       monsterDataList = new Dictionary<string, BattlerData>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<BattlerData> battlerList = DB_Main.getLandMonsterXML();
+         List<string> rawXMLData = DB_Main.getLandMonsterXML();
 
-         // Iterate over the files
-         for (int i = 0; i < battlerList.Count; i++) {
-            // Read and deserialize the file
-            BattlerData monsterData = battlerList[i];
-
-            // Save the Monster data in the memory cache
-            monsterDataList.Add(monsterData.enemyName, monsterData);
-         }
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (string rawText in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(rawText);
+               BattlerData monsterData = Util.xmlLoad<BattlerData>(newTextAsset);
+               Enemy.Type typeID = (Enemy.Type) monsterData.enemyType;
+
+               // Save the Monster data in the memory cache
+               if (!monsterDataList.ContainsKey(monsterData.enemyName)) {
+                  monsterDataList.Add(monsterData.enemyName, monsterData);
+               }
+            }
             monsterToolScreen.updatePanelWithBattlerData(monsterDataList);
+            XmlLoadingPanel.self.finishLoading();
          });
       });
    }
 
    public void deleteMonsterDataFile (BattlerData data) {
-      // Build the file name
-      string fileName = data.enemyName;
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.deleteLandmonsterXML((int) data.enemyType);
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
-
-      // Save the file
-      ToolsUtil.deleteFile(path);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadAllDataFiles();
+         });
+      });
    }
 
    public bool ifExists (string nameID) {
@@ -56,26 +64,51 @@ public class MonsterToolManager : MonoBehaviour {
    }
    
    public void saveDataToFile (BattlerData data) {
+      XmlSerializer ser = new XmlSerializer(data.GetType());
+      var sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, data);
+      }
+
+      string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateMonsterXML(data);
+         DB_Main.updateLandMonsterXML(longString, (int) data.enemyType);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadAllDataFiles();
+         });
       });
    }
 
    public void duplicateData (BattlerData data) {
-      string directoryPath = Path.Combine(Application.dataPath, "Data", FOLDER_PATH);
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
+      int uniqueID = 0;
+      foreach (Enemy.Type landMonsterType in Enum.GetValues(typeof(Enemy.Type))) {
+         if (!monsterDataList.Values.ToList().Exists(_ => _.enemyType == landMonsterType) && landMonsterType != Enemy.Type.None) {
+            uniqueID = (int) landMonsterType;
+            break;
+         }
+      }
+      if (uniqueID == 0) {
+         Debug.LogWarning("All ID is accounted for, please edit data instead");
+         return;
       }
 
-      // Build the file name
       data.enemyName += "_copy";
-      string fileName = data.enemyName;
+      data.enemyType = (Enemy.Type) uniqueID;
+      XmlSerializer ser = new XmlSerializer(data.GetType());
+      var sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, data);
+      }
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data", FOLDER_PATH, fileName + ".xml");
+      string longString = sb.ToString();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.updateLandMonsterXML(longString, uniqueID);
 
-      // Save the file
-      ToolsUtil.xmlSave(data, path);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadAllDataFiles();
+         });
+      });
    }
 
    #region Private Variables

@@ -88,6 +88,7 @@ public class CraftingIngredientPanel : MonoBehaviour {
 
    private void closeEntirePanel() {
       updateRootTemplate();
+      craftingToolManager.loadAllDataFiles();
       gameObject.SetActive(false);
    }
 
@@ -204,7 +205,6 @@ public class CraftingIngredientPanel : MonoBehaviour {
          updateData();
          craftingToolManager.saveDataToFile(currentCombinationData);
       }
-      craftingToolManager.loadAllDataFiles();
       gameObject.SetActive(false);
    }
 

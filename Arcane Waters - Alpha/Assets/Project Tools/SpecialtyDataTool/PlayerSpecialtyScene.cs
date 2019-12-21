@@ -55,12 +55,10 @@ public class PlayerSpecialtyScene : MonoBehaviour
       template.deleteButton.onClick.AddListener(() => {
          Destroy(template.gameObject, .5f);
          toolManager.deleteDataFile(specialtyData);
-         toolManager.loadXMLData();
       });
 
       template.duplicateButton.onClick.AddListener(() => {
          toolManager.duplicateXMLData(specialtyData);
-         toolManager.loadXMLData();
       });
 
       try {
@@ -73,7 +71,7 @@ public class PlayerSpecialtyScene : MonoBehaviour
       template.gameObject.SetActive(true);
    }
 
-   public void loadPlayerSpecialtyData (Dictionary<string, PlayerSpecialtyData> data) {
+   public void loadPlayerSpecialtyData (Dictionary<Specialty.Type, PlayerSpecialtyData> data) {
       itemTemplateParent.gameObject.DestroyChildren();
 
       // Create a row for each player specialty
@@ -88,12 +86,10 @@ public class PlayerSpecialtyScene : MonoBehaviour
          template.deleteButton.onClick.AddListener(() => {
             Destroy(template.gameObject, .5f);
             toolManager.deleteDataFile(specialty);
-            toolManager.loadXMLData();
          });
 
          template.duplicateButton.onClick.AddListener(() => {
             toolManager.duplicateXMLData(specialty);
-            toolManager.loadXMLData();
          });
 
          try {

@@ -32,12 +32,8 @@ public class ShipDataPanel : MonoBehaviour {
       saveButton.onClick.AddListener(() => {
          ShipData newShipData = getShipData();
          if (newShipData != null) {
-            if (newShipData.shipName != startingName) {
-               shipToolManager.deleteMonsterDataFile(new ShipData { shipName = startingName });
-            }
             shipToolManager.saveXMLData(newShipData);
             gameObject.SetActive(false);
-            shipToolManager.loadXMLData();
          }
       });
       cancelButton.onClick.AddListener(() => {

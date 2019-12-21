@@ -308,7 +308,6 @@ public class SeaMonsterDataPanel : MonoBehaviour
       rawData.lootData = getRawLootData();
 
       monsterToolManager.saveDataToFile(rawData);
-      monsterToolManager.loadAllDataFiles();
       gameObject.SetActive(false);
    }
 
