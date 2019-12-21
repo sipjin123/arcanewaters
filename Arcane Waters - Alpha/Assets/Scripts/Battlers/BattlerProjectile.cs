@@ -23,7 +23,7 @@ public class BattlerProjectile : MonoBehaviour {
    public const float STOP_DISTANCE = .1f;
 
    // Reference to the sprite
-   public SpriteRenderer renderer;
+   public SpriteRenderer projectileRenderer;
 
    #endregion
 
@@ -45,7 +45,7 @@ public class BattlerProjectile : MonoBehaviour {
    }
 
    IEnumerator CO_StopProjectile () {
-      EffectManager.show(Effect.Type.Cannon_Smoke, transform.position);
+      EffectManager.show(Effect.Type.Hit, transform.position, .15f);
       yield return new WaitForSeconds(.1f);
 
       gameObject.SetActive(false);

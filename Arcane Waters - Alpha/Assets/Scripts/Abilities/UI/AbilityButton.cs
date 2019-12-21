@@ -24,9 +24,15 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
    // Holds the grayscale holder
    public GameObject grayScaleObj;
 
+   // If this Button is enabled
+   public bool isEnabled;
+
    #endregion
 
    public void OnPointerEnter (PointerEventData eventData) {
+      if (!isEnabled) {
+         return;
+      }
 
       float currentCooldown = BattleManager.self.getPlayerBattler().stanceCurrentCooldown;
       RectTransform frameRectTransform = null;
@@ -124,14 +130,26 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
    public void enableButton () {
       GetComponent<Image>().raycastTarget = true;
+
+      abilityIcon.gameObject.SetActive(true);
+      abilityButton.interactable = true;
+      abilityIcon.raycastTarget = true;
+
       abilityIcon.color = Color.white;
       grayScaleObj.SetActive(false);
+      isEnabled = true;
    }
 
    public void disableButton() {
       GetComponent<Image>().raycastTarget = false;
+
+      abilityIcon.gameObject.SetActive(false);
+      abilityButton.interactable = false;
+      abilityIcon.raycastTarget = false;
+
       abilityIcon.color = Color.gray;
       grayScaleObj.SetActive(true);
+      isEnabled = false;
    }
 
    private void OnDisable () {

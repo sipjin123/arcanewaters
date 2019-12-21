@@ -485,6 +485,13 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       _outline.setNewColor(color);
       _outline.setVisibility(isMouseHovering() && !isDead());
 
+      // Hide or show battler Name
+      if (battlerType.Equals(BattlerType.PlayerControlled)) {
+         BattleUIManager.self.usernameText.gameObject.SetActive(isMouseHovering());
+      } else {
+         battlerBar.nameText.gameObject.SetActive(isMouseHovering());
+      }
+
       // Any time out sprite changes, we need to regenerate our outline
       _outline.recreateOutlineIfVisible();
    }
@@ -1429,7 +1436,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    
    public float getPreContactLength () {
       // The amount of time our attack takes depends the type of Battler
-      return 0.3f;
+      return 0.5f;
    }
    
    public float getPreMagicLength () {

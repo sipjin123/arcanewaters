@@ -77,7 +77,7 @@ public class EffectManager : MonoBehaviour {
       return list;
    }
 
-   public static GameObject show (Effect.Type effectType, Vector2 pos) {
+   public static GameObject show (Effect.Type effectType, Vector2 pos, float overWriteSpeed = 0) {
       // Instantiate a generic effect from the prefab
       GameObject genericEffect = Instantiate(PrefabsManager.self.genericEffectPrefab, pos, Quaternion.identity);
 
@@ -87,6 +87,9 @@ public class EffectManager : MonoBehaviour {
 
       // Check if we need to set a custom speed
       float frameLength = getFrameLength(effectType);
+      if (overWriteSpeed != 0) {
+         frameLength = overWriteSpeed;
+      }
       if (frameLength >= 0f) {
          anim.frameLengthOverride = frameLength;
       }
@@ -234,7 +237,7 @@ public class EffectManager : MonoBehaviour {
       genericEffect.transform.position = sourcePos;
       BattlerProjectile battlerProjectile = genericEffect.GetComponent<BattlerProjectile>();
       battlerProjectile.setTrajectory(sourcePos, targetPos, projectileSpeed);
-      battlerProjectile.renderer.sprite = ImageManager.getSprite(projectileSpritePath);
+      battlerProjectile.projectileRenderer.sprite = ImageManager.getSprite(projectileSpritePath);
       genericEffect.transform.localScale = new Vector3(scale, scale, scale);
    }
 
