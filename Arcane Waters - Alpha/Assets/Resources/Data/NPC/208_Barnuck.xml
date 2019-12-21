@@ -1,0 +1,206 @@
+<?xml version="1.0"?>
+<NPCData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <npcId>208</npcId>
+  <name>Barnuck</name>
+  <greetingTextStranger>Hunh?</greetingTextStranger>
+  <greetingTextAcquaintance>Yes, what?</greetingTextAcquaintance>
+  <greetingTextCasualFriend>Oh, it's you again.</greetingTextCasualFriend>
+  <greetingTextCloseFriend>Have you brought me something?</greetingTextCloseFriend>
+  <greetingTextBestFriend>You always know what I need.</greetingTextBestFriend>
+  <giftOfferNPCText>I'm not interested in gifts...</giftOfferNPCText>
+  <giftLikedText>...unless I can use them!</giftLikedText>
+  <giftNotLikedText>...because I can't make anything with them.</giftNotLikedText>
+  <hasTradeGossipDialogue>true</hasTradeGossipDialogue>
+  <hasGoodbyeDialogue>true</hasGoodbyeDialogue>
+  <lastUsedQuestId>2</lastUsedQuestId>
+  <Quests>
+    <Quest>
+      <questId>0</questId>
+      <title>You look frustrated! Anything I can help with?</title>
+      <isRepeatable>false</isRepeatable>
+      <lastUsedNodeId>2</lastUsedNodeId>
+      <Nodes>
+        <Node>
+          <nodeId>0</nodeId>
+          <nextNodeId>1</nextNodeId>
+          <npcText>Not unless you can bring me the most basic building materials. Trade ships can't get through and I don't have the goods to even fix up people's houses!</npcText>
+          <userText>Will this help?</userText>
+          <DeliverObjectives>
+            <Deliver>
+              <itemTypeId>6</itemTypeId>
+              <count>6</count>
+              <category>6</category>
+            </Deliver>
+          </DeliverObjectives>
+          <ItemRewards />
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>5</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+        <Node>
+          <nodeId>1</nodeId>
+          <nextNodeId>2</nextNodeId>
+          <npcText>That was a start, but the monsters ran rampage again, and I have nothing to repair the damage!</npcText>
+          <userText>This should help patch up the holes.</userText>
+          <DeliverObjectives>
+            <Deliver>
+              <itemTypeId>17</itemTypeId>
+              <count>2</count>
+              <category>6</category>
+            </Deliver>
+            <Deliver>
+              <itemTypeId>7</itemTypeId>
+              <count>4</count>
+              <category>6</category>
+            </Deliver>
+          </DeliverObjectives>
+          <ItemRewards />
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>5</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+        <Node>
+          <nodeId>2</nodeId>
+          <nextNodeId>-1</nextNodeId>
+          <npcText>Right, next task! I'm trying to strengthen our doors and windows to stop monsters getting into the houses. Can you find me anything that will do the job?</npcText>
+          <userText>The people will be safer thanks to your work.</userText>
+          <DeliverObjectives>
+            <Deliver>
+              <itemTypeId>19</itemTypeId>
+              <count>4</count>
+              <category>6</category>
+            </Deliver>
+            <Deliver>
+              <itemTypeId>3</itemTypeId>
+              <count>6</count>
+              <category>6</category>
+            </Deliver>
+          </DeliverObjectives>
+          <ItemRewards />
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>5</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+      </Nodes>
+      <friendshipRankRequired>1</friendshipRankRequired>
+    </Quest>
+    <Quest>
+      <questId>1</questId>
+      <title>This town is overly vulnerable to monster attacks.</title>
+      <isRepeatable>false</isRepeatable>
+      <lastUsedNodeId>1</lastUsedNodeId>
+      <Nodes>
+        <Node>
+          <nodeId>0</nodeId>
+          <nextNodeId>1</nextNodeId>
+          <npcText>Tell me about it! If I knew the best way to fortify this place I would do it, but I need some plans to work from.</npcText>
+          <userText>I found some plans for beach defences.</userText>
+          <DeliverObjectives>
+            <Deliver>
+              <itemTypeId>29</itemTypeId>
+              <count>1</count>
+              <category>6</category>
+            </Deliver>
+          </DeliverObjectives>
+          <ItemRewards />
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>10</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+        <Node>
+          <nodeId>1</nodeId>
+          <nextNodeId>-1</nextNodeId>
+          <npcText>These are fantastic! But we'll need more wood and ore to build them than I've ever seen in this place.</npcText>
+          <userText>Time to get those barricades built, Barnuck!</userText>
+          <DeliverObjectives>
+            <Deliver>
+              <itemTypeId>6</itemTypeId>
+              <count>12</count>
+              <category>6</category>
+            </Deliver>
+            <Deliver>
+              <itemTypeId>3</itemTypeId>
+              <count>10</count>
+              <category>6</category>
+            </Deliver>
+          </DeliverObjectives>
+          <ItemRewards />
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>10</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+      </Nodes>
+      <friendshipRankRequired>3</friendshipRankRequired>
+    </Quest>
+    <Quest>
+      <questId>2</questId>
+      <title>What do you need?</title>
+      <isRepeatable>true</isRepeatable>
+      <lastUsedNodeId>0</lastUsedNodeId>
+      <Nodes>
+        <Node>
+          <nodeId>0</nodeId>
+          <nextNodeId>-1</nextNodeId>
+          <npcText>Basic materials. Always something broken.</npcText>
+          <userText>A little something for your efforts.</userText>
+          <DeliverObjectives>
+            <Deliver>
+              <itemTypeId>6</itemTypeId>
+              <count>2</count>
+              <category>6</category>
+            </Deliver>
+            <Deliver>
+              <itemTypeId>17</itemTypeId>
+              <count>2</count>
+              <category>6</category>
+            </Deliver>
+          </DeliverObjectives>
+          <ItemRewards />
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>2</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+      </Nodes>
+      <friendshipRankRequired>3</friendshipRankRequired>
+    </Quest>
+  </Quests>
+  <Gifts>
+    <Gift>
+      <itemTypeId>27</itemTypeId>
+      <rewardedFriendship>1</rewardedFriendship>
+      <itemCategory>6</itemCategory>
+      <color1>0</color1>
+      <color2>0</color2>
+    </Gift>
+    <Gift>
+      <itemTypeId>31</itemTypeId>
+      <rewardedFriendship>1</rewardedFriendship>
+      <itemCategory>6</itemCategory>
+      <color1>0</color1>
+      <color2>0</color2>
+    </Gift>
+    <Gift>
+      <itemTypeId>3</itemTypeId>
+      <rewardedFriendship>1</rewardedFriendship>
+      <itemCategory>6</itemCategory>
+      <color1>0</color1>
+      <color2>0</color2>
+    </Gift>
+  </Gifts>
+  <iconPath />
+  <spritePath>Assets/Sprites/NPCs/Bodies/Hammer/hammer_1.png</spritePath>
+  <faction>7</faction>
+  <specialty>5</specialty>
+</NPCData>

@@ -1,0 +1,183 @@
+<?xml version="1.0"?>
+<NPCData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <npcId>207</npcId>
+  <name>Lady Ives</name>
+  <greetingTextStranger>Yes, how can I help you?</greetingTextStranger>
+  <greetingTextAcquaintance>Good to meet you.</greetingTextAcquaintance>
+  <greetingTextCasualFriend>I see the monsters don't hold you back!</greetingTextCasualFriend>
+  <greetingTextCloseFriend>I appreciate all you've done for us.</greetingTextCloseFriend>
+  <greetingTextBestFriend>Well, if it isn't my favourite sailor!</greetingTextBestFriend>
+  <giftOfferNPCText>I need anything that can help the people in this town.</giftOfferNPCText>
+  <giftLikedText>This will come in very useful.</giftLikedText>
+  <giftNotLikedText>Nobody needs this.</giftNotLikedText>
+  <hasTradeGossipDialogue>true</hasTradeGossipDialogue>
+  <hasGoodbyeDialogue>true</hasGoodbyeDialogue>
+  <lastUsedQuestId>1</lastUsedQuestId>
+  <Quests>
+    <Quest>
+      <questId>0</questId>
+      <title>Is there anything you need in this town?</title>
+      <isRepeatable>false</isRepeatable>
+      <lastUsedNodeId>4</lastUsedNodeId>
+      <Nodes>
+        <Node>
+          <nodeId>0</nodeId>
+          <nextNodeId>1</nextNodeId>
+          <npcText>So many people lack the basics in this place. If you can find me some cloth and some coal, that would be a great help.</npcText>
+          <userText>I've brought the goods you needed.</userText>
+          <DeliverObjectives>
+            <Deliver>
+              <itemTypeId>8</itemTypeId>
+              <count>2</count>
+              <category>6</category>
+            </Deliver>
+            <Deliver>
+              <itemTypeId>4</itemTypeId>
+              <count>6</count>
+              <category>6</category>
+            </Deliver>
+          </DeliverObjectives>
+          <ItemRewards />
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>5</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+        <Node>
+          <nodeId>1</nodeId>
+          <nextNodeId>3</nextNodeId>
+          <npcText>Now we need goods for bedding and tents while Barnuck fixes up the houses. Can you bring us some of these items?</npcText>
+          <userText>I've brought you something that will help.</userText>
+          <DeliverObjectives>
+            <Deliver>
+              <itemTypeId>5</itemTypeId>
+              <count>4</count>
+              <category>6</category>
+            </Deliver>
+            <Deliver>
+              <itemTypeId>7</itemTypeId>
+              <count>6</count>
+              <category>6</category>
+            </Deliver>
+          </DeliverObjectives>
+          <ItemRewards />
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>5</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+        <Node>
+          <nodeId>3</nodeId>
+          <nextNodeId>4</nextNodeId>
+          <npcText>Until our fortifications are complete, we're defenceless against these creatures. Can you find us some weapons?</npcText>
+          <userText>I hope these will come in useful.</userText>
+          <DeliverObjectives>
+            <Deliver>
+              <itemTypeId>103</itemTypeId>
+              <count>4</count>
+              <category>1</category>
+            </Deliver>
+            <Deliver>
+              <itemTypeId>2</itemTypeId>
+              <count>2</count>
+              <category>2</category>
+            </Deliver>
+          </DeliverObjectives>
+          <ItemRewards />
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>10</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+        <Node>
+          <nodeId>4</nodeId>
+          <nextNodeId>-1</nextNodeId>
+          <npcText>The creatures get more aggressive by the day. We desperately need to take up arms against them!</npcText>
+          <userText>Brought you something to help defend yourselves.</userText>
+          <DeliverObjectives>
+            <Deliver>
+              <itemTypeId>202</itemTypeId>
+              <count>3</count>
+              <category>1</category>
+            </Deliver>
+            <Deliver>
+              <itemTypeId>3</itemTypeId>
+              <count>2</count>
+              <category>2</category>
+            </Deliver>
+          </DeliverObjectives>
+          <ItemRewards />
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>10</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+      </Nodes>
+      <friendshipRankRequired>1</friendshipRankRequired>
+    </Quest>
+    <Quest>
+      <questId>1</questId>
+      <title>What does a trader need that I can offer?</title>
+      <isRepeatable>true</isRepeatable>
+      <lastUsedNodeId>0</lastUsedNodeId>
+      <Nodes>
+        <Node>
+          <nodeId>0</nodeId>
+          <nextNodeId>-1</nextNodeId>
+          <npcText>So many of my ships are attacked by monsters, I just need more of the basics.</npcText>
+          <userText>I found what you need.</userText>
+          <DeliverObjectives>
+            <Deliver>
+              <itemTypeId>4</itemTypeId>
+              <count>4</count>
+              <category>6</category>
+            </Deliver>
+            <Deliver>
+              <itemTypeId>5</itemTypeId>
+              <count>2</count>
+              <category>6</category>
+            </Deliver>
+          </DeliverObjectives>
+          <ItemRewards />
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>2</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+      </Nodes>
+      <friendshipRankRequired>3</friendshipRankRequired>
+    </Quest>
+  </Quests>
+  <Gifts>
+    <Gift>
+      <itemTypeId>101</itemTypeId>
+      <rewardedFriendship>1</rewardedFriendship>
+      <itemCategory>1</itemCategory>
+      <color1>0</color1>
+      <color2>0</color2>
+    </Gift>
+    <Gift>
+      <itemTypeId>1</itemTypeId>
+      <rewardedFriendship>2</rewardedFriendship>
+      <itemCategory>2</itemCategory>
+      <color1>0</color1>
+      <color2>0</color2>
+    </Gift>
+    <Gift>
+      <itemTypeId>10</itemTypeId>
+      <rewardedFriendship>2</rewardedFriendship>
+      <itemCategory>6</itemCategory>
+      <color1>0</color1>
+      <color2>0</color2>
+    </Gift>
+  </Gifts>
+  <iconPath />
+  <spritePath>Assets/Sprites/NPCs/Bodies/Skullhat/skullhat_1.png</spritePath>
+  <faction>6</faction>
+  <specialty>3</specialty>
+</NPCData>

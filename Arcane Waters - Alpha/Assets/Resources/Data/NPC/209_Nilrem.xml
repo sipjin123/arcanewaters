@@ -1,0 +1,191 @@
+<?xml version="1.0"?>
+<NPCData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <npcId>209</npcId>
+  <name>Nilrem</name>
+  <greetingTextStranger>Greetings!</greetingTextStranger>
+  <greetingTextAcquaintance>Hello again!</greetingTextAcquaintance>
+  <greetingTextCasualFriend>Oh, bring me anything interesting?</greetingTextCasualFriend>
+  <greetingTextCloseFriend>Ah, my mystical friend!</greetingTextCloseFriend>
+  <greetingTextBestFriend>I couldn't have done this without you.</greetingTextBestFriend>
+  <giftOfferNPCText>Now, what properties does this have?</giftOfferNPCText>
+  <giftLikedText>Yes... yes, definitely magical.</giftLikedText>
+  <giftNotLikedText>Aw, nothing magical at all.</giftNotLikedText>
+  <hasTradeGossipDialogue>false</hasTradeGossipDialogue>
+  <hasGoodbyeDialogue>true</hasGoodbyeDialogue>
+  <lastUsedQuestId>1</lastUsedQuestId>
+  <Quests>
+    <Quest>
+      <questId>0</questId>
+      <title>What on earth is that smell?</title>
+      <isRepeatable>false</isRepeatable>
+      <lastUsedNodeId>4</lastUsedNodeId>
+      <Nodes>
+        <Node>
+          <nodeId>0</nodeId>
+          <nextNodeId>1</nextNodeId>
+          <npcText>Apologies, my name is Nilrem and I love to experiment with ingredients to make potions and spells. Some have an odour that... lingers, shall we say.</npcText>
+          <userText>Fair enough. is there anything you need?</userText>
+          <DeliverObjectives />
+          <ItemRewards />
+        </Node>
+        <Node>
+          <nodeId>1</nodeId>
+          <nextNodeId>2</nextNodeId>
+          <npcText>I'm trying to figure out a way to boost my intelligence, so I can make faster progress with my potions. Can you find me this? </npcText>
+          <userText>It's a bit ripe, but it should do you.</userText>
+          <DeliverObjectives>
+            <Deliver>
+              <itemTypeId>34</itemTypeId>
+              <count>2</count>
+              <category>6</category>
+            </Deliver>
+          </DeliverObjectives>
+          <ItemRewards />
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>5</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+        <Node>
+          <nodeId>2</nodeId>
+          <nextNodeId>3</nextNodeId>
+          <npcText>That ingredient had less than optimal results. While I work out how I can get rid of my new toe, could you find me something different to try?</npcText>
+          <userText>This is horrible, but I hope it's useful.</userText>
+          <DeliverObjectives>
+            <Deliver>
+              <itemTypeId>14</itemTypeId>
+              <count>2</count>
+              <category>6</category>
+            </Deliver>
+          </DeliverObjectives>
+          <ItemRewards />
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>5</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+        <Node>
+          <nodeId>3</nodeId>
+          <nextNodeId>4</nextNodeId>
+          <npcText>Apart from a persistant itch, that had no effect. But I'm pretty sure I know exactly what I need now. I'm so close!</npcText>
+          <userText>Well, this had better work.</userText>
+          <DeliverObjectives>
+            <Deliver>
+              <itemTypeId>35</itemTypeId>
+              <count>2</count>
+              <category>6</category>
+            </Deliver>
+          </DeliverObjectives>
+          <ItemRewards />
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>5</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+        <Node>
+          <nodeId>4</nodeId>
+          <nextNodeId>-1</nextNodeId>
+          <npcText>Success! I know how to make a potion of Boost Intelligence! For your efforts, I will share this with you. Along with a good salve for soothing skin rashes.</npcText>
+          <userText>Thanks for the recipe, this will be very useful!</userText>
+          <DeliverObjectives />
+          <ItemRewards>
+            <Item>
+              <itemTypeId>29</itemTypeId>
+              <count>1</count>
+              <category>6</category>
+            </Item>
+          </ItemRewards>
+        </Node>
+      </Nodes>
+      <friendshipRankRequired>1</friendshipRankRequired>
+    </Quest>
+    <Quest>
+      <questId>1</questId>
+      <title>How are the experiments going?</title>
+      <isRepeatable>false</isRepeatable>
+      <lastUsedNodeId>3</lastUsedNodeId>
+      <Nodes>
+        <Node>
+          <nodeId>0</nodeId>
+          <nextNodeId>1</nextNodeId>
+          <npcText>I'm stuck again! I want to make a potion to defend against earth-based attacks, but I don't have the insect parts I need.</npcText>
+          <userText>Is this what you're looking for?</userText>
+          <DeliverObjectives>
+            <Deliver>
+              <itemTypeId>17</itemTypeId>
+              <count>3</count>
+              <category>6</category>
+            </Deliver>
+          </DeliverObjectives>
+          <ItemRewards />
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>5</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+        <Node>
+          <nodeId>1</nodeId>
+          <nextNodeId>2</nextNodeId>
+          <npcText>No good. Can you bring me some bug secretions? No, I mean I want you to kill them and collect their juices.</npcText>
+          <userText>Please don't make me bring you this again.</userText>
+          <DeliverObjectives>
+            <Deliver>
+              <itemTypeId>21</itemTypeId>
+              <count>3</count>
+              <category>6</category>
+            </Deliver>
+          </DeliverObjectives>
+          <ItemRewards />
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>5</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+        <Node>
+          <nodeId>2</nodeId>
+          <nextNodeId>3</nextNodeId>
+          <npcText>I think I've got it now! Insect parts aren't enough - it's their eggs I need. This must be the key...</npcText>
+          <userText>Take it! It's moving...</userText>
+          <DeliverObjectives>
+            <Deliver>
+              <itemTypeId>20</itemTypeId>
+              <count>2</count>
+              <category>6</category>
+            </Deliver>
+          </DeliverObjectives>
+          <ItemRewards />
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>5</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+        <Node>
+          <nodeId>3</nodeId>
+          <nextNodeId>-1</nextNodeId>
+          <npcText>Haha! I've done it! A potion of Earth Defence. And the recipe is all yours. You really are a lifesaver.</npcText>
+          <userText>Thanks. That was only half as disgusting as I thought it would be.</userText>
+          <DeliverObjectives />
+          <ItemRewards>
+            <Item>
+              <itemTypeId>29</itemTypeId>
+              <count>1</count>
+              <category>6</category>
+            </Item>
+          </ItemRewards>
+        </Node>
+      </Nodes>
+      <friendshipRankRequired>2</friendshipRankRequired>
+    </Quest>
+  </Quests>
+  <Gifts />
+  <iconPath />
+  <spritePath />
+  <faction>8</faction>
+  <specialty>2</specialty>
+</NPCData>

@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<NPCData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <npcId>206</npcId>
+  <name>Silver Hook</name>
+  <greetingTextStranger>Watch your step.</greetingTextStranger>
+  <greetingTextAcquaintance>I see ye.</greetingTextAcquaintance>
+  <greetingTextCasualFriend>Ye be safe around us.</greetingTextCasualFriend>
+  <greetingTextCloseFriend>Arr! My friend returns.</greetingTextCloseFriend>
+  <greetingTextBestFriend>Ahoy, me sea mate!</greetingTextBestFriend>
+  <giftOfferNPCText>This better be good...</giftOfferNPCText>
+  <giftLikedText>Blimey, this be a handsome gift!</giftLikedText>
+  <giftNotLikedText>Scupper that!</giftNotLikedText>
+  <hasTradeGossipDialogue>false</hasTradeGossipDialogue>
+  <hasGoodbyeDialogue>true</hasGoodbyeDialogue>
+  <lastUsedQuestId>1</lastUsedQuestId>
+  <Quests>
+    <Quest>
+      <questId>0</questId>
+      <title>Anything I can do for a pirate like you?</title>
+      <isRepeatable>false</isRepeatable>
+      <lastUsedNodeId>0</lastUsedNodeId>
+      <Nodes>
+        <Node>
+          <nodeId>0</nodeId>
+          <nextNodeId>-1</nextNodeId>
+          <npcText>Privateers are harrassing me ships near the [Name Bay]. If ye can send them to the bottom of the ocean, I might have something for ye.</npcText>
+          <userText>I sunk those privateer ships like you asked.</userText>
+          <DeliverObjectives />
+          <ItemRewards />
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>10</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+      </Nodes>
+      <friendshipRankRequired>1</friendshipRankRequired>
+    </Quest>
+    <Quest>
+      <questId>1</questId>
+      <title>You look like you need something.</title>
+      <isRepeatable>false</isRepeatable>
+      <lastUsedNodeId>0</lastUsedNodeId>
+      <Nodes>
+        <Node>
+          <nodeId>0</nodeId>
+          <nextNodeId>-1</nextNodeId>
+          <npcText>Yes - gold! I need to build me some new ships to take on those privateers. I hear they have plenty in their base [West] of the town. I'd be happy if ye liberated some of that for me.</npcText>
+          <userText>The privateer gold is free! (For a small fee).</userText>
+          <DeliverObjectives />
+          <ItemRewards />
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>10</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+      </Nodes>
+      <friendshipRankRequired>1</friendshipRankRequired>
+    </Quest>
+  </Quests>
+  <Gifts />
+  <iconPath />
+  <spritePath>Assets/Sprites/NPCs/Bodies/Stripes/stripes_1.png</spritePath>
+  <faction>2</faction>
+  <specialty>9</specialty>
+</NPCData>

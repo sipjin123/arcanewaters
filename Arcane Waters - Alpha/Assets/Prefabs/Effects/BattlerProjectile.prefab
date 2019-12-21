@@ -48,9 +48,8 @@ MonoBehaviour:
   isInitialized: 0
   startPosition: {x: 0, y: 0}
   targetPosition: {x: 0, y: 0}
-  timeToReachTarget: 0
-  timeAlive: 0
-  renderer: {fileID: 6741503060635277830}
+  projectileSpeed: 0
+  projectileRenderer: {fileID: 6741503060635277830}
 --- !u!1 &1308094845865132502
 GameObject:
   m_ObjectHideFlags: 0

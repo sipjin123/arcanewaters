@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<NPCData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <npcId>205</npcId>
+  <name>Captain Jeffers</name>
+  <greetingTextStranger>Unless you're here to stop Silver Hook, I'm not interested.</greetingTextStranger>
+  <greetingTextAcquaintance>I remember you. You've assisted me before.</greetingTextAcquaintance>
+  <greetingTextCasualFriend>I appreciate the help you've given me.</greetingTextCasualFriend>
+  <greetingTextCloseFriend>Our work against the pirates is saving lives.</greetingTextCloseFriend>
+  <greetingTextBestFriend>The two of us together will defeat this pirate menace!</greetingTextBestFriend>
+  <giftOfferNPCText>What is this?</giftOfferNPCText>
+  <giftLikedText>I accept.</giftLikedText>
+  <giftNotLikedText>Please don't bother me with this</giftNotLikedText>
+  <hasTradeGossipDialogue>false</hasTradeGossipDialogue>
+  <hasGoodbyeDialogue>true</hasGoodbyeDialogue>
+  <lastUsedQuestId>1</lastUsedQuestId>
+  <Quests>
+    <Quest>
+      <questId>0</questId>
+      <title>There seem to be a lot of pirates around here.</title>
+      <isRepeatable>false</isRepeatable>
+      <lastUsedNodeId>0</lastUsedNodeId>
+      <Nodes>
+        <Node>
+          <nodeId>0</nodeId>
+          <nextNodeId>-1</nextNodeId>
+          <npcText>Pirate ships are attacking villages on the [east] coast. I need someone to scupper them, and fast!</npcText>
+          <userText>I've taken care of those pirates for you.</userText>
+          <DeliverObjectives />
+          <ItemRewards />
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>10</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+      </Nodes>
+      <friendshipRankRequired>1</friendshipRankRequired>
+    </Quest>
+    <Quest>
+      <questId>1</questId>
+      <title>Ho, Captain. How are things going with the pirates?</title>
+      <isRepeatable>false</isRepeatable>
+      <lastUsedNodeId>0</lastUsedNodeId>
+      <Nodes>
+        <Node>
+          <nodeId>0</nodeId>
+          <nextNodeId>-1</nextNodeId>
+          <npcText>Not well. They've set up a camp somewhere along the [Name coast]. If you can find it and clear it out, you'll be well rewarded.</npcText>
+          <userText>I found the pirate camp. Safe to say, it's not there any more.</userText>
+          <DeliverObjectives />
+          <ItemRewards />
+          <FriendshipRewards>
+            <Friendship>
+              <rewardedFriendship>10</rewardedFriendship>
+            </Friendship>
+          </FriendshipRewards>
+        </Node>
+      </Nodes>
+      <friendshipRankRequired>1</friendshipRankRequired>
+    </Quest>
+  </Quests>
+  <Gifts />
+  <iconPath />
+  <spritePath>Assets/Sprites/NPCs/Bodies/Pegleg/pegleg_1.png</spritePath>
+  <faction>3</faction>
+  <specialty>7</specialty>
+</NPCData>

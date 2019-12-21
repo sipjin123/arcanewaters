@@ -15962,6 +15962,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: f8a0238c1fda2e844b655143485f1ff7, type: 3}
     sprites:
     - {fileID: 21300000, guid: f8a0238c1fda2e844b655143485f1ff7, type: 3}
+  - imageName: enemy_icon_ring_5
+    imagePath: Assets/Sprites/Icons/Battle/enemy/enemy_icon_ring_5.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Battle/enemy/enemy_icon_ring_5
+    texture2D: {fileID: 2800000, guid: c8c14a6e3733ad248adf8454e7ca043d, type: 3}
+    sprite: {fileID: 21300000, guid: c8c14a6e3733ad248adf8454e7ca043d, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: c8c14a6e3733ad248adf8454e7ca043d, type: 3}
   - imageName: enemy_icon_ring_7
     imagePath: Assets/Sprites/Icons/Battle/enemy_icon_ring_7.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Battle/enemy_icon_ring_7
@@ -20384,6 +20391,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 71be80314d8660246bab7dbe410bdbcd, type: 3}
     sprites:
     - {fileID: 21300000, guid: 71be80314d8660246bab7dbe410bdbcd, type: 3}
+  - imageName: icon_circle_disabled
+    imagePath: Assets/Sprites/Icons/Battle/enemy/icon_circle_disabled.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Battle/enemy/icon_circle_disabled
+    texture2D: {fileID: 2800000, guid: 3aebf3aea750e4b4ca39d5bfd041e369, type: 3}
+    sprite: {fileID: 21300000, guid: 3aebf3aea750e4b4ca39d5bfd041e369, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 3aebf3aea750e4b4ca39d5bfd041e369, type: 3}
   - imageName: icon_circle_enemy_click
     imagePath: Assets/Sprites/Icons/Battle/enemy/icon_circle_enemy_click.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Battle/enemy/icon_circle_enemy_click
@@ -26224,6 +26238,27 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 3a2dad62a4d324144b3b8783167919ce, type: 3}
     sprites:
     - {fileID: 21300000, guid: 3a2dad62a4d324144b3b8783167919ce, type: 3}
+  - imageName: player_icon_ring_5
+    imagePath: Assets/Sprites/Icons/Battle/Player/player_icon_ring_5.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Battle/Player/player_icon_ring_5
+    texture2D: {fileID: 2800000, guid: 9ed2a10669f13ae42b6415cd2576a6a5, type: 3}
+    sprite: {fileID: 21300000, guid: 9ed2a10669f13ae42b6415cd2576a6a5, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 9ed2a10669f13ae42b6415cd2576a6a5, type: 3}
+  - imageName: player_icon_ring_6
+    imagePath: Assets/Sprites/Icons/Battle/Player/player_icon_ring_6.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Battle/Player/player_icon_ring_6
+    texture2D: {fileID: 2800000, guid: 799581901e4f9f84aae36150523b7e21, type: 3}
+    sprite: {fileID: 21300000, guid: 799581901e4f9f84aae36150523b7e21, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 799581901e4f9f84aae36150523b7e21, type: 3}
+  - imageName: player_icon_ring_7
+    imagePath: Assets/Sprites/Icons/Battle/Player/player_icon_ring_7.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Battle/Player/player_icon_ring_7
+    texture2D: {fileID: 2800000, guid: d82e7742bc4a30a4ca6762dde5e0cd67, type: 3}
+    sprite: {fileID: 21300000, guid: d82e7742bc4a30a4ca6762dde5e0cd67, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: d82e7742bc4a30a4ca6762dde5e0cd67, type: 3}
   - imageName: pointer_28
     imagePath: Assets/Sprites/GUI/pointer_28.png
     imagePathWithoutExtension: Assets/Sprites/GUI/pointer_28
@@ -51708,6 +51743,8 @@ MonoBehaviour:
     audioPath: Assets/Resources/Sound/Effects/Worm_Hurt.ogg
     audioPathWithoutExtension: Assets/Resources/Sound/Effects/Worm_Hurt
     audioClip: {fileID: 8300000, guid: 1f1cf47b47209c4488f0399a44438eae, type: 3}
+  defaultHitAudio: 
+  defaultCastAudio: 
 --- !u!1 &933774003
 GameObject:
   m_ObjectHideFlags: 0
@@ -83790,6 +83827,125 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1001 &4239660547047598713
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 293278830788185517, guid: 585135a6ba75a1e429758e020a9b3a8d,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 293278830788185517, guid: 585135a6ba75a1e429758e020a9b3a8d,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 293278830788185517, guid: 585135a6ba75a1e429758e020a9b3a8d,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 293278830788185517, guid: 585135a6ba75a1e429758e020a9b3a8d,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 293278830788185517, guid: 585135a6ba75a1e429758e020a9b3a8d,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 293278830788185517, guid: 585135a6ba75a1e429758e020a9b3a8d,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 293278830788185517, guid: 585135a6ba75a1e429758e020a9b3a8d,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 293278830788185517, guid: 585135a6ba75a1e429758e020a9b3a8d,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 293278830788185517, guid: 585135a6ba75a1e429758e020a9b3a8d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 293278830788185517, guid: 585135a6ba75a1e429758e020a9b3a8d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 293278830788185517, guid: 585135a6ba75a1e429758e020a9b3a8d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 293278830788185517, guid: 585135a6ba75a1e429758e020a9b3a8d,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 293278830788185517, guid: 585135a6ba75a1e429758e020a9b3a8d,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 293278830788185517, guid: 585135a6ba75a1e429758e020a9b3a8d,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 293278830788185517, guid: 585135a6ba75a1e429758e020a9b3a8d,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 293278830788185517, guid: 585135a6ba75a1e429758e020a9b3a8d,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 293278830788185517, guid: 585135a6ba75a1e429758e020a9b3a8d,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 293278830788185517, guid: 585135a6ba75a1e429758e020a9b3a8d,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 293278830788185517, guid: 585135a6ba75a1e429758e020a9b3a8d,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 293278830788185517, guid: 585135a6ba75a1e429758e020a9b3a8d,
+        type: 3}
+      propertyPath: m_Pivot.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 293278830788185517, guid: 585135a6ba75a1e429758e020a9b3a8d,
+        type: 3}
+      propertyPath: m_Pivot.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6597532030138632329, guid: 585135a6ba75a1e429758e020a9b3a8d,
+        type: 3}
+      propertyPath: m_Name
+      value: LoadBlocker
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 585135a6ba75a1e429758e020a9b3a8d, type: 3}
 --- !u!224 &4434247106089688217
 RectTransform:
   m_ObjectHideFlags: 0
