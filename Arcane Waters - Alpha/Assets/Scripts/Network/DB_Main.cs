@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
+using System.Xml;
 
 #if IS_SERVER_BUILD
 using MySql.Data.MySqlClient;
@@ -339,75 +340,31 @@ public class DB_Main : DB_MainStub {
 
    #region Monster XML Data
 
-   public static new void updateMonsterXML (BattlerData battleData) {
+   public static new void updateLandMonsterXML (string rawData, int typeIndex) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO land_monster_xml (enemyType, enemyName, damagePerLevel, defensePerLevel, healthPerlevel, preMagicLength, preContactLength," +
-            " baseHealth, baseDefense, baseDamage, baseGoldReward, baseXPReward," +
-            " deathSoundPath, attackJumpSoundPath, imagePath," +
-            " baseDamageMultiplierSet, perLevelDamageMultiplierSet, baseDefenseMultiplierSet, perLevelDefenseMultiplierSet) " +
-
-            // Values setup
-            "VALUES(@enemyType, @enemyName, @damagePerLevel, @defensePerLevel, @healthPerlevel, @preMagicLength, @preContactLength, " +
-            "@baseHealth, @baseDefense, @baseDamage, @baseGoldReward, @baseXPReward, " +
-            "@deathSoundPath, @attackJumpSoundPath, @imagePath, " +
-            "@baseDamageMultiplierSet, @perLevelDamageMultiplierSet, @baseDefenseMultiplierSet, @perLevelDefenseMultiplierSet) " +
-
-            // Values overwritting
-            "ON DUPLICATE KEY UPDATE " +
-            "enemyName = @enemyName, " +
-            "damagePerLevel = @damagePerLevel, defensePerLevel = @defensePerLevel, healthPerlevel = @healthPerlevel, preMagicLength = @preMagicLength, preContactLength = @preContactLength, " +
-            "baseHealth = @baseHealth, baseDefense = @baseDefense, baseDamage = @baseDamage, baseGoldReward = @baseGoldReward, baseXPReward = @baseXPReward, " +
-            "deathSoundPath = @deathSoundPath, attackJumpSoundPath = @attackJumpSoundPath, imagePath = @imagePath, " +
-            "baseDamageMultiplierSet = @baseDamageMultiplierSet, perLevelDamageMultiplierSet = @perLevelDamageMultiplierSet, " +
-            "baseDefenseMultiplierSet = @baseDefenseMultiplierSet, perLevelDefenseMultiplierSet = @perLevelDefenseMultiplierSet"
-            , conn)) {
+            "INSERT INTO land_monster_xml (enemyType, xmlContent) " +
+            "VALUES(@enemyType, @xmlContent) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
 
             conn.Open();
             cmd.Prepare();
 
-            cmd.Parameters.AddWithValue("@enemyType", (int) battleData.enemyType);
-            cmd.Parameters.AddWithValue("@enemyName", battleData.enemyName);
-
-            cmd.Parameters.AddWithValue("@baseHealth", battleData.baseHealth);
-            cmd.Parameters.AddWithValue("@baseDefense", battleData.baseDefense);
-            cmd.Parameters.AddWithValue("@baseDamage", battleData.baseDamage);
-            cmd.Parameters.AddWithValue("@baseGoldReward", battleData.baseGoldReward);
-            cmd.Parameters.AddWithValue("@baseXPReward", battleData.baseXPReward);
-
-            cmd.Parameters.AddWithValue("@damagePerLevel", battleData.damagePerLevel);
-            cmd.Parameters.AddWithValue("@defensePerLevel", battleData.defensePerLevel);
-            cmd.Parameters.AddWithValue("@healthPerlevel", battleData.healthPerlevel);
-            cmd.Parameters.AddWithValue("@preContactLength", battleData.preContactLength);
-            cmd.Parameters.AddWithValue("@preMagicLength", battleData.preMagicLength);
-
-            cmd.Parameters.AddWithValue("@deathSoundPath", battleData.deathSoundPath);
-            cmd.Parameters.AddWithValue("@attackJumpSoundPath", battleData.attackJumpSoundPath);
-            cmd.Parameters.AddWithValue("@imagePath", battleData.imagePath);
-
-            battleData.baseDamageMultiplierSet.updateStringValues();
-            battleData.perLevelDamageMultiplierSet.updateStringValues();
-            battleData.baseDefenseMultiplierSet.updateStringValues();
-            battleData.perLevelDefenseMultiplierSet.updateStringValues();
-
-            cmd.Parameters.AddWithValue("@baseDamageMultiplierSet", JsonUtility.ToJson(battleData.baseDamageMultiplierSet.stringTranslation));
-            cmd.Parameters.AddWithValue("@perLevelDamageMultiplierSet", JsonUtility.ToJson(battleData.perLevelDamageMultiplierSet.stringTranslation));
-            cmd.Parameters.AddWithValue("@baseDefenseMultiplierSet", JsonUtility.ToJson(battleData.baseDefenseMultiplierSet.stringTranslation));
-            cmd.Parameters.AddWithValue("@perLevelDefenseMultiplierSet", JsonUtility.ToJson(battleData.perLevelDefenseMultiplierSet.stringTranslation));
+            cmd.Parameters.AddWithValue("@enemyType", typeIndex);
+            cmd.Parameters.AddWithValue("@xmlContent", rawData);
 
             // Execute the command
             cmd.ExecuteNonQuery();
          }
       } catch (Exception e) {
-         UnityEngine.Debug.LogError("Error: " + e.ToString());
          D.error("MySQL Error: " + e.ToString());
       }
    }
 
-   public static new List<BattlerData> getLandMonsterXML () {
-      List<BattlerData> monsterList = new List<BattlerData>();
+   public static new List<string> getLandMonsterXML () {
+      List<string> rawDataList = new List<string>();
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
@@ -420,15 +377,581 @@ public class DB_Main : DB_MainStub {
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  BattlerData monsterData = new BattlerData(dataReader);
-                  monsterList.Add(monsterData);
+                  rawDataList.Add(dataReader.GetString("xmlContent"));
                }
             }
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
-      return new List<BattlerData>(monsterList);
+      return new List<string>(rawDataList);
+   }
+
+   public static new void deleteLandmonsterXML (int typeID) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM land_monster_xml WHERE enemyType=@enemyType", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@enemyType", typeID);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   #endregion
+
+   #region SeaMonster XML Data
+
+   public static new void updateSeaMonsterXML (string rawData, int typeIndex) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "INSERT INTO sea_monster_xml (seaMonsterType, xmlContent) " +
+            "VALUES(@seaMonsterType, @xmlContent) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@seaMonsterType", typeIndex);
+            cmd.Parameters.AddWithValue("@xmlContent", rawData);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<string> getSeaMonsterXML () {
+      List<string> rawDataList = new List<string>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane.sea_monster_xml where seaMonsterType != @seaMonsterType", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@seaMonsterType", 0);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  rawDataList.Add(dataReader.GetString("xmlContent"));
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return new List<string>(rawDataList);
+   }
+
+   public static new void deleteSeamonsterXML (int typeID) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM sea_monster_xml WHERE seaMonsterType=@seaMonsterType", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@seaMonsterType", typeID);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   #endregion
+
+   #region NPC XML Data
+
+   public static new void updateNPCXML (string rawData, int typeIndex) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "INSERT INTO npc_xml (npcId, xmlContent) " +
+            "VALUES(@npcId, @xmlContent) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@npcId", typeIndex);
+            cmd.Parameters.AddWithValue("@xmlContent", rawData);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<string> getNPCXML () {
+      List<string> rawDataList = new List<string>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane.npc_xml", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  rawDataList.Add(dataReader.GetString("xmlContent"));
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return new List<string>(rawDataList);
+   }
+
+   public static new void deleteNPCXML (int typeID) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM npc_xml WHERE npcId=@npcId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@npcId", typeID);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   #endregion
+
+   #region Ship XML Data
+
+   public static new void updateShipXML (string rawData, int typeIndex) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "INSERT INTO ship_xml (shipType, xmlContent) " +
+            "VALUES(@shipType, @xmlContent) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@shipType", typeIndex);
+            cmd.Parameters.AddWithValue("@xmlContent", rawData);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<string> getShipXML () {
+      List<string> rawDataList = new List<string>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane.ship_xml where shipType != @shipType", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@shipType", 0);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  rawDataList.Add(dataReader.GetString("xmlContent"));
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return new List<string>(rawDataList);
+   }
+
+   public static new void deleteShipXML (int typeID) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM ship_xml WHERE shipType=@shipType", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@shipType", typeID);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   #endregion
+
+   #region Achievement XML Data
+
+   public static new void updateAchievementXML (string rawData, string name) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "INSERT INTO achievement_xml (achievementName, xmlContent) " +
+            "VALUES(@achievementName, @xmlContent) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@achievementName", name);
+            cmd.Parameters.AddWithValue("@xmlContent", rawData);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void deleteAchievementXML (string name) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM achievement_xml WHERE achievementName=@achievementName", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@achievementName", name);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<string> getAchievementXML () {
+      List<string> rawDataList = new List<string>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane.achievement_xml", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  rawDataList.Add(dataReader.GetString("xmlContent"));
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return new List<string>(rawDataList);
+   }
+
+   #endregion
+
+   #region Player Class XML Data
+
+   public static new void updatePlayerClassXML (string rawData, int key, ClassManager.PlayerStatType playerStatType) {
+      string tableName = "";
+      switch (playerStatType) {
+         case ClassManager.PlayerStatType.Class:
+            tableName = "player_class_xml";
+            break;
+         case ClassManager.PlayerStatType.Job:
+            tableName = "player_job_xml";
+            break;
+         case ClassManager.PlayerStatType.Faction:
+            tableName = "player_faction_xml";
+            break;
+         case ClassManager.PlayerStatType.Specialty:
+            tableName = "player_specialty_xml";
+            break;
+      }
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "INSERT INTO "+ tableName + " (type, xmlContent) " +
+            "VALUES(@type, @xmlContent) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@type", key);
+            cmd.Parameters.AddWithValue("@xmlContent", rawData);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<string> getPlayerClassXML (ClassManager.PlayerStatType playerStatType) {
+      string tableName = "";
+      switch (playerStatType) {
+         case ClassManager.PlayerStatType.Class:
+            tableName = "player_class_xml";
+            break;
+         case ClassManager.PlayerStatType.Job:
+            tableName = "player_job_xml";
+            break;
+         case ClassManager.PlayerStatType.Faction:
+            tableName = "player_faction_xml";
+            break;
+         case ClassManager.PlayerStatType.Specialty:
+            tableName = "player_specialty_xml";
+            break;
+      }
+
+      List<string> rawDataList = new List<string>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane."+ tableName, conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  rawDataList.Add(dataReader.GetString("xmlContent"));
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return new List<string>(rawDataList);
+   }
+
+   public static new void deletePlayerClassXML (ClassManager.PlayerStatType playerStatType, int typeID) {
+      string tableName = "";
+      switch (playerStatType) {
+         case ClassManager.PlayerStatType.Class:
+            tableName = "player_class_xml";
+            break;
+         case ClassManager.PlayerStatType.Job:
+            tableName = "player_job_xml";
+            break;
+         case ClassManager.PlayerStatType.Faction:
+            tableName = "player_faction_xml";
+            break;
+         case ClassManager.PlayerStatType.Specialty:
+            tableName = "player_specialty_xml";
+            break;
+      }
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM "+ tableName + " WHERE type=@type", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@type", typeID);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   #endregion
+
+   #region Crafting XML Data
+
+   public static new void updateCraftingXML (string rawData, string name) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "INSERT INTO crafting_xml (name, xmlContent) " +
+            "VALUES(@name, @xmlContent) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@name", name);
+            cmd.Parameters.AddWithValue("@xmlContent", rawData);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<string> getCraftingXML () {
+      List<string> rawDataList = new List<string>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane.crafting_xml", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  rawDataList.Add(dataReader.GetString("xmlContent"));
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return new List<string>(rawDataList);
+   }
+
+   public static new void deleteCraftingXML (string name) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM crafting_xml WHERE name=@name", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@name", name);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   #endregion
+
+   #region Equipment XML Data
+
+   public static new void updateEquipmentXML (string rawData, int typeID, EquipmentToolManager.EquipmentType equipType) {
+      string tableName = "";
+      switch (equipType) {
+         case EquipmentToolManager.EquipmentType.Weapon:
+            tableName = "equipment_weapon_xml";
+            break;
+         case EquipmentToolManager.EquipmentType.Armor:
+            tableName = "equipment_armor_xml";
+            break;
+         case EquipmentToolManager.EquipmentType.Helm:
+            tableName = "equipment_helm_xml";
+            break;
+      }
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "INSERT INTO "+ tableName + " (type, xmlContent) " +
+            "VALUES(@type, @xmlContent) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@type", typeID);
+            cmd.Parameters.AddWithValue("@xmlContent", rawData);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void deleteEquipmentXML (int type, EquipmentToolManager.EquipmentType equipType) {
+      string tableName = "";
+      switch (equipType) {
+         case EquipmentToolManager.EquipmentType.Weapon:
+            tableName = "equipment_weapon_xml";
+            break;
+         case EquipmentToolManager.EquipmentType.Armor:
+            tableName = "equipment_armor_xml";
+            break;
+         case EquipmentToolManager.EquipmentType.Helm:
+            tableName = "equipment_helm_xml";
+            break;
+      }
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM "+ tableName + " WHERE type=@type", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@type", type);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<string> getEquipmentXML (EquipmentToolManager.EquipmentType equipType) {
+      string tableName = "";
+      switch (equipType) {
+         case EquipmentToolManager.EquipmentType.Weapon:
+            tableName = "equipment_weapon_xml";
+            break;
+         case EquipmentToolManager.EquipmentType.Armor:
+            tableName = "equipment_armor_xml";
+            break;
+         case EquipmentToolManager.EquipmentType.Helm:
+            tableName = "equipment_helm_xml";
+            break;
+      }
+
+      List<string> rawDataList = new List<string>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane."+ tableName, conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  rawDataList.Add(dataReader.GetString("xmlContent"));
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return new List<string>(rawDataList);
    }
 
    #endregion
@@ -1744,11 +2267,17 @@ public class DB_Main : DB_MainStub {
             updateItemQuantity(userId, databaseItem.id, databaseItem.count);
             // Return the updated item
             return databaseItem;
+         } else {
+            // Otherwise, create a new stack
+            return createNewItem(userId, castedItem).getCastItem();
          }
+      } else {
+         // Since the item cannot be stacked, set its count to 1
+         castedItem.count = 1;
+
+         // Create the item
+         return createNewItem(userId, castedItem).getCastItem();
       }
-      
-      // Create the item
-      return createNewItem(userId, castedItem).getCastItem();
    }
 
    public static new void transferItem(Item item, int fromUserId, int toUserId, int amount) {
@@ -1995,11 +2524,11 @@ public class DB_Main : DB_MainStub {
       }
 
       // Sorts the item ID
-      query.Append("ORDER BY itmId");
+      query.Append("ORDER BY itmId DESC");
 
       // Removes the limit if the page is -1
       if (page > 0 && itemsPerPage > 0) {
-         query.Append(" DESC LIMIT @start, @perPage");
+         query.Append(" LIMIT @start, @perPage");
       }
 
       try {

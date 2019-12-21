@@ -11,6 +11,9 @@ public class SpecialtyManager : XmlManager {
    // Self
    public static SpecialtyManager self;
 
+   // For editor preview of data
+   public List<PlayerSpecialtyData> specialtyDataList = new List<PlayerSpecialtyData>();
+
    #endregion
 
    public void Awake () {
@@ -32,17 +35,23 @@ public class SpecialtyManager : XmlManager {
    private void initializeDataCache () {
       _specialtyData = new Dictionary<Specialty.Type, PlayerSpecialtyData>();
 
-      // Iterate over the files
-      foreach (TextAsset textAsset in textAssets) {
-         // Read and deserialize the file
-         PlayerSpecialtyData specialtyData = Util.xmlLoad<PlayerSpecialtyData>(textAsset);
-         Specialty.Type uniqueID = specialtyData.type;
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<string> rawXMLData = DB_Main.getPlayerClassXML(ClassManager.PlayerStatType.Specialty);
 
-         // Save the data in the memory cache
-         if (!_specialtyData.ContainsKey(uniqueID)) {
-            _specialtyData.Add(uniqueID, specialtyData);
-         }
-      }
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (string rawText in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(rawText);
+               PlayerSpecialtyData specialtyData = Util.xmlLoad<PlayerSpecialtyData>(newTextAsset);
+               Specialty.Type uniqueID = specialtyData.type;
+
+               // Save the data in the memory cache
+               if (!_specialtyData.ContainsKey(uniqueID)) {
+                  _specialtyData.Add(uniqueID, specialtyData);
+                  specialtyDataList.Add(specialtyData);
+               }
+            }
+         });
+      });
    }
 
    public override void loadAllXMLData () {

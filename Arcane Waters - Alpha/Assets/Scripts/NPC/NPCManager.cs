@@ -17,7 +17,10 @@ public class NPCManager : XmlManager {
    public List<NPCData> npcDataList { get { return _npcData.Values.ToList(); } }
 
    // If the server finished the initialization of data
-   public bool serverInitialized; 
+   public bool serverInitialized;
+
+   // List of npc data for editor reviewing
+   public List<NPCData> npcList = new List<NPCData>();
 
    #endregion
 
@@ -26,21 +29,26 @@ public class NPCManager : XmlManager {
    }
 
    public void initializeQuestCache () {
-      // Iterate over the files
-      foreach (TextAsset textAsset in textAssets) {
-         // Read and deserialize the file
-         NPCData npcData = Util.xmlLoad<NPCData>(textAsset);
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<string> rawXMLData = DB_Main.getNPCXML();
 
-         // Save the NPC data in the memory cache
-         _npcData.Add(npcData.npcId, npcData);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (string rawText in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(rawText);
+               NPCData npcData = Util.xmlLoad<NPCData>(newTextAsset);
 
-         // Initializes info of the npc
-         if (_npcs.ContainsKey(npcData.npcId)) {
-            _npcs[npcData.npcId].initData();
-         }
-      }
-    
-      serverInitialized = true;
+               // Save the NPC data in the memory cache
+               _npcData.Add(npcData.npcId, npcData);
+               npcList.Add(npcData);
+
+               // Initializes info of the npc
+               if (_npcs.ContainsKey(npcData.npcId)) {
+                  _npcs[npcData.npcId].initData();
+               }
+            }
+            serverInitialized = true;
+         });
+      });
    }
 
    public void initializeNPCClientData (NPCData[] dataList) {

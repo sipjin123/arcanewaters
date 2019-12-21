@@ -23,9 +23,15 @@ public class ShopManager : MonoBehaviour {
 
    private void Start () {
       // Routinely change out the items
-      InvokeRepeating("randomlyGenerateItems", 0f, (float) TimeSpan.FromHours(1).TotalSeconds);
-      InvokeRepeating("randomlyGenerateShips", 0f, (float) TimeSpan.FromHours(1).TotalSeconds);
       InvokeRepeating("randomlyGenerateCropOffers", 0f, (float) TimeSpan.FromHours(CropOffer.REGEN_INTERVAL).TotalSeconds);
+   }
+
+   public void initializeRandomGeneratedItems () {
+      InvokeRepeating("randomlyGenerateItems", 0f, (float) TimeSpan.FromHours(1).TotalSeconds);
+   }
+
+   public void initializeRandomGeneratedShips () {
+      InvokeRepeating("randomlyGenerateShips", 0f, (float) TimeSpan.FromHours(1).TotalSeconds);
    }
 
    public Item getItem (int itemId) {

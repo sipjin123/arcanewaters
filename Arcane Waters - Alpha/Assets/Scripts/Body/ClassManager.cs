@@ -11,6 +11,18 @@ public class ClassManager : XmlManager {
    // Self
    public static ClassManager self;
 
+   // For editor preview of data
+   public List<PlayerClassData> classDataList = new List<PlayerClassData>();
+
+   public enum PlayerStatType
+   {
+      None = 0,
+      Class = 1,
+      Faction = 2, 
+      Specialty = 3,
+      Job = 4
+   }
+
    #endregion
 
    public void Awake () {
@@ -32,17 +44,23 @@ public class ClassManager : XmlManager {
    private void initializeDataCache () {
       _classData = new Dictionary<Class.Type, PlayerClassData>();
 
-      // Iterate over the files
-      foreach (TextAsset textAsset in textAssets) {
-         // Read and deserialize the file
-         PlayerClassData classData = Util.xmlLoad<PlayerClassData>(textAsset);
-         Class.Type uniqueID = classData.type;
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<string> rawXMLData = DB_Main.getPlayerClassXML(PlayerStatType.Class);
 
-         // Save the data in the memory cache
-         if (!_classData.ContainsKey(uniqueID)) {
-            _classData.Add(uniqueID, classData);
-         }
-      }
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (string rawText in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(rawText);
+               PlayerClassData classData = Util.xmlLoad<PlayerClassData>(newTextAsset);
+               Class.Type uniqueID = classData.type;
+
+               // Save the data in the memory cache
+               if (!_classData.ContainsKey(uniqueID)) {
+                  _classData.Add(uniqueID, classData);
+                  classDataList.Add(classData);
+               }
+            }
+         });
+      });
    }
 
    public override void loadAllXMLData () {
@@ -62,3 +80,4 @@ public class ClassManager : XmlManager {
 
    #endregion
 }
+ 

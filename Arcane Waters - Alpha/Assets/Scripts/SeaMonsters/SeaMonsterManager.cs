@@ -75,22 +75,27 @@ public class SeaMonsterManager : XmlManager {
       if (!hasInitialized) {
          seaMonsterDataList = new List<SeaMonsterEntityData>();
          hasInitialized = true;
-         // Iterate over the files
-         foreach (TextAsset textAsset in textAssets) {
-            // Read and deserialize the file
-            SeaMonsterEntityData monsterData = Util.xmlLoad<SeaMonsterEntityData>(textAsset);
-            Enemy.Type typeID = (Enemy.Type) monsterData.seaMonsterType;
-            
-            // Save the monster data in the memory cache
-            if (!_seaMonsterData.ContainsKey(typeID)) {
-               _seaMonsterData.Add(typeID, monsterData);
-               seaMonsterDataList.Add(monsterData);
-            }
-         }
+
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            List<string> rawXMLData = DB_Main.getSeaMonsterXML();
+
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               foreach (string rawText in rawXMLData) {
+                  TextAsset newTextAsset = new TextAsset(rawText);
+                  SeaMonsterEntityData newSeaData = Util.xmlLoad<SeaMonsterEntityData>(newTextAsset);
+                  SeaMonsterEntity.Type typeID = (SeaMonsterEntity.Type) newSeaData.seaMonsterType;
+
+                  if (!_seaMonsterData.ContainsKey(typeID)) {
+                     _seaMonsterData.Add(typeID, newSeaData);
+                     seaMonsterDataList.Add(newSeaData);
+                  }
+               }
+            });
+         });
       }
    }
    
-   public SeaMonsterEntityData getMonster (Enemy.Type enemyType, int itemType) {
+   public SeaMonsterEntityData getMonster (SeaMonsterEntity.Type enemyType, int itemType) {
       return _seaMonsterData[enemyType];
    }
 
@@ -106,7 +111,7 @@ public class SeaMonsterManager : XmlManager {
 
    public List<SeaMonsterEntityData> getAllSeaMonsterData () {
       List<SeaMonsterEntityData> seaMonsterList = new List<SeaMonsterEntityData>();
-      foreach (KeyValuePair<Enemy.Type, SeaMonsterEntityData> item in _seaMonsterData) {
+      foreach (KeyValuePair<SeaMonsterEntity.Type, SeaMonsterEntityData> item in _seaMonsterData) {
          seaMonsterList.Add(item.Value);
       }
       return seaMonsterList;
@@ -130,7 +135,7 @@ public class SeaMonsterManager : XmlManager {
    protected Dictionary<string, List<SeaMonsterSpawner>> _spawners = new Dictionary<string, List<SeaMonsterSpawner>>();
 
    // The cached sea monster data 
-   private Dictionary<Enemy.Type, SeaMonsterEntityData> _seaMonsterData = new Dictionary<Enemy.Type, SeaMonsterEntityData>();
+   private Dictionary<SeaMonsterEntity.Type, SeaMonsterEntityData> _seaMonsterData = new Dictionary<SeaMonsterEntity.Type, SeaMonsterEntityData>();
 
    #endregion
 }

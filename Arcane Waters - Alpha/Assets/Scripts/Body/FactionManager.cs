@@ -11,6 +11,9 @@ public class FactionManager : XmlManager {
    // Self
    public static FactionManager self;
 
+   // For editor preview of data
+   public List<PlayerFactionData> factionDataList = new List<PlayerFactionData>();
+
    #endregion
 
    public void Awake () {
@@ -32,17 +35,23 @@ public class FactionManager : XmlManager {
    private void translateXMLData () {
       _factionData = new Dictionary<Faction.Type, PlayerFactionData>();
 
-      // Iterate over the files
-      foreach (TextAsset textAsset in textAssets) {
-         // Read and deserialize the file
-         PlayerFactionData factionData = Util.xmlLoad<PlayerFactionData>(textAsset);
-         Faction.Type uniqueID = factionData.type;
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<string> rawXMLData = DB_Main.getPlayerClassXML(ClassManager.PlayerStatType.Faction);
 
-         // Save the data in the memory cache
-         if (!_factionData.ContainsKey(uniqueID)) {
-            _factionData.Add(uniqueID, factionData);
-         }
-      }
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (string rawText in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(rawText);
+               PlayerFactionData factionData = Util.xmlLoad<PlayerFactionData>(newTextAsset);
+               Faction.Type uniqueID = factionData.type;
+
+               // Save the data in the memory cache
+               if (!_factionData.ContainsKey(uniqueID)) {
+                  _factionData.Add(uniqueID, factionData);
+                  factionDataList.Add(factionData);
+               }
+            }
+         });
+      });
    }
 
    public override void loadAllXMLData () {

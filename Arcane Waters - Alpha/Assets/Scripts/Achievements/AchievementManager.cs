@@ -15,6 +15,9 @@ public class AchievementManager : XmlManager
    // Determines how many tiers will be setup for all the achievements (Example: Bronze Minerx100, Silver Minerx500, Gold Minerx500, Platinum Minerx1000)
    public const int MAX_TIER_COUNT = 4;
 
+   // List of achievement data for editor review
+   public List<AchievementData> achievmentDataList;
+
    #endregion
 
    public void Awake () {
@@ -51,20 +54,23 @@ public class AchievementManager : XmlManager
 
    private void translateXMLData () {
       _achievementDataCollection = new Dictionary<string, AchievementData>();
+      
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<string> rawXMLData = DB_Main.getAchievementXML();
 
-      // Iterate over the files
-      foreach (TextAsset textAsset in textAssets) {
-         // Read and deserialize the file
-         AchievementData rawData = Util.xmlLoad<AchievementData>(textAsset);
-         string actionKey = rawData.actionType.ToString() + rawData.tier.ToString();
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (string rawText in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(rawText);
+               AchievementData achievementData = Util.xmlLoad<AchievementData>(newTextAsset);
 
-         // Save the achievement data in the memory cache
-         if (_achievementDataCollection.ContainsKey(actionKey)) {
-            Debug.LogWarning("Duplicated ID: " + actionKey + " : " + rawData.achievementName);
-         } else {
-            _achievementDataCollection.Add(actionKey, rawData);
-         }
-      }
+               // Save the achievement data in the memory cache
+               if (!_achievementDataCollection.ContainsKey(achievementData.achievementName)) {
+                  _achievementDataCollection.Add(achievementData.achievementName, achievementData);
+                  achievmentDataList.Add(achievementData);
+               }
+            }
+         });
+      });
    }
 
    public override void loadAllXMLData () {

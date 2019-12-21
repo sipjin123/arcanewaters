@@ -4,6 +4,7 @@ using System.IO;
 using System.Xml.Serialization;
 using System;
 
+[Serializable]
 [XmlRoot("NPCData")]
 public class NPCData
 {

@@ -9,6 +9,7 @@ public class Enemy : NetEntity {
 
    // The Type of Enemy
    public enum Type {
+      None = 0,
       Plant = 100, Golem = 101, Slime = 102, GolemBoss = 103,
       Coralbow = 200, Entarcher = 201, Flower = 202, Muckspirit = 203, Treeman = 204,
       Lizard = 205, Shroom = 206, Wisp = 207, PlayerBattler = 305

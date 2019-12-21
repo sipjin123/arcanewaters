@@ -11,6 +11,9 @@ public class JobManager : XmlManager {
    // Self
    public static JobManager self;
 
+   // For editor preview of data
+   public List<PlayerJobData> jobDataList = new List<PlayerJobData>();
+
    #endregion
 
    public void Awake () {
@@ -32,17 +35,23 @@ public class JobManager : XmlManager {
    private void initializeDataCache () {
       _jobData = new Dictionary<Jobs.Type, PlayerJobData>();
 
-      // Iterate over the files
-      foreach (TextAsset textAsset in textAssets) {
-         // Read and deserialize the file
-         PlayerJobData jobData = Util.xmlLoad<PlayerJobData>(textAsset);
-         Jobs.Type uniqueID = jobData.type;
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<string> rawXMLData = DB_Main.getPlayerClassXML(ClassManager.PlayerStatType.Job);
 
-         // Save the data in the memory cache
-         if (!_jobData.ContainsKey(uniqueID)) {
-            _jobData.Add(uniqueID, jobData);
-         }
-      }
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (string rawText in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(rawText);
+               PlayerJobData jobData = Util.xmlLoad<PlayerJobData>(newTextAsset);
+               Jobs.Type uniqueID = jobData.type;
+
+               // Save the data in the memory cache
+               if (!_jobData.ContainsKey(uniqueID)) {
+                  _jobData.Add(uniqueID, jobData);
+                  jobDataList.Add(jobData);
+               }
+            }
+         });
+      });
    }
 
    public override void loadAllXMLData () {

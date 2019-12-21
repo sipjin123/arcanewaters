@@ -10,11 +10,95 @@ public class DB_MainStub : MonoBehaviour {
 
    #endregion
 
-   public static List<BattlerData> getLandMonsterXML () {
-      return new List<BattlerData>();
+   public static void updateEquipmentXML (string rawData, int typeID, EquipmentToolManager.EquipmentType equipType) {
+   
    }
 
-   public static void updateMonsterXML (BattlerData battleData) {
+   public static void deleteEquipmentXML (int type, EquipmentToolManager.EquipmentType equipType) {
+   }
+
+   public static List<string> getEquipmentXML (EquipmentToolManager.EquipmentType equipType) {
+      return new List<string>();
+   }
+
+   public static void updatePlayerClassXML (string rawData, int key, ClassManager.PlayerStatType playerStatType) {
+
+   }
+
+   public static List<string> getPlayerClassXML (ClassManager.PlayerStatType playerStatType) {
+      return new List<string>();
+   }
+
+   public static void deletePlayerClassXML (ClassManager.PlayerStatType playerStatType, int typeID) {
+
+   }
+
+   public static void updateCraftingXML (string rawData, string name) {
+
+   }
+
+   public static void deleteCraftingXML (string name) {
+
+   }
+
+   public static List<string> getCraftingXML () {
+      return new List<string>();
+   }
+
+   public static void updateAchievementXML (string rawData, string name) {
+
+   }
+
+   public static void deleteAchievementXML (string name) {
+   }
+
+   public static List<string> getAchievementXML () {
+      return new List<string>();
+   }
+
+   public static void updateNPCXML (string rawData, int typeIndex) {
+
+   }
+
+   public static List<string> getNPCXML () {
+      return new List<string>();
+   }
+
+   public static void deleteNPCXML (int typeID) {
+
+   }
+
+   public static void updateShipXML (string rawData, int typeIndex) {
+
+   }
+
+   public static List<string> getShipXML () {
+      return new List<string>();
+   }
+
+   public static void deleteShipXML (int typeID) {
+
+   }
+
+   public static void updateSeaMonsterXML (string rawData, int typeIndex) {
+
+   }
+
+   public static void deleteSeamonsterXML (int typeID) {
+   }
+
+   public static List<string> getSeaMonsterXML () {
+      return new List<string>();
+   }
+
+   public static List<string> getLandMonsterXML () {
+      return new List<string>();
+   }
+
+   public static void deleteLandmonsterXML (int typeID) {
+   }
+
+   public static void updateLandMonsterXML (string rawData, int typeIndex) {
 
    }
 

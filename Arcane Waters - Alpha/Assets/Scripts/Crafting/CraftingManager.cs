@@ -11,6 +11,9 @@ public class CraftingManager : XmlManager {
    // Self
    public static CraftingManager self;
 
+   // For editor preview of data
+   public List<CraftableItemRequirements> craftingDataList = new List<CraftableItemRequirements>();
+
    #endregion
 
    private void Awake () {
@@ -37,21 +40,28 @@ public class CraftingManager : XmlManager {
 
    private void translateXMLData () {
       _craftingData = new Dictionary<string, CraftableItemRequirements>();
-      // Iterate over the files
-      foreach (TextAsset textAsset in textAssets) {
-         // Read and deserialize the file
-         CraftableItemRequirements craftingData = Util.xmlLoad<CraftableItemRequirements>(textAsset);
 
-         // Save the Crafting data in the memory cache
-         string keyName = craftingData.resultItem.category == Item.Category.None ? "Undefined" : craftingData.resultItem.category+"_"+craftingData.resultItem.itemTypeId;
-         if (_craftingData.ContainsKey(keyName)) {
-            _craftingData.Add(keyName, craftingData);
-         } else {
-            D.warning("Key already exists: " + keyName);
-         }
-      }
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<string> rawXMLData = DB_Main.getCraftingXML();
 
-      RewardManager.self.craftableDataList = getAllCraftableData();
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (string rawText in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(rawText);
+               CraftableItemRequirements craftingData = Util.xmlLoad<CraftableItemRequirements>(newTextAsset); 
+               string keyName = craftingData.resultItem.category == Item.Category.None ? "Undefined" : craftingData.resultItem.category + "_" + craftingData.resultItem.itemTypeId;
+               
+               // Save the Crafting data in the memory cache
+               if (!_craftingData.ContainsKey(keyName)) {
+                  _craftingData.Add(keyName, craftingData);
+                  craftingDataList.Add(craftingData);
+               } else {
+                  D.warning("Key already exists: " + keyName);
+               }
+
+               RewardManager.self.craftableDataList = getAllCraftableData();
+            }
+         });
+      });
    }
 
    public override void loadAllXMLData () {

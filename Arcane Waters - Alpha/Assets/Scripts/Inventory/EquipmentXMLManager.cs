@@ -22,6 +22,14 @@ public class EquipmentXMLManager : XmlManager {
    // Holds the xml raw data
    public List<TextAsset> weaponTextAssets, armorTextAssets, helmTextAssets;
 
+   // Display list for editor reviewing
+   public List<WeaponStatData> weaponStatData = new List<WeaponStatData>();
+   public List<ArmorStatData> armorStatData = new List<ArmorStatData>();
+   public List<HelmStatData> helmStatData = new List<HelmStatData>();
+
+   // Determines how many equipment set has been loaded
+   public int equipmentLoadCounter = 0;
+
    #endregion
 
    private void Awake () {
@@ -52,46 +60,76 @@ public class EquipmentXMLManager : XmlManager {
       return null;
    }
 
+   private void finishedLoading () {
+      equipmentLoadCounter ++;
+      if (equipmentLoadCounter == 3) {
+         ShopManager.self.initializeRandomGeneratedItems();
+         equipmentLoadCounter = 0;
+      }
+   }
+
    private void initializeDataCache () {
+      equipmentLoadCounter = 0;
       _weaponStatList = new Dictionary<Weapon.Type, WeaponStatData>();
       _armorStatList = new Dictionary<Armor.Type, ArmorStatData>();
       _helmStatList = new Dictionary<Helm.Type, HelmStatData>();
 
-      // Iterate over the files
-      foreach (TextAsset textAsset in weaponTextAssets) {
-         // Read and deserialize the file
-         WeaponStatData rawData = Util.xmlLoad<WeaponStatData>(textAsset);
-         Weapon.Type uniqueID = rawData.weaponType;
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<string> rawXMLData = DB_Main.getEquipmentXML(EquipmentType.Weapon);
 
-         // Save the data in the memory cache
-         if (!_weaponStatList.ContainsKey(uniqueID)) {
-            _weaponStatList.Add(uniqueID, rawData);
-         }
-      }
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (string rawText in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(rawText);
+               WeaponStatData rawData = Util.xmlLoad<WeaponStatData>(newTextAsset);
+               Weapon.Type uniqueID = rawData.weaponType;
 
-      // Iterate over the files
-      foreach (TextAsset textAsset in armorTextAssets) {
-         // Read and deserialize the file
-         ArmorStatData rawData = Util.xmlLoad<ArmorStatData>(textAsset);
-         Armor.Type uniqueID = rawData.armorType;
+               // Save the data in the memory cache
+               if (!_weaponStatList.ContainsKey(uniqueID)) {
+                  _weaponStatList.Add(uniqueID, rawData);
+                  weaponStatData.Add(rawData);
+               }
+            }
+            finishedLoading();
+         });
+      });
 
-         // Save the data in the memory cache
-         if (!_armorStatList.ContainsKey(uniqueID)) {
-            _armorStatList.Add(uniqueID, rawData);
-         }
-      }
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<string> rawXMLData = DB_Main.getEquipmentXML(EquipmentType.Armor);
 
-      // Iterate over the files
-      foreach (TextAsset textAsset in helmTextAssets) {
-         // Read and deserialize the file
-         HelmStatData rawData = Util.xmlLoad<HelmStatData>(textAsset);
-         Helm.Type uniqueID = rawData.helmType;
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (string rawText in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(rawText);
+               ArmorStatData rawData = Util.xmlLoad<ArmorStatData>(newTextAsset);
+               Armor.Type uniqueID = rawData.armorType;
 
-         // Save the data in the memory cache
-         if (!_helmStatList.ContainsKey(uniqueID)) {
-            _helmStatList.Add(uniqueID, rawData);
-         }
-      }
+               // Save the data in the memory cache
+               if (!_armorStatList.ContainsKey(uniqueID)) {
+                  _armorStatList.Add(uniqueID, rawData);
+                  armorStatData.Add(rawData);
+               }
+            }
+            finishedLoading();
+         });
+      });
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<string> rawXMLData = DB_Main.getEquipmentXML(EquipmentType.Helm);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (string rawText in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(rawText);
+               HelmStatData rawData = Util.xmlLoad<HelmStatData>(newTextAsset);
+               Helm.Type uniqueID = rawData.helmType;
+
+               // Save the data in the memory cache
+               if (!_helmStatList.ContainsKey(uniqueID)) {
+                  _helmStatList.Add(uniqueID, rawData);
+                  helmStatData.Add(rawData);
+               }
+            }
+            finishedLoading();
+         });
+      });
    }
    
    public override void loadAllXMLData () {
