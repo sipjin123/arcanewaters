@@ -51,6 +51,9 @@ public class AdminManager : NetworkBehaviour {
       if (Util.isAutoTesting()) {
          InvokeRepeating("warpRandomly", 10f, 10f);
       }
+
+      // Builds the dictionary of all item names
+      buildItemNamesDictionary();
    }
 
    void Update () {
@@ -147,6 +150,93 @@ public class AdminManager : NetworkBehaviour {
       StartCoroutine(ChatPanel.self.moveCaretToEnd());
    }
 
+   public void tryAutoCompleteForGetItemCommand (string inputString) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      if (!inputString.StartsWith("/admin get_item ")) {
+         return;
+      }
+
+      // Only auto complete if the user added exactly one character to the previous input
+      if (inputString.Length - _lastAutoCompletedInput.Length != 1 ||
+         !inputString.StartsWith(_lastAutoCompletedInput)) {
+
+         // Prevent trying to auto complete this input again
+         _lastAutoCompletedInput = inputString;
+         return;
+      }
+
+      // Prevent trying to auto complete this input again
+      _lastAutoCompletedInput = inputString;
+
+      // Split the command
+      string[] sections = inputString.Split(' ');
+
+      // Check if the user is writing the item name
+      if (sections.Length >= 4 && sections[3].Length > 0) {
+         string categoryStr = sections[2];
+
+         // Since there can be spaces in the item names, join the whole end of the input command to form it
+         string inputItemName = sections[3];
+         for (int i = 4; i < sections.Length; i++) {
+            inputItemName = inputItemName + " " + sections[i];
+         }
+
+         // Get the correct item name dictionary
+         Dictionary<string, int> dictionary;
+         switch (categoryStr.Substring(0, 1).ToLower()) {
+            case "w":
+               dictionary = _weaponNames;
+               break;
+            case "a":
+               dictionary = _armorNames;
+               break;
+            case "c":
+               dictionary = _craftingIngredientNames;
+               break;
+            case "u":
+               dictionary = _usableNames;
+               break;
+            case "b":
+               dictionary = _blueprintNames;
+               break;
+            default:
+               return;
+         }
+
+         // Find the first item name that starts with what the user wrote
+         string foundItemName = null;
+         foreach (string itemName in dictionary.Keys) {
+            // Verify that this item name is longer than what the user wrote
+            if (itemName.Length > inputItemName.Length) {
+
+               // Cut the item name at the same length than what the user wrote
+               string partialItemName = itemName.Substring(0, inputItemName.Length);
+
+               // Compare case insensitive
+               if (partialItemName.Equals(inputItemName, StringComparison.CurrentCultureIgnoreCase)) {
+                  foundItemName = itemName;
+                  break;
+               }
+            }
+         }
+
+         if (foundItemName != null) {
+            // Remove the part of the item name that is already written
+            string autoComplete = foundItemName.Substring(inputItemName.Length);
+
+            // Add the auto complete to the input field text
+            ChatPanel.self.inputField.SetTextWithoutNotify(ChatPanel.self.inputField.text + autoComplete);
+
+            // Select the auto complete part
+            ChatPanel.self.inputField.selectionAnchorPosition = ChatPanel.self.inputField.text.Length;
+            ChatPanel.self.inputField.selectionFocusPosition = ChatPanel.self.inputField.text.Length - autoComplete.Length;
+         }
+      }
+   }
+
    protected void requestAddGold (string parameters) {
       string[] list = parameters.Split(' ');
       int gold = 0;
@@ -213,17 +303,30 @@ public class AdminManager : NetworkBehaviour {
    }
 
    protected void requestGetItem (string parameters) {
-      string[] list = parameters.Split(' ');
+      string[] sections = parameters.Split(' ');
       string categoryStr = "";
-      string itemTypeStr = "";
+      string itemName = "";
       int count = 1;
 
       // Parse the parameters
       try {
-         categoryStr = list[0];
-         itemTypeStr = list[1];
-         if (list.Length > 2) {
-            count = int.Parse(list[2]);
+         categoryStr = sections[0];
+
+         // Determine how many sections form the item name (there can be spaces in the name)
+         int lastNameSectionIndex = 1;
+
+         // If the last section is an integer, it is the count
+         if (sections.Length > 2 && int.TryParse(sections[sections.Length - 1], out count)) {
+            lastNameSectionIndex = sections.Length - 2;
+         } else {
+            lastNameSectionIndex = sections.Length - 1;
+            count = 1;
+         }
+
+         // Join the name sections in a single string
+         itemName = sections[1];
+         for (int i = 2; i <= lastNameSectionIndex; i++) {
+            itemName = itemName + " " + sections[i];
          }
       } catch (System.Exception e) {
          D.warning("Unable to parse from: " + parameters + ", exception: " + e);
@@ -249,74 +352,59 @@ public class AdminManager : NetworkBehaviour {
             category = Item.Category.Blueprint;
             break;
          default:
-            D.error("Could not parse the item category " + categoryStr);
+            ChatManager.self.addChat("Not a valid item category", ChatInfo.Type.Error);
+            D.error("Could not parse the category " + categoryStr);
             return;
       }
+
+      // Search for the item name in lower case
+      itemName = itemName.ToLower();
 
       // Get the item type
       int itemTypeId;
       switch (category) {
          case Item.Category.Weapon:
-            try {
-               itemTypeId = (int) Enum.Parse(typeof(Weapon.Type), itemTypeStr);
-            } catch (Exception e) {
-               D.error("Could not parse the weapon type " + itemTypeStr + ", exception: " + e);
+            if (_weaponNames.ContainsKey(itemName)) {
+               itemTypeId = _weaponNames[itemName];
+            } else {
+               ChatManager.self.addChat("Could not find the weapon " + itemName, ChatInfo.Type.Error);
                return;
             }
             break;
          case Item.Category.Armor:
-            try {
-               itemTypeId = (int) Enum.Parse(typeof(Armor.Type), itemTypeStr);
-            } catch (Exception e) {
-               D.error("Could not parse the armor type " + itemTypeStr + ", exception: " + e);
+            if (_armorNames.ContainsKey(itemName)) {
+               itemTypeId = _armorNames[itemName];
+            } else {
+               ChatManager.self.addChat("Could not find the armor " + itemName, ChatInfo.Type.Error);
                return;
             }
             break;
          case Item.Category.Usable:
-            try {
-               itemTypeId = (int) Enum.Parse(typeof(UsableItem.Type), itemTypeStr);
-            } catch (Exception e) {
-               D.error("Could not parse the usable item type " + itemTypeStr + ", exception: " + e);
+            if (_usableNames.ContainsKey(itemName)) {
+               itemTypeId = _usableNames[itemName];
+            } else {
+               ChatManager.self.addChat("Could not find the usable item " + itemName, ChatInfo.Type.Error);
                return;
             }
             break;
          case Item.Category.CraftingIngredients:
-            try {
-               itemTypeId = (int) Enum.Parse(typeof(CraftingIngredients.Type), itemTypeStr);
-            } catch (Exception e) {
-               D.error("Could not parse the crafting ingredient type " + itemTypeStr + ", exception: " + e);
+            if (_craftingIngredientNames.ContainsKey(itemName)) {
+               itemTypeId = _craftingIngredientNames[itemName];
+            } else {
+               ChatManager.self.addChat("Could not find the crafting ingredient " + itemName, ChatInfo.Type.Error);
                return;
             }
             break;
          case Item.Category.Blueprint:
-            string prefix = "";
-
-            try {
-               // Try to parse a weapon with the given type
-               itemTypeId = (int) Enum.Parse(typeof(Weapon.Type), itemTypeStr);
-               prefix = Blueprint.WEAPON_PREFIX;
-            } catch (Exception e1) {
-               try {
-                  // Try to parse an armor with the given type
-                  itemTypeId = (int) Enum.Parse(typeof(Armor.Type), itemTypeStr);
-                  prefix = Blueprint.ARMOR_PREFIX;
-               } catch (Exception e2) {
-                  D.error("Could not parse the blueprint type " + itemTypeStr + "\n" + e1.ToString() + "\n" + e2.ToString());
-                  return;
-               }
+            if (_blueprintNames.ContainsKey(itemName)) {
+               itemTypeId = _blueprintNames[itemName];
+            } else {
+               ChatManager.self.addChat("Could not find the blueprint " + itemName, ChatInfo.Type.Error);
+               return;
             }
-
-            // Convert the type id to a string
-            string itemTypeIdStr = itemTypeId.ToString();
-
-            // Add the prefix
-            itemTypeIdStr = prefix + itemTypeIdStr;
-
-            // Convert back to an integer
-            itemTypeId = int.Parse(itemTypeIdStr);
             break;
          default:
-            D.error("Could not parse the item type " + itemTypeStr + " of category " + category.ToString());
+            D.error("The category " + category.ToString() + " is not managed.");
             return;
       }
 
@@ -329,11 +417,8 @@ public class AdminManager : NetworkBehaviour {
       int count = 100;
 
       // Parse the optional item count (for stacks)
-      try {
-         if (list.Length > 0) {
-            count = int.Parse(list[0]);
-         }
-      } catch (System.Exception e) {
+      if (list.Length > 0 && !int.TryParse(list[0], out count)) {
+         count = 100;
       }
 
       // Send the request to the server
@@ -771,6 +856,65 @@ public class AdminManager : NetworkBehaviour {
       return wasItemCreated;
    }
 
+   private void buildItemNamesDictionary() {
+      // Clear all the dictionaries
+      _weaponNames.Clear();
+      _armorNames.Clear();
+      _usableNames.Clear();
+      _craftingIngredientNames.Clear();
+      _blueprintNames.Clear();
+
+      // Set all the weapon names
+      foreach (Weapon.Type weaponType in Enum.GetValues(typeof(Weapon.Type))) {
+         addToItemNameDictionary(_weaponNames, Item.Category.Weapon, (int) weaponType);
+      }
+
+      // Set all the armor names
+      foreach (Armor.Type armorType in Enum.GetValues(typeof(Armor.Type))) {
+         addToItemNameDictionary(_armorNames, Item.Category.Armor, (int) armorType);
+      }
+
+      // Set all the usable items names
+      foreach (UsableItem.Type usableType in Enum.GetValues(typeof(UsableItem.Type))) {
+         addToItemNameDictionary(_usableNames, Item.Category.Usable, (int) usableType);
+      }
+
+      // Set all the crafting ingredients names
+      foreach (CraftingIngredients.Type craftingIngredientsType in Enum.GetValues(typeof(CraftingIngredients.Type))) {
+         addToItemNameDictionary(_craftingIngredientNames, Item.Category.CraftingIngredients, (int) craftingIngredientsType);
+      }
+
+      // Set all the weapon blueprint names
+      foreach (Weapon.Type weaponType in Enum.GetValues(typeof(Weapon.Type))) {
+         string itemTypeStr = Blueprint.WEAPON_PREFIX + ((int) weaponType).ToString();
+         addToItemNameDictionary(_blueprintNames, Item.Category.Blueprint, int.Parse(itemTypeStr));
+      }
+
+      // Set all the armor blueprint names
+      foreach (Armor.Type armorType in Enum.GetValues(typeof(Armor.Type))) {
+         string itemTypeStr = Blueprint.ARMOR_PREFIX + ((int) armorType).ToString();
+         addToItemNameDictionary(_blueprintNames, Item.Category.Blueprint, int.Parse(itemTypeStr));
+      }
+   }
+
+   private void addToItemNameDictionary (Dictionary<string, int> dictionary, Item.Category category, int itemTypeId) {
+      // Create a base item
+      Item baseItem = new Item(-1, category, itemTypeId, 1, Util.randomEnum<ColorType>(), Util.randomEnum<ColorType>(), "");
+      baseItem = baseItem.getCastItem();
+
+      // Get the item name in lower case
+      string itemName = baseItem.getName().ToLower();
+
+      // Add the new entry in the dictionary
+      if (!"undefined".Equals(itemName) && !"usable item".Equals(itemName) && !"undefined design".Equals(itemName)) {
+         if (!dictionary.ContainsKey(itemName)) {
+            dictionary.Add(itemName, itemTypeId);
+         } else {
+            D.warning(string.Format("The {0} item name {1} is duplicated.", category.ToString(), itemName));
+         }
+      }
+   }
+
    #region Private Variables
 
    // A history of commands we've requested
@@ -781,6 +925,16 @@ public class AdminManager : NetworkBehaviour {
 
    // Our associated Player object
    protected NetEntity _player;
+
+   // The dictionary of item ids accessible by in-game item name
+   protected Dictionary<string, int> _weaponNames = new Dictionary<string, int>();
+   protected Dictionary<string, int> _armorNames = new Dictionary<string, int>();
+   protected Dictionary<string, int> _usableNames = new Dictionary<string, int>();
+   protected Dictionary<string, int> _craftingIngredientNames = new Dictionary<string, int>();
+   protected Dictionary<string, int> _blueprintNames = new Dictionary<string, int>();
+
+   // The last chat input that went through the auto complete process
+   private string _lastAutoCompletedInput = "";
 
    #endregion
 }

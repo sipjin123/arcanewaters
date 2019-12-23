@@ -64,6 +64,9 @@ public class ChatPanel : MonoBehaviour {
 
       // Rebuild our message list once a second to hide any old messages
       InvokeRepeating("rebuildMessageList", 1f, 1f);
+
+      // Call the autocomplete function when the user writes in chat
+      inputField.onValueChanged.AddListener((string inputString) => ChatManager.self.onChatInputValuechanged(inputString));
    }
 
    void Update () {
@@ -109,8 +112,8 @@ public class ChatPanel : MonoBehaviour {
             inputField.text = "";
          }
 
-         // Unselect the input field
-         EventSystem.current.SetSelectedGameObject(null);
+         // Reselect the input field
+         inputField.ActivateInputField();
       }
 
       // Activate the input field when enter is pressed and the field is unfocused, except if the

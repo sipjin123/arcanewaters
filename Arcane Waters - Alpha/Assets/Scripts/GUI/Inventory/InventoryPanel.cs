@@ -73,6 +73,13 @@ public class InventoryPanel : Panel, IPointerClickHandler {
    public Button ingredientsTabButton;
    public Button othersTabButton;
 
+   // The stat rows for each element
+   public InventoryStatRow physicalStatRow;
+   public InventoryStatRow fireStatRow;
+   public InventoryStatRow earthStatRow;
+   public InventoryStatRow airStatRow;
+   public InventoryStatRow waterStatRow;
+
    // Self
    public static InventoryPanel self;
 
@@ -105,6 +112,19 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       foreach (Item.Category c in workSet) {
          _othersTabCategories.Add(c);
       }
+
+      // Initialize the stat rows
+      physicalStatRow.setElement(Element.Physical);
+      fireStatRow.setElement(Element.Fire);
+      earthStatRow.setElement(Element.Earth);
+      airStatRow.setElement(Element.Air);
+      waterStatRow.setElement(Element.Water);
+
+      physicalStatRow.clear();
+      fireStatRow.clear();
+      earthStatRow.clear();
+      airStatRow.clear();
+      waterStatRow.clear();
    }
 
    public void refreshPanel () {
@@ -139,6 +159,13 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       // Update our character preview stack
       characterStack.updateLayers(userObjects);
 
+      // Clear stat rows
+      physicalStatRow.clear();
+      fireStatRow.clear();
+      earthStatRow.clear();
+      airStatRow.clear();
+      waterStatRow.clear();
+
       // Clear out any current items
       itemCellsContainer.DestroyChildren();
       equippedWeaponCellContainer.DestroyChildren();
@@ -158,8 +185,10 @@ public class InventoryPanel : Panel, IPointerClickHandler {
          // If the item is equipped, place the item cell in the equipped slots
          if (castedItem.id == equippedWeaponId) {
             cell.transform.SetParent(equippedWeaponCellContainer.transform, false);
+            refreshStats((Weapon) castedItem);
          } else if (castedItem.id == equippedArmorId) {
             cell.transform.SetParent(equippedArmorCellContainer.transform, false);
+            refreshStats((Armor) castedItem);
          }
 
          // Set the cell click events
@@ -314,6 +343,59 @@ public class InventoryPanel : Panel, IPointerClickHandler {
 
       _currentPage = 1;
       refreshPanel();
+   }
+
+   public void refreshStats (Weapon equippedWeapon) {
+      physicalStatRow.setEquippedWeapon(equippedWeapon);
+      fireStatRow.setEquippedWeapon(equippedWeapon);
+      earthStatRow.setEquippedWeapon(equippedWeapon);
+      airStatRow.setEquippedWeapon(equippedWeapon);
+      waterStatRow.setEquippedWeapon(equippedWeapon);
+   }
+
+   public void refreshStats (Armor equippedArmor) {
+      physicalStatRow.setEquippedArmor(equippedArmor);
+      fireStatRow.setEquippedArmor(equippedArmor);
+      earthStatRow.setEquippedArmor(equippedArmor);
+      airStatRow.setEquippedArmor(equippedArmor);
+      waterStatRow.setEquippedArmor(equippedArmor);
+   }
+
+   public void setStatModifiers (Item item) {
+      // Skip equipped items
+      if (item.id == _equippedArmorId || item.id == _equippedWeaponId) {
+         return;
+      }
+
+      // Determine if the hovered item is a weapon or an armor
+      if (item is Weapon) {
+         Weapon weapon = (Weapon) item;
+
+         // Set how the stats would change if the item was equipped
+         physicalStatRow.setStatModifiersForWeapon(weapon);
+         fireStatRow.setStatModifiersForWeapon(weapon);
+         earthStatRow.setStatModifiersForWeapon(weapon);
+         airStatRow.setStatModifiersForWeapon(weapon);
+         waterStatRow.setStatModifiersForWeapon(weapon);
+
+      } else if (item is Armor) {
+         Armor armor = (Armor) item;
+
+         // Set how the stats would change if the item was equipped
+         physicalStatRow.setStatModifiersForArmor(armor);
+         fireStatRow.setStatModifiersForArmor(armor);
+         earthStatRow.setStatModifiersForArmor(armor);
+         airStatRow.setStatModifiersForArmor(armor);
+         waterStatRow.setStatModifiersForArmor(armor);
+      }
+   }
+
+   public void clearStatModifiers () {
+      physicalStatRow.disableStatModifiers();
+      fireStatRow.disableStatModifiers();
+      earthStatRow.disableStatModifiers();
+      airStatRow.disableStatModifiers();
+      waterStatRow.disableStatModifiers();
    }
 
    public void showContextMenu (ItemCell itemCell) {

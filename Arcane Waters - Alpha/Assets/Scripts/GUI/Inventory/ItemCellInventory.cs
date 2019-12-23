@@ -4,7 +4,7 @@ using TMPro;
 using System.Collections;
 using UnityEngine.EventSystems;
 
-public class ItemCellInventory : ItemCell, IPointerDownHandler
+public class ItemCellInventory : ItemCell, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
 {
 
    #region Public Variables
@@ -16,6 +16,18 @@ public class ItemCellInventory : ItemCell, IPointerDownHandler
    public CanvasGroup canvasGroup;
 
    #endregion
+
+   public void OnPointerEnter (PointerEventData eventData) {
+      if (_interactable) {
+         InventoryPanel.self.setStatModifiers(getItem());
+      }
+   }
+
+   public void OnPointerExit (PointerEventData eventData) {
+      if (_interactable) {
+         InventoryPanel.self.clearStatModifiers();
+      }
+   }
 
    public void OnPointerDown (PointerEventData eventData) {
       if (_interactable) {

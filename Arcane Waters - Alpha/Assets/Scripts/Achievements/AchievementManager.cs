@@ -62,10 +62,11 @@ public class AchievementManager : XmlManager
             foreach (string rawText in rawXMLData) {
                TextAsset newTextAsset = new TextAsset(rawText);
                AchievementData achievementData = Util.xmlLoad<AchievementData>(newTextAsset);
+               string actionKey = achievementData.actionType.ToString() + achievementData.tier.ToString();
 
                // Save the achievement data in the memory cache
-               if (!_achievementDataCollection.ContainsKey(achievementData.achievementName)) {
-                  _achievementDataCollection.Add(achievementData.achievementName, achievementData);
+               if (!_achievementDataCollection.ContainsKey(actionKey)) {
+                  _achievementDataCollection.Add(actionKey, achievementData);
                   achievmentDataList.Add(achievementData);
                }
             }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using UnityEngine.EventSystems;
 
 public class PanelManager : MonoBehaviour {
    #region Public Variables
@@ -49,13 +50,16 @@ public class PanelManager : MonoBehaviour {
    private void Update () {
       // Let us easily close panels with the Escape key
       if (Input.GetKeyUp(KeyCode.Escape)) {
-         if (confirmScreen.canvasGroup.alpha > 0f) {
+         // The chat input field might remain selected
+         if (EventSystem.current.currentSelectedGameObject == ChatPanel.self.inputField.gameObject) {
+            EventSystem.current.SetSelectedGameObject(null);
+         } else if (confirmScreen.canvasGroup.alpha > 0f) {
             confirmScreen.hide();
          } else if (noticeScreen.canvasGroup.alpha > 0f) {
             noticeScreen.hide();
          } else if (hasPanelInStack()) {
             popPanel();
-         } else if (!OptionsPanel.self.isShowing()) {
+         } else if (!((OptionsPanel) get(Panel.Type.Options)).isShowing()) {
             pushPanel(Panel.Type.Options);
          } else {
             popPanel();

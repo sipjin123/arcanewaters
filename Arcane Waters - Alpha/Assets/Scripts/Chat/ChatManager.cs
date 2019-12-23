@@ -89,6 +89,10 @@ public class ChatManager : MonoBehaviour {
       }
    }
 
+   public void onChatInputValuechanged (string inputString) {
+      Global.player.admin.tryAutoCompleteForGetItemCommand(inputString);
+   }
+
    protected void checkForGuildMessages () {
       // Only the server does this
       if (!NetworkServer.active) {

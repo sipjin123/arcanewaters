@@ -98,7 +98,8 @@ public class NetEntity : NetworkBehaviour
    // The direction we're falling, if any
    public int fallDirection = 0;
 
-   // The admin flag for this entity, only valid on the server
+   // The admin flag for this entity
+   [SyncVar]
    public int adminFlag;
 
    // The Class that this player has chosen

@@ -665,7 +665,6 @@ public class BattleManager : MonoBehaviour {
                float attackApplyDelay = 0;
                AttackAbilityData abilityDataReference = (AttackAbilityData) AbilityManager.getAbility(action.abilityGlobalID, AbilityType.Standard);
                if (abilityDataReference.abilityActionType == AbilityActionType.Ranged || abilityDataReference.abilityActionType == AbilityActionType.CastToTarget) {
-                  // Apply Delay percentage 
                   attackApplyDelay += abilityDataReference.getTotalAnimLength(source, target) * delayMagnitude;
                }
 
