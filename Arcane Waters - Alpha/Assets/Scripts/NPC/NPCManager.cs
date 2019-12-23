@@ -291,16 +291,6 @@ public class NPCManager : XmlManager {
       }
    }
 
-   public override void loadAllXMLData () {
-      base.loadAllXMLData();
-      loadXMLData(NPCToolManager.FOLDER_PATH);
-   }
-
-   public override void clearAllXMLData () {
-      base.clearAllXMLData();
-      textAssets = new List<TextAsset>();
-   }
-
    #region Private Variables
 
    // Keeps track of the NPCs, based on their id

@@ -29,10 +29,6 @@ public class ClassManager : XmlManager {
       self = this;
    }
 
-   private void Start () {
-      initializeDataCache();
-   }
-
    public PlayerClassData getClassData (Class.Type classType) {
       PlayerClassData returnData = _classData[classType];
       if (returnData == null) {
@@ -41,7 +37,7 @@ public class ClassManager : XmlManager {
       return returnData;
    }
 
-   private void initializeDataCache () {
+   public void initializeDataCache () {
       _classData = new Dictionary<Class.Type, PlayerClassData>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -63,14 +59,14 @@ public class ClassManager : XmlManager {
       });
    }
 
-   public override void loadAllXMLData () {
-      base.loadAllXMLData();
-      loadXMLData(PlayerClassTool.FOLDER_PATH);
-   }
+   public void addClassInfo (PlayerClassData classData) {
+      Class.Type uniqueID = classData.type;
 
-   public override void clearAllXMLData () {
-      base.clearAllXMLData();
-      textAssets = new List<TextAsset>();
+      // Save the data in the memory cache
+      if (!_classData.ContainsKey(uniqueID)) {
+         _classData.Add(uniqueID, classData);
+         classDataList.Add(classData);
+      }
    }
 
    #region Private Variables

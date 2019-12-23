@@ -120,8 +120,18 @@ public class MyNetworkManager : NetworkManager {
       // Start up Photon so the servers can talk to each other
       connectToPhotonMaster();
 
-      // Loads the NPC quest data
+      // Loads all SQL Data from server
       NPCManager.self.initializeQuestCache();
+      ShipDataManager.self.initializeDataCache();
+      ClassManager.self.initializeDataCache();
+      FactionManager.self.initializeDataCache();
+      SpecialtyManager.self.initializeDataCache();
+      JobManager.self.initializeDataCache();
+      CraftingManager.self.initializeDataCache();
+      AchievementManager.self.initializeDataCache();
+      EquipmentXMLManager.self.initializeDataCache();
+      SeaMonsterManager.self.initializeSeaMonsterCache();
+      MonsterManager.self.initializeLandMonsterDataCache();
 
       // Schedule the leader boards recalculation
       LeaderBoardsManager.self.scheduleLeaderBoardRecalculation();
@@ -209,6 +219,32 @@ public class MyNetworkManager : NetworkManager {
             // Sends npc data of the area to the client
             player.rpc.Target_ReceiveNPCsForCurrentArea(player.connectionToClient, serializedNPCData(referenceNPCData));
 
+            // Send job info to client
+            player.rpc.Target_ReceiveJobInfo (player.connectionToClient, Util.serialize(JobManager.self.jobDataList));
+
+            // Sends ship data to the client
+            player.rpc.Target_ReceiveAllShipInfo(player.connectionToClient, Util.serialize(ShipDataManager.self.shipDataList));
+
+            // Seamonster data to the client
+            player.rpc.Target_ReceiveAllSeaMonsterInfo(player.connectionToClient, Util.serialize(SeaMonsterManager.self.seaMonsterDataList));
+
+            // Sends all equipment info to client
+            player.rpc.Target_ReceiveEquipmentData(player.connectionToClient, Util.serialize(EquipmentXMLManager.self.weaponStatList), EquipmentToolManager.EquipmentType.Weapon);
+            player.rpc.Target_ReceiveEquipmentData(player.connectionToClient, Util.serialize(EquipmentXMLManager.self.armorStatList), EquipmentToolManager.EquipmentType.Armor);
+            player.rpc.Target_ReceiveEquipmentData(player.connectionToClient, Util.serialize(EquipmentXMLManager.self.helmStatList), EquipmentToolManager.EquipmentType.Helm);
+
+            List<BattlerData> newEnemyList = new List<BattlerData>();
+            foreach (NetworkBehaviour entity in instance.entities) {
+               if (entity is Enemy) {
+                  BattlerData fetchedData = MonsterManager.self.getMonster(entity.GetComponent<Enemy>().enemyType);
+                  newEnemyList.Add(fetchedData);
+               }
+            }
+
+            // Send Landmonster data to the client
+            player.rpc.Target_ReceiveMonsterData(player.connectionToClient, Util.serialize(newEnemyList));
+
+            // Set tutorial info
             TutorialManager.self.sendTutorialInfo(player, false);
 
             // Give the player local authority so that movement feels instantaneous

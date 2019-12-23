@@ -107,7 +107,7 @@ public class InstanceManager : MonoBehaviour {
       
       if (Area.isRandom(areaKey)) {
          // Create any SeaMonsters that exist in this Sea Random Map instance
-         SeaMonsterManager.self.spawnSeaMonstersOnServerForInstance(instance);
+         SeaMonsterManager.self.registerSeaMonstersOnServerForInstance(instance);
       } else {
          // Create any Enemies that exist in this Instance
          EnemyManager.self.spawnEnemiesOnServerForInstance(instance);

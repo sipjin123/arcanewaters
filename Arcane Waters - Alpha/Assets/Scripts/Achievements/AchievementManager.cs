@@ -24,10 +24,6 @@ public class AchievementManager : XmlManager
       self = this;
    }
 
-   private void Start () {
-      translateXMLData();
-   }
-
    public AchievementData getAchievementData (string uniqueID) {
       AchievementData returnData = _achievementDataCollection[uniqueID];
       return returnData;
@@ -52,7 +48,7 @@ public class AchievementManager : XmlManager
       return new List<AchievementData>(newDataList);
    }
 
-   private void translateXMLData () {
+   public void initializeDataCache () {
       _achievementDataCollection = new Dictionary<string, AchievementData>();
       
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -72,16 +68,6 @@ public class AchievementManager : XmlManager
             }
          });
       });
-   }
-
-   public override void loadAllXMLData () {
-      base.loadAllXMLData();
-      loadXMLData(AchievementToolManager.FOLDER_PATH);
-   }
-
-   public override void clearAllXMLData () {
-      base.clearAllXMLData();
-      textAssets = new List<TextAsset>();
    }
 
    public static void registerUserAchievement (int userID, ActionType action, int customCount = 1, Item dependencyItem = null) {

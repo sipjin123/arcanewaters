@@ -20,10 +20,6 @@ public class JobManager : XmlManager {
       self = this;
    }
 
-   private void Start () {
-      initializeDataCache();
-   }
-
    public PlayerJobData getJobData (Jobs.Type jobtype) {
       PlayerJobData returnData = _jobData[jobtype];
       if (returnData == null) {
@@ -32,9 +28,7 @@ public class JobManager : XmlManager {
       return returnData;
    }
 
-   private void initializeDataCache () {
-      _jobData = new Dictionary<Jobs.Type, PlayerJobData>();
-
+   public void initializeDataCache () {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<string> rawXMLData = DB_Main.getPlayerClassXML(ClassManager.PlayerStatType.Job);
 
@@ -54,14 +48,16 @@ public class JobManager : XmlManager {
       });
    }
 
-   public override void loadAllXMLData () {
-      base.loadAllXMLData();
-      loadXMLData(PlayerJobToolManager.FOLDER_PATH);
-   }
+   public void receiveDataFromServer (List<PlayerJobData> receivedJobDataList) {
+      foreach (PlayerJobData jobData in receivedJobDataList) {
+         Jobs.Type uniqueID = jobData.type;
 
-   public override void clearAllXMLData () {
-      base.clearAllXMLData();
-      textAssets = new List<TextAsset>();
+         // Save the data in the memory cache
+         if (!_jobData.ContainsKey(uniqueID)) {
+            _jobData.Add(uniqueID, jobData);
+            jobDataList.Add(jobData);
+         }
+      }
    }
 
    #region Private Variables

@@ -92,9 +92,6 @@ public class BattleManager : MonoBehaviour {
          this.addEnemyToBattle(battle, enemy, Battle.TeamType.Defenders, playerBody);
       }
 
-      // Provides the clients with the list of monsters present in the battle sequence
-      playerBody.rpc.Cmd_ProcessMonsterData(new List<Enemy.Type>(enemyTypes).ToArray());
-
       return battle;
    }
 
@@ -658,7 +655,9 @@ public class BattleManager : MonoBehaviour {
                AttackAction attackAction = (AttackAction) action;
 
                // Registers the usage of the Offensive Skill for achievement recording
-               AchievementManager.registerUserAchievement(source.player.userId, ActionType.OffensiveSkillUse);
+               if (source.player.userId != 0) {
+                  AchievementManager.registerUserAchievement(source.player.userId, ActionType.OffensiveSkillUse);
+               }
 
                // Applies damage delay for abilities with extra animation durations such as casting and aiming
                float delayMagnitude = .5f;

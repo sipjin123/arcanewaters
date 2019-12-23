@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System.IO;
+using System.Linq;
 
 public class ShipDataManager : XmlManager {
    #region Public Variables
@@ -14,27 +15,25 @@ public class ShipDataManager : XmlManager {
    // Determines if the list is generated already
    public bool hasInitialized;
 
-   // Holds the list of the xml translated data
-   public List<ShipData> shipDataList;
+   // Holds the ship data
+   public List<ShipData> shipDataList = new List<ShipData>();
 
    #endregion
 
    public void Awake () {
       self = this;
-      initializeDataCache();
    }
 
    public ShipData getShipData (Ship.Type shipType) {
-      ShipData returnData = shipDataList.Find(_ => _.shipType == shipType);
+      ShipData returnData = _shipData[shipType];
       if (returnData == null) {
          return new ShipData();
       }
       return returnData;
    }
 
-   private void initializeDataCache () {
+   public void initializeDataCache () {
       if (!hasInitialized) {
-         shipDataList = new List<ShipData>();
          hasInitialized = true;
 
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -59,14 +58,13 @@ public class ShipDataManager : XmlManager {
       }
    }
 
-   public override void loadAllXMLData () {
-      base.loadAllXMLData();
-      loadXMLData(ShipDataToolManager.FOLDER_PATH);
-   }
-
-   public override void clearAllXMLData () {
-      base.clearAllXMLData();
-      textAssets = new List<TextAsset>();
+   public void receiveShipDataFromServer (List<ShipData> shipDataList) {
+      foreach (ShipData shipData in shipDataList) {
+         if (!_shipData.ContainsKey(shipData.shipType)) {
+            _shipData.Add(shipData.shipType, shipData);
+            this.shipDataList.Add(shipData);
+         }
+      }
    }
 
    #region Private Variables

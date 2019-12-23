@@ -130,9 +130,13 @@ public class Weapon : EquippableItem {
    }
 
    public static string getName (Weapon.Type weaponType) {
+      if (weaponType == Type.None) {
+         return "None";
+      }
+
       WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponType);
       if (weaponData == null) {
-         D.warning("Weapon data does not exist! Go to Equipment Editor and make new data");
+         D.warning("Weapon data does not exist! Go to Equipment Editor and make new data :: (" + weaponType + ")");
          return "Undefined";
       }
 

@@ -20,10 +20,6 @@ public class SpecialtyManager : XmlManager {
       self = this;
    }
 
-   private void Start () {
-      initializeDataCache();
-   }
-
    public PlayerSpecialtyData getSpecialtyData (Specialty.Type specialtytype) {
       PlayerSpecialtyData returnData = _specialtyData[specialtytype];
       if (returnData == null) {
@@ -32,7 +28,7 @@ public class SpecialtyManager : XmlManager {
       return returnData;
    }
 
-   private void initializeDataCache () {
+   public void initializeDataCache () {
       _specialtyData = new Dictionary<Specialty.Type, PlayerSpecialtyData>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -54,14 +50,13 @@ public class SpecialtyManager : XmlManager {
       });
    }
 
-   public override void loadAllXMLData () {
-      base.loadAllXMLData();
-      loadXMLData(PlayerSpecialtyToolManager.FOLDER_PATH);
-   }
-
-   public override void clearAllXMLData () {
-      base.clearAllXMLData();
-      textAssets = new List<TextAsset>();
+   public void addSpecialtyInfo (PlayerSpecialtyData specialtyData) {
+      Specialty.Type uniqueID = specialtyData.type;
+      // Save the data in the memory cache
+      if (!_specialtyData.ContainsKey(uniqueID)) {
+         _specialtyData.Add(uniqueID, specialtyData);
+         specialtyDataList.Add(specialtyData);
+      }
    }
 
    #region Private Variables

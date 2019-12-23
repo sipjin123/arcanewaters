@@ -283,7 +283,7 @@ public class DamageSimulatorPanel : MonoBehaviour {
 
    private void processPlayerOutputDamage () {
       AttackAbilityData fetchedAbility = AbilityManager.self.allGameAbilities.Find(_ => _.itemName == abilityText.text) as AttackAbilityData;
-      BattlerData battleData = MonsterManager.self.getMonster(Enemy.Type.PlayerBattler, 0);
+      BattlerData battleData = MonsterManager.self.getMonster(Enemy.Type.PlayerBattler);
       int level = int.Parse(playerLevel.text);
 
       baseDamage = battleData.baseDamage;
@@ -318,7 +318,7 @@ public class DamageSimulatorPanel : MonoBehaviour {
    }
 
    private void processPlayerOutputDefense () {
-      BattlerData battleData = MonsterManager.self.getMonster(Enemy.Type.PlayerBattler, 0);
+      BattlerData battleData = MonsterManager.self.getMonster(Enemy.Type.PlayerBattler);
       int level = int.Parse(playerLevel.text);
 
       baseDefense = battleData.baseDefense;

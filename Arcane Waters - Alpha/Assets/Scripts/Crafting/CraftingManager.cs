@@ -20,12 +20,6 @@ public class CraftingManager : XmlManager {
       self = this;
    }
 
-   private void Start () {
-#if IS_SERVER_BUILD
-      translateXMLData();
-#endif
-   }
-
    public CraftableItemRequirements getItem(Item.Category itemCategory, int itemType) {
       return _craftingData[itemCategory.ToString()];
    }
@@ -38,7 +32,7 @@ public class CraftingManager : XmlManager {
       return craftableList;
    }
 
-   private void translateXMLData () {
+   public void initializeDataCache () {
       _craftingData = new Dictionary<string, CraftableItemRequirements>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -62,16 +56,6 @@ public class CraftingManager : XmlManager {
             }
          });
       });
-   }
-
-   public override void loadAllXMLData () {
-      base.loadAllXMLData();
-      loadXMLData(CraftingToolManager.FOLDER_PATH);
-   }
-
-   public override void clearAllXMLData () {
-      base.clearAllXMLData();
-      textAssets = new List<TextAsset>();
    }
 
    #region Private Variables

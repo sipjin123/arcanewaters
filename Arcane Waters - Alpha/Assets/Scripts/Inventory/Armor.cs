@@ -177,9 +177,13 @@ public class Armor : EquippableItem {
    }
 
    public static string getName (Armor.Type armorType) {
+      if (armorType == Type.None) {
+         return "None";
+      }
+
       ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(armorType);
       if (armorData == null) {
-         D.warning("Armor data does not exist! Go to Equipment Editor and make new data");
+         D.warning("Armor data does not exist! Go to Equipment Editor and make new data :: (" + armorType + ")");
          return "Undefined";
       }
 

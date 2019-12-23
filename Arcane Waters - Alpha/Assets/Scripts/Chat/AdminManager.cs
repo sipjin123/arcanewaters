@@ -51,9 +51,6 @@ public class AdminManager : NetworkBehaviour {
       if (Util.isAutoTesting()) {
          InvokeRepeating("warpRandomly", 10f, 10f);
       }
-
-      // Builds the dictionary of all item names
-      buildItemNamesDictionary();
    }
 
    void Update () {
@@ -603,6 +600,15 @@ public class AdminManager : NetworkBehaviour {
       // Add it to the Instance
       Instance instance = InstanceManager.self.getInstance(_player.instanceId);
       InstanceManager.self.addEnemyToInstance(enemy, instance);
+
+      // Get battler data of enemy to send to client
+      List<BattlerData> newEnemyList = new List<BattlerData>();
+      BattlerData fetchedData = MonsterManager.self.getMonster(enemy.enemyType);
+      newEnemyList.Add(fetchedData);
+
+      // Provides the clients with the list of monsters present in the battle sequence
+      _player.rpc.Target_ReceiveMonsterData(_player.connectionToClient, Util.serialize(newEnemyList));
+
       enemy.transform.position = _player.transform.position;
       enemy.desiredPosition = enemy.transform.position;
       NetworkServer.Spawn(enemy.gameObject);
@@ -856,7 +862,7 @@ public class AdminManager : NetworkBehaviour {
       return wasItemCreated;
    }
 
-   private void buildItemNamesDictionary() {
+   public void buildItemNamesDictionary() {
       // Clear all the dictionaries
       _weaponNames.Clear();
       _armorNames.Clear();

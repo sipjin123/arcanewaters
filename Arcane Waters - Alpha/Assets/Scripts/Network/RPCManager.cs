@@ -26,6 +26,42 @@ public class RPCManager : NetworkBehaviour {
       NPCManager.self.initializeNPCClientData(npcDataList);
    }
 
+   [TargetRpc]
+   public void Target_ReceiveEquipmentData (NetworkConnection connection, string[] rawData, EquipmentToolManager.EquipmentType equipType) {
+      switch (equipType) {
+         case EquipmentToolManager.EquipmentType.Weapon:
+            WeaponStatData[] weaponDataList = Util.unserialize<WeaponStatData>(rawData).ToArray();
+            EquipmentXMLManager.self.receiveWeaponDataFromServer(new List<WeaponStatData>(weaponDataList));
+            break;
+         case EquipmentToolManager.EquipmentType.Armor:
+            ArmorStatData[] armorDataList = Util.unserialize<ArmorStatData>(rawData).ToArray();
+            EquipmentXMLManager.self.receiveArmorDataFromServer(new List<ArmorStatData>(armorDataList));
+            break;
+         case EquipmentToolManager.EquipmentType.Helm:
+            HelmStatData[] helmDataList = Util.unserialize<HelmStatData>(rawData).ToArray();
+            EquipmentXMLManager.self.receiveHelmDataFromServer(new List<HelmStatData>(helmDataList));
+            break;
+      }
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveAllShipInfo (NetworkConnection connection, string[] rawShipInfo) {
+      // Deserialize data
+      ShipData[] shipDataList = Util.unserialize<ShipData>(rawShipInfo).ToArray();
+
+      // Cache to npc manager 
+      ShipDataManager.self.receiveShipDataFromServer(new List<ShipData>(shipDataList));
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveAllSeaMonsterInfo (NetworkConnection connection, string[] rawInfo) {
+      // Deserialize data
+      SeaMonsterEntityData[] seaMonsterList = Util.unserialize<SeaMonsterEntityData>(rawInfo).ToArray();
+
+      // Cache to npc manager 
+      SeaMonsterManager.self.receiveListFromServer(seaMonsterList);
+   }
+
    [Command]
    public void Cmd_InteractAnimation (Anim.Type animType) {
       Rpc_InteractAnimation(animType);
@@ -2553,10 +2589,22 @@ public class RPCManager : NetworkBehaviour {
             // Updates the ability info in the SQL Database
             DB_Main.updateAbilitiesData(playerBody.userId, newSQLData);
          }
-
+         
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Provides the client with the info of the Equipped Abilities
             Target_UpdateBattleAbilityUI(playerBody.connectionToClient, Util.serialize(abilityDataList.FindAll(_=>_.equipSlotIndex >= 0)));
+
+            // Send class info to client
+            PlayerClassData currentClassData = ClassManager.self.getClassData(playerBody.classType);
+            Target_ReceiveClassInfo(playerBody.connectionToClient, JsonUtility.ToJson(currentClassData));
+
+            // Send faction info to client
+            PlayerFactionData currentFactionData = FactionManager.self.getFactionData(playerBody.faction);
+            Target_ReceiveFactionInfo(playerBody.connectionToClient, JsonUtility.ToJson(currentFactionData));
+
+            // Send specialty info to client
+            PlayerSpecialtyData currentSpecialtyData = SpecialtyManager.self.getSpecialtyData(playerBody.specialty);
+            Target_ReceiveSpecialtyInfo(playerBody.connectionToClient, JsonUtility.ToJson(currentSpecialtyData));
          });
       });
    }
@@ -2710,6 +2758,30 @@ public class RPCManager : NetworkBehaviour {
       BattleUIManager.self.SetupAbilityUI(attackAbilityDataList.OrderBy(_ =>_.equipSlotIndex).ToArray());
    }
 
+   [TargetRpc]
+   public void Target_ReceiveClassInfo (NetworkConnection connection, string rawClassData) {
+      PlayerClassData classData = JsonUtility.FromJson<PlayerClassData>(rawClassData);
+      ClassManager.self.addClassInfo(classData);
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveJobInfo (NetworkConnection connection, string[] rawData) {
+      List<PlayerJobData> jobData = Util.unserialize<PlayerJobData>(rawData);
+      JobManager.self.receiveDataFromServer(jobData);
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveSpecialtyInfo (NetworkConnection connection, string rawSpecialtyData) {
+      PlayerSpecialtyData specialtyData = JsonUtility.FromJson<PlayerSpecialtyData>(rawSpecialtyData);
+      SpecialtyManager.self.addSpecialtyInfo(specialtyData);
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveFactionInfo (NetworkConnection connection, string rawFactionData) {
+      PlayerFactionData factionData = JsonUtility.FromJson<PlayerFactionData>(rawFactionData);
+      FactionManager.self.addFactionInfo(factionData);
+   }
+
    [Server]
    private void processCraftingItems (Item[] itemRequestList) {
       List<CraftableItemRequirements> itemReturnList = new List<CraftableItemRequirements>();
@@ -2743,7 +2815,7 @@ public class RPCManager : NetworkBehaviour {
       }
 
       if (battlerDataList.Count > 0) {
-         Target_ReceiveMonsterData(_player.connectionToClient, battlerDataList.ToArray());
+         Target_ReceiveMonsterData(_player.connectionToClient, Util.serialize(battlerDataList));
       }
 
       processEnemySkills(battlerDataList);
@@ -2787,13 +2859,15 @@ public class RPCManager : NetworkBehaviour {
    #endregion
 
    [TargetRpc]
-   public void Target_ReceiveMonsterData (NetworkConnection connection, BattlerData[] dataList) {
+   public void Target_ReceiveMonsterData (NetworkConnection connection, string[] rawData) {
+      List<BattlerData> dataList = Util.unserialize<BattlerData>(rawData);
+
       // Translates JSON Raw data into ability data for each monster
-      foreach(BattlerData battlerData in dataList) {
+      foreach (BattlerData battlerData in dataList) {
          battlerData.battlerAbilities.attackAbilityDataList = Util.unserialize<AttackAbilityData>(battlerData.battlerAbilities.attackAbilityRawData).ToArray();
          battlerData.battlerAbilities.buffAbilityDataList = Util.unserialize<BuffAbilityData>(battlerData.battlerAbilities.buffAbilityRawData).ToArray();
       }
-      MonsterManager.self.receiveListFromServer(dataList);
+      MonsterManager.self.receiveListFromServer(dataList.ToArray());
    }
 
    [Command]

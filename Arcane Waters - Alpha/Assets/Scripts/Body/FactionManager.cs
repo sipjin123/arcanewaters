@@ -20,10 +20,6 @@ public class FactionManager : XmlManager {
       self = this;
    }
 
-   private void Start () {
-      translateXMLData();
-   }
-
    public PlayerFactionData getFactionData (Faction.Type factionType) {
       PlayerFactionData returnData = _factionData[factionType];
       if (returnData == null) {
@@ -32,7 +28,7 @@ public class FactionManager : XmlManager {
       return returnData;
    }
 
-   private void translateXMLData () {
+   public void initializeDataCache () {
       _factionData = new Dictionary<Faction.Type, PlayerFactionData>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -54,14 +50,14 @@ public class FactionManager : XmlManager {
       });
    }
 
-   public override void loadAllXMLData () {
-      base.loadAllXMLData();
-      loadXMLData(PlayerFactionToolManager.FOLDER_PATH);
-   }
+   public void addFactionInfo (PlayerFactionData factionData) {
+      Faction.Type uniqueID = factionData.type;
 
-   public override void clearAllXMLData () {
-      base.clearAllXMLData();
-      textAssets = new List<TextAsset>();
+      // Save the data in the memory cache
+      if (!_factionData.ContainsKey(uniqueID)) {
+         _factionData.Add(uniqueID, factionData);
+         factionDataList.Add(factionData);
+      }
    }
 
    #region Private Variables

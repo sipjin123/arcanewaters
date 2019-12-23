@@ -41,7 +41,7 @@ public class RewardManager : MonoBehaviour {
       return newLootLibrary;
    }
 
-   private void Start () {
+   public void initSeaMonsterLootList () {
       _seaMonsterLootList = new List<SeaMonsterLootLibrary>();
       foreach (SeaMonsterEntityData seaMonsterData in SeaMonsterManager.self.seaMonsterDataList) {
          SeaMonsterLootLibrary newLibrary = new SeaMonsterLootLibrary();
@@ -50,7 +50,9 @@ public class RewardManager : MonoBehaviour {
 
          _seaMonsterLootList.Add(newLibrary);
       }
+   }
 
+   public void initLandMonsterLootList () {
       _landMonsterLootList = new List<EnemyLootLibrary>();
       foreach (BattlerData monsterData in MonsterManager.self.monsterDataList) {
          EnemyLootLibrary newLibrary = new EnemyLootLibrary();

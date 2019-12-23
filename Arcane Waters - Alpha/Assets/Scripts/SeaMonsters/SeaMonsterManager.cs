@@ -20,6 +20,27 @@ public class SeaMonsterManager : XmlManager {
    // Holds the list of the xml translated data
    public List<SeaMonsterEntityData> seaMonsterDataList;
 
+   // Holds the info the monsters to spawn after fetching data from SQL database
+   public List<SeaMonsterSpawnData> scheduledSpawnList = new List<SeaMonsterSpawnData>();
+
+   public class SeaMonsterSpawnData
+   {
+      public SeaMonsterSpawner seaMonsterSpawner;
+      public Instance instance;
+
+      public void spawn () {
+         // Create an Enemy in this instance
+         SeaMonsterEntity seaMonster = Instantiate(PrefabsManager.self.seaMonsterPrefab);
+         seaMonster.monsterType = seaMonsterSpawner.enemyType;
+         seaMonster.areaKey = instance.areaKey;
+
+         // Add it to the Instance
+         InstanceManager.self.addSeaMonsterToInstance(seaMonster, instance);
+         seaMonster.transform.position = seaMonsterSpawner.transform.position;
+         NetworkServer.Spawn(seaMonster.gameObject);
+      }
+   }
+
    #endregion
 
    public void Awake () {
@@ -33,10 +54,6 @@ public class SeaMonsterManager : XmlManager {
       }
    }
    
-   private void Start () {
-      initializeSeaMonsterCache();
-   }
-
    #region Spawn Features
 
    public void storeSpawner (SeaMonsterSpawner spawner, string areaKey) {
@@ -47,23 +64,25 @@ public class SeaMonsterManager : XmlManager {
       }
    }
 
-   public void spawnSeaMonstersOnServerForInstance (Instance instance) {
-      // If we don't have any spawners defined for this Area, then we're done
-      if (!_spawners.ContainsKey(instance.areaKey)) {
-         D.log("No SeaMonster Spawners defined for Area Key: " + instance.areaKey);
-         return;
-      }
-
+   public void registerSeaMonstersOnServerForInstance (Instance instance) {
+      // Registers the new monsters to spawn to a Queue which will trigger after the Seamonster data is fetched
       foreach (SeaMonsterSpawner spawner in _spawners[instance.areaKey]) {
-         // Create an Enemy in this instance
-         SeaMonsterEntity seaMonster = Instantiate(PrefabsManager.self.seaMonsterPrefab);
-         seaMonster.monsterType = spawner.enemyType;
-         seaMonster.areaKey = instance.areaKey;
+         scheduledSpawnList.Add(new SeaMonsterSpawnData {
+            instance = instance,
+            seaMonsterSpawner = spawner
+         });
+      }
+   }
 
-         // Add it to the Instance
-         InstanceManager.self.addSeaMonsterToInstance(seaMonster, instance);
-         seaMonster.transform.position = spawner.transform.position;
-         NetworkServer.Spawn(seaMonster.gameObject);
+   public void spawnSeamonstersOnServerForInstance  () {
+      foreach (SeaMonsterSpawnData spawnSched in scheduledSpawnList) {
+         // If we don't have any spawners defined for this Area, then we're done
+         if (!_spawners.ContainsKey(spawnSched.instance.areaKey)) {
+            D.log("No SeaMonster Spawners defined for Area Key: " + spawnSched.instance.areaKey);
+            return;
+         }
+
+         spawnSched.spawn();
       }
    }
 
@@ -71,7 +90,7 @@ public class SeaMonsterManager : XmlManager {
 
    #region XML Features
 
-   private void initializeSeaMonsterCache () {
+   public void initializeSeaMonsterCache () {
       if (!hasInitialized) {
          seaMonsterDataList = new List<SeaMonsterEntityData>();
          hasInitialized = true;
@@ -90,6 +109,8 @@ public class SeaMonsterManager : XmlManager {
                      seaMonsterDataList.Add(newSeaData);
                   }
                }
+               spawnSeamonstersOnServerForInstance ();
+               RewardManager.self.initSeaMonsterLootList();
             });
          });
       }
@@ -115,16 +136,6 @@ public class SeaMonsterManager : XmlManager {
          seaMonsterList.Add(item.Value);
       }
       return seaMonsterList;
-   }
-
-   public override void loadAllXMLData () {
-      base.loadAllXMLData();
-      loadXMLData(SeaMonsterToolManager.FOLDER_PATH);
-   }
-
-   public override void clearAllXMLData () {
-      base.clearAllXMLData();
-      textAssets = new List<TextAsset>();
    }
 
    #endregion
