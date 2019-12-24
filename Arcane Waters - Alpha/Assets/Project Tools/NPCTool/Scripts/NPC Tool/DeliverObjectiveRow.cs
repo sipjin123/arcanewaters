@@ -45,6 +45,12 @@ public class DeliverObjectiveRow : MonoBehaviour
       itemIcon.sprite = Util.getRawSpriteIcon(deliverObjective.category, deliverObjective.itemTypeId);
 
       count.text = deliverObjective.count.ToString();
+      if (deliverObjective.category == Item.Category.Quest_Item) {
+         deliverObjective.count = 1;
+         count.gameObject.SetActive(false);
+      } else {
+         count.gameObject.SetActive(true);
+      }
    }
 
    public QuestObjectiveDeliver getModifiedDeliverObjective () {

@@ -34,6 +34,12 @@ public class QuestNode
    [XmlArray("FriendshipRewards"), XmlArrayItem("Friendship")]
    public QuestRewardFriendship[] friendshipRewards = null;
 
+   // The required gold to provide to the npc
+   public int goldRequirement;
+
+   // The rewarded gold upon completion
+   public int goldReward;
+
    #endregion
 
    public QuestNode () {
@@ -41,7 +47,7 @@ public class QuestNode
 
    public QuestNode (int id, int nextNodeId, string npcText, string userText,
       QuestObjectiveDeliver[] deliverObjectives, QuestRewardItem[] itemRewards,
-      QuestRewardFriendship[] friendshipRewards) {
+      QuestRewardFriendship[] friendshipRewards, int goldRequired, int goldReward) {
       this.nodeId = id;
       this.nextNodeId = nextNodeId;
       this.npcText = npcText;
@@ -49,6 +55,8 @@ public class QuestNode
       this.deliverObjectives = deliverObjectives;
       this.itemRewards = itemRewards;
       this.friendshipRewards = friendshipRewards;
+      this.goldRequirement = goldRequired;
+      this.goldReward = goldReward;
    }
 
    public List<QuestObjective> getAllQuestObjectives () {
@@ -61,6 +69,15 @@ public class QuestNode
             foreach(QuestObjective o in deliverObjectives) {
                _allQuestObjectives.Add(o);
             }
+         }
+
+         if (goldRequirement > 0) {
+            QuestObjectiveDeliver questDeliver = new QuestObjectiveDeliver {
+               category = Item.Category.Currency,
+               count = goldRequirement,
+               itemTypeId = 0,
+            };
+            _allQuestObjectives.Add(questDeliver);
          }
       }
       return _allQuestObjectives;

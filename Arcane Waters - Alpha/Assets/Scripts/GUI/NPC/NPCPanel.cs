@@ -116,18 +116,23 @@ public class NPCPanel : Panel {
          // Set the quest title
          string questTitle = quest.title;
 
+         string questStatus = null;
+         if (quest.questProgress > 0) {
+            questStatus = "In Progress";
+         }
+
          // Verifies if the user has enough friendship to start the quest
          bool canStartQuest = true;
          if (!NPCFriendship.isRankAboveOrEqual(friendshipLevel, quest.friendshipRankRequired)) {
             canStartQuest = false;
-            questTitle += " (friendship too low)";
+            questStatus = "Friendship too Low";
          }
 
          // Create a clickable text row for the quest
          addDialogueOptionRow(Mode.QuestList, ClickableText.Type.NPCDialogueOption,
-            () => questSelectionRowClickedOn(quest.questId), canStartQuest, questTitle);
+            () => questSelectionRowClickedOn(quest.questId), canStartQuest, questTitle, questStatus);
       }
-
+      
       // Create a clickable text row for the gift offering
       if (canOfferGift) {
          addDialogueOptionRow(Mode.QuestList, ClickableText.Type.Gift,
@@ -164,7 +169,7 @@ public class NPCPanel : Panel {
 
       // Retrieve the quest objectives
       List<QuestObjective> questObjectives = node.getAllQuestObjectives();
-
+      
       // If there are quest objectives, display them in their section
       if (questObjectives != null && questObjectives.Count > 0) {
          // Enable the quest objectives section
@@ -214,7 +219,7 @@ public class NPCPanel : Panel {
    }
 
    public void updatePanelWithCustomDialogue (int friendshipLevel, string npcText,
-      ClickableText.Type userTextType, string userText) {
+      ClickableText.Type userTextType, string userText, string questStatusText = null) {
       // Show the correct section
       configurePanelForMode(Mode.QuestNode);
 
@@ -223,14 +228,14 @@ public class NPCPanel : Panel {
 
       // Clear out the old clickable options
       clearDialogueOptions();
-
+      
       // Create a clickable text row with the user's answer
       if (userText == null) {
          addDialogueOptionRow(Mode.QuestNode, userTextType,
             () => backToQuestSelectionRowClickedOn(), true);
       } else {
          addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.NPCDialogueOption,
-            () => backToQuestSelectionRowClickedOn(), true, userText);
+            () => backToQuestSelectionRowClickedOn(), true, userText, questStatusText);
       }
    }
 
@@ -395,7 +400,7 @@ public class NPCPanel : Panel {
    }
 
    private void addDialogueOptionRow (Mode mode, ClickableText.Type clickableType,
-      UnityEngine.Events.UnityAction functionToCall, bool isInteractive, string text = null) {
+      UnityEngine.Events.UnityAction functionToCall, bool isInteractive, string text = null, string statusText = null) {
       // Find the correct container that will hold the row
       GameObject container;
       switch (mode) {
@@ -413,6 +418,11 @@ public class NPCPanel : Panel {
       // Create a clickable text row
       ClickableText row = Instantiate(dialogueOptionRowPrefab);
       row.transform.SetParent(container.transform);
+
+      if (statusText != null) {
+         row.statusIndicator.SetActive(true);
+         row.setBackground(isInteractive, statusText);
+      }
 
       // Set the text
       if (text == null) {

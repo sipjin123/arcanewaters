@@ -49,7 +49,7 @@ public class RPCManager : NetworkBehaviour {
       // Deserialize data
       ShipData[] shipDataList = Util.unserialize<ShipData>(rawShipInfo).ToArray();
 
-      // Cache to npc manager 
+      // Cache to ship data manager 
       ShipDataManager.self.receiveShipDataFromServer(new List<ShipData>(shipDataList));
    }
 
@@ -58,7 +58,7 @@ public class RPCManager : NetworkBehaviour {
       // Deserialize data
       SeaMonsterEntityData[] seaMonsterList = Util.unserialize<SeaMonsterEntityData>(rawInfo).ToArray();
 
-      // Cache to npc manager 
+      // Cache to sea monster manager 
       SeaMonsterManager.self.receiveListFromServer(seaMonsterList);
    }
 
@@ -1172,9 +1172,15 @@ public class RPCManager : NetworkBehaviour {
             foreach (Quest quest in allQuests) {
                // Skip the quest if the player has already completed it
                if (!completedQuestIds.Contains(quest.questId)) {
-                  Quest q = new Quest(quest.questId, quest.title, quest.friendshipRankRequired, quest.isRepeatable,
-                     quest.lastUsedNodeId, null);
+                  Quest q = new Quest(quest.questId, quest.title, quest.friendshipRankRequired, quest.isRepeatable, quest.lastUsedNodeId, null);
                   questList.Add(q);
+
+                  QuestStatusInfo questStatInfo = questStatuses.Find(_ => _.questId == quest.questId);
+                  if (questStatInfo == null) {
+                     q.questProgress = 0;
+                  } else {
+                     q.questProgress = questStatInfo.questNodeId;
+                  }
                }
             }
 

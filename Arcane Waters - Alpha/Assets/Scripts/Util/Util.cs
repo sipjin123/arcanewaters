@@ -77,6 +77,9 @@ public class Util : MonoBehaviour {
          case Item.Category.Helm:
             itemTypeName = ((Helm.Type) typeID).ToString();
             break;
+         case Item.Category.Quest_Item:
+            itemTypeName = ((QuestItem.Type) typeID).ToString();
+            break;
          default:
             itemTypeName = "None";
             break;
@@ -101,6 +104,9 @@ public class Util : MonoBehaviour {
             break;
          case Item.Category.Helm:
             newType = typeof(Armor.Type);
+            break;
+         case Item.Category.Quest_Item:
+            newType = typeof(QuestItem.Type);
             break;
          default:
             newType = null;

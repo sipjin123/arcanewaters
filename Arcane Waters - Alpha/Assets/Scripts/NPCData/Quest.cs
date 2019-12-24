@@ -35,6 +35,9 @@ public class Quest
    [XmlArray("Nodes"), XmlArrayItem("Node")]
    public QuestNode[] nodes;
 
+   // The progress level of the quest
+   public int questProgress;
+
    #endregion
 
    public Quest () {

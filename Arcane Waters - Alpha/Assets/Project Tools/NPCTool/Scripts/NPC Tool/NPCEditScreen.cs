@@ -441,6 +441,13 @@ public class NPCEditScreen : MonoBehaviour
 
                   currentQuestModified.currentQuestNode.cachedReward.category = selectedCategory;
                   currentQuestModified.currentQuestNode.cachedReward.itemTypeId = selectedTypeID;
+
+                  if (selectedCategory == Item.Category.Quest_Item) {
+                     currentQuestModified.currentQuestNode.currentItemModifying.count.text = "1";
+                     currentQuestModified.currentQuestNode.currentItemModifying.count.gameObject.SetActive(false);
+                  } else {
+                     currentQuestModified.currentQuestNode.currentItemModifying.count.gameObject.SetActive(true);
+                  }
                } else if (selectionType == ItemSelectionType.Delivery) {
                   currentQuestModified.currentQuestNode.currentDeliverObjective.itemCategory.text = ((int) selectedCategory).ToString();
                   currentQuestModified.currentQuestNode.currentDeliverObjective.itemTypeId.text = selectedTypeID.ToString();
@@ -448,6 +455,13 @@ public class NPCEditScreen : MonoBehaviour
                   currentQuestModified.currentQuestNode.currentDeliverObjective.itemCategoryName.text = selectedCategory.ToString();
                   currentQuestModified.currentQuestNode.currentDeliverObjective.itemTypeName.text = item.Value.ToString();
                   currentQuestModified.currentQuestNode.currentDeliverObjective.itemIcon.sprite = Util.getRawSpriteIcon(selectedCategory, item.Key);
+
+                  if (selectedCategory == Item.Category.Quest_Item) {
+                     currentQuestModified.currentQuestNode.currentDeliverObjective.count.text = "1";
+                     currentQuestModified.currentQuestNode.currentDeliverObjective.count.gameObject.SetActive(false);
+                  } else {
+                     currentQuestModified.currentQuestNode.currentDeliverObjective.count.gameObject.SetActive(true);
+                  }
                }
 
                confirmSelectionButton.onClick.Invoke();

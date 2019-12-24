@@ -25,6 +25,9 @@ public class QuestObjectiveDeliver : QuestObjective
    // The number of items to deliver
    public int count;
 
+   // Currency Path
+   public const string GOLD_ICON_PATH = "Assets/Sprites/Icons/gold_icon.png";
+
    #endregion
 
    public QuestObjectiveDeliver () {
@@ -39,37 +42,60 @@ public class QuestObjectiveDeliver : QuestObjective
 
    // Must be called from the background thread!
    public override bool canObjectiveBeCompletedDB (int userId) {
-      // Retrieve the number of items the users has in inventory
-      int itemsInInventory = DB_Main.getItemCount(userId, (int) category, itemTypeId);
+      if (category != Item.Category.Currency) {
+         // Retrieve the number of items the users has in inventory
+         int itemsInInventory = DB_Main.getItemCount(userId, (int) category, itemTypeId);
 
-      // Determines if the objective is completed
-      return canObjectiveBeCompleted(itemsInInventory);
+         // Determines if the objective is completed
+         return canObjectiveBeCompleted(itemsInInventory);
+      } else {
+         int currentCurrentcy = DB_Main.getGold(userId);
+
+         // Determines if the objective is completed
+         return canObjectiveBeCompleted(currentCurrentcy);
+      }
    }
 
    // Must be called from the background thread!
    public override void completeObjective (int userId) {
-      // Retrieve the number of items the users has in inventory
-      int itemsInInventory = DB_Main.getItemCount(userId, (int) category, itemTypeId);
+      if (category != Item.Category.Currency) {
+         // Retrieve the number of items the users has in inventory
+         int itemsInInventory = DB_Main.getItemCount(userId, (int) category, itemTypeId);
 
-      // Retrieve the item ID
-      int itemId = DB_Main.getItemID(userId, (int) category, itemTypeId);
+         // Retrieve the item ID
+         int itemId = DB_Main.getItemID(userId, (int) category, itemTypeId);
 
-      // Remove the required amount of items from the inventory
-      DB_Main.decreaseQuantityOrDeleteItem(userId, itemId, count);
+         // Remove the required amount of items from the inventory
+         DB_Main.decreaseQuantityOrDeleteItem(userId, itemId, count);
+      } else {
+         // Reduce gold
+         DB_Main.addGold(userId, -count);
+      }
    }
 
    // Must be called from the background thread!
    public override int getObjectiveProgress (int userId) {
-      // Retrieve the number of items the users has in inventory
-      int itemsForObjective = DB_Main.getItemCount(userId, (int) category, itemTypeId);
+      if (category != Item.Category.Currency) {
+         // Retrieve the number of items the users has in inventory
+         int itemsForObjective = DB_Main.getItemCount(userId, (int) category, itemTypeId);
 
-      // Clamp the number of items to the required amount
-      if (itemsForObjective > count) {
-         itemsForObjective = count;
+         // Clamp the number of items to the required amount
+         if (itemsForObjective > count) {
+            itemsForObjective = count;
+         }
+
+         // Return the item count
+         return itemsForObjective;
+      } else {
+         int itemsForObjective = DB_Main.getGold(userId);
+
+         // Clamp the number of items to the required amount
+         if (itemsForObjective > count) {
+            itemsForObjective = count;
+         }
+         // Return the item count
+         return itemsForObjective;
       }
-
-      // Return the item count
-      return itemsForObjective;
    }
 
    public override bool canObjectiveBeCompleted (int progress) {
@@ -110,6 +136,9 @@ public class QuestObjectiveDeliver : QuestObjective
          case Item.Category.Blueprint:
             builder.Append(Blueprint.getName(itemTypeId));
             break;
+         case Item.Category.Currency:
+            builder.Append("Gold");
+            break;
          default:
             break;
       }
@@ -123,9 +152,13 @@ public class QuestObjectiveDeliver : QuestObjective
    }
 
    public override Sprite getIcon () {
-      Item item = new Item(-1, category, itemTypeId, 1, ColorType.Black, ColorType.Black, "").getCastItem();
-      string path = item.getIconPath();
-      return ImageManager.getSprite(path);
+      if (category == Item.Category.Currency) {
+         return ImageManager.getSprite(GOLD_ICON_PATH);
+      } else {
+         Item item = new Item(-1, category, itemTypeId, 1, ColorType.Black, ColorType.Black, "").getCastItem();
+         string path = item.getIconPath();
+         return ImageManager.getSprite(path);
+      }
    }
 
    public override string getProgressString (int progress) {

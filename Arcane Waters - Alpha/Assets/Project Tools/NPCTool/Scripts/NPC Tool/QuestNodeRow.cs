@@ -70,6 +70,9 @@ public class QuestNodeRow : MonoBehaviour
    // An image indicator for dropdown capabilities
    public GameObject dropDownIndicator;
 
+   // Gold requirement and reward for quest
+   public InputField rewardGold, requiredGold;
+
    #endregion
 
    public void setRowForQuestNode (QuestNode node) {
@@ -103,6 +106,13 @@ public class QuestNodeRow : MonoBehaviour
             deliveryRow.setRowForDeliverObjective(deliverObjective);
             deliveryRow.itemIcon.sprite = Util.getRawSpriteIcon(deliverObjective.category, deliverObjective.itemTypeId);
             
+            if (deliverObjective.category == Item.Category.Quest_Item) {
+               deliveryRow.count.gameObject.SetActive(false);
+               deliverObjective.count = 1;
+            } else {
+               deliveryRow.count.gameObject.SetActive(true);
+            }
+
             deliveryRow.updateCategoryButton.onClick.AddListener(() => {
                npcEditScreen.toggleItemSelectionPanel(NPCEditScreen.ItemSelectionType.Delivery);
                currentDeliverObjective = deliveryRow;
@@ -153,6 +163,9 @@ public class QuestNodeRow : MonoBehaviour
          }
       }
       cachedQuestNode.itemRewards = cachedRewardList.ToArray();
+
+      requiredGold.text = node.goldRequirement.ToString();
+      rewardGold.text = node.goldReward.ToString();
 
       createRewardButton.onClick.AddListener(() => createRewardButtonClickedOn());
       createDeliveryQuestButton.onClick.AddListener(() => createDeliveryQuestButtonClickedOn());
@@ -276,7 +289,7 @@ public class QuestNodeRow : MonoBehaviour
 
       // Create a new quest node object
       QuestNode node = new QuestNode(_questNodeId, -1, npcText.text, userText.text, deliverObjectiveList.ToArray(),
-         itemRewardList.ToArray(), friendshipRewardArray);
+         itemRewardList.ToArray(), friendshipRewardArray, int.Parse(requiredGold.text), int.Parse(rewardGold.text));
 
       return node;
    }

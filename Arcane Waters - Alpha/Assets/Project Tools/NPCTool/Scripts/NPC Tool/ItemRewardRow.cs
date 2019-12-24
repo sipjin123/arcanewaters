@@ -45,6 +45,12 @@ public class ItemRewardRow : MonoBehaviour
       itemIcon.sprite = Util.getRawSpriteIcon(itemReward.category, itemReward.itemTypeId);
 
       count.text = itemReward.count.ToString();
+      if (itemReward.category == Item.Category.Quest_Item) {
+         itemReward.count = 1;
+         count.gameObject.SetActive(false);
+      } else {
+         count.gameObject.SetActive(true);
+      }
    }
 
    public QuestRewardItem getModifiedItemReward () {

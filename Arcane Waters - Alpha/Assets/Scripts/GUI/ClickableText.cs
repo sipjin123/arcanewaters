@@ -21,6 +21,12 @@ public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointer
    // A custom Event that gets invoked when we're clicked
    public UnityEvent clickedEvent = new UnityEvent();
 
+   // Holds the status of the clickable text if there is one
+   public GameObject statusIndicator;
+   public Text statusText;
+   public Sprite positiveIndicator, negativeIndicator;
+   public Image indicatorImage;
+
    #endregion
 
    public void initData (Type textType) {
@@ -44,6 +50,15 @@ public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointer
    public void disablePointerEvents (Color disabledColor) {
       _interactable = false;
       textComp.color = disabledColor;
+   }
+
+   public void setBackground (bool positiveResult, string text) {
+      if (positiveResult) {
+         indicatorImage.sprite = positiveIndicator;
+      } else {
+         indicatorImage.sprite = negativeIndicator;
+      }
+      statusText.text = text;
    }
 
    protected string getMessageForType () {
