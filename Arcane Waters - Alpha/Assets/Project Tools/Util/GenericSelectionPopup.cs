@@ -41,6 +41,7 @@ public class GenericSelectionPopup : MonoBehaviour {
    public Dictionary<string, Sprite> playerFactionSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> playerSpecialtySpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> playerJobSpriteList = new Dictionary<string, Sprite>();
+   public Dictionary<string, Sprite> tutorialSpriteList = new Dictionary<string, Sprite>();
 
    public enum selectionType
    {
@@ -61,7 +62,7 @@ public class GenericSelectionPopup : MonoBehaviour {
       HelmType = 14,
       UsableItemType = 15,
       UsableItemIcon = 16,
-      AchievementType = 17,
+      ActionType = 17,
       AchievementIcon = 18,
       ItemType = 19,
       ItemCategory = 20,
@@ -74,7 +75,9 @@ public class GenericSelectionPopup : MonoBehaviour {
       PlayerJobType = 27,
       PlayerJobIcons = 28,
       MonsterType = 29,
-      AbilityType = 30
+      AbilityType = 30,
+      Step = 31,
+      TutorialIcon = 32
    }
 
    #endregion
@@ -125,6 +128,9 @@ public class GenericSelectionPopup : MonoBehaviour {
 
       string jobPath = "Assets/Sprites/Icons/Jobs/";
       setupSpriteContent(playerJobSpriteList, jobPath);
+
+      string tutorialPath = "Assets/Sprites/Icons/";
+      setupSpriteContent(tutorialSpriteList, tutorialPath);
    }
 
    private void setupSpriteContent (Dictionary<string, Sprite> spriteCollection, string spritePath) {
@@ -212,6 +218,12 @@ public class GenericSelectionPopup : MonoBehaviour {
             Sprite icon = ImageManager.getSprite(sourceSprite.Key);
             createImageTemplate(sourceSprite.Key, shortName, icon, imageIcon, textUI);
          }
+      } else if (popupType == selectionType.TutorialIcon) {
+         foreach (KeyValuePair<string, Sprite> sourceSprite in tutorialSpriteList) {
+            string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
+            Sprite icon = ImageManager.getSprite(sourceSprite.Key);
+            createImageTemplate(sourceSprite.Key, shortName, icon, imageIcon, textUI);
+         }
       }
    }
 
@@ -265,7 +277,7 @@ public class GenericSelectionPopup : MonoBehaviour {
                createTextTemplate(helmType.ToString(), textUI, changeEvent);
             }
             break;
-         case selectionType.AchievementType:
+         case selectionType.ActionType:
             foreach (ActionType actionType in Enum.GetValues(typeof(ActionType))) {
                createTextTemplate(actionType.ToString(), textUI, changeEvent);
             }
@@ -298,6 +310,11 @@ public class GenericSelectionPopup : MonoBehaviour {
          case selectionType.MonsterType:
             foreach (Enemy.Type enemyType in Enum.GetValues(typeof(Enemy.Type))) {
                createTextTemplate(enemyType.ToString(), textUI, changeEvent);
+            }
+            break;
+         case selectionType.Step:
+            foreach (Step step in Enum.GetValues(typeof(Step))) {
+               createTextTemplate(step.ToString(), textUI, changeEvent);
             }
             break;
          case selectionType.AbilityType:

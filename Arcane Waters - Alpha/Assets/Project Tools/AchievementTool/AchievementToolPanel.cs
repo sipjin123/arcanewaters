@@ -48,7 +48,7 @@ public class AchievementToolPanel : MonoBehaviour {
       });
 
       _achievementTypeButton.onClick.AddListener(() => {
-         selectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.AchievementType, _achievementTypeText);
+         selectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.ActionType, _achievementTypeText);
       });
       _changeIconButton.onClick.AddListener(() => {
          selectionPopup.callImageTextSelectionPopup(GenericSelectionPopup.selectionType.AchievementIcon, _achievementIcon, _achievementIconPath);
