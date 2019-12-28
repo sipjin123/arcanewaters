@@ -192,6 +192,16 @@ public class ServerMessageManager : MonoBehaviour {
       // Grab the latest version of their user objects
       UserObjects userObjects = DB_Main.getUserObjects(userId);
 
+      // Create the default ability
+      BasicAbilityData startingAbility = AbilityManager.getAbility(AbilityManager.STARTING_ABILITY_ID, AbilityType.Standard);
+      AbilitySQLData startingAbilitySQL = AbilitySQLData.TranslateBasicAbility(startingAbility);
+
+      // Make sure the ability is equipped
+      startingAbilitySQL.equipSlotIndex = 0;
+
+      // Add the ability to the user
+      DB_Main.updateAbilitiesData(userId, startingAbilitySQL);
+
       // Give some additional armor and weapons to test users
       /*if (true) {
          DB_Main.addGold(userId, 800);

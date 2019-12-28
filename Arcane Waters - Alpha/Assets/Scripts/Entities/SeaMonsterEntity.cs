@@ -643,12 +643,7 @@ public class SeaMonsterEntity : SeaEntity
    [Server]
    protected void spawnChest () {
       Instance currentInstance = InstanceManager.self.getInstance(this.instanceId);
-      Rpc_SpawnTreasureChestSea(TreasureManager.self.createSeaMonsterChest(currentInstance, transform.position, seaMonsterData.seaMonsterType).gameObject);
-   }
-
-   [ClientRpc]
-   private void Rpc_SpawnTreasureChestSea (GameObject obj) {
-      Minimap.self.addTreasureChestIcon(obj);
+      TreasureManager.self.createSeaMonsterChest(currentInstance, transform.position, seaMonsterData.seaMonsterType);
    }
 
    [Server]

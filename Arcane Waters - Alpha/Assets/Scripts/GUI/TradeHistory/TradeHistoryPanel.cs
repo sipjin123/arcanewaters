@@ -28,7 +28,7 @@ public class TradeHistoryPanel : Panel
    public static TradeHistoryPanel self;
 
    // The number of rows per page
-   public static int ROWS_PER_PAGE = 8;
+   public static int ROWS_PER_PAGE = 14;
 
    #endregion
 

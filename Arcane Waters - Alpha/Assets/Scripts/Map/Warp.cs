@@ -45,7 +45,9 @@ public class Warp : MonoBehaviour, MapCreationTool.IMapEditorDataReceiver {
          return false;
       }
       if (Spawn.HOUSE_EXIT.Equals(spawnTarget) && currentStep == (int) Step.GetDressed) {
-         ServerMessageManager.sendError(ErrorMessage.Type.Misc, player, "You need to get dressed before leaving the house!");
+         if (player.connectionToClient != null) {
+            ServerMessageManager.sendError(ErrorMessage.Type.Misc, player, "You need to get dressed before leaving the house!");
+         }
          return false;
       }
 

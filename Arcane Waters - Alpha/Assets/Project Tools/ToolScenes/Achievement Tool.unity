@@ -28638,7 +28638,7 @@ PrefabInstance:
     - target: {fileID: 5890500984787708247, guid: cf247d87f846fb348af5e917ad74d094,
         type: 3}
       propertyPath: m_CharacterLimit
-      value: 60
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 5890500984787708247, guid: cf247d87f846fb348af5e917ad74d094,
         type: 3}

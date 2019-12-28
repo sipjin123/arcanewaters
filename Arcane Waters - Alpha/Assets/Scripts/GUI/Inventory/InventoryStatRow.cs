@@ -10,6 +10,9 @@ public class InventoryStatRow : MonoBehaviour
 {
    #region Public Variables
 
+   // The row element
+   public Element element;
+
    // The attack value of the equipped weapon
    public Text attackText;
 
@@ -30,10 +33,6 @@ public class InventoryStatRow : MonoBehaviour
 
    #endregion
 
-   public void setElement (Element element) {
-      _element = element;
-   }
-
    public void clear () {
       attackText.text = "0";
       defenseText.text = "0";
@@ -41,12 +40,12 @@ public class InventoryStatRow : MonoBehaviour
    }
 
    public void setEquippedWeapon (Weapon weapon) {
-      _equippedAttackValue = weapon.getDamage(_element);
+      _equippedAttackValue = weapon.getDamage(element);
       attackText.text = _equippedAttackValue.ToString();
    }
 
    public void setEquippedArmor (Armor armor) {
-      _equippedDefenseValue = armor.getDefense(_element);
+      _equippedDefenseValue = armor.getDefense(element);
       defenseText.text = _equippedDefenseValue.ToString();
    }
 
@@ -55,7 +54,7 @@ public class InventoryStatRow : MonoBehaviour
       attackModText.gameObject.SetActive(true);
 
       // Calculate the attack modifier
-      float newAttack = weapon.getDamage(_element);
+      float newAttack = weapon.getDamage(element);
       float attackDifference = newAttack - _equippedAttackValue;
 
       // Display the stat difference and color according to its positive or negative effect
@@ -73,7 +72,7 @@ public class InventoryStatRow : MonoBehaviour
       defenseModText.gameObject.SetActive(true);
 
       // Calculate the defense modifier
-      float newDefense = armor.getDefense(_element);
+      float newDefense = armor.getDefense(element);
       float defenseDifference = newDefense - _equippedDefenseValue;
 
       // Display the stat difference and color according to its positive or negative effect
@@ -92,9 +91,6 @@ public class InventoryStatRow : MonoBehaviour
    }
 
    #region Private Variables
-
-   // The element displayed by the row
-   private Element _element = Element.ALL;
 
    // The attack stat of the equipped weapon
    private float _equippedAttackValue = 0;

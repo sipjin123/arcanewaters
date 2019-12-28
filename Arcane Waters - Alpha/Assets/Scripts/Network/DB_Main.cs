@@ -3796,7 +3796,7 @@ public class DB_Main : DB_MainStub {
 
    private static MySqlConnection getConnection () {
       // Throws a warning if used in the main thread
-      if (UnityThreadHelper.IsMainThread) {
+      if (UnityThreadHelper.IsMainThread && !ClientManager.isApplicationQuitting) {
          D.warning("A database query is being run in the main thread - use the background thread instead");
       }
 

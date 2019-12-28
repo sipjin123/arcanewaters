@@ -5648,6 +5648,37 @@ MonoBehaviour:
     - {fileID: 4012464663506218954, guid: 4418128771e56794a8d872339ebe7985, type: 3}
     - {fileID: -4580975539929579683, guid: 4418128771e56794a8d872339ebe7985, type: 3}
     - {fileID: 1304906387726826887, guid: 4418128771e56794a8d872339ebe7985, type: 3}
+  - imageName: dog_1
+    imagePath: Assets/Sprites/NPCs/Bodies/Dog/dog_1.png
+    imagePathWithoutExtension: Assets/Sprites/NPCs/Bodies/Dog/dog_1
+    texture2D: {fileID: 2800000, guid: 5e987d3b11e71434185a5e2264967ca4, type: 3}
+    sprite: {fileID: -8822964745596161490, guid: 5e987d3b11e71434185a5e2264967ca4,
+      type: 3}
+    sprites:
+    - {fileID: -8822964745596161490, guid: 5e987d3b11e71434185a5e2264967ca4, type: 3}
+    - {fileID: 7344659274553346034, guid: 5e987d3b11e71434185a5e2264967ca4, type: 3}
+    - {fileID: 4012464663506218954, guid: 5e987d3b11e71434185a5e2264967ca4, type: 3}
+    - {fileID: -4580975539929579683, guid: 5e987d3b11e71434185a5e2264967ca4, type: 3}
+    - {fileID: 1304906387726826887, guid: 5e987d3b11e71434185a5e2264967ca4, type: 3}
+    - {fileID: -1424219314953613090, guid: 5e987d3b11e71434185a5e2264967ca4, type: 3}
+    - {fileID: -804048438504138782, guid: 5e987d3b11e71434185a5e2264967ca4, type: 3}
+    - {fileID: -8312443754975706761, guid: 5e987d3b11e71434185a5e2264967ca4, type: 3}
+    - {fileID: 3215257896197394071, guid: 5e987d3b11e71434185a5e2264967ca4, type: 3}
+    - {fileID: -5245200360909235531, guid: 5e987d3b11e71434185a5e2264967ca4, type: 3}
+    - {fileID: 44185946523065229, guid: 5e987d3b11e71434185a5e2264967ca4, type: 3}
+    - {fileID: -2048827523447971665, guid: 5e987d3b11e71434185a5e2264967ca4, type: 3}
+    - {fileID: 8531835754009180679, guid: 5e987d3b11e71434185a5e2264967ca4, type: 3}
+    - {fileID: 690380811361054711, guid: 5e987d3b11e71434185a5e2264967ca4, type: 3}
+    - {fileID: 3892434163456347278, guid: 5e987d3b11e71434185a5e2264967ca4, type: 3}
+    - {fileID: -2306577704922078487, guid: 5e987d3b11e71434185a5e2264967ca4, type: 3}
+    - {fileID: 853494483008539140, guid: 5e987d3b11e71434185a5e2264967ca4, type: 3}
+    - {fileID: -2111627939188094808, guid: 5e987d3b11e71434185a5e2264967ca4, type: 3}
+    - {fileID: 4870918468608438130, guid: 5e987d3b11e71434185a5e2264967ca4, type: 3}
+    - {fileID: -532162433305845211, guid: 5e987d3b11e71434185a5e2264967ca4, type: 3}
+    - {fileID: -7573129980734677097, guid: 5e987d3b11e71434185a5e2264967ca4, type: 3}
+    - {fileID: 8732541016316423750, guid: 5e987d3b11e71434185a5e2264967ca4, type: 3}
+    - {fileID: -4740483774537809980, guid: 5e987d3b11e71434185a5e2264967ca4, type: 3}
+    - {fileID: -4580825126585807340, guid: 5e987d3b11e71434185a5e2264967ca4, type: 3}
   - imageName: done_text
     imagePath: Assets/Sprites/GUI/done_text.png
     imagePathWithoutExtension: Assets/Sprites/GUI/done_text
@@ -5891,6 +5922,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: f8a0238c1fda2e844b655143485f1ff7, type: 3}
     sprites:
     - {fileID: 21300000, guid: f8a0238c1fda2e844b655143485f1ff7, type: 3}
+  - imageName: enemy_icon_ring_5
+    imagePath: Assets/Sprites/Icons/Battle/enemy/enemy_icon_ring_5.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Battle/enemy/enemy_icon_ring_5
+    texture2D: {fileID: 2800000, guid: c8c14a6e3733ad248adf8454e7ca043d, type: 3}
+    sprite: {fileID: 21300000, guid: c8c14a6e3733ad248adf8454e7ca043d, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: c8c14a6e3733ad248adf8454e7ca043d, type: 3}
   - imageName: enemy_icon_ring_7
     imagePath: Assets/Sprites/Icons/Battle/enemy_icon_ring_7.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Battle/enemy_icon_ring_7
@@ -9092,6 +9130,13 @@ MonoBehaviour:
     sprites:
     - {fileID: 3564856121727798196, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
     - {fileID: 6120081450217617434, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
+  - imageName: gold_icon
+    imagePath: Assets/Sprites/Icons/gold_icon.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/gold_icon
+    texture2D: {fileID: 2800000, guid: 260e695607a72784ea9a26c51021d6d2, type: 3}
+    sprite: {fileID: 21300000, guid: 260e695607a72784ea9a26c51021d6d2, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 260e695607a72784ea9a26c51021d6d2, type: 3}
   - imageName: golem
     imagePath: Assets/Sprites/Enemies/golem.png
     imagePathWithoutExtension: Assets/Sprites/Enemies/golem
@@ -10313,6 +10358,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 71be80314d8660246bab7dbe410bdbcd, type: 3}
     sprites:
     - {fileID: 21300000, guid: 71be80314d8660246bab7dbe410bdbcd, type: 3}
+  - imageName: icon_circle_disabled
+    imagePath: Assets/Sprites/Icons/Battle/enemy/icon_circle_disabled.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Battle/enemy/icon_circle_disabled
+    texture2D: {fileID: 2800000, guid: 3aebf3aea750e4b4ca39d5bfd041e369, type: 3}
+    sprite: {fileID: 21300000, guid: 3aebf3aea750e4b4ca39d5bfd041e369, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 3aebf3aea750e4b4ca39d5bfd041e369, type: 3}
   - imageName: icon_circle_enemy_click
     imagePath: Assets/Sprites/Icons/Battle/enemy/icon_circle_enemy_click.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Battle/enemy/icon_circle_enemy_click
@@ -11881,6 +11933,13 @@ MonoBehaviour:
     - {fileID: 21300000, guid: c510b9f3f07ee459f9b59ccff115335e, type: 3}
     - {fileID: 21300002, guid: c510b9f3f07ee459f9b59ccff115335e, type: 3}
     - {fileID: 21300004, guid: c510b9f3f07ee459f9b59ccff115335e, type: 3}
+  - imageName: Letter
+    imagePath: Assets/Sprites/Icons/QuestItem/Letter.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/QuestItem/Letter
+    texture2D: {fileID: 2800000, guid: 2226d82ba3bc4474e90f3b10254380ae, type: 3}
+    sprite: {fileID: 21300000, guid: 2226d82ba3bc4474e90f3b10254380ae, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 2226d82ba3bc4474e90f3b10254380ae, type: 3}
   - imageName: lettuce
     imagePath: Assets/Sprites/Cargo/lettuce.png
     imagePathWithoutExtension: Assets/Sprites/Cargo/lettuce
@@ -14532,6 +14591,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: a1913e789eb0ed24d92d1c919bf79f4a, type: 3}
     sprites:
     - {fileID: 21300000, guid: a1913e789eb0ed24d92d1c919bf79f4a, type: 3}
+  - imageName: Message
+    imagePath: Assets/Sprites/Icons/QuestItem/Message.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/QuestItem/Message
+    texture2D: {fileID: 2800000, guid: ef21eaf684574e2418eef695d1938e24, type: 3}
+    sprite: {fileID: 21300000, guid: ef21eaf684574e2418eef695d1938e24, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: ef21eaf684574e2418eef695d1938e24, type: 3}
   - imageName: message_button
     imagePath: Assets/Sprites/GUI/Friend List/message_button.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Friend List/message_button
@@ -16153,6 +16219,27 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 3a2dad62a4d324144b3b8783167919ce, type: 3}
     sprites:
     - {fileID: 21300000, guid: 3a2dad62a4d324144b3b8783167919ce, type: 3}
+  - imageName: player_icon_ring_5
+    imagePath: Assets/Sprites/Icons/Battle/Player/player_icon_ring_5.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Battle/Player/player_icon_ring_5
+    texture2D: {fileID: 2800000, guid: 9ed2a10669f13ae42b6415cd2576a6a5, type: 3}
+    sprite: {fileID: 21300000, guid: 9ed2a10669f13ae42b6415cd2576a6a5, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 9ed2a10669f13ae42b6415cd2576a6a5, type: 3}
+  - imageName: player_icon_ring_6
+    imagePath: Assets/Sprites/Icons/Battle/Player/player_icon_ring_6.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Battle/Player/player_icon_ring_6
+    texture2D: {fileID: 2800000, guid: 799581901e4f9f84aae36150523b7e21, type: 3}
+    sprite: {fileID: 21300000, guid: 799581901e4f9f84aae36150523b7e21, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 799581901e4f9f84aae36150523b7e21, type: 3}
+  - imageName: player_icon_ring_7
+    imagePath: Assets/Sprites/Icons/Battle/Player/player_icon_ring_7.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Battle/Player/player_icon_ring_7
+    texture2D: {fileID: 2800000, guid: d82e7742bc4a30a4ca6762dde5e0cd67, type: 3}
+    sprite: {fileID: 21300000, guid: d82e7742bc4a30a4ca6762dde5e0cd67, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: d82e7742bc4a30a4ca6762dde5e0cd67, type: 3}
   - imageName: pointer_28
     imagePath: Assets/Sprites/GUI/pointer_28.png
     imagePathWithoutExtension: Assets/Sprites/GUI/pointer_28

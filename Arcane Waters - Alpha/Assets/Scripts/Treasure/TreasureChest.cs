@@ -76,7 +76,15 @@ public class TreasureChest : NetworkBehaviour {
       if (!NetworkClient.active) {
          triggerCollider.enabled = false;
       }
-      StartCoroutine(CO_DisableChestAfterLifetime());
+
+      // Schedule the chest disappearance, except for Site chests
+      if (chestType != ChestSpawnType.Site) {
+         StartCoroutine(CO_DisableChestAfterLifetime());
+      }
+   }
+
+   public void Start () {
+      Minimap.self.addTreasureChestIcon(this.gameObject);
    }
 
    public void Update () {

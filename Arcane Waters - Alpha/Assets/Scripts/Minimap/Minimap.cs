@@ -153,6 +153,7 @@ public class Minimap : ClientMonoBehaviour {
 
       // Delete any old markers we created
       iconContainer.DestroyChildren();
+      _treasureChestIcons.Clear();
 
       // Create icons for any impassable areas
       /*for (float y = area.cameraBounds.bounds.min.y; y < area.cameraBounds.bounds.max.y; y += (4f * SCALE)) {
@@ -198,6 +199,13 @@ public class Minimap : ClientMonoBehaviour {
          MM_TutorialIcon icon = Instantiate(tutorialIconPrefab, this.iconContainer.transform);
          icon.tutorialStepType = loc.tutorialStepType;
          icon.target = loc.gameObject;
+      }
+
+      // Create icons for all treasure chests
+      foreach(TreasureChest chest in TreasureManager.self.GetComponentsInChildren<TreasureChest>()) {
+         if (!chest.hasBeenOpened()) {
+            addTreasureChestIcon(chest.gameObject);
+         }
       }
 
       // Note the new area type

@@ -114,12 +114,6 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       }
 
       // Initialize the stat rows
-      physicalStatRow.setElement(Element.Physical);
-      fireStatRow.setElement(Element.Fire);
-      earthStatRow.setElement(Element.Earth);
-      airStatRow.setElement(Element.Air);
-      waterStatRow.setElement(Element.Water);
-
       physicalStatRow.clear();
       fireStatRow.clear();
       earthStatRow.clear();

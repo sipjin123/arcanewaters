@@ -75,7 +75,9 @@ public class ImageManager : ClientMonoBehaviour {
 
       // Returns a blank texture if the fetched data from the path is null
       if (fetchedTexture == null) {
-         Debug.LogWarning("Returning a blank texture");
+         if (warnOnNull) {
+            Debug.LogWarning("Returning a blank texture");
+         }
          return self.blankTexture;
       }
       return fetchedTexture;

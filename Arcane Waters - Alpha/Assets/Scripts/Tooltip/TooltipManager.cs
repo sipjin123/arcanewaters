@@ -115,6 +115,12 @@ public class TooltipManager : ClientMonoBehaviour {
       // Bottom buttons
       if (gameObject.name == "Character Button") {
          return "Character Info <color=green>[C]</color>";
+      } else if (imageName.StartsWith("btn_abilities")) {
+         return "Abilities <color=green>[U]</color>";
+      } else if (imageName.StartsWith("btn_craft")) {
+         return "Crafting <color=green>[Y]</color>";
+      } else if (imageName.StartsWith("btn_friends")) {
+         return "Friend List <color=green>[F]</color>";
       } else if (imageName.StartsWith("btn_guild")) {
          return "Guild Info <color=green>[G]</color>";
       } else if (imageName.StartsWith("btn_inventory")) {

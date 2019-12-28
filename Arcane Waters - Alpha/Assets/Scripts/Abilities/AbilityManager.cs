@@ -11,6 +11,9 @@ public class AbilityManager : MonoBehaviour
    // The maximum number of abilities that can be equipped in combat
    public static int MAX_EQUIPPED_ABILITIES = 5;
 
+   // The global id of the default ability all users start with
+   public static int STARTING_ABILITY_ID = 1;
+
    // A convenient self reference
    public static AbilityManager self;
 

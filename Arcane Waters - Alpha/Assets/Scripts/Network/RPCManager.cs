@@ -2562,41 +2562,39 @@ public class RPCManager : NetworkBehaviour {
       // Look up the player's Area
       Area area = AreaManager.self.getArea(_player.areaKey);
 
-      // Get or create the Battle instance
-      Battle battle = (enemy.battleId > 0) ? BattleManager.self.getBattle(enemy.battleId) : BattleManager.self.createBattle(area, instance, enemy, playerBody);
-
-      // If the Battle is full, we can't proceed
-      if (!battle.hasRoomLeft(Battle.TeamType.Attackers)) {
-         ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "The battle is already full!");
-         return;
-      }
-
-      // Add the player to the Battle
-      BattleManager.self.addPlayerToBattle(battle, playerBody, Battle.TeamType.Attackers);
-
-      // Server will setup the abilities and send to clients what abilities to use
-      setupAbilityForBattle(_player.userId);
+      // Enter the background thread to determine if the user has at least one ability equipped
+      bool hasAbilityEquipped = false;
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Retrieves skill list from database
+         // Retrieve the skill list from database
          List<AbilitySQLData> abilityDataList = DB_Main.getAllAbilities(playerBody.userId);
 
-         if (abilityDataList.Count < 1) {
-            // Manual integration of skills if database does not exist yet
-            AbilitySQLData newSQLData = new AbilitySQLData {
-               abilityID = 1,
-               abilityLevel = 1,
-               description = AbilityManager.getAbility(1, AbilityType.Standard).itemDescription,
-               equipSlotIndex = 0,
-               name = AbilityManager.getAbility(1, AbilityType.Standard).itemName
-            };
-            abilityDataList.Add(newSQLData);
+         // Determine if at least one ability is equipped
+         hasAbilityEquipped = abilityDataList.Exists(_ => _.equipSlotIndex != -1);
 
-            // Updates the ability info in the SQL Database
-            DB_Main.updateAbilitiesData(playerBody.userId, newSQLData);
-         }
-         
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+
+            // If no ability is equipped, send an error to the client
+            if (!hasAbilityEquipped) {
+               ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, "You must equip at least one ability!");
+               return;
+            }
+
+            // Get or create the Battle instance
+            Battle battle = (enemy.battleId > 0) ? BattleManager.self.getBattle(enemy.battleId) : BattleManager.self.createBattle(area, instance, enemy, playerBody);
+
+            // If the Battle is full, we can't proceed
+            if (!battle.hasRoomLeft(Battle.TeamType.Attackers)) {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "The battle is already full!");
+               return;
+            }
+
+            // Add the player to the Battle
+            BattleManager.self.addPlayerToBattle(battle, playerBody, Battle.TeamType.Attackers);
+
+            // Server will setup the abilities and send to clients what abilities to use
+            setupAbilityForBattle(_player.userId);
+
             // Provides the client with the info of the Equipped Abilities
             Target_UpdateBattleAbilityUI(playerBody.connectionToClient, Util.serialize(abilityDataList.FindAll(_=>_.equipSlotIndex >= 0)));
 
