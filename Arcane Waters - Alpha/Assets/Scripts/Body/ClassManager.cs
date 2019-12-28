@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System.IO;
 
-public class ClassManager : XmlManager {
+public class ClassManager : MonoBehaviour {
    #region Public Variables
 
    // Self

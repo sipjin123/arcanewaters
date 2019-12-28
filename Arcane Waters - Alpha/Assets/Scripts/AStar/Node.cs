@@ -1,9 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace AStar
 {
+   [Serializable]
    public class ANode
    {
       // X and Y Position in the Node Array

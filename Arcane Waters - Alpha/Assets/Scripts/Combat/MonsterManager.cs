@@ -6,7 +6,7 @@ using Mirror;
 using System.IO;
 using System.Linq;
 
-public class MonsterManager : XmlManager {
+public class MonsterManager : MonoBehaviour {
    #region Public Variables
 
    // Self

@@ -26,6 +26,7 @@ public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointer
    public Text statusText;
    public Sprite positiveIndicator, negativeIndicator;
    public Image indicatorImage;
+   public bool hasIndicator;
 
    #endregion
 
@@ -59,6 +60,8 @@ public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointer
          indicatorImage.sprite = negativeIndicator;
       }
       statusText.text = text;
+      hasIndicator = true;
+      statusIndicator.gameObject.SetActive(false);
    }
 
    protected string getMessageForType () {
@@ -89,12 +92,20 @@ public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointer
          // Switch our color
          textComp.color = Color.yellow;
       }
+
+      if (hasIndicator) {
+         statusIndicator.gameObject.SetActive(true);
+      }
    }
 
    public void OnPointerExit (PointerEventData eventData) {
       if (_interactable) {
          // Switch back to our original color
          textComp.color = _initialFontColor;
+      }
+
+      if (hasIndicator) {
+         statusIndicator.gameObject.SetActive(false);
       }
    }
 

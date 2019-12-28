@@ -49,10 +49,10 @@ public class QuestObjectiveDeliver : QuestObjective
          // Determines if the objective is completed
          return canObjectiveBeCompleted(itemsInInventory);
       } else {
-         int currentCurrentcy = DB_Main.getGold(userId);
+         int currentCurrency = DB_Main.getGold(userId);
 
          // Determines if the objective is completed
-         return canObjectiveBeCompleted(currentCurrentcy);
+         return canObjectiveBeCompleted(currentCurrency);
       }
    }
 

@@ -605,6 +605,73 @@ public class DB_Main : DB_MainStub {
 
    #endregion
 
+   #region Tutorial XML Data
+
+   public static new void updateTutorialXML (string rawData, string name, int order) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "INSERT INTO tutorial_xml (tutorialTitle, xmlContent, stepOrder) " +
+            "VALUES(@tutorialTitle, @xmlContent, @stepOrder) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@tutorialTitle", name);
+            cmd.Parameters.AddWithValue("@xmlContent", rawData);
+            cmd.Parameters.AddWithValue("@stepOrder", order);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void deleteTutorialXML (string name) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM tutorial_xml WHERE tutorialTitle=@tutorialTitle", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@tutorialTitle", name);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<string> getTutorialXML () {
+      List<string> rawDataList = new List<string>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane.tutorial_xml", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  rawDataList.Add(dataReader.GetString("xmlContent"));
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return new List<string>(rawDataList);
+   }
+
+   #endregion
+
    #region Achievement XML Data
 
    public static new void updateAchievementXML (string rawData, string name) {

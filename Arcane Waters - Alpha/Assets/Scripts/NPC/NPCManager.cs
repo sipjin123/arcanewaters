@@ -7,7 +7,7 @@ using System.IO;
 using System;
 using System.Linq;
 
-public class NPCManager : XmlManager {
+public class NPCManager : MonoBehaviour {
    #region Public Variables
 
    // Self
@@ -101,7 +101,7 @@ public class NPCManager : XmlManager {
          }
          return returnList;
       } else {
-         D.log("NPC Data Does Not Exist");
+         D.log("NPC Data Does Not Exist for area: " + areaKey);
          return new List<NPCData>();
       }
    }

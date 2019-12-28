@@ -912,7 +912,7 @@ public class AdminManager : NetworkBehaviour {
       string itemName = baseItem.getName().ToLower();
 
       // Add the new entry in the dictionary
-      if (!"undefined".Equals(itemName) && !"usable item".Equals(itemName) && !"undefined design".Equals(itemName)) {
+      if (!"undefined".Equals(itemName) && !"usable item".Equals(itemName) && !"undefined design".Equals(itemName) && !itemName.ToLower().Contains("none")) {
          if (!dictionary.ContainsKey(itemName)) {
             dictionary.Add(itemName, itemTypeId);
          } else {

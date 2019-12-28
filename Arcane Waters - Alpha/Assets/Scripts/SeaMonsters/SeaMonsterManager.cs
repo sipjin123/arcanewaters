@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System.IO;
 
-public class SeaMonsterManager : XmlManager {
+public class SeaMonsterManager : MonoBehaviour {
    #region Public Variables
 
    // Self

@@ -247,7 +247,7 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
    protected int getId () {
       // Blocks the ID generation for Debug scenes, uses the custom ID setup for the npc instead
       if (isDebug) {
-         nameText.text = "ID: [" + this.npcId+"]\n"+this.getName();
+         nameText.text = "ID: [" + this.npcId + "]\n" + this.getName();
          return this.npcId;
       }
 

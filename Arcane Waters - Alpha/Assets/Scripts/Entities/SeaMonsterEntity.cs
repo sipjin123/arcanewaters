@@ -604,7 +604,6 @@ public class SeaMonsterEntity : SeaEntity
       List<ANode> gridPath = pathFindingReference.findPathNowInit(transform.position, location);
       if (gridPath == null) {
          // Invalid Path, attempt again
-
          planNextMove();
          return;
       }

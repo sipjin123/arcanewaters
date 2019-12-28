@@ -5,8 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System.IO;
 
-public class AchievementManager : XmlManager
-{
+public class AchievementManager : MonoBehaviour {
    #region Public Variables
 
    // Self

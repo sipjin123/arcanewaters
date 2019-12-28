@@ -7,7 +7,7 @@ using System.Linq;
 using System.IO;
 using static EquipmentToolManager;
 
-public class EquipmentXMLManager : XmlManager {
+public class EquipmentXMLManager : MonoBehaviour {
    #region Public Variables
 
    // A convenient self reference

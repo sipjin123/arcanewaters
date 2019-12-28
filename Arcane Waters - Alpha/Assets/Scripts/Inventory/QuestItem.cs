@@ -3,10 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System;
 #if IS_SERVER_BUILD
 using MySql.Data.MySqlClient;
 #endif
 
+[Serializable]
 public class QuestItem : Item
 {
    #region Public Variables
@@ -33,6 +35,7 @@ public class QuestItem : Item
       this.category = (Item.Category) DataUtil.getInt(dataReader, "itmCategory");
       this.itemTypeId = DataUtil.getInt(dataReader, "itmType");
       this.data = DataUtil.getString(dataReader, "itmData");
+      this.questType = (Type) DataUtil.getInt(dataReader, "itmType");
 
       // Defaults
       this.color1 = (ColorType) DataUtil.getInt(dataReader, "itmColor1");
@@ -48,7 +51,7 @@ public class QuestItem : Item
 #endif
 
    public QuestItem (int id, int recipeType, ColorType primaryColorId, ColorType secondaryColorId, string data = "", int count = 0) {
-      this.category = Category.Blueprint;
+      this.category = Category.Quest_Item;
       this.id = id;
       this.questType = (Type) recipeType;
       this.itemTypeId = (int) recipeType;

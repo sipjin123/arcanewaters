@@ -176,28 +176,30 @@ public class InventoryPanel : Panel, IPointerClickHandler {
          // Get the casted item
          Item castedItem = item.getCastItem();
 
-         // Instantiates the cell
-         ItemCell cell = Instantiate(itemCellPrefab, itemCellsContainer.transform, false);
+         if (castedItem.category != Item.Category.Blueprint) {
+            // Instantiates the cell
+            ItemCell cell = Instantiate(itemCellPrefab, itemCellsContainer.transform, false);
 
-         // Initializes the cell
-         cell.setCellForItem(castedItem);
+            // Initializes the cell
+            cell.setCellForItem(castedItem);
 
-         // If the item is equipped, place the item cell in the equipped slots
-         if (castedItem.id == equippedWeaponId) {
-            cell.transform.SetParent(equippedWeaponCellContainer.transform, false);
-            refreshStats((Weapon) castedItem);
-         } else if (castedItem.id == equippedArmorId) {
-            cell.transform.SetParent(equippedArmorCellContainer.transform, false);
-            refreshStats((Armor) castedItem);
+            // If the item is equipped, place the item cell in the equipped slots
+            if (castedItem.id == equippedWeaponId) {
+               cell.transform.SetParent(equippedWeaponCellContainer.transform, false);
+               refreshStats((Weapon) castedItem);
+            } else if (castedItem.id == equippedArmorId) {
+               cell.transform.SetParent(equippedArmorCellContainer.transform, false);
+               refreshStats((Armor) castedItem);
+            }
+
+            // Set the cell click events
+            cell.leftClickEvent.RemoveAllListeners();
+            cell.rightClickEvent.RemoveAllListeners();
+            cell.doubleClickEvent.RemoveAllListeners();
+            cell.leftClickEvent.AddListener(() => hideContextMenu());
+            cell.rightClickEvent.AddListener(() => showContextMenu(cell));
+            cell.doubleClickEvent.AddListener(() => tryEquipOrUseItem(cell.getItem()));
          }
-
-         // Set the cell click events
-         cell.leftClickEvent.RemoveAllListeners();
-         cell.rightClickEvent.RemoveAllListeners();
-         cell.doubleClickEvent.RemoveAllListeners();
-         cell.leftClickEvent.AddListener(() => hideContextMenu());
-         cell.rightClickEvent.AddListener(() => showContextMenu(cell));
-         cell.doubleClickEvent.AddListener(() => tryEquipOrUseItem(cell.getItem()));
       }
 
       // Insert the player's name

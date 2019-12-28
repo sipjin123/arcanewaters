@@ -6,7 +6,7 @@ using Mirror;
 using System.IO;
 using System.Linq;
 
-public class ShipDataManager : XmlManager {
+public class ShipDataManager : MonoBehaviour {
    #region Public Variables
 
    // Self

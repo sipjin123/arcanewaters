@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System.IO;
 
-public class FactionManager : XmlManager {
+public class FactionManager : MonoBehaviour {
    #region Public Variables
 
    // Self

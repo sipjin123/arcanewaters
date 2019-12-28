@@ -10,6 +10,17 @@ public class DB_MainStub : MonoBehaviour {
 
    #endregion
 
+   public static void updateTutorialXML (string rawData, string name, int order) {
+
+   }
+
+   public static void deleteTutorialXML (string name) {
+   }
+
+   public static List<string> getTutorialXML () {
+      return new List<string>();
+   }
+
    public static void updateEquipmentXML (string rawData, int typeID, EquipmentToolManager.EquipmentType equipType) {
    
    }
