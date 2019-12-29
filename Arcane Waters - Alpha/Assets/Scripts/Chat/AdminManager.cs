@@ -622,7 +622,7 @@ public class AdminManager : NetworkBehaviour {
       }
 
       // Make sure they aren't already done with the tutorial
-      int maxStep = System.Enum.GetValues(typeof(Step)).Cast<int>().Max();
+      int maxStep = TutorialManager.self.fetchMaxTutorialCount();
       int highestCompletedStep = TutorialManager.getHighestCompletedStep(_player.userId);
 
       if (highestCompletedStep >= maxStep) {
@@ -630,15 +630,13 @@ public class AdminManager : NetworkBehaviour {
          yield break;
       }
 
-      foreach (Step step in System.Enum.GetValues(typeof(Step))) {
-         if (step == Step.None) {
+      foreach (TutorialData tutData in  TutorialManager.self.tutorialDataList()) {
+         if (tutData.stepOrder == 0) {
             continue;
          }
 
-         if (stepNumber == 0 || (int) step == stepNumber) {
-            _player.completedTutorialStep(step);
-            yield return new WaitForSeconds(.5f);
-         }
+         _player.completedTutorialStep(tutData.stepOrder);
+         yield return new WaitForSeconds(.5f);
       }
    }
 

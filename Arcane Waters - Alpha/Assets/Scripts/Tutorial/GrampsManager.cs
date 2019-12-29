@@ -116,47 +116,12 @@ public class GrampsManager : ClientMonoBehaviour {
       }
 
       // Check which step of the tutorial the player is on
-      Step currentStep = TutorialManager.currentStep;
+      int currentStep = TutorialManager.currentStep;
       List<string> msgList = new List<string>();
+      TutorialData fetchData = TutorialManager.self.fetchTutorialData(currentStep);
 
-      if (currentStep == Step.GetDressed) {
-         msgList.Add("Hey there, squirt!  It's about time you got out of bed, we've got a big day ahead of us!  Hurry up and get dressed!");
-      } else if (currentStep == Step.FindSeedBag) {
-         msgList.Add("Now that you're awake, I could use your help running the farm.  If we sell the crops, it's a great way to make some extra money!");
-         msgList.Add("The first thing we should do is plant some seeds.  I'm sure I left the seed bag somewhere outside the house.  Could you try and find it?");
-      } else if (currentStep == Step.PlantSeeds) {
-         msgList.Add("Great, you found it!  I had been looking everywhere for that thing.");
-         msgList.Add("There are some holes in the dirt ready for seeds.  Press 1 to equip the seed bag, and go walk over each of the holes to plant the seeds.");
-      } else if (currentStep == Step.GetWateringCan) {
-         msgList.Add("Nice work!  Pretty soon, those plants are going to need some water.  I left a watering can in the house you can use.");
-      } else if (currentStep == Step.StartWatering) {
-         msgList.Add("Oh good, you found where I put it.  You can press 2 to equip the watering can, and then take it to the seeds that you planted.");
-      } else if (currentStep == Step.FinishWatering) {
-         msgList.Add("The crops will need to be watered a few times before they're ready for harvest.");
-         msgList.Add("Some types of plants take a while before they're ready for water, but these crops should grow quite fast!");
-      } else if (currentStep == Step.GetPitchfork) {
-         msgList.Add("The crops are ready for harvest!  You'll need a pitchfork, I just left one in the house for you.");
-      } else if (currentStep == Step.HarvestCrops) {
-         msgList.Add("Press 3 to equip the pitchfork, and then go harvest your crops!");
-      } else if (currentStep == Step.HeadToDocks) {
-         msgList.Add("Now that we have some crops, we can sell them at another town for a profit!");
-         msgList.Add("I'm going to give you my old merchant ship.  It's nothing fancy, but it's a start.");
-         msgList.Add("Head to the docks south of town and hop on board!");
-      } else if (currentStep == Step.FindTown) {
-         msgList.Add("I've heard there's a town north of here a little way, start sailing that way and see if you can find it!");
-      } else if (currentStep == Step.SellCrops) {
-         msgList.Add("Great, you found it!  Head into the shop to sell your crops for some profit!");
-      } else if (currentStep == Step.FindTreasureSite) {
-         msgList.Add("Now that you know how to run the farm and make money, there's one more thing I want to teach you.");
-         msgList.Add("There are some forests north of here that are rumored to have treasure.  See if you can find it!");
-      } else if (currentStep == Step.DestroyGate) {
-         msgList.Add("You found the treasure site!  But it looks like the entrance is blocked off to guard the treasure inside!");
-         msgList.Add("If you hold right-click you can fire the cannons out the side of the ship.  Attack the encampment until the gates open, and then you can get inside!");
-      } else if (currentStep == Step.EnterTreasureSite) {
-         msgList.Add("You cleared the encampment gates!  Let's find out what's inside!");
-      } else if (currentStep == Step.ExploreTreasureSite) {
-         msgList.Add("The treasure site has been overrun with strange lizard creatures!  It's a good thing this is just a demo, or I bet they'd attack!");
-         msgList.Add("Well, squirt, I've taught you everything I know now.  If you keep running the farm and finding treasure sites like this one, you'll be rich in no time!");
+      foreach (string dialogue in fetchData.msgList) {
+         msgList.Add(dialogue);
       }
 
       // Only add messages that we haven't already shown

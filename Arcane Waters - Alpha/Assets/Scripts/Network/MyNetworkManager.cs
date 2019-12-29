@@ -123,6 +123,7 @@ public class MyNetworkManager : NetworkManager {
       // Loads all SQL Data from server
       NPCManager.self.initializeQuestCache();
       ShipDataManager.self.initializeDataCache();
+      TutorialManager.self.initializeDataCache();
       ClassManager.self.initializeDataCache();
       FactionManager.self.initializeDataCache();
       SpecialtyManager.self.initializeDataCache();

@@ -35,7 +35,8 @@ public class TreasureSiteGate : ClientMonoBehaviour {
       // We only mess with the warp if we have a player object
       if (Global.player != null) {
          // If we're past the tutorial step, we can clear the gate
-         if (TutorialManager.currentStep > Step.DestroyGate) {
+         if (TutorialManager.currentStep > 13) {
+            // TODO: 13 is a placeholder for : Step.DestroyGate
             foreach (SpriteRenderer gate in _gates) {
                gate.enabled = false;
             }
@@ -67,7 +68,8 @@ public class TreasureSiteGate : ClientMonoBehaviour {
       }
 
       if (!isEntranceStillBlocked()) {
-         Global.player.Cmd_CompletedTutorialStep(Step.DestroyGate);
+         int stepIndex = TutorialManager.self.tutorialDataList().Find(_ => _.tutorialName.Contains("DestroyGate")).stepOrder;
+         Global.player.Cmd_CompletedTutorialStep(stepIndex);
       }
    }
 

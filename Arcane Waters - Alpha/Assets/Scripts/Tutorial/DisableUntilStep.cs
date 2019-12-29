@@ -8,7 +8,7 @@ public class DisableUntilStep : ClientMonoBehaviour {
    #region Public Variables
 
    // The tutorial step that first enables this
-   public Step disabledUntilThisStep;
+   public int disabledUntilThisStep;
 
    // The collider to disable
    public Collider2D colliderToDisable;
@@ -17,7 +17,7 @@ public class DisableUntilStep : ClientMonoBehaviour {
 
    void Update () {
       // Check if the collider should be disabled because the player hasn't gotten far enough in the tutorial
-      bool disabled = (int) TutorialManager.currentStep < (int) disabledUntilThisStep;
+      bool disabled = (int) TutorialManager.currentStep < disabledUntilThisStep;
 
       // Toggle the script accordingly
       colliderToDisable.enabled = !disabled;

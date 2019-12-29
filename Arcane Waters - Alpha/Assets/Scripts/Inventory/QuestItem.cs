@@ -14,7 +14,7 @@ public class QuestItem : Item
    #region Public Variables
 
    // The type of Quest Item
-   public Type questType;
+   public Type questItemType;
 
    public enum Type
    {
@@ -30,12 +30,11 @@ public class QuestItem : Item
 #if IS_SERVER_BUILD
 
    public QuestItem (MySqlDataReader dataReader) {
-      this.questType = (Type)DataUtil.getInt(dataReader, "itmType");
+      this.questItemType = (Type) DataUtil.getInt(dataReader, "itmType");
       this.id = DataUtil.getInt(dataReader, "itmId");
       this.category = (Item.Category) DataUtil.getInt(dataReader, "itmCategory");
       this.itemTypeId = DataUtil.getInt(dataReader, "itmType");
       this.data = DataUtil.getString(dataReader, "itmData");
-      this.questType = (Type) DataUtil.getInt(dataReader, "itmType");
 
       // Defaults
       this.color1 = (ColorType) DataUtil.getInt(dataReader, "itmColor1");
@@ -53,7 +52,7 @@ public class QuestItem : Item
    public QuestItem (int id, int recipeType, ColorType primaryColorId, ColorType secondaryColorId, string data = "", int count = 0) {
       this.category = Category.Quest_Item;
       this.id = id;
-      this.questType = (Type) recipeType;
+      this.questItemType = (Type) recipeType;
       this.itemTypeId = (int) recipeType;
       this.count = 1;
       this.color1 = (ColorType) primaryColorId;
@@ -74,7 +73,7 @@ public class QuestItem : Item
    }
 
    public override string getName () {
-      return questType.ToString();
+      return questItemType.ToString();
    }
 
    public static string getName (int recipeTypeID) {
@@ -85,7 +84,7 @@ public class QuestItem : Item
       string recipeString = questTypeID.ToString();
 
       QuestItem questItem = new QuestItem {
-         questType = (Type) questTypeID,
+         questItemType = (Type) questTypeID,
          itemTypeId = questTypeID,
          count = 0,
          color1 = ColorType.Black,
@@ -103,6 +102,6 @@ public class QuestItem : Item
    }
 
    public override string getIconPath () {
-      return "Assets/Sprites/Icons/QuestItem/" + questType + ".png";
+      return "Assets/Sprites/Icons/QuestItem/" + questItemType + ".png";
    }
 }

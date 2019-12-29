@@ -8,7 +8,7 @@ public class ShortcutBox : MonoBehaviour {
    #region Public Variables
 
    // The required tutorial step before this box becomes available (if any)
-   public Step requiredTutorialStep = Step.None;
+   public int requiredTutorialStep = 0;
 
    // The item number associated with this shortcut
    public int itemNumber = 0;

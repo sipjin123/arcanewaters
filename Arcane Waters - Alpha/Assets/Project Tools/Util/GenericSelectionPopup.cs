@@ -76,8 +76,8 @@ public class GenericSelectionPopup : MonoBehaviour {
       PlayerJobIcons = 28,
       MonsterType = 29,
       AbilityType = 30,
-      Step = 31,
-      TutorialIcon = 32
+      TutorialIcon = 31,
+      RequirementType = 32
    }
 
    #endregion
@@ -237,6 +237,11 @@ public class GenericSelectionPopup : MonoBehaviour {
                createTextTemplate(shipType.ToString(), textUI, changeEvent);
             }
             break;
+         case selectionType.RequirementType:
+            foreach (RequirementType requirementType in Enum.GetValues(typeof(RequirementType))) {
+               createTextTemplate(requirementType.ToString(), textUI, changeEvent);
+            }
+            break;
          case selectionType.ShipSailType:
             foreach (Ship.SailType sailType in Enum.GetValues(typeof(Ship.SailType))) {
                createTextTemplate(sailType.ToString(), textUI, changeEvent);
@@ -310,11 +315,6 @@ public class GenericSelectionPopup : MonoBehaviour {
          case selectionType.MonsterType:
             foreach (Enemy.Type enemyType in Enum.GetValues(typeof(Enemy.Type))) {
                createTextTemplate(enemyType.ToString(), textUI, changeEvent);
-            }
-            break;
-         case selectionType.Step:
-            foreach (Step step in Enum.GetValues(typeof(Step))) {
-               createTextTemplate(step.ToString(), textUI, changeEvent);
             }
             break;
          case selectionType.AbilityType:

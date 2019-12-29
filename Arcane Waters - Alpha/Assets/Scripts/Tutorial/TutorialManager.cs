@@ -5,31 +5,11 @@ using UnityEngine.UI;
 using Mirror;
 using System.Linq;
 
-// The tutorial step names
-public enum Step {
-   None = 0,
-   GetDressed = 1,
-   FindSeedBag = 2,
-   PlantSeeds = 3,
-   GetWateringCan = 4,
-   StartWatering = 5,
-   FinishWatering = 6,
-   GetPitchfork = 7,
-   HarvestCrops = 8,
-   HeadToDocks = 9,
-   FindTown = 10,
-   SellCrops = 11,
-   FindTreasureSite = 12,
-   DestroyGate = 13,
-   EnterTreasureSite = 14,
-   ExploreTreasureSite = 15,
-}
-
 public class TutorialManager : MonoBehaviour {
    #region Public Variables
 
    // The current step that this player is on
-   public static Step currentStep = Step.None;
+   public static int currentStep = 0;
 
    // Our Canvas Group
    public CanvasGroup canvasGroup;
@@ -44,6 +24,35 @@ public class TutorialManager : MonoBehaviour {
 
       // Start out with the tutorial panel hidden
       TutorialPanel.self.gameObject.SetActive(false);
+   }
+
+   public TutorialData currentTutorialData () {
+      return fetchTutorialData(currentStep);
+   }
+
+   public int fetchMaxTutorialCount () {
+      return _tutorialDataList.Count;
+   }
+
+   public List<TutorialData> tutorialDataList () {
+      return _tutorialDataList;
+   }
+
+   public void initializeDataCache () {
+      _tutorialDataList = new List<TutorialData>();
+
+      // Get the info from the database
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<string> rawXMLData = DB_Main.getTutorialXML();
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (string rawText in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(rawText);
+               TutorialData tutorialData = Util.xmlLoad<TutorialData>(newTextAsset);
+               _tutorialDataList.Add(tutorialData);
+            }
+         });
+      });
    }
 
    private void Update () {
@@ -89,6 +98,12 @@ public class TutorialManager : MonoBehaviour {
       _hasReceivedInitialData = true;
       currentStep = getCurrentStep();
 
+      TutorialData currTutorialData = fetchTutorialData(currentStep);
+      string areaType = "";
+      if (currTutorialData.requirementType == RequirementType.Area) {
+         areaType = currTutorialData.rawDataJson;
+      }
+
       // Check if we just completed a step
       if (justCompletedStep) {
          EventManager.TriggerEvent(EventManager.COMPLETED_TUTORIAL_STEP);
@@ -99,7 +114,7 @@ public class TutorialManager : MonoBehaviour {
       TutorialPanel.self.updatePanel(tutorialInfo);
 
       // If we're on the ship step and in our ship, we're done
-      if (Global.player is PlayerShipEntity && currentStep == Step.HeadToDocks) {
+      if (Global.player is PlayerShipEntity && areaType == "Shipyard") {
          Global.player.Cmd_CompletedTutorialStep(TutorialManager.currentStep);
       }
    }
@@ -114,12 +129,12 @@ public class TutorialManager : MonoBehaviour {
       return getHighestCompletedStep(list);
    }
 
-   protected Step getCurrentStep () {
+   protected int getCurrentStep () {
       if (!_hasReceivedInitialData) {
-         return Step.None;
+         return 0;
       }
 
-      return (Step) getHighestCompletedStep() + 1;
+      return getHighestCompletedStep() + 1;
    }
 
    protected int getHighestCompletedStep () {
@@ -138,6 +153,14 @@ public class TutorialManager : MonoBehaviour {
       return highestStep;
    }
 
+   public TutorialData fetchTutorialData (int stepID) {
+      return _tutorialDataList.Find(_ => _.stepOrder == stepID);
+   }
+
+   public TutorialData fetchTutorialData (string stepTitle) {
+      return _tutorialDataList.Find(_ => _.tutorialName == stepTitle);
+   }
+
    #region Private Variables
 
    // The info on our tutorial progress
@@ -150,7 +173,13 @@ public class TutorialManager : MonoBehaviour {
    protected static Dictionary<int, List<TutorialInfo>> _tutorialData = new Dictionary<int, List<TutorialInfo>>();
 
    // Maps tutorial steps to the associated summary
-   protected static Dictionary<Step, TutorialStep> _tutorialSteps = new Dictionary<Step, TutorialStep>() {
+   protected static Dictionary<int, TutorialStep> _tutorialSteps = new Dictionary<int, TutorialStep>();
+
+   // List of tutorial data
+   [SerializeField]
+   protected List<TutorialData> _tutorialDataList;
+
+   /*{
         { Step.None, new TutorialStep("", "") },
         { Step.GetDressed, new TutorialStep("Get Dressed!", "Walk up to the dresser with the arrow over it and get dressed.") },
         { Step.FindSeedBag, new TutorialStep("Find the Seed Bag", "Try and find the lost bag of seeds somewhere nearby.") },
@@ -167,7 +196,7 @@ public class TutorialManager : MonoBehaviour {
         { Step.DestroyGate, new TutorialStep("Attack the Gates", "Hold right-click to fire your cannons at the encampment gates!") },
         { Step.EnterTreasureSite, new TutorialStep("Enter the Treasure Site", "Now that the gates are clear, enter the treasure site!") },
         { Step.ExploreTreasureSite, new TutorialStep("Explore the Treasure Site", "Look around the treasure site to see what you can find!") },
-    };
+    };*/
 
    #endregion
 }

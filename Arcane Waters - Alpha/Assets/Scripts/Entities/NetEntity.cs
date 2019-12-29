@@ -701,9 +701,9 @@ public class NetEntity : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_CompletedTutorialStep (Step step) {
+   public void Cmd_CompletedTutorialStep (int stepIndex) {
       // We handle the logic in a non-Cmd function, so that the code can be called from other places
-      completedTutorialStep(step);
+      completedTutorialStep(stepIndex);
    }
 
    [Command]
@@ -798,25 +798,26 @@ public class NetEntity : NetworkBehaviour
    }
 
    [Server]
-   public void completedTutorialStep (Step step) {
+   public void completedTutorialStep (int stepIndex) {
       // Make sure we don't process the same tutorial step multiple times
-      if (_processedTutorialSteps.ContainsKey(step)) {
+      if (_processedTutorialSteps.ContainsKey(stepIndex)) {
          return;
       }
-      _processedTutorialSteps[step] = true;
+      _processedTutorialSteps[stepIndex] = true;
 
       // Database thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         Step completedStep = DB_Main.completeTutorialStep(this.userId, step);
+         TutorialData completedStep = DB_Main.completeTutorialStep(this.userId, stepIndex);
 
          // If they completed certain steps, they get items
-         if (completedStep == Step.FindSeedBag) {
-            DB_Main.insertNewWeapon(this.userId, Weapon.Type.Seeds, ColorType.White, ColorType.White);
-         } else if (completedStep == Step.GetWateringCan) {
-            DB_Main.insertNewWeapon(this.userId, Weapon.Type.WateringPot, ColorType.White, ColorType.White);
-         } else if (completedStep == Step.GetPitchfork) {
-            DB_Main.insertNewWeapon(this.userId, Weapon.Type.Pitchfork, ColorType.White, ColorType.White);
-         } else if (completedStep == Step.HarvestCrops) {
+         if (completedStep.requirementType == RequirementType.Item) {
+            Item item = JsonUtility.FromJson<Item>(completedStep.rawDataJson);
+
+            if (item.category == Item.Category.Weapon) {
+               DB_Main.insertNewWeapon(this.userId, (Weapon.Type) item.itemTypeId, ColorType.White, ColorType.White);
+            } 
+         }
+         if (completedStep.actionType == ActionType.HarvestCrop) {
             ShipInfo shipInfo = DB_Main.createStartingShip(userId);
             DB_Main.setCurrentShip(userId, shipInfo.shipId);
          }
@@ -824,7 +825,7 @@ public class NetEntity : NetworkBehaviour
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Send the info to the player
-            if (completedStep > 0) {
+            if (completedStep.stepOrder > 0) {
                TutorialManager.self.sendTutorialInfo(this, true);
             }
          });
@@ -866,7 +867,7 @@ public class NetEntity : NetworkBehaviour
    protected Dictionary<NetEntity, float> _attackers = new Dictionary<NetEntity, float>();
 
    // Used by the server to keep track of which tutorial steps have already been processed
-   protected Dictionary<Step, bool> _processedTutorialSteps = new Dictionary<Step, bool>();
+   protected Dictionary<int, bool> _processedTutorialSteps = new Dictionary<int, bool>();
 
    #endregion
 }

@@ -8,7 +8,7 @@ public class TutorialStepTrigger : ClientMonoBehaviour {
    #region Public Variables
 
    // The step we need to be on in order to activate this trigger
-   public Step requiredTutorialStep;
+   public int requiredTutorialStep;
 
    #endregion
 

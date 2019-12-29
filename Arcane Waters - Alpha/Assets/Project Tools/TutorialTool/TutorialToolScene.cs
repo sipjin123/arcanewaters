@@ -47,12 +47,13 @@ public class TutorialToolScene : MonoBehaviour
          isShowingDetails = _;
          toolManager.loadXMLData();
       });
+
+      tutorialPanel.gameObject.SetActive(false);
    }
 
    private void createTemplate () {
       TutorialData tutorialData = new TutorialData();
       tutorialData.tutorialName = "Undefined";
-      tutorialData.tutorialStep = Step.None;
 
       TutorialToolTemplate template = Instantiate(tutorialTemplatePrefab, itemTemplateParent.transform);
       template.editButton.onClick.AddListener(() => {
@@ -79,10 +80,10 @@ public class TutorialToolScene : MonoBehaviour
       template.gameObject.SetActive(true);
    }
 
-   public void loadData (Dictionary<Step, TutorialData> data) {
+   public void loadData (Dictionary<string, TutorialData> data) {
       itemTemplateParent.gameObject.DestroyChildren();
 
-      List<TutorialData> sortedList = data.Values.ToList().OrderBy(w => w.tutorialStep).ToList();
+      List<TutorialData> sortedList = data.Values.ToList().OrderBy(w => w.stepOrder).ToList();
 
       // Create a row for each tutorial element
       foreach (TutorialData tutorialData in sortedList) {

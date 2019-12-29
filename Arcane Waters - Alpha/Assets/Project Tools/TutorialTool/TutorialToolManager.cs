@@ -83,7 +83,7 @@ public class TutorialToolManager : MonoBehaviour {
    }
 
    public void loadXMLData () {
-      _tutorialDataList = new Dictionary<Step, TutorialData>();
+      _tutorialDataList = new Dictionary<string, TutorialData>();
 
       XmlLoadingPanel.self.startLoading();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -95,8 +95,8 @@ public class TutorialToolManager : MonoBehaviour {
                TutorialData tutorialData = Util.xmlLoad<TutorialData>(newTextAsset);
 
                // Save the data in the memory cache
-               if (!_tutorialDataList.ContainsKey(tutorialData.tutorialStep)) {
-                  _tutorialDataList.Add(tutorialData.tutorialStep, tutorialData);
+               if (!_tutorialDataList.ContainsKey(tutorialData.tutorialName)) {
+                  _tutorialDataList.Add(tutorialData.tutorialName, tutorialData);
                }
             }
             toolScene.loadData(_tutorialDataList);
@@ -108,7 +108,7 @@ public class TutorialToolManager : MonoBehaviour {
    #region Private Variables
 
    // Holds the list of tutorial data
-   private Dictionary<Step, TutorialData> _tutorialDataList = new Dictionary<Step, TutorialData>();
+   private Dictionary<string, TutorialData> _tutorialDataList = new Dictionary<string, TutorialData>();
 
    #endregion
 }

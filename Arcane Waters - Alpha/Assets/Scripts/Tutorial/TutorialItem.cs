@@ -8,7 +8,7 @@ public class TutorialItem : ClientMonoBehaviour {
    #region Public Variables
 
    // The step that picking up this item completes
-   public Step tutorialStepForThisItem;
+   public int tutorialStepForThisItem;
 
    // The Container for our sprites
    public GameObject spriteContainer;

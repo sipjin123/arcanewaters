@@ -19,14 +19,14 @@ public class SeedBag : ClientMonoBehaviour {
 
    void Update () {
       // We only show the seed bag if they're on step 1 of the tutorial
-      spriteContainer.SetActive(TutorialManager.currentStep == Step.FindSeedBag);
+      spriteContainer.SetActive(isSeedBagActive());
    }
 
    void OnTriggerEnter2D (Collider2D other) {
       PlayerBodyEntity body = other.transform.GetComponent<PlayerBodyEntity>();
 
       // If this client's player picked up the seed bag, tell the server
-      if (body != null && body.isLocalPlayer && TutorialManager.currentStep == Step.FindSeedBag) {
+      if (body != null && body.isLocalPlayer && isSeedBagActive()) {
          body.Cmd_CompletedTutorialStep(TutorialManager.currentStep);
 
          // Make the bag react right away
@@ -39,9 +39,15 @@ public class SeedBag : ClientMonoBehaviour {
 
    protected void completedTutorialStep () {
       // If they just completed the first tutorial step, show an effect
-      if (TutorialManager.currentStep == Step.FindSeedBag) {
+      if (isSeedBagActive()) {
          //EffectManager.show("cannon_smoke", this.transform.position);
       }
+   }
+
+   private bool isSeedBagActive () {
+      TutorialData currTutdata = TutorialManager.self.fetchTutorialData(TutorialManager.currentStep);
+
+      return currTutdata.tutorialName.Contains("FindSeedBag"); 
    }
 
    #region Private Variables

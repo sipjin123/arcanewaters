@@ -39,12 +39,19 @@ public class Warp : MonoBehaviour, MapCreationTool.IMapEditorDataReceiver {
    protected bool meetsRequirements (NetEntity player) {
       Spawn spawn = SpawnManager.self.getSpawn(areaTarget, spawnTarget);
       int currentStep = TutorialManager.getHighestCompletedStep(player.userId) + 1;
+      TutorialData currTutData = TutorialManager.self.fetchTutorialData(currentStep);
+      string currArea = "none";
+      if (currTutData.requirementType == RequirementType.Area) {
+         currArea = currTutData.rawDataJson;
+      }
 
       // We can't warp to the sea until we've gotten far enough into the tutorial
-      if (Area.isSea(spawn.AreaKey) && currentStep < (int) Step.HeadToDocks) {
+      if (Area.isSea(spawn.AreaKey) && currentStep <= 8) {
+         // TODO: 9 is a placeholder for tutorial title : HeadToDocks
          return false;
       }
-      if (Spawn.HOUSE_EXIT.Equals(spawnTarget) && currentStep == (int) Step.GetDressed) {
+      if (Spawn.HOUSE_EXIT.Equals(spawnTarget) && currentStep == 1) {
+         // TODO: 1 is a placeholder for tutorial title : GetDressed
          if (player.connectionToClient != null) {
             ServerMessageManager.sendError(ErrorMessage.Type.Misc, player, "You need to get dressed before leaving the house!");
          }
@@ -52,7 +59,8 @@ public class Warp : MonoBehaviour, MapCreationTool.IMapEditorDataReceiver {
       }
 
       // We can't warp into the treasure site until we clear the gate
-      if (Area.isTreasureSite(spawn.AreaKey) && currentStep < (int) Step.EnterTreasureSite) {
+      if (Area.isTreasureSite(spawn.AreaKey) && currentStep < 14) {
+         // TODO: 14 is a placeholder for tutorial title : EnterTreasureSite
          return false;
       }
 

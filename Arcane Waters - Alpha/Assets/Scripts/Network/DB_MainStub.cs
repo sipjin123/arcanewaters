@@ -242,8 +242,8 @@ public class DB_MainStub : MonoBehaviour {
       return null;
    }
 
-   public static Step completeTutorialStep (int userId, Step step) {
-      return default(Step);
+   public static TutorialData completeTutorialStep (int userId, int stepIndex) {
+      return new TutorialData();
    }
 
    public static int getUserId (string username) {

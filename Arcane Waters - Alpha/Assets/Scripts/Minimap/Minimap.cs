@@ -197,7 +197,7 @@ public class Minimap : ClientMonoBehaviour {
       // Create icons for all tutorial objectives
       foreach (TutorialLocation loc in area.GetComponentsInChildren<TutorialLocation>()) {
          MM_TutorialIcon icon = Instantiate(tutorialIconPrefab, this.iconContainer.transform);
-         icon.tutorialStepType = loc.tutorialStepType;
+         icon.tutorialStepCount = loc.tutorialStepType;
          icon.target = loc.gameObject;
       }
 

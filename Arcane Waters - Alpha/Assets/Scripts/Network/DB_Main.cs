@@ -1523,7 +1523,8 @@ public class DB_Main : DB_MainStub {
       return tutorialInfo;
    }
 
-   public static new Step completeTutorialStep (int userId, Step step) {
+   public static new TutorialData completeTutorialStep (int userId, int stepIndex) {
+      TutorialData data = TutorialManager.self.fetchTutorialData(stepIndex);
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
@@ -1533,18 +1534,18 @@ public class DB_Main : DB_MainStub {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
-            cmd.Parameters.AddWithValue("@stepNumber", (int) step);
+            cmd.Parameters.AddWithValue("@stepNumber", data.stepOrder);
 
             // Execute the command
             cmd.ExecuteNonQuery();
 
-            return step;
+            return data;
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
 
-      return Step.None;
+      return new TutorialData();
    }
 
    public static new int getUserId (string username) {
