@@ -29,7 +29,7 @@ namespace MapCreationTool
          get { return new Vector2(start.x + size.x * 0.5f, start.y + size.y * 0.5f); }
       }
 
-      public bool allInLayer (int layer) {
+      public bool allInLayer (string layer) {
          for (int i = 0; i < tiles.GetLength(0); i++) {
             for (int j = 0; j < tiles.GetLength(1); j++) {
                if (tiles[i, j] != null && tiles[i, j].layer != layer)
@@ -72,6 +72,8 @@ namespace MapCreationTool
       NineFour,
       Dock,
       Wall,
-      River
+      River,
+      InteriorWall,
+      Rect
    }
 }

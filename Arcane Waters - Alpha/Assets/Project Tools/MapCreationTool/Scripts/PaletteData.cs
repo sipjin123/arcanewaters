@@ -6,9 +6,9 @@ namespace MapCreationTool.PaletteTilesData
 {
    public class PaletteData
    {
-      public const int PathLayer = 2;
-      public const int WaterLayer = 9;
-      public const int MountainLayer = 6;
+      public const string PathLayer = "path";
+      public const string WaterLayer = "water";
+      public const string MountainLayer = "mountain";
       public TileGroup[,] tileGroups { get; set; }
       public List<PrefabGroup> prefabGroups { get; set; }
       public BiomeType? type { get; set; }
@@ -85,7 +85,7 @@ namespace MapCreationTool.PaletteTilesData
    {
       public TileBase[,] innerTiles { get; set; }
       public TileBase[,] outerTiles { get; set; }
-      public int layer { get; set; }
+      public string layer { get; set; }
 
       public override Vector2Int brushSize => new Vector2Int(5, 6);
       public MountainGroup () {
@@ -127,7 +127,7 @@ namespace MapCreationTool.PaletteTilesData
    {
       public TileData[,] mainTiles { get; set; }
       public TileData[,] cornerTiles { get; set; }
-      public int layer { get; set; }
+      public string layer { get; set; }
       public bool singleLayer { get; set; }
       public bool invertedCorners { get; set; }
 
@@ -155,7 +155,7 @@ namespace MapCreationTool.PaletteTilesData
    public class WallGroup : TileGroup
    {
       public TileData[,] allTiles { get; set; }
-      public int layer { get; set; }
+      public string layer { get; set; }
 
       public override Vector2Int brushSize => new Vector2Int(1, 2);
 
@@ -175,7 +175,7 @@ namespace MapCreationTool.PaletteTilesData
 
    public class NineGroup : TileGroup
    {
-      public int layer { get; set; }
+      public string layer { get; set; }
       public int subLayer { get; set; }
 
       public override Vector2Int brushSize => new Vector2Int(2, 2);
@@ -187,7 +187,7 @@ namespace MapCreationTool.PaletteTilesData
 
    public class DockGroup : TileGroup
    {
-      public int layer { get; set; }
+      public string layer { get; set; }
       public int subLayer { get; set; }
 
       public DockGroup () {
@@ -200,7 +200,19 @@ namespace MapCreationTool.PaletteTilesData
    public class TileData
    {
       public TileBase tile { get; set; }
-      public int layer { get; set; }
+      public string layer { get; set; }
       public int subLayer { get; set; }
+      public int cluster { get; set; }
+
+      public TileData (BiomedPaletteData.BiomedTileData biomedData, BiomeType biome) {
+         tile = biomedData.tile[biome];
+         layer = biomedData.layer;
+         subLayer = biomedData.subLayer;
+         cluster = biomedData.cluster;
+      }
+
+      public TileData () {
+         
+      }
    }
 }

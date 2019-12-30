@@ -94,7 +94,7 @@ namespace MapCreationTool
          targetMatrixHeight = EditorGUILayout.IntField(targetMatrixHeight);
          GUILayout.EndHorizontal();
 
-         if(GUILayout.Button("Resize") && targetMatrixWidth != tileSetups.size.x && targetMatrixHeight != tileSetups.size.y) {
+         if(GUILayout.Button("Resize") && (targetMatrixWidth != tileSetups.size.x || targetMatrixHeight != tileSetups.size.y)) {
             Undo.RecordObject(target, "resized matrix size manually");
             tileSetups.resize(targetMatrixWidth, targetMatrixHeight);
             EditorUtility.SetDirty(target);
@@ -103,6 +103,7 @@ namespace MapCreationTool
 
       private void OnEnable () {
          clusterColors = new Color[] {
+            new Color(0, 0, 0, 0),
             new Color(1, 0.5f, 1, 0.4f),
             new Color(1, 1, 0.5f, 0.4f),
             new Color(0.5f, 1, 1, 0.4f),
@@ -111,7 +112,7 @@ namespace MapCreationTool
       }
 
       private void drawToolLayer() {
-         selectedLayer = EditorGUILayout.Popup("Layer to set", selectedLayer, removeNulls(config.areaLayerMap));
+         selectedLayer = EditorGUILayout.Popup("Layer to set", selectedLayer, config.getLayerNames(editorType));
       }
 
       private void drawToolSublayer() {
@@ -119,7 +120,7 @@ namespace MapCreationTool
       }
 
       private void drawToolCluster() {
-         selectedCluster = EditorGUILayout.Popup("Sublayer to set", selectedCluster, Enumerable.Range(0, 4).Select(n => n.ToString()).ToArray());
+         selectedCluster = EditorGUILayout.Popup("Cluster to set", selectedCluster, Enumerable.Range(0, 5).Select(n => n.ToString()).ToArray());
       }
 
       private void drawToolCollision() {
@@ -153,7 +154,7 @@ namespace MapCreationTool
 
                switch(tool) {
                   case Tool.Layer:
-                     tileSetups[index.x, index.y].layer = removeNulls(config.areaLayerMap)[selectedLayer];
+                     tileSetups[index.x, index.y].layer = config.getLayerNames(editorType)[selectedLayer];
                      break;
                   case Tool.Sublayer:
                      tileSetups[index.x, index.y].sublayer = selectedSublayer;
@@ -185,7 +186,8 @@ namespace MapCreationTool
          for(int i = 0; i < tileSetups.size.x; i++) {
             for(int j = 0; j < tileSetups.size.y; j++) {
                if (drawClusters) {
-                  Handles.DrawSolidRectangleWithOutline(new Rect(new Vector3(i, j, 0), Vector3.one), clusterColors[tileSetups[i, j].cluster], Color.black);
+                  if(tileSetups[i, j].cluster != 0)
+                     Handles.DrawSolidRectangleWithOutline(new Rect(new Vector3(i, j, 0), Vector3.one), clusterColors[tileSetups[i, j].cluster], Color.black);
                }
 
                if (drawLayer) {
@@ -205,14 +207,14 @@ namespace MapCreationTool
          style.alignment = TextAnchor.UpperCenter;
          Vector3 worldPos = tileIndex + Vector3.up * 0.95f + Vector3.right * 0.5f;
 
-         float offset = 0.01f;
+         //float offset = 0.01f;
+         //
+         //style.normal.textColor = Color.white;
 
-         style.normal.textColor = Color.white;
-
-         Handles.Label(worldPos + new Vector3(offset, 0, 0), text, style );
-         Handles.Label(worldPos + new Vector3(-offset, 0, 0), text, style);
-         Handles.Label(worldPos + new Vector3(0, offset, 0), text, style);
-         Handles.Label(worldPos + new Vector3(0, -offset, 0), text, style);
+         //Handles.Label(worldPos + new Vector3(offset, 0, 0), text, style );
+         //Handles.Label(worldPos + new Vector3(-offset, 0, 0), text, style);
+         //Handles.Label(worldPos + new Vector3(0, offset, 0), text, style);
+         //Handles.Label(worldPos + new Vector3(0, -offset, 0), text, style);
 
          style.normal.textColor = Color.black;
          Handles.Label(worldPos, text, style);
@@ -224,14 +226,14 @@ namespace MapCreationTool
          style.fixedHeight = 1;
          Vector3 worldPos = tileIndex + Vector3.right * 0.5f + Vector3.up * 0.05f;
 
-         float offset = 0.01f;
+         //float offset = 0.01f;
+         //
+         //style.normal.textColor = Color.white;
 
-         style.normal.textColor = Color.white;
-
-         Handles.Label(worldPos + new Vector3(offset, 0, 0), text, style);
-         Handles.Label(worldPos + new Vector3(-offset, 0, 0), text, style);
-         Handles.Label(worldPos + new Vector3(0, offset, 0), text, style);
-         Handles.Label(worldPos + new Vector3(0, -offset, 0), text, style);
+         //Handles.Label(worldPos + new Vector3(offset, 0, 0), text, style);
+         //Handles.Label(worldPos + new Vector3(-offset, 0, 0), text, style);
+         //Handles.Label(worldPos + new Vector3(0, offset, 0), text, style);
+         //Handles.Label(worldPos + new Vector3(0, -offset, 0), text, style);
 
          style.normal.textColor = Color.black;
          Handles.Label(worldPos, text, style);

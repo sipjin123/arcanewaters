@@ -79,6 +79,7 @@ public class Minimap : ClientMonoBehaviour {
    public MinimapGeneratorPreset baseLavaPreset;
    public MinimapGeneratorPreset baseForestPreset;
    public MinimapGeneratorPreset baseMushroomPreset;
+   public MinimapGeneratorPreset interiorPreset;
 
    // Self
    public static Minimap self;
@@ -896,9 +897,11 @@ public class Minimap : ClientMonoBehaviour {
       }
 
       Biome.Type biomeType = Area.getBiome(area.areaKey);
-      
+
       if (Area.isSea(area.areaKey)) {
          return lookUpSeaPreset(biomeType);
+      } else if (Area.isInterior(area.areaKey)) {
+         return interiorPreset;
       } else {
          switch (biomeType) {
             case Biome.Type.Forest:

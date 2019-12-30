@@ -188,6 +188,10 @@ namespace MapCreationTool
          FileUtility.saveFile(drawBoard.formSerializedData());
       }
 
+      public void exportButton_Click() {
+         FileUtility.exportFile(drawBoard.formExportData());
+      }
+
       public void masterToolButton_Click () {
          yesNoDialog.display("Exiting map editor",
              "Are you sure you want to exit the map editor?\nAll unsaved progress will be lost.",

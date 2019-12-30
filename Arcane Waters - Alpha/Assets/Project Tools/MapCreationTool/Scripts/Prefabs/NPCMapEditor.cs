@@ -3,26 +3,36 @@
 
 namespace MapCreationTool
 {
-   public class NPCMapEditor : MonoBehaviour, IPrefabDataListener, IHighlightable
+   public class NPCMapEditor : MapEditorPrefab, IPrefabDataListener, IHighlightable
    {
-      private SpriteSwapper spriteSwapper;
+      private SpriteSwap spriteSwapper;
       private SpriteOutline outline;
 
       private void Awake () {
-         spriteSwapper = GetComponentInChildren<SpriteSwapper>();
+         spriteSwapper = GetComponentInChildren<SpriteSwap>();
          outline = GetComponentInChildren<SpriteOutline>();
       }
 
       public void dataFieldChanged (string key, string value) {
          if (key.CompareTo("npc data") == 0) {
-            int id = int.Parse(value.Split(':')[0]);
-
-            Texture2D npcTexture = NPCManager.instance.getTexture(id);
+            Texture2D npcTexture = NPCManager.instance.getTexture(int.Parse(value.Split(':')[0]));
 
             if (npcTexture != null) {
                spriteSwapper.newTexture = npcTexture;
             }
-         } 
+         }
+      }
+
+      public override void createdForPrieview () {
+         setDefaultSprite();
+      }
+
+      public void setDefaultSprite () {
+         Texture2D npcTexture = NPCManager.instance.getFirstNpcTexture();
+
+         if (npcTexture != null) {
+            spriteSwapper.newTexture = npcTexture;
+         }
       }
 
       public void setHighlight (bool hovered, bool selected) {

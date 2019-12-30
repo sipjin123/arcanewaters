@@ -25,6 +25,13 @@ namespace MapCreationTool
          this.subLayers = subLayers.Select(tl => new Layer(tl)).ToArray();
       }
 
+      public void Destroy() {
+         if (tilemap != null)
+            Object.Destroy(tilemap.gameObject);
+         foreach (Layer layer in subLayers)
+            layer.Destroy();
+      }
+
       /// <summary>
       /// Checks whether the layer has a tilemap. Otherwise, the layer is only a container for sublayers
       /// </summary>

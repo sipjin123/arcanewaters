@@ -29,6 +29,8 @@ namespace MapCreationTool
       private Vector3Int? draggingFrom = null;
       private Vector3Int lastDragPos = Vector3Int.zero;
 
+      private Vector2 paletteSize;
+
       private void Awake () {
          tilemap = GetComponentInChildren<Tilemap>();
          eventCanvas = GetComponentInChildren<Canvas>().GetComponent<RectTransform>();
@@ -104,6 +106,9 @@ namespace MapCreationTool
                child.gameObject.layer = LayerMask.NameToLayer("MapEditor_Palette");
             p.transform.localPosition = pref.centerPoint;
 
+            if (p.GetComponent<NPCMapEditor>())
+               p.GetComponent<NPCMapEditor>().setDefaultSprite();
+
             prefabs.Add(p);
          }
 
@@ -116,6 +121,8 @@ namespace MapCreationTool
 
          regularTileBounds = new Rect(Vector2.zero, size);
 
+         paletteSize = new Vector2(paletteData.tileGroups.GetLength(0), paletteData.tileGroups.GetLength(1));
+
          recalculateCamBounds();
          clampCamPos();
       }
@@ -126,19 +133,19 @@ namespace MapCreationTool
       }
 
       private void recalculateCamBounds () {
-         Vector2 tilemapSize = (Vector2Int) tilemap.size + new Vector2(1f, 4f);
+         Vector2 extendedSize = paletteSize + new Vector2(1f, 4f);
          Vector2 tilemapOrigin = new Vector2(-0.5f, -2f);
 
          float aspect = (float) paletteCamera.pixelHeight / paletteCamera.pixelWidth;
 
          float size = Mathf.Max(
-                 tilemapSize.x * 0.5f * aspect,
-                 tilemapSize.y * 0.5f);
+                 extendedSize.x * 0.5f * aspect,
+                 extendedSize.y * 0.5f);
 
          paletteCamera.orthographicSize = size;
 
          camBounds = new Rect(
-             tilemapOrigin + new Vector2(0, tilemapSize.y - size * 2f),
+             tilemapOrigin + new Vector2(0, extendedSize.y - size * 2f),
              new Vector2(
                  size * 2f / aspect,
                  size * 2f));

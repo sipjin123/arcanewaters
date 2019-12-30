@@ -2,6 +2,8 @@
 using MapCreationTool.Serialization;
 using System.Linq;
 using UnityEngine.Tilemaps;
+using System.Collections.Generic;
+using System;
 
 namespace MapCreationTool
 {
@@ -22,25 +24,26 @@ namespace MapCreationTool
       /// Creates an instance of a map from the serialized map data
       /// </summary>
       /// <param name="data"></param>
-      public static Area instantiateMapData(TextAsset data, string areaKey) {
+      public static Area instantiateMapData(TextAsset data, string areaKey, Vector3 position) {
 
          ensureSerializationMapsLoaded();
 
-         MapTemplate result = Object.Instantiate(AssetSerializationMaps.mapTemplate);
+         MapTemplate result = UnityEngine.Object.Instantiate(AssetSerializationMaps.mapTemplate, position, Quaternion.identity);
          result.name = areaKey;
 
          Area area = result.area;
          area.areaKey = areaKey;
 
-         DeserializedProject deserialized = Serializer.deserialize(data.text, false);
+         ExportedProject001 exportedProject = JsonUtility.FromJson<ExportedProject001>(data.text);
 
-         instantiateTilemaps(deserialized.tiles, AssetSerializationMaps.tilemapTemplate, result.tilemapParent);
-         instantiatePrefabs(deserialized.prefabs, result.prefabParent);
+         instantiateTilemaps(exportedProject, result.tilemapParent);
+         instantiatePrefabs(exportedProject, result.prefabParent, result.npcParent);
 
-         setCameraBounds(result, deserialized.tiles);
+         Debug.LogWarning("Not setting camera bounds.");
+         setCameraBounds(result, exportedProject);
 
          // Destroy the template component
-         Object.Destroy(result);
+         UnityEngine.Object.Destroy(result);
 
          return area;
       }
@@ -50,12 +53,14 @@ namespace MapCreationTool
       /// </summary>
       /// <param name="map"></param>
       /// <param name="tiles"></param>
-      static void setCameraBounds(MapTemplate map, DeserializedProject.DeserializedTile[] tiles) {
+      static void setCameraBounds(MapTemplate map, ExportedProject001 project) {
          Bounds bounds = new Bounds();
 
-         foreach(var tile in tiles) {
-            bounds.min = new Vector3(Mathf.Min(tile.position.x, bounds.min.x), Mathf.Min(tile.position.y, bounds.min.y), 0);
-            bounds.max = new Vector3(Mathf.Max(tile.position.x, bounds.max.x), Mathf.Max(tile.position.y, bounds.max.y), 0);
+         foreach(var layer in project.layers) {
+            foreach(var tile in layer.tiles) {
+               bounds.min = new Vector3(Mathf.Min(tile.x, bounds.min.x), Mathf.Min(tile.y, bounds.min.y), 0);
+               bounds.max = new Vector3(Mathf.Max(tile.x, bounds.max.x), Mathf.Max(tile.y, bounds.max.y), 0);
+            }
          }
 
          bounds.max += new Vector3(1, 1, 0);
@@ -70,54 +75,43 @@ namespace MapCreationTool
          map.confiner.m_BoundingShape2D = map.camBounds;
       }
 
-      static void instantiatePrefabs(DeserializedProject.DeserializedPrefab[] prefabs, Transform parent) {
-         foreach (var prefab in prefabs) {
-            var pref = Object.Instantiate(prefab.prefab, parent);
-            pref.transform.localPosition = prefab.position + Vector3.back * 10;
+      static void instantiatePrefabs(ExportedProject001 project, Transform prefabParent, Transform npcParent) {
+         Func<int, GameObject> indexToPrefab = (index) => { return AssetSerializationMaps.getPrefab(index, project.biome, false); };
+         foreach (var prefab in project.prefabs) {
+            GameObject original = indexToPrefab(prefab.i);
+            Transform parent = original.GetComponent<NPC>() ? npcParent : prefabParent;
+            Vector3 targetLocalPos = new Vector3(prefab.x, prefab.y, 0) * 0.16f + Vector3.back * 10;
+
+            var pref = UnityEngine.Object.Instantiate(
+               original, 
+               parent.TransformPoint(targetLocalPos), 
+               Quaternion.identity, 
+               parent);
 
             ZSnap zsnap = pref.GetComponent<ZSnap>();
             if (zsnap != null)
                zsnap.snapZ();
 
             IMapEditorDataReceiver receiver = pref.GetComponent<IMapEditorDataReceiver>();
-            if (receiver != null && prefab.dataFields != null)
-               receiver.receiveData(prefab.dataFields);
+            if (receiver != null && prefab.d != null)
+               receiver.receiveData(prefab.d);
          }
       }
 
-      static void instantiateTilemaps(DeserializedProject.DeserializedTile[] tiles, Tilemap tilemapPref, Transform parent) {
-         // Set up the layers
-         Tilemap[] tms = new Tilemap[10000];
-         foreach(var tile in tiles) {
-            int layerIndex = tile.layer * 100 + (tile.sublayer ?? 0);
-            if (tms[layerIndex] == null) {
-               float posZ = AssetSerializationMaps.layerZFirst + tile.layer * AssetSerializationMaps.layerZMultip +
-                   (tile.sublayer == null ? 0 : tile.sublayer.Value * AssetSerializationMaps.sublayerZMultip);
+      static void instantiateTilemaps (ExportedProject001 project, Transform parent) {
+         Func<Vector2Int, TileBase> indexToTile = (index) => { return AssetSerializationMaps.getTile(index, project.biome); };
+         
+         foreach (ExportedLayer001 layer in project.layers) {
+            // Create the tilemap gameobject
+            var tilemap = UnityEngine.Object.Instantiate(AssetSerializationMaps.tilemapTemplate, parent);
+            tilemap.transform.localPosition = new Vector3(0, 0, layer.z);
+            tilemap.gameObject.name = "Layer " + layer.z;
 
-               var tilemap = Object.Instantiate(AssetSerializationMaps.tilemapTemplate, parent);
-               tilemap.transform.localPosition = new Vector3(0, 0, posZ);
+            // Add all the tiles
+            Vector3Int[] positions = layer.tiles.Select(t => new Vector3Int(t.x, t.y, 0)).ToArray();
+            TileBase[] tiles = layer.tiles.Select(t => indexToTile(new Vector2Int(t.i, t.j))).ToArray();
 
-               tilemap.gameObject.name = "Layer " + layerIndex;
-               
-               //Add water so water checker catches it
-               if (tile.layer == PaletteTilesData.PaletteData.WaterLayer)
-                  tilemap.gameObject.name += " Water";
-
-               if (!AssetSerializationMaps.layersWithColliders.Contains(tile.layer) && tilemap.GetComponent<Collider>()) {
-                  Object.Destroy(tilemap.GetComponent<Collider>());
-               }
-
-               tms[layerIndex] = tilemap;
-            }
-         }
-
-         var groups = tiles
-            .Where(t => t.tile != AssetSerializationMaps.transparentTileBase)
-            .GroupBy(t => t.layer * 100 + (t.sublayer ?? 0))
-            .Select(group => new { group.Key, Tiles = group.Select(t => t.tile), Positions = group.Select(t => t.position) });
-
-         foreach(var group in groups) {
-            tms[group.Key].SetTiles(group.Positions.ToArray(), group.Tiles.ToArray());
+            tilemap.SetTiles(positions, tiles);
          }
       }
 

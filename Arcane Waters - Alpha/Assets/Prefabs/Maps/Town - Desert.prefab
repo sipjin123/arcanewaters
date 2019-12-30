@@ -3619,8 +3619,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: 212a7a47fc07116499d8e2fe669a5944, type: 3}
     m_FontSize: 10
@@ -3927,6 +3925,7 @@ MonoBehaviour:
   areaKey: 
   tradeGossip: 
   nameText: {fileID: 114727364712084622}
+  isDebug: 0
 --- !u!114 &114034973510082398
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4975,8 +4974,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: 212a7a47fc07116499d8e2fe669a5944, type: 3}
     m_FontSize: 10
@@ -5347,8 +5344,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: 212a7a47fc07116499d8e2fe669a5944, type: 3}
     m_FontSize: 10
@@ -11542,6 +11537,7 @@ MonoBehaviour:
   areaKey: 
   tradeGossip: 
   nameText: {fileID: 114332248134155814}
+  isDebug: 0
 --- !u!114 &114363089151257858
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16426,8 +16422,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: 212a7a47fc07116499d8e2fe669a5944, type: 3}
     m_FontSize: 10
@@ -25394,6 +25388,7 @@ MonoBehaviour:
   areaKey: 
   tradeGossip: 
   nameText: {fileID: 114212360658317732}
+  isDebug: 0
 --- !u!114 &114312272544705556
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26824,8 +26819,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: 212a7a47fc07116499d8e2fe669a5944, type: 3}
     m_FontSize: 10
@@ -70337,6 +70330,7 @@ MonoBehaviour:
   areaKey: 
   tradeGossip: 
   nameText: {fileID: 114623528390769516}
+  isDebug: 0
 --- !u!114 &114735098395616002
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -70595,6 +70589,7 @@ MonoBehaviour:
   areaKey: 
   tradeGossip: 
   nameText: {fileID: 114777030809500630}
+  isDebug: 0
 --- !u!114 &114191319717709586
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -80008,8 +80003,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: 212a7a47fc07116499d8e2fe669a5944, type: 3}
     m_FontSize: 10
@@ -80270,8 +80263,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: 212a7a47fc07116499d8e2fe669a5944, type: 3}
     m_FontSize: 10
@@ -80548,6 +80539,7 @@ MonoBehaviour:
   areaKey: 
   tradeGossip: 
   nameText: {fileID: 114088767808694780}
+  isDebug: 0
 --- !u!114 &114405104360492512
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -81112,6 +81104,7 @@ MonoBehaviour:
   areaKey: 
   tradeGossip: 
   nameText: {fileID: 114254676660439670}
+  isDebug: 0
 --- !u!114 &114955043768503344
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -81596,6 +81589,7 @@ Transform:
   - {fileID: 4043187531539076}
   - {fileID: 6802607642364123117}
   - {fileID: 4269339592337492}
+  - {fileID: 8703376570014148456}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -82133,6 +82127,7 @@ MonoBehaviour:
   areaKey: 
   tradeGossip: 
   nameText: {fileID: 114567657183815314}
+  isDebug: 0
 --- !u!114 &114954128627759726
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -83987,6 +83982,7 @@ MonoBehaviour:
   areaKey: 
   tradeGossip: 
   nameText: {fileID: 114260086272422788}
+  isDebug: 0
 --- !u!114 &114971489126937936
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -88886,6 +88882,7 @@ MonoBehaviour:
   areaKey: 
   tradeGossip: 
   nameText: {fileID: 114272362794273764}
+  isDebug: 0
 --- !u!114 &114993460691957416
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -88980,8 +88977,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: 212a7a47fc07116499d8e2fe669a5944, type: 3}
     m_FontSize: 10
@@ -89616,6 +89611,7 @@ MonoBehaviour:
   areaKey: 
   tradeGossip: 
   nameText: {fileID: 114320693839009946}
+  isDebug: 0
 --- !u!114 &114364421302604266
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -89966,8 +89962,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: 212a7a47fc07116499d8e2fe669a5944, type: 3}
     m_FontSize: 10
@@ -91185,6 +91179,7 @@ MonoBehaviour:
   areaKey: 
   tradeGossip: 
   nameText: {fileID: 114633239289831016}
+  isDebug: 0
 --- !u!114 &114395369788222136
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -91918,6 +91913,7 @@ MonoBehaviour:
   areaKey: 
   tradeGossip: 
   nameText: {fileID: 114676158165861924}
+  isDebug: 0
 --- !u!114 &114418469265134726
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -92415,6 +92411,7 @@ MonoBehaviour:
   areaKey: 
   tradeGossip: 
   nameText: {fileID: 114941171198945456}
+  isDebug: 0
 --- !u!114 &114956278396223950
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -92883,8 +92880,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: 212a7a47fc07116499d8e2fe669a5944, type: 3}
     m_FontSize: 10
@@ -99388,8 +99383,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: 212a7a47fc07116499d8e2fe669a5944, type: 3}
     m_FontSize: 10
@@ -99740,8 +99733,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: 212a7a47fc07116499d8e2fe669a5944, type: 3}
     m_FontSize: 10
@@ -100737,8 +100728,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: 212a7a47fc07116499d8e2fe669a5944, type: 3}
     m_FontSize: 10
@@ -100949,8 +100938,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: 212a7a47fc07116499d8e2fe669a5944, type: 3}
     m_FontSize: 10
@@ -101492,6 +101479,7 @@ MonoBehaviour:
   areaKey: 
   tradeGossip: 
   nameText: {fileID: 0}
+  isDebug: 0
 --- !u!114 &1697695112472486841
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -101575,16 +101563,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: newTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: ab036c0c30bdf8f4da8fcce42092df2e, type: 3}
     - target: {fileID: 114912060166489536, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: npcData
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
-        type: 3}
-      propertyPath: newTexture
-      value: 
-      objectReference: {fileID: 2800000, guid: 2fd3408a8dcee1a42bb37908c10227da, type: 3}
     - target: {fileID: 224054833768133422, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -101615,6 +101603,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: newTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: 2fd3408a8dcee1a42bb37908c10227da, type: 3}
     - target: {fileID: 8246330360122713945, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -101630,11 +101623,6 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
-        type: 3}
-      propertyPath: newTexture
-      value: 
-      objectReference: {fileID: 2800000, guid: ab036c0c30bdf8f4da8fcce42092df2e, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f8f35b9f6cbe1fb4d88c39af030bddd4, type: 3}
 --- !u!4 &227393963755072160 stripped
@@ -101698,16 +101686,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: newTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: 3a2eeef537e872646a6bee31b125edf1, type: 3}
     - target: {fileID: 114912060166489536, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: npcData
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
-        type: 3}
-      propertyPath: newTexture
-      value: 
-      objectReference: {fileID: 2800000, guid: 96971288906b8374c915b82e38e55080, type: 3}
     - target: {fileID: 224054833768133422, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -101738,6 +101726,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: newTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: 96971288906b8374c915b82e38e55080, type: 3}
     - target: {fileID: 8246330360122713945, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -101753,11 +101746,6 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
-        type: 3}
-      propertyPath: newTexture
-      value: 
-      objectReference: {fileID: 2800000, guid: 3a2eeef537e872646a6bee31b125edf1, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f8f35b9f6cbe1fb4d88c39af030bddd4, type: 3}
 --- !u!4 &765795572932938870 stripped
@@ -101821,16 +101809,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: newTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: 2e0d1b3bae10b2142bd319de292c461a, type: 3}
     - target: {fileID: 114912060166489536, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: npcData
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
-        type: 3}
-      propertyPath: newTexture
-      value: 
-      objectReference: {fileID: 2800000, guid: 38a71abc4e883f544af2d0ef470af9d2, type: 3}
     - target: {fileID: 224054833768133422, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -101861,6 +101849,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: newTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: 38a71abc4e883f544af2d0ef470af9d2, type: 3}
     - target: {fileID: 8246330360122713945, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -101876,11 +101869,6 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
-        type: 3}
-      propertyPath: newTexture
-      value: 
-      objectReference: {fileID: 2800000, guid: 2e0d1b3bae10b2142bd319de292c461a, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f8f35b9f6cbe1fb4d88c39af030bddd4, type: 3}
 --- !u!4 &1082010977986087184 stripped
@@ -101896,11 +101884,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4964268670328478}
     m_Modifications:
-    - target: {fileID: 1385971446458028834, guid: cdd2555a7603dac41bb7e6d15bda9f23,
+    - target: {fileID: 1343626252261056022, guid: cdd2555a7603dac41bb7e6d15bda9f23,
         type: 3}
-      propertyPath: m_Name
-      value: Virtual Camera
-      objectReference: {fileID: 0}
+      propertyPath: m_BoundingShape2D
+      value: 
+      objectReference: {fileID: 60263175631946524}
     - target: {fileID: 1383685778058357592, guid: cdd2555a7603dac41bb7e6d15bda9f23,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -101956,11 +101944,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1343626252261056022, guid: cdd2555a7603dac41bb7e6d15bda9f23,
+    - target: {fileID: 1385971446458028834, guid: cdd2555a7603dac41bb7e6d15bda9f23,
         type: 3}
-      propertyPath: m_BoundingShape2D
-      value: 
-      objectReference: {fileID: 60263175631946524}
+      propertyPath: m_Name
+      value: Virtual Camera
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cdd2555a7603dac41bb7e6d15bda9f23, type: 3}
 --- !u!114 &114744227511982436 stripped
@@ -102036,16 +102024,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: newTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: 07289395090b25842b0fae20ca69fba0, type: 3}
     - target: {fileID: 114912060166489536, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: npcData
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
-        type: 3}
-      propertyPath: newTexture
-      value: 
-      objectReference: {fileID: 2800000, guid: 07289395090b25842b0fae20ca69fba0, type: 3}
     - target: {fileID: 224054833768133422, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -102076,6 +102064,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: newTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: 07289395090b25842b0fae20ca69fba0, type: 3}
     - target: {fileID: 8246330360122713945, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -102091,11 +102084,6 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
-        type: 3}
-      propertyPath: newTexture
-      value: 
-      objectReference: {fileID: 2800000, guid: 07289395090b25842b0fae20ca69fba0, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f8f35b9f6cbe1fb4d88c39af030bddd4, type: 3}
 --- !u!4 &1397273681210999132 stripped
@@ -102159,16 +102147,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: newTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: 5931702be6b7d1446be06eb55727621a, type: 3}
     - target: {fileID: 114912060166489536, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: npcData
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
-        type: 3}
-      propertyPath: newTexture
-      value: 
-      objectReference: {fileID: 2800000, guid: ab036c0c30bdf8f4da8fcce42092df2e, type: 3}
     - target: {fileID: 224054833768133422, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -102199,6 +102187,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: newTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: ab036c0c30bdf8f4da8fcce42092df2e, type: 3}
     - target: {fileID: 8246330360122713945, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -102214,11 +102207,6 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
-        type: 3}
-      propertyPath: newTexture
-      value: 
-      objectReference: {fileID: 2800000, guid: 5931702be6b7d1446be06eb55727621a, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f8f35b9f6cbe1fb4d88c39af030bddd4, type: 3}
 --- !u!4 &1965831406545423347 stripped
@@ -102234,11 +102222,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4964268670328478}
     m_Modifications:
-    - target: {fileID: 2813100160522236083, guid: 06b4e62e8403ede4ab954c70f7515de4,
-        type: 3}
-      propertyPath: m_Name
-      value: Item Shop Sign
-      objectReference: {fileID: 0}
     - target: {fileID: 2810705069707985535, guid: 06b4e62e8403ede4ab954c70f7515de4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -102293,6 +102276,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2813100160522236083, guid: 06b4e62e8403ede4ab954c70f7515de4,
+        type: 3}
+      propertyPath: m_Name
+      value: Item Shop Sign
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 06b4e62e8403ede4ab954c70f7515de4, type: 3}
@@ -102357,16 +102345,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: newTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: 7397b65e65f9e1b46a7f4ec1b0bf4fe7, type: 3}
     - target: {fileID: 114912060166489536, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: npcData
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
-        type: 3}
-      propertyPath: newTexture
-      value: 
-      objectReference: {fileID: 2800000, guid: 3a2eeef537e872646a6bee31b125edf1, type: 3}
     - target: {fileID: 224054833768133422, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -102397,6 +102385,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: newTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: 3a2eeef537e872646a6bee31b125edf1, type: 3}
     - target: {fileID: 8246330360122713945, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -102412,11 +102405,6 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
-        type: 3}
-      propertyPath: newTexture
-      value: 
-      objectReference: {fileID: 2800000, guid: 7397b65e65f9e1b46a7f4ec1b0bf4fe7, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f8f35b9f6cbe1fb4d88c39af030bddd4, type: 3}
 --- !u!4 &2986421847771637003 stripped
@@ -102480,16 +102468,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: newTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: 2cbb96996f6ff8e48907f4ac9b27a430, type: 3}
     - target: {fileID: 114912060166489536, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: npcData
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
-        type: 3}
-      propertyPath: newTexture
-      value: 
-      objectReference: {fileID: 2800000, guid: 2cbb96996f6ff8e48907f4ac9b27a430, type: 3}
     - target: {fileID: 224054833768133422, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -102520,6 +102508,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: newTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: 2cbb96996f6ff8e48907f4ac9b27a430, type: 3}
     - target: {fileID: 8246330360122713945, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -102535,11 +102528,6 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
-        type: 3}
-      propertyPath: newTexture
-      value: 
-      objectReference: {fileID: 2800000, guid: 2cbb96996f6ff8e48907f4ac9b27a430, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f8f35b9f6cbe1fb4d88c39af030bddd4, type: 3}
 --- !u!4 &3467369224683556712 stripped
@@ -102603,16 +102591,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: newTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: 92d5447b428a51242bdfb46f1b759bcd, type: 3}
     - target: {fileID: 114912060166489536, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: npcData
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
-        type: 3}
-      propertyPath: newTexture
-      value: 
-      objectReference: {fileID: 2800000, guid: 92d5447b428a51242bdfb46f1b759bcd, type: 3}
     - target: {fileID: 224054833768133422, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -102643,6 +102631,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: newTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: 92d5447b428a51242bdfb46f1b759bcd, type: 3}
     - target: {fileID: 8246330360122713945, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -102658,11 +102651,6 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
-        type: 3}
-      propertyPath: newTexture
-      value: 
-      objectReference: {fileID: 2800000, guid: 92d5447b428a51242bdfb46f1b759bcd, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f8f35b9f6cbe1fb4d88c39af030bddd4, type: 3}
 --- !u!4 &3982683520321518171 stripped
@@ -102670,6 +102658,96 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4420619915159614, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
     type: 3}
   m_PrefabInstance: {fileID: 3984244246015775333}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &4859045375642796666
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 4964268670328478}
+    m_Modifications:
+    - target: {fileID: 3973301111055378852, guid: 9602eb5b3f834724abc3814f972345be,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3973301111055378852, guid: 9602eb5b3f834724abc3814f972345be,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3973301111055378852, guid: 9602eb5b3f834724abc3814f972345be,
+        type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4298218442774226194, guid: 9602eb5b3f834724abc3814f972345be,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 9.224
+      objectReference: {fileID: 0}
+    - target: {fileID: 4298218442774226194, guid: 9602eb5b3f834724abc3814f972345be,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -4.847
+      objectReference: {fileID: 0}
+    - target: {fileID: 4298218442774226194, guid: 9602eb5b3f834724abc3814f972345be,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4298218442774226194, guid: 9602eb5b3f834724abc3814f972345be,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4298218442774226194, guid: 9602eb5b3f834724abc3814f972345be,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4298218442774226194, guid: 9602eb5b3f834724abc3814f972345be,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4298218442774226194, guid: 9602eb5b3f834724abc3814f972345be,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4298218442774226194, guid: 9602eb5b3f834724abc3814f972345be,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 23
+      objectReference: {fileID: 0}
+    - target: {fileID: 4298218442774226194, guid: 9602eb5b3f834724abc3814f972345be,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4298218442774226194, guid: 9602eb5b3f834724abc3814f972345be,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4298218442774226194, guid: 9602eb5b3f834724abc3814f972345be,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4298218442774231790, guid: 9602eb5b3f834724abc3814f972345be,
+        type: 3}
+      propertyPath: m_Name
+      value: Crafting Anvil
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 9602eb5b3f834724abc3814f972345be, type: 3}
+--- !u!4 &8703376570014148456 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4298218442774226194, guid: 9602eb5b3f834724abc3814f972345be,
+    type: 3}
+  m_PrefabInstance: {fileID: 4859045375642796666}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5173799871913438222
 PrefabInstance:
@@ -102726,16 +102804,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: newTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: 38a71abc4e883f544af2d0ef470af9d2, type: 3}
     - target: {fileID: 114912060166489536, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: npcData
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
-        type: 3}
-      propertyPath: newTexture
-      value: 
-      objectReference: {fileID: 2800000, guid: 2e0d1b3bae10b2142bd319de292c461a, type: 3}
     - target: {fileID: 224054833768133422, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -102766,6 +102844,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: newTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: 2e0d1b3bae10b2142bd319de292c461a, type: 3}
     - target: {fileID: 8246330360122713945, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -102781,11 +102864,6 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
-        type: 3}
-      propertyPath: newTexture
-      value: 
-      objectReference: {fileID: 2800000, guid: 38a71abc4e883f544af2d0ef470af9d2, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f8f35b9f6cbe1fb4d88c39af030bddd4, type: 3}
 --- !u!4 &5170892227498886192 stripped
@@ -102849,16 +102927,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: newTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: abbbda560ff9e874eaca871133e52144, type: 3}
     - target: {fileID: 114912060166489536, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: npcData
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
-        type: 3}
-      propertyPath: newTexture
-      value: 
-      objectReference: {fileID: 2800000, guid: abbbda560ff9e874eaca871133e52144, type: 3}
     - target: {fileID: 224054833768133422, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -102889,6 +102967,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: newTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: abbbda560ff9e874eaca871133e52144, type: 3}
     - target: {fileID: 8246330360122713945, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -102904,11 +102987,6 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
-        type: 3}
-      propertyPath: newTexture
-      value: 
-      objectReference: {fileID: 2800000, guid: abbbda560ff9e874eaca871133e52144, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f8f35b9f6cbe1fb4d88c39af030bddd4, type: 3}
 --- !u!4 &5788547503040365014 stripped
@@ -102972,16 +103050,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: newTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: 507a0b5916ab7f34ab964e2a728ff4b6, type: 3}
     - target: {fileID: 114912060166489536, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: npcData
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
-        type: 3}
-      propertyPath: newTexture
-      value: 
-      objectReference: {fileID: 2800000, guid: 507a0b5916ab7f34ab964e2a728ff4b6, type: 3}
     - target: {fileID: 224054833768133422, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -103012,6 +103090,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: newTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: 507a0b5916ab7f34ab964e2a728ff4b6, type: 3}
     - target: {fileID: 8246330360122713945, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -103027,11 +103110,6 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
-        type: 3}
-      propertyPath: newTexture
-      value: 
-      objectReference: {fileID: 2800000, guid: 507a0b5916ab7f34ab964e2a728ff4b6, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f8f35b9f6cbe1fb4d88c39af030bddd4, type: 3}
 --- !u!4 &7060228883060495019 stripped
@@ -103100,11 +103178,6 @@ PrefabInstance:
       propertyPath: npcData
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
-        type: 3}
-      propertyPath: newTexture
-      value: 
-      objectReference: {fileID: 2800000, guid: 6f1b3c7c7b4a5864591d983eba46eb98, type: 3}
     - target: {fileID: 224054833768133422, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -103135,6 +103208,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: newTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: 6f1b3c7c7b4a5864591d983eba46eb98, type: 3}
     - target: {fileID: 8246330360122713945, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -103213,16 +103291,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: newTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: 96971288906b8374c915b82e38e55080, type: 3}
     - target: {fileID: 114912060166489536, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: npcData
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
-        type: 3}
-      propertyPath: newTexture
-      value: 
-      objectReference: {fileID: 2800000, guid: 5931702be6b7d1446be06eb55727621a, type: 3}
     - target: {fileID: 224054833768133422, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -103253,6 +103331,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5575320467910960297, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
+        type: 3}
+      propertyPath: newTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: 5931702be6b7d1446be06eb55727621a, type: 3}
     - target: {fileID: 8246330360122713945, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -103268,11 +103351,6 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114733719341658542, guid: f8f35b9f6cbe1fb4d88c39af030bddd4,
-        type: 3}
-      propertyPath: newTexture
-      value: 
-      objectReference: {fileID: 2800000, guid: 96971288906b8374c915b82e38e55080, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f8f35b9f6cbe1fb4d88c39af030bddd4, type: 3}
 --- !u!4 &7827664444325390226 stripped
@@ -103288,11 +103366,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4964268670328478}
     m_Modifications:
-    - target: {fileID: 2813100160522236083, guid: 9f16bbd9c36e2f54ab9ff1e7322bc298,
-        type: 3}
-      propertyPath: m_Name
-      value: Weapon Shop Sign
-      objectReference: {fileID: 0}
     - target: {fileID: 2810705069707985535, guid: 9f16bbd9c36e2f54ab9ff1e7322bc298,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -103347,6 +103420,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2813100160522236083, guid: 9f16bbd9c36e2f54ab9ff1e7322bc298,
+        type: 3}
+      propertyPath: m_Name
+      value: Weapon Shop Sign
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9f16bbd9c36e2f54ab9ff1e7322bc298, type: 3}

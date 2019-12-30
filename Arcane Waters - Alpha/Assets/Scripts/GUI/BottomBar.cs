@@ -35,16 +35,6 @@ public class BottomBar : MonoBehaviour {
       }
    }
 
-   public void toggleCraftingPanel () {
-      PanelManager.self.selectedPanel = Panel.Type.Craft;
-      CraftingPanel panel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);
-
-      // If the panel is not showing, send a request to the server to get our items
-      if (!panel.isShowing()) {
-         panel.requestInventoryFromServer();
-      }
-   }
-
    public void toggleMapPanel () {
       OverworldScreen panel = (OverworldScreen) PanelManager.self.get(Panel.Type.Overworld);
 

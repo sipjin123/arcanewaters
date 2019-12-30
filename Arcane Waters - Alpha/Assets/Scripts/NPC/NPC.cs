@@ -495,7 +495,8 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
             // Get ID from npc data field
             // Field arrives in format <npc id>: <npc name>
             int id = int.Parse(field.v.Split(':')[0]);
-            //npcId = id;
+            isDebug = true;
+            npcId = id;
          }
       }
    }

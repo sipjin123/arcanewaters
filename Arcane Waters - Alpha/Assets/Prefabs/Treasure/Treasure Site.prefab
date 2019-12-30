@@ -125,7 +125,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdc884480543aaf44b9df8dd4ad431ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnTarget: 16
+  areaTarget: TreasurePine
+  spawnTarget: TreasurePine
   newFacingDirection: 1
 --- !u!61 &5980782172353308208
 BoxCollider2D:

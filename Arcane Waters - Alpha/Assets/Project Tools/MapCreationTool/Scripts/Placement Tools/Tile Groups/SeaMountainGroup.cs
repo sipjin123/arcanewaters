@@ -6,7 +6,7 @@ namespace MapCreationTool
    public class SeaMountainGroup : TileGroup
    {
       public TileBase[,] allTiles { get; set; }
-      public int layer { get; set; }
+      public string layer { get; set; }
 
       public override Vector2Int brushSize => new Vector2Int(5, 5);
       public SeaMountainGroup () {

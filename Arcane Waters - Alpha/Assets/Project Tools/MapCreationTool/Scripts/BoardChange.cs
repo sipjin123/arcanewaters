@@ -35,11 +35,13 @@ namespace MapCreationTool
             DrawBoard.size.x - 1, DrawBoard.size.y - 1, 0);
       }
 
-      private static Bounds getBoardBoundsFloat () {
-         return new Bounds(Vector3.zero, (Vector3Int) DrawBoard.size);
+      private static Bounds getPrefabBounds () {
+         Bounds result = new Bounds(Vector3.zero, (Vector3Int) DrawBoard.size);
+         result.Expand(6f);
+         return result;
       }
 
-      public static BoardChange calculateClearAllChange (Dictionary<int, Layer> layers, List<PlacedPrefab> prefabs) {
+      public static BoardChange calculateClearAllChange (Dictionary<string, Layer> layers, List<PlacedPrefab> prefabs) {
          BoardChange result = new BoardChange();
 
          foreach (Layer layer in layers.Values) {
@@ -62,7 +64,7 @@ namespace MapCreationTool
       }
 
       public static BoardChange calculatePrefabChange (GameObject prefabToPlace, Vector3 positionToPlace) {
-         Bounds bounds = getBoardBoundsFloat();
+         Bounds bounds = getPrefabBounds();
          if (positionToPlace.x < bounds.min.x || positionToPlace.x > bounds.max.x || positionToPlace.y < bounds.min.y || positionToPlace.y > bounds.max.y)
             return new BoardChange();
 
@@ -91,10 +93,10 @@ namespace MapCreationTool
          return result;
       }
 
-      public static BoardChange calculateDeserializedDataChange (DeserializedProject data, Dictionary<int, Layer> layers, List<PlacedPrefab> prefabs) {
+      public static BoardChange calculateDeserializedDataChange (DeserializedProject data, Dictionary<string, Layer> layers, List<PlacedPrefab> prefabs) {
          BoardChange result = calculateClearAllChange(layers, prefabs);
          BoundsInt boundsInt = getBoardBoundsInt();
-         Bounds boundsFloat = getBoardBoundsFloat();
+         Bounds boundsFloat = getPrefabBounds();
 
          foreach (var tile in data.tiles) {
             // Check if tile is in bounds of the board
@@ -239,7 +241,7 @@ namespace MapCreationTool
          return change;
       }
 
-      public static BoardChange calculateFillChanges (PaletteTilesData.TileData tile, Dictionary<int, Layer> layers, Vector3 worldPos) {
+      public static BoardChange calculateFillChanges (PaletteTilesData.TileData tile, Dictionary<string, Layer> layers, Vector3 worldPos) {
          BoardChange change = new BoardChange();
 
          Vector3Int startCell = DrawBoard.worldToCell(worldPos);
@@ -305,6 +307,54 @@ namespace MapCreationTool
                q.Enqueue(new Point2(pos.x + 1, pos.y - 1));
                used[getUsedIndex(pos.x + 1, pos.y - 1)] = true;
             }
+         }
+
+         return change;
+      }
+
+      public static BoardChange calculateRectChanges (RectTileGroup group, Layer layer, Vector3Int p1, Vector3Int p2) {
+         BoundsInt bounds = getBoardBoundsInt();
+         BoardChange change = new BoardChange();
+
+         // Clamp points inside board bounds
+         p1.Set(Math.Max(p1.x, bounds.min.x), Math.Max(p1.y, bounds.min.y), 0);
+         p1.Set(Math.Min(p1.x, bounds.max.x), Math.Min(p1.y, bounds.max.y), 0);
+         p2.Set(Math.Max(p2.x, bounds.min.x), Math.Max(p2.y, bounds.min.y), 0);
+         p2.Set(Math.Min(p2.x, bounds.max.x), Math.Min(p2.y, bounds.max.y), 0);
+
+         // Find min and max corners of the bounding box
+         Vector3Int min = new Vector3Int(Math.Min(p1.x, p2.x), Mathf.Min(p1.y, p2.y), 0);
+         Vector3Int max = new Vector3Int(Math.Max(p1.x, p2.x), Mathf.Max(p1.y, p2.y), 0);
+         Vector2Int size = new Vector2Int(max.x - min.x + 1, max.y - min.y + 1);
+
+         // Add left corners
+         change.tileChanges.Add(new TileChange { layer = layer, position = min, tile = group.tiles[0, 0].tile });
+         change.tileChanges.Add(new TileChange { layer = layer, position = new Vector3Int(min.x, max.y, 0), tile = group.tiles[0, 2].tile });
+
+         // Add rest of left column
+         for (int i = 1; i < size.y - 1; i++) {
+            change.tileChanges.Add(new TileChange { layer = layer, position = min + Vector3Int.up * i, tile = group.tiles[0, 1].tile });
+         }
+
+         // Add middle rows
+         for (int i = 1; i < size.x - 1; i++) {
+            // Add top and bot tiles
+            change.tileChanges.Add(new TileChange { layer = layer, position = new Vector3Int(min.x + i, min.y, 0), tile = group.tiles[1, 0].tile });
+            change.tileChanges.Add(new TileChange { layer = layer, position = new Vector3Int(min.x + i, max.y, 0), tile = group.tiles[1, 2].tile });
+
+            // Add rest of tiles
+            for (int j = 1; j < size.y - 1; j++) {
+               change.tileChanges.Add(new TileChange { layer = layer, position = min + new Vector3Int(i, j, 0), tile = group.tiles[1, 1].tile });
+            }
+         }
+
+         // Add right corners
+         change.tileChanges.Add(new TileChange { layer = layer, position = new Vector3Int(max.x, min.y, 0), tile = group.tiles[2, 0].tile });
+         change.tileChanges.Add(new TileChange { layer = layer, position = max, tile = group.tiles[2, 2].tile });
+
+         // Add rest of right tiles
+         for (int i = 1; i < size.y - 1; i++) {
+            change.tileChanges.Add(new TileChange { layer = layer, position = max - Vector3Int.up * i, tile = group.tiles[2, 1].tile });
          }
 
          return change;
@@ -766,8 +816,8 @@ namespace MapCreationTool
                      continue;
 
                   change.tileChanges.Add(new TileChange(
-                     group.pickTile(adj, surroundingCount(adj, new Vector2Int(i, j), SidesInt.uniform(3)), i, j), 
-                     position, 
+                     group.pickTile(adj, surroundingCount(adj, new Vector2Int(i, j), SidesInt.uniform(3)), i, j),
+                     position,
                      layer));
                }
             }
@@ -824,6 +874,73 @@ namespace MapCreationTool
 
                   change.tileChanges.Add(new TileChange(
                      group.pickTile(adj, surroundingCount(adj, new Vector2Int(i, j), SidesInt.uniform(1)), i, j),
+                     position,
+                     layer));
+               }
+            }
+         }
+
+         return change;
+      }
+
+      public static BoardChange calculateInteriorWallChanges (InteriorWallGroup group, Vector3 worldPos, Layer layer) {
+         BoardChange change = new BoardChange();
+         BoundsInt bounds = getBoardBoundsInt();
+
+         Vector3Int targetCenter = DrawBoard.worldToCell(worldPos - new Vector3(group.brushSize.x / 2, group.brushSize.y / 2));
+
+         List<Vector3Int> addedTiles = new List<Vector3Int>();
+
+         for (int i = 0; i < group.brushSize.x; i++)
+            for (int j = 0; j < group.brushSize.y; j++)
+               addedTiles.Add(new Vector3Int(i + targetCenter.x, j + targetCenter.y, 0));
+
+         //Ensure no edge cases are present
+         addedTiles = tilesToRemoveThinParts(layer, addedTiles, group.brushSize);
+         addedTiles = tilesToRoundOutCorners(layer, addedTiles);
+
+         //Get bounds in which to check for rearangements
+         BoundsInt rearrangeBounds = encapsulate(addedTiles);
+
+         //Expand bounds include border and edge tiles to check
+         rearrangeBounds.min += new Vector3Int(1, 1, 0) * -6;
+         rearrangeBounds.max += new Vector3Int(1, 1, 0) * 6;
+
+         Vector3Int from = rearrangeBounds.min;
+         Vector3Int size = rearrangeBounds.size;
+
+         bool[,] adj = new bool[size.x, size.y];
+
+         //Fill adjacency matrix according to relavent tile info
+         for (int i = 0; i < size.x; i++) {
+            for (int j = 0; j < size.y; j++) {
+               Vector3Int index = new Vector3Int(i, j, 0) + from;
+
+               TileBase tile = layer.getTile(index);
+               adj[i, j] = tile != null && group.contains(tile);
+
+               // If the position is outside of the map, we will treat this position as if it contains a tile
+               if (index.x < bounds.min.x || index.x > bounds.max.x || index.y < bounds.min.y || index.y > bounds.max.y)
+                  adj[i, j] = true;
+            }
+         }
+
+         //Fill in tiles that will be added
+         foreach (Vector3Int pos in addedTiles)
+            adj[pos.x - from.x, pos.y - from.y] = true;
+
+         //Determine tiles based on the adjacency matrix
+         for (int i = 3; i < size.x - 3; i++) {
+            for (int j = 3; j < size.y - 3; j++) {
+               if (adj[i, j]) {
+                  Vector3Int position = from + new Vector3Int(i, j, 0);
+
+                  // If the position is outside the map, continue
+                  if (position.x < bounds.min.x || position.x > bounds.max.x || position.y < bounds.min.y || position.y > bounds.max.y)
+                     continue;
+
+                  change.tileChanges.Add(new TileChange(
+                     group.pickTile(adj, surroundingCount(adj, new Vector2Int(i, j), SidesInt.uniform(3)), i, j),
                      position,
                      layer));
                }
@@ -983,7 +1100,7 @@ namespace MapCreationTool
       /// <param name="group"></param>
       /// <param name="worldPos"></param>
       /// <returns></returns>
-      public static BoardChange calculateRegularTileGroupChanges (TileGroup group, Dictionary<int, Layer> layers, Vector3 worldPos) {
+      public static BoardChange calculateRegularTileGroupChanges (TileGroup group, Dictionary<string, Layer> layers, Vector3 worldPos) {
          BoardChange change = new BoardChange();
          BoundsInt bounds = getBoardBoundsInt();
 
@@ -999,7 +1116,7 @@ namespace MapCreationTool
                   if (position.x < bounds.min.x || position.x > bounds.max.x || position.y < bounds.min.y || position.y > bounds.max.y)
                      continue;
 
-                  Layer layer = layers[0].defaultLayer;
+                  Layer layer = null;
 
                   if (group.tiles[i, j].layer == PaletteData.MountainLayer)
                      layer = layers[group.tiles[i, j].layer].subLayers[Tools.mountainLayer];
@@ -1397,7 +1514,7 @@ namespace MapCreationTool
          return change;
       }
 
-      private static List<Vector3Int> tilesToRoundOutCorners(Layer layer, List<Vector3Int> placed) {
+      private static List<Vector3Int> tilesToRoundOutCorners (Layer layer, List<Vector3Int> placed) {
          HashSet<Vector3Int> result = new HashSet<Vector3Int>();
          foreach (var p in placed)
             result.Add(p);
@@ -1405,7 +1522,7 @@ namespace MapCreationTool
          BoundsInt bounds = getBoardBoundsInt();
 
          Func<Vector3Int, bool> has = (p) => {
-            return result.Contains(p) || layer.hasTile(p) || 
+            return result.Contains(p) || layer.hasTile(p) ||
                p.x < bounds.min.x || p.x > bounds.max.x || p.y < bounds.min.y || p.y > bounds.max.y;
          };
 

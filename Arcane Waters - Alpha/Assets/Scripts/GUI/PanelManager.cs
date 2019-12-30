@@ -80,14 +80,10 @@ public class PanelManager : MonoBehaviour {
          BottomBar.self.toggleGuildPanel();
       } else if (Input.GetKeyUp(KeyCode.L)) {
          BottomBar.self.toggleShipsPanel();
-      } else if (Input.GetKeyUp(KeyCode.E)) {
-         BottomBar.self.toggleStorePanel();
       } else if (Input.GetKeyUp(KeyCode.O)) {
          BottomBar.self.toggleOptionsPanel();
       } else if (Input.GetKeyUp(KeyCode.M)) {
          BottomBar.self.toggleMapPanel();
-      } else if (Input.GetKeyUp(KeyCode.Y)) {
-         BottomBar.self.toggleCraftingPanel();
       } else if (Input.GetKeyUp(KeyCode.T)) {
          BottomBar.self.toggleTradeHistoryPanel();
       } else if (Input.GetKeyUp(KeyCode.B)) {

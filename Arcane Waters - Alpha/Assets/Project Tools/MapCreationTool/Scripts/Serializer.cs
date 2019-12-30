@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using System.Text.RegularExpressions;
 
 namespace MapCreationTool.Serialization
 {
@@ -11,23 +12,30 @@ namespace MapCreationTool.Serialization
    /// </summary>
    public partial class Serializer
    {
+      static string[] layersSea001to002 = new string[] { "ground", "grass", "undf", "undf", "undf", "mountain", "mountain",
+         "mountain-top", "mountain-top", "water", "dock", "detail", "detail", "detail", "detail", "detail", "detail", "detail"};
+      static string[] layersArea001to002 = new string[] { "ground", "grass", "path", "path", "shrub", "mountain", "mountain",
+         "mountain", "shrub", "water", "dock", "detail", "fence", "bush", "stump", "bush", "prop", "stair"};
+      static string[] layersInterior001to002 = new string[] { "ground", "floor", "floor", "rug", "shadow", "wall",
+         "wall", "furniture", "chair", "mat", "trinket", "ceiling", "undf", "undf", "undf", "undf", "undf", "undf" };
+
       public static string serialize (
-          Dictionary<int, Layer> layers,
+          Dictionary<string, Layer> layers,
           List<PlacedPrefab> prefabs,
           BiomeType biome,
           EditorType editorType,
           Vector2Int size,
           bool prettyPrint = false) {
          try {
-            return serialize001(layers, prefabs, biome, editorType, size, prettyPrint);
+            return serialize002(layers, prefabs, biome, editorType, size, prettyPrint);
          } catch (Exception ex) {
             Debug.LogError("Failed to serialize map.");
             throw ex;
          }
       }
 
-      private static string serialize001 (
-          Dictionary<int, Layer> layers,
+      private static string serialize002 (
+          Dictionary<string, Layer> layers,
           List<PlacedPrefab> prefabs,
           BiomeType biome,
           EditorType editorType,
@@ -48,18 +56,18 @@ namespace MapCreationTool.Serialization
              ).ToArray();
 
          //Make layer serialization object
-         List<Layer001> layersSerialized = new List<Layer001>();
+         List<Layer002> layersSerialized = new List<Layer002>();
 
          foreach (var layerkv in layers) {
             if (layerkv.Value.hasTilemap) {
-               layersSerialized.Add(new Layer001 {
-                  index = layerkv.Key,
+               layersSerialized.Add(new Layer002 {
+                  id = layerkv.Key,
                   tiles = serializeTiles(layerkv.Value, tileToIndex),
                   sublayers = new SubLayer001[0]
                });
             } else {
-               Layer001 ls = new Layer001 {
-                  index = layerkv.Key,
+               Layer002 ls = new Layer002 {
+                  id = layerkv.Key,
                   tiles = new Tile001[0],
                   sublayers = new SubLayer001[layerkv.Value.subLayers.Length]
                };
@@ -73,8 +81,8 @@ namespace MapCreationTool.Serialization
             }
          }
 
-         Project001 project = new Project001 {
-            version = "0.0.1",
+         Project002 project = new Project002 {
+            version = "0.0.2",
             biome = biome,
             layers = layersSerialized.ToArray(),
             prefabs = prefabsSerialized,
@@ -92,11 +100,165 @@ namespace MapCreationTool.Serialization
       /// <param name="forEditor">Whether the desirelized project will be used by the editor, or the main game</param>
       /// <returns></returns>
       public static DeserializedProject deserialize (string data, bool forEditor) {
+         int version = extractVersion(data);
+
+         switch (version) {
+            case 000001:
+               return deserialize001(data, forEditor);
+            case 000002:
+               return deserialize002(data, forEditor);
+            default:
+               throw new Exception("Failed to identify the file version.");
+         }
+      }
+
+      public static string serializeExport(
+         Dictionary<string, Layer> layers, 
+         List<PlacedPrefab> prefabs, 
+         BiomeType biome, 
+         EditorType editorType, 
+         EditorConfig config) {
+         return serializeExport001(layers, prefabs, biome, editorType, config);
+      }
+
+      private static string serializeExport001(
+         Dictionary<string, Layer> layers, 
+         List<PlacedPrefab> prefabs, 
+         BiomeType biome, 
+         EditorType editorType,
+         EditorConfig config) {
+         Func<GameObject, int> prefabToIndex = (go) => { return AssetSerializationMaps.getIndex(go, biome); };
+         Func<TileBase, Vector2Int> tileToIndex = (tile) => { return AssetSerializationMaps.getIndex(tile, biome); };
+
+         //Make prefab serialization object
+         ExportedPrefab001[] prefabsSerialized
+             = prefabs.Select(p =>
+                 new ExportedPrefab001 {
+                    i = prefabToIndex(p.original),
+                    x = p.placedInstance.transform.position.x,
+                    y = p.placedInstance.transform.position.y,
+                    d = p.data.Select(data => new DataField { k = data.Key, v = data.Value }).ToArray()
+                 }
+             ).ToArray();
+
+         //Make layer serialization object
+         List<ExportedLayer001> layersSerialized = new List<ExportedLayer001>();
+
+               
+         foreach (var layerkv in layers) {
+            if (layerkv.Value.hasTilemap) {
+               if (layerkv.Value.tileCount == 0)
+                  continue;
+               layersSerialized.Add(new ExportedLayer001 {
+                  z = getZ(config.getIndex(layerkv.Key, editorType), 0),
+                  tiles = getExportedTiles(layerkv.Value, tileToIndex)
+               });
+            } else {
+               for (int i = 0; i < layerkv.Value.subLayers.Length; i++) {
+                  if (layerkv.Value.subLayers[i].tileCount == 0)
+                     continue;
+                  layersSerialized.Add(new ExportedLayer001 {
+                     z = getZ(config.getIndex(layerkv.Key, editorType), i),
+                     tiles = getExportedTiles(layerkv.Value.subLayers[i], tileToIndex)
+                  });
+               }
+            }
+         }
+
+         ExportedProject001 project = new ExportedProject001 {
+            version = "0.0.1",
+            biome = biome,
+            layers = layersSerialized.ToArray(),
+            prefabs = prefabsSerialized,
+         };
+
+         return JsonUtility.ToJson(project);
+      }
+
+      private static ExportedTile001[] getExportedTiles(Layer layer, Func<TileBase, Vector2Int> tileToIndex) {
+         ExportedTile001[] tiles = new ExportedTile001[layer.tileCount];
+         int n = 0;
+
+         for (int i = 0; i < layer.size.x; i++) {
+            for (int j = 0; j < layer.size.y; j++) {
+               Vector3Int pos = new Vector3Int(i + layer.origin.x, j + layer.origin.y, 0);
+               TileBase tile = layer.getTile(pos);
+               if (tile != null) {
+                  Vector2Int index = tileToIndex(tile);
+                  tiles[n++] = new ExportedTile001 {
+                     i = index.x,
+                     j = index.y,
+                     x = pos.x,
+                     y = pos.y
+                  };
+               }
+            }
+         }
+
+         return tiles;
+      }
+
+      static float getZ(int layer, int sublayer) {
+         return 
+            AssetSerializationMaps.layerZFirst + 
+            layer * AssetSerializationMaps.layerZMultip +
+            sublayer * AssetSerializationMaps.sublayerZMultip;
+      }
+
+      private static DeserializedProject deserialize001 (string data, bool forEditor) {
          Project001 dt = JsonUtility.FromJson<Project001>(data);
 
+         List<DeserializedProject.DeserializedPrefab> prefabs = new List<DeserializedProject.DeserializedPrefab>();
+         List<DeserializedProject.DeserializedTile> tiles = new List<DeserializedProject.DeserializedTile>();
 
-         if (dt.version != "0.0.1")
-            throw new ArgumentException($"File version {dt.version} not supported.");
+         Func<Vector2Int, TileBase> indexToTile = (index) => { return AssetSerializationMaps.getTile(index, dt.biome); };
+         Func<int, GameObject> indexToPrefab = (index) => { return AssetSerializationMaps.getPrefab(index, dt.biome, forEditor); };
+
+         string[] layerVersionMap = getLayerMaps001to002(dt.editorType);
+
+         foreach (var pref in dt.prefabs) {
+            prefabs.Add(new DeserializedProject.DeserializedPrefab {
+               position = new Vector3(pref.x, pref.y, 0),
+               prefab = indexToPrefab(pref.i),
+               dataFields = pref.data
+            });
+         }
+
+         foreach (var layer in dt.layers) {
+            if (layer.sublayers.Length == 0) {
+               foreach (var tile in layer.tiles) {
+                  tiles.Add(new DeserializedProject.DeserializedTile {
+                     layer = layerVersionMap[layer.index],
+                     sublayer = null,
+                     position = new Vector3Int(tile.x, tile.y, 0),
+                     tile = indexToTile(new Vector2Int(tile.i, tile.j))
+                  });
+               }
+            } else {
+               for (int i = 0; i < layer.sublayers.Length; i++) {
+                  foreach (var tile in layer.sublayers[i].tiles) {
+                     tiles.Add(new DeserializedProject.DeserializedTile {
+                        layer = layerVersionMap[layer.index],
+                        sublayer = i,
+                        position = new Vector3Int(tile.x, tile.y, 0),
+                        tile = indexToTile(new Vector2Int(tile.i, tile.j))
+                     });
+                  }
+               }
+            }
+         }
+
+         return new DeserializedProject {
+            prefabs = prefabs.ToArray(),
+            tiles = tiles.ToArray(),
+            biome = dt.biome,
+            size = dt.size,
+            editorType = dt.editorType
+         };
+      }
+
+      private static DeserializedProject deserialize002 (string data, bool forEditor) {
+         Project002 dt = JsonUtility.FromJson<Project002>(data);
 
          List<DeserializedProject.DeserializedPrefab> prefabs = new List<DeserializedProject.DeserializedPrefab>();
          List<DeserializedProject.DeserializedTile> tiles = new List<DeserializedProject.DeserializedTile>();
@@ -116,7 +278,7 @@ namespace MapCreationTool.Serialization
             if (layer.sublayers.Length == 0) {
                foreach (var tile in layer.tiles) {
                   tiles.Add(new DeserializedProject.DeserializedTile {
-                     layer = layer.index,
+                     layer = layer.id,
                      sublayer = null,
                      position = new Vector3Int(tile.x, tile.y, 0),
                      tile = indexToTile(new Vector2Int(tile.i, tile.j))
@@ -126,7 +288,7 @@ namespace MapCreationTool.Serialization
                for (int i = 0; i < layer.sublayers.Length; i++) {
                   foreach (var tile in layer.sublayers[i].tiles) {
                      tiles.Add(new DeserializedProject.DeserializedTile {
-                        layer = layer.index,
+                        layer = layer.id,
                         sublayer = i,
                         position = new Vector3Int(tile.x, tile.y, 0),
                         tile = indexToTile(new Vector2Int(tile.i, tile.j))
@@ -143,6 +305,33 @@ namespace MapCreationTool.Serialization
             size = dt.size,
             editorType = dt.editorType
          };
+      }
+
+
+      private static int extractVersion (string data) {
+         Regex rx = new Regex("\"[0-9].[0-9].[0-9]\"");
+         Match match = rx.Match(data);
+
+         if (!match.Success)
+            throw new Exception("Could not identify the file version");
+
+         string versionString = match.Groups[0].Value.Replace('\"', ' ');
+         string[] versionNumbers = versionString.Split('.');
+
+         return int.Parse(versionNumbers[0]) * 10000 + int.Parse(versionNumbers[1]) * 100 + int.Parse(versionNumbers[2]);
+      }
+
+      private static string[] getLayerMaps001to002 (EditorType editorType) {
+         switch (editorType) {
+            case EditorType.Area:
+               return layersArea001to002;
+            case EditorType.Sea:
+               return layersSea001to002;
+            case EditorType.Interior:
+               return layersInterior001to002;
+            default:
+               throw new Exception("Unhandled editor type.");
+         }
       }
 
       private static Tile001[] serializeTiles (Layer layer, Func<TileBase, Vector2Int> tileToIndex) {
@@ -167,6 +356,41 @@ namespace MapCreationTool.Serialization
       }
    }
 
+   [Serializable]
+   public class ExportedProject001
+   {
+      public string version;
+      public BiomeType biome;
+      public Vector2Int size;
+      public ExportedPrefab001[] prefabs;
+      public ExportedLayer001[] layers;
+   }
+
+   [Serializable]
+   public class ExportedPrefab001
+   {
+      public int i; // Prefab index
+      public float x; // Prefab position x
+      public float y; // Prefab position y
+      public DataField[] d; // The custom data of the prefab, defined as key-value pairs
+   }
+
+   [Serializable]
+   public class ExportedLayer001
+   {
+      public float z;
+      public ExportedTile001[] tiles;
+   }
+
+   [Serializable]
+   public class ExportedTile001
+   {
+      public int i; // Tile index x
+      public int j; // Tile index y
+      public int x; // Tile position x
+      public int y; // Tile position y
+   }
+
    public class DeserializedProject
    {
       public DeserializedPrefab[] prefabs;
@@ -185,10 +409,29 @@ namespace MapCreationTool.Serialization
       public class DeserializedTile
       {
          public TileBase tile;
-         public int layer;
+         public string layer;
          public int? sublayer;
          public Vector3Int position;
       }
+   }
+
+   [Serializable]
+   public class Project002
+   {
+      public string version;
+      public BiomeType biome;
+      public EditorType editorType;
+      public Layer002[] layers;
+      public Prefab001[] prefabs;
+      public Vector2Int size;
+   }
+
+   [Serializable]
+   public class Layer002
+   {
+      public string id;
+      public Tile001[] tiles;
+      public SubLayer001[] sublayers;
    }
 
    [Serializable]
@@ -220,25 +463,25 @@ namespace MapCreationTool.Serialization
    [Serializable]
    public class Tile001
    {
-      public int i; //Tile index x
-      public int j; //Tile index y
-      public int x; //Tile position x
-      public int y; //Tile position y
+      public int i; // Tile index x
+      public int j; // Tile index y
+      public int x; // Tile position x
+      public int y; // Tile position y
    }
 
    [Serializable]
    public class Prefab001
    {
-      public int i; //Prefab index
-      public float x; //Prefab position x
-      public float y; //Prefab position y
-      public DataField[] data; //The custom data of the prefab, defined as key-value pairs
+      public int i; // Prefab index
+      public float x; // Prefab position x
+      public float y; // Prefab position y
+      public DataField[] data; // The custom data of the prefab, defined as key-value pairs
    }
 
    [Serializable]
    public class DataField
    {
-      public string k; //Key
-      public string v; //Value
+      public string k; // Key
+      public string v; // Value
    }
 }

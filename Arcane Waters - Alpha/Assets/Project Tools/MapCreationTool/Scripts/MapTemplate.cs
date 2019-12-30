@@ -8,6 +8,7 @@ namespace MapCreationTool
       public Area area;
       public Transform tilemapParent;
       public Transform prefabParent;
+      public Transform npcParent;
       public PolygonCollider2D camBounds;
       public CinemachineConfiner confiner;
    }

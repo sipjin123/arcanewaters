@@ -220,7 +220,7 @@ namespace MapCreationTool
 
          foreach (var data in from.tiles) {
             if (data != null) {
-               newGroup.layer = data.layer;
+               //newGroup.layer = data.layer;
                break;
             }
          }
@@ -287,9 +287,10 @@ namespace MapCreationTool
             }
          }
 
+         Debug.LogWarning("Not setting the layer, because layer setup has changed.");
          foreach (var data in from.tiles) {
             if (data != null) {
-               newGroup.layer = data.layer;
+               //newGroup.layer = data.layer;
                break;
             }
          }
@@ -315,7 +316,7 @@ namespace MapCreationTool
                if (tileMatrix[index.x, index.y] != null) {
                   newGroup.innerTiles[i, j] = new PaletteTilesData.TileData {
                      tile = tileMatrix[index.x, index.y].tile[biome],
-                     layer = tileMatrix[index.x, index.y].layer,
+                     //layer = tileMatrix[index.x, index.y].layer,
                      subLayer = tileMatrix[index.x, index.y].subLayer
                   };
                }
@@ -328,7 +329,7 @@ namespace MapCreationTool
                if (tileMatrix[index.x, index.y] != null) {
                   newGroup.outerTiles[i, j] = new PaletteTilesData.TileData {
                      tile = tileMatrix[index.x, index.y].tile[biome],
-                     layer = tileMatrix[index.x, index.y].layer,
+                     //layer = tileMatrix[index.x, index.y].layer,
                      subLayer = tileMatrix[index.x, index.y].subLayer
                   };
                }
@@ -379,7 +380,7 @@ namespace MapCreationTool
                if (tileMatrix[index.x, index.y] != null) {
                   newGroup.mainTiles[i, j] = new PaletteTilesData.TileData {
                      tile = tileMatrix[index.x, index.y].tile[biome],
-                     layer = tileMatrix[index.x, index.y].layer,
+                     //layer = tileMatrix[index.x, index.y].layer,
                      subLayer = tileMatrix[index.x, index.y].subLayer
                   };
                }
@@ -392,7 +393,7 @@ namespace MapCreationTool
                if (tileMatrix[index.x, index.y] != null) {
                   newGroup.cornerTiles[i, j] = new PaletteTilesData.TileData {
                      tile = tileMatrix[index.x, index.y].tile[biome],
-                     layer = tileMatrix[index.x, index.y].layer,
+                     //layer = tileMatrix[index.x, index.y].layer,
                      subLayer = tileMatrix[index.x, index.y].subLayer
                   };
                }
@@ -419,7 +420,7 @@ namespace MapCreationTool
                if (tileMatrix[index.x, index.y] != null) {
                   newGroup.allTiles[i, j] = new PaletteTilesData.TileData {
                      tile = tileMatrix[index.x, index.y].tile[biome],
-                     layer = tileMatrix[index.x, index.y].layer,
+                     //layer = tileMatrix[index.x, index.y].layer,
                      subLayer = tileMatrix[index.x, index.y].subLayer
                   };
                }
@@ -513,7 +514,7 @@ namespace MapCreationTool
                if (tiles[i, j] != null && tiles[i, j].tile[targetBiome] != null) {
                   result[i, j] = new PaletteTilesData.TileData {
                      tile = tiles[i, j].tile[targetBiome],
-                     layer = tiles[i, j].layer,
+                     //layer = tiles[i, j].layer,
                      subLayer = tiles[i, j].subLayer
                   };
                }

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Linq;
+using System;
 
 namespace MapCreationTool
 {
@@ -11,18 +12,56 @@ namespace MapCreationTool
       public Tile[] clusterTiles;
       public TileBase transparentTile;
 
-      public TitleIndex[] areaLayerTitleIndexes;
+      public TitleIndex[] areaLayerIndexes;
+      public TitleIndex[] seaLayerIndexes;
+      public TitleIndex[] interiorLayerIndexes;
 
-      public string[] areaLayerMap
+      public string[] areaLayerNames
       {
-         get
-         {
-            string[] result = new string[areaLayerTitleIndexes.Max(l => l.index+1)];
-            foreach (TitleIndex tl in areaLayerTitleIndexes) {
-               result[tl.index] = tl.layer;
-            }
+         get { return areaLayerIndexes.Select(l => l.layer).ToArray(); }
+      }
 
-            return result;
+      public string[] seaLayerNames
+      {
+         get { return seaLayerIndexes.Select(l => l.layer).ToArray(); }
+      }
+
+      public string[] interiorLayerNames
+      {
+         get { return interiorLayerIndexes.Select(l => l.layer).ToArray(); }
+      }
+
+      public int getIndex(string layer, EditorType editorType) {
+         foreach(TitleIndex ti in getLayers(editorType)) {
+            if (ti.layer.CompareTo(layer) == 0)
+               return ti.index;
+         }
+         throw new Exception($"Undefined layer {layer}.");
+      }
+
+      public TitleIndex[] getLayers (EditorType editorType) {
+         switch (editorType) {
+            case EditorType.Area:
+               return areaLayerIndexes;
+            case EditorType.Sea:
+               return seaLayerIndexes;
+            case EditorType.Interior:
+               return interiorLayerIndexes;
+            default:
+               throw new Exception("Undefined editor type.");
+         }
+      }
+
+      public string[] getLayerNames (EditorType editorType) {
+         switch (editorType) {
+            case EditorType.Area:
+               return areaLayerNames;
+            case EditorType.Sea:
+               return seaLayerNames;
+            case EditorType.Interior:
+               return interiorLayerNames;
+            default:
+               throw new Exception("Undefined editor type.");
          }
       }
 

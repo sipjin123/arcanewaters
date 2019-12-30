@@ -18,11 +18,11 @@ namespace MapCreationTool
       public static Vector2Int origin { get; private set; }
 
       [SerializeField]
+      private EditorConfig config = null;
+      [SerializeField]
       private Tilemap layerPref = null;
       [SerializeField]
       private Transform prefabLayer = null;
-      [SerializeField]
-      private LayerName[] layerDefinitions = new LayerName[0];
       [SerializeField]
       private Transform layerContainer = null;
       [SerializeField]
@@ -49,11 +49,13 @@ namespace MapCreationTool
       private Rect camBounds;
       private Preview preview = new Preview();
 
-      private Dictionary<int, Layer> layers;
+      private Dictionary<string, Layer> layers;
 
       private List<PlacedPrefab> placedPrefabs = new List<PlacedPrefab>();
 
       private PlacedPrefab selectedPrefab;
+
+      private Vector3Int? draggingFrom = null;
 
       private void Awake () {
 
@@ -64,15 +66,16 @@ namespace MapCreationTool
          recalculateCamBounds();
          clampCamPos();
 
-         setUpLayers();
-
          Utilities.addPointerListener(eventCanvas, EventTriggerType.PointerDown, pointerDown);
          Utilities.addPointerListener(eventCanvas, EventTriggerType.Drag, drag);
          Utilities.addPointerListener(eventCanvas, EventTriggerType.PointerEnter, pointerEnter);
          Utilities.addPointerListener(eventCanvas, EventTriggerType.PointerExit, pointerExit);
+         Utilities.addPointerListener(eventCanvas, EventTriggerType.BeginDrag, pointerBeginDrag);
+         Utilities.addPointerListener(eventCanvas, EventTriggerType.EndDrag, pointerEndDrag);
       }
 
       private void Start () {
+         setUpLayers(Tools.editorType);
          setBoardSize(Tools.boardSize);
          updateBrushOutline();
       }
@@ -120,6 +123,7 @@ namespace MapCreationTool
 
       private void editorTypeChanged (EditorType from, EditorType to) {
          changeBoard(BoardChange.calculateClearAllChange(layers, placedPrefabs));
+         setUpLayers(to);
       }
 
       private void toolChanged (ToolType from, ToolType to) {
@@ -154,24 +158,23 @@ namespace MapCreationTool
             sizeCover.transform.position.z);
       }
 
-      private void setUpLayers () {
-         layers = new Dictionary<int, Layer>();
-         foreach (LayerName ln in layerDefinitions) {
+      private void setUpLayers (EditorType editorType) {
+         if (layers != null) {
+            foreach (Layer layer in layers.Values)
+               layer.Destroy();
+         }
+
+         layers = new Dictionary<string, Layer>();
+
+         foreach (var l in config.getLayers(editorType)) {
             Tilemap[] subLayers = new Tilemap[10];
             for (int i = 0; i < 10; i++) {
                Tilemap layer = Instantiate(layerPref, Vector3.zero, Quaternion.identity, layerContainer);
-               layer.gameObject.name = ln.name + " " + i;
-               layer.transform.localPosition = new Vector3(0, 0, layerToZ(ln.layer, i));
+               layer.gameObject.name = l.layer + " " + i;
+               layer.transform.localPosition = new Vector3(0, 0, layerToZ(l.index, i));
                subLayers[i] = layer;
             }
-            layers.Add(ln.layer, new Layer(subLayers));
-         }
-
-         if (!layers.ContainsKey(0)) {
-            Tilemap layer = Instantiate(layerPref, Vector3.zero, Quaternion.identity, layerContainer);
-            layer.gameObject.name = "default";
-            layer.transform.localPosition = new Vector3(0, 0, layerToZ(0));
-            layers.Add(0, new Layer(layer));
+            layers.Add(l.layer, new Layer(subLayers));
          }
       }
 
@@ -468,6 +471,13 @@ namespace MapCreationTool
                } else if (Tools.tileGroup.type == TileGroupType.River) {
                   var group = Tools.tileGroup as RiverGroup;
                   result.add(BoardChange.calculateRiverChanges(group, pointerWorldPosition, layers[group.layer].subLayers[group.subLayer]));
+               } else if (Tools.tileGroup.type == TileGroupType.InteriorWall) {
+                  var group = Tools.tileGroup as InteriorWallGroup;
+                  result.add(BoardChange.calculateInteriorWallChanges(group, pointerWorldPosition, layers[group.layer].subLayers[group.subLayer]));
+               } else if (Tools.tileGroup.type == TileGroupType.Rect && draggingFrom != null) {
+                  var group = Tools.tileGroup as RectTileGroup;
+                  Vector3Int to = worldToCell(pointerWorldPosition);
+                  result.add(BoardChange.calculateRectChanges(group, layers[group.layer].subLayers[group.subLayer], draggingFrom.Value, to));
                }
             }
          } else if (Tools.toolType == ToolType.Fill) {
@@ -503,6 +513,10 @@ namespace MapCreationTool
       }
       public string formSerializedData () {
          return Serializer.serialize(layers, placedPrefabs, Tools.biome, Tools.editorType, Tools.boardSize, false);
+      }
+
+      public string formExportData () {
+         return Serializer.serializeExport(layers, placedPrefabs, Tools.biome, Tools.editorType, config);
       }
 
       public void ensurePreviewCleared () {
@@ -550,6 +564,8 @@ namespace MapCreationTool
             var zSnap = preview.prefabPreviewInstance.GetComponent<ZSnap>();
             if (zSnap != null)
                zSnap.isActive = true;
+
+            preview.prefabPreviewInstance.GetComponent<MapEditorPrefab>()?.createdForPrieview();
          }
 
          if (preview.prefabPreviewInstance != null)
@@ -684,10 +700,32 @@ namespace MapCreationTool
          updatePreview(data.position);
       }
 
-      private void drag (PointerEventData data) {
-         if (data.button == PointerEventData.InputButton.Left)
+      public void pointerBeginDrag (PointerEventData data) {
+         if (data.button == PointerEventData.InputButton.Left) {
+            if (Tools.tileGroup != null && Tools.tileGroup.type == TileGroupType.Rect) {
+               var pos = worldToCell(data.pointerPressRaycast.worldPosition);
+               draggingFrom = pos;
+            }
+         }
+      }
+
+      public void pointerEndDrag (PointerEventData data) {
+         if (draggingFrom == null)
+            return;
+
+         if (data.button == PointerEventData.InputButton.Left) {
             changeBoard(getPotentialBoardChange(data.pointerCurrentRaycast.worldPosition, true));
-         else {
+         }
+
+         draggingFrom = null;
+      }
+
+      private void drag (PointerEventData data) {
+         if (data.button == PointerEventData.InputButton.Left) {
+            if (Tools.tileGroup == null || Tools.tileGroup.type != TileGroupType.Rect) {
+               changeBoard(getPotentialBoardChange(data.pointerCurrentRaycast.worldPosition, true));
+            }
+         } else {
             Vector3 curPos = cam.ScreenToWorldPoint(data.position);
             Vector3 prevPos = cam.ScreenToWorldPoint(data.position + data.delta);
             cam.transform.localPosition += curPos - prevPos;

@@ -57846,7 +57846,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 5
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
   m_MaxChunkCount: 16
@@ -62641,7 +62641,7 @@ Tilemap:
       - {fileID: 21300150, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300156, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300162, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 13, y: 9, z: 0}
@@ -62691,7 +62691,7 @@ Tilemap:
       - {fileID: 21300488, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300494, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300500, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 19, y: 9, z: 0}

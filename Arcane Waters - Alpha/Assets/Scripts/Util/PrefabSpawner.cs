@@ -60,15 +60,12 @@ public class PrefabSpawner : MonoBehaviour {
             continue;
          }
 
-         Area area = MapImporter.instantiateMapData(map.mapFile, areaKey);
+         Area area = MapImporter.instantiateMapData(map.mapFile, areaKey, nextPos);
 
          // If there is an aditional prefab defined add it to the main instance
          if (map.includePrefab != null) {
             Instantiate(map.includePrefab, area.transform);
          }
-
-         // Set the position
-         area.transform.position = nextPos;
 
          rowCounter++;
          if (rowCounter == mapColumns) {

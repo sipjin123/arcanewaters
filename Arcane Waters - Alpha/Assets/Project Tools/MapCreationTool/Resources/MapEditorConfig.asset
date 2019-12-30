@@ -37,10 +37,72 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 15551267f8d51dc46be8ee806e5162d5, type: 2}
   - {fileID: 11400000, guid: 288b8229d1866244594e56f28b688e89, type: 2}
   transparentTile: {fileID: 11400000, guid: 6770d82dbc34c894eb30ee1fd5b3b937, type: 2}
-  areaLayerTitleIndexes:
+  areaLayerIndexes:
   - layer: ground
-    index: 2
+    index: 0
+  - layer: grass
+    index: 5
   - layer: path
-    index: 4
+    index: 10
+  - layer: shrub
+    index: 15
+  - layer: mountain
+    index: 20
+  - layer: water
+    index: 25
   - layer: dock
-    index: 6
+    index: 30
+  - layer: detail
+    index: 35
+  - layer: fence
+    index: 40
+  - layer: bush
+    index: 45
+  - layer: stump
+    index: 50
+  - layer: prop
+    index: 55
+  - layer: stair
+    index: 60
+  seaLayerIndexes:
+  - layer: ground
+    index: 0
+  - layer: grass
+    index: 20
+  - layer: mountain
+    index: 10
+  - layer: mountain-top
+    index: 15
+  - layer: water
+    index: 5
+  - layer: river
+    index: 25
+  - layer: dock
+    index: 30
+  - layer: bulding
+    index: 35
+  - layer: detail
+    index: 40
+  - layer: tree
+    index: 45
+  interiorLayerIndexes:
+  - layer: ground
+    index: 0
+  - layer: floor
+    index: 5
+  - layer: rug
+    index: 10
+  - layer: shadow
+    index: 15
+  - layer: wall
+    index: 20
+  - layer: furniture
+    index: 25
+  - layer: chair
+    index: 30
+  - layer: mat
+    index: 35
+  - layer: trinket
+    index: 40
+  - layer: ceiling
+    index: 45

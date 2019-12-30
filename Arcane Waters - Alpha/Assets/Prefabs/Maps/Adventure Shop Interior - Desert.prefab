@@ -1764,7 +1764,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdc884480543aaf44b9df8dd4ad431ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  areaTarget: StartingTown
+  areaTarget: DesertTown
   spawnTarget: DesertWeaponsOutside
   newFacingDirection: 5
 --- !u!61 &3542227133843090983
@@ -1859,8 +1859,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: 212a7a47fc07116499d8e2fe669a5944, type: 3}
     m_FontSize: 10
@@ -5811,8 +5809,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 21300000, guid: 7c736385e93358f43ab5feaafa47687e, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
@@ -5877,8 +5873,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-    m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!114 &2354983804873623219
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6344,6 +6338,7 @@ MonoBehaviour:
   areaKey: 
   tradeGossip: 
   nameText: {fileID: 4026684233128282657}
+  isDebug: 0
 --- !u!114 &1345669549585492461
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -43905,11 +43900,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1285095242073328739}
     m_Modifications:
-    - target: {fileID: 3289152499000331066, guid: 22906db42144879439398a7039da03e5,
-        type: 3}
-      propertyPath: m_Name
-      value: Furnace
-      objectReference: {fileID: 0}
     - target: {fileID: 1214332783484034289, guid: 22906db42144879439398a7039da03e5,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -43964,6 +43954,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3289152499000331066, guid: 22906db42144879439398a7039da03e5,
+        type: 3}
+      propertyPath: m_Name
+      value: Furnace
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 22906db42144879439398a7039da03e5, type: 3}

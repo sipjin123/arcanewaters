@@ -23,7 +23,7 @@ namespace MapCreationTool
                   name = customData.name,
                   options = new string[] { "North", "NorthEast", "East", "SouthEast", "South", "SouthWest", "West", "NorthWest" }
                };
-            } else if (customData.type == CustomFieldType.NPC) {
+            } else if (customData.type == CustomFieldType.NPC && NPCManager.instance.npcCount > 0) {
                Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
                selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
                   name = customData.name,

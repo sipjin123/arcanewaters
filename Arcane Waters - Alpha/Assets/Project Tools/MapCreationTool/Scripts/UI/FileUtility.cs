@@ -21,5 +21,11 @@ namespace MapCreationTool
             return File.ReadAllText(path[0]);
          return null;
       }
+
+      public static void exportFile(string data) {
+         string path = StandaloneFileBrowser.SaveFilePanel("Export file", "", "new file", "json");
+         if (!string.IsNullOrEmpty(path))
+            File.WriteAllText(path, data);
+      }
    }
 }

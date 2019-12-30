@@ -8,24 +8,19 @@ namespace MapCreationTool
 {
    public class Overlord : MonoBehaviour
    {
-      [SerializeField]
-      private EditorConfig config = null;
-
       [Space(5)]
       [SerializeField]
-      private PaletteResources areaPaletteResources = null;
+      private BiomedPaletteData areaPaletteData = null;
       [SerializeField]
-      private PaletteResources interiorPaletteResources = null;
+      private BiomedPaletteData seaPaletteData = null;
       [SerializeField]
-      private PaletteResources seaPaletteResources = null;
+      private BiomedPaletteData interiorPaletteData = null;
       [SerializeField]
       private Palette palette = null;
       [SerializeField]
       private DrawBoard drawBoard = null;
-
-      private Dictionary<BiomeType, PaletteData> areaPaletteDatas;
-      private Dictionary<BiomeType, PaletteData> interiorPaletteDatas;
-      private Dictionary<BiomeType, PaletteData> seaPaletteDatas;
+      [SerializeField]
+      private GameObject loadCover = null;
 
       private void Awake () {
          Tools.setDefaultValues();
@@ -33,9 +28,9 @@ namespace MapCreationTool
 
          AssetSerializationMaps.load();
 
-         areaPaletteDatas = areaPaletteResources.gatherData(config);
-         interiorPaletteDatas = interiorPaletteResources.gatherData(config);
-         seaPaletteDatas = seaPaletteResources.gatherData(config);
+         areaPaletteData.collectInformation();
+         seaPaletteData.collectInformation();
+         interiorPaletteData.collectInformation();
       }
 
       private void OnEnable () {
@@ -47,6 +42,8 @@ namespace MapCreationTool
          Tools.AnythingChanged += ensurePreviewCleared;
 
          Tools.EditorTypeChanged += editorTypeChanged;
+
+         NPCManager.OnLoaded += onLoaded;
       }
 
       private void OnDisable () {
@@ -58,10 +55,12 @@ namespace MapCreationTool
          Tools.AnythingChanged -= ensurePreviewCleared;
 
          Tools.EditorTypeChanged -= editorTypeChanged;
+         NPCManager.OnLoaded -= onLoaded;
       }
 
-      private void Start () {
-         palette.populatePalette(currentEditorPalettes[Tools.biome]);
+      private void onLoaded () {
+         Destroy(loadCover);
+         palette.populatePalette(currentPaletteData[Tools.biome]);
       }
 
       private void Update () {
@@ -78,7 +77,7 @@ namespace MapCreationTool
          Tools.changeBiome(dt.biome);
          Tools.changeEditorType(dt.editorType);
 
-         if(dt.size != default) {
+         if (dt.size != default) {
             Tools.changeBoardSize(dt.size);
          }
 
@@ -86,16 +85,16 @@ namespace MapCreationTool
          Undo.clear();
       }
 
-      private void editorTypeChanged(EditorType from, EditorType to) {
-         switch(to) {
+      private void editorTypeChanged (EditorType from, EditorType to) {
+         switch (to) {
             case EditorType.Area:
-               palette.populatePalette(areaPaletteDatas[Tools.biome]);
+               palette.populatePalette(areaPaletteData[Tools.biome]);
                break;
             case EditorType.Interior:
-               palette.populatePalette(interiorPaletteDatas[Tools.biome]);
+               palette.populatePalette(interiorPaletteData[Tools.biome]);
                break;
             case EditorType.Sea:
-               palette.populatePalette(seaPaletteDatas[Tools.biome]);
+               palette.populatePalette(seaPaletteData[Tools.biome]);
                break;
             default:
                Debug.LogError("Unrecognized editor type.");
@@ -107,25 +106,26 @@ namespace MapCreationTool
          drawBoard.ensurePreviewCleared();
       }
       private void onBiomeChanged (BiomeType from, BiomeType to) {
-         Dictionary<BiomeType, PaletteData> currentPalettes = currentEditorPalettes;
+         BiomedPaletteData currentPalette = currentPaletteData;
 
-         palette.populatePalette(currentPalettes[to]);
-         drawBoard.changeBiome(currentPalettes[from], currentPalettes[to]);
+         palette.populatePalette(currentPalette[to]);
+         drawBoard.changeBiome(currentPalette[from], currentPalette[to]);
       }
 
       /// <summary>
       /// Returns a dictionary of palettes that the current type of editor uses
       /// </summary>
-      private Dictionary<BiomeType, PaletteData> currentEditorPalettes
+      private BiomedPaletteData currentPaletteData
       {
-         get {
-            switch(Tools.editorType) {
+         get
+         {
+            switch (Tools.editorType) {
                case EditorType.Area:
-                  return areaPaletteDatas;
+                  return areaPaletteData;
                case EditorType.Interior:
-                  return interiorPaletteDatas;
+                  return interiorPaletteData;
                case EditorType.Sea:
-                  return seaPaletteDatas;
+                  return seaPaletteData;
                default:
                   throw new System.Exception($"Unrecognized editor type {Tools.editorType.ToString()}");
             }

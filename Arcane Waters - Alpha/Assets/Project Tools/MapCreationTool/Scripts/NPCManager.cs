@@ -8,6 +8,7 @@ namespace MapCreationTool
 {
    public class NPCManager : MonoBehaviour
    {
+      public static event System.Action OnLoaded;
       public static NPCManager instance { get; private set; }
 
       private NPCData[] npcs;
@@ -23,55 +24,63 @@ namespace MapCreationTool
       private IEnumerator Start () {
          yield return new WaitUntil(() => ImageManager.self != null);
 
-         loadAllDataFiles();
          loadBodies();
+         loadAllNpcs();
       }
 
-      public Texture2D getTexture(int npcId) {
+      public Texture2D getTexture (int npcId) {
          if (!idToNpc.ContainsKey(npcId)) {
             Debug.LogError("Unrecognized npc ID.");
             return null;
          }
-            
+
          NPCData data = idToNpc[npcId];
          return ImageManager.getTexture(data.spritePath);
       }
 
-      public string[] formSelectionOptions() {
+      public Texture2D getFirstNpcTexture () {
+         return npcCount == 0 ? null : ImageManager.getTexture(npcs[0].spritePath);
+      }
+
+      public string[] formSelectionOptions () {
          return npcs.Select(n => n.npcId + ": " + n.name).ToArray();
       }
 
-      private void loadAllDataFiles () {
-         // Build the path to the folder containing the NPC data XML files
-         string directoryPath = Path.Combine(Application.dataPath, "Data", NPCToolManager.FOLDER_PATH);
-
-         if (!Directory.Exists(directoryPath)) {
-            DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
-         }
-
-         // Get the list of XML files in the folder
-         string[] fileNames = ToolsUtil.getFileNamesInFolder(directoryPath, "*.xml");
-
-         idToNpc = new Dictionary<int, NPCData>();
-         // Iterate over the files
-         for (int i = 0; i < fileNames.Length; i++) {
-            // Build the path to a single file
-            string filePath = Path.Combine(directoryPath, fileNames[i]);
-
-            // Read and deserialize the file
-            NPCData npcData = ToolsUtil.xmlLoad<NPCData>(filePath);
-
-            // Save the NPC data in the memory cache
-            if (!idToNpc.ContainsKey(npcData.npcId)) {
-               idToNpc.Add(npcData.npcId, npcData);
-            }
-         }
-
-         npcs = idToNpc.OrderBy(n => n.Key).Select(n => n.Value).ToArray();
-         loaded = true;
+      public int npcCount
+      {
+         get { return npcs.Length; }
       }
 
-      private void loadBodies() {
+      private void loadAllNpcs () {
+         idToNpc = new Dictionary<int, NPCData>();
+
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            List<string> rawXMLData = DB_Main.getNPCXML();
+
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               foreach (string rawText in rawXMLData) {
+                  TextAsset newTextAsset = new TextAsset(rawText);
+                  NPCData npcData = Util.xmlLoad<NPCData>(newTextAsset);
+
+                  // Save the NPC data in the memory cache
+                  if (!idToNpc.ContainsKey(npcData.npcId)) {
+                     idToNpc.Add(npcData.npcId, npcData);
+                  }
+               }
+
+               instance.finishLoadingNpcs();
+            });
+         });
+      }
+
+      private void finishLoadingNpcs () {
+         npcs = idToNpc.OrderBy(n => n.Key).Select(n => n.Value).ToArray();
+         loaded = true;
+
+         OnLoaded?.Invoke();
+      }
+
+      private void loadBodies () {
          string spritePath = "Assets/Sprites/NPCs/Bodies/";
          npcBodySprites = new Dictionary<string, Sprite>();
          List<ImageManager.ImageData> spriteFiles = ImageManager.getSpritesInDirectory(spritePath);

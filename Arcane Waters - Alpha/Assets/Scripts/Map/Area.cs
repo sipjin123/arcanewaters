@@ -89,11 +89,15 @@ public class Area : MonoBehaviour {
    }
 
    public static bool isShop (string areaKey) {
-      return areaKey.Contains("Shop");
+      return areaKey.Contains("Shop") || areaKey.Contains("Shipyard");
    }
 
    public static bool isMerchantShop(string areaKey) {
       return areaKey.StartsWith("MerchantShop");
+   }
+
+   public static bool isInterior(string areaKey) {
+      return isShop(areaKey) || isHouse(areaKey);
    }
 
    public List<Tilemap> getTilemaps () {

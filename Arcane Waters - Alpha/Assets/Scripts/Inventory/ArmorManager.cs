@@ -76,13 +76,18 @@ public class ArmorManager : EquipmentManager {
       SoundManager.create3dSound("equip_", this.transform.position, 2);
 
       // Check if we completed a tutorial step
-      if (_body != null && _body.isLocalPlayer && TutorialManager.currentStep == Step.GetDressed) {
+      if (_body != null && _body.isLocalPlayer && TutorialManager.self.currentTutorialData().actionType == ActionType.EquipArmor) {
          _body.Cmd_CompletedTutorialStep(TutorialManager.currentStep);
       }
    }
 
    [Server]
    public void updateArmorSyncVars (Armor newArmor) {
+      if (newArmor.itemTypeId == 0) {
+         // No armor to equip
+         return;
+      }
+
       _armor = newArmor;
 
       // Assign the armor ID
