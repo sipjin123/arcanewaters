@@ -45,9 +45,19 @@ public class SeedBag : ClientMonoBehaviour {
    }
 
    private bool isSeedBagActive () {
-      TutorialData currTutdata = TutorialManager.self.fetchTutorialData(TutorialManager.currentStep);
+      TutorialData currentTutorialData = TutorialManager.self.fetchTutorialData(TutorialManager.currentStep);
+      Item item = null;
+      if (currentTutorialData.requirementType == RequirementType.Item) {
+         item = JsonUtility.FromJson<Item>(currentTutorialData.rawDataJson);
+      }
 
-      return currTutdata.tutorialName.Contains("FindSeedBag"); 
+      if (item != null) {
+         if (item.category == Item.Category.Weapon && item.itemTypeId == (int)Weapon.Type.Seeds) {
+            return true;
+         }
+      }
+
+      return false;
    }
 
    #region Private Variables

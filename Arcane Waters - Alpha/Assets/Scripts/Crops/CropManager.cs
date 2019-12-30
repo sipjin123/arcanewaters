@@ -414,8 +414,8 @@ public class CropManager : NetworkBehaviour {
       }
 
       // If we're on the harvest step, we can move on to the next step
-      if (Global.player != null && cropInfo.userId == Global.player.userId && TutorialManager.currentStep == 8) {
-         // TODO: 8 is a placeholder for : HarvestCrops
+      bool ifHarvestCrops = TutorialManager.self.currentTutorialData().actionType == ActionType.HarvestCrop;
+      if (Global.player != null && cropInfo.userId == Global.player.userId && ifHarvestCrops) {
          Global.player.Cmd_CompletedTutorialStep(TutorialManager.currentStep);
       }
    }
@@ -423,20 +423,20 @@ public class CropManager : NetworkBehaviour {
    [TargetRpc]
    public void Target_ReceiveCrop (NetworkConnection connection, CropInfo cropInfo, bool justGrew) {
       // If we're on the planting step and just received one of our own crops, we can move on to the next step
-      if (Global.player != null && cropInfo.userId == Global.player.userId && TutorialManager.currentStep == 3) {
-         // TODO: 5 is a place holder for :  PlantSeeds
+      bool ifPlantSeeds = TutorialManager.self.currentTutorialData().actionType == ActionType.PlantCrop;
+      if (Global.player != null && cropInfo.userId == Global.player.userId && ifPlantSeeds) {
          Global.player.Cmd_CompletedTutorialStep(TutorialManager.currentStep);
       }
 
       // If we're on the watering step and the crop grew, we can move on to the next step
-      if (Global.player != null && cropInfo.userId == Global.player.userId && TutorialManager.currentStep == 5 && justGrew) {
-         // TODO: 5 is a place holder for : StartWatering
+      bool ifStartedWateringCrops = TutorialManager.self.currentTutorialData().actionType == ActionType.WaterCrop && TutorialManager.self.currentTutorialData().countRequirement == 1;
+      if (Global.player != null && cropInfo.userId == Global.player.userId && ifStartedWateringCrops && justGrew) {
          Global.player.Cmd_CompletedTutorialStep(TutorialManager.currentStep);
       }
 
       // If we're on the watering step and the crop finished, we can move on to the next step
-      if (Global.player != null && cropInfo.userId == Global.player.userId && TutorialManager.currentStep == 6 && justGrew && cropInfo.isMaxLevel()) {
-         // TODO: 6 is a place holder for : FinishWatering
+      bool ifFinishedWateringCrops = TutorialManager.self.currentTutorialData().actionType == ActionType.WaterCrop && TutorialManager.self.currentTutorialData().countRequirement > 1;
+      if (Global.player != null && cropInfo.userId == Global.player.userId && ifFinishedWateringCrops && justGrew && cropInfo.isMaxLevel()) {
          Global.player.Cmd_CompletedTutorialStep(TutorialManager.currentStep);
       }
 
@@ -478,8 +478,8 @@ public class CropManager : NetworkBehaviour {
 
    protected static int getWaterIntervalSeconds (Crop.Type cropType, int highestCompletedTutorialStep) {
       // When they're just getting started, make the crops grow fast
-      if (highestCompletedTutorialStep <= 7) {
-         // TODO: 7 is a placeholder for: GetPitchfork
+      TutorialData tutorialData = TutorialManager.self.currentTutorialData();
+      if (tutorialData.actionType == ActionType.WaterCrop && tutorialData.countRequirement == 1) {
          return 6;
       }
 

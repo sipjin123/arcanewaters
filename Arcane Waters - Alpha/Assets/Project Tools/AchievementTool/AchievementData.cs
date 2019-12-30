@@ -92,7 +92,7 @@ public enum ActionType
    MineOre = 36, OpenTreasureChest = 37, HarvestCrop = 38, SellCrop = 39, WaterCrop = 40,
    PlantCrop = 41, EarnGold = 42, GatherItem = 43, HealthGain = 44, OreGain = 45,
    HitSeaMonster = 46, HitEnemyShips = 47, EnterArea = 48, ReachCoordinates = 49, ReceiveItem = 50,
-   EquipArmor = 51
+   EquipArmor = 51, DestroyGate = 52
 }
 
 /*

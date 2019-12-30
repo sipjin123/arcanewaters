@@ -104,7 +104,7 @@ public class TutorialToolPanel : MonoBehaviour {
       _imageIcon.sprite = toolManager.toolScene.emptySprite;
       _areaKey.text = "None";
 
-      RequirementType requirementType = (RequirementType) Enum.Parse(typeof(RequirementType), _requirementTypeText.text);
+      RequirementType requirementType = tutorialData.requirementType;
       switch (requirementType) {
          case RequirementType.Area:
             _itemOptionObj.SetActive(false);

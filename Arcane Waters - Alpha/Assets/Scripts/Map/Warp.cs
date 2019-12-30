@@ -14,6 +14,11 @@ public class Warp : MonoBehaviour, MapCreationTool.IMapEditorDataReceiver {
    // The facing direction we should have after spawning
    public Direction newFacingDirection = Direction.South;
 
+   // Hard coded quest index
+   public const int GET_DRESSED_QUEST_INDEX = 1;
+   public const int HEAD_TO_DOCKS_QUEST_INDEX = 8;
+   public const int ENTER_TREASURE_SITE_QUEST_INDEX = 14;
+
    #endregion
 
    void Awake() {
@@ -31,7 +36,6 @@ public class Warp : MonoBehaviour, MapCreationTool.IMapEditorDataReceiver {
       // If a player entered this warp on the server, move them
       if (player.isServer && player.connectionToClient != null) {
          Spawn spawn = SpawnManager.self.getSpawn(areaTarget, spawnTarget);
-         Debug.Log("Starting warp to target area: " + spawn.AreaKey);
          player.spawnInNewMap(spawn.AreaKey, spawn, newFacingDirection);
       }
    }
@@ -46,12 +50,12 @@ public class Warp : MonoBehaviour, MapCreationTool.IMapEditorDataReceiver {
       }
 
       // We can't warp to the sea until we've gotten far enough into the tutorial
-      if (Area.isSea(spawn.AreaKey) && currentStep <= 8) {
-         // TODO: 9 is a placeholder for tutorial title : HeadToDocks
+      if (Area.isSea(spawn.AreaKey) && currentStep <= HEAD_TO_DOCKS_QUEST_INDEX) {
          return false;
       }
-      if (Spawn.HOUSE_EXIT.Equals(spawnTarget) && currentStep == 1) {
-         // TODO: 1 is a placeholder for tutorial title : GetDressed
+
+      // Requires the player to finish the first quest requirement
+      if (Spawn.HOUSE_EXIT.Equals(spawnTarget) && currentStep == GET_DRESSED_QUEST_INDEX) {
          if (player.connectionToClient != null) {
             ServerMessageManager.sendError(ErrorMessage.Type.Misc, player, "You need to get dressed before leaving the house!");
          }
@@ -59,8 +63,7 @@ public class Warp : MonoBehaviour, MapCreationTool.IMapEditorDataReceiver {
       }
 
       // We can't warp into the treasure site until we clear the gate
-      if (Area.isTreasureSite(spawn.AreaKey) && currentStep < 14) {
-         // TODO: 14 is a placeholder for tutorial title : EnterTreasureSite
+      if (Area.isTreasureSite(spawn.AreaKey) && currentStep < ENTER_TREASURE_SITE_QUEST_INDEX) {
          return false;
       }
 

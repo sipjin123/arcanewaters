@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System.Linq;
+using UnityEngine.Events;
 
 public class TutorialManager : MonoBehaviour {
    #region Public Variables
@@ -16,6 +17,9 @@ public class TutorialManager : MonoBehaviour {
 
    // Self
    public static TutorialManager self;
+
+   // Event notifying that the setup of the XML is finished
+   public UnityEvent finishSetupEvent = new UnityEvent();
 
    #endregion
 
@@ -52,6 +56,7 @@ public class TutorialManager : MonoBehaviour {
                _tutorialDataList.Add(tutorialData);
             }
          });
+         finishSetupEvent.Invoke();
       });
    }
 
@@ -100,8 +105,10 @@ public class TutorialManager : MonoBehaviour {
 
       TutorialData currTutorialData = fetchTutorialData(currentStep);
       string areaType = "";
-      if (currTutorialData.requirementType == RequirementType.Area) {
-         areaType = currTutorialData.rawDataJson;
+      if (currTutorialData != null) {
+         if (currTutorialData.requirementType == RequirementType.Area) {
+            areaType = currTutorialData.rawDataJson;
+         }
       }
 
       // Check if we just completed a step
@@ -114,7 +121,7 @@ public class TutorialManager : MonoBehaviour {
       TutorialPanel.self.updatePanel(tutorialInfo);
 
       // If we're on the ship step and in our ship, we're done
-      if (Global.player is PlayerShipEntity && areaType == "Shipyard") {
+      if (Global.player is PlayerShipEntity && Area.isSea(areaType)) {
          Global.player.Cmd_CompletedTutorialStep(TutorialManager.currentStep);
       }
    }
@@ -138,7 +145,9 @@ public class TutorialManager : MonoBehaviour {
    }
 
    protected int getHighestCompletedStep () {
-      return getHighestCompletedStep(_progressInfo);
+      int returnInt = getHighestCompletedStep(_progressInfo);
+      returnInt = Mathf.Clamp(returnInt, 0, _tutorialDataList.Count);
+      return returnInt;
    }
 
    protected static int getHighestCompletedStep (List<TutorialInfo> tutorialInfo) {
@@ -178,25 +187,6 @@ public class TutorialManager : MonoBehaviour {
    // List of tutorial data
    [SerializeField]
    protected List<TutorialData> _tutorialDataList;
-
-   /*{
-        { Step.None, new TutorialStep("", "") },
-        { Step.GetDressed, new TutorialStep("Get Dressed!", "Walk up to the dresser with the arrow over it and get dressed.") },
-        { Step.FindSeedBag, new TutorialStep("Find the Seed Bag", "Try and find the lost bag of seeds somewhere nearby.") },
-        { Step.PlantSeeds, new TutorialStep("Plant some Seeds", "Press 1 to equip the Seed Bag and use it to plant some crops in the holes.") },
-        { Step.GetWateringCan, new TutorialStep("Get the Watering Pot", "Grab the watering pot from your house.") },
-        { Step.StartWatering, new TutorialStep("Water the Seeds", "Equip the watering can by pressing 2, and use it to water the seeds you planted.") },
-        { Step.FinishWatering, new TutorialStep("Water the Crops", "Keep watering the crops until they're fully grown.") },
-        { Step.GetPitchfork, new TutorialStep("Get the Pitchfork", "Grab the Pitchfork that Gramps left in the house.") },
-        { Step.HarvestCrops, new TutorialStep("Use the Pitchfork", "Press 3 to equip the Pitchfork, and walk over the crops to harvest them.") },
-        { Step.HeadToDocks, new TutorialStep("Set Sail!", "Head to the docks at the south end of town to board your ship!") },
-        { Step.FindTown, new TutorialStep("Find the Nearby Town", "Sail north until you find a town to sell your crops.") },
-        { Step.SellCrops, new TutorialStep("Sell your Crops", "Go into the store to sell the crops.") },
-        { Step.FindTreasureSite, new TutorialStep("Find the Treasure", "Sail north and look for the hidden treasure site.") },
-        { Step.DestroyGate, new TutorialStep("Attack the Gates", "Hold right-click to fire your cannons at the encampment gates!") },
-        { Step.EnterTreasureSite, new TutorialStep("Enter the Treasure Site", "Now that the gates are clear, enter the treasure site!") },
-        { Step.ExploreTreasureSite, new TutorialStep("Explore the Treasure Site", "Look around the treasure site to see what you can find!") },
-    };*/
 
    #endregion
 }

@@ -16,9 +16,23 @@ public class TreasureSiteGate : ClientMonoBehaviour {
    public SpriteRenderer gateStatus3;
    public SpriteRenderer gateStatus4;
 
+   // Quest index must be greater than this index for the gate to be disabled
+   public int destroyGateQuestIndex;
+
+   // Gate quest title
+   public const string DESTROY_GATE_QUEST_TITLE = "DestroyGate";
+
+   // Determines if xml setup is done
+   public bool isXmlSetupFinished = false;
+
    #endregion
 
    public void Start () {
+      TutorialManager.self.finishSetupEvent.AddListener(() => {
+         destroyGateQuestIndex = TutorialManager.self.fetchTutorialData(DESTROY_GATE_QUEST_TITLE).stepOrder;
+         isXmlSetupFinished = true;
+      });
+      
       _collider = GetComponent<PolygonCollider2D>();
 
       // Store the gate statuses in list form
@@ -33,10 +47,9 @@ public class TreasureSiteGate : ClientMonoBehaviour {
       statusesContainer.SetActive(Global.player != null && TutorialManager.currentStep > 0);
 
       // We only mess with the warp if we have a player object
-      if (Global.player != null) {
+      if (Global.player != null && isXmlSetupFinished) {
          // If we're past the tutorial step, we can clear the gate
-         if (TutorialManager.currentStep > 13) {
-            // TODO: 13 is a placeholder for : Step.DestroyGate
+         if (TutorialManager.currentStep > destroyGateQuestIndex) {
             foreach (SpriteRenderer gate in _gates) {
                gate.enabled = false;
             }
@@ -68,7 +81,7 @@ public class TreasureSiteGate : ClientMonoBehaviour {
       }
 
       if (!isEntranceStillBlocked()) {
-         int stepIndex = TutorialManager.self.tutorialDataList().Find(_ => _.tutorialName.Contains("DestroyGate")).stepOrder;
+         int stepIndex = TutorialManager.self.tutorialDataList().Find(_ => _.actionType == ActionType.DestroyGate).stepOrder;
          Global.player.Cmd_CompletedTutorialStep(stepIndex);
       }
    }
