@@ -21,6 +21,9 @@ public class TutorialManager : MonoBehaviour {
    // Event notifying that the setup of the XML is finished
    public UnityEvent finishSetupEvent = new UnityEvent();
 
+   // If xml data is initialized
+   public bool hasInitialized;
+
    #endregion
 
    private void Awake () {
@@ -55,9 +58,21 @@ public class TutorialManager : MonoBehaviour {
                TutorialData tutorialData = Util.xmlLoad<TutorialData>(newTextAsset);
                _tutorialDataList.Add(tutorialData);
             }
+            finishSetupEvent.Invoke();
+            hasInitialized = true;
          });
-         finishSetupEvent.Invoke();
       });
+   }
+
+   public void receiveListFromServer (TutorialData[] tutorialDataArray) {
+      if (!hasInitialized) {
+         _tutorialDataList = new List<TutorialData>();
+         foreach (TutorialData tutorialData in tutorialDataArray) {
+            _tutorialDataList.Add(tutorialData);
+         }
+         hasInitialized = true;
+         finishSetupEvent.Invoke();
+      }
    }
 
    private void Update () {
@@ -167,7 +182,11 @@ public class TutorialManager : MonoBehaviour {
    }
 
    public TutorialData fetchTutorialData (string stepTitle) {
-      return _tutorialDataList.Find(_ => _.tutorialName == stepTitle);
+      TutorialData returnData = _tutorialDataList.Find(_ => _.tutorialName == stepTitle);
+      if (returnData == null) {
+         D.warning("Problem with Tutorial XML Data: Please create data in tutorial data editor : ({" + stepTitle + "})");
+      }
+      return returnData;
    }
 
    #region Private Variables

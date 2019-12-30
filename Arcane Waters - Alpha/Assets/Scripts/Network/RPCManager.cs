@@ -62,6 +62,15 @@ public class RPCManager : NetworkBehaviour {
       SeaMonsterManager.self.receiveListFromServer(seaMonsterList);
    }
 
+   [TargetRpc]
+   public void Target_ReceiveTutorialData (NetworkConnection connection, string[] rawInfo) {
+      // Deserialize data
+      TutorialData[] tutorialDataList = Util.unserialize<TutorialData>(rawInfo).ToArray();
+
+      // Cache to tutorial manager 
+      TutorialManager.self.receiveListFromServer(tutorialDataList);
+   }
+
    [Command]
    public void Cmd_InteractAnimation (Anim.Type animType) {
       Rpc_InteractAnimation(animType);

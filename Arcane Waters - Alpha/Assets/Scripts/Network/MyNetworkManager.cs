@@ -229,6 +229,9 @@ public class MyNetworkManager : NetworkManager {
             // Seamonster data to the client
             player.rpc.Target_ReceiveAllSeaMonsterInfo(player.connectionToClient, Util.serialize(SeaMonsterManager.self.seaMonsterDataList));
 
+            // Tutorial data to the client
+            player.rpc.Target_ReceiveTutorialData(player.connectionToClient, Util.serialize(TutorialManager.self.tutorialDataList()));
+
             // Sends all equipment info to client
             player.rpc.Target_ReceiveEquipmentData(player.connectionToClient, Util.serialize(EquipmentXMLManager.self.weaponStatList), EquipmentToolManager.EquipmentType.Weapon);
             player.rpc.Target_ReceiveEquipmentData(player.connectionToClient, Util.serialize(EquipmentXMLManager.self.armorStatList), EquipmentToolManager.EquipmentType.Armor);

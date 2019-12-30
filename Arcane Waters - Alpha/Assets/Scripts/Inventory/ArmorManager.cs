@@ -76,8 +76,11 @@ public class ArmorManager : EquipmentManager {
       SoundManager.create3dSound("equip_", this.transform.position, 2);
 
       // Check if we completed a tutorial step
-      if (_body != null && _body.isLocalPlayer && TutorialManager.self.currentTutorialData().actionType == ActionType.EquipArmor) {
-         _body.Cmd_CompletedTutorialStep(TutorialManager.currentStep);
+      TutorialData tutorialData = TutorialManager.self.currentTutorialData();
+      if (_body != null && tutorialData != null) {
+         if (_body.isLocalPlayer && tutorialData.actionType == ActionType.EquipArmor) {
+            _body.Cmd_CompletedTutorialStep(TutorialManager.currentStep);
+         }
       }
    }
 

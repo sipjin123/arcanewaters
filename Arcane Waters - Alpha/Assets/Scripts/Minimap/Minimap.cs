@@ -25,6 +25,9 @@ public class Minimap : ClientMonoBehaviour {
    // The prefab we use for showing Tutorial objectives
    public MM_TutorialIcon tutorialIconPrefab;
 
+   // Generic Tutorial arrow indicator
+   public TutorialItem tutorialArrowPrefab;
+
    // The prefab we use for showing impassable areas
    public MM_Icon impassableIconPrefab;
 
