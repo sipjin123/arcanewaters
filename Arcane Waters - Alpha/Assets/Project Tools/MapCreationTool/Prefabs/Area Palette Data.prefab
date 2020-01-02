@@ -7717,6 +7717,50 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefab: {fileID: 2604347782234788204, guid: b7863808928071c488680a6dc2df578d, type: 3}
+--- !u!1 &1736009308122812811
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5502864680399512718}
+  - component: {fileID: 963978033945318061}
+  m_Layer: 0
+  m_Name: tutorial arrow
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5502864680399512718
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1736009308122812811}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 11, y: 47.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 3719976920741877196}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &963978033945318061
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1736009308122812811}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d14a3bae45cba31478d29685e1dea398, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 6524891404889324934, guid: 00a69225f1b381a4e81d0296bcfe19fd, type: 3}
 --- !u!1 &1957980700305842665
 GameObject:
   m_ObjectHideFlags: 0
@@ -9478,6 +9522,7 @@ Transform:
   - {fileID: 959149835713038355}
   - {fileID: 6426896187925013103}
   - {fileID: 8834653578186453418}
+  - {fileID: 5502864680399512718}
   m_Father: {fileID: 6003827098852396580}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -42813,11 +42858,11 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 1
+      cluster: 3
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 1
+      cluster: 3
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -43009,11 +43054,11 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 1
+      cluster: 3
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 1
+      cluster: 3
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -43205,11 +43250,11 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 1
+      cluster: 3
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 1
+      cluster: 3
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -43401,11 +43446,11 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 1
+      cluster: 3
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 1
+      cluster: 3
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -43605,7 +43650,7 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 2
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -44773,11 +44818,11 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 4
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 4
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -44969,11 +45014,11 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 4
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 4
       collisionType: 0
     - layer: 
       sublayer: 0

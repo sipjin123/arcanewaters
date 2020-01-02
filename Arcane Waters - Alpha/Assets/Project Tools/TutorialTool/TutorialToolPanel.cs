@@ -80,6 +80,13 @@ public class TutorialToolPanel : MonoBehaviour {
       _imageButton.onClick.AddListener(() => {
          selectionPopup.callImageTextSelectionPopup(GenericSelectionPopup.selectionType.TutorialIcon, _iconSprite, _imagePath);
       });
+      _tutorialIndicatorButton.onClick.AddListener(() => {
+         selectionPopup.callImageTextSelectionPopup(GenericSelectionPopup.selectionType.TutorialIcon, _tutorialIndicatorImage, _tutorialIndicatorPath);
+      });
+      _tutorialIndicatorText.onValueChanged.AddListener(_ => {
+         _textSample.text = _;
+         _imageSample.sprite = ImageManager.getSprite(_tutorialIndicatorPath.text);
+      });
 
       _itemCategoryButton.onClick.AddListener(() => {
          selectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.ItemCategory, _itemCategoryText);
@@ -134,6 +141,16 @@ public class TutorialToolPanel : MonoBehaviour {
       } else {
          _iconSprite.sprite = toolManager.toolScene.emptySprite;
       }
+      if (tutorialData.tutorialIndicatorImgPath != "") {
+         _tutorialIndicatorImage.sprite = ImageManager.getSprite(tutorialData.tutorialIndicatorImgPath);
+         _imageSample.sprite = ImageManager.getSprite(tutorialData.tutorialIndicatorImgPath);
+      } else {
+         _tutorialIndicatorImage.sprite = toolManager.toolScene.emptySprite;
+         _imageSample.sprite = toolManager.toolScene.emptySprite;
+      }
+
+      _tutorialIndicatorText.text = tutorialData.tutorialIndicatorMessage;
+      _textSample.text = tutorialData.tutorialIndicatorMessage;
 
       int msgCounter = 0;
       _msgParent.gameObject.DestroyChildren();
@@ -160,6 +177,9 @@ public class TutorialToolPanel : MonoBehaviour {
       tutorialData.countRequirement = int.Parse(_count.text);
       tutorialData.stepOrder = int.Parse(_tutorialStep.text);
       tutorialData.requirementType = (RequirementType) Enum.Parse(typeof(RequirementType), _requirementTypeText.text);
+
+      tutorialData.tutorialIndicatorMessage = _tutorialIndicatorText.text;
+      tutorialData.tutorialIndicatorImgPath = _tutorialIndicatorPath.text;
 
       RequirementType requirementType = (RequirementType) Enum.Parse(typeof(RequirementType), _requirementTypeText.text);
       switch (requirementType) {
@@ -224,6 +244,15 @@ public class TutorialToolPanel : MonoBehaviour {
 
    [SerializeField]
    private Image _iconSprite;
+
+   [SerializeField]
+   private Button _tutorialIndicatorButton;
+   [SerializeField]
+   private Image _tutorialIndicatorImage, _imageSample;
+   [SerializeField]
+   private Text _tutorialIndicatorPath, _textSample;
+   [SerializeField]
+   private InputField _tutorialIndicatorText;
 #pragma warning restore 0649
    #endregion
 }

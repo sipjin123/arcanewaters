@@ -59,6 +59,16 @@ public class TestMapManager : MonoBehaviour
                   player.spawnInNewMap(spawn.AreaKey, spawn, Direction.South);
                }
             }
+         } else if (Input.GetKeyDown(KeyCode.Alpha6) || Input.GetKeyDown(KeyCode.Keypad6)) {
+            var player = Global.player;
+            // If a player entered this warp on the server, move them
+            if (player.isServer && player.connectionToClient != null) {
+               Spawn spawn = SpawnManager.get().getSpawn("BurlTestMap", "main");
+               if (spawn != null) {
+                  Debug.Log("Starting warp to target area: " + spawn.AreaKey);
+                  player.spawnInNewMap(spawn.AreaKey, spawn, Direction.South);
+               }
+            }
          }
       }
    }

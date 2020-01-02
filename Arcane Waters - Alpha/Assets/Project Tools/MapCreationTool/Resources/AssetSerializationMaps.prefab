@@ -42163,7 +42163,7 @@ Tilemap:
   - first: {x: 22, y: 17, z: 0}
     second:
       m_TileIndex: 0
-      m_TileSpriteIndex: 0
+      m_TileSpriteIndex: 553
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
@@ -42172,7 +42172,7 @@ Tilemap:
   - first: {x: 23, y: 17, z: 0}
     second:
       m_TileIndex: 1
-      m_TileSpriteIndex: 1
+      m_TileSpriteIndex: 552
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
@@ -44343,7 +44343,7 @@ Tilemap:
       m_TileIndex: 242
       m_TileSpriteIndex: 242
       m_TileMatrixIndex: 0
-      m_TileColorIndex: 1
+      m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
       m_ColliderType: 1
@@ -44865,7 +44865,7 @@ Tilemap:
       m_TileIndex: 300
       m_TileSpriteIndex: 300
       m_TileMatrixIndex: 0
-      m_TileColorIndex: 1
+      m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
       m_ColliderType: 0
@@ -45369,7 +45369,7 @@ Tilemap:
       m_TileIndex: 356
       m_TileSpriteIndex: 356
       m_TileMatrixIndex: 0
-      m_TileColorIndex: 1
+      m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
       m_ColliderType: 1
@@ -47146,7 +47146,7 @@ Tilemap:
       - {fileID: 21300512, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300518, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300524, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 24, y: 17, z: 0}
@@ -47196,7 +47196,7 @@ Tilemap:
       - {fileID: 21300490, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300496, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300502, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 25, y: 18, z: 0}
@@ -48910,10 +48910,10 @@ Tilemap:
   - m_RefCount: 0
     m_Data: {fileID: 0}
   m_TileSpriteArray:
-  - m_RefCount: 1
-    m_Data: {fileID: 21300522, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-  - m_RefCount: 1
-    m_Data: {fileID: 21300524, guid: 9f8480c050207984e966150b40d27fae, type: 3}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
   - m_RefCount: 1
     m_Data: {fileID: 21300526, guid: 9f8480c050207984e966150b40d27fae, type: 3}
   - m_RefCount: 1
@@ -50014,10 +50014,10 @@ Tilemap:
     m_Data: {fileID: 21300036, guid: 96fb9bdc1ecb0714aa8504cbdd2815ae, type: 3}
   - m_RefCount: 1
     m_Data: {fileID: 21300038, guid: 96fb9bdc1ecb0714aa8504cbdd2815ae, type: 3}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
+  - m_RefCount: 1
+    m_Data: {fileID: 21300524, guid: 9f8480c050207984e966150b40d27fae, type: 3}
+  - m_RefCount: 1
+    m_Data: {fileID: 21300522, guid: 9f8480c050207984e966150b40d27fae, type: 3}
   m_TileMatrixArray:
   - m_RefCount: 552
     m_Data:
@@ -50038,10 +50038,10 @@ Tilemap:
       e32: 0
       e33: 1
   m_TileColorArray:
-  - m_RefCount: 549
+  - m_RefCount: 552
     m_Data: {r: 1, g: 1, b: 1, a: 1}
-  - m_RefCount: 3
-    m_Data: {r: 1, g: 1, b: 1, a: 0.25}
+  - m_RefCount: 0
+    m_Data: {r: 0, g: 0, b: 0, a: 0}
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Origin: {x: 0, y: 0, z: 0}
@@ -93244,8 +93244,10 @@ MonoBehaviour:
       index: 1
       toIndexPrefabs:
       - {fileID: 6928936740555346515, guid: 932504cf2f7292942a1e97f351e8b9c1, type: 3}
+      - {fileID: 6524891404889324934, guid: 00a69225f1b381a4e81d0296bcfe19fd, type: 3}
       fromIndexPrefabs:
       - {fileID: 1322722724978774, guid: f8f35b9f6cbe1fb4d88c39af030bddd4, type: 3}
+      - {fileID: 6524891404889324934, guid: 598e4fd7105a2944f84be41bdffc57fc, type: 3}
   collidableLayers: 04000000060000000700000008000000110000000a0000000b0000000c0000000d0000000e0000000f00000010000000
   transparentTile: {fileID: 11400000, guid: 6770d82dbc34c894eb30ee1fd5b3b937, type: 2}
   layerZMultiplier: -0.01

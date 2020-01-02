@@ -1,6 +1,7 @@
 ﻿using MapCreationTool.PaletteTilesData;
 using MapCreationTool.Serialization;
 using MapCreationTool.UndoSystem;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -51,6 +52,7 @@ namespace MapCreationTool
 
       private Dictionary<string, Layer> layers;
 
+      [SerializeField]
       private List<PlacedPrefab> placedPrefabs = new List<PlacedPrefab>();
 
       private PlacedPrefab selectedPrefab;
@@ -592,7 +594,7 @@ namespace MapCreationTool
 
          //--------------------------------
          //Handle prefab selection
-         if (Tools.toolType == ToolType.PrefabData) {
+         if (Tools.toolType == ToolType.PrefabData || Tools.toolType == ToolType.TutorialData) {
             var target = getHoveredPrefab();
 
             if (target != null && target != selectedPrefab) {
@@ -694,7 +696,7 @@ namespace MapCreationTool
          if (data.button == PointerEventData.InputButton.Left) {
             if (Tools.toolType == ToolType.Brush || Tools.toolType == ToolType.Eraser || Tools.toolType == ToolType.Fill)
                changeBoard(getPotentialBoardChange(data.pointerCurrentRaycast.worldPosition));
-            else if (Tools.toolType == ToolType.PrefabData)
+            else if (Tools.toolType == ToolType.PrefabData || Tools.toolType == ToolType.TutorialData)
                selectPrefab(getHoveredPrefab());
          }
          updatePreview(data.position);
@@ -763,9 +765,11 @@ namespace MapCreationTool
       public bool previewTilesSet { get; set; }
    }
 
+   [Serializable]
    public class PlacedPrefab
    {
       public GameObject placedInstance { get; set; }
+
       public GameObject original { get; set; }
 
       public Dictionary<string, string> data { get; private set; }
@@ -801,10 +805,11 @@ namespace MapCreationTool
       }
 
       public void setData (string key, string value) {
-         if (data.ContainsKey(key))
+         if (data.ContainsKey(key)) {
             data[key] = value;
-         else
+         } else {
             data.Add(key, value);
+         }
       }
 
       public string getData (string key) {

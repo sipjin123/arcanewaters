@@ -35,6 +35,10 @@ public class TutorialData
    // The requirement for the succession
    public RequirementType requirementType;
 
+   // For tutorial indicators
+   public string tutorialIndicatorMessage = "";
+   public string tutorialIndicatorImgPath = "";
+
    public TutorialData () {
 
    }

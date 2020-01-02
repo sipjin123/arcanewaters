@@ -27967,6 +27967,8 @@ MonoBehaviour:
       m_Image: {fileID: 0}
     - m_Text: 'Tool: Prefab Data'
       m_Image: {fileID: 0}
+    - m_Text: 'Tool: Tutorial Data'
+      m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
