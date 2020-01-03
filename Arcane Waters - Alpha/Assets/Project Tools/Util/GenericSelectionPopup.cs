@@ -28,6 +28,9 @@ public class GenericSelectionPopup : MonoBehaviour {
    public Button confirmButton;
    public Button exitButton;
 
+   // Audio source
+   public AudioSource audioSource;
+
    // Sprite dictionary
    public Dictionary<string, Sprite> genericIconSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> shipIconSpriteList = new Dictionary<string, Sprite>();
@@ -42,6 +45,7 @@ public class GenericSelectionPopup : MonoBehaviour {
    public Dictionary<string, Sprite> playerSpecialtySpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> playerJobSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> tutorialSpriteList = new Dictionary<string, Sprite>();
+   public Dictionary<string, Sprite> shipAbilitySpriteList = new Dictionary<string, Sprite>();
 
    public enum selectionType
    {
@@ -77,7 +81,8 @@ public class GenericSelectionPopup : MonoBehaviour {
       MonsterType = 29,
       AbilityType = 30,
       TutorialIcon = 31,
-      RequirementType = 32
+      RequirementType = 32,
+      ShipAbilityIcon = 33,
    }
 
    #endregion
@@ -131,6 +136,9 @@ public class GenericSelectionPopup : MonoBehaviour {
 
       string tutorialPath = "Assets/Sprites/Icons/";
       setupSpriteContent(tutorialSpriteList, tutorialPath);
+
+      string shipAbilityPath = "Assets/Sprites/Icons/";
+      setupSpriteContent(shipAbilitySpriteList, shipAbilityPath);
    }
 
    private void setupSpriteContent (Dictionary<string, Sprite> spriteCollection, string spritePath) {
@@ -220,6 +228,12 @@ public class GenericSelectionPopup : MonoBehaviour {
          }
       } else if (popupType == selectionType.TutorialIcon) {
          foreach (KeyValuePair<string, Sprite> sourceSprite in tutorialSpriteList) {
+            string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
+            Sprite icon = ImageManager.getSprite(sourceSprite.Key);
+            createImageTemplate(sourceSprite.Key, shortName, icon, imageIcon, textUI);
+         }
+      } else if (popupType == selectionType.ShipAbilityIcon) {
+         foreach (KeyValuePair<string, Sprite> sourceSprite in shipAbilitySpriteList) {
             string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
             Sprite icon = ImageManager.getSprite(sourceSprite.Key);
             createImageTemplate(sourceSprite.Key, shortName, icon, imageIcon, textUI);
@@ -437,6 +451,30 @@ public class GenericSelectionPopup : MonoBehaviour {
       selectionTemplate.previewButton.onClick.AddListener(() => {
          previewSelectionIcon.sprite = selectionIcon;
       });
+   }
+
+   public void toggleAudioSelection (AudioClip clip, Text textUsed) {
+      selectionPanel.SetActive(true); 
+      templateParent.DestroyChildren();
+
+      foreach (AudioClipManager.AudioClipData sourceClip in AudioClipManager.self.audioDataList) {
+         GameObject iconTempObj = Instantiate(templatePrefab.gameObject, templateParent.transform);
+         ItemTypeTemplate iconTemp = iconTempObj.GetComponent<ItemTypeTemplate>();
+         iconTemp.itemTypeText.text = sourceClip.audioName;
+
+         iconTemp.previewButton.onClick.AddListener(() => {
+            if (sourceClip.audioClip != null) {
+               audioSource.clip = sourceClip.audioClip;
+               audioSource.Play();
+            }
+         });
+
+         iconTemp.selectButton.onClick.AddListener(() => {
+            textUsed.text = sourceClip.audioPath;
+            clip = sourceClip.audioClip;
+            closePopup();
+         });
+      }
    }
 
    private void closePopup() {

@@ -338,6 +338,72 @@ public class DB_Main : DB_MainStub {
 
    #endregion
 
+   #region Ship Ability XML Data
+
+   public static new void updateShipAbilityXML (string rawData, string shipAbilityName) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "INSERT INTO ship_ability_xml (shipAbilityName, xmlContent) " +
+            "VALUES(@shipAbilityName, @xmlContent) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@shipAbilityName", shipAbilityName);
+            cmd.Parameters.AddWithValue("@xmlContent", rawData);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<string> getShipAbilityXML () {
+      List<string> rawDataList = new List<string>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane.ship_ability_xml", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  rawDataList.Add(dataReader.GetString("xmlContent"));
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return new List<string>(rawDataList);
+   }
+
+   public static new void deleteShipAbilityXML (string shipAbilityName) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM ship_ability_xml WHERE shipAbilityName=@shipAbilityName", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@shipAbilityName", shipAbilityName);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   #endregion
+
    #region Monster XML Data
 
    public static new void updateLandMonsterXML (string rawData, int typeIndex) {

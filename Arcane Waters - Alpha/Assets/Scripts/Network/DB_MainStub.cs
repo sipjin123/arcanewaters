@@ -10,6 +10,16 @@ public class DB_MainStub : MonoBehaviour {
 
    #endregion
 
+   public static void updateShipAbilityXML (string rawData, string shipAbilityName) {
+   }
+
+   public static List<string> getShipAbilityXML () {
+      return new List<string>();
+   }
+
+   public static void deleteShipAbilityXML (string shipAbilityName) {
+   }
+
    public static void updateTutorialXML (string rawData, string name, int order) {
 
    }
