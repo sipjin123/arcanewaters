@@ -71,7 +71,7 @@ public class ClientManager : MonoBehaviour {
 
    public static void sendAccountNameAndUserId () {
       LogInUserMessage msg = new LogInUserMessage(Global.netId,
-         Global.lastUsedAccountName, Global.lastUserAccountPassword, Global.GAME_VERSION, Global.currentlySelectedUserId);
+         Global.lastUsedAccountName, Global.lastUserAccountPassword, Global.clientGameVersion, Global.currentlySelectedUserId);
 
       // Send a message to the Server letting them know which of our Users we want to log in to
       NetworkClient.Send(msg);

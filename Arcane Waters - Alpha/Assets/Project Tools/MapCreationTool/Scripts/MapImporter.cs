@@ -36,10 +36,9 @@ namespace MapCreationTool
 
          ExportedProject001 exportedProject = JsonUtility.FromJson<ExportedProject001>(data.text);
 
-         instantiateTilemaps(exportedProject, result.tilemapParent);
+         instantiateTilemaps(exportedProject, result.tilemapParent, result.collisionTilemapParent);
          instantiatePrefabs(exportedProject, result.prefabParent, result.npcParent);
 
-         Debug.LogWarning("Not setting camera bounds.");
          setCameraBounds(result, exportedProject);
 
          // Destroy the template component
@@ -98,20 +97,29 @@ namespace MapCreationTool
          }
       }
 
-      static void instantiateTilemaps (ExportedProject001 project, Transform parent) {
+      static void instantiateTilemaps (ExportedProject001 project, Transform tilemapParent, Transform collisionTilemapParent) {
          Func<Vector2Int, TileBase> indexToTile = (index) => { return AssetSerializationMaps.getTile(index, project.biome); };
          
          foreach (ExportedLayer001 layer in project.layers) {
             // Create the tilemap gameobject
-            var tilemap = UnityEngine.Object.Instantiate(AssetSerializationMaps.tilemapTemplate, parent);
+            var tilemap = UnityEngine.Object.Instantiate(AssetSerializationMaps.tilemapTemplate, tilemapParent);
             tilemap.transform.localPosition = new Vector3(0, 0, layer.z);
             tilemap.gameObject.name = "Layer " + layer.z;
+
+            var colTilemap = UnityEngine.Object.Instantiate(AssetSerializationMaps.collisionTilemapTemplate, collisionTilemapParent);
+            colTilemap.transform.localPosition = Vector3.zero;
+            colTilemap.gameObject.name = "Layer " + layer.z;
 
             // Add all the tiles
             Vector3Int[] positions = layer.tiles.Select(t => new Vector3Int(t.x, t.y, 0)).ToArray();
             TileBase[] tiles = layer.tiles.Select(t => indexToTile(new Vector2Int(t.i, t.j))).ToArray();
-
             tilemap.SetTiles(positions, tiles);
+
+            positions = layer.tiles.Where(t => t.c == 1).Select(t => new Vector3Int(t.x, t.y, 0)).ToArray();
+            tiles = layer.tiles.Where(t => t.c == 1).Select(t => indexToTile(new Vector2Int(t.i, t.j))).ToArray();
+            colTilemap.SetTiles(positions, tiles);
+
+            colTilemap.GetComponent<TilemapCollider2D>().enabled = true;
          }
       }
 

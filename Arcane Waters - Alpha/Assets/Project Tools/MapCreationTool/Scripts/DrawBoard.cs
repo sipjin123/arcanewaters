@@ -21,6 +21,8 @@ namespace MapCreationTool
       [SerializeField]
       private EditorConfig config = null;
       [SerializeField]
+      private Palette palette = null;
+      [SerializeField]
       private Tilemap layerPref = null;
       [SerializeField]
       private Transform prefabLayer = null;
@@ -367,6 +369,9 @@ namespace MapCreationTool
          if (instance.GetComponent<ZSnap>())
             instance.GetComponent<ZSnap>().roundoutPosition();
 
+         if (instance.GetComponent<MapEditorPrefab>())
+            instance.GetComponent<MapEditorPrefab>().placedInEditor();
+
          return instance;
       }
 
@@ -518,7 +523,7 @@ namespace MapCreationTool
       }
 
       public string formExportData () {
-         return Serializer.serializeExport(layers, placedPrefabs, Tools.biome, Tools.editorType, config);
+         return Serializer.serializeExport(layers, placedPrefabs, Tools.biome, Tools.editorType, config, palette.formCollisionDictionary(), origin, size);
       }
 
       public void ensurePreviewCleared () {

@@ -3811,6 +3811,29 @@ public class DB_Main : DB_MainStub {
       return mailCount;
    }
 
+   public static new int getMinimumClientGameVersion () {
+      int minVersion = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT minClientVersion FROM game_version WHERE id='1'", conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  minVersion = dataReader.GetInt32("minClientVersion");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return minVersion;
+   }
+
    public static new void readTest () {
       try {
          using (MySqlConnection conn = getConnection())

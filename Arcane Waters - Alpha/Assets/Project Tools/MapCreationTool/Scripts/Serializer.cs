@@ -112,21 +112,27 @@ namespace MapCreationTool.Serialization
          }
       }
 
-      public static string serializeExport(
-         Dictionary<string, Layer> layers, 
-         List<PlacedPrefab> prefabs, 
-         BiomeType biome, 
-         EditorType editorType, 
-         EditorConfig config) {
-         return serializeExport001(layers, prefabs, biome, editorType, config);
+      public static string serializeExport (
+         Dictionary<string, Layer> layers,
+         List<PlacedPrefab> prefabs,
+         BiomeType biome,
+         EditorType editorType,
+         EditorConfig config,
+         Dictionary<TileBase, TileCollisionType> collisionDictionary,
+         Vector2Int editorOrigin,
+         Vector2Int editorSize) {
+         return serializeExport001(layers, prefabs, biome, editorType, config, collisionDictionary, editorOrigin, editorSize);
       }
 
-      private static string serializeExport001(
-         Dictionary<string, Layer> layers, 
-         List<PlacedPrefab> prefabs, 
-         BiomeType biome, 
+      private static string serializeExport001 (
+         Dictionary<string, Layer> layers,
+         List<PlacedPrefab> prefabs,
+         BiomeType biome,
          EditorType editorType,
-         EditorConfig config) {
+         EditorConfig config,
+         Dictionary<TileBase, TileCollisionType> collisionDictionary,
+         Vector2Int editorOrigin,
+         Vector2Int editorSize) {
          Func<GameObject, int> prefabToIndex = (go) => { return AssetSerializationMaps.getIndex(go, biome); };
          Func<TileBase, Vector2Int> tileToIndex = (tile) => { return AssetSerializationMaps.getIndex(tile, biome); };
 
@@ -141,43 +147,93 @@ namespace MapCreationTool.Serialization
                  }
              ).ToArray();
 
-         //Make layer serialization object
-         List<ExportedLayer001> layersSerialized = new List<ExportedLayer001>();
-
-               
-         foreach (var layerkv in layers) {
-            if (layerkv.Value.hasTilemap) {
-               if (layerkv.Value.tileCount == 0)
-                  continue;
-               layersSerialized.Add(new ExportedLayer001 {
-                  z = getZ(config.getIndex(layerkv.Key, editorType), 0),
-                  tiles = getExportedTiles(layerkv.Value, tileToIndex)
-               });
-            } else {
-               for (int i = 0; i < layerkv.Value.subLayers.Length; i++) {
-                  if (layerkv.Value.subLayers[i].tileCount == 0)
-                     continue;
-                  layersSerialized.Add(new ExportedLayer001 {
-                     z = getZ(config.getIndex(layerkv.Key, editorType), i),
-                     tiles = getExportedTiles(layerkv.Value.subLayers[i], tileToIndex)
-                  });
-               }
-            }
-         }
-
          ExportedProject001 project = new ExportedProject001 {
             version = "0.0.1",
             biome = biome,
-            layers = layersSerialized.ToArray(),
+            layers = formExportedLayers(layers, tileToIndex, collisionDictionary, config, editorType, editorOrigin, editorSize).ToArray(),
             prefabs = prefabsSerialized,
          };
 
          return JsonUtility.ToJson(project);
       }
 
-      private static ExportedTile001[] getExportedTiles(Layer layer, Func<TileBase, Vector2Int> tileToIndex) {
-         ExportedTile001[] tiles = new ExportedTile001[layer.tileCount];
-         int n = 0;
+      private static List<ExportedLayer001> formExportedLayers (
+         Dictionary<string, Layer> layers,
+         Func<TileBase, Vector2Int> tileToIndex,
+         Dictionary<TileBase, TileCollisionType> collisionDictionary,
+         EditorConfig config,
+         EditorType editorType,
+         Vector2Int editorOrigin,
+         Vector2Int editorSize) {
+         List<ExportedLayer001> result = new List<ExportedLayer001>();
+
+         // Form mid export layers. These are layers with tile matrixes, whose tiles also have the collision setup info attached
+         List<MidExportLayer> midLayers = new List<MidExportLayer>();
+
+         foreach (var layerkv in layers) {
+            if (layerkv.Value.hasTilemap) {
+               if (layerkv.Value.tileCount == 0)
+                  continue;
+
+               midLayers.Add(new MidExportLayer {
+                  z = getZ(config.getIndex(layerkv.Key, editorType), 0),
+                  tileMatrix = getTilesWithCollisions(layerkv.Value, tileToIndex, collisionDictionary, editorOrigin, editorSize)
+               });
+            } else {
+               for (int i = 0; i < layerkv.Value.subLayers.Length; i++) {
+                  if (layerkv.Value.subLayers[i].tileCount == 0)
+                     continue;
+
+                  midLayers.Add(new MidExportLayer {
+                     z = getZ(config.getIndex(layerkv.Key, editorType), i),
+                     tileMatrix = getTilesWithCollisions(layerkv.Value.subLayers[i], tileToIndex, collisionDictionary, editorOrigin, editorSize)
+                  });
+               }
+            }
+         }
+
+         // Set collision flag to tiles inside mid export data structure
+         for(int i = 0; i < editorSize.x; i++) {
+            for(int j = 0; j < editorSize.y; j++) {
+               for(int k = midLayers.Count - 1; k >= 0; k--) {
+                  if (midLayers[k].tileMatrix[i, j] == null)
+                     continue;
+
+                  if (midLayers[k].tileMatrix[i, j].collisionType == TileCollisionType.Enabled) {
+                     midLayers[k].tileMatrix[i, j].tile.c = 1;
+                  } else if(midLayers[k].tileMatrix[i, j].collisionType == TileCollisionType.CancelEnabled) {
+                     midLayers[k].tileMatrix[i, j].tile.c = 1;
+                     break;
+                  }
+               }
+            }
+         }
+
+         // Form final layers
+         foreach(MidExportLayer midLayer in midLayers) {
+            List<ExportedTile001> exportedTiles = new List<ExportedTile001>();
+            for(int i = 0; i < midLayer.tileMatrix.GetLength(0); i++) {
+               for(int j = 0; j < midLayer.tileMatrix.GetLength(1); j++) {
+                  if(midLayer.tileMatrix[i, j] != null)
+                     exportedTiles.Add(midLayer.tileMatrix[i, j].tile);
+               }
+            }
+            result.Add(new ExportedLayer001 { 
+               z = midLayer.z, 
+               tiles = exportedTiles.ToArray() 
+            });
+         }
+
+         return result;
+      }
+
+      private static TileIndexWithCollision[,] getTilesWithCollisions (
+         Layer layer,
+         Func<TileBase, Vector2Int> tileToIndex,
+         Dictionary<TileBase, TileCollisionType> tileToCollision,
+         Vector2Int editorOrigin,
+         Vector2Int editorSize) {
+         TileIndexWithCollision[,] tiles = new TileIndexWithCollision[editorSize.x, editorSize.y];
 
          for (int i = 0; i < layer.size.x; i++) {
             for (int j = 0; j < layer.size.y; j++) {
@@ -185,11 +241,19 @@ namespace MapCreationTool.Serialization
                TileBase tile = layer.getTile(pos);
                if (tile != null) {
                   Vector2Int index = tileToIndex(tile);
-                  tiles[n++] = new ExportedTile001 {
-                     i = index.x,
-                     j = index.y,
-                     x = pos.x,
-                     y = pos.y
+
+                  TileCollisionType col = TileCollisionType.Disabled;
+                  if (tileToCollision.TryGetValue(tile, out TileCollisionType foundCol))
+                     col = foundCol;
+
+                  tiles[pos.x - editorOrigin.x, pos.y - editorOrigin.y] = new TileIndexWithCollision {
+                     tile = new ExportedTile001 {
+                        i = index.x,
+                        j = index.y,
+                        x = pos.x,
+                        y = pos.y
+                     },
+                     collisionType = col
                   };
                }
             }
@@ -198,9 +262,9 @@ namespace MapCreationTool.Serialization
          return tiles;
       }
 
-      static float getZ(int layer, int sublayer) {
-         return 
-            AssetSerializationMaps.layerZFirst + 
+      static float getZ (int layer, int sublayer) {
+         return
+            AssetSerializationMaps.layerZFirst +
             layer * AssetSerializationMaps.layerZMultip +
             sublayer * AssetSerializationMaps.sublayerZMultip;
       }
@@ -354,6 +418,24 @@ namespace MapCreationTool.Serialization
          }
          return tiles.ToArray();
       }
+
+      /// <summary>
+      /// Used in the middle of map export process as a temporary layer
+      /// </summary>
+      private class MidExportLayer
+      {
+         public float z { get; set; }
+         public TileIndexWithCollision[,] tileMatrix { get; set; }
+      }
+
+      /// <summary>
+      /// Used in the middle of map export process
+      /// </summary>
+      private class TileIndexWithCollision
+      {
+         public ExportedTile001 tile { get; set; }
+         public TileCollisionType collisionType { get; set; }
+      }
    }
 
    [Serializable]
@@ -389,6 +471,7 @@ namespace MapCreationTool.Serialization
       public int j; // Tile index y
       public int x; // Tile position x
       public int y; // Tile position y
+      public int c; // Whether the tile should collide
    }
 
    public class DeserializedProject

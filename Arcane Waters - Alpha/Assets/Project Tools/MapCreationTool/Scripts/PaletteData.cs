@@ -26,6 +26,20 @@ namespace MapCreationTool.PaletteTilesData
          return tileGroups[x, y];
       }
 
+      public Dictionary<TileBase, TileCollisionType> formCollisionDictionary() {
+         Dictionary<TileBase, TileCollisionType> result = new Dictionary<TileBase, TileCollisionType>(tileGroups.GetLength(0) * tileGroups.GetLength(1));
+
+         for (int i = 0; i < tileGroups.GetLength(0); i++) {
+            for(int j = 0; j < tileGroups.GetLength(1); j++) {
+               TileData tile = getTile(i, j);
+               if (tile != null && !result.ContainsKey(tile.tile))
+                  result.Add(tile.tile, tile.collision);
+            }
+         }
+
+         return result;
+      }
+
       public Vector2Int indexOf (TileBase tile) {
          for (int i = 0; i < tileGroups.GetLength(0); i++) {
             for (int j = 0; j < tileGroups.GetLength(1); j++) {
@@ -203,12 +217,14 @@ namespace MapCreationTool.PaletteTilesData
       public string layer { get; set; }
       public int subLayer { get; set; }
       public int cluster { get; set; }
+      public TileCollisionType collision { get; set; }
 
       public TileData (BiomedPaletteData.BiomedTileData biomedData, BiomeType biome) {
          tile = biomedData.tile[biome];
          layer = biomedData.layer;
          subLayer = biomedData.subLayer;
          cluster = biomedData.cluster;
+         collision = biomedData.collisionType;
       }
 
       public TileData () {

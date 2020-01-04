@@ -21,12 +21,67 @@ namespace MapCreationTool
       public TileBase pickTile (bool[,] adj, SidesInt sur, int x, int y) {
          Vector2Int tileIndex = new Vector2Int(-1, -1);
 
+         // Bottom row
+         if (sur.bot == 0 && sur.left == 0 && sur.right > 1 && !adj[x - 1, y + 1])
+            tileIndex.Set(0, 0);
+         else if (sur.bot == 0 && sur.left == 1 && sur.right > 1)
+            tileIndex.Set(1, 0);
+         else if (sur.bot == 0 && ((sur.left > 1 && sur.right > 1) || (sur.left == 1 && sur.right == 1)))
+            tileIndex.Set(2, 0);
+         else if (sur.bot == 0 && sur.left > 1 && sur.right == 1)
+            tileIndex.Set(3, 0);
+         else if (sur.bot == 0 && sur.left > 1 && sur.right == 0 && !adj[x + 1, y + 1])
+            tileIndex.Set(4, 0);
 
-
-         // If no tile index was found, add an empty tile
-         if (tileIndex.x == -1) {
-            Debug.LogError("Could not find target tile in river placement tool.");
+         // Second from bottom row
+         else if (sur.bot == 1 && sur.left == 0 && sur.right > 1)
+            tileIndex.Set(0, 1);
+         else if (sur.bot == 1 && sur.left == 1 && sur.right > 1 && adj[x - 1, y - 1])
             tileIndex.Set(1, 1);
+         else if (sur.bot == 1 && adj[x - 1, y - 1] && adj[x + 1, y - 1] &&
+            ((sur.left > 1 && sur.right > 1) || (sur.left == 1 && sur.right == 1)))
+            tileIndex.Set(2, 1);
+         else if (sur.bot == 1 && sur.left > 1 && sur.right == 1 && adj[x + 1, y - 1])
+            tileIndex.Set(3, 1);
+         else if (sur.bot == 1 && sur.left > 1 && sur.right == 0)
+            tileIndex.Set(4, 1);
+
+         // Third from bottom row
+         else if (sur.bot == 2 && sur.left == 0 && sur.right > 1)
+            tileIndex.Set(0, 2);
+         else if (sur.bot == 2 && sur.left == 1 && sur.right > 1 && adj[x - 1, y - 2])
+            tileIndex.Set(1, 2);
+         else if (sur.bot == 2 && adj[x - 1, y - 2] && adj[x + 1, y - 2] &&
+            ((sur.left > 1 && sur.right > 1) || (sur.left == 1 && sur.right == 1)))
+            tileIndex.Set(2, 2);
+         else if (sur.bot == 2 && sur.left > 1 && sur.right == 1 && adj[x + 1, y - 2])
+            tileIndex.Set(3, 2);
+         else if (sur.bot == 2 && sur.left > 1 && sur.right == 0)
+            tileIndex.Set(4, 2);
+
+         // Diagonals
+
+         else if (sur.left == 0 && sur.bot == 0 && sur.right > 1 && adj[x + 1, y + 1])
+            tileIndex.Set(0, 3);
+         else if (sur.left > 0 && sur.bot == 1 && sur.right > 1 && !adj[x - 1, y - 1])
+            tileIndex.Set(1, 3);
+         else if (sur.left > 1 && sur.bot == 1 && sur.right > 0 && !adj[x + 1, y - 1])
+            tileIndex.Set(2, 3);
+         else if (sur.left > 1 && sur.bot == 0 && sur.right == 0 && adj[x - 1, y + 1])
+            tileIndex.Set(3, 3);
+
+         else if (sur.left > 0 && sur.bot == 2 && sur.right > 0 && !adj[x - 1, y - 2])
+            tileIndex.Set(1, 4);
+         else if (sur.left > 0 && sur.bot == 3 && !adj[x - 1, y - 3])
+            tileIndex.Set(1, 5);
+         else if (sur.bot == 3 && sur.right > 0 && !adj[x + 1, y - 3])
+            tileIndex.Set(2, 5);
+         else if (sur.left > 0 && sur.bot == 2 && sur.right > 0 && !adj[x + 1, y - 2])
+            tileIndex.Set(2, 4);
+
+         // If no tile index was found, add a ceiling tile
+         if (tileIndex.x == -1) {
+            tileIndex.Set(1, 7);
          }
          return allTiles[tileIndex.x, tileIndex.y];
       }

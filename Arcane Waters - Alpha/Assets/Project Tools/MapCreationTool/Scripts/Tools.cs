@@ -197,12 +197,12 @@ namespace MapCreationTool
          }
       }
 
-      public static void changeEditorType(EditorType type) {
+      public static void changeEditorType (EditorType type) {
          EditorType oldType = editorType;
          editorType = type;
 
 
-         if(tileGroup != null) {
+         if (tileGroup != null) {
             TileGroup oldGroup = tileGroup;
             tileGroup = null;
 
@@ -215,7 +215,7 @@ namespace MapCreationTool
          Undo.clear();
       }
 
-      public static void changeBoardSize(Vector2Int size) {
+      public static void changeBoardSize (Vector2Int size) {
          Vector2Int oldSize = boardSize;
          boardSize = size;
 

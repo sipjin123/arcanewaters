@@ -565,6 +565,10 @@ public class DB_MainStub : MonoBehaviour {
       return 0;
    }
 
+   public static int getMinimumClientGameVersion () {
+      return 0;
+   }
+
    /*
 
    public static void refillSupplies (int userId) {

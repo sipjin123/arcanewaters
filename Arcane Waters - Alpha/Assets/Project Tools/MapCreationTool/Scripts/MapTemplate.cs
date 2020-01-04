@@ -7,6 +7,7 @@ namespace MapCreationTool
    {
       public Area area;
       public Transform tilemapParent;
+      public Transform collisionTilemapParent;
       public Transform prefabParent;
       public Transform npcParent;
       public PolygonCollider2D camBounds;

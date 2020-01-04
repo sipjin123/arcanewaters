@@ -9,6 +9,7 @@ namespace MapCreationTool
       public event System.Action<string> ValueChanged;
       public Text fieldName { get; private set; }
       public InputField valueInput { get; private set; }
+      public Toggle valueToggle { get; private set; }
       public Dropdown valueDropdown { get; private set; }
 
       private RectTransform rectT;
@@ -17,6 +18,7 @@ namespace MapCreationTool
          fieldName = GetComponentInChildren<Text>();
          valueInput = GetComponentInChildren<InputField>();
          valueDropdown = GetComponentInChildren<Dropdown>();
+         valueToggle = GetComponentInChildren<Toggle>(true);
 
          rectT = GetComponent<RectTransform>();
       }
@@ -26,6 +28,8 @@ namespace MapCreationTool
             valueInput.onValueChanged.AddListener(inputValueChanged);
          if (valueDropdown != null)
             valueDropdown.onValueChanged.AddListener(dropdownValueChanged);
+         if (valueToggle != null)
+            valueToggle.onValueChanged.AddListener(toggleValueChanged);
       }
 
       private void OnDisable () {
@@ -48,6 +52,10 @@ namespace MapCreationTool
             valueInput.contentType = InputField.ContentType.Standard;
             valueInput.placeholder.GetComponent<Text>().text = "Enter text...";
             rectT.sizeDelta = new Vector2(450, rectT.sizeDelta.y);
+         } else if (type == DataFieldType.Bool) {
+            valueInput.gameObject.SetActive(false);
+            valueToggle.gameObject.SetActive(true);
+            rectT.sizeDelta = new Vector2(180, rectT.sizeDelta.y);
          }
       }
 
@@ -57,8 +65,11 @@ namespace MapCreationTool
       }
 
       public void setValue (string value) {
-         if (valueInput != null) {
+         if (valueInput != null && valueInput.gameObject.activeSelf) {
             valueInput.SetTextWithoutNotify(value);
+         }
+         if (valueToggle != null && valueToggle.gameObject.activeSelf) {
+            valueToggle.SetIsOnWithoutNotify(bool.Parse(value));
          }
          if (valueDropdown != null) {
             int index = -1;
@@ -75,6 +86,10 @@ namespace MapCreationTool
 
       private void dropdownValueChanged (int value) {
          ValueChanged?.Invoke(valueDropdown.options[value].text);
+      }
+
+      private void toggleValueChanged(bool value) {
+         ValueChanged?.Invoke(value.ToString());
       }
    }
 }

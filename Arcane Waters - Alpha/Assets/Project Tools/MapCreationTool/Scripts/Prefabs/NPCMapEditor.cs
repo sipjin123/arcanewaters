@@ -36,17 +36,7 @@ namespace MapCreationTool
       }
 
       public void setHighlight (bool hovered, bool selected) {
-         if (!hovered && !selected) {
-            outline.setVisibility(false);
-         } else if (hovered) {
-            outline.setVisibility(true);
-            outline.setNewColor(Color.white);
-            outline.Regenerate();
-         } else if (selected) {
-            outline.setVisibility(true);
-            outline.setNewColor(Color.green);
-            outline.Regenerate();
-         }
+         setOutlineHighlight(outline, hovered, selected);
       }
    }
 

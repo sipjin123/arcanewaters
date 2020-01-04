@@ -18,6 +18,7 @@ namespace MapCreationTool
       public float layerZStart = 1f;
       public MapTemplate _mapTemplate;
       public Tilemap _tilemapTemplate;
+      public Tilemap _collisionTilemapTemplate;
 
       private void OnValidate () {
          loadLocal();
@@ -33,6 +34,7 @@ namespace MapCreationTool
             layerZFirst = layerZStart;
             tilemapTemplate = _tilemapTemplate;
             mapTemplate = _mapTemplate;
+            collisionTilemapTemplate = _collisionTilemapTemplate;
 
             foreach (BiomeMapsDefinition definition in mapsDefinitions) {
                BiomeMaps bm = new BiomeMaps();
@@ -143,6 +145,7 @@ namespace MapCreationTool
       public static bool loaded { get; private set; }
       public static MapTemplate mapTemplate { get; private set; }
       public static Tilemap tilemapTemplate { get; private set; }
+      public static Tilemap collisionTilemapTemplate { get; private set; }
 
       public class BiomeMaps
       {

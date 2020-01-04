@@ -24,7 +24,8 @@ public class ZSnap : MonoBehaviour {
       }
 
       if (sortPoint != null) {
-         offsetZ = sortPoint.transform.localPosition.y;
+         // Set the offset, factoring in the scale of the gameobject
+         offsetZ = sortPoint.transform.localPosition.y * transform.localScale.y;
       }
 
       // Avoid positions that are between pixel values

@@ -778,6 +778,37 @@ public class Util : MonoBehaviour {
       return fileNamesArray;
    }
 
+   public static int getGameVersion () {
+      int gameVersion;
+
+      // Load the cloud build manifest json file
+      TextAsset manifestJSON = (TextAsset) Resources.Load("UnityCloudBuildManifest.json");
+      
+      if (manifestJSON != null) {
+         // Deserialize the manifest
+         CloudBuildManifest manifest = JsonUtility.FromJson<CloudBuildManifest>(manifestJSON.text);
+
+         // Get the game version number from the manifest
+         try {
+            gameVersion = int.Parse(manifest.buildNumber);
+         } catch (Exception e) {
+            D.error("Could not parse the build number. Exception: " + e);
+            gameVersion = 0;
+         }
+      } else {
+         // If the manifest does not exist, set the game version to a high value to allow the connection to the server
+         gameVersion = int.MaxValue;
+
+         // If this is a cloud build, then the manifest cannot be missing
+#if CLOUD_BUILD
+         D.error("Could not find the cloud build manifest.");
+         gameVersion = 0;
+#endif
+      }
+
+      return gameVersion;
+   }
+
    // A Random instance we can use for generating random numbers
    private static System.Random r = new System.Random();
 }

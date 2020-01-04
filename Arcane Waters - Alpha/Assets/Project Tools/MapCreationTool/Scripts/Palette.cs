@@ -74,6 +74,10 @@ namespace MapCreationTool
             pointerScroll(Input.mouseScrollDelta.y);
       }
 
+      public Dictionary<TileBase, TileCollisionType> formCollisionDictionary () {
+         return paletteData.formCollisionDictionary();
+      }
+
       public void populatePalette (PaletteData data) {
          paletteData = data;
          Tools.changeTileGroup(null, registerUndo: false);

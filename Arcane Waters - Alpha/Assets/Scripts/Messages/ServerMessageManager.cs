@@ -14,7 +14,7 @@ public class ServerMessageManager : MonoBehaviour {
       int selectedUserId = logInUserMessage.selectedUserId;
 
       // Make sure they have the required game version
-      if (logInUserMessage.clientGameVersion < Global.GAME_VERSION) {
+      if (logInUserMessage.clientGameVersion < GameVersionManager.self.minClientGameVersion) {
          string msg = string.Format("Refusing login for {0}, client version {1}", logInUserMessage.accountName, logInUserMessage.clientGameVersion);
          D.debug(msg);
          sendError(ErrorMessage.Type.ClientOutdated, conn.connectionId);
@@ -48,6 +48,7 @@ public class ServerMessageManager : MonoBehaviour {
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+
             // If there was a valid account ID and a specified user ID, tell the client we authenticated them
             if (accountId > 0 && logInUserMessage.selectedUserId > 0 && users.Count == 1) {
                // Keep track of the user ID that's been authenticated for this connection

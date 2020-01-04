@@ -61,7 +61,8 @@ namespace MapCreationTool
    {
       Int,
       Float,
-      String
+      String,
+      Bool
    }
 
    public enum CustomFieldType
