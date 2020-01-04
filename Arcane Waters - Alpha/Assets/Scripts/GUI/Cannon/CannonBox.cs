@@ -10,6 +10,12 @@ public class CannonBox : ClientMonoBehaviour {
    // The attack type that this box selects
    public Attack.Type attackType;
 
+   // Skill Icon
+   public Image skillIcon;
+
+   // Skill highlight
+   public GameObject highlightSkill;
+
    #endregion
 
    private void Start () {
@@ -26,8 +32,7 @@ public class CannonBox : ClientMonoBehaviour {
       }*/
 
       // Maybe swap out the image
-      int spriteIndex = (this.attackType == SeaManager.selectedAttackType) ? 1 : 0;
-      _containerImage.sprite = ImageManager.getSprites(_containerImage.sprite.texture)[spriteIndex];
+      highlightSkill.SetActive(this.attackType == SeaManager.selectedAttackType);
    }
 
    public void setCannons () {

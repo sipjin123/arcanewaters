@@ -54,4 +54,7 @@ public class ShipData
    public string spritePath;
    public string rippleSpritePath;
    public string avatarIconPath;
+
+   // List of ship ability names
+   public List<string> shipAbilities = new List<string>();
 }

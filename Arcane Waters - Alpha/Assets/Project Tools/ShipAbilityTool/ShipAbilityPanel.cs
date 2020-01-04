@@ -55,11 +55,8 @@ public class ShipAbilityPanel : MonoBehaviour {
       _shipCastType.maxValue = Enum.GetValues(typeof(ShipAbilityData.ShipCastType)).Length - 1;
       _shipCastCollisionType.maxValue = Enum.GetValues(typeof(ShipAbilityData.ShipCastCollisionType)).Length - 1;
       _shipAbilityEffect.maxValue = Enum.GetValues(typeof(ShipAbilityData.ShipAbilityEffect)).Length - 1;
-
-      _shipType.onClick.AddListener(() => {
-         selectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.ShipType, _shipTypeText);
-      });
-
+      _shipAbilityAttackType.maxValue = Enum.GetValues(typeof(Attack.Type)).Length - 1;
+   
       _shipCastType.onValueChanged.AddListener(_ => {
          _shipCastText.text = ((ShipAbilityData.ShipCastType) _).ToString();
       });
@@ -72,17 +69,21 @@ public class ShipAbilityPanel : MonoBehaviour {
          _shipAbilityEffectText.text = ((ShipAbilityData.ShipAbilityEffect) _).ToString();
       });
 
+      _shipAbilityAttackType.onValueChanged.AddListener(_ => {
+         _shipAbilityAttackTypeText.text = ((Attack.Type) _).ToString();
+      });
+
       _abilityPathButton.onClick.AddListener(() => {
          selectionPopup.callImageTextSelectionPopup(GenericSelectionPopup.selectionType.ShipAbilityIcon, _abilityPathIcon, _abilityPath);
       });
       _projectilePathButton.onClick.AddListener(() => {
-         selectionPopup.callImageTextSelectionPopup(GenericSelectionPopup.selectionType.ShipAbilityIcon, _projectilePathIcon, _projectilePath);
+         selectionPopup.callImageTextSelectionPopup(GenericSelectionPopup.selectionType.CannonSprites, _projectilePathIcon, _projectilePath);
       });
       _skillHitButton.onClick.AddListener(() => {
-         selectionPopup.callImageTextSelectionPopup(GenericSelectionPopup.selectionType.ShipAbilityIcon, _skillHitIcon, _skillHitText);
+         selectionPopup.callImageTextSelectionPopup(GenericSelectionPopup.selectionType.ShipAbilityEffect, _skillHitIcon, _skillHitText);
       });
       _skillCastButton.onClick.AddListener(() => {
-         selectionPopup.callImageTextSelectionPopup(GenericSelectionPopup.selectionType.ShipAbilityIcon, _skillCastIcon, _skillCastText);
+         selectionPopup.callImageTextSelectionPopup(GenericSelectionPopup.selectionType.ShipAbilityEffect, _skillCastIcon, _skillCastText);
       });
 
       _hitAudioButton.onClick.AddListener(() => {
@@ -139,11 +140,12 @@ public class ShipAbilityPanel : MonoBehaviour {
       _shipVariety.text = shipAbilityData.shipTypeVariety.ToString();
 
       // Loads all slider data
-      _shipTypeText.text = shipAbilityData.shipType.ToString();
       _shipCastText.text = shipAbilityData.shipCastType.ToString();
       _shipCastCollisionText.text = shipAbilityData.shipCastCollisionType.ToString();
       _shipAbilityEffectText.text = shipAbilityData.shipAbilityEffect.ToString();
+      _shipAbilityAttackTypeText.text = shipAbilityData.selectedAttackType.ToString();
 
+      _shipAbilityAttackType.value  = (int) shipAbilityData.selectedAttackType;
       _shipCastType.value = (int) shipAbilityData.shipCastType;
       _shipCastCollisionType.value = (int) shipAbilityData.shipCastCollisionType;
       _shipAbilityEffect.value = (int) shipAbilityData.shipAbilityEffect;
@@ -164,10 +166,10 @@ public class ShipAbilityPanel : MonoBehaviour {
       abilityData.abilityName = _abilityName.text;
       abilityData.abilityDescription = _abilityDescription.text;
 
-      abilityData.shipType = (Ship.Type) Enum.Parse(typeof(Ship.Type), _shipTypeText.text);
       abilityData.shipCastType = (ShipAbilityData.ShipCastType) Enum.Parse(typeof(ShipAbilityData.ShipCastType), _shipCastText.text);
       abilityData.shipCastCollisionType = (ShipAbilityData.ShipCastCollisionType) Enum.Parse(typeof(ShipAbilityData.ShipCastCollisionType), _shipCastCollisionText.text);
       abilityData.shipAbilityEffect = (ShipAbilityData.ShipAbilityEffect) Enum.Parse(typeof(ShipAbilityData.ShipAbilityEffect), _shipAbilityEffectText.text);
+      abilityData.selectedAttackType = (Attack.Type) Enum.Parse(typeof(Attack.Type), _shipAbilityAttackTypeText.text);
 
       abilityData.shipTypeVariety = int.Parse(_shipVariety.text);
       abilityData.levelRequirement = int.Parse(_levelRequirement.text);
@@ -194,11 +196,6 @@ public class ShipAbilityPanel : MonoBehaviour {
    private InputField _abilityName, _abilityDescription;
 
    [SerializeField]
-   private Button _shipType;
-   [SerializeField]
-   private Text _shipTypeText;
-
-   [SerializeField]
    private Slider _shipCastType;
    [SerializeField]
    private Text _shipCastText;
@@ -207,6 +204,11 @@ public class ShipAbilityPanel : MonoBehaviour {
    private Slider _shipAbilityEffect;
    [SerializeField]
    private Text _shipAbilityEffectText;
+
+   [SerializeField]
+   private Slider _shipAbilityAttackType;
+   [SerializeField]
+   private Text _shipAbilityAttackTypeText;
 
    [SerializeField]
    private Slider _shipCastCollisionType;

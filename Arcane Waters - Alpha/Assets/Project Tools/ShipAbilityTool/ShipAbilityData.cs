@@ -3,17 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System;
 
+[Serializable]
 public class ShipAbilityData
 {
    // The name of the ability
    public string abilityName;
 
+   // Sea Entity Attack Type
+   public Attack.Type selectedAttackType;
+
    // The info of the ability
    public string abilityDescription;
-
-   // Type of ship
-   public Ship.Type shipType;
 
    // If there are varieties of the ship type
    public int shipTypeVariety;
@@ -25,7 +27,7 @@ public class ShipAbilityData
    public int damage;
 
    // FX per frame of the ability effect
-   public float abilitySpriteFXPerFrame;
+   public float abilitySpriteFXPerFrame = 0.06f;
 
    // Ability Cooldown
    public float coolDown;

@@ -31,6 +31,12 @@ public class CannonBall : MonoBehaviour {
    // Our cannon ball sprite
    public GameObject cannonBall;
 
+   // Projectile Sprite
+   public SpriteRenderer staticSprite;
+
+   // Animated sprite
+   public SpriteRenderer animatedSprite;
+
    #endregion
 
    void Update () {

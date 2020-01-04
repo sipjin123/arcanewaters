@@ -48,7 +48,6 @@ public class ShipAbilityToolManager : MonoBehaviour {
    }
 
    public void duplicateXMLData (ShipAbilityData data) {
-      data.shipType = 0;
       data.abilityName = "Undefined Faction";
       data.projectileSpritePath = "";
       XmlSerializer ser = new XmlSerializer(data.GetType());

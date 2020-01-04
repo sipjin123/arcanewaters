@@ -144,7 +144,7 @@ public class ShipEntity : SeaEntity {
 
       // Calculate shot parameters
       float distanceModifier = getDamageModifierForDistance(normalizedDistance);
-      float projectileFlightDuration = normalizedDistance * 1f;
+      float projectileFlightDuration = (normalizedDistance * 1f) * ShipAbilityManager.self.getAbility(attackType).projectileSpeed;
 
       // Fire the cannon ball and display an attack circle in all the clients
       Rpc_CreateCannonBall(spawnPosition, spot, Util.netTime(), Util.netTime() + projectileFlightDuration,
@@ -187,6 +187,18 @@ public class ShipEntity : SeaEntity {
       ball.endPos = endPos;
       ball.startTime = startTime;
       ball.endTime = endTime;
+
+      string projectilePath = ShipAbilityManager.self.getAbility(attackType).projectileSpritePath;
+      if (projectilePath != "") {
+         Sprite[] spriteArray = ImageManager.getSprites(projectilePath);
+         if (spriteArray.Length == 1) {
+            ball.staticSprite.gameObject.SetActive(true);
+            ball.staticSprite.sprite = spriteArray[0];
+         } else {
+            ball.animatedSprite.gameObject.SetActive(true);
+            ball.animatedSprite.sprite = spriteArray[0];
+         }
+      }
 
       // Play an appropriate sound
       playAttackSound();

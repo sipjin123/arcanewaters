@@ -136,6 +136,7 @@ public class MyNetworkManager : NetworkManager {
       EquipmentXMLManager.self.initializeDataCache();
       SeaMonsterManager.self.initializeSeaMonsterCache();
       MonsterManager.self.initializeLandMonsterDataCache();
+      ShipAbilityManager.self.initializDataCache();
 
       // Schedule the leader boards recalculation
       LeaderBoardsManager.self.scheduleLeaderBoardRecalculation();

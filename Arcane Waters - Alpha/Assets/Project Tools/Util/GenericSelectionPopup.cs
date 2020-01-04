@@ -46,6 +46,8 @@ public class GenericSelectionPopup : MonoBehaviour {
    public Dictionary<string, Sprite> playerJobSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> tutorialSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> shipAbilitySpriteList = new Dictionary<string, Sprite>();
+   public Dictionary<string, Sprite> shipAbilityEffectSpriteList = new Dictionary<string, Sprite>();
+   public Dictionary<string, Sprite> cannonSpriteList = new Dictionary<string, Sprite>();
 
    public enum selectionType
    {
@@ -83,6 +85,8 @@ public class GenericSelectionPopup : MonoBehaviour {
       TutorialIcon = 31,
       RequirementType = 32,
       ShipAbilityIcon = 33,
+      ShipAbilityEffect = 34,
+      CannonSprites = 35
    }
 
    #endregion
@@ -139,6 +143,12 @@ public class GenericSelectionPopup : MonoBehaviour {
 
       string shipAbilityPath = "Assets/Sprites/Icons/";
       setupSpriteContent(shipAbilitySpriteList, shipAbilityPath);
+
+      string shipAbilityEffectPath = "Assets/Sprites/Effects/";
+      setupSpriteContent(shipAbilityEffectSpriteList, shipAbilityEffectPath);
+
+      string cannonSpritePath = "Assets/Sprites/Cannon/";
+      setupSpriteContent(cannonSpriteList, cannonSpritePath); 
    }
 
    private void setupSpriteContent (Dictionary<string, Sprite> spriteCollection, string spritePath) {
@@ -234,6 +244,18 @@ public class GenericSelectionPopup : MonoBehaviour {
          }
       } else if (popupType == selectionType.ShipAbilityIcon) {
          foreach (KeyValuePair<string, Sprite> sourceSprite in shipAbilitySpriteList) {
+            string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
+            Sprite icon = ImageManager.getSprite(sourceSprite.Key);
+            createImageTemplate(sourceSprite.Key, shortName, icon, imageIcon, textUI);
+         }
+      } else if (popupType == selectionType.ShipAbilityEffect) {
+         foreach (KeyValuePair<string, Sprite> sourceSprite in shipAbilityEffectSpriteList) {
+            string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
+            Sprite icon = ImageManager.getSprite(sourceSprite.Key);
+            createImageTemplate(sourceSprite.Key, shortName, icon, imageIcon, textUI);
+         }
+      } else if (popupType == selectionType.CannonSprites) {
+         foreach (KeyValuePair<string, Sprite> sourceSprite in cannonSpriteList) {
             string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
             Sprite icon = ImageManager.getSprite(sourceSprite.Key);
             createImageTemplate(sourceSprite.Key, shortName, icon, imageIcon, textUI);

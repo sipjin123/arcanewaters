@@ -153,6 +153,9 @@ public class PrefabsManager : MonoBehaviour {
    }
 
    public CannonBall getCannonBallPrefab (Attack.Type attackType) {
+      return cannonBallPrefab;
+
+      // TODO: Temporary disable cannon ball variety
       switch (attackType) {
          case Attack.Type.Ice:
             return cannonBallIcePrefab;

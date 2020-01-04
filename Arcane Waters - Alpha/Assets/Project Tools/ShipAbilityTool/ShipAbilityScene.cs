@@ -43,7 +43,6 @@ public class ShipAbilityScene : MonoBehaviour {
       ShipAbilityData shipAbilityData = new ShipAbilityData();
 
       shipAbilityData.abilityName = "Undefined";
-      shipAbilityData.shipType = Ship.Type.Barge;
 
       ShipAbilityTemplate template = Instantiate(itemTemplatePrefab, itemTemplateParent.transform);
       template.editButton.onClick.AddListener(() => {

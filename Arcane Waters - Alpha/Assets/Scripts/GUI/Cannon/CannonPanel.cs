@@ -10,6 +10,12 @@ public class CannonPanel : ClientMonoBehaviour {
    // Self
    public static CannonPanel self;
 
+   // Prefab for UI selection
+   public CannonBox cannonBoxPrefab;
+
+   // Template holder
+   public Transform cannonBoxParent;
+
    #endregion
 
    protected override void Awake () {
@@ -22,6 +28,24 @@ public class CannonPanel : ClientMonoBehaviour {
       // Look up components
       _canvasGroup = GetComponent<CanvasGroup>();
       _boxes = GetComponentsInChildren<CannonBox>();
+   }
+
+   public void setForThisType (Ship.Type shipType) {
+      ShipData currShipData = ShipDataManager.self.getShipData(shipType);
+
+      // TODO: Temporarily add ship abilities to all ships, must add this feature in ship editor tool
+      foreach (ShipAbilityData shipData in ShipAbilityManager.self.shipAbilityDataList) {
+         currShipData.shipAbilities.Add(shipData.abilityName);
+      }
+
+      cannonBoxParent.gameObject.DestroyChildren();
+      foreach (string abilityName in currShipData.shipAbilities) {
+         CannonBox abilityTab = Instantiate(cannonBoxPrefab.gameObject, cannonBoxParent).GetComponent<CannonBox>();
+         ShipAbilityData shipAbility = ShipAbilityManager.self.getAbility(abilityName);
+
+         abilityTab.attackType = shipAbility.selectedAttackType;
+         abilityTab.skillIcon.sprite = ImageManager.getSprite(shipAbility.skillIconPath);
+      }
    }
 
    private void Update () {

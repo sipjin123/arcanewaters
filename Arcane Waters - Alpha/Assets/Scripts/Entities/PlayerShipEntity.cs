@@ -30,6 +30,8 @@ public class PlayerShipEntity : ShipEntity {
          _movementAudioSource = SoundManager.createLoopedAudio(SoundManager.Type.Ship_Movement, this.transform);
          _movementAudioSource.gameObject.AddComponent<MatchCameraZ>();
          _movementAudioSource.volume = 0f;
+
+         CannonPanel.self.setForThisType(this.shipType);
       }
    }
 
