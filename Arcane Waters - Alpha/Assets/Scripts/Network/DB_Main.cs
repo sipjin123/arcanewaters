@@ -2174,7 +2174,7 @@ public class DB_Main : DB_MainStub {
          ser.Serialize(writer, shipInfo.shipAbilities);
       }
 
-      string longString = sb.ToString();
+      string serializedShipAbilities = sb.ToString();
 
       try {
          using (MySqlConnection conn = getConnection())
@@ -2203,7 +2203,7 @@ public class DB_Main : DB_MainStub {
             cmd.Parameters.AddWithValue("@speed", shipInfo.speed);
             cmd.Parameters.AddWithValue("@sailors", shipInfo.sailors);
             cmd.Parameters.AddWithValue("@rarity", (int) shipInfo.rarity);
-            cmd.Parameters.AddWithValue("@shipAbilities", longString);
+            cmd.Parameters.AddWithValue("@shipAbilities", serializedShipAbilities);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -2225,7 +2225,7 @@ public class DB_Main : DB_MainStub {
          ser.Serialize(writer, shipyardInfo.shipAbilities);
       }
 
-      string longString = sb.ToString();
+      string serializedShipAbilities = sb.ToString();
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
@@ -2254,7 +2254,7 @@ public class DB_Main : DB_MainStub {
             cmd.Parameters.AddWithValue("@sailors", shipyardInfo.sailors);
             cmd.Parameters.AddWithValue("@speed", shipyardInfo.speed);
             cmd.Parameters.AddWithValue("@rarity", (int) shipyardInfo.rarity);
-            cmd.Parameters.AddWithValue("@shipAbilities", longString); 
+            cmd.Parameters.AddWithValue("@shipAbilities", serializedShipAbilities); 
 
             // Execute the command
             cmd.ExecuteNonQuery();

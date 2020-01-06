@@ -87,7 +87,7 @@ public class ArmorManager : EquipmentManager {
    [Server]
    public void updateArmorSyncVars (Armor newArmor) {
       if (newArmor == null) {
-         D.log("Armor is null");
+         D.debug("Armor is null");
          return;
       }
 

@@ -80,7 +80,7 @@ public class WeaponManager : EquipmentManager {
    [Server]
    public void updateWeaponSyncVars (Weapon weapon) {
       if (weapon == null) {
-         D.log("Weapon is null");
+         D.debug("Weapon is null");
          return;
       }
 

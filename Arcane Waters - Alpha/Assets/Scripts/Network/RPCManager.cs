@@ -566,6 +566,22 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
+   public void Cmd_RequestShipAbilities (int shipID) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         ShipInfo shipInfo = DB_Main.getShipInfo(shipID);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            ShipAbilityInfo shipAbility = Util.xmlLoad<ShipAbilityInfo>(shipInfo.shipAbilityXML);
+            Target_SetShipAbilities(_player.connectionToClient, shipAbility.ShipAbilities);
+         });
+      });
+   }
+
+   [TargetRpc]
+   public void Target_SetShipAbilities (NetworkConnection connection, string[] rawAbilityData) {
+      CannonPanel.self.setAbilityTab(rawAbilityData);
+   }
+
+   [Command]
    public void Cmd_RequestCharacterInfoFromServer (int userId) {
       if (userId == 0) {
          userId = _player.userId;

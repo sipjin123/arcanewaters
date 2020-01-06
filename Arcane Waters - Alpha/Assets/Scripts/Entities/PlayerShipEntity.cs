@@ -28,11 +28,14 @@ public class PlayerShipEntity : ShipEntity {
    protected override void Start () {
       base.Start();
 
-      // Create a ship movement sound for our own ship
       if (isLocalPlayer) {
+         // Create a ship movement sound for our own ship
          _movementAudioSource = SoundManager.createLoopedAudio(SoundManager.Type.Ship_Movement, this.transform);
          _movementAudioSource.gameObject.AddComponent<MatchCameraZ>();
          _movementAudioSource.volume = 0f;
+
+         // Notify UI panel to display the current skills this ship has
+         rpc.Cmd_RequestShipAbilities(shipId);
       }
    }
 
@@ -132,13 +135,6 @@ public class PlayerShipEntity : ShipEntity {
       this.rarity = shipInfo.rarity;
 
       this.shipAbilities = shipInfo.shipAbilities;
-
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            ShipAbilityInfo shipAbility = Util.xmlLoad<ShipAbilityInfo>(shipInfo.shipAbilityXML);
-            CannonPanel.self.setAbilityTab(shipAbility.ShipAbilities);
-         });
-      });
    }
 
    protected void adjustMovementAudio() {

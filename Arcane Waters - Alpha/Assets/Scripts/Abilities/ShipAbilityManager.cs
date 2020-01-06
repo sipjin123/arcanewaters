@@ -73,11 +73,14 @@ public class ShipAbilityManager : MonoBehaviour {
       }
 
       List<string> randomAbilityList = new List<string>();
-      while (randomAbilityList.Count < abilityCount) {
-         int randomAbility = Random.Range(0, totalAbilityList.Count-1);
-         string newAbility = totalAbilityList[randomAbility];
-         randomAbilityList.Add(newAbility);
-         totalAbilityList.RemoveAt(randomAbility);
+      if (totalAbilityList.Count > 0) {
+         while (randomAbilityList.Count < abilityCount) {
+            string newAbility = totalAbilityList.ChooseRandom();
+            randomAbilityList.Add(newAbility);
+            totalAbilityList.Remove(totalAbilityList.Find(_=>_ == newAbility));
+         }
+      } else {
+         D.debug("No abilities available");
       }
 
       return randomAbilityList;

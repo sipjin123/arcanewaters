@@ -125,7 +125,7 @@ public class ShipDataPanel : MonoBehaviour {
       newShipData.baseCargoRoom = int.Parse(_baseCargoRoom.text);
       newShipData.baseSupplyRoom = int.Parse(_baseSupplyRoom.text);
       newShipData.basePrice = int.Parse(_basePrice.text);
-      newShipData.skillIsRandom = _randomSkill.isOn;
+      newShipData.isSkillRandom = _randomSkill.isOn;
 
       try {
          newShipData.skinType = (Ship.SkinType) Enum.Parse(typeof(Ship.SkinType), _skinTypeText.text);
@@ -174,7 +174,7 @@ public class ShipDataPanel : MonoBehaviour {
       _avatarIcon.sprite = selectionPopup.emptySprite;
       _spriteIcon.sprite = selectionPopup.emptySprite;
       _rippleSpriteIcon.sprite = selectionPopup.emptySprite;
-      _randomSkill.isOn = loadedShipData.skillIsRandom;
+      _randomSkill.isOn = loadedShipData.isSkillRandom;
 
       if (loadedShipData.avatarIconPath != null && loadedShipData.avatarIconPath != "") {
          Sprite shipSprite = ImageManager.getSpritesInDirectory(loadedShipData.avatarIconPath)[0].sprites[3];
