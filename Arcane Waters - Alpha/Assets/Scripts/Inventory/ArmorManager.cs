@@ -86,6 +86,11 @@ public class ArmorManager : EquipmentManager {
 
    [Server]
    public void updateArmorSyncVars (Armor newArmor) {
+      if (newArmor == null) {
+         D.log("Armor is null");
+         return;
+      }
+
       if (newArmor.itemTypeId == 0) {
          // No armor to equip
          return;

@@ -79,6 +79,11 @@ public class WeaponManager : EquipmentManager {
 
    [Server]
    public void updateWeaponSyncVars (Weapon weapon) {
+      if (weapon == null) {
+         D.log("Weapon is null");
+         return;
+      }
+
       _weapon = weapon;
 
       // Assign the weapon ID

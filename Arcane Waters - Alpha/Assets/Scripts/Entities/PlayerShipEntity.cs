@@ -20,6 +20,9 @@ public class PlayerShipEntity : ShipEntity {
    // The coordinates of the next shot
    public Vector2 nextShotTarget = new Vector2(0, 0);
 
+   // Ability Reference
+   public ShipAbilityInfo shipAbilities = new ShipAbilityInfo();
+
    #endregion
 
    protected override void Start () {
@@ -30,8 +33,6 @@ public class PlayerShipEntity : ShipEntity {
          _movementAudioSource = SoundManager.createLoopedAudio(SoundManager.Type.Ship_Movement, this.transform);
          _movementAudioSource.gameObject.AddComponent<MatchCameraZ>();
          _movementAudioSource.volume = 0f;
-
-         CannonPanel.self.setForThisType(this.shipType);
       }
    }
 
@@ -129,6 +130,15 @@ public class PlayerShipEntity : ShipEntity {
       this.speed = shipInfo.speed;
       this.sailors = shipInfo.sailors;
       this.rarity = shipInfo.rarity;
+
+      this.shipAbilities = shipInfo.shipAbilities;
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            ShipAbilityInfo shipAbility = Util.xmlLoad<ShipAbilityInfo>(shipInfo.shipAbilityXML);
+            CannonPanel.self.setAbilityTab(shipAbility.ShipAbilities);
+         });
+      });
    }
 
    protected void adjustMovementAudio() {

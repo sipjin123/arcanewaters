@@ -120,18 +120,20 @@ public class GrampsManager : ClientMonoBehaviour {
       List<string> msgList = new List<string>();
       TutorialData fetchData = TutorialManager.self.fetchTutorialData(currentStep);
 
-      foreach (string dialogue in fetchData.msgList) {
-         msgList.Add(dialogue);
-      }
-
-      // Only add messages that we haven't already shown
-      foreach (string msg in msgList) {
-         if (!_textsShown.Contains(msg) && !_listOfThingsToSay.Contains(msg)) {
-            _listOfThingsToSay.Add(msg);
+      if (fetchData != null) {
+         foreach (string dialogue in fetchData.msgList) {
+            msgList.Add(dialogue);
          }
-      }
 
-      startSayingStuffFromList();
+         // Only add messages that we haven't already shown
+         foreach (string msg in msgList) {
+            if (!_textsShown.Contains(msg) && !_listOfThingsToSay.Contains(msg)) {
+               _listOfThingsToSay.Add(msg);
+            }
+         }
+
+         startSayingStuffFromList();
+      }
    }
 
    protected void finishTypingText () {

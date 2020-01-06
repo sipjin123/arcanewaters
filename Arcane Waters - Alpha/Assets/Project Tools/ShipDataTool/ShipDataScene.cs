@@ -29,6 +29,7 @@ public class ShipDataScene : MonoBehaviour {
    #endregion
 
    private void Awake () {
+      shipDataPanel.gameObject.SetActive(false);
       createButton.onClick.AddListener(() => {
          createTemplate();
       });

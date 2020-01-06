@@ -45,12 +45,42 @@ public class ShipAbilityManager : MonoBehaviour {
       }
    }
 
+   public void receiveDataFromServer (ShipAbilityData[] dataCollection) {
+      if (!hasInitialized) {
+         shipAbilityDataList = new List<ShipAbilityData>();
+         foreach (ShipAbilityData data in dataCollection) {
+            if (!_shipAbilityData.ContainsKey(data.abilityName)) {
+               _shipAbilityData.Add(data.abilityName, data);
+               this.shipAbilityDataList.Add(data);
+            }
+         }
+         hasInitialized = true;
+      }
+   }
+
    public ShipAbilityData getAbility (string name) {
       return _shipAbilityData[name];
    }
 
    public ShipAbilityData getAbility (Attack.Type attackType) {
       return shipAbilityDataList.Find(_ => _.selectedAttackType == attackType);
+   }
+
+   public static List<string> getRandomAbilities (int abilityCount) {
+      List<string> totalAbilityList = new List<string>();
+      foreach (ShipAbilityData ability in self.shipAbilityDataList) {
+         totalAbilityList.Add(ability.abilityName);
+      }
+
+      List<string> randomAbilityList = new List<string>();
+      while (randomAbilityList.Count < abilityCount) {
+         int randomAbility = Random.Range(0, totalAbilityList.Count-1);
+         string newAbility = totalAbilityList[randomAbility];
+         randomAbilityList.Add(newAbility);
+         totalAbilityList.RemoveAt(randomAbility);
+      }
+
+      return randomAbilityList;
    }
 
    #region Private Variables

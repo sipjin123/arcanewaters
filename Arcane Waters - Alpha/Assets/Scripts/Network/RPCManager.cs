@@ -54,6 +54,15 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
+   public void Target_ReceiveAllShipAbilityInfo (NetworkConnection connection, string[] rawShipAbilityInfo) {
+      // Deserialize data
+      ShipAbilityData[] shipDataList = Util.unserialize<ShipAbilityData>(rawShipAbilityInfo).ToArray();
+
+      // Cache to ship data manager 
+      ShipAbilityManager.self.receiveDataFromServer(shipDataList);
+   }
+
+   [TargetRpc]
    public void Target_ReceiveAllSeaMonsterInfo (NetworkConnection connection, string[] rawInfo) {
       // Deserialize data
       SeaMonsterEntityData[] seaMonsterList = Util.unserialize<SeaMonsterEntityData>(rawInfo).ToArray();
@@ -194,7 +203,13 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_ReceiveShipyard (NetworkConnection connection, int gold, string[] shipArray) {
-      ShipyardScreen.self.updatePanelWithShips(gold, Util.unserialize<ShipInfo>(shipArray));
+      // Translate Abilities
+      List<ShipInfo> newShipInfo = Util.unserialize<ShipInfo>(shipArray);
+      foreach (ShipInfo info in newShipInfo) {
+         info.shipAbilities = Util.xmlLoad<ShipAbilityInfo>(info.shipAbilityXML);
+      }
+
+      ShipyardScreen.self.updatePanelWithShips(gold, newShipInfo);
    }
 
    [TargetRpc]

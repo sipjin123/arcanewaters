@@ -26,9 +26,26 @@ public class ShipDataPanel : MonoBehaviour {
    // Caches the initial type incase it is changed
    public string startingName;
 
+   // Skill template
+   public ShipSkillTemplate skillTemplate;
+
+   // Button for adding skills
+   public Button addSkillButton;
+
+   // Skill content holder
+   public Transform skillTemplateHolder, skillOptionHolder;
+
+   // Skill Selection UI
+   public GameObject skillSelectionPanel;
+   public Button closeSelectionPanel;
+
    #endregion
 
    private void Awake () {
+      closeSelectionPanel.onClick.AddListener(() => {
+         skillSelectionPanel.SetActive(false);
+      });
+
       saveButton.onClick.AddListener(() => {
          ShipData newShipData = getShipData();
          if (newShipData != null) {
@@ -39,6 +56,27 @@ public class ShipDataPanel : MonoBehaviour {
       cancelButton.onClick.AddListener(() => {
          gameObject.SetActive(false);
          shipToolManager.loadXMLData();
+      });
+
+      addSkillButton.onClick.AddListener(() => {
+         skillSelectionPanel.SetActive(true);
+
+         skillOptionHolder.gameObject.DestroyChildren();
+         foreach (string skillOption in shipToolManager.shipSkillList) {
+            if (!existingInInventory(skillOption)) {
+               ShipSkillTemplate skillOptionTemp = Instantiate(skillTemplate, skillOptionHolder.transform);
+               skillOptionTemp.skillNameText.text = skillOption;
+
+               skillOptionTemp.selectButton.onClick.AddListener(() => {
+                  skillSelectionPanel.SetActive(false);
+                  ShipSkillTemplate skillTemp = Instantiate(skillTemplate, skillTemplateHolder.transform);
+                  skillTemp.skillNameText.text = skillOption;
+                  skillTemp.deleteButton.onClick.AddListener(() => {
+                     Destroy(skillTemp.gameObject);
+                  });
+               });
+            }
+         }
       });
 
       _shipTypeButton.onClick.AddListener(() => {
@@ -87,6 +125,7 @@ public class ShipDataPanel : MonoBehaviour {
       newShipData.baseCargoRoom = int.Parse(_baseCargoRoom.text);
       newShipData.baseSupplyRoom = int.Parse(_baseSupplyRoom.text);
       newShipData.basePrice = int.Parse(_basePrice.text);
+      newShipData.skillIsRandom = _randomSkill.isOn;
 
       try {
          newShipData.skinType = (Ship.SkinType) Enum.Parse(typeof(Ship.SkinType), _skinTypeText.text);
@@ -101,6 +140,11 @@ public class ShipDataPanel : MonoBehaviour {
       newShipData.avatarIconPath = _avatarPath.text;
       newShipData.spritePath = _spritePath.text;
       newShipData.rippleSpritePath = _ripplePath.text;
+
+      newShipData.shipAbilities = new List<string>();
+      foreach (Transform abilityTemplate in skillTemplateHolder.transform) {
+         newShipData.shipAbilities.Add(abilityTemplate.GetComponent<ShipSkillTemplate>().skillNameText.text);
+      }
 
       return newShipData;
    }
@@ -130,6 +174,7 @@ public class ShipDataPanel : MonoBehaviour {
       _avatarIcon.sprite = selectionPopup.emptySprite;
       _spriteIcon.sprite = selectionPopup.emptySprite;
       _rippleSpriteIcon.sprite = selectionPopup.emptySprite;
+      _randomSkill.isOn = loadedShipData.skillIsRandom;
 
       if (loadedShipData.avatarIconPath != null && loadedShipData.avatarIconPath != "") {
          Sprite shipSprite = ImageManager.getSpritesInDirectory(loadedShipData.avatarIconPath)[0].sprites[3];
@@ -142,6 +187,23 @@ public class ShipDataPanel : MonoBehaviour {
       if (loadedShipData.rippleSpritePath != null && loadedShipData.rippleSpritePath != "") {
          _rippleSpriteIcon.sprite = ImageManager.getSprite(loadedShipData.rippleSpritePath);
       }
+
+      skillTemplateHolder.gameObject.DestroyChildren();
+      foreach (string skill in loadedShipData.shipAbilities) {
+         ShipSkillTemplate skillTemp = Instantiate(skillTemplate.gameObject, skillTemplateHolder).GetComponent<ShipSkillTemplate>();
+         skillTemp.skillNameText.text = skill;
+         skillTemplate.deleteButton.onClick.AddListener(() => {
+            Destroy(skillTemp.gameObject);
+         });
+      }
+   }
+
+   private bool existingInInventory (string name) {
+      List<string> cachedAbilityList = new List<string>();
+      foreach (Transform child in skillTemplateHolder) {
+         cachedAbilityList.Add(child.GetComponent<ShipSkillTemplate>().skillNameText.text);
+      }
+      return cachedAbilityList.Find(_ => _ == name) != null;
    }
 
    #region Private Variables
@@ -167,6 +229,9 @@ public class ShipDataPanel : MonoBehaviour {
    private InputField _baseCargoRoom;
    [SerializeField]
    private InputField _baseSupplyRoom;
+
+   [SerializeField]
+   private Toggle _randomSkill;
 
    // Slider input fields
    [SerializeField]

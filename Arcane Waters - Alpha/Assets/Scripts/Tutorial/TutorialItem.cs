@@ -29,6 +29,9 @@ public class TutorialItem : ClientMonoBehaviour, IMapEditorDataReceiver {
    // Determines if data was setup
    public bool isActivated = false;
 
+   // If can be picked up
+   public bool canBePickedUp = false;
+
    #endregion
 
    void Start () {
@@ -63,6 +66,28 @@ public class TutorialItem : ClientMonoBehaviour, IMapEditorDataReceiver {
       if (TutorialManager.currentStep == tutorialStepForThisItem + 1) {
          // EffectManager.show("cannon_smoke", this.transform.position);
          // SoundManager.play2DClip(SoundManager.Type.Powerup);
+      }
+   }
+
+   void OnTriggerEnter2D (Collider2D other) {
+      if (!canBePickedUp) {
+         return;
+      }
+
+      PlayerBodyEntity body = other.transform.GetComponent<PlayerBodyEntity>();
+
+      // If this client's player picked up the item, tell the server
+      if (body != null && body.isLocalPlayer && TutorialManager.currentStep == tutorialStepForThisItem) {
+         body.Cmd_CompletedTutorialStep(tutorialStepForThisItem);
+
+         // Make the item react right away
+         EffectManager.show(Effect.Type.Pickup_Effect, this.transform.position);
+         foreach (SpriteRenderer renderer in GetComponentsInChildren<SpriteRenderer>()) {
+            Util.setAlpha(renderer, 0f);
+         }
+
+         // Play a sound
+         SoundManager.create3dSound("item_pick_up", Global.player.transform.position);
       }
    }
 

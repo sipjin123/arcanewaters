@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System;
+using System.Xml.Serialization;
 
 #if IS_SERVER_BUILD
 using MySql.Data.MySqlClient;
@@ -70,6 +71,12 @@ public class ShipInfo {
    // Whether the ship has been sold, only valid for shops
    public bool hasSold;
 
+   // XML Data of ship abilities
+   public string shipAbilityXML;
+
+   // Ship Abilities
+   public ShipAbilityInfo shipAbilities = new ShipAbilityInfo();
+
    // Colors
    public ColorType color1;
    public ColorType color2;
@@ -111,13 +118,20 @@ public class ShipInfo {
       this.color2 = (ColorType) DataUtil.getInt(dataReader, "color2");
       this.sailColor1 = (ColorType) DataUtil.getInt(dataReader, "sailColor1");
       this.sailColor2 = (ColorType) DataUtil.getInt(dataReader, "sailColor2");
+
+      this.shipAbilityXML = DataUtil.getString(dataReader, "shipAbilities");
+
+      if (this.shipAbilityXML.Length > 0) {
+         ShipAbilityInfo shipAbility = Util.xmlLoad<ShipAbilityInfo>(this.shipAbilityXML);
+         this.shipAbilities = shipAbility;
+      }
    }
 
    #endif
 
    public ShipInfo (int shipId, int userId, Ship.Type shipType,Ship.SkinType skinType, Ship.MastType mastType, Ship.SailType sailType, string shipName,
       ColorType color1, ColorType color2, ColorType sailColor1, ColorType sailColor2, int supplies, int suppliesMax, int cargoMax, int health, int maxHealth, int damage,
-      int attackRange, int speed, int sailors, Rarity.Type rarity) {
+      int attackRange, int speed, int sailors, Rarity.Type rarity, ShipAbilityInfo shipAbilities) {
       this.shipId = shipId;
       this.userId = userId;
       this.shipType = shipType;
@@ -139,6 +153,7 @@ public class ShipInfo {
       this.speed = speed;
       this.sailors = sailors;
       this.rarity = rarity;
+      this.shipAbilities = shipAbilities;
    }
 
    public override bool Equals (object rhs) {
@@ -156,4 +171,15 @@ public class ShipInfo {
    #region Private Variables
 
    #endregion
+}
+
+public class ShipAbilityInfo
+{
+   public ShipAbilityInfo () { }
+   public ShipAbilityInfo (bool autoGenerate) {
+      if (autoGenerate) {
+         ShipAbilities = ShipAbilityManager.getRandomAbilities(3).ToArray();
+      }
+   }
+   public string[] ShipAbilities = new string[0];
 }

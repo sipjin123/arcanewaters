@@ -2166,13 +2166,21 @@ public class DB_Main : DB_MainStub {
       Ship.Type shipType = Ship.Type.Caravel;
       ShipInfo shipInfo = new ShipInfo(0, userId, shipType, Ship.SkinType.None, Ship.MastType.Caravel_1, Ship.SailType.Caravel_1, shipType + "",
             ColorType.HullBrown, ColorType.HullBrown, ColorType.SailWhite, ColorType.SailWhite, 100, 100, 20,
-            80, 80, 15, 100, 90, 10, Rarity.Type.Common);
+            80, 80, 15, 100, 90, 10, Rarity.Type.Common, new ShipAbilityInfo(true));
+      
+      System.Xml.Serialization.XmlSerializer ser = new System.Xml.Serialization.XmlSerializer(shipInfo.shipAbilities.GetType());
+      var sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, shipInfo.shipAbilities);
+      }
+
+      string longString = sb.ToString();
 
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO ships (usrId, shpType, color1, color2, mastType, sailType, shpName, sailColor1, sailColor2, supplies, suppliesMax, cargoMax, health, maxHealth, attackRange, speed, sailors, rarity) " +
-            "VALUES(@usrId, @shpType, @color1, @color2, @mastType, @sailType, @shipName, @sailColor1, @sailColor2, @supplies, @suppliesMax, @cargoMax, @maxHealth, @maxHealth, @attackRange, @speed, @sailors, @rarity)", conn)) {
+            "INSERT INTO ships (usrId, shpType, color1, color2, mastType, sailType, shpName, sailColor1, sailColor2, supplies, suppliesMax, cargoMax, health, maxHealth, attackRange, speed, sailors, rarity, shipAbilities) " +
+            "VALUES(@usrId, @shpType, @color1, @color2, @mastType, @sailType, @shipName, @sailColor1, @sailColor2, @supplies, @suppliesMax, @cargoMax, @maxHealth, @maxHealth, @attackRange, @speed, @sailors, @rarity, @shipAbilities)", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -2195,6 +2203,7 @@ public class DB_Main : DB_MainStub {
             cmd.Parameters.AddWithValue("@speed", shipInfo.speed);
             cmd.Parameters.AddWithValue("@sailors", shipInfo.sailors);
             cmd.Parameters.AddWithValue("@rarity", (int) shipInfo.rarity);
+            cmd.Parameters.AddWithValue("@shipAbilities", longString);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -2210,11 +2219,18 @@ public class DB_Main : DB_MainStub {
    public static new ShipInfo createShipFromShipyard (int userId, ShipInfo shipyardInfo) {
       ShipInfo shipInfo = new ShipInfo();
 
+      System.Xml.Serialization.XmlSerializer ser = new System.Xml.Serialization.XmlSerializer(shipyardInfo.shipAbilities.GetType());
+      var sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, shipyardInfo.shipAbilities);
+      }
+
+      string longString = sb.ToString();
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO ships (usrId, shpType, color1, color2, mastType, sailType, shpName, sailColor1, sailColor2, supplies, suppliesMax, cargoMax, health, maxHealth, damage, sailors, attackRange, speed, rarity) " +
-            "VALUES(@usrId, @shpType, @color1, @color2, @mastType, @sailType, @shipName, @sailColor1, @sailColor2, @supplies, @suppliesMax, @cargoMax, @health, @maxHealth, @damage, @sailors, @attackRange, @speed, @rarity)", conn)) {
+            "INSERT INTO ships (usrId, shpType, color1, color2, mastType, sailType, shpName, sailColor1, sailColor2, supplies, suppliesMax, cargoMax, health, maxHealth, damage, sailors, attackRange, speed, rarity, shipAbilities) " +
+            "VALUES(@usrId, @shpType, @color1, @color2, @mastType, @sailType, @shipName, @sailColor1, @sailColor2, @supplies, @suppliesMax, @cargoMax, @health, @maxHealth, @damage, @sailors, @attackRange, @speed, @rarity, @shipAbilities)", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -2238,6 +2254,7 @@ public class DB_Main : DB_MainStub {
             cmd.Parameters.AddWithValue("@sailors", shipyardInfo.sailors);
             cmd.Parameters.AddWithValue("@speed", shipyardInfo.speed);
             cmd.Parameters.AddWithValue("@rarity", (int) shipyardInfo.rarity);
+            cmd.Parameters.AddWithValue("@shipAbilities", longString); 
 
             // Execute the command
             cmd.ExecuteNonQuery();

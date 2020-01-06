@@ -156,6 +156,7 @@ public class PrefabsManager : MonoBehaviour {
       return cannonBallPrefab;
 
       // TODO: Temporary disable cannon ball variety
+      /*
       switch (attackType) {
          case Attack.Type.Ice:
             return cannonBallIcePrefab;
@@ -163,7 +164,7 @@ public class PrefabsManager : MonoBehaviour {
             return cannonBallAirPrefab;
          default:
             return cannonBallPrefab;
-      }
+      }*/
    }
 
    public VenomProjectile getVenomPrefab (Attack.Type attackType) {

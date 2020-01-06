@@ -19,6 +19,9 @@ public class ShipDataToolManager : MonoBehaviour {
    // Holds the path of the folder
    public const string FOLDER_PATH = "ShipStats";
 
+   // List of abilities
+   public List<string> shipSkillList = new List<string>();
+
    #endregion
 
    private void Start () {
@@ -86,11 +89,19 @@ public class ShipDataToolManager : MonoBehaviour {
    public void loadXMLData () {
       XmlLoadingPanel.self.startLoading();
       _shipDataList = new Dictionary<string, ShipData>();
+      shipSkillList = new List<string>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<string> rawXMLData = DB_Main.getShipXML();
+         List<string> rawShipAbilityXMLData = DB_Main.getShipAbilityXML();
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (string shipAbilityText in rawShipAbilityXMLData) {
+               TextAsset newTextAsset = new TextAsset(shipAbilityText);
+               ShipAbilityData shipAbility = Util.xmlLoad<ShipAbilityData>(newTextAsset);
+               shipSkillList.Add(shipAbility.abilityName);
+            }
+
             foreach (string rawText in rawXMLData) {
                TextAsset newTextAsset = new TextAsset(rawText);
                ShipData shipData = Util.xmlLoad<ShipData>(newTextAsset);

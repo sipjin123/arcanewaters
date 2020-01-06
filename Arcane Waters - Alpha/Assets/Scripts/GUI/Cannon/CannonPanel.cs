@@ -30,16 +30,9 @@ public class CannonPanel : ClientMonoBehaviour {
       _boxes = GetComponentsInChildren<CannonBox>();
    }
 
-   public void setForThisType (Ship.Type shipType) {
-      ShipData currShipData = ShipDataManager.self.getShipData(shipType);
-
-      // TODO: Temporarily add ship abilities to all ships, must add this feature in ship editor tool
-      foreach (ShipAbilityData shipData in ShipAbilityManager.self.shipAbilityDataList) {
-         currShipData.shipAbilities.Add(shipData.abilityName);
-      }
-
+   public void setAbilityTab (string[] abilities) {
       cannonBoxParent.gameObject.DestroyChildren();
-      foreach (string abilityName in currShipData.shipAbilities) {
+      foreach (string abilityName in abilities) {
          CannonBox abilityTab = Instantiate(cannonBoxPrefab.gameObject, cannonBoxParent).GetComponent<CannonBox>();
          ShipAbilityData shipAbility = ShipAbilityManager.self.getAbility(abilityName);
 

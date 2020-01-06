@@ -76,6 +76,16 @@ public class ShipyardScreen : Panel {
          // Create a new row
          ShipyardRow row = Instantiate(rowPrefab, rowsContainer.transform, false);
          row.transform.SetParent(rowsContainer.transform, false);
+
+         row.skillPrefabHolder.DestroyChildren();
+         foreach (string abilityName in shipInfo.shipAbilities.ShipAbilities) {
+            ShipUISkillTemplate template = Instantiate(row.skillPrefab, row.skillPrefabHolder.transform).GetComponent<ShipUISkillTemplate>();
+            template.skillName.text = abilityName;
+
+            string iconPath = ShipAbilityManager.self.getAbility(abilityName).skillIconPath;
+            template.skillIcon.sprite = ImageManager.getSprite(iconPath);
+         }
+
          row.setRowForItem(shipInfo);
       }
    }

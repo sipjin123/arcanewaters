@@ -31,6 +31,10 @@ public class ShipyardRow : MonoBehaviour {
    public Text attackRangeText;
    public Text sailorsText;
 
+   // Skill prefabs setup
+   public GameObject skillPrefabHolder;
+   public GameObject skillPrefab;
+
    #endregion
 
    public void setRowForItem (ShipInfo shipInfo) {

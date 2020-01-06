@@ -233,6 +233,9 @@ public class MyNetworkManager : NetworkManager {
             // Sends ship data to the client
             player.rpc.Target_ReceiveAllShipInfo(player.connectionToClient, Util.serialize(ShipDataManager.self.shipDataList));
 
+            // Sends ship ability data to the client
+            player.rpc.Target_ReceiveAllShipAbilityInfo(player.connectionToClient, Util.serialize(ShipAbilityManager.self.shipAbilityDataList));
+
             // Seamonster data to the client
             player.rpc.Target_ReceiveAllSeaMonsterInfo(player.connectionToClient, Util.serialize(SeaMonsterManager.self.seaMonsterDataList));
 

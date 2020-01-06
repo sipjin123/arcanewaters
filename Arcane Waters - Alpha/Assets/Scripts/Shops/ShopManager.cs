@@ -5,6 +5,9 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 using System.Linq;
+using System.Xml.Serialization;
+using System.Text;
+using System.Xml;
 
 public class ShopManager : MonoBehaviour {
    #region Public Variables
@@ -118,8 +121,8 @@ public class ShopManager : MonoBehaviour {
             price = Util.roundToPrettyNumber(price);
             attackRange = Util.roundToPrettyNumber(attackRange);
 
-            ShipInfo ship = new ShipInfo(_shipId--, 0, shipType, Ship.SkinType.None, Ship.MastType.Caravel_1, Ship.SailType.Caravel_1, shipType+"",
-               ColorType.None, ColorType.None, ColorType.None, ColorType.None, suppliesRoom, suppliesRoom, cargoRoom, health, health, damage, attackRange, speed, sailors, rarity);
+            ShipInfo ship = new ShipInfo(_shipId--, 0, shipType, Ship.SkinType.None, Ship.MastType.Caravel_1, Ship.SailType.Caravel_1, shipType + "",
+               ColorType.None, ColorType.None, ColorType.None, ColorType.None, suppliesRoom, suppliesRoom, cargoRoom, health, health, damage, attackRange, speed, sailors, rarity, new ShipAbilityInfo(true));
 
             // We note the price separately, since it's only used in this context
             ship.price = price;
@@ -215,6 +218,15 @@ public class ShopManager : MonoBehaviour {
 
       foreach (int shipId in _shipsByArea[areaKey]) {
          ShipInfo ship = (ShipInfo) _ships[shipId];
+
+         XmlSerializer ser = new XmlSerializer(ship.shipAbilities.GetType());
+         var sb = new StringBuilder();
+         using (var writer = XmlWriter.Create(sb)) {
+            ser.Serialize(writer, ship.shipAbilities);
+         }
+
+         string longString = sb.ToString();
+         ship.shipAbilityXML = longString;
          list.Add(ship);
       }
 

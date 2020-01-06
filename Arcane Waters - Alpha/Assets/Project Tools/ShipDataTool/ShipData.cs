@@ -55,6 +55,9 @@ public class ShipData
    public string rippleSpritePath;
    public string avatarIconPath;
 
+   // Determines if skill is randomized
+   public bool skillIsRandom;
+
    // List of ship ability names
    public List<string> shipAbilities = new List<string>();
 }
