@@ -6,7 +6,7 @@ using Mirror;
 using UnityEngine.EventSystems;
 using System.Text;
 
-public class AbilityRow : MonoBehaviour, IPointerEnterHandler
+public class AbilityRow : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
    #region Public Variables
 
@@ -15,6 +15,9 @@ public class AbilityRow : MonoBehaviour, IPointerEnterHandler
 
    // The name of the ability
    public Text abilityName;
+
+   // Transform where Tooltip should snap to
+   public Transform displayPoint;
 
    #endregion
 
@@ -33,6 +36,11 @@ public class AbilityRow : MonoBehaviour, IPointerEnterHandler
    public void OnPointerEnter (PointerEventData eventData) {
       // Display the ability description in the ability panel
       AbilityPanel.self.displayDescription(icon.sprite, abilityName.text, _description);
+      AbilityPanel.self.showToolTip(true, abilityName.text, displayPoint.position);
+   }
+
+   public void OnPointerExit (PointerEventData eventData) {
+      AbilityPanel.self.showToolTip(false, abilityName.text, displayPoint.position);
    }
 
    #region Private Variables

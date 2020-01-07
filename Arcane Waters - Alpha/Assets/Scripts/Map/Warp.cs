@@ -45,7 +45,7 @@ public class Warp : MonoBehaviour, MapCreationTool.IMapEditorDataReceiver {
       int currentStep = TutorialManager.getHighestCompletedStep(player.userId) + 1;
       TutorialData currTutData = TutorialManager.self.fetchTutorialData(currentStep);
       string currArea = "none";
-      if (currTutData.requirementType == RequirementType.Area) {
+      if (currTutData != null && currTutData.requirementType == RequirementType.Area) {
          currArea = currTutData.rawDataJson;
       }
 

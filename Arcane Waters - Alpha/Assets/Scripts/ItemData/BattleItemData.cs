@@ -21,6 +21,9 @@ public class BattleItemData
    // The level required for this item
    public int levelRequirement;
 
+   // The level of this ability
+   public int abilityLevel;
+
    // Effect that will be executed when the ability hits the target, it can be a buff/debuff too
    public string[] hitSpritesPath;
 

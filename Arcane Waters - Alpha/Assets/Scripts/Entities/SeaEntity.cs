@@ -304,19 +304,26 @@ public class SeaEntity : NetEntity {
          // Play the damage sound
          SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Hit_1, pos);
       } else {
-         // Show the explosion
-         if (attackType != Attack.Type.Ice && attackType != Attack.Type.Venom && attackType != Attack.Type.Tentacle) {
-            Instantiate(PrefabsManager.self.explosionPrefab, pos, Quaternion.identity);
-         }
-
-         // If tentacle attack, calls tentacle collision effect
          if (attackType == Attack.Type.Tentacle) {
+            // If tentacle attack, calls tentacle collision effect
             Instantiate(PrefabsManager.self.tentacleCollisionPrefab, this.transform.position + new Vector3(0f, 0), Quaternion.identity);
-         }
-
-         // If worm attack, calls slime collision effect
-         if (attackType == Attack.Type.Venom) {
+         } else if (attackType == Attack.Type.Venom) {
+            // If worm attack, calls slime collision effect
             ExplosionManager.createSlimeExplosion(pos);
+         } else if (attackType == Attack.Type.Ice) { 
+            // TODO: Add ice effect logic here
+         } else {
+            ShipAbilityData shipData = ShipAbilityManager.self.getAbility(attackType);
+            if (shipData == null) {
+               // Show generic explosion
+               Instantiate(PrefabsManager.self.explosionPrefab, pos, Quaternion.identity);
+            } else {
+               EffectManager.createDynamicEffect(shipData.collisionSpritePath, pos, shipData.abilitySpriteFXPerFrame);
+               AudioClip clip = AudioClipManager.self.getAudioClipData(shipData.collisionSFXPath).audioClip;
+               if (clip != null) {
+                  SoundManager.playClipOneShotAtPoint(clip, Camera.main.transform.position);
+               }
+            }
          }
 
          // Show the damage text

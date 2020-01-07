@@ -124,16 +124,16 @@ public class GrampsManager : ClientMonoBehaviour {
          foreach (string dialogue in fetchData.msgList) {
             msgList.Add(dialogue);
          }
-
-         // Only add messages that we haven't already shown
-         foreach (string msg in msgList) {
-            if (!_textsShown.Contains(msg) && !_listOfThingsToSay.Contains(msg)) {
-               _listOfThingsToSay.Add(msg);
-            }
-         }
-
-         startSayingStuffFromList();
       }
+
+      // Only add messages that we haven't already shown
+      foreach (string msg in msgList) {
+         if (!_textsShown.Contains(msg) && !_listOfThingsToSay.Contains(msg)) {
+            _listOfThingsToSay.Add(msg);
+         }
+      }
+
+      startSayingStuffFromList();
    }
 
    protected void finishTypingText () {

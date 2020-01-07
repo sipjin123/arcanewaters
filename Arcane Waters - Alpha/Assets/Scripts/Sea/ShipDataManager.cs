@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System.IO;
 using System.Linq;
+using UnityEngine.Events;
 
 public class ShipDataManager : MonoBehaviour {
    #region Public Variables
@@ -18,6 +19,9 @@ public class ShipDataManager : MonoBehaviour {
    // Holds the ship data
    public List<ShipData> shipDataList = new List<ShipData>();
 
+   // Determines if data setup is done
+   public UnityEvent finishedDataSetup = new UnityEvent(); 
+
    #endregion
 
    public void Awake () {
@@ -25,17 +29,16 @@ public class ShipDataManager : MonoBehaviour {
    }
 
    public ShipData getShipData (Ship.Type shipType) {
-      ShipData returnData = _shipData[shipType];
-      if (returnData == null) {
+      if (!_shipData.ContainsKey(shipType)) {
+         D.debug("Failed to fetch ship data: " + shipType);
          return new ShipData();
       }
+      ShipData returnData = _shipData[shipType];
       return returnData;
    }
 
    public void initializeDataCache () {
       if (!hasInitialized) {
-         hasInitialized = true;
-
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             List<string> rawXMLData = DB_Main.getShipXML();
 
@@ -51,8 +54,8 @@ public class ShipDataManager : MonoBehaviour {
                      shipDataList.Add(shipData);
                   }
                }
-
-               ShopManager.self.initializeRandomGeneratedShips();
+               hasInitialized = true;
+               finishedDataSetup.Invoke();
             });
          });
       }
@@ -65,6 +68,8 @@ public class ShipDataManager : MonoBehaviour {
             this.shipDataList.Add(shipData);
          }
       }
+      hasInitialized = true;
+      finishedDataSetup.Invoke();
    }
 
    #region Private Variables

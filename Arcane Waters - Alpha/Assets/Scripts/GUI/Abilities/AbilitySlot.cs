@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
 
-public class AbilitySlot : MonoBehaviour, IPointerEnterHandler
+public class AbilitySlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
    #region Public Variables
 
@@ -20,6 +20,9 @@ public class AbilitySlot : MonoBehaviour, IPointerEnterHandler
 
    // The unequip button
    public Button unequipButton;
+
+   // Transform where Tooltip should snap to
+   public Transform displayPoint;
 
    #endregion
 
@@ -51,7 +54,12 @@ public class AbilitySlot : MonoBehaviour, IPointerEnterHandler
       if (_isUsed) {
          // Display the ability description in the ability panel
          AbilityPanel.self.displayDescription(icon.sprite, abilityName.text, _description);
+         AbilityPanel.self.showToolTip(true, abilityName.text, displayPoint.position);
       }
+   }
+
+   public void OnPointerExit (PointerEventData eventData) {
+      AbilityPanel.self.showToolTip(false, abilityName.text, displayPoint.position);
    }
 
    public bool isFree () {

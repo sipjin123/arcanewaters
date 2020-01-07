@@ -20,6 +20,10 @@ public class AreaManager : MonoBehaviour {
 
    private void Awake () {
       self = this;
+
+      if (areaKeyForSunkenPlayers == "" || spawnKeyForSunkenPlayers == "") {
+         D.debug("Spawn area for sunken ships is not set properly");
+      }
    }
 
    void Start () {

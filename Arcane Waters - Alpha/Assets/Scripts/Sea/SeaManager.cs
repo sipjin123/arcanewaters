@@ -31,6 +31,14 @@ public class SeaManager : MonoBehaviour {
       self = this;
    }
 
+   public bool isOffensiveAbility () {
+      if (selectedAttackType == Attack.Type.Heal || selectedAttackType == Attack.Type.SpeedBoost) {
+         return false;
+      }
+
+      return true;
+   }
+
    private void Update () {
       // We only handle player input when the player is in a ship
       if (!(Global.player is PlayerShipEntity) || ChatManager.isTyping()) {

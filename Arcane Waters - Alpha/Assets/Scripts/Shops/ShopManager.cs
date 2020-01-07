@@ -27,14 +27,20 @@ public class ShopManager : MonoBehaviour {
    private void Start () {
       // Routinely change out the items
       InvokeRepeating("randomlyGenerateCropOffers", 0f, (float) TimeSpan.FromHours(CropOffer.REGEN_INTERVAL).TotalSeconds);
+
+      ShipDataManager.self.finishedDataSetup.AddListener(() => checkIfDataSetupIsFinished());
+      ShipAbilityManager.self.finishedDataSetup.AddListener(() => checkIfDataSetupIsFinished());
    }
 
    public void initializeRandomGeneratedItems () {
       InvokeRepeating("randomlyGenerateItems", 0f, (float) TimeSpan.FromHours(1).TotalSeconds);
    }
 
-   public void initializeRandomGeneratedShips () {
-      InvokeRepeating("randomlyGenerateShips", 0f, (float) TimeSpan.FromHours(1).TotalSeconds);
+   private void checkIfDataSetupIsFinished () {
+      // Initialize random generated ships only when ship data and ship abilities data are setup
+      if (ShipDataManager.self.hasInitialized && ShipAbilityManager.self.hasInitialized) {
+         InvokeRepeating("randomlyGenerateShips", 0f, (float) TimeSpan.FromHours(1).TotalSeconds);
+      }
    }
 
    public Item getItem (int itemId) {

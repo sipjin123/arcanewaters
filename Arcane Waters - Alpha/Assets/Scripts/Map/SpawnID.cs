@@ -1,4 +1,7 @@
-﻿public struct SpawnID
+﻿using System;
+
+[Serializable]
+public struct SpawnID
 {
    // The key of the area that the spawn is placed in
    public string areaKey;

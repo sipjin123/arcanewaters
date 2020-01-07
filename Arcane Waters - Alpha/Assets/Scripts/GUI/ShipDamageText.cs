@@ -16,6 +16,14 @@ public class ShipDamageText : MonoBehaviour {
    // How fast this text should float up
    public static float RISE_SPEED = .0035f;
 
+   // Determines if positive or negative attribute
+   public bool negativeEffect = false;
+
+   // Effect indicators
+   public GameObject frameObj;
+   public Image icon;
+   public Text notificationText;
+
    #endregion
 
    void Start () {
@@ -31,8 +39,26 @@ public class ShipDamageText : MonoBehaviour {
       Destroy(this.gameObject, LIFETIME);
    }
 
+   public void setIcon (string path) {
+      if (!frameObj || !icon) {
+         return;
+      }
+
+      frameObj.SetActive(true);
+      icon.sprite = ImageManager.getSprite(path);
+   }
+
+   public void setMessage (string msg) {
+      if (!frameObj || !notificationText) {
+         return;
+      }
+
+      frameObj.SetActive(true);
+      notificationText.text = msg;
+   }
+
    public void setDamage (int amount) {
-      this.text.text = "-" + amount;
+      this.text.text = negativeEffect ? "-" : "+" + amount;
    }
 
    protected void floatUp () {

@@ -34,6 +34,7 @@ public partial class SpawnManager : MonoBehaviour {
          D.warning($"Storing multiple spawns of the same type: areaKey = { areaKey }, spawnKey = { spawnKey }");
       }
 
+      _spawnIDList.Add(new SpawnID(areaKey, spawnKey));
       _spawns[new SpawnID(areaKey, spawnKey)] = spawn;
    }
 
@@ -56,6 +57,10 @@ public partial class SpawnManager : MonoBehaviour {
    // Keeps track of the Spawns that we know about
    // Dictionary key - <areaKey, spawnKey>
    protected Dictionary<SpawnID, Spawn> _spawns = new Dictionary<SpawnID, Spawn>();
+
+   // Editor preview of data list
+   [SerializeField]
+   protected List<SpawnID> _spawnIDList = new List<SpawnID>();
 
    #endregion
 }

@@ -32,9 +32,15 @@ public class CannonPanel : ClientMonoBehaviour {
 
    public void setAbilityTab (string[] abilities) {
       cannonBoxParent.gameObject.DestroyChildren();
+
+      Attack.Type initialAbility = Attack.Type.None;
       foreach (string abilityName in abilities) {
          CannonBox abilityTab = Instantiate(cannonBoxPrefab.gameObject, cannonBoxParent).GetComponent<CannonBox>();
          ShipAbilityData shipAbility = ShipAbilityManager.self.getAbility(abilityName);
+         if (initialAbility == Attack.Type.None) {
+            initialAbility = shipAbility.selectedAttackType;
+            abilityTab.setCannons();
+         }
 
          abilityTab.attackType = shipAbility.selectedAttackType;
          abilityTab.skillIcon.sprite = ImageManager.getSprite(shipAbility.skillIconPath);

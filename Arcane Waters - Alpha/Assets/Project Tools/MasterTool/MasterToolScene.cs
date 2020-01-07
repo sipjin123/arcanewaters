@@ -24,6 +24,7 @@ public class MasterToolScene : MonoBehaviour {
    public const string playerFactionScene = "PlayerFaction Tool";
    public const string playerSpecialtyScene = "PlayerSpecialty Tool";
    public const string playerJobScene = "PlayerJob Tool";
+   public const string shipAbilityScene = "ShipAbility Tool";
 
    // Button triggers to open scene
    public Button clickAbilityScene, 
@@ -40,6 +41,7 @@ public class MasterToolScene : MonoBehaviour {
       clickFactionScene,
       clickSpecialtyScene,
       clickJobScene,
+      clickShipAbilityScene,
       exitButton;
 
    #endregion
@@ -90,6 +92,9 @@ public class MasterToolScene : MonoBehaviour {
       });
       clickJobScene.onClick.AddListener(() => {
          SceneManager.LoadScene(playerJobScene);
+      });
+      clickShipAbilityScene.onClick.AddListener(() => {
+         SceneManager.LoadScene(shipAbilityScene);
       });
    }
 

@@ -16,6 +16,9 @@ public class EffectManager : MonoBehaviour {
    // Generic effect prefab for use in combat actions
    public CombatEffect combatVFXPrefab;
 
+   // Generic effect prefab for use in world combat effects
+   public CombatEffect worldCombatVFXPrefab;
+
    // Self
    public static EffectManager self;
 
@@ -33,6 +36,18 @@ public class EffectManager : MonoBehaviour {
       effect.effectType = effectType;
 
       return effect;
+   }
+
+   public static void createDynamicEffect (string spritePath, Vector2 pos, float timePerFrame) {
+      Sprite[] sprites = ImageManager.getSprites(spritePath);
+
+      //If we do not have any effect sprites we cancel
+      if (sprites.Length <= 0) {
+         return;
+      }
+
+      CombatEffect effect = Instantiate(self.worldCombatVFXPrefab, pos, Quaternion.identity).GetComponent<CombatEffect>();
+      effect.initEffect(sprites, timePerFrame);
    }
 
    public CombatEffect createCombatEffect (Sprite[] effectSprites, Vector2 pos, float timePerFrame) {

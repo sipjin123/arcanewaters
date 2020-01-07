@@ -128,6 +128,51 @@ public class ShipEntity : SeaEntity {
    }
 
    [Command]
+   public void Cmd_CastAbility (Attack.Type attackType) {
+      if (isDead() || !hasReloaded()) {
+         return;
+      }
+
+      // Note the time at which we last successfully attacked
+      _lastAttackTime = Time.time;
+
+      ShipAbilityData shipData = ShipAbilityManager.self.getAbility(attackType);
+      
+      // Attributes set up by server only
+      switch (attackType) {
+         case Attack.Type.Heal:
+            currentHealth += shipData.damage;
+            break;
+         case Attack.Type.SpeedBoost:
+            speed += shipData.damage;
+            break;
+      }
+
+      Rpc_CastSkill(attackType, shipData, transform.position);
+   }
+
+   [ClientRpc]
+   public void Rpc_CastSkill (Attack.Type attackType, ShipAbilityData shipData, Vector2 pos) {
+      // Play The effect of the buff
+      EffectManager.createDynamicEffect(shipData.castSpritePath, pos, shipData.abilitySpriteFXPerFrame);
+
+      // Play an appropriate sound
+      AudioClip clip = AudioClipManager.self.getAudioClipData(shipData.castSFXPath).audioClip;
+      if (clip != null) {
+         SoundManager.playClipOneShotAtPoint(clip, Camera.main.transform.position);
+      } else {
+         playAttackSound();
+      }
+
+      // Show the damage text
+      ShipDamageText damageText = Instantiate(PrefabsManager.self.getTextPrefab(attackType), pos, Quaternion.identity);
+      damageText.setIcon(shipData.skillIconPath);
+      damageText.negativeEffect = false;
+      damageText.setDamage(shipData.damage);
+      damageText.notificationText.text = shipData.abilityName;
+   }
+
+   [Command]
    public void Cmd_FireMainCannonAtSpot (Vector2 spot, Attack.Type attackType, Vector2 spawnPosition) {
       if (isDead() || !hasReloaded()) {
          return;
@@ -146,9 +191,11 @@ public class ShipEntity : SeaEntity {
       float distanceModifier = getDamageModifierForDistance(normalizedDistance);
       float projectileFlightDuration = (normalizedDistance * 1f) * ShipAbilityManager.self.getAbility(attackType).projectileSpeed;
 
+      ShipAbilityData shipData = ShipAbilityManager.self.getAbility(attackType);
+
       // Fire the cannon ball and display an attack circle in all the clients
       Rpc_CreateCannonBall(spawnPosition, spot, Util.netTime(), Util.netTime() + projectileFlightDuration,
-         attackType, AttackManager.self.getColorForDistance(normalizedDistance));
+         attackType, AttackManager.self.getColorForDistance(normalizedDistance), shipData);
 
       // Have the server check for collisions after the AOE projectile reaches the target
       StartCoroutine(CO_CheckCircleForCollisions(this, projectileFlightDuration, spot, attackType, false, distanceModifier));
@@ -158,7 +205,7 @@ public class ShipEntity : SeaEntity {
    }
 
    [ClientRpc]
-   public void Rpc_CreateCannonBall (Vector2 startPos, Vector2 endPos, float startTime, float endTime, Attack.Type attackType, Color color) {
+   public void Rpc_CreateCannonBall (Vector2 startPos, Vector2 endPos, float startTime, float endTime, Attack.Type attackType, Color color, ShipAbilityData shipAbilityData) {
       // Create a new Attack Circle object from the prefab
       AttackCircle attackCircle;
 
@@ -178,7 +225,8 @@ public class ShipEntity : SeaEntity {
       // Create a cannon smoke effect
       Vector2 direction = endPos - startPos;
       Vector2 offset = direction.normalized * .1f;
-      Instantiate(PrefabsManager.self.cannonSmokePrefab, startPos + offset, Quaternion.identity);
+
+      EffectManager.createDynamicEffect(shipAbilityData.castSpritePath, startPos, shipAbilityData.abilitySpriteFXPerFrame);
 
       // Create a cannon ball
       CannonBall ball = Instantiate(PrefabsManager.self.getCannonBallPrefab(attackType), startPos, Quaternion.identity);
@@ -201,7 +249,12 @@ public class ShipEntity : SeaEntity {
       }
 
       // Play an appropriate sound
-      playAttackSound();
+      AudioClip clip = AudioClipManager.self.getAudioClipData(shipAbilityData.castSFXPath).audioClip;
+      if (clip != null) {
+         SoundManager.playClipOneShotAtPoint(clip, Camera.main.transform.position);
+      } else {
+         playAttackSound();
+      }
 
       // If it was our ship, shake the camera
       if (isLocalPlayer) {

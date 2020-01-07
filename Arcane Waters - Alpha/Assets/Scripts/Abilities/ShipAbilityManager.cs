@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using UnityEngine.Events;
 
 public class ShipAbilityManager : MonoBehaviour {
    #region Public Variables
@@ -16,6 +17,9 @@ public class ShipAbilityManager : MonoBehaviour {
    // Holds the list of the xml translated data
    public List<ShipAbilityData> shipAbilityDataList;
 
+   // Determines if data setup is done
+   public UnityEvent finishedDataSetup = new UnityEvent();
+
    #endregion
 
    private void Awake () {
@@ -25,8 +29,6 @@ public class ShipAbilityManager : MonoBehaviour {
    public void initializDataCache () {
       if (!hasInitialized) {
          shipAbilityDataList = new List<ShipAbilityData>();
-         hasInitialized = true;
-
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             List<string> rawXMLData = DB_Main.getShipAbilityXML();
 
@@ -40,6 +42,8 @@ public class ShipAbilityManager : MonoBehaviour {
                      shipAbilityDataList.Add(shipAbilityData);
                   }
                }
+               finishedDataSetup.Invoke();
+               hasInitialized = true;
             });
          });
       }
@@ -54,6 +58,7 @@ public class ShipAbilityManager : MonoBehaviour {
                this.shipAbilityDataList.Add(data);
             }
          }
+         finishedDataSetup.Invoke();
          hasInitialized = true;
       }
    }

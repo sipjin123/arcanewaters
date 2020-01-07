@@ -58,7 +58,11 @@ public class PlayerShipEntity : ShipEntity {
       // If the reload is finished and a shot was scheduled, fire it
       if (isNextShotDefined && hasReloaded()) {
          // Fire the scheduled shot
-         Cmd_FireMainCannonAtSpot(nextShotTarget, SeaManager.selectedAttackType, transform.position);
+         if (!SeaManager.self.isOffensiveAbility()) {
+            Cmd_CastAbility(SeaManager.selectedAttackType);
+         } else {
+            Cmd_FireMainCannonAtSpot(nextShotTarget, SeaManager.selectedAttackType, transform.position);
+         }
          isNextShotDefined = false;
       }
 
@@ -74,7 +78,11 @@ public class PlayerShipEntity : ShipEntity {
             nextShotTarget = clampToRange(Util.getMousePos());
             isNextShotDefined = true;
          } else {
-            Cmd_FireMainCannonAtSpot(Util.getMousePos(), SeaManager.selectedAttackType, transform.position);
+            if (!SeaManager.self.isOffensiveAbility()) {
+               Cmd_CastAbility(SeaManager.selectedAttackType);
+            } else {
+               Cmd_FireMainCannonAtSpot(Util.getMousePos(), SeaManager.selectedAttackType, transform.position);
+            }
          }
       }
 

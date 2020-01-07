@@ -34,9 +34,23 @@ public class AbilityPanel : Panel {
    // Self
    public static AbilityPanel self;
 
+   // Data Display
+   public Text toolTipLevel, toolTipAP, toolTipLevelRequired;
+   public Text panelLevel, panelAP, panelLevelRequired;
+
+   // Custom tooltip for abilities
+   public GameObject toolTipCustom;
+
+   // Cached info of the abilities
+   public List<BasicAbilityData> cachedAbility;
+
+   // Canvas reference
+   public Canvas canvas;
+
    #endregion
 
    public override void Awake () {
+      canvas = transform.parent.GetComponent<Canvas>();
       base.Awake();
       self = this;
    }
@@ -46,6 +60,7 @@ public class AbilityPanel : Panel {
       abilityRowsContainer.DestroyChildren();
       abilitySlotsContainer.DestroyChildren();
       _equippedAbilitySlots.Clear();
+      cachedAbility = new List<BasicAbilityData>();
 
       // Create empty ability slots
       for (int i = 0; i < AbilityManager.MAX_EQUIPPED_ABILITIES; i++) {
@@ -61,12 +76,6 @@ public class AbilityPanel : Panel {
 
          // Builds the ability description
          StringBuilder builder = new StringBuilder();
-         builder.Append("LVL: ");
-         builder.Append(basicAbilityData.levelRequirement);
-         builder.Append("\n");
-         builder.Append("AP: ");
-         builder.Append(basicAbilityData.apChange);
-         builder.Append("\n");
          builder.Append(basicAbilityData.itemDescription);
          string description = builder.ToString();
 
@@ -79,6 +88,7 @@ public class AbilityPanel : Panel {
             AbilityRow abilityRow = Instantiate(abilityRowPrefab, abilityRowsContainer.transform, false);
             abilityRow.setRowForAbilityData(ability.abilityID, basicAbilityData, description);
          }
+         cachedAbility.Add(basicAbilityData);
       }
    }
 
@@ -86,6 +96,23 @@ public class AbilityPanel : Panel {
       descriptionIcon.sprite = iconSprite;
       descriptionName.text = name;
       descriptionText.text = description;
+   }
+
+   public void showToolTip (bool isActive, string skillName, Vector3 pos) {
+      toolTipCustom.SetActive(isActive);
+      toolTipCustom.transform.position = pos;
+
+      BasicAbilityData abilityData = cachedAbility.Find(_ => _.itemName == skillName);
+      if (abilityData != null) {
+         toolTipLevel.text = abilityData.abilityLevel.ToString();
+         panelLevel.text = abilityData.abilityLevel.ToString();
+
+         toolTipLevelRequired.text = abilityData.levelRequirement.ToString();
+         panelLevelRequired.text = abilityData.levelRequirement.ToString();
+
+         toolTipAP.text = abilityData.abilityCost.ToString();
+         panelAP.text = abilityData.abilityCost.ToString();
+      }
    }
 
    public void tryEquipAbility(int abilityId) {
