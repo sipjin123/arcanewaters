@@ -46,7 +46,7 @@ public class ShipDataToolManager : MonoBehaviour {
       });
    }
 
-   public void deleteMonsterDataFile (ShipData data) {
+   public void deleteDataFile (ShipData data) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.deleteShipXML((int) data.shipType);
 

@@ -21,7 +21,7 @@ public class MonsterToolManager : MonoBehaviour {
 
    #endregion
 
-   private void Awake () {
+   private void Start () {
       loadAllDataFiles();
    }
 

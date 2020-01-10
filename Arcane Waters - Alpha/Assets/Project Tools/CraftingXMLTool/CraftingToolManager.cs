@@ -19,7 +19,7 @@ public class CraftingToolManager : MonoBehaviour {
 
    #endregion
 
-   private void Awake () {
+   private void Start () {
       loadAllDataFiles();
    }
 

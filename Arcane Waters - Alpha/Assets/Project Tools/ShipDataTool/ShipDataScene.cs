@@ -55,7 +55,7 @@ public class ShipDataScene : MonoBehaviour {
 
       template.deleteButton.onClick.AddListener(() => {
          Destroy(template.gameObject, .5f);
-         shipToolManager.deleteMonsterDataFile(shipData);
+         shipToolManager.deleteDataFile(shipData);
       });
 
       template.duplicateButton.onClick.AddListener(() => {
@@ -86,7 +86,7 @@ public class ShipDataScene : MonoBehaviour {
 
          template.deleteButton.onClick.AddListener(() => {
             Destroy(template.gameObject, .5f);
-            shipToolManager.deleteMonsterDataFile(shipData);
+            shipToolManager.deleteDataFile(shipData);
          });
 
          template.duplicateButton.onClick.AddListener(() => {

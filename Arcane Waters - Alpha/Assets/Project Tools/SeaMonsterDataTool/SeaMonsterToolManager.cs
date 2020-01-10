@@ -22,7 +22,7 @@ public class SeaMonsterToolManager : MonoBehaviour
 
    #endregion
 
-   private void Awake () {
+   private void Start () {
       loadAllDataFiles();
    }
 

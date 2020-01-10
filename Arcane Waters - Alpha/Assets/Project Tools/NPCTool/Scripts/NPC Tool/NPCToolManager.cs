@@ -33,11 +33,11 @@ public class NPCToolManager : MonoBehaviour {
       openMainTool.onClick.AddListener(() => {
          SceneManager.LoadScene(MasterToolScene.masterScene);
       });
-      loadAllDataFiles();
    }
 
    public void Start () {
       npcSelectionScreen.show();
+      loadAllDataFiles();
    }
 
    public void loadAllDataFiles () {

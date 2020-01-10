@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class NPCSelectionScreen : MonoBehaviour
 {
@@ -81,6 +82,10 @@ public class NPCSelectionScreen : MonoBehaviour
       }
    }
 
+   public void openMaterScene () {
+      SceneManager.LoadScene(MasterToolScene.masterScene);
+   }
+
    public void editNPC(int npcId) {
       // Retrieve the NPC data
       NPCData data = NPCToolManager.self.getNPCData(npcId);
@@ -107,10 +112,6 @@ public class NPCSelectionScreen : MonoBehaviour
 
    public void createNewNPCButtonClickedOn () {
       npcIdInputScreen.show();
-   }
-
-   public void exitButtonClickedOn() {
-      Application.Quit();
    }
 
    public void show () {
