@@ -178,7 +178,14 @@ public class TutorialManager : MonoBehaviour {
    }
 
    public TutorialData fetchTutorialData (int stepID) {
-      return _tutorialDataList.Find(_ => _.stepOrder == stepID);
+      TutorialData tutorialData = _tutorialDataList.Find(_ => _.stepOrder == stepID);
+
+      if (tutorialData == null) {
+         D.debug("Found no tutorial data for step " + stepID + " so returning an empty TutorialData.");
+         tutorialData = new TutorialData();
+      }
+
+      return tutorialData;
    }
 
    public TutorialData fetchTutorialData (string stepTitle) {

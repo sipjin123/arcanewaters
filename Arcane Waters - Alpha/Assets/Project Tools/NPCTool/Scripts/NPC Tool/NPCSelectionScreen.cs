@@ -82,7 +82,7 @@ public class NPCSelectionScreen : MonoBehaviour
       }
    }
 
-   public void openMaterScene () {
+   public void openMasterScene () {
       SceneManager.LoadScene(MasterToolScene.masterScene);
    }
 

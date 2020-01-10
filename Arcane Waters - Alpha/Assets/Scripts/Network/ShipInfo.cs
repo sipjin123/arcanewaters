@@ -175,7 +175,11 @@ public class ShipInfo {
 
 public class ShipAbilityInfo
 {
+   // The default attack ability of the ship
    public const string DEFAULT_ABILITY = "RegularCannon";
+
+   // Holds the collection of ability names
+   public string[] ShipAbilities = new string[0];
 
    public ShipAbilityInfo () { }
    public ShipAbilityInfo (bool autoGenerate) {
@@ -183,5 +187,4 @@ public class ShipAbilityInfo
          ShipAbilities = ShipAbilityManager.getRandomAbilities(3).ToArray();
       }
    }
-   public string[] ShipAbilities = new string[0];
 }

@@ -68,7 +68,11 @@ public class ShopXMLManager : MonoBehaviour {
    }
 
    public ShopData getShopDataByArea (string area) {
-      return shopDataList.Find(_ => _.areaAttachment == area);
+      ShopData returnData = shopDataList.Find(_ => _.areaAttachment == area);
+      if (returnData == null) {
+         return new ShopData { shopGreetingText = "Greeting Text Not Set" };
+      }
+      return returnData;
    }
 
    #region Private Variables

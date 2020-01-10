@@ -72,8 +72,6 @@ public class ShipyardScreen : Panel {
       rowsContainer.DestroyChildren();
 
       foreach(ShipInfo shipInfo in shipList) { 
-         // Look up the info for this row
-
          // Create a new row
          ShipyardRow row = Instantiate(rowPrefab, rowsContainer.transform, false);
          row.transform.SetParent(rowsContainer.transform, false);

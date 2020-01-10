@@ -238,7 +238,6 @@ public class ShopManager : MonoBehaviour {
       // Saves the current time
       lastCropRegenTime = DateTime.UtcNow;
 
-
       // Generate offers for each of the areas
       foreach (string areaKey in Area.getAllAreaKeys()) {
          Biome.Type biomeType = Area.getBiome(areaKey);

@@ -1144,7 +1144,7 @@ public class RPCManager : NetworkBehaviour {
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             ShopData shopData = ShopXMLManager.self.getShopDataByArea(_player.areaKey);
-            string greetingText = shopData == null ? "No Message" : shopData.shopGreetingText;
+            string greetingText = shopData.shopGreetingText;
 
             _player.rpc.Target_ReceiveOffers(_player.connectionToClient, gold, list.ToArray(), lastCropRegenTime, greetingText);
          });
@@ -3062,7 +3062,7 @@ public class RPCManager : NetworkBehaviour {
          int gold = DB_Main.getGold(_player.userId);
 
          ShopData shopData = ShopXMLManager.self.getShopDataByArea(_player.areaKey);
-         string greetingText = shopData == null ? "No Message" : shopData.shopGreetingText;
+         string greetingText = shopData.shopGreetingText;
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             _player.rpc.Target_ReceiveShipyard(_player.connectionToClient, gold, Util.serialize(list), greetingText);
@@ -3102,6 +3102,7 @@ public class RPCManager : NetworkBehaviour {
    protected void getItemsForArea () {
       // Get the current list of items for the area
       List<Item> list = ShopManager.self.getItems(_player.areaKey);
+
       // Sort by rarity
       List<Item> sortedList = list.OrderBy(x => x.getSellPrice()).ToList();
 
@@ -3111,7 +3112,7 @@ public class RPCManager : NetworkBehaviour {
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             ShopData shopData = ShopXMLManager.self.getShopDataByArea(_player.areaKey);
-            string greetingText = shopData == null ? "No Greeting Text" : shopData.shopGreetingText;
+            string greetingText = shopData.shopGreetingText;
 
             _player.rpc.Target_ReceiveShopItems(_player.connectionToClient, gold, Util.serialize(sortedList), greetingText);
          });
