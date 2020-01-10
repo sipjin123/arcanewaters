@@ -68,7 +68,6 @@ namespace MapCreationTool
    public enum CustomFieldType
    {
       Direction,
-      NPC,
-      TutorialArrow
+      NPC
    }
 }

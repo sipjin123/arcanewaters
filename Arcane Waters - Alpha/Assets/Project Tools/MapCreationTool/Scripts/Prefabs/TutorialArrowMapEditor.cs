@@ -8,18 +8,23 @@ namespace MapCreationTool
 {
    public class TutorialArrowMapEditor : MapEditorPrefab, IPrefabDataListener, IHighlightable
    {
-      private SpriteRenderer objSprite;
+      [SerializeField]
+      private SpriteRenderer highlight = null;
+
       private TutorialItem tutorialItem;
+      private Text text;
 
       private void Awake () {
          tutorialItem = GetComponent<TutorialItem>();
          tutorialItem.isSetInMapEditor = true;
          tutorialItem.transform.localScale = new Vector3(2, 2, 2);
-         objSprite = GetComponentInChildren<SpriteRenderer>();
+         text = GetComponentInChildren<Text>();
+         text.text = "Step ID: -";
       }
 
       public void dataFieldChanged (string key, string value) {
-         if (key.CompareTo("tutorial data") == 0) {
+         if (key.CompareTo("step id") == 0) {
+            text.text = "Step ID: " + value;
          }
       }
 
@@ -31,7 +36,7 @@ namespace MapCreationTool
       }
 
       public void setHighlight (bool hovered, bool selected) {
-
+         setSpriteOutline(highlight, hovered, selected);
       }
    }
 }

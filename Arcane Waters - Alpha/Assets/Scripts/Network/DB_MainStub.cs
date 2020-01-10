@@ -581,7 +581,11 @@ public class DB_MainStub : MonoBehaviour {
       return 0;
    }
 
-   public static int getMinimumClientGameVersion () {
+   public static int getMinimumClientGameVersionForWindows () {
+      return 0;
+   }
+
+   public static int getMinimumClientGameVersionForMac () {
       return 0;
    }
 

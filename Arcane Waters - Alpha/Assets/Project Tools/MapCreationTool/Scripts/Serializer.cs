@@ -177,6 +177,7 @@ namespace MapCreationTool.Serialization
 
                midLayers.Add(new MidExportLayer {
                   z = getZ(config.getIndex(layerkv.Key, editorType), 0),
+                  layer = layerkv.Key,
                   tileMatrix = getTilesWithCollisions(layerkv.Value, tileToIndex, collisionDictionary, editorOrigin, editorSize)
                });
             } else {
@@ -186,6 +187,7 @@ namespace MapCreationTool.Serialization
 
                   midLayers.Add(new MidExportLayer {
                      z = getZ(config.getIndex(layerkv.Key, editorType), i),
+                     layer = layerkv.Key,
                      tileMatrix = getTilesWithCollisions(layerkv.Value.subLayers[i], tileToIndex, collisionDictionary, editorOrigin, editorSize)
                   });
                }
@@ -193,16 +195,35 @@ namespace MapCreationTool.Serialization
          }
 
          // Set collision flag to tiles inside mid export data structure
-         for(int i = 0; i < editorSize.x; i++) {
-            for(int j = 0; j < editorSize.y; j++) {
-               for(int k = midLayers.Count - 1; k >= 0; k--) {
+         for (int i = 0; i < editorSize.x; i++) {
+            for (int j = 0; j < editorSize.y; j++) {
+               bool hasWater = false;
+               for (int k = midLayers.Count - 1; k >= 0; k--) {
+                  if (midLayers[k].layer.CompareTo("water") == 0 && midLayers[k].tileMatrix[i, j] != null) {
+                     hasWater = true;
+                  }
+               }
+
+               for (int k = midLayers.Count - 1; k >= 0; k--) {
+
                   if (midLayers[k].tileMatrix[i, j] == null)
                      continue;
 
+                  // If docks have no water under them, don't place colliders
+                  if (midLayers[k].layer.CompareTo("dock") == 0 && !hasWater) {
+                     if (midLayers[k].tileMatrix[i, j].collisionType == TileCollisionType.CancelEnabled || midLayers[k].tileMatrix[i, j].collisionType == TileCollisionType.CancelDisabled) {
+                        break;
+                     } else  {
+                        continue;
+                     }
+                  }
+
                   if (midLayers[k].tileMatrix[i, j].collisionType == TileCollisionType.Enabled) {
                      midLayers[k].tileMatrix[i, j].tile.c = 1;
-                  } else if(midLayers[k].tileMatrix[i, j].collisionType == TileCollisionType.CancelEnabled) {
+                  } else if (midLayers[k].tileMatrix[i, j].collisionType == TileCollisionType.CancelEnabled) {
                      midLayers[k].tileMatrix[i, j].tile.c = 1;
+                     break;
+                  } else if(midLayers[k].tileMatrix[i, j].collisionType == TileCollisionType.CancelDisabled) {
                      break;
                   }
                }
@@ -210,17 +231,17 @@ namespace MapCreationTool.Serialization
          }
 
          // Form final layers
-         foreach(MidExportLayer midLayer in midLayers) {
+         foreach (MidExportLayer midLayer in midLayers) {
             List<ExportedTile001> exportedTiles = new List<ExportedTile001>();
-            for(int i = 0; i < midLayer.tileMatrix.GetLength(0); i++) {
-               for(int j = 0; j < midLayer.tileMatrix.GetLength(1); j++) {
-                  if(midLayer.tileMatrix[i, j] != null)
+            for (int i = 0; i < midLayer.tileMatrix.GetLength(0); i++) {
+               for (int j = 0; j < midLayer.tileMatrix.GetLength(1); j++) {
+                  if (midLayer.tileMatrix[i, j] != null)
                      exportedTiles.Add(midLayer.tileMatrix[i, j].tile);
                }
             }
-            result.Add(new ExportedLayer001 { 
-               z = midLayer.z, 
-               tiles = exportedTiles.ToArray() 
+            result.Add(new ExportedLayer001 {
+               z = midLayer.z,
+               tiles = exportedTiles.ToArray()
             });
          }
 
@@ -425,6 +446,7 @@ namespace MapCreationTool.Serialization
       private class MidExportLayer
       {
          public float z { get; set; }
+         public string layer { get; set; }
          public TileIndexWithCollision[,] tileMatrix { get; set; }
       }
 

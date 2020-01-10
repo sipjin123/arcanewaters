@@ -13,8 +13,16 @@ public class ServerMessageManager : MonoBehaviour {
    public static void On_LogInUserMessage (NetworkConnection conn, LogInUserMessage logInUserMessage) {
       int selectedUserId = logInUserMessage.selectedUserId;
 
+      // Determine the minimum client version for the client's platform
+      int minClientGameVersion;
+      if (logInUserMessage.clientPlatform == RuntimePlatform.OSXPlayer) {
+         minClientGameVersion = GameVersionManager.self.minClientGameVersionMac;
+      } else {
+         minClientGameVersion = GameVersionManager.self.minClientGameVersionWin;
+      }
+
       // Make sure they have the required game version
-      if (logInUserMessage.clientGameVersion < GameVersionManager.self.minClientGameVersion) {
+      if (logInUserMessage.clientGameVersion < minClientGameVersion) {
          string msg = string.Format("Refusing login for {0}, client version {1}", logInUserMessage.accountName, logInUserMessage.clientGameVersion);
          D.debug(msg);
          sendError(ErrorMessage.Type.ClientOutdated, conn.connectionId);

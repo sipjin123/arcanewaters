@@ -9,8 +9,9 @@ public class GameVersionManager : MonoBehaviour
 {
    #region Public Variables
 
-   // The minimum client version, below which the client is asked to download the new build
-   public int minClientGameVersion = int.MaxValue;
+   // The minimum client versions, below which the client is asked to download the new build
+   public int minClientGameVersionWin = int.MaxValue;
+   public int minClientGameVersionMac = int.MaxValue;
 
    // Self
    public static GameVersionManager self;
@@ -28,7 +29,8 @@ public class GameVersionManager : MonoBehaviour
    private void updateMinimumClientGameVersion () {
       if (NetworkServer.active) {
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            minClientGameVersion = DB_Main.getMinimumClientGameVersion();
+            minClientGameVersionWin = DB_Main.getMinimumClientGameVersionForWindows();
+            minClientGameVersionMac = DB_Main.getMinimumClientGameVersionForMac();
          });
       }
    }

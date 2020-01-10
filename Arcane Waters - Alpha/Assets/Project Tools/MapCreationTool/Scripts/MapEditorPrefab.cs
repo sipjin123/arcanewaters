@@ -21,5 +21,15 @@ namespace MapCreationTool
             outline.Regenerate();
          }
       }
+
+      public void setSpriteOutline(SpriteRenderer sr, bool hovered, bool selected) {
+         if (!hovered && !selected) {
+            sr.color = new Color(1, 1, 1, 0);
+         } else if (hovered) {
+            sr.color = Color.white; ;
+         } else if (selected) {
+            sr.color = Color.green;
+         }
+      }
    }
 }

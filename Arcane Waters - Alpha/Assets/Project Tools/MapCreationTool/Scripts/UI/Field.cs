@@ -9,7 +9,10 @@ namespace MapCreationTool
       public event System.Action<string> ValueChanged;
       public Text fieldName { get; private set; }
       public InputField valueInput { get; private set; }
-      public Toggle valueToggle { get; private set; }
+
+      [SerializeField]
+      private Toggle valueToggle = null;
+
       public Dropdown valueDropdown { get; private set; }
 
       private RectTransform rectT;
@@ -18,7 +21,6 @@ namespace MapCreationTool
          fieldName = GetComponentInChildren<Text>();
          valueInput = GetComponentInChildren<InputField>();
          valueDropdown = GetComponentInChildren<Dropdown>();
-         valueToggle = GetComponentInChildren<Toggle>(true);
 
          rectT = GetComponent<RectTransform>();
       }

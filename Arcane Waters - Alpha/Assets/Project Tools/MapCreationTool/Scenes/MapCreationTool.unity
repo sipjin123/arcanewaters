@@ -4626,7 +4626,6 @@ MonoBehaviour:
     m_RotationOrder: 4
   transparentTile: {fileID: 11400000, guid: 6770d82dbc34c894eb30ee1fd5b3b937, type: 2}
   sizeCover: {fileID: 932657815}
-  placedPrefabs: []
 --- !u!4 &723787623
 Transform:
   m_ObjectHideFlags: 0
@@ -28069,8 +28068,6 @@ MonoBehaviour:
     - m_Text: 'Tool: Fill'
       m_Image: {fileID: 0}
     - m_Text: 'Tool: Prefab Data'
-      m_Image: {fileID: 0}
-    - m_Text: 'Tool: Tutorial Data'
       m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:

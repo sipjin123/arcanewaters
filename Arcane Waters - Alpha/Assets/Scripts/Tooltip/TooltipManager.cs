@@ -117,8 +117,6 @@ public class TooltipManager : ClientMonoBehaviour {
          return "Character Info <color=green>[C]</color>";
       } else if (imageName.StartsWith("btn_abilities")) {
          return "Abilities <color=green>[U]</color>";
-      } else if (imageName.StartsWith("btn_friends")) {
-         return "Friend List <color=green>[F]</color>";
       } else if (imageName.StartsWith("btn_guild")) {
          return "Guild Info <color=green>[G]</color>";
       } else if (imageName.StartsWith("btn_inventory")) {
@@ -135,6 +133,10 @@ public class TooltipManager : ClientMonoBehaviour {
          return "Gem Store <color=green>[E]</color>";
       } else if (imageName.StartsWith("btn_trade")) {
          return "Trade History <color=green>[T]</color>";
+      } else if (imageName.StartsWith("btn_friends")) {
+         return "Friend List <color=green>[F]</color>";
+      } else if (imageName.StartsWith("btn_mail")) {
+         return "Mail <color=green>[K]</color>";
       }
 
       // Specialties

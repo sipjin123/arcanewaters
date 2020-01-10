@@ -64,7 +64,7 @@ public static class ExtensionsUtil {
 
    public static T ChooseRandom<T> (this IList<T> list) {
       // Get a random index from the list
-      int randomIndex = UnityEngine.Random.Range(0, list.Count);
+      int randomIndex = r.Next(0, list.Count);
 
       return list[randomIndex];
    }

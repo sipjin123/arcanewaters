@@ -292,8 +292,17 @@ public class AdminManager : NetworkBehaviour {
 
    protected void requestWarp (string parameters) {
       string[] list = parameters.Split(' ');
-      string areaKey = list[0];
-      string spawnKey = list[1];
+      string areaKey = "";
+      string spawnKey = "";
+
+      try {
+         areaKey = list[0];
+         spawnKey = list[1];
+      } catch (System.Exception e) {
+         D.warning("Unable to parse from: " + parameters + ", exception: " + e);
+         ChatManager.self.addChat("Not a valid warp command", ChatInfo.Type.Error);
+         return;
+      }
 
       // Send the request to the server
       Cmd_Warp(areaKey, spawnKey);
@@ -573,6 +582,11 @@ public class AdminManager : NetworkBehaviour {
       }
 
       Spawn spawn = SpawnManager.self.getSpawn(areaKey, spawnKey);
+
+      if (spawn == null) {
+         ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "Could not determine the warp destination. Area: " + areaKey + ", spawn: " + spawnKey);
+         return;
+      }
 
       _player.spawnInNewMap(spawn.AreaKey, spawn, Direction.South);
    }

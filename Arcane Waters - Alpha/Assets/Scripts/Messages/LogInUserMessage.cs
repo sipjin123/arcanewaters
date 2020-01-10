@@ -21,6 +21,9 @@ public class LogInUserMessage : MessageBase {
    // The selected user
    public int selectedUserId;
 
+   // The client platform
+   public RuntimePlatform clientPlatform;   
+
    #endregion
 
    public LogInUserMessage () { }
@@ -29,11 +32,12 @@ public class LogInUserMessage : MessageBase {
       this.netId = netId;
    }
 
-   public LogInUserMessage (uint netId, string accountName, string accountPassword, int clientGameVersion, int selectedUserId) {
+   public LogInUserMessage (uint netId, string accountName, string accountPassword, int clientGameVersion, int selectedUserId, RuntimePlatform clientPlatform) {
       this.netId = netId;
       this.selectedUserId = selectedUserId;
       this.accountName = accountName;
       this.clientGameVersion = clientGameVersion;
       this.accountPassword = accountPassword;
+      this.clientPlatform = clientPlatform;
    }
 }

@@ -1,7 +1,6 @@
 ﻿using MapCreationTool.PaletteTilesData;
 using MapCreationTool.Serialization;
 using MapCreationTool.UndoSystem;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -54,7 +53,6 @@ namespace MapCreationTool
 
       private Dictionary<string, Layer> layers;
 
-      [SerializeField]
       private List<PlacedPrefab> placedPrefabs = new List<PlacedPrefab>();
 
       private PlacedPrefab selectedPrefab;
@@ -599,7 +597,7 @@ namespace MapCreationTool
 
          //--------------------------------
          //Handle prefab selection
-         if (Tools.toolType == ToolType.PrefabData || Tools.toolType == ToolType.TutorialData) {
+         if (Tools.toolType == ToolType.PrefabData) {
             var target = getHoveredPrefab();
 
             if (target != null && target != selectedPrefab) {
@@ -701,7 +699,7 @@ namespace MapCreationTool
          if (data.button == PointerEventData.InputButton.Left) {
             if (Tools.toolType == ToolType.Brush || Tools.toolType == ToolType.Eraser || Tools.toolType == ToolType.Fill)
                changeBoard(getPotentialBoardChange(data.pointerCurrentRaycast.worldPosition));
-            else if (Tools.toolType == ToolType.PrefabData || Tools.toolType == ToolType.TutorialData)
+            else if (Tools.toolType == ToolType.PrefabData)
                selectPrefab(getHoveredPrefab());
          }
          updatePreview(data.position);
@@ -770,7 +768,6 @@ namespace MapCreationTool
       public bool previewTilesSet { get; set; }
    }
 
-   [Serializable]
    public class PlacedPrefab
    {
       public GameObject placedInstance { get; set; }

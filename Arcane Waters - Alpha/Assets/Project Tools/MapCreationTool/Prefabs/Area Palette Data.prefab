@@ -36650,7 +36650,7 @@ Tilemap:
       m_TileColorIndex: 527
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 12, y: 26, z: 0}
     second:
       m_TileIndex: 328
@@ -36659,7 +36659,7 @@ Tilemap:
       m_TileColorIndex: 527
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 13, y: 26, z: 0}
     second:
       m_TileIndex: 327
@@ -36668,7 +36668,7 @@ Tilemap:
       m_TileColorIndex: 527
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 15, y: 26, z: 0}
     second:
       m_TileIndex: 326
@@ -36812,7 +36812,7 @@ Tilemap:
       m_TileColorIndex: 527
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 12, y: 28, z: 0}
     second:
       m_TileIndex: 302
@@ -36821,7 +36821,7 @@ Tilemap:
       m_TileColorIndex: 527
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 13, y: 28, z: 0}
     second:
       m_TileIndex: 301
@@ -36830,7 +36830,7 @@ Tilemap:
       m_TileColorIndex: 527
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 15, y: 28, z: 0}
     second:
       m_TileIndex: 300
@@ -36893,7 +36893,7 @@ Tilemap:
       m_TileColorIndex: 527
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 12, y: 29, z: 0}
     second:
       m_TileIndex: 289
@@ -36902,7 +36902,7 @@ Tilemap:
       m_TileColorIndex: 527
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 13, y: 29, z: 0}
     second:
       m_TileIndex: 288
@@ -36911,7 +36911,7 @@ Tilemap:
       m_TileColorIndex: 527
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 14, y: 29, z: 0}
     second:
       m_TileIndex: 287
@@ -37334,7 +37334,7 @@ Tilemap:
       m_TileColorIndex: 527
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 10, y: 34, z: 0}
     second:
       m_TileIndex: 302
@@ -37343,7 +37343,7 @@ Tilemap:
       m_TileColorIndex: 527
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 11, y: 34, z: 0}
     second:
       m_TileIndex: 301
@@ -37352,7 +37352,7 @@ Tilemap:
       m_TileColorIndex: 527
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 9, y: 35, z: 0}
     second:
       m_TileIndex: 290
@@ -37361,7 +37361,7 @@ Tilemap:
       m_TileColorIndex: 527
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 10, y: 35, z: 0}
     second:
       m_TileIndex: 289
@@ -37370,7 +37370,7 @@ Tilemap:
       m_TileColorIndex: 527
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 11, y: 35, z: 0}
     second:
       m_TileIndex: 288
@@ -37379,7 +37379,7 @@ Tilemap:
       m_TileColorIndex: 527
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 1, y: 36, z: 0}
     second:
       m_TileIndex: 507
@@ -44742,15 +44742,15 @@ MonoBehaviour:
     - layer: dock
       sublayer: 0
       cluster: 1
-      collisionType: 0
+      collisionType: 2
     - layer: dock
       sublayer: 0
       cluster: 1
-      collisionType: 0
+      collisionType: 2
     - layer: dock
       sublayer: 0
       cluster: 1
-      collisionType: 0
+      collisionType: 2
     - layer: 
       sublayer: 0
       cluster: 0
@@ -44942,15 +44942,15 @@ MonoBehaviour:
     - layer: dock
       sublayer: 0
       cluster: 1
-      collisionType: 0
+      collisionType: 2
     - layer: dock
       sublayer: 0
       cluster: 1
-      collisionType: 0
+      collisionType: 3
     - layer: dock
       sublayer: 0
       cluster: 1
-      collisionType: 0
+      collisionType: 2
     - layer: 
       sublayer: 0
       cluster: 0
@@ -45114,19 +45114,19 @@ MonoBehaviour:
     - layer: dock
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 2
     - layer: dock
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 2
     - layer: dock
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 2
     - layer: dock
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 2
     - layer: path
       sublayer: 0
       cluster: 0
@@ -45142,15 +45142,15 @@ MonoBehaviour:
     - layer: dock
       sublayer: 0
       cluster: 1
-      collisionType: 0
+      collisionType: 2
     - layer: dock
       sublayer: 0
       cluster: 1
-      collisionType: 0
+      collisionType: 2
     - layer: dock
       sublayer: 0
       cluster: 1
-      collisionType: 0
+      collisionType: 2
     - layer: 
       sublayer: 0
       cluster: 0
@@ -45314,19 +45314,19 @@ MonoBehaviour:
     - layer: dock
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 2
     - layer: dock
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 2
     - layer: dock
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 3
     - layer: dock
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 2
     - layer: path
       sublayer: 0
       cluster: 0
@@ -45514,19 +45514,19 @@ MonoBehaviour:
     - layer: dock
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 2
     - layer: dock
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 2
     - layer: dock
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 2
     - layer: dock
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 2
     - layer: path
       sublayer: 0
       cluster: 0
@@ -53239,7 +53239,7 @@ Tilemap:
       - {fileID: 21300176, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300182, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300188, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 14, y: 8, z: 0}
@@ -53449,7 +53449,7 @@ Tilemap:
       - {fileID: 21300464, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300470, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300476, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 19, y: 10, z: 0}

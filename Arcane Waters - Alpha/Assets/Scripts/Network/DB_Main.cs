@@ -784,7 +784,7 @@ public class DB_Main : DB_MainStub {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.tutorial_xml", conn)) {
+            "SELECT * FROM arcane.tutorial_xml ORDER BY stepOrder", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -3912,19 +3912,42 @@ public class DB_Main : DB_MainStub {
       return mailCount;
    }
 
-   public static new int getMinimumClientGameVersion () {
+   public static new int getMinimumClientGameVersionForWindows () {
       int minVersion = 0;
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT minClientVersion FROM game_version WHERE id='1'", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT minClientVersionWin FROM game_version", conn)) {
             conn.Open();
             cmd.Prepare();
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  minVersion = dataReader.GetInt32("minClientVersion");
+                  minVersion = dataReader.GetInt32("minClientVersionWin");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return minVersion;
+   }
+
+   public static new int getMinimumClientGameVersionForMac () {
+      int minVersion = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT minClientVersionMac FROM game_version", conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  minVersion = dataReader.GetInt32("minClientVersionMac");
                }
             }
          }
