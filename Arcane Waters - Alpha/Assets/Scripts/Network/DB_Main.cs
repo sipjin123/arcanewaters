@@ -604,6 +604,72 @@ public class DB_Main : DB_MainStub {
 
    #endregion
 
+   #region Shop XML Data
+
+   public static new void updateShopXML (string rawData, string shopName) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "INSERT INTO shop_xml (shopName, xmlContent) " +
+            "VALUES(@shopName, @xmlContent) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@shopName", shopName);
+            cmd.Parameters.AddWithValue("@xmlContent", rawData);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<string> getShopXML () {
+      List<string> rawDataList = new List<string>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane.shop_xml", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  rawDataList.Add(dataReader.GetString("xmlContent"));
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return new List<string>(rawDataList);
+   }
+
+   public static new void deleteShopXML (string shopName) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM shop_xml WHERE shopName=@shopName", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@shopName", shopName);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   #endregion
+
    #region Ship XML Data
 
    public static new void updateShipXML (string rawData, int typeIndex) {
@@ -2166,8 +2232,9 @@ public class DB_Main : DB_MainStub {
       Ship.Type shipType = Ship.Type.Caravel;
       ShipInfo shipInfo = new ShipInfo(0, userId, shipType, Ship.SkinType.None, Ship.MastType.Caravel_1, Ship.SailType.Caravel_1, shipType + "",
             ColorType.HullBrown, ColorType.HullBrown, ColorType.SailWhite, ColorType.SailWhite, 100, 100, 20,
-            80, 80, 15, 100, 90, 10, Rarity.Type.Common, new ShipAbilityInfo(true));
-      
+            80, 80, 15, 100, 90, 10, Rarity.Type.Common, new ShipAbilityInfo(false));
+      shipInfo.shipAbilities.ShipAbilities = new string []{ ShipAbilityInfo.DEFAULT_ABILITY };
+
       System.Xml.Serialization.XmlSerializer ser = new System.Xml.Serialization.XmlSerializer(shipInfo.shipAbilities.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {
@@ -2214,6 +2281,23 @@ public class DB_Main : DB_MainStub {
       }
 
       return shipInfo;
+   }
+
+   public static new void updateShipAbilities (int shipId, string abilityXML) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("UPDATE ships SET ships.shipAbilities=@shipAbilities WHERE ships.shpId = @shipId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@shipId", shipId);
+            cmd.Parameters.AddWithValue("@shipAbilities", abilityXML);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
    }
 
    public static new ShipInfo createShipFromShipyard (int userId, ShipInfo shipyardInfo) {

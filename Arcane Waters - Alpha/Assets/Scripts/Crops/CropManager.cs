@@ -478,7 +478,7 @@ public class CropManager : NetworkBehaviour {
 
    protected static int getWaterIntervalSeconds (Crop.Type cropType, int highestCompletedTutorialStep) {
       // When they're just getting started, make the crops grow fast
-      TutorialData tutorialData = TutorialManager.self.currentTutorialData();
+      TutorialData tutorialData = TutorialManager.self.fetchTutorialData(highestCompletedTutorialStep);
       if (tutorialData.actionType == ActionType.WaterCrop && tutorialData.countRequirement == 1) {
          return 6;
       }

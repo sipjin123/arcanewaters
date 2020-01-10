@@ -6,6 +6,7 @@ using Mirror;
 using System.Linq;
 using System.IO;
 using static EquipmentToolManager;
+using UnityEngine.Events;
 
 public class EquipmentXMLManager : MonoBehaviour {
    #region Public Variables
@@ -32,6 +33,9 @@ public class EquipmentXMLManager : MonoBehaviour {
 
    // Determines if all equipment is loaded
    public bool loadedAllEquipment;
+
+   // Determines if data setup is done
+   public UnityEvent finishedDataSetup = new UnityEvent();
 
    #endregion
 
@@ -66,8 +70,7 @@ public class EquipmentXMLManager : MonoBehaviour {
          if (Global.player != null) { 
             Global.player.admin.buildItemNamesDictionary();
          }
-
-         ShopManager.self.initializeRandomGeneratedItems();
+         finishedDataSetup.Invoke();
          equipmentLoadCounter = 0;
       }
    }

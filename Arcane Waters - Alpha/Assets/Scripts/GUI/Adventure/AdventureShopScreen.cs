@@ -64,6 +64,11 @@ public class AdventureShopScreen : Panel {
       Global.player.rpc.Cmd_BuyItem(itemId);
    }
 
+   public void updateGreetingText (string text) {
+      _greetingText = text;
+      greetingText.text = text;
+   }
+
    public void updatePanelWithItems (int gold, List<Item> itemList) {
       moneyText.text = gold + "";
 

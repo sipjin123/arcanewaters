@@ -143,9 +143,12 @@ public class MerchantScreen : Panel {
       Global.player.rpc.Cmd_SellCrops(offerId, amountToSell);
    }
 
-   public void updatePanelWithOffers (int gold, List<CropOffer> offers, long lastCropRegenTime) {
+   public void updatePanelWithOffers (int gold, List<CropOffer> offers, long lastCropRegenTime, string greetingText) {
       // Keep track of these offers for later reference
       _offers = offers;
+
+      this.greetingText.text = greetingText;
+      _greetingText = greetingText;
 
       // Clear out any old info
       cropRowsContainer.DestroyChildren();

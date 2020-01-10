@@ -10,6 +10,10 @@ public class DB_MainStub : MonoBehaviour {
 
    #endregion
 
+   public static void updateShipAbilities (int shipId, string abilityXML) {
+
+   }
+
    public static void updateShipAbilityXML (string rawData, string shipAbilityName) {
    }
 
@@ -86,6 +90,18 @@ public class DB_MainStub : MonoBehaviour {
    }
 
    public static void deleteNPCXML (int typeID) {
+
+   }
+
+   public static void updateShopXML (string rawData, string shopName) {
+
+   }
+
+   public static List<string> getShopXML () {
+      return new List<string>();
+   }
+
+   public static void deleteShopXML (string shopName) {
 
    }
 

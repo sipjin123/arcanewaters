@@ -35,8 +35,8 @@ public class AbilityPanel : Panel {
    public static AbilityPanel self;
 
    // Data Display
-   public Text toolTipLevel, toolTipAP, toolTipLevelRequired;
-   public Text panelLevel, panelAP, panelLevelRequired;
+   public Text toolTipLevel, toolTipAP;
+   public Text panelLevel, panelAP;
 
    // Custom tooltip for abilities
    public GameObject toolTipCustom;
@@ -106,9 +106,6 @@ public class AbilityPanel : Panel {
       if (abilityData != null) {
          toolTipLevel.text = abilityData.abilityLevel.ToString();
          panelLevel.text = abilityData.abilityLevel.ToString();
-
-         toolTipLevelRequired.text = abilityData.levelRequirement.ToString();
-         panelLevelRequired.text = abilityData.levelRequirement.ToString();
 
          toolTipAP.text = abilityData.abilityCost.ToString();
          panelAP.text = abilityData.abilityCost.ToString();

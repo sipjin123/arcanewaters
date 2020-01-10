@@ -175,6 +175,8 @@ public class ShipInfo {
 
 public class ShipAbilityInfo
 {
+   public const string DEFAULT_ABILITY = "RegularCannon";
+
    public ShipAbilityInfo () { }
    public ShipAbilityInfo (bool autoGenerate) {
       if (autoGenerate) {

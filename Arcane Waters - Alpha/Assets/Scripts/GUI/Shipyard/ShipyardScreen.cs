@@ -63,15 +63,16 @@ public class ShipyardScreen : Panel {
       Global.player.rpc.Cmd_BuyShip(shipId);
    }
 
-   public void updatePanelWithShips (int gold, List<ShipInfo> shipList) {
+   public void updatePanelWithShips (int gold, List<ShipInfo> shipList, string greetingText) {
+      this.greetingText.text = greetingText;
+      _greetingText = greetingText;
       moneyText.text = gold + "";
 
       // Clear out any old info
       rowsContainer.DestroyChildren();
 
-      for (int i = 0; i < 3; i ++) {
+      foreach(ShipInfo shipInfo in shipList) { 
          // Look up the info for this row
-         ShipInfo shipInfo = shipList[i];
 
          // Create a new row
          ShipyardRow row = Instantiate(rowPrefab, rowsContainer.transform, false);

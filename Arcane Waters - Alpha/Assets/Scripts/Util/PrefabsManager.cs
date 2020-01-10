@@ -81,7 +81,7 @@ public class PrefabsManager : MonoBehaviour {
    public ShipDamageText shipDamageTextPrefab;
 
    // The Prefab we use for creating Heal text
-   public ShipDamageText shipHealTextPrefab;
+   public ShipDamageText shipBuffTextPrefab;
 
    // The Prefab we use for creating Ice Damage text
    public ShipDamageText shipDamageTextIcePrefab;
@@ -205,9 +205,9 @@ public class PrefabsManager : MonoBehaviour {
          case Attack.Type.Air:
             return shipDamageTextAirPrefab;
          case Attack.Type.Heal:
-            return shipHealTextPrefab;
+            return shipBuffTextPrefab;
          case Attack.Type.SpeedBoost:
-            return shipHealTextPrefab;
+            return shipBuffTextPrefab;
          default:
             return shipDamageTextPrefab;
       }

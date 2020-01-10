@@ -192,24 +192,25 @@ public class RPCManager : NetworkBehaviour {
    #endregion
 
    [TargetRpc]
-   public void Target_ReceiveItems (NetworkConnection connection, int gold, string[] itemArray) {
+   public void Target_ReceiveShopItems (NetworkConnection connection, int gold, string[] itemArray, string greetingText) {
+      AdventureShopScreen.self.updateGreetingText(greetingText);
       AdventureShopScreen.self.updatePanelWithItems(gold, Item.unserializeAndCast(itemArray));
    }
 
    [TargetRpc]
-   public void Target_ReceiveOffers (NetworkConnection connection, int gold, CropOffer[] offerArray, long lastCropRegenTime) {
-      MerchantScreen.self.updatePanelWithOffers(gold, new List<CropOffer>(offerArray), lastCropRegenTime);
+   public void Target_ReceiveOffers (NetworkConnection connection, int gold, CropOffer[] offerArray, long lastCropRegenTime, string greetingText) {
+      MerchantScreen.self.updatePanelWithOffers(gold, new List<CropOffer>(offerArray), lastCropRegenTime, greetingText);
    }
 
    [TargetRpc]
-   public void Target_ReceiveShipyard (NetworkConnection connection, int gold, string[] shipArray) {
+   public void Target_ReceiveShipyard (NetworkConnection connection, int gold, string[] shipArray, string greetingText) {
       // Translate Abilities
       List<ShipInfo> newShipInfo = Util.unserialize<ShipInfo>(shipArray);
       foreach (ShipInfo info in newShipInfo) {
          info.shipAbilities = Util.xmlLoad<ShipAbilityInfo>(info.shipAbilityXML);
       }
 
-      ShipyardScreen.self.updatePanelWithShips(gold, newShipInfo);
+      ShipyardScreen.self.updatePanelWithShips(gold, newShipInfo, greetingText);
    }
 
    [TargetRpc]
@@ -569,6 +570,22 @@ public class RPCManager : NetworkBehaviour {
    public void Cmd_RequestShipAbilities (int shipID) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          ShipInfo shipInfo = DB_Main.getShipInfo(shipID);
+         if (shipInfo.shipAbilityXML == null || shipInfo.shipAbilityXML == "") {
+            D.error("XML Data does not exist for Ship ID: " + shipID + " Creating new Data with Default Ability: " + ShipAbilityInfo.DEFAULT_ABILITY);
+            string[] shipArray = new string[] { ShipAbilityInfo.DEFAULT_ABILITY };
+
+            shipInfo.shipAbilities = new ShipAbilityInfo { ShipAbilities = shipArray };
+
+            System.Xml.Serialization.XmlSerializer ser = new System.Xml.Serialization.XmlSerializer(shipInfo.shipAbilities.GetType());
+            var sb = new StringBuilder();
+            using (var writer = System.Xml.XmlWriter.Create(sb)) {
+               ser.Serialize(writer, shipInfo.shipAbilities);
+            }
+
+            string xmlString = sb.ToString();
+            shipInfo.shipAbilityXML = xmlString;
+            DB_Main.updateShipAbilities(shipID, xmlString);
+         }
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             ShipAbilityInfo shipAbility = Util.xmlLoad<ShipAbilityInfo>(shipInfo.shipAbilityXML);
             Target_SetShipAbilities(_player.connectionToClient, shipAbility.ShipAbilities);
@@ -1126,8 +1143,10 @@ public class RPCManager : NetworkBehaviour {
          int gold = DB_Main.getGold(_player.userId);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            _player.rpc.Target_ReceiveOffers(_player.connectionToClient, gold, list.ToArray(),
-               lastCropRegenTime);
+            ShopData shopData = ShopXMLManager.self.getShopDataByArea(_player.areaKey);
+            string greetingText = shopData == null ? "No Message" : shopData.shopGreetingText;
+
+            _player.rpc.Target_ReceiveOffers(_player.connectionToClient, gold, list.ToArray(), lastCropRegenTime, greetingText);
          });
       });
    }
@@ -3042,8 +3061,11 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          int gold = DB_Main.getGold(_player.userId);
 
+         ShopData shopData = ShopXMLManager.self.getShopDataByArea(_player.areaKey);
+         string greetingText = shopData == null ? "No Message" : shopData.shopGreetingText;
+
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            _player.rpc.Target_ReceiveShipyard(_player.connectionToClient, gold, Util.serialize(list));
+            _player.rpc.Target_ReceiveShipyard(_player.connectionToClient, gold, Util.serialize(list), greetingText);
          });
       });
    }
@@ -3080,7 +3102,6 @@ public class RPCManager : NetworkBehaviour {
    protected void getItemsForArea () {
       // Get the current list of items for the area
       List<Item> list = ShopManager.self.getItems(_player.areaKey);
-
       // Sort by rarity
       List<Item> sortedList = list.OrderBy(x => x.getSellPrice()).ToList();
 
@@ -3089,7 +3110,10 @@ public class RPCManager : NetworkBehaviour {
          int gold = DB_Main.getGold(_player.userId);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            _player.rpc.Target_ReceiveItems(_player.connectionToClient, gold, Util.serialize(sortedList));
+            ShopData shopData = ShopXMLManager.self.getShopDataByArea(_player.areaKey);
+            string greetingText = shopData == null ? "No Greeting Text" : shopData.shopGreetingText;
+
+            _player.rpc.Target_ReceiveShopItems(_player.connectionToClient, gold, Util.serialize(sortedList), greetingText);
          });
       });
    }
