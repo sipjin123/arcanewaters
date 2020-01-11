@@ -1131,9 +1131,16 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_GetOffersForArea () {
+   public void Cmd_GetOffersForArea (string shopName) {
+      bool useShopName = shopName == ShopManager.DEFAULT_SHOP_NAME ? false : true;
+
       // Get the current list of offers for the area
-      List<CropOffer> list = ShopManager.self.getOffers(_player.areaKey);
+      List<CropOffer> list = new List<CropOffer>();
+      if (useShopName) {
+         list = ShopManager.self.getOffersByShopName(shopName);
+      } else {
+         list = ShopManager.self.getOffers(_player.areaKey);
+      }
 
       // Get the last offer regeneration time
       long lastCropRegenTime = ShopManager.self.lastCropRegenTime.ToBinary();
@@ -1143,7 +1150,12 @@ public class RPCManager : NetworkBehaviour {
          int gold = DB_Main.getGold(_player.userId);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            ShopData shopData = ShopXMLManager.self.getShopDataByArea(_player.areaKey);
+            ShopData shopData = new ShopData();
+            if (useShopName) {
+               shopData = ShopXMLManager.self.getShopDataByName(shopName);
+            } else {
+               shopData = ShopXMLManager.self.getShopDataByArea(_player.areaKey);
+            }
             string greetingText = shopData.shopGreetingText;
 
             _player.rpc.Target_ReceiveOffers(_player.connectionToClient, gold, list.ToArray(), lastCropRegenTime, greetingText);
@@ -1152,8 +1164,8 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_GetItemsForArea () {
-      getItemsForArea();
+   public void Cmd_GetItemsForArea (string shopName) {
+      getItemsForArea(shopName);
    }
 
    [Command]
@@ -1191,8 +1203,8 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_GetShipsForArea () {
-      getShipsForArea();
+   public void Cmd_GetShipsForArea (string shopName) {
+      getShipsForArea(shopName);
    }
 
    #region NPCQuest
@@ -2041,7 +2053,7 @@ public class RPCManager : NetworkBehaviour {
       // Make sure it's still available
       if (shopItem.count <= 0) {
          ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, "That item has sold out!");
-         getItemsForArea();
+         getItemsForArea(ShopManager.DEFAULT_SHOP_NAME);
          return;
       }
 
@@ -2096,7 +2108,7 @@ public class RPCManager : NetworkBehaviour {
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.StoreItemBought, _player, "You have purchased a " + shopItem.getName() + "!");
 
             // Make sure their gold display gets updated
-            getItemsForArea();
+            getItemsForArea(ShopManager.DEFAULT_SHOP_NAME);
          });
       });
    }
@@ -2150,7 +2162,7 @@ public class RPCManager : NetworkBehaviour {
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.ShipBought, _player);
 
             // Make sure their gold display gets updated
-            getShipsForArea();
+            getShipsForArea(ShopManager.DEFAULT_SHOP_NAME);
          });
       });
    }
@@ -3053,15 +3065,28 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Server]
-   protected void getShipsForArea () {
+   protected void getShipsForArea (string shopName) {
+      bool findByShopName = shopName == ShopManager.DEFAULT_SHOP_NAME ? false : true;
+
       // Get the current list of ships for the area
-      List<ShipInfo> list = ShopManager.self.getShips(_player.areaKey);
+      List<ShipInfo> list = new List<ShipInfo>();
+      if (findByShopName) {
+         list = ShopManager.self.getShipsByShopName(shopName);
+      } else {
+         list = ShopManager.self.getShips(_player.areaKey);
+      }
 
       // Look up their current gold in the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          int gold = DB_Main.getGold(_player.userId);
 
-         ShopData shopData = ShopXMLManager.self.getShopDataByArea(_player.areaKey);
+         ShopData shopData = new ShopData();
+         if (findByShopName) {
+            shopData = ShopXMLManager.self.getShopDataByName(shopName);
+         } else {
+            shopData = ShopXMLManager.self.getShopDataByArea(_player.areaKey);
+         }
+
          string greetingText = shopData.shopGreetingText;
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -3099,9 +3124,16 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Server]
-   protected void getItemsForArea () {
+   protected void getItemsForArea (string shopName) {
+      bool findByShopName = shopName == ShopManager.DEFAULT_SHOP_NAME ? false : true;
+
       // Get the current list of items for the area
-      List<Item> list = ShopManager.self.getItems(_player.areaKey);
+      List<Item> list = new List<Item>();
+      if (findByShopName) {
+         list = ShopManager.self.getItemsByShopName(shopName);
+      } else {
+         list = ShopManager.self.getItems(_player.areaKey);
+      }
 
       // Sort by rarity
       List<Item> sortedList = list.OrderBy(x => x.getSellPrice()).ToList();
@@ -3111,7 +3143,13 @@ public class RPCManager : NetworkBehaviour {
          int gold = DB_Main.getGold(_player.userId);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            ShopData shopData = ShopXMLManager.self.getShopDataByArea(_player.areaKey);
+            ShopData shopData = new ShopData();
+            if (findByShopName) {
+               shopData = ShopXMLManager.self.getShopDataByName(shopName);
+            } else {
+               shopData = ShopXMLManager.self.getShopDataByArea(_player.areaKey);
+            }
+
             string greetingText = shopData.shopGreetingText;
 
             _player.rpc.Target_ReceiveShopItems(_player.connectionToClient, gold, Util.serialize(sortedList), greetingText);

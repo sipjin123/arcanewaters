@@ -5,6 +5,8 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
 using MapCreationTool;
+using System;
+using Random = UnityEngine.Random;
 
 public class NPC : MonoBehaviour, IMapEditorDataReceiver {
    #region Public Variables
@@ -237,6 +239,20 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
 
       if (_shopTrigger != null) {
          // If this is a Shop NPC, then show the appropriate panel
+         switch (_shopTrigger.panelType) {
+            case Panel.Type.Adventure:
+               AdventureShopScreen adventurePanel = (AdventureShopScreen) PanelManager.self.get(_shopTrigger.panelType);
+               adventurePanel.shopName = _shopName;
+               break;
+            case Panel.Type.Shipyard:
+               ShipyardScreen shipyardPanel = (ShipyardScreen) PanelManager.self.get(_shopTrigger.panelType);
+               shipyardPanel.shopName = _shopName;
+               break;
+            case Panel.Type.Merchant:
+               MerchantScreen merchantPanel = (MerchantScreen) PanelManager.self.get(_shopTrigger.panelType);
+               merchantPanel.shopName = _shopName;
+               break;
+         }
          PanelManager.self.pushIfNotShowing(_shopTrigger.panelType);
       } else {
          // Send a request to the server to get the npc panel info
@@ -490,6 +506,8 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
    }
 
    public void receiveData (MapCreationTool.Serialization.DataField[] dataFields) {
+      string shopName = "";
+      string panelName = "None";
       foreach (MapCreationTool.Serialization.DataField field in dataFields) {
          if (field.k.CompareTo("npc data") == 0) {
             // Get ID from npc data field
@@ -497,7 +515,19 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
             int id = int.Parse(field.v.Split(':')[0]);
             isDebug = true;
             npcId = id;
+         } else if (field.k.CompareTo("shop name") == 0) {
+            // Get Shop Name (if any)
+            shopName = field.v.Split(':')[0];
+         } else if (field.k.CompareTo("panel type") == 0) {
+            // Get Shop Panel Type (if any)
+            panelName = field.v.Split(':')[0];
          }
+      }
+
+      if (panelName != "None") {
+         _shopTrigger = gameObject.AddComponent<ShopTrigger>();
+         _shopName = shopName;
+         _shopTrigger.panelType = (Panel.Type) Enum.Parse(typeof(Panel.Type), panelName);
       }
    }
 
@@ -541,6 +571,9 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
 
    // The default name, when not defined in the data file
    protected string _npcName = "NPC";
+
+   // Shop Name (if any)
+   protected string _shopName = ShopManager.DEFAULT_SHOP_NAME;
 
    #endregion
 }

@@ -32,15 +32,15 @@ public class MerchantScreen : Panel {
    // Self
    public static MerchantScreen self;
 
+   // Name of the shop reference
+   public string shopName = ShopManager.DEFAULT_SHOP_NAME;
+
    #endregion
 
    public override void Awake () {
       base.Awake();
 
       self = this;
-
-      // Keep track of what our intro text is
-      _greetingText = greetingText.text;
 
       // Initializes the offer expiration countdown
       timeLeftText.text = "";
@@ -51,10 +51,10 @@ public class MerchantScreen : Panel {
       base.show();
 
       // Show the correct offers based on our current area
-      Global.player.rpc.Cmd_GetOffersForArea();
+      Global.player.rpc.Cmd_GetOffersForArea(shopName);
 
-      // Start typing out our intro text
-      AutoTyper.SlowlyRevealText(greetingText, _greetingText);
+      // Greeting message is decided from the XML Data of the Shop
+      greetingText.text = "";
    }
 
    public override void Update () {
@@ -114,7 +114,7 @@ public class MerchantScreen : Panel {
          PanelManager.self.noticeScreen.show("This offer has sold out!");
 
          // Update the offers
-         Global.player.rpc.Cmd_GetOffersForArea();
+         Global.player.rpc.Cmd_GetOffersForArea(ShopManager.DEFAULT_SHOP_NAME);
          return;
       }
 
@@ -149,6 +149,9 @@ public class MerchantScreen : Panel {
 
       this.greetingText.text = greetingText;
       _greetingText = greetingText;
+
+      // Start typing out our intro text
+      AutoTyper.SlowlyRevealText(this.greetingText, _greetingText);
 
       // Clear out any old info
       cropRowsContainer.DestroyChildren();

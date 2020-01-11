@@ -69,6 +69,16 @@ public class TestMapManager : MonoBehaviour
                   player.spawnInNewMap(spawn.AreaKey, spawn, Direction.South);
                }
             }
+         } else if (Input.GetKeyDown(KeyCode.Alpha7) || Input.GetKeyDown(KeyCode.Keypad7)) {
+            var player = Global.player;
+            // If a player entered this warp on the server, move them
+            if (player.isServer && player.connectionToClient != null) {
+               Spawn spawn = SpawnManager.get().getSpawn("StartingTown", "ForestTownWeaponsOutside");
+               if (spawn != null) {
+                  Debug.Log("Starting warp to target area: " + spawn.AreaKey);
+                  player.spawnInNewMap(spawn.AreaKey, spawn, Direction.South);
+               }
+            }
          }
       }
    }

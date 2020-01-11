@@ -473,7 +473,7 @@ public class CropManager : NetworkBehaviour {
       }
 
       // Updates the offers in the merchant panel
-      Global.player.rpc.Cmd_GetOffersForArea();
+      Global.player.rpc.Cmd_GetOffersForArea(ShopManager.DEFAULT_SHOP_NAME);
    }
 
    protected static int getWaterIntervalSeconds (Crop.Type cropType, int highestCompletedTutorialStep) {

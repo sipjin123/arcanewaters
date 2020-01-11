@@ -24,25 +24,25 @@ public class AdventureShopScreen : Panel {
    // Self
    public static AdventureShopScreen self;
 
+   // Name of the shop reference
+   public string shopName = ShopManager.DEFAULT_SHOP_NAME;
+
    #endregion
 
    public override void Awake () {
       base.Awake();
 
       self = this;
-
-      // Keep track of what our intro text is
-      _greetingText = greetingText.text;
    }
 
    public override void show () {
       base.show();
 
       // Show the correct contents based on our current area
-      Global.player.rpc.Cmd_GetItemsForArea();
+      Global.player.rpc.Cmd_GetItemsForArea(shopName);
 
-      // Start typing out our intro text
-      AutoTyper.SlowlyRevealText(greetingText, _greetingText);
+      // Greeting message is decided from the XML Data of the Shop
+      greetingText.text = "";
    }
 
    public void buyButtonPressed (int itemId) {
@@ -67,6 +67,9 @@ public class AdventureShopScreen : Panel {
    public void updateGreetingText (string text) {
       _greetingText = text;
       greetingText.text = text;
+
+      // Start typing out our intro text
+      AutoTyper.SlowlyRevealText(greetingText, _greetingText);
    }
 
    public void updatePanelWithItems (int gold, List<Item> itemList) {

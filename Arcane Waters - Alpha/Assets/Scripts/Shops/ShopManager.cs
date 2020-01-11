@@ -18,6 +18,9 @@ public class ShopManager : MonoBehaviour {
    // The last time the crops were regenerated
    public DateTime lastCropRegenTime;
 
+   // Default Shop Name
+   public static string DEFAULT_SHOP_NAME = "None";
+
    #endregion
 
    private void Awake () {
@@ -72,66 +75,63 @@ public class ShopManager : MonoBehaviour {
          // Clear out the previous list
          _itemsByArea[areaKey] = new List<int>();
 
-         bool randomizeItems = true;
-         if (ShopXMLManager.self.getShopDataByArea(areaKey) != null) {
-            if (ShopXMLManager.self.getShopDataByArea(areaKey).shopItems.Length > 0) {
-               randomizeItems = false;
+         // Make 3 new items
+         for (int i = 0; i < 3; i++) {
+            Item item = null;
+
+            if (UnityEngine.Random.Range(0f, 1f) > .5f) {
+               Weapon.Type weaponType = getPossibleWeapons(biomeType).ChooseByRandom();
+               item = Weapon.generateRandom(_itemId++, weaponType);
+            } else {
+               Armor.Type armorType = getPossibleArmor(biomeType).ChooseByRandom();
+               item = Armor.generateRandom(_itemId++, armorType);
             }
-         } 
-         
-         if (randomizeItems) {
-            // Make 3 new items
-            for (int i = 0; i < 3; i++) {
-               Item item = null;
 
-               if (UnityEngine.Random.Range(0f, 1f) > .5f) {
-                  Weapon.Type weaponType = getPossibleWeapons(biomeType).ChooseByRandom();
-                  item = Weapon.generateRandom(_itemId++, weaponType);
-               } else {
-                  Armor.Type armorType = getPossibleArmor(biomeType).ChooseByRandom();
-                  item = Armor.generateRandom(_itemId++, armorType);
-               }
+            // Store the item
+            _items[item.id] = item;
 
-               // Store the item
-               _items[item.id] = item;
+            // Add it to the list
+            _itemsByArea[areaKey].Add(item.id);
+         }
+      }
+      generateShopItems();
+   }
 
-               // Add it to the list
-               _itemsByArea[areaKey].Add(item.id);
-            }
-         } else {
-            foreach (ShopItemData rawItemData in ShopXMLManager.self.getShopDataByArea(areaKey).shopItems) {
-               if (rawItemData.shopItemCategory == ShopToolPanel.ShopCategory.Armor || rawItemData.shopItemCategory == ShopToolPanel.ShopCategory.Weapon) {
-                  float randomizedChance = UnityEngine.Random.Range(0, 100);
-                  if (randomizedChance < rawItemData.dropChance) {
-                     Item item = new Item {
-                        category = (Item.Category) rawItemData.shopItemCategoryIndex,
-                        itemTypeId = rawItemData.shopItemTypeIndex,
-                        count = 99,
-                        id = _itemId++,
-                        color1 = ColorType.Black,
-                        color2 = ColorType.Black,
-                        data = ""
-                     };
+   private void generateShopItems () {
+      foreach (ShopData shopData in ShopXMLManager.self.shopDataList) {
+         _itemsByShopName[shopData.shopName] = new List<int>();
+         foreach (ShopItemData rawItemData in ShopXMLManager.self.getShopDataByName(shopData.shopName).shopItems) {
+            if (rawItemData.shopItemCategory == ShopToolPanel.ShopCategory.Armor || rawItemData.shopItemCategory == ShopToolPanel.ShopCategory.Weapon) {
+               float randomizedChance = UnityEngine.Random.Range(0, 100);
+               if (randomizedChance < rawItemData.dropChance) {
+                  Item item = new Item {
+                     category = (Item.Category) rawItemData.shopItemCategoryIndex,
+                     itemTypeId = rawItemData.shopItemTypeIndex,
+                     count = 99,
+                     id = _itemId++,
+                     color1 = ColorType.Black,
+                     color2 = ColorType.Black,
+                     data = ""
+                  };
 
-                     Rarity.Type rarity = Rarity.getRandom();
-                     int randomizedPrice = UnityEngine.Random.Range(rawItemData.shopItemCostMin, rawItemData.shopItemCostMax);
-                     string data = "";
-                     if ((Item.Category) rawItemData.shopItemCategoryIndex == Item.Category.Weapon) {
-                        data = string.Format("damage={0}, rarity={1}, price={2}", 0, (int) rarity, randomizedPrice);
-                     }
-                     if ((Item.Category) rawItemData.shopItemCategoryIndex == Item.Category.Armor) {
-                        data = string.Format("armor={0}, rarity={1}, price={2}", 0, (int) rarity, randomizedPrice);
-                     }
-                     item.count = UnityEngine.Random.Range(rawItemData.shopItemCountMin, rawItemData.shopItemCountMax);
-
-                     item.data = data;
-
-                     // Store the item
-                     _items[item.id] = item.getCastItem();
-
-                     // Add it to the list
-                     _itemsByArea[areaKey].Add(item.id);
+                  Rarity.Type rarity = Rarity.getRandom();
+                  int randomizedPrice = UnityEngine.Random.Range(rawItemData.shopItemCostMin, rawItemData.shopItemCostMax);
+                  string data = "";
+                  if ((Item.Category) rawItemData.shopItemCategoryIndex == Item.Category.Weapon) {
+                     data = string.Format("damage={0}, rarity={1}, price={2}", 0, (int) rarity, randomizedPrice);
                   }
+                  if ((Item.Category) rawItemData.shopItemCategoryIndex == Item.Category.Armor) {
+                     data = string.Format("armor={0}, rarity={1}, price={2}", 0, (int) rarity, randomizedPrice);
+                  }
+                  item.count = UnityEngine.Random.Range(rawItemData.shopItemCountMin, rawItemData.shopItemCountMax);
+
+                  item.data = data;
+
+                  // Store the item
+                  _items[item.id] = item.getCastItem();
+
+                  // Add it to the list
+                  _itemsByShopName[shopData.shopName].Add(item.id);
                }
             }
          }
@@ -149,80 +149,76 @@ public class ShopManager : MonoBehaviour {
          // Clear out the previous list
          _shipsByArea[areaKey] = new List<int>();
 
-         bool randomizeShips = true; 
-         if (ShopXMLManager.self.getShopDataByArea(areaKey) != null) {
-            if (ShopXMLManager.self.getShopDataByArea(areaKey).shopItems.Length > 0) {
-               randomizeShips = false;
-            }
+         // Make 3 new ships
+         for (int i = 1; i <= 3; i++) {
+            Ship.Type shipType = Util.randomEnum<Ship.Type>();
+            Rarity.Type rarity = Rarity.getRandom();
+            int speed = (int) (Ship.getBaseSpeed(shipType) * Rarity.getIncreasingModifier(rarity));
+            speed = Mathf.Clamp(speed, 70, 130);
+            int sailors = (int) (Ship.getBaseSailors(shipType) * Rarity.getDecreasingModifier(rarity));
+            int suppliesRoom = (int) (Ship.getBaseSuppliesRoom(shipType) * Rarity.getIncreasingModifier(rarity));
+            int cargoRoom = (int) (Ship.getBaseCargoRoom(shipType) * Rarity.getIncreasingModifier(rarity));
+            int damage = (int) (Ship.getBaseDamage(shipType) * Rarity.getIncreasingModifier(rarity));
+            int health = (int) (Ship.getBaseHealth(shipType) * Rarity.getIncreasingModifier(rarity));
+            int price = (int) (Ship.getBasePrice(shipType) * Rarity.getIncreasingModifier(rarity));
+            int attackRange = (int) (Ship.getBaseAttackRange(shipType) * Rarity.getIncreasingModifier(rarity));
+
+            // Let's use nice numbers
+            sailors = Util.roundToPrettyNumber(sailors);
+            suppliesRoom = Util.roundToPrettyNumber(suppliesRoom);
+            cargoRoom = Util.roundToPrettyNumber(cargoRoom);
+            damage = Util.roundToPrettyNumber(damage);
+            health = Util.roundToPrettyNumber(health);
+            price = Util.roundToPrettyNumber(price);
+            attackRange = Util.roundToPrettyNumber(attackRange);
+
+            ShipInfo ship = new ShipInfo(_shipId--, 0, shipType, Ship.SkinType.None, Ship.MastType.Caravel_1, Ship.SailType.Caravel_1, shipType + "",
+               ColorType.None, ColorType.None, ColorType.None, ColorType.None, suppliesRoom, suppliesRoom, cargoRoom, health, health, damage, attackRange, speed, sailors, rarity, new ShipAbilityInfo(true));
+
+            // We note the price separately, since it's only used in this context
+            ship.price = price;
+
+            // Store the ship
+            _ships[ship.shipId] = ship;
+
+
+            // Add it to the list
+            _shipsByArea[areaKey].Add(ship.shipId);
          }
+      }
+      generateShopShips();
+   }
 
-         if (randomizeShips) {
-            // Make 3 new ships
-            for (int i = 1; i <= 3; i++) {
-               Ship.Type shipType = Util.randomEnum<Ship.Type>();
-               Rarity.Type rarity = Rarity.getRandom();
-               int speed = (int) (Ship.getBaseSpeed(shipType) * Rarity.getIncreasingModifier(rarity));
-               speed = Mathf.Clamp(speed, 70, 130);
-               int sailors = (int) (Ship.getBaseSailors(shipType) * Rarity.getDecreasingModifier(rarity));
-               int suppliesRoom = (int) (Ship.getBaseSuppliesRoom(shipType) * Rarity.getIncreasingModifier(rarity));
-               int cargoRoom = (int) (Ship.getBaseCargoRoom(shipType) * Rarity.getIncreasingModifier(rarity));
-               int damage = (int) (Ship.getBaseDamage(shipType) * Rarity.getIncreasingModifier(rarity));
-               int health = (int) (Ship.getBaseHealth(shipType) * Rarity.getIncreasingModifier(rarity));
-               int price = (int) (Ship.getBasePrice(shipType) * Rarity.getIncreasingModifier(rarity));
-               int attackRange = (int) (Ship.getBaseAttackRange(shipType) * Rarity.getIncreasingModifier(rarity));
+   private void generateShopShips () {
+      foreach (ShopData shopData in ShopXMLManager.self.shopDataList) {
+         _shipsByShopName[shopData.shopName] = new List<int>();
+         foreach (ShopItemData shopItem in ShopXMLManager.self.getShopDataByName(shopData.shopName).shopItems) {
+            if (shopItem.shopItemCategory == ShopToolPanel.ShopCategory.Ship) {
+               float randomizedChance = UnityEngine.Random.Range(0, 100);
+               if (randomizedChance < shopItem.dropChance) {
+                  Ship.Type shipType = (Ship.Type) shopItem.shopItemTypeIndex;
+                  Rarity.Type rarity = Rarity.getRandom();
+                  int speed = (int) (Ship.getBaseSpeed(shipType) * Rarity.getIncreasingModifier(rarity));
+                  speed = Mathf.Clamp(speed, 70, 130);
+                  int sailors = (int) (Ship.getBaseSailors(shipType) * Rarity.getDecreasingModifier(rarity));
+                  int suppliesRoom = (int) (Ship.getBaseSuppliesRoom(shipType) * Rarity.getIncreasingModifier(rarity));
+                  int cargoRoom = (int) (Ship.getBaseCargoRoom(shipType) * Rarity.getIncreasingModifier(rarity));
+                  int damage = (int) (Ship.getBaseDamage(shipType) * Rarity.getIncreasingModifier(rarity));
+                  int health = (int) (Ship.getBaseHealth(shipType) * Rarity.getIncreasingModifier(rarity));
+                  int attackRange = (int) (Ship.getBaseAttackRange(shipType) * Rarity.getIncreasingModifier(rarity));
+                  int price = UnityEngine.Random.Range(shopItem.shopItemCostMin, shopItem.shopItemCostMax);
 
-               // Let's use nice numbers
-               sailors = Util.roundToPrettyNumber(sailors);
-               suppliesRoom = Util.roundToPrettyNumber(suppliesRoom);
-               cargoRoom = Util.roundToPrettyNumber(cargoRoom);
-               damage = Util.roundToPrettyNumber(damage);
-               health = Util.roundToPrettyNumber(health);
-               price = Util.roundToPrettyNumber(price);
-               attackRange = Util.roundToPrettyNumber(attackRange);
+                  ShipInfo ship = new ShipInfo(_shipId--, 0, shipType, Ship.SkinType.None, Ship.MastType.Caravel_1, Ship.SailType.Caravel_1, shipType + "",
+                       ColorType.None, ColorType.None, ColorType.None, ColorType.None, suppliesRoom, suppliesRoom, cargoRoom, health, health, damage, attackRange, speed, sailors, rarity, new ShipAbilityInfo(true));
 
-               ShipInfo ship = new ShipInfo(_shipId--, 0, shipType, Ship.SkinType.None, Ship.MastType.Caravel_1, Ship.SailType.Caravel_1, shipType + "",
-                  ColorType.None, ColorType.None, ColorType.None, ColorType.None, suppliesRoom, suppliesRoom, cargoRoom, health, health, damage, attackRange, speed, sailors, rarity, new ShipAbilityInfo(true));
+                  // We note the price separately, since it's only used in this context
+                  ship.price = price;
 
-               // We note the price separately, since it's only used in this context
-               ship.price = price;
+                  // Store the ship
+                  _ships[ship.shipId] = ship;
 
-               // Store the ship
-               _ships[ship.shipId] = ship;
-
-
-               // Add it to the list
-               _shipsByArea[areaKey].Add(ship.shipId);
-            }
-         } else {
-            foreach (ShopItemData shopItem in ShopXMLManager.self.getShopDataByArea(areaKey).shopItems) {
-               if (shopItem.shopItemCategory == ShopToolPanel.ShopCategory.Ship) {
-                  float randomizedChance = UnityEngine.Random.Range(0, 100);
-                  if (randomizedChance < shopItem.dropChance) {
-                     Ship.Type shipType = (Ship.Type) shopItem.shopItemTypeIndex;
-                     Rarity.Type rarity = Rarity.getRandom();
-                     int speed = (int) (Ship.getBaseSpeed(shipType) * Rarity.getIncreasingModifier(rarity));
-                     speed = Mathf.Clamp(speed, 70, 130);
-                     int sailors = (int) (Ship.getBaseSailors(shipType) * Rarity.getDecreasingModifier(rarity));
-                     int suppliesRoom = (int) (Ship.getBaseSuppliesRoom(shipType) * Rarity.getIncreasingModifier(rarity));
-                     int cargoRoom = (int) (Ship.getBaseCargoRoom(shipType) * Rarity.getIncreasingModifier(rarity));
-                     int damage = (int) (Ship.getBaseDamage(shipType) * Rarity.getIncreasingModifier(rarity));
-                     int health = (int) (Ship.getBaseHealth(shipType) * Rarity.getIncreasingModifier(rarity));
-                     int attackRange = (int) (Ship.getBaseAttackRange(shipType) * Rarity.getIncreasingModifier(rarity));
-                     int price = UnityEngine.Random.Range(shopItem.shopItemCostMin, shopItem.shopItemCostMax);
-
-                     ShipInfo ship = new ShipInfo(_shipId--, 0, shipType, Ship.SkinType.None, Ship.MastType.Caravel_1, Ship.SailType.Caravel_1, shipType + "",
-                          ColorType.None, ColorType.None, ColorType.None, ColorType.None, suppliesRoom, suppliesRoom, cargoRoom, health, health, damage, attackRange, speed, sailors, rarity, new ShipAbilityInfo(true));
-
-                     // We note the price separately, since it's only used in this context
-                     ship.price = price;
-
-                     // Store the ship
-                     _ships[ship.shipId] = ship;
-
-
-                     // Add it to the list
-                     _shipsByArea[areaKey].Add(ship.shipId);
-                  }
+                  // Add it to the list
+                  _shipsByShopName[shopData.shopName].Add(ship.shipId);
                }
             }
          }
@@ -245,95 +241,94 @@ public class ShopManager : MonoBehaviour {
          // Clear out the previous list
          _offersByArea[areaKey] = new List<CropOffer>();
 
-         bool randomizeItems = true;
-         if (ShopXMLManager.self.getShopDataByArea(areaKey) != null) {
-            if (ShopXMLManager.self.getShopDataByArea(areaKey).shopItems.Length > 0) {
-               randomizeItems = false;
+         // The types of crops that might show  up
+         List<Crop.Type> cropList = Util.getAllEnumValues<Crop.Type>();
+         cropList.Remove(Crop.Type.None);
+         cropList.Remove(CropManager.STARTING_CROP);
+         cropList.Shuffle();
+
+         // Make 3 new offers
+         for (int i = 0; i < 3; i++) {
+            Rarity.Type rarity = Rarity.getRandom();
+
+            Crop.Type cropType = cropList[i];
+            int stockCount = Util.getBellCurveInt(1000, 100, 100, CropOffer.MAX_STOCK);
+            stockCount = Util.roundToPrettyNumber(stockCount);
+            int pricePerUnit = (int) (CropManager.getBasePrice(cropType) * Rarity.getCropSellPriceModifier(rarity));
+            pricePerUnit = Util.roundToPrettyNumber(pricePerUnit);
+            CropOffer offer = new CropOffer(_offerId++, areaKey, cropType, stockCount, pricePerUnit, rarity);
+
+            // For the sake of the tutorial, there will always be an offer for the starting crop in the desert town
+            if (Area.MERCHANT_SHOP_DESERT.Equals(areaKey) && i == 0) {
+               offer.cropType = CropManager.STARTING_CROP;
+               offer.rarity = Rarity.Type.Common;
+               offer.pricePerUnit = 80;
+               offer.amount = int.MaxValue;
             }
-         }
 
-         if (randomizeItems) {
-            // The types of crops that might show  up
-            List<Crop.Type> cropList = Util.getAllEnumValues<Crop.Type>();
-            cropList.Remove(Crop.Type.None);
-            cropList.Remove(CropManager.STARTING_CROP);
-            cropList.Shuffle();
+            // Store the offer
+            _offers[offer.id] = offer;
 
-            // Make 3 new offers
-            for (int i = 0; i < 3; i++) {
-               Rarity.Type rarity = Rarity.getRandom();
-
-               Crop.Type cropType = cropList[i];
-               int stockCount = Util.getBellCurveInt(1000, 100, 100, CropOffer.MAX_STOCK);
-               stockCount = Util.roundToPrettyNumber(stockCount);
-               int pricePerUnit = (int) (CropManager.getBasePrice(cropType) * Rarity.getCropSellPriceModifier(rarity));
-               pricePerUnit = Util.roundToPrettyNumber(pricePerUnit);
-               CropOffer offer = new CropOffer(_offerId++, areaKey, cropType, stockCount, pricePerUnit, rarity);
-
-               // For the sake of the tutorial, there will always be an offer for the starting crop in the desert town
-               if (Area.MERCHANT_SHOP_DESERT.Equals(areaKey) && i == 0) {
-                  offer.cropType = CropManager.STARTING_CROP;
-                  offer.rarity = Rarity.Type.Common;
-                  offer.pricePerUnit = 80;
-                  offer.amount = int.MaxValue;
-               }
-
-               // Store the offer
-               _offers[offer.id] = offer;
-
-               // Add it to the list
-               _offersByArea[areaKey].Add(offer);
-            }
-         } else {
-            int index = 0;
-            foreach (ShopItemData rawItemData in ShopXMLManager.self.getShopDataByArea(areaKey).shopItems) {
-               if (rawItemData.shopItemCategory == ShopToolPanel.ShopCategory.Crop) {
-                  float randomizedChance = UnityEngine.Random.Range(0, 100);
-                  if (randomizedChance < rawItemData.dropChance) {
-                     // The types of crops that might show  up
-                     List<Crop.Type> cropList = Util.getAllEnumValues<Crop.Type>();
-                     cropList.Remove(Crop.Type.None);
-                     cropList.Remove(CropManager.STARTING_CROP);
-                     cropList.Shuffle();
-
-                     // Make offers from the database
-                     Rarity.Type rarity = Rarity.getRandom();
-
-                     Crop.Type cropType = (Crop.Type) rawItemData.shopItemTypeIndex;
-                     int stockCount = UnityEngine.Random.Range(rawItemData.shopItemCountMin, rawItemData.shopItemCountMax);
-                     stockCount = Util.roundToPrettyNumber(stockCount);
-                     int pricePerUnit = UnityEngine.Random.Range(rawItemData.shopItemCostMin, rawItemData.shopItemCostMax);
-                     pricePerUnit = Util.roundToPrettyNumber(pricePerUnit);
-
-                     CropOffer offer = new CropOffer(_offerId++, areaKey, cropType, stockCount, pricePerUnit, rarity);
-
-                     // For the sake of the tutorial, there will always be an offer for the starting crop in the desert town
-                     if (Area.MERCHANT_SHOP_DESERT.Equals(areaKey) && index == 0) {
-                        offer.cropType = CropManager.STARTING_CROP;
-                        offer.rarity = Rarity.Type.Common;
-                        offer.pricePerUnit = 80;
-                        offer.amount = int.MaxValue;
-                     }
-
-                     // Store the offer
-                     _offers[offer.id] = offer;
-
-                     // Add it to the list
-                     _offersByArea[areaKey].Add(offer);
-                     index++;
-                  }
-               }
-            }
+            // Add it to the list
+            _offersByArea[areaKey].Add(offer);
          }
       }
+
+      generateShopCrops();
 
       // Update the Tip Manager now that the offers have changed
       TipManager.self.updateCropTips();
    }
 
+   private void generateShopCrops () {
+      int index = 0;
+      foreach (ShopData shopData in ShopXMLManager.self.shopDataList) {
+         _offersByShopName[shopData.shopName] = new List<CropOffer>();
+         foreach (ShopItemData rawItemData in ShopXMLManager.self.getShopDataByName(shopData.shopName).shopItems) {
+            if (rawItemData.shopItemCategory == ShopToolPanel.ShopCategory.Crop) {
+               float randomizedChance = UnityEngine.Random.Range(0, 100);
+               if (randomizedChance < rawItemData.dropChance) {
+                  // The types of crops that might show  up
+                  List<Crop.Type> cropList = Util.getAllEnumValues<Crop.Type>();
+                  cropList.Remove(Crop.Type.None);
+                  cropList.Remove(CropManager.STARTING_CROP);
+                  cropList.Shuffle();
+
+                  // Make offers from the database
+                  Rarity.Type rarity = Rarity.getRandom();
+
+                  Crop.Type cropType = (Crop.Type) rawItemData.shopItemTypeIndex;
+                  int stockCount = UnityEngine.Random.Range(rawItemData.shopItemCountMin, rawItemData.shopItemCountMax);
+                  stockCount = Util.roundToPrettyNumber(stockCount);
+                  int pricePerUnit = UnityEngine.Random.Range(rawItemData.shopItemCostMin, rawItemData.shopItemCostMax);
+                  pricePerUnit = Util.roundToPrettyNumber(pricePerUnit);
+
+                  CropOffer offer = new CropOffer(_offerId++, "None", cropType, stockCount, pricePerUnit, rarity);
+
+                  // Store the offer
+                  _offers[offer.id] = offer;
+
+                  // Add it to the list
+                  _offersByShopName[shopData.shopName].Add(offer);
+
+                  index++;
+               }
+            }
+         }
+      }
+   }
+
    public List<CropOffer> getOffers (string areaKey) {
       if (_offersByArea.ContainsKey(areaKey)) {
          return _offersByArea[areaKey];
+      }
+
+      return new List<CropOffer>();
+   }
+
+   public List<CropOffer> getOffersByShopName (string shopName) {
+      if (_offersByShopName.ContainsKey(shopName)) {
+         return _offersByShopName[shopName];
       }
 
       return new List<CropOffer>();
@@ -358,10 +353,45 @@ public class ShopManager : MonoBehaviour {
       return list;
    }
 
+   public List<Item> getItemsByShopName (string shopName) {
+      List<Item> list = new List<Item>();
+
+      if (!_itemsByShopName.ContainsKey(shopName)) {
+         D.debug("Shop name does not exist!: " + shopName);
+      }
+
+      foreach (int itemId in _itemsByShopName[shopName]) {
+         Item item = _items[itemId];
+         list.Add(item);
+      }
+
+      return list;
+   }
+
    public List<ShipInfo> getShips (string areaKey) {
       List<ShipInfo> list = new List<ShipInfo>();
 
       foreach (int shipId in _shipsByArea[areaKey]) {
+         ShipInfo ship = (ShipInfo) _ships[shipId];
+
+         XmlSerializer ser = new XmlSerializer(ship.shipAbilities.GetType());
+         var sb = new StringBuilder();
+         using (var writer = XmlWriter.Create(sb)) {
+            ser.Serialize(writer, ship.shipAbilities);
+         }
+
+         string longString = sb.ToString();
+         ship.shipAbilityXML = longString;
+         list.Add(ship);
+      }
+
+      return list;
+   }
+
+   public List<ShipInfo> getShipsByShopName (string shopName) {
+      List<ShipInfo> list = new List<ShipInfo>();
+
+      foreach (int shipId in _shipsByShopName[shopName]) {
          ShipInfo ship = (ShipInfo) _ships[shipId];
 
          XmlSerializer ser = new XmlSerializer(ship.shipAbilities.GetType());
@@ -448,6 +478,15 @@ public class ShopManager : MonoBehaviour {
 
    // Keeps lists of Crop Offers based on Area
    protected Dictionary<string, List<CropOffer>> _offersByArea = new Dictionary<string, List<CropOffer>>();
+
+   // Keeps lists of items based on Shop Name
+   protected Dictionary<string, List<int>> _itemsByShopName = new Dictionary<string, List<int>>();
+
+   // Keeps lists of ships based on Shop Name
+   protected Dictionary<string, List<int>> _shipsByShopName = new Dictionary<string, List<int>>();
+
+   // Keeps lists of Crop Offers based on Shop Name
+   protected Dictionary<string, List<CropOffer>> _offersByShopName = new Dictionary<string, List<CropOffer>>();
 
    #endregion
 }

@@ -247,7 +247,8 @@ public class Area : MonoBehaviour {
          "CollisionTest",
          "SeaRandom_1",
          "SeaRandom_2",
-         "SeaRandom_3"
+         "SeaRandom_3",
+         "BurlTestMap"
       };
    }
 

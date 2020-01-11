@@ -23,25 +23,25 @@ public class ShipyardScreen : Panel {
    // Self
    public static ShipyardScreen self;
 
+   // Name of the shop reference
+   public string shopName = ShopManager.DEFAULT_SHOP_NAME;
+
    #endregion
 
    public override void Awake () {
       base.Awake();
 
       self = this;
-
-      // Keep track of what our intro text is
-      _greetingText = greetingText.text;
    }
 
    public override void show () {
       base.show();
 
       // Show the correct contents based on our current area
-      Global.player.rpc.Cmd_GetShipsForArea();
+      Global.player.rpc.Cmd_GetShipsForArea(shopName);
 
-      // Start typing out our intro text
-      AutoTyper.SlowlyRevealText(greetingText, _greetingText);
+      // Greeting message is decided from the XML Data of the Shop
+      greetingText.text = "";
    }
 
    public void buyButtonPressed (int shipId) {
@@ -67,6 +67,9 @@ public class ShipyardScreen : Panel {
       this.greetingText.text = greetingText;
       _greetingText = greetingText;
       moneyText.text = gold + "";
+
+      // Start typing out our intro text
+      AutoTyper.SlowlyRevealText(this.greetingText, _greetingText);
 
       // Clear out any old info
       rowsContainer.DestroyChildren();

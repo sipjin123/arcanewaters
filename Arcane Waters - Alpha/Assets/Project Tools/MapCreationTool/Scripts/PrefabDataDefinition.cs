@@ -2,6 +2,7 @@
 using System.Linq;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace MapCreationTool
 {
@@ -28,6 +29,19 @@ namespace MapCreationTool
                selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
                   name = customData.name,
                   options = NPCManager.instance.formSelectionOptions()
+               };
+            } else if (customData.type == CustomFieldType.ShopPanelType && NPCManager.instance.npcCount > 0) {
+               Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
+               List<string> optionList = new List<string>();
+
+               optionList.Add(Panel.Type.None.ToString());
+               optionList.Add(Panel.Type.Adventure.ToString());
+               optionList.Add(Panel.Type.Shipyard.ToString());
+               optionList.Add(Panel.Type.Merchant.ToString());
+
+               selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
+                  name = customData.name,
+                  options = optionList.ToArray()
                };
             }
          }
@@ -68,6 +82,7 @@ namespace MapCreationTool
    public enum CustomFieldType
    {
       Direction,
-      NPC
+      NPC,
+      ShopPanelType
    }
 }

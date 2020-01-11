@@ -2,7 +2,7 @@
    // Basic info of the shop data
    public string shopName;
    public string shopIconPath = "";
-   public string shopGreetingText;
+   public string shopGreetingText = "Not Greeting Text Setup";
    public string areaAttachment = "";
 
    public ShopItemData[] shopItems = new ShopItemData[0];
