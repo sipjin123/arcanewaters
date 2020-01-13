@@ -38,6 +38,7 @@ public class NPCToolManager : MonoBehaviour {
    public void Start () {
       npcSelectionScreen.show();
       loadAllDataFiles();
+      Invoke("loadAllDataFiles", 2f);
    }
 
    public void loadAllDataFiles () {

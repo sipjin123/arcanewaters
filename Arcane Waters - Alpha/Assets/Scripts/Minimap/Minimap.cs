@@ -901,7 +901,7 @@ public class Minimap : ClientMonoBehaviour {
 
       Biome.Type biomeType = Area.getBiome(area.areaKey);
 
-      if (Area.isSea(area.areaKey)) {
+      if (area.isSea) {
          return lookUpSeaPreset(biomeType);
       } else if (Area.isInterior(area.areaKey)) {
          return interiorPreset;

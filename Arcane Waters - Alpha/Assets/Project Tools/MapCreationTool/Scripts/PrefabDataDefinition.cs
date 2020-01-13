@@ -43,6 +43,12 @@ namespace MapCreationTool
                   name = customData.name,
                   options = optionList.ToArray()
                };
+            } else if (customData.type == CustomFieldType.ShopName && ShopManager.instance.shopEntryCount > 0 && NPCManager.instance.npcCount > 0) {
+               Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
+               selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
+                  name = customData.name,
+                  options = ShopManager.instance.formSelectionOptions()
+               };
             }
          }
       }
@@ -83,6 +89,7 @@ namespace MapCreationTool
    {
       Direction,
       NPC,
-      ShopPanelType
+      ShopPanelType,
+      ShopName
    }
 }

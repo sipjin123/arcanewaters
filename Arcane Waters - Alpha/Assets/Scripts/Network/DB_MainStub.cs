@@ -10,6 +10,17 @@ public class DB_MainStub : MonoBehaviour {
 
    #endregion
 
+   public static void updateBattleAbilities (string abilityName, string abilityXML, int abilityType) {
+
+   }
+
+   public static void deleteBattleAbilityXML (string abilityName) {
+   }
+
+   public static List<AbilityXMLContent> getBattleAbilityXML () {
+      return new List<AbilityXMLContent>();
+   }
+
    public static void updateShipAbilities (int shipId, string abilityXML) {
 
    }

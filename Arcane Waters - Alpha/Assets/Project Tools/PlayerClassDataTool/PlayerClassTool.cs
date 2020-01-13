@@ -22,7 +22,7 @@ public class PlayerClassTool : MonoBehaviour
    #endregion
 
    private void Start () {
-      loadXMLData();
+      Invoke("loadXMLData", 2f);
    }
 
    public void saveXMLData (PlayerClassData data) {

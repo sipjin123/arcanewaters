@@ -23,7 +23,7 @@ public class SeaMonsterToolManager : MonoBehaviour
    #endregion
 
    private void Start () {
-      loadAllDataFiles();
+      Invoke("loadAllDataFiles", 2f);
    }
 
    public void loadAllDataFiles () {

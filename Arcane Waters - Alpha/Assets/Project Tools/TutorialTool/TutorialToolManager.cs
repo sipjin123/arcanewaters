@@ -17,7 +17,7 @@ public class TutorialToolManager : MonoBehaviour {
    #endregion
 
    private void Start () {
-      loadXMLData();
+      Invoke("loadXMLData", 2f);
    }
 
    public void saveXMLData (TutorialData data) {

@@ -11,11 +11,10 @@ namespace MapCreationTool
       public static event System.Action OnLoaded;
       public static NPCManager instance { get; private set; }
 
-      private NPCData[] npcs;
+      private NPCData[] npcs = new NPCData[0];
       public Dictionary<int, NPCData> idToNpc { get; private set; }
       public Dictionary<string, Sprite> npcBodySprites { get; private set; }
       public bool loaded { get; private set; }
-
 
       private void Awake () {
          instance = this;

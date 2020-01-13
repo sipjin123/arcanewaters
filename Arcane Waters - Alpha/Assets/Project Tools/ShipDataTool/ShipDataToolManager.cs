@@ -25,7 +25,7 @@ public class ShipDataToolManager : MonoBehaviour {
    #endregion
 
    private void Start () {
-      loadXMLData();
+      Invoke("loadXMLData", 2f);
    }
 
    public void saveXMLData (ShipData data) {

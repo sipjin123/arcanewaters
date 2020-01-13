@@ -43,6 +43,7 @@ namespace MapCreationTool
 
          Tools.EditorTypeChanged += editorTypeChanged;
 
+         ShopManager.OnLoaded += onLoaded;
          NPCManager.OnLoaded += onLoaded;
       }
 
@@ -55,6 +56,7 @@ namespace MapCreationTool
          Tools.AnythingChanged -= ensurePreviewCleared;
 
          Tools.EditorTypeChanged -= editorTypeChanged;
+         ShopManager.OnLoaded -= onLoaded;
          NPCManager.OnLoaded -= onLoaded;
       }
 

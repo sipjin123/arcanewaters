@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class AreaManager : MonoBehaviour {
+public class AreaManager : MonoBehaviour
+{
    #region Public Variables
 
    // The area key of the place we spawn players after their ship sinks
@@ -42,11 +43,18 @@ public class AreaManager : MonoBehaviour {
    }
 
    public Area getArea (string areaKey) {
-      return _areas[areaKey];
+      if (_areas.TryGetValue(areaKey, out Area area)) {
+         return area;
+      }
+      return null;
    }
 
    public List<Area> getAreas () {
       return new List<Area>(_areas.Values);
+   }
+
+   public List<string> getAreaNames () {
+      return new List<string>(_areas.Keys);
    }
 
    protected void toggleAreaCollidersForPerformanceImprovement () {

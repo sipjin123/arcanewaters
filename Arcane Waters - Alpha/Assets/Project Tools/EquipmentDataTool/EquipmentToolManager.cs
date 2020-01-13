@@ -30,7 +30,7 @@ public class EquipmentToolManager : MonoBehaviour {
    #endregion
 
    private void Start () {
-      loadXMLData();
+      Invoke("loadXMLData", 2f);
    }
 
    #region Save 

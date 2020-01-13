@@ -21,7 +21,7 @@ public class PlayerSpecialtyToolManager : MonoBehaviour {
    #endregion
 
    private void Start () {
-      loadXMLData();
+      Invoke("loadXMLData", 2f);
    }
 
    public void saveXMLData (PlayerSpecialtyData data) {

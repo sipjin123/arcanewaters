@@ -163,6 +163,77 @@ public class DB_Main : DB_MainStub {
 
    #endregion
 
+   #region Battler Abilities
+
+   public static new void updateBattleAbilities (string abilityName, string abilityXML, int abilityType) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "INSERT INTO ability_xml (ability_name, xmlContent, ability_type) " +
+            "VALUES(@ability_name, @xmlContent, @ability_type) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, ability_type = @ability_type", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@ability_name", abilityName);
+            cmd.Parameters.AddWithValue("@xmlContent", abilityXML);
+            cmd.Parameters.AddWithValue("@ability_type", abilityType);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void deleteBattleAbilityXML (string abilityName) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM ability_xml WHERE ability_name=@ability_name", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@ability_name", abilityName);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<AbilityXMLContent> getBattleAbilityXML () {
+      List<AbilityXMLContent> xmlContent = new List<AbilityXMLContent>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane.ability_xml", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  AbilityXMLContent newXML = new AbilityXMLContent();
+                  newXML.abilityXML = dataReader.GetString("xmlContent");
+                  newXML.abilityType = dataReader.GetInt32("ability_type");
+                  xmlContent.Add(newXML);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return xmlContent;
+   }
+
+   #endregion
+
    #region NPC Quest and Relationship
 
    public static new void createNPCRelationship (int npcId, int userId, int friendshipLevel) {
