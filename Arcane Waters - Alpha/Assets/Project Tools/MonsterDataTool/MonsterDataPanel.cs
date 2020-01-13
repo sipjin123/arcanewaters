@@ -6,6 +6,7 @@ using Mirror;
 using System;
 using System.Linq;
 using static MonsterSkillTemplate;
+using UnityEngine.SceneManagement;
 
 public class MonsterDataPanel : MonoBehaviour {
    #region Public Variables
@@ -45,6 +46,9 @@ public class MonsterDataPanel : MonoBehaviour {
 
    // The selection panel for monster types
    public GameObject selectionPanel;
+
+   // The skill count of this unit
+   public int skillIndex;
 
    // The type of monster this unit is
    public Text monsterTypeText;
@@ -115,7 +119,7 @@ public class MonsterDataPanel : MonoBehaviour {
    private void Awake () {
       revertButton.onClick.AddListener(() => {
          monsterToolManager.loadAllDataFiles();
-         abilityToolManager.loadAllDataFiles();
+         abilityToolManager.loadXML();
          gameObject.SetActive(false);
       });
       addATKSkillButton.onClick.AddListener(() => addSkillTemplate(AbilityType.Standard));
@@ -364,7 +368,6 @@ public class MonsterDataPanel : MonoBehaviour {
       }
 
       monsterToolManager.saveDataToFile(rawData);
-      abilityToolManager.loadAllDataFiles();
       gameObject.SetActive(false);
    }
 
@@ -564,6 +567,7 @@ public class MonsterDataPanel : MonoBehaviour {
    #region Skill Feature
 
    private void loadSkillTemplates(BattlerData battlerData) {
+      skillIndex = 0;
       skillTemplateParent.gameObject.DestroyChildren();
       monsterSkillTemplateList = new List<MonsterSkillTemplate>();
       AbilityDataRecord dataRecord = battlerData.battlerAbilities;
@@ -575,7 +579,8 @@ public class MonsterDataPanel : MonoBehaviour {
 
    private void loadSkill (AttackAbilityData[] attackAbilityDataList, BuffAbilityData[] buffAbilityDataList) {
       if (attackAbilityDataList != null) {
-         foreach (AttackAbilityData ability in attackAbilityDataList) {
+         foreach (AttackAbilityData referenceAbility in attackAbilityDataList) {
+            AttackAbilityData ability = monsterToolManager.attackAbilityList.Find(_ => _.itemName == referenceAbility.itemName);
             BattleItemData battleItemData = BattleItemData.CreateInstance(ability.itemID, ability.itemName, ability.itemDescription, ability.elementType, ability.hitAudioClipPath, ability.hitSpritesPath, ability.battleItemType, ability.classRequirement, ability.itemIconPath, ability.levelRequirement);
             BasicAbilityData basicData = BasicAbilityData.CreateInstance(battleItemData, ability.abilityCost, ability.castSpritesPath, ability.castAudioClipPath, ability.allowedStances, ability.abilityType, ability.abilityCooldown, ability.apChange, ability.FXTimePerFrame);
             AttackAbilityData attackAbility = AttackAbilityData.CreateInstance(basicData, ability.hasKnockup, ability.baseDamage, ability.hasShake, ability.abilityActionType, ability.canBeBlocked, ability.hasKnockBack, ability.projectileSpeed, ability.projectileSpritePath, ability.projectileScale);
@@ -583,7 +588,8 @@ public class MonsterDataPanel : MonoBehaviour {
          }
       }
       if (buffAbilityDataList != null) {
-         foreach (BuffAbilityData ability in buffAbilityDataList) {
+         foreach (BuffAbilityData referenceAbility in buffAbilityDataList) {
+            BuffAbilityData ability = monsterToolManager.buffAbilityList.Find(_ => _.itemName == referenceAbility.itemName);
             BattleItemData battleItemData = BattleItemData.CreateInstance(ability.itemID, ability.itemName, ability.itemDescription, ability.elementType, ability.hitAudioClipPath, ability.hitSpritesPath, ability.battleItemType, ability.classRequirement, ability.itemIconPath, ability.levelRequirement);
             BasicAbilityData basicData = BasicAbilityData.CreateInstance(battleItemData, ability.abilityCost, ability.castSpritesPath, ability.castAudioClipPath, ability.allowedStances, ability.abilityType, ability.abilityCooldown, ability.apChange, ability.FXTimePerFrame);
             BuffAbilityData buffAbility = BuffAbilityData.CreateInstance(basicData, ability.duration, ability.buffType, ability.buffActionType, ability.iconPath, ability.value, ability.bonusStatType);
@@ -621,9 +627,15 @@ public class MonsterDataPanel : MonoBehaviour {
          monsterSkillTemplateList.Remove(monsterTemp);
          Destroy(template);
       });
+      skillTemplate.openAbilityButton.onClick.AddListener(() => {
+         SceneManager.LoadScene(MasterToolScene.abilityScene);
+      });
+
+      skillTemplate.templateNumber.text = skillIndex.ToString();
       skillTemplate.abilityTypeEnum = AbilityType.Standard;
       skillTemplate.loadAttackData(attackAbility);
       monsterSkillTemplateList.Add(skillTemplate);
+      skillIndex++;
    }
 
    private void finalizeBuffTemplate (BuffAbilityData buffAbility) {
@@ -634,9 +646,15 @@ public class MonsterDataPanel : MonoBehaviour {
          monsterSkillTemplateList.Remove(monsterTemp);
          Destroy(template);
       });
+      skillTemplate.openAbilityButton.onClick.AddListener(() => {
+         SceneManager.LoadScene(MasterToolScene.abilityScene);
+      });
+
+      skillTemplate.templateNumber.text = skillIndex.ToString();
       skillTemplate.abilityTypeEnum = AbilityType.BuffDebuff;
       skillTemplate.loadBuffData(buffAbility);
       monsterSkillTemplateList.Add(skillTemplate);
+      skillIndex++;
    }
 
    #endregion

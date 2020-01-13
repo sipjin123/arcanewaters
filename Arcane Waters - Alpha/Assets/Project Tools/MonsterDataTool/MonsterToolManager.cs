@@ -19,18 +19,26 @@ public class MonsterToolManager : MonoBehaviour {
    // Holds the path of the folder
    public const string FOLDER_PATH = "MonsterStats";
 
+   public List<BasicAbilityData> basicAbilityList = new List<BasicAbilityData>();
+   public List<AttackAbilityData> attackAbilityList = new List<AttackAbilityData>();
+   public List<BuffAbilityData> buffAbilityList = new List<BuffAbilityData>();
+
    #endregion
 
    private void Start () {
-      loadAllDataFiles();
+      Invoke("loadAllDataFiles", 2f);
    }
 
    public void loadAllDataFiles () {
       XmlLoadingPanel.self.startLoading();
+      basicAbilityList = new List<BasicAbilityData>();
+      attackAbilityList = new List<AttackAbilityData>();
+      buffAbilityList = new List<BuffAbilityData>();
       monsterDataList = new Dictionary<string, BattlerData>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<string> rawXMLData = DB_Main.getLandMonsterXML();
+         List<AbilityXMLContent> abilityContentList = DB_Main.getBattleAbilityXML();
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (string rawText in rawXMLData) {
@@ -43,6 +51,34 @@ public class MonsterToolManager : MonoBehaviour {
                   monsterDataList.Add(monsterData.enemyName, monsterData);
                }
             }
+
+            foreach (AbilityXMLContent abilityXML in abilityContentList) {
+               AbilityType abilityType = (AbilityType) abilityXML.abilityType;
+               TextAsset newTextAsset = new TextAsset(abilityXML.abilityXML);
+
+               switch (abilityType) {
+                  case AbilityType.Standard:
+                     AttackAbilityData attackAbilityData = Util.xmlLoad<AttackAbilityData>(newTextAsset);
+                     attackAbilityList.Add(attackAbilityData);
+                     basicAbilityList.Add(attackAbilityData);
+                     break;
+                  case AbilityType.Stance:
+                     AttackAbilityData stancebilityData = Util.xmlLoad<AttackAbilityData>(newTextAsset);
+                     attackAbilityList.Add(stancebilityData);
+                     basicAbilityList.Add(stancebilityData);
+                     break;
+                  case AbilityType.BuffDebuff:
+                     BuffAbilityData buffAbilityData = Util.xmlLoad<BuffAbilityData>(newTextAsset);
+                     buffAbilityList.Add(buffAbilityData);
+                     basicAbilityList.Add(buffAbilityData);
+                     break;
+                  default:
+                     BasicAbilityData abilityData = Util.xmlLoad<BasicAbilityData>(newTextAsset);
+                     basicAbilityList.Add(abilityData);
+                     break;
+               }
+            }
+
             monsterToolScreen.updatePanelWithBattlerData(monsterDataList);
             XmlLoadingPanel.self.finishLoading();
          });

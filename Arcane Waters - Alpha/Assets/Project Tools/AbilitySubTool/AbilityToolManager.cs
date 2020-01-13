@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System.IO;
+using System.Xml.Serialization;
+using System.Text;
+using System.Xml;
 
 public class AbilityToolManager : MonoBehaviour
 {
@@ -28,92 +31,87 @@ public class AbilityToolManager : MonoBehaviour
    #endregion
 
    private void Start () {
-      loadAllDataFiles();
+      Invoke("loadXML", 2f);
    }
 
-   public void loadAllDataFiles () {
+   public void loadXML () {
       abilityDataList = new Dictionary<string, BasicAbilityData>();
       attackAbilityList = new Dictionary<string, AttackAbilityData>();
       buffAbilityList = new Dictionary<string, BuffAbilityData>();
 
-      loadBasicAbility(DirectoryType.BasicAbility);
-      loadBasicAbility(DirectoryType.AttackAbility);
-      loadBasicAbility(DirectoryType.BuffAbility);
+      XmlLoadingPanel.self.startLoading();
 
-      if (abilityScene != null) {
-         abilityScene.updateWithAbilityData(abilityDataList, attackAbilityList, buffAbilityList);
-      }
-      if (monsterAbilityManager != null) {
-         monsterAbilityManager.updateWithAbilityData(abilityDataList, attackAbilityList, buffAbilityList);
-      }
-   }
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List< AbilityXMLContent> xmlContentList = DB_Main.getBattleAbilityXML();
 
-   public void duplicateFile (BasicAbilityData data, DirectoryType directoryType) {
-      string directoryPath = "";
-      directoryPath = Path.Combine(Application.dataPath, "Data/" + FOLDER_PATH, getDirectory(directoryType));
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (AbilityXMLContent xmlContent in xmlContentList) {
+               TextAsset newTextAsset = new TextAsset(xmlContent.abilityXML);
 
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
-      }
-
-      // Build the file name
-      data.itemName += "_copy";
-      string fileName = data.itemName;
-
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data/" + FOLDER_PATH, getDirectory(directoryType), fileName + ".xml");
-
-      // Save the file
-      ToolsUtil.xmlSave(data, path);
-   }
-
-   private void loadBasicAbility(DirectoryType directoryType) {
-      // Build the path to the folder containing the ability data XML files
-      string directoryPath = "";
-      directoryPath = Path.Combine(Application.dataPath, "Data/" + FOLDER_PATH, getDirectory(directoryType));
-
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
-      } else {
-         // Get the list of XML files in the folder
-         string[] fileNames = ToolsUtil.getFileNamesInFolder(directoryPath, "*.xml");
-
-         // Iterate over the files
-         for (int i = 0; i < fileNames.Length; i++) {
-            // Build the path to a single file
-            string filePath = Path.Combine(directoryPath, fileNames[i]);
-
-            // Read and deserialize the file
-            switch (directoryType) {
-               case DirectoryType.BasicAbility: {
-                     BasicAbilityData abilityData = ToolsUtil.xmlLoad<BasicAbilityData>(filePath);
+               AbilityType abilityType = (AbilityType) xmlContent.abilityType;
+               // Read and deserialize the file
+               switch (abilityType) {
+                  case AbilityType.Standard:
+                     AttackAbilityData attackAbilityData = Util.xmlLoad<AttackAbilityData>(newTextAsset);
+                     attackAbilityList.Add(attackAbilityData.itemName, attackAbilityData);
+                     abilityDataList.Add(attackAbilityData.itemName, attackAbilityData);
+                     break;
+                  case AbilityType.Stance:
+                     AttackAbilityData stancebilityData = Util.xmlLoad<AttackAbilityData>(newTextAsset);
+                     attackAbilityList.Add(stancebilityData.itemName, stancebilityData);
+                     abilityDataList.Add(stancebilityData.itemName, stancebilityData);
+                     break;
+                  case AbilityType.BuffDebuff:
+                     BuffAbilityData buffAbilityData = Util.xmlLoad<BuffAbilityData>(newTextAsset);
+                     buffAbilityList.Add(buffAbilityData.itemName, buffAbilityData);
+                     abilityDataList.Add(buffAbilityData.itemName, buffAbilityData);
+                     break;
+                  default:
+                     BasicAbilityData abilityData = Util.xmlLoad<BasicAbilityData>(newTextAsset);
                      abilityDataList.Add(abilityData.itemName, abilityData);
-                  }
-                  break;
-               case DirectoryType.AttackAbility: {
-                     AttackAbilityData abilityData = ToolsUtil.xmlLoad<AttackAbilityData>(filePath);
-                     attackAbilityList.Add(abilityData.itemName, abilityData);
-                  }
-                  break;
-               case DirectoryType.BuffAbility: {
-                     BuffAbilityData abilityData = ToolsUtil.xmlLoad<BuffAbilityData>(filePath);
-                     buffAbilityList.Add(abilityData.itemName, abilityData);
-                  }
-                  break;
+                     break;
+               }
             }
-         }
+
+            if (abilityScene != null) {
+               abilityScene.updateWithAbilityData(abilityDataList, attackAbilityList, buffAbilityList);
+            }
+            if (monsterAbilityManager != null) {
+               monsterAbilityManager.updateWithAbilityData(abilityDataList, attackAbilityList, buffAbilityList);
+            }
+            XmlLoadingPanel.self.finishLoading();
+         });
+      });
+   }
+   
+
+   public void duplicateFile (BasicAbilityData data) {
+      data.itemName = "Undefined Faction";
+
+      XmlSerializer ser = new XmlSerializer(data.GetType());
+      var sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, data);
       }
+
+      string longString = sb.ToString();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.updateBattleAbilities(data.itemName, longString, (int) data.abilityType);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadXML();
+         });
+      });
    }
 
-   public void deleteSkillDataFile (BasicAbilityData data, DirectoryType directoryType) {
-      // Build the file name
-      string fileName = data.itemName;
+   public void deleteSkillDataFile (BasicAbilityData data) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.deleteBattleAbilityXML(data.itemName);
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data/" + FOLDER_PATH, getDirectory(directoryType), fileName + ".xml");
-
-      // Delete the file
-      ToolsUtil.deleteFile(path);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadXML();
+         });
+      });
    }
 
    public bool ifExists (string nameID) {
@@ -121,37 +119,20 @@ public class AbilityToolManager : MonoBehaviour
    }
 
    public void saveAbility (BasicAbilityData data, DirectoryType directoryType) {
-      string directoryPath = "";
-      directoryPath = Path.Combine(Application.dataPath, "Data/" + FOLDER_PATH, getDirectory(directoryType));
-
-      if (!Directory.Exists(directoryPath)) {
-         DirectoryInfo folder = Directory.CreateDirectory(directoryPath);
+      XmlSerializer ser = new XmlSerializer(data.GetType());
+      var sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, data);
       }
 
-      // Build the file name
-      string fileName = data.itemName;
+      string longString = sb.ToString();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.updateBattleAbilities(data.itemName, longString, (int)data.abilityType);
 
-      // Build the path to the file
-      string path = Path.Combine(Application.dataPath, "Data/" + FOLDER_PATH, getDirectory(directoryType), fileName + ".xml");
-
-      // Save the file
-      ToolsUtil.xmlSave(data, path);
-   }
-
-   private string getDirectory (DirectoryType directoryType) {
-      string directoryPath = "";
-      switch (directoryType) {
-         case DirectoryType.BasicAbility:
-            directoryPath = "BasicAbility";
-            break;
-         case DirectoryType.AttackAbility:
-            directoryPath = "AttackAbility";
-            break;
-         case DirectoryType.BuffAbility:
-            directoryPath = "BuffAbility";
-            break;
-      }
-      return directoryPath;
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadXML();
+         });
+      });
    }
 
    #region Private Variables
@@ -162,4 +143,13 @@ public class AbilityToolManager : MonoBehaviour
    private Dictionary<string, BuffAbilityData> buffAbilityList = new Dictionary<string, BuffAbilityData>();
 
    #endregion
+}
+
+public class AbilityXMLContent
+{
+   // Type of ability
+   public int abilityType = 0;
+
+   // Ability Content
+   public string abilityXML = "";
 }

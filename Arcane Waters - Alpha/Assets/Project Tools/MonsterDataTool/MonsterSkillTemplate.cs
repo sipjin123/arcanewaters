@@ -25,12 +25,16 @@ public class MonsterSkillTemplate : MonoBehaviour {
    public Image previewSelectionIcon;
    public Button deleteSkillButton;
 
+   // Quick Access to Ability Tool
+   public Button openAbilityButton;
+
    // Primary Key variables to determine the ability
    public Text skillName;
    public AbilityType abilityTypeEnum;
-   public Sprite buffSprite, attackSprite;
+   public Sprite buffSprite, attackSprite, stanceSprite;
    public Image abilityTypeIcon;
    public Text skillLabel;
+   public Text templateNumber;
 
    // Ability Stances
    public List<Battler.Stance> stanceList = new List<Battler.Stance>();
@@ -109,7 +113,10 @@ public class MonsterSkillTemplate : MonoBehaviour {
 
    // Holds the variables only available to ability types with projectile
    public GameObject[] projectileVariables;
-   
+
+   // Previews Image icon determining skill type
+   public Image typeIcon;
+
    public enum PathType
    {
       HitSprite,
@@ -252,8 +259,15 @@ public class MonsterSkillTemplate : MonoBehaviour {
    #region Retrieve and Load Data
 
    public void loadAttackData(AttackAbilityData attackData) {
-      skillLabel.text = "Attack Ability";
-      abilityTypeIcon.sprite = attackSprite;
+      if (attackData.abilityType == AbilityType.Standard) {
+         skillLabel.text = "Attack Ability";
+         abilityTypeIcon.sprite = attackSprite;
+         typeIcon.sprite = attackSprite;
+      } else if (attackData.abilityType == AbilityType.Stance) {
+         skillLabel.text = "Stance Ability";
+         abilityTypeIcon.sprite = stanceSprite;
+         typeIcon.sprite = stanceSprite;
+      }
 
       loadGenericData(attackData);
 
@@ -279,6 +293,7 @@ public class MonsterSkillTemplate : MonoBehaviour {
    public void loadBuffData (BuffAbilityData buffData) {
       skillLabel.text = "Buff Ability";
       abilityTypeIcon.sprite = buffSprite;
+      typeIcon.sprite = buffSprite;
 
       loadGenericData(buffData);
 

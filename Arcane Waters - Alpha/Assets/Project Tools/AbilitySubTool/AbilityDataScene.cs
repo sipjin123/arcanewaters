@@ -31,6 +31,9 @@ public class AbilityDataScene : MonoBehaviour
    // Opens the main tool
    public Button openMainTool;
 
+   // Quick Access to monster tool
+   public Button[] openMonsterTool;
+
    // Skills Variables
    public Button addATKSkillButton, addDEFSkillButton;
    public Transform skillTemplateParent;
@@ -60,11 +63,16 @@ public class AbilityDataScene : MonoBehaviour
 
       cancelButton.onClick.AddListener(() => {
          abilityPanel.SetActive(false);
-         loadAllDataFiles();
+         abilityManager.loadXML();
       });
       openMainTool.onClick.AddListener(() => {
          SceneManager.LoadScene(MasterToolScene.masterScene);
       });
+      foreach (Button button in openMonsterTool) {
+         button.onClick.AddListener(() => {
+            SceneManager.LoadScene(MasterToolScene.monsterScene);
+         });
+      }
       addATKSkillButton.onClick.AddListener(() => addSkillTemplate(AbilityType.Standard));
       addDEFSkillButton.onClick.AddListener(() => addSkillTemplate(AbilityType.BuffDebuff));
       createTemplateButton.onClick.AddListener(() => createNewTemplate(new BasicAbilityData()));
@@ -125,7 +133,7 @@ public class AbilityDataScene : MonoBehaviour
       abilityPanel.SetActive(false);
 
       if (skillTemplateList.Count < 1) {
-         loadAllDataFiles();
+         abilityManager.loadXML();
          Debug.LogError("No skill yet");
          return;
       }
@@ -136,69 +144,44 @@ public class AbilityDataScene : MonoBehaviour
       } else if (skillTemplateList[0].abilityTypeEnum == AbilityType.BuffDebuff) {
          abilityManager.saveAbility(skillTemplate.getBuffData(), AbilityToolManager.DirectoryType.BuffAbility);
       }
-      loadAllDataFiles();
    }
 
    public void deleteAbility (BasicAbilityData data) {
       switch (data.abilityType) {
          case AbilityType.Standard:
-            abilityManager.deleteSkillDataFile(data, AbilityToolManager.DirectoryType.AttackAbility);
+            abilityManager.deleteSkillDataFile(data);
             break;
          case AbilityType.BuffDebuff:
-            abilityManager.deleteSkillDataFile(data, AbilityToolManager.DirectoryType.BuffAbility);
+            abilityManager.deleteSkillDataFile(data);
             break;
          default:
-            abilityManager.deleteSkillDataFile(data, AbilityToolManager.DirectoryType.BasicAbility);
+            abilityManager.deleteSkillDataFile(data);
             break;
       }
-   }
-
-   public void loadAllDataFiles() {
-      abilityManager.loadAllDataFiles();
    }
 
    public void updateWithAbilityData (Dictionary<string, BasicAbilityData> basicAbilityData, Dictionary<string, AttackAbilityData> attackData, Dictionary<string, BuffAbilityData> buffData) {
       // Clear all the rows
       abilityTemplateParent.gameObject.DestroyChildren();
       skillTemplateList = new List<MonsterSkillTemplate>();
-      foreach (BasicAbilityData abilityData in basicAbilityData.Values) {
-         AbilityDataTemplate template = Instantiate(abilityTemplate, abilityTemplateParent);
-         template.editButton.onClick.AddListener(() => {
-            loadGenericData(abilityData);
-            abilityPanel.SetActive(true);
-         });
-         template.deleteButton.onClick.AddListener(() => {
-            deleteAbility(new BasicAbilityData { itemName = template.actualName, abilityType = AbilityType.Undefined });
-            loadAllDataFiles();
-            Destroy(template.gameObject, .5f);
-         });
-         template.duplicateButton.onClick.AddListener(() => {
-            AbilityToolManager.DirectoryType directoryType = AbilityToolManager.DirectoryType.BasicAbility;
-            abilityManager.duplicateFile(abilityData, directoryType);
-            abilityManager.loadAllDataFiles();
-         });
-
-         finalizeTemplate(template, abilityData);
-      }
 
       foreach (AttackAbilityData abilityData in attackData.Values) {
-         AbilityDataTemplate template = Instantiate(abilityTemplate, abilityTemplateParent);
-         template.editButton.onClick.AddListener(() => {
-            loadAttackData(abilityData);
-            abilityPanel.SetActive(true);
-         });
-         template.deleteButton.onClick.AddListener(() => {
-            deleteAbility(new BasicAbilityData { itemName = template.actualName, abilityType = AbilityType.Standard });
-            loadAllDataFiles();
-            Destroy(template.gameObject, .5f);
-         });
-         template.duplicateButton.onClick.AddListener(() => {
-            AbilityToolManager.DirectoryType directoryType = AbilityToolManager.DirectoryType.AttackAbility;
-            abilityManager.duplicateFile(abilityData, directoryType);
-            abilityManager.loadAllDataFiles();
-         });
+         if (abilityData.abilityType != AbilityType.Stance) {
+            AbilityDataTemplate template = Instantiate(abilityTemplate, abilityTemplateParent);
+            template.editButton.onClick.AddListener(() => {
+               loadAttackData(abilityData);
+               abilityPanel.SetActive(true);
+            });
+            template.deleteButton.onClick.AddListener(() => {
+               deleteAbility(new BasicAbilityData { itemName = template.actualName, abilityType = AbilityType.Standard });
+               Destroy(template.gameObject, .5f);
+            });
+            template.duplicateButton.onClick.AddListener(() => {
+               abilityManager.duplicateFile(abilityData);
+            });
 
-         finalizeTemplate(template, abilityData);
+            finalizeTemplate(template, abilityData);
+         }
       }
 
       foreach (BuffAbilityData abilityData in buffData.Values) {
@@ -209,16 +192,31 @@ public class AbilityDataScene : MonoBehaviour
          });
          template.deleteButton.onClick.AddListener(() => {
             deleteAbility(new BasicAbilityData { itemName = template.actualName, abilityType = AbilityType.BuffDebuff });
-            loadAllDataFiles();
             Destroy(template.gameObject, .5f);
          });
          template.duplicateButton.onClick.AddListener(() => {
-            AbilityToolManager.DirectoryType directoryType = AbilityToolManager.DirectoryType.BuffAbility;
-            abilityManager.duplicateFile(abilityData, directoryType);
-            abilityManager.loadAllDataFiles();
+            abilityManager.duplicateFile(abilityData);
          });
 
          finalizeTemplate(template, abilityData);
+      }
+
+      foreach (BasicAbilityData abilityData in basicAbilityData.Values) {
+         if (abilityData.abilityType == AbilityType.Stance) {
+            AbilityDataTemplate template = Instantiate(abilityTemplate, abilityTemplateParent);
+            template.editButton.onClick.AddListener(() => {
+               loadGenericData(abilityData);
+               abilityPanel.SetActive(true);
+            });
+            template.deleteButton.onClick.AddListener(() => {
+               deleteAbility(new BasicAbilityData { itemName = template.actualName, abilityType = AbilityType.Undefined });
+               Destroy(template.gameObject, .5f);
+            });
+            template.duplicateButton.onClick.AddListener(() => {
+               abilityManager.duplicateFile(abilityData);
+            });
+            finalizeTemplate(template, abilityData);
+         }
       }
    }
 

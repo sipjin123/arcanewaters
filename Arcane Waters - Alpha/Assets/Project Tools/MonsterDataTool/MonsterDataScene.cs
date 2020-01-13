@@ -36,9 +36,18 @@ public class MonsterDataScene : MonoBehaviour {
    // Opens the main tool
    public Button openMainTool;
 
+   // Quick Access to ability Tool
+   public Button[] openAbilityTool;
+
    #endregion
 
    private void Awake () {
+      foreach (Button button in openAbilityTool) {
+         button.onClick.AddListener(() => {
+            SceneManager.LoadScene(MasterToolScene.abilityScene);
+         });
+      }
+
       monsterPanel.gameObject.SetActive(false);
       openMainTool.onClick.AddListener(() => {
          SceneManager.LoadScene(MasterToolScene.masterScene);
@@ -114,7 +123,7 @@ public class MonsterDataScene : MonoBehaviour {
    }
 
    public void refreshXML () {
-      abilityToolManager.loadAllDataFiles();
+      abilityToolManager.loadXML();
    }
 
    public void updatePanelWithBattlerData (Dictionary<string, BattlerData> battlerData) {
@@ -140,7 +149,6 @@ public class MonsterDataScene : MonoBehaviour {
 
             Enemy.Type type = battler.enemyType;
             toolManager.deleteMonsterDataFile(new BattlerData { enemyType = type, enemyName = battler.enemyName });
-            abilityToolManager.loadAllDataFiles();
          });
 
          try {
