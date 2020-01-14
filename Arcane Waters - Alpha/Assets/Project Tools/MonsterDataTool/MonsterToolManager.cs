@@ -19,14 +19,19 @@ public class MonsterToolManager : MonoBehaviour {
    // Holds the path of the folder
    public const string FOLDER_PATH = "MonsterStats";
 
+   // Cache all abilities
    public List<BasicAbilityData> basicAbilityList = new List<BasicAbilityData>();
+
+   // Cache offensive abilities only
    public List<AttackAbilityData> attackAbilityList = new List<AttackAbilityData>();
+
+   // Cache buff abilities only
    public List<BuffAbilityData> buffAbilityList = new List<BuffAbilityData>();
 
    #endregion
 
    private void Start () {
-      Invoke("loadAllDataFiles", 2f);
+      Invoke("loadAllDataFiles", MasterToolScene.loadDelay);
    }
 
    public void loadAllDataFiles () {

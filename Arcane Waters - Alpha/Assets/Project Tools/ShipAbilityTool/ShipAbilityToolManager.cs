@@ -17,7 +17,7 @@ public class ShipAbilityToolManager : MonoBehaviour {
    #endregion
 
    private void Start () {
-      Invoke("loadXMLData", 2f);
+      Invoke("loadXMLData", MasterToolScene.loadDelay);
    }
 
    public void saveXMLData (ShipAbilityData data) {

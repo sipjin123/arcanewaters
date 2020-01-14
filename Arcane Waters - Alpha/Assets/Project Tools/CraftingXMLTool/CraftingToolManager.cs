@@ -20,7 +20,7 @@ public class CraftingToolManager : MonoBehaviour {
    #endregion
 
    private void Start () {
-      Invoke("loadAllDataFiles", 2f);
+      Invoke("loadAllDataFiles", MasterToolScene.loadDelay);
    }
 
    public void loadAllDataFiles () {

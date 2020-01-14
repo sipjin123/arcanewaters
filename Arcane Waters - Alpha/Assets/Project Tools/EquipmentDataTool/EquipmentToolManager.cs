@@ -30,7 +30,7 @@ public class EquipmentToolManager : MonoBehaviour {
    #endregion
 
    private void Start () {
-      Invoke("loadXMLData", 2f);
+      Invoke("loadXMLData", MasterToolScene.loadDelay);
    }
 
    #region Save 

@@ -31,7 +31,7 @@ public class AbilityToolManager : MonoBehaviour
    #endregion
 
    private void Start () {
-      Invoke("loadXML", 2f);
+      Invoke("loadXML", MasterToolScene.loadDelay);
    }
 
    public void loadXML () {

@@ -20,7 +20,7 @@ public class AchievementToolManager : MonoBehaviour {
    #endregion
 
    private void Start () {
-      Invoke("loadXMLData", 2f);
+      Invoke("loadXMLData", MasterToolScene.loadDelay);
    }
 
    public void saveXMLData (AchievementData data) {

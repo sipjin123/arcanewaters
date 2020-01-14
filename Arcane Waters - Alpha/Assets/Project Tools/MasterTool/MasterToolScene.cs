@@ -27,6 +27,9 @@ public class MasterToolScene : MonoBehaviour {
    public const string shipAbilityScene = "ShipAbility Tool";
    public const string shopScene = "ShopTool";
 
+   // Loading delay before fetching XML Data
+   public static float loadDelay = 2;
+
    // Button triggers to open scene
    public Button clickAbilityScene, 
       clickMonsterScene, 
