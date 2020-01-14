@@ -386,7 +386,7 @@ namespace MapCreationTool
                   if (tile != null && tile != transparentTile) {
                      Vector2Int index = from.indexOf(tile);
                      if (index.x == -1)
-                        throw new System.Exception("Unrecognized tile!");
+                        throw new System.Exception($"Unrecognized tile - {tile.name}");
 
                      result.tileChanges.Add(new TileChange(to.getTile(index.x, index.y)?.tile, new Vector3Int(i, j, 0), layer));
                   }

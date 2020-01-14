@@ -49,7 +49,7 @@ public class AmbienceManager : ClientMonoBehaviour {
    }
 
    protected List<SoundManager.Type> getAmbienceTypeForArea (string areaKey) {
-      if (Area.isSea(areaKey)) {
+      if (AreaManager.self.getArea(areaKey)?.isSea == true) {
          return new List<SoundManager.Type>() { SoundManager.Type.Ambience_Ocean };
       }
 

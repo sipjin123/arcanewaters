@@ -141,16 +141,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: NPC
-  dataFields:
-  - name: shop name
-    defaultValue: 
-    type: 2
+  dataFields: []
   selectDataFields: []
   customDataFields:
   - name: npc data
     type: 1
   - name: panel type
     type: 2
+  - name: shop name
+    type: 3
 --- !u!114 &1964489795130427793
 MonoBehaviour:
   m_ObjectHideFlags: 0

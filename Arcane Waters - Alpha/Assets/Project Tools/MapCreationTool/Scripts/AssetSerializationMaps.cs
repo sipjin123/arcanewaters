@@ -56,8 +56,10 @@ namespace MapCreationTool
                   for (int j = 0; j < definition.tilemap.size.y; j++) {
                      var tile = definition.tilemap.GetTile(new Vector3Int(i, j, 0) + definition.tilemap.origin);
                      if (tile != null) {
-                        bm.tileToIndex.Add(tile, new Vector2Int(i, j));
-                        bm.indexToTile.Add(new Vector2Int(i, j), tile);
+                        if (!bm.tileToIndex.ContainsKey(tile))
+                           bm.tileToIndex.Add(tile, new Vector2Int(i, j));
+                        if (!bm.indexToTile.ContainsKey(new Vector2Int(i, j)))
+                           bm.indexToTile.Add(new Vector2Int(i, j), tile);
                      }
                   }
                }
@@ -72,8 +74,10 @@ namespace MapCreationTool
                for (int j = 0; j < allBiomesDefinition.tilemap.size.y; j++) {
                   var tile = allBiomesDefinition.tilemap.GetTile(new Vector3Int(i, j, 0) + allBiomesDefinition.tilemap.origin);
                   if (tile != null) {
-                     allBiomes.tileToIndex.Add(tile, new Vector2Int(i, j));
-                     allBiomes.indexToTile.Add(new Vector2Int(i, j), tile);
+                     if(!allBiomes.tileToIndex.ContainsKey(tile))
+                        allBiomes.tileToIndex.Add(tile, new Vector2Int(i, j));
+                     if (!allBiomes.indexToTile.ContainsKey(new Vector2Int(i, j)))
+                        allBiomes.indexToTile.Add(new Vector2Int(i, j), tile);
                   }
                }
             }
@@ -112,9 +116,16 @@ namespace MapCreationTool
       }
 
       public static Vector2Int getIndex (TileBase tile, BiomeType biome) {
-         if (allBiomes.tileToIndex.TryGetValue(tile, out Vector2Int index))
-            return index;
-         return biomeSpecific[biome].tileToIndex[tile];
+         try {
+            if (allBiomes.tileToIndex.TryGetValue(tile, out Vector2Int index))
+               return index;
+            return biomeSpecific[biome].tileToIndex[tile];
+         }
+         catch(Exception ex) {
+            Debug.Log($"Unable to get index for tile {tile.name}");
+            throw ex;
+         }
+         
       }
 
       public static GameObject getPrefab (int index, BiomeType biome, bool editorPrefab) {

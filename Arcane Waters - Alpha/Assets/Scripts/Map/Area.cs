@@ -6,7 +6,8 @@ using Mirror;
 using UnityEngine.Tilemaps;
 using System;
 
-public class Area : MonoBehaviour {
+public class Area : MonoBehaviour
+{
    #region Public Variables
 
    // Hardcoded area keys
@@ -30,9 +31,12 @@ public class Area : MonoBehaviour {
    // The Virtual Camera for this Area
    public Cinemachine.CinemachineVirtualCamera vcam;
 
+   // Whether this area is a sea area
+   public bool isSea = false;
+
    #endregion
 
-   private void Start() {
+   private void Start () {
       // Regenerate any tilemap colliders
       foreach (CompositeCollider2D compositeCollider in GetComponentsInChildren<CompositeCollider2D>()) {
          compositeCollider.GenerateGeometry();
@@ -47,6 +51,11 @@ public class Area : MonoBehaviour {
       // Make note of the initial states
       foreach (TilemapCollider2D collider in _tilemapColliders) {
          _initialStates[collider] = collider.enabled;
+      }
+
+      // Check if area is a sea area
+      if (!isSea) {
+         isSea = areaKey.StartsWith("Ocean") || areaKey.StartsWith("Sea");
       }
 
       // If the area is a town, lists all the areas that can be accessed from it
@@ -66,10 +75,6 @@ public class Area : MonoBehaviour {
          // Otherwise, the town area is the area itself
          townAreaKey = areaKey;
       }
-   }
-
-   public static bool isSea (string areaKey) {
-      return (areaKey.StartsWith("Ocean") || areaKey.StartsWith("Sea"));
    }
 
    public static bool isHouse (string areaKey) {
@@ -92,11 +97,11 @@ public class Area : MonoBehaviour {
       return areaKey.Contains("Shop") || areaKey.Contains("Shipyard");
    }
 
-   public static bool isMerchantShop(string areaKey) {
+   public static bool isMerchantShop (string areaKey) {
       return areaKey.StartsWith("MerchantShop");
    }
 
-   public static bool isInterior(string areaKey) {
+   public static bool isInterior (string areaKey) {
       return isShop(areaKey) || isHouse(areaKey);
    }
 
@@ -176,7 +181,7 @@ public class Area : MonoBehaviour {
          case "SeaTop":
             return SoundManager.Type.Sea_Pine;
          case "TreasurePine":
-           return SoundManager.Type.Town_Pine;
+            return SoundManager.Type.Town_Pine;
          default:
             return SoundManager.Type.None;
       }

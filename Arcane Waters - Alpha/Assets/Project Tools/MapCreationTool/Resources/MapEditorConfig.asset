@@ -68,11 +68,11 @@ MonoBehaviour:
   - layer: ground
     index: 0
   - layer: grass
-    index: 20
+    index: 15
   - layer: mountain
     index: 10
   - layer: mountain-top
-    index: 15
+    index: 20
   - layer: water
     index: 5
   - layer: river

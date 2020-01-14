@@ -136,7 +136,7 @@ public class TutorialManager : MonoBehaviour {
       TutorialPanel.self.updatePanel(tutorialInfo);
 
       // If we're on the ship step and in our ship, we're done
-      if (Global.player is PlayerShipEntity && Area.isSea(areaType)) {
+      if (Global.player is PlayerShipEntity && AreaManager.self.getArea(areaType)?.isSea == true) {
          Global.player.Cmd_CompletedTutorialStep(TutorialManager.currentStep);
       }
    }

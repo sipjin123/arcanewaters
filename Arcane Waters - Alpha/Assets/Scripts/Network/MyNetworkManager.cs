@@ -192,7 +192,8 @@ public class MyNetworkManager : NetworkManager {
             }
 
             // Create the Player object
-            GameObject prefab = Area.isSea(previousAreaKey) ? PrefabsManager.self.playerShipPrefab : PrefabsManager.self.playerBodyPrefab;
+            Area previousArea = AreaManager.self.getArea(previousAreaKey);
+            GameObject prefab = previousArea?.isSea == true ? PrefabsManager.self.playerShipPrefab : PrefabsManager.self.playerBodyPrefab;
             GameObject playerObject = Instantiate(prefab, userInfo.localPos, Quaternion.identity);
             NetEntity player = playerObject.GetComponent<NetEntity>();
             player.areaKey = previousAreaKey;

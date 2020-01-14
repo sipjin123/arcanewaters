@@ -26,11 +26,11 @@ namespace MapCreationTool.PaletteTilesData
          return tileGroups[x, y];
       }
 
-      public Dictionary<TileBase, TileCollisionType> formCollisionDictionary() {
+      public Dictionary<TileBase, TileCollisionType> formCollisionDictionary () {
          Dictionary<TileBase, TileCollisionType> result = new Dictionary<TileBase, TileCollisionType>(tileGroups.GetLength(0) * tileGroups.GetLength(1));
 
          for (int i = 0; i < tileGroups.GetLength(0); i++) {
-            for(int j = 0; j < tileGroups.GetLength(1); j++) {
+            for (int j = 0; j < tileGroups.GetLength(1); j++) {
                TileData tile = getTile(i, j);
                if (tile != null && !result.ContainsKey(tile.tile))
                   result.Add(tile.tile, tile.collision);
@@ -92,18 +92,6 @@ namespace MapCreationTool.PaletteTilesData
 
          tileGroups = newG;
          prefabGroups = newPrefs;
-      }
-   }
-
-   public class MountainGroup : TileGroup
-   {
-      public TileBase[,] innerTiles { get; set; }
-      public TileBase[,] outerTiles { get; set; }
-      public string layer { get; set; }
-
-      public override Vector2Int brushSize => new Vector2Int(5, 6);
-      public MountainGroup () {
-         type = TileGroupType.Mountain;
       }
    }
 
@@ -228,7 +216,7 @@ namespace MapCreationTool.PaletteTilesData
       }
 
       public TileData () {
-         
+
       }
    }
 }

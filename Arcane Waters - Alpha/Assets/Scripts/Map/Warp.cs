@@ -50,7 +50,7 @@ public class Warp : MonoBehaviour, MapCreationTool.IMapEditorDataReceiver {
       }
 
       // We can't warp to the sea until we've gotten far enough into the tutorial
-      if (Area.isSea(spawn.AreaKey) && currentStep <= HEAD_TO_DOCKS_QUEST_INDEX) {
+      if (AreaManager.self.getArea(spawn.AreaKey)?.isSea == true && currentStep <= HEAD_TO_DOCKS_QUEST_INDEX) {
          return false;
       }
 

@@ -36,6 +36,10 @@ namespace MapCreationTool
 
          ExportedProject001 exportedProject = JsonUtility.FromJson<ExportedProject001>(data.text);
 
+         if(exportedProject.editorType == EditorType.Sea) {
+            area.isSea = true;
+         }
+
          instantiateTilemaps(exportedProject, result.tilemapParent, result.collisionTilemapParent);
          instantiatePrefabs(exportedProject, result.prefabParent, result.npcParent);
 
@@ -113,6 +117,17 @@ namespace MapCreationTool
             // Add all the tiles
             Vector3Int[] positions = layer.tiles.Select(t => new Vector3Int(t.x, t.y, 0)).ToArray();
             TileBase[] tiles = layer.tiles.Select(t => indexToTile(new Vector2Int(t.i, t.j))).ToArray();
+
+            // Ensure the 'sprite' of animated tiles is set
+            foreach(TileBase tileBase in tiles) {
+               AnimatedTile aTile = tileBase as AnimatedTile;
+               if(aTile != null) {
+                  if(aTile.sprite == null && aTile.m_AnimatedSprites.Length > 0) {
+                     aTile.sprite = aTile.m_AnimatedSprites[0];
+                  }
+               }
+            }
+
             tilemap.SetTiles(positions, tiles);
 
             positions = layer.tiles.Where(t => t.c == 1).Select(t => new Vector3Int(t.x, t.y, 0)).ToArray();

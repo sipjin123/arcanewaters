@@ -151,6 +151,7 @@ namespace MapCreationTool.Serialization
             version = "0.0.1",
             biome = biome,
             layers = formExportedLayers(layers, tileToIndex, collisionDictionary, config, editorType, editorOrigin, editorSize).ToArray(),
+            editorType = editorType,
             prefabs = prefabsSerialized,
          };
 
@@ -465,6 +466,7 @@ namespace MapCreationTool.Serialization
    {
       public string version;
       public BiomeType biome;
+      public EditorType editorType;
       public Vector2Int size;
       public ExportedPrefab001[] prefabs;
       public ExportedLayer001[] layers;

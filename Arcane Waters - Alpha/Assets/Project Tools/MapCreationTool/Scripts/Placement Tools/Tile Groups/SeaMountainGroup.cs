@@ -114,7 +114,7 @@ namespace MapCreationTool
          else if ((sur.left == 1 && sur.top > 1 && sur.right > 1 && sur.bot > 1 && !adj[x - 1, y - 1] && !adj[x - 1, y - 2]) ||
             (sur.left > 0 && sur.top > 1 && sur.right > 1 && sur.bot > 1 && !adj[x - 1, y - 1]))
             tileIndex.Set(5, 2);
-         else if ((sur.left == 1 && sur.top > 1 && sur.right > 0 && sur.bot > 1 && !adj[x + 1, y - 1] && !adj[x + 1, y - 2]) || 
+         else if ((sur.left == 1 && sur.top > 1 && sur.right > 0 && sur.bot > 1 && !adj[x + 1, y - 1] && !adj[x + 1, y - 2]) ||
             (sur.left > 1 && sur.top > 1 && sur.right > 0 && sur.bot > 1 && !adj[x + 1, y - 1]))
             tileIndex.Set(1, 2);
 
@@ -159,6 +159,27 @@ namespace MapCreationTool
             tileIndex.Set(0, 8);
          else if (sur.left > 1 && sur.top > 0 && sur.right == 1 && sur.bot > 0 && !adj[x + 1, y + 1])
             tileIndex.Set(6, 8);
+
+         // Override for bottom slope middle tiles
+         if (tileIndex.x == 3 && (tileIndex.y == 5 || tileIndex.y == 6)) {
+            bool leftMost = false;
+            bool rightMost = false;
+            // Whether it is the first, or the second tile from the bottom in the bottom row
+            int nth = tileIndex.y == 5 ? 0 : 1;
+
+            if (sur.left == 1 || adj[x - 1, y - 1 - nth] || !adj[x - 2, y - nth])
+               leftMost = true;
+
+            if (sur.right == 1 || adj[x + 1, y - 1 - nth] || !adj[x + 2, y - nth])
+               rightMost = true;
+
+            if (leftMost && rightMost)
+               tileIndex.y -= 2;
+            else if (leftMost && !rightMost)
+               tileIndex.x--;
+            else if (!leftMost && rightMost)
+               tileIndex.x++;
+         }
 
          // If no tile index was found, add an empty tile
          if (tileIndex.x == -1)
