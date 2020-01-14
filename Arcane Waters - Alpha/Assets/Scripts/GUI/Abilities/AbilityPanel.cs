@@ -42,10 +42,17 @@ public class AbilityPanel : Panel {
    public GameObject toolTipCustom;
 
    // Cached info of the abilities
-   public List<BasicAbilityData> cachedAbility;
+   public List<BasicAbilityData> cachedAbilityList;
 
    // Canvas reference
    public Canvas canvas;
+
+   // The zone where grabbed abiities can be dropped
+   public ItemDropZone inventoryDropZone;
+   public List<ItemDropZone> equipmentDropZone;
+
+   // Holds the canvas blocker 
+   public GameObject canvasBlocker;
 
    #endregion
 
@@ -56,16 +63,25 @@ public class AbilityPanel : Panel {
    }
 
    public void receiveDataFromServer (AbilitySQLData[] abilityList) {
+      canvasBlocker.SetActive(false);
+
       // Clear all the rows and slots
       abilityRowsContainer.DestroyChildren();
       abilitySlotsContainer.DestroyChildren();
       _equippedAbilitySlots.Clear();
-      cachedAbility = new List<BasicAbilityData>();
+      cachedAbilityList = new List<BasicAbilityData>();
+      equipmentDropZone = new List<ItemDropZone>();
 
       // Create empty ability slots
       for (int i = 0; i < AbilityManager.MAX_EQUIPPED_ABILITIES; i++) {
          AbilitySlot abilitySlot = Instantiate(abilitySlotPrefab, abilitySlotsContainer.transform, false);
          abilitySlot.abilitySlotId = i;
+
+         // Add drop zone for ability equip
+         ItemDropZone dropZone = abilitySlot.gameObject.AddComponent<ItemDropZone>();
+         dropZone.rectTransform = abilitySlot.GetComponent<RectTransform>();
+         equipmentDropZone.Add(dropZone);
+
          _equippedAbilitySlots.Add(abilitySlot);
       }
 
@@ -80,7 +96,7 @@ public class AbilityPanel : Panel {
          string description = builder.ToString();
 
          // Determine if the ability is equipped
-         if (ability.equipSlotIndex >= 0) {
+         if (ability.equipSlotIndex >= 0 && ability.equipSlotIndex < AbilityManager.MAX_EQUIPPED_ABILITIES) {
             // Initialize the equipped ability slot
             _equippedAbilitySlots[ability.equipSlotIndex].setSlotForAbilityData(ability.abilityID, basicAbilityData, description);
          } else {
@@ -88,7 +104,7 @@ public class AbilityPanel : Panel {
             AbilityRow abilityRow = Instantiate(abilityRowPrefab, abilityRowsContainer.transform, false);
             abilityRow.setRowForAbilityData(ability.abilityID, basicAbilityData, description);
          }
-         cachedAbility.Add(basicAbilityData);
+         cachedAbilityList.Add(basicAbilityData);
       }
    }
 
@@ -102,7 +118,7 @@ public class AbilityPanel : Panel {
       toolTipCustom.SetActive(isActive);
       toolTipCustom.transform.position = pos;
 
-      BasicAbilityData abilityData = cachedAbility.Find(_ => _.itemName == skillName);
+      BasicAbilityData abilityData = cachedAbilityList.Find(_ => _.itemName == skillName);
       if (abilityData != null) {
          toolTipLevel.text = abilityData.abilityLevel.ToString();
          panelLevel.text = abilityData.abilityLevel.ToString();
@@ -112,23 +128,92 @@ public class AbilityPanel : Panel {
       }
    }
 
-   public void tryEquipAbility(int abilityId) {
-      foreach (AbilitySlot slot in _equippedAbilitySlots) {
-         if (slot.isFree()) {
-            Global.player.rpc.Cmd_UpdateAbility(abilityId, slot.abilitySlotId);
-            break;
+   #region Equip Feature
+
+   public void tryEquipAbility(int abilityId, int slotID) {
+      if (_equippedAbilitySlots[slotID].isFree()) {
+         Global.player.rpc.Cmd_UpdateAbility(abilityId, _equippedAbilitySlots[slotID].abilitySlotId);
+      }
+   }
+
+   public void unequipAbility (int abilityId) {
+      canvasBlocker.SetActive(true);
+      Global.player.rpc.Cmd_UpdateAbility(abilityId, -1);
+   }
+
+   public void tryGrabAbility (AbilityRow abilityCell) {
+      BasicAbilityData castedAbility = AbilityManager.getAbility(abilityCell.abilityName.text);
+      _sourceAbilityCell = abilityCell;
+      _cachedAbility = castedAbility;
+
+      // Hide the cell being grabbed
+      _sourceAbilityCell.hide();
+
+      // Initialize the common grabbed object
+      _draggedAbilityCell.setRowForAbilityData(castedAbility.itemID, castedAbility, castedAbility.itemDescription);
+      _draggableAbility.activate();
+   }
+
+   public void stopGrabbingAbility () {
+      if (_sourceAbilityCell != null && _draggableAbility != null) {
+         // Restore the grabbed cell
+         _sourceAbilityCell.show();
+         _draggedAbilityCell = null;
+
+         // Deactivate the grabbed ability
+         _draggableAbility.deactivate();
+      }
+   }
+
+   public void tryDropGrabbedAbility (Vector2 screenPosition) {
+      if (_sourceAbilityCell != null) {
+         // Determine which action was performed
+         bool droppedInInventory = inventoryDropZone.isInZone(screenPosition);
+         bool droppedInEquipmentSlots = false;
+         AbilitySlot droppedSlot = null;
+             
+         foreach (ItemDropZone zone in equipmentDropZone) {
+           if (zone.isInZone(screenPosition)) {
+               droppedInEquipmentSlots = true;
+               droppedSlot = zone.GetComponent<AbilitySlot>();
+               break;
+            }
+         }
+
+         // Ability can be dragged from the equipment slots to the inventory or vice-versa
+         if (droppedInEquipmentSlots) {
+            canvasBlocker.SetActive(true);
+
+            int abilityIDCache = _cachedAbility.itemID;
+            tryEquipAbility(abilityIDCache, droppedSlot.abilitySlotId);
+            droppedSlot?.setSlotForAbilityData(_cachedAbility.itemID, _cachedAbility, _cachedAbility.itemDescription);
+            _draggableAbility.deactivate();
+         } else {
+            // Otherwise, simply stop grabbing
+            stopGrabbingAbility();
          }
       }
    }
 
-   public void unequipAbility(int abilityId) {
-      Global.player.rpc.Cmd_UpdateAbility(abilityId, -1);
-   }
+   #endregion
 
    #region Private Variables
 
+#pragma warning disable 0649
    // The equipped ability slots
    private List<AbilitySlot> _equippedAbilitySlots = new List<AbilitySlot>();
+
+   // The data of the ability being dragged
+   private BasicAbilityData _cachedAbility;
+
+   // The cell from which an ability was grabbed
+   [SerializeField]
+   private AbilityRow _sourceAbilityCell, _draggedAbilityCell;
+
+   // The grabbed ability UI that can be dragged
+   [SerializeField]
+   private GrabbedAbility _draggableAbility;
+#pragma warning restore 0649 
 
    #endregion
 }

@@ -6,7 +6,7 @@ using Mirror;
 using UnityEngine.EventSystems;
 using System.Text;
 
-public class AbilityRow : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class AbilityRow : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler
 {
    #region Public Variables
 
@@ -19,6 +19,9 @@ public class AbilityRow : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
    // Transform where Tooltip should snap to
    public Transform displayPoint;
 
+   // Holder of the contents of the template
+   public GameObject contentHolder;
+
    #endregion
 
    public void setRowForAbilityData (int abilityId, BasicAbilityData basicAbilityData, string description) {
@@ -30,7 +33,15 @@ public class AbilityRow : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
    }
 
    public void onRowButtonPress () {
-      AbilityPanel.self.tryEquipAbility(_abilityId);
+      //AbilityPanel.self.tryEquipAbility(_abilityId, );
+   }
+
+   public void hide () {
+      contentHolder.SetActive(false);
+   }
+
+   public void show () {
+      contentHolder.SetActive(true);
    }
 
    public void OnPointerEnter (PointerEventData eventData) {
@@ -41,6 +52,10 @@ public class AbilityRow : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
    public void OnPointerExit (PointerEventData eventData) {
       AbilityPanel.self.showToolTip(false, abilityName.text, displayPoint.position);
+   }
+
+   public void OnPointerDown (PointerEventData eventData) {
+      AbilityPanel.self.tryGrabAbility(this);
    }
 
    #region Private Variables

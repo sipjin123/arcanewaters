@@ -160,6 +160,12 @@ public class AbilityManager : MonoBehaviour
       }
    }
 
+   public static BasicAbilityData getAbility (string abilityName) {
+      BasicAbilityData returnAbility = self._allGameAbilities.Find(_ => _.itemName == abilityName);
+
+      return returnAbility;
+   }
+
    public static AttackAbilityData getAttackAbility (int abilityGlobalID) {
       AttackAbilityData returnAbility = new AttackAbilityData();
       returnAbility = self._attackAbilities.Find(_ => _.itemID == abilityGlobalID);

@@ -2697,27 +2697,10 @@ public class RPCManager : NetworkBehaviour {
             // Modifies equipment slot of the ability (Slots 0 -> 4 are Equipped and Slots -1 are Unequipped)
             sqlData.equipSlotIndex = equipSlot;
 
-            // Reorder the abilities by equipment slot
-            abilityDataList = abilityDataList.OrderBy(a => a.equipSlotIndex).ToList();
-
-            // Reassign the equipment slot to remove gaps
-            int slotIndex = 0;
-            foreach(AbilitySQLData data in abilityDataList) {
-               if (data.equipSlotIndex != -1) {
-                  data.equipSlotIndex = slotIndex;
-                  slotIndex++;
-
-                  // Save the slot change
-                  DB_Main.updateAbilitiesData(_player.userId, data);
-               }
-            }
-
             // Make sure that the requested ability update is saved
             DB_Main.updateAbilitiesData(_player.userId, sqlData);
          }
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            fetchAbilitiesForUIPanel();
-         });
+         fetchAbilitiesForUIPanel();
       });
    }
 
