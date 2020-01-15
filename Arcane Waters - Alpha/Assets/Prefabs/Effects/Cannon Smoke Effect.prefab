@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 95740904834874048}
   - component: {fileID: 114276769214249124}
   - component: {fileID: 114685778653505506}
+  - component: {fileID: -8127186406473608724}
+  - component: {fileID: 1019629684556397932}
   m_Layer: 0
   m_Name: Cannon Smoke Effect
   m_TagString: Untagged
@@ -92,7 +94,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1946685176054144}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 6a52051978c60f648bb36eca00d205a1, type: 2}
   m_CullingMode: 0
@@ -125,9 +127,58 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1946685176054144}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a382d158a7c303749820839e20a683f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 0}
+--- !u!114 &-8127186406473608724
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1946685176054144}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59a9a98428d226e419fede1b7cdd5674, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialDelay: 0
+  frameLengthOverride: 0.1
+  delayStart: 0
+  destroyAtEnd: 1
+  stayAtLastFrame: 0
+  loopDelay: 0
+  isPaused: 0
+  minIndex: 0
+  maxIndex: 1000
+  currentAnimation: 0
+  group: 0
+--- !u!114 &1019629684556397932
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1946685176054144}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d45d0453b775934f8e9d1cd259eced3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spriteMagnitudeSetup:
+  - impactMagnitude: 1
+    spriteReference: {fileID: -8084721619412961970, guid: c354d1a04fd19af4cb68d9299e932c64,
+      type: 3}
+  - impactMagnitude: 2
+    spriteReference: {fileID: 4761925100391501788, guid: a57364d225f65b04e898b2ea2282499d,
+      type: 3}
+  - impactMagnitude: 3
+    spriteReference: {fileID: -3279787208746309174, guid: c7c88b2bdf5fb2b448df96725be89819,
+      type: 3}
+  - impactMagnitude: 0
+    spriteReference: {fileID: -8084721619412961970, guid: c354d1a04fd19af4cb68d9299e932c64,
+      type: 3}
+  spriteRenderReference: {fileID: 212076455087445722}

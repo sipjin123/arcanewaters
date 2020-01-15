@@ -64,16 +64,6 @@ public class PrefabsManager : MonoBehaviour {
    // The Prefab we use for treasureChest spawning
    public GameObject treasureChestPrefab;
 
-   [Header("VFX Prefabs")]
-   // The Prefab we use for creating cannon splashes
-   public GameObject cannonSplashPrefab;
-
-   // The Prefab we use for creating explosions
-   public GameObject explosionPrefab;
-
-   // The Prefab we use for creating cannon smoke
-   public GameObject cannonSmokePrefab;
-
    [Header("Network Dependent Prefabs")]
    // The Prefab we use for creating networked cannon balls
    public GameObject networkedCannonBallPrefab;
@@ -219,7 +209,35 @@ public class PrefabsManager : MonoBehaviour {
       }
    }
 
+   public GameObject requestCannonSmokePrefab (Attack.ImpactMagnitude impactType) {
+      GameObject newPrefab = Instantiate(cannonSmokePrefab);
+      newPrefab.GetComponent<MagnitudeHandler>().setSprite(impactType);
+      return newPrefab;
+   }
+
+   public GameObject requestCannonExplosionPrefab (Attack.ImpactMagnitude impactType) {
+      GameObject newPrefab = Instantiate(explosionPrefab);
+      newPrefab.GetComponent<MagnitudeHandler>().setSprite(impactType);
+      return newPrefab;
+   }
+
+   public GameObject requestCannonSplashPrefab (Attack.ImpactMagnitude impactType) {
+      GameObject newPrefab = Instantiate(cannonSplashPrefab);
+      newPrefab.GetComponent<MagnitudeHandler>().setSprite(impactType);
+      return newPrefab;
+   }
+
    #region Private Variables
+
+   [Header("VFX Prefabs")]
+   // The Prefab we use for creating cannon splashes
+   [SerializeField] private GameObject cannonSplashPrefab;
+
+   // The Prefab we use for creating explosions
+   [SerializeField] private GameObject explosionPrefab;
+
+   // The Prefab we use for creating cannon smoke
+   [SerializeField] private GameObject cannonSmokePrefab;
 
    #endregion
 }

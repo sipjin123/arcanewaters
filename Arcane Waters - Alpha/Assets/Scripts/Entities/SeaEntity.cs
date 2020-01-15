@@ -46,6 +46,9 @@ public class SeaEntity : NetEntity {
    // Holds the list of colliders for this obj
    public List<Collider2D> colliderList;
 
+   // Cache the impact type of the ability
+   public Attack.ImpactMagnitude currentImpactMagnitude;
+
    #endregion
 
    protected override void Start () {
@@ -226,41 +229,25 @@ public class SeaEntity : NetEntity {
       if (attackType == Attack.Type.Shock_Ball) {
          // Create a shock ball
          ShockballProjectile shockBall = Instantiate(PrefabsManager.self.getShockballPrefab(attackType), startPos, Quaternion.identity);
-         shockBall.creator = this;
-         shockBall.startPos = startPos;
-         shockBall.endPos = endPos;
-         shockBall.startTime = startTime;
-         shockBall.endTime = endTime;
+         shockBall.init(startTime, endTime, startPos, endPos, this, currentImpactMagnitude);
          shockBall.setDirection((Direction) facing);
       } else if (attackType == Attack.Type.Mini_Boulder) {
          // Create a boulder
          BoulderProjectile boulder = Instantiate(PrefabsManager.self.miniBoulderPrefab, startPos, Quaternion.identity);
-         boulder.creator = this;
-         boulder.startPos = startPos;
-         boulder.endPos = endPos;
-         boulder.startTime = startTime;
-         boulder.endTime = endTime;
+         boulder.init(startTime, endTime, startPos, endPos, this, currentImpactMagnitude);
       } else if (attackType == Attack.Type.Tentacle_Range) {
          // Create a tentacle projectile
          TentacleProjectile tentacleProjectile = Instantiate(PrefabsManager.self.getTentacleProjectilePrefab(attackType), startPos, Quaternion.identity);
-         tentacleProjectile.creator = this;
-         tentacleProjectile.startPos = startPos;
-         tentacleProjectile.endPos = endPos;
-         tentacleProjectile.startTime = startTime;
-         tentacleProjectile.endTime = endTime;
+         tentacleProjectile.init(startTime, endTime, startPos, endPos, this, currentImpactMagnitude);
       } else {
          // Create a cannon smoke effect
          Vector2 direction = endPos - startPos;
          Vector2 offset = direction.normalized * .1f;
-         Instantiate(PrefabsManager.self.cannonSmokePrefab, startPos + offset, Quaternion.identity);
+         Instantiate(PrefabsManager.self.requestCannonSmokePrefab(currentImpactMagnitude), startPos + offset, Quaternion.identity);
 
          // Create a cannon ball
          CannonBall ball = Instantiate(PrefabsManager.self.getCannonBallPrefab(attackType), startPos, Quaternion.identity);
-         ball.creator = this;
-         ball.startPos = startPos;
-         ball.endPos = endPos;
-         ball.startTime = startTime;
-         ball.endTime = endTime;
+         ball.init(startTime, endTime, startPos, endPos, this, currentImpactMagnitude);
       }
 
       // Play an appropriate sound
@@ -278,16 +265,11 @@ public class SeaEntity : NetEntity {
       Vector2 direction = target.transform.position - source.transform.position;
       Vector3 offset = direction.normalized * .1f;
       Vector3 startPos = source.transform.position + offset;
-      Instantiate(PrefabsManager.self.cannonSmokePrefab, startPos, Quaternion.identity);
+      Instantiate(PrefabsManager.self.requestCannonSmokePrefab(currentImpactMagnitude), startPos, Quaternion.identity);
 
       // Create a cannon ball
       CannonBall ball = Instantiate(PrefabsManager.self.cannonBallPrefab, startPos, Quaternion.identity);
-      ball.creator = this;
-      ball.startPos = startPos;
-      ball.endPos = target.transform.position;
-      ball.targetObject = target;
-      ball.startTime = startTime;
-      ball.endTime = endTime;
+      ball.init(startTime, endTime, startPos, target.transform.position, this, currentImpactMagnitude, target);
 
       // Play an appropriate sound
       playAttackSound();
@@ -316,7 +298,7 @@ public class SeaEntity : NetEntity {
             ShipAbilityData shipData = ShipAbilityManager.self.getAbility(attackType);
             if (shipData == null) {
                // Show generic explosion
-               Instantiate(PrefabsManager.self.explosionPrefab, pos, Quaternion.identity);
+               Instantiate(PrefabsManager.self.requestCannonExplosionPrefab(currentImpactMagnitude), pos, Quaternion.identity);
             } else {
                EffectManager.createDynamicEffect(shipData.collisionSpritePath, pos, shipData.abilitySpriteFXPerFrame);
                AudioClip clip = AudioClipManager.self.getAudioClipData(shipData.collisionSFXPath).audioClip;
@@ -722,8 +704,7 @@ public class SeaEntity : NetEntity {
          // Create the boulder projectile object from the prefab
          GameObject boulderObject = Instantiate(PrefabsManager.self.boulderPrefab, startPos, Quaternion.identity);
          NetworkedBoulderProjectile netBoulder = boulderObject.GetComponent<NetworkedBoulderProjectile>();
-         netBoulder.creatorUserId = this.userId;
-         netBoulder.instanceId = this.instanceId;
+         netBoulder.init(this.userId, this.instanceId, currentImpactMagnitude);
          netBoulder.setDirection((Direction) facing, endPos);
 
          // Add velocity to the projectile
@@ -793,8 +774,7 @@ public class SeaEntity : NetEntity {
       // Create the venom projectile object from the prefab
       GameObject venomObject = Instantiate(PrefabsManager.self.networkedVenomProjectilePrefab, startPos, Quaternion.identity);
       NetworkedVenomProjectile netVenom = venomObject.GetComponent<NetworkedVenomProjectile>();
-      netVenom.creatorUserId = this.userId;
-      netVenom.instanceId = this.instanceId;
+      netVenom.init(this.userId, this.instanceId, currentImpactMagnitude);
       netVenom.setDirection((Direction) facing, endpos);
 
       // Add velocity to the projectile

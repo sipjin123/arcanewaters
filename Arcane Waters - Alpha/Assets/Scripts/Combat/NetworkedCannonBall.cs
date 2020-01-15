@@ -7,12 +7,6 @@ using Mirror;
 public class NetworkedCannonBall : MonoBehaviour {
    #region Public Variables
 
-   // The source of this attack
-   public int creatorUserId;
-
-   // The instance id for this cannon ball
-   public int instanceId;
-
    // Our cannon ball sprite
    public GameObject cannonBall;
 
@@ -33,18 +27,24 @@ public class NetworkedCannonBall : MonoBehaviour {
 
    #endregion
 
+   public void init (int userID, int instanceID, Attack.ImpactMagnitude impactType) {
+      _creatorUserId = userID;
+      _instanceId = instanceID;
+      _impactMagnitude = impactType;
+   }
+
    private void Start () {
       _startTime = TimeManager.self.getSyncedTime();
 
       // Create a cannon smoke effect at our creation point
       Vector2 offset = this.body.velocity.normalized * .1f;
-      Instantiate(PrefabsManager.self.cannonSmokePrefab, (Vector2)this.transform.position + offset, Quaternion.identity);
+      Instantiate(PrefabsManager.self.requestCannonSmokePrefab(_impactMagnitude), (Vector2)this.transform.position + offset, Quaternion.identity);
 
       // Play a sound effect
       SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Cannon_2, this.transform.position);
 
       // If it was our ship, shake the camera
-      if (Global.player != null && creatorUserId == Global.player.userId) {
+      if (Global.player != null && _creatorUserId == Global.player.userId) {
          CameraManager.shakeCamera();
       }
    }
@@ -63,11 +63,11 @@ public class NetworkedCannonBall : MonoBehaviour {
       SeaEntity hitEntity = other.transform.GetComponentInParent<SeaEntity>();
 
       // We only care about hitting other sea entities in our instance
-      if (hitEntity == null || hitEntity.instanceId != this.instanceId || hitEntity.userId == this.creatorUserId) {
+      if (hitEntity == null || hitEntity.instanceId != this._instanceId || hitEntity.userId == this._creatorUserId) {
          return;
       }
 
-      SeaEntity sourceEntity = SeaManager.self.getEntity(this.creatorUserId);
+      SeaEntity sourceEntity = SeaManager.self.getEntity(this._creatorUserId);
 
       // The Server will handle applying damage
       if (NetworkServer.active) {
@@ -86,6 +86,10 @@ public class NetworkedCannonBall : MonoBehaviour {
       Destroy(this.gameObject);
    }
 
+   public int getInstanceID () {
+      return _instanceId;
+   }
+
    private void OnDestroy () {
       // Don't need to handle any of these effects in Batch Mode
       if (Application.isBatchMode) {
@@ -96,10 +100,10 @@ public class NetworkedCannonBall : MonoBehaviour {
       if (cannonBall.transform.localPosition.y <= .02f) {
          // Was there a Land collider where the cannonball hit?
          if (Util.hasLandTile(this.transform.position)) {
-            Instantiate(PrefabsManager.self.cannonSmokePrefab, circleCollider.transform.position, Quaternion.identity);
+            Instantiate(PrefabsManager.self.requestCannonSmokePrefab(_impactMagnitude), circleCollider.transform.position, Quaternion.identity);
             SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position);
          } else {
-            Instantiate(PrefabsManager.self.cannonSplashPrefab, circleCollider.transform.position + new Vector3(0f, -.1f), Quaternion.identity);
+            Instantiate(PrefabsManager.self.requestCannonSplashPrefab(_impactMagnitude), circleCollider.transform.position + new Vector3(0f, -.1f), Quaternion.identity);
             SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Splash_Cannon_1, this.transform.position);
          }
       }
@@ -114,6 +118,15 @@ public class NetworkedCannonBall : MonoBehaviour {
 
    // Our Start Time
    protected float _startTime;
+
+   // The source of this attack
+   protected int _creatorUserId;
+
+   // The instance id for this cannon ball
+   protected int _instanceId;
+
+   // Determines the impact level of this projectile
+   protected Attack.ImpactMagnitude _impactMagnitude = Attack.ImpactMagnitude.None;
 
    #endregion
 }

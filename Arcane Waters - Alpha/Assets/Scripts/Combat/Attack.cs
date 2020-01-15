@@ -15,6 +15,14 @@ public class Attack : MonoBehaviour {
       DamageAmplify = 13, SpawnStoneBlocker = 14,  
    }
 
+   public enum ImpactMagnitude
+   {
+      None = 0,
+      Weak = 1,
+      Normal = 2,
+      Strong = 3
+   }
+
    #endregion
 
    public static float getDamageModifier (Type attackType) {

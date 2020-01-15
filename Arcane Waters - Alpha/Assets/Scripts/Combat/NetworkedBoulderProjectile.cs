@@ -8,12 +8,6 @@ public class NetworkedBoulderProjectile : MonoBehaviour
 {
    #region Public Variables
 
-   // The source of this attack
-   public int creatorUserId;
-
-   // The instance id for this boulder projectile
-   public int instanceId;
-
    // Our boulder sprite
    public GameObject boulderProjectile;
 
@@ -39,6 +33,12 @@ public class NetworkedBoulderProjectile : MonoBehaviour
    public Vector2 startPos;
 
    #endregion
+
+   public void init (int userID, int instanceID, Attack.ImpactMagnitude impactType) {
+      _creatorUserId = userID;
+      _instanceId = instanceID; 
+      _impactMagnitude = impactType;
+   }
 
    private void Start () {
       _startTime = TimeManager.self.getSyncedTime();
@@ -77,11 +77,11 @@ public class NetworkedBoulderProjectile : MonoBehaviour
       SeaEntity hitEntity = other.transform.GetComponentInParent<SeaEntity>();
 
       // We only care about hitting other sea entities in our instance
-      if (hitEntity == null || this.creatorUserId == hitEntity.userId || other.GetComponent<CombatCollider>() != null || hitEntity.instanceId != this.instanceId) {
+      if (hitEntity == null || this._creatorUserId == hitEntity.userId || other.GetComponent<CombatCollider>() != null || hitEntity.instanceId != this._instanceId) {
          return;
       }
 
-      SeaEntity sourceEntity = SeaManager.self.getEntity(this.creatorUserId);
+      SeaEntity sourceEntity = SeaManager.self.getEntity(this._creatorUserId);
 
       // The Server will handle applying damage
       if (NetworkServer.active) {
@@ -89,10 +89,10 @@ public class NetworkedBoulderProjectile : MonoBehaviour
          hitEntity.currentHealth -= damage;
 
          // Spawn Mini Boulders upon Collision
-         SeaManager.self.getEntity(creatorUserId).fireMultiDirectionalProjectile(transform.position, Attack.Type.Mini_Boulder);
+         SeaManager.self.getEntity(_creatorUserId).fireMultiDirectionalProjectile(transform.position, Attack.Type.Mini_Boulder);
 
          // Registers Damage throughout the clients
-         hitEntity.Rpc_NetworkProjectileDamage(creatorUserId, Attack.Type.Boulder, circleCollider.transform.position);
+         hitEntity.Rpc_NetworkProjectileDamage(_creatorUserId, Attack.Type.Boulder, circleCollider.transform.position);
 
          // Have the server tell the clients where the explosion occurred
          hitEntity.Rpc_ShowExplosion(hitEntity.transform.position, damage, Attack.Type.Boulder);
@@ -108,10 +108,10 @@ public class NetworkedBoulderProjectile : MonoBehaviour
 
    public void callCollision (bool hitLand, Vector3 location) {
       if (hitLand) {
-         Instantiate(PrefabsManager.self.cannonSmokePrefab, location, Quaternion.identity);
+         Instantiate(PrefabsManager.self.requestCannonSmokePrefab(_impactMagnitude), location, Quaternion.identity);
          SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Boulder, this.transform.position);
       } else {
-         Instantiate(PrefabsManager.self.cannonSplashPrefab, this.transform.position + new Vector3(0f, -.1f), Quaternion.identity);
+         Instantiate(PrefabsManager.self.requestCannonSplashPrefab(_impactMagnitude), this.transform.position + new Vector3(0f, -.1f), Quaternion.identity);
          SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Splash_Cannon_1, this.transform.position);
       }
    }
@@ -137,6 +137,15 @@ public class NetworkedBoulderProjectile : MonoBehaviour
 
    // Blocks update func if the projectile collided
    protected bool _hasCollided;
+
+   // The source of this attack
+   private int _creatorUserId;
+
+   // The instance id for this boulder projectile
+   private int _instanceId;
+
+   // Determines the impact level of this projectile
+   private Attack.ImpactMagnitude _impactMagnitude = Attack.ImpactMagnitude.None;
 
    #endregion
 }

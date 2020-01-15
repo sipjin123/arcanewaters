@@ -4,30 +4,12 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class BoulderProjectile : MonoBehaviour
+public class BoulderProjectile : GenericSeaProjectile
 {
    #region Public Variables
 
    // The Type of projectile this is
    public Attack.Type attackType = Attack.Type.Boulder;
-
-   // The creator of this Attack Circle
-   public SeaEntity creator;
-
-   // The target of the attack, if any
-   public GameObject targetObject;
-
-   // Our Start Point
-   public Vector2 startPos;
-
-   // Our End Point
-   public Vector2 endPos;
-
-   // Our Start Time
-   public float startTime;
-
-   // Our End Time
-   public float endTime;
 
    // Our boulder projectile sprite
    public GameObject boulderProjectile;
@@ -39,14 +21,14 @@ public class BoulderProjectile : MonoBehaviour
 
    void Update () {
       // If a target object has been specified, update our end position
-      if (targetObject != null) {
-         endPos = targetObject.transform.position;
+      if (_targetObject != null) {
+         _endPos = _targetObject.transform.position;
       }
 
       // Move from the start to the end point
-      float totalLifetime = endTime - startTime;
-      float lerpTime = (TimeManager.self.getSyncedTime() - startTime) / totalLifetime;
-      Util.setXY(this.transform, Vector2.Lerp(startPos, endPos, lerpTime));
+      float totalLifetime = _endTime - _startTime;
+      float lerpTime = (TimeManager.self.getSyncedTime() - _startTime) / totalLifetime;
+      Util.setXY(this.transform, Vector2.Lerp(_startPos, _endPos, lerpTime));
 
       // Adjusts the height of the projectile sprite based in an arch
       float angleInDegrees = lerpTime * 180f;
@@ -54,7 +36,7 @@ public class BoulderProjectile : MonoBehaviour
       Util.setLocalY(boulderProjectile.transform, ballHeight);
 
       // If we've been alive long enough, destroy ourself
-      if (TimeManager.self.getSyncedTime() > this.endTime) {
+      if (TimeManager.self.getSyncedTime() > this._endTime) {
          bool hitEnemy = false;
 
          // Create an explosion effect on the client if any targets were hit
@@ -87,11 +69,11 @@ public class BoulderProjectile : MonoBehaviour
          // If we didn't hit an enemy, then show an effect based on whether we hit land or water
          if (!hitEnemy) {
             // Was there a Land collider where the projectile hit?
-            if (Util.hasLandTile(endPos)) {
-               Instantiate(PrefabsManager.self.cannonSmokePrefab, this.transform.position, Quaternion.identity);
+            if (Util.hasLandTile(_endPos)) {
+               Instantiate(PrefabsManager.self.requestCannonSmokePrefab(_impactMagnitude), this.transform.position, Quaternion.identity);
                SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position);
             } else {
-               Instantiate(PrefabsManager.self.cannonSplashPrefab, this.transform.position + new Vector3(0f, -.1f), Quaternion.identity);
+               Instantiate(PrefabsManager.self.requestCannonSplashPrefab(_impactMagnitude), this.transform.position + new Vector3(0f, -.1f), Quaternion.identity);
                SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Splash_Cannon_1, this.transform.position);
             }
          }

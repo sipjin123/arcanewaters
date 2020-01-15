@@ -8,12 +8,6 @@ public class NetworkedTentacleProjectile : MonoBehaviour
 {
    #region Public Variables
 
-   // The source of this attack
-   public int creatorUserId;
-
-   // The instance id for this tentacle projectile
-   public int instanceId;
-
    // Our tentacle sprite
    public GameObject tentacleProjectile;
 
@@ -77,11 +71,11 @@ public class NetworkedTentacleProjectile : MonoBehaviour
       SeaEntity hitEntity = other.transform.GetComponentInParent<SeaEntity>();
 
       // We only care about hitting other sea entities in our instance
-      if (hitEntity == null || this.creatorUserId == hitEntity.userId || other.GetComponent<CombatCollider>() != null || hitEntity.instanceId != this.instanceId) {
+      if (hitEntity == null || this._creatorUserId == hitEntity.userId || other.GetComponent<CombatCollider>() != null || hitEntity.instanceId != this._instanceId) {
          return;
       }
 
-      SeaEntity sourceEntity = SeaManager.self.getEntity(this.creatorUserId);
+      SeaEntity sourceEntity = SeaManager.self.getEntity(this._creatorUserId);
 
       // The Server will handle applying damage
       if (NetworkServer.active) {
@@ -110,10 +104,10 @@ public class NetworkedTentacleProjectile : MonoBehaviour
 
    public void callCollision (bool hitLand, Vector3 location) {
       if (hitLand) {
-         Instantiate(PrefabsManager.self.cannonSmokePrefab, location, Quaternion.identity);
+         Instantiate(PrefabsManager.self.requestCannonSmokePrefab(_impactMagnitude), location, Quaternion.identity);
          SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Boulder, this.transform.position);
       } else {
-         Instantiate(PrefabsManager.self.cannonSplashPrefab, this.transform.position + new Vector3(0f, -.1f), Quaternion.identity);
+         Instantiate(PrefabsManager.self.requestCannonSplashPrefab(_impactMagnitude), this.transform.position + new Vector3(0f, -.1f), Quaternion.identity);
          SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Splash_Cannon_1, this.transform.position);
       }
    }
@@ -139,6 +133,15 @@ public class NetworkedTentacleProjectile : MonoBehaviour
 
    // Blocks update func if the projectile collided
    protected bool _hasCollided;
+
+   // Determines the impact level of this projectile
+   protected Attack.ImpactMagnitude _impactMagnitude = Attack.ImpactMagnitude.None;
+
+   // The source of this attack
+   private int _creatorUserId;
+
+   // The instance id for this venom projectile
+   private int _instanceId;
 
    #endregion
 }

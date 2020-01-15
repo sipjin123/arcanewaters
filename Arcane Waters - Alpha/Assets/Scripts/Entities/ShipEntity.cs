@@ -192,6 +192,7 @@ public class ShipEntity : SeaEntity {
       float projectileFlightDuration = (normalizedDistance * 1f) * ShipAbilityManager.self.getAbility(attackType).projectileSpeed;
 
       ShipAbilityData shipData = ShipAbilityManager.self.getAbility(attackType);
+      this.currentImpactMagnitude = shipData.impactMagnitude;
 
       // Fire the cannon ball and display an attack circle in all the clients
       Rpc_CreateCannonBall(spawnPosition, spot, Util.netTime(), Util.netTime() + projectileFlightDuration,
@@ -206,6 +207,8 @@ public class ShipEntity : SeaEntity {
 
    [ClientRpc]
    public void Rpc_CreateCannonBall (Vector2 startPos, Vector2 endPos, float startTime, float endTime, Attack.Type attackType, Color color, ShipAbilityData shipAbilityData) {
+      this.currentImpactMagnitude = shipAbilityData.impactMagnitude;
+      
       // Create a new Attack Circle object from the prefab
       AttackCircle attackCircle;
 
@@ -230,11 +233,7 @@ public class ShipEntity : SeaEntity {
 
       // Create a cannon ball
       CannonBall ball = Instantiate(PrefabsManager.self.getCannonBallPrefab(attackType), startPos, Quaternion.identity);
-      ball.creator = this;
-      ball.startPos = startPos;
-      ball.endPos = endPos;
-      ball.startTime = startTime;
-      ball.endTime = endTime;
+      ball.init(startTime, endTime, startPos, endPos, this, currentImpactMagnitude);
 
       string projectilePath = ShipAbilityManager.self.getAbility(attackType).projectileSpritePath;
       if (projectilePath != "") {

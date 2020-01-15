@@ -62,6 +62,9 @@ public class ShipAbilityData
    // Determines the ability effect
    public ShipAbilityEffect shipAbilityEffect;
 
+   // The strength of the impact
+   public Attack.ImpactMagnitude impactMagnitude = Attack.ImpactMagnitude.None;
+
    public enum ShipAbilityEffect
    {
       None = 0,

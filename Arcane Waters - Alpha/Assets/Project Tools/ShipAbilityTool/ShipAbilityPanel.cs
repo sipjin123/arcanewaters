@@ -56,7 +56,12 @@ public class ShipAbilityPanel : MonoBehaviour {
       _shipCastCollisionType.maxValue = Enum.GetValues(typeof(ShipAbilityData.ShipCastCollisionType)).Length - 1;
       _shipAbilityEffect.maxValue = Enum.GetValues(typeof(ShipAbilityData.ShipAbilityEffect)).Length - 1;
       _shipAbilityAttackType.maxValue = Enum.GetValues(typeof(Attack.Type)).Length - 1;
-   
+      _impactMagnitude.maxValue = Enum.GetValues(typeof(Attack.ImpactMagnitude)).Length - 1;
+
+      _impactMagnitude.onValueChanged.AddListener(_ => {
+         _impactMagnitudeText.text = ((Attack.ImpactMagnitude) _).ToString();
+      });
+
       _shipCastType.onValueChanged.AddListener(_ => {
          _shipCastText.text = ((ShipAbilityData.ShipCastType) _).ToString();
       });
@@ -144,7 +149,9 @@ public class ShipAbilityPanel : MonoBehaviour {
       _shipCastCollisionText.text = shipAbilityData.shipCastCollisionType.ToString();
       _shipAbilityEffectText.text = shipAbilityData.shipAbilityEffect.ToString();
       _shipAbilityAttackTypeText.text = shipAbilityData.selectedAttackType.ToString();
+      _impactMagnitudeText.text = shipAbilityData.impactMagnitude.ToString();
 
+      _impactMagnitude.value = (int) shipAbilityData.impactMagnitude;
       _shipAbilityAttackType.value  = (int) shipAbilityData.selectedAttackType;
       _shipCastType.value = (int) shipAbilityData.shipCastType;
       _shipCastCollisionType.value = (int) shipAbilityData.shipCastCollisionType;
@@ -170,6 +177,7 @@ public class ShipAbilityPanel : MonoBehaviour {
       abilityData.shipCastCollisionType = (ShipAbilityData.ShipCastCollisionType) Enum.Parse(typeof(ShipAbilityData.ShipCastCollisionType), _shipCastCollisionText.text);
       abilityData.shipAbilityEffect = (ShipAbilityData.ShipAbilityEffect) Enum.Parse(typeof(ShipAbilityData.ShipAbilityEffect), _shipAbilityEffectText.text);
       abilityData.selectedAttackType = (Attack.Type) Enum.Parse(typeof(Attack.Type), _shipAbilityAttackTypeText.text);
+      abilityData.impactMagnitude = (Attack.ImpactMagnitude) Enum.Parse(typeof(Attack.ImpactMagnitude), _impactMagnitudeText.text);
 
       abilityData.shipTypeVariety = int.Parse(_shipVariety.text);
       abilityData.levelRequirement = int.Parse(_levelRequirement.text);
@@ -214,6 +222,11 @@ public class ShipAbilityPanel : MonoBehaviour {
    private Slider _shipCastCollisionType;
    [SerializeField]
    private Text _shipCastCollisionText;
+
+   [SerializeField]
+   private Slider _impactMagnitude;
+   [SerializeField]
+   private Text _impactMagnitudeText;
 
    [SerializeField]
    private InputField _shipVariety, _levelRequirement, _abilityDamage, _projectileSpeed, _fxPerFrame, _cooldown;

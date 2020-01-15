@@ -8,12 +8,6 @@ public class NetworkedVenomProjectile : MonoBehaviour
 {
    #region Public Variables
 
-   // The source of this attack
-   public int creatorUserId;
-
-   // The instance id for this venom projectile
-   public int instanceId;
-
    // Our venom sprite
    public GameObject venomProjectile;
 
@@ -36,6 +30,12 @@ public class NetworkedVenomProjectile : MonoBehaviour
    public Vector2 endPos;
 
    #endregion
+
+   public void init (int userID, int instanceID, Attack.ImpactMagnitude impactType) {
+      _creatorUserId = userID;
+      _instanceId = instanceID;
+      _impactMagnitude = impactType;
+   }
 
    private void Start () {
       _startTime = TimeManager.self.getSyncedTime();
@@ -68,11 +68,11 @@ public class NetworkedVenomProjectile : MonoBehaviour
       SeaEntity hitEntity = other.transform.GetComponentInParent<SeaEntity>();
 
       // We only care about hitting other sea entities in our instance
-      if (hitEntity == null || this.creatorUserId == hitEntity.userId || other.GetComponent<CombatCollider>() != null || hitEntity.instanceId != this.instanceId) {
+      if (hitEntity == null || this._creatorUserId == hitEntity.userId || other.GetComponent<CombatCollider>() != null || hitEntity.instanceId != this._instanceId) {
          return;
       }
 
-      SeaEntity sourceEntity = SeaManager.self.getEntity(this.creatorUserId);
+      SeaEntity sourceEntity = SeaManager.self.getEntity(this._creatorUserId);
 
       // The Server will handle applying damage
       if (NetworkServer.active) {
@@ -86,7 +86,7 @@ public class NetworkedVenomProjectile : MonoBehaviour
          hitEntity.Rpc_AttachEffect(damage, Attack.Type.Venom);
 
          // Registers Damage throughout the clients
-         hitEntity.Rpc_NetworkProjectileDamage(creatorUserId, Attack.Type.Venom, circleCollider.transform.position);
+         hitEntity.Rpc_NetworkProjectileDamage(_creatorUserId, Attack.Type.Venom, circleCollider.transform.position);
 
          // Have the server tell the clients where the explosion occurred
          hitEntity.Rpc_ShowExplosion(hitEntity.transform.position, damage, Attack.Type.Venom);
@@ -104,14 +104,14 @@ public class NetworkedVenomProjectile : MonoBehaviour
       // Commands the server to process spawning of venom residue
       if (NetworkServer.active) {
          if (!hitLand) {
-            SeaEntity sourceEntity = SeaManager.self.getEntity(this.creatorUserId);
-            sourceEntity.Rpc_SpawnVenomResidue(creatorUserId, circleCollider.transform.position);
+            SeaEntity sourceEntity = SeaManager.self.getEntity(this._creatorUserId);
+            sourceEntity.Rpc_SpawnVenomResidue(_creatorUserId, circleCollider.transform.position);
          } 
       }
 
       // Plays SFX and VFX for land collision
       if (hitLand) {
-         Instantiate(PrefabsManager.self.cannonSmokePrefab, location, Quaternion.identity);
+         Instantiate(PrefabsManager.self.requestCannonSmokePrefab(_impactMagnitude), location, Quaternion.identity);
          SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position);
       } 
    }
@@ -137,6 +137,15 @@ public class NetworkedVenomProjectile : MonoBehaviour
 
    // Blocks update func if the projectile collided
    protected bool _hasCollided;
+
+   // Determines the impact level of this projectile
+   protected Attack.ImpactMagnitude _impactMagnitude = Attack.ImpactMagnitude.None;
+
+   // The source of this attack
+   private int _creatorUserId;
+
+   // The instance id for this venom projectile
+   private int _instanceId;
 
    #endregion
 }

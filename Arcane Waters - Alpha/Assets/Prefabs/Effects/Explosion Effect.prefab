@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 95740904834874048}
   - component: {fileID: 114276769214249124}
   - component: {fileID: 114685778653505506}
+  - component: {fileID: 9004816753771808240}
+  - component: {fileID: 5731905278718632889}
   m_Layer: 0
   m_Name: Explosion Effect
   m_TagString: Untagged
@@ -29,7 +31,7 @@ Transform:
   m_GameObject: {fileID: 1946685176054144}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -1000, y: -1000, z: 0}
-  m_LocalScale: {x: 0.6, y: 0.6, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -92,7 +94,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1946685176054144}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: e4b7499b57f5cf640a4b358a15fa0d2e, type: 2}
   m_CullingMode: 0
@@ -125,9 +127,58 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1946685176054144}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a382d158a7c303749820839e20a683f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 0}
+--- !u!114 &9004816753771808240
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1946685176054144}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59a9a98428d226e419fede1b7cdd5674, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialDelay: 0
+  frameLengthOverride: 0.1
+  delayStart: 0
+  destroyAtEnd: 1
+  stayAtLastFrame: 0
+  loopDelay: 0
+  isPaused: 0
+  minIndex: 0
+  maxIndex: 1000
+  currentAnimation: 0
+  group: 0
+--- !u!114 &5731905278718632889
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1946685176054144}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d45d0453b775934f8e9d1cd259eced3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spriteMagnitudeSetup:
+  - impactMagnitude: 1
+    spriteReference: {fileID: 9052737111106500113, guid: aaeb432f75a5b6540876a1b713fc7725,
+      type: 3}
+  - impactMagnitude: 2
+    spriteReference: {fileID: -2793918242167088782, guid: a5379bbebd6947a4d9473468f7ad1512,
+      type: 3}
+  - impactMagnitude: 3
+    spriteReference: {fileID: -7928899089655048934, guid: b17cd35aeb36cac428f6947c746b678f,
+      type: 3}
+  - impactMagnitude: 0
+    spriteReference: {fileID: 9052737111106500113, guid: aaeb432f75a5b6540876a1b713fc7725,
+      type: 3}
+  spriteRenderReference: {fileID: 212076455087445722}

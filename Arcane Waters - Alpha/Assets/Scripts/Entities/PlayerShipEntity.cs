@@ -272,8 +272,7 @@ public class PlayerShipEntity : ShipEntity {
       // Create the cannon ball object from the prefab
       GameObject ballObject = Instantiate(PrefabsManager.self.networkedCannonBallPrefab, this.transform.position, Quaternion.identity);
       NetworkedCannonBall netBall = ballObject.GetComponent<NetworkedCannonBall>();
-      netBall.creatorUserId = this.userId;
-      netBall.instanceId = this.instanceId;
+      netBall.init(this.userId, this.instanceId, currentImpactMagnitude);
 
       // Add velocity to the ball
       netBall.body.velocity = velocity;
