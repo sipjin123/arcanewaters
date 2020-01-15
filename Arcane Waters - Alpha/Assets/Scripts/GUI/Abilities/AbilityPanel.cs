@@ -35,11 +35,7 @@ public class AbilityPanel : Panel {
    public static AbilityPanel self;
 
    // Data Display
-   public Text toolTipLevel, toolTipAP;
    public Text panelLevel, panelAP;
-
-   // Custom tooltip for abilities
-   public GameObject toolTipCustom;
 
    // Cached info of the abilities
    public List<BasicAbilityData> cachedAbilityList;
@@ -53,6 +49,12 @@ public class AbilityPanel : Panel {
 
    // Holds the canvas blocker 
    public GameObject canvasBlocker;
+
+   // The scroller holding the abilities
+   public ScrollRect scroller;
+
+   // Spawn points for ability slots
+   public Transform[] slotSpawnPoints;
 
    #endregion
 
@@ -82,6 +84,8 @@ public class AbilityPanel : Panel {
          dropZone.rectTransform = abilitySlot.GetComponent<RectTransform>();
          equipmentDropZone.Add(dropZone);
 
+         abilitySlot.transform.position = slotSpawnPoints[i].position;
+
          _equippedAbilitySlots.Add(abilitySlot);
       }
 
@@ -102,7 +106,7 @@ public class AbilityPanel : Panel {
          } else {
             // Instantiate an ability row
             AbilityRow abilityRow = Instantiate(abilityRowPrefab, abilityRowsContainer.transform, false);
-            abilityRow.setRowForAbilityData(ability.abilityID, basicAbilityData, description);
+            abilityRow.setRowForAbilityData(basicAbilityData, description);
          }
          cachedAbilityList.Add(basicAbilityData);
       }
@@ -112,20 +116,6 @@ public class AbilityPanel : Panel {
       descriptionIcon.sprite = iconSprite;
       descriptionName.text = name;
       descriptionText.text = description;
-   }
-
-   public void showToolTip (bool isActive, string skillName, Vector3 pos) {
-      toolTipCustom.SetActive(isActive);
-      toolTipCustom.transform.position = pos;
-
-      BasicAbilityData abilityData = cachedAbilityList.Find(_ => _.itemName == skillName);
-      if (abilityData != null) {
-         toolTipLevel.text = abilityData.abilityLevel.ToString();
-         panelLevel.text = abilityData.abilityLevel.ToString();
-
-         toolTipAP.text = abilityData.abilityCost.ToString();
-         panelAP.text = abilityData.abilityCost.ToString();
-      }
    }
 
    #region Equip Feature
@@ -142,7 +132,7 @@ public class AbilityPanel : Panel {
    }
 
    public void tryGrabAbility (AbilityRow abilityCell) {
-      BasicAbilityData castedAbility = AbilityManager.getAbility(abilityCell.abilityName.text);
+      BasicAbilityData castedAbility = AbilityManager.getAbility(abilityCell.abilityName);
       _sourceAbilityCell = abilityCell;
       _cachedAbility = castedAbility;
 
@@ -150,7 +140,22 @@ public class AbilityPanel : Panel {
       _sourceAbilityCell.hide();
 
       // Initialize the common grabbed object
-      _draggedAbilityCell.setRowForAbilityData(castedAbility.itemID, castedAbility, castedAbility.itemDescription);
+      _draggedAbilityCell.setRowForAbilityData(castedAbility, castedAbility.itemDescription);
+      _draggableAbility.activate();
+
+      scroller.enabled = false;
+   }
+
+   public void tryGrabEquippedAbility (AbilitySlot abilitySlot) {
+      BasicAbilityData castedAbility = AbilityManager.getAbility(abilitySlot.abilityName.text);
+      _sourceAbilitySlot = abilitySlot;
+      _cachedAbility = castedAbility;
+
+      // Hide the cell being grabbed
+      _sourceAbilitySlot.hide();
+
+      // Initialize the common grabbed object
+      _draggedAbilityCell.setRowForAbilityData(castedAbility, castedAbility.itemDescription);
       _draggableAbility.activate();
    }
 
@@ -158,10 +163,23 @@ public class AbilityPanel : Panel {
       if (_sourceAbilityCell != null && _draggableAbility != null) {
          // Restore the grabbed cell
          _sourceAbilityCell.show();
-         _draggedAbilityCell = null;
+         _draggedAbilityCell.hide();
 
          // Deactivate the grabbed ability
          _draggableAbility.deactivate();
+
+         scroller.enabled = true;
+      }
+
+      if (_sourceAbilitySlot != null && _draggableAbility != null) {
+         // Restore the grabbed cell
+         _sourceAbilitySlot.show();
+         _draggedAbilityCell.hide();
+
+         // Deactivate the grabbed ability
+         _draggableAbility.deactivate();
+
+         scroller.enabled = true;
       }
    }
 
@@ -171,9 +189,9 @@ public class AbilityPanel : Panel {
          bool droppedInInventory = inventoryDropZone.isInZone(screenPosition);
          bool droppedInEquipmentSlots = false;
          AbilitySlot droppedSlot = null;
-             
+
          foreach (ItemDropZone zone in equipmentDropZone) {
-           if (zone.isInZone(screenPosition)) {
+            if (zone.isInZone(screenPosition)) {
                droppedInEquipmentSlots = true;
                droppedSlot = zone.GetComponent<AbilitySlot>();
                break;
@@ -181,7 +199,41 @@ public class AbilityPanel : Panel {
          }
 
          // Ability can be dragged from the equipment slots to the inventory or vice-versa
-         if (droppedInEquipmentSlots) {
+         if (droppedInEquipmentSlots && !droppedInInventory && droppedSlot.isFree()) {
+            canvasBlocker.SetActive(true);
+
+            int abilityIDCache = _cachedAbility.itemID;
+            tryEquipAbility(abilityIDCache, droppedSlot.abilitySlotId);
+            droppedSlot?.setSlotForAbilityData(_cachedAbility.itemID, _cachedAbility, _cachedAbility.itemDescription);
+            _draggableAbility.deactivate();
+         } else {
+            // Otherwise, simply stop grabbing
+            stopGrabbingAbility();
+         }
+      }
+      
+      if (_sourceAbilitySlot != null) {
+         // Determine which action was performed
+         bool droppedInInventory = inventoryDropZone.isInZone(screenPosition);
+         bool droppedInEquipmentSlots = false;
+         AbilitySlot droppedSlot = null;
+
+         foreach (ItemDropZone zone in equipmentDropZone) {
+            if (zone.isInZone(screenPosition)) {
+               droppedInEquipmentSlots = true;
+               droppedSlot = zone.GetComponent<AbilitySlot>();
+               break;
+            }
+         }
+
+         if (droppedInInventory) {
+            canvasBlocker.SetActive(true);
+
+            int abilityIDCache = _cachedAbility.itemID;
+            unequipAbility(abilityIDCache);
+
+            _draggableAbility.deactivate();
+         } else if (droppedInEquipmentSlots && droppedSlot != _sourceAbilitySlot) {
             canvasBlocker.SetActive(true);
 
             int abilityIDCache = _cachedAbility.itemID;
@@ -209,6 +261,9 @@ public class AbilityPanel : Panel {
    // The cell from which an ability was grabbed
    [SerializeField]
    private AbilityRow _sourceAbilityCell, _draggedAbilityCell;
+
+   // The current slot being updated
+   private AbilitySlot _sourceAbilitySlot;
 
    // The grabbed ability UI that can be dragged
    [SerializeField]

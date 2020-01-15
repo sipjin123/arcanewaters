@@ -81,6 +81,11 @@ public class MonsterManager : MonoBehaviour {
    }
 
    public BattlerData getMonster (Enemy.Type enemyType) {
+      if (!_monsterDataDict.ContainsKey(enemyType)) {
+         D.warning("Enemy type is not registered: " + enemyType);
+         return null;
+      }
+
       return _monsterDataDict[enemyType];
    }
 
@@ -98,6 +103,14 @@ public class MonsterManager : MonoBehaviour {
          monsterList.Add(item.Value);
       }
       return monsterList;
+   }
+
+   public List<int> getAllEnemyType () {
+      List<int> typeList = new List<int>();
+      foreach (KeyValuePair<Enemy.Type, BattlerData> item in _monsterDataDict) {
+         typeList.Add((int)item.Key);
+      }
+      return typeList;
    }
 
    public void initializeLandMonsterDataCache () {

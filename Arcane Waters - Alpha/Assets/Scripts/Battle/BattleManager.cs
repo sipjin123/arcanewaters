@@ -95,6 +95,50 @@ public class BattleManager : MonoBehaviour {
       return battle;
    }
 
+   public Battle createTeamBattle (Area area, Instance instance, Enemy enemy, Enemy.Type[] attackersData, PlayerBodyEntity playerBody, Enemy.Type[] defendersData) {
+      // We need to make a new one
+      Battle battle = Instantiate(battlePrefab);
+
+      // Look up the Battle Board for this Area's tile type
+      Biome.Type biomeType = Area.getBiome(area.areaKey);
+      BattleBoard battleBoard = _boards[biomeType];
+
+      // Set up our initial data and position
+      battle.battleId = _id++;
+      battle.area = area;
+      battle.biomeType = biomeType;
+      battle.battleBoard = battleBoard;
+      battle.transform.SetParent(this.transform);
+      Util.setXY(battle.transform, battleBoard.transform.position);
+
+      // Actually spawn the Battle as a Network object now
+      NetworkServer.Spawn(battle.gameObject);
+
+      // Keep track of the Battles we create
+      _battles[battle.battleId] = battle;
+
+      // Check how many players are in the Instance
+      int playersInInstance = instance.getPlayerCount();
+
+      // Hashset for enemy types in the battle sequence
+      HashSet<Enemy.Type> enemyTypes = new HashSet<Enemy.Type>();
+
+      // Spawn an appropriate number of enemies based on the number of players in the instance
+      foreach (Enemy.Type enemyType in defendersData) {
+         enemy.enemyType = enemyType;
+         enemyTypes.Add(enemyType);
+         this.addEnemyToBattle(battle, enemy, Battle.TeamType.Defenders, playerBody);
+      }
+
+      foreach (Enemy.Type enemyType in attackersData) {
+         enemy.enemyType = enemyType;
+         enemyTypes.Add(enemyType);
+         this.addEnemyToBattle(battle, enemy, Battle.TeamType.Attackers, playerBody);
+      }
+
+      return battle;
+   }
+
    public Battle getBattle (int battleId) {
       if (_battles.ContainsKey(battleId)) {
          return _battles[battleId];
@@ -301,15 +345,17 @@ public class BattleManager : MonoBehaviour {
    }
 
    private Battler createBattlerForEnemy (Battle battle, Enemy enemy, Battle.TeamType teamType) {
-      Enemy.Type overrideType = Enemy.Type.Lizard;
+      Enemy.Type overrideType = enemy.enemyType;//Enemy.Type.Lizard;
       Battler enemyPrefab = prefabTypes.Find(_ => _.enemyType == Enemy.Type.Lizard).enemyPrefab;
 
+      /* // TODO: Randomizes enemy spawn depending on spawn count
       _spawnCounter++;
-      // For testing Purposes, adds a chance to spawn a Golem Monster
+      // TODO: For testing Purposes, adds a chance to spawn a Golem Monster
       if (_spawnCounter == 2) {
          Debug.Log("Spawning a Debug Monster, Delete after feature completion!");
          overrideType = Enemy.Type.Golem;
-      }
+      }*/
+
       BattlerData data = getAllBattlersData().Find(x => x.enemyType == overrideType);
       Battler battler = Instantiate(enemyPrefab);
       battler.enemyType = overrideType;

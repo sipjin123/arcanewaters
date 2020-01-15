@@ -94,6 +94,8 @@ public class PanelManager : MonoBehaviour {
          BottomBar.self.toggleAbilityPanel();
       } else if (Input.GetKeyUp(KeyCode.K)) {
          BottomBar.self.toggleMailPanel();
+      } else if (Input.GetKeyUp(KeyCode.Q)) {
+         BottomBar.self.toggleTeamCombatPanel();
       }
    }
 

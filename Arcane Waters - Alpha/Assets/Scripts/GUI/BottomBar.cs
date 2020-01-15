@@ -138,6 +138,18 @@ public class BottomBar : MonoBehaviour {
       }
    }
 
+   public void toggleTeamCombatPanel () {
+      TeamCombatPanel panel = (TeamCombatPanel) PanelManager.self.get(Panel.Type.Team_Combat);
+
+      PanelManager.self.togglePanel(Panel.Type.Team_Combat);
+
+      if (!panel.isShowing()) {
+         panel.fetchSQLData();
+      } else {
+         PanelManager.self.togglePanel(Panel.Type.Team_Combat);
+      }
+   }
+
    #region Private Variables
 
    #endregion

@@ -15,7 +15,7 @@ public class Panel : MonoBehaviour {
       ItemShop = 11, CharPreview = 12, WorldMap = 13, Store = 14, Merchant = 15,
       Adventure = 16, CharacterInfo = 17, Guild = 18, GuildCreate = 19, Flagship = 20,
       NPC_Panel = 21, Overworld = 22, Craft = 23, Reward = 24, TradeHistory = 25, RandomMaps = 26,
-      LeaderBoards = 27, FriendList = 28, Ability_Panel = 29, Mail = 30
+      LeaderBoards = 27, FriendList = 28, Ability_Panel = 29, Mail = 30, Team_Combat = 31
    }
 
    // The type of Panel this is

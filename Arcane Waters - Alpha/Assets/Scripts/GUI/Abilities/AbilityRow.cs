@@ -6,7 +6,7 @@ using Mirror;
 using UnityEngine.EventSystems;
 using System.Text;
 
-public class AbilityRow : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler
+public class AbilityRow : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler
 {
    #region Public Variables
 
@@ -14,44 +14,34 @@ public class AbilityRow : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
    public Image icon;
 
    // The name of the ability
-   public Text abilityName;
-
-   // Transform where Tooltip should snap to
-   public Transform displayPoint;
+   public string abilityName;
 
    // Holder of the contents of the template
    public GameObject contentHolder;
 
    #endregion
 
-   public void setRowForAbilityData (int abilityId, BasicAbilityData basicAbilityData, string description) {
+   public void setRowForAbilityData (BasicAbilityData basicAbilityData, string description) {
       _basicAbilityData = basicAbilityData;
-      _abilityId = abilityId;
       _description = description;
       icon.sprite = ImageManager.getSprite(basicAbilityData.itemIconPath);
-      abilityName.text = basicAbilityData.itemName;
-   }
-
-   public void onRowButtonPress () {
-      //AbilityPanel.self.tryEquipAbility(_abilityId, );
+      abilityName = basicAbilityData.itemName;
+      show();
    }
 
    public void hide () {
+      gameObject.SetActive(false);
       contentHolder.SetActive(false);
    }
 
    public void show () {
+      gameObject.SetActive(true);
       contentHolder.SetActive(true);
    }
 
    public void OnPointerEnter (PointerEventData eventData) {
       // Display the ability description in the ability panel
-      AbilityPanel.self.displayDescription(icon.sprite, abilityName.text, _description);
-      AbilityPanel.self.showToolTip(true, abilityName.text, displayPoint.position);
-   }
-
-   public void OnPointerExit (PointerEventData eventData) {
-      AbilityPanel.self.showToolTip(false, abilityName.text, displayPoint.position);
+      AbilityPanel.self.displayDescription(icon.sprite, abilityName, _description);
    }
 
    public void OnPointerDown (PointerEventData eventData) {
@@ -59,9 +49,6 @@ public class AbilityRow : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
    }
 
    #region Private Variables
-
-   // The id of the ability
-   private int _abilityId;
 
    // The base data of the displayed ability
    private BasicAbilityData _basicAbilityData;

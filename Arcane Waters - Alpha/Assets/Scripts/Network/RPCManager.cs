@@ -81,6 +81,24 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
+   public void Cmd_RequestTeamCombatData () {
+      Target_ReceiveTeamCombatData(_player.connectionToClient, MonsterManager.self.getAllEnemyType().ToArray());
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveTeamCombatData (NetworkConnection connection, int[] enemyTypes) {
+      TeamCombatPanel panel = (TeamCombatPanel) PanelManager.self.get(Panel.Type.Team_Combat);
+
+      // Pass the data to the panel
+      panel.receiveDataFromServer(enemyTypes);
+
+      // Make sure the panel is showing
+      if (!panel.isShowing()) {
+         PanelManager.self.pushPanel(panel.type);
+      }
+   }
+
+   [Command]
    public void Cmd_InteractAnimation (Anim.Type animType) {
       Rpc_InteractAnimation(animType);
    }
@@ -2609,6 +2627,100 @@ public class RPCManager : NetworkBehaviour {
    }
 
    #endregion
+
+   [Command]
+   public void Cmd_StartNewTeamBattle (Enemy.Type[] defenderBattlers, Enemy.Type[] attackerBattlers) {
+      // Create an Enemy in this instance
+      Enemy spawnedEnemy = Instantiate(PrefabsManager.self.enemyPrefab);
+      spawnedEnemy.enemyType = Enemy.Type.Lizard;
+
+      // Add it to the Instance
+      Instance newInstance = InstanceManager.self.getInstance(_player.instanceId);
+      InstanceManager.self.addEnemyToInstance(spawnedEnemy, newInstance);
+
+      // Get battler data of enemy to send to client
+      List<BattlerData> newEnemyList = new List<BattlerData>();
+      BattlerData fetchedData = MonsterManager.self.getMonster(spawnedEnemy.enemyType);
+      newEnemyList.Add(fetchedData);
+
+      // Provides the clients with the list of monsters present in the battle sequence
+      _player.rpc.Target_ReceiveMonsterData(_player.connectionToClient, Util.serialize(newEnemyList));
+
+      spawnedEnemy.transform.position = _player.transform.position;
+      spawnedEnemy.desiredPosition = spawnedEnemy.transform.position;
+      NetworkServer.Spawn(spawnedEnemy.gameObject);
+
+      // We need a Player Body object to proceed
+      if (!(_player is PlayerBodyEntity)) {
+         D.warning("Player object is not a Player Body, so can't start a Battle: " + _player);
+         return;
+      }
+
+      // Make sure we're not already in a Battle
+      if (BattleManager.self.isInBattle(_player.userId)) {
+         D.warning("Can't start new Battle for player that's already in a Battle: " + _player.userId);
+         return;
+      }
+
+      // Get references to the Player and Enemy objects
+      PlayerBodyEntity playerBody = (PlayerBodyEntity) _player;
+      NetworkIdentity enemyIdent = NetworkIdentity.spawned[spawnedEnemy.netId];
+      Enemy enemy = enemyIdent.GetComponent<Enemy>();
+      Instance instance = InstanceManager.self.getInstance(playerBody.instanceId);
+
+      // Look up the player's Area
+      Area area = AreaManager.self.getArea(_player.areaKey);
+
+      // Enter the background thread to determine if the user has at least one ability equipped
+      bool hasAbilityEquipped = false;
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Retrieve the skill list from database
+         List<AbilitySQLData> abilityDataList = DB_Main.getAllAbilities(playerBody.userId);
+
+         // Determine if at least one ability is equipped
+         hasAbilityEquipped = abilityDataList.Exists(_ => _.equipSlotIndex != -1);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+
+            // If no ability is equipped, send an error to the client
+            if (!hasAbilityEquipped) {
+               ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, "You must equip at least one ability!");
+               return;
+            }
+
+            // Get or create the Battle instance
+            Battle battle = (enemy.battleId > 0) ? BattleManager.self.getBattle(enemy.battleId) : BattleManager.self.createTeamBattle(area, instance, enemy, attackerBattlers, playerBody, defenderBattlers);
+
+            // If the Battle is full, we can't proceed
+            if (!battle.hasRoomLeft(Battle.TeamType.Attackers)) {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "The battle is already full!");
+               return;
+            }
+
+            // Add the player to the Battle
+            BattleManager.self.addPlayerToBattle(battle, playerBody, Battle.TeamType.Attackers);
+
+            // Server will setup the abilities and send to clients what abilities to use
+            setupAbilityForBattle(_player.userId);
+
+            // Provides the client with the info of the Equipped Abilities
+            Target_UpdateBattleAbilityUI(playerBody.connectionToClient, Util.serialize(abilityDataList.FindAll(_ => _.equipSlotIndex >= 0)));
+
+            // Send class info to client
+            PlayerClassData currentClassData = ClassManager.self.getClassData(playerBody.classType);
+            Target_ReceiveClassInfo(playerBody.connectionToClient, JsonUtility.ToJson(currentClassData));
+
+            // Send faction info to client
+            PlayerFactionData currentFactionData = FactionManager.self.getFactionData(playerBody.faction);
+            Target_ReceiveFactionInfo(playerBody.connectionToClient, JsonUtility.ToJson(currentFactionData));
+
+            // Send specialty info to client
+            PlayerSpecialtyData currentSpecialtyData = SpecialtyManager.self.getSpecialtyData(playerBody.specialty);
+            Target_ReceiveSpecialtyInfo(playerBody.connectionToClient, JsonUtility.ToJson(currentSpecialtyData));
+         });
+      });
+   }
 
    [Command]
    public void Cmd_StartNewBattle (uint enemyNetId) {

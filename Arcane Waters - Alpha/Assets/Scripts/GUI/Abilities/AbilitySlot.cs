@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
 
-public class AbilitySlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class AbilitySlot : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler
 {
    #region Public Variables
 
@@ -18,19 +18,22 @@ public class AbilitySlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
    // The name of the ability
    public Text abilityName;
 
-   // The unequip button
-   public Button unequipButton;
-
    // Transform where Tooltip should snap to
    public Transform displayPoint;
+
+   // Holder of the contents of the template
+   public GameObject contentHolder, blankContentHolder;
+
+   // Reference to the selection button
+   public Button buttonReference;
 
    #endregion
 
    public void Awake () {
       icon.gameObject.SetActive(false);
       abilityName.text = "";
-      unequipButton.gameObject.SetActive(false);
       _isUsed = false;
+      buttonReference.interactable = false;
    }
 
    public void setSlotForAbilityData (int abilityId, BasicAbilityData basicAbilityData, string description) {
@@ -40,30 +43,39 @@ public class AbilitySlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
       icon.sprite = ImageManager.getSprite(basicAbilityData.itemIconPath);
       abilityName.text = basicAbilityData.itemName;
       icon.gameObject.SetActive(true);
-      unequipButton.gameObject.SetActive(true);
       _isUsed = true;
-   }
+      buttonReference.interactable = true;
 
-   public void onUnequipButtonPress () {
-      if (_isUsed) {
-         AbilityPanel.self.unequipAbility(_abilityId);
-      }
+      show();
    }
 
    public void OnPointerEnter (PointerEventData eventData) {
       if (_isUsed) {
          // Display the ability description in the ability panel
          AbilityPanel.self.displayDescription(icon.sprite, abilityName.text, _description);
-         AbilityPanel.self.showToolTip(true, abilityName.text, displayPoint.position);
       }
-   }
-
-   public void OnPointerExit (PointerEventData eventData) {
-      AbilityPanel.self.showToolTip(false, abilityName.text, displayPoint.position);
    }
 
    public bool isFree () {
       return !_isUsed;
+   }
+
+   public void OnPointerDown (PointerEventData eventData) {
+      if (_isUsed) {
+         AbilityPanel.self.tryGrabEquippedAbility(this);
+      }
+   }
+
+   public void hide () {
+      contentHolder.SetActive(false);
+      blankContentHolder.SetActive(true);
+      buttonReference.interactable = false;
+   }
+
+   public void show () {
+      buttonReference.interactable = true;
+      contentHolder.SetActive(true);
+      blankContentHolder.SetActive(false);
    }
 
    #region Private Variables

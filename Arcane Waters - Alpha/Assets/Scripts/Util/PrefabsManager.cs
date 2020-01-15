@@ -8,6 +8,7 @@ using DigitalRuby.LightningBolt;
 public class PrefabsManager : MonoBehaviour {
    #region Public Variables
 
+   [Header("Entity Prefabs")]
    // The prefab we use for creating player ships
    public GameObject playerShipPrefab;
 
@@ -20,9 +21,10 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab we use for creating player bodies
    public GameObject playerBodyPrefab;
 
-   // The Prefab we use for creating cannon smoke
-   public GameObject cannonSmokePrefab;
+   // The prefab for spawning an npc
+   public NPC npcPrefab;
 
+   [Header("Sea Combat Projectiles")]
    // The Prefab we use for creating venom projectiles
    public VenomProjectile venomPrefab;
 
@@ -53,9 +55,6 @@ public class PrefabsManager : MonoBehaviour {
    // The Prefab we use for creating air cannon balls
    public CannonBall cannonBallAirPrefab;
 
-   // The Prefab we use for creating cannon splashes
-   public GameObject cannonSplashPrefab;
-
    // The Prefab we use for creating tentacle collision effects
    public GameObject tentacleCollisionPrefab;
 
@@ -65,9 +64,17 @@ public class PrefabsManager : MonoBehaviour {
    // The Prefab we use for treasureChest spawning
    public GameObject treasureChestPrefab;
 
+   [Header("VFX Prefabs")]
+   // The Prefab we use for creating cannon splashes
+   public GameObject cannonSplashPrefab;
+
    // The Prefab we use for creating explosions
    public GameObject explosionPrefab;
 
+   // The Prefab we use for creating cannon smoke
+   public GameObject cannonSmokePrefab;
+
+   [Header("Network Dependent Prefabs")]
    // The Prefab we use for creating networked cannon balls
    public GameObject networkedCannonBallPrefab;
 
@@ -77,6 +84,7 @@ public class PrefabsManager : MonoBehaviour {
    // The Prefab we use for creating tentacle projectiles
    public TentacleProjectile tentacleProjectilePrefab;
 
+   [Header("Text Prefabs")]
    // The Prefab we use for creating Damage text
    public ShipDamageText shipDamageTextPrefab;
 
@@ -98,12 +106,22 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab we use for creating name text that follows the players around
    public SmoothFollow nameTextPrefab;
 
+   // A prefab we can use to create floating damage numbers from
+   public GameObject damageTextPrefab;
+
+   // The prefab we use to create battle text
+   public GameObject battleTextPrefab;
+
    // The prefab we use for showing XP gains
    public GameObject xpGainPrefab;
 
    // The prefab we use for showing level gains
    public GameObject levelGainPrefab;
 
+   // A prefab we can use for showing that the requirements are not enough
+   public GameObject insufficientPrefab;
+
+   [Header("Generic Prefabs")]
    // A prefab we use for creating a figure eight route
    public Route figureEightRoutePrefab;
 
@@ -125,15 +143,6 @@ public class PrefabsManager : MonoBehaviour {
    // A prefab we can use for showing that an object is too far away
    public GameObject tooFarPrefab;
 
-   // A prefab we can use for showing that the requirements are not enough
-   public GameObject insufficientPrefab;
-
-   // A prefab we can use to create floating damage numbers from
-   public GameObject damageTextPrefab;
-
-   // The prefab we use to create battle text
-   public GameObject battleTextPrefab;
-
    // The prefab we use to create a cancel icon
    public GameObject cancelIconPrefab;
 
@@ -142,9 +151,6 @@ public class PrefabsManager : MonoBehaviour {
 
    // The prefab we use for creating Status effects
    public Status statusPrefab;
-
-   // The prefab for spawning an npc
-   public NPC npcPrefab;
 
    // Self
    public static PrefabsManager self;
