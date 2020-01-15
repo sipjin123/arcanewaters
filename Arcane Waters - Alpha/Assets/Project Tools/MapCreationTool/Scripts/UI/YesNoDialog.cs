@@ -4,10 +4,8 @@ using UnityEngine.UI;
 
 namespace MapCreationTool
 {
-   public class YesNoDialog : MonoBehaviour
+   public class YesNoDialog : UIPanel
    {
-      private CanvasGroup cGroup;
-
       private Action onYes;
       private Action onNo;
 
@@ -15,11 +13,6 @@ namespace MapCreationTool
       private Text titleText = null;
       [SerializeField]
       private Text contentText = null;
-
-      private void Awake () {
-         cGroup = GetComponent<CanvasGroup>();
-         hide();
-      }
 
       public void display (string title, string content, Action onYes, Action onNo) {
          this.onYes = onYes;
@@ -39,18 +32,6 @@ namespace MapCreationTool
       public void noButton_Click () {
          onNo?.Invoke();
          hide();
-      }
-
-      private void hide () {
-         cGroup.alpha = 0;
-         cGroup.blocksRaycasts = false;
-         cGroup.interactable = false;
-      }
-
-      private void show () {
-         cGroup.alpha = 1;
-         cGroup.blocksRaycasts = true;
-         cGroup.interactable = true;
       }
    }
 }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics;
 using System.Xml;
+using MapCreationTool;
 
 #if IS_SERVER_BUILD
 using MySql.Data.MySqlClient;
@@ -89,7 +90,7 @@ public class DB_Main : DB_MainStub {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@userID", userID);
-            cmd.Parameters.AddWithValue("@actionTypeId", (int)actionType);
+            cmd.Parameters.AddWithValue("@actionTypeId", (int) actionType);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -258,7 +259,7 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static new int getFriendshipLevel(int npcId, int userId) {
+   public static new int getFriendshipLevel (int npcId, int userId) {
 
       int friendshipLevel = -1;
 
@@ -675,6 +676,126 @@ public class DB_Main : DB_MainStub {
 
    #endregion
 
+   #region Map Editor Data
+
+   public static new List<MapDTO> getMapDatas (bool includeEditorData, bool includeGameData) {
+      List<MapDTO> result = new List<MapDTO>();
+
+      string cmdText = "SELECT name, created_at, updated_at";
+      if (includeEditorData) {
+         cmdText += ", editor_data";
+      }
+      if (includeGameData) {
+         cmdText += ", game_data";
+      }
+      cmdText += " FROM map_data ORDER BY updated_at DESC;";
+
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+         conn.Open();
+         cmd.Prepare();
+
+         using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+            while (dataReader.Read()) {
+               result.Add(new MapDTO {
+                  name = dataReader.GetString("name"),
+                  createdAt = dataReader.GetDateTime("created_at"),
+                  updatedAt = dataReader.GetDateTime("updated_at"),
+                  editorData = includeEditorData ? dataReader.GetString("editor_data") : null,
+                  gameData = includeGameData ? dataReader.GetString("game_data") : null
+               });
+            }
+         }
+      }
+
+      return result;
+   }
+
+   public static new MapDTO getMapData (string name, bool includeEditorData, bool includeGameData) {
+      string cmdText = "SELECT name, created_at, updated_at";
+      if (includeEditorData) {
+         cmdText += ", editor_data";
+      }
+      if (includeGameData) {
+         cmdText += ", game_data";
+      }
+
+      cmdText += " FROM map_data WHERE name = '" + name + "';";
+
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+         conn.Open();
+         cmd.Prepare();
+
+         using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+            if (!dataReader.HasRows) {
+               return null;
+            } else {
+               dataReader.Read();
+               return new MapDTO {
+                  name = dataReader.GetString("name"),
+                  createdAt = dataReader.GetDateTime("created_at"),
+                  updatedAt = dataReader.GetDateTime("updated_at"),
+                  editorData = includeEditorData ? dataReader.GetString("editor_data") : null,
+                  gameData = includeGameData ? dataReader.GetString("game_data") : null
+               };
+            }
+         }
+      }
+   }
+
+   public static new void deleteMapData (string name) {
+      string cmdText = "DELETE FROM map_data WHERE name = '" + name + "';";
+
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+         conn.Open();
+         cmd.Prepare();
+
+         cmd.ExecuteNonQuery();
+      }
+   }
+
+   public static new void createMapData (MapDTO map) {
+      string cmdText = "INSERT INTO map_data (name, editor_data, game_data, created_at, updated_at) " +
+            "values(@name, @editorData, @gameData, @createdAt, @updatedAt);";
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+         conn.Open();
+         cmd.Prepare();
+
+         cmd.Parameters.AddWithValue("@name", map.name);
+         cmd.Parameters.AddWithValue("@editorData", map.editorData);
+         cmd.Parameters.AddWithValue("@gameData", map.gameData);
+         cmd.Parameters.AddWithValue("@createdAt", DateTime.UtcNow);
+         cmd.Parameters.AddWithValue("@updatedAt", DateTime.UtcNow);
+
+         // Execute the command
+         cmd.ExecuteNonQuery();
+      }
+   }
+
+   public static new void updateMapData (MapDTO map) {
+      string cmdText = "UPDATE map_data SET " +
+         "editor_data = @editorData, game_data = @gameData, updated_at = @updatedAt " +
+         "WHERE name = @name;";
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+         conn.Open();
+         cmd.Prepare();
+
+         cmd.Parameters.AddWithValue("@name", map.name);
+         cmd.Parameters.AddWithValue("@editorData", map.editorData);
+         cmd.Parameters.AddWithValue("@gameData", map.gameData);
+         cmd.Parameters.AddWithValue("@updatedAt", DateTime.UtcNow);
+
+         // Execute the command
+         cmd.ExecuteNonQuery();
+      }
+   }
+
+   #endregion
+
    #region Shop XML Data
 
    public static new void updateShopXML (string rawData, string shopName) {
@@ -964,7 +1085,7 @@ public class DB_Main : DB_MainStub {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO "+ tableName + " (type, xmlContent) " +
+            "INSERT INTO " + tableName + " (type, xmlContent) " +
             "VALUES(@type, @xmlContent) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
 
@@ -1003,7 +1124,7 @@ public class DB_Main : DB_MainStub {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane."+ tableName, conn)) {
+            "SELECT * FROM arcane." + tableName, conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -1040,7 +1161,7 @@ public class DB_Main : DB_MainStub {
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM "+ tableName + " WHERE type=@type", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM " + tableName + " WHERE type=@type", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@type", typeID);
@@ -1141,7 +1262,7 @@ public class DB_Main : DB_MainStub {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO "+ tableName + " (type, xmlContent) " +
+            "INSERT INTO " + tableName + " (type, xmlContent) " +
             "VALUES(@type, @xmlContent) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
 
@@ -1175,7 +1296,7 @@ public class DB_Main : DB_MainStub {
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM "+ tableName + " WHERE type=@type", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM " + tableName + " WHERE type=@type", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@type", type);
@@ -1206,7 +1327,7 @@ public class DB_Main : DB_MainStub {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane."+ tableName, conn)) {
+            "SELECT * FROM arcane." + tableName, conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -1240,41 +1361,41 @@ public class DB_Main : DB_MainStub {
       }
 
       try {
-            using (MySqlConnection conn = getConnection())
-            using (MySqlCommand cmd = new MySqlCommand(string.Format("SELECT * FROM arcane.items where itmCategory = @itmCategory and ({0}) and usrId = @usrId", itemIds), conn)) {
-               conn.Open();
-               cmd.Prepare();
-               cmd.Parameters.AddWithValue("@itmCategory", itmCategory);
-               cmd.Parameters.AddWithValue("@usrId", usrId); 
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(string.Format("SELECT * FROM arcane.items where itmCategory = @itmCategory and ({0}) and usrId = @usrId", itemIds), conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@itmCategory", itmCategory);
+            cmd.Parameters.AddWithValue("@usrId", usrId);
 
-               // Create a data reader and Execute the command
-               using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-                  while (dataReader.Read()) {
-                     int newCategory = DataUtil.getInt(dataReader, "itmCategory");
-                     int newType = DataUtil.getInt(dataReader, "itmType");
-                     int newitemCount = DataUtil.getInt(dataReader, "itmCount");
-                     int newItemID = DataUtil.getInt(dataReader, "itmId");
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  int newCategory = DataUtil.getInt(dataReader, "itmCategory");
+                  int newType = DataUtil.getInt(dataReader, "itmType");
+                  int newitemCount = DataUtil.getInt(dataReader, "itmCount");
+                  int newItemID = DataUtil.getInt(dataReader, "itmId");
 
-                     ItemInfo info = new ItemInfo(dataReader);
-                     Item newItem = new Item {
-                        category = (Item.Category) newCategory,
-                        itemTypeId = newType,
-                        count = newitemCount,
-                        id = newItemID
-                     };
+                  ItemInfo info = new ItemInfo(dataReader);
+                  Item newItem = new Item {
+                     category = (Item.Category) newCategory,
+                     itemTypeId = newType,
+                     count = newitemCount,
+                     id = newItemID
+                  };
 
-                     Item findItem = newItemList.Find(_ => _.itemTypeId == newType && (int)_.category == newCategory);
-                     if (newItemList.Contains(findItem)) {
-                        int itemIndex = newItemList.IndexOf(findItem);
-                        newItemList[itemIndex].count +=1;
-                     } else {
-                        newItemList.Add(newItem);
-                     }
+                  Item findItem = newItemList.Find(_ => _.itemTypeId == newType && (int) _.category == newCategory);
+                  if (newItemList.Contains(findItem)) {
+                     int itemIndex = newItemList.IndexOf(findItem);
+                     newItemList[itemIndex].count += 1;
+                  } else {
+                     newItemList.Add(newItem);
                   }
                }
             }
-         } catch (Exception e) {
-            D.error("MySQL Error: " + e.ToString());
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
       }
       return newItemList;
    }
@@ -1397,7 +1518,7 @@ public class DB_Main : DB_MainStub {
       return accountId;
    }
 
-   public static new List<UserInfo> getUsersForAccount (int accId, int userId=0) {
+   public static new List<UserInfo> getUsersForAccount (int accId, int userId = 0) {
       List<UserInfo> userList = new List<UserInfo>();
       string userClause = (userId == 0) ? " AND users.usrId != @usrId" : " AND users.usrId = @usrId";
 
@@ -1651,7 +1772,7 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static new List<SiloInfo> getSiloInfo(int userId) {
+   public static new List<SiloInfo> getSiloInfo (int userId) {
       List<SiloInfo> siloInfo = new List<SiloInfo>();
 
       try {
@@ -1676,14 +1797,12 @@ public class DB_Main : DB_MainStub {
       return siloInfo;
    }
 
-   public static new void addToSilo (int userId, Crop.Type cropType, int amount=1) {
-      try
-      {
+   public static new void addToSilo (int userId, Crop.Type cropType, int amount = 1) {
+      try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "INSERT INTO silo (usrId, crpType, cropCount) VALUES(@usrId, @crpType, @cropCount) " +
-            "ON DUPLICATE KEY UPDATE cropCount = cropCount + " + amount, conn))
-         {
+            "ON DUPLICATE KEY UPDATE cropCount = cropCount + " + amount, conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -1694,9 +1813,7 @@ public class DB_Main : DB_MainStub {
             // Execute the command
             cmd.ExecuteNonQuery();
          }
-      }
-      catch (Exception e)
-      {
+      } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
    }
@@ -2304,7 +2421,7 @@ public class DB_Main : DB_MainStub {
       ShipInfo shipInfo = new ShipInfo(0, userId, shipType, Ship.SkinType.None, Ship.MastType.Caravel_1, Ship.SailType.Caravel_1, shipType + "",
             ColorType.HullBrown, ColorType.HullBrown, ColorType.SailWhite, ColorType.SailWhite, 100, 100, 20,
             80, 80, 15, 100, 90, 10, Rarity.Type.Common, new ShipAbilityInfo(false));
-      shipInfo.shipAbilities.ShipAbilities = new string []{ ShipAbilityInfo.DEFAULT_ABILITY };
+      shipInfo.shipAbilities.ShipAbilities = new string[] { ShipAbilityInfo.DEFAULT_ABILITY };
 
       System.Xml.Serialization.XmlSerializer ser = new System.Xml.Serialization.XmlSerializer(shipInfo.shipAbilities.GetType());
       var sb = new StringBuilder();
@@ -2409,7 +2526,7 @@ public class DB_Main : DB_MainStub {
             cmd.Parameters.AddWithValue("@sailors", shipyardInfo.sailors);
             cmd.Parameters.AddWithValue("@speed", shipyardInfo.speed);
             cmd.Parameters.AddWithValue("@rarity", (int) shipyardInfo.rarity);
-            cmd.Parameters.AddWithValue("@shipAbilities", serializedShipAbilities); 
+            cmd.Parameters.AddWithValue("@shipAbilities", serializedShipAbilities);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -2586,7 +2703,7 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static new void transferItem(Item item, int fromUserId, int toUserId, int amount) {
+   public static new void transferItem (Item item, int fromUserId, int toUserId, int amount) {
       // Make sure that we have the right class
       Item fromItem = item.getCastItem();
 
@@ -2668,7 +2785,7 @@ public class DB_Main : DB_MainStub {
    }
 
    // Prefer using transferItem() to change an item user id
-   private static void updateItemUserId(int itemId, int fromUserId, int toUserId) {
+   private static void updateItemUserId (int itemId, int fromUserId, int toUserId) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("UPDATE items SET usrId=@toUsrId WHERE usrId=@fromUsrId AND itmId=@itmId", conn)) {
@@ -2936,7 +3053,7 @@ public class DB_Main : DB_MainStub {
             cmd.Parameters.AddWithValue("@itmType", (int) itemType);
             cmd.Parameters.AddWithValue("@itmColor1", (int) ColorType.None);
             cmd.Parameters.AddWithValue("@itmColor2", (int) ColorType.None);
-            cmd.Parameters.AddWithValue("@itmData", "skinType=" + ((int)skinType));
+            cmd.Parameters.AddWithValue("@itmData", "skinType=" + ((int) skinType));
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -3305,7 +3422,7 @@ public class DB_Main : DB_MainStub {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "UPDATE jobs SET "+ columnName +" = "+columnName+" + @XP WHERE usrId=@usrId", conn)) {
+            "UPDATE jobs SET " + columnName + " = " + columnName + " + @XP WHERE usrId=@usrId", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -3466,7 +3583,7 @@ public class DB_Main : DB_MainStub {
       }
 
       return tradeList;
-   } 
+   }
 
    public static new void pruneJobHistory (DateTime untilDate) {
 
@@ -3487,7 +3604,7 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static new List<LeaderBoardInfo> calculateLeaderBoard (Jobs.Type jobType, Faction.Type boardFaction, 
+   public static new List<LeaderBoardInfo> calculateLeaderBoard (Jobs.Type jobType, Faction.Type boardFaction,
       LeaderBoardsManager.Period period, DateTime startDate, DateTime endDate) {
 
       List<LeaderBoardInfo> list = new List<LeaderBoardInfo>();
@@ -3526,7 +3643,7 @@ public class DB_Main : DB_MainStub {
    }
 
    public static new void deleteLeaderBoards (LeaderBoardsManager.Period period) {
-      
+
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
@@ -3584,9 +3701,9 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static new void updateLeaderBoardDates (LeaderBoardsManager.Period period, 
+   public static new void updateLeaderBoardDates (LeaderBoardsManager.Period period,
       DateTime startDate, DateTime endDate) {
-      
+
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
@@ -4055,7 +4172,7 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static void setServer(string server) {
+   public static void setServer (string server) {
       _connectionString = buildConnectionString(server);
    }
 

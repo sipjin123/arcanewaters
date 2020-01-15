@@ -291,21 +291,31 @@ public class AdminManager : NetworkBehaviour {
    }
 
    protected void requestWarp (string parameters) {
-      string[] list = parameters.Split(' ');
-      string areaKey = "";
-      string spawnKey = "";
+      string partialAreaKey = parameters;
 
-      try {
-         areaKey = list[0];
-         spawnKey = list[1];
-      } catch (System.Exception e) {
-         D.warning("Unable to parse from: " + parameters + ", exception: " + e);
+      if (string.IsNullOrEmpty(parameters)) {
          ChatManager.self.addChat("Not a valid warp command", ChatInfo.Type.Error);
          return;
       }
 
+      // Get all the area keys
+      List<string> areaKeys = AreaManager.self.getAreaKeys();
+
+      // Try to select area keys whose beginning match exactly with the user input
+      List<string> exactMatchKeys = areaKeys.Where(s => s.StartsWith(partialAreaKey, StringComparison.CurrentCultureIgnoreCase)).ToList();
+      if (exactMatchKeys.Count > 0) {
+         // If there are matchs, use that sub-list instead
+         areaKeys = exactMatchKeys;
+      }
+
+      // Get the area key closest to the given partial key
+      string closestAreaKey = areaKeys.OrderBy(s => Util.compare(s, partialAreaKey)).First();
+
+      // Get the destination area
+      Area destinationArea = AreaManager.self.getArea(closestAreaKey);
+
       // Send the request to the server
-      Cmd_Warp(areaKey, spawnKey);
+      Cmd_Warp(destinationArea.areaKey);
    }
 
    protected void requestGetItem (string parameters) {
@@ -570,21 +580,18 @@ public class AdminManager : NetworkBehaviour {
    }
 
    [Command]
-   protected void Cmd_Warp (string areaKey, string spawnKey) {
+   protected void Cmd_Warp (string areaKey) {
       // Make sure this is an admin
       if (!_player.isAdmin()) {
          D.warning("Received admin command from non-admin!");
          return;
       }
 
-      if ("".Equals(spawnKey)) {
-         return;
-      }
-
-      Spawn spawn = SpawnManager.self.getSpawn(areaKey, spawnKey);
+      // Get the default spawn for the destination area
+      Spawn spawn = SpawnManager.self.getSpawn(areaKey);
 
       if (spawn == null) {
-         ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "Could not determine the warp destination. Area: " + areaKey + ", spawn: " + spawnKey);
+         ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "Could not determine the warp destination. Area Name: " + areaKey);
          return;
       }
 

@@ -53,7 +53,7 @@ public class AreaManager : MonoBehaviour
       return new List<Area>(_areas.Values);
    }
 
-   public List<string> getAreaNames () {
+   public List<string> getAreaKeys () {
       return new List<string>(_areas.Keys);
    }
 

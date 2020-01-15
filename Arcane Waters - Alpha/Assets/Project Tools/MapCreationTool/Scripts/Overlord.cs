@@ -8,6 +8,8 @@ namespace MapCreationTool
 {
    public class Overlord : MonoBehaviour
    {
+      public static Overlord instance { get; private set; }
+
       [Space(5)]
       [SerializeField]
       private BiomedPaletteData areaPaletteData = null;
@@ -23,6 +25,8 @@ namespace MapCreationTool
       private GameObject loadCover = null;
 
       private void Awake () {
+         instance = this;
+
          Tools.setDefaultValues();
          Undo.clear();
 
@@ -73,7 +77,7 @@ namespace MapCreationTool
          }
       }
 
-      public void applyFileData (string data) {
+      public void applyFileData (string data, string mapName) {
          var dt = Serializer.deserialize(data, true);
 
          Tools.changeBiome(dt.biome);
@@ -83,7 +87,8 @@ namespace MapCreationTool
             Tools.changeBoardSize(dt.size);
          }
 
-         drawBoard.applyDeserializedData(dt);
+         drawBoard.applyDeserializedData(dt, mapName);
+
          Undo.clear();
       }
 

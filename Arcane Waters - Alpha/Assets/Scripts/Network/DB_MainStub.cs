@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 using System.Text;
+using MapCreationTool;
 
 public class DB_MainStub : MonoBehaviour {
    #region Public Variables
@@ -47,7 +48,7 @@ public class DB_MainStub : MonoBehaviour {
    }
 
    public static void updateEquipmentXML (string rawData, int typeID, EquipmentToolManager.EquipmentType equipType) {
-   
+
    }
 
    public static void deleteEquipmentXML (int type, EquipmentToolManager.EquipmentType equipType) {
@@ -101,6 +102,26 @@ public class DB_MainStub : MonoBehaviour {
    }
 
    public static void deleteNPCXML (int typeID) {
+
+   }
+
+   public static List<MapDTO> getMapDatas (bool includeEditorData, bool includeGameData) {
+      return new List<MapDTO>();
+   }
+
+   public static MapDTO getMapData (string name, bool includeEditorData, bool includeGameData) {
+      return null;
+   }
+
+   public static void deleteMapData (string name) {
+
+   }
+
+   public static void createMapData (MapDTO map) {
+
+   }
+
+   public static void updateMapData (MapDTO map) {
 
    }
 
@@ -171,7 +192,7 @@ public class DB_MainStub : MonoBehaviour {
    }
 
    public static void readTest () {
-      
+
    }
 
    public static void createNPCRelationship (int npcId, int userId, int friendshipLevel) {
@@ -266,13 +287,12 @@ public class DB_MainStub : MonoBehaviour {
 
    }
 
-   public static List<SiloInfo> getSiloInfo(int userId) {
+   public static List<SiloInfo> getSiloInfo (int userId) {
       return null;
    }
 
-   public static void addToSilo(int userId, Crop.Type cropType, int amount=1)
-   {
-      
+   public static void addToSilo (int userId, Crop.Type cropType, int amount = 1) {
+
    }
 
    public static List<TutorialInfo> getTutorialInfo (int userId) {
@@ -403,7 +423,7 @@ public class DB_MainStub : MonoBehaviour {
 
    }
 
-   public static void updateItemQuantity (int userId, int itmId, int itmCount) { 
+   public static void updateItemQuantity (int userId, int itmId, int itmCount) {
 
    }
 
@@ -489,7 +509,7 @@ public class DB_MainStub : MonoBehaviour {
    }
 
    public static void assignGuild (int userId, int guildId) {
-       
+
    }
 
    public static void addJobXP (int userId, Jobs.Type jobType, Faction.Type faction, int XP) {
@@ -519,7 +539,7 @@ public class DB_MainStub : MonoBehaviour {
    public static void pruneJobHistory (DateTime untilDate) {
    }
 
-   public static List<LeaderBoardInfo> calculateLeaderBoard (Jobs.Type jobType, Faction.Type faction, 
+   public static List<LeaderBoardInfo> calculateLeaderBoard (Jobs.Type jobType, Faction.Type faction,
       LeaderBoardsManager.Period period, DateTime startDate, DateTime endDate) {
       return null;
    }

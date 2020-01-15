@@ -1,7 +1,8 @@
-﻿using MapCreationTool.PaletteTilesData;
-using MapCreationTool.UndoSystem;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MapCreationTool.UndoSystem;
+using MySql.Data.MySqlClient;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -26,6 +27,8 @@ namespace MapCreationTool
       private Dropdown editorTypeDropdown = null;
       [SerializeField]
       private Dropdown boardSizeDropdown = null;
+      [SerializeField]
+      private Button saveButton = null;
 
       [SerializeField]
       private Button undoButton = null;
@@ -41,7 +44,10 @@ namespace MapCreationTool
 
       private int[] boardSizes = { 64, 128, 256 };
 
-      public YesNoDialog yesNoDialog { get; private set; }
+      public static YesNoDialog yesNoDialog { get; private set; }
+      public static MapListPanel mapList { get; private set; }
+      public static SaveAsPanel saveAsPanel { get; private set; }
+      public static ErrorDialog errorDialog { get; private set; }
 
       private Dictionary<string, BiomeType> optionsPacks = new Dictionary<string, BiomeType>
       {
@@ -83,8 +89,8 @@ namespace MapCreationTool
                biomeDropdown.value = i;
 
          editorTypeDropdown.SetValueWithoutNotify((int) Tools.editorType);
-         
-         for(int i = 0; i < boardSizes.Length; i++) {
+
+         for (int i = 0; i < boardSizes.Length; i++) {
             if (boardSizes[i] == Tools.boardSize.x)
                boardSizeDropdown.SetValueWithoutNotify(i);
          }
@@ -94,6 +100,9 @@ namespace MapCreationTool
       private void Awake () {
          canvasScaler = GetComponent<CanvasScaler>();
          yesNoDialog = GetComponentInChildren<YesNoDialog>();
+         mapList = GetComponentInChildren<MapListPanel>();
+         saveAsPanel = GetComponentInChildren<SaveAsPanel>();
+         errorDialog = GetComponentInChildren<ErrorDialog>();
 
          boardSizeDropdown.options = boardSizes.Select(size => new Dropdown.OptionData { text = "Size: " + size }).ToList();
       }
@@ -105,7 +114,7 @@ namespace MapCreationTool
       private void updateShowedOptions () {
          mountainLayerDropdown.gameObject.SetActive(
              Tools.toolType == ToolType.Brush &&
-             Tools.tileGroup != null && 
+             Tools.tileGroup != null &&
              (Tools.tileGroup.type == TileGroupType.Mountain || Tools.tileGroup.type == TileGroupType.SeaMountain));
 
          burrowedTreesToggle.gameObject.SetActive(
@@ -179,17 +188,55 @@ namespace MapCreationTool
             yesNoDialog.display(
              "Opening a map",
              "Are you sure you want to open a map?\nAll unsaved progress will be permanently lost.",
-             () => overlord.applyFileData(data),
+             () => overlord.applyFileData(data, null),
              null);
          }
       }
 
       public void saveButton_Click () {
-         FileUtility.saveFile(drawBoard.formSerializedData());
+         if (DrawBoard.loadedMapName == null) {
+            saveAs();
+         } else {
+            saveButton.interactable = false;
+            try {
+               MapDTO map = new MapDTO {
+                  name = DrawBoard.loadedMapName,
+                  editorData = DrawBoard.instance.formSerializedData(),
+                  gameData = DrawBoard.instance.formExportData()
+               };
+
+               UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+                  string dbError = null;
+                  try {
+                     DB_Main.updateMapData(map);
+                  } catch (MySqlException ex) {
+                     if (ex.Number == 1062) {
+                        dbError = $"Map with name '{map.name}' already exists";
+                     } else {
+                        dbError = ex.Message;
+                     }
+                  }
+
+                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                     if (dbError != null) {
+                        errorDialog.display(dbError);
+                     }
+                     saveButton.interactable = true;
+                  });
+               });
+            } catch (Exception ex) {
+               saveButton.interactable = true;
+               errorDialog.display(ex.Message);
+            }
+         }
       }
 
-      public void exportButton_Click() {
-         FileUtility.exportFile(drawBoard.formExportData());
+      public void saveAs () {
+         saveAsPanel.open();
+      }
+
+      public void openMapList () {
+         mapList.open();
       }
 
       public void masterToolButton_Click () {

@@ -101,7 +101,6 @@ public class NPCManager : MonoBehaviour {
          }
          return returnList;
       } else {
-         D.log("NPC Data Does Not Exist for area: " + areaKey);
          return new List<NPCData>();
       }
    }

@@ -188,48 +188,7 @@ public class Area : MonoBehaviour
    }
 
    public static int getAreaId (string areaKey) {
-      switch (areaKey) {
-         case "StartingTown":
-            return 1;
-         case "Farm":
-            return 2;
-         case "Ocean1":
-            return 3;
-         case "House":
-            return 4;
-         case "TreasurePine":
-            return 5;
-         case "DesertTown":
-            return 6;
-         case "SeaBottom":
-            return 7;
-         case "SeaMiddle":
-            return 8;
-         case "SeaTop":
-            return 9;
-         case "MerchantShop_Desert":
-            return 10;
-         case "MerchantShop_Forest":
-            return 11;
-         case "AdventureShop_Forest":
-            return 12;
-         case "AdventureShop_Desert":
-            return 13;
-         case "Shipyard_Forest":
-            return 14;
-         case "TonyTest":
-            return 2001;
-         case "CollisionTest":
-            return 2002;
-         case "SeaRandom_1":
-            return 1001;
-         case "SeaRandom_2":
-            return 1002;
-         case "SeaRandom_3":
-            return 1003;
-         default:
-            return 0;
-      }
+      return areaKey.GetHashCode();
    }
 
    public static List<string> getAllAreaKeys () {

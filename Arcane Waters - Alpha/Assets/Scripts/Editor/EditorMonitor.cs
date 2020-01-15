@@ -18,7 +18,7 @@ public static class EditorMonitor {
 
    static void OnProjectChanged () {
       #if UNITY_EDITOR && !CLOUD_BUILD
-         Debug.Log("Project hierarchy changed, so updating image manager.");
+         // Debug.Log("Project hierarchy changed, so updating image manager.");
          EditorUtil.updateImagerManager();
       #endif
    }

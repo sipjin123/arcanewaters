@@ -1,8 +1,8 @@
-﻿using MapCreationTool.PaletteTilesData;
+﻿using System.Collections.Generic;
+using System.Linq;
+using MapCreationTool.PaletteTilesData;
 using MapCreationTool.Serialization;
 using MapCreationTool.UndoSystem;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Tilemaps;
@@ -14,8 +14,10 @@ namespace MapCreationTool
       public static event System.Action<PrefabDataDefinition, PlacedPrefab> SelectedPrefabChanged;
       public static event System.Action<PlacedPrefab> SelectedPrefabDataChanged;
 
+      public static DrawBoard instance { get; private set; }
       public static Vector2Int size { get; private set; }
       public static Vector2Int origin { get; private set; }
+      public static string loadedMapName { get; set; }
 
       [SerializeField]
       private EditorConfig config = null;
@@ -60,6 +62,7 @@ namespace MapCreationTool
       private Vector3Int? draggingFrom = null;
 
       private void Awake () {
+         instance = this;
 
          eventCanvas = GetComponentInChildren<EventTrigger>();
          grid = GetComponentInChildren<Grid>();
@@ -242,10 +245,13 @@ namespace MapCreationTool
 
       public void newMap () {
          clearAll();
+         loadedMapName = null;
          Undo.clear();
       }
 
-      public void applyDeserializedData (DeserializedProject data) {
+      public void applyDeserializedData (DeserializedProject data, string mapName) {
+         loadedMapName = null;
+
          changeBoard(BoardChange.calculateDeserializedDataChange(data, layers, placedPrefabs));
          foreach (var pref in data.prefabs) {
             PlacedPrefab pp = placedPrefabs.FirstOrDefault(p => p.original == pref.prefab &&
@@ -257,6 +263,8 @@ namespace MapCreationTool
                }
             }
          }
+
+         loadedMapName = mapName;
       }
 
       private void changeBoard (BoardChange change, bool registerUndo = true) {
