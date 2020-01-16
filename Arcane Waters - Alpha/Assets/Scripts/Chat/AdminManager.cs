@@ -622,14 +622,6 @@ public class AdminManager : NetworkBehaviour {
       Instance instance = InstanceManager.self.getInstance(_player.instanceId);
       InstanceManager.self.addEnemyToInstance(enemy, instance);
 
-      // Get battler data of enemy to send to client
-      List<BattlerData> newEnemyList = new List<BattlerData>();
-      BattlerData fetchedData = MonsterManager.self.getMonster(enemy.enemyType);
-      newEnemyList.Add(fetchedData);
-
-      // Provides the clients with the list of monsters present in the battle sequence
-      _player.rpc.Target_ReceiveMonsterData(_player.connectionToClient, Util.serialize(newEnemyList));
-
       enemy.transform.position = _player.transform.position;
       enemy.desiredPosition = enemy.transform.position;
       NetworkServer.Spawn(enemy.gameObject);

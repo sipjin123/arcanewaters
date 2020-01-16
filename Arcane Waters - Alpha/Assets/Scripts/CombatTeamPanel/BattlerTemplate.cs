@@ -19,6 +19,9 @@ public class BattlerTemplate : MonoBehaviour {
    // Cached data 
    public BattlerData battlerDataCache;
 
+   // User name text for player battlers
+   public InputField userNameText;
+
    #endregion
 
    #region Private Variables

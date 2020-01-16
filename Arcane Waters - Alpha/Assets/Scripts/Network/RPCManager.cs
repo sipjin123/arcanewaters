@@ -2646,7 +2646,7 @@ public class RPCManager : NetworkBehaviour {
    #endregion
 
    [Command]
-   public void Cmd_StartNewTeamBattle (int userId, Enemy.Type[] defenderBattlers, Enemy.Type[] attackerBattlers) {
+   public void Cmd_StartNewTeamBattle (int userId, Enemy.Type[] defenderBattlers, Enemy.Type[] attackerBattlers, string[] defenderPlayerNames, string[] attackerPlayerNames) {
       // Checks if the user is an admin
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Fetch info from server
@@ -2660,26 +2660,23 @@ public class RPCManager : NetworkBehaviour {
          });
       });
 
+      // Hard code enemy type spawn for now
+      Enemy.Type enemyToSpawn = Enemy.Type.Lizard;
+
       // Create an Enemy in this instance
       Enemy spawnedEnemy = Instantiate(PrefabsManager.self.enemyPrefab);
-      spawnedEnemy.enemyType = Enemy.Type.Lizard;
+      spawnedEnemy.enemyType = enemyToSpawn;
 
       // Add it to the Instance
       Instance newInstance = InstanceManager.self.getInstance(_player.instanceId);
       InstanceManager.self.addEnemyToInstance(spawnedEnemy, newInstance);
 
-      // Get battler data of enemy to send to client
-      List<BattlerData> newEnemyList = new List<BattlerData>();
-      BattlerData fetchedData = MonsterManager.self.getMonster(spawnedEnemy.enemyType);
-      newEnemyList.Add(fetchedData);
-
-      // Provides the clients with the list of monsters present in the battle sequence
-      _player.rpc.Target_ReceiveMonsterData(_player.connectionToClient, Util.serialize(newEnemyList));
-
       spawnedEnemy.transform.position = _player.transform.position;
       spawnedEnemy.desiredPosition = spawnedEnemy.transform.position;
       NetworkServer.Spawn(spawnedEnemy.gameObject);
 
+      // TODO: Update automated team combat system
+      /*
       // We need a Player Body object to proceed
       if (!(_player is PlayerBodyEntity)) {
          D.warning("Player object is not a Player Body, so can't start a Battle: " + _player);
@@ -2691,6 +2688,8 @@ public class RPCManager : NetworkBehaviour {
          D.warning("Can't start new Battle for player that's already in a Battle: " + _player.userId);
          return;
       }
+
+      List<PlayerBodyEntity> playerBodyEntities = new List<PlayerBodyEntity>();
 
       // Get references to the Player and Enemy objects
       PlayerBodyEntity playerBody = (PlayerBodyEntity) _player;
@@ -2708,10 +2707,21 @@ public class RPCManager : NetworkBehaviour {
          // Retrieve the skill list from database
          List<AbilitySQLData> abilityDataList = DB_Main.getAllAbilities(playerBody.userId);
 
-         // Determine if at least one ability is equipped
-         hasAbilityEquipped = abilityDataList.Exists(_ => _.equipSlotIndex != -1);
+         foreach (string playerName in attackerPlayerNames) {
+            int attackerID = DB_Main.getUserIDbyName(playerName);
+            if (attackerID != 0) {
+               PlayerBodyEntity bodyEntity = (PlayerBodyEntity) BodyManager.self.getBody(attackerID);
+               if (bodyEntity != null) {
+                  playerBodyEntities.Add(bodyEntity);
+                  D.log("Getting the player id: " + playerName + " - " + attackerID);
+               }
+            }
+         }
+         playerBodyEntities.Add(playerBody);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Determine if at least one ability is equipped
+            hasAbilityEquipped = abilityDataList.Exists(_ => _.equipSlotIndex != -1);
 
             // If no ability is equipped, send an error to the client
             if (!hasAbilityEquipped) {
@@ -2719,37 +2729,39 @@ public class RPCManager : NetworkBehaviour {
                return;
             }
 
-            // Get or create the Battle instance
-            Battle battle = (enemy.battleId > 0) ? BattleManager.self.getBattle(enemy.battleId) : BattleManager.self.createTeamBattle(area, instance, enemy, attackerBattlers, playerBody, defenderBattlers);
+            foreach (PlayerBodyEntity entity in playerBodyEntities) {
+               // Get or create the Battle instance
+               Battle battle = (enemy.battleId > 0) ? BattleManager.self.getBattle(enemy.battleId) : BattleManager.self.createTeamBattle(area, instance, enemy, attackerBattlers, entity, defenderBattlers);
 
-            // If the Battle is full, we can't proceed
-            if (!battle.hasRoomLeft(Battle.TeamType.Attackers)) {
-               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "The battle is already full!");
-               return;
+               // If the Battle is full, we can't proceed
+               if (!battle.hasRoomLeft(Battle.TeamType.Attackers)) {
+                  ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "The battle is already full!");
+                  return;
+               }
+
+               // Add the player to the Battle
+               BattleManager.self.addPlayerToBattle(battle, entity, Battle.TeamType.Attackers);
+
+               // Server will setup the abilities and send to clients what abilities to use
+               setupAbilityForBattle(entity.userId);
+
+               // Provides the client with the info of the Equipped Abilities
+               Target_UpdateBattleAbilityUI(entity.connectionToClient, Util.serialize(abilityDataList.FindAll(_ => _.equipSlotIndex >= 0)));
+
+               // Send class info to client
+               PlayerClassData currentClassData = ClassManager.self.getClassData(entity.classType);
+               Target_ReceiveClassInfo(entity.connectionToClient, JsonUtility.ToJson(currentClassData));
+
+               // Send faction info to client
+               PlayerFactionData currentFactionData = FactionManager.self.getFactionData(entity.faction);
+               Target_ReceiveFactionInfo(entity.connectionToClient, JsonUtility.ToJson(currentFactionData));
+
+               // Send specialty info to client
+               PlayerSpecialtyData currentSpecialtyData = SpecialtyManager.self.getSpecialtyData(entity.specialty);
+               Target_ReceiveSpecialtyInfo(entity.connectionToClient, JsonUtility.ToJson(currentSpecialtyData));
             }
-
-            // Add the player to the Battle
-            BattleManager.self.addPlayerToBattle(battle, playerBody, Battle.TeamType.Attackers);
-
-            // Server will setup the abilities and send to clients what abilities to use
-            setupAbilityForBattle(_player.userId);
-
-            // Provides the client with the info of the Equipped Abilities
-            Target_UpdateBattleAbilityUI(playerBody.connectionToClient, Util.serialize(abilityDataList.FindAll(_ => _.equipSlotIndex >= 0)));
-
-            // Send class info to client
-            PlayerClassData currentClassData = ClassManager.self.getClassData(playerBody.classType);
-            Target_ReceiveClassInfo(playerBody.connectionToClient, JsonUtility.ToJson(currentClassData));
-
-            // Send faction info to client
-            PlayerFactionData currentFactionData = FactionManager.self.getFactionData(playerBody.faction);
-            Target_ReceiveFactionInfo(playerBody.connectionToClient, JsonUtility.ToJson(currentFactionData));
-
-            // Send specialty info to client
-            PlayerSpecialtyData currentSpecialtyData = SpecialtyManager.self.getSpecialtyData(playerBody.specialty);
-            Target_ReceiveSpecialtyInfo(playerBody.connectionToClient, JsonUtility.ToJson(currentSpecialtyData));
          });
-      });
+      });*/
    }
 
    [Command]
@@ -3062,10 +3074,48 @@ public class RPCManager : NetworkBehaviour {
    public void Target_ReceiveMonsterData (NetworkConnection connection, string[] rawData) {
       List<BattlerData> dataList = Util.unserialize<BattlerData>(rawData);
 
-      // Translates JSON Raw data into ability data for each monster
       foreach (BattlerData battlerData in dataList) {
-         battlerData.battlerAbilities.attackAbilityDataList = Util.unserialize<AttackAbilityData>(battlerData.battlerAbilities.attackAbilityRawData).ToArray();
-         battlerData.battlerAbilities.buffAbilityDataList = Util.unserialize<BuffAbilityData>(battlerData.battlerAbilities.buffAbilityRawData).ToArray();
+         TextAsset newTextAsset = new TextAsset(battlerData.serializedBattlerAbilities);
+         AbilityDataRecord translatedAbilityData = Util.xmlLoad<AbilityDataRecord>(newTextAsset);
+
+         // Translates JSON Raw data into ability data for each monster
+         string[] attackAbilityNames = translatedAbilityData.attackAbilityRawData;
+         string[] buffAbilityNames = translatedAbilityData.buffAbilityRawData;
+
+         List<AttackAbilityData> attackDataList = new List<AttackAbilityData>();
+         List<BuffAbilityData> buffDataList = new List<BuffAbilityData>();
+         List<BasicAbilityData> basicDataList = new List<BasicAbilityData>();
+
+         // Fetch data of the abilities having the same name / Data is provided by the server upon Server Init
+         if (attackAbilityNames != null && attackAbilityNames.Length > 0) {
+            foreach (string attackName in attackAbilityNames) {
+               AttackAbilityData attackData = AbilityManager.getAttackAbility(attackName);
+               if (attackData != null) {
+                  attackDataList.Add(attackData);
+                  basicDataList.Add(attackData);
+               } else {
+                  D.warning("A Ability name does not exist in collection[Attack]: " + attackName);
+               }
+            }
+         }
+
+         if (buffAbilityNames != null && buffAbilityNames.Length > 0) {
+            foreach (string buffName in buffAbilityNames) {
+               BuffAbilityData buffData = AbilityManager.getBuffAbility(buffName);
+               if (buffData != null) {
+                  buffDataList.Add(buffData);
+                  basicDataList.Add(buffData);
+               } else {
+                  D.warning("Ability name does not exist in collection[Buff]: " + buffName);
+               }
+            }
+         }
+
+         // Set fetched ability data to battler data
+         battlerData.battlerAbilities = new AbilityDataRecord();
+         battlerData.battlerAbilities.attackAbilityDataList = attackDataList.ToArray();
+         battlerData.battlerAbilities.buffAbilityDataList = buffDataList.ToArray();
+         battlerData.battlerAbilities.basicAbilityDataList = basicDataList.ToArray();
       }
       MonsterManager.self.receiveListFromServer(dataList.ToArray());
    }

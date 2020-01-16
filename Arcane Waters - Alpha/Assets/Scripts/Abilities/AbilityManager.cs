@@ -23,6 +23,12 @@ public class AbilityManager : MonoBehaviour
    // References to all the abilities
    public List<BasicAbilityData> allGameAbilities { get { return _allGameAbilities; } }
 
+   // References to all the abilities
+   public List<AttackAbilityData> allAttackbilities { get { return _attackAbilities; } }
+
+   // References to all the abilities
+   public List<BuffAbilityData> allBuffAbilities { get { return _buffAbilities; } }
+
    #endregion
 
    void Awake () {
@@ -162,6 +168,18 @@ public class AbilityManager : MonoBehaviour
 
    public static BasicAbilityData getAbility (string abilityName) {
       BasicAbilityData returnAbility = self._allGameAbilities.Find(_ => _.itemName == abilityName);
+
+      return returnAbility;
+   }
+
+   public static AttackAbilityData getAttackAbility (string abilityName) {
+      AttackAbilityData returnAbility = self._attackAbilities.Find(_ => _.itemName == abilityName);
+
+      return returnAbility;
+   }
+
+   public static BuffAbilityData getBuffAbility (string abilityName) {
+      BuffAbilityData returnAbility = self._buffAbilities.Find(_ => _.itemName == abilityName);
 
       return returnAbility;
    }

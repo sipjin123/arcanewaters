@@ -24,17 +24,20 @@ public class MonsterManager : MonoBehaviour {
    // Request access to monster data list
    public List<BattlerData> monsterDataList { get { return _monsterDataDict.Values.ToList(); } }
 
+   // Determined if data setup is finished
+   public bool isInitialized;
+
    #endregion
 
    public void Awake () {
       self = this;
-
    }
 
    public BattlerData requestBattler (Enemy.Type enemyType) {
       if (_monsterDataDict.ContainsKey(enemyType)) {
          return _monsterDataDict[enemyType];
       }
+
       return null;
    }
 
@@ -93,6 +96,13 @@ public class MonsterManager : MonoBehaviour {
       foreach (BattlerData battlerData in battlerDataList) {
          if (!_monsterDataDict.ContainsKey(battlerData.enemyType)) {
             _monsterDataDict.Add(battlerData.enemyType, battlerData);
+            _debugDataList.Add(battlerData);
+         } else {
+            _monsterDataDict[battlerData.enemyType] = battlerData;
+            BattlerData battleData = _debugDataList.Find(_ => _.enemyType == battlerData.enemyType);
+            _debugDataList.Remove(battleData);
+
+            _debugDataList.Add(battlerData);
          }
       }
    }
@@ -123,7 +133,7 @@ public class MonsterManager : MonoBehaviour {
             foreach (string rawText in rawXMLData) {
                TextAsset newTextAsset = new TextAsset(rawText);
                BattlerData monsterData = Util.xmlLoad<BattlerData>(newTextAsset);
-               Enemy.Type typeID = (Enemy.Type) monsterData.enemyType;
+               Enemy.Type enemyType = (Enemy.Type) monsterData.enemyType;
 
                if (monsterData.battlerAbilities.basicAbilityDataList != null) {
                   foreach (BasicAbilityData basicAbility in monsterData.battlerAbilities.basicAbilityDataList) {
@@ -132,15 +142,16 @@ public class MonsterManager : MonoBehaviour {
                }
 
                // Save the monster data in the memory cache
-               if (!_monsterDataDict.ContainsKey(typeID)) {
-                  _monsterDataDict.Add(typeID, monsterData);
+               if (!_monsterDataDict.ContainsKey(enemyType)) {
+                  _monsterDataDict.Add(enemyType, monsterData);
+                  _debugDataList.Add(monsterData);
                }
 
                if (battleManager != null) {
                   battleManager.registerBattler(monsterData);
                }
             }
-
+            isInitialized = true;
             RewardManager.self.initLandMonsterLootList();
          });
       });
@@ -150,6 +161,10 @@ public class MonsterManager : MonoBehaviour {
 
    // The cached monster data 
    private Dictionary<Enemy.Type, BattlerData> _monsterDataDict = new Dictionary<Enemy.Type, BattlerData>();
+
+   // List of battle data for editor preview
+   [SerializeField]
+   private List<BattlerData> _debugDataList = new List<BattlerData>();
 
    #endregion
 }

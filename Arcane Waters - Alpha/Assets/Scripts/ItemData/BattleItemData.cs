@@ -6,11 +6,11 @@ public class BattleItemData
 {
    #region Public Variables
 
-   // Most basic data that each BattleItem holds
-   public int itemID;
-
    // The item name
    public string itemName;
+
+   // Most basic data that each BattleItem holds
+   public int itemID;
 
    // The description of the item
    public string itemDescription;

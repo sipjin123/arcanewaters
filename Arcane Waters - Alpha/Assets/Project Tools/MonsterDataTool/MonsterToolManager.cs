@@ -66,20 +66,24 @@ public class MonsterToolManager : MonoBehaviour {
                      AttackAbilityData attackAbilityData = Util.xmlLoad<AttackAbilityData>(newTextAsset);
                      attackAbilityList.Add(attackAbilityData);
                      basicAbilityList.Add(attackAbilityData);
+                     AbilityManager.self.addNewAbility(attackAbilityData);
                      break;
                   case AbilityType.Stance:
                      AttackAbilityData stancebilityData = Util.xmlLoad<AttackAbilityData>(newTextAsset);
                      attackAbilityList.Add(stancebilityData);
                      basicAbilityList.Add(stancebilityData);
+                     AbilityManager.self.addNewAbility(stancebilityData);
                      break;
                   case AbilityType.BuffDebuff:
                      BuffAbilityData buffAbilityData = Util.xmlLoad<BuffAbilityData>(newTextAsset);
                      buffAbilityList.Add(buffAbilityData);
                      basicAbilityList.Add(buffAbilityData);
+                     AbilityManager.self.addNewAbility(buffAbilityData);
                      break;
                   default:
                      BasicAbilityData abilityData = Util.xmlLoad<BasicAbilityData>(newTextAsset);
                      basicAbilityList.Add(abilityData);
+                     AbilityManager.self.addNewAbility(abilityData);
                      break;
                }
             }

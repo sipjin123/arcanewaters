@@ -41,6 +41,7 @@ public class BattlerData {
 
    // Attacks and abilities that the battler have
    public AbilityDataRecord battlerAbilities;
+   public string serializedBattlerAbilities;
    public RawGenericLootData battlerLootData;
 
    // Multiplier Sets

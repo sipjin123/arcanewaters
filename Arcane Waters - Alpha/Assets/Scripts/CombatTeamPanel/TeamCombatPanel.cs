@@ -30,6 +30,9 @@ public class TeamCombatPanel : Panel
    // Type of enemies attacking and defending
    public List<Enemy.Type> leftBattlers, rightBattlers;
 
+   // List of players invited to battle
+   public List<string> leftBattlerNames, rightBattlerNames;
+
    // Launches the team battler system
    public Button launchBattler;
 
@@ -61,17 +64,31 @@ public class TeamCombatPanel : Panel
       launchBattler.onClick.AddListener(() => {
          leftBattlers = new List<Enemy.Type>();
          foreach (Transform template in leftBattlerParent) {
-            leftBattlers.Add(template.GetComponent<BattlerTemplate>().battlerDataCache.enemyType);
+            BattlerTemplate battlerTemplate = template.GetComponent<BattlerTemplate>();
+            Enemy.Type battlerType = battlerTemplate.battlerDataCache.enemyType;
+
+            if (battlerType != Enemy.Type.PlayerBattler) {
+               leftBattlers.Add(battlerType);
+            } else {
+               leftBattlerNames.Add(battlerTemplate.userNameText.text);
+            }
          }
 
          rightBattlers = new List<Enemy.Type>();
          foreach (Transform template in rightBattlerParent) {
-            rightBattlers.Add(template.GetComponent<BattlerTemplate>().battlerDataCache.enemyType);
+            BattlerTemplate battlerTemplate = template.GetComponent<BattlerTemplate>();
+            Enemy.Type battlerType = battlerTemplate.battlerDataCache.enemyType;
+
+            if (battlerType != Enemy.Type.PlayerBattler) {
+               rightBattlers.Add(battlerType);
+            } else {
+               rightBattlerNames.Add(battlerTemplate.userNameText.text);
+            }
          }
 
          PanelManager.self.popPanel();
 
-         Global.player.rpc.Cmd_StartNewTeamBattle(Global.player.userId, leftBattlers.ToArray(), rightBattlers.ToArray());
+         Global.player.rpc.Cmd_StartNewTeamBattle(Global.player.userId, leftBattlers.ToArray(), rightBattlers.ToArray(), leftBattlerNames.ToArray(), rightBattlerNames.ToArray());
       });
    }
 
@@ -82,6 +99,12 @@ public class TeamCombatPanel : Panel
       template.battlerIcon.sprite = ImageManager.getSprite(battlerData.imagePath);
       template.battlerType.text = battlerData.enemyType.ToString();
       template.battlerDataCache = battlerData;
+
+      if (enemyType == Enemy.Type.PlayerBattler) {
+         template.userNameText.gameObject.SetActive(true);
+      } else {
+         template.battlerName.gameObject.SetActive(true);
+      }
    }
 
    private void setupDropDown () {

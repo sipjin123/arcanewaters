@@ -11,6 +11,10 @@ public class DB_MainStub : MonoBehaviour {
 
    #endregion
 
+   public static int getUserIDbyName (string name) {
+      return 0;
+   }
+
    public static void updateBattleAbilities (string abilityName, string abilityXML, int abilityType) {
 
    }

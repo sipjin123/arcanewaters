@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System.Xml.Serialization;
+using System.Text;
+using System.Xml;
 
 public class MyNetworkManager : NetworkManager {
    #region Public Variables
@@ -241,6 +244,9 @@ public class MyNetworkManager : NetworkManager {
             // Seamonster data to the client
             player.rpc.Target_ReceiveAllSeaMonsterInfo(player.connectionToClient, Util.serialize(SeaMonsterManager.self.seaMonsterDataList));
 
+            // Ability data to the client
+            player.rpc.Target_ReceiveAbilities(player.connectionToClient, Util.serialize(AbilityManager.self.allAttackbilities), Util.serialize(AbilityManager.self.allBuffAbilities));
+
             // Tutorial data to the client
             player.rpc.Target_ReceiveTutorialData(player.connectionToClient, Util.serialize(TutorialManager.self.tutorialDataList()));
 
@@ -254,17 +260,9 @@ public class MyNetworkManager : NetworkManager {
             player.rpc.Target_ReceiveEquipmentData(player.connectionToClient, Util.serialize(EquipmentXMLManager.self.armorStatList), EquipmentToolManager.EquipmentType.Armor);
             player.rpc.Target_ReceiveEquipmentData(player.connectionToClient, Util.serialize(EquipmentXMLManager.self.helmStatList), EquipmentToolManager.EquipmentType.Helm);
 
-            List<BattlerData> newEnemyList = new List<BattlerData>();
-            foreach (NetworkBehaviour entity in instance.entities) {
-               if (entity is Enemy) {
-                  BattlerData fetchedData = MonsterManager.self.getMonster(entity.GetComponent<Enemy>().enemyType);
-                  newEnemyList.Add(fetchedData);
-               }
-            }
-
-            // Send Landmonster data to the client
-            player.rpc.Target_ReceiveMonsterData(player.connectionToClient, Util.serialize(newEnemyList));
-
+            // Sends monster data to client
+            sendMonsterData(player);
+        
             // Set tutorial info
             TutorialManager.self.sendTutorialInfo(player, false);
 
@@ -272,6 +270,55 @@ public class MyNetworkManager : NetworkManager {
             player.netIdent.AssignClientAuthority(conn);
          });
       });
+   }
+
+   private void sendMonsterData (NetEntity player) {
+      List<BattlerData> newEnemyList = new List<BattlerData>();
+      foreach (BattlerData entity in MonsterManager.self.getAllMonsterData()) {
+         BattlerData fetchedData = MonsterManager.self.getMonster(entity.enemyType);
+
+         // Translate data to minimize Packet Size
+         List<string> attackSkillNames = new List<string>();
+         List<string> buffSkillNames = new List<string>();
+         List<string> basicSkillNames = new List<string>();
+
+         foreach (AttackAbilityData attackData in fetchedData.battlerAbilities.attackAbilityDataList) {
+            attackSkillNames.Add(attackData.itemName);
+         }
+         foreach (BuffAbilityData buffData in fetchedData.battlerAbilities.buffAbilityDataList) {
+            buffSkillNames.Add(buffData.itemName);
+         }
+         foreach (BasicAbilityData basicData in fetchedData.battlerAbilities.basicAbilityDataList) {
+            basicSkillNames.Add(basicData.itemName);
+         }
+
+         // Set to serialized data
+         fetchedData.battlerAbilities.attackAbilityRawData = attackSkillNames.ToArray();
+         fetchedData.battlerAbilities.buffAbilityRawData = buffSkillNames.ToArray();
+         fetchedData.battlerAbilities.basicAbilityRawData = basicSkillNames.ToArray();
+
+         fetchedData.battlerAbilities.attackAbilityDataList = new AttackAbilityData[0];
+         fetchedData.battlerAbilities.buffAbilityDataList = new BuffAbilityData[0];
+         fetchedData.battlerAbilities.basicAbilityDataList = new BasicAbilityData[0];
+
+         // Serialize battle data
+         XmlSerializer ser = new XmlSerializer(fetchedData.battlerAbilities.GetType());
+         var sb = new StringBuilder();
+         using (var writer = XmlWriter.Create(sb)) {
+            ser.Serialize(writer, fetchedData.battlerAbilities);
+         }
+
+         string serializedAbilityData = sb.ToString();
+         fetchedData.serializedBattlerAbilities = serializedAbilityData;
+
+         // Empty the ability list content
+         fetchedData.battlerAbilities = new AbilityDataRecord();
+
+         newEnemyList.Add(fetchedData);
+      }
+
+      // Send Landmonster data to the client
+      player.rpc.Target_ReceiveMonsterData(player.connectionToClient, Util.serialize(newEnemyList));
    }
 
    public string[] serializedNPCData (List<NPCData> referenceNPCData) {
