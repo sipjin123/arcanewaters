@@ -105,7 +105,7 @@ public class MonsterManager : MonoBehaviour {
       return monsterList;
    }
 
-   public List<int> getAllEnemyType () {
+   public List<int> getAllEnemyTypes () {
       List<int> typeList = new List<int>();
       foreach (KeyValuePair<Enemy.Type, BattlerData> item in _monsterDataDict) {
          typeList.Add((int)item.Key);

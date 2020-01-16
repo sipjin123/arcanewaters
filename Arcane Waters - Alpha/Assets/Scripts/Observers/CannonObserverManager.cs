@@ -23,7 +23,7 @@ public class CannonObserverManager : NetworkBehaviour {
       connectionsToObserve.Clear();
 
       // Look up our instance
-      Instance instance = InstanceManager.self.getInstance(_ball.getInstanceID());
+      Instance instance = InstanceManager.self.getInstance(_ball.instanceId);
 
       foreach (NetworkBehaviour entity in instance.entities) {
          if (entity.connectionToClient != null) {

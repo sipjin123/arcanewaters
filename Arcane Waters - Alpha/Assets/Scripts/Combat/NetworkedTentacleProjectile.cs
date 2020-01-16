@@ -71,7 +71,7 @@ public class NetworkedTentacleProjectile : MonoBehaviour
       SeaEntity hitEntity = other.transform.GetComponentInParent<SeaEntity>();
 
       // We only care about hitting other sea entities in our instance
-      if (hitEntity == null || this._creatorUserId == hitEntity.userId || other.GetComponent<CombatCollider>() != null || hitEntity.instanceId != this._instanceId) {
+      if (hitEntity == null || _creatorUserId == hitEntity.userId || other.GetComponent<CombatCollider>() != null || hitEntity.instanceId != _instanceId) {
          return;
       }
 

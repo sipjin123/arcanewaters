@@ -137,6 +137,8 @@ public class TooltipManager : ClientMonoBehaviour {
          return "Friend List <color=green>[F]</color>";
       } else if (imageName.StartsWith("btn_mail")) {
          return "Mail <color=green>[K]</color>";
+      } else if (imageName.StartsWith("btn_team")) {
+         return "Team Combat <color=green>[K]</color>";
       }
 
       // Specialties

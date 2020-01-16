@@ -190,13 +190,13 @@ public class ShipEntity : SeaEntity {
       // Calculate shot parameters
       float distanceModifier = getDamageModifierForDistance(normalizedDistance);
       float projectileFlightDuration = (normalizedDistance * 1f) * ShipAbilityManager.self.getAbility(attackType).projectileSpeed;
-
+    
       ShipAbilityData shipData = ShipAbilityManager.self.getAbility(attackType);
-      this.currentImpactMagnitude = shipData.impactMagnitude;
+      this.currentImpactMagnitude = ShipAbilityData.getImpactType(normalizedDistance);
 
       // Fire the cannon ball and display an attack circle in all the clients
       Rpc_CreateCannonBall(spawnPosition, spot, Util.netTime(), Util.netTime() + projectileFlightDuration,
-         attackType, AttackManager.self.getColorForDistance(normalizedDistance), shipData);
+         attackType, AttackManager.self.getColorForDistance(normalizedDistance), shipData, normalizedDistance);
 
       // Have the server check for collisions after the AOE projectile reaches the target
       StartCoroutine(CO_CheckCircleForCollisions(this, projectileFlightDuration, spot, attackType, false, distanceModifier));
@@ -206,9 +206,9 @@ public class ShipEntity : SeaEntity {
    }
 
    [ClientRpc]
-   public void Rpc_CreateCannonBall (Vector2 startPos, Vector2 endPos, float startTime, float endTime, Attack.Type attackType, Color color, ShipAbilityData shipAbilityData) {
-      this.currentImpactMagnitude = shipAbilityData.impactMagnitude;
-      
+   public void Rpc_CreateCannonBall (Vector2 startPos, Vector2 endPos, float startTime, float endTime, Attack.Type attackType, Color color, ShipAbilityData shipAbilityData, float normalizedDistance) {
+      this.currentImpactMagnitude = ShipAbilityData.getImpactType(normalizedDistance);      
+
       // Create a new Attack Circle object from the prefab
       AttackCircle attackCircle;
 

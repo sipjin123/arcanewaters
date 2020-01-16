@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class BottomBar : MonoBehaviour {
    #region Public Variables
@@ -6,10 +7,16 @@ public class BottomBar : MonoBehaviour {
    // Self
    public static BottomBar self;
 
+   public Button[] adminOnlyButtons;
+
    #endregion
 
    private void Awake () {
       self = this;
+
+      foreach (Button button in adminOnlyButtons) {
+         button.gameObject.SetActive(false);
+      }
    }
 
    public void toggleCharacterInfoPanel () {
@@ -147,6 +154,12 @@ public class BottomBar : MonoBehaviour {
          panel.fetchSQLData();
       } else {
          PanelManager.self.togglePanel(Panel.Type.Team_Combat);
+      }
+   }
+
+   public void enableAdminButtons () {
+      foreach (Button button in adminOnlyButtons) {
+         button.gameObject.SetActive(true);
       }
    }
 

@@ -65,6 +65,17 @@ public class ShipAbilityData
    // The strength of the impact
    public Attack.ImpactMagnitude impactMagnitude = Attack.ImpactMagnitude.None;
 
+   public static Attack.ImpactMagnitude getImpactType (float normalizedValue) {
+      if (normalizedValue < .33f) {
+         return Attack.ImpactMagnitude.Strong;
+      }
+      if (normalizedValue < .66f) {
+         return Attack.ImpactMagnitude.Normal;
+      }
+
+      return Attack.ImpactMagnitude.Weak;
+   }
+
    public enum ShipAbilityEffect
    {
       None = 0,

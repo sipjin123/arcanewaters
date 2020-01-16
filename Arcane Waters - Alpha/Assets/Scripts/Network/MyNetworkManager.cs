@@ -244,6 +244,11 @@ public class MyNetworkManager : NetworkManager {
             // Tutorial data to the client
             player.rpc.Target_ReceiveTutorialData(player.connectionToClient, Util.serialize(TutorialManager.self.tutorialDataList()));
 
+            // Gives the user admin features if it has an admin flag
+            if (player.isAdmin()) {
+               player.rpc.Target_GrantAdminAccess(player.connectionToClient);
+            }
+
             // Sends all equipment info to client
             player.rpc.Target_ReceiveEquipmentData(player.connectionToClient, Util.serialize(EquipmentXMLManager.self.weaponStatList), EquipmentToolManager.EquipmentType.Weapon);
             player.rpc.Target_ReceiveEquipmentData(player.connectionToClient, Util.serialize(EquipmentXMLManager.self.armorStatList), EquipmentToolManager.EquipmentType.Armor);

@@ -72,6 +72,11 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
+   public void Target_GrantAdminAccess (NetworkConnection connection) {
+      BottomBar.self.enableAdminButtons();
+   }
+
+   [TargetRpc]
    public void Target_ReceiveTutorialData (NetworkConnection connection, string[] rawInfo) {
       // Deserialize data
       TutorialData[] tutorialDataList = Util.unserialize<TutorialData>(rawInfo).ToArray();
@@ -81,8 +86,20 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_RequestTeamCombatData () {
-      Target_ReceiveTeamCombatData(_player.connectionToClient, MonsterManager.self.getAllEnemyType().ToArray());
+   public void Cmd_RequestTeamCombatData (int userId) {
+      // Checks if the user is an admin
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Fetch info from server
+         UserInfo info = DB_Main.getUserInfo(userId);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (info.adminFlag == 1) {
+               Target_ReceiveTeamCombatData(_player.connectionToClient, MonsterManager.self.getAllEnemyTypes().ToArray());
+            } else {
+               D.warning("You are not at admin! Denying access to team combat simulation");
+            }
+         });
+      });
    }
 
    [TargetRpc]
@@ -2629,7 +2646,20 @@ public class RPCManager : NetworkBehaviour {
    #endregion
 
    [Command]
-   public void Cmd_StartNewTeamBattle (Enemy.Type[] defenderBattlers, Enemy.Type[] attackerBattlers) {
+   public void Cmd_StartNewTeamBattle (int userId, Enemy.Type[] defenderBattlers, Enemy.Type[] attackerBattlers) {
+      // Checks if the user is an admin
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Fetch info from server
+         UserInfo info = DB_Main.getUserInfo(userId);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (info.adminFlag == 0) {
+               D.warning("You are not at admin! Denying access to team combat simulation");
+               return;
+            } 
+         });
+      });
+
       // Create an Enemy in this instance
       Enemy spawnedEnemy = Instantiate(PrefabsManager.self.enemyPrefab);
       spawnedEnemy.enemyType = Enemy.Type.Lizard;

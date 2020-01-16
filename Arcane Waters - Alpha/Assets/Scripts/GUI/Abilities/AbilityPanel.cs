@@ -43,7 +43,7 @@ public class AbilityPanel : Panel {
    // Canvas reference
    public Canvas canvas;
 
-   // The zone where grabbed abiities can be dropped
+   // The zone where grabbed abilities can be dropped
    public ItemDropZone inventoryDropZone;
    public List<ItemDropZone> equipmentDropZone;
 
@@ -52,9 +52,6 @@ public class AbilityPanel : Panel {
 
    // The scroller holding the abilities
    public ScrollRect scroller;
-
-   // Spawn points for ability slots
-   public Transform[] slotSpawnPoints;
 
    #endregion
 
@@ -83,9 +80,6 @@ public class AbilityPanel : Panel {
          ItemDropZone dropZone = abilitySlot.gameObject.AddComponent<ItemDropZone>();
          dropZone.rectTransform = abilitySlot.GetComponent<RectTransform>();
          equipmentDropZone.Add(dropZone);
-
-         abilitySlot.transform.position = slotSpawnPoints[i].position;
-
          _equippedAbilitySlots.Add(abilitySlot);
       }
 

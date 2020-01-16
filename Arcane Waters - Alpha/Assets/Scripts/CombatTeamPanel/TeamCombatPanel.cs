@@ -71,7 +71,7 @@ public class TeamCombatPanel : Panel
 
          PanelManager.self.popPanel();
 
-         Global.player.rpc.Cmd_StartNewTeamBattle(leftBattlers.ToArray(), rightBattlers.ToArray());
+         Global.player.rpc.Cmd_StartNewTeamBattle(Global.player.userId, leftBattlers.ToArray(), rightBattlers.ToArray());
       });
    }
 
@@ -115,7 +115,7 @@ public class TeamCombatPanel : Panel
    }
 
    public void fetchSQLData () {
-      Global.player.rpc.Cmd_RequestTeamCombatData();
+      Global.player.rpc.Cmd_RequestTeamCombatData(Global.player.userId);
    }
 
    #region Private Variables

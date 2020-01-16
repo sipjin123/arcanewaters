@@ -25,6 +25,9 @@ public class NetworkedCannonBall : MonoBehaviour {
    // How fast the cannon ball should move
    public static float MOVE_SPEED = 2f;
 
+   // Returns the instance id
+   public int instanceId { get { return _instanceId; } }
+
    #endregion
 
    public void init (int userID, int instanceID, Attack.ImpactMagnitude impactType) {
@@ -84,10 +87,6 @@ public class NetworkedCannonBall : MonoBehaviour {
 
       // Get rid of the cannon ball
       Destroy(this.gameObject);
-   }
-
-   public int getInstanceID () {
-      return _instanceId;
    }
 
    private void OnDestroy () {
