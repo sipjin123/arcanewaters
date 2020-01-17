@@ -356,7 +356,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
          NetEntity playerBody = player;
 
          if (playerBody == null) {
-            Debug.LogError("Couldnt find player: " + userId);
+            D.warning("Could not find player: " + userId);
             return;
          }
 

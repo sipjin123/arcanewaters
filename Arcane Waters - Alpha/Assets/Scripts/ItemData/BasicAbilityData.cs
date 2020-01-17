@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -147,15 +148,39 @@ public enum AbilityType
 [Serializable]
 public class AbilityDataRecord
 {
-   // Generic Skills
-   public BasicAbilityData[] basicAbilityDataList;
+   public static AbilityDataRecord CreateInstance (AbilityDataRecord record) {
+      AbilityDataRecord newRecord = new AbilityDataRecord();
+
+      List<AttackAbilityData> attackList = new List<AttackAbilityData>();
+      List<BuffAbilityData> buffList = new List<BuffAbilityData>();
+      List<BasicAbilityData> basicList = new List<BasicAbilityData>();
+
+      foreach (AttackAbilityData attackData in record.attackAbilityDataList) {
+         attackList.Add(attackData);
+      }
+      foreach (BuffAbilityData buffData in record.buffAbilityDataList) {
+         buffList.Add(buffData);
+      }
+      foreach (BasicAbilityData basicData in record.buffAbilityDataList) {
+         basicList.Add(basicData);
+      }
+
+      newRecord.attackAbilityDataList = attackList.ToArray();
+      newRecord.buffAbilityDataList = buffList.ToArray();
+      newRecord.basicAbilityDataList = basicList.ToArray();
+
+      return newRecord;
+   }
+
+   // Generic Skills1
+   public BasicAbilityData[] basicAbilityDataList = new BasicAbilityData[0];
    public string[] basicAbilityRawData;
 
    // Offensive Skills
-   public AttackAbilityData[] attackAbilityDataList;
+   public AttackAbilityData[] attackAbilityDataList = new AttackAbilityData[0];
    public string[] attackAbilityRawData;
 
    // Support Skills
-   public BuffAbilityData[] buffAbilityDataList;
+   public BuffAbilityData[] buffAbilityDataList = new BuffAbilityData[0];
    public string[] buffAbilityRawData;
 }

@@ -20,6 +20,9 @@ public class OptionsPanel : Panel, IPointerClickHandler {
    // Self
    public static OptionsPanel self;
 
+   // Buttons only admins can access
+   public GameObject[] adminOnlyButtons;
+
    #endregion
 
    public override void Awake () {
@@ -79,6 +82,24 @@ public class OptionsPanel : Panel, IPointerClickHandler {
       Global.lastUsedAccountName = "";
       Global.lastUserAccountPassword = "";
       Global.currentlySelectedUserId = 0;
+   }
+
+   public void enableAdminButtons (bool isEnabled) {
+      foreach (GameObject row in adminOnlyButtons) {
+         row.SetActive(isEnabled);
+      }
+   }
+
+   public void requestTeamCombat () {
+      TeamCombatPanel panel = (TeamCombatPanel) PanelManager.self.get(Panel.Type.Team_Combat);
+
+      PanelManager.self.togglePanel(Panel.Type.Team_Combat);
+
+      if (!panel.isShowing()) {
+         panel.fetchSQLData();
+      } else {
+         PanelManager.self.togglePanel(Panel.Type.Team_Combat);
+      }
    }
 
    #region Private Variables

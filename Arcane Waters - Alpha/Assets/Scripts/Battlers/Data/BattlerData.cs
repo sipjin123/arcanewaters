@@ -121,7 +121,7 @@ public class BattlerData {
       float earthDefMultiplier, float airDefMultiplier, float waterDefMultiplier, float allDefMultiplier, float physicalAtkMultiplier,
       float fireAtkMultiplier, float earthAtkMultiplier, float airAtkMultiplier, float waterAtkMultiplier, float allAtkMultiplier,
       string deathSound, string jumpAtkSound, float preContactLength, float preMagicLength, int baseXPReward, RawGenericLootData lootData,
-      Enemy.Type enemyType, Battler battlerObject) {
+      Enemy.Type enemyType, Battler battlerObject, string imagePath) {
 
       BattlerData data = new BattlerData();
 
@@ -129,7 +129,7 @@ public class BattlerData {
        defPerLevel, healthPerLevel, battlerAbilities, physicalDefMultiplier, fireDefMultiplier,
        earthDefMultiplier, airDefMultiplier, waterDefMultiplier, allDefMultiplier, physicalAtkMultiplier,
        fireAtkMultiplier, earthAtkMultiplier, airAtkMultiplier, waterAtkMultiplier, allAtkMultiplier,
-       deathSound, jumpAtkSound, preContactLength, preMagicLength, baseXPReward, lootData, enemyType, battlerObject);
+       deathSound, jumpAtkSound, preContactLength, preMagicLength, baseXPReward, lootData, enemyType, battlerObject, imagePath);
 
       return data;
    }
@@ -188,6 +188,8 @@ public class BattlerData {
 
       preContactLength = datacopy.preContactLength;
       preMagicLength = datacopy.preMagicLength;
+
+      imagePath = datacopy.imagePath;
    }
 
    protected void setAllBattlerData (int xp, int apWhenDamaged, int baseHealth, int baseDef, int baseDmg, int baseGold, int dmgPerLevel,
@@ -195,7 +197,7 @@ public class BattlerData {
       float earthDefMultiplier, float airDefMultiplier, float waterDefMultiplier, float allDefMultiplier, float physicalAtkMultiplier,
       float fireAtkMultiplier, float earthAtkMultiplier, float airAtkMultiplier, float waterAtkMultiplier, float allAtkMultiplier,
       string deathSound, string jumpAtkSound, float preContactLength, float preMagicLength, int baseXPReward, RawGenericLootData lootData,
-      Enemy.Type enemyType, Battler battlerObject) {
+      Enemy.Type enemyType, Battler battlerObject, string imagePath) {
 
       this.currentXP = xp;
       this.enemyType = enemyType;
@@ -234,6 +236,7 @@ public class BattlerData {
 
       this.preContactLength = preContactLength;
       this.preMagicLength = preMagicLength;
+      this.imagePath = imagePath;
    }
 
    #region Helper Class

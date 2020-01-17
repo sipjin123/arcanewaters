@@ -7,16 +7,10 @@ public class BottomBar : MonoBehaviour {
    // Self
    public static BottomBar self;
 
-   public Button[] adminOnlyButtons;
-
    #endregion
 
    private void Awake () {
       self = this;
-
-      foreach (Button button in adminOnlyButtons) {
-         button.gameObject.SetActive(false);
-      }
    }
 
    public void toggleCharacterInfoPanel () {
@@ -142,24 +136,6 @@ public class BottomBar : MonoBehaviour {
          panel.refreshMailList();
       } else {
          PanelManager.self.togglePanel(Panel.Type.Mail);
-      }
-   }
-
-   public void toggleTeamCombatPanel () {
-      TeamCombatPanel panel = (TeamCombatPanel) PanelManager.self.get(Panel.Type.Team_Combat);
-
-      PanelManager.self.togglePanel(Panel.Type.Team_Combat);
-
-      if (!panel.isShowing()) {
-         panel.fetchSQLData();
-      } else {
-         PanelManager.self.togglePanel(Panel.Type.Team_Combat);
-      }
-   }
-
-   public void enableAdminButtons () {
-      foreach (Button button in adminOnlyButtons) {
-         button.gameObject.SetActive(true);
       }
    }
 

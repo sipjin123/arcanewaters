@@ -251,9 +251,7 @@ public class MyNetworkManager : NetworkManager {
             player.rpc.Target_ReceiveTutorialData(player.connectionToClient, Util.serialize(TutorialManager.self.tutorialDataList()));
 
             // Gives the user admin features if it has an admin flag
-            if (player.isAdmin()) {
-               player.rpc.Target_GrantAdminAccess(player.connectionToClient);
-            }
+            player.rpc.Target_GrantAdminAccess(player.connectionToClient, player.isAdmin());
 
             // Sends all equipment info to client
             player.rpc.Target_ReceiveEquipmentData(player.connectionToClient, Util.serialize(EquipmentXMLManager.self.weaponStatList), EquipmentToolManager.EquipmentType.Weapon);
@@ -275,8 +273,14 @@ public class MyNetworkManager : NetworkManager {
    private void sendMonsterData (NetEntity player) {
       List<BattlerData> newEnemyList = new List<BattlerData>();
       foreach (BattlerData entity in MonsterManager.self.getAllMonsterData()) {
-         BattlerData fetchedData = MonsterManager.self.getMonster(entity.enemyType);
+         BattlerData fetchedData = MonsterManager.self.getCopyOfMonster(entity.enemyType);
 
+         if (fetchedData == null) {
+            Debug.LogError("Null data!");
+            return;
+         }
+
+         
          // Translate data to minimize Packet Size
          List<string> attackSkillNames = new List<string>();
          List<string> buffSkillNames = new List<string>();
@@ -313,9 +317,20 @@ public class MyNetworkManager : NetworkManager {
 
          // Empty the ability list content
          fetchedData.battlerAbilities = new AbilityDataRecord();
-
+         
+         fetchedData.battlerAbilities = new AbilityDataRecord();
          newEnemyList.Add(fetchedData);
       }
+
+      // TODO: This is for logging bytes of data being sent. Modify feature into sending all abilities
+      /* XmlSerializer ser = new XmlSerializer(newEnemyList.GetType());
+      var sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, newEnemyList);
+      }
+      string longString = sb.ToString();
+      byte[] bytes = Encoding.ASCII.GetBytes(longString);*/
+
 
       // Send Landmonster data to the client
       player.rpc.Target_ReceiveMonsterData(player.connectionToClient, Util.serialize(newEnemyList));

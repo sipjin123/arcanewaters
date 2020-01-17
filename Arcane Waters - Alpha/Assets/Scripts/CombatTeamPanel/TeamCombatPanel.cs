@@ -63,6 +63,7 @@ public class TeamCombatPanel : Panel
 
       launchBattler.onClick.AddListener(() => {
          leftBattlers = new List<Enemy.Type>();
+         leftBattlerNames = new List<string>();
          foreach (Transform template in leftBattlerParent) {
             BattlerTemplate battlerTemplate = template.GetComponent<BattlerTemplate>();
             Enemy.Type battlerType = battlerTemplate.battlerDataCache.enemyType;
@@ -75,6 +76,7 @@ public class TeamCombatPanel : Panel
          }
 
          rightBattlers = new List<Enemy.Type>();
+         rightBattlerNames = new List<string>();
          foreach (Transform template in rightBattlerParent) {
             BattlerTemplate battlerTemplate = template.GetComponent<BattlerTemplate>();
             Enemy.Type battlerType = battlerTemplate.battlerDataCache.enemyType;

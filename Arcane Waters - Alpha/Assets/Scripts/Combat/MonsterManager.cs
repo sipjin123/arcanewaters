@@ -92,17 +92,25 @@ public class MonsterManager : MonoBehaviour {
       return _monsterDataDict[enemyType];
    }
 
-   public void receiveListFromServer (BattlerData[] battlerDataList) {
-      foreach (BattlerData battlerData in battlerDataList) {
-         if (!_monsterDataDict.ContainsKey(battlerData.enemyType)) {
-            _monsterDataDict.Add(battlerData.enemyType, battlerData);
-            _debugDataList.Add(battlerData);
-         } else {
-            _monsterDataDict[battlerData.enemyType] = battlerData;
-            BattlerData battleData = _debugDataList.Find(_ => _.enemyType == battlerData.enemyType);
-            _debugDataList.Remove(battleData);
+   public BattlerData getCopyOfMonster (Enemy.Type enemyType) {
+      BattlerData newBattlerData = BattlerData.CreateInstance(_monsterDataDict[enemyType]);
+      newBattlerData.battlerAbilities = AbilityDataRecord.CreateInstance(newBattlerData.battlerAbilities);
+      return newBattlerData;
+   }
 
-            _debugDataList.Add(battlerData);
+   public void receiveListFromServer (BattlerData[] battlerDataList) {
+      if (!isInitialized) {
+         foreach (BattlerData battlerData in battlerDataList) {
+            if (!_monsterDataDict.ContainsKey(battlerData.enemyType)) {
+               _monsterDataDict.Add(battlerData.enemyType, battlerData);
+               _debugDataList.Add(battlerData);
+            } else {
+               _monsterDataDict[battlerData.enemyType] = battlerData;
+               BattlerData battleData = _debugDataList.Find(_ => _.enemyType == battlerData.enemyType);
+               _debugDataList.Remove(battleData);
+
+               _debugDataList.Add(battlerData);
+            }
          }
       }
    }
