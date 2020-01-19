@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using MapCreationTool.UndoSystem;
-using MySql.Data.MySqlClient;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+
+#if IS_SERVER_BUILD
+using MySql.Data.MySqlClient;
+#endif
 
 namespace MapCreationTool
 {
@@ -194,6 +197,8 @@ namespace MapCreationTool
       }
 
       public void saveButton_Click () {
+         #if IS_SERVER_BUILD
+
          if (DrawBoard.loadedMapName == null) {
             saveAs();
          } else {
@@ -229,6 +234,8 @@ namespace MapCreationTool
                errorDialog.display(ex.Message);
             }
          }
+
+         #endif
       }
 
       public void saveAs () {

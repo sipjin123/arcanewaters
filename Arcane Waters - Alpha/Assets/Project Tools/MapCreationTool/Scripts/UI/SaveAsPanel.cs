@@ -1,7 +1,10 @@
 ﻿using System;
-using MySql.Data.MySqlClient;
 using UnityEngine;
 using UnityEngine.UI;
+
+#if IS_SERVER_BUILD
+using MySql.Data.MySqlClient;
+#endif
 
 namespace MapCreationTool
 {
@@ -35,6 +38,8 @@ namespace MapCreationTool
       }
 
       public void save () {
+         #if IS_SERVER_BUILD
+
          loadingText.text = "Loading...";
          updateText.text = "";
          saveButton.interactable = false;
@@ -92,6 +97,8 @@ namespace MapCreationTool
             saveButton.interactable = true;
             saveButtonText.text = "Save";
          }
+
+         #endif
       }
 
       private void setUpdateText () {
