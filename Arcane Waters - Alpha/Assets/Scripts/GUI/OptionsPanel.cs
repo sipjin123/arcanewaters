@@ -91,14 +91,13 @@ public class OptionsPanel : Panel, IPointerClickHandler {
    }
 
    public void requestTeamCombat () {
+      PanelManager.self.popPanel();
       TeamCombatPanel panel = (TeamCombatPanel) PanelManager.self.get(Panel.Type.Team_Combat);
-
-      PanelManager.self.togglePanel(Panel.Type.Team_Combat);
 
       if (!panel.isShowing()) {
          panel.fetchSQLData();
       } else {
-         PanelManager.self.togglePanel(Panel.Type.Team_Combat);
+         PanelManager.self.pushPanel(Panel.Type.Team_Combat);
       }
    }
 

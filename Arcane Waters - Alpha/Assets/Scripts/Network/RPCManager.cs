@@ -3096,49 +3096,6 @@ public class RPCManager : NetworkBehaviour {
    [TargetRpc]
    public void Target_ReceiveMonsterData (NetworkConnection connection, string[] rawData) {
       List<BattlerData> dataList = Util.unserialize<BattlerData>(rawData);
-
-      foreach (BattlerData battlerData in dataList) {
-         TextAsset newTextAsset = new TextAsset(battlerData.serializedBattlerAbilities);
-         AbilityDataRecord translatedAbilityData = Util.xmlLoad<AbilityDataRecord>(newTextAsset);
-
-         // Translates JSON Raw data into ability data for each monster
-         string[] attackAbilityNames = translatedAbilityData.attackAbilityRawData;
-         string[] buffAbilityNames = translatedAbilityData.buffAbilityRawData;
-
-         List<AttackAbilityData> attackDataList = new List<AttackAbilityData>();
-         List<BuffAbilityData> buffDataList = new List<BuffAbilityData>();
-         List<BasicAbilityData> basicDataList = new List<BasicAbilityData>();
-
-         // Fetch data of the abilities having the same name / Data is provided by the server upon Server Init
-         if (attackAbilityNames != null && attackAbilityNames.Length > 0) {
-            foreach (string attackName in attackAbilityNames) {
-               AttackAbilityData attackData = AbilityManager.getAttackAbility(attackName);
-               if (attackData != null) {
-                  attackDataList.Add(attackData);
-                  basicDataList.Add(attackData);
-               } else {
-                  D.warning("A Ability name does not exist in collection[Attack]: " + attackName);
-               }
-            }
-         }
-
-         if (buffAbilityNames != null && buffAbilityNames.Length > 0) {
-            foreach (string buffName in buffAbilityNames) {
-               BuffAbilityData buffData = AbilityManager.getBuffAbility(buffName);
-               if (buffData != null) {
-                  buffDataList.Add(buffData);
-                  basicDataList.Add(buffData);
-               } else {
-                  D.warning("Ability name does not exist in collection[Buff]: " + buffName);
-               }
-            }
-         }
-
-         // Set fetched ability data to battler data
-         battlerData.battlerAbilities.attackAbilityDataList = attackDataList.ToArray();
-         battlerData.battlerAbilities.buffAbilityDataList = buffDataList.ToArray();
-         battlerData.battlerAbilities.basicAbilityDataList = basicDataList.ToArray();
-      }
       MonsterManager.self.receiveListFromServer(dataList.ToArray());
    }
 

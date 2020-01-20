@@ -279,57 +279,8 @@ public class MyNetworkManager : NetworkManager {
             Debug.LogError("Null data!");
             return;
          }
-         
-         // Translate data to minimize Packet Size
-         List<string> attackSkillNames = new List<string>();
-         List<string> buffSkillNames = new List<string>();
-         List<string> basicSkillNames = new List<string>();
-
-         foreach (AttackAbilityData attackData in fetchedData.battlerAbilities.attackAbilityDataList) {
-            attackSkillNames.Add(attackData.itemName);
-         }
-         foreach (BuffAbilityData buffData in fetchedData.battlerAbilities.buffAbilityDataList) {
-            buffSkillNames.Add(buffData.itemName);
-         }
-         foreach (BasicAbilityData basicData in fetchedData.battlerAbilities.basicAbilityDataList) {
-            basicSkillNames.Add(basicData.itemName);
-         }
-
-         // Set to serialized data
-         fetchedData.battlerAbilities.attackAbilityRawData = attackSkillNames.ToArray();
-         fetchedData.battlerAbilities.buffAbilityRawData = buffSkillNames.ToArray();
-         fetchedData.battlerAbilities.basicAbilityRawData = basicSkillNames.ToArray();
-
-         fetchedData.battlerAbilities.attackAbilityDataList = new AttackAbilityData[0];
-         fetchedData.battlerAbilities.buffAbilityDataList = new BuffAbilityData[0];
-         fetchedData.battlerAbilities.basicAbilityDataList = new BasicAbilityData[0];
-
-         // Serialize battle data
-         XmlSerializer ser = new XmlSerializer(fetchedData.battlerAbilities.GetType());
-         var sb = new StringBuilder();
-         using (var writer = XmlWriter.Create(sb)) {
-            ser.Serialize(writer, fetchedData.battlerAbilities);
-         }
-
-         string serializedAbilityData = sb.ToString();
-         fetchedData.serializedBattlerAbilities = serializedAbilityData;
-
-         // Empty the ability list content
-         fetchedData.battlerAbilities = new AbilityDataRecord();
-         
-         fetchedData.battlerAbilities = new AbilityDataRecord();
          newEnemyList.Add(fetchedData);
       }
-
-      // TODO: This is for logging bytes of data being sent. Modify feature into sending all abilities
-      /* XmlSerializer ser = new XmlSerializer(newEnemyList.GetType());
-      var sb = new StringBuilder();
-      using (var writer = XmlWriter.Create(sb)) {
-         ser.Serialize(writer, newEnemyList);
-      }
-      string longString = sb.ToString();
-      byte[] bytes = Encoding.ASCII.GetBytes(longString);*/
-
 
       // Send Landmonster data to the client
       player.rpc.Target_ReceiveMonsterData(player.connectionToClient, Util.serialize(newEnemyList));

@@ -87,10 +87,9 @@ public class TeamCombatPanel : Panel
                rightBattlerNames.Add(battlerTemplate.userNameText.text);
             }
          }
+         Global.player.rpc.Cmd_StartNewTeamBattle(leftBattlers.ToArray(), rightBattlers.ToArray(), rightBattlerNames.ToArray());
 
          PanelManager.self.popPanel();
-
-         Global.player.rpc.Cmd_StartNewTeamBattle(leftBattlers.ToArray(), rightBattlers.ToArray(), rightBattlerNames.ToArray());
       });
    }
 
