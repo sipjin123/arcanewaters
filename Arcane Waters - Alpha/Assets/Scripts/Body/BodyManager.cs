@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System.Linq;
 
 public class BodyManager : MonoBehaviour {
    #region Public Variables
@@ -22,6 +23,15 @@ public class BodyManager : MonoBehaviour {
       }
 
       return null;
+   }
+
+   public BodyEntity getBodyWithName (string userName) {
+      BodyEntity newBody = _bodies.Values.ToList().Find(_ => _.nameText.text == userName);
+      if (newBody == null) {
+         D.warning("No body with username exists in the collection: " + userName);
+         return null;
+      }
+      return newBody;
    }
 
    public void storeBody (BodyEntity body) {

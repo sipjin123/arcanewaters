@@ -279,7 +279,6 @@ public class MyNetworkManager : NetworkManager {
             Debug.LogError("Null data!");
             return;
          }
-
          
          // Translate data to minimize Packet Size
          List<string> attackSkillNames = new List<string>();

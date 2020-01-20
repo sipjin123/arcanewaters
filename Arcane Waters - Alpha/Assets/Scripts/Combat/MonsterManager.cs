@@ -103,13 +103,8 @@ public class MonsterManager : MonoBehaviour {
          foreach (BattlerData battlerData in battlerDataList) {
             if (!_monsterDataDict.ContainsKey(battlerData.enemyType)) {
                _monsterDataDict.Add(battlerData.enemyType, battlerData);
-               _debugDataList.Add(battlerData);
             } else {
                _monsterDataDict[battlerData.enemyType] = battlerData;
-               BattlerData battleData = _debugDataList.Find(_ => _.enemyType == battlerData.enemyType);
-               _debugDataList.Remove(battleData);
-
-               _debugDataList.Add(battlerData);
             }
          }
       }
@@ -152,7 +147,6 @@ public class MonsterManager : MonoBehaviour {
                // Save the monster data in the memory cache
                if (!_monsterDataDict.ContainsKey(enemyType)) {
                   _monsterDataDict.Add(enemyType, monsterData);
-                  _debugDataList.Add(monsterData);
                }
 
                if (battleManager != null) {
@@ -169,10 +163,6 @@ public class MonsterManager : MonoBehaviour {
 
    // The cached monster data 
    private Dictionary<Enemy.Type, BattlerData> _monsterDataDict = new Dictionary<Enemy.Type, BattlerData>();
-
-   // List of battle data for editor preview
-   [SerializeField]
-   private List<BattlerData> _debugDataList = new List<BattlerData>();
 
    #endregion
 }

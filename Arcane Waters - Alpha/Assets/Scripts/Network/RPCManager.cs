@@ -87,20 +87,13 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_RequestTeamCombatData (int userId) {
+   public void Cmd_RequestTeamCombatData () {
       // Checks if the user is an admin
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Fetch info from server
-         UserInfo info = DB_Main.getUserInfo(userId);
-
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            if (info.adminFlag == 1) {
-               Target_ReceiveTeamCombatData(_player.connectionToClient, MonsterManager.self.getAllEnemyTypes().ToArray());
-            } else {
-               D.warning("You are not at admin! Denying access to team combat simulation");
-            }
-         });
-      });
+      if (_player.isAdmin()) {
+         Target_ReceiveTeamCombatData(_player.connectionToClient, MonsterManager.self.getAllEnemyTypes().ToArray());
+      } else {
+         D.warning("You are not at admin! Denying access to team combat simulation");
+      }
    }
 
    [TargetRpc]
@@ -2647,19 +2640,12 @@ public class RPCManager : NetworkBehaviour {
    #endregion
 
    [Command]
-   public void Cmd_StartNewTeamBattle (int userId, Enemy.Type[] defenderBattlers, Enemy.Type[] attackerBattlers, string[] defenderPlayerNames, string[] attackerPlayerNames) {
-      // Checks if the user is an admin
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Fetch info from server
-         UserInfo info = DB_Main.getUserInfo(userId);
-
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            if (info.adminFlag == 0) {
-               D.warning("You are not at admin! Denying access to team combat simulation");
-               return;
-            }
-         });
-      });
+   public void Cmd_StartNewTeamBattle (Enemy.Type[] defenderBattlers, Enemy.Type[] attackerBattlers, string[] attackerPlayerNames) {
+      // Checks if the user is an admin  
+      if (!_player.isAdmin()) {
+         D.warning("You are not at admin! Denying access to team combat simulation");
+         return;
+      }
 
       // Hard code enemy type spawn for now
       Enemy.Type enemyToSpawn = Enemy.Type.Lizard;
@@ -2707,13 +2693,15 @@ public class RPCManager : NetworkBehaviour {
          List<AbilitySQLData> abilityDataList = DB_Main.getAllAbilities(playerBody.userId);
 
          foreach (string playerName in attackerPlayerNames) {
-            int attackerID = DB_Main.getUserIDbyName(playerName);
-            if (attackerID != 0) {
-               PlayerBodyEntity bodyEntity = (PlayerBodyEntity) BodyManager.self.getBody(attackerID);
+            // Since the body manager has the collection of user net entities, it will search for the body entity with the user name provided
+            BodyEntity rawEntity = BodyManager.self.getBodyWithName(playerName);
+
+            if (rawEntity != null) {
+               PlayerBodyEntity bodyEntity = (PlayerBodyEntity) rawEntity;
                if (bodyEntity != null) {
                   partyBodyEntities.Add(bodyEntity);
                } else {
-                  D.warning("Server cant find this ID: " + attackerID);
+                  D.warning("Server cant find this ID: " + rawEntity.userId);
                }
             }
          }
@@ -2740,21 +2728,22 @@ public class RPCManager : NetworkBehaviour {
             // Add the player to the Battle
             BattleManager.self.addPlayerToBattle(battle, playerBody, Battle.TeamType.Attackers);
 
-            // Server will setup the abilities and send to clients what abilities to use
+            // Host Battler Should know their own ability
             setupAbilityForBattle(_player.userId, _player.userId);
-
-            // Provides the client with the info of the Equipped Abilities
-            Target_UpdateBattleAbilityUI(_player.connectionToClient, Util.serialize(abilityDataList.FindAll(_ => _.equipSlotIndex >= 0)));
 
             foreach (Battler temp in battle.getAttackers()) {
                if (temp.enemyType == Enemy.Type.PlayerBattler) {
-                  // Server will setup the abilities and send to clients what abilities to use
+                  // Server will provide host battler the ability info of the invited battler
                   setupAbilityForBattle(_player.userId, temp.userId);
 
+                  // Party mates will be provided the skill info of both the their abilities and the host battlers abilities
                   setupAbilityForBattle(temp.userId, temp.userId);
                   setupAbilityForBattle(temp.userId, _player.userId);
                }
             }
+
+            // Provides the client with the info of the Equipped Abilities
+            Target_UpdateBattleAbilityUI(_player.connectionToClient, Util.serialize(abilityDataList.FindAll(_ => _.equipSlotIndex >= 0)));
 
             // Send class info to client
             PlayerClassData currentClassData = ClassManager.self.getClassData(playerBody.classType);
@@ -2838,14 +2827,15 @@ public class RPCManager : NetworkBehaviour {
             // Add the player to the Battle
             BattleManager.self.addPlayerToBattle(battle, playerBody, Battle.TeamType.Attackers);
 
-            // Server will setup the abilities and send to clients what abilities to use
+            // Host Battler Should know their own ability
             setupAbilityForBattle(_player.userId, _player.userId);
 
             foreach (Battler temp in battle.getAttackers()) {
                if (temp.enemyType == Enemy.Type.PlayerBattler) {
-                  // Server will setup the abilities and send to clients what abilities to use
+                  // Server will provide host battler the ability info of the invited battler
                   setupAbilityForBattle(_player.userId, temp.userId);
 
+                  // Party mates will be provided the skill info of both the their abilities and the host battlers abilities
                   setupAbilityForBattle(temp.userId, temp.userId);
                   setupAbilityForBattle(temp.userId, _player.userId);
                }

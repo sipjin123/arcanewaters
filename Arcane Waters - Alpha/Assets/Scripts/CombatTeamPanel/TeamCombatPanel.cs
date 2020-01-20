@@ -90,7 +90,7 @@ public class TeamCombatPanel : Panel
 
          PanelManager.self.popPanel();
 
-         Global.player.rpc.Cmd_StartNewTeamBattle(Global.player.userId, leftBattlers.ToArray(), rightBattlers.ToArray(), leftBattlerNames.ToArray(), rightBattlerNames.ToArray());
+         Global.player.rpc.Cmd_StartNewTeamBattle(leftBattlers.ToArray(), rightBattlers.ToArray(), rightBattlerNames.ToArray());
       });
    }
 
@@ -115,6 +115,11 @@ public class TeamCombatPanel : Panel
          List<Dropdown.OptionData> optionDataList = new List<Dropdown.OptionData>();
 
          foreach (Enemy.Type enemyType in Enum.GetValues(typeof(Enemy.Type))) {
+            if (dropdownIndex == 0 && enemyType == Enemy.Type.PlayerBattler) {
+               // Left side battlers should not have players
+               continue;
+            }
+
             if (availableEnemyTypes.Contains(enemyType)) {
                Dropdown.OptionData optionData = new Dropdown.OptionData {
                   image = null,
@@ -140,7 +145,7 @@ public class TeamCombatPanel : Panel
    }
 
    public void fetchSQLData () {
-      Global.player.rpc.Cmd_RequestTeamCombatData(Global.player.userId);
+      Global.player.rpc.Cmd_RequestTeamCombatData();
    }
 
    #region Private Variables

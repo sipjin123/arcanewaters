@@ -1347,29 +1347,6 @@ public class DB_Main : DB_MainStub {
 
    #endregion
 
-   public static new int getUserIDbyName (string usrName) {
-      int userID = 0;
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM arcane.users WHERE usrName=@usrName", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@usrName", usrName);
-
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  userID = DataUtil.getInt(dataReader, "usrId");
-               }
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-
-      return userID;
-   }
-
    public static new List<Item> getRequiredIngredients (int usrId, List<CraftingIngredients.Type> itemList) {
       int itmCategory = (int) Item.Category.CraftingIngredients;
       List<Item> newItemList = new List<Item>();
