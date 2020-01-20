@@ -172,12 +172,15 @@ namespace MapCreationTool.Serialization
          List<MidExportLayer> midLayers = new List<MidExportLayer>();
 
          foreach (var layerkv in layers) {
+            // Set offset for layers that are supposed to be on top of player
+            float zOffset = layerkv.Key.CompareTo("ceiling") == 0 || layerkv.Key.CompareTo("door-frame") == 0 ? -110f : 0;
+
             if (layerkv.Value.hasTilemap) {
                if (layerkv.Value.tileCount == 0)
                   continue;
 
                midLayers.Add(new MidExportLayer {
-                  z = getZ(config.getIndex(layerkv.Key, editorType), 0),
+                  z = getZ(config.getIndex(layerkv.Key, editorType), 0) + zOffset,
                   layer = layerkv.Key,
                   tileMatrix = getTilesWithCollisions(layerkv.Value, tileToIndex, collisionDictionary, editorOrigin, editorSize)
                });
@@ -187,7 +190,7 @@ namespace MapCreationTool.Serialization
                      continue;
 
                   midLayers.Add(new MidExportLayer {
-                     z = getZ(config.getIndex(layerkv.Key, editorType), i),
+                     z = getZ(config.getIndex(layerkv.Key, editorType), i) + zOffset,
                      layer = layerkv.Key,
                      tileMatrix = getTilesWithCollisions(layerkv.Value.subLayers[i], tileToIndex, collisionDictionary, editorOrigin, editorSize)
                   });

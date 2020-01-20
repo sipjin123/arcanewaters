@@ -204,6 +204,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Tree1_bur Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 3857231016148657456, guid: e9e701951343edf45a3e6a0ba3d2b79f,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 7702458471359994442, guid: e9e701951343edf45a3e6a0ba3d2b79f,
         type: 3}
       propertyPath: m_LocalPosition.x

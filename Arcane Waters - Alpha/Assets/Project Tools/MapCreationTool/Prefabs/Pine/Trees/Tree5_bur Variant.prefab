@@ -269,6 +269,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Tree5_bur Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 5096972720089391040, guid: a7f5e29160173c14d86f0d92aa38bd01,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3534174222686341142, guid: a7f5e29160173c14d86f0d92aa38bd01, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: a7f5e29160173c14d86f0d92aa38bd01, type: 3}

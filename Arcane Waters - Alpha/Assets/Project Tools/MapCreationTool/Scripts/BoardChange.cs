@@ -64,6 +64,11 @@ namespace MapCreationTool
       }
 
       public static BoardChange calculatePrefabChange (GameObject prefabToPlace, Vector3 positionToPlace) {
+         PrefabCenterOffset prefOffset = prefabToPlace.GetComponent<PrefabCenterOffset>();
+         if (prefOffset != null) {
+            positionToPlace -= Vector3.up * prefOffset.offset;
+         }
+
          Bounds bounds = getPrefabBounds();
          if (positionToPlace.x < bounds.min.x || positionToPlace.x > bounds.max.x || positionToPlace.y < bounds.min.y || positionToPlace.y > bounds.max.y)
             return new BoardChange();
@@ -896,9 +901,9 @@ namespace MapCreationTool
                addedTiles.Add(new Vector3Int(i + targetCenter.x, j + targetCenter.y, 0));
 
          //Ensure no edge cases are present
-         addedTiles = tilesToRemoveThinParts(layer, addedTiles, group.brushSize);
-         addedTiles = tilesToRoundOutCorners(layer, addedTiles);
-         addedTiles = tilesForWallEdgeCases(layer, addedTiles);
+         addedTiles = tilesToRemoveThinParts(layer, addedTiles, group.brushSize, false);
+         addedTiles = tilesToRoundOutCorners(layer, addedTiles, false);
+         addedTiles = tilesForWallEdgeCases(layer, addedTiles, false);
 
          //Get bounds in which to check for rearangements
          BoundsInt rearrangeBounds = encapsulate(addedTiles);
@@ -1373,7 +1378,7 @@ namespace MapCreationTool
          return change;
       }
 
-      private static List<Vector3Int> tilesForWallEdgeCases (Layer layer, List<Vector3Int> placed) {
+      private static List<Vector3Int> tilesForWallEdgeCases (Layer layer, List<Vector3Int> placed, bool ofBoundsIsFilled = true) {
          HashSet<Vector3Int> result = new HashSet<Vector3Int>();
          foreach (var p in placed)
             result.Add(p);
@@ -1381,9 +1386,15 @@ namespace MapCreationTool
          BoundsInt bounds = getBoardBoundsInt();
 
          Func<Vector3Int, bool> has = (p) => {
-            return result.Contains(p) || layer.hasTile(p) ||
-               p.x < bounds.min.x || p.x > bounds.max.x || p.y < bounds.min.y || p.y > bounds.max.y;
+            return result.Contains(p) || layer.hasTile(p);
          };
+
+         if(ofBoundsIsFilled) {
+            has = (p) => {
+               return result.Contains(p) || layer.hasTile(p) ||
+                  p.x < bounds.min.x || p.x > bounds.max.x || p.y < bounds.min.y || p.y > bounds.max.y;
+            };
+         }
 
          Func<Vector3Int, Vector3Int[]> getNeighbours = (p) => {
             return new Vector3Int[] { p + Vector3Int.up, p + Vector3Int.down, p + Vector3Int.left, p + Vector3Int.right,
@@ -1436,7 +1447,7 @@ namespace MapCreationTool
          return result.ToList();
       }
 
-      private static List<Vector3Int> tilesToRoundOutCorners (Layer layer, List<Vector3Int> placed) {
+      private static List<Vector3Int> tilesToRoundOutCorners (Layer layer, List<Vector3Int> placed, bool ofBoundsIsFilled = true) {
          HashSet<Vector3Int> result = new HashSet<Vector3Int>();
          foreach (var p in placed)
             result.Add(p);
@@ -1444,9 +1455,15 @@ namespace MapCreationTool
          BoundsInt bounds = getBoardBoundsInt();
 
          Func<Vector3Int, bool> has = (p) => {
-            return result.Contains(p) || layer.hasTile(p) ||
-               p.x < bounds.min.x || p.x > bounds.max.x || p.y < bounds.min.y || p.y > bounds.max.y;
+            return result.Contains(p) || layer.hasTile(p);
          };
+
+         if(ofBoundsIsFilled) {
+            has = (p) => {
+               return result.Contains(p) || layer.hasTile(p) ||
+                  p.x < bounds.min.x || p.x > bounds.max.x || p.y < bounds.min.y || p.y > bounds.max.y;
+            };
+         }
 
          Func<Vector3Int, Vector3Int[]> getNeighbours = (p) => {
             return new Vector3Int[] { p + Vector3Int.up, p + Vector3Int.down, p + Vector3Int.left, p + Vector3Int.right,
@@ -1531,8 +1548,8 @@ namespace MapCreationTool
       /// <param name="layer">The layer which to check</param>
       /// <param name="placed">Aditional tiles that will be placed inside the layer</param>
       /// <returns>The given 'placed' positions, and new positions to remove thin parts </returns>
-      private static List<Vector3Int> tilesToRemoveThinParts (Layer layer, List<Vector3Int> placed, int minThiccness) {
-         return tilesToRemoveThinParts(layer, placed, new Vector2Int(minThiccness, minThiccness));
+      private static List<Vector3Int> tilesToRemoveThinParts (Layer layer, List<Vector3Int> placed, int minThiccness, bool ofBoundsIsFilled = true) {
+         return tilesToRemoveThinParts(layer, placed, new Vector2Int(minThiccness, minThiccness), ofBoundsIsFilled);
       }
 
       /// <summary>
@@ -1541,7 +1558,7 @@ namespace MapCreationTool
       /// <param name="layer">The layer which to check</param>
       /// <param name="placed">Aditional tiles that will be placed inside the layer</param>
       /// <returns>The given 'placed' positions, and new positions to remove thin parts </returns>
-      private static List<Vector3Int> tilesToRemoveThinParts (Layer layer, List<Vector3Int> placed, Vector2Int minThiccness) {
+      private static List<Vector3Int> tilesToRemoveThinParts (Layer layer, List<Vector3Int> placed, Vector2Int minThiccness, bool ofBoundsIsFilled = true) {
          Vector2Int minDistance = minThiccness + Vector2Int.one;
 
          HashSet<Vector3Int> result = new HashSet<Vector3Int>();
@@ -1555,9 +1572,15 @@ namespace MapCreationTool
          BoundsInt bounds = getBoardBoundsInt();
 
          Func<Vector3Int, bool> has = (p) => {
-            return result.Contains(p) || layer.hasTile(p) ||
-               p.x < bounds.min.x || p.x > bounds.max.x || p.y < bounds.min.y || p.y > bounds.max.y;
+            return result.Contains(p) || layer.hasTile(p);
          };
+
+         if(ofBoundsIsFilled) {
+            has = (p) => {
+               return result.Contains(p) || layer.hasTile(p) ||
+                  p.x < bounds.min.x || p.x > bounds.max.x || p.y < bounds.min.y || p.y > bounds.max.y;
+            };
+         }
 
          Queue<Vector3Int> queue = new Queue<Vector3Int>(result.SelectMany(p => getNeighbours(p)));
 

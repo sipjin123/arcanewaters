@@ -92,8 +92,13 @@ namespace MapCreationTool
                   loadingText.text = "";
                   errorText.text = $"Could not find map {name} in the database";
                } else {
-                  Overlord.instance.applyFileData(map.editorData, name);
-                  hide();
+                  try {
+                     Overlord.instance.applyFileData(map.editorData, name);
+                     hide();
+                  } catch (Exception ex) {
+                     loadingText.text = "";
+                     errorText.text = ex.Message;
+                  }
                }
             });
          });

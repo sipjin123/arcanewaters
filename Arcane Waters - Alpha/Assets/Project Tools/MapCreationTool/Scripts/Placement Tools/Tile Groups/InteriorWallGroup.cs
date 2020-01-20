@@ -24,14 +24,24 @@ namespace MapCreationTool
          // Bottom row
          if (sur.bot == 0 && sur.left == 0 && sur.right > 1 && !adj[x - 1, y + 1])
             tileIndex.Set(0, 0);
-         else if (sur.bot == 0 && sur.left == 1 && sur.right > 1)
-            tileIndex.Set(1, 0);
-         else if (sur.bot == 0 && ((sur.left > 1 && sur.right > 1) || (sur.left == 1 && sur.right == 1)))
-            tileIndex.Set(2, 0);
-         else if (sur.bot == 0 && sur.left > 1 && sur.right == 1)
-            tileIndex.Set(3, 0);
          else if (sur.bot == 0 && sur.left > 1 && sur.right == 0 && !adj[x + 1, y + 1])
             tileIndex.Set(4, 0);
+         else if (sur.bot == 0 && sur.left > 0 && sur.right > 0) {
+            bool left = true;
+            bool right = true;
+
+            if (sur.left == 1 && !adj[x - 2, y + 1])
+               left = false;
+            if (sur.right == 1 && !adj[x + 2, y + 1])
+               right = false;
+
+            if (left && right || !left && !right)
+               tileIndex.Set(2, 0);
+            else if (right)
+               tileIndex.Set(1, 0);
+            else
+               tileIndex.Set(3, 0);
+         }
 
          // Second from bottom row
          else if (sur.bot == 1 && sur.left == 0 && sur.right > 1)

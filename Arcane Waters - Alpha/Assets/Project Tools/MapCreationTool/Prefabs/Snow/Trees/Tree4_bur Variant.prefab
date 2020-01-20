@@ -269,6 +269,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Tree4_bur Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 3077035100070928884, guid: 182100fdf52fca64e83512027bb21ab2,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 4467362910918887410, guid: 182100fdf52fca64e83512027bb21ab2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 182100fdf52fca64e83512027bb21ab2, type: 3}

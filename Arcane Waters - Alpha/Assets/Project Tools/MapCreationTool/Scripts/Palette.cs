@@ -108,7 +108,9 @@ namespace MapCreationTool
             p.layer = LayerMask.NameToLayer("MapEditor_Palette");
             foreach (var child in p.GetComponentsInChildren<Transform>())
                child.gameObject.layer = LayerMask.NameToLayer("MapEditor_Palette");
-            p.transform.localPosition = pref.centerPoint;
+
+            float centerOffset = p.GetComponent<PrefabCenterOffset>() ? p.GetComponent<PrefabCenterOffset>().offset : 0;
+            p.transform.localPosition = pref.centerPoint - Vector2.up * centerOffset;
 
             if (p.GetComponent<NPCMapEditor>())
                p.GetComponent<NPCMapEditor>().setDefaultSprite();

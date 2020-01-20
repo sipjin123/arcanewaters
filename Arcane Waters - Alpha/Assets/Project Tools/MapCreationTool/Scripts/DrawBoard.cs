@@ -581,8 +581,11 @@ namespace MapCreationTool
             preview.prefabPreviewInstance.GetComponent<MapEditorPrefab>()?.createdForPrieview();
          }
 
-         if (preview.prefabPreviewInstance != null)
-            preview.prefabPreviewInstance.transform.position = worldPos;
+         if (preview.prefabPreviewInstance != null) {
+            float offset = preview.prefabPreviewInstance.GetComponent<PrefabCenterOffset>()?.offset ?? 0;
+            preview.prefabPreviewInstance.transform.position = worldPos - Vector2.up * offset;
+         }
+            
 
          //------------------------
          //Handle prefabs to destroy

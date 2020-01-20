@@ -106,3 +106,5 @@ MonoBehaviour:
     index: 40
   - layer: ceiling
     index: 45
+  - layer: door-frame
+    index: 45

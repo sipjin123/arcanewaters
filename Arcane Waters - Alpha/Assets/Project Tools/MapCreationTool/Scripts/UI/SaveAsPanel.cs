@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,8 +16,6 @@ namespace MapCreationTool
       [SerializeField]
       private Text errorText = null;
       [SerializeField]
-      private Text loadingText = null;
-      [SerializeField]
       private Text updateText = null;
       [SerializeField]
       private Button saveButton = null;
@@ -24,7 +23,6 @@ namespace MapCreationTool
       private Text saveButtonText = null;
 
       public void open () {
-         loadingText.text = "";
          errorText.text = "";
          saveButtonText.text = "Save";
          saveButton.interactable = true;
@@ -38,14 +36,20 @@ namespace MapCreationTool
       }
 
       public void save () {
-         #if IS_SERVER_BUILD
+         StartCoroutine(saveRoutine());
+      }
 
-         loadingText.text = "Loading...";
-         updateText.text = "";
+      public IEnumerator saveRoutine () {
          saveButton.interactable = false;
+         updateText.text = "";
          saveButtonText.text = "Saving...";
          errorText.text = "";
 
+         // Wait for a few frames so the UI can update
+         yield return new WaitForEndOfFrame();
+         yield return new WaitForEndOfFrame();
+         yield return new WaitForEndOfFrame();
+#if IS_SERVER_BUILD
          try {
             if (string.IsNullOrWhiteSpace(inputField.text)) {
                throw new Exception("Name cannot be empty");
@@ -76,7 +80,6 @@ namespace MapCreationTool
                }
 
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  loadingText.text = "";
                   updateText.text = "";
                   saveButton.interactable = true;
                   saveButtonText.text = "Save";
@@ -92,13 +95,11 @@ namespace MapCreationTool
          } catch (Exception ex) {
             errorText.text = ex.Message;
 
-            loadingText.text = "";
             updateText.text = "";
             saveButton.interactable = true;
             saveButtonText.text = "Save";
          }
-
-         #endif
+#endif
       }
 
       private void setUpdateText () {

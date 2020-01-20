@@ -7,7 +7,8 @@ using System;
 
 namespace MapCreationTool
 {
-   public class MapImporter { 
+   public class MapImporter
+   {
       public const string DataFileExtension = "arcane";
 
       // This was used to automatically generate map files inside the project files. The script must be in the Editor folder for this to work.
@@ -24,7 +25,7 @@ namespace MapCreationTool
       /// Creates an instance of a map from the serialized map data
       /// </summary>
       /// <param name="data"></param>
-      public static Area instantiateMapData(TextAsset data, string areaKey, Vector3 position) {
+      public static Area instantiateMapData (string data, string areaKey, Vector3 position) {
 
          ensureSerializationMapsLoaded();
 
@@ -34,9 +35,9 @@ namespace MapCreationTool
          Area area = result.area;
          area.areaKey = areaKey;
 
-         ExportedProject001 exportedProject = JsonUtility.FromJson<ExportedProject001>(data.text);
+         ExportedProject001 exportedProject = JsonUtility.FromJson<ExportedProject001>(data);
 
-         if(exportedProject.editorType == EditorType.Sea) {
+         if (exportedProject.editorType == EditorType.Sea) {
             area.isSea = true;
          }
 
@@ -56,11 +57,11 @@ namespace MapCreationTool
       /// </summary>
       /// <param name="map"></param>
       /// <param name="tiles"></param>
-      static void setCameraBounds(MapTemplate map, ExportedProject001 project) {
+      static void setCameraBounds (MapTemplate map, ExportedProject001 project) {
          Bounds bounds = new Bounds();
 
-         foreach(var layer in project.layers) {
-            foreach(var tile in layer.tiles) {
+         foreach (var layer in project.layers) {
+            foreach (var tile in layer.tiles) {
                bounds.min = new Vector3(Mathf.Min(tile.x, bounds.min.x), Mathf.Min(tile.y, bounds.min.y), 0);
                bounds.max = new Vector3(Mathf.Max(tile.x, bounds.max.x), Mathf.Max(tile.y, bounds.max.y), 0);
             }
@@ -68,7 +69,7 @@ namespace MapCreationTool
 
          bounds.max += new Vector3(1, 1, 0);
 
-         map.camBounds.points = new Vector2[] { 
+         map.camBounds.points = new Vector2[] {
             new Vector2(bounds.min.x, bounds.min.y),
             new Vector2(bounds.min.x, bounds.max.y),
             new Vector2(bounds.max.x, bounds.max.y),
@@ -78,7 +79,7 @@ namespace MapCreationTool
          map.confiner.m_BoundingShape2D = map.camBounds;
       }
 
-      static void instantiatePrefabs(ExportedProject001 project, Transform prefabParent, Transform npcParent) {
+      static void instantiatePrefabs (ExportedProject001 project, Transform prefabParent, Transform npcParent) {
          Func<int, GameObject> indexToPrefab = (index) => { return AssetSerializationMaps.getPrefab(index, project.biome, false); };
          foreach (var prefab in project.prefabs) {
             GameObject original = indexToPrefab(prefab.i);
@@ -86,9 +87,9 @@ namespace MapCreationTool
             Vector3 targetLocalPos = new Vector3(prefab.x, prefab.y, 0) * 0.16f + Vector3.back * 10;
 
             var pref = UnityEngine.Object.Instantiate(
-               original, 
-               parent.TransformPoint(targetLocalPos), 
-               Quaternion.identity, 
+               original,
+               parent.TransformPoint(targetLocalPos),
+               Quaternion.identity,
                parent);
 
             ZSnap zsnap = pref.GetComponent<ZSnap>();
@@ -103,7 +104,7 @@ namespace MapCreationTool
 
       static void instantiateTilemaps (ExportedProject001 project, Transform tilemapParent, Transform collisionTilemapParent) {
          Func<Vector2Int, TileBase> indexToTile = (index) => { return AssetSerializationMaps.getTile(index, project.biome); };
-         
+
          foreach (ExportedLayer001 layer in project.layers) {
             // Create the tilemap gameobject
             var tilemap = UnityEngine.Object.Instantiate(AssetSerializationMaps.tilemapTemplate, tilemapParent);
@@ -119,10 +120,10 @@ namespace MapCreationTool
             TileBase[] tiles = layer.tiles.Select(t => indexToTile(new Vector2Int(t.i, t.j))).ToArray();
 
             // Ensure the 'sprite' of animated tiles is set
-            foreach(TileBase tileBase in tiles) {
+            foreach (TileBase tileBase in tiles) {
                AnimatedTile aTile = tileBase as AnimatedTile;
-               if(aTile != null) {
-                  if(aTile.sprite == null && aTile.m_AnimatedSprites.Length > 0) {
+               if (aTile != null) {
+                  if (aTile.sprite == null && aTile.m_AnimatedSprites.Length > 0) {
                      aTile.sprite = aTile.m_AnimatedSprites[0];
                   }
                }
@@ -138,8 +139,8 @@ namespace MapCreationTool
          }
       }
 
-      public static Direction? ParseDirection(string data) {
-         switch(data.Trim(' ')) {
+      public static Direction? ParseDirection (string data) {
+         switch (data.Trim(' ')) {
             case "":
                return Direction.North;
             case "North":
