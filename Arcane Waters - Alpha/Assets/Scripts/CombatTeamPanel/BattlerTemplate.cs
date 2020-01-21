@@ -22,6 +22,9 @@ public class BattlerTemplate : MonoBehaviour {
    // User name text for player battlers
    public InputField userNameText;
 
+   // Button that deletes the template
+   public Button deleteButton;
+
    #endregion
 
    #region Private Variables

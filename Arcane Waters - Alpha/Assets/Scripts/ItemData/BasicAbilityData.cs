@@ -157,9 +157,11 @@ public class AbilityDataRecord
 
       foreach (AttackAbilityData attackData in record.attackAbilityDataList) {
          attackList.Add(attackData);
+         basicList.Add(attackData);
       }
       foreach (BuffAbilityData buffData in record.buffAbilityDataList) {
          buffList.Add(buffData);
+         basicList.Add(buffData);
       }
       foreach (BasicAbilityData basicData in record.buffAbilityDataList) {
          basicList.Add(basicData);

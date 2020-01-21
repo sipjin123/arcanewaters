@@ -87,7 +87,7 @@ public class TeamCombatPanel : Panel
                rightBattlerNames.Add(battlerTemplate.userNameText.text);
             }
          }
-         Global.player.rpc.Cmd_StartNewTeamBattle(leftBattlers.ToArray(), rightBattlers.ToArray(), rightBattlerNames.ToArray());
+         Global.player.rpc.Cmd_StartNewTeamBattle(leftBattlers.ToArray(), rightBattlers.ToArray(), leftBattlerNames.ToArray(), rightBattlerNames.ToArray());
 
          PanelManager.self.popPanel();
       });
@@ -100,6 +100,10 @@ public class TeamCombatPanel : Panel
       template.battlerIcon.sprite = ImageManager.getSprite(battlerData.imagePath);
       template.battlerType.text = battlerData.enemyType.ToString();
       template.battlerDataCache = battlerData;
+
+      template.deleteButton.onClick.AddListener(() => {
+         Destroy(template.gameObject);
+      });
 
       if (enemyType == Enemy.Type.PlayerBattler) {
          template.userNameText.gameObject.SetActive(true);
@@ -114,11 +118,6 @@ public class TeamCombatPanel : Panel
          List<Dropdown.OptionData> optionDataList = new List<Dropdown.OptionData>();
 
          foreach (Enemy.Type enemyType in Enum.GetValues(typeof(Enemy.Type))) {
-            if (dropdownIndex == 0 && enemyType == Enemy.Type.PlayerBattler) {
-               // Left side battlers should not have players
-               continue;
-            }
-
             if (availableEnemyTypes.Contains(enemyType)) {
                Dropdown.OptionData optionData = new Dropdown.OptionData {
                   image = null,

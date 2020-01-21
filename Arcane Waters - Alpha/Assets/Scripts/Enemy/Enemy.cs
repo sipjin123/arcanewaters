@@ -145,7 +145,7 @@ public class Enemy : NetEntity {
          return;
       }
       
-      Global.player.rpc.Cmd_StartNewBattle(this.netId);
+      Global.player.rpc.Cmd_StartNewBattle(this.netId, Battle.TeamType.Attackers);
    }
 
    public bool isPlayerClose () {

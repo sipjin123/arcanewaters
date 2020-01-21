@@ -47,6 +47,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    // The types of stances a battler can be in
    public enum Stance { Balanced = 0, Attack = 1, Defense = 2 };
 
+   // The list of battler ability ID's
+   public SyncListInt basicAbilityIDList = new SyncListInt();
+   public SyncListInt attackAbilityIDList = new SyncListInt();
+   public SyncListInt buffAbilityIDList = new SyncListInt();
+
    // The userId associated with this Battler, if any
    [SyncVar]
    public int userId;
@@ -232,7 +237,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       this.player = enemyIdent.GetComponent<NetEntity>();
 
       // Set our sprite sheets according to our types
-      if (battlerType == BattlerType.PlayerControlled) {
+      if (battlerType == BattlerType.PlayerControlled && Global.player.userId == this.userId) {
          updateSprites();
       } else {
          onBattlerSelect.AddListener(() => {
@@ -292,6 +297,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    public void initialize () {
       if (!_hasInitializedStats) {
          BattlerData battlerData = MonsterManager.self.requestBattler(enemyType);
+
          if (battlerType == BattlerType.PlayerControlled) {
             battlerData = MonsterManager.self.requestBattler(Enemy.Type.PlayerBattler);
          } else {
@@ -330,6 +336,37 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
          _hasInitializedStats = true;
       }
    }
+
+   private void syncAbilities () {
+      if (battlerType == BattlerType.PlayerControlled) {
+         // Create new ability record to assign to this entity
+         AbilityDataRecord newAbilityRecord = new AbilityDataRecord();
+         _battlerAttackAbilities = new List<AttackAbilityData>();
+         _battlerBuffAbilities = new List<BuffAbilityData>();
+         _battlerBasicAbilities = new List<BasicAbilityData>();
+
+         foreach (int attackID in attackAbilityIDList) {
+            AttackAbilityData attackData = AbilityManager.getAttackAbility(attackID);
+            if (attackData != null) {
+               _battlerAttackAbilities.Add(attackData);
+            }
+         }
+         foreach (int buffId in buffAbilityIDList) {
+            BuffAbilityData buffData = AbilityManager.getBuffAbility(buffId);
+            if (buffData != null) {
+               _battlerBuffAbilities.Add(buffData);
+            }
+         }
+         foreach (int basicID in basicAbilityIDList) {
+            BasicAbilityData basicData = AbilityManager.getAbility(basicID, AbilityType.Undefined);
+            if (basicData != null) {
+               _battlerBasicAbilities.Add(basicData);
+            }
+         }
+      }
+   }
+
+   #region Stat Related Functions
 
    private void setupEnemyStats () {
       if (battlerType == BattlerType.AIEnemyControlled) {
@@ -444,6 +481,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       _alteredBattlerData.baseDefenseMultiplierSet.allDefenseMultiplier += stat.bonusResistanceAllPerLevel * level;
    }
 
+   #endregion
+
    // Basic method that will handle the functionality for whenever we deselect this battler
    public void deselectThis () {
       onBattlerDeselect.Invoke();
@@ -496,7 +535,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       _outline.recreateOutlineIfVisible();
    }
 
-   public void setBattlerAbilities (AbilityDataRecord values) {
+   public void setBattlerAbilities (AbilityDataRecord values, bool hostBattler = false) {
       if (battlerAbilitiesInitialized) {
          return;
       }
@@ -513,11 +552,23 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
                   AttackAbilityData atkAbilityData = AttackAbilityData.CreateInstance(Array.Find<AttackAbilityData>(values.attackAbilityDataList, element => element.itemName == item.itemName));
                   _battlerAttackAbilities.Add(atkAbilityData);
                   _battlerBasicAbilities.Add(atkAbilityData);
+
+                  // Sync ID's
+                  if (hostBattler) {
+                     attackAbilityIDList.Add(atkAbilityData.itemID);
+                     basicAbilityIDList.Add(atkAbilityData.itemID);
+                  }
                   break;
                case AbilityType.BuffDebuff:
                   BuffAbilityData buffAbilityData = BuffAbilityData.CreateInstance(Array.Find<BuffAbilityData>(values.buffAbilityDataList, element => element.itemName == item.itemName));
                   _battlerBuffAbilities.Add(buffAbilityData);
                   _battlerBasicAbilities.Add(buffAbilityData);
+
+                  // Sync ID's
+                  if (hostBattler) {
+                     buffAbilityIDList.Add(buffAbilityData.itemID);
+                     basicAbilityIDList.Add(buffAbilityData.itemID);
+                  }
                   break;
                default:
                   Debug.LogWarning("UNCATEGORIZED ability: " + item.itemName);
@@ -606,26 +657,28 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    public void handleEndOfBattle (Battle.TeamType winningTeam) {
       if (teamType != winningTeam) {
 
-         // Monster battler
          if (isMonster()) {
+            // Monster battler
             Enemy enemy = (Enemy) player;
 
             if (!enemy.isDefeated) {
                enemy.isDefeated = true;
             }
 
-            // Player battler
          } else {
+            // Player battler
             Spawn spawn = SpawnManager.self.getSpawn(Area.FOREST_TOWN, Spawn.FOREST_TOWN_DOCK);
 
             // If they're still connected, we can warp them directly
-            if (player != null && player.connectionToClient != null) {
-               player.spawnInNewMap(spawn.AreaKey, spawn, Direction.North);
-            } else {
-               // The user might be offline, in which case we need to modify their position in the DB
-               UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-                  DB_Main.setNewPosition(userId, spawn.transform.position, Direction.North, spawn.AreaKey);
-               });
+            if (player.userId == Global.player.userId) {
+               if (player != null && player.connectionToClient != null) {
+                  player.spawnInNewMap(spawn.AreaKey, spawn, Direction.North);
+               } else {
+                  // The user might be offline, in which case we need to modify their position in the DB
+                  UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+                     DB_Main.setNewPosition(userId, spawn.transform.position, Direction.North, spawn.AreaKey);
+                  });
+               }
             }
          }
       }
@@ -1349,6 +1402,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             transform.SetParent(battle.transform, false);
          }
       }
+
+      yield return new WaitUntil(() => basicAbilityIDList.Count > 0);
+      syncAbilities();
    }
 
    #endregion

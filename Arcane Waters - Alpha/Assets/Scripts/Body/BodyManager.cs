@@ -26,7 +26,7 @@ public class BodyManager : MonoBehaviour {
    }
 
    public BodyEntity getBodyWithName (string userName) {
-      BodyEntity newBody = _bodies.Values.ToList().Find(_ => _.nameText.text == userName);
+      BodyEntity newBody = _bodies.Values.ToList().Find(_ => _.entityName == userName);
       if (newBody == null) {
          D.warning("No body with username exists in the collection: " + userName);
          return null;

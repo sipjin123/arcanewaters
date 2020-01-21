@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-
+using System.Linq;
 
 public partial class SpawnManager : MonoBehaviour {
    #region Public Variables
@@ -49,7 +49,7 @@ public partial class SpawnManager : MonoBehaviour {
          return _spawns[spawnID];
       } else {
          D.warning("Spawin ID is missing: " + areaKey+" - "+spawnKey);
-         return null;
+         return _spawns.Values.ToList()[0];
       }
    }
 
