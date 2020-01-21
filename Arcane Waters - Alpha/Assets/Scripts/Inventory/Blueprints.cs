@@ -135,13 +135,7 @@ public class Blueprint : RecipeItem
                weaponType = (Weapon.Type) item;
             }
          }
-         Weapon newWeapon = new Weapon {
-            category = itemCategory,
-            type = weaponType,
-            itemTypeId = (int) weaponType,
-            id = 0,
-            count = 1,
-         };
+         Weapon newWeapon = new Weapon(0, weaponType);
          return newWeapon;
       } else {
          Armor.Type armorType = Armor.Type.None;
@@ -153,13 +147,7 @@ public class Blueprint : RecipeItem
                armorType = (Armor.Type) item;
             }
          }
-         Armor newArmor = new Armor {
-            category = itemCategory,
-            type = armorType,
-            itemTypeId = (int) armorType,
-            id = 0,
-            count = 1,
-         };
+         Armor newArmor = new Armor(0, armorType);
          return newArmor;
       }
    }

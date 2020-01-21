@@ -32,6 +32,9 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
    public Sprite foodIcon;
    public Sprite defaultItemIcon;
 
+   // The background image
+   public Image backgroundImage;
+
    // The click events
    public UnityEvent leftClickEvent;
    public UnityEvent rightClickEvent;
@@ -137,6 +140,10 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
 
    public ColorKey getItemColorKey () {
       return _colorKey;
+   }
+
+   public void hideBackground () {
+      backgroundImage.enabled = false;
    }
 
    #region Private Variables

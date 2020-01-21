@@ -223,10 +223,6 @@ public class DB_MainStub : MonoBehaviour {
       return null;
    }
 
-   public static List<Item> getRequiredIngredients (int usrId, List<CraftingIngredients.Type> itemList) {
-      return new List<Item>();
-   }
-
    public static List<CropInfo> getCropInfo (int userId) {
       return null;
    }
@@ -439,12 +435,24 @@ public class DB_MainStub : MonoBehaviour {
       return 0;
    }
 
+   public static int getItemCount (int userId, Item.Category[] categories) {
+      return 0;
+   }
+
    public static int getItemCount (int userId, Item.Category[] categories, List<int> itemIdsToFilter) {
       return 0;
    }
 
+   public static List<Item> getItems (int userId, Item.Category[] categories, int page, int itemsPerPage) {
+      return null;
+   }
+
    public static List<Item> getItems (int userId, Item.Category[] categories, int page, int itemsPerPage,
       List<int> itemIdsToFilter) {
+      return null;
+   }
+
+   public static List<Item> getCraftingIngredients (int usrId, List<CraftingIngredients.Type> ingredientTypes) {
       return null;
    }
 

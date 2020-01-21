@@ -358,31 +358,14 @@ public class RPCManager : NetworkBehaviour {
       // Check what we're going to give the user
       Item item = chest.getContents();
 
-      // Gathers the item rewards from the scriptable object
-      List<LootInfo> lootInfoList = new List<LootInfo>();
-      CraftingIngredients craftingIngredient = new CraftingIngredients { category = Item.Category.CraftingIngredients, count = item.count, type = (CraftingIngredients.Type) item.itemTypeId };
-      LootInfo newLootInfo = new LootInfo { lootType = craftingIngredient.type, chanceRatio = 100, quantity = craftingIngredient.count };
-      lootInfoList.Add(newLootInfo);
+      // Grant the rewards to the user
+      giveItemRewardsToPlayer(_player.userId, new List<Item>() { item }, false);
 
-      List<CraftingIngredients.Type> itemLoots = new List<CraftingIngredients.Type>();
-      foreach (LootInfo info in lootInfoList) {
-         itemLoots.Add(info.lootType);
-      }
+      // Registers the interaction of loot bags to the achievement database for recording
+      AchievementManager.registerUserAchievement(_player.userId, ActionType.OpenedLootBag);
 
-      // Add it to their inventory
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<Item> databaseList = DB_Main.getRequiredIngredients(_player.userId, itemLoots);
-
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            processGroupRewards(_player.userId, databaseList, lootInfoList, false);
-
-            // Registers the interaction of loot bags to the achievement database for recording
-            AchievementManager.registerUserAchievement(_player.userId, ActionType.OpenedLootBag);
-
-            // Send it to the specific player that opened it
-            Target_OpenChest(_player.connectionToClient, item, chest.id);
-         });
-      });
+      // Send it to the specific player that opened it
+      Target_OpenChest(_player.connectionToClient, item, chest.id);
    }
 
    [Server]
@@ -541,6 +524,56 @@ public class RPCManager : NetworkBehaviour {
 
       // Pass the data to the panel
       panel.updatePanelWithMailList(mailList, pageNumber, totalMailCount);
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveSingleBlueprint (NetworkConnection connection, Item blueprint,
+      Item[] equippedItems, Item[] inventoryIngredientsArray, Item[] requiredIngredientsArray) {
+      List<Item> inventoryIngredients = new List<Item>(inventoryIngredientsArray);
+      List<Item> requiredIngredients = new List<Item>(requiredIngredientsArray);
+      
+      // Get the crafting panel
+      CraftingPanel craftingPanel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);
+
+      // Get the reward panel
+      RewardScreen rewardScreen = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
+
+      // Make sure the crafting panel is showing, except if the reward panel is showing
+      if (!craftingPanel.isShowing() && !rewardScreen.isShowing()) {
+         PanelManager.self.pushPanel(craftingPanel.type);
+      }
+
+      // Pass the data to the panel
+      craftingPanel.updatePanelWithSingleBlueprint(blueprint, equippedItems,
+         inventoryIngredients, requiredIngredients);
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveBlueprintList (NetworkConnection connection,
+      Item[] blueprintArray,  int pageNumber, int totalBlueprintCount) {
+      
+      // Make sure the panel is showing
+      CraftingPanel craftingPanel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);
+
+      // Get the reward panel
+      RewardScreen rewardScreen = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
+
+      // Show the crafting panel, except if the reward panel is showing
+      if (!craftingPanel.isShowing() && !rewardScreen.isShowing()) {
+         PanelManager.self.pushPanel(craftingPanel.type);
+      }
+
+      // Pass the data to the panel
+      craftingPanel.updatePanelWithBlueprintList(blueprintArray, pageNumber, totalBlueprintCount);
+   }
+
+   [TargetRpc]
+   public void Target_CloseCraftingPanel (NetworkConnection connection) {
+      // Get the crafting panel
+      CraftingPanel panel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);
+
+      // Refresh the panel
+      panel.refreshCurrentlySelectedBlueprint();
    }
 
    [Command]
@@ -738,42 +771,6 @@ public class RPCManager : NetworkBehaviour {
             _player.rpc.Target_ReceiveLeaderBoards(_player.connectionToClient, period, boardFaction, timeLeftUntilRecalculation.TotalSeconds,
                farmingEntries.ToArray(), sailingEntries.ToArray(), exploringEntries.ToArray(), tradingEntries.ToArray(),
                craftingEntries.ToArray(), miningEntries.ToArray());
-         });
-      });
-   }
-
-   [Command]
-   public void Cmd_RequestItemsFromServer (int pageNumber, int itemsPerPage, Item.Category[] categories) {
-      // Enforce a reasonable max here
-      if (itemsPerPage > 200) {
-         D.warning("Requesting too many items per page.");
-         return;
-      }
-
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
-         UserInfo userInfo = userObjects.userInfo;
-         int totalItemCount = DB_Main.getItemCount(_player.userId);
-
-         // Get the items from the database
-         List<Item> items = DB_Main.getItems(_player.userId, categories, pageNumber, itemsPerPage, new List<int>());
-
-         List<Item> craftableList = new List<Item>();
-         foreach (Item item in items) {
-            if (item.category == Item.Category.Blueprint) {
-               Item convertedItem = Blueprint.getItemData(item.itemTypeId);
-               craftableList.Add(convertedItem);
-            }
-         }
-
-         // Back to the Unity thread to send the results back to the client
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            InventoryMessage inventoryMessage = new InventoryMessage(_player.netId, userObjects, categories,
-               pageNumber, userInfo.gold, userInfo.gems, totalItemCount, userInfo.armorId, userInfo.weaponId, items.ToArray());
-            NetworkServer.SendToClientOfPlayer(_player.netIdent, inventoryMessage);
-
-            processCraftingItems(craftableList.ToArray());
          });
       });
    }
@@ -2277,8 +2274,194 @@ public class RPCManager : NetworkBehaviour {
    #endregion
 
    [Command]
-   public void Cmd_CraftItem (Item.Category category, int itemType) {
-      validateCraftingRewards(_player.userId, category, itemType);
+   public void Cmd_RequestBlueprintsFromServer (int pageNumber, int itemsPerPage) {
+      // Enforce a reasonable max here
+      if (itemsPerPage > 200) {
+         D.warning("Requesting too many items per page.");
+         return;
+      }
+
+      // Set the category filter
+      Item.Category[] categories = new Item.Category[] { Item.Category.Blueprint };
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Get the item count
+         int totalItemCount = DB_Main.getItemCount(_player.userId, categories);
+
+         // Calculate the maximum page number
+         int maxPage = Mathf.CeilToInt((float) totalItemCount / itemsPerPage);
+         if (maxPage == 0) {
+            maxPage = 1;
+         }
+
+         // Clamp the requested page number to the max page - the number of items could have changed
+         pageNumber = Mathf.Clamp(pageNumber, 1, maxPage);
+
+         // Get the blueprints from the database
+         List<Item> items = DB_Main.getItems(_player.userId, categories, pageNumber, itemsPerPage);
+
+         // Back to the Unity thread to send the results back to the client
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_ReceiveBlueprintList(_player.connectionToClient, items.ToArray(), pageNumber, totalItemCount);
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_RequestSingleBlueprintFromServer (int itemId) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+
+         // Retrieve the blueprint from the player's inventory
+         Item blueprint = DB_Main.getItem(_player.userId, itemId);
+
+         // Verify if the player has the blueprint in his inventory
+         if (blueprint == null) {
+            string feedbackMessage = "The blueprint is not present in your inventory!";
+            sendError(feedbackMessage);
+            return;
+         }
+
+         // Get the user equipped items
+         UserInfo userInfo = DB_Main.getUserInfo(_player.userId);
+         List<Item> equippedItems = new List<Item>(2);
+
+         // Get the equipped weapon
+         if (userInfo.weaponId != 0) {
+            equippedItems.Add(DB_Main.getItem(_player.userId, userInfo.weaponId));
+         }
+
+         // Get the equipped armor
+         if (userInfo.armorId != 0) {
+            equippedItems.Add(DB_Main.getItem(_player.userId, userInfo.armorId));
+         }
+
+         // Get the resulting item
+         Item resultItem = Blueprint.getItemData(((Blueprint)blueprint).bpTypeID);
+
+         // Get the crafting requirement data
+         CraftableItemRequirements craftingRequirements = RewardManager.self.craftableDataList.Find(_ =>
+            _.resultItem.category == resultItem.category &&
+            _.resultItem.itemTypeId == resultItem.itemTypeId);
+
+         // Build the list of ingredients
+         List<CraftingIngredients.Type> ingredientsList = new List<CraftingIngredients.Type>();
+         foreach (Item item in craftingRequirements.combinationRequirements) {
+            ingredientsList.Add((CraftingIngredients.Type) item.itemTypeId);
+         }
+
+         // Get the ingredients present in the user inventory
+         List<Item> inventoryIngredients = DB_Main.getCraftingIngredients(_player.userId, ingredientsList);
+
+         // Back to the Unity thread to send the results back to the client
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_ReceiveSingleBlueprint(_player.connectionToClient, blueprint, equippedItems.ToArray(),
+               inventoryIngredients.ToArray(), craftingRequirements.combinationRequirements);
+         });
+      });
+   }
+   
+   [Command]
+   public void Cmd_CraftItem (int blueprintItemId) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Retrieve the blueprint from the player's inventory
+         Blueprint blueprint = (Blueprint) DB_Main.getItem(_player.userId, blueprintItemId);
+
+         // Verify if the player has the blueprint in his inventory
+         if (blueprint == null) {
+            sendError("The blueprint is not present in your inventory!");
+            return;
+         }
+
+         // Get the resulting item
+         Item resultItem = Blueprint.getItemData(blueprint.bpTypeID);
+
+         // Randomize the colors
+         resultItem.color1 = Util.randomEnum<ColorType>();
+         resultItem.color2 = Util.randomEnum<ColorType>();
+
+         // Get the crafting requirement data
+         CraftableItemRequirements craftingRequirements = RewardManager.self.craftableDataList.Find(_ =>
+            _.resultItem.category == resultItem.category &&
+            _.resultItem.itemTypeId == resultItem.itemTypeId);
+
+         // Build the list of ingredients
+         List<CraftingIngredients.Type> ingredientsList = new List<CraftingIngredients.Type>();
+         foreach (Item item in craftingRequirements.combinationRequirements) {
+            ingredientsList.Add((CraftingIngredients.Type) item.itemTypeId);
+         }
+
+         // Get the ingredients present in the user inventory
+         List<Item> inventoryIngredients = DB_Main.getCraftingIngredients(_player.userId, ingredientsList);
+
+         // Compare the ingredients present in the inventory with the requisites
+         foreach (Item requiredIngredient in craftingRequirements.combinationRequirements) {
+
+            // Get the inventory ingredient, if there is any
+            Item inventoryIngredient = inventoryIngredients.Find(s =>
+               s.itemTypeId == requiredIngredient.itemTypeId);
+
+            // Verify that there are enough items in the inventory stack
+            if (inventoryIngredient == null || inventoryIngredient.count < requiredIngredient.count) {
+               sendError("There are not enough ingredients to craft this item!");
+               return;
+            }
+         }
+
+         // Add the result item to the user inventory
+         Item craftedItem = DB_Main.createItemOrUpdateItemCount(_player.userId, resultItem);
+
+         // If the item could not be created, stop the process
+         if (craftedItem == null) {
+            D.warning(string.Format("Could not create the crafted item in the user inventory. Blueprint id: {0}, item category: {1}, item type id: {2}.",
+               blueprint.bpTypeID, resultItem.category, resultItem.itemTypeId));
+            return;
+         }
+
+         // Decrease the quantity of each used ingredient in the user inventory
+         foreach (Item requiredIngredient in craftingRequirements.combinationRequirements) {
+
+            // Get the inventory ingredient, if there is any
+            Item inventoryIngredient = inventoryIngredients.Find(s =>
+               s.itemTypeId == requiredIngredient.itemTypeId);
+
+            // Decrease the quantity in the user inventory
+            DB_Main.decreaseQuantityOrDeleteItem(_player.userId, inventoryIngredient.id, requiredIngredient.count);
+         }
+
+         // Add the crafting xp
+         int xp = 10;
+         DB_Main.addJobXP(_player.userId, Jobs.Type.Crafter, _player.faction, xp);
+         Jobs newJobXP = DB_Main.getJobXP(_player.userId);
+
+         // Back to the Unity thread to send the results back to the client
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+
+            // Registers the crafting action to the achievement database for recording
+            AchievementManager.registerUserAchievement(_player.userId, ActionType.Craft);
+
+            // Let them know they gained experience
+            _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Crafter, 0);
+
+            // Update the available ingredients for the displayed blueprint
+            Target_CloseCraftingPanel(_player.connectionToClient);
+
+            // Display the reward panel
+            Target_ReceiveItem(_player.connectionToClient, craftedItem);
+         });
+      });
    }
 
    [TargetRpc]
@@ -2295,101 +2478,16 @@ public class RPCManager : NetworkBehaviour {
       EnemyLootLibrary lootLibrary = RewardManager.self.fetchLandMonsterLootData(enemyType);
       List<LootInfo> processedLoots = lootLibrary.dropTypes.requestLootList();
 
-      // Registers list of ingredient types for data fetching
-      List<CraftingIngredients.Type> itemLoots = new List<CraftingIngredients.Type>();
-      for (int i = 0; i < processedLoots.Count; i++) {
-         itemLoots.Add(processedLoots[i].lootType);
+      // Build the list of rewarded items
+      List<Item> rewardedItems = new List<Item>();
+      foreach (LootInfo lootInfo in processedLoots) {
+         CraftingIngredients item = new CraftingIngredients(0, lootInfo.lootType, ColorType.Black, ColorType.Black);
+         item.count = lootInfo.quantity;
+         rewardedItems.Add(item);
       }
 
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<Item> databaseList = DB_Main.getRequiredIngredients(_player.userId, itemLoots);
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            processGroupRewards(_player.userId, databaseList, processedLoots, true);
-         });
-      });
-   }
-
-   [Server]
-   public void validateCraftingRewards (int userId, Item.Category category, int itemType) {
-      CraftableItemRequirements data = RewardManager.self.craftableDataList.Find(_ => _.resultItem.category == category && _.resultItem.itemTypeId == itemType);
-
-      List<CraftingIngredients.Type> requiredItemList = new List<CraftingIngredients.Type>();
-      foreach (Item item in data.combinationRequirements) {
-         requiredItemList.Add((CraftingIngredients.Type) item.itemTypeId);
-      }
-
-      // Fetches the needed items and checks if it is equivalent to the requirement
-      List<Item> databaseItemList = new List<Item>();
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         databaseItemList = DB_Main.getRequiredIngredients(userId, requiredItemList);
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            if (databaseItemList.Count <= 0) {
-               D.log("Crafting: Client does not have the materials!");
-               return;
-            } else {
-               for (int i = 0; i < databaseItemList.Count; i++) {
-                  if (databaseItemList[i].count < data.combinationRequirements[i].count) {
-                     D.log("Crafting: Client has Insufficient Materials");
-                     return;
-                  }
-               }
-            }
-
-            processCraftingRewards(userId, category, itemType, databaseItemList, data.combinationRequirements);
-         });
-      });
-   }
-
-   [Server]
-   private void processCraftingRewards (int userId, Item.Category category, int itemType, List<Item> databaseItems, Item[] requiredItems) {
-      // Gets the crafting result using cached scriptable object combo data
-      CraftableItemRequirements data = RewardManager.self.craftableDataList.Find(_ => _.resultItem.category == category && _.resultItem.itemTypeId == itemType);
-      Item rewardItem = data.resultItem;
-      List<Item> rewardItemList = new List<Item>();
-
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Fetches reward item id
-         int rewardItemID = DB_Main.getItemID(userId, (int) rewardItem.category, rewardItem.itemTypeId);
-
-         // Add the crafting xp
-         int xp = 10;
-         DB_Main.addJobXP(_player.userId, Jobs.Type.Crafter, _player.faction, xp);
-         Jobs newJobXP = DB_Main.getJobXP(_player.userId);
-
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            rewardItem.id = rewardItemID;
-            rewardItemList.Add(data.resultItem);
-            finalizeRewards(userId, rewardItemList, databaseItems, requiredItems);
-
-            // Registers the crafting action to the achievement database for recording
-            AchievementManager.registerUserAchievement(_player.userId, ActionType.Craft);
-
-            // Let them know they gained experience
-            _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Crafter, 0);
-         });
-      });
-   }
-
-   [Server]
-   private void finalizeRewards (int userId, List<Item> rewardItem, List<Item> databaseItems, Item[] requiredItems) {
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         for (int i = 0; i < rewardItem.Count; i++) {
-            // Creates or updates item database count
-            DB_Main.createItemOrUpdateItemCount(userId, rewardItem[i]);
-         }
-
-         foreach (Item item in requiredItems) {
-            int deductCount = item.count;
-
-            // Deduct quantity of each required ingredient or delete item if it hits zero count
-            int databaseID = databaseItems.Find(_ => _.itemTypeId == item.itemTypeId && _.category == item.category).id;
-            DB_Main.decreaseQuantityOrDeleteItem(userId, databaseID, deductCount);
-         }
-
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_ReceiveItemList(_player.connectionToClient, rewardItem.ToArray());
-         });
-      });
+      // Grant the rewards to the user
+      giveItemRewardsToPlayer(_player.userId, rewardedItems, true);
    }
 
    [TargetRpc]
@@ -2437,15 +2535,18 @@ public class RPCManager : NetworkBehaviour {
       // Gathers the item rewards from the scriptable object
       List<LootInfo> lootInfoList = RewardManager.self.oreLootList.Find(_ => _.oreType == oreNode.oreType).dropTypes.requestLootList();
 
-      // Registers list of ingredient types for data fetching
-      List<CraftingIngredients.Type> itemLoots = new List<CraftingIngredients.Type>();
-      for (int i = 0; i < lootInfoList.Count; i++) {
-         itemLoots.Add(lootInfoList[i].lootType);
+      // Build the list of rewarded items
+      List<Item> rewardedItems = new List<Item>();
+      foreach(LootInfo lootInfo in lootInfoList) {
+         CraftingIngredients item = new CraftingIngredients(0, lootInfo.lootType, ColorType.Black, ColorType.Black);
+         item.count = lootInfo.quantity;
+         rewardedItems.Add(item);
       }
 
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<Item> databaseList = DB_Main.getRequiredIngredients(_player.userId, itemLoots);
+      // Grant the rewards to the user
+      giveItemRewardsToPlayer(_player.userId, rewardedItems, true);
 
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Add the mining xp
          int xp = 10;
          DB_Main.addJobXP(_player.userId, Jobs.Type.Miner, _player.faction, xp);
@@ -2455,8 +2556,7 @@ public class RPCManager : NetworkBehaviour {
             // Registers the Ore mining success action to the achievement database for recording
             AchievementManager.registerUserAchievement(_player.userId, ActionType.MineOre);
             AchievementManager.registerUserAchievement(_player.userId, ActionType.OreGain, lootInfoList.Count);
-            processGroupRewards(_player.userId, databaseList, lootInfoList, true);
-
+            
             // Let them know they gained experience
             _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Miner, 0);
          });
@@ -2464,31 +2564,17 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Server]
-   private void processGroupRewards (int userID, List<Item> databaseItems, List<LootInfo> rewardList, bool showPanel) {
-      // Generate Item List to show in popup after data writing
-      List<Item> itemRewardList = new List<Item>();
-      for (int i = 0; i < rewardList.Count; i++) {
-         Item itemToCreate = new CraftingIngredients(0, rewardList[i].lootType, ColorType.Black, ColorType.Black);
-         Item databaseItemType = databaseItems.Find(_ => _.category == Item.Category.CraftingIngredients && _.itemTypeId == (int) rewardList[i].lootType);
-
-         // Registers the quantity of each item
-         itemToCreate.count = rewardList[i].quantity;
-         if (databaseItemType != null) {
-            itemToCreate.id = databaseItemType.id;
-         }
-         itemRewardList.Add(itemToCreate);
-      }
-
+   private void giveItemRewardsToPlayer (int userID, List<Item> rewardList, bool showPanel) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Creates or updates database item
-         foreach (Item item in itemRewardList) {
+         // Create or update the database item
+         foreach (Item item in rewardList) {
             DB_Main.createItemOrUpdateItemCount(userID, item);
          }
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Calls Reward Popup
             if (showPanel) {
-               Target_ReceiveItemList(_player.connectionToClient, itemRewardList.ToArray());
+               Target_ReceiveItemList(_player.connectionToClient, rewardList.ToArray());
             }
          });
       });
@@ -3017,24 +3103,6 @@ public class RPCManager : NetworkBehaviour {
       FactionManager.self.addFactionInfo(factionData);
    }
 
-   [Server]
-   private void processCraftingItems (Item[] itemRequestList) {
-      List<CraftableItemRequirements> itemReturnList = new List<CraftableItemRequirements>();
-
-      foreach (Item currItem in itemRequestList) {
-         CraftableItemRequirements requirement = CraftingManager.self.getAllCraftableData().Find(_ => _.resultItem.itemTypeId == currItem.itemTypeId && _.resultItem.category == currItem.category);
-         if (requirement != null) {
-            itemReturnList.Add(requirement);
-         }
-      }
-      Target_ReceiveCraftingRecipes(_player.connectionToClient, itemReturnList.ToArray());
-   }
-
-   [TargetRpc]
-   public void Target_ReceiveCraftingRecipes (NetworkConnection connection, CraftableItemRequirements[] itemRequirements) {
-      RewardManager.self.receiveListFromServer(itemRequirements);
-   }
-
    [Command]
    public void Cmd_ProcessMonsterData (Enemy.Type[] enemyTypes) {
       List<BattlerData> battlerDataList = new List<BattlerData>();
@@ -3360,6 +3428,17 @@ public class RPCManager : NetworkBehaviour {
             NetworkServer.SendToClientOfPlayer(_player.netIdent, equipMessage);
          });
       });
+   }
+
+   [Server]
+   private void sendError (string message) {
+      if (UnityThreadHelper.IsMainThread) {
+         ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, message);
+      } else {
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, message);
+         });
+      }
    }
 
    #region Private Variables

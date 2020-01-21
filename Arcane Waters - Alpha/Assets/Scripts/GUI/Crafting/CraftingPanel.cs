@@ -2,247 +2,332 @@
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.Linq;
 
-public class CraftingPanel : Panel, IPointerClickHandler
+public class CraftingPanel : Panel
 {
    #region Public Variables
 
-   // Image icon of weapons
-   public Sprite weaponBlueprintIcon;
+   // The number of blueprint rows to display per page
+   public static int ROWS_PER_PAGE = 9;
 
-   // Image icon of armors
-   public Sprite armorBlueprintIcon;
+   // The mode of the panel
+   public enum Mode { None = 0, NoBlueprintSelected = 1, BlueprintSelected = 2 }
 
-   // The name of player
-   public Text playerNameText;
+   // The section displayed when no blueprint is selected
+   public GameObject noBlueprintSelectedSection;
 
-   // The name of the item above the description to be crafted
-   public Text itemTitleText;
+   // The section displayed when a blueprint is selected
+   public GameObject blueprintSelectedSection;
 
-   // The details of the item to b crafted
-   public Text itemInfoText;
+   // The container for the blueprint rows
+   public GameObject blueprintRowsContainer;
 
-   // The cost of crafting the item
-   public Text goldText;
-   public Text gemsText;
+   // The container for the ingredient item cells
+   public GameObject ingredientCellsContainer;
 
-   // An empty placeholder
-   public Sprite emptyImage;
+   // The container for the result item cell
+   public GameObject resultItemContainer;
 
-   // The Templates for the raw materials used for crafting
-   public BlueprintRow blueprintRow;
+   // The prefab we use for creating blueprint rows
+   public BlueprintRow blueprintRowPrefab;
 
-   // The crafting slots
-   public List<CraftingRow> craftingRowList;
+   // The prefab we use for creating ingredient cells
+   public ItemCellIngredient ingredientCellPrefab;
 
-   // List of Ingredients for Crafting
-   public List<Item> ingredientList;
+   // The prefab we use for creating item cells
+   public ItemCell itemCellPrefab;
 
-   // The holder of the current items that can be used for crafting
-   public Transform listParent;
+   // The name of the result item
+   public Text itemNameText;
 
-   // Primary buttons
-   public Button craftButton, clearButton;
+   // The description of the result item
+   public Text descriptionText;
 
-   // Disable Button Object for crafting
-   public GameObject craftDisabled;
+   // The stat cells for each element
+   public CraftingStatColumn physicalStatColumn;
+   public CraftingStatColumn fireStatColumn;
+   public CraftingStatColumn earthStatColumn;
+   public CraftingStatColumn airStatColumn;
+   public CraftingStatColumn waterStatColumn;
 
-   // Caches the item that can be crafted
-   public Item craftableItem;
+   // The craft button
+   public Button craftButton;
 
-   // Our character stack
-   public CharacterStack characterStack;
+   // The page number text
+   public Text pageNumberText;
+
+   // The next page button
+   public Button nextPageButton;
+
+   // The previous page button
+   public Button previousPageButton;
+
+   // Self
+   public static CraftingPanel self;
 
    #endregion
 
-   public override void Start () {
-      base.Start();
-
-      clearButton.onClick.AddListener(() => { purge(); });
-      craftButton.onClick.AddListener(() => { craft(); });
+   public override void Awake () {
+      base.Awake();
+      self = this;
    }
 
-   private void OnEnable () {
-      for (int i = 0; i < craftingRowList.Count; i++) {
-         craftingRowList[i].purgeData();
+   public void refreshBlueprintList () {
+      Global.player.rpc.Cmd_RequestBlueprintsFromServer(_currentPage, ROWS_PER_PAGE);
+   }
+
+   public void displayBlueprint (int itemId) {
+      Global.player.rpc.Cmd_RequestSingleBlueprintFromServer(itemId);
+   }
+
+   public void refreshCurrentlySelectedBlueprint () {
+      Global.player.rpc.Cmd_RequestSingleBlueprintFromServer(_selectedBlueprintId);
+   }
+
+   public void clearSelectedBlueprint () {
+      _selectedBlueprintId = -1;
+      configurePanelForMode(Mode.NoBlueprintSelected);
+   }
+
+   public void updatePanelWithBlueprintList (Item[] blueprintArray, int pageNumber, int totalBlueprintCount) {
+      // Update the current page number
+      _currentPage = pageNumber;
+
+      // Calculate the maximum page number
+      _maxPage = Mathf.CeilToInt((float) totalBlueprintCount / ROWS_PER_PAGE);
+      if (_maxPage == 0) {
+         _maxPage = 1;
+      }
+
+      // Update the current page text
+      pageNumberText.text = "Page " + _currentPage.ToString() + " of " + _maxPage.ToString();
+
+      // Update the navigation buttons
+      updateNavigationButtons();
+
+      // Clear out any items in the list
+      blueprintRowsContainer.DestroyChildren();
+
+      // Create the blueprint rows
+      foreach(Item blueprintItem in blueprintArray) {
+         Blueprint blueprint = (Blueprint)(blueprintItem.getCastItem());
+
+         // Get the resulting item
+         Item resultItem = Blueprint.getItemData(blueprint.bpTypeID);
+
+         // Instantiates the row
+         BlueprintRow row = Instantiate(blueprintRowPrefab, blueprintRowsContainer.transform, false);
+
+         // Initializes the row
+         row.setRowForBlueprint(resultItem, blueprint, _selectedBlueprintId == blueprint.id);
+      }
+
+      // Update the craft button
+      updateCraftButton();
+
+      // Set the panel mode if it has not been initialized yet
+      if (_currentMode == Mode.None) {
+         configurePanelForMode(Mode.NoBlueprintSelected);
+      }
+   }
+   
+   public void updatePanelWithSingleBlueprint (Item blueprint, Item[] equippedItems,
+      List<Item> inventoryIngredients, List<Item> requiredIngredients) {
+      _selectedBlueprintId = blueprint.id;
+
+      // Get the casted blueprint
+      blueprint = blueprint.getCastItem();
+
+      // Configure the panel
+      configurePanelForMode(Mode.BlueprintSelected);
+
+      // Keep track of the equipped weapon and armor
+      _equippedArmor = null;
+      _equippedWeapon = null;
+      foreach (Item equippedItem in equippedItems) {
+         Item castedEquippedItem = equippedItem.getCastItem();
+         if (castedEquippedItem is Weapon) {
+            _equippedWeapon = (Weapon) castedEquippedItem;
+         } else if (castedEquippedItem is Armor) {
+            _equippedArmor = (Armor) castedEquippedItem;
+         }
+      }
+      
+      // Get the resulting item
+      Item resultItem = Blueprint.getItemData(((Blueprint)blueprint).bpTypeID);
+
+      // Clear any previous result item
+      resultItemContainer.DestroyChildren();
+
+      // Instantiate a cell for the result item
+      ItemCell cell = Instantiate(itemCellPrefab, resultItemContainer.transform, false);
+
+      // Initialize the cell
+      cell.setCellForItem(resultItem);
+
+      // Set the cell click events
+      cell.leftClickEvent.RemoveAllListeners();
+      cell.rightClickEvent.RemoveAllListeners();
+      cell.doubleClickEvent.RemoveAllListeners();
+
+      // Set the result item name
+      itemNameText.text = resultItem.getName();
+
+      // Set the result item description
+      descriptionText.text = resultItem.getDescription();
+
+      // Clear any existing statistic
+      physicalStatColumn.clear();
+      fireStatColumn.clear();
+      earthStatColumn.clear();
+      airStatColumn.clear();
+      waterStatColumn.clear();
+
+      // Set the result item statistics
+      if (resultItem is Weapon) {
+         Weapon weapon = (Weapon) resultItem;
+
+         physicalStatColumn.setColumnForWeapon(weapon, _equippedWeapon);
+         fireStatColumn.setColumnForWeapon(weapon, _equippedWeapon);
+         earthStatColumn.setColumnForWeapon(weapon, _equippedWeapon);
+         airStatColumn.setColumnForWeapon(weapon, _equippedWeapon);
+         waterStatColumn.setColumnForWeapon(weapon, _equippedWeapon);
+      } else if (resultItem is Armor) {
+         Armor armor = (Armor) resultItem;
+
+         physicalStatColumn.setColumnForArmor(armor, _equippedArmor);
+         fireStatColumn.setColumnForArmor(armor, _equippedArmor);
+         earthStatColumn.setColumnForArmor(armor, _equippedArmor);
+         airStatColumn.setColumnForArmor(armor, _equippedArmor);
+         waterStatColumn.setColumnForArmor(armor, _equippedArmor);
+      }
+
+      // Clear all existing ingredients
+      ingredientCellsContainer.DestroyChildren();
+
+      // Keep track if the currently selected blueprint can be crafted
+      _canSelectedBlueprintBeCrafted = true;
+
+      // Set the ingredients
+      foreach (Item ingredient in requiredIngredients) {
+         // Get the casted item
+         Item requiredIngredient = ingredient.getCastItem();
+
+         // Get the inventory ingredient, if there is any
+         Item inventoryIngredient = inventoryIngredients.Find(s =>
+            s.itemTypeId == requiredIngredient.itemTypeId);
+
+         // Get the ingredient count present in the user inventory
+         int inventoryCount = 0;
+         if (inventoryIngredient != null) {
+            inventoryCount = inventoryIngredient.count;
+         }
+
+         // Instantiate an item cell
+         ItemCellIngredient ingredientCell = Instantiate(ingredientCellPrefab, ingredientCellsContainer.transform, false);
+
+         // Initialize the cell
+         ingredientCell.setCellForItem(requiredIngredient, inventoryCount, requiredIngredient.count);
+
+         // Set the cell click events
+         ingredientCell.leftClickEvent.RemoveAllListeners();
+         ingredientCell.rightClickEvent.RemoveAllListeners();
+         ingredientCell.doubleClickEvent.RemoveAllListeners();
+
+         // If there are not enough ingredients, the item cannot be crafted
+         if (inventoryCount < requiredIngredient.count) {
+            _canSelectedBlueprintBeCrafted = false;
+         }
+      }
+
+      // Update the craft button
+      updateCraftButton();
+
+      // Refresh the blueprint list
+      refreshBlueprintList();
+   }
+
+   public void craft () {
+      if (_selectedBlueprintId != -1) {
+         Global.player.rpc.Cmd_CraftItem(_selectedBlueprintId);
       }
    }
 
-   public void requestInventoryFromServer () {
-      // Fetches all items for comparison if item requirements are met
-      Global.player.rpc.Cmd_RequestItemsFromServer(-1, -1, new Item.Category[] { Item.Category.CraftingIngredients, Item.Category.Blueprint });
-   }
-
-   private void clickMaterialRow (BlueprintRow currBlueprintRow) {
-      Blueprint currItem = currBlueprintRow.itemData;
-      Item convertedItem = Blueprint.getItemData(currItem.itemTypeId);
-
-      CraftableItemRequirements itemCombo = RewardManager.self.craftableDataList.Find(_ => _.resultItem.category == Blueprint.getEquipmentType(currItem.itemTypeId) && _.resultItem.itemTypeId == convertedItem.itemTypeId);
-
-      if (itemCombo == null) {
-         D.error("Item does not exist");
-         currBlueprintRow.itemName.text = "Missing Data";
+   public void updateCraftButton () {
+      if (_selectedBlueprintId == -1 || !_canSelectedBlueprintBeCrafted) {
+         craftButton.interactable = false;
       } else {
-         // Un selects previous selected blueprint
-         if (_currBlueprintRow != null) {
-            if (_currBlueprintRow != currBlueprintRow) {
-               _currBlueprintRow.deselectItem();
-            }
-         }
-         // Enables Selection Frame
-         currBlueprintRow.selectItem();
-         _currBlueprintRow = currBlueprintRow;
-
-         _craftingIngredientList = itemCombo.combinationRequirements;
-
-         int requirementCount = itemCombo.combinationRequirements.Length;
-         int passedRequirementCount = 0;
-
-         // Clears previous requirement list
-         for (int i = 0; i < craftingRowList.Count; i++) {
-            craftingRowList[i].purgeData();
-         }
-
-         // Checks individual materials if complete
-         for (int i = 0; i < requirementCount; i++) {
-            Item requirement = itemCombo.combinationRequirements[i];
-            Item myIngredient = ingredientList.Find(_ => _.itemTypeId == requirement.itemTypeId);
-            int ingredientCount = 0;
-
-            if (myIngredient != null) {
-               ingredientCount = myIngredient.count;
-            } 
-
-            bool passedRequirement = false;
-
-            if (ingredientCount >= requirement.count) {
-               passedRequirement = true;
-               passedRequirementCount++;
-            }
-            craftableItem = itemCombo.resultItem.getCastItem();
-            craftingRowList[i].injectItem(requirement.getCastItem(), ingredientCount, requirement.count, passedRequirement);
-         }
-
-         // Enables/Disables Craft Button if valid requirements
-         if(passedRequirementCount >= requirementCount) {
-            craftButton.gameObject.SetActive(true);
-            craftDisabled.SetActive(false);
-         }
-         else {
-            craftButton.gameObject.SetActive(false);
-            craftDisabled.SetActive(true);
-         }
-
-         // Updates the Icon and description of the item
-         previewItem();
-
-         if (craftableItem.category == Item.Category.Weapon) {
-            characterStack.updateWeapon(_userObjects.userInfo.gender, (Weapon.Type) craftableItem.itemTypeId, ColorType.Black, ColorType.Blue);
-         } else if (craftableItem.category == Item.Category.Armor) {
-            characterStack.updateArmor(_userObjects.userInfo.gender, (Armor.Type) craftableItem.itemTypeId, ColorType.Black, ColorType.Blue);
-         }
+         craftButton.interactable = true;
       }
    }
 
-   private void purge () {
-      previewItem();
-      for (int i = 0; i < craftingRowList.Count; i++) {
-         craftingRowList[i].purgeData();
+   private void configurePanelForMode (Mode mode) {
+      switch (mode) {
+         case Mode.NoBlueprintSelected:
+            noBlueprintSelectedSection.SetActive(true);
+            blueprintSelectedSection.SetActive(false);
+            break;
+         case Mode.BlueprintSelected:
+            noBlueprintSelectedSection.SetActive(false);
+            blueprintSelectedSection.SetActive(true);
+            break;
+         default:
+            break;
+      }
+      _currentMode = mode;
+   }
+
+   public void nextPage () {
+      if (_currentPage < _maxPage) {
+         _currentPage++;
+         refreshBlueprintList();
       }
    }
 
-   private void craft () {
-      if (craftableItem != null) {
-         Item item = craftableItem;
-
-         // Tells the server the item was crafted
-         Global.player.rpc.Cmd_CraftItem(Blueprint.getEquipmentType(_currBlueprintRow.itemData.itemTypeId), item.itemTypeId);
-
-         PanelManager.self.get(Type.Craft).hide();
-         craftableItem = null;
+   public void previousPage () {
+      if (_currentPage > 1) {
+         _currentPage--;
+         refreshBlueprintList();
       }
    }
 
-   private void previewItem () {
-      itemTitleText.text = "";
-      itemInfoText.text = "";
+   private void updateNavigationButtons () {
+      // Activate or deactivate the navigation buttons if we reached a limit
+      previousPageButton.enabled = true;
+      nextPageButton.enabled = true;
 
-      List<CraftableItemRequirements> dataList = RewardManager.self.craftableDataList;
-      itemInfoText.text = "A blueprint design for: "+craftableItem.getDescription();
-      itemTitleText.text = craftableItem.getName() + " Design";
-   }
-
-   public void receiveItemsFromServer (UserObjects userObjects, int pageNumber, int gold, int gems, int totalItemCount, int equippedArmorId, int equippedWeaponId, Item[] itemArray) {
-      // Clears listeners for existing templates
-      if (listParent.childCount > 0) {
-         foreach (Transform child in listParent) {
-            child.GetComponent<BlueprintRow>().button.onClick.RemoveAllListeners();
-         }
-      }
-      listParent.gameObject.DestroyChildren();
-
-      // Adds crafting materials to view panel
-      ingredientList = new List<Item>();
-      List<Item> itemList = new List<Item>();
-      foreach (Item item in itemArray) {
-         itemList.Add(item.getCastItem());
+      if (_currentPage <= 1) {
+         previousPageButton.enabled = false;
       }
 
-      for (int i = 0; i < itemList.Count; i++) {
-         Item itemData = itemList[i].getCastItem();
-
-         // Handles all the blueprints that can be crafted
-         if (itemData.category == Item.Category.Blueprint) {
-            GameObject prefab = Instantiate(this.blueprintRow.gameObject, listParent);
-            BlueprintRow blueprintRow = prefab.GetComponent<BlueprintRow>();
-
-            // Setting up the data of the blueprint template
-            int ingredient = itemData.itemTypeId;
-            Blueprint blueprint = new Blueprint(0, ingredient, ColorType.DarkGreen, ColorType.DarkPurple, "");
-            blueprint.itemTypeId = ingredient;
-
-            // Determines what icon to preview in crafting panel
-            Sprite blueprintIcon = emptyImage;
-            if (Blueprint.getEquipmentType(blueprint.itemTypeId) == Item.Category.Weapon) {
-               blueprintIcon = weaponBlueprintIcon;
-            } else if (Blueprint.getEquipmentType(blueprint.itemTypeId) == Item.Category.Armor) {
-               blueprintIcon = armorBlueprintIcon;
-            }
-
-            blueprintRow.button.onClick.AddListener(() => {
-               clickMaterialRow(blueprintRow);
-            });
-            blueprintRow.initData(blueprint, blueprintIcon);
-            prefab.SetActive(true);
-         }
-         else if (itemData.category == Item.Category.CraftingIngredients) {
-            ingredientList.Add(itemData);
-         }
+      if (_currentPage >= _maxPage) {
+         nextPageButton.enabled = false;
       }
-
-      // Updates player data preview
-      playerNameText.text = Global.player.entityName;
-      _userObjects = userObjects;
-      characterStack.updateLayers(userObjects);
-   }
-
-   public void OnPointerClick (PointerEventData eventData) {
-
    }
 
    #region Private Variables
 
-   // Cached Material To Craft
-   private BlueprintRow _currBlueprintRow;
+   // The weapon currently equipped by the player
+   private Weapon _equippedWeapon;
 
-   // Cached Recipe
-   private CraftingRow _currCraftingRow;
+   // The armor currently equipped by the player
+   private Armor _equippedArmor;
 
-   // The last set of User Objects that we received
-   protected UserObjects _userObjects;
+   // The index of the current page
+   private int _currentPage = 1;
 
-   // Caches ingredients that are needed for crafting
-   private Item[] _craftingIngredientList;
+   // The maximum page index (starting at 1)
+   private int _maxPage = 1;
+
+   // The item id of the currently displayed blueprint
+   private int _selectedBlueprintId = -1;
+
+   // Gets set to true when the item can be crafted
+   private bool _canSelectedBlueprintBeCrafted = false;
+
+   // The current panel mode
+   private Mode _currentMode = Mode.None;
 
    #endregion
 }

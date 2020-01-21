@@ -58,7 +58,8 @@ public class CraftingAnvil : MonoBehaviour
 
       // If the panel is not showing, send a request to the server to get the crafting data
       if (!panel.isShowing()) {
-         panel.requestInventoryFromServer();
+         panel.clearSelectedBlueprint();
+         panel.refreshBlueprintList();
       }
    }
 

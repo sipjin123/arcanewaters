@@ -63,13 +63,6 @@ public class RewardManager : MonoBehaviour {
       }
    }
 
-   public void receiveListFromServer (CraftableItemRequirements[] requirements) {
-      craftableDataList = new List<CraftableItemRequirements>();
-      foreach(CraftableItemRequirements requirement in requirements) {
-         craftableDataList.Add(requirement);
-      }
-   }
-
    public void showItemsInRewardPanel (List<Item> loots) {
       // Calls the panel and injects the List of items
       RewardScreen rewardPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);

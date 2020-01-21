@@ -1347,59 +1347,6 @@ public class DB_Main : DB_MainStub {
 
    #endregion
 
-   public static new List<Item> getRequiredIngredients (int usrId, List<CraftingIngredients.Type> itemList) {
-      int itmCategory = (int) Item.Category.CraftingIngredients;
-      List<Item> newItemList = new List<Item>();
-
-      string itemIds = "";
-      for (int i = 0; i < itemList.Count; i++) {
-         int itmType = (int) itemList[i];
-         if (i > 0) {
-            itemIds += " or ";
-         }
-         itemIds += "itmType = " + itmType;
-      }
-
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(string.Format("SELECT * FROM arcane.items where itmCategory = @itmCategory and ({0}) and usrId = @usrId", itemIds), conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@itmCategory", itmCategory);
-            cmd.Parameters.AddWithValue("@usrId", usrId);
-
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  int newCategory = DataUtil.getInt(dataReader, "itmCategory");
-                  int newType = DataUtil.getInt(dataReader, "itmType");
-                  int newitemCount = DataUtil.getInt(dataReader, "itmCount");
-                  int newItemID = DataUtil.getInt(dataReader, "itmId");
-
-                  ItemInfo info = new ItemInfo(dataReader);
-                  Item newItem = new Item {
-                     category = (Item.Category) newCategory,
-                     itemTypeId = newType,
-                     count = newitemCount,
-                     id = newItemID
-                  };
-
-                  Item findItem = newItemList.Find(_ => _.itemTypeId == newType && (int) _.category == newCategory);
-                  if (newItemList.Contains(findItem)) {
-                     int itemIndex = newItemList.IndexOf(findItem);
-                     newItemList[itemIndex].count += 1;
-                  } else {
-                     newItemList.Add(newItem);
-                  }
-               }
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-      return newItemList;
-   }
-
    #region Crops
 
    public static new List<CropInfo> getCropInfo (int userId) {
@@ -2854,6 +2801,10 @@ public class DB_Main : DB_MainStub {
       return itemCount;
    }
 
+   public static new int getItemCount (int userId, Item.Category[] categories) {
+      return getItemCount(userId, categories, new List<int>());
+   }
+
    public static new int getItemCount (int userId, Item.Category[] categories, List<int> itemIdsToFilter) {
       // Initialize the count
       int itemCount = 0;
@@ -2912,6 +2863,10 @@ public class DB_Main : DB_MainStub {
       }
 
       return itemCount;
+   }
+
+   public static new List<Item> getItems (int userId, Item.Category[] categories, int page, int itemsPerPage) {
+      return getItems(userId, categories, page, itemsPerPage, new List<int>());
    }
 
    public static new List<Item> getItems (int userId, Item.Category[] categories, int page, int itemsPerPage,
@@ -2990,6 +2945,48 @@ public class DB_Main : DB_MainStub {
          D.error("MySQL Error: " + e.ToString());
       }
 
+      return itemList;
+   }
+
+   public static new List<Item> getCraftingIngredients (int usrId, List<CraftingIngredients.Type> ingredientTypes) {
+      List<Item> itemList = new List<Item>();
+
+      string itemIds = "";
+      for (int i = 0; i < ingredientTypes.Count; i++) {
+         int itmType = (int) ingredientTypes[i];
+         if (i > 0) {
+            itemIds += " or ";
+         }
+         itemIds += "itmType = " + itmType;
+      }
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(string.Format("SELECT * FROM arcane.items WHERE usrId = @usrId AND itmCategory = @itmCategory AND ({0})", itemIds), conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@itmCategory", (int) Item.Category.CraftingIngredients);
+            cmd.Parameters.AddWithValue("@usrId", usrId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  int itemId = DataUtil.getInt(dataReader, "itmId");
+                  Item.Category category = (Item.Category) DataUtil.getInt(dataReader, "itmCategory");
+                  int itemTypeId = DataUtil.getInt(dataReader, "itmType");
+                  ColorType color1 = (ColorType) DataUtil.getInt(dataReader, "itmColor1");
+                  ColorType color2 = (ColorType) DataUtil.getInt(dataReader, "itmColor2");
+                  string data = DataUtil.getString(dataReader, "itmData");
+                  int itemCount = DataUtil.getInt(dataReader, "itmCount");
+
+                  Item newItem = new Item(itemId, category, itemTypeId, itemCount, color1, color2, data);
+                  itemList.Add(newItem);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
       return itemList;
    }
 

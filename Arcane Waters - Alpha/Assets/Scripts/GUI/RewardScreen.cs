@@ -25,23 +25,30 @@ public class RewardScreen : Panel
    }
 
    public void setItemData (Item item) {
+      // Get the casted item
+      Item castedItem = item.getCastItem();
+
+      // Disable all the rows
       disableAll();
-      rewardRows[0].rewardIcon.sprite = ImageManager.getSprite(item.getCastItem().getIconPath());
+
+      // Initialize the first row
       rewardRows[0].gameObject.SetActive(true);
-      rewardRows[0].setQuantityText(item.count.ToString());
-      rewardRows[0].rewardName.text = item.getCastItem().getName();
-      rewardRows[0].quantityContainer.SetActive(item.count > 1);
+      rewardRows[0].setRowForItem(castedItem);
    }
 
    public void setItemDataGroup (List<Item> itemList) {
+      // Disable all the rows
       disableAll();
+
       for (int i = 0; i < itemList.Count; i++) {
+         // Get the casted item
          Item currItem = itemList[i].getCastItem();
+
+         // Enable the row
          rewardRows[i].gameObject.SetActive(true);
-         rewardRows[i].rewardIcon.sprite = ImageManager.getSprite(currItem.getIconPath());
-         rewardRows[i].setQuantityText(currItem.count.ToString());
-         rewardRows[i].rewardName.text = currItem.getName();
-         rewardRows[i].quantityContainer.SetActive(currItem.count > 1);
+
+         // Initialize the row
+         rewardRows[0].setRowForItem(currItem);
       }
    }
 

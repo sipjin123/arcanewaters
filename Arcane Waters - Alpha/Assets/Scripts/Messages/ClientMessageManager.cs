@@ -292,18 +292,6 @@ public class ClientMessageManager : MonoBehaviour {
       MyNetworkManager.self.StopClient();
    }
 
-   public static void On_Inventory (NetworkConnection conn, InventoryMessage msg) {
-      if (PanelManager.self.selectedPanel == Panel.Type.Craft) {
-         CraftingPanel craftPanel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);
-         if (!craftPanel.isShowing()) {
-            // Make sure the inventory panel is showing
-            PanelManager.self.pushPanel(Panel.Type.Craft);
-         }
-         // Update the Crafting Panel with the items we received from the server
-         craftPanel.receiveItemsFromServer(msg.userObjects, msg.pageNumber, msg.gold, msg.gems, msg.totalItemCount, msg.equippedArmorId, msg.equippedWeaponId, msg.itemArray);
-      }
-   }
-
    public static void On_Store (NetworkConnection conn, StoreMessage msg) {
       // Show the Store panel after updating the gems on hand
       StoreScreen store = (StoreScreen) PanelManager.self.get(Panel.Type.Store);

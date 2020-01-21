@@ -190,12 +190,7 @@ public class CraftingIngredientPanel : MonoBehaviour {
    }
 
    private Item getItem(Item.Category categ, int typeID, int count) {
-      Item resultItem = new Item {
-         category = categ,
-         itemTypeId = typeID,
-         count = count
-      };
-
+      Item resultItem = new Item(0, categ, typeID, count, ColorType.None, ColorType.None, "");
       return resultItem;
    }
 

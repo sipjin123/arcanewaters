@@ -97,6 +97,17 @@ public class Weapon : EquippableItem {
       this.data = data;
    }
 
+   public Weapon (int id, Type weaponType) {
+      this.category = Category.Weapon;
+      this.id = id;
+      this.count = 1;
+      this.itemTypeId = (int) weaponType;
+      this.type = weaponType;
+      this.color1 = ColorType.None;
+      this.color2 = ColorType.None;
+      this.data = "";
+   }
+
    public override string getDescription () {
       WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(this.type);
       if (weaponData == null) {

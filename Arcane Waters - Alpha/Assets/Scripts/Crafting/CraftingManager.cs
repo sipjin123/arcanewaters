@@ -20,8 +20,9 @@ public class CraftingManager : MonoBehaviour {
       self = this;
    }
 
-   public CraftableItemRequirements getItem(Item.Category itemCategory, int itemType) {
-      return _craftingData[itemCategory.ToString()];
+   public CraftableItemRequirements getItem(Item.Category itemCategory, int itemTypeId) {
+      string keyName = getKey(itemCategory, itemTypeId);
+      return _craftingData[keyName];
    }
 
    public List<CraftableItemRequirements> getAllCraftableData () {
@@ -42,7 +43,7 @@ public class CraftingManager : MonoBehaviour {
             foreach (string rawText in rawXMLData) {
                TextAsset newTextAsset = new TextAsset(rawText);
                CraftableItemRequirements craftingData = Util.xmlLoad<CraftableItemRequirements>(newTextAsset); 
-               string keyName = craftingData.resultItem.category == Item.Category.None ? "Undefined" : craftingData.resultItem.category + "_" + craftingData.resultItem.itemTypeId;
+               string keyName = getKey(craftingData.resultItem.category, craftingData.resultItem.itemTypeId);
                
                // Save the Crafting data in the memory cache
                if (!_craftingData.ContainsKey(keyName)) {
@@ -56,6 +57,10 @@ public class CraftingManager : MonoBehaviour {
             }
          });
       });
+   }
+
+   private string getKey (Item.Category category, int itemTypeId) {
+      return category == Item.Category.None ? "Undefined" : category + "_" + itemTypeId;
    }
 
    #region Private Variables

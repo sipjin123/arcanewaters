@@ -9,9 +9,6 @@ public class ItemCellInventory : ItemCell, IPointerDownHandler, IPointerEnterHan
 
    #region Public Variables
 
-   // The background image
-   public Image backgroundImage;
-
    // The canvas group component
    public CanvasGroup canvasGroup;
 

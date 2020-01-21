@@ -11,7 +11,7 @@ public class MailPanel : Panel
 
    #region Public Variables
 
-   // The number of rows to display per page, when displaying friendship requests
+   // The number of mail rows to display per page
    public static int ROWS_PER_PAGE = 7;
 
    // The mode of the panel
