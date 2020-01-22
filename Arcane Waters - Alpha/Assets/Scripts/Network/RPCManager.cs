@@ -2761,15 +2761,15 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Get references to the Player and Enemy objects
-      PlayerBodyEntity hostBattler = (PlayerBodyEntity) _player;
+      PlayerBodyEntity localBattler = (PlayerBodyEntity) _player;
       NetworkIdentity enemyIdent = NetworkIdentity.spawned[spawnedEnemy.netId];
       Enemy enemy = enemyIdent.GetComponent<Enemy>();
-      Instance instance = InstanceManager.self.getInstance(hostBattler.instanceId);
+      Instance instance = InstanceManager.self.getInstance(localBattler.instanceId);
 
-      List<PlayerBodyEntity> partyBodyEntities = new List<PlayerBodyEntity>();
+      List<PlayerBodyEntity> bodyEntities = new List<PlayerBodyEntity>();
 
       // Register the Host as the first entry for the party entities
-      partyBodyEntities.Add(hostBattler);
+      bodyEntities.Add(localBattler);
 
       // Look up the player's Area
       Area area = AreaManager.self.getArea(_player.areaKey);
@@ -2779,7 +2779,7 @@ public class RPCManager : NetworkBehaviour {
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Retrieve the skill list from database
-         List<AbilitySQLData> abilityDataList = DB_Main.getAllAbilities(hostBattler.userId);
+         List<AbilitySQLData> abilityDataList = DB_Main.getAllAbilities(localBattler.userId);
 
          // Cache Attackers Info
          foreach (string playerName in attackerPlayerNames) {
@@ -2789,7 +2789,7 @@ public class RPCManager : NetworkBehaviour {
             if (rawEntity != null) {
                PlayerBodyEntity bodyEntity = (PlayerBodyEntity) rawEntity;
                if (bodyEntity != null) {
-                  partyBodyEntities.Add(bodyEntity);
+                  bodyEntities.Add(bodyEntity);
                } else {
                   D.warning("Server cant find this ID: " + rawEntity.userId);
                }
@@ -2804,7 +2804,7 @@ public class RPCManager : NetworkBehaviour {
             if (rawEntity != null) {
                PlayerBodyEntity bodyEntity = (PlayerBodyEntity) rawEntity;
                if (bodyEntity != null) {
-                  partyBodyEntities.Add(bodyEntity);
+                  bodyEntities.Add(bodyEntity);
                } else {
                   D.warning("Server cant find this ID: " + rawEntity.userId);
                }
@@ -2822,7 +2822,7 @@ public class RPCManager : NetworkBehaviour {
             }
 
             // Get or create the Battle instance
-            Battle battle = (enemy.battleId > 0) ? BattleManager.self.getBattle(enemy.battleId) : BattleManager.self.createTeamBattle(area, instance, enemy, attackerBattlers, hostBattler, defenderBattlers);
+            Battle battle = (enemy.battleId > 0) ? BattleManager.self.getBattle(enemy.battleId) : BattleManager.self.createTeamBattle(area, instance, enemy, attackerBattlers, localBattler, defenderBattlers);
 
             // If the Battle is full, we can't proceed
             if (!battle.hasRoomLeft(Battle.TeamType.Attackers)) {
@@ -2831,29 +2831,29 @@ public class RPCManager : NetworkBehaviour {
             }
 
             // Add the player to the Battle
-            BattleManager.self.addPlayerToBattle(battle, hostBattler, Battle.TeamType.Attackers);
+            BattleManager.self.addPlayerToBattle(battle, localBattler, Battle.TeamType.Attackers);
 
             // Provides all the abilities for the players in the party
-            setupAbilitiestForPlayers(partyBodyEntities);
+            setupAbilitiesForPlayers(bodyEntities);
 
             // Provides the client with the info of the Equipped Abilities
             Target_UpdateBattleAbilityUI(_player.connectionToClient, Util.serialize(abilityDataList.FindAll(_ => _.equipSlotIndex >= 0)));
 
             // Send class info to client
-            PlayerClassData currentClassData = ClassManager.self.getClassData(hostBattler.classType);
+            PlayerClassData currentClassData = ClassManager.self.getClassData(localBattler.classType);
             Target_ReceiveClassInfo(_player.connectionToClient, JsonUtility.ToJson(currentClassData));
 
             // Send faction info to client
-            PlayerFactionData currentFactionData = FactionManager.self.getFactionData(hostBattler.faction);
+            PlayerFactionData currentFactionData = FactionManager.self.getFactionData(localBattler.faction);
             Target_ReceiveFactionInfo(_player.connectionToClient, JsonUtility.ToJson(currentFactionData));
 
             // Send specialty info to client
-            PlayerSpecialtyData currentSpecialtyData = SpecialtyManager.self.getSpecialtyData(hostBattler.specialty);
+            PlayerSpecialtyData currentSpecialtyData = SpecialtyManager.self.getSpecialtyData(localBattler.specialty);
             Target_ReceiveSpecialtyInfo(_player.connectionToClient, JsonUtility.ToJson(currentSpecialtyData));
 
-            foreach (PlayerBodyEntity inviteeBattlers in partyBodyEntities) {
+            foreach (PlayerBodyEntity inviteeBattlers in bodyEntities) {
                // Only invite other players, host should not receive this invite
-               if (inviteeBattlers.userId != hostBattler.userId) {
+               if (inviteeBattlers.userId != localBattler.userId) {
                   Battle.TeamType teamType = new List<string>(attackerPlayerNames).Find(_ => _ == inviteeBattlers.entityName) != null ? Battle.TeamType.Attackers : Battle.TeamType.Defenders;
                   inviteeBattlers.rpc.Target_InvitePlayerToCombat(inviteeBattlers.connectionToClient, spawnedEnemy.netId, teamType);
                }
@@ -2926,7 +2926,7 @@ public class RPCManager : NetworkBehaviour {
             BattleManager.self.addPlayerToBattle(battle, playerBody, teamType);
 
             // Host Battler Should know their own ability
-            setupAbilitiestForPlayers(new List<PlayerBodyEntity>() { playerBody });
+            setupAbilitiesForPlayers(new List<PlayerBodyEntity>() { playerBody });
 
             // Provides the client with the info of the Equipped Abilities
             Target_UpdateBattleAbilityUI(playerBody.connectionToClient, Util.serialize(abilityDataList.FindAll(_ => _.equipSlotIndex >= 0)));
@@ -2984,7 +2984,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Server]
-   public void setupAbilitiestForPlayers (List<PlayerBodyEntity> playerEntities) {
+   public void setupAbilitiesForPlayers (List<PlayerBodyEntity> playerEntities) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          foreach (PlayerBodyEntity entity in playerEntities) {
             // Retrieves skill list from database
@@ -2998,7 +2998,7 @@ public class RPCManager : NetworkBehaviour {
 
                // Set server data
                Battler battler = BattleManager.self.getBattler(entity.userId);
-               battler.setBattlerAbilities(getAbilityRecord(equippedAbilityDataList.ToArray()), true);
+               battler.setBattlerAbilities(getAbilityRecord(equippedAbilityDataList.ToArray()), BattlerType.PlayerControlled);
             });
          }
       });

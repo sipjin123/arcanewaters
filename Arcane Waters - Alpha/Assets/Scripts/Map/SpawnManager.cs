@@ -48,7 +48,7 @@ public partial class SpawnManager : MonoBehaviour {
       if (_spawns.ContainsKey(spawnID)) {
          return _spawns[spawnID];
       } else {
-         D.warning("Spawin ID is missing: " + areaKey+" - "+spawnKey);
+         D.warning("Spawn ID is missing: " + areaKey+" - "+spawnKey);
          return _spawns.Values.ToList()[0];
       }
    }

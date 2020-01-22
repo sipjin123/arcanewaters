@@ -237,9 +237,15 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       this.player = enemyIdent.GetComponent<NetEntity>();
 
       // Set our sprite sheets according to our types
-      if (battlerType == BattlerType.PlayerControlled && Global.player.userId == this.userId) {
+      if (battlerType == BattlerType.PlayerControlled && isLocalBattler()) {
          updateSprites();
       } else {
+         // Only player battlers need sprite update
+         if (battlerType == BattlerType.PlayerControlled && !isLocalBattler()) {
+            updateSprites();
+         }
+
+         // Both Monster and Player battlers are selectable
          onBattlerSelect.AddListener(() => {
             BattleUIManager.self.triggerTargetUI(this);
          });
@@ -321,7 +327,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
                mainSpriteRenderer.sprite = fetchSprite;
             }
             
-            setBattlerAbilities(_alteredBattlerData.battlerAbilities);
+            setBattlerAbilities(_alteredBattlerData.battlerAbilities, battlerType);
 
             // Extra cooldown time for AI controlled battlers, so they do not attack instantly
             this.cooldownEndTime = Util.netTime() + 5f;
@@ -535,7 +541,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       _outline.recreateOutlineIfVisible();
    }
 
-   public void setBattlerAbilities (AbilityDataRecord values, bool hostBattler = false) {
+   public void setBattlerAbilities (AbilityDataRecord values, BattlerType battlerType) {
       if (battlerAbilitiesInitialized) {
          return;
       }
@@ -553,8 +559,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
                   _battlerAttackAbilities.Add(atkAbilityData);
                   _battlerBasicAbilities.Add(atkAbilityData);
 
-                  // Sync ID's
-                  if (hostBattler) {
+                  // Sync ID's for Player battlers
+                  if (battlerType == BattlerType.PlayerControlled) {
                      attackAbilityIDList.Add(atkAbilityData.itemID);
                      basicAbilityIDList.Add(atkAbilityData.itemID);
                   }
@@ -564,8 +570,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
                   _battlerBuffAbilities.Add(buffAbilityData);
                   _battlerBasicAbilities.Add(buffAbilityData);
 
-                  // Sync ID's
-                  if (hostBattler) {
+                  // Sync ID's for Player battlers
+                  if (battlerType == BattlerType.PlayerControlled) {
                      buffAbilityIDList.Add(buffAbilityData.itemID);
                      basicAbilityIDList.Add(buffAbilityData.itemID);
                   }
@@ -669,8 +675,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             // Player battler
             Spawn spawn = SpawnManager.self.getSpawn(Area.FOREST_TOWN, Spawn.FOREST_TOWN_DOCK);
 
-            // If they're still connected, we can warp them directly
-            if (player.userId == Global.player.userId) {
+            if (isLocalBattler()) {
+               // If they're still connected, we can warp them directly
                if (player != null && player.connectionToClient != null) {
                   player.spawnInNewMap(spawn.AreaKey, spawn, Direction.North);
                } else {
