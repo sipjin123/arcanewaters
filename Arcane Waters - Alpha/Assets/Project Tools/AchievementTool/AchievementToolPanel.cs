@@ -30,6 +30,10 @@ public class AchievementToolPanel : MonoBehaviour {
    #endregion
 
    private void Awake () {
+      if (!MasterToolAccountManager.canAlterData()) {
+         saveButton.gameObject.SetActive(false);
+      }
+
       saveButton.onClick.AddListener(() => {
          AchievementData itemData = getAchievementData();
          if (itemData != null) {

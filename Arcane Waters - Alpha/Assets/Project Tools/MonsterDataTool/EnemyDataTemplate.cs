@@ -36,9 +36,14 @@ public class EnemyDataTemplate : MonoBehaviour {
 
       nameText.text = newName;
       indexText.text = "ID# " + ((int) resultItem.enemyType).ToString();
+
+      if (!MasterToolAccountManager.canAlterData()) {
+         deleteButton.gameObject.SetActive(false);
+         duplicateButton.gameObject.SetActive(false);
+      }
    }
 
    #region Private Variables
-      
+
    #endregion
 }

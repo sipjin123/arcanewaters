@@ -27,6 +27,10 @@ public class TutorialToolPanel : MonoBehaviour {
    #endregion
 
    private void Awake () {
+      if (!MasterToolAccountManager.canAlterData()) {
+         saveButton.gameObject.SetActive(false);
+      }
+
       saveButton.onClick.AddListener(() => {
          TutorialData itemData = getTutorialData();
          if (itemData != null) {

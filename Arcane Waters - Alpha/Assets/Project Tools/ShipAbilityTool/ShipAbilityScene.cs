@@ -29,6 +29,10 @@ public class ShipAbilityScene : MonoBehaviour {
    #endregion
 
    private void Awake () {
+      if (!MasterToolAccountManager.canAlterData()) {
+         createButton.gameObject.SetActive(false);
+      }
+
       createButton.onClick.AddListener(() => {
          createTemplate();
       });

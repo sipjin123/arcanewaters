@@ -5,6 +5,8 @@ using UnityEngine.UI;
 using Mirror;
 
 public class ShopToolTemplate : MonoBehaviour {
+   #region Public Variable
+
    // Name of the template 
    public Text nameText;
 
@@ -22,4 +24,13 @@ public class ShopToolTemplate : MonoBehaviour {
 
    // Button for duplicating this template
    public Button duplicateButton;
+
+   #endregion
+
+   private void OnEnable () {
+      if (!MasterToolAccountManager.canAlterData()) {
+         duplicateButton.gameObject.SetActive(false);
+         deleteButton.gameObject.SetActive(false);
+      }
+   }
 }

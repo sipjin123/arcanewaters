@@ -32,6 +32,10 @@ public class ShipAbilityPanel : MonoBehaviour {
    #endregion
 
    private void Awake () {
+      if (!MasterToolAccountManager.canAlterData()) {
+         saveButton.gameObject.SetActive(false);
+      }
+
       foreach (TogglerClass toggler in togglerList) {
          toggler.initListeners();
       }

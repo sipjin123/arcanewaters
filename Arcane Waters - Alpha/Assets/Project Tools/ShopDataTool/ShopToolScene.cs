@@ -29,6 +29,10 @@ public class ShopToolScene : MonoBehaviour {
    #endregion
 
    private void Awake () {
+      if (!MasterToolAccountManager.canAlterData()) {
+         createButton.gameObject.SetActive(false);
+      }
+
       shopPanel.gameObject.SetActive(false);
       createButton.onClick.AddListener(() => {
          createTemplate();

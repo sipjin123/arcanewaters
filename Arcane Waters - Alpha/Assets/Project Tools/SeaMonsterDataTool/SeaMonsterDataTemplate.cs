@@ -37,6 +37,11 @@ public class SeaMonsterDataTemplate : MonoBehaviour
 
       nameText.text = newName;
       indexText.text = "ID# " + ((int) resultItem.seaMonsterType).ToString();
+
+      if (!MasterToolAccountManager.canAlterData()) {
+         deleteButton.gameObject.SetActive(false);
+         duplicateButton.gameObject.SetActive(false);
+      }
    }
 
    #region Private Variables

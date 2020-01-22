@@ -42,6 +42,10 @@ public class ShipDataPanel : MonoBehaviour {
    #endregion
 
    private void Awake () {
+      if (!MasterToolAccountManager.canAlterData()) {
+         saveButton.gameObject.SetActive(false);
+      }
+
       closeSelectionPanel.onClick.AddListener(() => {
          skillSelectionPanel.SetActive(false);
       });

@@ -66,7 +66,7 @@ public class CraftingToolManager : MonoBehaviour {
       return craftingDataList.ContainsKey(nameID);
    }
 
-   public void saveDataToFile (CraftableItemRequirements data) {
+   public void saveDataToFile (CraftableItemRequirements data, bool deleteBlankData) {
       string fileName = data.resultItem.category == Item.Category.None ? "Undefined" : Util.getItemName(data.resultItem.category, data.resultItem.itemTypeId);
 
       XmlSerializer ser = new XmlSerializer(data.GetType());
@@ -78,6 +78,10 @@ public class CraftingToolManager : MonoBehaviour {
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.updateCraftingXML(longString, fileName);
+
+         if (deleteBlankData) {
+            deleteCraftingDataFile(new CraftableItemRequirements { resultItem = new Item { category = Item.Category.None } });
+         }
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadAllDataFiles();

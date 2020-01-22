@@ -49,6 +49,10 @@ public class ShopToolPanel : MonoBehaviour
    #endregion
 
    private void Awake () {
+      if (!MasterToolAccountManager.canAlterData()) {
+         saveButton.gameObject.SetActive(false);
+      }
+
       saveButton.onClick.AddListener(() => {
          ShopData newShipData = getShopData();
 

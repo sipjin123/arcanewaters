@@ -31,6 +31,11 @@ public class NPCSelectionRow : MonoBehaviour
       _npcId = npcId;
       npcIdText.text = npcId.ToString();
       npcNameText.text = npcName;
+
+      if (!MasterToolAccountManager.canAlterData()) {
+         duplicateButton.gameObject.SetActive(false);
+         deleteButton.gameObject.SetActive(false);
+      }
    }
 
    public void editButtonClickedOn () {

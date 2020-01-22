@@ -10,7 +10,7 @@ public class SeaMonsterEntity : SeaEntity
 
    public enum Type
    {
-      None = 0, Tentacle = 1, Horror = 2, Worm = 3, Reef_Giant = 4, Fishman = 5,
+      None = 0, Tentacle = 1, Horror = 2, Worm = 3, Reef_Giant = 4, Fishman = 5, SeaSerpent = 6
    }
 
    // List of children dependencies

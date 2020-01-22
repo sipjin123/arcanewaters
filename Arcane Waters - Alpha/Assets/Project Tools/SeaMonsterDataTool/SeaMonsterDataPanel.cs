@@ -103,6 +103,10 @@ public class SeaMonsterDataPanel : MonoBehaviour
    #endregion
 
    private void Awake () {
+      if (!MasterToolAccountManager.canAlterData()) {
+         saveExitButton.gameObject.SetActive(false);
+      }
+
       previewPanel.SetActive(false);
       revertButton.onClick.AddListener(() => {
          monsterToolManager.loadAllDataFiles();

@@ -239,6 +239,10 @@ public class DB_MainStub : MonoBehaviour {
       return -1;
    }
 
+   public static int getAccountPermissionLevel (int accountId) {
+      return 0;
+   }
+
    public static List<UserInfo> getUsersForAccount (int accId, int userId = 0) {
       return new List<UserInfo>();
    }

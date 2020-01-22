@@ -69,6 +69,9 @@ public class CraftingIngredientPanel : MonoBehaviour {
    // The icon of the result item
    public Image resultItemIcon;
 
+   // Determines if the template is a new entry
+   private bool emptyContent;
+
    #endregion
 
    private void Awake () {
@@ -84,6 +87,10 @@ public class CraftingIngredientPanel : MonoBehaviour {
       });
 
       resultItemCategoryDisplay.text = Item.Category.None.ToString();
+
+      if (!MasterToolAccountManager.canAlterData()) {
+         saveExitButton.gameObject.SetActive(false);
+      }
    }
 
    private void closeEntirePanel() {
@@ -198,7 +205,7 @@ public class CraftingIngredientPanel : MonoBehaviour {
       if (currentCombinationData != null) {
          updateRootTemplate();
          updateData();
-         craftingToolManager.saveDataToFile(currentCombinationData);
+         craftingToolManager.saveDataToFile(currentCombinationData, emptyContent);
       }
       gameObject.SetActive(false);
    }
@@ -210,6 +217,8 @@ public class CraftingIngredientPanel : MonoBehaviour {
    }
 
    public void setData(CraftableItemRequirements currData) {
+      emptyContent = currData.resultItem.category == Item.Category.None;
+
       ingredientTemplateParent.gameObject.DestroyChildren();
       itemRowList = new List<ItemRequirementRow>();
 

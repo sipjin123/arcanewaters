@@ -141,6 +141,9 @@ public class NPCEditScreen : MonoBehaviour
    // The starting id of the npc
    public int startingID;
 
+   // Save Button
+   public Button saveButton;
+
    // Enum to determine the current item category
    public enum ItemSelectionType
    {
@@ -175,6 +178,10 @@ public class NPCEditScreen : MonoBehaviour
       closeAvatarSelectionButton.onClick.AddListener(() => {
          iconSelectionPanel.SetActive(false);
       });
+
+      if (!MasterToolAccountManager.canAlterData()) {
+         saveButton.gameObject.SetActive(false);
+      }
    }
 
    public void convertFaction () {
@@ -286,6 +293,11 @@ public class NPCEditScreen : MonoBehaviour
 
       // Overwrite the panel values
       updatePanelWithNPC(data);
+
+      // Hide the screen
+      hide();
+
+      NPCToolManager.self.loadAllDataFiles();
    }
 
    public void saveButtonClickedOn () {

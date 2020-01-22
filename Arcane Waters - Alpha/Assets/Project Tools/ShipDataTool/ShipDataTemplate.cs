@@ -36,5 +36,10 @@ public class ShipDataTemplate : MonoBehaviour {
 
       nameText.text = newName;
       indexText.text = "ID# " + ((int) resultItem.shipID).ToString();
+
+      if (!MasterToolAccountManager.canAlterData()) {
+         deleteButton.gameObject.SetActive(false);
+         duplicateButton.gameObject.SetActive(false);
+      }
    }
 }

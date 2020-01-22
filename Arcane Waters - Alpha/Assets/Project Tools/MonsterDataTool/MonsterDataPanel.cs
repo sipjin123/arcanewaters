@@ -117,6 +117,10 @@ public class MonsterDataPanel : MonoBehaviour {
    #endregion
 
    private void Awake () {
+      if (!MasterToolAccountManager.canAlterData()) {
+         saveExitButton.gameObject.SetActive(false);
+      }
+
       revertButton.onClick.AddListener(() => {
          monsterToolManager.loadAllDataFiles();
          abilityToolManager.loadXML();

@@ -54,6 +54,10 @@ public class PlayerClassPanel : MonoBehaviour {
       foreach (TogglerClass toggler in togglerList) {
          toggler.initListeners();
       }
+
+      if (!MasterToolAccountManager.canAlterData()) {
+         saveButton.gameObject.SetActive(false);
+      }
    }
 
    private PlayerClassData getClassData () {

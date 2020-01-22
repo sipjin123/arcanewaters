@@ -36,6 +36,10 @@ public class ShipDataScene : MonoBehaviour {
       mainMenuButton.onClick.AddListener(() => {
          SceneManager.LoadScene(MasterToolScene.masterScene);
       });
+
+      if (!MasterToolAccountManager.canAlterData()) {
+         createButton.gameObject.SetActive(false);
+      }
    }
 
    private void createTemplate () {

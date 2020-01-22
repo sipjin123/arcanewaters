@@ -37,6 +37,10 @@ public class PlayerClassScene : MonoBehaviour {
       });
 
       playerClassPanel.gameObject.SetActive(false);
+
+      if (!MasterToolAccountManager.canAlterData()) {
+         createButton.gameObject.SetActive(false);
+      }
    }
 
    private void createTemplate () {

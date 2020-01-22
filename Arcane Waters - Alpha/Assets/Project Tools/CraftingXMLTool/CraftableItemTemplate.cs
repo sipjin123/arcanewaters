@@ -36,6 +36,11 @@ public class CraftableItemTemplate : MonoBehaviour {
 
       nameText.text = newName;
       indexText.text = "ID# "+resultItem.itemTypeId.ToString();
+
+      if (!MasterToolAccountManager.canAlterData()) {
+         duplicateButton.gameObject.SetActive(false);
+         deleteButton.gameObject.SetActive(false);
+      }
    }
 
    #region Private Variables

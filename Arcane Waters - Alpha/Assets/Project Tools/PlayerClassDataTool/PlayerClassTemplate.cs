@@ -27,6 +27,13 @@ public class PlayerClassTemplate : MonoBehaviour {
 
    #endregion
 
+   private void OnEnable () {
+      if (!MasterToolAccountManager.canAlterData()) {
+         deleteButton.gameObject.SetActive(false);
+         duplicateButton.gameObject.SetActive(false);
+      }
+   }
+
    #region Private Variables
 
    #endregion

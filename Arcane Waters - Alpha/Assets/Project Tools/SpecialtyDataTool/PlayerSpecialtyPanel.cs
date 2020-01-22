@@ -30,6 +30,10 @@ public class PlayerSpecialtyPanel : MonoBehaviour
    #endregion
 
    private void Awake () {
+      if (!MasterToolAccountManager.canAlterData()) {
+         saveButton.gameObject.SetActive(false);
+      }
+
       saveButton.onClick.AddListener(() => {
          PlayerSpecialtyData itemData = getSpecialtyData();
          if (itemData != null) {

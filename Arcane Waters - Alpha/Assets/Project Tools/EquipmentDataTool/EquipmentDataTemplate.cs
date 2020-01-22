@@ -30,4 +30,11 @@ public class EquipmentDataTemplate : MonoBehaviour {
    public EquipmentType equipmentType;
 
    #endregion
+
+   private void OnEnable () {
+      if (!MasterToolAccountManager.canAlterData()) {
+         duplicateButton.gameObject.SetActive(false);
+         deleteButton.gameObject.SetActive(false);
+      }
+   }
 }

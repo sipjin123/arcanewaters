@@ -171,8 +171,8 @@ public class DB_Main : DB_MainStub {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO ability_xml (ability_name, xmlContent, ability_type) " +
-            "VALUES(@ability_name, @xmlContent, @ability_type) " +
+            "INSERT INTO ability_xml (ability_name, xmlContent, ability_type, creator_userID) " +
+            "VALUES(@ability_name, @xmlContent, @ability_type, @creator_userID) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, ability_type = @ability_type", conn)) {
 
             conn.Open();
@@ -181,6 +181,7 @@ public class DB_Main : DB_MainStub {
             cmd.Parameters.AddWithValue("@ability_name", abilityName);
             cmd.Parameters.AddWithValue("@xmlContent", abilityXML);
             cmd.Parameters.AddWithValue("@ability_type", abilityType);
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccoundID);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -417,8 +418,8 @@ public class DB_Main : DB_MainStub {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO ship_ability_xml (shipAbilityName, xmlContent) " +
-            "VALUES(@shipAbilityName, @xmlContent) " +
+            "INSERT INTO ship_ability_xml (shipAbilityName, xmlContent, creator_userID) " +
+            "VALUES(@shipAbilityName, @xmlContent, @creator_userID) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
 
             conn.Open();
@@ -426,6 +427,7 @@ public class DB_Main : DB_MainStub {
 
             cmd.Parameters.AddWithValue("@shipAbilityName", shipAbilityName);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccoundID);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -483,8 +485,8 @@ public class DB_Main : DB_MainStub {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO land_monster_xml (enemyType, xmlContent) " +
-            "VALUES(@enemyType, @xmlContent) " +
+            "INSERT INTO land_monster_xml (enemyType, xmlContent, creator_userID) " +
+            "VALUES(@enemyType, @xmlContent, @creator_userID) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
 
             conn.Open();
@@ -492,6 +494,7 @@ public class DB_Main : DB_MainStub {
 
             cmd.Parameters.AddWithValue("@enemyType", typeIndex);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccoundID);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -550,8 +553,8 @@ public class DB_Main : DB_MainStub {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO sea_monster_xml (seaMonsterType, xmlContent) " +
-            "VALUES(@seaMonsterType, @xmlContent) " +
+            "INSERT INTO sea_monster_xml (seaMonsterType, xmlContent, creator_userID) " +
+            "VALUES(@seaMonsterType, @xmlContent, @creator_userID) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
 
             conn.Open();
@@ -559,6 +562,7 @@ public class DB_Main : DB_MainStub {
 
             cmd.Parameters.AddWithValue("@seaMonsterType", typeIndex);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccoundID);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -617,8 +621,8 @@ public class DB_Main : DB_MainStub {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO npc_xml (npcId, xmlContent) " +
-            "VALUES(@npcId, @xmlContent) " +
+            "INSERT INTO npc_xml (npcId, xmlContent, creator_userID) " +
+            "VALUES(@npcId, @xmlContent, @creator_userID) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
 
             conn.Open();
@@ -626,6 +630,7 @@ public class DB_Main : DB_MainStub {
 
             cmd.Parameters.AddWithValue("@npcId", typeIndex);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccoundID);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -803,8 +808,8 @@ public class DB_Main : DB_MainStub {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO shop_xml (shopName, xmlContent) " +
-            "VALUES(@shopName, @xmlContent) " +
+            "INSERT INTO shop_xml (shopName, xmlContent, creator_userID) " +
+            "VALUES(@shopName, @xmlContent, @creator_userID) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
 
             conn.Open();
@@ -812,6 +817,7 @@ public class DB_Main : DB_MainStub {
 
             cmd.Parameters.AddWithValue("@shopName", shopName);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccoundID);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -869,8 +875,8 @@ public class DB_Main : DB_MainStub {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO ship_xml (shipType, xmlContent) " +
-            "VALUES(@shipType, @xmlContent) " +
+            "INSERT INTO ship_xml (shipType, xmlContent, creator_userID) " +
+            "VALUES(@shipType, @xmlContent, @creator_userID) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
 
             conn.Open();
@@ -878,6 +884,7 @@ public class DB_Main : DB_MainStub {
 
             cmd.Parameters.AddWithValue("@shipType", typeIndex);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccoundID);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -936,8 +943,8 @@ public class DB_Main : DB_MainStub {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO tutorial_xml (tutorialTitle, xmlContent, stepOrder) " +
-            "VALUES(@tutorialTitle, @xmlContent, @stepOrder) " +
+            "INSERT INTO tutorial_xml (tutorialTitle, xmlContent, stepOrder, creator_userID) " +
+            "VALUES(@tutorialTitle, @xmlContent, @stepOrder, @creator_userID) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
 
             conn.Open();
@@ -946,6 +953,7 @@ public class DB_Main : DB_MainStub {
             cmd.Parameters.AddWithValue("@tutorialTitle", name);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
             cmd.Parameters.AddWithValue("@stepOrder", order);
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccoundID);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1003,8 +1011,8 @@ public class DB_Main : DB_MainStub {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO achievement_xml (achievementName, xmlContent) " +
-            "VALUES(@achievementName, @xmlContent) " +
+            "INSERT INTO achievement_xml (achievementName, xmlContent, creator_userID) " +
+            "VALUES(@achievementName, @xmlContent, @creator_userID) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
 
             conn.Open();
@@ -1012,6 +1020,7 @@ public class DB_Main : DB_MainStub {
 
             cmd.Parameters.AddWithValue("@achievementName", name);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccoundID); 
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1085,8 +1094,8 @@ public class DB_Main : DB_MainStub {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO " + tableName + " (type, xmlContent) " +
-            "VALUES(@type, @xmlContent) " +
+            "INSERT INTO " + tableName + " (type, xmlContent, creator_userID) " +
+            "VALUES(@type, @xmlContent, @creator_userID) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
 
             conn.Open();
@@ -1094,6 +1103,7 @@ public class DB_Main : DB_MainStub {
 
             cmd.Parameters.AddWithValue("@type", key);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccoundID);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1183,8 +1193,8 @@ public class DB_Main : DB_MainStub {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO crafting_xml (name, xmlContent) " +
-            "VALUES(@name, @xmlContent) " +
+            "INSERT INTO crafting_xml (name, xmlContent, creator_userID) " +
+            "VALUES(@name, @xmlContent, @creator_userID) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
 
             conn.Open();
@@ -1192,6 +1202,7 @@ public class DB_Main : DB_MainStub {
 
             cmd.Parameters.AddWithValue("@name", name);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccoundID);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1262,8 +1273,8 @@ public class DB_Main : DB_MainStub {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO " + tableName + " (type, xmlContent) " +
-            "VALUES(@type, @xmlContent) " +
+            "INSERT INTO " + tableName + " (type, xmlContent, creator_userID) " +
+            "VALUES(@type, @xmlContent, @creator_userID) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
 
             conn.Open();
@@ -1271,6 +1282,7 @@ public class DB_Main : DB_MainStub {
 
             cmd.Parameters.AddWithValue("@type", typeID);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccoundID);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1834,6 +1846,7 @@ public class DB_Main : DB_MainStub {
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
+         UnityEngine.Debug.LogError("ERror is: " + e.ToString());
       }
 
       return userId;
@@ -1965,6 +1978,30 @@ public class DB_Main : DB_MainStub {
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
                   accountStatus = dataReader.GetInt32("accStatus");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return accountStatus;
+   }
+
+   public static new int getAccountPermissionLevel (int accountId) {
+      int accountStatus = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT usrAdminFlag FROM accounts WHERE accId=@accId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@accId", accountId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  accountStatus = dataReader.GetInt32("usrAdminFlag");
                }
             }
          }

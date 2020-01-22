@@ -48,6 +48,10 @@ public class MonsterDataScene : MonoBehaviour {
          });
       }
 
+      if (!MasterToolAccountManager.canAlterData()) {
+         createTemplateButton.gameObject.SetActive(false);
+      }
+
       monsterPanel.gameObject.SetActive(false);
       openMainTool.onClick.AddListener(() => {
          SceneManager.LoadScene(MasterToolScene.masterScene);

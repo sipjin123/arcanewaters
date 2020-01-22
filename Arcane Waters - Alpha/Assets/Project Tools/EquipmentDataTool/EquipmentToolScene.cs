@@ -33,6 +33,11 @@ public class EquipmentToolScene : MonoBehaviour {
    #endregion
 
    private void Awake () {
+      if (!MasterToolAccountManager.canAlterData()) {
+         createWeaponButton.gameObject.SetActive(false);
+         createArmorButton.gameObject.SetActive(false);
+         createHelmButton.gameObject.SetActive(false);
+      }
 
       weaponToggle.onValueChanged.AddListener(_ => {
          weaponTemplateParent.SetActive(_);

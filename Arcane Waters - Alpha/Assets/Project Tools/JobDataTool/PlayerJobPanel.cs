@@ -29,6 +29,10 @@ public class PlayerJobPanel : MonoBehaviour {
    #endregion
 
    private void Awake () {
+      if (!MasterToolAccountManager.canAlterData()) {
+         saveButton.gameObject.SetActive(false);
+      }
+
       saveButton.onClick.AddListener(() => {
          PlayerJobData itemData = getJobData();
          if (itemData != null) {

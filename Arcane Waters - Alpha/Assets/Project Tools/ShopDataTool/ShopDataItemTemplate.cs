@@ -70,5 +70,9 @@ public class ShopDataItemTemplate : MonoBehaviour {
             cropIcon.SetActive(true);
             break;
       }
+
+      if (!MasterToolAccountManager.canAlterData()) {
+         deleteItem.gameObject.SetActive(false);
+      }
    }
 }

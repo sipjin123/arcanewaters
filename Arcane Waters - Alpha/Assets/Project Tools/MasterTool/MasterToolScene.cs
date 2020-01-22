@@ -26,9 +26,13 @@ public class MasterToolScene : MonoBehaviour {
    public const string playerJobScene = "PlayerJob Tool";
    public const string shipAbilityScene = "ShipAbility Tool";
    public const string shopScene = "ShopTool";
+   public const string tutorialScene = "Tutorial Tool";
 
    // Loading delay before fetching XML Data
    public static float loadDelay = 2;
+
+   // Login instance of the master tool
+   public GameObject loginInstance;
 
    // Button triggers to open scene
    public Button clickAbilityScene, 
@@ -47,6 +51,7 @@ public class MasterToolScene : MonoBehaviour {
       clickJobScene,
       clickShipAbilityScene,
       clickShopScene,
+      clickTutorialScene,
       exitButton;
 
    #endregion
@@ -104,6 +109,13 @@ public class MasterToolScene : MonoBehaviour {
       clickShopScene.onClick.AddListener(() => {
          SceneManager.LoadScene(shopScene);
       });
+      clickTutorialScene.onClick.AddListener(() => {
+         SceneManager.LoadScene(tutorialScene);
+      });
+      
+      if (MasterToolAccountManager.self == null) {
+         GameObject loginPanel = Instantiate(loginInstance);
+      }
    }
 
    #region Private Variables

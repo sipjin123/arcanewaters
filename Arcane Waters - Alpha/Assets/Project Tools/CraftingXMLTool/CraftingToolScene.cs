@@ -39,6 +39,10 @@ public class CraftingToolScene : MonoBehaviour {
       craftingPanel.popUpSelectionPanel.gameObject.SetActive(false);
       refreshButton.onClick.AddListener(() => refreshXML());
       createTemplateButton.onClick.AddListener(() => createNewTemplate(new CraftableItemRequirements()));
+
+      if (!MasterToolAccountManager.canAlterData()) {
+         createTemplateButton.gameObject.SetActive(false);
+      }
    }
 
    private void createNewTemplate(CraftableItemRequirements requirementData) {
@@ -58,7 +62,7 @@ public class CraftingToolScene : MonoBehaviour {
          template.itemIcon.sprite = Util.getRawSpriteIcon(requirementData.resultItem.category, requirementData.resultItem.itemTypeId);
 
          template.gameObject.SetActive(true);
-         toolManager.saveDataToFile(requirementData);
+         toolManager.saveDataToFile(requirementData, false);
       }
    }
 

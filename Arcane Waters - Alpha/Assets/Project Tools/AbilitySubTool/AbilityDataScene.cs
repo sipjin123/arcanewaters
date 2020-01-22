@@ -61,6 +61,11 @@ public class AbilityDataScene : MonoBehaviour
    private void Start () {
       abilityPanel.SetActive(false);
 
+      if (!MasterToolAccountManager.canAlterData()) {
+         saveButton.gameObject.SetActive(false);
+         createTemplateButton.gameObject.SetActive(false);
+      }
+
       cancelButton.onClick.AddListener(() => {
          abilityPanel.SetActive(false);
          abilityManager.loadXML();
@@ -172,10 +177,12 @@ public class AbilityDataScene : MonoBehaviour
                loadAttackData(abilityData);
                abilityPanel.SetActive(true);
             });
+
             template.deleteButton.onClick.AddListener(() => {
                deleteAbility(new BasicAbilityData { itemName = template.actualName, abilityType = AbilityType.Standard });
                Destroy(template.gameObject, .5f);
             });
+
             template.duplicateButton.onClick.AddListener(() => {
                abilityManager.duplicateFile(abilityData);
             });
@@ -215,6 +222,7 @@ public class AbilityDataScene : MonoBehaviour
             template.duplicateButton.onClick.AddListener(() => {
                abilityManager.duplicateFile(abilityData);
             });
+
             finalizeTemplate(template, abilityData);
          }
       }

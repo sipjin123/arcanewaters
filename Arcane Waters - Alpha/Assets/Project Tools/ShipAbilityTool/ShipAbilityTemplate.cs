@@ -28,6 +28,13 @@ public class ShipAbilityTemplate : MonoBehaviour
 
    #endregion
 
+   private void OnEnable () {
+      if (!MasterToolAccountManager.canAlterData()) {
+         duplicateButton.gameObject.SetActive(false);
+         deleteButton.gameObject.SetActive(false);
+      }
+   }
+
    #region Private Variables
 
    #endregion

@@ -28,6 +28,9 @@ public class NPCSelectionScreen : MonoBehaviour
    // The list of the rows created
    public List<NPCSelectionRow> npcRowList = new List<NPCSelectionRow>();
 
+   // Button for creating templates
+   public UnityEngine.UI.Button createButton;
+
    #endregion
 
    public void updatePanelWithNPCs(Dictionary<int, NPCData> _npcData) {
@@ -79,6 +82,10 @@ public class NPCSelectionScreen : MonoBehaviour
             Sprite sourceSprite = imgData.sprite;
             npcEditScreen.avatarSpriteList.Add(imgData.imagePath, sourceSprite);
          }
+      }
+
+      if (!MasterToolAccountManager.canAlterData()) {
+         createButton.gameObject.SetActive(false);
       }
    }
 

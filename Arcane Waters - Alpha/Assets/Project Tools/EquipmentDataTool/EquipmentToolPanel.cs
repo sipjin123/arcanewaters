@@ -42,6 +42,10 @@ public class EquipmentToolPanel : MonoBehaviour {
    #endregion
 
    private void Awake () {
+      if (!MasterToolAccountManager.canAlterData()) {
+         saveButton.gameObject.SetActive(false);
+      }
+
       createElementalModifierButton.onClick.AddListener(() => createModifierTemplate(ModifierType.Elemental));
       createRarityModifierButton.onClick.AddListener(() => createModifierTemplate(ModifierType.Rarity));
 

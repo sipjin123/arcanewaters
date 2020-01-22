@@ -29,6 +29,10 @@ public class PlayerFactionPanel : MonoBehaviour {
    #endregion
 
    private void Awake () {
+      if (!MasterToolAccountManager.canAlterData()) {
+         saveButton.gameObject.SetActive(false);
+      }
+
       saveButton.onClick.AddListener(() => {
          PlayerFactionData itemData = getFactionData();
          if (itemData != null) {
