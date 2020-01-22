@@ -365,6 +365,11 @@ public class Util : MonoBehaviour {
       return isServerBuild;
    }
 
+   public static bool isBatchServer () {
+      // In production, we always run the server in batch mode (no visuals) and automatically start up the server
+      return Application.isBatchMode && CommandCodes.get(CommandCodes.Type.AUTO_SERVER);
+   }
+
    public static void SetVisibility (GameObject go, bool vis) {
       foreach (var r in go.GetComponents<Renderer>()) {
          r.enabled = vis;

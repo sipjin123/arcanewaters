@@ -3004,37 +3004,17 @@ public class RPCManager : NetworkBehaviour {
       });
    }
 
-   protected AbilityDataRecord getAbilityRecord (AbilitySQLData[] equippedAbilities) {
+   protected List<BasicAbilityData> getAbilityRecord (AbilitySQLData[] equippedAbilities) {
       List<BasicAbilityData> basicAbilityList = new List<BasicAbilityData>();
-      List<AttackAbilityData> attackAbilityList = new List<AttackAbilityData>();
-      List<BuffAbilityData> buffAbilityList = new List<BuffAbilityData>();
 
       foreach (AbilitySQLData abilitySQL in equippedAbilities) {
-         if (abilitySQL.abilityType == AbilityType.Standard) {
-            BasicAbilityData abilityData = AbilityManager.getAbility(abilitySQL.abilityID, AbilityType.Standard);
-            AttackAbilityData attackAbilityData = AbilityManager.getAttackAbility(abilitySQL.abilityID);
-            if (abilityData != null) {
-               basicAbilityList.Add(abilityData);
-               attackAbilityList.Add(attackAbilityData);
-            }
-         }
-         if (abilitySQL.abilityType == AbilityType.BuffDebuff) {
-            BasicAbilityData abilityData = AbilityManager.getAbility(abilitySQL.abilityID, AbilityType.BuffDebuff);
-            BuffAbilityData buffAbilityData = AbilityManager.getBuffAbility(abilitySQL.abilityID);
-            if (abilityData != null) {
-               basicAbilityList.Add(abilityData);
-               buffAbilityList.Add(buffAbilityData);
-            }
+         BasicAbilityData abilityData = AbilityManager.getAbility(abilitySQL.abilityID, AbilityType.Undefined);
+         if (abilityData != null) {
+            basicAbilityList.Add(abilityData);
          }
       }
 
-      AbilityDataRecord abilityRecord = new AbilityDataRecord {
-         basicAbilityDataList = basicAbilityList.ToArray(),
-         attackAbilityDataList = attackAbilityList.ToArray(),
-         buffAbilityDataList = buffAbilityList.ToArray(),
-      };
-
-      return abilityRecord;
+      return basicAbilityList;
    }
 
    [Server]

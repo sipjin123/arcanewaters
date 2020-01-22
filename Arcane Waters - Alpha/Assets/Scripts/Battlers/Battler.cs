@@ -49,8 +49,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
    // The list of battler ability ID's
    public SyncListInt basicAbilityIDList = new SyncListInt();
-   public SyncListInt attackAbilityIDList = new SyncListInt();
-   public SyncListInt buffAbilityIDList = new SyncListInt();
 
    // The userId associated with this Battler, if any
    [SyncVar]
@@ -326,8 +324,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             if (fetchSprite != null) {
                mainSpriteRenderer.sprite = fetchSprite;
             }
-            
-            setBattlerAbilities(_alteredBattlerData.battlerAbilities, battlerType);
+
+            setBattlerAbilities(new List<BasicAbilityData>(_alteredBattlerData.battlerAbilities.basicAbilityDataList), battlerType);
 
             // Extra cooldown time for AI controlled battlers, so they do not attack instantly
             this.cooldownEndTime = Util.netTime() + 5f;
@@ -346,23 +344,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    private void syncAbilities () {
       if (battlerType == BattlerType.PlayerControlled) {
          // Create new ability record to assign to this entity
-         AbilityDataRecord newAbilityRecord = new AbilityDataRecord();
-         _battlerAttackAbilities = new List<AttackAbilityData>();
-         _battlerBuffAbilities = new List<BuffAbilityData>();
          _battlerBasicAbilities = new List<BasicAbilityData>();
 
-         foreach (int attackID in attackAbilityIDList) {
-            AttackAbilityData attackData = AbilityManager.getAttackAbility(attackID);
-            if (attackData != null) {
-               _battlerAttackAbilities.Add(attackData);
-            }
-         }
-         foreach (int buffId in buffAbilityIDList) {
-            BuffAbilityData buffData = AbilityManager.getBuffAbility(buffId);
-            if (buffData != null) {
-               _battlerBuffAbilities.Add(buffData);
-            }
-         }
          foreach (int basicID in basicAbilityIDList) {
             BasicAbilityData basicData = AbilityManager.getAbility(basicID, AbilityType.Undefined);
             if (basicData != null) {
@@ -394,7 +377,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       }
    }
 
-   private void setupPlayerStats() {
+   private void setupPlayerStats () {
       if (battlerType == BattlerType.PlayerControlled) {
          NetEntity playerBody = player;
 
@@ -439,14 +422,14 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             addDefaultStats(specialtyStatDefault);
             addCombatStats(specialtyStatCombat);
          }
-      } 
+      }
    }
 
    private void addDefaultStats (UserDefaultStats stat) {
       _alteredBattlerData.baseHealth += (int) stat.bonusMaxHP;
       _alteredBattlerData.healthPerlevel += (int) stat.hpPerLevel;
 
-      this.health += (int) stat.bonusMaxHP + ((int)stat.hpPerLevel * LevelUtil.levelForXp(XP));
+      this.health += (int) stat.bonusMaxHP + ((int) stat.hpPerLevel * LevelUtil.levelForXp(XP));
 
       _alteredBattlerData.baseDamage += (int) stat.bonusATK;
       _alteredBattlerData.damagePerLevel += (int) stat.bonusATKPerLevel;
@@ -541,7 +524,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       _outline.recreateOutlineIfVisible();
    }
 
-   public void setBattlerAbilities (AbilityDataRecord values, BattlerType battlerType) {
+   public void setBattlerAbilities (List<BasicAbilityData> basicAbilityList, BattlerType battlerType) {
       if (battlerAbilitiesInitialized) {
          return;
       }
@@ -551,37 +534,16 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       _offenseInitializedStance = BasicAbilityData.CreateInstance(AbilityInventory.self.offenseStance);
       _defensiveInitializedStance = BasicAbilityData.CreateInstance(AbilityInventory.self.defenseStance);
 
-      if (values.basicAbilityDataList != null) {
-         foreach (BasicAbilityData item in values.basicAbilityDataList) {
-            switch (item.abilityType) {
-               case AbilityType.Standard:
-                  AttackAbilityData atkAbilityData = AttackAbilityData.CreateInstance(Array.Find<AttackAbilityData>(values.attackAbilityDataList, element => element.itemName == item.itemName));
-                  _battlerAttackAbilities.Add(atkAbilityData);
-                  _battlerBasicAbilities.Add(atkAbilityData);
+      if (basicAbilityList != null) {
+         foreach (BasicAbilityData item in basicAbilityList) {
+            _battlerBasicAbilities.Add(item);
 
-                  // Sync ID's for Player battlers
-                  if (battlerType == BattlerType.PlayerControlled) {
-                     attackAbilityIDList.Add(atkAbilityData.itemID);
-                     basicAbilityIDList.Add(atkAbilityData.itemID);
-                  }
-                  break;
-               case AbilityType.BuffDebuff:
-                  BuffAbilityData buffAbilityData = BuffAbilityData.CreateInstance(Array.Find<BuffAbilityData>(values.buffAbilityDataList, element => element.itemName == item.itemName));
-                  _battlerBuffAbilities.Add(buffAbilityData);
-                  _battlerBasicAbilities.Add(buffAbilityData);
-
-                  // Sync ID's for Player battlers
-                  if (battlerType == BattlerType.PlayerControlled) {
-                     buffAbilityIDList.Add(buffAbilityData.itemID);
-                     basicAbilityIDList.Add(buffAbilityData.itemID);
-                  }
-                  break;
-               default:
-                  Debug.LogWarning("UNCATEGORIZED ability: " + item.itemName);
-                  break;
+            // Sync ID's for Player battlers
+            if (battlerType == BattlerType.PlayerControlled) {
+               basicAbilityIDList.Add(item.itemID);
             }
+            battlerAbilitiesInitialized = true;
          }
-         battlerAbilitiesInitialized = true;
       } else {
          Debug.LogError("There is no ability");
       }
@@ -651,7 +613,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
    public void playDeathSound () {
       AudioClip deathSound = AudioClipManager.self.getAudioClipData(getBattlerData().deathSoundPath).audioClip;
-      
+
       if (deathSound == null) {
          Debug.LogWarning("Battler does not have a death sound");
          return;
@@ -745,7 +707,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       BuffAbilityData globalAbilityData = BuffAbilityData.CreateInstance(abilityDataReference);
 
       switch (globalAbilityData.buffActionType) {
-         case BuffActionType.Regeneration: 
+         case BuffActionType.Regeneration:
             // Cast version of the Buff Action
             BuffAction buffAction = (BuffAction) battleAction;
             Battler targetBattler = battle.getBattler(buffAction.targetId);
@@ -882,7 +844,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
       // Then proceeding to execute the remaining for each path, it is a little extensive, but definitely a lot better than
       // creating a lot of different scripts
-      
+
       Battle battle = BattleManager.self.getBattle(battleAction.battleId);
       Battler sourceBattler = battle.getBattler(battleAction.sourceId);
 
@@ -898,7 +860,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       // we check if the ability we want to reference is a cancel ability
 
       if (!globalAbilityData.isCancel()) {
-         attackerAbility = _battlerAttackAbilities[battleAction.abilityInventoryIndex];
+         attackerAbility = getAttackAbility(battleAction.abilityInventoryIndex);
       }
 
       switch (globalAbilityData.abilityActionType) {
@@ -1026,9 +988,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             }
 
             onBattlerAttackEnd.Invoke();
-            
+
             break;
-         case AbilityActionType.Ranged: 
+         case AbilityActionType.Ranged:
             // Cast version of the Attack Action
             action = (AttackAction) battleAction;
             targetBattler = battle.getBattler(action.targetId);
@@ -1135,10 +1097,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             }
 
             onBattlerAttackEnd.Invoke();
-            
+
             break;
 
-         case AbilityActionType.CastToTarget: 
+         case AbilityActionType.CastToTarget:
             // Cast version of the Attack Action
             action = (AttackAction) battleAction;
             targetBattler = battle.getBattler(action.targetId);
@@ -1242,7 +1204,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             }
 
             onBattlerAttackEnd.Invoke();
-            
+
             break;
 
          case AbilityActionType.Cancel:
@@ -1495,12 +1457,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
       return 1f;
    }
-   
+
    public float getPreContactLength () {
       // The amount of time our attack takes depends the type of Battler
       return 0.5f;
    }
-   
+
    public float getPreMagicLength () {
       // The amount of time before the ground effect appears depends on the type of Battler
       return .6f;
@@ -1562,7 +1524,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
       // Add our weapon's damage value, if we have a weapon
       if (weaponManager.hasWeapon()) {
-          damage += weaponManager.getWeapon().getDamage(element);
+         damage += weaponManager.getWeapon().getDamage(element);
       }
 
       float multiplier = 1;
@@ -1745,16 +1707,16 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    public bool isAttacker () {
       return teamType == Battle.TeamType.Attackers;
    }
-   
+
    public Vector2 getMagicGroundPosition () {
       return new Vector2(transform.position.x, transform.position.y - (mainSpriteRenderer.bounds.extents.y / 2));
    }
-   
+
    public Vector2 getMeleeStandPosition () {
       Vector2 startPos = battleSpot.transform.position;
       return startPos + new Vector2(mainSpriteRenderer.bounds.extents.x, 0) * (isAttacker() ? -1f : 1f);
    }
-   
+
    public Vector2 getRangedEndPosition () {
       Vector2 startPos = battleSpot.transform.position;
       return startPos + new Vector2(0f, mainSpriteRenderer.bounds.extents.x * 2) * (isAttacker() ? -1f : 1f);
@@ -1836,17 +1798,43 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
    // Ability Getters
    public List<BasicAbilityData> getBasicAbilities () { return _battlerBasicAbilities; }
-   public List<AttackAbilityData> getAttackAbilities () { return _battlerAttackAbilities; }
-   public List<BuffAbilityData> getBuffAbilities () { return _battlerBuffAbilities; }
+
+   public List<AttackAbilityData> getAttackAbilities () {
+      List<AttackAbilityData> attackAbilities = new List<AttackAbilityData>();
+      foreach (BasicAbilityData basicData in _battlerBasicAbilities) {
+         if (basicData.abilityType == AbilityType.Standard) {
+            attackAbilities.Add(AbilityManager.getAttackAbility(basicData.itemID));
+         }
+      }
+      return attackAbilities;
+   }
+
+   public List<BuffAbilityData> getBuffAbilities () {
+      List<BuffAbilityData> buffAbilities = new List<BuffAbilityData>();
+      foreach (BasicAbilityData basicData in _battlerBasicAbilities) {
+         if (basicData.abilityType == AbilityType.BuffDebuff) {
+            buffAbilities.Add(AbilityManager.getBuffAbility(basicData.itemID));
+         }
+      }
+      return buffAbilities;
+   }
+
+   public AttackAbilityData getAttackAbility (int indexID) {
+      return getAttackAbilities()[indexID];
+   }
+
+   public BuffAbilityData getBuffAbilitiy (int indexID) {
+      return getBuffAbilities()[indexID];
+   }
 
    public AttackAbilityData getBasicAttack () {
       // Safe check
-      if (_battlerAttackAbilities.Count <= 0) {
+      if (getAttackAbilities().Count <= 0) {
          Debug.LogError("This battler do not have any abilities");
          return null;
       }
 
-      return _battlerAttackAbilities[0];
+      return getAttackAbility(0);
    }
 
    private bool isMouseHovering () {
@@ -1887,12 +1875,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
 
    // Attack abilities that will be used in combat
    [SerializeField] private List<BasicAbilityData> _battlerBasicAbilities = new List<BasicAbilityData>();
-
-   // Attack abilities that will be used in combat
-   [SerializeField] private List<AttackAbilityData> _battlerAttackAbilities = new List<AttackAbilityData>();
-
-   // Buff abilities that will be used when buffing/debuffing a target in combat.
-   [SerializeField] private List<BuffAbilityData> _battlerBuffAbilities = new List<BuffAbilityData>();
 
    // Battler data reference that will be initialized (ready to be used, use getBattlerData() )
    [SerializeField] private BattlerData _alteredBattlerData;
