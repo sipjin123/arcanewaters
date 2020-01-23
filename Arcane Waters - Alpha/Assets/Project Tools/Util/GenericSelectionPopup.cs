@@ -433,7 +433,11 @@ public class GenericSelectionPopup : MonoBehaviour {
       selectionTemplate.selectButton.onClick.AddListener(() => {
          textUI.text = selectionName;
          indexUI.text = index.ToString();
-         itemIconPath.text = imagePath;
+
+         if (itemIconPath != null) {
+            itemIconPath.text = imagePath;
+         }
+
          if (changeEvent != null) {
             changeEvent.Invoke();
          }

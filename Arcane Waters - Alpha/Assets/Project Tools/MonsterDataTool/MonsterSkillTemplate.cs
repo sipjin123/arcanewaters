@@ -206,6 +206,10 @@ public class MonsterSkillTemplate : MonoBehaviour {
       buffActionType.onValueChanged.AddListener(_ => {
          buffActionTypeText.text = ((BuffActionType) buffActionType.value).ToString() + countSliderValue(buffActionType);
       });
+
+      if (!MasterToolAccountManager.canAlterData()) {
+         deleteSkillButton.gameObject.SetActive(false);
+      }
    }
 
    private void initializeSliderValues() {

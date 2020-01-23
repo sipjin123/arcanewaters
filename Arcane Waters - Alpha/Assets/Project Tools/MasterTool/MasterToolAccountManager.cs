@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using UnityEngine.SceneManagement;
 
 public class MasterToolAccountManager : MonoBehaviour {
    #region Public Variables
@@ -14,11 +15,11 @@ public class MasterToolAccountManager : MonoBehaviour {
    public InputField userNameField;
    public InputField passwordField;
 
-   // Main canvas of the login panel
-   public Canvas loginCanvas;
+   // Main canvas of the login panel and the passive data
+   public Canvas loginCanvas, passiveCanvas;
 
    // Main canvas of the info of the user
-   public CanvasGroup passiveCanvas;
+   public CanvasGroup passiveCanvasGroup;
 
    // Button for login and logout trigger
    public Button loginButton;
@@ -52,6 +53,7 @@ public class MasterToolAccountManager : MonoBehaviour {
       DontDestroyOnLoad(this);
       self = this; 
       revealPassivePanel(false);
+      passiveCanvas.enabled = false;
 
       userNameField.text = PlayerPrefs.GetString(USERNAME_PREF);
 
@@ -78,6 +80,18 @@ public class MasterToolAccountManager : MonoBehaviour {
          });
       });
 
+      logOutButton.onClick.AddListener(() => {
+         loginCanvas.enabled = true;
+         passiveCanvas.enabled = false;
+
+         passwordField.text = "";
+         userNameText.text = "";
+         permissionText.text = "";
+         accountIDText.text = "";
+
+         SceneManager.LoadScene(MasterToolScene.masterScene);
+      });
+
       closeErrorPanel.onClick.AddListener(() => { errorPanel.SetActive(false); });
    }
 
@@ -88,6 +102,8 @@ public class MasterToolAccountManager : MonoBehaviour {
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             if (permissionLevel > 0) {
                loginCanvas.enabled = false;
+               passiveCanvas.enabled = true;
+
                PlayerPrefs.SetString(USERNAME_PREF, userNameField.text);
                PlayerPrefs.SetInt(ACCOUNT_ID_PREF, accID);
 
@@ -97,14 +113,14 @@ public class MasterToolAccountManager : MonoBehaviour {
                userNameText.text = userNameField.text;
                accountIDText.text = accID.ToString();
                permissionText.text = PERMISSION_LEVEL.ToString();
-               loadingPanel.SetActive(false); 
+               loadingPanel.SetActive(false);
             }
          });
       });
    }
 
    public void revealPassivePanel (bool isActive) {
-      passiveCanvas.alpha = isActive ? 1 : .3f;
+      passiveCanvasGroup.alpha = isActive ? 1 : .3f;
    }
 
    public static bool canAlterData () {
