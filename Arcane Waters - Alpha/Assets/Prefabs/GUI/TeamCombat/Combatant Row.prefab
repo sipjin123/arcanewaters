@@ -1409,6 +1409,7 @@ MonoBehaviour:
     elementalWeakness: 
     elementalResistance: 
   userNameText: {fileID: 4350942604826619494}
+  deleteButton: {fileID: 7016715273066300437}
 --- !u!114 &8294512198877250503
 MonoBehaviour:
   m_ObjectHideFlags: 0

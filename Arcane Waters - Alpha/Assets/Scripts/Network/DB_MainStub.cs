@@ -11,17 +11,6 @@ public class DB_MainStub : MonoBehaviour {
 
    #endregion
 
-   public static void updateBattleAbilities (string abilityName, string abilityXML, int abilityType) {
-
-   }
-
-   public static void deleteBattleAbilityXML (string abilityName) {
-   }
-
-   public static List<AbilityXMLContent> getBattleAbilityXML () {
-      return new List<AbilityXMLContent>();
-   }
-
    public static void updateShipAbilities (int shipId, string abilityXML) {
 
    }
@@ -191,6 +180,18 @@ public class DB_MainStub : MonoBehaviour {
       return new List<AchievementData>();
    }
 
+   public static void updateBattleAbilities (string abilityName, string abilityXML, int abilityType) {
+
+   }
+
+   public static void deleteBattleAbilityXML (string abilityName) {
+
+   }
+
+   public static List<AbilityXMLContent> getBattleAbilityXML () {
+      return null;
+   }
+
    public static void readTest () {
 
    }
@@ -221,6 +222,10 @@ public class DB_MainStub : MonoBehaviour {
 
    public static List<QuestStatusInfo> getQuestStatuses (int npcId, int userId) {
       return null;
+   }
+
+   public static List<Item> getRequiredIngredients (int usrId, List<CraftingIngredients.Type> itemList) {
+      return new List<Item>();
    }
 
    public static List<CropInfo> getCropInfo (int userId) {
@@ -359,7 +364,7 @@ public class DB_MainStub : MonoBehaviour {
       return null;
    }
 
-   public static int createUser (int accountId, UserInfo userInfo, Area area) {
+   public static int createUser (int accountId, int usrAdminFlag, UserInfo userInfo, Area area) {
       return 0;
    }
 
@@ -434,7 +439,7 @@ public class DB_MainStub : MonoBehaviour {
    public static int getItemCount (int userId) {
       return 0;
    }
-
+   
    public static int getItemCount (int userId, int itemCategory, int itemType) {
       return 0;
    }
@@ -443,11 +448,17 @@ public class DB_MainStub : MonoBehaviour {
       return 0;
    }
 
-   public static int getItemCount (int userId, Item.Category[] categories, List<int> itemIdsToFilter) {
+   public static int getItemCount (int userId, Item.Category[] categories, List<int> itemIdsToFilter,
+      List<Item.Category> categoriesToFilter) {
       return 0;
    }
 
    public static List<Item> getItems (int userId, Item.Category[] categories, int page, int itemsPerPage) {
+      return null;
+   }
+
+   public static List<Item> getItems (int userId, Item.Category[] categories, int page, int itemsPerPage,
+      List<int> itemIdsToFilter, List<Item.Category> categoriesToFilter) {
       return null;
    }
 
@@ -625,6 +636,10 @@ public class DB_MainStub : MonoBehaviour {
    }
 
    public static int getMinimumClientGameVersionForWindows () {
+      return 0;
+   }
+
+   public static int getUsrAdminFlag(int accountId) {
       return 0;
    }
 

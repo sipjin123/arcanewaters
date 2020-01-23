@@ -23,9 +23,21 @@ public class BlueprintRow : MonoBehaviour
    // The row image
    public Image rowImage;
 
+   // The icon displayed when the blueprint can be crafted
+   public GameObject canBeCraftedIcon;
+
+   // The icon displayed when the blueprint cannot be crafted
+   public GameObject cannotBeCraftedIcon;
+
+   // The color of the item name text when the recipe data is missing
+   public Color missingRecipeTextColor;
+
+   // The button of the row
+   public Button rowButton;
+
    #endregion Public Variables
 
-   public void setRowForBlueprint (Item resultItem, Blueprint blueprint, bool isSelected) {
+   public void setRowForBlueprint (Item resultItem, Blueprint blueprint, bool isSelected, Blueprint.Status status) {
       _blueprintItemId = blueprint.id;
       itemNameText.text = resultItem.getName();
 
@@ -57,6 +69,24 @@ public class BlueprintRow : MonoBehaviour
       // Recolor
       if (colorKey != null) {
          recoloredSprite.recolor(colorKey, resultItem.color1, resultItem.color2);
+      }
+      switch (status) {
+         case Blueprint.Status.Craftable:
+            canBeCraftedIcon.SetActive(true);
+            cannotBeCraftedIcon.SetActive(false);
+            break;
+         case Blueprint.Status.NotCraftable:
+            canBeCraftedIcon.SetActive(false);
+            cannotBeCraftedIcon.SetActive(true);
+            break;
+         case Blueprint.Status.MissingRecipe:
+            canBeCraftedIcon.SetActive(false);
+            cannotBeCraftedIcon.SetActive(false);
+            itemNameText.color = missingRecipeTextColor;
+            rowButton.interactable = false;
+            break;
+         default:
+            break;
       }
    }
 

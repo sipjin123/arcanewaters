@@ -90,7 +90,7 @@ public class CraftingPanel : Panel
       configurePanelForMode(Mode.NoBlueprintSelected);
    }
 
-   public void updatePanelWithBlueprintList (Item[] blueprintArray, int pageNumber, int totalBlueprintCount) {
+   public void updatePanelWithBlueprintList (Item[] blueprintArray, Blueprint.Status[] blueprintStatusesArray, int pageNumber, int totalBlueprintCount) {
       // Update the current page number
       _currentPage = pageNumber;
 
@@ -110,8 +110,8 @@ public class CraftingPanel : Panel
       blueprintRowsContainer.DestroyChildren();
 
       // Create the blueprint rows
-      foreach(Item blueprintItem in blueprintArray) {
-         Blueprint blueprint = (Blueprint)(blueprintItem.getCastItem());
+      for (int i = 0; i < blueprintArray.Length; i++) {
+         Blueprint blueprint = (Blueprint)(blueprintArray[i].getCastItem());
 
          // Get the resulting item
          Item resultItem = Blueprint.getItemData(blueprint.bpTypeID);
@@ -120,7 +120,7 @@ public class CraftingPanel : Panel
          BlueprintRow row = Instantiate(blueprintRowPrefab, blueprintRowsContainer.transform, false);
 
          // Initializes the row
-         row.setRowForBlueprint(resultItem, blueprint, _selectedBlueprintId == blueprint.id);
+         row.setRowForBlueprint(resultItem, blueprint, _selectedBlueprintId == blueprint.id, blueprintStatusesArray[i]);
       }
 
       // Update the craft button

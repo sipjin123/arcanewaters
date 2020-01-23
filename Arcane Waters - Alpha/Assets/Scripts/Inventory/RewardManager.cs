@@ -8,9 +8,6 @@ using System;
 public class RewardManager : MonoBehaviour {
    #region Public Variables
 
-   // List of items that can be crafted
-   public List<CraftableItemRequirements> craftableDataList;
-
    // Self reference
    public static RewardManager self;
    

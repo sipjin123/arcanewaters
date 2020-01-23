@@ -550,7 +550,7 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_ReceiveBlueprintList (NetworkConnection connection,
-      Item[] blueprintArray, int pageNumber, int totalBlueprintCount) {
+      Item[] blueprintArray, Blueprint.Status[] blueprintStatusesArray, int pageNumber, int totalBlueprintCount) {
 
       // Make sure the panel is showing
       CraftingPanel craftingPanel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);
@@ -564,11 +564,11 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Pass the data to the panel
-      craftingPanel.updatePanelWithBlueprintList(blueprintArray, pageNumber, totalBlueprintCount);
+      craftingPanel.updatePanelWithBlueprintList(blueprintArray, blueprintStatusesArray, pageNumber, totalBlueprintCount);
    }
 
    [TargetRpc]
-   public void Target_CloseCraftingPanel (NetworkConnection connection) {
+   public void Target_RefreshCraftingPanel (NetworkConnection connection) {
       // Get the crafting panel
       CraftingPanel panel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);
 
@@ -787,7 +787,8 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
          UserInfo userInfo = userObjects.userInfo;
-         int totalItemCount = DB_Main.getItemCount(_player.userId, categories, new List<int> { userInfo.weaponId, userInfo.armorId });
+         int totalItemCount = DB_Main.getItemCount(_player.userId, categories, new List<int> { userInfo.weaponId, userInfo.armorId },
+            new List<Item.Category>() { Item.Category.Blueprint });
 
          // Calculate the maximum page number
          int maxPage = Mathf.CeilToInt((float) totalItemCount / itemsPerPage);
@@ -799,7 +800,8 @@ public class RPCManager : NetworkBehaviour {
          pageNumber = Mathf.Clamp(pageNumber, 1, maxPage);
 
          // Get the items from the database
-         List<Item> items = DB_Main.getItems(_player.userId, categories, pageNumber, itemsPerPage, new List<int> { userInfo.weaponId, userInfo.armorId });
+         List<Item> items = DB_Main.getItems(_player.userId, categories, pageNumber, itemsPerPage, new List<int> { userInfo.weaponId, userInfo.armorId },
+            new List<Item.Category>() { Item.Category.Blueprint });
 
          // Get the equipped weapon, independently of the category filters
          if (userInfo.weaponId != 0) {
@@ -848,8 +850,8 @@ public class RPCManager : NetworkBehaviour {
          }
 
          // Get the item count and item list from the database
-         totalItemCount = DB_Main.getItemCount(_player.userId, categoryArray, itemIdsToFilter);
-         items = DB_Main.getItems(_player.userId, categoryArray, pageNumber, itemsPerPage, itemIdsToFilter);
+         totalItemCount = DB_Main.getItemCount(_player.userId, categoryArray, itemIdsToFilter, new List<Item.Category>());
+         items = DB_Main.getItems(_player.userId, categoryArray, pageNumber, itemsPerPage, itemIdsToFilter, new List<Item.Category>());
 
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -1951,7 +1953,7 @@ public class RPCManager : NetworkBehaviour {
          MailInfo mail = DB_Main.getMailInfo(mailId);
 
          // Get the attached items
-         List<Item> attachedItems = DB_Main.getItems(-mail.mailId, new Item.Category[] { Item.Category.None }, 1, MailManager.MAX_ATTACHED_ITEMS, new List<int>());
+         List<Item> attachedItems = DB_Main.getItems(-mail.mailId, new Item.Category[] { Item.Category.None }, 1, MailManager.MAX_ATTACHED_ITEMS);
 
          // If the mail had not been read before, set it as read
          if (!mail.isRead) {
@@ -1990,7 +1992,7 @@ public class RPCManager : NetworkBehaviour {
          MailInfo mail = DB_Main.getMailInfo(mailId);
 
          // Get the attached items
-         List<Item> attachedItems = DB_Main.getItems(-mail.mailId, new Item.Category[] { Item.Category.None }, 1, MailManager.MAX_ATTACHED_ITEMS, new List<int>());
+         List<Item> attachedItems = DB_Main.getItems(-mail.mailId, new Item.Category[] { Item.Category.None }, 1, MailManager.MAX_ATTACHED_ITEMS);
 
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -2013,7 +2015,7 @@ public class RPCManager : NetworkBehaviour {
          DB_Main.deleteMail(mailId);
 
          // Get the attached items
-         List<Item> attachedItems = DB_Main.getItems(-mailId, new Item.Category[] { Item.Category.None }, 1, MailManager.MAX_ATTACHED_ITEMS, new List<int>());
+         List<Item> attachedItems = DB_Main.getItems(-mailId, new Item.Category[] { Item.Category.None }, 1, MailManager.MAX_ATTACHED_ITEMS);
 
          // Delete the attached items
          foreach (Item item in attachedItems) {
@@ -2299,11 +2301,64 @@ public class RPCManager : NetworkBehaviour {
          pageNumber = Mathf.Clamp(pageNumber, 1, maxPage);
 
          // Get the blueprints from the database
-         List<Item> items = DB_Main.getItems(_player.userId, categories, pageNumber, itemsPerPage);
+         List<Item> blueprints = DB_Main.getItems(_player.userId, categories, pageNumber, itemsPerPage);
 
+         // Build the list of ingredients needed for all the blueprints in the page
+         List<CraftingIngredients.Type> ingredientsList = new List<CraftingIngredients.Type>();
+         foreach (Item blueprint in blueprints) {
+            // Get the resulting item
+            Item resultItem = Blueprint.getItemData(((Blueprint) blueprint).bpTypeID);
+
+            // Get the crafting requirement data
+            CraftableItemRequirements craftingRequirements = CraftingManager.self.getCraftableData(
+               resultItem.category, resultItem.itemTypeId);
+
+            // Add the required ingredients to the common list
+            if (craftingRequirements != null) {
+               foreach (Item item in craftingRequirements.combinationRequirements) {
+                  ingredientsList.Add((CraftingIngredients.Type) item.itemTypeId);
+               }
+            }
+         }
+
+         // Get the ingredients present in the user inventory
+         List<Item> inventoryIngredients = DB_Main.getCraftingIngredients(_player.userId, ingredientsList);
+
+         // Determine if each blueprint can be crafted, not crafted or if the data is missing
+         List<Blueprint.Status> blueprintStatuses = new List<Blueprint.Status>();
+         foreach (Item blueprint in blueprints) {
+            Blueprint.Status status = Blueprint.Status.Craftable;
+
+            // Get the resulting item
+            Item resultItem = Blueprint.getItemData(((Blueprint) blueprint).bpTypeID);
+
+            // Get the crafting requirement data
+            CraftableItemRequirements craftingRequirements = CraftingManager.self.getCraftableData(
+               resultItem.category, resultItem.itemTypeId);
+
+            if (craftingRequirements == null) {
+               status = Blueprint.Status.MissingRecipe;
+            } else {
+               // Compare the ingredients present in the inventory with the requisites
+               foreach (Item requiredIngredient in craftingRequirements.combinationRequirements) {
+
+                  // Get the inventory ingredient, if there is any
+                  Item inventoryIngredient = inventoryIngredients.Find(s =>
+                     s.itemTypeId == requiredIngredient.itemTypeId);
+
+                  // Verify that there are enough items in the inventory stack
+                  if (inventoryIngredient == null || inventoryIngredient.count < requiredIngredient.count) {
+                     status = Blueprint.Status.NotCraftable;
+                     break;
+                  }
+               }
+            }
+
+            blueprintStatuses.Add(status);
+         }
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_ReceiveBlueprintList(_player.connectionToClient, items.ToArray(), pageNumber, totalItemCount);
+            Target_ReceiveBlueprintList(_player.connectionToClient, blueprints.ToArray(), blueprintStatuses.ToArray(), pageNumber, totalItemCount);
          });
       });
    }
@@ -2346,14 +2401,15 @@ public class RPCManager : NetworkBehaviour {
          Item resultItem = Blueprint.getItemData(((Blueprint) blueprint).bpTypeID);
 
          // Get the crafting requirement data
-         CraftableItemRequirements craftingRequirements = RewardManager.self.craftableDataList.Find(_ =>
-            _.resultItem.category == resultItem.category &&
-            _.resultItem.itemTypeId == resultItem.itemTypeId);
+         CraftableItemRequirements craftingRequirements = CraftingManager.self.getCraftableData(
+               resultItem.category, resultItem.itemTypeId);
 
          // Build the list of ingredients
          List<CraftingIngredients.Type> ingredientsList = new List<CraftingIngredients.Type>();
-         foreach (Item item in craftingRequirements.combinationRequirements) {
-            ingredientsList.Add((CraftingIngredients.Type) item.itemTypeId);
+         if (craftingRequirements != null) {
+            foreach (Item item in craftingRequirements.combinationRequirements) {
+               ingredientsList.Add((CraftingIngredients.Type) item.itemTypeId);
+            }
          }
 
          // Get the ingredients present in the user inventory
@@ -2393,9 +2449,15 @@ public class RPCManager : NetworkBehaviour {
          resultItem.color2 = Util.randomEnum<ColorType>();
 
          // Get the crafting requirement data
-         CraftableItemRequirements craftingRequirements = RewardManager.self.craftableDataList.Find(_ =>
-            _.resultItem.category == resultItem.category &&
-            _.resultItem.itemTypeId == resultItem.itemTypeId);
+         CraftableItemRequirements craftingRequirements = CraftingManager.self.getCraftableData(
+               resultItem.category, resultItem.itemTypeId);
+
+         // Verify if the crafting data exists
+         if (craftingRequirements == null) {
+            D.error(string.Format("The craftable data for item (category: {0}, item type: {1}) is missing.", resultItem.category, resultItem.itemTypeId));
+            sendError("The blueprint data is missing!");
+            return;
+         }
 
          // Build the list of ingredients
          List<CraftingIngredients.Type> ingredientsList = new List<CraftingIngredients.Type>();
@@ -2433,7 +2495,7 @@ public class RPCManager : NetworkBehaviour {
          // Decrease the quantity of each used ingredient in the user inventory
          foreach (Item requiredIngredient in craftingRequirements.combinationRequirements) {
 
-            // Get the inventory ingredient, if there is any
+            // Get the inventory ingredient
             Item inventoryIngredient = inventoryIngredients.Find(s =>
                s.itemTypeId == requiredIngredient.itemTypeId);
 
@@ -2449,14 +2511,14 @@ public class RPCManager : NetworkBehaviour {
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
 
-            // Registers the crafting action to the achievement database for recording
+            // Registers the crafting action to the achievement database
             AchievementManager.registerUserAchievement(_player.userId, ActionType.Craft);
 
             // Let them know they gained experience
             _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Crafter, 0);
 
             // Update the available ingredients for the displayed blueprint
-            Target_CloseCraftingPanel(_player.connectionToClient);
+            Target_RefreshCraftingPanel(_player.connectionToClient);
 
             // Display the reward panel
             Target_ReceiveItem(_player.connectionToClient, craftedItem);
@@ -3145,7 +3207,7 @@ public class RPCManager : NetworkBehaviour {
       if (_player == null || !(_player is PlayerBodyEntity)) {
          return;
       }
-      
+
       // Look up the player's Battle object
       PlayerBodyEntity playerBody = (PlayerBodyEntity) _player;
       Battle battle = BattleManager.self.getBattle(playerBody.battleId);
@@ -3255,7 +3317,7 @@ public class RPCManager : NetworkBehaviour {
          D.debug("Battler requested to use ability they're not allowed: " + playerBody.entityName + ", " + abilityData.itemName);
          return;
       }
-      
+
       BattleManager.self.executeStanceChangeAction(battle, sourceBattler, newStance);
    }
 

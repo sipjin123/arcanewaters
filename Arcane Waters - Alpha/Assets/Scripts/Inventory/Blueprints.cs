@@ -11,7 +11,14 @@ using MySql.Data.MySqlClient;
 public class Blueprint : RecipeItem
 {
    #region Public Variables
-   
+
+   // The different blueprint statuses
+   public enum Status {
+      Craftable = 1,
+      NotCraftable = 2,
+      MissingRecipe = 3// = Missing CraftableItemRequirements data
+   }
+
    // The type of blueprint equipment if Weapon or Armor
    public Item.Category equipmentType;
 
@@ -121,33 +128,32 @@ public class Blueprint : RecipeItem
       return getItemData(recipeTypeID).getName();
    }
 
-   public static Item getItemData (int recipeType) {
-      string recipeString = recipeType.ToString();
+   public static Item getItemData (int bpTypeID) {
+      string stringID = bpTypeID.ToString();
 
-      Item.Category itemCategory = getEquipmentType(recipeType);
-      if (itemCategory == Category.Weapon) {
-         Weapon.Type weaponType = Weapon.Type.None;
+      // Determine if the blueprint is for a weapon
+      if (stringID.StartsWith(WEAPON_PREFIX)) {
+         
+         // Extract the typeId of the weapon
+         stringID = stringID.Substring(WEAPON_PREFIX.Length, (stringID.Length - WEAPON_PREFIX.Length));
 
-         foreach (var item in Enum.GetValues(typeof(Weapon.Type))) {
-            string weaponString = item.ToString();
-            recipeString = recipeString.Replace(WEAPON_PREFIX, "");
-            if (recipeString == ((int)item).ToString()) {
-               weaponType = (Weapon.Type) item;
-            }
-         }
+         // Convert to a weapon type
+         Weapon.Type weaponType = (Weapon.Type) int.Parse(stringID);
+
+         // Create the weapon object
          Weapon newWeapon = new Weapon(0, weaponType);
+
          return newWeapon;
       } else {
-         Armor.Type armorType = Armor.Type.None;
+         // Extract the typeId of the armor
+         stringID = stringID.Substring(ARMOR_PREFIX.Length, (stringID.Length - ARMOR_PREFIX.Length));
 
-         foreach (var item in Enum.GetValues(typeof(Armor.Type))) {
-            string armorString = item.ToString();
-            recipeString = recipeString.Replace(ARMOR_PREFIX, "");
-            if (recipeString == ((int)item).ToString()) {
-               armorType = (Armor.Type) item;
-            }
-         }
+         // Convert to a weapon type
+         Armor.Type armorType = (Armor.Type) int.Parse(stringID);
+
+         // Create the weapon object
          Armor newArmor = new Armor(0, armorType);
+
          return newArmor;
       }
    }
@@ -170,16 +176,12 @@ public class Blueprint : RecipeItem
       int idComparison = int.Parse(blueprintType.ToString().Replace(prefixExtracted,""));
 
       if (prefixCategory == Category.Weapon) {
-         foreach (Weapon.Type val in Enum.GetValues(typeof(Weapon.Type))) {
-            if ((int) val == idComparison) {
-               return Item.Category.Weapon;
-            }
+         if (Enum.IsDefined(typeof(Weapon.Type), idComparison)) {
+            return Item.Category.Weapon;
          }
       } else if (prefixCategory == Category.Armor) {
-         foreach (Armor.Type val in Enum.GetValues(typeof(Armor.Type))) {
-            if ((int) val == idComparison) {
-               return Item.Category.Armor;
-            }
+         if (Enum.IsDefined(typeof(Armor.Type), idComparison)) {
+            return Item.Category.Armor;
          }
       }
 

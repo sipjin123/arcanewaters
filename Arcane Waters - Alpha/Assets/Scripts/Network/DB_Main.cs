@@ -1359,6 +1359,59 @@ public class DB_Main : DB_MainStub {
 
    #endregion
 
+   public static new List<Item> getRequiredIngredients (int usrId, List<CraftingIngredients.Type> itemList) {
+      int itmCategory = (int) Item.Category.CraftingIngredients;
+      List<Item> newItemList = new List<Item>();
+
+      string itemIds = "";
+      for (int i = 0; i < itemList.Count; i++) {
+         int itmType = (int) itemList[i];
+         if (i > 0) {
+            itemIds += " or ";
+         }
+         itemIds += "itmType = " + itmType;
+      }
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(string.Format("SELECT * FROM arcane.items where itmCategory = @itmCategory and ({0}) and usrId = @usrId", itemIds), conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@itmCategory", itmCategory);
+            cmd.Parameters.AddWithValue("@usrId", usrId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  int newCategory = DataUtil.getInt(dataReader, "itmCategory");
+                  int newType = DataUtil.getInt(dataReader, "itmType");
+                  int newitemCount = DataUtil.getInt(dataReader, "itmCount");
+                  int newItemID = DataUtil.getInt(dataReader, "itmId");
+
+                  ItemInfo info = new ItemInfo(dataReader);
+                  Item newItem = new Item {
+                     category = (Item.Category) newCategory,
+                     itemTypeId = newType,
+                     count = newitemCount,
+                     id = newItemID
+                  };
+
+                  Item findItem = newItemList.Find(_ => _.itemTypeId == newType && (int) _.category == newCategory);
+                  if (newItemList.Contains(findItem)) {
+                     int itemIndex = newItemList.IndexOf(findItem);
+                     newItemList[itemIndex].count += 1;
+                  } else {
+                     newItemList.Add(newItem);
+                  }
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return newItemList;
+   }
+
    #region Crops
 
    public static new List<CropInfo> getCropInfo (int userId) {
@@ -2220,9 +2273,8 @@ public class DB_Main : DB_MainStub {
       return weapon;
    }
 
-   public static new int createUser (int accountId, UserInfo userInfo, Area area) {
+   public static new int createUser (int accountId, int usrAdminFlag, UserInfo userInfo, Area area) {
       int userId = 0;
-
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
@@ -2236,7 +2288,7 @@ public class DB_Main : DB_MainStub {
             cmd.Parameters.AddWithValue("@localX", userInfo.localPos.x);
             cmd.Parameters.AddWithValue("@localY", userInfo.localPos.y);
             cmd.Parameters.AddWithValue("@bodyType", (int) userInfo.bodyType);
-            cmd.Parameters.AddWithValue("@usrAdminFlag", Application.isEditor ? 1 : 0);
+            cmd.Parameters.AddWithValue("@usrAdminFlag", usrAdminFlag);
             cmd.Parameters.AddWithValue("@usrFacing", (int) userInfo.facingDirection);
             cmd.Parameters.AddWithValue("@hairType", (int) userInfo.hairType);
             cmd.Parameters.AddWithValue("@hairColor1", (int) userInfo.hairColor1);
@@ -2838,10 +2890,11 @@ public class DB_Main : DB_MainStub {
    }
 
    public static new int getItemCount (int userId, Item.Category[] categories) {
-      return getItemCount(userId, categories, new List<int>());
+      return getItemCount(userId, categories, new List<int>(), new List<Item.Category>());
    }
 
-   public static new int getItemCount (int userId, Item.Category[] categories, List<int> itemIdsToFilter) {
+   public static new int getItemCount (int userId, Item.Category[] categories, List<int> itemIdsToFilter,
+      List<Item.Category> categoriesToFilter) {
       // Initialize the count
       int itemCount = 0;
 
@@ -2856,6 +2909,19 @@ public class DB_Main : DB_MainStub {
          for (int i = 1; i < categories.Length; i++) {
             query.Append(" OR itmCategory=@itmCategory" + i);
          }
+         query.Append(") ");
+      }
+
+      // Filter categories
+      if (categoriesToFilter.Count > 0) {
+         query.Append("AND itmCategory NOT IN (");
+         for (int i = 0; i < categoriesToFilter.Count; i++) {
+            query.Append("@filteredCategory" + i + ", ");
+         }
+
+         // Delete the last ", "
+         query.Length = query.Length - 2;
+
          query.Append(") ");
       }
 
@@ -2887,6 +2953,10 @@ public class DB_Main : DB_MainStub {
                cmd.Parameters.AddWithValue("@filteredItemId" + i, itemIdsToFilter[i]);
             }
 
+            for (int i = 0; i < categoriesToFilter.Count; i++) {
+               cmd.Parameters.AddWithValue("@filteredCategory" + i, categoriesToFilter[i]);
+            }
+
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
@@ -2902,11 +2972,11 @@ public class DB_Main : DB_MainStub {
    }
 
    public static new List<Item> getItems (int userId, Item.Category[] categories, int page, int itemsPerPage) {
-      return getItems(userId, categories, page, itemsPerPage, new List<int>());
+      return getItems(userId, categories, page, itemsPerPage, new List<int>(), new List<Item.Category>());
    }
 
    public static new List<Item> getItems (int userId, Item.Category[] categories, int page, int itemsPerPage,
-      List<int> itemIdsToFilter) {
+      List<int> itemIdsToFilter, List<Item.Category> categoriesToFilter) {
       // Initialize the list
       List<Item> itemList = new List<Item>();
 
@@ -2921,6 +2991,19 @@ public class DB_Main : DB_MainStub {
          for (int i = 1; i < categories.Length; i++) {
             query.Append(" OR itmCategory=@itmCategory" + i);
          }
+         query.Append(") ");
+      }
+      
+      // Filter categories
+      if (categoriesToFilter.Count > 0) {
+         query.Append("AND itmCategory NOT IN (");
+         for (int i = 0; i < categoriesToFilter.Count; i++) {
+            query.Append("@filteredCategory" + i + ", ");
+         }
+
+         // Delete the last ", "
+         query.Length = query.Length - 2;
+
          query.Append(") ");
       }
 
@@ -2959,6 +3042,9 @@ public class DB_Main : DB_MainStub {
             for (int i = 0; i < itemIdsToFilter.Count; i++) {
                cmd.Parameters.AddWithValue("@filteredItemId" + i, itemIdsToFilter[i]);
             }
+            for (int i = 0; i < categoriesToFilter.Count; i++) {
+               cmd.Parameters.AddWithValue("@filteredCategory" + i, categoriesToFilter[i]);
+            }
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -2987,18 +3073,24 @@ public class DB_Main : DB_MainStub {
    public static new List<Item> getCraftingIngredients (int usrId, List<CraftingIngredients.Type> ingredientTypes) {
       List<Item> itemList = new List<Item>();
 
-      string itemIds = "";
+      // If no ingredient is given, return an empty list
+      if (ingredientTypes == null || ingredientTypes.Count <= 0) {
+         return itemList;
+      }
+
+      // Build the item type list condition
+      StringBuilder builder = new StringBuilder();
       for (int i = 0; i < ingredientTypes.Count; i++) {
          int itmType = (int) ingredientTypes[i];
          if (i > 0) {
-            itemIds += " or ";
+            builder.Append(" or ");
          }
-         itemIds += "itmType = " + itmType;
+         builder.Append("itmType = " + itmType);
       }
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(string.Format("SELECT * FROM arcane.items WHERE usrId = @usrId AND itmCategory = @itmCategory AND ({0})", itemIds), conn)) {
+         using (MySqlCommand cmd = new MySqlCommand(string.Format("SELECT * FROM arcane.items WHERE usrId = @usrId AND itmCategory = @itmCategory AND ({0})", builder.ToString()), conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@itmCategory", (int) Item.Category.CraftingIngredients);
@@ -4227,6 +4319,30 @@ public class DB_Main : DB_MainStub {
       string itemData = DataUtil.getString(dataReader, "weaponData");
 
       return new Weapon(itemId, itemTypeId, color1, color2, itemData);
+   }
+
+   public static new int getUsrAdminFlag (int accountId) {
+      int result = -1;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT usrAdminFlag FROM accounts WHERE accId = @accountId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@accountId", accountId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  result = dataReader.GetInt32("usrAdminFlag");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return result;
    }
 
    private static MySqlConnection getConnection () {

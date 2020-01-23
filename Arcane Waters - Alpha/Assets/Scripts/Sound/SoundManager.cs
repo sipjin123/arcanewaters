@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.Audio;
 
-public class SoundManager : MonoBehaviour { 
+public class SoundManager : MonoBehaviour {
    #region Public Variables
 
    // The minimum amount of time we'll wait between playing the same clip
@@ -142,9 +142,14 @@ public class SoundManager : MonoBehaviour {
       self.musicParentGroup.audioMixer.SetFloat("MusicParentVolume", musicOn ? VOLUME_UNCHANGED : VOLUME_OFF);
       self.effectsParentGroup.audioMixer.SetFloat("EffectsParentVolume", effectsOn ? VOLUME_UNCHANGED : VOLUME_OFF);
 
+      // Consider SFX_MIN_DB as the lowest practical audible volume. If effectsVolume is 0, set the volume to VOLUME_OFF to ensure silence
+      float sfxVolume = effectsVolume > 0 ? (1f - effectsVolume) * SFX_MIN_DB : VOLUME_OFF;
+
       // Make the audio mixer volume match the current volume settings
-      self.musicChildGroup.audioMixer.SetFloat("MusicChildVolume", (1f - musicVolume) * -80f);
-      self.effectsChildGroup.audioMixer.SetFloat("EffectsChildVolume", (1f - effectsVolume) * -80f);
+      self.effectsChildGroup.audioMixer.SetFloat("EffectsChildVolume", sfxVolume);
+
+      // Set the music volume on the AudioSource
+      backgroundMusicAudioSource.volume = musicVolume;
    }
 
    void OnDestroy () {
@@ -213,7 +218,7 @@ public class SoundManager : MonoBehaviour {
 
       }
    }
-   
+
    public void musicButtonPressed () {
       musicOn = !musicOn;
 
@@ -314,8 +319,8 @@ public class SoundManager : MonoBehaviour {
    /// </summary>
    /// <param name="clip"></param>
    /// <param name="pos"></param>
-   public static void playClipOneShotAtPoint(AudioClip clip, Vector3 pos) {
-      if(clip == null) {
+   public static void playClipOneShotAtPoint (AudioClip clip, Vector3 pos) {
+      if (clip == null) {
          //Debug.LogWarning("There was no clip attached, will not play any sound");
          return;
       }
@@ -336,7 +341,7 @@ public class SoundManager : MonoBehaviour {
       return source;
    }
 
-   protected static AudioSource createAudioSource(Vector3 pos) {
+   protected static AudioSource createAudioSource (Vector3 pos) {
       // Get the Z position of the currently active camera
       float posZ = Global.isInBattle() ? BattleCamera.self.getCamera().transform.position.z : Camera.main.transform.position.z;
       pos = new Vector3(pos.x, pos.y, posZ);
@@ -476,6 +481,9 @@ public class SoundManager : MonoBehaviour {
 
    // The minimum volume setting for Audio Mixer Groups
    protected static float VOLUME_OFF = -80f;
+
+   // The dB value at which we can consider SFX to be inaudible
+   protected static float SFX_MIN_DB = -25f;
 
    // The default volume setting for Audio Mixer Groups
    protected static float VOLUME_UNCHANGED = 0f;

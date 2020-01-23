@@ -187,12 +187,15 @@ public class ServerMessageManager : MonoBehaviour {
       // Need to create their Armor first
       int armorId = DB_Main.insertNewArmor(0, msg.armorType, msg.armorColor1, msg.armorColor2);
 
+      // Get search the database to determine whether or not the account has admin privileges
+      int adminFlag = DB_Main.getUsrAdminFlag(accountId);
+
       // Assign the new armor to the user
       // msg.userInfo.armorId = armorId;
 
       // Then insert the User in the database
       userInfo.facingDirection = (int) Direction.West;
-      int userId = DB_Main.createUser(accountId, userInfo, area);
+      int userId = DB_Main.createUser(accountId, adminFlag, userInfo, area);
       DB_Main.insertIntoJobs(userId);
 
       // Update the armor as belonging to this new user id

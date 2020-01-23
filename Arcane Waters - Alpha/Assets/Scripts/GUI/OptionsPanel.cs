@@ -4,8 +4,11 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
+using System;
+using static UnityEngine.UI.Dropdown;
 
 public class OptionsPanel : Panel, IPointerClickHandler {
+
    #region Public Variables
 
    // The zone Text
@@ -16,6 +19,12 @@ public class OptionsPanel : Panel, IPointerClickHandler {
 
    // The effects slider
    public Slider effectsSlider;
+
+   // The available resolutions dropdown
+   public Dropdown resolutionsDropdown;
+
+   // The fullscreen toggle
+   public Toggle fullscreenToggle;
 
    // Self
    public static OptionsPanel self;
@@ -29,6 +38,50 @@ public class OptionsPanel : Panel, IPointerClickHandler {
       base.Awake();
 
       self = this;
+   }
+
+   public override void Start () {
+      base.Start();
+
+      initializeResolutionsDropdown();
+      initializeFullScreenToggle();
+   }
+
+   private void initializeFullScreenToggle () {
+      fullscreenToggle.SetIsOnWithoutNotify(ScreenSettingsManager.IsFullScreen);
+      fullscreenToggle.onValueChanged.AddListener(setFullScreen);
+   }
+
+   private void setFullScreen (bool fullscreen) {
+      ScreenSettingsManager.setFullscreen(fullscreen);
+   }
+
+   private void setResolution (int resolutionIndex) {
+      ScreenSettingsManager.setResolution(Screen.resolutions[resolutionIndex].width, Screen.resolutions[resolutionIndex].height);
+   }
+
+   private void initializeResolutionsDropdown () {
+      Resolution[] supportedResolutions = Screen.resolutions;
+      List<OptionData> options = new List<OptionData>();
+      int currentResolution = -1;
+
+      for (int i = 0; i < supportedResolutions.Length; i++) {
+         Resolution res = supportedResolutions[i];
+         OptionData o = new OptionData($"{res.width} x {res.height}");
+         options.Add(o);
+
+         if (res.width == ScreenSettingsManager.Width && res.height == ScreenSettingsManager.Height) {
+            currentResolution = i;
+         }
+      }
+
+      resolutionsDropdown.options = options;
+
+      if (currentResolution >= 0) {
+         resolutionsDropdown.SetValueWithoutNotify(currentResolution);
+      }
+
+      resolutionsDropdown.onValueChanged.AddListener(setResolution);
    }
 
    public void receiveDataFromServer (int instanceNumber, int totalInstances) {

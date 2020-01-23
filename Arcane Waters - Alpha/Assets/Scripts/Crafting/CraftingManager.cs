@@ -20,9 +20,13 @@ public class CraftingManager : MonoBehaviour {
       self = this;
    }
 
-   public CraftableItemRequirements getItem(Item.Category itemCategory, int itemTypeId) {
-      string keyName = getKey(itemCategory, itemTypeId);
-      return _craftingData[keyName];
+   public CraftableItemRequirements getCraftableData(Item.Category itemCategory, int itemTypeId) {
+      string key = getKey(itemCategory, itemTypeId);
+      if (_craftingData.ContainsKey(key)) {
+         return _craftingData[key];
+      } else {
+         return null;
+      }
    }
 
    public List<CraftableItemRequirements> getAllCraftableData () {
@@ -52,8 +56,6 @@ public class CraftingManager : MonoBehaviour {
                } else {
                   D.warning("Key already exists: " + keyName);
                }
-
-               RewardManager.self.craftableDataList = getAllCraftableData();
             }
          });
       });
