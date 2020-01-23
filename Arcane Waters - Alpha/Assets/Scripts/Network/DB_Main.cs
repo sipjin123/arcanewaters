@@ -181,7 +181,7 @@ public class DB_Main : DB_MainStub {
             cmd.Parameters.AddWithValue("@ability_name", abilityName);
             cmd.Parameters.AddWithValue("@xmlContent", abilityXML);
             cmd.Parameters.AddWithValue("@ability_type", abilityType);
-            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccoundID);
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -427,7 +427,7 @@ public class DB_Main : DB_MainStub {
 
             cmd.Parameters.AddWithValue("@shipAbilityName", shipAbilityName);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
-            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccoundID);
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -494,7 +494,7 @@ public class DB_Main : DB_MainStub {
 
             cmd.Parameters.AddWithValue("@enemyType", typeIndex);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
-            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccoundID);
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -562,7 +562,7 @@ public class DB_Main : DB_MainStub {
 
             cmd.Parameters.AddWithValue("@seaMonsterType", typeIndex);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
-            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccoundID);
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -630,7 +630,7 @@ public class DB_Main : DB_MainStub {
 
             cmd.Parameters.AddWithValue("@npcId", typeIndex);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
-            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccoundID);
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -817,7 +817,7 @@ public class DB_Main : DB_MainStub {
 
             cmd.Parameters.AddWithValue("@shopName", shopName);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
-            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccoundID);
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -884,7 +884,7 @@ public class DB_Main : DB_MainStub {
 
             cmd.Parameters.AddWithValue("@shipType", typeIndex);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
-            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccoundID);
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -953,7 +953,7 @@ public class DB_Main : DB_MainStub {
             cmd.Parameters.AddWithValue("@tutorialTitle", name);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
             cmd.Parameters.AddWithValue("@stepOrder", order);
-            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccoundID);
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1020,7 +1020,7 @@ public class DB_Main : DB_MainStub {
 
             cmd.Parameters.AddWithValue("@achievementName", name);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
-            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccoundID); 
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID); 
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1103,7 +1103,7 @@ public class DB_Main : DB_MainStub {
 
             cmd.Parameters.AddWithValue("@type", key);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
-            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccoundID);
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1202,7 +1202,7 @@ public class DB_Main : DB_MainStub {
 
             cmd.Parameters.AddWithValue("@name", name);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
-            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccoundID);
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1282,7 +1282,7 @@ public class DB_Main : DB_MainStub {
 
             cmd.Parameters.AddWithValue("@type", typeID);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
-            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccoundID);
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1846,7 +1846,6 @@ public class DB_Main : DB_MainStub {
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
-         UnityEngine.Debug.LogError("ERror is: " + e.ToString());
       }
 
       return userId;

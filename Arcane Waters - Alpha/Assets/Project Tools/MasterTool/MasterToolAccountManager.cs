@@ -17,7 +17,10 @@ public class MasterToolAccountManager : MonoBehaviour {
    // Main canvas of the login panel
    public Canvas loginCanvas;
 
-   // Button for login adn logout trigger
+   // Main canvas of the info of the user
+   public CanvasGroup passiveCanvas;
+
+   // Button for login and logout trigger
    public Button loginButton;
    public Button logOutButton;
 
@@ -32,25 +35,32 @@ public class MasterToolAccountManager : MonoBehaviour {
    public Text userNameText, accountIDText, permissionText;
 
    // Blocker for account fetching
-   public GameObject loadingPaenl;
+   public GameObject loadingPanel;
 
    // Current Account ID being used
-   public int currentAccoundID;
+   public int currentAccountID;
 
    // Current permission level of the account
-   public static PermissionLevel PERMISSION_LEVEL;
+   public static AdminManager.Type PERMISSION_LEVEL;
+
+   // Button for exiting the application
+   public Button exitButton;
 
    #endregion
 
    private void Awake () {
       DontDestroyOnLoad(this);
-      self = this;
+      self = this; 
+      revealPassivePanel(false);
 
       userNameField.text = PlayerPrefs.GetString(USERNAME_PREF);
-      passwordField.text = "test";
+
+      exitButton.onClick.AddListener(() => {
+         Application.Quit();
+      });
 
       loginButton.onClick.AddListener(() => {
-         loadingPaenl.SetActive(true);
+         loadingPanel.SetActive(true);
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             // Look up the account ID corresponding to the provided account name and password
             string salt = Util.createSalt("arcane");
@@ -62,7 +72,7 @@ public class MasterToolAccountManager : MonoBehaviour {
                   proceedToLogin(accID);
                } else {
                   errorPanel.SetActive(true);
-                  loadingPaenl.SetActive(false);
+                  loadingPanel.SetActive(false);
                }
             });
          });
@@ -81,49 +91,31 @@ public class MasterToolAccountManager : MonoBehaviour {
                PlayerPrefs.SetString(USERNAME_PREF, userNameField.text);
                PlayerPrefs.SetInt(ACCOUNT_ID_PREF, accID);
 
-               currentAccoundID = accID;
-               PERMISSION_LEVEL = (PermissionLevel) permissionLevel;
+               currentAccountID = accID;
+               PERMISSION_LEVEL = (AdminManager.Type) permissionLevel;
 
                userNameText.text = userNameField.text;
                accountIDText.text = accID.ToString();
                permissionText.text = PERMISSION_LEVEL.ToString();
-               loadingPaenl.SetActive(false);
+               loadingPanel.SetActive(false); 
             }
          });
       });
    }
 
+   public void revealPassivePanel (bool isActive) {
+      passiveCanvas.alpha = isActive ? 1 : .3f;
+   }
+
    public static bool canAlterData () {
-      if (PERMISSION_LEVEL == PermissionLevel.Admin || PERMISSION_LEVEL == PermissionLevel.ContentWriter) {
+      if (PERMISSION_LEVEL == AdminManager.Type.Admin || PERMISSION_LEVEL == AdminManager.Type.ContentWriter) {
          return true;
       }
 
       return false;
    }
 
-   private void Update () {
-      if (Input.GetKeyDown(KeyCode.Alpha1)) {
-         PERMISSION_LEVEL = PermissionLevel.Admin;
-         permissionText.text = PERMISSION_LEVEL.ToString();
-      }
-      if (Input.GetKeyDown(KeyCode.Alpha2)) {
-         PERMISSION_LEVEL = PermissionLevel.QA;
-         permissionText.text = PERMISSION_LEVEL.ToString();
-      }
-      if (Input.GetKeyDown(KeyCode.Alpha3)) {
-         PERMISSION_LEVEL = PermissionLevel.ContentWriter;
-         permissionText.text = PERMISSION_LEVEL.ToString();
-      }
-   }
-
    #region Private Variables
 
    #endregion
-}
-public enum PermissionLevel
-{
-   User = 0,
-   Admin = 1,
-   QA = 2,
-   ContentWriter = 3
 }
