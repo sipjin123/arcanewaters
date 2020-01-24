@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using static EditorSQLManager;
+using System;
 
 public class PlayerClassTemplate : MonoBehaviour {
    #region Public Variables
@@ -25,12 +27,45 @@ public class PlayerClassTemplate : MonoBehaviour {
    // Button for duplicating this template
    public Button duplicateButton;
 
+   public EditorToolType editortoolType;
+
    #endregion
 
    private void OnEnable () {
       if (!MasterToolAccountManager.canAlterData()) {
          deleteButton.gameObject.SetActive(false);
          duplicateButton.gameObject.SetActive(false);
+      }
+
+      switch (editortoolType) {
+         case EditorToolType.PlayerClass:
+            int typeIndex = (int) Enum.Parse(typeof(Class.Type), indexText.text);
+            if (typeIndex != 0 && !PlayerClassTool.self.didUserCreateData((int) typeIndex)) {
+               deleteButton.gameObject.SetActive(false);
+               editButton.gameObject.SetActive(false);
+            }
+            break;
+         case EditorToolType.PlayerFaction:
+            typeIndex = (int) Enum.Parse(typeof(Faction.Type), indexText.text);
+            if (typeIndex != 0 && !PlayerFactionToolManager.self.didUserCreateData((int) typeIndex)) {
+               deleteButton.gameObject.SetActive(false);
+               editButton.gameObject.SetActive(false);
+            }
+            break;
+         case EditorToolType.PlayerSpecialty:
+            typeIndex = (int) Enum.Parse(typeof(Specialty.Type), indexText.text);
+            if (typeIndex != 0 && !PlayerSpecialtyToolManager.self.didUserCreateData((int) typeIndex)) {
+               deleteButton.gameObject.SetActive(false);
+               editButton.gameObject.SetActive(false);
+            }
+            break;
+         case EditorToolType.PlayerJob:
+            typeIndex = (int) Enum.Parse(typeof(Jobs.Type), indexText.text);
+            if (typeIndex != 0 && !PlayerJobToolManager.self.didUserCreateData((int) typeIndex)) {
+               deleteButton.gameObject.SetActive(false);
+               editButton.gameObject.SetActive(false);
+            }
+            break;
       }
    }
 

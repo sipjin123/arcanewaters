@@ -28,7 +28,30 @@ public class MonsterToolManager : MonoBehaviour {
    // Cache buff abilities only
    public List<BuffAbilityData> buffAbilityList = new List<BuffAbilityData>();
 
+   // Self
+   public static MonsterToolManager self;
+
+   // Holds the collection of user id that created the data entry
+   public List<SQLEntryIDClass> _userIdData = new List<SQLEntryIDClass>();
+
    #endregion
+
+   private void Awake () {
+      self = this;
+   }
+
+   public bool didUserCreateData (int entryID) {
+      SQLEntryIDClass sqlEntry = _userIdData.Find(_ => _.dataID == entryID);
+      if (sqlEntry != null) {
+         if (sqlEntry.ownerID == MasterToolAccountManager.self.currentAccountID) {
+            return true;
+         }
+      } else {
+         Debug.LogWarning("Entry does not exist: " + entryID);
+      }
+
+      return false;
+   }
 
    private void Start () {
       Invoke("loadAllDataFiles", MasterToolScene.loadDelay);
@@ -44,6 +67,7 @@ public class MonsterToolManager : MonoBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<string> rawXMLData = DB_Main.getLandMonsterXML();
          List<AbilityXMLContent> abilityContentList = DB_Main.getBattleAbilityXML();
+         _userIdData = DB_Main.getSQLDataByID(EditorSQLManager.EditorToolType.Battler);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (string rawText in rawXMLData) {

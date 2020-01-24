@@ -51,6 +51,8 @@ public class PlayerSpecialtyScene : MonoBehaviour
       specialtyData.type = Specialty.Type.None;
 
       PlayerClassTemplate template = Instantiate(itemTemplatePrefab, itemTemplateParent.transform);
+      template.indexText.text = specialtyData.type.ToString();
+
       template.editButton.onClick.AddListener(() => {
          playerSpecialtyPanel.loadPlayerSpecialtyData(specialtyData);
          playerSpecialtyPanel.gameObject.SetActive(true);
@@ -82,6 +84,8 @@ public class PlayerSpecialtyScene : MonoBehaviour
       foreach (PlayerSpecialtyData specialty in data.Values) {
          PlayerClassTemplate template = Instantiate(itemTemplatePrefab, itemTemplateParent.transform);
          template.nameText.text = specialty.specialtyName;
+         template.indexText.text = specialty.type.ToString();
+
          template.editButton.onClick.AddListener(() => {
             playerSpecialtyPanel.loadPlayerSpecialtyData(specialty);
             playerSpecialtyPanel.gameObject.SetActive(true);

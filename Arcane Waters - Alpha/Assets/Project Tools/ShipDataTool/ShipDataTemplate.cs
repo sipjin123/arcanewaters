@@ -41,5 +41,10 @@ public class ShipDataTemplate : MonoBehaviour {
          deleteButton.gameObject.SetActive(false);
          duplicateButton.gameObject.SetActive(false);
       }
+      
+      if (resultItem.shipType != Ship.Type.None && !ShipDataToolManager.self.didUserCreateData((int)resultItem.shipType)) {
+         deleteButton.gameObject.SetActive(false);
+         editButton.gameObject.SetActive(false);
+      }
    }
 }

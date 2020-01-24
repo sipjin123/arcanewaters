@@ -17,7 +17,30 @@ public class CraftingToolManager : MonoBehaviour {
    // Holds the path of the folder
    public const string FOLDER_PATH = "Crafting";
 
+   // Self
+   public static CraftingToolManager self;
+
+   // Holds the collection of user id that created the data entry
+   public List<SQLEntryNameClass> _userIdData = new List<SQLEntryNameClass>();
+
    #endregion
+
+   private void Awake () {
+      self = this;
+   }
+
+   public bool didUserCreateData (string entryName) {
+      SQLEntryNameClass sqlEntry = _userIdData.Find(_ => _.dataName == entryName);
+      if (sqlEntry != null) {
+         if (sqlEntry.ownerID == MasterToolAccountManager.self.currentAccountID) {
+            return true;
+         }
+      } else {
+         Debug.LogWarning("Entry does not exist: " + entryName);
+      }
+
+      return false;
+   }
 
    private void Start () {
       Invoke("loadAllDataFiles", MasterToolScene.loadDelay);
@@ -29,6 +52,7 @@ public class CraftingToolManager : MonoBehaviour {
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<string> rawXMLData = DB_Main.getCraftingXML();
+         _userIdData = DB_Main.getSQLDataByName(EditorSQLManager.EditorToolType.Crafting);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (string rawText in rawXMLData) {

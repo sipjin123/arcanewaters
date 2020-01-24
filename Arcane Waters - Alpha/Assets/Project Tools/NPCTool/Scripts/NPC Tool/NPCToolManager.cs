@@ -26,7 +26,23 @@ public class NPCToolManager : MonoBehaviour {
    // Holds the path of the folder
    public const string FOLDER_PATH = "NPC";
 
+   // Holds the collection of user id that created the data entry
+   public List<SQLEntryIDClass> _userIdData = new List<SQLEntryIDClass>();
+
    #endregion
+
+   public bool didUserCreateData (int entryID) {
+      SQLEntryIDClass sqlEntry = _userIdData.Find(_ => _.dataID == entryID);
+      if (sqlEntry != null) {
+         if (sqlEntry.ownerID == MasterToolAccountManager.self.currentAccountID) {
+            return true;
+         }
+      } else {
+         Debug.LogWarning("Entry does not exist: " + entryID);
+      }
+
+      return false;
+   }
 
    public void Awake () {
       self = this;
@@ -47,6 +63,7 @@ public class NPCToolManager : MonoBehaviour {
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<string> rawXMLData = DB_Main.getNPCXML();
+         _userIdData = DB_Main.getSQLDataByID(EditorSQLManager.EditorToolType.NPC);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (string rawText in rawXMLData) {

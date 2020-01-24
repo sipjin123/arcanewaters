@@ -164,21 +164,21 @@ public class DB_Main : DB_MainStub {
 
    #endregion
 
-   #region Battler Abilities
+   #region Battler Abilities XML
 
    public static new void updateBattleAbilities (string abilityName, string abilityXML, int abilityType) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO ability_xml (ability_name, xmlContent, ability_type, creator_userID) " +
-            "VALUES(@ability_name, @xmlContent, @ability_type, @creator_userID) " +
+            "INSERT INTO ability_xml (xml_name, xmlContent, ability_type, creator_userID) " +
+            "VALUES(@xml_name, @xmlContent, @ability_type, @creator_userID) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, ability_type = @ability_type", conn)) {
 
             conn.Open();
             cmd.Prepare();
 
-            cmd.Parameters.AddWithValue("@ability_name", abilityName);
+            cmd.Parameters.AddWithValue("@xml_name", abilityName);
             cmd.Parameters.AddWithValue("@xmlContent", abilityXML);
             cmd.Parameters.AddWithValue("@ability_type", abilityType);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
@@ -194,10 +194,10 @@ public class DB_Main : DB_MainStub {
    public static new void deleteBattleAbilityXML (string abilityName) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM ability_xml WHERE ability_name=@ability_name", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM ability_xml WHERE xml_name=@xml_name", conn)) {
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@ability_name", abilityName);
+            cmd.Parameters.AddWithValue("@xml_name", abilityName);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -411,6 +411,57 @@ public class DB_Main : DB_MainStub {
 
    #endregion
 
+   public static new List<SQLEntryNameClass> getSQLDataByName (EditorSQLManager.EditorToolType editorType) {
+      List<SQLEntryNameClass> rawDataList = new List<SQLEntryNameClass>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane." + EditorSQLManager.getSQLTableByName(editorType), conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  SQLEntryNameClass newEntry = new SQLEntryNameClass(dataReader);
+                  rawDataList.Add(newEntry);
+               }
+            }
+         }
+      } catch (Exception e) {
+         UnityEngine.Debug.LogError(e.ToString());
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return rawDataList;
+   }
+
+   public static new List<SQLEntryIDClass> getSQLDataByID (EditorSQLManager.EditorToolType editorType) {
+      List<SQLEntryIDClass> rawDataList = new List<SQLEntryIDClass>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane." + EditorSQLManager.getSQLTableByID(editorType), conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  SQLEntryIDClass newEntry = new SQLEntryIDClass(dataReader);
+                  rawDataList.Add(newEntry);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return rawDataList;
+   }
+
    #region Ship Ability XML Data
 
    public static new void updateShipAbilityXML (string rawData, string shipAbilityName) {
@@ -418,14 +469,14 @@ public class DB_Main : DB_MainStub {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO ship_ability_xml (shipAbilityName, xmlContent, creator_userID) " +
-            "VALUES(@shipAbilityName, @xmlContent, @creator_userID) " +
+            "INSERT INTO ship_ability_xml (xml_name, xmlContent, creator_userID) " +
+            "VALUES(@xml_name, @xmlContent, @creator_userID) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
 
             conn.Open();
             cmd.Prepare();
 
-            cmd.Parameters.AddWithValue("@shipAbilityName", shipAbilityName);
+            cmd.Parameters.AddWithValue("@xml_name", shipAbilityName);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
 
@@ -463,10 +514,10 @@ public class DB_Main : DB_MainStub {
    public static new void deleteShipAbilityXML (string shipAbilityName) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM ship_ability_xml WHERE shipAbilityName=@shipAbilityName", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM ship_ability_xml WHERE xml_name=@xml_name", conn)) {
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@shipAbilityName", shipAbilityName);
+            cmd.Parameters.AddWithValue("@xml_name", shipAbilityName);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -485,14 +536,14 @@ public class DB_Main : DB_MainStub {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO land_monster_xml (enemyType, xmlContent, creator_userID) " +
-            "VALUES(@enemyType, @xmlContent, @creator_userID) " +
+            "INSERT INTO land_monster_xml (xml_id, xmlContent, creator_userID) " +
+            "VALUES(@xml_id, @xmlContent, @creator_userID) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
 
             conn.Open();
             cmd.Prepare();
 
-            cmd.Parameters.AddWithValue("@enemyType", typeIndex);
+            cmd.Parameters.AddWithValue("@xml_id", typeIndex);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
 
@@ -509,11 +560,11 @@ public class DB_Main : DB_MainStub {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.land_monster_xml where enemyType != @enemyType", conn)) {
+            "SELECT * FROM arcane.land_monster_xml where xml_id != @xml_id", conn)) {
 
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@enemyType", 0);
+            cmd.Parameters.AddWithValue("@xml_id", 0);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -531,10 +582,10 @@ public class DB_Main : DB_MainStub {
    public static new void deleteLandmonsterXML (int typeID) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM land_monster_xml WHERE enemyType=@enemyType", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM land_monster_xml WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@enemyType", typeID);
+            cmd.Parameters.AddWithValue("@xml_id", typeID);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -553,14 +604,14 @@ public class DB_Main : DB_MainStub {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO sea_monster_xml (seaMonsterType, xmlContent, creator_userID) " +
-            "VALUES(@seaMonsterType, @xmlContent, @creator_userID) " +
+            "INSERT INTO sea_monster_xml (xml_id, xmlContent, creator_userID) " +
+            "VALUES(@xml_id, @xmlContent, @creator_userID) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
 
             conn.Open();
             cmd.Prepare();
 
-            cmd.Parameters.AddWithValue("@seaMonsterType", typeIndex);
+            cmd.Parameters.AddWithValue("@xml_id", typeIndex);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
 
@@ -577,11 +628,11 @@ public class DB_Main : DB_MainStub {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.sea_monster_xml where seaMonsterType != @seaMonsterType", conn)) {
+            "SELECT * FROM arcane.sea_monster_xml where xml_id != @xml_id", conn)) {
 
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@seaMonsterType", 0);
+            cmd.Parameters.AddWithValue("@xml_id", 0);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -599,10 +650,10 @@ public class DB_Main : DB_MainStub {
    public static new void deleteSeamonsterXML (int typeID) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM sea_monster_xml WHERE seaMonsterType=@seaMonsterType", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM sea_monster_xml WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@seaMonsterType", typeID);
+            cmd.Parameters.AddWithValue("@xml_id", typeID);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -621,14 +672,14 @@ public class DB_Main : DB_MainStub {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO npc_xml (npcId, xmlContent, creator_userID) " +
-            "VALUES(@npcId, @xmlContent, @creator_userID) " +
+            "INSERT INTO npc_xml (xml_id, xmlContent, creator_userID) " +
+            "VALUES(@xml_id, @xmlContent, @creator_userID) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
 
             conn.Open();
             cmd.Prepare();
 
-            cmd.Parameters.AddWithValue("@npcId", typeIndex);
+            cmd.Parameters.AddWithValue("@xml_id", typeIndex);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
 
@@ -666,10 +717,10 @@ public class DB_Main : DB_MainStub {
    public static new void deleteNPCXML (int typeID) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM npc_xml WHERE npcId=@npcId", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM npc_xml WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@npcId", typeID);
+            cmd.Parameters.AddWithValue("@xml_id", typeID);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -808,14 +859,14 @@ public class DB_Main : DB_MainStub {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO shop_xml (shopName, xmlContent, creator_userID) " +
-            "VALUES(@shopName, @xmlContent, @creator_userID) " +
+            "INSERT INTO shop_xml (xml_name, xmlContent, creator_userID) " +
+            "VALUES(@xml_name, @xmlContent, @creator_userID) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
 
             conn.Open();
             cmd.Prepare();
 
-            cmd.Parameters.AddWithValue("@shopName", shopName);
+            cmd.Parameters.AddWithValue("@xml_name", shopName);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
 
@@ -853,10 +904,10 @@ public class DB_Main : DB_MainStub {
    public static new void deleteShopXML (string shopName) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM shop_xml WHERE shopName=@shopName", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM shop_xml WHERE xml_name=@xml_name", conn)) {
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@shopName", shopName);
+            cmd.Parameters.AddWithValue("@xml_name", shopName);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -875,14 +926,14 @@ public class DB_Main : DB_MainStub {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO ship_xml (shipType, xmlContent, creator_userID) " +
-            "VALUES(@shipType, @xmlContent, @creator_userID) " +
+            "INSERT INTO ship_xml (xml_id, xmlContent, creator_userID) " +
+            "VALUES(@xml_id, @xmlContent, @creator_userID) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
 
             conn.Open();
             cmd.Prepare();
 
-            cmd.Parameters.AddWithValue("@shipType", typeIndex);
+            cmd.Parameters.AddWithValue("@xml_id", typeIndex);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
 
@@ -899,11 +950,11 @@ public class DB_Main : DB_MainStub {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.ship_xml where shipType != @shipType", conn)) {
+            "SELECT * FROM arcane.ship_xml where xml_id != @xml_id", conn)) {
 
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@shipType", 0);
+            cmd.Parameters.AddWithValue("@xml_id", 0);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -921,10 +972,10 @@ public class DB_Main : DB_MainStub {
    public static new void deleteShipXML (int typeID) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM ship_xml WHERE shipType=@shipType", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM ship_xml WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@shipType", typeID);
+            cmd.Parameters.AddWithValue("@xml_id", typeID);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -943,14 +994,14 @@ public class DB_Main : DB_MainStub {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO tutorial_xml (tutorialTitle, xmlContent, stepOrder, creator_userID) " +
-            "VALUES(@tutorialTitle, @xmlContent, @stepOrder, @creator_userID) " +
+            "INSERT INTO tutorial_xml (xml_name, xmlContent, stepOrder, creator_userID) " +
+            "VALUES(@xml_name, @xmlContent, @stepOrder, @creator_userID) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
 
             conn.Open();
             cmd.Prepare();
 
-            cmd.Parameters.AddWithValue("@tutorialTitle", name);
+            cmd.Parameters.AddWithValue("@xml_name", name);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
             cmd.Parameters.AddWithValue("@stepOrder", order);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
@@ -966,10 +1017,10 @@ public class DB_Main : DB_MainStub {
    public static new void deleteTutorialXML (string name) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM tutorial_xml WHERE tutorialTitle=@tutorialTitle", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM tutorial_xml WHERE xml_name=@xml_name", conn)) {
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@tutorialTitle", name);
+            cmd.Parameters.AddWithValue("@xml_name", name);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1011,14 +1062,14 @@ public class DB_Main : DB_MainStub {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO achievement_xml (achievementName, xmlContent, creator_userID) " +
-            "VALUES(@achievementName, @xmlContent, @creator_userID) " +
+            "INSERT INTO achievement_xml (xml_name, xmlContent, creator_userID) " +
+            "VALUES(@xml_name, @xmlContent, @creator_userID) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
 
             conn.Open();
             cmd.Prepare();
 
-            cmd.Parameters.AddWithValue("@achievementName", name);
+            cmd.Parameters.AddWithValue("@xml_name", name);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID); 
 
@@ -1033,10 +1084,10 @@ public class DB_Main : DB_MainStub {
    public static new void deleteAchievementXML (string name) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM achievement_xml WHERE achievementName=@achievementName", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM achievement_xml WHERE xml_name=@xml_name", conn)) {
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@achievementName", name);
+            cmd.Parameters.AddWithValue("@xml_name", name);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1094,14 +1145,14 @@ public class DB_Main : DB_MainStub {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO " + tableName + " (type, xmlContent, creator_userID) " +
-            "VALUES(@type, @xmlContent, @creator_userID) " +
+            "INSERT INTO " + tableName + " (xml_id, xmlContent, creator_userID) " +
+            "VALUES(@xml_id, @xmlContent, @creator_userID) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
 
             conn.Open();
             cmd.Prepare();
 
-            cmd.Parameters.AddWithValue("@type", key);
+            cmd.Parameters.AddWithValue("@xml_id", key);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
 
@@ -1171,10 +1222,10 @@ public class DB_Main : DB_MainStub {
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM " + tableName + " WHERE type=@type", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM " + tableName + " WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@type", typeID);
+            cmd.Parameters.AddWithValue("@xml_id", typeID);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1193,14 +1244,14 @@ public class DB_Main : DB_MainStub {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO crafting_xml (name, xmlContent, creator_userID) " +
-            "VALUES(@name, @xmlContent, @creator_userID) " +
+            "INSERT INTO crafting_xml (xml_name, xmlContent, creator_userID) " +
+            "VALUES(@xml_name, @xmlContent, @creator_userID) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
 
             conn.Open();
             cmd.Prepare();
 
-            cmd.Parameters.AddWithValue("@name", name);
+            cmd.Parameters.AddWithValue("@xml_name", name);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
 
@@ -1238,10 +1289,10 @@ public class DB_Main : DB_MainStub {
    public static new void deleteCraftingXML (string name) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM crafting_xml WHERE name=@name", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM crafting_xml WHERE xml_name=@xml_name", conn)) {
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@name", name);
+            cmd.Parameters.AddWithValue("@xml_name", name);
 
             // Execute the command
             cmd.ExecuteNonQuery();

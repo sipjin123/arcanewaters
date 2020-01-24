@@ -365,10 +365,10 @@ public class MonsterDataPanel : MonoBehaviour {
       rawData.battlerLootData = getRawLootData();
 
       foreach (AttackAbilityData attackAbility in rawData.battlerAbilities.attackAbilityDataList) {
-         abilityToolManager.saveAbility(attackAbility, AbilityToolManager.DirectoryType.AttackAbility);
+         abilityToolManager.saveAbility(attackAbility);
       }
       foreach (BuffAbilityData buffAbility in rawData.battlerAbilities.buffAbilityDataList) {
-         abilityToolManager.saveAbility(buffAbility, AbilityToolManager.DirectoryType.BuffAbility);
+         abilityToolManager.saveAbility(buffAbility);
       }
 
       monsterToolManager.saveDataToFile(rawData);

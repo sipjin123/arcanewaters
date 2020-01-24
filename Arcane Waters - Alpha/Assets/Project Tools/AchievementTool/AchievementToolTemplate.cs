@@ -32,6 +32,11 @@ public class AchievementToolTemplate : MonoBehaviour {
          deleteButton.gameObject.SetActive(false);
          duplicateButton.gameObject.SetActive(false);
       }
+
+      if (Util.hasValidEntryName(nameText.text) && !AchievementToolManager.self.didUserCreateData(nameText.text)) {
+         deleteButton.gameObject.SetActive(false);
+         editButton.gameObject.SetActive(false);
+      }
    }
 
    #region Private Variables

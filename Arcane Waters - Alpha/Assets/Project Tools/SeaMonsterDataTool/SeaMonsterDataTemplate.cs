@@ -42,6 +42,11 @@ public class SeaMonsterDataTemplate : MonoBehaviour
          deleteButton.gameObject.SetActive(false);
          duplicateButton.gameObject.SetActive(false);
       }
+
+      if (resultItem.seaMonsterType != SeaMonsterEntity.Type.None && !SeaMonsterToolManager.self.didUserCreateData((int) resultItem.seaMonsterType)) {
+         deleteButton.gameObject.SetActive(false);
+         editButton.gameObject.SetActive(false);
+      }
    }
 
    #region Private Variables

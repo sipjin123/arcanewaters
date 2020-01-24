@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.SceneManagement;
+using MySql.Data.MySqlClient;
+using System;
 
 public class MasterToolScene : MonoBehaviour {
    #region Public Variables
@@ -33,6 +35,9 @@ public class MasterToolScene : MonoBehaviour {
 
    // Login instance of the master tool
    public GameObject loginInstance;
+
+   // Initial reference for image manager before initialization
+   public ImageManager imageManagerReference;
 
    // Button triggers to open scene
    public Button clickAbilityScene, 
@@ -115,6 +120,10 @@ public class MasterToolScene : MonoBehaviour {
       
       if (MasterToolAccountManager.self == null) {
          GameObject loginPanel = Instantiate(loginInstance);
+         imageManagerReference.transform.SetParent(loginPanel.transform);
+         imageManagerReference.gameObject.SetActive(true);
+      } else {
+         Destroy(imageManagerReference.gameObject);
       }
    }
 

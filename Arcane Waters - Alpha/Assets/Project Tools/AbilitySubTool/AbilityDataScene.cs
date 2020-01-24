@@ -56,6 +56,9 @@ public class AbilityDataScene : MonoBehaviour
    public Dictionary<string, Sprite> hitIconSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> projectileSpriteList = new Dictionary<string, Sprite>();
 
+   // Initial name before editing was done
+   private string startingName;
+
    #endregion
 
    private void Start () {
@@ -122,6 +125,7 @@ public class AbilityDataScene : MonoBehaviour
    private void createNewTemplate (BasicAbilityData abilityData) {
       AbilityDataTemplate template = Instantiate(abilityTemplate, abilityTemplateParent);
       template.editButton.onClick.AddListener(() => {
+         startingName = abilityData.itemName;
          abilityPanel.SetActive(true);
          skillTemplateList = new List<MonsterSkillTemplate>();
          skillTemplateParent.gameObject.DestroyChildren();
@@ -145,9 +149,17 @@ public class AbilityDataScene : MonoBehaviour
 
       MonsterSkillTemplate skillTemplate = skillTemplateList[0];
       if (skillTemplateList[0].abilityTypeEnum == AbilityType.Standard) {
-         abilityManager.saveAbility(skillTemplate.getAttackData(), AbilityToolManager.DirectoryType.AttackAbility);
+         if (startingName != skillTemplateList[0].skillName.text) {
+            abilityManager.overWriteAbiltiy(skillTemplate.getAttackData(), startingName);
+         } else {
+            abilityManager.saveAbility(skillTemplate.getAttackData());
+         }
       } else if (skillTemplateList[0].abilityTypeEnum == AbilityType.BuffDebuff) {
-         abilityManager.saveAbility(skillTemplate.getBuffData(), AbilityToolManager.DirectoryType.BuffAbility);
+         if (startingName != skillTemplateList[0].skillName.text) {
+            abilityManager.overWriteAbiltiy(skillTemplate.getBuffData(), startingName);
+         } else {
+            abilityManager.saveAbility(skillTemplate.getBuffData());
+         }
       }
    }
 
@@ -174,6 +186,7 @@ public class AbilityDataScene : MonoBehaviour
          if (abilityData.abilityType != AbilityType.Stance) {
             AbilityDataTemplate template = Instantiate(abilityTemplate, abilityTemplateParent);
             template.editButton.onClick.AddListener(() => {
+               startingName = abilityData.itemName;
                loadAttackData(abilityData);
                abilityPanel.SetActive(true);
             });
@@ -194,6 +207,7 @@ public class AbilityDataScene : MonoBehaviour
       foreach (BuffAbilityData abilityData in buffData.Values) {
          AbilityDataTemplate template = Instantiate(abilityTemplate, abilityTemplateParent);
          template.editButton.onClick.AddListener(() => {
+            startingName = abilityData.itemName;
             loadBuffData(abilityData);
             abilityPanel.SetActive(true);
          });
@@ -212,6 +226,7 @@ public class AbilityDataScene : MonoBehaviour
          if (abilityData.abilityType == AbilityType.Stance) {
             AbilityDataTemplate template = Instantiate(abilityTemplate, abilityTemplateParent);
             template.editButton.onClick.AddListener(() => {
+               startingName = abilityData.itemName;
                loadGenericData(abilityData);
                abilityPanel.SetActive(true);
             });

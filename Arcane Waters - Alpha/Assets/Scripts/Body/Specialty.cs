@@ -10,7 +10,7 @@ public class Specialty : MonoBehaviour {
    // The Types of specialties
    public enum Type {
       None = 0, Treasure = 1, Adventurer = 2, Merchant = 3, Farmer = 4, Crafter = 5,
-      Sharpshooter = 6, Fencer = 7, Brawler = 8, Sailor = 9, Cannoneer = 10,
+      Sharpshooter = 6, Fencer = 7, Brawler = 8, Sailor = 9, Cannoneer = 10, TestEntry = 11
    }
 
    #endregion

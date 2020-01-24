@@ -563,6 +563,7 @@ MonoBehaviour:
   npcIconButton: {fileID: 6808845469312049236}
   deleteButton: {fileID: 1532650897371589662}
   duplicateButton: {fileID: 3907841258494220364}
+  editButton: {fileID: 7599107092912464433}
 --- !u!1001 &4365492555048661352
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -860,6 +861,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 4699594334486291491}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7599107092912464433 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2904016394973382162, guid: 4256ceeb4e0f48f4eb80d747a95ee343,
+    type: 3}
+  m_PrefabInstance: {fileID: 4699594334486291491}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &7192354884629804497
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -51,6 +51,8 @@ public class PlayerJobScene : MonoBehaviour
       jobData.type = Jobs.Type.None;
 
       PlayerClassTemplate template = Instantiate(itemTemplatePrefab, itemTemplateParent.transform);
+      template.indexText.text = jobData.type.ToString();
+
       template.editButton.onClick.AddListener(() => {
          playerJobPanel.loadPlayerJobData(jobData);
          playerJobPanel.gameObject.SetActive(true);
@@ -82,6 +84,8 @@ public class PlayerJobScene : MonoBehaviour
       foreach (PlayerJobData job in data.Values) {
          PlayerClassTemplate template = Instantiate(itemTemplatePrefab, itemTemplateParent.transform);
          template.nameText.text = job.jobName;
+         template.indexText.text = job.type.ToString();
+
          template.editButton.onClick.AddListener(() => {
             playerJobPanel.loadPlayerJobData(job);
             playerJobPanel.gameObject.SetActive(true);

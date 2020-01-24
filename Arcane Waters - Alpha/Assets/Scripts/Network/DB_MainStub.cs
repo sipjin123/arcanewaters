@@ -11,6 +11,14 @@ public class DB_MainStub : MonoBehaviour {
 
    #endregion
 
+   public static List<SQLEntryNameClass> getSQLDataByName (EditorSQLManager.EditorToolType editorType) {
+      return new List<SQLEntryNameClass>();
+   }
+
+   public static List<SQLEntryIDClass> getSQLDataByID (EditorSQLManager.EditorToolType editorType) {
+      return new List<SQLEntryIDClass>();
+   }
+
    public static void updateShipAbilities (int shipId, string abilityXML) {
 
    }

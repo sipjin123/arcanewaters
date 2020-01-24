@@ -32,7 +32,7 @@ public class TutorialToolScene : MonoBehaviour
    public Toggle showDetails;
 
    // Determines if details are being shown in the UI
-   public bool isShowingDetails = true;
+   public bool isShowingDetails = false;
 
    #endregion
 
@@ -93,9 +93,11 @@ public class TutorialToolScene : MonoBehaviour
       foreach (TutorialData tutorialData in sortedList) {
          TutorialToolTemplate template = Instantiate(tutorialTemplatePrefab, itemTemplateParent.transform);
          if (isShowingDetails) {
-            template.nameText.text = tutorialData.tutorialName + "\n[" + tutorialData.stepOrder + "]";
+            template.nameText.text = tutorialData.tutorialName;
+            template.indexText.text = tutorialData.stepOrder.ToString();
          } else {
             template.nameText.text = tutorialData.tutorialName;
+            template.indexText.text = "";
          }
 
          template.editButton.onClick.AddListener(() => {

@@ -50,6 +50,8 @@ public class PlayerFactionScene : MonoBehaviour {
       factionData.type = Faction.Type.None;
 
       PlayerClassTemplate template = Instantiate(itemTemplatePrefab, itemTemplateParent.transform);
+      template.indexText.text = factionData.type.ToString();
+
       template.editButton.onClick.AddListener(() => {
          playerFactionPanel.loadPlayerFactionData(factionData);
          playerFactionPanel.gameObject.SetActive(true);
@@ -81,6 +83,8 @@ public class PlayerFactionScene : MonoBehaviour {
       foreach (PlayerFactionData faction in data.Values) {
          PlayerClassTemplate template = Instantiate(itemTemplatePrefab, itemTemplateParent.transform);
          template.nameText.text = faction.factionName;
+         template.indexText.text = faction.type.ToString();
+
          template.editButton.onClick.AddListener(() => {
             playerFactionPanel.loadPlayerFactionData(faction);
             playerFactionPanel.gameObject.SetActive(true);

@@ -20,7 +20,30 @@ public class SeaMonsterToolManager : MonoBehaviour
    // Holds the path of the folder
    public const string FOLDER_PATH = "SeaMonsterStats";
 
+   // Self
+   public static SeaMonsterToolManager self;
+
+   // Holds the collection of user id that created the data entry
+   public List<SQLEntryIDClass> _userIdData = new List<SQLEntryIDClass>();
+
    #endregion
+
+   private void Awake () {
+      self = this;
+   }
+
+   public bool didUserCreateData (int entryID) {
+      SQLEntryIDClass sqlEntry = _userIdData.Find(_ => _.dataID == entryID);
+      if (sqlEntry != null) {
+         if (sqlEntry.ownerID == MasterToolAccountManager.self.currentAccountID) {
+            return true;
+         }
+      } else {
+         Debug.LogWarning("Entry does not exist: " + entryID);
+      }
+
+      return false;
+   }
 
    private void Start () {
       Invoke("loadAllDataFiles", MasterToolScene.loadDelay);
@@ -32,6 +55,7 @@ public class SeaMonsterToolManager : MonoBehaviour
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<string> rawXMLData = DB_Main.getSeaMonsterXML();
+         _userIdData = DB_Main.getSQLDataByID(EditorSQLManager.EditorToolType.SeaMonster);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (string rawText in rawXMLData) {
@@ -84,7 +108,7 @@ public class SeaMonsterToolManager : MonoBehaviour
    public void duplicateFile (SeaMonsterEntityData data) {
       int uniqueID = 0;
       foreach (SeaMonsterEntity.Type seaMonsterType in Enum.GetValues(typeof(SeaMonsterEntity.Type))) {
-         if (!monsterDataList.Values.ToList().Exists(_ => _.seaMonsterType == seaMonsterType) && seaMonsterType != SeaMonsterEntity.Type.None) {
+         if (seaMonsterType != SeaMonsterEntity.Type.None && !monsterDataList.Values.ToList().Exists(_ => _.seaMonsterType == seaMonsterType) && seaMonsterType != SeaMonsterEntity.Type.None) {
             uniqueID = (int) seaMonsterType;
             break;
          } 

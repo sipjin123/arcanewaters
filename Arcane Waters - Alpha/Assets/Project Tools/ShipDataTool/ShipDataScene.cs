@@ -45,7 +45,7 @@ public class ShipDataScene : MonoBehaviour {
    private void createTemplate () {
       ShipData shipData = new ShipData();
       shipData.shipName = "Undefined";
-      shipData.shipType = Ship.Type.Barge;
+      shipData.shipType = Ship.Type.None;
       shipData.mastType = Ship.MastType.Caravel_1;
       shipData.sailType = Ship.SailType.Caravel_1;
       shipData.skinType = Ship.SkinType.Barge_Dragon;

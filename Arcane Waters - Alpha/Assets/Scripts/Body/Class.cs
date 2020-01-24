@@ -9,7 +9,7 @@ public class Class : MonoBehaviour {
 
    // The Types of class
    public enum Type {
-      None = 0, Fighter = 1, Marksman = 2, Mystic = 3, Healer = 4
+      None = 0, Fighter = 1, Marksman = 2, Mystic = 3, Healer = 4, TestEntry = 5
    }
       
    #endregion

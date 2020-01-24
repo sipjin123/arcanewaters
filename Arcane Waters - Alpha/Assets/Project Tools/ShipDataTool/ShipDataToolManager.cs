@@ -22,7 +22,30 @@ public class ShipDataToolManager : MonoBehaviour {
    // List of abilities
    public List<string> shipSkillList = new List<string>();
 
+   // Self
+   public static ShipDataToolManager self;
+
+   // Holds the collection of user id that created the data entry
+   public List<SQLEntryIDClass> _userIdData = new List<SQLEntryIDClass>();
+
    #endregion
+
+   private void Awake () {
+      self = this;
+   }
+
+   public bool didUserCreateData (int entryID) {
+      SQLEntryIDClass sqlEntry = _userIdData.Find(_ => _.dataID == entryID);
+      if (sqlEntry != null) {
+         if (sqlEntry.ownerID == MasterToolAccountManager.self.currentAccountID) {
+            return true;
+         }
+      } else {
+         Debug.LogWarning("Entry does not exist: " + entryID);
+      }
+
+      return false;
+   }
 
    private void Start () {
       Invoke("loadXMLData", MasterToolScene.loadDelay);
@@ -59,7 +82,7 @@ public class ShipDataToolManager : MonoBehaviour {
    public void duplicateXMLData (ShipData data) {
       int uniqueID = 0;
       foreach (Ship.Type shipType in Enum.GetValues(typeof(Ship.Type))) {
-         if (!_shipDataList.Values.ToList().Exists(_ => _.shipType == shipType)) {
+         if (shipType != Ship.Type.None && !_shipDataList.Values.ToList().Exists(_ => _.shipType == shipType)) {
             uniqueID = (int)shipType;
             break;
          }
@@ -70,6 +93,7 @@ public class ShipDataToolManager : MonoBehaviour {
       }
 
       data.shipName += "_copy";
+      data.shipType = (Ship.Type) uniqueID;
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {
@@ -94,6 +118,7 @@ public class ShipDataToolManager : MonoBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<string> rawXMLData = DB_Main.getShipXML();
          List<string> rawShipAbilityXMLData = DB_Main.getShipAbilityXML();
+         _userIdData = DB_Main.getSQLDataByID(EditorSQLManager.EditorToolType.Ship);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (string shipAbilityText in rawShipAbilityXMLData) {

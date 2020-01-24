@@ -41,6 +41,11 @@ public class CraftableItemTemplate : MonoBehaviour {
          duplicateButton.gameObject.SetActive(false);
          deleteButton.gameObject.SetActive(false);
       }
+    
+      if (Util.hasValidEntryName(nameText.text) && !CraftingToolManager.self.didUserCreateData(nameText.text)) {
+         deleteButton.gameObject.SetActive(false);
+         editButton.gameObject.SetActive(false);
+      }
    }
 
    #region Private Variables

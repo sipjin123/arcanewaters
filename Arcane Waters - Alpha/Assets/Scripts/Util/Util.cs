@@ -56,6 +56,13 @@ public class Util : MonoBehaviour {
       return -1;
    }
 
+   public static bool hasValidEntryName (string entryName) {
+      if (entryName.ToLower() == "none" || entryName.ToLower() == "undefined") {
+         return false;
+      }
+      return true;
+   }
+
    public static string getItemName (Item.Category category, int typeID) {
       string itemTypeName = "";
       switch (category) {

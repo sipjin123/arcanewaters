@@ -42,7 +42,7 @@ public class MasterToolAccountManager : MonoBehaviour {
    public int currentAccountID;
 
    // Current permission level of the account
-   public static AdminManager.Type PERMISSION_LEVEL;
+   public static AdminManager.Type PERMISSION_LEVEL = AdminManager.Type.Admin;
 
    // Button for exiting the application
    public Button exitButton;

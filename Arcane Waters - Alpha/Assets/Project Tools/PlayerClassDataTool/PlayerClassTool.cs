@@ -19,7 +19,30 @@ public class PlayerClassTool : MonoBehaviour
    // Holds the path of the folder
    public const string FOLDER_PATH = "PlayerClass";
 
+   // Self
+   public static PlayerClassTool self;
+
+   // Holds the collection of user id that created the data entry
+   public List<SQLEntryIDClass> _userIdData = new List<SQLEntryIDClass>();
+
    #endregion
+
+   private void Awake () {
+      self = this;
+   }
+
+   public bool didUserCreateData (int entryID) {
+      SQLEntryIDClass sqlEntry = _userIdData.Find(_ => _.dataID == entryID);
+      if (sqlEntry != null) {
+         if (sqlEntry.ownerID == MasterToolAccountManager.self.currentAccountID) {
+            return true;
+         }
+      } else {
+         Debug.LogWarning("Entry does not exist: " + entryID);
+      }
+
+      return false;
+   }
 
    private void Start () {
       Invoke("loadXMLData", MasterToolScene.loadDelay);
@@ -78,6 +101,7 @@ public class PlayerClassTool : MonoBehaviour
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<string> rawXMLData = DB_Main.getPlayerClassXML(PlayerStatType.Class);
+         _userIdData = DB_Main.getSQLDataByID(EditorSQLManager.EditorToolType.PlayerClass);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (string rawText in rawXMLData) {

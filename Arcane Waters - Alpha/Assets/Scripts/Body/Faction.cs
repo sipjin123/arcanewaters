@@ -10,7 +10,7 @@ public class Faction : MonoBehaviour {
    // The Faction types
    public enum Type {
       None = 0, Neutral = 1, Pirates = 2, Privateers = 3, Pillagers = 4, Cartographers = 5,
-      Merchants = 6, Builders = 7, Naturalists = 8
+      Merchants = 6, Builders = 7, Naturalists = 8, TestEntry = 9
    }
 
    #endregion

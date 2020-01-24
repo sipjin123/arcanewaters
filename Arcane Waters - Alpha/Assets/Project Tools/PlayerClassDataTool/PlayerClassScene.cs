@@ -50,6 +50,8 @@ public class PlayerClassScene : MonoBehaviour {
       classData.type = Class.Type.None;
 
       PlayerClassTemplate template = Instantiate(itemTemplatePrefab, itemTemplateParent.transform);
+      template.indexText.text = classData.type.ToString();
+
       template.editButton.onClick.AddListener(() => {
          playerClassPanel.loadPlayerClassData(classData);
          playerClassPanel.gameObject.SetActive(true);
@@ -81,6 +83,8 @@ public class PlayerClassScene : MonoBehaviour {
       foreach (PlayerClassData playerClass in data.Values) {
          PlayerClassTemplate template = Instantiate(itemTemplatePrefab, itemTemplateParent.transform);
          template.nameText.text = playerClass.className;
+         template.indexText.text = playerClass.type.ToString();
+
          template.editButton.onClick.AddListener(() => {
             playerClassPanel.loadPlayerClassData(playerClass);
             playerClassPanel.gameObject.SetActive(true);

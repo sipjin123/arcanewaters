@@ -17,7 +17,30 @@ public class AchievementToolManager : MonoBehaviour {
    // Holds the path of the folder
    public const string FOLDER_PATH = "Achievement";
 
+   // Self
+   public static AchievementToolManager self;
+
+   // Holds the collection of user id that created the data entry
+   public List<SQLEntryNameClass> _userIdData = new List<SQLEntryNameClass>();
+
    #endregion
+
+   private void Awake () {
+      self = this;
+   }
+
+   public bool didUserCreateData (string entryName) {
+      SQLEntryNameClass sqlEntry = _userIdData.Find(_ => _.dataName == entryName);
+      if (sqlEntry != null) {
+         if (sqlEntry.ownerID == MasterToolAccountManager.self.currentAccountID) {
+            return true;
+         }
+      } else {
+         Debug.LogWarning("Entry does not exist: " + entryName);
+      }
+
+      return false;
+   }
 
    private void Start () {
       Invoke("loadXMLData", MasterToolScene.loadDelay);
@@ -91,6 +114,7 @@ public class AchievementToolManager : MonoBehaviour {
       XmlLoadingPanel.self.startLoading();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<string> rawXMLData = DB_Main.getAchievementXML();
+         _userIdData = DB_Main.getSQLDataByName(EditorSQLManager.EditorToolType.Achievement);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (string rawText in rawXMLData) {

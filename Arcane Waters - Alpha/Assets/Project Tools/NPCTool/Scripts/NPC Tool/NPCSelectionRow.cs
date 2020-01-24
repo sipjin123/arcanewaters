@@ -24,6 +24,9 @@ public class NPCSelectionRow : MonoBehaviour
    // Button for duplicating this template
    public Button duplicateButton;
 
+   // Button for editing this template
+   public Button editButton;
+
    #endregion
 
    public void setRowForNPC(NPCSelectionScreen npcSelectionScreen, int npcId, string npcName) {
@@ -35,6 +38,11 @@ public class NPCSelectionRow : MonoBehaviour
       if (!MasterToolAccountManager.canAlterData()) {
          duplicateButton.gameObject.SetActive(false);
          deleteButton.gameObject.SetActive(false);
+      }
+
+      if (!NPCToolManager.self.didUserCreateData(npcId)) {
+         deleteButton.gameObject.SetActive(false);
+         editButton.gameObject.SetActive(false);
       }
    }
 

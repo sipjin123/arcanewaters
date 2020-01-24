@@ -41,6 +41,11 @@ public class EnemyDataTemplate : MonoBehaviour {
          deleteButton.gameObject.SetActive(false);
          duplicateButton.gameObject.SetActive(false);
       }
+
+      if (resultItem.enemyType != Enemy.Type.None && !MonsterToolManager.self.didUserCreateData((int) resultItem.enemyType)) {
+         deleteButton.gameObject.SetActive(false);
+         editButton.gameObject.SetActive(false);
+      }
    }
 
    #region Private Variables
