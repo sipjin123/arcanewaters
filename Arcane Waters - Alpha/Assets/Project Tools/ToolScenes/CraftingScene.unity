@@ -4722,6 +4722,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60c2fbb04ac71b344b9623ab913034c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  userIdData: []
+  editorToolType: 3
   craftingToolScreen: {fileID: 631334683}
 --- !u!114 &1218528435 stripped
 MonoBehaviour:

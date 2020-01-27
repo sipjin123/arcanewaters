@@ -119,12 +119,13 @@ public class MasterToolScene : MonoBehaviour {
       });
       
       if (MasterToolAccountManager.self == null) {
+         // Login panel will be created only once, if the scene resets and the login panel is already active it will no longer instantiate
          GameObject loginPanel = Instantiate(loginInstance);
+
+         // Image manager will be injected to the login panel
          imageManagerReference.transform.SetParent(loginPanel.transform);
          imageManagerReference.gameObject.SetActive(true);
-      } else {
-         Destroy(imageManagerReference.gameObject);
-      }
+      } 
    }
 
    #region Private Variables

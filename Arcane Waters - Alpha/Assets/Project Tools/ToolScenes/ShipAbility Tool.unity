@@ -10034,8 +10034,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c8618971bca637418d8fc5ce50a8ce0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  userNameData: []
+  userIdData: []
+  editorToolType: 13
   shipAbilityToolScene: {fileID: 631334679}
-  _userIdData: []
 --- !u!1 &1223559960
 GameObject:
   m_ObjectHideFlags: 0

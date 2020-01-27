@@ -9,7 +9,7 @@ using System.Text;
 using System.Xml;
 using System;
 
-public class TutorialToolManager : MonoBehaviour {
+public class TutorialToolManager : XmlDataToolManager {
    #region Public Variables
 
    // Holds the main scene for the data templates
@@ -18,26 +18,10 @@ public class TutorialToolManager : MonoBehaviour {
    // Self
    public static TutorialToolManager self;
 
-   // Holds the collection of user id that created the data entry
-   public List<SQLEntryNameClass> _userIdData = new List<SQLEntryNameClass>();
-
    #endregion
 
    private void Awake () {
       self = this;
-   }
-
-   public bool didUserCreateData (string entryName) {
-      SQLEntryNameClass sqlEntry = _userIdData.Find(_ => _.dataName == entryName);
-      if (sqlEntry != null) {
-         if (sqlEntry.ownerID == MasterToolAccountManager.self.currentAccountID) {
-            return true;
-         }
-      } else {
-         Debug.LogWarning("Entry does not exist: " + entryName);
-      }
-
-      return false;
    }
 
    private void Start () {
@@ -112,7 +96,7 @@ public class TutorialToolManager : MonoBehaviour {
       XmlLoadingPanel.self.startLoading();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<string> rawXMLData = DB_Main.getTutorialXML();
-         _userIdData = DB_Main.getSQLDataByName(EditorSQLManager.EditorToolType.Tutorial);
+         userNameData = DB_Main.getSQLDataByName(editorToolType);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (string rawText in rawXMLData) {

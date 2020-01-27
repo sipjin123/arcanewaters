@@ -32153,9 +32153,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e34cef95b49634459c4570dea27de63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  userIdData: []
+  editorToolType: 1
   abilityScene: {fileID: 631334679}
   monsterAbilityManager: {fileID: 0}
-  _userIdData: []
 --- !u!1 &1218971292
 GameObject:
   m_ObjectHideFlags: 0

@@ -15,7 +15,7 @@ public class EditorSQLManager
       Achievement = 2,
       Crafting = 3,
       Equipment = 4,
-      Battler = 5,
+      LandMonster = 5,
       NPC = 6,
       PlayerClass = 7,
       PlayerFaction = 8,
@@ -59,7 +59,7 @@ public class EditorSQLManager
                default:
                   return "";
             }
-         case EditorToolType.Battler:
+         case EditorToolType.LandMonster:
             return "land_monster_xml";
          case EditorToolType.NPC:
             return "npc_xml";

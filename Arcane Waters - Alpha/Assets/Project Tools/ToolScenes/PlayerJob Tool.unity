@@ -16944,6 +16944,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d409254a8b8f8443a1d527453576443, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  userNameData: []
+  userIdData: []
+  editorToolType: 9
   jobSceneScene: {fileID: 631334679}
 --- !u!1 &1256991693
 GameObject:

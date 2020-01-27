@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 using System.Text;
 using System.Xml;
 
-public class CraftingToolManager : MonoBehaviour {
+public class CraftingToolManager : XmlDataToolManager {
    #region Public Variables
 
    // Reference to the tool scene
@@ -20,26 +20,10 @@ public class CraftingToolManager : MonoBehaviour {
    // Self
    public static CraftingToolManager self;
 
-   // Holds the collection of user id that created the data entry
-   public List<SQLEntryNameClass> _userIdData = new List<SQLEntryNameClass>();
-
    #endregion
 
    private void Awake () {
       self = this;
-   }
-
-   public bool didUserCreateData (string entryName) {
-      SQLEntryNameClass sqlEntry = _userIdData.Find(_ => _.dataName == entryName);
-      if (sqlEntry != null) {
-         if (sqlEntry.ownerID == MasterToolAccountManager.self.currentAccountID) {
-            return true;
-         }
-      } else {
-         Debug.LogWarning("Entry does not exist: " + entryName);
-      }
-
-      return false;
    }
 
    private void Start () {
@@ -52,7 +36,7 @@ public class CraftingToolManager : MonoBehaviour {
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<string> rawXMLData = DB_Main.getCraftingXML();
-         _userIdData = DB_Main.getSQLDataByName(EditorSQLManager.EditorToolType.Crafting);
+         userNameData = DB_Main.getSQLDataByName(editorToolType);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (string rawText in rawXMLData) {

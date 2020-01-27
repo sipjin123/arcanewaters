@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 using System.Text;
 using System.Xml;
 
-public class AbilityToolManager : MonoBehaviour
+public class AbilityToolManager : XmlDataToolManager
 {
    #region Public Variables
 
@@ -31,26 +31,10 @@ public class AbilityToolManager : MonoBehaviour
    // Self
    public static AbilityToolManager self;
 
-   // Holds the collection of user id that created the data entry
-   public List<SQLEntryNameClass> _userIdData = new List<SQLEntryNameClass>();
-
    #endregion
 
    private void Awake () {
       self = this;
-   }
-
-   public bool didUserCreateData (string entryName) {
-      SQLEntryNameClass sqlEntry = _userIdData.Find(_ => _.dataName == entryName);
-      if (sqlEntry != null) {
-         if (sqlEntry.ownerID == MasterToolAccountManager.self.currentAccountID) {
-            return true;
-         }
-      } else {
-         Debug.LogWarning("Entry does not exist: " + entryName);
-      }
-
-      return false;
    }
 
    private void Start () {
@@ -66,7 +50,7 @@ public class AbilityToolManager : MonoBehaviour
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List< AbilityXMLContent> xmlContentList = DB_Main.getBattleAbilityXML();
-         _userIdData = DB_Main.getSQLDataByName(EditorSQLManager.EditorToolType.BattlerAbility);
+         userNameData = DB_Main.getSQLDataByName(editorToolType);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (AbilityXMLContent xmlContent in xmlContentList) {
@@ -142,7 +126,7 @@ public class AbilityToolManager : MonoBehaviour
       return abilityDataList.ContainsKey(nameID);
    }
 
-   public void overWriteAbiltiy (BasicAbilityData data, string oldName) {
+   public void overWriteAbility (BasicAbilityData data, string oldName) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.deleteBattleAbilityXML(oldName);
 

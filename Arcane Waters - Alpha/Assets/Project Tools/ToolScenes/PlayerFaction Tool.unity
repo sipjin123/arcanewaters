@@ -16885,8 +16885,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bc73f2c22dbe9149b369c78388753d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  userNameData: []
+  userIdData: []
+  editorToolType: 8
   factionScene: {fileID: 631334679}
-  _userIdData: []
 --- !u!1 &1218514794 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 702800922526139589, guid: cf247d87f846fb348af5e917ad74d094,

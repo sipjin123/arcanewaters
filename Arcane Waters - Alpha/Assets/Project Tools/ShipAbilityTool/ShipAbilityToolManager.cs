@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 using System.Text;
 using System.Xml;
 
-public class ShipAbilityToolManager : MonoBehaviour {
+public class ShipAbilityToolManager : XmlDataToolManager {
    #region Public Variables
 
    // Holds the main scene 
@@ -17,26 +17,10 @@ public class ShipAbilityToolManager : MonoBehaviour {
    // Self
    public static ShipAbilityToolManager self;
 
-   // Holds the collection of user id that created the data entry
-   public List<SQLEntryNameClass> _userIdData = new List<SQLEntryNameClass>();
-
    #endregion
 
    private void Awake () {
       self = this;
-   }
-
-   public bool didUserCreateData (string entryName) {
-      SQLEntryNameClass sqlEntry = _userIdData.Find(_ => _.dataName == entryName);
-      if (sqlEntry != null) {
-         if (sqlEntry.ownerID == MasterToolAccountManager.self.currentAccountID) {
-            return true;
-         }
-      } else {
-         Debug.LogWarning("Entry does not exist: " + entryName);
-      }
-
-      return false;
    }
 
    private void Start () {
@@ -95,7 +79,7 @@ public class ShipAbilityToolManager : MonoBehaviour {
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<string> rawXMLData = DB_Main.getShipAbilityXML();
-         _userIdData = DB_Main.getSQLDataByName(EditorSQLManager.EditorToolType.ShipAbility);
+         userNameData = DB_Main.getSQLDataByName(editorToolType);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (string rawText in rawXMLData) {

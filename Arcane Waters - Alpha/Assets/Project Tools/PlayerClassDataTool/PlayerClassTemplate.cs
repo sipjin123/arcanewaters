@@ -27,6 +27,7 @@ public class PlayerClassTemplate : MonoBehaviour {
    // Button for duplicating this template
    public Button duplicateButton;
 
+   // Set up what type of editor tool template this script is: (Class, Faction, Specialty, Job)
    public EditorToolType editortoolType;
 
    #endregion

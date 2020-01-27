@@ -39686,8 +39686,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5123dabebd5d06d4e9f59313607da76e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  userNameData: []
+  userIdData: []
+  editorToolType: 7
   classScene: {fileID: 631334679}
-  _userIdData: []
 --- !u!114 &1217920903 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8338020911986875331, guid: ff2de8113588ba445b10df537adbc854,

@@ -5742,8 +5742,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efde3f4ae5851b44790370407329af54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  userIdData: []
+  editorToolType: 2
   achievementToolScene: {fileID: 631334679}
-  _userIdData: []
 --- !u!1 &1256991693
 GameObject:
   m_ObjectHideFlags: 0

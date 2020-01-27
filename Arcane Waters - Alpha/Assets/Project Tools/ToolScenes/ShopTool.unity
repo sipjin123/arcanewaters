@@ -9992,8 +9992,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 460a91e7561c20149acc70ce22b8f701, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  userNameData: []
+  userIdData: []
+  editorToolType: 14
   shopScene: {fileID: 631334679}
-  _userIdData: []
 --- !u!1 &1223208396
 GameObject:
   m_ObjectHideFlags: 0

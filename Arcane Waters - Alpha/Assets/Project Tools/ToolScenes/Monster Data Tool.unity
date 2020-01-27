@@ -37417,6 +37417,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 419a342cacc5f4a4f9a703d138400efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  userNameData: []
+  userIdData: []
+  editorToolType: 5
   monsterToolScreen: {fileID: 631334679}
   basicAbilityList: []
   attackAbilityList: []
@@ -57929,6 +57932,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e34cef95b49634459c4570dea27de63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  userNameData: []
+  userIdData: []
+  editorToolType: 0
   abilityScene: {fileID: 0}
   monsterAbilityManager: {fileID: 1199783814}
 --- !u!1 &1973472824 stripped
