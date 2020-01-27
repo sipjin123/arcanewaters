@@ -339,12 +339,12 @@ public class SeaMonsterDataPanel : MonoBehaviour
 
       foreach (SeaMonsterLootRow lootRow in monsterLootList) {
          LootInfo newLootInfo = new LootInfo();
-         newLootInfo.lootType = (CraftingIngredients.Type) lootRow.currentType;
+         newLootInfo.lootType = new Item { category = lootRow.currentCategory, itemTypeId = lootRow.currentType };
          newLootInfo.quantity = int.Parse(lootRow.itemCount.text);
          newLootInfo.chanceRatio = (float) lootRow.chanceRatio.value;
          tempLootInfo.Add(newLootInfo);
       }
-      rawData.defaultLoot = (CraftingIngredients.Type) monsterLootRowDefault.currentType;
+      rawData.defaultLoot = new Item { category = monsterLootRowDefault.currentCategory, itemTypeId = monsterLootRowDefault.currentType };
       rawData.lootList = tempLootInfo.ToArray();
       rawData.minQuantity = int.Parse(rewardItemMin.text);
       rawData.maxQuantity = int.Parse(rewardItemMax.text);
@@ -360,8 +360,8 @@ public class SeaMonsterDataPanel : MonoBehaviour
          foreach (LootInfo lootInfo in lootData.lootList) {
             GameObject lootTemp = Instantiate(lootTemplate.gameObject, lootTemplateParent.transform);
             SeaMonsterLootRow row = lootTemp.GetComponent<SeaMonsterLootRow>();
-            row.currentCategory = Item.Category.CraftingIngredients;
-            row.currentType = (int) lootInfo.lootType;
+            row.currentCategory = lootInfo.lootType.category;
+            row.currentType = lootInfo.lootType.itemTypeId;
             row.itemCount.text = lootInfo.quantity.ToString();
             row.chanceRatio.value = lootInfo.chanceRatio;
 
@@ -371,8 +371,8 @@ public class SeaMonsterDataPanel : MonoBehaviour
             monsterLootList.Add(row);
          }
 
-         monsterLootRowDefault.currentCategory = Item.Category.CraftingIngredients;
-         monsterLootRowDefault.currentType = (int) lootData.defaultLoot;
+         monsterLootRowDefault.currentCategory = lootData.defaultLoot.category;
+         monsterLootRowDefault.currentType = lootData.defaultLoot.itemTypeId;
          rewardItemMin.text = lootData.minQuantity.ToString();
          rewardItemMax.text = lootData.maxQuantity.ToString();
       } else {
@@ -390,7 +390,7 @@ public class SeaMonsterDataPanel : MonoBehaviour
       itemCategoryParent.gameObject.DestroyChildren();
 
       foreach (Item.Category category in Enum.GetValues(typeof(Item.Category))) {
-         if (category == Item.Category.CraftingIngredients) {
+         if (category == Item.Category.CraftingIngredients || category == Item.Category.Blueprint) {
             GameObject template = Instantiate(itemCategoryTemplate.gameObject, itemCategoryParent.transform);
             ItemCategoryTemplate categoryTemp = template.GetComponent<ItemCategoryTemplate>();
             categoryTemp.itemCategoryText.text = category.ToString();
@@ -413,10 +413,23 @@ public class SeaMonsterDataPanel : MonoBehaviour
       itemTypeParent.gameObject.DestroyChildren();
 
       Dictionary<int, string> itemNameList = new Dictionary<int, string>();
-      if (itemType != null) {
-         foreach (object item in Enum.GetValues(itemType)) {
-            int newVal = (int) item;
-            itemNameList.Add(newVal, item.ToString());
+      if ((itemType != null && selectedCategory != Item.Category.Blueprint) || selectedCategory == Item.Category.Blueprint) {
+         if (selectedCategory == Item.Category.Blueprint) {
+            foreach (CraftableItemRequirements item in SeaMonsterToolManager.self.craftingDataList) {
+               string prefix = Blueprint.WEAPON_PREFIX;
+               if (item.resultItem.category == Item.Category.Armor) {
+                  prefix = Blueprint.ARMOR_PREFIX;
+               }
+
+               prefix = prefix + item.resultItem.itemTypeId;
+
+               itemNameList.Add(int.Parse(prefix), Util.getItemName(item.resultItem.category, item.resultItem.itemTypeId));
+            }
+         } else {
+            foreach (object item in Enum.GetValues(itemType)) {
+               int newVal = (int) item;
+               itemNameList.Add(newVal, item.ToString());
+            }
          }
 
          var sortedList = itemNameList.OrderBy(r => r.Value);

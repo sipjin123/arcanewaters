@@ -29,7 +29,7 @@ public class GenericLootData : ScriptableObject {
 
       // If there are no item that passed their chance ratio, an optional default value can be set
       if (newLootList.Count == 0 || defaultLoot != CraftingIngredients.Type.None) {
-         newLootList.Add(new LootInfo { lootType = defaultLoot, quantity = 1 });
+         newLootList.Add(new LootInfo { lootType = new Item { category = Item.Category.None, itemTypeId = 0 }, quantity = 1 });
          return newLootList;
       }
 
@@ -63,7 +63,7 @@ public class RawGenericLootData
 
    [XmlElement(Namespace = "IngredientType")]
    // If all chances have failed, set this item as the return loot
-   public CraftingIngredients.Type defaultLoot;
+   public Item defaultLoot;
 
    [Range(0, 5)]
    public int minQuantity;
@@ -77,8 +77,8 @@ public class RawGenericLootData
       List<LootInfo> newLootList = new List<LootInfo>();
 
       // If there are no item that passed their chance ratio, an optional default value can be set
-      if (newLootList.Count == 0 || defaultLoot != CraftingIngredients.Type.None) {
-         newLootList.Add(new LootInfo { lootType = defaultLoot, quantity = 1 });
+      if (lootList.Length == 0) {
+         newLootList.Add(new LootInfo { lootType = new Item { category = Item.Category.None, itemTypeId = 0 }, quantity = 1 });
          return newLootList;
       }
 
@@ -95,7 +95,13 @@ public class RawGenericLootData
             if (newLootList.Count >= randomizedLootCount) {
                break;
             }
-         }
+         } 
+      }
+
+      if (newLootList.Count < 1) {
+         newLootList.Add(new LootInfo { 
+            lootType = defaultLoot, 
+            quantity = Mathf.Clamp(defaultLoot.count, 1, defaultLoot.count), chanceRatio = 100 });
       }
 
       return newLootList;
@@ -107,7 +113,7 @@ public class LootInfo
 {
    [XmlElement(Namespace = "IngredientType")]
    // Type of loot
-   public CraftingIngredients.Type lootType;
+   public Item lootType;
 
    // Number of loots
    public int quantity = 1;

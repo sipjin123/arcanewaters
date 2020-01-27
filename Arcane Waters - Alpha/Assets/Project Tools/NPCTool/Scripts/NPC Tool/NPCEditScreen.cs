@@ -342,26 +342,22 @@ public class NPCEditScreen : MonoBehaviour
       itemCategoryParent.gameObject.DestroyChildren();
 
       foreach (Item.Category category in Enum.GetValues(typeof(Item.Category))) {
-         if (category == Item.Category.Blueprint) {
-            continue;
-         }
+           GameObject template = Instantiate(itemCategoryPrefab, itemCategoryParent);
+            ItemCategoryTemplate categoryTemp = template.GetComponent<ItemCategoryTemplate>();
+            categoryTemp.itemCategoryText.text = category.ToString();
+            categoryTemp.itemIndexText.text = ((int) category).ToString();
+            categoryTemp.itemCategory = category;
+            categoryTemp.selectButton.onClick.AddListener(() => {
+               selectedCategory = category;
+               updateTypeOptions(selectionType);
+            });
 
-         GameObject template = Instantiate(itemCategoryPrefab, itemCategoryParent);
-         ItemCategoryTemplate categoryTemp = template.GetComponent<ItemCategoryTemplate>();
-         categoryTemp.itemCategoryText.text = category.ToString();
-         categoryTemp.itemIndexText.text = ((int) category).ToString();
-         categoryTemp.itemCategory = category;
-         categoryTemp.selectButton.onClick.AddListener(() => {
-            selectedCategory = category;
-            updateTypeOptions(selectionType);
-         });
-
-         if ((category == Item.Category.Helm || category == Item.Category.Potion)) {
-            categoryTemp.selectButton.interactable = false;
-            categoryTemp.selectButton.GetComponent<Image>().color = Color.gray;
-         } else {
-            template.SetActive(true);
-         }
+            if ((category == Item.Category.Helm || category == Item.Category.Potion)) {
+               categoryTemp.selectButton.interactable = false;
+               categoryTemp.selectButton.GetComponent<Image>().color = Color.gray;
+            } else {
+               template.SetActive(true);
+            }
       }
       updateTypeOptions(selectionType);
    }
@@ -416,10 +412,23 @@ public class NPCEditScreen : MonoBehaviour
       itemTypeParent.gameObject.DestroyChildren();
 
       Dictionary<int, string> itemNameList = new Dictionary<int, string>();
-      if (itemType != null) {
-         foreach (object item in Enum.GetValues(itemType)) {
-            int newVal = (int) item;
-            itemNameList.Add(newVal, item.ToString());
+      if (itemType != null && selectedCategory != Item.Category.Blueprint || selectedCategory == Item.Category.Blueprint) {
+         if (selectedCategory != Item.Category.Blueprint) {
+            foreach (object item in Enum.GetValues(itemType)) {
+               int newVal = (int) item;
+               itemNameList.Add(newVal, item.ToString());
+            }
+         } else {
+            foreach (CraftableItemRequirements item in NPCToolManager.self.craftingDataList) {
+               string prefix = Blueprint.WEAPON_PREFIX;
+               if (item.resultItem.category == Item.Category.Armor) {
+                  prefix = Blueprint.ARMOR_PREFIX;
+               }
+
+               prefix = prefix + item.resultItem.itemTypeId;
+
+               itemNameList.Add(int.Parse(prefix), Util.getItemName(item.resultItem.category, item.resultItem.itemTypeId));
+            }
          }
 
          var sortedList = itemNameList.OrderBy(r => r.Value);

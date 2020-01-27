@@ -151,7 +151,7 @@ public class ShopManager : MonoBehaviour {
 
          // Make 3 new ships
          for (int i = 1; i <= 3; i++) {
-            Ship.Type shipType = Util.randomEnum<Ship.Type>();
+            Ship.Type shipType = Util.randomEnumStartAt<Ship.Type>(1);
             Rarity.Type rarity = Rarity.getRandom();
             int speed = (int) (Ship.getBaseSpeed(shipType) * Rarity.getIncreasingModifier(rarity));
             speed = Mathf.Clamp(speed, 70, 130);

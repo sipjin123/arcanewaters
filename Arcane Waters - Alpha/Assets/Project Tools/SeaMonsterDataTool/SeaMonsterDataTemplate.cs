@@ -43,9 +43,11 @@ public class SeaMonsterDataTemplate : MonoBehaviour
          duplicateButton.gameObject.SetActive(false);
       }
 
-      if (resultItem.seaMonsterType != SeaMonsterEntity.Type.None && !SeaMonsterToolManager.self.didUserCreateData((int) resultItem.seaMonsterType)) {
-         deleteButton.gameObject.SetActive(false);
-         editButton.gameObject.SetActive(false);
+      if (MasterToolAccountManager.PERMISSION_LEVEL == AdminManager.Type.ContentWriter) {
+         if (resultItem.seaMonsterType != SeaMonsterEntity.Type.None && !SeaMonsterToolManager.self.didUserCreateData((int) resultItem.seaMonsterType)) {
+            deleteButton.gameObject.SetActive(false);
+            editButton.gameObject.SetActive(false);
+         }
       }
    }
 

@@ -174,12 +174,12 @@ public class TreasureChest : NetworkBehaviour {
       List<LootInfo> processedLoots = lootLibrary.dropTypes.requestLootList();
 
       // Registers list of ingredient types for data fetching
-      List<CraftingIngredients.Type> itemLoots = new List<CraftingIngredients.Type>();
+      List<Item> itemLoots = new List<Item>();
       foreach(LootInfo info in processedLoots) {
          itemLoots.Add(info.lootType);
       }
 
-      Item itemToCreate = new CraftingIngredients(0, processedLoots[0].lootType, ColorType.Black, ColorType.Black);
+      Item itemToCreate = new Item { category = itemLoots[0].category, itemTypeId = itemLoots[0].itemTypeId };
       return itemToCreate;
    }
 
@@ -189,12 +189,12 @@ public class TreasureChest : NetworkBehaviour {
       List<LootInfo> processedLoot = battlerData.battlerLootData.requestLootList();
 
       // Registers list of ingredient types for data fetching
-      List <CraftingIngredients.Type> itemLoots = new List<CraftingIngredients.Type>();
+      List <Item> itemLoots = new List<Item>();
       foreach (LootInfo info in processedLoot) {
          itemLoots.Add(info.lootType);
       }
 
-      Item itemToCreate = new CraftingIngredients(0, processedLoot[0].lootType, ColorType.Black, ColorType.Black);
+      Item itemToCreate = new Item { category = itemLoots[0].category, itemTypeId = itemLoots[0].itemTypeId };
       return itemToCreate;
    }
 
@@ -215,7 +215,21 @@ public class TreasureChest : NetworkBehaviour {
       floatingIcon.transform.SetParent(this.transform);
       floatingIcon.transform.localPosition = new Vector3(0f, .04f);
       Image image = floatingIcon.GetComponentInChildren<Image>();
-      image.sprite = ImageManager.getSprite(item.getIconPath());
+      if (item.category != Item.Category.Blueprint) {
+         image.sprite = ImageManager.getSprite(item.getIconPath());
+      } else {
+         Item.Category modifiedCategory = Item.Category.None;
+         string prefix = "";
+         if (item.itemTypeId.ToString().StartsWith(Blueprint.WEAPON_PREFIX)) {
+            modifiedCategory = Item.Category.Weapon;
+            prefix = Blueprint.WEAPON_PREFIX;
+         } else {
+            modifiedCategory = Item.Category.Armor;
+            prefix = Blueprint.ARMOR_PREFIX;
+         }
+
+         image.sprite = ImageManager.getSprite(new Item { category = modifiedCategory, itemTypeId = int.Parse(item.itemTypeId.ToString().Replace(prefix, "")) }.getIconPath());
+      }
 
       // Create a new instance of the material we can use for recoloring
       Material sourceMaterial = MaterialManager.self.getGUIMaterial(item.getColorKey());

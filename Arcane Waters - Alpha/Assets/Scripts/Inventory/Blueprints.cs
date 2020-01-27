@@ -192,6 +192,10 @@ public class Blueprint : RecipeItem
       return base.canBeTrashed();
    }
 
+   public override bool canBeStacked () {
+      return true;
+   }
+
    public override string getIconPath () {
       string stringID = bpTypeID.ToString();
 

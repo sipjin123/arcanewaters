@@ -42,9 +42,11 @@ public class EnemyDataTemplate : MonoBehaviour {
          duplicateButton.gameObject.SetActive(false);
       }
 
-      if (resultItem.enemyType != Enemy.Type.None && !MonsterToolManager.self.didUserCreateData((int) resultItem.enemyType)) {
-         deleteButton.gameObject.SetActive(false);
-         editButton.gameObject.SetActive(false);
+      if (MasterToolAccountManager.PERMISSION_LEVEL == AdminManager.Type.ContentWriter) {
+         if (resultItem.enemyType != Enemy.Type.None && !MonsterToolManager.self.didUserCreateData((int) resultItem.enemyType)) {
+            deleteButton.gameObject.SetActive(false);
+            editButton.gameObject.SetActive(false);
+         }
       }
    }
 

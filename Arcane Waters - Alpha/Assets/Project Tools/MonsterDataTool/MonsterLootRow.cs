@@ -72,10 +72,28 @@ public class MonsterLootRow : MonoBehaviour
          itemCategoryString.text = "(Select)";
          itemTypeString.text = "(Select)";
       } else {
-         itemCategoryString.text = currentCategory.ToString();
-         itemTypeString.text = Util.getItemName(currentCategory, currentType).ToString();
+         if (currentCategory == Item.Category.Blueprint) {
+            itemCategoryString.text = Item.Category.Blueprint.ToString();
+            Item.Category modifiedCategory = Item.Category.None;
+
+            int modifiedID = 0;
+            if (currentType.ToString().StartsWith(Blueprint.WEAPON_PREFIX)) {
+               modifiedID = int.Parse(currentType.ToString().Replace(Blueprint.WEAPON_PREFIX, ""));
+               modifiedCategory = Item.Category.Weapon;
+            } else {
+               modifiedID = int.Parse(currentType.ToString().Replace(Blueprint.ARMOR_PREFIX, ""));
+               modifiedCategory = Item.Category.Armor;
+            }
+
+            itemCategoryString.text = currentCategory.ToString();
+            itemTypeString.text = Util.getItemName(modifiedCategory, modifiedID).ToString();
+            itemIcon.sprite = Util.getRawSpriteIcon(modifiedCategory, modifiedID);
+         } else {
+            itemCategoryString.text = currentCategory.ToString();
+            itemTypeString.text = Util.getItemName(currentCategory, currentType).ToString();
+            itemIcon.sprite = Util.getRawSpriteIcon(currentCategory, currentType);
+         }
       }
-      itemIcon.sprite = Util.getRawSpriteIcon(currentCategory, currentType);
    }
 
    private void deleteData () {

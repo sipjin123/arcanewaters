@@ -104,7 +104,6 @@ public class QuestNodeRow : MonoBehaviour
             DeliverObjectiveRow deliveryRow = Instantiate(deliverObjectivePrefab, deliverObjectivesRowsContainer.transform, false);
             deliveryRow.transform.SetParent(deliverObjectivesRowsContainer.transform, false);
             deliveryRow.setRowForDeliverObjective(deliverObjective);
-            deliveryRow.itemIcon.sprite = Util.getRawSpriteIcon(deliverObjective.category, deliverObjective.itemTypeId);
             
             if (deliverObjective.category == Item.Category.Quest_Item) {
                deliveryRow.count.gameObject.SetActive(false);
@@ -144,7 +143,6 @@ public class QuestNodeRow : MonoBehaviour
             ItemRewardRow itemRewardRow = Instantiate(itemRewardPrefab, itemRewardRowsContainer.transform, false);
             itemRewardRow.transform.SetParent(itemRewardRowsContainer.transform, false);
             itemRewardRow.setRowForItemReward(itemReward);
-            itemRewardRow.itemIcon.sprite = Util.getRawSpriteIcon(itemReward.category, itemReward.itemTypeId);
 
             itemRewardRow.updateCategoryButton.onClick.AddListener(() => {
                npcEditScreen.toggleItemSelectionPanel(NPCEditScreen.ItemSelectionType.Reward);

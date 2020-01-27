@@ -381,12 +381,12 @@ public class MonsterDataPanel : MonoBehaviour {
 
       foreach (MonsterLootRow lootRow in monsterLootList) {
          LootInfo newLootInfo = new LootInfo();
-         newLootInfo.lootType = (CraftingIngredients.Type) lootRow.currentType;
+         newLootInfo.lootType = new Item { category = lootRow.currentCategory, itemTypeId = lootRow.currentType };
          newLootInfo.quantity = int.Parse(lootRow.itemCount.text);
          newLootInfo.chanceRatio = (float) lootRow.chanceRatio.value;
          tempLootInfo.Add(newLootInfo);
       }
-      rawData.defaultLoot = (CraftingIngredients.Type) monsterLootRowDefault.currentType;
+      rawData.defaultLoot = new Item { category = monsterLootRowDefault.currentCategory, itemTypeId = monsterLootRowDefault.currentType };
       rawData.lootList = tempLootInfo.ToArray();
       rawData.minQuantity = int.Parse(rewardItemMin.text);
       rawData.maxQuantity = int.Parse(rewardItemMax.text);
@@ -484,8 +484,8 @@ public class MonsterDataPanel : MonoBehaviour {
          foreach (LootInfo lootInfo in rawData.battlerLootData.lootList) {
             GameObject lootTemp = Instantiate(lootTemplate.gameObject, lootTemplateParent.transform);
             MonsterLootRow row = lootTemp.GetComponent<MonsterLootRow>();
-            row.currentCategory = Item.Category.CraftingIngredients;
-            row.currentType = (int) lootInfo.lootType;
+            row.currentCategory = lootInfo.lootType.category;
+            row.currentType = lootInfo.lootType.itemTypeId;
             row.itemCount.text = lootInfo.quantity.ToString();
             row.chanceRatio.value = lootInfo.chanceRatio;
 
@@ -496,8 +496,8 @@ public class MonsterDataPanel : MonoBehaviour {
          }
       }
       if (rawData.battlerLootData != null) {
-         monsterLootRowDefault.currentCategory = Item.Category.CraftingIngredients;
-         monsterLootRowDefault.currentType = (int) rawData.battlerLootData.defaultLoot;
+         monsterLootRowDefault.currentCategory = rawData.battlerLootData.defaultLoot.category;
+         monsterLootRowDefault.currentType = rawData.battlerLootData.defaultLoot.itemTypeId;
          rewardItemMin.text = rawData.battlerLootData.minQuantity.ToString();
          rewardItemMax.text = rawData.battlerLootData.maxQuantity.ToString();
       } else {
@@ -521,7 +521,7 @@ public class MonsterDataPanel : MonoBehaviour {
       itemCategoryParent.gameObject.DestroyChildren();
 
       foreach (Item.Category category in Enum.GetValues(typeof(Item.Category))) {
-         if (category == Item.Category.CraftingIngredients) {
+         if (category == Item.Category.CraftingIngredients || category == Item.Category.Blueprint) {
             GameObject template = Instantiate(itemCategoryTemplate.gameObject, itemCategoryParent.transform);
             ItemCategoryTemplate categoryTemp = template.GetComponent<ItemCategoryTemplate>();
             categoryTemp.itemCategoryText.text = category.ToString();
@@ -544,10 +544,23 @@ public class MonsterDataPanel : MonoBehaviour {
       itemTypeParent.gameObject.DestroyChildren();
 
       Dictionary<int, string> itemNameList = new Dictionary<int, string>();
-      if (itemType != null) {
-         foreach (object item in Enum.GetValues(itemType)) {
-            int newVal = (int) item;
-            itemNameList.Add(newVal, item.ToString());
+      if ((itemType != null && selectedCategory != Item.Category.Blueprint) || selectedCategory == Item.Category.Blueprint) {
+         if (selectedCategory == Item.Category.Blueprint) {
+            foreach (CraftableItemRequirements item in MonsterToolManager.self.craftingDataList) {
+               string prefix = Blueprint.WEAPON_PREFIX;
+               if (item.resultItem.category == Item.Category.Armor) {
+                  prefix = Blueprint.ARMOR_PREFIX;
+               }
+
+               prefix = prefix + item.resultItem.itemTypeId;
+
+               itemNameList.Add(int.Parse(prefix), Util.getItemName(item.resultItem.category, item.resultItem.itemTypeId));
+            }
+         } else {
+            foreach (object item in Enum.GetValues(itemType)) {
+               int newVal = (int) item;
+               itemNameList.Add(newVal, item.ToString());
+            }
          }
 
          var sortedList = itemNameList.OrderBy(r => r.Value);

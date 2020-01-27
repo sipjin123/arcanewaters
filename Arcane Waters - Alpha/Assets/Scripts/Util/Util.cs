@@ -589,6 +589,11 @@ public class Util : MonoBehaviour {
       return values[r.Next(0, values.Length)];
    }
 
+   public static T randomEnumStartAt<T> (int startingIndex) {
+      T[] values = (T[]) Enum.GetValues(typeof(T));
+      return values[r.Next(startingIndex, values.Length)];
+   }
+
    public static List<T> getAllEnumValues<T> () {
       return new List<T>(Enum.GetValues(typeof(T)).Cast<T>());
    }

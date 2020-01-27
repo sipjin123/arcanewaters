@@ -57934,7 +57934,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   userNameData: []
   userIdData: []
-  editorToolType: 0
+  editorToolType: 1
   abilityScene: {fileID: 0}
   monsterAbilityManager: {fileID: 1199783814}
 --- !u!1 &1973472824 stripped

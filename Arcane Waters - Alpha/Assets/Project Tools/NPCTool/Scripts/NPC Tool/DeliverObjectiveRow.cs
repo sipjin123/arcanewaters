@@ -40,9 +40,26 @@ public class DeliverObjectiveRow : MonoBehaviour
          itemTypeId.text = deliverObjective.itemTypeId.ToString();
       }
 
-      itemCategoryName.text = deliverObjective.category.ToString();
-      itemTypeName.text = Util.getItemName(deliverObjective.category, deliverObjective.itemTypeId);
-      itemIcon.sprite = Util.getRawSpriteIcon(deliverObjective.category, deliverObjective.itemTypeId);
+      if (deliverObjective.category == Item.Category.Blueprint) {
+         itemCategoryName.text = deliverObjective.category.ToString();
+         Item.Category modifiedCategory = Item.Category.None;
+
+         int modifiedID = 0;
+         if (deliverObjective.itemTypeId.ToString().StartsWith(Blueprint.WEAPON_PREFIX)) {
+            modifiedID = int.Parse(deliverObjective.itemTypeId.ToString().Replace(Blueprint.WEAPON_PREFIX,""));
+            modifiedCategory = Item.Category.Weapon;
+         } else {
+            modifiedID = int.Parse(deliverObjective.itemTypeId.ToString().Replace(Blueprint.ARMOR_PREFIX, ""));
+            modifiedCategory = Item.Category.Armor;
+         }
+
+         itemTypeName.text = Util.getItemName(modifiedCategory, modifiedID);
+         itemIcon.sprite = Util.getRawSpriteIcon(modifiedCategory, modifiedID);
+      } else {
+         itemCategoryName.text = deliverObjective.category.ToString();
+         itemTypeName.text = Util.getItemName(deliverObjective.category, deliverObjective.itemTypeId);
+         itemIcon.sprite = Util.getRawSpriteIcon(deliverObjective.category, deliverObjective.itemTypeId);
+      }
 
       count.text = deliverObjective.count.ToString();
       if (deliverObjective.category == Item.Category.Quest_Item) {

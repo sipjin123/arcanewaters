@@ -40,9 +40,11 @@ public class NPCSelectionRow : MonoBehaviour
          deleteButton.gameObject.SetActive(false);
       }
 
-      if (!NPCToolManager.self.didUserCreateData(npcId)) {
-         deleteButton.gameObject.SetActive(false);
-         editButton.gameObject.SetActive(false);
+      if (MasterToolAccountManager.PERMISSION_LEVEL == AdminManager.Type.ContentWriter) {
+         if (!NPCToolManager.self.didUserCreateData(npcId)) {
+            deleteButton.gameObject.SetActive(false);
+            editButton.gameObject.SetActive(false);
+         }
       }
    }
 

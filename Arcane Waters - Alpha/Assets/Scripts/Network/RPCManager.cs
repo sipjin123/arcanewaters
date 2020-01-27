@@ -2490,7 +2490,7 @@ public class RPCManager : NetworkBehaviour {
       // Build the list of rewarded items
       List<Item> rewardedItems = new List<Item>();
       foreach (LootInfo lootInfo in processedLoots) {
-         CraftingIngredients item = new CraftingIngredients(0, lootInfo.lootType, ColorType.Black, ColorType.Black);
+         Item item = new Item { category = lootInfo.lootType.category, itemTypeId = lootInfo.lootType.itemTypeId };
          item.count = lootInfo.quantity;
          rewardedItems.Add(item);
       }
@@ -2547,7 +2547,7 @@ public class RPCManager : NetworkBehaviour {
       // Build the list of rewarded items
       List<Item> rewardedItems = new List<Item>();
       foreach (LootInfo lootInfo in lootInfoList) {
-         CraftingIngredients item = new CraftingIngredients(0, lootInfo.lootType, ColorType.Black, ColorType.Black);
+         Item item = new Item { category = lootInfo.lootType.category, itemTypeId = lootInfo.lootType.itemTypeId };
          item.count = lootInfo.quantity;
          rewardedItems.Add(item);
       }
