@@ -16,7 +16,7 @@ public class PrefabSpawner : MonoBehaviour
 
    [Space(5)]
    // A list of maps we want to auto-spawn at startup
-   public List<Map> maps = new List<Map>();
+   public string[] maps = new string[0];
 
    [Tooltip("The position of the first spawned map.")]
    public Vector2 mapSpawnStart = new Vector2(0, -100);
@@ -53,37 +53,31 @@ public class PrefabSpawner : MonoBehaviour
       int rowCounter = 0;
       Vector3 nextPos = mapSpawnStart;
 
-      string[] mapDatas = downloadMapData(maps.Select(m => m.name).ToArray());
+      string[] mapDatas = downloadMapData(maps).ToArray();
 
       for (int i = 0; i < mapDatas.Length; i++) {
          if (mapDatas[i] == null) {
-            D.warning($"Failed to download map {maps[i].name}");
+            D.warning($"Failed to download map {maps[i]}");
             continue;
          }
 
-         // If there is a name to override defined, use it
-         string areaKey = string.IsNullOrWhiteSpace(maps[i].overrideName) ? maps[i].name : maps[i].overrideName;
-
          try {
             // If it's a map that's already in the scene, don't duplicate it
-            if (isAreaAlreadyCreated(areaKey)) {
-               Debug.LogWarning($"Area with a key { areaKey } already exists. Skipping spawning another one.");
+            if (isAreaAlreadyCreated(maps[i])) {
+               Debug.LogWarning($"Area with a key { maps[i] } already exists. Skipping spawning another one.");
                continue;
             }
 
-            Area area = MapImporter.instantiateMapData(mapDatas[i], areaKey, nextPos);
+            Area area = MapImporter.instantiateMapData(mapDatas[i], maps[i], nextPos);
 
-            // If there is an aditional prefab defined add it to the main instance
-            if (maps[i].includePrefab != null) {
-               Instantiate(maps[i].includePrefab, area.transform);
-            }
          } catch (Exception ex) {
-            D.error($"Unable to spawn map of key {areaKey}. Error message: {ex.Message}");
+            D.error($"Unable to spawn map of key {maps[i]}. Error message: {ex.Message}");
          }
 
          rowCounter++;
          if (rowCounter == mapColumns) {
             nextPos = new Vector3(mapSpawnStart.x, nextPos.y + mapSpawnDelta.y);
+            rowCounter = 0;
          } else {
             nextPos = new Vector3(nextPos.x + mapSpawnDelta.x, nextPos.y);
          }
@@ -100,7 +94,7 @@ public class PrefabSpawner : MonoBehaviour
 
          tasks[index] = UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             try {
-               result[index] = DB_Main.getMapData(names[index], false, true)?.gameData;
+               result[index] = DB_Main.getLiveMapData(names[index])?.serializedData;
             } catch (Exception ex) {
                D.error($"Caught an exception while downloading map ${names[index]}: {ex.Message}");
             }
@@ -123,20 +117,6 @@ public class PrefabSpawner : MonoBehaviour
 
       return false;
    }
-
-   [System.Serializable]
-   public class Map
-   {
-      [Tooltip("The name of the map")]
-      public string name;
-
-      [Tooltip("If this is not empty, the areaKey of the area will be set to this. Otherwise, the name of the file will be used.")]
-      public string overrideName;
-
-      [Tooltip("If this is set, the GameObject will be instantiated and added as a child to the spawned map.")]
-      public GameObject includePrefab;
-   }
-
    #region Private Variables
 
    #endregion

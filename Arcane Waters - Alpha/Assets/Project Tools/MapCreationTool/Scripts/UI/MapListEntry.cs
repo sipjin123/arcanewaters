@@ -9,20 +9,40 @@ namespace MapCreationTool
       [SerializeField]
       private Text nameText = null;
       [SerializeField]
-      private Text dateText = null;
+      private Text createdAtText = null;
       [SerializeField]
-      private Button deleteButton = null;
+      private Text updatedAtText = null;
+      [SerializeField]
+      private Text versionText = null;
+      [SerializeField]
+      private Text liveVersionText = null;
+      [SerializeField]
+      private Text creatorText = null;
+      [SerializeField]
+      private Button button = null;
 
-      public void set (MapDTO map, Action<string> onDelete, Action<string> openMap) {
+      public void set (MapDTO map, Action<string> onButtonClick, Action openMap) {
          nameText.text = map.name;
-         dateText.text = map.updatedAt.ToLocalTime().ToString();
+         createdAtText.text = map.createdAt.ToLocalTime().ToString();
+         updatedAtText.text = map.updatedAt.ToLocalTime().ToString();
+         versionText.text = map.version.ToString();
+         liveVersionText.text = map.liveVersion?.ToString() ?? "-";
+         creatorText.text = map.creatorName + '\n' + map.creatorID;
 
-         deleteButton.onClick.RemoveAllListeners();
-         deleteButton.onClick.AddListener(() => onDelete(map.name));
+         button.onClick.RemoveAllListeners();
+         button.onClick.AddListener(() => onButtonClick(map.name));
 
          Button btn = GetComponent<Button>();
          btn.onClick.RemoveAllListeners();
-         btn.onClick.AddListener(() => openMap(map.name));
+         btn.onClick.AddListener(() => openMap());
+      }
+
+      public void setAsLiveMap () {
+         button.interactable = false;
+
+         Text text = button.GetComponentInChildren<Text>();
+         text.text = "LIVE!";
+         text.fontStyle = FontStyle.BoldAndItalic;
       }
 
       public string getName () {

@@ -741,17 +741,6 @@ public class NetEntity : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_SpawnIntoGeneratedMap (MapSummary mapSummary) {
-      // Look up the Spawn object and the server that is associated with this map data
-      Area area = AreaManager.self.getArea(mapSummary.areaKey);
-      Spawn spawn = area.GetComponentInChildren<Spawn>();
-      Server server = ServerNetwork.self.getServer(mapSummary.serverAddress, mapSummary.serverPort);
-
-      // Proceed to spawn onto the requested server
-      spawnOnSpecificServer(server, mapSummary.areaKey, spawn, Direction.North);
-   }
-
-   [Command]
    public void Cmd_SpawnInNewMap (string newArea, string spawnKey, Direction newFacingDirection) {
       Spawn spawn = SpawnManager.self.getSpawn(newArea, spawnKey);
 

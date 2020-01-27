@@ -197,23 +197,33 @@ namespace MapCreationTool
       }
 
       public void saveButton_Click () {
-         #if IS_SERVER_BUILD
+#if IS_SERVER_BUILD
+         if (!MasterToolAccountManager.canAlterData()) {
+            errorDialog.displayUnauthorized("Your account type has no permissions to alter data");
+            return;
+         }
 
-         if (DrawBoard.loadedMapName == null) {
+         if (DrawBoard.loadedMap == null) {
             saveAs();
          } else {
+            if (DrawBoard.loadedMap.creatorID != MasterToolAccountManager.self.currentAccountID) {
+               errorDialog.displayUnauthorized("You are not the creator of this map");
+               return;
+            }
             saveButton.interactable = false;
             try {
                MapDTO map = new MapDTO {
-                  name = DrawBoard.loadedMapName,
+                  name = DrawBoard.loadedMap.name,
                   editorData = DrawBoard.instance.formSerializedData(),
-                  gameData = DrawBoard.instance.formExportData()
+                  gameData = DrawBoard.instance.formExportData(),
+                  creatorID = MasterToolAccountManager.self.currentAccountID,
+                  version = -1 // This will activate the trigger which will set the approriate version
                };
 
                UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                   string dbError = null;
                   try {
-                     DB_Main.updateMapData(map);
+                     DB_Main.createNewMapDataVersion(map);
                   } catch (MySqlException ex) {
                      if (ex.Number == 1062) {
                         dbError = $"Map with name '{map.name}' already exists";
@@ -235,7 +245,7 @@ namespace MapCreationTool
             }
          }
 
-         #endif
+#endif
       }
 
       public void saveAs () {

@@ -115,16 +115,6 @@ public class ServerNetwork : MonoBehaviour {
       return null;
    }
 
-   public List<MapSummary> getAllMapSummaries () {
-      List<MapSummary> mapSummaries = new List<MapSummary>();
-
-      foreach (Server server in servers) {
-         mapSummaries.AddRange(server.mapSummaries);
-      }
-
-      return mapSummaries;
-   }
-
    public bool isUserOnline (int userId) {
       bool isOnline = false;
 

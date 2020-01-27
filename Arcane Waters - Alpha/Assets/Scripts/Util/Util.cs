@@ -407,7 +407,7 @@ public class Util : MonoBehaviour {
       Process p = Process.GetCurrentProcess();
 
       if (p != null && !p.HasExited) {
-         return p.ProcessName;
+         return Path.GetFileName(p.ProcessName);
       }
 
       return "Unknown";

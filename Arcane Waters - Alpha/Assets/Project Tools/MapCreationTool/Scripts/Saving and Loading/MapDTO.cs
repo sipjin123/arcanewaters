@@ -9,6 +9,10 @@ namespace MapCreationTool
       public string gameData { get; set; }
       public DateTime updatedAt { get; set; }
       public DateTime createdAt { get; set; }
+      public int version { get; set; }
+      public int? liveVersion { get; set; }
+      public int creatorID { get; set; }
+      public string creatorName { get; set; }
    }
 }
 

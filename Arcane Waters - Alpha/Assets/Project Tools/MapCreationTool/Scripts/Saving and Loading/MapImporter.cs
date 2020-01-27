@@ -92,9 +92,13 @@ namespace MapCreationTool
                Quaternion.identity,
                parent);
 
-            ZSnap zsnap = pref.GetComponent<ZSnap>();
-            if (zsnap != null)
-               zsnap.snapZ();
+            //ZSnap zsnap = pref.GetComponent<ZSnap>();
+            //if (zsnap != null)
+            //   zsnap.snapZ();
+
+            foreach (ZSnap snap in pref.GetComponentsInChildren<ZSnap>()) {
+               snap.snapZ();
+            }
 
             IMapEditorDataReceiver receiver = pref.GetComponent<IMapEditorDataReceiver>();
             if (receiver != null && prefab.d != null)

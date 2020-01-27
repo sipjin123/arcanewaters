@@ -10,6 +10,12 @@ namespace MapCreationTool
    {
       public static Overlord instance { get; private set; }
 
+      [Header("Accounts")]
+      [SerializeField]
+      private MasterToolAccountManager accountManagerPref = null;
+      [SerializeField]
+      private bool instantLoginWithTestPassword = true;
+
       [Space(5)]
       [SerializeField]
       private BiomedPaletteData areaPaletteData = null;
@@ -35,6 +41,15 @@ namespace MapCreationTool
          areaPaletteData.collectInformation();
          seaPaletteData.collectInformation();
          interiorPaletteData.collectInformation();
+
+         if (MasterToolAccountManager.self == null) {
+            MasterToolAccountManager loginPanel = Instantiate(accountManagerPref);
+
+            if (instantLoginWithTestPassword) {
+               loginPanel.passwordField.text = "test";
+               loginPanel.loginButton.onClick.Invoke();
+            }
+         }
       }
 
       private void OnEnable () {
@@ -77,7 +92,7 @@ namespace MapCreationTool
          }
       }
 
-      public void applyFileData (string data, string mapName) {
+      public void applyFileData (string data, MapDTO mapDescription) {
          var dt = Serializer.deserialize(data, true);
 
          Tools.changeBiome(dt.biome);
@@ -87,7 +102,7 @@ namespace MapCreationTool
             Tools.changeBoardSize(dt.size);
          }
 
-         drawBoard.applyDeserializedData(dt, mapName);
+         drawBoard.applyDeserializedData(dt, mapDescription);
 
          Undo.clear();
       }

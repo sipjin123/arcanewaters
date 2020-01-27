@@ -44,19 +44,7 @@ public class InstanceManager : MonoBehaviour {
          player.cropManager.loadCrops();
       }
 
-      // Generated random map if we are spawned in it and it wasn't created before
-      if (Area.isRandom(areaKey)) {
-         StartCoroutine(waitForPlayerSpawn(player, areaKey));         
-      }
-
       return instance;
-   }
-
-   IEnumerator waitForPlayerSpawn (NetEntity player, string areaKey) {
-      yield return new WaitUntil(() => player != null);
-      if (RandomMapManager.self && RandomMapManager.self.mapConfigs.ContainsKey(areaKey)) {
-         player.rpc.Target_TrySpawnRandomMap(player.connectionToClient, RandomMapManager.self.mapConfigs[areaKey]);
-      }
    }
 
    public void addEnemyToInstance (Enemy enemy, Instance instance) {
@@ -86,9 +74,6 @@ public class InstanceManager : MonoBehaviour {
       instance.serverAddress = MyNetworkManager.self.networkAddress;
       instance.serverPort = MyNetworkManager.self.telepathy.port;
       instance.mapSeed = Random.Range(0, 1000000);
-      if (Area.isRandom(areaKey)) {
-         instance.mapDifficulty = (MapSummary.MapDifficulty) Random.Range((int) MapSummary.MapDifficulty.Easy, (int) MapSummary.MapDifficulty.Hard + 1);
-      }
 
       // Keep track of it
       _instances.Add(instance.id, instance);
@@ -104,14 +89,9 @@ public class InstanceManager : MonoBehaviour {
             OreManager.self.createOreNodesForInstance(instance);
          }
       }
-      
-      if (Area.isRandom(areaKey)) {
-         // Create any SeaMonsters that exist in this Sea Random Map instance
-         SeaMonsterManager.self.registerSeaMonstersOnServerForInstance(instance);
-      } else {
-         // Create any Enemies that exist in this Instance
-         EnemyManager.self.spawnEnemiesOnServerForInstance(instance);
-      }
+
+      // Create any Enemies that exist in this Instance
+      EnemyManager.self.spawnEnemiesOnServerForInstance(instance);
 
       // Spawn the network object on the Clients
       NetworkServer.Spawn(instance.gameObject);

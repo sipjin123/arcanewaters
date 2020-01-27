@@ -89,10 +89,6 @@ public class Area : MonoBehaviour
       return areaKey.Contains("Treasure");
    }
 
-   public static bool isRandom (string areaKey) {
-      return getRandomAreaKeys().Contains(areaKey);
-   }
-
    public static bool isShop (string areaKey) {
       return areaKey.Contains("Shop") || areaKey.Contains("Shipyard");
    }
@@ -107,10 +103,6 @@ public class Area : MonoBehaviour
 
    public List<Tilemap> getTilemaps () {
       return _tilemaps;
-   }
-
-   public static List<string> getRandomAreaKeys () {
-      return new List<string>() { "SeaRandom_1", "SeaRandom_2", "SeaRandom_3" };
    }
 
    public static string getName (string areaKey) {
@@ -209,9 +201,6 @@ public class Area : MonoBehaviour
          "Shipyard_Forest",
          "TonyTest",
          "CollisionTest",
-         "SeaRandom_1",
-         "SeaRandom_2",
-         "SeaRandom_3",
          "BurlTestMap"
       };
    }

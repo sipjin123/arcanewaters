@@ -11,9 +11,6 @@ public class SeaMonsterManager : MonoBehaviour {
    // Self
    public static SeaMonsterManager self;
 
-   // Sea monsters to spawn on random maps
-   public SeaMonsterEntity.Type[] randomSeaMonsters;
-
    // Determines if the list is generated already
    public bool hasInitialized;
 
@@ -45,33 +42,12 @@ public class SeaMonsterManager : MonoBehaviour {
 
    public void Awake () {
       self = this;
-
-      // Create empty lists for each random sea map
-      foreach (string areaKey in Area.getAllAreaKeys()) {
-         if (Area.isRandom(areaKey)) {
-            _spawners[areaKey] = new List<SeaMonsterSpawner>();
-         }
-      }
    }
    
    #region Spawn Features
 
    public void storeSpawner (SeaMonsterSpawner spawner, string areaKey) {
-      if (Area.isRandom(areaKey)) {
-         List<SeaMonsterSpawner> list = _spawners[areaKey];
-         list.Add(spawner);
-         _spawners[areaKey] = list;
-      }
-   }
 
-   public void registerSeaMonstersOnServerForInstance (Instance instance) {
-      // Registers the new monsters to spawn to a Queue which will trigger after the Seamonster data is fetched
-      foreach (SeaMonsterSpawner spawner in _spawners[instance.areaKey]) {
-         scheduledSpawnList.Add(new SeaMonsterSpawnData {
-            instance = instance,
-            seaMonsterSpawner = spawner
-         });
-      }
    }
 
    public void spawnSeamonstersOnServerForInstance  () {
@@ -142,7 +118,7 @@ public class SeaMonsterManager : MonoBehaviour {
 
    #region Private Variables
 
-   // Stores a list of SeaMonster Spawners for each random sea map
+   // Stores a list of SeaMonster Spawners for each sea map
    protected Dictionary<string, List<SeaMonsterSpawner>> _spawners = new Dictionary<string, List<SeaMonsterSpawner>>();
 
    // The cached sea monster data 

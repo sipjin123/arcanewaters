@@ -6,7 +6,8 @@ using System.Linq;
 using System.Text;
 using MapCreationTool;
 
-public class DB_MainStub : MonoBehaviour {
+public class DB_MainStub : MonoBehaviour
+{
    #region Public Variables
 
    #endregion
@@ -102,23 +103,35 @@ public class DB_MainStub : MonoBehaviour {
 
    }
 
-   public static List<MapDTO> getMapDatas (bool includeEditorData, bool includeGameData) {
+   public static List<MapDTO> getMapDataDescriptions () {
       return new List<MapDTO>();
    }
 
-   public static MapDTO getMapData (string name, bool includeEditorData, bool includeGameData) {
+   public static List<MapDTO> getMapVersionsDescriptions (string name) {
+      return new List<MapDTO>();
+   }
+
+   public static MapDTO getEditorMapData (string name) {
       return null;
    }
 
-   public static void deleteMapData (string name) {
+   public static MapDTO getEditorMapData (string name, int version) {
+      return null;
+   }
+
+   public static MapData getLiveMapData (string name) {
+      return null;
+   }
+
+   public static void setLiveMapVersion (MapDTO map, int publisherID) {
 
    }
 
-   public static void createMapData (MapDTO map) {
-
+   public static List<MapData> getLiveMapDataDescriptions () {
+      return new List<MapData>();
    }
 
-   public static void updateMapData (MapDTO map) {
+   public static void createNewMapDataVersion (MapDTO map) {
 
    }
 
@@ -447,7 +460,7 @@ public class DB_MainStub : MonoBehaviour {
    public static int getItemCount (int userId) {
       return 0;
    }
-   
+
    public static int getItemCount (int userId, int itemCategory, int itemType) {
       return 0;
    }
@@ -647,7 +660,7 @@ public class DB_MainStub : MonoBehaviour {
       return 0;
    }
 
-   public static int getUsrAdminFlag(int accountId) {
+   public static int getUsrAdminFlag (int accountId) {
       return 0;
    }
 

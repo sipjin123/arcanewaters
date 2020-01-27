@@ -47,15 +47,15 @@ public class SeaManager : MonoBehaviour {
 
       // Allow pressing F1 through F3 to change the combat mode
       if (Input.GetKeyUp(KeyCode.Alpha1)) {
-         selectedAttackType = Attack.Type.Cannon;
+         selectedAttackType = CannonPanel.self.getAttackType(0);
       }
 
       if (Input.GetKeyUp(KeyCode.Alpha2)) {
-         selectedAttackType = Attack.Type.Ice;
+         selectedAttackType = CannonPanel.self.getAttackType(1);
       }
 
       if (Input.GetKeyUp(KeyCode.Alpha3)) {
-         selectedAttackType = Attack.Type.Air;
+         selectedAttackType = CannonPanel.self.getAttackType(2);
       }
 
       // Allow pressing F1 through F2 to change the move mode

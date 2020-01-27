@@ -588,25 +588,6 @@ public class RPCManager : NetworkBehaviour {
       BugReportManager.self.storeBugReportOnServer(_player, subject, message);
    }
 
-   [TargetRpc]
-   public void Target_ReceiveMapSummaries (NetworkConnection connection, MapSummary[] mapSummaryArray) {
-      // Pass this data along to the Random Maps panel to display
-      RandomMapsPanel panel = (RandomMapsPanel) PanelManager.self.get(Panel.Type.RandomMaps);
-      panel.showPanelUsingMapSummaries(mapSummaryArray);
-   }
-
-   [TargetRpc]
-   public void Target_SpawnRandomMap (NetworkConnection connection, MapConfig mapConfig) {
-      // Generate the random map tiles
-      RandomMapCreator.generateRandomMap(mapConfig);
-   }
-
-   [TargetRpc]
-   public void Target_TrySpawnRandomMap (NetworkConnection connection, MapConfig mapConfig) {
-      // Generate the random map tiles
-      RandomMapManager.self.tryGenerateRandomMap(mapConfig);
-   }
-
    [Command]
    public void Cmd_SendChat (string message, ChatInfo.Type chatType) {
       // Create a Chat Info for this message
@@ -1194,40 +1175,6 @@ public class RPCManager : NetworkBehaviour {
    [Command]
    public void Cmd_GetItemsForArea (string shopName) {
       getItemsForArea(shopName);
-   }
-
-   [Command]
-   public void Cmd_GetSummaryOfGeneratedMaps () {
-      // Create a list to store the map data
-      List<MapSummary> list = new List<MapSummary>();
-
-      foreach (MapSummary mapSummary in ServerNetwork.self.getAllMapSummaries()) {
-         list.Add(mapSummary);
-      }
-
-      // Pass the data back to the client
-      Target_ReceiveMapSummaries(_player.connectionToClient, list.ToArray());
-   }
-
-   [Command]
-   public void Cmd_GetMapConfigFromServer (string areaKey) {
-      if (RandomMapManager.self.mapConfigs.ContainsKey(areaKey)) {
-         Target_SpawnRandomMap(_player.connectionToClient, RandomMapManager.self.mapConfigs[areaKey]);
-      }
-   }
-
-   [Command]
-   public void Cmd_CompareClientServerMapConfig (MapConfig mapConfig) {
-      foreach (string areaKey in Area.getRandomAreaKeys()) {
-         // If there is existing instance of desired random map - move player there
-         if (RandomMapManager.self.mapConfigs.ContainsKey(areaKey) && RandomMapManager.self.mapConfigs[areaKey].Equals(mapConfig)) {
-            Target_SpawnRandomMap(_player.connectionToClient, RandomMapManager.self.mapConfigs[areaKey]);
-            return;
-         }
-      }
-
-      // Move player back to town if random sea map instance hasn't been found
-      _player.Cmd_SpawnInNewMap(Area.STARTING_TOWN, Spawn.FOREST_TOWN_DOCK, Direction.North);
    }
 
    [Command]

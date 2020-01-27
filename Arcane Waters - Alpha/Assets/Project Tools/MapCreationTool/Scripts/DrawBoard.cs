@@ -17,7 +17,7 @@ namespace MapCreationTool
       public static DrawBoard instance { get; private set; }
       public static Vector2Int size { get; private set; }
       public static Vector2Int origin { get; private set; }
-      public static string loadedMapName { get; set; }
+      public static MapDTO loadedMap { get; set; }
 
       [SerializeField]
       private EditorConfig config = null;
@@ -245,12 +245,12 @@ namespace MapCreationTool
 
       public void newMap () {
          clearAll();
-         loadedMapName = null;
+         loadedMap = null;
          Undo.clear();
       }
 
-      public void applyDeserializedData (DeserializedProject data, string mapName) {
-         loadedMapName = null;
+      public void applyDeserializedData (DeserializedProject data, MapDTO mapDescription) {
+         loadedMap = null;
 
          changeBoard(BoardChange.calculateDeserializedDataChange(data, layers, placedPrefabs));
          foreach (var pref in data.prefabs) {
@@ -264,7 +264,7 @@ namespace MapCreationTool
             }
          }
 
-         loadedMapName = mapName;
+         loadedMap = mapDescription;
       }
 
       private void changeBoard (BoardChange change, bool registerUndo = true) {
@@ -371,6 +371,7 @@ namespace MapCreationTool
 
       private GameObject instantiatePlacedPrefab (GameObject original, Vector3 position) {
          var instance = Instantiate(original, position, Quaternion.identity, prefabLayer);
+         instance.name = original.name;
 
          if (instance.GetComponent<ZSnap>())
             instance.GetComponent<ZSnap>().roundoutPosition();
@@ -573,6 +574,7 @@ namespace MapCreationTool
          if (prefToAdd != null) {
             preview.targetPrefab = prefToAdd.prefabToPlace;
             preview.prefabPreviewInstance = Instantiate(preview.targetPrefab, prefabLayer);
+            preview.prefabPreviewInstance.name = preview.targetPrefab.name;
 
             var zSnap = preview.prefabPreviewInstance.GetComponent<ZSnap>();
             if (zSnap != null)
@@ -585,7 +587,7 @@ namespace MapCreationTool
             float offset = preview.prefabPreviewInstance.GetComponent<PrefabCenterOffset>()?.offset ?? 0;
             preview.prefabPreviewInstance.transform.position = worldPos - Vector2.up * offset;
          }
-            
+
 
          //------------------------
          //Handle prefabs to destroy
@@ -802,10 +804,19 @@ namespace MapCreationTool
             } else if (hovered) {
                outline.setVisibility(true);
                outline.setNewColor(Color.white);
+               SpriteRenderer sr = outline.transform.Find("Outline")?.GetComponent<SpriteRenderer>();
+               if (sr != null) {
+                  sr.color = Color.white;
+               }
                outline.Regenerate();
             } else if (selected) {
                outline.setVisibility(true);
                outline.setNewColor(Color.green);
+               outline.color = Color.green;
+               SpriteRenderer sr = outline.transform.Find("Outline")?.GetComponent<SpriteRenderer>();
+               if (sr != null) {
+                  sr.color = Color.green;
+               }
                outline.Regenerate();
             }
          }

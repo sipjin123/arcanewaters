@@ -26,7 +26,7 @@ namespace MapCreationTool
          errorText.text = "";
          saveButtonText.text = "Save";
          saveButton.interactable = true;
-         inputField.text = DrawBoard.loadedMapName ?? "";
+         inputField.text = DrawBoard.loadedMap?.name ?? "";
          setUpdateText();
          show();
       }
@@ -40,6 +40,11 @@ namespace MapCreationTool
       }
 
       public IEnumerator saveRoutine () {
+         if (!MasterToolAccountManager.canAlterData()) {
+            UI.errorDialog.displayUnauthorized("Your account type has no permissions to alter data");
+            yield break;
+         }
+
          saveButton.interactable = false;
          updateText.text = "";
          saveButtonText.text = "Saving...";
@@ -55,22 +60,24 @@ namespace MapCreationTool
                throw new Exception("Name cannot be empty");
             }
 
-            bool update = shouldBeUpdating();
+            if (shouldBeUpdating()) {
+               if (DrawBoard.loadedMap.creatorID != MasterToolAccountManager.self.currentAccountID) {
+                  throw new Exception("You are not the creator of this map");
+               }
+            }
 
             MapDTO map = new MapDTO {
                name = inputField.text,
                editorData = DrawBoard.instance.formSerializedData(),
-               gameData = DrawBoard.instance.formExportData()
+               gameData = DrawBoard.instance.formExportData(),
+               creatorID = MasterToolAccountManager.self.currentAccountID,
+               version = shouldBeUpdating() ? -1 : 0
             };
 
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                string dbError = null;
                try {
-                  if (update) {
-                     DB_Main.updateMapData(map);
-                  } else {
-                     DB_Main.createMapData(map);
-                  }
+                  DB_Main.createNewMapDataVersion(map);
                } catch (MySqlException ex) {
                   if (ex.Number == 1062) {
                      dbError = $"Map with name '{map.name}' already exists";
@@ -87,7 +94,7 @@ namespace MapCreationTool
                   if (dbError != null) {
                      errorText.text = dbError;
                   } else {
-                     DrawBoard.loadedMapName = map.name;
+                     DrawBoard.loadedMap = map;
                      hide();
                   }
                });
@@ -111,7 +118,7 @@ namespace MapCreationTool
       }
 
       private bool shouldBeUpdating () {
-         return DrawBoard.loadedMapName != null && DrawBoard.loadedMapName.CompareTo(inputField.text) == 0;
+         return DrawBoard.loadedMap != null && DrawBoard.loadedMap.name.CompareTo(inputField.text) == 0;
       }
 
       public void close () {

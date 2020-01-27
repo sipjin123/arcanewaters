@@ -23,9 +23,6 @@ public class Server : Photon.PunBehaviour {
    // A listing of open area types on this server
    public string[] openAreas = new string[0];
 
-   // Keeps track of the random map summaries for this server
-   public MapSummary[] mapSummaries = new MapSummary[Area.getRandomAreaKeys().Count];
-
    // Keeps track of the users connected to this server
    public HashSet<int> connectedUserIds = new HashSet<int>();
 
@@ -51,9 +48,6 @@ public class Server : Photon.PunBehaviour {
    }
 
    private void Start () {
-      // Update our map summaries with the latest number of players
-      InvokeRepeating("updateMapSummariesForThisServer", 5f, 5f);
-
       // Update the online users
       InvokeRepeating("checkOnlineUsers", 5.5f, 5f);
    }
@@ -76,16 +70,6 @@ public class Server : Photon.PunBehaviour {
          stream.SendNext(name);
          stream.SendNext(openAreas);
 
-         for (int i = 0; i < this.mapSummaries.Length; i++) {
-            MapSummary summary = this.mapSummaries[i];
-            stream.SendNext(summary.serverAddress);
-            stream.SendNext(summary.serverPort);
-            stream.SendNext(summary.areaKey);
-            stream.SendNext(summary.biomeType);
-            stream.SendNext(summary.playersCount);
-            stream.SendNext(summary.maxPlayersCount);
-         }
-
          int[] connectedUserIdsArray = new int[connectedUserIds.Count];
          connectedUserIds.CopyTo(connectedUserIdsArray);
          stream.SendNext(connectedUserIdsArray);
@@ -97,19 +81,6 @@ public class Server : Photon.PunBehaviour {
          this.playerCount = (int) stream.ReceiveNext();
          this.name = (string) stream.ReceiveNext();
          this.openAreas = (string[]) stream.ReceiveNext();
-
-         for (int i = 0; i < this.mapSummaries.Length; i++) {
-            MapSummary summary = new MapSummary();
-            summary.serverAddress = (string) stream.ReceiveNext();
-            summary.serverPort = (int) stream.ReceiveNext();
-            summary.areaKey = (string) stream.ReceiveNext();
-            summary.biomeType = (Biome.Type) stream.ReceiveNext();
-            summary.playersCount = (int) stream.ReceiveNext();
-            summary.maxPlayersCount = (int) stream.ReceiveNext();
-
-            this.mapSummaries[i] = summary;
-         }
-
          int[] connectedUserIdsArray = (int[]) stream.ReceiveNext();
          connectedUserIds.Clear();
          foreach (int userId in connectedUserIdsArray) {
@@ -127,19 +98,6 @@ public class Server : Photon.PunBehaviour {
 
    void OnDestroy () {
       ServerNetwork.self.removeServer(this);
-   }
-
-   protected void updateMapSummariesForThisServer () {
-      // Let the other servers know about our map summaries
-      if (this.photonView.isMine) {
-         List<MapSummary> mapSummaryList = new List<MapSummary>();
-
-         foreach (Instance instance in RandomMapManager.self.getInstances()) {
-            mapSummaryList.Add(instance.getMapSummary());
-         }
-
-         this.mapSummaries = mapSummaryList.ToArray();
-      }
    }
 
    protected void checkOnlineUsers () {

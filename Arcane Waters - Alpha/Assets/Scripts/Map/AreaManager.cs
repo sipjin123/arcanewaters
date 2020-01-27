@@ -59,11 +59,6 @@ public class AreaManager : MonoBehaviour
 
    protected void toggleAreaCollidersForPerformanceImprovement () {
       foreach (Area area in _areas.Values) {
-         // We don't do this for randomized maps
-         if (Area.isRandom(area.areaKey)) {
-            continue;
-         }
-
          // We only need colliders for the area that the player is in
          bool needColliders = InstanceManager.self.hasActiveInstanceForArea(area.areaKey);
 

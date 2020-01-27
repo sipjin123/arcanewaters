@@ -51,6 +51,9 @@ public class AdminManager : NetworkBehaviour {
       if (Util.isAutoTesting()) {
          InvokeRepeating("warpRandomly", 10f, 10f);
       }
+
+      // Request the list of blueprints from the server
+      Cmd_RequestBlueprintListFromServer();
    }
 
    void Update () {
@@ -784,39 +787,33 @@ public class AdminManager : NetworkBehaviour {
             }
          }
 
-         // Create all the weapon blueprints
-         foreach (Weapon.Type weaponType in Enum.GetValues(typeof(Weapon.Type))) {
-            if (weaponType != Weapon.Type.None) {
-               // Get the item type id
-               int itemTypeId = (int) weaponType;
+         // Get all the crafting data
+         foreach (CraftableItemRequirements itemRequirements in CraftingManager.self.getAllCraftableData()) {
 
+            // Get the result item
+            Item resultItem = itemRequirements.resultItem;
+
+            // Determine if the result item is a weapon or an armor
+            if (resultItem.category == Item.Category.Weapon) {
                // Convert the type id into a string and add the weapon prefix
-               string itemTypeIdStr = Blueprint.WEAPON_PREFIX + itemTypeId.ToString();
+               string itemTypeIdStr = Blueprint.WEAPON_PREFIX + resultItem.itemTypeId.ToString();
 
                // Reconvert the type id into an integer
-               itemTypeId = int.Parse(itemTypeIdStr);
+               int itemTypeId = int.Parse(itemTypeIdStr);
 
                // Create the item
-               if (createItemIfNotExistOrReplenishStack(Item.Category.Blueprint, (int) itemTypeId, count)) {
+               if (createItemIfNotExistOrReplenishStack(Item.Category.Blueprint, itemTypeId, count)) {
                   blueprintCount++;
                }
-            }
-         }
-
-         // Create all the armor blueprints
-         foreach (Armor.Type armorType in Enum.GetValues(typeof(Armor.Type))) {
-            if (armorType != Armor.Type.None) {
-               // Get the item type id
-               int itemTypeId = (int) armorType;
-
-               // Convert the type id into a string and add the weapon prefix
-               string itemTypeIdStr = Blueprint.ARMOR_PREFIX + itemTypeId.ToString();
+            } else if (resultItem.category == Item.Category.Armor) {
+               // Convert the type id into a string and add the armor prefix
+               string itemTypeIdStr = Blueprint.ARMOR_PREFIX + resultItem.itemTypeId.ToString();
 
                // Reconvert the type id into an integer
-               itemTypeId = int.Parse(itemTypeIdStr);
+               int itemTypeId = int.Parse(itemTypeIdStr);
 
                // Create the item
-               if (createItemIfNotExistOrReplenishStack(Item.Category.Blueprint, (int) itemTypeId, count)) {
+               if (createItemIfNotExistOrReplenishStack(Item.Category.Blueprint, itemTypeId, count)) {
                   blueprintCount++;
                }
             }
@@ -873,13 +870,52 @@ public class AdminManager : NetworkBehaviour {
       return wasItemCreated;
    }
 
+   [Command]
+   protected void Cmd_RequestBlueprintListFromServer () {
+      List<Weapon.Type> weaponTypes = new List<Weapon.Type>();
+      List<Armor.Type> armorTypes = new List<Armor.Type>();
+
+      // Get all the crafting data
+      foreach (CraftableItemRequirements itemRequirements in CraftingManager.self.getAllCraftableData()) {
+
+         // Get the result item
+         Item resultItem = itemRequirements.resultItem;
+
+         // Add the result item type to the correspondent list
+         if (resultItem.category == Item.Category.Weapon) {
+            weaponTypes.Add((Weapon.Type) resultItem.itemTypeId);
+         } else if (resultItem.category == Item.Category.Armor) {
+            armorTypes.Add((Armor.Type) resultItem.itemTypeId);
+         }
+      }
+
+      // Send the data to the client
+      Rpc_ReceiveBlueprintList(weaponTypes.ToArray(), armorTypes.ToArray());
+   }
+
+   [ClientRpc]
+   public void Rpc_ReceiveBlueprintList (Weapon.Type[] weaponTypes, Armor.Type[] armorTypes) {
+      _blueprintNames.Clear();
+
+      // Set all the weapon blueprint names
+      foreach (Weapon.Type weaponType in weaponTypes) {
+         string itemTypeStr = Blueprint.WEAPON_PREFIX + ((int) weaponType).ToString();
+         addToItemNameDictionary(_blueprintNames, Item.Category.Blueprint, int.Parse(itemTypeStr));
+      }
+
+      // Set all the armor blueprint names
+      foreach (Armor.Type armorType in armorTypes) {
+         string itemTypeStr = Blueprint.ARMOR_PREFIX + ((int) armorType).ToString();
+         addToItemNameDictionary(_blueprintNames, Item.Category.Blueprint, int.Parse(itemTypeStr));
+      }
+   }
+
    public void buildItemNamesDictionary() {
       // Clear all the dictionaries
       _weaponNames.Clear();
       _armorNames.Clear();
       _usableNames.Clear();
       _craftingIngredientNames.Clear();
-      _blueprintNames.Clear();
 
       // Set all the weapon names
       foreach (Weapon.Type weaponType in Enum.GetValues(typeof(Weapon.Type))) {
@@ -899,18 +935,6 @@ public class AdminManager : NetworkBehaviour {
       // Set all the crafting ingredients names
       foreach (CraftingIngredients.Type craftingIngredientsType in Enum.GetValues(typeof(CraftingIngredients.Type))) {
          addToItemNameDictionary(_craftingIngredientNames, Item.Category.CraftingIngredients, (int) craftingIngredientsType);
-      }
-
-      // Set all the weapon blueprint names
-      foreach (Weapon.Type weaponType in Enum.GetValues(typeof(Weapon.Type))) {
-         string itemTypeStr = Blueprint.WEAPON_PREFIX + ((int) weaponType).ToString();
-         addToItemNameDictionary(_blueprintNames, Item.Category.Blueprint, int.Parse(itemTypeStr));
-      }
-
-      // Set all the armor blueprint names
-      foreach (Armor.Type armorType in Enum.GetValues(typeof(Armor.Type))) {
-         string itemTypeStr = Blueprint.ARMOR_PREFIX + ((int) armorType).ToString();
-         addToItemNameDictionary(_blueprintNames, Item.Category.Blueprint, int.Parse(itemTypeStr));
       }
    }
 

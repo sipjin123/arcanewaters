@@ -16,6 +16,9 @@ public class CannonPanel : ClientMonoBehaviour {
    // Template holder
    public Transform cannonBoxParent;
 
+   // List of abilities in the cannon panel
+   public List<CannonBox> cannonBoxList;
+
    #endregion
 
    protected override void Awake () {
@@ -32,6 +35,7 @@ public class CannonPanel : ClientMonoBehaviour {
 
    public void setAbilityTab (string[] abilities) {
       cannonBoxParent.gameObject.DestroyChildren();
+      cannonBoxList = new List<CannonBox>();
 
       Attack.Type initialAbility = Attack.Type.None;
       foreach (string abilityName in abilities) {
@@ -44,7 +48,16 @@ public class CannonPanel : ClientMonoBehaviour {
 
          abilityTab.attackType = shipAbility.selectedAttackType;
          abilityTab.skillIcon.sprite = ImageManager.getSprite(shipAbility.skillIconPath);
+
+         cannonBoxList.Add(abilityTab);
       }
+   }
+
+   public Attack.Type getAttackType (int index) {
+      if (index < cannonBoxList.Count) {
+         return cannonBoxList[index].attackType;
+      }
+      return Attack.Type.Cannon;
    }
 
    private void Update () {
