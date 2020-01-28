@@ -47,9 +47,11 @@ public class AbilityDataTemplate : MonoBehaviour
          duplicateButton.gameObject.SetActive(false);
       }
 
-      if (Util.hasValidEntryName(resultItem.itemName) && !AbilityToolManager.self.didUserCreateData(resultItem.itemName)) {
-         deleteButton.gameObject.SetActive(false);
-         editButton.gameObject.SetActive(false);
+      if (MasterToolAccountManager.PERMISSION_LEVEL == AdminManager.Type.ContentWriter) {
+         if (Util.hasValidEntryName(resultItem.itemName) && !AbilityToolManager.self.didUserCreateData(resultItem.itemName)) {
+            deleteButton.gameObject.SetActive(false);
+            editButton.gameObject.SetActive(false);
+         }
       }
    }
 

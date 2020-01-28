@@ -33,9 +33,11 @@ public class ShopToolTemplate : MonoBehaviour {
          deleteButton.gameObject.SetActive(false);
       }
 
-      if (Util.hasValidEntryName(nameText.text) && !ShopDataToolManager.self.didUserCreateData(nameText.text)) {
-         deleteButton.gameObject.SetActive(false);
-         editButton.gameObject.SetActive(false);
+      if (MasterToolAccountManager.PERMISSION_LEVEL == AdminManager.Type.ContentWriter) {
+         if (Util.hasValidEntryName(nameText.text) && !ShopDataToolManager.self.didUserCreateData(nameText.text)) {
+            deleteButton.gameObject.SetActive(false);
+            editButton.gameObject.SetActive(false);
+         }
       }
    }
 }

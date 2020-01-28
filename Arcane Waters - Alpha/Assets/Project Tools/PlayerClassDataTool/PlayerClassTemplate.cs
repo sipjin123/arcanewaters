@@ -38,35 +38,37 @@ public class PlayerClassTemplate : MonoBehaviour {
          duplicateButton.gameObject.SetActive(false);
       }
 
-      switch (editortoolType) {
-         case EditorToolType.PlayerClass:
-            int typeIndex = (int) Enum.Parse(typeof(Class.Type), indexText.text);
-            if (typeIndex != 0 && !PlayerClassTool.self.didUserCreateData((int) typeIndex)) {
-               deleteButton.gameObject.SetActive(false);
-               editButton.gameObject.SetActive(false);
-            }
-            break;
-         case EditorToolType.PlayerFaction:
-            typeIndex = (int) Enum.Parse(typeof(Faction.Type), indexText.text);
-            if (typeIndex != 0 && !PlayerFactionToolManager.self.didUserCreateData((int) typeIndex)) {
-               deleteButton.gameObject.SetActive(false);
-               editButton.gameObject.SetActive(false);
-            }
-            break;
-         case EditorToolType.PlayerSpecialty:
-            typeIndex = (int) Enum.Parse(typeof(Specialty.Type), indexText.text);
-            if (typeIndex != 0 && !PlayerSpecialtyToolManager.self.didUserCreateData((int) typeIndex)) {
-               deleteButton.gameObject.SetActive(false);
-               editButton.gameObject.SetActive(false);
-            }
-            break;
-         case EditorToolType.PlayerJob:
-            typeIndex = (int) Enum.Parse(typeof(Jobs.Type), indexText.text);
-            if (typeIndex != 0 && !PlayerJobToolManager.self.didUserCreateData((int) typeIndex)) {
-               deleteButton.gameObject.SetActive(false);
-               editButton.gameObject.SetActive(false);
-            }
-            break;
+      if (MasterToolAccountManager.PERMISSION_LEVEL == AdminManager.Type.ContentWriter) {
+         switch (editortoolType) {
+            case EditorToolType.PlayerClass:
+               int typeIndex = (int) Enum.Parse(typeof(Class.Type), indexText.text);
+               if (typeIndex != 0 && !PlayerClassTool.self.didUserCreateData((int) typeIndex)) {
+                  deleteButton.gameObject.SetActive(false);
+                  editButton.gameObject.SetActive(false);
+               }
+               break;
+            case EditorToolType.PlayerFaction:
+               typeIndex = (int) Enum.Parse(typeof(Faction.Type), indexText.text);
+               if (typeIndex != 0 && !PlayerFactionToolManager.self.didUserCreateData((int) typeIndex)) {
+                  deleteButton.gameObject.SetActive(false);
+                  editButton.gameObject.SetActive(false);
+               }
+               break;
+            case EditorToolType.PlayerSpecialty:
+               typeIndex = (int) Enum.Parse(typeof(Specialty.Type), indexText.text);
+               if (typeIndex != 0 && !PlayerSpecialtyToolManager.self.didUserCreateData((int) typeIndex)) {
+                  deleteButton.gameObject.SetActive(false);
+                  editButton.gameObject.SetActive(false);
+               }
+               break;
+            case EditorToolType.PlayerJob:
+               typeIndex = (int) Enum.Parse(typeof(Jobs.Type), indexText.text);
+               if (typeIndex != 0 && !PlayerJobToolManager.self.didUserCreateData((int) typeIndex)) {
+                  deleteButton.gameObject.SetActive(false);
+                  editButton.gameObject.SetActive(false);
+               }
+               break;
+         }
       }
    }
 

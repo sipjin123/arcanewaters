@@ -41,10 +41,12 @@ public class CraftableItemTemplate : MonoBehaviour {
          duplicateButton.gameObject.SetActive(false);
          deleteButton.gameObject.SetActive(false);
       }
-    
-      if (Util.hasValidEntryName(nameText.text) && !CraftingToolManager.self.didUserCreateData(nameText.text)) {
-         deleteButton.gameObject.SetActive(false);
-         editButton.gameObject.SetActive(false);
+
+      if (MasterToolAccountManager.PERMISSION_LEVEL == AdminManager.Type.ContentWriter) {
+         if (Util.hasValidEntryName(nameText.text) && !CraftingToolManager.self.didUserCreateData(nameText.text)) {
+            deleteButton.gameObject.SetActive(false);
+            editButton.gameObject.SetActive(false);
+         }
       }
    }
 
