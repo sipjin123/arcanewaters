@@ -34,6 +34,13 @@ public class MonsterToolManager : XmlDataToolManager {
    // Crafting Data to be rewarded
    public List<CraftableItemRequirements> craftingDataList = new List<CraftableItemRequirements>();
 
+   public class BattlerXMLContent
+   {
+      public int xml_id;
+      public BattlerData battler;
+      public bool isEnabled;
+   }
+
    #endregion
 
    private void Awake () {
@@ -67,22 +74,26 @@ public class MonsterToolManager : XmlDataToolManager {
       basicAbilityList = new List<BasicAbilityData>();
       attackAbilityList = new List<AttackAbilityData>();
       buffAbilityList = new List<BuffAbilityData>();
-      monsterDataList = new Dictionary<string, BattlerData>();
+      monsterDataList = new List<BattlerXMLContent>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<string> rawXMLData = DB_Main.getLandMonsterXML();
+         List<XMLPair> xmlPairList = DB_Main.getLandMonsterXML();
          List<AbilityXMLContent> abilityContentList = DB_Main.getBattleAbilityXML();
          userIdData = DB_Main.getSQLDataByID(editorToolType);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            foreach (string rawText in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(rawText);
+            foreach (XMLPair xmlPair in xmlPairList) {
+               TextAsset newTextAsset = new TextAsset(xmlPair.raw_xml_data);
                BattlerData monsterData = Util.xmlLoad<BattlerData>(newTextAsset);
-               Enemy.Type typeID = (Enemy.Type) monsterData.enemyType;
 
                // Save the Monster data in the memory cache
-               if (!monsterDataList.ContainsKey(monsterData.enemyName)) {
-                  monsterDataList.Add(monsterData.enemyName, monsterData);
+               if (!monsterDataList.Exists(_=>_.xml_id == xmlPair.xml_id)) {
+                  BattlerXMLContent newXmlContent = new BattlerXMLContent {
+                     xml_id = xmlPair.xml_id,
+                     battler = monsterData,
+                     isEnabled = xmlPair.is_enabled
+                  };
+                  monsterDataList.Add(newXmlContent);
                }
             }
 
@@ -119,9 +130,9 @@ public class MonsterToolManager : XmlDataToolManager {
       });
    }
 
-   public void deleteMonsterDataFile (BattlerData data) {
+   public void deleteMonsterDataFile (int xml_id) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.deleteLandmonsterXML((int) data.enemyType);
+         DB_Main.deleteLandmonsterXML(xml_id);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadAllDataFiles();
@@ -129,11 +140,7 @@ public class MonsterToolManager : XmlDataToolManager {
       });
    }
 
-   public bool ifExists (string nameID) {
-      return monsterDataList.ContainsKey(nameID);
-   }
-   
-   public void saveDataToFile (BattlerData data) {
+   public void saveDataToFile (BattlerData data, int xml_id, bool isActive) {
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {
@@ -142,7 +149,7 @@ public class MonsterToolManager : XmlDataToolManager {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateLandMonsterXML(longString, (int) data.enemyType);
+         DB_Main.updateLandMonsterXML(longString, xml_id, data.enemyType, data.enemyName, isActive);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadAllDataFiles();
@@ -151,20 +158,7 @@ public class MonsterToolManager : XmlDataToolManager {
    }
 
    public void duplicateData (BattlerData data) {
-      int uniqueID = 0;
-      foreach (Enemy.Type landMonsterType in Enum.GetValues(typeof(Enemy.Type))) {
-         if (!monsterDataList.Values.ToList().Exists(_ => _.enemyType == landMonsterType) && landMonsterType != Enemy.Type.None) {
-            uniqueID = (int) landMonsterType;
-            break;
-         }
-      }
-      if (uniqueID == 0) {
-         Debug.LogWarning("All ID is accounted for, please edit data instead");
-         return;
-      }
-
       data.enemyName += "_copy";
-      data.enemyType = (Enemy.Type) uniqueID;
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {
@@ -173,7 +167,7 @@ public class MonsterToolManager : XmlDataToolManager {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateLandMonsterXML(longString, uniqueID);
+         DB_Main.updateLandMonsterXML(longString, -1, data.enemyType, data.enemyName, false);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadAllDataFiles();
@@ -183,7 +177,8 @@ public class MonsterToolManager : XmlDataToolManager {
 
    #region Private Variables
 
-   private Dictionary<string, BattlerData> monsterDataList = new Dictionary<string, BattlerData>();
+   // Cached monster list
+   [SerializeField] private List<BattlerXMLContent> monsterDataList = new List<BattlerXMLContent>();
 
    #endregion
 }

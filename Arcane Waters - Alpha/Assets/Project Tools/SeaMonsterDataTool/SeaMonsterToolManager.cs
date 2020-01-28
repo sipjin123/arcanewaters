@@ -26,6 +26,13 @@ public class SeaMonsterToolManager : XmlDataToolManager
    // Crafting Data to be rewarded
    public List<CraftableItemRequirements> craftingDataList = new List<CraftableItemRequirements>();
 
+   public class SeaMonsterXMLContent
+   {
+      public int xml_id;
+      public SeaMonsterEntityData seaMonsterData;
+      public bool isEnabled;
+   }
+
    #endregion
 
    private void Awake () {
@@ -56,21 +63,25 @@ public class SeaMonsterToolManager : XmlDataToolManager
 
    public void loadAllDataFiles () {
       XmlLoadingPanel.self.startLoading();
-      monsterDataList = new Dictionary<string, SeaMonsterEntityData>();
+      monsterDataList = new List<SeaMonsterXMLContent>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<string> rawXMLData = DB_Main.getSeaMonsterXML();
+         List<XMLPair> rawXMLData = DB_Main.getSeaMonsterXML();
          userIdData = DB_Main.getSQLDataByID(editorToolType);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            foreach (string rawText in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(rawText);
+            foreach (XMLPair xmlPair in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(xmlPair.raw_xml_data);
                SeaMonsterEntityData newSeaData = Util.xmlLoad<SeaMonsterEntityData>(newTextAsset);
-               SeaMonsterEntity.Type typeID = (SeaMonsterEntity.Type) newSeaData.seaMonsterType;
 
                // Save the Monster data in the memory cache
-               if (!monsterDataList.ContainsKey(newSeaData.monsterName)) {
-                  monsterDataList.Add(newSeaData.monsterName, newSeaData);
+               if (!monsterDataList.Exists(_=>_.xml_id == xmlPair.xml_id)) {
+                  SeaMonsterXMLContent xmlContent = new SeaMonsterXMLContent { 
+                     xml_id = xmlPair.xml_id,
+                     isEnabled = xmlPair.is_enabled,
+                     seaMonsterData = newSeaData
+                  };
+                  monsterDataList.Add(xmlContent);
                }
             }
             monsterToolScreen.updatePanelWithData(monsterDataList);
@@ -79,9 +90,9 @@ public class SeaMonsterToolManager : XmlDataToolManager
       });
    }
 
-   public void deleteMonsterDataFile (SeaMonsterEntityData data) {
+   public void deleteMonsterDataFile (int xmlID) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.deleteSeamonsterXML((int) data.seaMonsterType);
+         DB_Main.deleteSeamonsterXML(xmlID);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadAllDataFiles();
@@ -89,11 +100,7 @@ public class SeaMonsterToolManager : XmlDataToolManager
       });
    }
 
-   public bool ifExists (string nameID) {
-      return monsterDataList.ContainsKey(nameID);
-   }
-
-   public void saveDataToFile (SeaMonsterEntityData data) {
+   public void saveDataToFile (SeaMonsterEntityData data, int xml_id, bool isActive) {
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {
@@ -102,7 +109,7 @@ public class SeaMonsterToolManager : XmlDataToolManager
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateSeaMonsterXML(longString, (int) data.seaMonsterType);
+         DB_Main.updateSeaMonsterXML(longString, xml_id, data.seaMonsterType, data.monsterName, isActive);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadAllDataFiles();
@@ -111,19 +118,6 @@ public class SeaMonsterToolManager : XmlDataToolManager
    }
 
    public void duplicateFile (SeaMonsterEntityData data) {
-      int uniqueID = 0;
-      foreach (SeaMonsterEntity.Type seaMonsterType in Enum.GetValues(typeof(SeaMonsterEntity.Type))) {
-         if (seaMonsterType != SeaMonsterEntity.Type.None && !monsterDataList.Values.ToList().Exists(_ => _.seaMonsterType == seaMonsterType) && seaMonsterType != SeaMonsterEntity.Type.None) {
-            uniqueID = (int) seaMonsterType;
-            break;
-         } 
-      }
-      if (uniqueID == 0) {
-         Debug.LogWarning("All ID is accounted for, please edit data instead");
-         return;
-      }
-
-      data.seaMonsterType = (SeaMonsterEntity.Type) uniqueID;
       data.monsterName += "_copy";
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
@@ -133,7 +127,7 @@ public class SeaMonsterToolManager : XmlDataToolManager
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateSeaMonsterXML(longString, uniqueID);
+         DB_Main.updateSeaMonsterXML(longString, -1, data.seaMonsterType, data.monsterName, false);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadAllDataFiles();
@@ -143,8 +137,8 @@ public class SeaMonsterToolManager : XmlDataToolManager
 
    #region Private Variables
 
-   // Holds the list of sea monster data
-   private Dictionary<string, SeaMonsterEntityData> monsterDataList = new Dictionary<string, SeaMonsterEntityData>();
+   // Cached sea monster list
+   [SerializeField] private List<SeaMonsterXMLContent> monsterDataList = new List<SeaMonsterXMLContent>();
 
    #endregion
 }

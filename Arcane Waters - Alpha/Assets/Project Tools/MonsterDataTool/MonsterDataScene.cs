@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 using UnityEngine.SceneManagement;
+using static MonsterToolManager;
 
 public class MonsterDataScene : MonoBehaviour {
    #region Public Variables
@@ -105,42 +106,42 @@ public class MonsterDataScene : MonoBehaviour {
    }
 
    private void createNewTemplate (BattlerData monsterData) {
-      string itemName = "Undefined";
-      monsterData.enemyType = Enemy.Type.Coralbow;
+      monsterData.enemyType = Enemy.Type.None;
 
-      if (!toolManager.ifExists(itemName)) {
-         EnemyDataTemplate template = Instantiate(monsterTemplate, monsterTemplateParent);
-         template.editButton.onClick.AddListener(() => {
-            monsterPanel.currentXMLTemplate = template;
-            monsterPanel.loadData(monsterData);
-            monsterPanel.gameObject.SetActive(true);
-         });
-         template.deleteButton.onClick.AddListener(() => {
-             toolManager.deleteMonsterDataFile(monsterData);
-         });
-         template.duplicateButton.onClick.AddListener(() => {
-            toolManager.duplicateData(monsterData);
-         });
+      EnemyDataTemplate template = Instantiate(monsterTemplate, monsterTemplateParent);
+      template.editButton.onClick.AddListener(() => {
+         monsterPanel.currentXMLTemplate = template;
+         monsterPanel.loadData(monsterData, -1, false);
+         monsterPanel.gameObject.SetActive(true);
+      });
+      template.deleteButton.onClick.AddListener(() => {
+            toolManager.deleteMonsterDataFile(template.xml_id);
+      });
+      template.duplicateButton.onClick.AddListener(() => {
+         toolManager.duplicateData(monsterData);
+      });
 
-         template.gameObject.SetActive(true);
-      }
+      template.gameObject.SetActive(true);
    }
 
    public void refreshXML () {
       abilityToolManager.loadXML();
    }
 
-   public void updatePanelWithBattlerData (Dictionary<string, BattlerData> battlerData) {
+   public void updatePanelWithBattlerData (List<BattlerXMLContent> battlerData) {
       // Clear all the rows
       monsterTemplateParent.gameObject.DestroyChildren();
 
       // Create a row for each monster element
-      foreach (BattlerData battler in battlerData.Values) {
+      foreach (BattlerXMLContent rawData in battlerData) {
+         BattlerData battler = rawData.battler;
+
          EnemyDataTemplate template = Instantiate(monsterTemplate, monsterTemplateParent);
-         template.updateItemDisplay(battler);
+         template.updateItemDisplay(battler, rawData.isEnabled);
+         template.xml_id = rawData.xml_id;
          template.editButton.onClick.AddListener(() => {
             monsterPanel.currentXMLTemplate = template;
-            monsterPanel.loadData(battler);
+            monsterPanel.loadData(battler, rawData.xml_id, rawData.isEnabled);
             monsterPanel.gameObject.SetActive(true);
          });
 
@@ -152,7 +153,7 @@ public class MonsterDataScene : MonoBehaviour {
             Destroy(template.gameObject, .5f);
 
             Enemy.Type type = battler.enemyType;
-            toolManager.deleteMonsterDataFile(new BattlerData { enemyType = type, enemyName = battler.enemyName });
+            toolManager.deleteMonsterDataFile(template.xml_id);
          });
 
          try {

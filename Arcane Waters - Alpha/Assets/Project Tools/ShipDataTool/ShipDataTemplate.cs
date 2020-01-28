@@ -25,9 +25,15 @@ public class ShipDataTemplate : MonoBehaviour {
    // Button for duplicating this template
    public Button duplicateButton;
 
+   // The xml id of this template
+   public int xml_id;
+
+   // An object to determine if the sql data is enabled
+   public GameObject enabledIndicator;
+
    #endregion
 
-   public void updateItemDisplay (ShipData resultItem) {
+   public void updateItemDisplay (ShipData resultItem, bool isActive) {
       string newName = "Undefined";
       try {
          newName = resultItem.shipName + " (" + ((Ship.Type) resultItem.shipType).ToString() + ")";
@@ -36,6 +42,7 @@ public class ShipDataTemplate : MonoBehaviour {
 
       nameText.text = newName;
       indexText.text = "ID# " + ((int) resultItem.shipID).ToString();
+      enabledIndicator.SetActive(isActive);
 
       if (!MasterToolAccountManager.canAlterData()) {
          deleteButton.gameObject.SetActive(false);

@@ -114,6 +114,12 @@ public class MonsterDataPanel : MonoBehaviour {
    // Audio source to play the sample clips
    public AudioSource audioSource;
 
+   // Reference to current xml id
+   public int currentXmlId;
+
+   // Toggler to determine if this sql data is active in the database
+   public Toggle xml_toggler;
+
    #endregion
 
    private void Awake () {
@@ -225,7 +231,9 @@ public class MonsterDataPanel : MonoBehaviour {
 
    #region Save and Load Data
 
-   public void loadData(BattlerData newBattleData) {
+   public void loadData(BattlerData newBattleData, int xml_id, bool isActive) {
+      xml_toggler.isOn = isActive;
+      currentXmlId = xml_id;
       startingName = newBattleData.enemyName;
       monsterTypeText.text = ((Enemy.Type) newBattleData.enemyType).ToString();
 
@@ -371,7 +379,7 @@ public class MonsterDataPanel : MonoBehaviour {
          abilityToolManager.saveAbility(buffAbility);
       }
 
-      monsterToolManager.saveDataToFile(rawData);
+      monsterToolManager.saveDataToFile(rawData, currentXmlId, xml_toggler.isOn);
       gameObject.SetActive(false);
    }
 

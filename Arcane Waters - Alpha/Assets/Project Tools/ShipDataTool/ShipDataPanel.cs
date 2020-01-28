@@ -39,6 +39,12 @@ public class ShipDataPanel : MonoBehaviour {
    public GameObject skillSelectionPanel;
    public Button closeSelectionPanel;
 
+   // Reference to current xml id
+   public int currentXmlId;
+
+   // Toggler to determine if this sql data is active in the database
+   public Toggle xml_toggler;
+
    #endregion
 
    private void Awake () {
@@ -53,7 +59,7 @@ public class ShipDataPanel : MonoBehaviour {
       saveButton.onClick.AddListener(() => {
          ShipData newShipData = getShipData();
          if (newShipData != null) {
-            shipToolManager.saveXMLData(newShipData);
+            shipToolManager.saveXMLData(newShipData, currentXmlId, xml_toggler.isOn);
             gameObject.SetActive(false);
          }
       });
@@ -153,7 +159,9 @@ public class ShipDataPanel : MonoBehaviour {
       return newShipData;
    }
 
-   public void loadData (ShipData loadedShipData) {
+   public void loadData (ShipData loadedShipData, int xml_id, bool isActive) {
+      currentXmlId = xml_id;
+      xml_toggler.isOn = isActive;
       _shipName.text = loadedShipData.shipName;
       startingName = _shipName.text;
       _baseHealth.text = loadedShipData.baseHealth.ToString();

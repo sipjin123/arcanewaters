@@ -147,19 +147,19 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
-   public static void updateShipXML (string rawData, int typeIndex) {
+   public static void updateShipXML (string rawData, int typeIndex, Ship.Type shipType, string shipName, bool isActive) {
 
    }
 
-   public static List<string> getShipXML () {
-      return new List<string>();
+   public static List<XMLPair> getShipXML () {
+      return new List<XMLPair>();
    }
 
    public static void deleteShipXML (int typeID) {
 
    }
 
-   public static void updateSeaMonsterXML (string rawData, int typeIndex) {
+   public static void updateSeaMonsterXML (string rawData, int typeIndex, SeaMonsterEntity.Type enemyType, string battlerName, bool isActive) {
 
    }
 
@@ -170,14 +170,14 @@ public class DB_MainStub : MonoBehaviour
       return new List<string>();
    }
 
-   public static List<string> getLandMonsterXML () {
-      return new List<string>();
+   public static List<XMLPair> getLandMonsterXML () {
+      return new List<XMLPair>();
    }
 
    public static void deleteLandmonsterXML (int typeID) {
    }
 
-   public static void updateLandMonsterXML (string rawData, int typeIndex) {
+   public static void updateLandMonsterXML (string rawData, int typeIndex, Enemy.Type enemyType, string battlerName, bool isActive) {
 
    }
 

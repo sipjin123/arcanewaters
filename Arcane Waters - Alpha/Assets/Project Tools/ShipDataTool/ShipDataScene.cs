@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.SceneManagement;
+using static ShipDataToolManager;
 
 public class ShipDataScene : MonoBehaviour {
    #region Public Variables
@@ -51,15 +52,16 @@ public class ShipDataScene : MonoBehaviour {
       shipData.skinType = Ship.SkinType.Barge_Dragon;
 
       ShipDataTemplate template = Instantiate(shipTemplatePrefab, shipTemplateParent.transform);
-      template.updateItemDisplay(shipData);
+      template.updateItemDisplay(shipData, false);
+      template.xml_id = -1;
       template.editButton.onClick.AddListener(() => {
-         shipDataPanel.loadData(shipData);
+         shipDataPanel.loadData(shipData, -1, false);
          shipDataPanel.gameObject.SetActive(true);
       });
 
       template.deleteButton.onClick.AddListener(() => {
          Destroy(template.gameObject, .5f);
-         shipToolManager.deleteDataFile(shipData);
+         shipToolManager.deleteDataFile(template.xml_id);
       });
 
       template.duplicateButton.onClick.AddListener(() => {
@@ -76,21 +78,23 @@ public class ShipDataScene : MonoBehaviour {
       template.gameObject.SetActive(true);
    }
 
-   public void loadShipData (Dictionary<string, ShipData> shipDataList) {
+   public void loadShipData (List<ShipXMLContent> shipDataList) {
       shipTemplateParent.gameObject.DestroyChildren();
 
       // Create a row for each monster element
-      foreach (ShipData shipData in shipDataList.Values) {
+      foreach (ShipXMLContent xmlContent in shipDataList) {
+         ShipData shipData = xmlContent.shipData;
          ShipDataTemplate template = Instantiate(shipTemplatePrefab, shipTemplateParent.transform);
-         template.updateItemDisplay(shipData);
+         template.xml_id = xmlContent.xml_id;
+         template.updateItemDisplay(shipData, xmlContent.isEnabled);
          template.editButton.onClick.AddListener(() => {
-            shipDataPanel.loadData(shipData);
+            shipDataPanel.loadData(shipData, xmlContent.xml_id, xmlContent.isEnabled);
             shipDataPanel.gameObject.SetActive(true);
          });
 
          template.deleteButton.onClick.AddListener(() => {
             Destroy(template.gameObject, .5f);
-            shipToolManager.deleteDataFile(shipData);
+            shipToolManager.deleteDataFile(template.xml_id);
          });
 
          template.duplicateButton.onClick.AddListener(() => {

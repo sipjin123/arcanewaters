@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 using UnityEngine.SceneManagement;
+using static SeaMonsterToolManager;
 
 public class SeaMonsterDataScene : MonoBehaviour
 {
@@ -83,45 +84,46 @@ public class SeaMonsterDataScene : MonoBehaviour
    }
 
    private void createNewTemplate (SeaMonsterEntityData monsterData) {
-      string itemName = "Undefined";
-      monsterData.seaMonsterType = SeaMonsterEntity.Type.Fishman;
+      monsterData.seaMonsterType = SeaMonsterEntity.Type.None;
 
-      if (!toolManager.ifExists(itemName)) {
-         SeaMonsterDataTemplate template = Instantiate(monsterTemplate, monsterTemplateParent);
-         template.editButton.onClick.AddListener(() => {
-            monsterPanel.currentXMLTemplate = template;
-            monsterPanel.loadData(monsterData);
-            monsterPanel.gameObject.SetActive(true);
-         });
-         template.deleteButton.onClick.AddListener(() => {
-            toolManager.deleteMonsterDataFile(monsterData);
-         });
-         template.duplicateButton.onClick.AddListener(() => {
-            toolManager.duplicateFile(monsterData);
-         });
+      SeaMonsterDataTemplate template = Instantiate(monsterTemplate, monsterTemplateParent);
+      template.xml_id = -1;
+      template.editButton.onClick.AddListener(() => {
+         monsterPanel.currentXMLTemplate = template;
+         monsterPanel.loadData(monsterData, -1, false);
+         monsterPanel.gameObject.SetActive(true);
+      });
+      template.deleteButton.onClick.AddListener(() => {
+         toolManager.deleteMonsterDataFile(template.xml_id);
+      });
+      template.duplicateButton.onClick.AddListener(() => {
+         toolManager.duplicateFile(monsterData);
+      });
 
-         template.gameObject.SetActive(true);
-      }
+      template.gameObject.SetActive(true);
    }
 
-   public void updatePanelWithData (Dictionary<string, SeaMonsterEntityData> monsterData) {
+   public void updatePanelWithData (List<SeaMonsterXMLContent> monsterData) {
       // Clear all the rows
       monsterTemplateParent.gameObject.DestroyChildren();
 
       // Create a row for each monster element
-      foreach (SeaMonsterEntityData seaMonsterData in monsterData.Values) {
+      foreach (SeaMonsterXMLContent rawData in monsterData) {
+         SeaMonsterEntityData seaMonsterData = rawData.seaMonsterData;
+
          SeaMonsterDataTemplate template = Instantiate(monsterTemplate, monsterTemplateParent);
-         template.updateItemDisplay(seaMonsterData);
+         template.xml_id = rawData.xml_id;
+         template.updateItemDisplay(seaMonsterData, rawData.isEnabled);
          template.editButton.onClick.AddListener(() => {
             monsterPanel.currentXMLTemplate = template;
-            monsterPanel.loadData(seaMonsterData);
+            monsterPanel.loadData(seaMonsterData, rawData.xml_id, rawData.isEnabled);
             monsterPanel.gameObject.SetActive(true);
          });
 
          template.deleteButton.onClick.AddListener(() => {
             Destroy(template.gameObject, .5f);
             
-            toolManager.deleteMonsterDataFile(new SeaMonsterEntityData { monsterName = seaMonsterData.monsterName, seaMonsterType = seaMonsterData.seaMonsterType });
+            toolManager.deleteMonsterDataFile(template.xml_id);
          });
 
          template.duplicateButton.onClick.AddListener(() => {

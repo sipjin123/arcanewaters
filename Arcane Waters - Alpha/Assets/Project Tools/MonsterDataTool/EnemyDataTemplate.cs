@@ -25,9 +25,15 @@ public class EnemyDataTemplate : MonoBehaviour {
    // Button for duplicating this template
    public Button duplicateButton;
 
+   // The xml id of this template
+   public int xml_id;
+
+   // An object to determine if the sql data is enabled
+   public GameObject enabledIndicator;
+
    #endregion
 
-   public void updateItemDisplay (BattlerData resultItem) {
+   public void updateItemDisplay (BattlerData resultItem, bool isActive) {
       string newName = "Undefined";
       try {
          newName = resultItem.enemyName + "\n(" + ((Enemy.Type) resultItem.enemyType).ToString() + ")";
@@ -36,6 +42,7 @@ public class EnemyDataTemplate : MonoBehaviour {
 
       nameText.text = newName;
       indexText.text = "ID# " + ((int) resultItem.enemyType).ToString();
+      enabledIndicator.SetActive(isActive);
 
       if (!MasterToolAccountManager.canAlterData()) {
          deleteButton.gameObject.SetActive(false);

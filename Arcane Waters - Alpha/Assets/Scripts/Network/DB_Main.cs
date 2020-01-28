@@ -532,20 +532,32 @@ public class DB_Main : DB_MainStub
 
    #region Monster XML Data
 
-   public static new void updateLandMonsterXML (string rawData, int typeIndex) {
+   public static new void updateLandMonsterXML (string rawData, int typeIndex, Enemy.Type enemyType, string battlerName, bool isActive) {
+      string xml_id_key = "xml_id, ";
+      string xml_id_value = "@xml_id, ";
+
+      // If this is a newly created data, let sql table auto generate id
+      if (typeIndex < 0) {
+         xml_id_key = "";
+         xml_id_value = "";
+      }
+
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO land_monster_xml (xml_id, xmlContent, creator_userID) " +
-            "VALUES(@xml_id, @xmlContent, @creator_userID) " +
-            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
+            "INSERT INTO land_monster_xml_v2 ("+ xml_id_key + "xmlContent, creator_userID, monster_type, monster_name, isActive) " +
+            "VALUES("+ xml_id_value + "@xmlContent, @creator_userID, @monster_type, @monster_name, @isActive) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, monster_type = @monster_type, monster_name = @monster_name, isActive = @isActive", conn)) {
 
             conn.Open();
             cmd.Prepare();
 
             cmd.Parameters.AddWithValue("@xml_id", typeIndex);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
+            cmd.Parameters.AddWithValue("@monster_type", enemyType.ToString());
+            cmd.Parameters.AddWithValue("@monster_name", battlerName);
+            cmd.Parameters.AddWithValue("@isActive", isActive); 
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
 
             // Execute the command
@@ -556,34 +568,39 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new List<string> getLandMonsterXML () {
-      List<string> rawDataList = new List<string>();
+   public static new List<XMLPair> getLandMonsterXML () {
+      List<XMLPair> rawDataList = new List<XMLPair>();
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.land_monster_xml where xml_id != @xml_id", conn)) {
+            "SELECT * FROM arcane.land_monster_xml_v2", conn)) {
 
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@xml_id", 0);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  rawDataList.Add(dataReader.GetString("xmlContent"));
+                  XMLPair newXMLPair = new XMLPair {
+                     xml_id = dataReader.GetInt32("xml_id"),
+                     raw_xml_data = dataReader.GetString("xmlContent"),
+                     is_enabled = dataReader.GetInt32("isActive") == 0 ? false : true
+                  };
+
+                  rawDataList.Add(newXMLPair);
                }
             }
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
-      return new List<string>(rawDataList);
+      return new List<XMLPair>(rawDataList);
    }
 
    public static new void deleteLandmonsterXML (int typeID) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM land_monster_xml WHERE xml_id=@xml_id", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM land_monster_xml_v2 WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_id", typeID);
@@ -600,20 +617,32 @@ public class DB_Main : DB_MainStub
 
    #region SeaMonster XML Data
 
-   public static new void updateSeaMonsterXML (string rawData, int typeIndex) {
+   public static new void updateSeaMonsterXML (string rawData, int typeIndex, SeaMonsterEntity.Type enemyType, string battlerName, bool isActive) {
+      string xml_id_key = "xml_id, ";
+      string xml_id_value = "@xml_id, ";
+
+      // If this is a newly created data, let sql table auto generate id
+      if (typeIndex < 0) {
+         xml_id_key = "";
+         xml_id_value = "";
+      }
+
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO sea_monster_xml (xml_id, xmlContent, creator_userID) " +
-            "VALUES(@xml_id, @xmlContent, @creator_userID) " +
-            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
+            "INSERT INTO sea_monster_xml_v2 (" + xml_id_key + "xmlContent, creator_userID, monster_type, monster_name, isActive) " +
+            "VALUES(" + xml_id_value + "@xmlContent, @creator_userID, @monster_type, @monster_name, @isActive) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, monster_type = @monster_type, monster_name = @monster_name, isActive = @isActive", conn)) {
 
             conn.Open();
             cmd.Prepare();
 
             cmd.Parameters.AddWithValue("@xml_id", typeIndex);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
+            cmd.Parameters.AddWithValue("@monster_type", enemyType.ToString());
+            cmd.Parameters.AddWithValue("@monster_name", battlerName);
+            cmd.Parameters.AddWithValue("@isActive", isActive);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
 
             // Execute the command
@@ -624,34 +653,39 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new List<string> getSeaMonsterXML () {
-      List<string> rawDataList = new List<string>();
+   public static new List<XMLPair> getSeaMonsterXML () {
+      List<XMLPair> rawDataList = new List<XMLPair>();
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.sea_monster_xml where xml_id != @xml_id", conn)) {
+            "SELECT * FROM arcane.sea_monster_xml_v2", conn)) {
 
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@xml_id", 0);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  rawDataList.Add(dataReader.GetString("xmlContent"));
+                  XMLPair newXMLPair = new XMLPair {
+                     xml_id = dataReader.GetInt32("xml_id"),
+                     raw_xml_data = dataReader.GetString("xmlContent"),
+                     is_enabled = dataReader.GetInt32("isActive") == 0 ? false : true
+                  };
+
+                  rawDataList.Add(newXMLPair);
                }
             }
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
-      return new List<string>(rawDataList);
+      return new List<XMLPair>(rawDataList);
    }
 
    public static new void deleteSeamonsterXML (int typeID) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM sea_monster_xml WHERE xml_id=@xml_id", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM sea_monster_xml_v2 WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_id", typeID);
@@ -1031,20 +1065,32 @@ public class DB_Main : DB_MainStub
 
    #region Ship XML Data
 
-   public static new void updateShipXML (string rawData, int typeIndex) {
+   public static new void updateShipXML (string rawData, int typeIndex, Ship.Type shipType, string shipName, bool isActive) {
+      string xml_id_key = "xml_id, ";
+      string xml_id_value = "@xml_id, ";
+
+      // If this is a newly created data, let sql table auto generate id
+      if (typeIndex < 0) {
+         xml_id_key = "";
+         xml_id_value = "";
+      }
+
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO ship_xml (xml_id, xmlContent, creator_userID) " +
-            "VALUES(@xml_id, @xmlContent, @creator_userID) " +
-            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
+            "INSERT INTO ship_xml_v2 (" + xml_id_key + "xmlContent, creator_userID, ship_type, ship_name, isActive) " +
+            "VALUES(" + xml_id_value + "@xmlContent, @creator_userID, @ship_type, @ship_name, @isActive) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, ship_type = @ship_type, ship_name = @ship_name, isActive = @isActive", conn)) {
 
             conn.Open();
             cmd.Prepare();
 
             cmd.Parameters.AddWithValue("@xml_id", typeIndex);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
+            cmd.Parameters.AddWithValue("@ship_type", shipType.ToString());
+            cmd.Parameters.AddWithValue("@ship_name", shipName);
+            cmd.Parameters.AddWithValue("@isActive", isActive);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
 
             // Execute the command
@@ -1055,34 +1101,38 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new List<string> getShipXML () {
-      List<string> rawDataList = new List<string>();
+   public static new List<XMLPair> getShipXML () {
+      List<XMLPair> rawDataList = new List<XMLPair>();
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.ship_xml where xml_id != @xml_id", conn)) {
+            "SELECT * FROM arcane.ship_xml_v2", conn)) {
 
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@xml_id", 0);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  rawDataList.Add(dataReader.GetString("xmlContent"));
+                  XMLPair newXMLPair = new XMLPair {
+                     xml_id = dataReader.GetInt32("xml_id"),
+                     raw_xml_data = dataReader.GetString("xmlContent"),
+                     is_enabled = dataReader.GetInt32("isActive") == 0 ? false : true
+                  };
+                  rawDataList.Add(newXMLPair);
                }
             }
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
-      return new List<string>(rawDataList);
+      return new List<XMLPair>(rawDataList);
    }
 
    public static new void deleteShipXML (int typeID) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM ship_xml WHERE xml_id=@xml_id", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM ship_xml_v2 WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_id", typeID);

@@ -130,11 +130,11 @@ public class MonsterManager : MonoBehaviour {
       _monsterDataDict = new Dictionary<Enemy.Type, BattlerData>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<string> rawXMLData = DB_Main.getLandMonsterXML();
+         List<XMLPair> rawXMLData = DB_Main.getLandMonsterXML();
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            foreach (string rawText in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(rawText);
+            foreach (XMLPair xmlPair in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(xmlPair.raw_xml_data);
                BattlerData monsterData = Util.xmlLoad<BattlerData>(newTextAsset);
                Enemy.Type enemyType = (Enemy.Type) monsterData.enemyType;
 
@@ -145,7 +145,7 @@ public class MonsterManager : MonoBehaviour {
                }
 
                // Save the monster data in the memory cache
-               if (!_monsterDataDict.ContainsKey(enemyType)) {
+               if (!_monsterDataDict.ContainsKey(enemyType) && xmlPair.is_enabled) {
                   _monsterDataDict.Add(enemyType, monsterData);
                }
 

@@ -26,9 +26,15 @@ public class SeaMonsterDataTemplate : MonoBehaviour
    // Button for duplicating this template
    public Button duplicateButton;
 
+   // The xml id of this template
+   public int xml_id;
+
+   // An object to determine if the sql data is enabled
+   public GameObject enabledIndicator;
+
    #endregion
 
-   public void updateItemDisplay (SeaMonsterEntityData resultItem) {
+   public void updateItemDisplay (SeaMonsterEntityData resultItem, bool isActive) {
       string newName = "Undefined";
       try {
          newName = resultItem.monsterName + " (" + ((Enemy.Type) resultItem.seaMonsterType).ToString() + ")";
@@ -37,6 +43,7 @@ public class SeaMonsterDataTemplate : MonoBehaviour
 
       nameText.text = newName;
       indexText.text = "ID# " + ((int) resultItem.seaMonsterType).ToString();
+      enabledIndicator.SetActive(isActive);
 
       if (!MasterToolAccountManager.canAlterData()) {
          deleteButton.gameObject.SetActive(false);

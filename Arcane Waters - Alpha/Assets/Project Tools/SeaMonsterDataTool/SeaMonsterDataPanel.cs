@@ -100,6 +100,12 @@ public class SeaMonsterDataPanel : MonoBehaviour
    public GameObject warningPanel;
    public Text warningText;
 
+   // Reference to current xml id
+   public int currentXmlId;
+
+   // Toggler to determine if this sql data is active in the database
+   public Toggle xml_toggler;
+
    #endregion
 
    private void Awake () {
@@ -181,7 +187,9 @@ public class SeaMonsterDataPanel : MonoBehaviour
 
    #region Save and Load Data
 
-   public void loadData (SeaMonsterEntityData seaMonsterData) {
+   public void loadData (SeaMonsterEntityData seaMonsterData, int xml_id, bool isEnabled) {
+      xml_toggler.isOn = isEnabled;
+      currentXmlId = xml_id;
       startingName = seaMonsterData.monsterName;
       monsterName.text = seaMonsterData.monsterName;
       seaMonsterType.text = seaMonsterData.seaMonsterType.ToString();
@@ -306,17 +314,10 @@ public class SeaMonsterDataPanel : MonoBehaviour
 
    public void saveData () {
       SeaMonsterEntityData rawData = getSeaMonsterData();
-      if (rawData.monsterName != startingName) {
-         deleteOldData(new SeaMonsterEntityData { monsterName = startingName });
-      }
       rawData.lootData = getRawLootData();
 
-      monsterToolManager.saveDataToFile(rawData);
+      monsterToolManager.saveDataToFile(rawData, currentXmlId, xml_toggler.isOn);
       gameObject.SetActive(false);
-   }
-
-   private void deleteOldData (SeaMonsterEntityData rawData) {
-      monsterToolManager.deleteMonsterDataFile(rawData);
    }
 
    #endregion

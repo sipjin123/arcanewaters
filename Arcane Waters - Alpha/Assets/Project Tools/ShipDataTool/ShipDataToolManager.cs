@@ -25,6 +25,13 @@ public class ShipDataToolManager : XmlDataToolManager {
    // Self
    public static ShipDataToolManager self;
 
+   public class ShipXMLContent
+   {
+      public int xml_id;
+      public ShipData shipData;
+      public bool isEnabled;
+   }
+
    #endregion
 
    private void Awake () {
@@ -35,7 +42,7 @@ public class ShipDataToolManager : XmlDataToolManager {
       Invoke("loadXMLData", MasterToolScene.loadDelay);
    }
 
-   public void saveXMLData (ShipData data) {
+   public void saveXMLData (ShipData data, int xml_id, bool isActive) {
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {
@@ -45,7 +52,7 @@ public class ShipDataToolManager : XmlDataToolManager {
       string longString = sb.ToString();
       Ship.Type uniqueID = data.shipType;
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateShipXML(longString, (int) uniqueID);
+         DB_Main.updateShipXML(longString, xml_id, data.shipType, data.shipName, isActive);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -53,9 +60,9 @@ public class ShipDataToolManager : XmlDataToolManager {
       });
    }
 
-   public void deleteDataFile (ShipData data) {
+   public void deleteDataFile (int  xml_id) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.deleteShipXML((int) data.shipType);
+         DB_Main.deleteShipXML(xml_id);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -64,20 +71,7 @@ public class ShipDataToolManager : XmlDataToolManager {
    }
 
    public void duplicateXMLData (ShipData data) {
-      int uniqueID = 0;
-      foreach (Ship.Type shipType in Enum.GetValues(typeof(Ship.Type))) {
-         if (shipType != Ship.Type.None && !_shipDataList.Values.ToList().Exists(_ => _.shipType == shipType)) {
-            uniqueID = (int)shipType;
-            break;
-         }
-      }
-      if (uniqueID == 0) {
-         Debug.LogWarning("All ID is accounted for, please edit data instead");
-         return;
-      }
-
       data.shipName += "_copy";
-      data.shipType = (Ship.Type) uniqueID;
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {
@@ -86,7 +80,7 @@ public class ShipDataToolManager : XmlDataToolManager {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateShipXML(longString, uniqueID);
+         DB_Main.updateShipXML(longString, -1 , data.shipType, data.shipName, false);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -96,11 +90,11 @@ public class ShipDataToolManager : XmlDataToolManager {
 
    public void loadXMLData () {
       XmlLoadingPanel.self.startLoading();
-      _shipDataList = new Dictionary<string, ShipData>();
+      _shipDataList = new List<ShipXMLContent>();
       shipSkillList = new List<string>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<string> rawXMLData = DB_Main.getShipXML();
+         List<XMLPair> rawXMLData = DB_Main.getShipXML();
          List<string> rawShipAbilityXMLData = DB_Main.getShipAbilityXML();
          userIdData = DB_Main.getSQLDataByID(editorToolType);
 
@@ -111,13 +105,18 @@ public class ShipDataToolManager : XmlDataToolManager {
                shipSkillList.Add(shipAbility.abilityName);
             }
 
-            foreach (string rawText in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(rawText);
+            foreach (XMLPair xmlPair in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(xmlPair.raw_xml_data);
                ShipData shipData = Util.xmlLoad<ShipData>(newTextAsset);
 
                // Save the Ship data in the memory cache
-               if (!_shipDataList.ContainsKey(shipData.shipName)) {
-                  _shipDataList.Add(shipData.shipName, shipData);
+               if (!_shipDataList.Exists(_=>_.xml_id == xmlPair.xml_id)) {
+                  ShipXMLContent shipContent = new ShipXMLContent { 
+                     xml_id = xmlPair.xml_id,
+                     isEnabled = xmlPair.is_enabled,
+                     shipData = shipData
+                  };
+                  _shipDataList.Add(shipContent);
                }
             }
 
@@ -129,8 +128,8 @@ public class ShipDataToolManager : XmlDataToolManager {
 
    #region Private Variables
 
-   // Holds the list of ship data
-   private Dictionary<string, ShipData> _shipDataList = new Dictionary<string, ShipData>();
+   // Cached ship list
+   [SerializeField] private List<ShipXMLContent> _shipDataList = new List<ShipXMLContent>();
 
    #endregion
 }
