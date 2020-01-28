@@ -63,6 +63,19 @@ MonoBehaviour:
   customFrameName: 
   generatesOnStart: 0
   generatesOnValidate: 1
+--- !u!114 &6855691053091309825
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6042828251236911108}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c85e043511dae404196a3a80dcf221f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  offset: 0.38
 --- !u!1001 &5539611723750873859
 PrefabInstance:
   m_ObjectHideFlags: 0

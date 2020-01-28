@@ -65,6 +65,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &-8373538384131012614
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1355704137072287835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c85e043511dae404196a3a80dcf221f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  offset: 0.51
 --- !u!114 &551346064709621743
 MonoBehaviour:
   m_ObjectHideFlags: 0

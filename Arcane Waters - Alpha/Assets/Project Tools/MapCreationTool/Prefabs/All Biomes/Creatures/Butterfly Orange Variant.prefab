@@ -1,0 +1,163 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8434323726427053730
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 241867156212524382}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  size: 1
+  blurSize: 0
+  color: {r: 1, g: 1, b: 1, a: 1}
+  blurAlphaMultiplier: 0.7
+  blurAlphaChoke: 1
+  invertBlur: 0
+  alphaThreshold: 0.05
+  buffer: 0
+  includeChildren: 1
+  childLayers:
+    serializedVersion: 2
+    m_Bits: 1
+  ignoreChildNames: []
+  sortMethod: 1
+  isAnimated: 1
+  useExportedFrame: 0
+  customFrameName: 
+  generatesOnStart: 0
+  generatesOnValidate: 1
+--- !u!114 &-3223676520118406379
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 241867156212524382}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3ce18de4c072c64482aed5eddf5469c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  title: Butterfly
+  dataFields: []
+  selectDataFields: []
+  customDataFields: []
+--- !u!114 &6997737282442294841
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 241867156212524382}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c85e043511dae404196a3a80dcf221f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  offset: 0.25
+--- !u!1001 &6429453905850648355
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 6512568615480877693, guid: ae9b490f18e903c49836fadf1d6790e0,
+        type: 3}
+      propertyPath: m_Name
+      value: Butterfly Orange Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 6518959670786831211, guid: ae9b490f18e903c49836fadf1d6790e0,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 6.16
+      objectReference: {fileID: 0}
+    - target: {fileID: 6518959670786831211, guid: ae9b490f18e903c49836fadf1d6790e0,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -4.9779997
+      objectReference: {fileID: 0}
+    - target: {fileID: 6518959670786831211, guid: ae9b490f18e903c49836fadf1d6790e0,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6518959670786831211, guid: ae9b490f18e903c49836fadf1d6790e0,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6518959670786831211, guid: ae9b490f18e903c49836fadf1d6790e0,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6518959670786831211, guid: ae9b490f18e903c49836fadf1d6790e0,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6518959670786831211, guid: ae9b490f18e903c49836fadf1d6790e0,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6518959670786831211, guid: ae9b490f18e903c49836fadf1d6790e0,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6518959670786831211, guid: ae9b490f18e903c49836fadf1d6790e0,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6518959670786831211, guid: ae9b490f18e903c49836fadf1d6790e0,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6518959670786831211, guid: ae9b490f18e903c49836fadf1d6790e0,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6518959670786831211, guid: ae9b490f18e903c49836fadf1d6790e0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 6.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 6518959670786831211, guid: ae9b490f18e903c49836fadf1d6790e0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 6.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 6538712284072069883, guid: ae9b490f18e903c49836fadf1d6790e0,
+        type: 3}
+      propertyPath: m_Offset.y
+      value: 0.04
+      objectReference: {fileID: 0}
+    - target: {fileID: 6538712284072069883, guid: ae9b490f18e903c49836fadf1d6790e0,
+        type: 3}
+      propertyPath: m_Size.x
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6538712284072069883, guid: ae9b490f18e903c49836fadf1d6790e0,
+        type: 3}
+      propertyPath: m_Size.y
+      value: 0.09
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6625258162034260659, guid: ae9b490f18e903c49836fadf1d6790e0, type: 3}
+  m_SourcePrefab: {fileID: 100100000, guid: ae9b490f18e903c49836fadf1d6790e0, type: 3}
+--- !u!1 &241867156212524382 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6512568615480877693, guid: ae9b490f18e903c49836fadf1d6790e0,
+    type: 3}
+  m_PrefabInstance: {fileID: 6429453905850648355}
+  m_PrefabAsset: {fileID: 0}

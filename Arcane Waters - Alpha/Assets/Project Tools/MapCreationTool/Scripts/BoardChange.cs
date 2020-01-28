@@ -60,26 +60,21 @@ namespace MapCreationTool
             result.prefabChanges.Add(new PrefabChange { prefabToDestroy = pref.original, positionToDestroy = pref.placedInstance.transform.position });
          }
 
-         return result;
+         return result; 
       }
 
       public static BoardChange calculatePrefabChange (GameObject prefabToPlace, Vector3 positionToPlace) {
-         PrefabCenterOffset prefOffset = prefabToPlace.GetComponent<PrefabCenterOffset>();
-         if (prefOffset != null) {
-            positionToPlace -= Vector3.up * prefOffset.offset;
-         }
-
          Bounds bounds = getPrefabBounds();
          if (positionToPlace.x < bounds.min.x || positionToPlace.x > bounds.max.x || positionToPlace.y < bounds.min.y || positionToPlace.y > bounds.max.y)
             return new BoardChange();
 
          return new BoardChange {
             prefabChanges = new List<PrefabChange> {
-            new PrefabChange {
-               prefabToPlace = prefabToPlace,
-               positionToPlace = positionToPlace
+               new PrefabChange {
+                  prefabToPlace = prefabToPlace,
+                  positionToPlace = positionToPlace
+               }
             }
-         }
          };
       }
 
@@ -1389,7 +1384,7 @@ namespace MapCreationTool
             return result.Contains(p) || layer.hasTile(p);
          };
 
-         if(ofBoundsIsFilled) {
+         if (ofBoundsIsFilled) {
             has = (p) => {
                return result.Contains(p) || layer.hasTile(p) ||
                   p.x < bounds.min.x || p.x > bounds.max.x || p.y < bounds.min.y || p.y > bounds.max.y;
@@ -1458,7 +1453,7 @@ namespace MapCreationTool
             return result.Contains(p) || layer.hasTile(p);
          };
 
-         if(ofBoundsIsFilled) {
+         if (ofBoundsIsFilled) {
             has = (p) => {
                return result.Contains(p) || layer.hasTile(p) ||
                   p.x < bounds.min.x || p.x > bounds.max.x || p.y < bounds.min.y || p.y > bounds.max.y;
@@ -1575,7 +1570,7 @@ namespace MapCreationTool
             return result.Contains(p) || layer.hasTile(p);
          };
 
-         if(ofBoundsIsFilled) {
+         if (ofBoundsIsFilled) {
             has = (p) => {
                return result.Contains(p) || layer.hasTile(p) ||
                   p.x < bounds.min.x || p.x > bounds.max.x || p.y < bounds.min.y || p.y > bounds.max.y;

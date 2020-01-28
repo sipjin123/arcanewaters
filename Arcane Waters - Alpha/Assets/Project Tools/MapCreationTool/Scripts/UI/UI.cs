@@ -31,6 +31,8 @@ namespace MapCreationTool
       [SerializeField]
       private Dropdown boardSizeDropdown = null;
       [SerializeField]
+      private Toggle snapToGridToggle = null;
+      [SerializeField]
       private Button saveButton = null;
 
       [SerializeField]
@@ -98,6 +100,8 @@ namespace MapCreationTool
                boardSizeDropdown.SetValueWithoutNotify(i);
          }
 
+         snapToGridToggle.SetIsOnWithoutNotify(Tools.snapToGrid);
+
          updateShowedOptions();
       }
       private void Awake () {
@@ -125,6 +129,8 @@ namespace MapCreationTool
              Tools.tileGroup != null && Tools.tileGroup.type == TileGroupType.TreePrefab);
 
          fillBoundsDropdown.gameObject.SetActive(Tools.toolType == ToolType.Fill);
+
+         snapToGridToggle.gameObject.SetActive(Tools.selectedPrefab != null);
       }
       public void biomeDropdown_Changes () {
          if (Tools.biome != optionsPacks[biomeDropdown.options[biomeDropdown.value].text])
@@ -141,6 +147,12 @@ namespace MapCreationTool
       public void toolDropdown_ValueChanged () {
          if (Tools.toolType != (ToolType) toolDropdown.value)
             Tools.changeTool((ToolType) toolDropdown.value);
+      }
+
+      public void snapToGridToggle_ValueChanged () {
+         if (Tools.snapToGrid != snapToGridToggle.isOn) {
+            Tools.changeSnapToGrid(snapToGridToggle.isOn);
+         }
       }
 
       public void editorTypeDropdown_ValueChanged () {

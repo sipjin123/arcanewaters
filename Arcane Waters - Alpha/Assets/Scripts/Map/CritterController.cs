@@ -1,10 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
-using Mirror;
+using MapCreationTool;
 
-public class CritterController : MonoBehaviour {
+public class CritterController : MonoBehaviour, IMapEditorDataReceiver
+{
    #region Public Variables
 
    // The speed at which we move
@@ -64,6 +63,18 @@ public class CritterController : MonoBehaviour {
 
       // Move back to our starting position
       this.transform.position = _startPos;
+   }
+
+   public void receiveData (MapCreationTool.Serialization.DataField[] dataFields) {
+      foreach (MapCreationTool.Serialization.DataField dataField in dataFields) {
+         if (dataField.k.Trim(' ').CompareTo("run direction") == 0) {
+            if (dataField.v.CompareTo("left") == 0) {
+               transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            } else if (dataField.v.CompareTo("right") == 0) {
+               transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            }
+         }
+      }
    }
 
    #region Private Variables

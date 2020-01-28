@@ -461,7 +461,8 @@ namespace MapCreationTool
                   NineGroup group = Tools.tileGroup as NineGroup;
                   result.add(BoardChange.calculateNineGroupChanges(group, layers[group.layer].subLayers[group.subLayer], pointerWorldPosition));
                } else if ((Tools.tileGroup.type == TileGroupType.Prefab || Tools.tileGroup.type == TileGroupType.TreePrefab) && !excludePrefabs) {
-                  result.add(BoardChange.calculatePrefabChange(Tools.selectedPrefab, pointerWorldPosition));
+                  Vector3 position = getPrefabPosition(Tools.tileGroup as PrefabGroup, Tools.selectedPrefab, pointerWorldPosition);
+                  result.add(BoardChange.calculatePrefabChange(Tools.selectedPrefab, position));
                } else if (Tools.tileGroup.type == TileGroupType.NineSliceInOut) {
                   NineSliceInOutGroup group = Tools.tileGroup as NineSliceInOutGroup;
                   result.add(BoardChange.calculateNineSliceInOutchanges(
@@ -575,6 +576,10 @@ namespace MapCreationTool
             preview.targetPrefab = prefToAdd.prefabToPlace;
             preview.prefabPreviewInstance = Instantiate(preview.targetPrefab, prefabLayer);
             preview.prefabPreviewInstance.name = preview.targetPrefab.name;
+            preview.prefabPreviewInstance.transform.position = prefToAdd.positionToPlace;
+
+            foreach (SpriteSwapper swapper in preview.prefabPreviewInstance.GetComponentsInChildren<SpriteSwapper>())
+               swapper.Update();
 
             var zSnap = preview.prefabPreviewInstance.GetComponent<ZSnap>();
             if (zSnap != null)
@@ -582,12 +587,6 @@ namespace MapCreationTool
 
             preview.prefabPreviewInstance.GetComponent<MapEditorPrefab>()?.createdForPrieview();
          }
-
-         if (preview.prefabPreviewInstance != null) {
-            float offset = preview.prefabPreviewInstance.GetComponent<PrefabCenterOffset>()?.offset ?? 0;
-            preview.prefabPreviewInstance.transform.position = worldPos - Vector2.up * offset;
-         }
-
 
          //------------------------
          //Handle prefabs to destroy
@@ -641,6 +640,23 @@ namespace MapCreationTool
          }
 
          brushOutline.color = Tools.toolType == ToolType.Eraser ? Color.red : Color.green;
+      }
+
+      private Vector3 getPrefabPosition (PrefabGroup group, GameObject prefabToPlace, Vector3 targetPosition) {
+         if (Tools.snapToGrid) {
+            targetPosition = cellToWorldCenter(worldToCell(targetPosition));
+            targetPosition += new Vector3(
+                group.brushSize.x % 2 == 0 ? -0.5f : 0,
+                group.brushSize.y % 2 == 0 ? -0.5f : 0,
+                0);
+         }
+
+         PrefabCenterOffset prefOffset = prefabToPlace.GetComponent<PrefabCenterOffset>();
+         if (prefOffset != null) {
+            targetPosition -= Vector3.up * prefOffset.offset;
+         }
+
+         return targetPosition;
       }
 
       private void selectPrefab (PlacedPrefab prefab, bool recordUndo = true) {

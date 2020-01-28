@@ -518,6 +518,7 @@ GameObject:
   - component: {fileID: -4843125669364470477}
   - component: {fileID: -1495895879080354060}
   - component: {fileID: 2420870635193838953}
+  - component: {fileID: -7273226190927383350}
   m_Layer: 0
   m_Name: Tutorial Arrow - Map Editor
   m_TagString: Untagged
@@ -624,6 +625,20 @@ MonoBehaviour:
   iconSprite: {fileID: 7928038050226102524}
   inGameText: {fileID: 7852279688882655742}
   isActivated: 0
+  canBePickedUp: 0
+--- !u!114 &-7273226190927383350
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6524891404889324934}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c85e043511dae404196a3a80dcf221f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  offset: 0.2
 --- !u!1 &7099649131010224874
 GameObject:
   m_ObjectHideFlags: 0

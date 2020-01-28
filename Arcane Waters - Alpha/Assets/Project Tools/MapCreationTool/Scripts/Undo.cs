@@ -113,6 +113,7 @@ namespace MapCreationTool.UndoSystem
       public BiomeType? biome { get; set; }
       public EraserLayerMode? eraserLayerMode { get; set; }
       public FillBounds? fillBounds { get; set; }
+      public bool? snapToGrid { get; set; }
 
       public bool hasTileGroup { get; set; }
       public TileGroup tileGroup { get; set; }

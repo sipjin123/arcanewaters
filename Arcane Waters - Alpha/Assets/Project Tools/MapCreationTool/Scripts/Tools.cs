@@ -17,6 +17,7 @@ namespace MapCreationTool
       public static event Action<FillBounds, FillBounds> FillBoundsChanged;
       public static event Action<EditorType, EditorType> EditorTypeChanged;
       public static event Action<Vector2Int, Vector2Int> BoardSizeChanged;
+      public static event Action<bool, bool> SnapToGridChanged;
 
       public static event Action AnythingChanged;
 
@@ -32,6 +33,7 @@ namespace MapCreationTool
       public static TileGroup tileGroup { get; private set; }
 
       public static Vector2Int boardSize { get; private set; }
+      public static bool snapToGrid { get; set; }
 
       public static GameObject selectedPrefab
       {
@@ -58,6 +60,7 @@ namespace MapCreationTool
          eraserLayerMode = EraserLayerMode.Top;
          editorType = EditorType.Area;
          boardSize = new Vector2Int(64, 64);
+         snapToGrid = false;
       }
 
       public static void performUndoRedo (UndoRedoData undoRedoData) {
@@ -67,6 +70,7 @@ namespace MapCreationTool
          mountainLayer = data.mountainLayer ?? mountainLayer;
          burrowedTrees = data.burrowedTrees ?? burrowedTrees;
          fillBounds = data.fillBounds ?? fillBounds;
+         snapToGrid = data.snapToGrid ?? snapToGrid;
 
          if (data.biome != null) {
             changeBiome(data.biome.Value, false);
@@ -157,6 +161,20 @@ namespace MapCreationTool
                 performUndoRedo,
                 new ToolUndoRedoData { eraserLayerMode = old },
                 new ToolUndoRedoData { eraserLayerMode = eraserLayerMode });
+         }
+      }
+
+      public static void changeSnapToGrid (bool enabled, bool registerUndo = true) {
+         bool old = snapToGrid;
+         snapToGrid = enabled;
+         SnapToGridChanged?.Invoke(old, snapToGrid);
+         AnythingChanged?.Invoke();
+
+         if (registerUndo) {
+            Undo.register(
+                performUndoRedo,
+                new ToolUndoRedoData { snapToGrid = old },
+                new ToolUndoRedoData { snapToGrid = snapToGrid });
          }
       }
 

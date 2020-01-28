@@ -16,35 +16,6 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0.155}
   serializedVersion: 2
   m_Radius: 0.16
---- !u!114 &-4241732045688408140
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7574094533249808552}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c85e043511dae404196a3a80dcf221f9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  offset: 1
---- !u!114 &4996117428970629217
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7574094533249808552}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f3ce18de4c072c64482aed5eddf5469c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  title: Fireplace
-  dataFields: []
-  selectDataFields: []
-  customDataFields: []
 --- !u!114 &-6751417929529060130
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -76,6 +47,35 @@ MonoBehaviour:
   customFrameName: 
   generatesOnStart: 0
   generatesOnValidate: 1
+--- !u!114 &-4241732045688408140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7574094533249808552}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c85e043511dae404196a3a80dcf221f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  offset: 1
+--- !u!114 &4996117428970629217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7574094533249808552}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3ce18de4c072c64482aed5eddf5469c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  title: Fireplace
+  dataFields: []
+  selectDataFields: []
+  customDataFields: []
 --- !u!1001 &1669168262037906114
 PrefabInstance:
   m_ObjectHideFlags: 0
