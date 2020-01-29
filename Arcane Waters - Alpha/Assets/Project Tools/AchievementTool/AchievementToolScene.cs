@@ -58,6 +58,7 @@ public class AchievementToolScene : MonoBehaviour {
       usableItemData.actionType = ActionType.None;
 
       AchievementToolTemplate template = Instantiate(achievementTemplatePrefab, itemTemplateParent.transform);
+      template.xmlToolReference = toolManager;
       template.editButton.onClick.AddListener(() => {
          achievementDataPanel.loadData(usableItemData);
          achievementDataPanel.gameObject.SetActive(true);
@@ -90,6 +91,7 @@ public class AchievementToolScene : MonoBehaviour {
       // Create a row for each achievement element
       foreach (AchievementData achievementData in sortedList) {
          AchievementToolTemplate template = Instantiate(achievementTemplatePrefab, itemTemplateParent.transform);
+         template.xmlToolReference = toolManager;
          if (isShowingDetails) {
             template.nameText.text = achievementData.achievementName + "\n[" + achievementData.tier + "] (" + achievementData.actionType + ")";
          } else {

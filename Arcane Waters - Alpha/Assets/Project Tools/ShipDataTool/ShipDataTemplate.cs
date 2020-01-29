@@ -18,7 +18,8 @@ public class ShipDataTemplate : GenericEntryTemplate {
    public void updateItemDisplay (ShipData resultItem, bool isActive) {
       string newName = resultItem.shipName + " (" + ((Ship.Type) resultItem.shipType).ToString() + ")";
 
-      modifyDisplay(newName, (int) resultItem.shipID);
+      updateDisplay(newName, (int) resultItem.shipID);
+      setIDRestriction(xml_id);
       enabledIndicator.SetActive(isActive);
    }
 }

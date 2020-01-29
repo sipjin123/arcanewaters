@@ -47,9 +47,9 @@ public class MonsterToolManager : XmlDataToolManager {
       _monsterDataList = new List<BattlerXMLContent>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         userIdData = DB_Main.getSQLDataByID(editorToolType);
          List<XMLPair> xmlPairList = DB_Main.getLandMonsterXML();
          List<AbilityXMLContent> abilityContentList = DB_Main.getBattleAbilityXML();
-         userIdData = DB_Main.getSQLDataByID(editorToolType);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (XMLPair xmlPair in xmlPairList) {

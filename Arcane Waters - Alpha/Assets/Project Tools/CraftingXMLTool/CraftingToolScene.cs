@@ -51,6 +51,7 @@ public class CraftingToolScene : MonoBehaviour {
 
       if (!toolManager.ifExists(itemName)) {
          CraftableItemTemplate template = Instantiate(craftableItemTemplate, craftableItemParent);
+         template.xmlToolReference = toolManager;
          template.editButton.onClick.AddListener(() => {
             craftingPanel.currentXMLTemplate = template;
             craftingPanel.gameObject.SetActive(true);
@@ -77,6 +78,7 @@ public class CraftingToolScene : MonoBehaviour {
       // Create a row for each crafting ingredient
       foreach (CraftableItemRequirements craftingRequirement in _craftingData.Values) {
          CraftableItemTemplate template = Instantiate(craftableItemTemplate, craftableItemParent);
+         template.xmlToolReference = toolManager;
          template.updateItemDisplay(craftingRequirement.resultItem);
          template.editButton.onClick.AddListener(() =>
          {

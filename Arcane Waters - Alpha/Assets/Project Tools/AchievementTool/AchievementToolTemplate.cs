@@ -10,7 +10,7 @@ public class AchievementToolTemplate : GenericEntryTemplate {
    #endregion
 
    private void OnEnable () {
-      setRestrictions(nameText.text);
+      setNameRestriction(nameText.text);
    }
 
    #region Private Variables

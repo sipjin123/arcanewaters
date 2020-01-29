@@ -5,36 +5,37 @@ using UnityEngine.UI;
 using Mirror;
 using static EquipmentToolManager;
 
-public class EquipmentDataTemplate : MonoBehaviour {
+public class EquipmentDataTemplate : GenericEntryTemplate {
    #region Public Variables
-
-   // Name of the item 
-   public Text nameText;
-
-   // Index of the item 
-   public Text indexText;
-
-   // Button for showing the panel in charge of editing the data
-   public Button editButton;
-
-   // Button for deleting a data
-   public Button deleteButton;
-
-   // Icon of the item
-   public Image itemIcon;
-
-   // Button for duplicating this template
-   public Button duplicateButton;
 
    // The type of equipment
    public EquipmentType equipmentType;
 
+   // Cached xml id
+   public int xml_id;
+
    #endregion
 
-   private void OnEnable () {
+   public void setData (string dataName, int dataID, EquipmentType dataType, int data_xml_id) {
+      equipmentType = dataType;
+      nameText.text = dataName;
+      xml_id = data_xml_id;
+      indexText.text = dataID.ToString();
+      setEquipmentRestriction(data_xml_id);
+   }
+
+   protected void setEquipmentRestriction (int template_id) {
       if (!MasterToolAccountManager.canAlterData()) {
-         duplicateButton.gameObject.SetActive(false);
          deleteButton.gameObject.SetActive(false);
+         duplicateButton.gameObject.SetActive(false);
+      }
+
+      if (MasterToolAccountManager.PERMISSION_LEVEL == AdminManager.Type.ContentWriter) {
+         if (Util.hasValidEntryName(nameText.text) && !EquipmentToolManager.equipmentToolSelf.didUserCreateData(template_id, equipmentType)) {
+            deleteButton.gameObject.SetActive(false);
+            editButton.gameObject.SetActive(false);
+         } 
       }
    }
+
 }

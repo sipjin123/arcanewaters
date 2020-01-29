@@ -19,7 +19,8 @@ public class SeaMonsterDataTemplate : GenericEntryTemplate
    public void updateItemDisplay (SeaMonsterEntityData resultItem, bool isActive) {
       string newName = resultItem.monsterName + " (" + ((Enemy.Type) resultItem.seaMonsterType).ToString() + ")";
 
-      modifyDisplay(newName, (int) resultItem.seaMonsterType);
+      updateDisplay(newName, (int) resultItem.seaMonsterType);
+      setIDRestriction(xml_id);
       enabledIndicator.SetActive(isActive);
    }
 

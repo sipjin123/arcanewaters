@@ -82,16 +82,16 @@ public class EquipmentXMLManager : MonoBehaviour {
       _helmStatList = new Dictionary<Helm.Type, HelmStatData>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<string> rawXMLData = DB_Main.getEquipmentXML(EquipmentType.Weapon);
+         List<XMLPair> rawXMLData = DB_Main.getEquipmentXML(EquipmentType.Weapon);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            foreach (string rawText in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(rawText);
+            foreach (XMLPair xmlPair in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(xmlPair.raw_xml_data);
                WeaponStatData rawData = Util.xmlLoad<WeaponStatData>(newTextAsset);
                Weapon.Type uniqueID = rawData.weaponType;
 
                // Save the data in the memory cache
-               if (!_weaponStatList.ContainsKey(uniqueID)) {
+               if (!_weaponStatList.ContainsKey(uniqueID) && xmlPair.is_enabled) {
                   _weaponStatList.Add(uniqueID, rawData);
                   weaponStatData.Add(rawData);
                }
@@ -101,16 +101,16 @@ public class EquipmentXMLManager : MonoBehaviour {
       });
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<string> rawXMLData = DB_Main.getEquipmentXML(EquipmentType.Armor);
+         List<XMLPair> rawXMLData = DB_Main.getEquipmentXML(EquipmentType.Armor);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            foreach (string rawText in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(rawText);
+            foreach (XMLPair xmlPair in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(xmlPair.raw_xml_data);
                ArmorStatData rawData = Util.xmlLoad<ArmorStatData>(newTextAsset);
                Armor.Type uniqueID = rawData.armorType;
 
                // Save the data in the memory cache
-               if (!_armorStatList.ContainsKey(uniqueID)) {
+               if (!_armorStatList.ContainsKey(uniqueID) && xmlPair.is_enabled) {
                   _armorStatList.Add(uniqueID, rawData);
                   armorStatData.Add(rawData);
                }
@@ -120,16 +120,16 @@ public class EquipmentXMLManager : MonoBehaviour {
       });
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<string> rawXMLData = DB_Main.getEquipmentXML(EquipmentType.Helm);
+         List<XMLPair> rawXMLData = DB_Main.getEquipmentXML(EquipmentType.Helm);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            foreach (string rawText in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(rawText);
+            foreach (XMLPair xmlPair in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(xmlPair.raw_xml_data);
                HelmStatData rawData = Util.xmlLoad<HelmStatData>(newTextAsset);
                Helm.Type uniqueID = rawData.helmType;
 
                // Save the data in the memory cache
-               if (!_helmStatList.ContainsKey(uniqueID)) {
+               if (!_helmStatList.ContainsKey(uniqueID) && xmlPair.is_enabled) {
                   _helmStatList.Add(uniqueID, rawData);
                   helmStatData.Add(rawData);
                }

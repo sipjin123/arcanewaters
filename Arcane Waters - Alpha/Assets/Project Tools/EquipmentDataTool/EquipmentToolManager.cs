@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 using System.Text;
 using System.Xml;
 
-public class EquipmentToolManager : MonoBehaviour {
+public class EquipmentToolManager : XmlDataToolManager {
    #region Public Variables
 
    // Holds the main scene for the equipment data
@@ -18,6 +18,14 @@ public class EquipmentToolManager : MonoBehaviour {
    public const string FOLDER_PATH_WEAPON = "EquipmentStats/Weapons";
    public const string FOLDER_PATH_ARMOR = "EquipmentStats/Armors";
    public const string FOLDER_PATH_HELM = "EquipmentStats/Helms";
+
+   // Holds the collection of user id that created the data entry
+   public List<SQLEntryIDClass> weaponUserID = new List<SQLEntryIDClass>();
+   public List<SQLEntryIDClass> armorUserID = new List<SQLEntryIDClass>();
+   public List<SQLEntryIDClass> helmUserID = new List<SQLEntryIDClass>();
+
+   // Self reference to the specific tool
+   public static EquipmentToolManager equipmentToolSelf;
 
    public enum EquipmentType
    {
@@ -30,12 +38,37 @@ public class EquipmentToolManager : MonoBehaviour {
    #endregion
 
    private void Start () {
+      self = this;
+      equipmentToolSelf = this;
       Invoke("loadXMLData", MasterToolScene.loadDelay);
+   }
+
+   public bool didUserCreateData (int entryID, EquipmentType equipmentType) {
+      SQLEntryIDClass sqlEntry = new SQLEntryIDClass();
+      switch (equipmentType) {
+         case EquipmentType.Weapon:
+            sqlEntry = weaponUserID.Find(_ => _.xmlID == entryID);
+            break;
+         case EquipmentType.Armor:
+            sqlEntry = armorUserID.Find(_ => _.xmlID == entryID);
+            break;
+         case EquipmentType.Helm:
+            sqlEntry = helmUserID.Find(_ => _.xmlID == entryID);
+            break;
+      }
+
+      if (sqlEntry != null) {
+         if (sqlEntry.ownerID == MasterToolAccountManager.self.currentAccountID) {
+            return true;
+         }
+      }
+
+      return false;
    }
 
    #region Save 
 
-   public void saveWeapon (WeaponStatData data) {
+   public void saveWeapon (WeaponStatData data, int xml_id) {
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {
@@ -44,7 +77,7 @@ public class EquipmentToolManager : MonoBehaviour {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateEquipmentXML(longString, (int)data.weaponType, EquipmentType.Weapon);
+         DB_Main.updateEquipmentXML(longString, xml_id, EquipmentType.Weapon, data.equipmentName);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -52,7 +85,7 @@ public class EquipmentToolManager : MonoBehaviour {
       });
    }
 
-   public void saveArmor (ArmorStatData data) {
+   public void saveArmor (ArmorStatData data, int xml_id) {
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {
@@ -61,7 +94,7 @@ public class EquipmentToolManager : MonoBehaviour {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateEquipmentXML(longString, (int) data.armorType, EquipmentType.Armor);
+         DB_Main.updateEquipmentXML(longString, xml_id, EquipmentType.Armor, data.equipmentName);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -69,7 +102,7 @@ public class EquipmentToolManager : MonoBehaviour {
       });
    }
 
-   public void saveHelm (HelmStatData data) {
+   public void saveHelm (HelmStatData data, int xml_id) {
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {
@@ -78,7 +111,7 @@ public class EquipmentToolManager : MonoBehaviour {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateEquipmentXML(longString, (int) data.helmType, EquipmentType.Helm);
+         DB_Main.updateEquipmentXML(longString, xml_id, EquipmentType.Helm, data.equipmentName);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -90,9 +123,9 @@ public class EquipmentToolManager : MonoBehaviour {
 
    #region Delete
 
-   public void deleteWeapon (WeaponStatData data) {
+   public void deleteWeapon (int xml_id) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.deleteEquipmentXML((int)data.weaponType, EquipmentType.Weapon);
+         DB_Main.deleteEquipmentXML(xml_id, EquipmentType.Weapon);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -100,9 +133,9 @@ public class EquipmentToolManager : MonoBehaviour {
       });
    }
 
-   public void deleteArmor (ArmorStatData data) {
+   public void deleteArmor (int xml_id) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.deleteEquipmentXML((int) data.armorType, EquipmentType.Armor);
+         DB_Main.deleteEquipmentXML(xml_id, EquipmentType.Armor);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -110,9 +143,9 @@ public class EquipmentToolManager : MonoBehaviour {
       });
    }
 
-   public void deleteHelm (HelmStatData data) {
+   public void deleteHelm (int xml_id) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.deleteEquipmentXML((int) data.helmType, EquipmentType.Helm);
+         DB_Main.deleteEquipmentXML(xml_id, EquipmentType.Helm);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -135,7 +168,7 @@ public class EquipmentToolManager : MonoBehaviour {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateEquipmentXML(longString, (int)data.weaponType, EquipmentType.Weapon);
+         DB_Main.updateEquipmentXML(longString, -1, EquipmentType.Weapon, data.equipmentName);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -154,7 +187,7 @@ public class EquipmentToolManager : MonoBehaviour {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateEquipmentXML(longString, (int) data.armorType, EquipmentType.Armor);
+         DB_Main.updateEquipmentXML(longString, -1, EquipmentType.Armor, data.equipmentName);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -173,7 +206,7 @@ public class EquipmentToolManager : MonoBehaviour {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateEquipmentXML(longString, (int) data.helmType, EquipmentType.Helm);
+         DB_Main.updateEquipmentXML(longString, -1, EquipmentType.Helm, data.equipmentName);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -187,6 +220,7 @@ public class EquipmentToolManager : MonoBehaviour {
 
    public void loadXMLData () {
       loadCounter = 0;
+      userIdData = new List<SQLEntryIDClass>();
       XmlLoadingPanel.self.startLoading();
       loadWeapons();
       loadArmors();
@@ -194,20 +228,24 @@ public class EquipmentToolManager : MonoBehaviour {
    }
 
    private void loadWeapons () {
-      _weaponStatData = new Dictionary<Weapon.Type, WeaponStatData>();
+      _weaponStatData = new List<WeaponXMLContent>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<string> rawXMLData = DB_Main.getEquipmentXML(EquipmentType.Weapon);
+         List<XMLPair> rawXMLData = DB_Main.getEquipmentXML(EquipmentType.Weapon);
+         weaponUserID = DB_Main.getSQLDataByID(editorToolType, 1);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            foreach (string rawText in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(rawText);
+            foreach (XMLPair xmlPair in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(xmlPair.raw_xml_data);
                WeaponStatData rawData = Util.xmlLoad<WeaponStatData>(newTextAsset);
 
                // Save the data in the memory cache
-               if (!_weaponStatData.ContainsKey(rawData.weaponType)) {
-                  // Save the Data in the memory cache
-                  _weaponStatData.Add(rawData.weaponType, rawData);
+               if (!_weaponStatData.Exists(_ => _.xml_id == xmlPair.xml_id)) {
+                  WeaponXMLContent newXML = new WeaponXMLContent {
+                     xml_id = xmlPair.xml_id,
+                     weaponStatData = rawData
+                  };
+                  _weaponStatData.Add(newXML);
                }
             }
             equipmentDataScene.loadWeaponData(_weaponStatData);
@@ -217,20 +255,25 @@ public class EquipmentToolManager : MonoBehaviour {
    }
 
    private void loadArmors () {
-      _armorStatData = new Dictionary<Armor.Type, ArmorStatData>();
+      _armorStatData = new List<ArmorXMLContent>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<string> rawXMLData = DB_Main.getEquipmentXML(EquipmentType.Armor);
+         List<XMLPair> rawXMLData = DB_Main.getEquipmentXML(EquipmentType.Armor);
+         armorUserID = DB_Main.getSQLDataByID(editorToolType, 2);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            foreach (string rawText in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(rawText);
+            foreach (XMLPair xmlPair in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(xmlPair.raw_xml_data);
                ArmorStatData rawData = Util.xmlLoad<ArmorStatData>(newTextAsset);
                Armor.Type uniqueID = rawData.armorType;
 
                // Save the data in the memory cache
-               if (!_armorStatData.ContainsKey(rawData.armorType)) {
-                  _armorStatData.Add(rawData.armorType, rawData);
+               if (!_armorStatData.Exists(_ => _.xml_id == xmlPair.xml_id)) {
+                  ArmorXMLContent newXML = new ArmorXMLContent {
+                     xml_id = xmlPair.xml_id,
+                     armorStatData = rawData
+                  };
+                  _armorStatData.Add(newXML);
                }
             }
             equipmentDataScene.loadArmorData(_armorStatData);
@@ -240,20 +283,23 @@ public class EquipmentToolManager : MonoBehaviour {
    }
 
    private void loadHelms () {
-      _helmStatData = new Dictionary<Helm.Type, HelmStatData>();
-
+      _helmStatData = new List<HelmXMLContent>();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<string> rawXMLData = DB_Main.getEquipmentXML(EquipmentType.Helm);
+         List<XMLPair> rawXMLData = DB_Main.getEquipmentXML(EquipmentType.Helm);
+         helmUserID = DB_Main.getSQLDataByID(editorToolType, 3);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            foreach (string rawText in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(rawText);
+            foreach (XMLPair xmlPair in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(xmlPair.raw_xml_data);
                HelmStatData rawData = Util.xmlLoad<HelmStatData>(newTextAsset);
-               Helm.Type uniqueID = rawData.helmType;
 
                // Save the data in the memory cache
-               if (!_helmStatData.ContainsKey(rawData.helmType)) {
-                  _helmStatData.Add(rawData.helmType, rawData);
+               if (!_helmStatData.Exists(_=>_.xml_id == xmlPair.xml_id)) {
+                  HelmXMLContent newXML = new HelmXMLContent {
+                     xml_id = xmlPair.xml_id,
+                     helmStatData = rawData
+                  };
+                  _helmStatData.Add(newXML);
                }
             }
             equipmentDataScene.loadHelmData(_helmStatData);
@@ -275,16 +321,41 @@ public class EquipmentToolManager : MonoBehaviour {
    #region Private Variables
 
    // Holds the list of loaded weapon data
-   private Dictionary<Weapon.Type, WeaponStatData> _weaponStatData = new Dictionary<Weapon.Type, WeaponStatData>();
+   private List<WeaponXMLContent> _weaponStatData = new List<WeaponXMLContent>();
 
    // Holds the list of loaded armor data
-   private Dictionary<Armor.Type, ArmorStatData> _armorStatData = new Dictionary<Armor.Type, ArmorStatData>();
+   private List<ArmorXMLContent> _armorStatData = new List<ArmorXMLContent>();
 
    // Holds the list of loaded helm data
-   private Dictionary<Helm.Type, HelmStatData> _helmStatData = new Dictionary<Helm.Type, HelmStatData>();
+   private List<HelmXMLContent> _helmStatData = new List<HelmXMLContent>();
 
    // Counts how many equipment set has been loaded
    private float loadCounter = 0;
 
    #endregion
+}
+
+public class WeaponXMLContent
+{
+   // Id of the xml entry
+   public int xml_id;
+
+   // Data of the weapon content
+   public WeaponStatData weaponStatData;
+}
+public class ArmorXMLContent
+{
+   // Id of the xml entry
+   public int xml_id;
+
+   // Data of the armor content
+   public ArmorStatData armorStatData;
+}
+public class HelmXMLContent
+{
+   // Id of the xml entry
+   public int xml_id;
+
+   // Data of the helm content
+   public HelmStatData helmStatData;
 }

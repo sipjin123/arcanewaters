@@ -10,6 +10,6 @@ public class ShopToolTemplate : GenericEntryTemplate {
    #endregion
 
    private void OnEnable () {
-      setRestrictions(nameText.text);
+      setNameRestriction(nameText.text);
    }
 }

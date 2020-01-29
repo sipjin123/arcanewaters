@@ -15,7 +15,8 @@ public class AbilityDataTemplate : GenericEntryTemplate
 
    public void updateItemDisplay (BasicAbilityData resultItem) {
       actualName = resultItem.itemName;
-      modifyDisplay(resultItem.itemName, resultItem.itemID);
+      updateDisplay(resultItem.itemName, resultItem.itemID);
+      setNameRestriction(actualName);
    }
 
    #region Private Variables

@@ -438,13 +438,13 @@ public class DB_Main : DB_MainStub
       return rawDataList;
    }
 
-   public static new List<SQLEntryIDClass> getSQLDataByID (EditorSQLManager.EditorToolType editorType) {
+   public static new List<SQLEntryIDClass> getSQLDataByID (EditorSQLManager.EditorToolType editorType, int indexID = 0) {
       List<SQLEntryIDClass> rawDataList = new List<SQLEntryIDClass>();
 
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane." + EditorSQLManager.getSQLTableByID(editorType), conn)) {
+            "SELECT * FROM arcane." + EditorSQLManager.getSQLTableByID(editorType, indexID), conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -1515,17 +1515,17 @@ public class DB_Main : DB_MainStub
 
    #region Equipment XML Data
 
-   public static new void updateEquipmentXML (string rawData, int typeID, EquipmentToolManager.EquipmentType equipType) {
+   public static new void updateEquipmentXML (string rawData, int entry_id, EquipmentToolManager.EquipmentType equipType, string equipmentName) {
       string tableName = "";
       switch (equipType) {
          case EquipmentToolManager.EquipmentType.Weapon:
-            tableName = "equipment_weapon_xml";
+            tableName = "equipment_weapon_xml_v2";
             break;
          case EquipmentToolManager.EquipmentType.Armor:
-            tableName = "equipment_armor_xml";
+            tableName = "equipment_armor_xml_v2";
             break;
          case EquipmentToolManager.EquipmentType.Helm:
-            tableName = "equipment_helm_xml";
+            tableName = "equipment_helm_xml_v2";
             break;
       }
 
@@ -1533,15 +1533,17 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO " + tableName + " (type, xmlContent, creator_userID) " +
-            "VALUES(@type, @xmlContent, @creator_userID) " +
-            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
+            "INSERT INTO " + tableName + " (xml_id, xmlContent, creator_userID, equipment_type, equipment_name) " +
+            "VALUES(@xml_id, @xmlContent, @creator_userID, @equipment_type, @equipment_name) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, equipment_type = @equipment_type, equipment_name = @equipment_name", conn)) {
 
             conn.Open();
             cmd.Prepare();
 
-            cmd.Parameters.AddWithValue("@type", typeID);
+            cmd.Parameters.AddWithValue("@xml_id", entry_id);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
+            cmd.Parameters.AddWithValue("@equipment_name", equipmentName);
+            cmd.Parameters.AddWithValue("@equipment_type", equipType.ToString());
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
 
             // Execute the command
@@ -1552,26 +1554,26 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new void deleteEquipmentXML (int type, EquipmentToolManager.EquipmentType equipType) {
+   public static new void deleteEquipmentXML (int xml_id, EquipmentToolManager.EquipmentType equipType) {
       string tableName = "";
       switch (equipType) {
          case EquipmentToolManager.EquipmentType.Weapon:
-            tableName = "equipment_weapon_xml";
+            tableName = "equipment_weapon_xml_v2";
             break;
          case EquipmentToolManager.EquipmentType.Armor:
-            tableName = "equipment_armor_xml";
+            tableName = "equipment_armor_xml_v2";
             break;
          case EquipmentToolManager.EquipmentType.Helm:
-            tableName = "equipment_helm_xml";
+            tableName = "equipment_helm_xml_v2";
             break;
       }
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM " + tableName + " WHERE type=@type", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM " + tableName + " WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@type", type);
+            cmd.Parameters.AddWithValue("@xml_id", xml_id);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1581,21 +1583,21 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new List<string> getEquipmentXML (EquipmentToolManager.EquipmentType equipType) {
+   public static new List<XMLPair> getEquipmentXML (EquipmentToolManager.EquipmentType equipType) {
       string tableName = "";
       switch (equipType) {
          case EquipmentToolManager.EquipmentType.Weapon:
-            tableName = "equipment_weapon_xml";
+            tableName = "equipment_weapon_xml_v2";
             break;
          case EquipmentToolManager.EquipmentType.Armor:
-            tableName = "equipment_armor_xml";
+            tableName = "equipment_armor_xml_v2";
             break;
          case EquipmentToolManager.EquipmentType.Helm:
-            tableName = "equipment_helm_xml";
+            tableName = "equipment_helm_xml_v2";
             break;
       }
 
-      List<string> rawDataList = new List<string>();
+      List<XMLPair> rawDataList = new List<XMLPair>();
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
@@ -1607,14 +1609,19 @@ public class DB_Main : DB_MainStub
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  rawDataList.Add(dataReader.GetString("xmlContent"));
+                  XMLPair xmlPair = new XMLPair { 
+                     is_enabled = true,
+                     raw_xml_data = dataReader.GetString("xmlContent"),
+                     xml_id = dataReader.GetInt32("xml_id")
+                  };
+                  rawDataList.Add(xmlPair);
                }
             }
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
-      return new List<string>(rawDataList);
+      return new List<XMLPair>(rawDataList);
    }
 
    #endregion

@@ -52,6 +52,7 @@ public class ShipDataScene : MonoBehaviour {
       shipData.skinType = Ship.SkinType.Barge_Dragon;
 
       ShipDataTemplate template = Instantiate(shipTemplatePrefab, shipTemplateParent.transform);
+      template.xmlToolReference = shipToolManager;
       template.updateItemDisplay(shipData, false);
       template.xml_id = -1;
       template.editButton.onClick.AddListener(() => {
@@ -85,6 +86,7 @@ public class ShipDataScene : MonoBehaviour {
       foreach (ShipXMLContent xmlContent in shipDataList) {
          ShipData shipData = xmlContent.shipData;
          ShipDataTemplate template = Instantiate(shipTemplatePrefab, shipTemplateParent.transform);
+         template.xmlToolReference = shipToolManager;
          template.xml_id = xmlContent.xml_id;
          template.updateItemDisplay(shipData, xmlContent.isEnabled);
          template.editButton.onClick.AddListener(() => {

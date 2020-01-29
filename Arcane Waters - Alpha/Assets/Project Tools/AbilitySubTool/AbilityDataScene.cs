@@ -121,6 +121,7 @@ public class AbilityDataScene : MonoBehaviour
 
    private void createNewTemplate (BasicAbilityData abilityData) {
       AbilityDataTemplate template = Instantiate(abilityTemplate, abilityTemplateParent);
+      template.xmlToolReference = abilityManager;
       template.editButton.onClick.AddListener(() => {
          _startingName = abilityData.itemName;
          abilityPanel.SetActive(true);
@@ -182,6 +183,7 @@ public class AbilityDataScene : MonoBehaviour
       foreach (AttackAbilityData abilityData in attackData.Values) {
          if (abilityData.abilityType != AbilityType.Stance) {
             AbilityDataTemplate template = Instantiate(abilityTemplate, abilityTemplateParent);
+            template.xmlToolReference = abilityManager;
             template.editButton.onClick.AddListener(() => {
                _startingName = abilityData.itemName;
                loadAttackData(abilityData);
@@ -203,6 +205,7 @@ public class AbilityDataScene : MonoBehaviour
 
       foreach (BuffAbilityData abilityData in buffData.Values) {
          AbilityDataTemplate template = Instantiate(abilityTemplate, abilityTemplateParent);
+         template.xmlToolReference = abilityManager;
          template.editButton.onClick.AddListener(() => {
             _startingName = abilityData.itemName;
             loadBuffData(abilityData);
@@ -222,6 +225,7 @@ public class AbilityDataScene : MonoBehaviour
       foreach (BasicAbilityData abilityData in basicAbilityData.Values) {
          if (abilityData.abilityType == AbilityType.Stance) {
             AbilityDataTemplate template = Instantiate(abilityTemplate, abilityTemplateParent);
+            template.xmlToolReference = abilityManager;
             template.editButton.onClick.AddListener(() => {
                _startingName = abilityData.itemName;
                loadGenericData(abilityData);

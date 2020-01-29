@@ -15,14 +15,13 @@ public class EnemyDataTemplate : GenericEntryTemplate {
 
    #endregion
 
-   public void updateItemDisplay (BattlerData resultItem, bool isActive) {
+   public void updateItemDisplay (BattlerData resultItem, bool isActive, int xmlId) {
       string newName = "Undefined";
-      try {
-         newName = resultItem.enemyName + "\n(" + ((Enemy.Type) resultItem.enemyType).ToString() + ")";
-      } catch {
-      }
+      xml_id = xmlId;
+      newName = resultItem.enemyName + "\n(" + ((Enemy.Type) resultItem.enemyType).ToString() + ")";
 
-      modifyDisplay(newName, (int) resultItem.enemyType);
+      updateDisplay(newName, (int) resultItem.enemyType);
+      setIDRestriction(xml_id);
       enabledIndicator.SetActive(isActive);
    }
 

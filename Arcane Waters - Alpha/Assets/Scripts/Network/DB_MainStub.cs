@@ -16,7 +16,7 @@ public class DB_MainStub : MonoBehaviour
       return new List<SQLEntryNameClass>();
    }
 
-   public static List<SQLEntryIDClass> getSQLDataByID (EditorSQLManager.EditorToolType editorType) {
+   public static List<SQLEntryIDClass> getSQLDataByID (EditorSQLManager.EditorToolType editorType, int id = 0) {
       return new List<SQLEntryIDClass>();
    }
 
@@ -45,15 +45,15 @@ public class DB_MainStub : MonoBehaviour
       return new List<string>();
    }
 
-   public static void updateEquipmentXML (string rawData, int typeID, EquipmentToolManager.EquipmentType equipType) {
+   public static void updateEquipmentXML (string rawData, int typeID, EquipmentToolManager.EquipmentType equipType, string equipmentName) {
 
    }
 
    public static void deleteEquipmentXML (int type, EquipmentToolManager.EquipmentType equipType) {
    }
 
-   public static List<string> getEquipmentXML (EquipmentToolManager.EquipmentType equipType) {
-      return new List<string>();
+   public static List<XMLPair> getEquipmentXML (EquipmentToolManager.EquipmentType equipType) {
+      return new List<XMLPair>();
    }
 
    public static void updatePlayerClassXML (string rawData, int key, ClassManager.PlayerStatType playerStatType) {

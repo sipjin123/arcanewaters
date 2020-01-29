@@ -35,16 +35,13 @@ public class XmlDataToolManager : MonoBehaviour {
       return false;
    }
 
-   public bool didUserCreateData (int entryID) {
-      SQLEntryIDClass sqlEntry = userIdData.Find(_ => _.dataID == entryID);
+   public bool didUserCreateData (int xml_id) {
+      SQLEntryIDClass sqlEntry = userIdData.Find(_ => _.xmlID == xml_id);
       if (sqlEntry != null) {
          if (sqlEntry.ownerID == MasterToolAccountManager.self.currentAccountID) {
             return true;
          }
-      } else {
-         Debug.LogWarning("Entry does not exist: " + entryID);
       }
-
       return false;
    }
 

@@ -12,7 +12,8 @@ public class CraftableItemTemplate : GenericEntryTemplate {
    public void updateItemDisplay(Item resultItem) {
       string newName = "Undefined";
       newName = Util.getItemName(resultItem.category, resultItem.itemTypeId);
-      modifyDisplay(newName, resultItem.itemTypeId);
+      updateDisplay(newName, resultItem.itemTypeId);
+      setNameRestriction(newName);
    }
 
    #region Private Variables

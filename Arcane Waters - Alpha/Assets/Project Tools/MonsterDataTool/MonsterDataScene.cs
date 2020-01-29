@@ -109,6 +109,7 @@ public class MonsterDataScene : MonoBehaviour {
       monsterData.enemyType = Enemy.Type.None;
 
       EnemyDataTemplate template = Instantiate(monsterTemplate, monsterTemplateParent);
+      template.xmlToolReference = toolManager;
       template.editButton.onClick.AddListener(() => {
          monsterPanel.currentXMLTemplate = template;
          monsterPanel.loadData(monsterData, -1, false);
@@ -137,8 +138,8 @@ public class MonsterDataScene : MonoBehaviour {
          BattlerData battler = rawData.battler;
 
          EnemyDataTemplate template = Instantiate(monsterTemplate, monsterTemplateParent);
-         template.updateItemDisplay(battler, rawData.isEnabled);
-         template.xml_id = rawData.xml_id;
+         template.xmlToolReference = toolManager;
+         template.updateItemDisplay(battler, rawData.isEnabled, rawData.xml_id);
          template.editButton.onClick.AddListener(() => {
             monsterPanel.currentXMLTemplate = template;
             monsterPanel.loadData(battler, rawData.xml_id, rawData.isEnabled);

@@ -42,6 +42,7 @@ public class NPCSelectionScreen : MonoBehaviour
       foreach (NPCData npcData in _npcData.Values) {
          // Create a new row
          NPCSelectionRow row = Instantiate(npcRowPrefab, rowsContainer.transform, false);
+         row.xmlToolReference = npcToolManager;
          row.transform.SetParent(rowsContainer.transform, false);
          row.setRowForNPC(this, npcData.npcId, npcData.name);
          row.deleteButton.onClick.AddListener(() => deleteNPC(npcData.npcId));

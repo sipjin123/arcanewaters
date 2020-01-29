@@ -49,6 +49,7 @@ public class ShopToolScene : MonoBehaviour {
       shopData.shopGreetingText = "";
 
       ShopToolTemplate template = Instantiate(shopTemplatePrefab, templateParent.transform);
+      template.xmlToolReference = toolManager;
       template.nameText.text = shopData.shopName;
       template.editButton.onClick.AddListener(() => {
          shopPanel.loadData(shopData);
@@ -73,6 +74,7 @@ public class ShopToolScene : MonoBehaviour {
       // Create a row for each monster element
       foreach (ShopData shopData in data.Values) {
          ShopToolTemplate template = Instantiate(shopTemplatePrefab, templateParent.transform);
+         template.xmlToolReference = toolManager;
          template.nameText.text = shopData.shopName;
 
          template.editButton.onClick.AddListener(() => {

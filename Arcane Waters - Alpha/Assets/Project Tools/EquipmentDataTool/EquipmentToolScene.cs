@@ -71,18 +71,17 @@ public class EquipmentToolScene : MonoBehaviour {
       weaponData.weaponClass = Weapon.Class.Any;
 
       EquipmentDataTemplate template = Instantiate(weaponTemplatePrefab, weaponTemplateParent.transform);
-      template.equipmentType = EquipmentType.Weapon;
-      template.nameText.text = weaponData.equipmentName+"("+ weaponData.weaponType + ")";
-      template.indexText.text = weaponData.equipmentID.ToString();
+      template.xmlToolReference = equipmentToolManager;
+      template.setData(weaponData.equipmentName, weaponData.equipmentID, EquipmentType.Weapon, -1);
 
       template.editButton.onClick.AddListener(() => {
-         equipmentDataPanel.loadWeaponData(weaponData);
+         equipmentDataPanel.loadWeaponData(weaponData, template.xml_id);
          equipmentDataPanel.gameObject.SetActive(true);
       });
 
       template.deleteButton.onClick.AddListener(() => {
          Destroy(template.gameObject, .5f);
-         equipmentToolManager.deleteWeapon(weaponData);
+         equipmentToolManager.deleteWeapon(template.xml_id);
       });
 
       template.duplicateButton.onClick.AddListener(() => {
@@ -104,18 +103,17 @@ public class EquipmentToolScene : MonoBehaviour {
       armorData.equipmentName = "Undefined";
 
       EquipmentDataTemplate template = Instantiate(armorTemplatePrefab, armorTemplateParent.transform);
-      template.equipmentType = EquipmentType.Armor;
-      template.nameText.text = armorData.equipmentName + "(" + armorData.armorType + ")";
-      template.indexText.text = armorData.equipmentID.ToString();
+      template.xmlToolReference = equipmentToolManager;
+      template.setData(armorData.equipmentName, armorData.equipmentID, EquipmentType.Armor, -1);
 
       template.editButton.onClick.AddListener(() => {
-         equipmentDataPanel.loadArmorData(armorData);
+         equipmentDataPanel.loadArmorData(armorData, template.xml_id);
          equipmentDataPanel.gameObject.SetActive(true);
       });
 
       template.deleteButton.onClick.AddListener(() => {
          Destroy(template.gameObject, .5f);
-         equipmentToolManager.deleteArmor(armorData);
+         equipmentToolManager.deleteArmor(template.xml_id);
       });
 
       template.duplicateButton.onClick.AddListener(() => {
@@ -137,18 +135,17 @@ public class EquipmentToolScene : MonoBehaviour {
       helmData.equipmentName = "Undefined";
 
       EquipmentDataTemplate template = Instantiate(helmTemplatePrefab, helmTemplateParent.transform);
-      template.equipmentType = EquipmentType.Helm;
-      template.nameText.text = helmData.equipmentName + "(" + helmData.helmType + ")";
-      template.indexText.text = helmData.equipmentID.ToString();
+      template.xmlToolReference = equipmentToolManager;
+      template.setData(helmData.equipmentName, helmData.equipmentID, EquipmentType.Helm, -1);
 
       template.editButton.onClick.AddListener(() => {
-         equipmentDataPanel.loadHelmData(helmData);
+         equipmentDataPanel.loadHelmData(helmData, template.xml_id);
          equipmentDataPanel.gameObject.SetActive(true);
       });
 
       template.deleteButton.onClick.AddListener(() => {
          Destroy(template.gameObject, .5f);
-         equipmentToolManager.deleteHelm(helmData);
+         equipmentToolManager.deleteHelm(template.xml_id);
       });
 
       template.duplicateButton.onClick.AddListener(() => {
@@ -165,23 +162,23 @@ public class EquipmentToolScene : MonoBehaviour {
       template.gameObject.SetActive(true);
    }
 
-   public void loadHelmData (Dictionary<Helm.Type, HelmStatData> helmStats) {
+   public void loadHelmData (List<HelmXMLContent> helmStats) {
       helmTemplateParent.gameObject.DestroyChildren();
 
       // Create a row for each weapon data element
-      foreach (HelmStatData helmData in helmStats.Values) {
+      foreach (HelmXMLContent xmlData in helmStats) {
+         HelmStatData helmData = xmlData.helmStatData;
          EquipmentDataTemplate template = Instantiate(helmTemplatePrefab, helmTemplateParent.transform);
-         template.nameText.text = helmData.equipmentName + "(" + helmData.helmType + ")";
-         template.indexText.text = helmData.equipmentID.ToString();
-
+         template.xmlToolReference = equipmentToolManager;
+         template.setData(helmData.equipmentName, helmData.equipmentID, EquipmentType.Helm, xmlData.xml_id);
          template.editButton.onClick.AddListener(() => {
-            equipmentDataPanel.loadHelmData(helmData);
+            equipmentDataPanel.loadHelmData(helmData, template.xml_id);
             equipmentDataPanel.gameObject.SetActive(true);
          });
 
          template.deleteButton.onClick.AddListener(() => {
             Destroy(template.gameObject, .5f);
-            equipmentToolManager.deleteHelm(helmData);
+            equipmentToolManager.deleteHelm(template.xml_id);
          });
 
          template.duplicateButton.onClick.AddListener(() => {
@@ -200,23 +197,24 @@ public class EquipmentToolScene : MonoBehaviour {
    }
 
 
-   public void loadArmorData (Dictionary<Armor.Type, ArmorStatData> armorStats) {
+   public void loadArmorData (List<ArmorXMLContent> armorStats) {
       armorTemplateParent.gameObject.DestroyChildren();
 
       // Create a row for each weapon data element
-      foreach (ArmorStatData armorData in armorStats.Values) {
+      foreach (ArmorXMLContent xmlData in armorStats) {
+         ArmorStatData armorData = xmlData.armorStatData;
          EquipmentDataTemplate template = Instantiate(armorTemplatePrefab, armorTemplateParent.transform);
-         template.nameText.text = armorData.equipmentName + "(" + armorData.armorType + ")";
-         template.indexText.text = armorData.equipmentID.ToString();
+         template.xmlToolReference = equipmentToolManager;
+         template.setData(armorData.equipmentName, armorData.equipmentID, EquipmentType.Armor, xmlData.xml_id);
 
          template.editButton.onClick.AddListener(() => {
-            equipmentDataPanel.loadArmorData(armorData);
+            equipmentDataPanel.loadArmorData(armorData, template.xml_id);
             equipmentDataPanel.gameObject.SetActive(true);
          });
 
          template.deleteButton.onClick.AddListener(() => {
             Destroy(template.gameObject, .5f);
-            equipmentToolManager.deleteArmor(armorData);
+            equipmentToolManager.deleteArmor(template.xml_id);
          });
 
          template.duplicateButton.onClick.AddListener(() => {
@@ -234,23 +232,24 @@ public class EquipmentToolScene : MonoBehaviour {
       }
    }
 
-   public void loadWeaponData (Dictionary<Weapon.Type, WeaponStatData> weaponStats) {
+   public void loadWeaponData (List<WeaponXMLContent> weaponStats) {
       weaponTemplateParent.gameObject.DestroyChildren();
 
       // Create a row for each weapon data element
-      foreach (WeaponStatData weaponData in weaponStats.Values) {
+      foreach (WeaponXMLContent xmlData in weaponStats) {
+         WeaponStatData weaponData = xmlData.weaponStatData;
          EquipmentDataTemplate template = Instantiate(weaponTemplatePrefab, weaponTemplateParent.transform);
-         template.nameText.text = weaponData.equipmentName + "(" + weaponData.weaponType + ")";
-         template.indexText.text = weaponData.equipmentID.ToString();
+         template.xmlToolReference = equipmentToolManager;
+         template.setData(weaponData.equipmentName, weaponData.equipmentID, EquipmentType.Weapon, xmlData.xml_id);
 
          template.editButton.onClick.AddListener(() => {
-            equipmentDataPanel.loadWeaponData(weaponData);
+            equipmentDataPanel.loadWeaponData(weaponData, template.xml_id);
             equipmentDataPanel.gameObject.SetActive(true);
          });
 
          template.deleteButton.onClick.AddListener(() => {
             Destroy(template.gameObject, .5f);
-            equipmentToolManager.deleteWeapon(weaponData);
+            equipmentToolManager.deleteWeapon(template.xml_id);
          });
 
          template.duplicateButton.onClick.AddListener(() => {

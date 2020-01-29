@@ -87,6 +87,7 @@ public class SeaMonsterDataScene : MonoBehaviour
       monsterData.seaMonsterType = SeaMonsterEntity.Type.None;
 
       SeaMonsterDataTemplate template = Instantiate(monsterTemplate, monsterTemplateParent);
+      template.xmlToolReference = toolManager;
       template.xml_id = -1;
       template.editButton.onClick.AddListener(() => {
          monsterPanel.currentXMLTemplate = template;
@@ -112,6 +113,7 @@ public class SeaMonsterDataScene : MonoBehaviour
          SeaMonsterEntityData seaMonsterData = rawData.seaMonsterData;
 
          SeaMonsterDataTemplate template = Instantiate(monsterTemplate, monsterTemplateParent);
+         template.xmlToolReference = toolManager;
          template.xml_id = rawData.xml_id;
          template.updateItemDisplay(seaMonsterData, rawData.isEnabled);
          template.editButton.onClick.AddListener(() => {
