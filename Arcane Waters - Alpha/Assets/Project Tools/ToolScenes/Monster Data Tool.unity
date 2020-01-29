@@ -9727,7 +9727,7 @@ PrefabInstance:
     - target: {fileID: 8544860627181754829, guid: d61d2e1de5c26734a8ad43780c86627d,
         type: 3}
       propertyPath: m_RootOrder
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 8544860627181754829, guid: d61d2e1de5c26734a8ad43780c86627d,
         type: 3}
@@ -10602,7 +10602,7 @@ GameObject:
   - component: {fileID: 310380829}
   - component: {fileID: 310380830}
   m_Layer: 5
-  m_Name: Ingredients
+  m_Name: Loots
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14227,6 +14227,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: RefreshButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 5569987059330870290, guid: e286d9b0f805f9d4f89a9fd32108464a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5569987059330870291, guid: e286d9b0f805f9d4f89a9fd32108464a,
         type: 3}
@@ -37815,11 +37820,11 @@ MonoBehaviour:
   userNameData: []
   userIdData: []
   editorToolType: 5
+  craftingDataList: []
   monsterToolScreen: {fileID: 631334679}
   basicAbilityList: []
   attackAbilityList: []
   buffAbilityList: []
-  craftingDataList: []
 --- !u!1 &1217943107 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 702800922526139589, guid: cf247d87f846fb348af5e917ad74d094,
@@ -49657,7 +49662,7 @@ PrefabInstance:
     - target: {fileID: 1591738033477244674, guid: 4256ceeb4e0f48f4eb80d747a95ee343,
         type: 3}
       propertyPath: m_RootOrder
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1591738033477244674, guid: 4256ceeb4e0f48f4eb80d747a95ee343,
         type: 3}
@@ -56674,16 +56679,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 240352c44865488449bd12b831ebca5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  changeItemTypeButton: {fileID: 1450924615}
-  changeItemCategoryButton: {fileID: 1608569889}
-  itemCount: {fileID: 0}
-  itemCategoryString: {fileID: 1395023456}
-  itemTypeString: {fileID: 548692654}
+  itemCategory: {fileID: 435694547}
+  itemTypeId: {fileID: 881049725}
+  itemCategoryName: {fileID: 1395023456}
+  itemTypeName: {fileID: 548692654}
+  itemIcon: {fileID: 2137876722}
+  updateCategoryButton: {fileID: 1608569889}
+  updateTypeButton: {fileID: 1450924615}
   deleteButton: {fileID: 1795077641}
+  itemCount: {fileID: 0}
   monsterPanel: {fileID: 197409595}
   currentCategory: 0
   currentType: 0
-  itemIcon: {fileID: 2137876722}
   chanceRatio: {fileID: 0}
   percentageField: {fileID: 0}
   percentageText: {fileID: 0}
@@ -58679,6 +58686,7 @@ MonoBehaviour:
   userNameData: []
   userIdData: []
   editorToolType: 1
+  craftingDataList: []
   abilityScene: {fileID: 0}
   monsterAbilityManager: {fileID: 1199783814}
 --- !u!1 &1973472824 stripped
@@ -63952,7 +63960,7 @@ GameObject:
   - component: {fileID: 438023456294276511}
   - component: {fileID: 438023456294276510}
   m_Layer: 5
-  m_Name: Gift Row
+  m_Name: Loot Row
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -67523,8 +67531,8 @@ RectTransform:
   - {fileID: 2737799957934783306}
   - {fileID: 1003417781303049096}
   - {fileID: 766384573}
-  - {fileID: 292477665}
   - {fileID: 1657365763}
+  - {fileID: 292477665}
   - {fileID: 1875009335}
   m_Father: {fileID: 766002985}
   m_RootOrder: 0
@@ -68122,16 +68130,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 240352c44865488449bd12b831ebca5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  changeItemTypeButton: {fileID: 1796890383}
-  changeItemCategoryButton: {fileID: 298093153}
-  itemCount: {fileID: 224079492}
-  itemCategoryString: {fileID: 1412639719}
-  itemTypeString: {fileID: 226989636}
+  itemCategory: {fileID: 1080557125}
+  itemTypeId: {fileID: 1443506935}
+  itemCategoryName: {fileID: 1412639719}
+  itemTypeName: {fileID: 226989636}
+  itemIcon: {fileID: 1597843840}
+  updateCategoryButton: {fileID: 298093153}
+  updateTypeButton: {fileID: 1796890383}
   deleteButton: {fileID: 4667181300162031991}
+  itemCount: {fileID: 224079492}
   monsterPanel: {fileID: 197409595}
   currentCategory: 0
   currentType: 0
-  itemIcon: {fileID: 1597843840}
   chanceRatio: {fileID: 938944506}
   percentageField: {fileID: 1207107}
   percentageText: {fileID: 254342381}

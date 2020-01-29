@@ -4584,7 +4584,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &195406531
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11564,6 +11564,7 @@ MonoBehaviour:
   userNameData: []
   userIdData: []
   editorToolType: 6
+  craftingDataList: []
   npcSelectionScreen: {fileID: 631334683}
   openMainTool: {fileID: 330403195}
 --- !u!1 &1222638118
@@ -23518,14 +23519,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemCategory: {fileID: 2914716467613927149}
   itemTypeId: {fileID: 495167225646018287}
-  count: {fileID: 1183168012}
   itemCategoryName: {fileID: 3055660231526836922}
   itemTypeName: {fileID: 3601631658259811787}
+  itemIcon: {fileID: 3773293470551714789}
   updateCategoryButton: {fileID: 7713259374094933900}
   updateTypeButton: {fileID: 1842622706664967764}
-  updateButton: {fileID: 3403632276593247705}
   deleteButton: {fileID: 4667181300162031991}
-  itemIcon: {fileID: 3773293470551714789}
+  count: {fileID: 1183168012}
+  updateButton: {fileID: 3403632276593247705}
 --- !u!1001 &6672609060479047190
 PrefabInstance:
   m_ObjectHideFlags: 0

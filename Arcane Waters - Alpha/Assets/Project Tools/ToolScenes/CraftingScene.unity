@@ -1125,7 +1125,7 @@ PrefabInstance:
     - target: {fileID: 1591738033477244674, guid: 4256ceeb4e0f48f4eb80d747a95ee343,
         type: 3}
       propertyPath: m_RootOrder
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1591738033477244674, guid: 4256ceeb4e0f48f4eb80d747a95ee343,
         type: 3}
@@ -1254,7 +1254,7 @@ PrefabInstance:
     - target: {fileID: 8544860627181754829, guid: d61d2e1de5c26734a8ad43780c86627d,
         type: 3}
       propertyPath: m_RootOrder
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 8544860627181754829, guid: d61d2e1de5c26734a8ad43780c86627d,
         type: 3}
@@ -4722,8 +4722,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60c2fbb04ac71b344b9623ab913034c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  userNameData: []
   userIdData: []
   editorToolType: 3
+  craftingDataList: []
   craftingToolScreen: {fileID: 631334683}
 --- !u!114 &1218528435 stripped
 MonoBehaviour:
@@ -5287,6 +5289,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: RefreshButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 5569987059330870290, guid: e286d9b0f805f9d4f89a9fd32108464a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5569987059330870291, guid: e286d9b0f805f9d4f89a9fd32108464a,
         type: 3}
@@ -8425,8 +8432,8 @@ MonoBehaviour:
   indexText: {fileID: 6477348327066294730}
   editButton: {fileID: 577788791}
   deleteButton: {fileID: 1242959262}
-  duplicateButton: {fileID: 585881297}
   itemIcon: {fileID: 665699471}
+  duplicateButton: {fileID: 585881297}
 --- !u!114 &1697649309253546826
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8936,8 +8943,8 @@ RectTransform:
   - {fileID: 2737799957934783306}
   - {fileID: 1003417781303049096}
   - {fileID: 585881295}
-  - {fileID: 1242959260}
   - {fileID: 577788789}
+  - {fileID: 1242959260}
   - {fileID: 358358938}
   m_Father: {fileID: 766002985}
   m_RootOrder: 0
