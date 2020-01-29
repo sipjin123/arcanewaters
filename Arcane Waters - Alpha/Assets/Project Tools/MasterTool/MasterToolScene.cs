@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.SceneManagement;
-using MySql.Data.MySqlClient;
 using System;
 
 public class MasterToolScene : MonoBehaviour {

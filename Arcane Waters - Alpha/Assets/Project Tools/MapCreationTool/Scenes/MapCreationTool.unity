@@ -5057,7 +5057,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 627526590}
   m_Enabled: 1
-  m_Alpha: 0
+  m_Alpha: 1
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
@@ -8528,6 +8528,146 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   imageDataList:
+  - imageName: ability_air_blowback
+    imagePath: Assets/Sprites/Icons/Skills/ability_air_blowback.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_air_blowback
+    texture2D: {fileID: 2800000, guid: faaf2984c8d925240b6c6fdd88335f5a, type: 3}
+    sprite: {fileID: 21300000, guid: faaf2984c8d925240b6c6fdd88335f5a, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: faaf2984c8d925240b6c6fdd88335f5a, type: 3}
+  - imageName: ability_air_gale_force
+    imagePath: Assets/Sprites/Icons/Skills/ability_air_gale_force.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_air_gale_force
+    texture2D: {fileID: 2800000, guid: 5c399ec9bbae6d5479a72d8a9298883c, type: 3}
+    sprite: {fileID: 21300000, guid: 5c399ec9bbae6d5479a72d8a9298883c, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 5c399ec9bbae6d5479a72d8a9298883c, type: 3}
+  - imageName: ability_air_levitate
+    imagePath: Assets/Sprites/Icons/Skills/ability_air_levitate.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_air_levitate
+    texture2D: {fileID: 2800000, guid: e920cbd5c89bda241a055f4ea4447a3a, type: 3}
+    sprite: {fileID: 21300000, guid: e920cbd5c89bda241a055f4ea4447a3a, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: e920cbd5c89bda241a055f4ea4447a3a, type: 3}
+  - imageName: ability_air_pull
+    imagePath: Assets/Sprites/Icons/Skills/ability_air_pull.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_air_pull
+    texture2D: {fileID: 2800000, guid: 1d77e8083624c384d9df12fa2ac2d2a6, type: 3}
+    sprite: {fileID: 21300000, guid: 1d77e8083624c384d9df12fa2ac2d2a6, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 1d77e8083624c384d9df12fa2ac2d2a6, type: 3}
+  - imageName: ability_air_whirlwind
+    imagePath: Assets/Sprites/Icons/Skills/ability_air_whirlwind.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_air_whirlwind
+    texture2D: {fileID: 2800000, guid: 1e1d861b0a5e9e54eb72da9de0665f95, type: 3}
+    sprite: {fileID: 21300000, guid: 1e1d861b0a5e9e54eb72da9de0665f95, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 1e1d861b0a5e9e54eb72da9de0665f95, type: 3}
+  - imageName: ability_earth_rock_hammer
+    imagePath: Assets/Sprites/Icons/Skills/ability_earth_rock_hammer.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_earth_rock_hammer
+    texture2D: {fileID: 2800000, guid: bc7f32508c3240f45accb8d170e91f3d, type: 3}
+    sprite: {fileID: 21300000, guid: bc7f32508c3240f45accb8d170e91f3d, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: bc7f32508c3240f45accb8d170e91f3d, type: 3}
+  - imageName: ability_earth_rolling_stone
+    imagePath: Assets/Sprites/Icons/Skills/ability_earth_rolling_stone.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_earth_rolling_stone
+    texture2D: {fileID: 2800000, guid: 1e4ccd0cc4c9221439df95161a55b8d8, type: 3}
+    sprite: {fileID: 21300000, guid: 1e4ccd0cc4c9221439df95161a55b8d8, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 1e4ccd0cc4c9221439df95161a55b8d8, type: 3}
+  - imageName: ability_earth_seismic_shake
+    imagePath: Assets/Sprites/Icons/Skills/ability_earth_seismic_shake.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_earth_seismic_shake
+    texture2D: {fileID: 2800000, guid: c4a769e1aec1f004fbe6a4a71aa99976, type: 3}
+    sprite: {fileID: 21300000, guid: c4a769e1aec1f004fbe6a4a71aa99976, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: c4a769e1aec1f004fbe6a4a71aa99976, type: 3}
+  - imageName: ability_earth_tendrils
+    imagePath: Assets/Sprites/Icons/Skills/ability_earth_tendrils.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_earth_tendrils
+    texture2D: {fileID: 2800000, guid: 5193e8b6f10aede468f2316204f3e071, type: 3}
+    sprite: {fileID: 21300000, guid: 5193e8b6f10aede468f2316204f3e071, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 5193e8b6f10aede468f2316204f3e071, type: 3}
+  - imageName: ability_earth_thorn_whip
+    imagePath: Assets/Sprites/Icons/Skills/ability_earth_thorn_whip.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_earth_thorn_whip
+    texture2D: {fileID: 2800000, guid: 8682d9862285ab8489dc56fdd161f5f8, type: 3}
+    sprite: {fileID: 21300000, guid: 8682d9862285ab8489dc56fdd161f5f8, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 8682d9862285ab8489dc56fdd161f5f8, type: 3}
+  - imageName: ability_fire_burning_hands
+    imagePath: Assets/Sprites/Icons/Skills/ability_fire_burning_hands.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_fire_burning_hands
+    texture2D: {fileID: 2800000, guid: 6caeef90c120373409074475d05d848e, type: 3}
+    sprite: {fileID: 21300000, guid: 6caeef90c120373409074475d05d848e, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 6caeef90c120373409074475d05d848e, type: 3}
+  - imageName: ability_fire_fireball
+    imagePath: Assets/Sprites/Icons/Skills/ability_fire_fireball.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_fire_fireball
+    texture2D: {fileID: 2800000, guid: 92528af7413521746b339743d4bc1162, type: 3}
+    sprite: {fileID: 21300000, guid: 92528af7413521746b339743d4bc1162, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 92528af7413521746b339743d4bc1162, type: 3}
+  - imageName: ability_fire_firespout
+    imagePath: Assets/Sprites/Icons/Skills/ability_fire_firespout.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_fire_firespout
+    texture2D: {fileID: 2800000, guid: e3a45eb8360aa30419eb54c4e6246ef4, type: 3}
+    sprite: {fileID: 21300000, guid: e3a45eb8360aa30419eb54c4e6246ef4, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: e3a45eb8360aa30419eb54c4e6246ef4, type: 3}
+  - imageName: ability_fire_flame_darts
+    imagePath: Assets/Sprites/Icons/Skills/ability_fire_flame_darts.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_fire_flame_darts
+    texture2D: {fileID: 2800000, guid: 4119ee35a0d70cc45ad23fcce255e670, type: 3}
+    sprite: {fileID: 21300000, guid: 4119ee35a0d70cc45ad23fcce255e670, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 4119ee35a0d70cc45ad23fcce255e670, type: 3}
+  - imageName: ability_fire_phoenix
+    imagePath: Assets/Sprites/Icons/Skills/ability_fire_phoenix.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_fire_phoenix
+    texture2D: {fileID: 2800000, guid: 8c278f91bd9a1ec4aad467b6f67fe188, type: 3}
+    sprite: {fileID: 21300000, guid: 8c278f91bd9a1ec4aad467b6f67fe188, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 8c278f91bd9a1ec4aad467b6f67fe188, type: 3}
+  - imageName: ability_physical_body_slam
+    imagePath: Assets/Sprites/Icons/Skills/ability_physical_body_slam.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_physical_body_slam
+    texture2D: {fileID: 2800000, guid: fb4b254d365745049b6cef2318fadace, type: 3}
+    sprite: {fileID: 21300000, guid: fb4b254d365745049b6cef2318fadace, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: fb4b254d365745049b6cef2318fadace, type: 3}
+  - imageName: ability_physical_bonebreaker
+    imagePath: Assets/Sprites/Icons/Skills/ability_physical_bonebreaker.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_physical_bonebreaker
+    texture2D: {fileID: 2800000, guid: 747c40389f66e4e468438f87ba34fa88, type: 3}
+    sprite: {fileID: 21300000, guid: 747c40389f66e4e468438f87ba34fa88, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 747c40389f66e4e468438f87ba34fa88, type: 3}
+  - imageName: ability_physical_headlock
+    imagePath: Assets/Sprites/Icons/Skills/ability_physical_headlock.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_physical_headlock
+    texture2D: {fileID: 2800000, guid: 309b36b9f338cdd40ba9e11157d6a09b, type: 3}
+    sprite: {fileID: 21300000, guid: 309b36b9f338cdd40ba9e11157d6a09b, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 309b36b9f338cdd40ba9e11157d6a09b, type: 3}
+  - imageName: ability_physical_right_hook
+    imagePath: Assets/Sprites/Icons/Skills/ability_physical_right_hook.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_physical_right_hook
+    texture2D: {fileID: 2800000, guid: 14365b40f783644429d91703b07cf6e1, type: 3}
+    sprite: {fileID: 21300000, guid: 14365b40f783644429d91703b07cf6e1, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 14365b40f783644429d91703b07cf6e1, type: 3}
+  - imageName: ability_physical_roundhouse
+    imagePath: Assets/Sprites/Icons/Skills/ability_physical_roundhouse.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_physical_roundhouse
+    texture2D: {fileID: 2800000, guid: 7cef0422e14b2664295835dbb94e20ea, type: 3}
+    sprite: {fileID: 21300000, guid: 7cef0422e14b2664295835dbb94e20ea, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 7cef0422e14b2664295835dbb94e20ea, type: 3}
   - imageName: ability_points_tooltip
     imagePath: Assets/Sprites/GUI/Abilities/ability_points_tooltip.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Abilities/ability_points_tooltip
@@ -8542,6 +8682,41 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 3454668f301bed0408862c606678897d, type: 3}
     sprites:
     - {fileID: 21300000, guid: 3454668f301bed0408862c606678897d, type: 3}
+  - imageName: ability_water_blizzard
+    imagePath: Assets/Sprites/Icons/Skills/ability_water_blizzard.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_water_blizzard
+    texture2D: {fileID: 2800000, guid: 0f5f9b341344d6943ad26c0f85920d05, type: 3}
+    sprite: {fileID: 21300000, guid: 0f5f9b341344d6943ad26c0f85920d05, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 0f5f9b341344d6943ad26c0f85920d05, type: 3}
+  - imageName: ability_water_fog
+    imagePath: Assets/Sprites/Icons/Skills/ability_water_fog.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_water_fog
+    texture2D: {fileID: 2800000, guid: a1e2560583b5d024095976f1f792036e, type: 3}
+    sprite: {fileID: 21300000, guid: a1e2560583b5d024095976f1f792036e, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: a1e2560583b5d024095976f1f792036e, type: 3}
+  - imageName: ability_water_ice_knife
+    imagePath: Assets/Sprites/Icons/Skills/ability_water_ice_knife.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_water_ice_knife
+    texture2D: {fileID: 2800000, guid: b0920eabd547ed140a3fc54e632e71a0, type: 3}
+    sprite: {fileID: 21300000, guid: b0920eabd547ed140a3fc54e632e71a0, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: b0920eabd547ed140a3fc54e632e71a0, type: 3}
+  - imageName: ability_water_storm
+    imagePath: Assets/Sprites/Icons/Skills/ability_water_storm.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_water_storm
+    texture2D: {fileID: 2800000, guid: 5d892deedd54a5344bbb7130552f0725, type: 3}
+    sprite: {fileID: 21300000, guid: 5d892deedd54a5344bbb7130552f0725, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 5d892deedd54a5344bbb7130552f0725, type: 3}
+  - imageName: ability_water_tsunami
+    imagePath: Assets/Sprites/Icons/Skills/ability_water_tsunami.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_water_tsunami
+    texture2D: {fileID: 2800000, guid: 81cdfb4f9bc6ce045a06c1f60559d6d2, type: 3}
+    sprite: {fileID: 21300000, guid: 81cdfb4f9bc6ce045a06c1f60559d6d2, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 81cdfb4f9bc6ce045a06c1f60559d6d2, type: 3}
   - imageName: accept_button
     imagePath: Assets/Sprites/GUI/Friend List/accept_button.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Friend List/accept_button
@@ -36333,11 +36508,11 @@ RectTransform:
   m_Father: {fileID: 1826076618862428668}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 215, y: 0}
-  m_SizeDelta: {x: 120, y: 50}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchoredPosition: {x: 570, y: 0}
+  m_SizeDelta: {x: 80, y: 50}
+  m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &569729627195748541
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -36443,11 +36618,11 @@ RectTransform:
   m_Father: {fileID: 1826076618862428668}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 340, y: 0}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchoredPosition: {x: 650, y: 0}
   m_SizeDelta: {x: 130, y: 50}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0, y: 0.5}
 --- !u!224 &2409661234007974239
 RectTransform:
   m_ObjectHideFlags: 0
@@ -36464,7 +36639,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 10, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 260, y: 50}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!224 &3005951508448600239
@@ -36481,11 +36656,11 @@ RectTransform:
   m_Father: {fileID: 1826076618862428668}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -40, y: 0}
-  m_SizeDelta: {x: 140, y: 50}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchoredPosition: {x: 380, y: 0}
+  m_SizeDelta: {x: 110, y: 50}
+  m_Pivot: {x: 0, y: 0.5}
 --- !u!1 &3016264824439682230
 GameObject:
   m_ObjectHideFlags: 0
@@ -36536,11 +36711,11 @@ RectTransform:
   m_Father: {fileID: 1826076618862428668}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 90, y: 0}
-  m_SizeDelta: {x: 120, y: 50}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchoredPosition: {x: 490, y: 0}
+  m_SizeDelta: {x: 80, y: 50}
+  m_Pivot: {x: 0, y: 0.5}
 --- !u!1 &3604178088795545074
 GameObject:
   m_ObjectHideFlags: 0
@@ -36778,7 +36953,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Live version
+  m_Text: 'Live
+
+    version'
 --- !u!222 &7169633132350977872
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -36801,11 +36978,11 @@ RectTransform:
   m_Father: {fileID: 1826076618862428668}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -180, y: 0}
-  m_SizeDelta: {x: 140, y: 50}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchoredPosition: {x: 270, y: 0}
+  m_SizeDelta: {x: 110, y: 50}
+  m_Pivot: {x: 0, y: 0.5}
 --- !u!1 &8808848771195569330
 GameObject:
   m_ObjectHideFlags: 0

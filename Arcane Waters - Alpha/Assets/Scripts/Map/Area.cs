@@ -75,6 +75,9 @@ public class Area : MonoBehaviour
          // Otherwise, the town area is the area itself
          townAreaKey = areaKey;
       }
+
+      // Store it in the Area Manager
+      AreaManager.self.storeArea(this);
    }
 
    public static bool isHouse (string areaKey) {

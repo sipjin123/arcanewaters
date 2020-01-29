@@ -31,7 +31,6 @@ public class EnemyManager : MonoBehaviour {
    public void spawnEnemiesOnServerForInstance (Instance instance) {
       // If we don't have any spawners defined for this Area, then we're done
       if (!_spawners.ContainsKey(instance.areaKey)) {
-         D.log("No Enemy Spawners defined for Area Key: " + instance.areaKey);
          return;
       }
 

@@ -62,7 +62,7 @@ namespace MapCreationTool
                   secondTitleText.text = $"Map count - {maps.Count}";
                   foreach (MapDTO map in maps) {
                      MapListEntry entry = Instantiate(entryPref, entryParent);
-                     entry.set(map, openVersionList, () => openMap(map.name));
+                     entry.set(map, openVersionList, () => deleteMap(map, true), () => openMap(map.name));
                      entries.Add(entry);
                   }
                }
@@ -135,7 +135,7 @@ namespace MapCreationTool
                   secondTitleText.text = $"Map {name} has {maps.Count} versions";
                   foreach (MapDTO map in maps) {
                      MapListEntry entry = Instantiate(versionListEntry, entryParent);
-                     entry.set(map, (n) => publishVersion(map), () => openMap(map.name, map.version));
+                     entry.set(map, (n) => publishVersion(map), () => deleteMap(map, false), () => openMap(map.name, map.version));
                      if (map.liveVersion != null && map.liveVersion.Value == map.version) {
                         entry.setAsLiveMap();
                      }
@@ -183,6 +183,54 @@ namespace MapCreationTool
                   } catch (Exception ex) {
                      loadingText.text = "";
                      errorText.text = ex.Message;
+                  }
+               }
+            });
+         });
+      }
+
+      public void deleteMap (MapDTO map, bool allVersions) {
+         if (!MasterToolAccountManager.canAlterData()) {
+            UI.errorDialog.displayUnauthorized("Your account type has no permissions to alter data");
+            return;
+         }
+
+         if (MasterToolAccountManager.PERMISSION_LEVEL != AdminManager.Type.Admin && map.creatorID != MasterToolAccountManager.self.currentAccountID) {
+            UI.errorDialog.displayUnauthorized("You are not the creator of this map");
+            return;
+         }
+
+         string dialogMessage = allVersions
+            ? $"Are you sure you want to delete map {map.name} <b>completely</b>? All versions will be <b>permanently</b> lost."
+            : $"Are you sure you want to delete map {map.name} version {map.version}?";
+
+         UI.yesNoDialog.display("Deleting a map", dialogMessage, () => deleteMapConfirm(map, allVersions), null);
+      }
+
+      public void deleteMapConfirm (MapDTO map, bool allVersions) {
+         clearEverything();
+         setLoadingText();
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            string error = null;
+            try {
+               if (allVersions) {
+                  DB_Main.deleteMapData(map.name);
+               } else {
+                  DB_Main.deleteMapDataVersion(map.name, map.version);
+               }
+            } catch (Exception ex) {
+               error = ex.Message;
+            }
+
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               if (error != null) {
+                  loadingText.text = "";
+                  errorText.text = error;
+               } else {
+                  if (allVersions) {
+                     open();
+                  } else {
+                     openVersionList(map.name);
                   }
                }
             });

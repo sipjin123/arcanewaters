@@ -135,6 +135,14 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
+   public static void deleteMapData (string name) {
+
+   }
+
+   public static void deleteMapDataVersion (string name, int version) {
+
+   }
+
    public static void updateShopXML (string rawData, string shopName) {
 
    }

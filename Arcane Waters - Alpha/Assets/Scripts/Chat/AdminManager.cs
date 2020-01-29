@@ -598,7 +598,7 @@ public class AdminManager : NetworkBehaviour {
          return;
       }
 
-      _player.spawnInNewMap(spawn.AreaKey, spawn, Direction.South);
+      _player.spawnInNewMap(areaKey, spawn, Direction.South);
    }
 
    [Command]

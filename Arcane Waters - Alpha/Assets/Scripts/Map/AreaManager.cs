@@ -30,12 +30,7 @@ public class AreaManager : MonoBehaviour
    void Start () {
       // Store references to all of our areas
       foreach (Area area in FindObjectsOfType<Area>()) {
-         _areas.Add(area.areaKey, area);
-
-         // Store all of the Enemy Spawners in each area
-         foreach (Enemy_Spawner spawner in area.GetComponentsInChildren<Enemy_Spawner>()) {
-            EnemyManager.self.storeSpawner(spawner, area.areaKey);
-         }
+         storeArea(area);
       }
 
       // Routinely check if we can switch off the colliders for any of the areas
@@ -55,6 +50,19 @@ public class AreaManager : MonoBehaviour
 
    public List<string> getAreaKeys () {
       return new List<string>(_areas.Keys);
+   }
+
+   public void storeArea (Area area) {
+      if (area == null || _areas.ContainsKey(area.areaKey)) {
+         return;
+      }
+
+      _areas.Add(area.areaKey, area);
+
+      // Store all of the Enemy Spawners in each area
+      foreach (Enemy_Spawner spawner in area.GetComponentsInChildren<Enemy_Spawner>()) {
+         EnemyManager.self.storeSpawner(spawner, area.areaKey);
+      }
    }
 
    protected void toggleAreaCollidersForPerformanceImprovement () {

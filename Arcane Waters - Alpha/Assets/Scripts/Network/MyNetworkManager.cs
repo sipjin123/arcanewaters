@@ -6,6 +6,7 @@ using Mirror;
 using System.Xml.Serialization;
 using System.Text;
 using System.Xml;
+using MapCreationTool;
 
 public class MyNetworkManager : NetworkManager {
    #region Public Variables
@@ -120,6 +121,8 @@ public class MyNetworkManager : NetworkManager {
    #region Server Functions
 
    public override void OnStartServer () {
+      D.debug("Server started on port: " + MyNetworkManager.getCurrentPort());
+
       // We have to register handlers to be able to send and receive messages
       MessageManager.registerServerHandlers();
 
@@ -150,6 +153,9 @@ public class MyNetworkManager : NetworkManager {
 
       // Regularly updates the required game version
       GameVersionManager.self.scheduleMinimumGameVersionUpdate();
+
+      // Instantiate all of the live maps created with the Map Editor tool
+      MapManager.self.spawnLiveMaps();
 
       // Make note that we started up a server
       wasServerStarted = true;

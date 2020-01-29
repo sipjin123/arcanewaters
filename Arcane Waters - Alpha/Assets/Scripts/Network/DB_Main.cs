@@ -994,6 +994,55 @@ public class DB_Main : DB_MainStub
       }
    }
 
+   public static new void deleteMapData (string name) {
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = conn.CreateCommand()) {
+         conn.Open();
+         MySqlTransaction transaction = conn.BeginTransaction();
+         cmd.Transaction = transaction;
+         cmd.Connection = conn;
+
+         try {
+            cmd.CommandText = "DELETE FROM live_maps WHERE name = @name;";
+            cmd.Parameters.AddWithValue("@name", name);
+            cmd.ExecuteNonQuery();
+
+            cmd.CommandText = "DELETE FROM map_data WHERE name = @name;";
+            cmd.ExecuteNonQuery();
+
+            transaction.Commit();
+         } catch (Exception e) {
+            transaction.Rollback();
+            throw e;
+         }
+      }
+   }
+
+   public static new void deleteMapDataVersion (string name, int version) {
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = conn.CreateCommand()) {
+         conn.Open();
+         MySqlTransaction transaction = conn.BeginTransaction();
+         cmd.Transaction = transaction;
+         cmd.Connection = conn;
+
+         try {
+            cmd.CommandText = "DELETE FROM live_maps WHERE name = @name AND version = @version;";
+            cmd.Parameters.AddWithValue("@name", name);
+            cmd.Parameters.AddWithValue("@version", version);
+            cmd.ExecuteNonQuery();
+
+            cmd.CommandText = "DELETE FROM map_data WHERE name = @name AND version = @version;";
+            cmd.ExecuteNonQuery();
+
+            transaction.Commit();
+         } catch (Exception e) {
+            transaction.Rollback();
+            throw e;
+         }
+      }
+   }
+
    #endregion
 
    #region Shop XML Data

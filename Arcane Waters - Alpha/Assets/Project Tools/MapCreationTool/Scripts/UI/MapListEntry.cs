@@ -20,8 +20,10 @@ namespace MapCreationTool
       private Text creatorText = null;
       [SerializeField]
       private Button button = null;
+      [SerializeField]
+      private Button deleteButton = null;
 
-      public void set (MapDTO map, Action<string> onButtonClick, Action openMap) {
+      public void set (MapDTO map, Action<string> onButtonClick, Action onDelete, Action openMap) {
          nameText.text = map.name;
          createdAtText.text = map.createdAt.ToLocalTime().ToString();
          updatedAtText.text = map.updatedAt.ToLocalTime().ToString();
@@ -31,6 +33,9 @@ namespace MapCreationTool
 
          button.onClick.RemoveAllListeners();
          button.onClick.AddListener(() => onButtonClick(map.name));
+
+         deleteButton.onClick.RemoveAllListeners();
+         deleteButton.onClick.AddListener(() => onDelete());
 
          Button btn = GetComponent<Button>();
          btn.onClick.RemoveAllListeners();

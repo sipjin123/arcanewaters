@@ -4,7 +4,10 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System;
+
+#if IS_SERVER_BUILD
 using MySql.Data.MySqlClient;
+#endif
 
 public class EditorSQLManager
 {
@@ -89,10 +92,14 @@ public class SQLEntryNameClass
 
    public SQLEntryNameClass () { }
 
+#if IS_SERVER_BUILD
+
    public SQLEntryNameClass (MySqlDataReader dataReader) {
       this.dataName = DataUtil.getString(dataReader, "xml_name");
       this.ownerID = DataUtil.getInt(dataReader, "creator_userID");
    }
+
+#endif
 }
 
 [Serializable]
@@ -104,10 +111,14 @@ public class SQLEntryIDClass
 
    public SQLEntryIDClass () { }
 
+#if IS_SERVER_BUILD
+
    public SQLEntryIDClass (MySqlDataReader dataReader) {
       this.dataID = DataUtil.getInt(dataReader, "xml_id");
       this.ownerID = DataUtil.getInt(dataReader, "creator_userID");
    }
+
+#endif
 }
 
 [Serializable]
