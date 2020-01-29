@@ -20,41 +20,11 @@ public class SeaMonsterToolManager : XmlDataToolManager
    // Holds the path of the folder
    public const string FOLDER_PATH = "SeaMonsterStats";
 
-   // Self
-   public static SeaMonsterToolManager self;
-
-   // Crafting Data to be rewarded
-   public List<CraftableItemRequirements> craftingDataList = new List<CraftableItemRequirements>();
-
-   public class SeaMonsterXMLContent
-   {
-      public int xml_id;
-      public SeaMonsterEntityData seaMonsterData;
-      public bool isEnabled;
-   }
-
    #endregion
 
    private void Awake () {
       self = this;
       fetchRecipe();
-   }
-
-   private void fetchRecipe () {
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<string> rawXMLData = DB_Main.getCraftingXML();
-         userNameData = DB_Main.getSQLDataByName(EditorSQLManager.EditorToolType.Crafting);
-
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            foreach (string rawText in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(rawText);
-               CraftableItemRequirements craftingData = Util.xmlLoad<CraftableItemRequirements>(newTextAsset);
-
-               // Save the Crafting data in the memory cache
-               craftingDataList.Add(craftingData);
-            }
-         });
-      });
    }
 
    private void Start () {
@@ -63,7 +33,7 @@ public class SeaMonsterToolManager : XmlDataToolManager
 
    public void loadAllDataFiles () {
       XmlLoadingPanel.self.startLoading();
-      monsterDataList = new List<SeaMonsterXMLContent>();
+      _monsterDataList = new List<SeaMonsterXMLContent>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<XMLPair> rawXMLData = DB_Main.getSeaMonsterXML();
@@ -75,16 +45,16 @@ public class SeaMonsterToolManager : XmlDataToolManager
                SeaMonsterEntityData newSeaData = Util.xmlLoad<SeaMonsterEntityData>(newTextAsset);
 
                // Save the Monster data in the memory cache
-               if (!monsterDataList.Exists(_=>_.xml_id == xmlPair.xml_id)) {
+               if (!_monsterDataList.Exists(_=>_.xml_id == xmlPair.xml_id)) {
                   SeaMonsterXMLContent xmlContent = new SeaMonsterXMLContent { 
                      xml_id = xmlPair.xml_id,
                      isEnabled = xmlPair.is_enabled,
                      seaMonsterData = newSeaData
                   };
-                  monsterDataList.Add(xmlContent);
+                  _monsterDataList.Add(xmlContent);
                }
             }
-            monsterToolScreen.updatePanelWithData(monsterDataList);
+            monsterToolScreen.updatePanelWithData(_monsterDataList);
             XmlLoadingPanel.self.finishLoading();
          });
       });
@@ -138,7 +108,7 @@ public class SeaMonsterToolManager : XmlDataToolManager
    #region Private Variables
 
    // Cached sea monster list
-   [SerializeField] private List<SeaMonsterXMLContent> monsterDataList = new List<SeaMonsterXMLContent>();
+   [SerializeField] private List<SeaMonsterXMLContent> _monsterDataList = new List<SeaMonsterXMLContent>();
 
    #endregion
 }

@@ -17,9 +17,6 @@ public class CraftingToolManager : XmlDataToolManager {
    // Holds the path of the folder
    public const string FOLDER_PATH = "Crafting";
 
-   // Self
-   public static CraftingToolManager self;
-
    #endregion
 
    private void Awake () {
@@ -31,7 +28,7 @@ public class CraftingToolManager : XmlDataToolManager {
    }
 
    public void loadAllDataFiles () {
-      craftingDataList = new Dictionary<string, CraftableItemRequirements>();
+      _craftingDataList = new Dictionary<string, CraftableItemRequirements>();
       XmlLoadingPanel.self.startLoading();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -45,14 +42,14 @@ public class CraftingToolManager : XmlDataToolManager {
                string craftingID = craftingData.resultItem.category == Item.Category.None ? "Undefined" : Util.getItemName(craftingData.resultItem.category, craftingData.resultItem.itemTypeId);
 
                // Save the Crafting data in the memory cache
-               if (!craftingDataList.ContainsKey(craftingID)) {
-                  craftingDataList.Add(craftingID, craftingData);
+               if (!_craftingDataList.ContainsKey(craftingID)) {
+                  _craftingDataList.Add(craftingID, craftingData);
                } else {
                   craftingID += "_copy";
-                  craftingDataList.Add(craftingID, craftingData);
+                  _craftingDataList.Add(craftingID, craftingData);
                }
             }
-            craftingToolScreen.updatePanelWithCraftingIngredients(craftingDataList);
+            craftingToolScreen.updatePanelWithCraftingIngredients(_craftingDataList);
             XmlLoadingPanel.self.finishLoading();
          });
       });
@@ -71,7 +68,7 @@ public class CraftingToolManager : XmlDataToolManager {
    }
 
    public bool ifExists (string nameID) {
-      return craftingDataList.ContainsKey(nameID);
+      return _craftingDataList.ContainsKey(nameID);
    }
 
    public void saveDataToFile (CraftableItemRequirements data, bool deleteBlankData) {
@@ -99,7 +96,8 @@ public class CraftingToolManager : XmlDataToolManager {
 
    #region Private Variables
 
-   private Dictionary<string, CraftableItemRequirements> craftingDataList = new Dictionary<string, CraftableItemRequirements>();
+   // Cache for craftable items data
+   private Dictionary<string, CraftableItemRequirements> _craftingDataList = new Dictionary<string, CraftableItemRequirements>();
 
    #endregion
 }

@@ -22,16 +22,6 @@ public class ShipDataToolManager : XmlDataToolManager {
    // List of abilities
    public List<string> shipSkillList = new List<string>();
 
-   // Self
-   public static ShipDataToolManager self;
-
-   public class ShipXMLContent
-   {
-      public int xml_id;
-      public ShipData shipData;
-      public bool isEnabled;
-   }
-
    #endregion
 
    private void Awake () {

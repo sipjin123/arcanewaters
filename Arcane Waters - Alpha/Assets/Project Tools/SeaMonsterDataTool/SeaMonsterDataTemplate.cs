@@ -4,27 +4,9 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class SeaMonsterDataTemplate : MonoBehaviour
+public class SeaMonsterDataTemplate : GenericEntryTemplate
 {
    #region Public Variables
-
-   // Name of the craftable item
-   public Text nameText;
-
-   // Index of the craftable item
-   public Text indexText;
-
-   // Button for showing the panel in charge of editing the ingredients
-   public Button editButton;
-
-   // Button for deleting a craftable item
-   public Button deleteButton;
-
-   // Icon of the item
-   public Image itemIcon;
-
-   // Button for duplicating this template
-   public Button duplicateButton;
 
    // The xml id of this template
    public int xml_id;
@@ -35,27 +17,10 @@ public class SeaMonsterDataTemplate : MonoBehaviour
    #endregion
 
    public void updateItemDisplay (SeaMonsterEntityData resultItem, bool isActive) {
-      string newName = "Undefined";
-      try {
-         newName = resultItem.monsterName + " (" + ((Enemy.Type) resultItem.seaMonsterType).ToString() + ")";
-      } catch {
-      }
+      string newName = resultItem.monsterName + " (" + ((Enemy.Type) resultItem.seaMonsterType).ToString() + ")";
 
-      nameText.text = newName;
-      indexText.text = "ID# " + ((int) resultItem.seaMonsterType).ToString();
+      modifyDisplay(newName, (int) resultItem.seaMonsterType);
       enabledIndicator.SetActive(isActive);
-
-      if (!MasterToolAccountManager.canAlterData()) {
-         deleteButton.gameObject.SetActive(false);
-         duplicateButton.gameObject.SetActive(false);
-      }
-
-      if (MasterToolAccountManager.PERMISSION_LEVEL == AdminManager.Type.ContentWriter) {
-         if (resultItem.seaMonsterType != SeaMonsterEntity.Type.None && !SeaMonsterToolManager.self.didUserCreateData((int) resultItem.seaMonsterType)) {
-            deleteButton.gameObject.SetActive(false);
-            editButton.gameObject.SetActive(false);
-         }
-      }
    }
 
    #region Private Variables

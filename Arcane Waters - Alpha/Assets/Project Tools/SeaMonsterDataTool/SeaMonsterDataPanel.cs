@@ -451,8 +451,8 @@ public class SeaMonsterDataPanel : MonoBehaviour
 
    private void updateMainItemDisplay () {
       lootSelectionPanel.SetActive(false);
-      currentLootTemplate.itemTypeString.text = itemTypeIDSelected.ToString();
-      currentLootTemplate.itemCategoryString.text = selectedCategory.ToString();
+      currentLootTemplate.itemTypeName.text = itemTypeIDSelected.ToString();
+      currentLootTemplate.itemCategoryName.text = selectedCategory.ToString();
    }
 
    #endregion

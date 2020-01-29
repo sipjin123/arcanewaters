@@ -15,9 +15,6 @@ public class ShopDataToolManager : XmlDataToolManager {
    // Holds the main scene for the shop data
    public ShopToolScene shopScene;
 
-   // Self
-   public static ShopDataToolManager self;
-
    #endregion
 
    private void Awake () {

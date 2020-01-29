@@ -17,9 +17,6 @@ public class AchievementToolManager : XmlDataToolManager {
    // Holds the path of the folder
    public const string FOLDER_PATH = "Achievement";
 
-   // Self
-   public static AchievementToolManager self;
-
    #endregion
 
    private void Awake () {

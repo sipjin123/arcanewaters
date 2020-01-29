@@ -69,7 +69,7 @@ public class ShipDataScene : MonoBehaviour {
       });
 
       try {
-         Sprite shipSprite = ImageManager.getSpritesInDirectory(shipData.avatarIconPath)[0].sprites[3];
+         Sprite shipSprite = ImageManager.getSpritesInDirectory(shipData.avatarIconPath)[0].sprites[5];
          template.itemIcon.sprite = shipSprite;
       } catch {
          template.itemIcon.sprite = emptySprite;
@@ -102,7 +102,7 @@ public class ShipDataScene : MonoBehaviour {
          });
 
          try {
-            Sprite shipSprite = ImageManager.getSpritesInDirectory(shipData.avatarIconPath)[0].sprites[3];
+            Sprite shipSprite = ImageManager.getSpritesInDirectory(shipData.avatarIconPath)[0].sprites[5];
             template.itemIcon.sprite = shipSprite;
          } catch {
             template.itemIcon.sprite = emptySprite;

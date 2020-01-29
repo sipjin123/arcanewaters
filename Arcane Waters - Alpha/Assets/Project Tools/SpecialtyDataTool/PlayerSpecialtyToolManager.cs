@@ -18,9 +18,6 @@ public class PlayerSpecialtyToolManager : XmlDataToolManager {
    // Holds the path of the folder
    public const string FOLDER_PATH = "PlayerSpecialty";
 
-   // Self
-   public static PlayerSpecialtyToolManager self;
-
    #endregion
 
    private void Awake () {

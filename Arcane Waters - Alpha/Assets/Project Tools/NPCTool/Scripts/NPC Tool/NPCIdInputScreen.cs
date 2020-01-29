@@ -27,7 +27,7 @@ public class NPCIdInputScreen : MonoBehaviour
       int npcId = int.Parse(npcIdInput.text);
 
       // Verify that the id is not already used
-      if (!NPCToolManager.self.isNPCIdFree(npcId)) {
+      if (!NPCToolManager.npcToolSelf.isNPCIdFree(npcId)) {
          // Display an error message
          npcIdExistMessage.SetActive(true);
          return;
@@ -37,7 +37,7 @@ public class NPCIdInputScreen : MonoBehaviour
       }
 
       // Create the new npc
-      NPCToolManager.self.createNewNPC(npcId);
+      NPCToolManager.npcToolSelf.createNewNPC(npcId);
 
       // Hide this screen
       hide();

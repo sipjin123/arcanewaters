@@ -185,7 +185,7 @@ public class GenericSelectionPopup : MonoBehaviour {
       } else if (popupType == selectionType.ShipAvatarIcon) {
          foreach (KeyValuePair<string, Sprite> sourceSprite in shipIconSpriteList) {
             string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
-            Sprite shipSprite = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].sprites[3];
+            Sprite shipSprite = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].sprites[5];
             createImageTemplate(sourceSprite.Key, shortName, shipSprite, imageIcon, textUI);
          }
       } else if (popupType == selectionType.WeaponIcon) {

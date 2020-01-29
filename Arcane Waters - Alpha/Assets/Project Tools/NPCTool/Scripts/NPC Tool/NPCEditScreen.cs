@@ -289,7 +289,7 @@ public class NPCEditScreen : MonoBehaviour
 
    public void revertButtonClickedOn () {
       // Get the unmodified data
-      NPCData data = NPCToolManager.self.getNPCData(_npcId);
+      NPCData data = NPCToolManager.npcToolSelf.getNPCData(_npcId);
 
       // Overwrite the panel values
       updatePanelWithNPC(data);
@@ -297,7 +297,7 @@ public class NPCEditScreen : MonoBehaviour
       // Hide the screen
       hide();
 
-      NPCToolManager.self.loadAllDataFiles();
+      NPCToolManager.npcToolSelf.loadAllDataFiles();
    }
 
    public void saveButtonClickedOn () {
@@ -327,10 +327,10 @@ public class NPCEditScreen : MonoBehaviour
 
       if (startingID != int.Parse(npcID.text)) {
          // Delete overwritten npc
-         NPCToolManager.self.overWriteNPC(npcData, startingID);
+         NPCToolManager.npcToolSelf.overWriteNPC(npcData, startingID);
       } else {
          // Save the new data
-         NPCToolManager.self.saveNPCDataToFile(npcData);
+         NPCToolManager.npcToolSelf.saveNPCDataToFile(npcData);
       }
 
       // Hide the screen

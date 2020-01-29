@@ -4,26 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class EnemyDataTemplate : MonoBehaviour {
+public class EnemyDataTemplate : GenericEntryTemplate {
    #region Public Variables
-
-   // Name of the craftable item
-   public Text nameText;
-
-   // Index of the craftable item
-   public Text indexText;
-
-   // Button for showing the panel in charge of editing the ingredients
-   public Button editButton;
-
-   // Button for deleting a craftable item
-   public Button deleteButton;
-
-   // Icon of the item
-   public Image itemIcon;
-
-   // Button for duplicating this template
-   public Button duplicateButton;
 
    // The xml id of this template
    public int xml_id;
@@ -40,21 +22,8 @@ public class EnemyDataTemplate : MonoBehaviour {
       } catch {
       }
 
-      nameText.text = newName;
-      indexText.text = "ID# " + ((int) resultItem.enemyType).ToString();
+      modifyDisplay(newName, (int) resultItem.enemyType);
       enabledIndicator.SetActive(isActive);
-
-      if (!MasterToolAccountManager.canAlterData()) {
-         deleteButton.gameObject.SetActive(false);
-         duplicateButton.gameObject.SetActive(false);
-      }
-
-      if (MasterToolAccountManager.PERMISSION_LEVEL == AdminManager.Type.ContentWriter) {
-         if (resultItem.enemyType != Enemy.Type.None && !MonsterToolManager.self.didUserCreateData((int) resultItem.enemyType)) {
-            deleteButton.gameObject.SetActive(false);
-            editButton.gameObject.SetActive(false);
-         }
-      }
    }
 
    #region Private Variables

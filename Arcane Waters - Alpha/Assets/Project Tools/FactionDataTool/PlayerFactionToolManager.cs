@@ -19,9 +19,6 @@ public class PlayerFactionToolManager : XmlDataToolManager
    // Holds the path of the folder
    public const string FOLDER_PATH = "PlayerFaction";
 
-   // Self
-   public static PlayerFactionToolManager self;
-
    #endregion
 
    private void Awake () {

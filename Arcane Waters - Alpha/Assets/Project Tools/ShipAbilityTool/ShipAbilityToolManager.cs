@@ -14,9 +14,6 @@ public class ShipAbilityToolManager : XmlDataToolManager {
    // Holds the main scene 
    public ShipAbilityScene shipAbilityToolScene;
 
-   // Self
-   public static ShipAbilityToolManager self;
-
    #endregion
 
    private void Awake () {

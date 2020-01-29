@@ -15,9 +15,6 @@ public class TutorialToolManager : XmlDataToolManager {
    // Holds the main scene for the data templates
    public TutorialToolScene toolScene;
 
-   // Self
-   public static TutorialToolManager self;
-
    #endregion
 
    private void Awake () {

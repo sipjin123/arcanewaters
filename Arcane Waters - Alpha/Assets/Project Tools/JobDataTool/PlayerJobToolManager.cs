@@ -18,9 +18,6 @@ public class PlayerJobToolManager : XmlDataToolManager {
    // Holds the path of the folder
    public const string FOLDER_PATH = "PlayerJob";
 
-   // Self
-   public static PlayerJobToolManager self;
-
    #endregion
 
    private void Awake () {

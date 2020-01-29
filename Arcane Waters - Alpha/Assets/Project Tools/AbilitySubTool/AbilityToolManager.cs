@@ -28,9 +28,6 @@ public class AbilityToolManager : XmlDataToolManager
       BuffAbility
    }
 
-   // Self
-   public static AbilityToolManager self;
-
    #endregion
 
    private void Awake () {

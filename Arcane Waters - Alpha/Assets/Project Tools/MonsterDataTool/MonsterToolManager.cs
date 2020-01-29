@@ -28,41 +28,11 @@ public class MonsterToolManager : XmlDataToolManager {
    // Cache buff abilities only
    public List<BuffAbilityData> buffAbilityList = new List<BuffAbilityData>();
 
-   // Self
-   public static MonsterToolManager self;
-
-   // Crafting Data to be rewarded
-   public List<CraftableItemRequirements> craftingDataList = new List<CraftableItemRequirements>();
-
-   public class BattlerXMLContent
-   {
-      public int xml_id;
-      public BattlerData battler;
-      public bool isEnabled;
-   }
-
    #endregion
 
    private void Awake () {
       self = this;
       fetchRecipe();
-   }
-
-   private void fetchRecipe () {
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<string> rawXMLData = DB_Main.getCraftingXML();
-         userNameData = DB_Main.getSQLDataByName(EditorSQLManager.EditorToolType.Crafting);
-
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            foreach (string rawText in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(rawText);
-               CraftableItemRequirements craftingData = Util.xmlLoad<CraftableItemRequirements>(newTextAsset);
-
-               // Save the Crafting data in the memory cache
-               craftingDataList.Add(craftingData);
-            }
-         });
-      });
    }
 
    private void Start () {
@@ -74,7 +44,7 @@ public class MonsterToolManager : XmlDataToolManager {
       basicAbilityList = new List<BasicAbilityData>();
       attackAbilityList = new List<AttackAbilityData>();
       buffAbilityList = new List<BuffAbilityData>();
-      monsterDataList = new List<BattlerXMLContent>();
+      _monsterDataList = new List<BattlerXMLContent>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<XMLPair> xmlPairList = DB_Main.getLandMonsterXML();
@@ -87,13 +57,13 @@ public class MonsterToolManager : XmlDataToolManager {
                BattlerData monsterData = Util.xmlLoad<BattlerData>(newTextAsset);
 
                // Save the Monster data in the memory cache
-               if (!monsterDataList.Exists(_=>_.xml_id == xmlPair.xml_id)) {
+               if (!_monsterDataList.Exists(_=>_.xml_id == xmlPair.xml_id)) {
                   BattlerXMLContent newXmlContent = new BattlerXMLContent {
                      xml_id = xmlPair.xml_id,
                      battler = monsterData,
                      isEnabled = xmlPair.is_enabled
                   };
-                  monsterDataList.Add(newXmlContent);
+                  _monsterDataList.Add(newXmlContent);
                }
             }
 
@@ -124,7 +94,7 @@ public class MonsterToolManager : XmlDataToolManager {
                }
             }
 
-            monsterToolScreen.updatePanelWithBattlerData(monsterDataList);
+            monsterToolScreen.updatePanelWithBattlerData(_monsterDataList);
             XmlLoadingPanel.self.finishLoading();
          });
       });
@@ -178,7 +148,7 @@ public class MonsterToolManager : XmlDataToolManager {
    #region Private Variables
 
    // Cached monster list
-   [SerializeField] private List<BattlerXMLContent> monsterDataList = new List<BattlerXMLContent>();
+   [SerializeField] private List<BattlerXMLContent> _monsterDataList = new List<BattlerXMLContent>();
 
    #endregion
 }

@@ -52,14 +52,14 @@ public class NPCSelectionScreen : MonoBehaviour
 
          if (npcData.iconPath != "") {
             try {
-               row.npcIcon.sprite = ImageManager.getSprite(npcData.iconPath);
+               row.itemIcon.sprite = ImageManager.getSprite(npcData.iconPath);
             } catch {
                // Should be an Error Icon
-               row.npcIcon.sprite = ImageManager.getSprite("Assets/Sprites/Icons/Stats/icon_precision.png");
+               row.itemIcon.sprite = ImageManager.getSprite("Assets/Sprites/Icons/Stats/icon_precision.png");
             }
          } else {
             // Should be a NULL Icon
-            row.npcIcon.sprite = ImageManager.getSprite("Assets/Sprites/Icons/Stats/icon_luck.png");
+            row.itemIcon.sprite = ImageManager.getSprite("Assets/Sprites/Icons/Stats/icon_luck.png");
          }
 
          npcRowList.Add(row);
@@ -95,7 +95,7 @@ public class NPCSelectionScreen : MonoBehaviour
 
    public void editNPC(int npcId) {
       // Retrieve the NPC data
-      NPCData data = NPCToolManager.self.getNPCData(npcId);
+      NPCData data = NPCToolManager.npcToolSelf.getNPCData(npcId);
 
       // Initialize the NPC edition screen with the data
       npcEditScreen.updatePanelWithNPC(data);
@@ -105,16 +105,16 @@ public class NPCSelectionScreen : MonoBehaviour
    }
 
    public void deleteNPC (int npcId) {
-      NPCSelectionRow selectionRow = npcRowList.Find(_ => int.Parse(_.npcIdText.text) == npcId);
+      NPCSelectionRow selectionRow = npcRowList.Find(_ => int.Parse(_.indexText.text) == npcId);
       GameObject rowObj = selectionRow.gameObject;
       npcRowList.Remove(selectionRow);
       Destroy(rowObj,.5f);
 
       // Retrieve the NPC data
-      NPCData data = NPCToolManager.self.getNPCData(npcId);
+      NPCData data = NPCToolManager.npcToolSelf.getNPCData(npcId);
 
       // Initialize the NPC edition screen with the data
-      NPCToolManager.self.deleteNPCDataFile(data);
+      NPCToolManager.npcToolSelf.deleteNPCDataFile(data);
    }
 
    public void createNewNPCButtonClickedOn () {

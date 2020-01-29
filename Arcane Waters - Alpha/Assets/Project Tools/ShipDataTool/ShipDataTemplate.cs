@@ -4,26 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class ShipDataTemplate : MonoBehaviour {
+public class ShipDataTemplate : GenericEntryTemplate {
    #region Public Variables
-
-   // Name of the ship 
-   public Text nameText;
-
-   // Index of the ship 
-   public Text indexText;
-
-   // Button for showing the panel in charge of editing the ship data
-   public Button editButton;
-
-   // Button for deleting a ship data
-   public Button deleteButton;
-
-   // Icon of the ship
-   public Image itemIcon;
-
-   // Button for duplicating this template
-   public Button duplicateButton;
 
    // The xml id of this template
    public int xml_id;
@@ -34,26 +16,9 @@ public class ShipDataTemplate : MonoBehaviour {
    #endregion
 
    public void updateItemDisplay (ShipData resultItem, bool isActive) {
-      string newName = "Undefined";
-      try {
-         newName = resultItem.shipName + " (" + ((Ship.Type) resultItem.shipType).ToString() + ")";
-      } catch {
-      }
+      string newName = resultItem.shipName + " (" + ((Ship.Type) resultItem.shipType).ToString() + ")";
 
-      nameText.text = newName;
-      indexText.text = "ID# " + ((int) resultItem.shipID).ToString();
+      modifyDisplay(newName, (int) resultItem.shipID);
       enabledIndicator.SetActive(isActive);
-
-      if (!MasterToolAccountManager.canAlterData()) {
-         deleteButton.gameObject.SetActive(false);
-         duplicateButton.gameObject.SetActive(false);
-      }
-
-      if (MasterToolAccountManager.PERMISSION_LEVEL == AdminManager.Type.ContentWriter) {
-         if (resultItem.shipType != Ship.Type.None && !ShipDataToolManager.self.didUserCreateData((int) resultItem.shipType)) {
-            deleteButton.gameObject.SetActive(false);
-            editButton.gameObject.SetActive(false);
-         }
-      }
    }
 }

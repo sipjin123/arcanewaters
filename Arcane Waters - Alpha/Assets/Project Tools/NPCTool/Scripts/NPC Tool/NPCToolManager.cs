@@ -15,7 +15,7 @@ public class NPCToolManager : XmlDataToolManager {
    #region Public Variables
 
    // Self
-   public static NPCToolManager self;
+   public static NPCToolManager npcToolSelf;
 
    // The NPC Selection Screen
    public NPCSelectionScreen npcSelectionScreen;
@@ -26,12 +26,10 @@ public class NPCToolManager : XmlDataToolManager {
    // Holds the path of the folder
    public const string FOLDER_PATH = "NPC";
 
-   // Crafting Data to be rewarded
-   public List<CraftableItemRequirements> craftingDataList = new List<CraftableItemRequirements>();
-
    #endregion
 
    public void Awake () {
+      npcToolSelf = this;
       self = this;
       openMainTool.onClick.AddListener(() => {
          SceneManager.LoadScene(MasterToolScene.masterScene);
@@ -44,23 +42,6 @@ public class NPCToolManager : XmlDataToolManager {
       Invoke("loadAllDataFiles", MasterToolScene.loadDelay);
 
       fetchRecipe();
-   }
-
-   private void fetchRecipe () {
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<string> rawXMLData = DB_Main.getCraftingXML();
-         userNameData = DB_Main.getSQLDataByName(EditorSQLManager.EditorToolType.Crafting);
-
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            foreach (string rawText in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(rawText);
-               CraftableItemRequirements craftingData = Util.xmlLoad<CraftableItemRequirements>(newTextAsset);
-
-               // Save the Crafting data in the memory cache
-               craftingDataList.Add(craftingData);
-            }
-         });
-      });
    }
 
    public void loadAllDataFiles () {
