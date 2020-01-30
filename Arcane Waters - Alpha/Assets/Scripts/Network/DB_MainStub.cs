@@ -16,7 +16,7 @@ public class DB_MainStub : MonoBehaviour
       return new List<SQLEntryNameClass>();
    }
 
-   public static List<SQLEntryIDClass> getSQLDataByID (EditorSQLManager.EditorToolType editorType, int id = 0) {
+   public static List<SQLEntryIDClass> getSQLDataByID (EditorSQLManager.EditorToolType editorType, EquipmentToolManager.EquipmentType equipmentType = EquipmentToolManager.EquipmentType.None) {
       return new List<SQLEntryIDClass>();
    }
 

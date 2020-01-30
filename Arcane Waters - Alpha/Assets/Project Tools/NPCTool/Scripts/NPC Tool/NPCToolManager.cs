@@ -15,7 +15,7 @@ public class NPCToolManager : XmlDataToolManager {
    #region Public Variables
 
    // Self
-   public static NPCToolManager npcToolSelf;
+   public static NPCToolManager instance;
 
    // The NPC Selection Screen
    public NPCSelectionScreen npcSelectionScreen;
@@ -29,7 +29,7 @@ public class NPCToolManager : XmlDataToolManager {
    #endregion
 
    public void Awake () {
-      npcToolSelf = this;
+      instance = this;
       self = this;
       openMainTool.onClick.AddListener(() => {
          SceneManager.LoadScene(MasterToolScene.masterScene);

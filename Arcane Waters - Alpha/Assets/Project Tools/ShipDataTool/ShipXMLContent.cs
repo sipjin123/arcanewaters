@@ -1,7 +1,7 @@
 ﻿public class ShipXMLContent
 {
    // Id of the xml entry
-   public int xml_id;
+   public int xmlId;
 
    // Data of the ship content
    public ShipData shipData;

@@ -7,28 +7,31 @@ using Mirror;
 public class GenericEntryTemplate : MonoBehaviour {
    #region Public Variables
 
-   // Name of the craftable item
+   // Name of the template
    public Text nameText;
 
-   // Index of the craftable item
+   // Entry ID of the template
    public Text indexText;
 
-   // Button for showing the panel in charge of editing the ingredients
+   // Button for showing the panel in charge of editing the template
    public Button editButton;
 
-   // Button for deleting a craftable item
+   // Button for deleting a template
    public Button deleteButton;
 
-   // Icon of the item
+   // Icon of the template
    public Image itemIcon;
 
    // Duplicate
    public Button duplicateButton;
 
-   // Reference to the xml manager
-   public XmlDataToolManager xmlToolReference;
-
    #endregion
+
+   public static GenericEntryTemplate CreateGenericTemplate (GameObject prefab, XmlDataToolManager xmlManager, Transform prefabParent) {
+      GenericEntryTemplate newTemplate = Instantiate(prefab.gameObject, prefabParent).GetComponent<GenericEntryTemplate>();
+      newTemplate._xmlToolReference = xmlManager;
+      return newTemplate;
+   }
 
    protected void updateDisplay (string templateName, int templateID = 0) {
       nameText.text = templateName;
@@ -56,7 +59,7 @@ public class GenericEntryTemplate : MonoBehaviour {
       }
 
       if (MasterToolAccountManager.PERMISSION_LEVEL == AdminManager.Type.ContentWriter) {
-         if (Util.hasValidEntryName(nameText.text) && !xmlToolReference.didUserCreateData(xml_id)) {
+         if (Util.hasValidEntryName(nameText.text) && !_xmlToolReference.didUserCreateData(xml_id)) {
             deleteButton.gameObject.SetActive(false);
             editButton.gameObject.SetActive(false);
          } 
@@ -64,6 +67,9 @@ public class GenericEntryTemplate : MonoBehaviour {
    }
 
    #region Private Variables
+
+   // Reference to the xml manager
+   protected XmlDataToolManager _xmlToolReference;
 
    #endregion
 }

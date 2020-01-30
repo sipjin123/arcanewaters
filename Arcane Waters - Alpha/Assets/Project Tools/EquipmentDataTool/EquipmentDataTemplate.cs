@@ -12,16 +12,16 @@ public class EquipmentDataTemplate : GenericEntryTemplate {
    public EquipmentType equipmentType;
 
    // Cached xml id
-   public int xml_id;
+   public int xmlId;
 
    #endregion
 
-   public void setData (string dataName, int dataID, EquipmentType dataType, int data_xml_id) {
+   public void setData (string dataName, int dataID, EquipmentType dataType, int templateID) {
       equipmentType = dataType;
       nameText.text = dataName;
-      xml_id = data_xml_id;
+      xmlId = templateID;
       indexText.text = dataID.ToString();
-      setEquipmentRestriction(data_xml_id);
+      setEquipmentRestriction(templateID);
    }
 
    protected void setEquipmentRestriction (int template_id) {

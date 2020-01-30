@@ -86,12 +86,12 @@ public class EquipmentXMLManager : MonoBehaviour {
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (XMLPair xmlPair in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(xmlPair.raw_xml_data);
+               TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                WeaponStatData rawData = Util.xmlLoad<WeaponStatData>(newTextAsset);
                Weapon.Type uniqueID = rawData.weaponType;
 
                // Save the data in the memory cache
-               if (!_weaponStatList.ContainsKey(uniqueID) && xmlPair.is_enabled) {
+               if (!_weaponStatList.ContainsKey(uniqueID) && xmlPair.isEnabled) {
                   _weaponStatList.Add(uniqueID, rawData);
                   weaponStatData.Add(rawData);
                }
@@ -105,12 +105,12 @@ public class EquipmentXMLManager : MonoBehaviour {
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (XMLPair xmlPair in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(xmlPair.raw_xml_data);
+               TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                ArmorStatData rawData = Util.xmlLoad<ArmorStatData>(newTextAsset);
                Armor.Type uniqueID = rawData.armorType;
 
                // Save the data in the memory cache
-               if (!_armorStatList.ContainsKey(uniqueID) && xmlPair.is_enabled) {
+               if (!_armorStatList.ContainsKey(uniqueID) && xmlPair.isEnabled) {
                   _armorStatList.Add(uniqueID, rawData);
                   armorStatData.Add(rawData);
                }
@@ -124,12 +124,12 @@ public class EquipmentXMLManager : MonoBehaviour {
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (XMLPair xmlPair in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(xmlPair.raw_xml_data);
+               TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                HelmStatData rawData = Util.xmlLoad<HelmStatData>(newTextAsset);
                Helm.Type uniqueID = rawData.helmType;
 
                // Save the data in the memory cache
-               if (!_helmStatList.ContainsKey(uniqueID) && xmlPair.is_enabled) {
+               if (!_helmStatList.ContainsKey(uniqueID) && xmlPair.isEnabled) {
                   _helmStatList.Add(uniqueID, rawData);
                   helmStatData.Add(rawData);
                }

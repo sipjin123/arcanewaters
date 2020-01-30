@@ -48,8 +48,7 @@ public class ShipAbilityScene : MonoBehaviour {
 
       shipAbilityData.abilityName = "Undefined";
 
-      ShipAbilityTemplate template = Instantiate(itemTemplatePrefab, itemTemplateParent.transform);
-      template.xmlToolReference = toolManager;
+      ShipAbilityTemplate template = GenericEntryTemplate.CreateGenericTemplate(itemTemplatePrefab.gameObject, toolManager, itemTemplateParent.transform).GetComponent<ShipAbilityTemplate>();
       template.editButton.onClick.AddListener(() => {
          shipAbilityPanel.loadData(shipAbilityData);
          shipAbilityPanel.gameObject.SetActive(true);
@@ -79,8 +78,7 @@ public class ShipAbilityScene : MonoBehaviour {
 
       // Create a row for each template
       foreach (ShipAbilityData shipData in data.Values) {
-         ShipAbilityTemplate template = Instantiate(itemTemplatePrefab, itemTemplateParent.transform);
-         template.xmlToolReference = toolManager;
+         ShipAbilityTemplate template = GenericEntryTemplate.CreateGenericTemplate(itemTemplatePrefab.gameObject, toolManager, itemTemplateParent.transform).GetComponent<ShipAbilityTemplate>();
          template.nameText.text = shipData.abilityName;
          template.editButton.onClick.AddListener(() => {
             shipAbilityPanel.loadData(shipData);

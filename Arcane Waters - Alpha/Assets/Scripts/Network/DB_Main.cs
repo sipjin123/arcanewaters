@@ -438,13 +438,13 @@ public class DB_Main : DB_MainStub
       return rawDataList;
    }
 
-   public static new List<SQLEntryIDClass> getSQLDataByID (EditorSQLManager.EditorToolType editorType, int indexID = 0) {
+   public static new List<SQLEntryIDClass> getSQLDataByID (EditorSQLManager.EditorToolType editorType, EquipmentToolManager.EquipmentType equipmentType = EquipmentToolManager.EquipmentType.None) {
       List<SQLEntryIDClass> rawDataList = new List<SQLEntryIDClass>();
 
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane." + EditorSQLManager.getSQLTableByID(editorType, indexID), conn)) {
+            "SELECT * FROM arcane." + EditorSQLManager.getSQLTableByID(editorType, equipmentType), conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -582,9 +582,9 @@ public class DB_Main : DB_MainStub
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
                   XMLPair newXMLPair = new XMLPair {
-                     xml_id = dataReader.GetInt32("xml_id"),
-                     raw_xml_data = dataReader.GetString("xmlContent"),
-                     is_enabled = dataReader.GetInt32("isActive") == 0 ? false : true
+                     xmlId = dataReader.GetInt32("xml_id"),
+                     rawXmlData = dataReader.GetString("xmlContent"),
+                     isEnabled = dataReader.GetInt32("isActive") == 0 ? false : true
                   };
 
                   rawDataList.Add(newXMLPair);
@@ -667,9 +667,9 @@ public class DB_Main : DB_MainStub
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
                   XMLPair newXMLPair = new XMLPair {
-                     xml_id = dataReader.GetInt32("xml_id"),
-                     raw_xml_data = dataReader.GetString("xmlContent"),
-                     is_enabled = dataReader.GetInt32("isActive") == 0 ? false : true
+                     xmlId = dataReader.GetInt32("xml_id"),
+                     rawXmlData = dataReader.GetString("xmlContent"),
+                     isEnabled = dataReader.GetInt32("isActive") == 0 ? false : true
                   };
 
                   rawDataList.Add(newXMLPair);
@@ -1164,9 +1164,9 @@ public class DB_Main : DB_MainStub
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
                   XMLPair newXMLPair = new XMLPair {
-                     xml_id = dataReader.GetInt32("xml_id"),
-                     raw_xml_data = dataReader.GetString("xmlContent"),
-                     is_enabled = dataReader.GetInt32("isActive") == 0 ? false : true
+                     xmlId = dataReader.GetInt32("xml_id"),
+                     rawXmlData = dataReader.GetString("xmlContent"),
+                     isEnabled = dataReader.GetInt32("isActive") == 0 ? false : true
                   };
                   rawDataList.Add(newXMLPair);
                }
@@ -1515,7 +1515,7 @@ public class DB_Main : DB_MainStub
 
    #region Equipment XML Data
 
-   public static new void updateEquipmentXML (string rawData, int entry_id, EquipmentToolManager.EquipmentType equipType, string equipmentName) {
+   public static new void updateEquipmentXML (string rawData, int entryId, EquipmentToolManager.EquipmentType equipType, string equipmentName) {
       string tableName = "";
       switch (equipType) {
          case EquipmentToolManager.EquipmentType.Weapon:
@@ -1540,7 +1540,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
 
-            cmd.Parameters.AddWithValue("@xml_id", entry_id);
+            cmd.Parameters.AddWithValue("@xml_id", entryId);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
             cmd.Parameters.AddWithValue("@equipment_name", equipmentName);
             cmd.Parameters.AddWithValue("@equipment_type", equipType.ToString());
@@ -1610,9 +1610,9 @@ public class DB_Main : DB_MainStub
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
                   XMLPair xmlPair = new XMLPair { 
-                     is_enabled = true,
-                     raw_xml_data = dataReader.GetString("xmlContent"),
-                     xml_id = dataReader.GetInt32("xml_id")
+                     isEnabled = true,
+                     rawXmlData = dataReader.GetString("xmlContent"),
+                     xmlId = dataReader.GetInt32("xml_id")
                   };
                   rawDataList.Add(xmlPair);
                }

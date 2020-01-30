@@ -59,8 +59,7 @@ public class TutorialToolScene : MonoBehaviour
       TutorialData tutorialData = new TutorialData();
       tutorialData.tutorialName = "Undefined";
 
-      TutorialToolTemplate template = Instantiate(tutorialTemplatePrefab, itemTemplateParent.transform);
-      template.xmlToolReference = toolManager;
+      TutorialToolTemplate template = GenericEntryTemplate.CreateGenericTemplate(tutorialTemplatePrefab.gameObject, toolManager, itemTemplateParent.transform).GetComponent<TutorialToolTemplate>();
       template.editButton.onClick.AddListener(() => {
          tutorialPanel.loadData(tutorialData);
          tutorialPanel.gameObject.SetActive(true);
@@ -92,8 +91,7 @@ public class TutorialToolScene : MonoBehaviour
 
       // Create a row for each tutorial element
       foreach (TutorialData tutorialData in sortedList) {
-         TutorialToolTemplate template = Instantiate(tutorialTemplatePrefab, itemTemplateParent.transform);
-         template.xmlToolReference = toolManager;
+         TutorialToolTemplate template = GenericEntryTemplate.CreateGenericTemplate(tutorialTemplatePrefab.gameObject, toolManager, itemTemplateParent.transform).GetComponent<TutorialToolTemplate>();
          if (isShowingDetails) {
             template.nameText.text = tutorialData.tutorialName;
             template.indexText.text = tutorialData.stepOrder.ToString();

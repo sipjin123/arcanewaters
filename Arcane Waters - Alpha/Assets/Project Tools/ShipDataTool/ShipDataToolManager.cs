@@ -96,14 +96,14 @@ public class ShipDataToolManager : XmlDataToolManager {
             }
 
             foreach (XMLPair xmlPair in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(xmlPair.raw_xml_data);
+               TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                ShipData shipData = Util.xmlLoad<ShipData>(newTextAsset);
 
                // Save the Ship data in the memory cache
-               if (!_shipDataList.Exists(_=>_.xml_id == xmlPair.xml_id)) {
+               if (!_shipDataList.Exists(_=>_.xmlId == xmlPair.xmlId)) {
                   ShipXMLContent shipContent = new ShipXMLContent { 
-                     xml_id = xmlPair.xml_id,
-                     isEnabled = xmlPair.is_enabled,
+                     xmlId = xmlPair.xmlId,
+                     isEnabled = xmlPair.isEnabled,
                      shipData = shipData
                   };
                   _shipDataList.Add(shipContent);

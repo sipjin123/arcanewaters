@@ -134,7 +134,7 @@ public class MonsterManager : MonoBehaviour {
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (XMLPair xmlPair in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(xmlPair.raw_xml_data);
+               TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                BattlerData monsterData = Util.xmlLoad<BattlerData>(newTextAsset);
                Enemy.Type enemyType = (Enemy.Type) monsterData.enemyType;
 
@@ -145,7 +145,7 @@ public class MonsterManager : MonoBehaviour {
                }
 
                // Save the monster data in the memory cache
-               if (!_monsterDataDict.ContainsKey(enemyType) && xmlPair.is_enabled) {
+               if (!_monsterDataDict.ContainsKey(enemyType) && xmlPair.isEnabled) {
                   _monsterDataDict.Add(enemyType, monsterData);
                }
 

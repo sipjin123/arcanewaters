@@ -44,12 +44,12 @@ public class ShipDataManager : MonoBehaviour {
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                foreach (XMLPair xmlPair in rawXMLData) {
-                  TextAsset newTextAsset = new TextAsset(xmlPair.raw_xml_data);
+                  TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                   ShipData shipData = Util.xmlLoad<ShipData>(newTextAsset);
                   Ship.Type uniqueID = shipData.shipType;
 
                   // Save the ship data in the memory cache
-                  if (!_shipData.ContainsKey(uniqueID) && xmlPair.is_enabled) {
+                  if (!_shipData.ContainsKey(uniqueID) && xmlPair.isEnabled) {
                      _shipData.Add(uniqueID, shipData);
                      shipDataList.Add(shipData);
                   }

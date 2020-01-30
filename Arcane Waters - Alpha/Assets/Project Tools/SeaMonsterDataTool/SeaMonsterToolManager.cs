@@ -41,14 +41,14 @@ public class SeaMonsterToolManager : XmlDataToolManager
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (XMLPair xmlPair in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(xmlPair.raw_xml_data);
+               TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                SeaMonsterEntityData newSeaData = Util.xmlLoad<SeaMonsterEntityData>(newTextAsset);
 
                // Save the Monster data in the memory cache
-               if (!_monsterDataList.Exists(_=>_.xml_id == xmlPair.xml_id)) {
+               if (!_monsterDataList.Exists(_=>_.xmlId == xmlPair.xmlId)) {
                   SeaMonsterXMLContent xmlContent = new SeaMonsterXMLContent { 
-                     xml_id = xmlPair.xml_id,
-                     isEnabled = xmlPair.is_enabled,
+                     xmlId = xmlPair.xmlId,
+                     isEnabled = xmlPair.isEnabled,
                      seaMonsterData = newSeaData
                   };
                   _monsterDataList.Add(xmlContent);

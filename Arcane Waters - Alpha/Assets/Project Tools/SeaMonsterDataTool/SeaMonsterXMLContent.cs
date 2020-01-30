@@ -1,7 +1,7 @@
 ﻿public class SeaMonsterXMLContent
 {
    // Id of the xml entry
-   public int xml_id;
+   public int xmlId;
 
    // Data of the sea monster content
    public SeaMonsterEntityData seaMonsterData;

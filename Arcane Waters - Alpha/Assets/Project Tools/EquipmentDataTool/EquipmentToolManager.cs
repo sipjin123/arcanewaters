@@ -232,17 +232,17 @@ public class EquipmentToolManager : XmlDataToolManager {
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<XMLPair> rawXMLData = DB_Main.getEquipmentXML(EquipmentType.Weapon);
-         weaponUserID = DB_Main.getSQLDataByID(editorToolType, 1);
+         weaponUserID = DB_Main.getSQLDataByID(editorToolType, EquipmentType.Weapon);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (XMLPair xmlPair in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(xmlPair.raw_xml_data);
+               TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                WeaponStatData rawData = Util.xmlLoad<WeaponStatData>(newTextAsset);
 
                // Save the data in the memory cache
-               if (!_weaponStatData.Exists(_ => _.xml_id == xmlPair.xml_id)) {
+               if (!_weaponStatData.Exists(_ => _.xml_id == xmlPair.xmlId)) {
                   WeaponXMLContent newXML = new WeaponXMLContent {
-                     xml_id = xmlPair.xml_id,
+                     xml_id = xmlPair.xmlId,
                      weaponStatData = rawData
                   };
                   _weaponStatData.Add(newXML);
@@ -259,18 +259,18 @@ public class EquipmentToolManager : XmlDataToolManager {
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<XMLPair> rawXMLData = DB_Main.getEquipmentXML(EquipmentType.Armor);
-         armorUserID = DB_Main.getSQLDataByID(editorToolType, 2);
+         armorUserID = DB_Main.getSQLDataByID(editorToolType, EquipmentType.Armor);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (XMLPair xmlPair in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(xmlPair.raw_xml_data);
+               TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                ArmorStatData rawData = Util.xmlLoad<ArmorStatData>(newTextAsset);
                Armor.Type uniqueID = rawData.armorType;
 
                // Save the data in the memory cache
-               if (!_armorStatData.Exists(_ => _.xml_id == xmlPair.xml_id)) {
+               if (!_armorStatData.Exists(_ => _.xml_id == xmlPair.xmlId)) {
                   ArmorXMLContent newXML = new ArmorXMLContent {
-                     xml_id = xmlPair.xml_id,
+                     xml_id = xmlPair.xmlId,
                      armorStatData = rawData
                   };
                   _armorStatData.Add(newXML);
@@ -286,17 +286,17 @@ public class EquipmentToolManager : XmlDataToolManager {
       _helmStatData = new List<HelmXMLContent>();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<XMLPair> rawXMLData = DB_Main.getEquipmentXML(EquipmentType.Helm);
-         helmUserID = DB_Main.getSQLDataByID(editorToolType, 3);
+         helmUserID = DB_Main.getSQLDataByID(editorToolType, EquipmentType.Helm);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (XMLPair xmlPair in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(xmlPair.raw_xml_data);
+               TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                HelmStatData rawData = Util.xmlLoad<HelmStatData>(newTextAsset);
 
                // Save the data in the memory cache
-               if (!_helmStatData.Exists(_=>_.xml_id == xmlPair.xml_id)) {
+               if (!_helmStatData.Exists(_=>_.xml_id == xmlPair.xmlId)) {
                   HelmXMLContent newXML = new HelmXMLContent {
-                     xml_id = xmlPair.xml_id,
+                     xml_id = xmlPair.xmlId,
                      helmStatData = rawData
                   };
                   _helmStatData.Add(newXML);

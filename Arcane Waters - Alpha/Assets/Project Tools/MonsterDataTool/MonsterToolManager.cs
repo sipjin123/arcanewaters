@@ -53,15 +53,15 @@ public class MonsterToolManager : XmlDataToolManager {
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (XMLPair xmlPair in xmlPairList) {
-               TextAsset newTextAsset = new TextAsset(xmlPair.raw_xml_data);
+               TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                BattlerData monsterData = Util.xmlLoad<BattlerData>(newTextAsset);
 
                // Save the Monster data in the memory cache
-               if (!_monsterDataList.Exists(_=>_.xml_id == xmlPair.xml_id)) {
+               if (!_monsterDataList.Exists(_=>_.xmlId == xmlPair.xmlId)) {
                   BattlerXMLContent newXmlContent = new BattlerXMLContent {
-                     xml_id = xmlPair.xml_id,
+                     xmlId = xmlPair.xmlId,
                      battler = monsterData,
-                     isEnabled = xmlPair.is_enabled
+                     isEnabled = xmlPair.isEnabled
                   };
                   _monsterDataList.Add(newXmlContent);
                }

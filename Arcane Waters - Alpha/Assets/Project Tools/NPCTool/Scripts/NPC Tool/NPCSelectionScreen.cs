@@ -41,8 +41,7 @@ public class NPCSelectionScreen : MonoBehaviour
       // Create a row for each npc
       foreach (NPCData npcData in _npcData.Values) {
          // Create a new row
-         NPCSelectionRow row = Instantiate(npcRowPrefab, rowsContainer.transform, false);
-         row.xmlToolReference = npcToolManager;
+         NPCSelectionRow row = GenericEntryTemplate.CreateGenericTemplate(npcRowPrefab.gameObject, npcToolManager, rowsContainer.transform).GetComponent<NPCSelectionRow>(); 
          row.transform.SetParent(rowsContainer.transform, false);
          row.setRowForNPC(this, npcData.npcId, npcData.name);
          row.deleteButton.onClick.AddListener(() => deleteNPC(npcData.npcId));
@@ -96,7 +95,7 @@ public class NPCSelectionScreen : MonoBehaviour
 
    public void editNPC(int npcId) {
       // Retrieve the NPC data
-      NPCData data = NPCToolManager.npcToolSelf.getNPCData(npcId);
+      NPCData data = NPCToolManager.instance.getNPCData(npcId);
 
       // Initialize the NPC edition screen with the data
       npcEditScreen.updatePanelWithNPC(data);
@@ -112,10 +111,10 @@ public class NPCSelectionScreen : MonoBehaviour
       Destroy(rowObj,.5f);
 
       // Retrieve the NPC data
-      NPCData data = NPCToolManager.npcToolSelf.getNPCData(npcId);
+      NPCData data = NPCToolManager.instance.getNPCData(npcId);
 
       // Initialize the NPC edition screen with the data
-      NPCToolManager.npcToolSelf.deleteNPCDataFile(data);
+      NPCToolManager.instance.deleteNPCDataFile(data);
    }
 
    public void createNewNPCButtonClickedOn () {

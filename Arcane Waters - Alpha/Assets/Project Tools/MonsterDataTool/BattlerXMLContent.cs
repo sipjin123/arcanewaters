@@ -1,7 +1,7 @@
 ﻿public class BattlerXMLContent
 {
    // Id of the xml entry
-   public int xml_id;
+   public int xmlId;
 
    // Data of the battler content
    public BattlerData battler;

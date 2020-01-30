@@ -51,8 +51,7 @@ public class ShipDataScene : MonoBehaviour {
       shipData.sailType = Ship.SailType.Caravel_1;
       shipData.skinType = Ship.SkinType.Barge_Dragon;
 
-      ShipDataTemplate template = Instantiate(shipTemplatePrefab, shipTemplateParent.transform);
-      template.xmlToolReference = shipToolManager;
+      ShipDataTemplate template = GenericEntryTemplate.CreateGenericTemplate(shipTemplatePrefab.gameObject, shipToolManager, shipTemplateParent.transform).GetComponent<ShipDataTemplate>();
       template.updateItemDisplay(shipData, false);
       template.xml_id = -1;
       template.editButton.onClick.AddListener(() => {
@@ -85,12 +84,11 @@ public class ShipDataScene : MonoBehaviour {
       // Create a row for each monster element
       foreach (ShipXMLContent xmlContent in shipDataList) {
          ShipData shipData = xmlContent.shipData;
-         ShipDataTemplate template = Instantiate(shipTemplatePrefab, shipTemplateParent.transform);
-         template.xmlToolReference = shipToolManager;
-         template.xml_id = xmlContent.xml_id;
+         ShipDataTemplate template = GenericEntryTemplate.CreateGenericTemplate(shipTemplatePrefab.gameObject, shipToolManager, shipTemplateParent.transform).GetComponent<ShipDataTemplate>();
+         template.xml_id = xmlContent.xmlId;
          template.updateItemDisplay(shipData, xmlContent.isEnabled);
          template.editButton.onClick.AddListener(() => {
-            shipDataPanel.loadData(shipData, xmlContent.xml_id, xmlContent.isEnabled);
+            shipDataPanel.loadData(shipData, xmlContent.xmlId, xmlContent.isEnabled);
             shipDataPanel.gameObject.SetActive(true);
          });
 
