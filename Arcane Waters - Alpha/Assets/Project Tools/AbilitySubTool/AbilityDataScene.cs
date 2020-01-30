@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 public class AbilityDataScene : MonoBehaviour
 {
@@ -56,10 +57,21 @@ public class AbilityDataScene : MonoBehaviour
    public Dictionary<string, Sprite> hitIconSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> projectileSpriteList = new Dictionary<string, Sprite>();
 
+   // List of id's that have been spawned
+   public List<int> idList;
+
+   // Error Panel
+   public GameObject errorPanel;
+   public Button closeErrorPanel;
+
    #endregion
 
    private void Start () {
       abilityPanel.SetActive(false);
+
+      closeErrorPanel.onClick.AddListener(() => {
+         errorPanel.SetActive(false);
+      });
 
       if (!MasterToolAccountManager.canAlterData()) {
          saveButton.gameObject.SetActive(false);
@@ -85,7 +97,7 @@ public class AbilityDataScene : MonoBehaviour
 
       if (!hasBeenInitialized) {
          hasBeenInitialized = true;
-         string spritePath = "Assets/Sprites/Icons/";
+         string spritePath = "Assets/Sprites/Icons/Abilities/";
          List<ImageManager.ImageData> spriteIconFiles = ImageManager.getSpritesInDirectory(spritePath);
 
          foreach (ImageManager.ImageData imgData in spriteIconFiles) {
@@ -132,12 +144,11 @@ public class AbilityDataScene : MonoBehaviour
          Destroy(template);
       });
 
+      template.warningIndicator.SetActive(true);
       template.gameObject.SetActive(true);
    }
 
    public void saveXML () {
-      abilityPanel.SetActive(false);
-
       if (skillTemplateList.Count < 1) {
          abilityManager.loadXML();
          Debug.LogError("No skill yet");
@@ -145,18 +156,24 @@ public class AbilityDataScene : MonoBehaviour
       }
 
       MonsterSkillTemplate skillTemplate = skillTemplateList[0];
-      if (skillTemplateList[0].abilityTypeEnum == AbilityType.Standard) {
-         if (_startingName != skillTemplateList[0].skillName.text) {
-            abilityManager.overWriteAbility(skillTemplate.getAttackData(), _startingName);
-         } else {
-            abilityManager.saveAbility(skillTemplate.getAttackData());
+      if (!idList.Exists(_ => _ == int.Parse(skillTemplate.itemID.text))) {
+         if (skillTemplateList[0].abilityTypeEnum == AbilityType.Standard) {
+            if (_startingName != skillTemplateList[0].skillName.text) {
+               abilityManager.overWriteAbility(skillTemplate.getAttackData(), _startingName);
+            } else {
+               abilityManager.saveAbility(skillTemplate.getAttackData());
+            }
+         } else if (skillTemplateList[0].abilityTypeEnum == AbilityType.BuffDebuff) {
+            if (_startingName != skillTemplateList[0].skillName.text) {
+               abilityManager.overWriteAbility(skillTemplate.getBuffData(), _startingName);
+            } else {
+               abilityManager.saveAbility(skillTemplate.getBuffData());
+            }
          }
-      } else if (skillTemplateList[0].abilityTypeEnum == AbilityType.BuffDebuff) {
-         if (_startingName != skillTemplateList[0].skillName.text) {
-            abilityManager.overWriteAbility(skillTemplate.getBuffData(), _startingName);
-         } else {
-            abilityManager.saveAbility(skillTemplate.getBuffData());
-         }
+            
+         abilityPanel.SetActive(false);
+      } else {
+         errorPanel.SetActive(true);
       }
    }
 
@@ -178,8 +195,13 @@ public class AbilityDataScene : MonoBehaviour
       // Clear all the rows
       abilityTemplateParent.gameObject.DestroyChildren();
       skillTemplateList = new List<MonsterSkillTemplate>();
+      idList = new List<int>();
 
-      foreach (AttackAbilityData abilityData in attackData.Values) {
+      List<AttackAbilityData> sortedAttackData = attackData.Values.ToList().OrderBy(w => w.itemID).ToList();
+      List<BuffAbilityData> sortedBuffData = buffData.Values.ToList().OrderBy(w => w.itemID).ToList();
+      List<BasicAbilityData> sortedBasicData = basicAbilityData.Values.ToList().OrderBy(w => w.itemID).ToList();
+
+      foreach (AttackAbilityData abilityData in sortedAttackData) {
          if (abilityData.abilityType != AbilityType.Stance) {
             AbilityDataTemplate template = GenericEntryTemplate.CreateGenericTemplate(abilityTemplate.gameObject, abilityManager, abilityTemplateParent.transform).GetComponent<AbilityDataTemplate>();
             template.editButton.onClick.AddListener(() => {
@@ -201,7 +223,7 @@ public class AbilityDataScene : MonoBehaviour
          }
       }
 
-      foreach (BuffAbilityData abilityData in buffData.Values) {
+      foreach (BuffAbilityData abilityData in sortedBuffData) {
          AbilityDataTemplate template = GenericEntryTemplate.CreateGenericTemplate(abilityTemplate.gameObject, abilityManager, abilityTemplateParent.transform).GetComponent<AbilityDataTemplate>();
          template.editButton.onClick.AddListener(() => {
             _startingName = abilityData.itemName;
@@ -219,7 +241,7 @@ public class AbilityDataScene : MonoBehaviour
          finalizeTemplate(template, abilityData);
       }
 
-      foreach (BasicAbilityData abilityData in basicAbilityData.Values) {
+      foreach (BasicAbilityData abilityData in sortedBasicData) {
          if (abilityData.abilityType == AbilityType.Stance) {
             AbilityDataTemplate template = GenericEntryTemplate.CreateGenericTemplate(abilityTemplate.gameObject, abilityManager, abilityTemplateParent.transform).GetComponent<AbilityDataTemplate>();
             template.editButton.onClick.AddListener(() => {
@@ -328,7 +350,13 @@ public class AbilityDataScene : MonoBehaviour
       } catch {
          template.itemIcon.sprite = emptySprite;
       }
+
+      idList.Add(abilityData.itemID);
       template.updateItemDisplay(abilityData);
+      template.warningIndicator.SetActive(!Util.hasValidEntryName(template.nameText.text));
+      template.editButton.onClick.AddListener(() => {
+         idList.Remove(abilityData.itemID);
+      });
       template.gameObject.SetActive(true);
    }
 

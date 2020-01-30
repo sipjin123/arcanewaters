@@ -35,7 +35,39 @@ public class AbilityManager : MonoBehaviour
       self = this;
    }
 
-   public void addNewAbility(BasicAbilityData ability) {
+   public void initializeDefaultAbilities () {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<AbilityXMLContent> abilityContentList = DB_Main.getDefaultAbilities();
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (AbilityXMLContent abilityXML in abilityContentList) {
+               AbilityType abilityType = (AbilityType) abilityXML.abilityType;
+               TextAsset newTextAsset = new TextAsset(abilityXML.abilityXML);
+
+               switch (abilityType) {
+                  case AbilityType.Standard:
+                     AttackAbilityData attackAbilityData = Util.xmlLoad<AttackAbilityData>(newTextAsset);
+                     addNewAbility(attackAbilityData);
+                     break;
+                  case AbilityType.Stance:
+                     AttackAbilityData stancebilityData = Util.xmlLoad<AttackAbilityData>(newTextAsset);
+                     addNewAbility(stancebilityData);
+                     break;
+                  case AbilityType.BuffDebuff:
+                     BuffAbilityData buffAbilityData = Util.xmlLoad<BuffAbilityData>(newTextAsset);
+                     addNewAbility(buffAbilityData);
+                     break;
+                  default:
+                     BasicAbilityData abilityData = Util.xmlLoad<BasicAbilityData>(newTextAsset);
+                     addNewAbility(abilityData);
+                     break;
+               }
+            }
+         });
+      });
+   }
+
+   public void addNewAbility (BasicAbilityData ability) {
       if (!_allGameAbilities.Exists(_ => _.itemName == ability.itemName)) {
          if (ability.abilityType == AbilityType.Standard) {
             AttackAbilityData newInstance = AttackAbilityData.CreateInstance((AttackAbilityData) ability);

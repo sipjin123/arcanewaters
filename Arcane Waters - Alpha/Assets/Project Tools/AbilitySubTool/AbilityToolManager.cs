@@ -92,7 +92,7 @@ public class AbilityToolManager : XmlDataToolManager
 
    public void duplicateFile (BasicAbilityData data) {
       data.itemName = "Undefined";
-
+      data.itemID++;
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {

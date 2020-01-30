@@ -120,6 +120,10 @@ public class MonsterDataPanel : MonoBehaviour {
    // Toggler to determine if this sql data is active in the database
    public Toggle xml_toggler;
 
+   // Error Panel
+   public GameObject errorPanel;
+   public Button closeErrorPanel;
+
    #endregion
 
    private void Awake () {
@@ -160,6 +164,9 @@ public class MonsterDataPanel : MonoBehaviour {
             audioSource.clip = deathAudio;
             audioSource.Play();
          }
+      });
+      closeErrorPanel.onClick.AddListener(() => {
+         errorPanel.SetActive(false);
       });
    }
 
@@ -369,18 +376,34 @@ public class MonsterDataPanel : MonoBehaviour {
    }
 
    public void saveData() {
-      BattlerData rawData = getBattlerData();
-      rawData.battlerLootData = getRawLootData();
+      BattlerData battlerData = getBattlerData();
+      battlerData.battlerLootData = getRawLootData();
 
-      foreach (AttackAbilityData attackAbility in rawData.battlerAbilities.attackAbilityDataList) {
+      foreach (AttackAbilityData attackAbility in battlerData.battlerAbilities.attackAbilityDataList) {
          abilityToolManager.saveAbility(attackAbility);
       }
-      foreach (BuffAbilityData buffAbility in rawData.battlerAbilities.buffAbilityDataList) {
+      foreach (BuffAbilityData buffAbility in battlerData.battlerAbilities.buffAbilityDataList) {
          abilityToolManager.saveAbility(buffAbility);
       }
 
-      monsterToolManager.saveDataToFile(rawData, currentXmlId, xml_toggler.isOn);
-      gameObject.SetActive(false);
+      if (isValidData(battlerData)) {
+         monsterToolManager.saveDataToFile(battlerData, currentXmlId, xml_toggler.isOn);
+         gameObject.SetActive(false);
+      } else {
+         errorPanel.SetActive(true);
+      }
+   }
+
+   private bool isValidData (BattlerData battleData) {
+      if (battleData.imagePath != string.Empty
+         && battleData.enemyName != string.Empty
+         && battleData.battlerLootData.defaultLoot.category != Item.Category.None 
+         && battleData.battlerLootData.defaultLoot.itemTypeId != 0
+         && battleData.enemyType != Enemy.Type.None) {
+         return true;
+      }
+
+      return false;
    }
 
    private RawGenericLootData getRawLootData() {

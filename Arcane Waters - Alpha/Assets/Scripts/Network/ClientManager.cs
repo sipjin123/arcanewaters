@@ -53,6 +53,8 @@ public class ClientManager : MonoBehaviour {
          QuickLaunchPanel.self.accountInputField.text = "tester" + testerNumber;
          QuickLaunchPanel.self.passwordInputField.text = "test";
          QuickLaunchPanel.self.clientToggle.isOn = true;
+         QuickLaunchPanel.self.serverToggle.isOn = false;
+         QuickLaunchPanel.self.hostToggle.isOn = false;
          QuickLaunchPanel.self.launch();
       }
 

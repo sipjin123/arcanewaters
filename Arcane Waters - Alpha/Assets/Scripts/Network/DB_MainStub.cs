@@ -174,8 +174,8 @@ public class DB_MainStub : MonoBehaviour
    public static void deleteSeamonsterXML (int typeID) {
    }
 
-   public static List<string> getSeaMonsterXML () {
-      return new List<string>();
+   public static List<XMLPair> getSeaMonsterXML () {
+      return new List<XMLPair>();
    }
 
    public static List<XMLPair> getLandMonsterXML () {
@@ -194,6 +194,10 @@ public class DB_MainStub : MonoBehaviour
    }
 
    public static List<AbilitySQLData> getAllAbilities (int userID) {
+      return new List<AbilitySQLData>();
+   }
+
+   public static List<AbilitySQLData> getDefaultAbilities () {
       return new List<AbilitySQLData>();
    }
 

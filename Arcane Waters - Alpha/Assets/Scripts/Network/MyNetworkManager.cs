@@ -144,6 +144,7 @@ public class MyNetworkManager : NetworkManager {
       MonsterManager.self.initializeLandMonsterDataCache();
       ShipAbilityManager.self.initializDataCache();
       ShopXMLManager.self.initializDataCache();
+      AbilityManager.self.initializeDefaultAbilities();
 
       // Schedule the leader boards recalculation
       LeaderBoardsManager.self.scheduleLeaderBoardRecalculation();
@@ -263,7 +264,7 @@ public class MyNetworkManager : NetworkManager {
             player.rpc.Target_ReceiveEquipmentData(player.connectionToClient, Util.serialize(EquipmentXMLManager.self.weaponStatList), EquipmentToolManager.EquipmentType.Weapon);
             player.rpc.Target_ReceiveEquipmentData(player.connectionToClient, Util.serialize(EquipmentXMLManager.self.armorStatList), EquipmentToolManager.EquipmentType.Armor);
             player.rpc.Target_ReceiveEquipmentData(player.connectionToClient, Util.serialize(EquipmentXMLManager.self.helmStatList), EquipmentToolManager.EquipmentType.Helm);
-
+            
             // Sends monster data to client
             sendMonsterData(player);
         

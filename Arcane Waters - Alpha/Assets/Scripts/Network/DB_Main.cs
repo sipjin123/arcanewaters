@@ -235,6 +235,34 @@ public class DB_Main : DB_MainStub
       return xmlContent;
    }
 
+   public static new List<AbilityXMLContent> getDefaultAbilities () {
+      List<AbilityXMLContent> xmlContent = new List<AbilityXMLContent>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM ability_xml WHERE (default_ability=@default_ability)", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@default_ability", 1);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  AbilityXMLContent newXML = new AbilityXMLContent();
+                  newXML.abilityXML = dataReader.GetString("xmlContent");
+                  newXML.abilityType = dataReader.GetInt32("ability_type");
+                  xmlContent.Add(newXML);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return xmlContent;
+   }
+
    #endregion
 
    #region NPC Quest and Relationship
