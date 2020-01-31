@@ -26,7 +26,7 @@ public class MapManager : MonoBehaviour {
       }
 
       // For now we'll just spawn one for testing purposes
-      string areaKey = "Starting Town New Houses";
+      string areaKey = "Pineward";
       MapData mapData = DB_Main.getLiveMapData(areaKey);
       MapImporter.instantiateMapData(mapData.serializedData, areaKey, new Vector3(500f, 500f));
    }

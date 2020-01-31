@@ -47,6 +47,9 @@ public class MasterToolAccountManager : MonoBehaviour {
    // Button for exiting the application
    public Button exitButton;
 
+   // User details found in the logout panel
+   public GameObject[] userDetails;
+
    #endregion
 
    private void Awake () {
@@ -121,6 +124,9 @@ public class MasterToolAccountManager : MonoBehaviour {
 
    public void revealPassivePanel (bool isActive) {
       passiveCanvasGroup.alpha = isActive ? 1 : .3f;
+      foreach (GameObject obj in userDetails) {
+         obj.SetActive(isActive);
+      }
    }
 
    public static bool canAlterData () {

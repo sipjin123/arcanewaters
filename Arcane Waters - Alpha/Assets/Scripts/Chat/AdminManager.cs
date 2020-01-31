@@ -53,7 +53,9 @@ public class AdminManager : NetworkBehaviour {
       }
 
       // Request the list of blueprints from the server
-      Cmd_RequestBlueprintListFromServer();
+      if (isLocalPlayer && _blueprintNames.Count == 0) {
+         Cmd_RequestBlueprintListFromServer();
+      }
    }
 
    void Update () {
@@ -574,7 +576,17 @@ public class AdminManager : NetworkBehaviour {
 
    [Command]
    protected void Cmd_PlayerGo (string targetPlayerName) {
+      if (!_player.isAdmin()) {
+         return;
+      }
 
+      BodyEntity targetBody = BodyManager.self.getBodyWithName(targetPlayerName);
+
+      if (targetBody == null) {
+         return;
+      }
+
+      _player.spawnInNewMap(targetBody.areaKey, targetBody.transform.position, Direction.South);
    }
 
    [Command]
@@ -972,7 +984,9 @@ public class AdminManager : NetworkBehaviour {
    protected Dictionary<string, int> _armorNames = new Dictionary<string, int>();
    protected Dictionary<string, int> _usableNames = new Dictionary<string, int>();
    protected Dictionary<string, int> _craftingIngredientNames = new Dictionary<string, int>();
-   protected Dictionary<string, int> _blueprintNames = new Dictionary<string, int>();
+
+   // The dictionary of blueprint names
+   protected static Dictionary<string, int> _blueprintNames = new Dictionary<string, int>();
 
    // The last chat input that went through the auto complete process
    private string _lastAutoCompletedInput = "";

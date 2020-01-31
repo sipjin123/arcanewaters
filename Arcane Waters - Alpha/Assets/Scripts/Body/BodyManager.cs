@@ -26,12 +26,14 @@ public class BodyManager : MonoBehaviour {
    }
 
    public BodyEntity getBodyWithName (string userName) {
-      BodyEntity newBody = _bodies.Values.ToList().Find(_ => _.entityName == userName);
-      if (newBody == null) {
-         D.warning("No body with username exists in the collection: " + userName);
-         return null;
+      foreach (BodyEntity body in _bodies.Values) {
+         if (userName.Equals(body.entityName, System.StringComparison.InvariantCultureIgnoreCase)) {
+            return body;
+         }
       }
-      return newBody;
+
+      D.warning("No body with username exists in the collection: " + userName);
+      return null;
    }
 
    public void storeBody (BodyEntity body) {

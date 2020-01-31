@@ -744,22 +744,25 @@ public class NetEntity : NetworkBehaviour
    public void Cmd_SpawnInNewMap (string newArea, string spawnKey, Direction newFacingDirection) {
       Spawn spawn = SpawnManager.self.getSpawn(newArea, spawnKey);
 
-      spawnInNewMap(newArea, spawn, newFacingDirection);
+      spawnInNewMap(newArea, spawn.transform.position, newFacingDirection);
    }
 
    [Server]
    public void spawnInNewMap (string newArea, Spawn spawn, Direction newFacingDirection) {
+      spawnInNewMap(newArea, spawn.transform.position, newFacingDirection);
+   }
+
+   [Server]
+   public void spawnInNewMap (string newArea, Vector2 newPosition, Direction newFacingDirection) {
       // Check which server we're likely to redirect to
       Server bestServer = ServerNetwork.self.findBestServerForConnectingPlayer(newArea, this.entityName, this.userId, this.connectionToClient.address);
 
       // Now that we know the target server, redirect them there
-      spawnOnSpecificServer(bestServer, newArea, spawn, newFacingDirection);
+      spawnOnSpecificServer(bestServer, newArea, newPosition, newFacingDirection);
    }
 
    [Server]
-   public void spawnOnSpecificServer (Server newServer, string newArea, Spawn spawn, Direction newFacingDirection) {
-      Vector2 newPosition = spawn.getSpawnPosition();
-
+   public void spawnOnSpecificServer (Server newServer, string newArea, Vector2 newPosition, Direction newFacingDirection) {
       // Make a note that we're about to proceed with a warp
       this.isAboutToWarpOnServer = true;
 
