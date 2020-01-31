@@ -108,7 +108,7 @@ public class MonsterDataScene : MonoBehaviour {
    private void createNewTemplate (BattlerData monsterData) {
       monsterData.enemyType = Enemy.Type.None;
 
-      EnemyDataTemplate template = GenericEntryTemplate.CreateGenericTemplate(monsterTemplate.gameObject, toolManager, monsterTemplateParent.transform).GetComponent<EnemyDataTemplate>();
+      EnemyDataTemplate template = GenericEntryTemplate.createGenericTemplate(monsterTemplate.gameObject, toolManager, monsterTemplateParent.transform).GetComponent<EnemyDataTemplate>();
       template.editButton.onClick.AddListener(() => {
          monsterPanel.currentXMLTemplate = template;
          monsterPanel.loadData(monsterData, -1, false);
@@ -136,7 +136,7 @@ public class MonsterDataScene : MonoBehaviour {
       foreach (BattlerXMLContent rawData in battlerData) {
          BattlerData battler = rawData.battler;
 
-         EnemyDataTemplate template = GenericEntryTemplate.CreateGenericTemplate(monsterTemplate.gameObject, toolManager, monsterTemplateParent.transform).GetComponent<EnemyDataTemplate>();
+         EnemyDataTemplate template = GenericEntryTemplate.createGenericTemplate(monsterTemplate.gameObject, toolManager, monsterTemplateParent.transform).GetComponent<EnemyDataTemplate>();
          template.updateItemDisplay(battler, rawData.isEnabled, rawData.xmlId);
          template.editButton.onClick.AddListener(() => {
             monsterPanel.currentXMLTemplate = template;

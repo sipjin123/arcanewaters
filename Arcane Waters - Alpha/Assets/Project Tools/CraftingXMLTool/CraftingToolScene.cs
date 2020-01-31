@@ -50,7 +50,7 @@ public class CraftingToolScene : MonoBehaviour {
       string itemName = "Undefined";
 
       if (!toolManager.ifExists(itemName)) {
-         CraftableItemTemplate template = GenericEntryTemplate.CreateGenericTemplate(craftableItemTemplate.gameObject, toolManager, craftableItemParent).GetComponent<CraftableItemTemplate>();
+         CraftableItemTemplate template = GenericEntryTemplate.createGenericTemplate(craftableItemTemplate.gameObject, toolManager, craftableItemParent).GetComponent<CraftableItemTemplate>();
          template.editButton.onClick.AddListener(() => {
             craftingPanel.currentXMLTemplate = template;
             craftingPanel.gameObject.SetActive(true);
@@ -76,7 +76,7 @@ public class CraftingToolScene : MonoBehaviour {
 
       // Create a row for each crafting ingredient
       foreach (CraftableItemRequirements craftingRequirement in _craftingData.Values) {
-         CraftableItemTemplate template = GenericEntryTemplate.CreateGenericTemplate(craftableItemTemplate.gameObject, toolManager, craftableItemParent).GetComponent<CraftableItemTemplate>();
+         CraftableItemTemplate template = GenericEntryTemplate.createGenericTemplate(craftableItemTemplate.gameObject, toolManager, craftableItemParent).GetComponent<CraftableItemTemplate>();
          template.updateItemDisplay(craftingRequirement.resultItem);
          template.editButton.onClick.AddListener(() =>
          {

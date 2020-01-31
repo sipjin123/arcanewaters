@@ -86,7 +86,7 @@ public class SeaMonsterDataScene : MonoBehaviour
    private void createNewTemplate (SeaMonsterEntityData monsterData) {
       monsterData.seaMonsterType = SeaMonsterEntity.Type.None;
 
-      SeaMonsterDataTemplate template = GenericEntryTemplate.CreateGenericTemplate(monsterTemplate.gameObject, toolManager, monsterTemplateParent.transform).GetComponent<SeaMonsterDataTemplate>();
+      SeaMonsterDataTemplate template = GenericEntryTemplate.createGenericTemplate(monsterTemplate.gameObject, toolManager, monsterTemplateParent.transform).GetComponent<SeaMonsterDataTemplate>();
       template.xml_id = -1;
       template.editButton.onClick.AddListener(() => {
          monsterPanel.currentXMLTemplate = template;
@@ -111,7 +111,7 @@ public class SeaMonsterDataScene : MonoBehaviour
       foreach (SeaMonsterXMLContent rawData in monsterData) {
          SeaMonsterEntityData seaMonsterData = rawData.seaMonsterData;
 
-         SeaMonsterDataTemplate template = GenericEntryTemplate.CreateGenericTemplate(monsterTemplate.gameObject, toolManager, monsterTemplateParent.transform).GetComponent<SeaMonsterDataTemplate>();
+         SeaMonsterDataTemplate template = GenericEntryTemplate.createGenericTemplate(monsterTemplate.gameObject, toolManager, monsterTemplateParent.transform).GetComponent<SeaMonsterDataTemplate>();
          template.xml_id = rawData.xmlId;
          template.updateItemDisplay(seaMonsterData, rawData.isEnabled);
          template.editButton.onClick.AddListener(() => {

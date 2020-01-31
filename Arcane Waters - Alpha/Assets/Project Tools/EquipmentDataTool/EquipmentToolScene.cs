@@ -70,7 +70,7 @@ public class EquipmentToolScene : MonoBehaviour {
       weaponData.equipmentName = "Undefined";
       weaponData.weaponClass = Weapon.Class.Any;
 
-      EquipmentDataTemplate template = GenericEntryTemplate.CreateGenericTemplate(weaponTemplatePrefab.gameObject, equipmentToolManager, weaponTemplateParent.transform).GetComponent<EquipmentDataTemplate>();
+      EquipmentDataTemplate template = GenericEntryTemplate.createGenericTemplate(weaponTemplatePrefab.gameObject, equipmentToolManager, weaponTemplateParent.transform).GetComponent<EquipmentDataTemplate>();
       template.setData(weaponData.equipmentName, weaponData.equipmentID, EquipmentType.Weapon, -1);
 
       template.editButton.onClick.AddListener(() => {
@@ -101,7 +101,7 @@ public class EquipmentToolScene : MonoBehaviour {
       ArmorStatData armorData = new ArmorStatData();
       armorData.equipmentName = "Undefined";
 
-      EquipmentDataTemplate template = GenericEntryTemplate.CreateGenericTemplate(armorTemplatePrefab.gameObject, equipmentToolManager, armorTemplateParent.transform).GetComponent<EquipmentDataTemplate>();
+      EquipmentDataTemplate template = GenericEntryTemplate.createGenericTemplate(armorTemplatePrefab.gameObject, equipmentToolManager, armorTemplateParent.transform).GetComponent<EquipmentDataTemplate>();
       template.setData(armorData.equipmentName, armorData.equipmentID, EquipmentType.Armor, -1);
 
       template.editButton.onClick.AddListener(() => {
@@ -132,7 +132,7 @@ public class EquipmentToolScene : MonoBehaviour {
       HelmStatData helmData = new HelmStatData();
       helmData.equipmentName = "Undefined";
 
-      EquipmentDataTemplate template = GenericEntryTemplate.CreateGenericTemplate(helmTemplatePrefab.gameObject, equipmentToolManager, helmTemplateParent.transform).GetComponent<EquipmentDataTemplate>();
+      EquipmentDataTemplate template = GenericEntryTemplate.createGenericTemplate(helmTemplatePrefab.gameObject, equipmentToolManager, helmTemplateParent.transform).GetComponent<EquipmentDataTemplate>();
       template.setData(helmData.equipmentName, helmData.equipmentID, EquipmentType.Helm, -1);
 
       template.editButton.onClick.AddListener(() => {
@@ -165,7 +165,7 @@ public class EquipmentToolScene : MonoBehaviour {
       // Create a row for each weapon data element
       foreach (HelmXMLContent xmlData in helmStats) {
          HelmStatData helmData = xmlData.helmStatData;
-         EquipmentDataTemplate template = GenericEntryTemplate.CreateGenericTemplate(helmTemplatePrefab.gameObject, equipmentToolManager, helmTemplateParent.transform).GetComponent<EquipmentDataTemplate>();
+         EquipmentDataTemplate template = GenericEntryTemplate.createGenericTemplate(helmTemplatePrefab.gameObject, equipmentToolManager, helmTemplateParent.transform).GetComponent<EquipmentDataTemplate>();
          template.setData(helmData.equipmentName, helmData.equipmentID, EquipmentType.Helm, xmlData.xml_id);
          template.editButton.onClick.AddListener(() => {
             equipmentDataPanel.loadHelmData(helmData, template.xmlId);
@@ -199,7 +199,7 @@ public class EquipmentToolScene : MonoBehaviour {
       // Create a row for each weapon data element
       foreach (ArmorXMLContent xmlData in armorStats) {
          ArmorStatData armorData = xmlData.armorStatData;
-         EquipmentDataTemplate template = GenericEntryTemplate.CreateGenericTemplate(armorTemplatePrefab.gameObject, equipmentToolManager, armorTemplateParent.transform).GetComponent<EquipmentDataTemplate>();
+         EquipmentDataTemplate template = GenericEntryTemplate.createGenericTemplate(armorTemplatePrefab.gameObject, equipmentToolManager, armorTemplateParent.transform).GetComponent<EquipmentDataTemplate>();
          template.setData(armorData.equipmentName, armorData.equipmentID, EquipmentType.Armor, xmlData.xml_id);
 
          template.editButton.onClick.AddListener(() => {
@@ -233,7 +233,7 @@ public class EquipmentToolScene : MonoBehaviour {
       // Create a row for each weapon data element
       foreach (WeaponXMLContent xmlData in weaponStats) {
          WeaponStatData weaponData = xmlData.weaponStatData;
-         EquipmentDataTemplate template = GenericEntryTemplate.CreateGenericTemplate(weaponTemplatePrefab.gameObject, equipmentToolManager, weaponTemplateParent.transform).GetComponent<EquipmentDataTemplate>();
+         EquipmentDataTemplate template = GenericEntryTemplate.createGenericTemplate(weaponTemplatePrefab.gameObject, equipmentToolManager, weaponTemplateParent.transform).GetComponent<EquipmentDataTemplate>();
          template.setData(weaponData.equipmentName, weaponData.equipmentID, EquipmentType.Weapon, xmlData.xml_id);
 
          template.editButton.onClick.AddListener(() => {

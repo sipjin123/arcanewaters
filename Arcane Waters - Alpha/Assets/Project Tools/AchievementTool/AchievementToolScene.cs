@@ -57,7 +57,7 @@ public class AchievementToolScene : MonoBehaviour {
       usableItemData.achievementName = "Undefined";
       usableItemData.actionType = ActionType.None;
 
-      AchievementToolTemplate template = GenericEntryTemplate.CreateGenericTemplate(achievementTemplatePrefab.gameObject, toolManager, itemTemplateParent.transform).GetComponent<AchievementToolTemplate>();
+      AchievementToolTemplate template = GenericEntryTemplate.createGenericTemplate(achievementTemplatePrefab.gameObject, toolManager, itemTemplateParent.transform).GetComponent<AchievementToolTemplate>();
       template.editButton.onClick.AddListener(() => {
          achievementDataPanel.loadData(usableItemData);
          achievementDataPanel.gameObject.SetActive(true);
@@ -89,7 +89,7 @@ public class AchievementToolScene : MonoBehaviour {
 
       // Create a row for each achievement element
       foreach (AchievementData achievementData in sortedList) {
-         AchievementToolTemplate template = GenericEntryTemplate.CreateGenericTemplate(achievementTemplatePrefab.gameObject, toolManager, itemTemplateParent.transform).GetComponent<AchievementToolTemplate>();
+         AchievementToolTemplate template = GenericEntryTemplate.createGenericTemplate(achievementTemplatePrefab.gameObject, toolManager, itemTemplateParent.transform).GetComponent<AchievementToolTemplate>();
          if (isShowingDetails) {
             template.nameText.text = achievementData.achievementName + "\n[" + achievementData.tier + "] (" + achievementData.actionType + ")";
          } else {

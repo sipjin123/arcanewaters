@@ -48,7 +48,7 @@ public class ShopToolScene : MonoBehaviour {
       shopData.shopIconPath = "";
       shopData.shopGreetingText = "";
 
-      ShopToolTemplate template = GenericEntryTemplate.CreateGenericTemplate(shopTemplatePrefab.gameObject, toolManager, templateParent.transform).GetComponent<ShopToolTemplate>();
+      ShopToolTemplate template = GenericEntryTemplate.createGenericTemplate(shopTemplatePrefab.gameObject, toolManager, templateParent.transform).GetComponent<ShopToolTemplate>();
       template.nameText.text = shopData.shopName;
       template.editButton.onClick.AddListener(() => {
          shopPanel.loadData(shopData);
@@ -72,7 +72,7 @@ public class ShopToolScene : MonoBehaviour {
 
       // Create a row for each monster element
       foreach (ShopData shopData in data.Values) {
-         ShopToolTemplate template = GenericEntryTemplate.CreateGenericTemplate(shopTemplatePrefab.gameObject, toolManager, templateParent.transform).GetComponent<ShopToolTemplate>();
+         ShopToolTemplate template = GenericEntryTemplate.createGenericTemplate(shopTemplatePrefab.gameObject, toolManager, templateParent.transform).GetComponent<ShopToolTemplate>();
          template.nameText.text = shopData.shopName;
 
          template.editButton.onClick.AddListener(() => {

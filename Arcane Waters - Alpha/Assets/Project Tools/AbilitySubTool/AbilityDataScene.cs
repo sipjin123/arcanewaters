@@ -132,7 +132,7 @@ public class AbilityDataScene : MonoBehaviour
    }
 
    private void createNewTemplate (BasicAbilityData abilityData) {
-      AbilityDataTemplate template = GenericEntryTemplate.CreateGenericTemplate(abilityTemplate.gameObject, abilityManager, abilityTemplateParent.transform).GetComponent<AbilityDataTemplate>();
+      AbilityDataTemplate template = GenericEntryTemplate.createGenericTemplate(abilityTemplate.gameObject, abilityManager, abilityTemplateParent.transform).GetComponent<AbilityDataTemplate>();
       template.editButton.onClick.AddListener(() => {
          _startingName = abilityData.itemName;
          abilityPanel.SetActive(true);
@@ -203,7 +203,7 @@ public class AbilityDataScene : MonoBehaviour
 
       foreach (AttackAbilityData abilityData in sortedAttackData) {
          if (abilityData.abilityType != AbilityType.Stance) {
-            AbilityDataTemplate template = GenericEntryTemplate.CreateGenericTemplate(abilityTemplate.gameObject, abilityManager, abilityTemplateParent.transform).GetComponent<AbilityDataTemplate>();
+            AbilityDataTemplate template = GenericEntryTemplate.createGenericTemplate(abilityTemplate.gameObject, abilityManager, abilityTemplateParent.transform).GetComponent<AbilityDataTemplate>();
             template.editButton.onClick.AddListener(() => {
                _startingName = abilityData.itemName;
                loadAttackData(abilityData);
@@ -224,7 +224,7 @@ public class AbilityDataScene : MonoBehaviour
       }
 
       foreach (BuffAbilityData abilityData in sortedBuffData) {
-         AbilityDataTemplate template = GenericEntryTemplate.CreateGenericTemplate(abilityTemplate.gameObject, abilityManager, abilityTemplateParent.transform).GetComponent<AbilityDataTemplate>();
+         AbilityDataTemplate template = GenericEntryTemplate.createGenericTemplate(abilityTemplate.gameObject, abilityManager, abilityTemplateParent.transform).GetComponent<AbilityDataTemplate>();
          template.editButton.onClick.AddListener(() => {
             _startingName = abilityData.itemName;
             loadBuffData(abilityData);
@@ -243,7 +243,7 @@ public class AbilityDataScene : MonoBehaviour
 
       foreach (BasicAbilityData abilityData in sortedBasicData) {
          if (abilityData.abilityType == AbilityType.Stance) {
-            AbilityDataTemplate template = GenericEntryTemplate.CreateGenericTemplate(abilityTemplate.gameObject, abilityManager, abilityTemplateParent.transform).GetComponent<AbilityDataTemplate>();
+            AbilityDataTemplate template = GenericEntryTemplate.createGenericTemplate(abilityTemplate.gameObject, abilityManager, abilityTemplateParent.transform).GetComponent<AbilityDataTemplate>();
             template.editButton.onClick.AddListener(() => {
                _startingName = abilityData.itemName;
                loadGenericData(abilityData);

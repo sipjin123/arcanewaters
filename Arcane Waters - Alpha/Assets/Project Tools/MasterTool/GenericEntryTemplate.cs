@@ -27,7 +27,7 @@ public class GenericEntryTemplate : MonoBehaviour {
 
    #endregion
 
-   public static GenericEntryTemplate CreateGenericTemplate (GameObject prefab, XmlDataToolManager xmlManager, Transform prefabParent) {
+   public static GenericEntryTemplate createGenericTemplate (GameObject prefab, XmlDataToolManager xmlManager, Transform prefabParent) {
       GenericEntryTemplate newTemplate = Instantiate(prefab.gameObject, prefabParent).GetComponent<GenericEntryTemplate>();
       newTemplate._xmlToolReference = xmlManager;
       return newTemplate;

@@ -41,7 +41,7 @@ public class NPCSelectionScreen : MonoBehaviour
       // Create a row for each npc
       foreach (NPCData npcData in _npcData.Values) {
          // Create a new row
-         NPCSelectionRow row = GenericEntryTemplate.CreateGenericTemplate(npcRowPrefab.gameObject, npcToolManager, rowsContainer.transform).GetComponent<NPCSelectionRow>(); 
+         NPCSelectionRow row = GenericEntryTemplate.createGenericTemplate(npcRowPrefab.gameObject, npcToolManager, rowsContainer.transform).GetComponent<NPCSelectionRow>(); 
          row.transform.SetParent(rowsContainer.transform, false);
          row.setRowForNPC(this, npcData.npcId, npcData.name);
          row.deleteButton.onClick.AddListener(() => deleteNPC(npcData.npcId));
