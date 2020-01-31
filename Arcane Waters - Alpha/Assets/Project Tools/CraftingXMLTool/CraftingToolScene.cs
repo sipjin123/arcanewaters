@@ -61,6 +61,7 @@ public class CraftingToolScene : MonoBehaviour {
          });
          template.itemIcon.sprite = Util.getRawSpriteIcon(requirementData.resultItem.category, requirementData.resultItem.itemTypeId);
 
+         template.setWarning();
          template.gameObject.SetActive(true);
          toolManager.saveDataToFile(requirementData, false);
       }
@@ -88,8 +89,11 @@ public class CraftingToolScene : MonoBehaviour {
             Destroy(template.gameObject, .5f);
             toolManager.deleteCraftingDataFile(craftingRequirement);
          });
-         template.itemIcon.sprite = Util.getRawSpriteIcon(craftingRequirement.resultItem.category, craftingRequirement.resultItem.itemTypeId);
 
+         if (craftingRequirement.resultItem.category == Item.Category.None) {
+            template.setWarning();
+         }
+         template.itemIcon.sprite = Util.getRawSpriteIcon(craftingRequirement.resultItem.category, craftingRequirement.resultItem.itemTypeId);
          template.gameObject.SetActive(true);
       }
    }

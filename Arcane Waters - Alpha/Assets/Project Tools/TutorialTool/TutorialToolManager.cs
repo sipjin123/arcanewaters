@@ -70,7 +70,7 @@ public class TutorialToolManager : XmlDataToolManager {
    }
 
    public void duplicateXMLData (TutorialData data) {
-      data.tutorialName += "_copy";
+      data.tutorialName = MasterToolScene.UNDEFINED;
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {

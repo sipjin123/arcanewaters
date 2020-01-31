@@ -61,7 +61,7 @@ public class ShipDataToolManager : XmlDataToolManager {
    }
 
    public void duplicateXMLData (ShipData data) {
-      data.shipName += "_copy";
+      data.shipName = MasterToolScene.UNDEFINED;
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {

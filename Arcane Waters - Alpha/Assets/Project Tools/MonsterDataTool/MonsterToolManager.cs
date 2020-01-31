@@ -128,7 +128,7 @@ public class MonsterToolManager : XmlDataToolManager {
    }
 
    public void duplicateData (BattlerData data) {
-      data.enemyName += "_copy";
+      data.enemyName = MasterToolScene.UNDEFINED;
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {

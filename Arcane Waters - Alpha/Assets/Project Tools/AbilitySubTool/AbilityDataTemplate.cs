@@ -11,9 +11,6 @@ public class AbilityDataTemplate : GenericEntryTemplate
    // The raw name of the item
    public string actualName;
 
-   // Determines if the template needs attention
-   public GameObject warningIndicator;
-
    #endregion
 
    public void updateItemDisplay (BasicAbilityData resultItem) {

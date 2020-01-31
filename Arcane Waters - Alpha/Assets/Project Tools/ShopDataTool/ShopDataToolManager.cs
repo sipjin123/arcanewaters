@@ -53,7 +53,7 @@ public class ShopDataToolManager : XmlDataToolManager {
    }
 
    public void duplicateXMLData (ShopData data) {
-      data.shopName += "_copy";
+      data.shopName = MasterToolScene.UNDEFINED;
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {

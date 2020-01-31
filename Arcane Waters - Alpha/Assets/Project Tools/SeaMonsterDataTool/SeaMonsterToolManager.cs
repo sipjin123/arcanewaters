@@ -88,7 +88,7 @@ public class SeaMonsterToolManager : XmlDataToolManager
    }
 
    public void duplicateFile (SeaMonsterEntityData data) {
-      data.monsterName += "_copy";
+      data.monsterName = MasterToolScene.UNDEFINED;
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {

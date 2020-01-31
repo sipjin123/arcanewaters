@@ -91,7 +91,7 @@ public class AbilityToolManager : XmlDataToolManager
    
 
    public void duplicateFile (BasicAbilityData data) {
-      data.itemName = "Undefined";
+      data.itemName = MasterToolScene.UNDEFINED;
       data.itemID++;
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();

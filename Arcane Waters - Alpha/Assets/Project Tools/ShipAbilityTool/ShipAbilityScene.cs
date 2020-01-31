@@ -70,6 +70,7 @@ public class ShipAbilityScene : MonoBehaviour {
          template.itemIcon.sprite = emptySprite;
       }
 
+      template.setWarning();
       template.gameObject.SetActive(true);
    }
 
@@ -101,6 +102,9 @@ public class ShipAbilityScene : MonoBehaviour {
             template.itemIcon.sprite = emptySprite;
          }
 
+         if (!Util.hasValidEntryName(template.nameText.text)) {
+            template.setWarning();
+         }
          template.gameObject.SetActive(true);
       }
    }

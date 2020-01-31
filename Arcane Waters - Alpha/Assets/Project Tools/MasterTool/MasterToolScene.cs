@@ -38,6 +38,9 @@ public class MasterToolScene : MonoBehaviour {
    // Initial reference for image manager before initialization
    public ImageManager imageManagerReference;
 
+   // Undefined template name
+   public static string UNDEFINED = "Undefined";
+
    // Button triggers to open scene
    public Button clickAbilityScene, 
       clickMonsterScene, 

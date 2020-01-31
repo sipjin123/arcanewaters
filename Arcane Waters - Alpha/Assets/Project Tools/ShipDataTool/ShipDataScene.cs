@@ -75,6 +75,7 @@ public class ShipDataScene : MonoBehaviour {
          template.itemIcon.sprite = emptySprite;
       }
 
+      template.setWarning();
       template.gameObject.SetActive(true);
    }
 
@@ -108,6 +109,9 @@ public class ShipDataScene : MonoBehaviour {
             template.itemIcon.sprite = emptySprite;
          }
 
+         if (!Util.hasValidEntryName(shipData.shipName)) {
+            template.setWarning();
+         }
          template.gameObject.SetActive(true);
       }
    }

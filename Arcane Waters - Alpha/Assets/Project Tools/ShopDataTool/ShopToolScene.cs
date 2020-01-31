@@ -64,6 +64,8 @@ public class ShopToolScene : MonoBehaviour {
          toolManager.duplicateXMLData(shopData);
       });
 
+
+      template.setWarning();
       template.gameObject.SetActive(true);
    }
 
@@ -96,6 +98,9 @@ public class ShopToolScene : MonoBehaviour {
             template.itemIcon.sprite = emptySprite;
          }
 
+         if (!Util.hasValidEntryName(template.nameText.text)) {
+            template.setWarning();
+         }
          template.gameObject.SetActive(true);
       }
    }

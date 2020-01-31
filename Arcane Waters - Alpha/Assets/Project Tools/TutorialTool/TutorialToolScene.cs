@@ -81,6 +81,7 @@ public class TutorialToolScene : MonoBehaviour
          template.itemIcon.sprite = emptySprite;
       }
 
+      template.setWarning();
       template.gameObject.SetActive(true);
    }
 
@@ -121,6 +122,9 @@ public class TutorialToolScene : MonoBehaviour
             template.itemIcon.sprite = emptySprite;
          }
 
+         if (!Util.hasValidEntryName(template.nameText.text)) {
+            template.setWarning();
+         }
          template.gameObject.SetActive(true);
       }
    }

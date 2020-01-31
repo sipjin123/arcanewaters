@@ -159,7 +159,7 @@ public class EquipmentToolManager : XmlDataToolManager {
 
    public void duplicateWeapon (WeaponStatData data) {
       data.weaponType = 0;
-      data.equipmentName = "Undefined Weapon";
+      data.equipmentName = MasterToolScene.UNDEFINED;
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {
@@ -178,7 +178,7 @@ public class EquipmentToolManager : XmlDataToolManager {
 
    public void duplicateArmor (ArmorStatData data) {
       data.armorType = 0;
-      data.equipmentName = "Undefined Armor";
+      data.equipmentName = MasterToolScene.UNDEFINED;
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {
@@ -197,7 +197,7 @@ public class EquipmentToolManager : XmlDataToolManager {
 
    public void duplicateHelm (HelmStatData data) {
       data.helmType = 0;
-      data.equipmentName = "Undefined Helmet";
+      data.equipmentName = MasterToolScene.UNDEFINED;
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {

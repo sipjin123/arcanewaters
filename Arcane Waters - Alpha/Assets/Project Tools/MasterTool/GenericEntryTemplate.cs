@@ -33,6 +33,10 @@ public class GenericEntryTemplate : MonoBehaviour {
       return newTemplate;
    }
 
+   public void setWarning () {
+      _warningIndicator.SetActive(true);
+   }
+
    protected void updateDisplay (string templateName, int templateID = 0) {
       nameText.text = templateName;
       indexText.text = "[" + templateID.ToString() + "]";
@@ -70,6 +74,10 @@ public class GenericEntryTemplate : MonoBehaviour {
 
    // Reference to the xml manager
    protected XmlDataToolManager _xmlToolReference;
+
+
+   // Determines if the template needs attention
+   [SerializeField] protected GameObject _warningIndicator;
 
    #endregion
 }

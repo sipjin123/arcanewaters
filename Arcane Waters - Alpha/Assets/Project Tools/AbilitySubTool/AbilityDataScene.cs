@@ -133,6 +133,7 @@ public class AbilityDataScene : MonoBehaviour
 
    private void createNewTemplate (BasicAbilityData abilityData) {
       AbilityDataTemplate template = GenericEntryTemplate.createGenericTemplate(abilityTemplate.gameObject, abilityManager, abilityTemplateParent.transform).GetComponent<AbilityDataTemplate>();
+      template.setWarning();
       template.editButton.onClick.AddListener(() => {
          _startingName = abilityData.itemName;
          abilityPanel.SetActive(true);
@@ -144,7 +145,6 @@ public class AbilityDataScene : MonoBehaviour
          Destroy(template);
       });
 
-      template.warningIndicator.SetActive(true);
       template.gameObject.SetActive(true);
    }
 
@@ -353,7 +353,11 @@ public class AbilityDataScene : MonoBehaviour
 
       idList.Add(abilityData.itemID);
       template.updateItemDisplay(abilityData);
-      template.warningIndicator.SetActive(!Util.hasValidEntryName(template.nameText.text));
+
+      if (!Util.hasValidEntryName(template.nameText.text)) {
+         template.setWarning();
+      }
+
       template.editButton.onClick.AddListener(() => {
          idList.Remove(abilityData.itemID);
       });

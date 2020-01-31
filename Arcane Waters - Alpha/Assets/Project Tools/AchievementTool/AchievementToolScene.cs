@@ -79,6 +79,7 @@ public class AchievementToolScene : MonoBehaviour {
          template.itemIcon.sprite = emptySprite;
       }
 
+      template.setWarning();
       template.gameObject.SetActive(true);
    }
 
@@ -115,6 +116,10 @@ public class AchievementToolScene : MonoBehaviour {
             template.itemIcon.sprite = iconSprite;
          } catch {
             template.itemIcon.sprite = emptySprite;
+         }
+
+         if (!Util.hasValidEntryName(template.nameText.text)) {
+            template.setWarning();
          }
 
          template.gameObject.SetActive(true);

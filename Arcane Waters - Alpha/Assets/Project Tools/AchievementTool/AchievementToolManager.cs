@@ -72,7 +72,7 @@ public class AchievementToolManager : XmlDataToolManager {
    }
 
    public void duplicateXMLData (AchievementData data) {
-      data.achievementName += "_copy";
+      data.achievementName = MasterToolScene.UNDEFINED;
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {

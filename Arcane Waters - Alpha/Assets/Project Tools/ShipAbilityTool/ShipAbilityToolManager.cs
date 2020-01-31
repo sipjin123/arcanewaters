@@ -52,7 +52,7 @@ public class ShipAbilityToolManager : XmlDataToolManager {
    }
 
    public void duplicateXMLData (ShipAbilityData data) {
-      data.abilityName = "Undefined Faction";
+      data.abilityName = MasterToolScene.UNDEFINED;
       data.projectileSpritePath = "";
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();

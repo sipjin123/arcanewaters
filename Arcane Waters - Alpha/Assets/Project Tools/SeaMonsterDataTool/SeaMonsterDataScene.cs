@@ -100,6 +100,7 @@ public class SeaMonsterDataScene : MonoBehaviour
          toolManager.duplicateFile(monsterData);
       });
 
+      template.setWarning();
       template.gameObject.SetActive(true);
    }
 
@@ -136,6 +137,9 @@ public class SeaMonsterDataScene : MonoBehaviour
             template.itemIcon.sprite = monsterPanel.emptySprite;
          }
 
+         if (!Util.hasValidEntryName(seaMonsterData.monsterName)) {
+            template.setWarning();
+         }
          template.gameObject.SetActive(true);
       }
    }

@@ -121,6 +121,7 @@ public class MonsterDataScene : MonoBehaviour {
          toolManager.duplicateData(monsterData);
       });
 
+      template.setWarning();
       template.gameObject.SetActive(true);
    }
 
@@ -161,6 +162,9 @@ public class MonsterDataScene : MonoBehaviour {
             template.itemIcon.sprite = monsterPanel.emptySprite;
          }
 
+         if (!Util.hasValidEntryName(battler.enemyName)) {
+            template.setWarning();
+         }
          template.gameObject.SetActive(true);
       }
    }
