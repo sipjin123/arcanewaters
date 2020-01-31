@@ -213,11 +213,11 @@ public class DB_MainStub : MonoBehaviour
       return new List<AchievementData>();
    }
 
-   public static void updateBattleAbilities (string abilityName, string abilityXML, int abilityType) {
+   public static void updateBattleAbilities (int skillId, string abilityName, string abilityXML, int abilityType) {
 
    }
 
-   public static void deleteBattleAbilityXML (string abilityName) {
+   public static void deleteBattleAbilityXML (int skillId) {
 
    }
 

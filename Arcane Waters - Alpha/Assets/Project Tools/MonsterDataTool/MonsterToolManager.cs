@@ -74,21 +74,25 @@ public class MonsterToolManager : XmlDataToolManager {
                switch (abilityType) {
                   case AbilityType.Standard:
                      AttackAbilityData attackAbilityData = Util.xmlLoad<AttackAbilityData>(newTextAsset);
+                     attackAbilityData.itemID = abilityXML.abilityId;
                      attackAbilityList.Add(attackAbilityData);
                      basicAbilityList.Add(attackAbilityData);
                      break;
                   case AbilityType.Stance:
                      AttackAbilityData stancebilityData = Util.xmlLoad<AttackAbilityData>(newTextAsset);
+                     stancebilityData.itemID = abilityXML.abilityId;
                      attackAbilityList.Add(stancebilityData);
                      basicAbilityList.Add(stancebilityData);
                      break;
                   case AbilityType.BuffDebuff:
                      BuffAbilityData buffAbilityData = Util.xmlLoad<BuffAbilityData>(newTextAsset);
+                     buffAbilityData.itemID = abilityXML.abilityId;
                      buffAbilityList.Add(buffAbilityData);
                      basicAbilityList.Add(buffAbilityData);
                      break;
                   default:
                      BasicAbilityData abilityData = Util.xmlLoad<BasicAbilityData>(newTextAsset);
+                     abilityData.itemID = abilityXML.abilityId;
                      basicAbilityList.Add(abilityData);
                      break;
                }

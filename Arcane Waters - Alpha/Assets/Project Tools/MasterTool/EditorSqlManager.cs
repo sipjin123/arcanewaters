@@ -35,7 +35,7 @@ public class EditorSQLManager
    public static string getSQLTableByName (EditorToolType editorType, int subType = 0) {
       switch (editorType) {
          case EditorToolType.BattlerAbility:
-            return "ability_xml";
+            return "ability_xml_v2";
          case EditorToolType.Achievement:
             return "achievement_xml";
          case EditorToolType.Crafting:

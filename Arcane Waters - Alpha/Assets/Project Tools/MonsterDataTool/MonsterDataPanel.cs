@@ -379,13 +379,6 @@ public class MonsterDataPanel : MonoBehaviour {
       BattlerData battlerData = getBattlerData();
       battlerData.battlerLootData = getRawLootData();
 
-      foreach (AttackAbilityData attackAbility in battlerData.battlerAbilities.attackAbilityDataList) {
-         abilityToolManager.saveAbility(attackAbility);
-      }
-      foreach (BuffAbilityData buffAbility in battlerData.battlerAbilities.buffAbilityDataList) {
-         abilityToolManager.saveAbility(buffAbility);
-      }
-
       if (isValidData(battlerData)) {
          monsterToolManager.saveDataToFile(battlerData, currentXmlId, xml_toggler.isOn);
          gameObject.SetActive(false);
@@ -398,7 +391,6 @@ public class MonsterDataPanel : MonoBehaviour {
       if (battleData.imagePath != string.Empty
          && battleData.enemyName != string.Empty
          && battleData.battlerLootData.defaultLoot.category != Item.Category.None 
-         && battleData.battlerLootData.defaultLoot.itemTypeId != 0
          && battleData.enemyType != Enemy.Type.None) {
          return true;
       }

@@ -9,6 +9,9 @@ using Random = UnityEngine.Random;
 public class MonsterSkillTemplate : MonoBehaviour {
    #region Public Variables
 
+   // The unique skill id of this template
+   public int skillID;
+
    // Reference to the monster panel
    public MonsterDataPanel monsterDataPanel;
 

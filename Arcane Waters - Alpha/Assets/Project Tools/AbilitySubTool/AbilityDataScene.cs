@@ -92,7 +92,7 @@ public class AbilityDataScene : MonoBehaviour
       }
       addATKSkillButton.onClick.AddListener(() => addSkillTemplate(AbilityType.Standard));
       addDEFSkillButton.onClick.AddListener(() => addSkillTemplate(AbilityType.BuffDebuff));
-      createTemplateButton.onClick.AddListener(() => createNewTemplate(new BasicAbilityData()));
+      createTemplateButton.onClick.AddListener(() => createNewTemplate(new BasicAbilityData { itemID = -1, itemName = MasterToolScene.UNDEFINED }));
       saveButton.onClick.AddListener(() => saveXML());
 
       if (!hasBeenInitialized) {
@@ -156,19 +156,11 @@ public class AbilityDataScene : MonoBehaviour
       }
 
       MonsterSkillTemplate skillTemplate = skillTemplateList[0];
-      if (!idList.Exists(_ => _ == int.Parse(skillTemplate.itemID.text))) {
+      if (!idList.Exists(_ => _ == skillTemplate.skillID)) {
          if (skillTemplateList[0].abilityTypeEnum == AbilityType.Standard) {
-            if (_startingName != skillTemplateList[0].skillName.text) {
-               abilityManager.overWriteAbility(skillTemplate.getAttackData(), _startingName);
-            } else {
-               abilityManager.saveAbility(skillTemplate.getAttackData());
-            }
+            abilityManager.saveAbility(skillTemplate.getAttackData());
          } else if (skillTemplateList[0].abilityTypeEnum == AbilityType.BuffDebuff) {
-            if (_startingName != skillTemplateList[0].skillName.text) {
-               abilityManager.overWriteAbility(skillTemplate.getBuffData(), _startingName);
-            } else {
-               abilityManager.saveAbility(skillTemplate.getBuffData());
-            }
+            abilityManager.saveAbility(skillTemplate.getBuffData());
          }
             
          abilityPanel.SetActive(false);
@@ -177,21 +169,11 @@ public class AbilityDataScene : MonoBehaviour
       }
    }
 
-   public void deleteAbility (BasicAbilityData data) {
-      switch (data.abilityType) {
-         case AbilityType.Standard:
-            abilityManager.deleteSkillDataFile(data);
-            break;
-         case AbilityType.BuffDebuff:
-            abilityManager.deleteSkillDataFile(data);
-            break;
-         default:
-            abilityManager.deleteSkillDataFile(data);
-            break;
-      }
+   public void deleteAbility (int skillId) {
+      abilityManager.deleteSkillDataFile(skillId);
    }
 
-   public void updateWithAbilityData (Dictionary<string, BasicAbilityData> basicAbilityData, Dictionary<string, AttackAbilityData> attackData, Dictionary<string, BuffAbilityData> buffData) {
+   public void updateWithAbilityData (Dictionary<int, BasicAbilityData> basicAbilityData, Dictionary<int, AttackAbilityData> attackData, Dictionary<int, BuffAbilityData> buffData) {
       // Clear all the rows
       abilityTemplateParent.gameObject.DestroyChildren();
       skillTemplateList = new List<MonsterSkillTemplate>();
@@ -211,7 +193,7 @@ public class AbilityDataScene : MonoBehaviour
             });
 
             template.deleteButton.onClick.AddListener(() => {
-               deleteAbility(new BasicAbilityData { itemName = template.actualName, abilityType = AbilityType.Standard });
+               deleteAbility(abilityData.itemID);
                Destroy(template.gameObject, .5f);
             });
 
@@ -231,7 +213,7 @@ public class AbilityDataScene : MonoBehaviour
             abilityPanel.SetActive(true);
          });
          template.deleteButton.onClick.AddListener(() => {
-            deleteAbility(new BasicAbilityData { itemName = template.actualName, abilityType = AbilityType.BuffDebuff });
+            deleteAbility(abilityData.itemID);
             Destroy(template.gameObject, .5f);
          });
          template.duplicateButton.onClick.AddListener(() => {
@@ -250,7 +232,7 @@ public class AbilityDataScene : MonoBehaviour
                abilityPanel.SetActive(true);
             });
             template.deleteButton.onClick.AddListener(() => {
-               deleteAbility(new BasicAbilityData { itemName = template.actualName, abilityType = AbilityType.Undefined });
+               deleteAbility(abilityData.itemID);
                Destroy(template.gameObject, .5f);
             });
             template.duplicateButton.onClick.AddListener(() => {
@@ -299,7 +281,7 @@ public class AbilityDataScene : MonoBehaviour
       switch (type) {
          case AbilityType.Standard: {
                // Basic data set
-               BattleItemData battleItemData = BattleItemData.CreateInstance(1, "Name", "Desc", Element.ALL, null, null, BattleItemType.UNDEFINED, Weapon.Class.Any, String.Empty, 1);
+               BattleItemData battleItemData = BattleItemData.CreateInstance(-1, "Name", "Desc", Element.ALL, null, null, BattleItemType.UNDEFINED, Weapon.Class.Any, String.Empty, 1);
                BasicAbilityData basicData = BasicAbilityData.CreateInstance(battleItemData, 1, null, "", new Battler.Stance[] { }, AbilityType.Standard, 1, 1, 1);
                AttackAbilityData attackData = AttackAbilityData.CreateInstance(basicData, false, 0, false, AbilityActionType.UNDEFINED, false, false, 2, null, 1);
                finalizeAttackTemplate(attackData);
@@ -307,7 +289,7 @@ public class AbilityDataScene : MonoBehaviour
             break;
          case AbilityType.BuffDebuff: {
                // Basic data set
-               BattleItemData battleItemData = BattleItemData.CreateInstance(1, "Name", "Desc", Element.ALL, null, null, BattleItemType.UNDEFINED, Weapon.Class.Any, String.Empty, 1);
+               BattleItemData battleItemData = BattleItemData.CreateInstance(-1, "Name", "Desc", Element.ALL, null, null, BattleItemType.UNDEFINED, Weapon.Class.Any, String.Empty, 1);
                BasicAbilityData basicData = BasicAbilityData.CreateInstance(battleItemData, 1, null, "", new Battler.Stance[] { }, AbilityType.BuffDebuff, 1, 1, 1);
                BuffAbilityData buffData = BuffAbilityData.CreateInstance(basicData, 1, BuffType.UNDEFINED, BuffActionType.UNDEFINED, string.Empty, 0, BonusStatType.None);
                finalizeBuffTemplate(buffData);

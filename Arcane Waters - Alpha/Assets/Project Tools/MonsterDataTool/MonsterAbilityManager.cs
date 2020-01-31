@@ -14,18 +14,18 @@ public class MonsterAbilityManager : MonoBehaviour {
 
    #endregion
 
-   public void updateWithAbilityData (Dictionary<string, BasicAbilityData> basicAbilityData, Dictionary<string, AttackAbilityData> attackData, Dictionary<string, BuffAbilityData> buffData) {
+   public void updateWithAbilityData (Dictionary<int, BasicAbilityData> basicAbilityData, Dictionary<int, AttackAbilityData> attackData, Dictionary<int, BuffAbilityData> buffData) {
       basicAbilityList = new List<BasicAbilityData>();
       attackAbilityList = new List<AttackAbilityData>();
       buffAbilityList = new List<BuffAbilityData>();
 
-      foreach (KeyValuePair<string, BasicAbilityData> basicAbility in basicAbilityData) {
+      foreach (KeyValuePair<int, BasicAbilityData> basicAbility in basicAbilityData) {
          basicAbilityList.Add(basicAbility.Value);
       }
-      foreach (KeyValuePair<string, AttackAbilityData> attackAbility in attackData) {
+      foreach (KeyValuePair<int, AttackAbilityData> attackAbility in attackData) {
          attackAbilityList.Add(attackAbility.Value);
       }
-      foreach (KeyValuePair<string, BuffAbilityData> buffAbility in buffData) {
+      foreach (KeyValuePair<int, BuffAbilityData> buffAbility in buffData) {
          buffAbilityList.Add(buffAbility.Value);
       }
    }

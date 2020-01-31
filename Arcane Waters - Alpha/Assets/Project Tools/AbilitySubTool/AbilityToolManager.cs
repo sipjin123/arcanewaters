@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
 using Mirror;
 using System.IO;
 using System.Xml.Serialization;
@@ -39,14 +38,14 @@ public class AbilityToolManager : XmlDataToolManager
    }
 
    public void loadXML () {
-      abilityDataList = new Dictionary<string, BasicAbilityData>();
-      attackAbilityList = new Dictionary<string, AttackAbilityData>();
-      buffAbilityList = new Dictionary<string, BuffAbilityData>();
+      abilityDataList = new Dictionary<int, BasicAbilityData>();
+      attackAbilityList = new Dictionary<int, AttackAbilityData>();
+      buffAbilityList = new Dictionary<int, BuffAbilityData>();
 
       XmlLoadingPanel.self.startLoading();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List< AbilityXMLContent> xmlContentList = DB_Main.getBattleAbilityXML();
+         List<AbilityXMLContent> xmlContentList = DB_Main.getBattleAbilityXML();
          userNameData = DB_Main.getSQLDataByName(editorToolType);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -58,22 +57,26 @@ public class AbilityToolManager : XmlDataToolManager
                switch (abilityType) {
                   case AbilityType.Standard:
                      AttackAbilityData attackAbilityData = Util.xmlLoad<AttackAbilityData>(newTextAsset);
-                     attackAbilityList.Add(attackAbilityData.itemName, attackAbilityData);
-                     abilityDataList.Add(attackAbilityData.itemName, attackAbilityData);
+                     attackAbilityData.itemID = xmlContent.abilityId;
+                     attackAbilityList.Add(xmlContent.abilityId, attackAbilityData);
+                     abilityDataList.Add(xmlContent.abilityId, attackAbilityData);
                      break;
                   case AbilityType.Stance:
                      AttackAbilityData stancebilityData = Util.xmlLoad<AttackAbilityData>(newTextAsset);
-                     attackAbilityList.Add(stancebilityData.itemName, stancebilityData);
-                     abilityDataList.Add(stancebilityData.itemName, stancebilityData);
+                     stancebilityData.itemID = xmlContent.abilityId;
+                     attackAbilityList.Add(xmlContent.abilityId, stancebilityData);
+                     abilityDataList.Add(xmlContent.abilityId, stancebilityData);
                      break;
                   case AbilityType.BuffDebuff:
                      BuffAbilityData buffAbilityData = Util.xmlLoad<BuffAbilityData>(newTextAsset);
-                     buffAbilityList.Add(buffAbilityData.itemName, buffAbilityData);
-                     abilityDataList.Add(buffAbilityData.itemName, buffAbilityData);
+                     buffAbilityData.itemID = xmlContent.abilityId;
+                     buffAbilityList.Add(xmlContent.abilityId, buffAbilityData);
+                     abilityDataList.Add(xmlContent.abilityId, buffAbilityData);
                      break;
                   default:
                      BasicAbilityData abilityData = Util.xmlLoad<BasicAbilityData>(newTextAsset);
-                     abilityDataList.Add(abilityData.itemName, abilityData);
+                     abilityData.itemID = xmlContent.abilityId;
+                     abilityDataList.Add(xmlContent.abilityId, abilityData);
                      break;
                }
             }
@@ -101,7 +104,7 @@ public class AbilityToolManager : XmlDataToolManager
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateBattleAbilities(data.itemName, longString, (int) data.abilityType);
+         DB_Main.updateBattleAbilities(-1, data.itemName, longString, (int) data.abilityType);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXML();
@@ -109,26 +112,12 @@ public class AbilityToolManager : XmlDataToolManager
       });
    }
 
-   public void deleteSkillDataFile (BasicAbilityData data) {
+   public void deleteSkillDataFile (int skillID) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.deleteBattleAbilityXML(data.itemName);
+         DB_Main.deleteBattleAbilityXML(skillID);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXML();
-         });
-      });
-   }
-
-   public bool ifExists (string nameID) {
-      return abilityDataList.ContainsKey(nameID);
-   }
-
-   public void overWriteAbility (BasicAbilityData data, string oldName) {
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.deleteBattleAbilityXML(oldName);
-
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            saveAbility(data);
          });
       });
    }
@@ -142,7 +131,7 @@ public class AbilityToolManager : XmlDataToolManager
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateBattleAbilities(data.itemName, longString, (int)data.abilityType);
+         DB_Main.updateBattleAbilities(data.itemID, data.itemName, longString, (int)data.abilityType);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXML();
@@ -153,9 +142,9 @@ public class AbilityToolManager : XmlDataToolManager
    #region Private Variables
 
    // Ability Cache
-   private Dictionary<string, BasicAbilityData> abilityDataList = new Dictionary<string, BasicAbilityData>();
-   private Dictionary<string, AttackAbilityData> attackAbilityList = new Dictionary<string, AttackAbilityData>();
-   private Dictionary<string, BuffAbilityData> buffAbilityList = new Dictionary<string, BuffAbilityData>();
+   private Dictionary<int, BasicAbilityData> abilityDataList = new Dictionary<int, BasicAbilityData>();
+   private Dictionary<int, AttackAbilityData> attackAbilityList = new Dictionary<int, AttackAbilityData>();
+   private Dictionary<int, BuffAbilityData> buffAbilityList = new Dictionary<int, BuffAbilityData>();
 
    #endregion
 }
@@ -167,4 +156,10 @@ public class AbilityXMLContent
 
    // Ability Content
    public string abilityXML = "";
+
+   // Id of the creator
+   public int ownderId = 0;
+
+   // Unique Id of the ability
+   public int abilityId = 0;
 }

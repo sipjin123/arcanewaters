@@ -167,18 +167,26 @@ public class DB_Main : DB_MainStub
 
    #region Battler Abilities XML
 
-   public static new void updateBattleAbilities (string abilityName, string abilityXML, int abilityType) {
+   public static new void updateBattleAbilities (int skillId, string abilityName, string abilityXML, int abilityType) {
+      string skillIdKey = "xml_id, ";
+      string skillIdValue = "@xml_id, ";
+      if (skillId < 0) {
+         skillIdKey = "";
+         skillIdValue = "";
+      }
+
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO ability_xml (xml_name, xmlContent, ability_type, creator_userID) " +
-            "VALUES(@xml_name, @xmlContent, @ability_type, @creator_userID) " +
-            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, ability_type = @ability_type", conn)) {
+            "INSERT INTO ability_xml_v2 ("+ skillIdKey + "xml_name, xmlContent, ability_type, creator_userID) " +
+            "VALUES("+ skillIdValue + "@xml_name, @xmlContent, @ability_type, @creator_userID) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, ability_type = @ability_type, xmlContent = @xmlContent", conn)) {
 
             conn.Open();
             cmd.Prepare();
 
+            cmd.Parameters.AddWithValue("@xml_id", skillId);
             cmd.Parameters.AddWithValue("@xml_name", abilityName);
             cmd.Parameters.AddWithValue("@xmlContent", abilityXML);
             cmd.Parameters.AddWithValue("@ability_type", abilityType);
@@ -188,17 +196,18 @@ public class DB_Main : DB_MainStub
             cmd.ExecuteNonQuery();
          }
       } catch (Exception e) {
+         UnityEngine.Debug.LogError("Error is: " + e.ToString());
          D.error("MySQL Error: " + e.ToString());
       }
    }
 
-   public static new void deleteBattleAbilityXML (string abilityName) {
+   public static new void deleteBattleAbilityXML (int skillId) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM ability_xml WHERE xml_name=@xml_name", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM ability_xml_v2 WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@xml_name", abilityName);
+            cmd.Parameters.AddWithValue("@xml_id", skillId);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -213,7 +222,7 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.ability_xml", conn)) {
+            "SELECT * FROM arcane.ability_xml_v2", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -224,6 +233,8 @@ public class DB_Main : DB_MainStub
                   AbilityXMLContent newXML = new AbilityXMLContent();
                   newXML.abilityXML = dataReader.GetString("xmlContent");
                   newXML.abilityType = dataReader.GetInt32("ability_type");
+                  newXML.abilityId = dataReader.GetInt32("xml_id");
+                  newXML.ownderId = dataReader.GetInt32("creator_userID");
                   xmlContent.Add(newXML);
                }
             }
@@ -240,7 +251,7 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM ability_xml WHERE (default_ability=@default_ability)", conn)) {
+            "SELECT * FROM ability_xml_v2 WHERE (default_ability=@default_ability)", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -252,6 +263,8 @@ public class DB_Main : DB_MainStub
                   AbilityXMLContent newXML = new AbilityXMLContent();
                   newXML.abilityXML = dataReader.GetString("xmlContent");
                   newXML.abilityType = dataReader.GetInt32("ability_type");
+                  newXML.abilityId = dataReader.GetInt32("xml_id");
+                  newXML.ownderId = dataReader.GetInt32("creator_userID");
                   xmlContent.Add(newXML);
                }
             }
