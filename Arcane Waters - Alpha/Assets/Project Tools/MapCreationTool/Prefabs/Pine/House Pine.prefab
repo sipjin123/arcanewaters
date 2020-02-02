@@ -403,12 +403,6 @@ MonoBehaviour:
   - name: locked
     defaultValue: true
     type: 3
-  - name: target map
-    defaultValue: 
-    type: 2
-  - name: target spawn
-    defaultValue: 
-    type: 2
   selectDataFields: []
   customDataFields: []
 --- !u!212 &7136490970979764131

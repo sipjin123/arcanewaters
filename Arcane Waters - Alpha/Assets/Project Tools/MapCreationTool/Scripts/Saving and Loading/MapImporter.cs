@@ -37,6 +37,11 @@ namespace MapCreationTool
 
          ExportedProject001 exportedProject = JsonUtility.FromJson<ExportedProject001>(data);
 
+         if(exportedProject.biome == Biome.Type.None) {
+            D.warning("Invalid biome type NONE in map data. Setting to 'Forest'.");
+            exportedProject.biome = Biome.Type.Forest;
+         }
+
          if (exportedProject.editorType == EditorType.Sea) {
             area.isSea = true;
          }

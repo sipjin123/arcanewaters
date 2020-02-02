@@ -27,8 +27,8 @@ public class MapManager : MonoBehaviour {
 
       // For now we'll just spawn one for testing purposes
       string areaKey = "Pineward";
-      MapData mapData = DB_Main.getLiveMapData(areaKey);
-      MapImporter.instantiateMapData(mapData.serializedData, areaKey, new Vector3(500f, 500f));
+      string mapData = DB_Main.getMapLiveVersionGameData(areaKey);
+      MapImporter.instantiateMapData(mapData, areaKey, new Vector3(500f, 500f));
    }
 
    #region Private Variables

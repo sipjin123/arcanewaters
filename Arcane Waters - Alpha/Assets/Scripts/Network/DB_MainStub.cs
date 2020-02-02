@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 using System.Text;
-using MapCreationTool;
+using MapCreationTool.Serialization;
 
 public class DB_MainStub : MonoBehaviour
 {
@@ -103,43 +103,47 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
-   public static List<MapDTO> getMapDataDescriptions () {
-      return new List<MapDTO>();
+   public static List<Map> getMaps () {
+      return new List<Map>();
    }
 
-   public static List<MapDTO> getMapVersionsDescriptions (string name) {
-      return new List<MapDTO>();
+   public static List<MapVersion> getMapVersions (Map map) {
+      return new List<MapVersion>();
    }
 
-   public static MapDTO getEditorMapData (string name) {
+   public static string getMapLiveVersionGameData (string mapName) {
       return null;
    }
 
-   public static MapDTO getEditorMapData (string name, int version) {
+   public static string getMapVersionEditorData (MapVersion version) {
       return null;
    }
 
-   public static MapData getLiveMapData (string name) {
+   public static List<MapSpawn> getMapSpawns () {
+      return new List<MapSpawn>();
+   }
+
+   public static void createMap (MapVersion mapVersion) {
+
+   }
+
+   public static MapVersion createNewMapVersion (MapVersion mapVersion) {
       return null;
    }
 
-   public static void setLiveMapVersion (MapDTO map, int publisherID) {
+   public static void updateMapVersion (MapVersion mapVersion) {
 
    }
 
-   public static List<MapData> getLiveMapDataDescriptions () {
-      return new List<MapData>();
-   }
-
-   public static void createNewMapDataVersion (MapDTO map) {
+   public static void deleteMap (string name) {
 
    }
 
-   public static void deleteMapData (string name) {
+   public static void deleteMapVersion (string name, int version) {
 
    }
 
-   public static void deleteMapDataVersion (string name, int version) {
+   public static void setLiveMapVersion (MapVersion version) {
 
    }
 
@@ -197,8 +201,8 @@ public class DB_MainStub : MonoBehaviour
       return new List<AbilitySQLData>();
    }
 
-   public static List<AbilitySQLData> getDefaultAbilities () {
-      return new List<AbilitySQLData>();
+   public static List<AbilityXMLContent> getDefaultAbilities () {
+      return new List<AbilityXMLContent>();
    }
 
    public static void updateAchievementData (AchievementData achievementData, int userID, bool hasReached, int addedCount) {

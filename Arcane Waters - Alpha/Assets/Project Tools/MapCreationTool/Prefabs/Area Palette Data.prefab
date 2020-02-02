@@ -63,7 +63,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3954157717700831650
 Transform:
   m_ObjectHideFlags: 0
@@ -97,22 +97,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   biomeTileMaps:
-  - biome: 0
+  - biome: 1
     outerTilemap: {fileID: 613167382716535742}
     innerTilemap: {fileID: 3381216353570805686}
-  - biome: 1
+  - biome: 2
     outerTilemap: {fileID: 5246155116821082308}
     innerTilemap: {fileID: 6185820284067180347}
-  - biome: 2
+  - biome: 5
     outerTilemap: {fileID: 6921446422733289715}
     innerTilemap: {fileID: 2602160743811452222}
-  - biome: 5
+  - biome: 6
     outerTilemap: {fileID: 5978658720404787527}
     innerTilemap: {fileID: 3891451778343277627}
-  - biome: 4
+  - biome: 3
     outerTilemap: {fileID: 6184909667630879952}
     innerTilemap: {fileID: 2525978244726498917}
-  - biome: 3
+  - biome: 4
     outerTilemap: {fileID: 6509944057426524009}
     innerTilemap: {fileID: 2058906067716927339}
   innerSize: {x: 7, y: 7}
@@ -7862,7 +7862,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7985777301269113212}
-  - component: {fileID: 6627993443323428308}
   m_Layer: 0
   m_Name: snow_pack
   m_TagString: Untagged
@@ -7886,20 +7885,6 @@ Transform:
   m_Father: {fileID: 6003827098852396580}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6627993443323428308
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1957980700305842665}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca63b335bbd7e7f47af62c8b4a5c5bd6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  biome: 3
-  tilemap: {fileID: 2901995650665914315}
 --- !u!1 &2072710543824538388
 GameObject:
   m_ObjectHideFlags: 0
@@ -8094,7 +8079,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1466015948610305524}
-  - component: {fileID: 3912605684604854671}
   m_Layer: 0
   m_Name: mushroom_pack
   m_TagString: Untagged
@@ -8118,20 +8102,6 @@ Transform:
   m_Father: {fileID: 6003827098852396580}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3912605684604854671
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2332766743188078916}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca63b335bbd7e7f47af62c8b4a5c5bd6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  biome: 5
-  tilemap: {fileID: 536430896551623715}
 --- !u!1 &2384699191539974878
 GameObject:
   m_ObjectHideFlags: 0
@@ -8284,7 +8254,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4099721573889338966}
-  - component: {fileID: 7620986577047401975}
   m_Layer: 0
   m_Name: lava_pack
   m_TagString: Untagged
@@ -8308,20 +8277,6 @@ Transform:
   m_Father: {fileID: 6003827098852396580}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7620986577047401975
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2590244388810913909}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca63b335bbd7e7f47af62c8b4a5c5bd6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  biome: 2
-  tilemap: {fileID: 2434172433085083963}
 --- !u!1 &2592141786506926415
 GameObject:
   m_ObjectHideFlags: 0
@@ -9966,7 +9921,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6199492241428390822}
-  - component: {fileID: 652158279605326305}
   m_Layer: 0
   m_Name: forest_pack
   m_TagString: Untagged
@@ -9990,20 +9944,6 @@ Transform:
   m_Father: {fileID: 6003827098852396580}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &652158279605326305
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2853342013909380766}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca63b335bbd7e7f47af62c8b4a5c5bd6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  biome: 0
-  tilemap: {fileID: 6432228011942056998}
 --- !u!1 &2918706218164239964
 GameObject:
   m_ObjectHideFlags: 0
@@ -43387,22 +43327,22 @@ MonoBehaviour:
   biomePaletteResources:
   - tilesTilemap: {fileID: 7537017483275653098}
     prefabsCon: {fileID: 8495604647790048600}
-    biome: 1
+    biome: 2
   - tilesTilemap: {fileID: 6432228011942056998}
     prefabsCon: {fileID: 4876502822655128039}
-    biome: 0
+    biome: 1
   - tilesTilemap: {fileID: 2434172433085083963}
     prefabsCon: {fileID: 2291161148427837116}
-    biome: 2
+    biome: 5
   - tilesTilemap: {fileID: 536430896551623715}
     prefabsCon: {fileID: 3865446687725341028}
-    biome: 5
+    biome: 6
   - tilesTilemap: {fileID: 6173510258201904799}
     prefabsCon: {fileID: 1547104772572133735}
-    biome: 4
+    biome: 3
   - tilesTilemap: {fileID: 2901995650665914315}
     prefabsCon: {fileID: 193901415175018326}
-    biome: 3
+    biome: 4
   sharedResources:
     tilesTilemap: {fileID: 203315423483637489}
     prefabsCon: {fileID: 3719976920741877196}
@@ -49260,7 +49200,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2742965851615802367}
-  - component: {fileID: 9051891198835113459}
   m_Layer: 0
   m_Name: pine_pack
   m_TagString: Untagged
@@ -49284,20 +49223,6 @@ Transform:
   m_Father: {fileID: 6003827098852396580}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9051891198835113459
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6592365104670220225}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca63b335bbd7e7f47af62c8b4a5c5bd6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  biome: 4
-  tilemap: {fileID: 6173510258201904799}
 --- !u!1 &6648081329585589749
 GameObject:
   m_ObjectHideFlags: 0
@@ -50171,7 +50096,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &5355132391283808116
 Transform:
   m_ObjectHideFlags: 0
@@ -51224,7 +51149,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2340811248796157081}
-  - component: {fileID: 3573887021033035134}
   m_Layer: 0
   m_Name: desert_pack
   m_TagString: Untagged
@@ -51248,20 +51172,6 @@ Transform:
   m_Father: {fileID: 6003827098852396580}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3573887021033035134
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7659546017329667118}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca63b335bbd7e7f47af62c8b4a5c5bd6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  biome: 1
-  tilemap: {fileID: 7537017483275653098}
 --- !u!1 &7761536823645306463
 GameObject:
   m_ObjectHideFlags: 0
@@ -54578,7 +54488,7 @@ Tilemap:
       - {fileID: 21300530, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300532, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300534, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 12, y: 11, z: 0}

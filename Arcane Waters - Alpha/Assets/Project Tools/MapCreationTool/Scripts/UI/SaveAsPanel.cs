@@ -2,10 +2,8 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-
-#if IS_SERVER_BUILD
-using MySql.Data.MySqlClient;
-#endif
+using MapCreationTool.Serialization;
+using System.Linq;
 
 namespace MapCreationTool
 {
@@ -16,8 +14,6 @@ namespace MapCreationTool
       [SerializeField]
       private Text errorText = null;
       [SerializeField]
-      private Text updateText = null;
-      [SerializeField]
       private Button saveButton = null;
       [SerializeField]
       private Text saveButtonText = null;
@@ -26,27 +22,20 @@ namespace MapCreationTool
          errorText.text = "";
          saveButtonText.text = "Save";
          saveButton.interactable = true;
-         inputField.text = DrawBoard.loadedMap?.name ?? "";
-         setUpdateText();
+         inputField.text = "";
          show();
       }
 
-      public void inputValueChanged () {
-         setUpdateText();
-      }
-
       public void save () {
+         if (!MasterToolAccountManager.canAlterData()) {
+            UI.errorDialog.displayUnauthorized("Your account type has no permissions to alter data");
+            return;
+         }
          StartCoroutine(saveRoutine());
       }
 
       public IEnumerator saveRoutine () {
-         if (!MasterToolAccountManager.canAlterData()) {
-            UI.errorDialog.displayUnauthorized("Your account type has no permissions to alter data");
-            yield break;
-         }
-
          saveButton.interactable = false;
-         updateText.text = "";
          saveButtonText.text = "Saving...";
          errorText.text = "";
 
@@ -54,71 +43,58 @@ namespace MapCreationTool
          yield return new WaitForEndOfFrame();
          yield return new WaitForEndOfFrame();
          yield return new WaitForEndOfFrame();
-#if IS_SERVER_BUILD
+
          try {
             if (string.IsNullOrWhiteSpace(inputField.text)) {
                throw new Exception("Name cannot be empty");
             }
 
-            if (shouldBeUpdating()) {
-               if (DrawBoard.loadedMap.creatorID != MasterToolAccountManager.self.currentAccountID) {
-                  throw new Exception("You are not the creator of this map");
-               }
-            }
-
-            MapDTO map = new MapDTO {
-               name = inputField.text,
+            MapVersion mapVersion = new MapVersion {
+               mapName = inputField.text,
+               version = 0,
+               createdAt = DateTime.UtcNow,
+               updatedAt = DateTime.UtcNow,
                editorData = DrawBoard.instance.formSerializedData(),
                gameData = DrawBoard.instance.formExportData(),
-               creatorID = MasterToolAccountManager.self.currentAccountID,
-               version = shouldBeUpdating() ? -1 : 0
+               map = new Map {
+                  name = inputField.text,
+                  createdAt = DateTime.UtcNow,
+                  creatorID = MasterToolAccountManager.self.currentAccountID
+               },
+               spawns = DrawBoard.instance.formSpawnList(inputField.text, 0)
             };
+
+            // Make sure all spawns have unique names
+            if (mapVersion.spawns.Count > 0 && mapVersion.spawns.GroupBy(s => s.name).Max(g => g.Count()) > 1) {
+               throw new Exception("Not all spawn names are unique");
+            }
 
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                string dbError = null;
                try {
-                  DB_Main.createNewMapDataVersion(map);
-               } catch (MySqlException ex) {
-                  if (ex.Number == 1062) {
-                     dbError = $"Map with name '{map.name}' already exists";
-                  } else {
-                     dbError = ex.Message;
-                  }
+                  DB_Main.createMap(mapVersion);
+               } catch (Exception ex) {
+                  dbError = ex.Message;
                }
 
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  updateText.text = "";
                   saveButton.interactable = true;
                   saveButtonText.text = "Save";
 
                   if (dbError != null) {
                      errorText.text = dbError;
                   } else {
-                     DrawBoard.loadedMap = map;
+                     DrawBoard.changeLoadedVersion(mapVersion);
+                     Overlord.instance.addSpawns(mapVersion.spawns);
                      hide();
                   }
                });
             });
          } catch (Exception ex) {
             errorText.text = ex.Message;
-
-            updateText.text = "";
             saveButton.interactable = true;
             saveButtonText.text = "Save";
          }
-#endif
-      }
-
-      private void setUpdateText () {
-         if (shouldBeUpdating()) {
-            updateText.text = $"Existing map '{inputField.text}' will be updated.";
-         } else {
-            updateText.text = "";
-         }
-      }
-
-      private bool shouldBeUpdating () {
-         return DrawBoard.loadedMap != null && DrawBoard.loadedMap.name.CompareTo(inputField.text) == 0;
       }
 
       public void close () {

@@ -12,7 +12,7 @@ namespace MapCreationTool
       [System.Serializable]
       public class BiomeTilemaps
       {
-         public BiomeType biome;
+         public Biome.Type biome;
          public Tilemap outerTilemap;
          public Tilemap innerTilemap;
       }

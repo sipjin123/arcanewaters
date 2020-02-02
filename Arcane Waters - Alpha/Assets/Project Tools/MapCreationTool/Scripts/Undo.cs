@@ -110,7 +110,7 @@ namespace MapCreationTool.UndoSystem
       public int? mountainLayer { get; set; }
       public bool? burrowedTrees { get; set; }
       public bool? individualTiles { get; set; }
-      public BiomeType? biome { get; set; }
+      public Biome.Type? biome { get; set; }
       public EraserLayerMode? eraserLayerMode { get; set; }
       public FillBounds? fillBounds { get; set; }
       public bool? snapToGrid { get; set; }

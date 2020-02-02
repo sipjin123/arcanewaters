@@ -13,11 +13,12 @@ namespace MapCreationTool
    {
       public static event System.Action<PrefabDataDefinition, PlacedPrefab> SelectedPrefabChanged;
       public static event System.Action<PlacedPrefab> SelectedPrefabDataChanged;
+      public static event System.Action<MapVersion> loadedVersionChanged;
 
       public static DrawBoard instance { get; private set; }
       public static Vector2Int size { get; private set; }
       public static Vector2Int origin { get; private set; }
-      public static MapDTO loadedMap { get; set; }
+      public static MapVersion loadedVersion { get; private set; }
 
       [SerializeField]
       private EditorConfig config = null;
@@ -82,6 +83,7 @@ namespace MapCreationTool
       private void Start () {
          setUpLayers(Tools.editorType);
          setBoardSize(Tools.boardSize);
+         changeLoadedVersion(null);
          updateBrushOutline();
       }
 
@@ -143,6 +145,11 @@ namespace MapCreationTool
 
       private void toolsAnythingChanged () {
          updateBrushOutline();
+      }
+
+      public static void changeLoadedVersion (MapVersion version) {
+         loadedVersion = version;
+         loadedVersionChanged?.Invoke(loadedVersion);
       }
 
       private void recalculateCamBounds () {
@@ -245,12 +252,12 @@ namespace MapCreationTool
 
       public void newMap () {
          clearAll();
-         loadedMap = null;
+         changeLoadedVersion(null);
          Undo.clear();
       }
 
-      public void applyDeserializedData (DeserializedProject data, MapDTO mapDescription) {
-         loadedMap = null;
+      public void applyDeserializedData (DeserializedProject data, MapVersion mapVersion) {
+         changeLoadedVersion(null);
 
          changeBoard(BoardChange.calculateDeserializedDataChange(data, layers, placedPrefabs));
          foreach (var pref in data.prefabs) {
@@ -264,7 +271,7 @@ namespace MapCreationTool
             }
          }
 
-         loadedMap = mapDescription;
+         changeLoadedVersion(mapVersion);
       }
 
       private void changeBoard (BoardChange change, bool registerUndo = true) {
@@ -532,6 +539,15 @@ namespace MapCreationTool
 
       public string formExportData () {
          return Serializer.serializeExport(layers, placedPrefabs, Tools.biome, Tools.editorType, config, palette.formCollisionDictionary(), origin, size);
+      }
+
+      public List<MapSpawn> formSpawnList (string mapName, int mapVersion) {
+         return GetComponentsInChildren<SpawnMapEditor>().Select(s => new MapSpawn {
+            mapName = mapName,
+            mapVersion = mapVersion,
+            name = s.spawnName
+         }
+         ).ToList();
       }
 
       public void ensurePreviewCleared () {

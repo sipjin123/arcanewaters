@@ -10,7 +10,8 @@ namespace MapCreationTool
       private SpriteRenderer ren;
       private Text text;
 
-      private string spawnName;
+      public string spawnName { get; private set; }
+
       private void Awake () {
          var canvas = GetComponentInChildren<Canvas>();
 

@@ -11,7 +11,7 @@ namespace MapCreationTool.PaletteTilesData
       public const string MountainLayer = "mountain";
       public TileGroup[,] tileGroups { get; set; }
       public List<PrefabGroup> prefabGroups { get; set; }
-      public BiomeType? type { get; set; }
+      public Biome.Type? type { get; set; }
 
       public TileData getTile (int x, int y) {
          TileGroup group = getGroup(x, y);
@@ -207,7 +207,7 @@ namespace MapCreationTool.PaletteTilesData
       public int cluster { get; set; }
       public TileCollisionType collision { get; set; }
 
-      public TileData (BiomedPaletteData.BiomedTileData biomedData, BiomeType biome) {
+      public TileData (BiomedPaletteData.BiomedTileData biomedData, Biome.Type biome) {
          tile = biomedData.tile[biome];
          layer = biomedData.layer;
          subLayer = biomedData.subLayer;

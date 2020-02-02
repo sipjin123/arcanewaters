@@ -5,10 +5,7 @@ using MapCreationTool.UndoSystem;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-
-#if IS_SERVER_BUILD
-using MySql.Data.MySqlClient;
-#endif
+using MapCreationTool.Serialization;
 
 namespace MapCreationTool
 {
@@ -34,6 +31,10 @@ namespace MapCreationTool
       private Toggle snapToGridToggle = null;
       [SerializeField]
       private Button saveButton = null;
+      [SerializeField]
+      private Text loadedMapText = null;
+      [SerializeField]
+      private Button newVersionButton = null;
 
       [SerializeField]
       private Button undoButton = null;
@@ -53,15 +54,17 @@ namespace MapCreationTool
       public static MapListPanel mapList { get; private set; }
       public static SaveAsPanel saveAsPanel { get; private set; }
       public static ErrorDialog errorDialog { get; private set; }
+      public static LoadingPanel loadingPanel { get; private set; }
+      public static VersionListPanel versionListPanel { get; private set; }
 
-      private Dictionary<string, BiomeType> optionsPacks = new Dictionary<string, BiomeType>
+      private Dictionary<string, Biome.Type> optionsPacks = new Dictionary<string, Biome.Type>
       {
-            {"Forest", BiomeType.Forest },
-            {"Desert", BiomeType.Desert },
-            {"Lava", BiomeType.Lava },
-            {"Shroom", BiomeType.Shroom },
-            {"Pine", BiomeType.Pine },
-            {"Snow", BiomeType.Snow }
+            {"Forest", Biome.Type.Forest },
+            {"Desert", Biome.Type.Desert },
+            {"Lava", Biome.Type.Lava },
+            {"Shroom", Biome.Type.Mushroom },
+            {"Pine", Biome.Type.Pine },
+            {"Snow", Biome.Type.Snow }
         };
 
       private void OnEnable () {
@@ -71,6 +74,8 @@ namespace MapCreationTool
          Undo.UndoPerformed += updateAllUI;
          Undo.RedoPerformed += updateAllUI;
          Undo.LogCleared += updateAllUI;
+
+         DrawBoard.loadedVersionChanged += changeLoadedMapUI;
       }
 
       private void OnDisable () {
@@ -80,7 +85,10 @@ namespace MapCreationTool
          Undo.UndoPerformed -= updateAllUI;
          Undo.RedoPerformed -= updateAllUI;
          Undo.LogCleared -= updateAllUI;
+
+         DrawBoard.loadedVersionChanged -= changeLoadedMapUI;
       }
+
       private void updateAllUI () {
          undoButton.interactable = Undo.undoCount > 0;
          redoButton.interactable = Undo.redoCount > 0;
@@ -104,20 +112,35 @@ namespace MapCreationTool
 
          updateShowedOptions();
       }
+
       private void Awake () {
          canvasScaler = GetComponent<CanvasScaler>();
          yesNoDialog = GetComponentInChildren<YesNoDialog>();
          mapList = GetComponentInChildren<MapListPanel>();
          saveAsPanel = GetComponentInChildren<SaveAsPanel>();
          errorDialog = GetComponentInChildren<ErrorDialog>();
+         loadingPanel = GetComponentInChildren<LoadingPanel>();
+         versionListPanel = GetComponentInChildren<VersionListPanel>();
 
          boardSizeDropdown.options = boardSizes.Select(size => new Dropdown.OptionData { text = "Size: " + size }).ToList();
       }
+
       private void Start () {
          biomeDropdown.options = optionsPacks.Keys.Select(k => new Dropdown.OptionData(k)).ToList();
 
          updateAllUI();
       }
+
+      private void changeLoadedMapUI (MapVersion mapVersion) {
+         if (mapVersion == null) {
+            newVersionButton.interactable = false;
+            loadedMapText.text = "New map";
+         } else {
+            newVersionButton.interactable = true;
+            loadedMapText.text = $"Name: {mapVersion.mapName}, version: {mapVersion.version}";
+         }
+      }
+
       private void updateShowedOptions () {
          mountainLayerDropdown.gameObject.SetActive(
              Tools.toolType == ToolType.Brush &&
@@ -132,18 +155,23 @@ namespace MapCreationTool
 
          snapToGridToggle.gameObject.SetActive(Tools.selectedPrefab != null);
       }
+
+
       public void biomeDropdown_Changes () {
          if (Tools.biome != optionsPacks[biomeDropdown.options[biomeDropdown.value].text])
             Tools.changeBiome(optionsPacks[biomeDropdown.options[biomeDropdown.value].text]);
       }
+
       public void burrowedTreesToggle_Changes () {
          if (Tools.burrowedTrees != burrowedTreesToggle.isOn)
             Tools.changeBurrowedTrees(burrowedTreesToggle.isOn);
       }
+
       public void mountainLayerDropdown_Changes () {
          if (Tools.mountainLayer != mountainLayerDropdown.value)
             Tools.changeMountainLayer(mountainLayerDropdown.value);
       }
+
       public void toolDropdown_ValueChanged () {
          if (Tools.toolType != (ToolType) toolDropdown.value)
             Tools.changeTool((ToolType) toolDropdown.value);
@@ -203,61 +231,67 @@ namespace MapCreationTool
             yesNoDialog.display(
              "Opening a map",
              "Are you sure you want to open a map?\nAll unsaved progress will be permanently lost.",
-             () => overlord.applyFileData(data, null),
+             () => overlord.applyFileData(data),
              null);
          }
       }
 
       public void saveButton_Click () {
-#if IS_SERVER_BUILD
          if (!MasterToolAccountManager.canAlterData()) {
             errorDialog.displayUnauthorized("Your account type has no permissions to alter data");
             return;
          }
 
-         if (DrawBoard.loadedMap == null) {
+         if (DrawBoard.loadedVersion == null) {
             saveAs();
          } else {
-            if (DrawBoard.loadedMap.creatorID != MasterToolAccountManager.self.currentAccountID) {
+            if (MasterToolAccountManager.PERMISSION_LEVEL != AdminManager.Type.Admin &&
+               DrawBoard.loadedVersion.map.creatorID != MasterToolAccountManager.self.currentAccountID) {
                errorDialog.displayUnauthorized("You are not the creator of this map");
                return;
             }
             saveButton.interactable = false;
             try {
-               MapDTO map = new MapDTO {
-                  name = DrawBoard.loadedMap.name,
+               MapVersion mapVersion = new MapVersion {
+                  mapName = DrawBoard.loadedVersion.mapName,
+                  version = DrawBoard.loadedVersion.version,
+                  createdAt = DrawBoard.loadedVersion.createdAt,
+                  updatedAt = DateTime.UtcNow,
                   editorData = DrawBoard.instance.formSerializedData(),
                   gameData = DrawBoard.instance.formExportData(),
-                  creatorID = MasterToolAccountManager.self.currentAccountID,
-                  version = -1 // This will activate the trigger which will set the approriate version
+                  map = DrawBoard.loadedVersion.map,
+                  spawns = DrawBoard.instance.formSpawnList(DrawBoard.loadedVersion.mapName, DrawBoard.loadedVersion.version)
                };
 
-               UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               // Make sure all spawns have unique names
+               if (mapVersion.spawns.Count > 0 && mapVersion.spawns.GroupBy(s => s.name).Max(g => g.Count()) > 1) {
+                  throw new Exception("Not all spawn names are unique");
+               }
+
+               UnityThreading.Task dbTask = UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                   string dbError = null;
                   try {
-                     DB_Main.createNewMapDataVersion(map);
-                  } catch (MySqlException ex) {
-                     if (ex.Number == 1062) {
-                        dbError = $"Map with name '{map.name}' already exists";
-                     } else {
-                        dbError = ex.Message;
-                     }
+                     DB_Main.updateMapVersion(mapVersion);
+                  } catch (Exception ex) {
+                     dbError = ex.Message;
                   }
 
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                      if (dbError != null) {
                         errorDialog.display(dbError);
+                     } else {
+                        DrawBoard.changeLoadedVersion(mapVersion);
+                        overlord.addSpawns(mapVersion.spawns);
                      }
                      saveButton.interactable = true;
                   });
                });
+               loadingPanel.display("Saving map version", dbTask);
             } catch (Exception ex) {
                saveButton.interactable = true;
                errorDialog.display(ex.Message);
             }
          }
-
-#endif
       }
 
       public void saveAs () {
@@ -266,6 +300,63 @@ namespace MapCreationTool
 
       public void openMapList () {
          mapList.open();
+      }
+
+      public void newVersion () {
+         if (DrawBoard.loadedVersion == null) {
+            return;
+         }
+
+         if (!MasterToolAccountManager.canAlterData()) {
+            errorDialog.displayUnauthorized("Your account type has no permissions to alter data");
+            return;
+         }
+
+         if (MasterToolAccountManager.PERMISSION_LEVEL != AdminManager.Type.Admin &&
+               DrawBoard.loadedVersion.map.creatorID != MasterToolAccountManager.self.currentAccountID) {
+            errorDialog.displayUnauthorized("You are not the creator of this map");
+            return;
+         }
+
+         try {
+            MapVersion mapVersion = new MapVersion {
+               mapName = DrawBoard.loadedVersion.mapName,
+               version = -1,
+               createdAt = DateTime.UtcNow,
+               updatedAt = DateTime.UtcNow,
+               editorData = DrawBoard.instance.formSerializedData(),
+               gameData = DrawBoard.instance.formExportData(),
+               map = DrawBoard.loadedVersion.map,
+               spawns = DrawBoard.instance.formSpawnList(DrawBoard.loadedVersion.mapName, DrawBoard.loadedVersion.version)
+            };
+
+            // Make sure all spawns have unique names
+            if (mapVersion.spawns.Count > 0 && mapVersion.spawns.GroupBy(s => s.name).Max(g => g.Count()) > 1) {
+               throw new Exception("Not all spawn names are unique");
+            }
+
+            UnityThreading.Task dbTask = UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               string dbError = null;
+               MapVersion createdVersion = null;
+               try {
+                  createdVersion = DB_Main.createNewMapVersion(mapVersion);
+               } catch (Exception ex) {
+                  dbError = ex.Message;
+               }
+
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  if (dbError != null) {
+                     errorDialog.display(dbError);
+                  } else {
+                     DrawBoard.changeLoadedVersion(createdVersion);
+                     overlord.addSpawns(createdVersion.spawns);
+                  }
+               });
+            });
+            loadingPanel.display("Saving map version", dbTask);
+         } catch (Exception ex) {
+            errorDialog.display(ex.Message);
+         }
       }
 
       public void masterToolButton_Click () {

@@ -11,7 +11,6 @@ namespace MapCreationTool
 
       public BiomeMapsDefinition[] mapsDefinitions;
       public MapsDefinition allBiomesDefinition;
-      public int[] collidableLayers = new int[0];
       public TileBase transparentTile;
       public float layerZMultiplier = -0.01f;
       public float sublayerZMultiplier = -0.0001f;
@@ -26,11 +25,10 @@ namespace MapCreationTool
 
       private void loadLocal () {
          try {
-            biomeSpecific = new Dictionary<BiomeType, BiomeMaps>();
+            biomeSpecific = new Dictionary<Biome.Type, BiomeMaps>();
             transparentTileBase = transparentTile;
             layerZMultip = layerZMultiplier;
             sublayerZMultip = sublayerZMultiplier;
-            layersWithColliders = collidableLayers;
             layerZFirst = layerZStart;
             tilemapTemplate = _tilemapTemplate;
             mapTemplate = _mapTemplate;
@@ -109,13 +107,13 @@ namespace MapCreationTool
 
       }
 
-      public static TileBase getTile (Vector2Int index, BiomeType biome) {
+      public static TileBase getTile (Vector2Int index, Biome.Type biome) {
          if (allBiomes.indexToTile.TryGetValue(index, out TileBase tile))
             return tile;
          return biomeSpecific[biome].indexToTile[index];
       }
 
-      public static Vector2Int getIndex (TileBase tile, BiomeType biome) {
+      public static Vector2Int getIndex (TileBase tile, Biome.Type biome) {
          try {
             if (allBiomes.tileToIndex.TryGetValue(tile, out Vector2Int index))
                return index;
@@ -128,7 +126,7 @@ namespace MapCreationTool
          
       }
 
-      public static GameObject getPrefab (int index, BiomeType biome, bool editorPrefab) {
+      public static GameObject getPrefab (int index, Biome.Type biome, bool editorPrefab) {
          if (editorPrefab) {
             if (allBiomes.indexToEditorPrefab.TryGetValue(index, out GameObject prefab))
                return prefab;
@@ -140,19 +138,18 @@ namespace MapCreationTool
          }
       }
 
-      public static int getIndex (GameObject prefab, BiomeType biome) {
+      public static int getIndex (GameObject prefab, Biome.Type biome) {
          if (allBiomes.prefabToIndex.TryGetValue(prefab, out int index))
             return index;
          return biomeSpecific[biome].prefabToIndex[prefab];
       }
 
-      public static Dictionary<BiomeType, BiomeMaps> biomeSpecific { get; set; }
+      public static Dictionary<Biome.Type, BiomeMaps> biomeSpecific { get; set; }
       public static BiomeMaps allBiomes { get; set; }
       public static TileBase transparentTileBase { get; set; }
       public static float layerZMultip { get; set; }
       public static float sublayerZMultip { get; set; }
       public static float layerZFirst { get; set; }
-      public static int[] layersWithColliders { get; set; }
       public static bool loaded { get; private set; }
       public static MapTemplate mapTemplate { get; private set; }
       public static Tilemap tilemapTemplate { get; private set; }
@@ -185,7 +182,7 @@ namespace MapCreationTool
       [Serializable]
       public class BiomeMapsDefinition : MapsDefinition
       {
-         public BiomeType biome;
+         public Biome.Type biome;
       }
 
       [Serializable]

@@ -17,9 +17,9 @@ namespace MapCreationTool
       public TileSetupContainer tileSetupContainer;
 
       // The dictionary all the different biome palette datas are stored in
-      private Dictionary<BiomeType, PaletteData> datas;
+      private Dictionary<Biome.Type, PaletteData> datas;
 
-      public PaletteData this[BiomeType type]
+      public PaletteData this[Biome.Type type]
       {
          get { return datas[type]; }
       }
@@ -29,7 +29,7 @@ namespace MapCreationTool
       /// Collects and arranges all the asigned information so that the data becomes usable
       /// </summary>
       public void collectInformation () {
-         datas = new Dictionary<BiomeType, PaletteData>();
+         datas = new Dictionary<Biome.Type, PaletteData>();
 
          // Container for all the special placement tool configs
          Transform specialCon = transform.Find("special");
@@ -90,7 +90,7 @@ namespace MapCreationTool
                // Set tile from the shared tilemap if it exists
                TileBase sTile = sharedPalette.tilesTilemap.GetTile(new Vector3Int(i, j, 0));
                if (sTile != null) {
-                  foreach (BiomeType biome in Enum.GetValues(typeof(BiomeType))) {
+                  foreach (Biome.Type biome in Enum.GetValues(typeof(Biome.Type))) {
                      result[i, j].tile[biome] = sTile;
                   }
                }
@@ -145,7 +145,7 @@ namespace MapCreationTool
          return groups;
       }
 
-      private List<TileGroup> formSpecialGroups (List<BiomedTileGroup> groups, BiomedTileData[,] tileMatrix, Transform specialCon, Transform[] prefabCons, BiomeType biome) {
+      private List<TileGroup> formSpecialGroups (List<BiomedTileGroup> groups, BiomedTileData[,] tileMatrix, Transform specialCon, Transform[] prefabCons, Biome.Type biome) {
          List<TileGroup> result = new List<TileGroup>();
          foreach (var group in groups) {
             //------------------------------------------------
@@ -213,7 +213,7 @@ namespace MapCreationTool
          return result;
       }
 
-      private RectTileGroup formSpecialGroup (BiomedTileGroup from, BiomedTileData[,] tileMatrix, RectGroupConfig config, BiomeType biome) {
+      private RectTileGroup formSpecialGroup (BiomedTileGroup from, BiomedTileData[,] tileMatrix, RectGroupConfig config, Biome.Type biome) {
          RectTileGroup newGroup = new RectTileGroup {
             tiles = extractBiome(from.tiles, biome),
             start = from.start
@@ -223,7 +223,7 @@ namespace MapCreationTool
          return newGroup;
       }
 
-      private InteriorWallGroup formSpecialGroup (BiomedTileGroup from, BiomedTileData[,] tileMatrix, InteriorWallConfig config, BiomeType biome) {
+      private InteriorWallGroup formSpecialGroup (BiomedTileGroup from, BiomedTileData[,] tileMatrix, InteriorWallConfig config, Biome.Type biome) {
          InteriorWallGroup newGroup = new InteriorWallGroup {
             tiles = extractBiome(from.tiles, biome),
             start = from.start,
@@ -243,7 +243,7 @@ namespace MapCreationTool
          return newGroup;
       }
 
-      private SeaMountainGroup formSpecialGroup (BiomedTileGroup from, BiomedTileData[,] tileMatrix, SeaMountainConfig config, BiomeType biome) {
+      private SeaMountainGroup formSpecialGroup (BiomedTileGroup from, BiomedTileData[,] tileMatrix, SeaMountainConfig config, Biome.Type biome) {
 
          BoundsInt bounds = config.mainBounds;
          bounds.position += Vector3Int.RoundToInt(config.transform.position);
@@ -272,7 +272,7 @@ namespace MapCreationTool
          return newGroup;
       }
 
-      private RiverGroup formSpecialGroup (BiomedTileGroup from, BiomedTileData[,] tileMatrix, RiverGroupConfig config, BiomeType biome) {
+      private RiverGroup formSpecialGroup (BiomedTileGroup from, BiomedTileData[,] tileMatrix, RiverGroupConfig config, Biome.Type biome) {
 
          BoundsInt bounds = config.mainBounds;
          bounds.position += Vector3Int.RoundToInt(config.transform.position);
@@ -303,7 +303,7 @@ namespace MapCreationTool
          return newGroup;
       }
 
-      private MountainGroup formSpecialGroup (BiomedTileGroup from, MountainGroupConfig config, BiomeType biome) {
+      private MountainGroup formSpecialGroup (BiomedTileGroup from, MountainGroupConfig config, Biome.Type biome) {
          var tm = config.biomeTileMaps.First(bm => bm.biome == biome);
          var outerTilemap = tm.outerTilemap;
          var innerTilemap = tm.innerTilemap;
@@ -341,7 +341,7 @@ namespace MapCreationTool
          return newGroup;
       }
 
-      private NineSliceInOutGroup formSpecialGroup (BiomedTileGroup from, BiomedTileData[,] tileMatrix, NineSliceInOutConfig config, BiomeType biome) {
+      private NineSliceInOutGroup formSpecialGroup (BiomedTileGroup from, BiomedTileData[,] tileMatrix, NineSliceInOutConfig config, Biome.Type biome) {
          BoundsInt innerBounds = config.innerBounds;
          innerBounds.position += Vector3Int.RoundToInt(config.transform.position);
          BoundsInt outerBounds = config.outerBounds;
@@ -374,7 +374,7 @@ namespace MapCreationTool
          return newGroup;
       }
 
-      private NineGroup formSpecialGroup (BiomedTileGroup from, NineGroupConfig config, BiomeType biome) {
+      private NineGroup formSpecialGroup (BiomedTileGroup from, NineGroupConfig config, Biome.Type biome) {
          NineGroup newGroup = new NineGroup {
             tiles = extractBiome(from.tiles, biome),
             start = from.start
@@ -384,7 +384,7 @@ namespace MapCreationTool
          return newGroup;
       }
 
-      private DockGroup FormSpecialGroup (BiomedTileGroup from, DockGroupConfig config, BiomeType biome) {
+      private DockGroup FormSpecialGroup (BiomedTileGroup from, DockGroupConfig config, Biome.Type biome) {
          DockGroup newGroup = new DockGroup {
             tiles = extractBiome(from.tiles, biome),
             start = from.start
@@ -396,7 +396,7 @@ namespace MapCreationTool
          return newGroup;
       }
 
-      private NineFourGroup formSpecialGroup (BiomedTileGroup from, BiomedTileData[,] tileMatrix, NineFourGroupConfig config, BiomeType biome) {
+      private NineFourGroup formSpecialGroup (BiomedTileGroup from, BiomedTileData[,] tileMatrix, NineFourGroupConfig config, Biome.Type biome) {
          BoundsInt mainBounds = config.mainBounds;
          mainBounds.position += Vector3Int.RoundToInt(config.transform.position);
          BoundsInt cornerBounds = config.cornerBounds;
@@ -432,7 +432,7 @@ namespace MapCreationTool
          return newGroup;
       }
 
-      private WallGroup formSpecialGroup (BiomedTileGroup from, BiomedTileData[,] tileMatrix, WallGroupConfig config, BiomeType biome) {
+      private WallGroup formSpecialGroup (BiomedTileGroup from, BiomedTileData[,] tileMatrix, WallGroupConfig config, Biome.Type biome) {
          BoundsInt bounds = config.tileBounds;
          bounds.position += Vector3Int.RoundToInt(config.transform.position);
 
@@ -526,7 +526,7 @@ namespace MapCreationTool
          return null;
       }
 
-      private PaletteTilesData.TileData[,] extractBiome (BiomedTileData[,] tiles, BiomeType targetBiome) {
+      private PaletteTilesData.TileData[,] extractBiome (BiomedTileData[,] tiles, Biome.Type targetBiome) {
          PaletteTilesData.TileData[,] result = new PaletteTilesData.TileData[tiles.GetLength(0), tiles.GetLength(1)];
 
          for (int i = 0; i < result.GetLength(0); i++) {
@@ -550,7 +550,7 @@ namespace MapCreationTool
       [System.Serializable]
       public class BiomePaletteResources : PaletteResources
       {
-         public BiomeType biome = BiomeType.Forest;
+         public Biome.Type biome = Biome.Type.Forest;
       }
 
       [System.Serializable]
@@ -626,9 +626,9 @@ namespace MapCreationTool
       }
       public class BiomedTile
       {
-         private Dictionary<BiomeType, TileBase> tiles = new Dictionary<BiomeType, TileBase>();
+         private Dictionary<Biome.Type, TileBase> tiles = new Dictionary<Biome.Type, TileBase>();
 
-         public TileBase this[BiomeType type]
+         public TileBase this[Biome.Type type]
          {
             get
             {

@@ -7,6 +7,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Xml;
 using MapCreationTool;
+using MapCreationTool.Serialization;
 
 #if IS_SERVER_BUILD
 using MySql.Data.MySqlClient;
@@ -587,8 +588,8 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO land_monster_xml_v2 ("+ xml_id_key + "xmlContent, creator_userID, monster_type, monster_name, isActive) " +
-            "VALUES("+ xml_id_value + "@xmlContent, @creator_userID, @monster_type, @monster_name, @isActive) " +
+            "INSERT INTO land_monster_xml_v2 (" + xml_id_key + "xmlContent, creator_userID, monster_type, monster_name, isActive) " +
+            "VALUES(" + xml_id_value + "@xmlContent, @creator_userID, @monster_type, @monster_name, @isActive) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, monster_type = @monster_type, monster_name = @monster_name, isActive = @isActive", conn)) {
 
             conn.Open();
@@ -598,7 +599,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
             cmd.Parameters.AddWithValue("@monster_type", enemyType.ToString());
             cmd.Parameters.AddWithValue("@monster_name", battlerName);
-            cmd.Parameters.AddWithValue("@isActive", isActive); 
+            cmd.Parameters.AddWithValue("@isActive", isActive);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
 
             // Execute the command
@@ -810,16 +811,13 @@ public class DB_Main : DB_MainStub
 
    #region Map Editor Data
 
-   public static new List<MapDTO> getMapDataDescriptions () {
-      List<MapDTO> result = new List<MapDTO>();
+   public static new List<Map> getMaps () {
+      List<Map> result = new List<Map>();
 
-      string cmdText = "SELECT map_data.name, MIN(created_at) as created_at, MAX(created_at) as updated_at, " +
-            "MAX(map_data.version) as version, live_maps.version as live_version, map_data.creatorUserId, accName " +
-         "FROM map_data " +
-            "LEFT JOIN live_maps ON map_data.name = live_maps.name " +
-            "LEFT JOIN accounts ON map_data.creatorUserId = accId " +
-         "GROUP BY name " +
-         "ORDER BY updated_at DESC;";
+      string cmdText = "SELECT name, createdAt, creatorUserId, publishedVersion, accName " +
+         "FROM maps " +
+            "LEFT JOIN accounts ON maps.creatorUserId = accId " +
+         "ORDER BY createdAt DESC;";
 
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
@@ -828,14 +826,12 @@ public class DB_Main : DB_MainStub
 
          using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
             while (dataReader.Read()) {
-               result.Add(new MapDTO {
+               result.Add(new Map {
                   name = dataReader.GetString("name"),
-                  createdAt = dataReader.GetDateTime("created_at"),
-                  updatedAt = dataReader.GetDateTime("updated_at"),
-                  version = dataReader.GetInt32("version"),
-                  liveVersion = dataReader.IsDBNull(dataReader.GetOrdinal("live_version"))
+                  createdAt = dataReader.GetDateTime("createdAt"),
+                  publishedVersion = dataReader.IsDBNull(dataReader.GetOrdinal("publishedVersion"))
                      ? (int?) null
-                     : dataReader.GetInt32("live_version"),
+                     : dataReader.GetInt32("publishedVersion"),
                   creatorID = dataReader.GetInt32("creatorUserId"),
                   creatorName = dataReader.GetString("accName")
                });
@@ -846,35 +842,28 @@ public class DB_Main : DB_MainStub
       return result;
    }
 
-   public static new List<MapDTO> getMapVersionsDescriptions (string name) {
-      List<MapDTO> result = new List<MapDTO>();
+   public static new List<MapVersion> getMapVersions (Map map) {
+      List<MapVersion> result = new List<MapVersion>();
 
-      string cmdText = "SELECT map_data.name, created_at, map_data.version, live_maps.version as live_version, map_data.creatorUserId as creatorUserId, accName " +
-         "FROM map_data " +
-            "LEFT JOIN live_maps ON map_data.name = live_maps.name " +
-            "LEFT JOIN accounts ON map_data.creatorUserId = accounts.accId " +
-         "WHERE map_data.name = @name " +
-         "ORDER BY map_data.version DESC;";
+      string cmdText = "SELECT version, createdAt, updatedAt " +
+         "FROM map_versions " +
+         "WHERE mapName = @name " +
+         "ORDER BY updatedAt DESC;";
 
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+         cmd.Parameters.AddWithValue("@name", map.name);
          conn.Open();
          cmd.Prepare();
-
-         cmd.Parameters.AddWithValue("@name", name);
 
          using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
             while (dataReader.Read()) {
-               result.Add(new MapDTO {
-                  name = dataReader.GetString("name"),
-                  createdAt = dataReader.GetDateTime("created_at"),
-                  updatedAt = dataReader.GetDateTime("created_at"),
+               result.Add(new MapVersion {
+                  mapName = map.name,
                   version = dataReader.GetInt32("version"),
-                  liveVersion = dataReader.IsDBNull(dataReader.GetOrdinal("live_version"))
-                     ? (int?) null
-                     : dataReader.GetInt32("live_version"),
-                  creatorID = dataReader.GetInt32("creatorUserId"),
-                  creatorName = dataReader.GetString("accName")
+                  createdAt = dataReader.GetDateTime("createdAt"),
+                  updatedAt = dataReader.GetDateTime("updatedAt"),
+                  map = map
                });
             }
          }
@@ -883,101 +872,52 @@ public class DB_Main : DB_MainStub
       return result;
    }
 
-   public static new MapDTO getEditorMapData (string name) {
-      string cmdText = "SELECT name, created_at, editor_data, version, creatorUserId, accName " +
-         "FROM map_data LEFT JOIN accounts ON map_data.creatorUserId = accounts.accId " +
-         "WHERE name = @name AND version = (SELECT MAX(version) FROM map_data WHERE name = @name);";
+   public static new string getMapLiveVersionGameData (string mapName) {
+      string cmdText = "SELECT gameData " +
+         "FROM map_versions " +
+         "WHERE mapName = @name AND version = (SELECT publishedVersion FROM maps WHERE name = @name);";
+
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+         conn.Open();
+         cmd.Prepare();
+         cmd.Parameters.AddWithValue("@name", mapName);
+
+         using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+            if (!dataReader.Read()) {
+               return null;
+            }
+            return dataReader.GetString("gameData");
+         }
+      }
+   }
+
+   public static new string getMapVersionEditorData (MapVersion version) {
+      string cmdText = "SELECT editorData from map_versions WHERE mapName = @name AND version = @version;";
 
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          conn.Open();
          cmd.Prepare();
 
-         cmd.Parameters.AddWithValue("@name", name);
+         cmd.Parameters.AddWithValue("@name", version.mapName);
+         cmd.Parameters.AddWithValue("@version", version.version);
 
          using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
             if (!dataReader.HasRows) {
                return null;
             } else {
                dataReader.Read();
-               return new MapDTO {
-                  name = dataReader.GetString("name"),
-                  createdAt = dataReader.GetDateTime("created_at"),
-                  updatedAt = dataReader.GetDateTime("created_at"),
-                  editorData = dataReader.GetString("editor_data"),
-                  version = dataReader.GetInt32("version"),
-                  creatorID = dataReader.GetInt32("creatorUserId"),
-                  creatorName = dataReader.GetString("accName")
-               };
+               return dataReader.GetString("editorData");
             }
          }
       }
    }
 
-   public static new MapDTO getEditorMapData (string name, int version) {
-      string cmdText = "SELECT name, created_at, editor_data, version, creatorUserId, accName " +
-         "FROM map_data LEFT JOIN accounts ON map_data.creatorUserId = accounts.accId " +
-         "WHERE name = @name AND version = @version;";
+   public static new List<MapSpawn> getMapSpawns () {
+      List<MapSpawn> result = new List<MapSpawn>();
 
-      using (MySqlConnection conn = getConnection())
-      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
-         conn.Open();
-         cmd.Prepare();
-
-         cmd.Parameters.AddWithValue("@name", name);
-         cmd.Parameters.AddWithValue("@version", version);
-
-         using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-            if (!dataReader.HasRows) {
-               return null;
-            } else {
-               dataReader.Read();
-               return new MapDTO {
-                  name = dataReader.GetString("name"),
-                  createdAt = dataReader.GetDateTime("created_at"),
-                  updatedAt = dataReader.GetDateTime("created_at"),
-                  editorData = dataReader.GetString("editor_data"),
-                  version = dataReader.GetInt32("version"),
-                  creatorID = dataReader.GetInt32("creatorUserId"),
-                  creatorName = dataReader.GetString("accName")
-               };
-            }
-         }
-      }
-   }
-
-   public static new MapData getLiveMapData (string name) {
-      string cmdText = "SELECT game_data, version " +
-         "FROM map_data " +
-         "WHERE name = @name AND version = (SELECT version FROM live_maps WHERE name = @name);";
-
-      using (MySqlConnection conn = getConnection())
-      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
-         conn.Open();
-         cmd.Prepare();
-
-         cmd.Parameters.AddWithValue("@name", name);
-
-         using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-            if (!dataReader.HasRows) {
-               return null;
-            } else {
-               dataReader.Read();
-               return new MapData {
-                  name = name,
-                  serializedData = dataReader.GetString("game_data"),
-                  version = dataReader.GetInt32("version")
-               };
-            }
-         }
-      }
-   }
-
-   public static new List<MapData> getLiveMapDataDescriptions () {
-      List<MapData> result = new List<MapData>();
-
-      string cmdText = "SELECT name, version FROM live_maps;";
-
+      string cmdText = "SELECT mapName, mapVersion, name FROM map_spawns;";
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          conn.Open();
@@ -985,9 +925,10 @@ public class DB_Main : DB_MainStub
 
          using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
             while (dataReader.Read()) {
-               result.Add(new MapData {
-                  name = dataReader.GetString("name"),
-                  version = dataReader.GetInt32("version")
+               result.Add(new MapSpawn {
+                  mapName = dataReader.GetString("mapName"),
+                  mapVersion = dataReader.GetInt32("mapVersion"),
+                  name = dataReader.GetString("name")
                });
             }
          }
@@ -996,46 +937,7 @@ public class DB_Main : DB_MainStub
       return result;
    }
 
-   public static new void setLiveMapVersion (MapDTO map, int publisherID) {
-      string cmdText = "INSERT INTO live_maps (name, version, published_at, creatorUserId) " +
-            "values(@name, @version, @published_at, @creatorUserId)" +
-            "ON DUPLICATE KEY UPDATE version = @version;";
-      using (MySqlConnection conn = getConnection())
-      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
-         conn.Open();
-         cmd.Prepare();
-
-         cmd.Parameters.AddWithValue("@name", map.name);
-         cmd.Parameters.AddWithValue("@version", map.version);
-         cmd.Parameters.AddWithValue("@published_at", DateTime.UtcNow);
-         cmd.Parameters.AddWithValue("@creatorUserId", publisherID);
-
-         // Execute the command
-         cmd.ExecuteNonQuery();
-      }
-   }
-
-   public static new void createNewMapDataVersion (MapDTO map) {
-      string cmdText = "INSERT INTO map_data (name, editor_data, game_data, created_at, version, creatorUserId) " +
-            "values(@name, @editorData, @gameData, @createdAt, @version, @creatorUserId);";
-      using (MySqlConnection conn = getConnection())
-      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
-         conn.Open();
-         cmd.Prepare();
-
-         cmd.Parameters.AddWithValue("@name", map.name);
-         cmd.Parameters.AddWithValue("@editorData", map.editorData);
-         cmd.Parameters.AddWithValue("@gameData", map.gameData);
-         cmd.Parameters.AddWithValue("@createdAt", DateTime.UtcNow);
-         cmd.Parameters.AddWithValue("@version", map.version);
-         cmd.Parameters.AddWithValue("@creatorUserId", map.creatorID);
-
-         // Execute the command
-         cmd.ExecuteNonQuery();
-      }
-   }
-
-   public static new void deleteMapData (string name) {
+   public static new void createMap (MapVersion mapVersion) {
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
          conn.Open();
@@ -1044,11 +946,175 @@ public class DB_Main : DB_MainStub
          cmd.Connection = conn;
 
          try {
-            cmd.CommandText = "DELETE FROM live_maps WHERE name = @name;";
-            cmd.Parameters.AddWithValue("@name", name);
+            // Insert entry to maps
+            cmd.CommandText = "INSERT INTO maps(name, createdAt, creatorUserId, publishedVersion) " +
+               "VALUES(@name, @createdAt, @creatorID, @publishedVersion);";
+            cmd.Parameters.AddWithValue("@name", mapVersion.map.name);
+            cmd.Parameters.AddWithValue("@createdAt", mapVersion.map.createdAt);
+            cmd.Parameters.AddWithValue("@creatorID", mapVersion.map.creatorID);
+            cmd.Parameters.AddWithValue("@publishedVersion", mapVersion.map.publishedVersion);
             cmd.ExecuteNonQuery();
 
-            cmd.CommandText = "DELETE FROM map_data WHERE name = @name;";
+            // Insert entry to map versions
+            cmd.CommandText = "INSERT INTO map_versions(mapName, version, createdAt, updatedAt, editorData, gameData) " +
+               "VALUES(@name, @version, @createdAt, @updatedAt, @editorData, @gameData);";
+            cmd.Parameters.Clear();
+            cmd.Parameters.AddWithValue("@name", mapVersion.mapName);
+            cmd.Parameters.AddWithValue("@version", mapVersion.version);
+            cmd.Parameters.AddWithValue("@createdAt", mapVersion.createdAt);
+            cmd.Parameters.AddWithValue("@updatedAt", mapVersion.updatedAt);
+            cmd.Parameters.AddWithValue("@editorData", mapVersion.editorData);
+            cmd.Parameters.AddWithValue("@gameData", mapVersion.gameData);
+            cmd.ExecuteNonQuery();
+
+            // Insert spawns
+            cmd.CommandText = "INSERT INTO map_spawns(mapName, mapVersion, name) Values(@mapName, @mapVersion, @name);";
+            foreach (MapSpawn spawn in mapVersion.spawns) {
+               cmd.Parameters.Clear();
+               cmd.Parameters.AddWithValue("@mapName", spawn.mapName);
+               cmd.Parameters.AddWithValue("@mapVersion", spawn.mapVersion);
+               cmd.Parameters.AddWithValue("@name", spawn.name);
+               cmd.ExecuteNonQuery();
+            }
+
+            transaction.Commit();
+         } catch (Exception e) {
+            transaction.Rollback();
+            throw e;
+         }
+      }
+   }
+
+   public static new MapVersion createNewMapVersion (MapVersion mapVersion) {
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = conn.CreateCommand()) {
+         conn.Open();
+         MySqlTransaction transaction = conn.BeginTransaction();
+         cmd.Transaction = transaction;
+         cmd.Connection = conn;
+
+         try {
+            // Fetch latest version of a map
+            cmd.Parameters.AddWithValue("@name", mapVersion.mapName);
+            cmd.CommandText = "SELECT IFNULL(MAX(version), -1) as latestVersion FROM map_versions WHERE mapName = @name;";
+
+            int latestVersion = -1;
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               dataReader.Read();
+               latestVersion = dataReader.GetInt32("latestVersion");
+            }
+
+            // Clone map into the a new map, setting new version number
+            MapVersion result = new MapVersion {
+               map = mapVersion.map,
+               spawns = mapVersion.spawns,
+               mapName = mapVersion.mapName,
+               version = latestVersion + 1,
+               createdAt = mapVersion.createdAt,
+               updatedAt = mapVersion.updatedAt,
+               editorData = mapVersion.editorData,
+               gameData = mapVersion.gameData
+            };
+
+            // Insert the new version 
+            cmd.CommandText = "INSERT INTO map_versions(mapName, version, createdAt, updatedAt, editorData, gameData) " +
+            "VALUES(@name, @version, @createdAt, @updatedAt, @editorData, @gameData);";
+
+            cmd.Parameters.AddWithValue("@version", result.version);
+            cmd.Parameters.AddWithValue("@createdAt", result.createdAt);
+            cmd.Parameters.AddWithValue("@updatedAt", result.updatedAt);
+            cmd.Parameters.AddWithValue("@editorData", result.editorData);
+            cmd.Parameters.AddWithValue("@gameData", result.gameData);
+            cmd.ExecuteNonQuery();
+
+            // Insert spawns
+            cmd.CommandText = "INSERT INTO map_spawns(mapName, mapVersion, name) Values(@mapName, @mapVersion, @name);";
+            foreach (MapSpawn spawn in result.spawns) {
+               cmd.Parameters.Clear();
+               cmd.Parameters.AddWithValue("@mapName", spawn.mapName);
+               cmd.Parameters.AddWithValue("@mapVersion", result.version);
+               cmd.Parameters.AddWithValue("@name", spawn.name);
+               cmd.ExecuteNonQuery();
+            }
+
+            transaction.Commit();
+            return result;
+         } catch (Exception e) {
+            transaction.Rollback();
+            throw e;
+         }
+      }
+   }
+
+   public static new void updateMapVersion (MapVersion mapVersion) {
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = conn.CreateCommand()) {
+         conn.Open();
+         MySqlTransaction transaction = conn.BeginTransaction();
+         cmd.Transaction = transaction;
+         cmd.Connection = conn;
+
+         try {
+            // Update entry in map versions
+            cmd.CommandText = "UPDATE map_versions SET " +
+               "createdAt = @createdAt, " +
+               "updatedAt = @updatedAt, " +
+               "editorData = @editorData, " +
+               "gameData = @gameData " +
+               "WHERE mapName = @name AND version = @version;";
+
+            cmd.Parameters.Clear();
+            cmd.Parameters.AddWithValue("@name", mapVersion.mapName);
+            cmd.Parameters.AddWithValue("@version", mapVersion.version);
+            cmd.Parameters.AddWithValue("@createdAt", mapVersion.createdAt);
+            cmd.Parameters.AddWithValue("@updatedAt", mapVersion.updatedAt);
+            cmd.Parameters.AddWithValue("@editorData", mapVersion.editorData);
+            cmd.Parameters.AddWithValue("@gameData", mapVersion.gameData);
+            cmd.ExecuteNonQuery();
+
+            // Delete old spawns
+            cmd.CommandText = "DELETE FROM map_spawns WHERE mapName = @name AND mapVersion = @version;";
+            cmd.ExecuteNonQuery();
+
+            // Insert spawns
+            cmd.CommandText = "INSERT INTO map_spawns(mapName, mapVersion, name) Values(@mapName, @mapVersion, @name);";
+            foreach (MapSpawn spawn in mapVersion.spawns) {
+               cmd.Parameters.Clear();
+               cmd.Parameters.AddWithValue("@mapName", spawn.mapName);
+               cmd.Parameters.AddWithValue("@mapVersion", spawn.mapVersion);
+               cmd.Parameters.AddWithValue("@name", spawn.name);
+               cmd.ExecuteNonQuery();
+            }
+
+            transaction.Commit();
+         } catch (Exception e) {
+            transaction.Rollback();
+            throw e;
+         }
+      }
+   }
+
+   public static new void deleteMap (string name) {
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = conn.CreateCommand()) {
+         conn.Open();
+         MySqlTransaction transaction = conn.BeginTransaction();
+         cmd.Transaction = transaction;
+         cmd.Connection = conn;
+
+         try {
+            cmd.Parameters.AddWithValue("@name", name);
+
+            // Delete map entry
+            cmd.CommandText = "DELETE FROM maps WHERE name = @name;";
+            cmd.ExecuteNonQuery();
+
+            // Delete all version entries
+            cmd.CommandText = "DELETE FROM map_versions WHERE mapName = @name;";
+            cmd.ExecuteNonQuery();
+
+            // Delete all spawn entries
+            cmd.CommandText = "DELETE FROM map_spawns WHERE mapName = @name;";
             cmd.ExecuteNonQuery();
 
             transaction.Commit();
@@ -1059,7 +1125,7 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new void deleteMapDataVersion (string name, int version) {
+   public static new void deleteMapVersion (string name, int version) {
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
          conn.Open();
@@ -1068,12 +1134,19 @@ public class DB_Main : DB_MainStub
          cmd.Connection = conn;
 
          try {
-            cmd.CommandText = "DELETE FROM live_maps WHERE name = @name AND version = @version;";
             cmd.Parameters.AddWithValue("@name", name);
             cmd.Parameters.AddWithValue("@version", version);
+
+            // Unpublish version
+            cmd.CommandText = "UPDATE maps SET publishedVersion = NULL WHERE name = @name and publishedVersion = @version";
             cmd.ExecuteNonQuery();
 
-            cmd.CommandText = "DELETE FROM map_data WHERE name = @name AND version = @version;";
+            // Delete version entry
+            cmd.CommandText = "DELETE FROM map_versions WHERE mapName = @name AND version = @version;";
+            cmd.ExecuteNonQuery();
+
+            // Delete all spawn entries
+            cmd.CommandText = "DELETE FROM map_spawns WHERE mapName = @name AND mapVersion = @version;";
             cmd.ExecuteNonQuery();
 
             transaction.Commit();
@@ -1081,6 +1154,21 @@ public class DB_Main : DB_MainStub
             transaction.Rollback();
             throw e;
          }
+      }
+   }
+
+   public static new void setLiveMapVersion (MapVersion version) {
+      string cmdText = "UPDATE maps SET publishedVersion = @version WHERE name = @name;";
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+         conn.Open();
+         cmd.Prepare();
+
+         cmd.Parameters.AddWithValue("@name", version.mapName);
+         cmd.Parameters.AddWithValue("@version", version.version);
+
+         // Execute the command
+         cmd.ExecuteNonQuery();
       }
    }
 
@@ -1650,7 +1738,7 @@ public class DB_Main : DB_MainStub
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  XMLPair xmlPair = new XMLPair { 
+                  XMLPair xmlPair = new XMLPair {
                      isEnabled = true,
                      rawXmlData = dataReader.GetString("xmlContent"),
                      xmlId = dataReader.GetInt32("xml_id")

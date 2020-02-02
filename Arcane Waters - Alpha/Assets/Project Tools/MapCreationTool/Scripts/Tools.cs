@@ -11,7 +11,7 @@ namespace MapCreationTool
       public static event Action<ToolType, ToolType> ToolChanged;
       public static event Action<int, int> MountainLayerChanged;
       public static event Action<bool, bool> BurrowedTreesChanged;
-      public static event Action<BiomeType, BiomeType> BiomeChanged;
+      public static event Action<Biome.Type, Biome.Type> BiomeChanged;
       public static event Action<EraserLayerMode, EraserLayerMode> EraserLayerModeChanged;
       public static event Action<TileGroup, TileGroup> TileGroupChanged;
       public static event Action<FillBounds, FillBounds> FillBoundsChanged;
@@ -24,7 +24,7 @@ namespace MapCreationTool
       public static ToolType toolType { get; private set; }
       public static int mountainLayer { get; private set; }
       public static bool burrowedTrees { get; private set; }
-      public static BiomeType biome { get; private set; }
+      public static Biome.Type biome { get; private set; }
       public static EraserLayerMode eraserLayerMode { get; private set; }
       public static FillBounds fillBounds { get; private set; }
 
@@ -56,7 +56,7 @@ namespace MapCreationTool
          toolType = ToolType.Brush;
          mountainLayer = 4;
          burrowedTrees = false;
-         biome = BiomeType.Forest;
+         biome = Biome.Type.Forest;
          eraserLayerMode = EraserLayerMode.Top;
          editorType = EditorType.Area;
          boardSize = new Vector2Int(64, 64);
@@ -136,8 +136,8 @@ namespace MapCreationTool
          }
       }
 
-      public static void changeBiome (BiomeType biome, bool registerUndo = true) {
-         BiomeType old = Tools.biome;
+      public static void changeBiome (Biome.Type biome, bool registerUndo = true) {
+         Biome.Type old = Tools.biome;
          Tools.biome = biome;
          BiomeChanged?.Invoke(old, Tools.biome);
          AnythingChanged?.Invoke();

@@ -1,7 +1,7 @@
-﻿using MapCreationTool.PaletteTilesData;
+﻿using System;
+using System.Collections.Generic;
 using MapCreationTool.Serialization;
 using MapCreationTool.UndoSystem;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace MapCreationTool
@@ -30,8 +30,11 @@ namespace MapCreationTool
       [SerializeField]
       private GameObject loadCover = null;
 
+      public Dictionary<string, List<string>> mapSpawns { get; private set; }
+
       private void Awake () {
          instance = this;
+         mapSpawns = new Dictionary<string, List<string>>();
 
          Tools.setDefaultValues();
          Undo.clear();
@@ -50,6 +53,10 @@ namespace MapCreationTool
                loginPanel.loginButton.onClick.Invoke();
             }
          }
+      }
+
+      private void Start () {
+         fetchSpawns();
       }
 
       private void OnEnable () {
@@ -79,6 +86,28 @@ namespace MapCreationTool
          NPCManager.OnLoaded -= onLoaded;
       }
 
+      private void fetchSpawns () {
+         UnityThreading.Task task = UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            string dbError = null;
+            List<MapSpawn> spawns = null;
+            try {
+               spawns = DB_Main.getMapSpawns();
+            } catch (Exception ex) {
+               dbError = ex.Message;
+            }
+
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               if (dbError != null) {
+                  UI.errorDialog.display(dbError);
+               } else {
+                  setSpawns(spawns);
+               }
+            });
+         });
+
+         UI.loadingPanel.display("Loading spawns", task);
+      }
+
       private void onLoaded () {
          Destroy(loadCover);
          palette.populatePalette(currentPaletteData[Tools.biome]);
@@ -92,7 +121,22 @@ namespace MapCreationTool
          }
       }
 
-      public void applyFileData (string data, MapDTO mapDescription) {
+      public void applyData (MapVersion mapVersion) {
+         var dt = Serializer.deserialize(mapVersion.editorData, true);
+
+         Tools.changeBiome(dt.biome);
+         Tools.changeEditorType(dt.editorType);
+
+         if (dt.size != default) {
+            Tools.changeBoardSize(dt.size);
+         }
+
+         drawBoard.applyDeserializedData(dt, mapVersion);
+
+         Undo.clear();
+      }
+
+      public void applyFileData (string data) {
          var dt = Serializer.deserialize(data, true);
 
          Tools.changeBiome(dt.biome);
@@ -102,7 +146,7 @@ namespace MapCreationTool
             Tools.changeBoardSize(dt.size);
          }
 
-         drawBoard.applyDeserializedData(dt, mapDescription);
+         drawBoard.applyDeserializedData(dt, null);
 
          Undo.clear();
       }
@@ -127,11 +171,28 @@ namespace MapCreationTool
       private void ensurePreviewCleared () {
          drawBoard.ensurePreviewCleared();
       }
-      private void onBiomeChanged (BiomeType from, BiomeType to) {
+      private void onBiomeChanged (Biome.Type from, Biome.Type to) {
          BiomedPaletteData currentPalette = currentPaletteData;
 
          palette.populatePalette(currentPalette[to]);
          drawBoard.changeBiome(currentPalette[from], currentPalette[to]);
+      }
+
+      public void setSpawns (List<MapSpawn> spawns) {
+         mapSpawns = new Dictionary<string, List<string>>();
+         addSpawns(spawns);
+      }
+
+      public void addSpawns (List<MapSpawn> spawns) {
+         foreach (MapSpawn spawn in spawns) {
+            if (!mapSpawns.ContainsKey(spawn.mapName)) {
+               mapSpawns.Add(spawn.mapName, new List<string> { spawn.name });
+            } else {
+               if (!mapSpawns[spawn.mapName].Contains(spawn.name)) {
+                  mapSpawns[spawn.mapName].Add(spawn.name);
+               }
+            }
+         }
       }
 
       /// <summary>
@@ -149,7 +210,7 @@ namespace MapCreationTool
                case EditorType.Sea:
                   return seaPaletteData;
                default:
-                  throw new System.Exception($"Unrecognized editor type {Tools.editorType.ToString()}");
+                  throw new Exception($"Unrecognized editor type {Tools.editorType.ToString()}");
             }
          }
       }

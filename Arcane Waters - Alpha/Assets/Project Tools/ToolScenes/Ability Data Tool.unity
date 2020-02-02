@@ -16512,7 +16512,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 502.265, y: -14.627014}
+  m_AnchoredPosition: {x: 502.265, y: -14.627001}
   m_SizeDelta: {x: 994.53, y: 19.254002}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &641298466
@@ -34932,6 +34932,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af1a4d8b8f12c314e8c6373c7d1bf453, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  skillID: 0
   monsterDataPanel: {fileID: 0}
   abilityDataScene: {fileID: 631334679}
   audioSource: {fileID: 1337692360}
@@ -39514,6 +39515,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_CharacterLimit
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5890500984787708247, guid: cf247d87f846fb348af5e917ad74d094,
+        type: 3}
+      propertyPath: m_Interactable
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5901269160117633478, guid: cf247d87f846fb348af5e917ad74d094,
         type: 3}
@@ -53208,6 +53214,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af1a4d8b8f12c314e8c6373c7d1bf453, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  skillID: 0
   monsterDataPanel: {fileID: 0}
   abilityDataScene: {fileID: 631334679}
   audioSource: {fileID: 2095715103}

@@ -47411,7 +47411,7 @@ Tilemap:
       - {fileID: 21300126, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300132, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300138, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 23, y: 29, z: 0}
@@ -93278,7 +93278,7 @@ MonoBehaviour:
       - {fileID: 852583141076585437, guid: 7a71b00c48db70b4dae79094388bec21, type: 3}
       - {fileID: 1820576471573080406, guid: 470d4ac8bbb842f4ba4ffa0b57edb3aa, type: 3}
       - {fileID: 533709203131732292, guid: 51487b426fdf4d549bb49c095f0fa081, type: 3}
-    biome: 0
+    biome: 1
   - tilemap: {fileID: 911818922030001466}
     prefabGroups:
     - title: trees
@@ -93325,7 +93325,7 @@ MonoBehaviour:
       - {fileID: 954504984031511166, guid: efd472a9ae64cd447bf3384bdf5e20c6, type: 3}
       - {fileID: 2896152329765423870, guid: 58c1c7852e9da3240aaca3a8e33aba4b, type: 3}
       - {fileID: 8909593567850714488, guid: 035509238c2cbc74591b595b2639ce8c, type: 3}
-    biome: 1
+    biome: 2
   - tilemap: {fileID: 6821355117217435030}
     prefabGroups:
     - title: trees
@@ -93372,7 +93372,7 @@ MonoBehaviour:
       - {fileID: 7089998631985693193, guid: 6d05f5a3f460d0f4ba4b46c911213d56, type: 3}
       - {fileID: 5618358362239157332, guid: 3e268c23f0abcf1478ff92bc5208d15b, type: 3}
       - {fileID: 7303353363822874398, guid: 3c31e7c6dd4f6364e905c7be9a7f3e2f, type: 3}
-    biome: 2
+    biome: 5
   - tilemap: {fileID: 1380472118748605242}
     prefabGroups:
     - title: trees
@@ -93419,7 +93419,7 @@ MonoBehaviour:
       - {fileID: 307741950614774290, guid: 4698966206c14fc449b08c3165e2af38, type: 3}
       - {fileID: 1112253755803811049, guid: 69babac696569d34b96be629b9da80ac, type: 3}
       - {fileID: 7236423260524567094, guid: 46a6910d74094e44ab090b41f5cc8815, type: 3}
-    biome: 3
+    biome: 4
   - tilemap: {fileID: 481428275710942420}
     prefabGroups:
     - title: trees
@@ -93466,7 +93466,7 @@ MonoBehaviour:
       - {fileID: 3452058141367066813, guid: 6b48f59448a6db84fb781003b49c7f9b, type: 3}
       - {fileID: 5870351349207015852, guid: e7383f0d486f73a4fbec8cd2435401cb, type: 3}
       - {fileID: 1276891071369396975, guid: 946c3306229572940aebfbfb31824f7c, type: 3}
-    biome: 4
+    biome: 3
   - tilemap: {fileID: 4574151143917167768}
     prefabGroups:
     - title: trees
@@ -93513,7 +93513,7 @@ MonoBehaviour:
       - {fileID: 2051394421515818879, guid: 58798314f253eed44a840930801d036f, type: 3}
       - {fileID: 5749548634317101366, guid: 99f4ed978dfa05548be48518085b739f, type: 3}
       - {fileID: 2250911150632424199, guid: cbea841894fe9d34c824dac9bfed8dba, type: 3}
-    biome: 5
+    biome: 6
   allBiomesDefinition:
     tilemap: {fileID: 8031485923113696121}
     prefabGroups:
@@ -93589,7 +93589,6 @@ MonoBehaviour:
       - {fileID: 6512568615480877693, guid: ae9b490f18e903c49836fadf1d6790e0, type: 3}
       - {fileID: 707201633651165828, guid: 325e0070886ff4a4585d50c50dbefc00, type: 3}
       - {fileID: 3729740426784677943, guid: dd657f4eabdb1004e8c8a4a2fb46191d, type: 3}
-  collidableLayers: 04000000060000000700000008000000110000000a0000000b0000000c0000000d0000000e0000000f00000010000000
   transparentTile: {fileID: 11400000, guid: 6770d82dbc34c894eb30ee1fd5b3b937, type: 2}
   layerZMultiplier: -0.01
   sublayerZMultiplier: -0.0001

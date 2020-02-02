@@ -22,7 +22,7 @@ namespace MapCreationTool.Serialization
       public static string serialize (
           Dictionary<string, Layer> layers,
           List<PlacedPrefab> prefabs,
-          BiomeType biome,
+          Biome.Type biome,
           EditorType editorType,
           Vector2Int size,
           bool prettyPrint = false) {
@@ -37,7 +37,7 @@ namespace MapCreationTool.Serialization
       private static string serialize002 (
           Dictionary<string, Layer> layers,
           List<PlacedPrefab> prefabs,
-          BiomeType biome,
+          Biome.Type biome,
           EditorType editorType,
           Vector2Int size,
           bool prettyPrint = false) {
@@ -115,7 +115,7 @@ namespace MapCreationTool.Serialization
       public static string serializeExport (
          Dictionary<string, Layer> layers,
          List<PlacedPrefab> prefabs,
-         BiomeType biome,
+         Biome.Type biome,
          EditorType editorType,
          EditorConfig config,
          Dictionary<TileBase, TileCollisionType> collisionDictionary,
@@ -127,7 +127,7 @@ namespace MapCreationTool.Serialization
       private static string serializeExport001 (
          Dictionary<string, Layer> layers,
          List<PlacedPrefab> prefabs,
-         BiomeType biome,
+         Biome.Type biome,
          EditorType editorType,
          EditorConfig config,
          Dictionary<TileBase, TileCollisionType> collisionDictionary,
@@ -297,6 +297,10 @@ namespace MapCreationTool.Serialization
       private static DeserializedProject deserialize001 (string data, bool forEditor) {
          Project001 dt = JsonUtility.FromJson<Project001>(data);
 
+         if(dt.biome == Biome.Type.None) {
+            dt.biome = Biome.Type.Forest;
+         }
+
          List<DeserializedProject.DeserializedPrefab> prefabs = new List<DeserializedProject.DeserializedPrefab>();
          List<DeserializedProject.DeserializedTile> tiles = new List<DeserializedProject.DeserializedTile>();
 
@@ -348,6 +352,10 @@ namespace MapCreationTool.Serialization
 
       private static DeserializedProject deserialize002 (string data, bool forEditor) {
          Project002 dt = JsonUtility.FromJson<Project002>(data);
+
+         if (dt.biome == Biome.Type.None) {
+            dt.biome = Biome.Type.Forest;
+         }
 
          List<DeserializedProject.DeserializedPrefab> prefabs = new List<DeserializedProject.DeserializedPrefab>();
          List<DeserializedProject.DeserializedTile> tiles = new List<DeserializedProject.DeserializedTile>();
@@ -468,7 +476,7 @@ namespace MapCreationTool.Serialization
    public class ExportedProject001
    {
       public string version;
-      public BiomeType biome;
+      public Biome.Type biome;
       public EditorType editorType;
       public Vector2Int size;
       public ExportedPrefab001[] prefabs;
@@ -505,7 +513,7 @@ namespace MapCreationTool.Serialization
    {
       public DeserializedPrefab[] prefabs;
       public DeserializedTile[] tiles;
-      public BiomeType biome;
+      public Biome.Type biome;
       public EditorType editorType;
       public Vector2Int size;
 
@@ -529,7 +537,7 @@ namespace MapCreationTool.Serialization
    public class Project002
    {
       public string version;
-      public BiomeType biome;
+      public Biome.Type biome;
       public EditorType editorType;
       public Layer002[] layers;
       public Prefab001[] prefabs;
@@ -548,7 +556,7 @@ namespace MapCreationTool.Serialization
    public class Project001
    {
       public string version;
-      public BiomeType biome;
+      public Biome.Type biome;
       public EditorType editorType;
       public Layer001[] layers;
       public Prefab001[] prefabs;

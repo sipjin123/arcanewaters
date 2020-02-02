@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -61,6 +62,21 @@ namespace MapCreationTool
       private void setLayout (PrefabDataDefinition data) {
          titleText.text = string.IsNullOrWhiteSpace(data.title) ? "Unnamed" : data.title;
 
+         // Custom logic for warps
+         if (data.title.CompareTo("Warp") == 0 || data.title.CompareTo("House") == 0) {
+            // target map
+            Field mf = Instantiate(dropdownFieldPref, transform);
+            mf.fieldName.text = "target map";
+            mf.ValueChanged += (value) => valueChanged("target map", value);
+            fields.Add("target map", mf);
+
+            // target spawn
+            Field sf = Instantiate(dropdownFieldPref, transform);
+            sf.fieldName.text = "target spawn";
+            sf.ValueChanged += (value) => valueChanged("target spawn", value);
+            fields.Add("target spawn", sf);
+         }
+
          foreach (var fieldDef in data.dataFields) {
             Field f = Instantiate(inputFieldPref, transform);
             f.setFieldProperties(fieldDef.type);
@@ -86,10 +102,36 @@ namespace MapCreationTool
          foreach (var f in fields) {
             f.Value.setValue(placedPrefab.getData(f.Key));
          }
+
+         if (titleText.text.CompareTo("Warp") == 0 || data.title.CompareTo("House") == 0) {
+            fields["target map"].setFieldProperties(Enumerable.Repeat("", 1).Union(Overlord.instance.mapSpawns.Keys).ToArray());
+            fields["target map"].setValue(placedPrefab.getData("target map"));
+            string mapValue = fields["target map"].valueDropdown.options[fields["target map"].valueDropdown.value].text;
+
+            if (Overlord.instance.mapSpawns.ContainsKey(mapValue)) {
+               fields["target spawn"].setFieldProperties(Enumerable.Repeat("", 1).Union(Overlord.instance.mapSpawns[mapValue]).ToArray());
+            } else {
+               fields["target spawn"].setFieldProperties(new string[] { "" });
+            }
+
+            fields["target spawn"].setValue(placedPrefab.getData("target spawn"));
+         }
       }
 
       private void valueChanged (string key, string value) {
          drawBoard.setSelectedPrefabData(key, value);
+
+         if (titleText.text.CompareTo("Warp") == 0 || data.title.CompareTo("House") == 0) {
+            if (key.CompareTo("target map") == 0) {
+               if (Overlord.instance.mapSpawns.ContainsKey(value)) {
+                  fields["target spawn"].setFieldProperties(Enumerable.Repeat("", 1).Union(Overlord.instance.mapSpawns[value]).ToArray());
+               } else {
+                  fields["target spawn"].setFieldProperties(new string[] { "" });
+               }
+
+               fields["target spawn"].setValue("");
+            }
+         }
       }
 
       public void show () {
