@@ -155,9 +155,6 @@ public class MyNetworkManager : NetworkManager {
       // Regularly updates the required game version
       GameVersionManager.self.scheduleMinimumGameVersionUpdate();
 
-      // Instantiate all of the live maps created with the Map Editor tool
-      MapManager.self.spawnLiveMaps();
-
       // Make note that we started up a server
       wasServerStarted = true;
    }
@@ -229,6 +226,9 @@ public class MyNetworkManager : NetworkManager {
             // Update the observers associated with the instance and the associated players
             Instance instance = InstanceManager.self.getInstance(player.instanceId);
             InstanceManager.self.rebuildInstanceObservers(player, instance);
+
+            // Tell the player information about the Area we're going to send them to
+            player.rpc.Target_ReceiveAreaInfo(player.connectionToClient, player.areaKey, previousArea.transform.position);
 
             // Send any extra info as targeted RPCs
             player.cropManager.sendSiloInfo();

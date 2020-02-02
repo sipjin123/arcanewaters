@@ -4,12 +4,11 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using MapCreationTool;
+using MapCreationTool.Serialization;
+using UnityEngine.Networking;
 
 public class MapManager : MonoBehaviour {
    #region Public Variables
-
-   // Whether or not we want to spawn the live maps from the database
-   public static bool isSpawningMaps = false;
 
    // Convenient self reference
    public static MapManager self;
@@ -20,21 +19,66 @@ public class MapManager : MonoBehaviour {
       self = this;
    }
 
-   public void spawnLiveMaps () {
-      if (!isSpawningMaps) {
+   public void spawnLiveMap (string areaKey, string mapData, Vector3 mapPosition) {
+      // If the map already exists, don't create it again
+      if (_maps.ContainsKey(areaKey)) {
+         D.warning("Map: " + areaKey + " already exists!");
          return;
       }
 
-      // For now we'll just spawn one for testing purposes
-      string areaKey = "Pineward";
-      string mapData = DB_Main.getMapLiveVersionGameData(areaKey);
-      MapImporter.instantiateMapData(mapData, areaKey, new Vector3(500f, 500f));
+      // Instantiate the map using the map data
+      Area area = MapImporter.instantiateMapData(mapData, areaKey, mapPosition);
+      AreaManager.self.storeArea(area);
+      area.vcam.VirtualCameraGameObject.SetActive(false);
+
+      // Keep track of the maps we create
+      _maps[area.areaKey] = mapData;
+   }
+
+   public Vector3 getNextMapPosition() {
+      // Every time the server creates a new map, we move the map offset
+      _mapOffset.x += 200f;
+
+      return _mapOffset;
+   }
+
+   public string getMapData (string areaKey) {
+      if (_maps.ContainsKey(areaKey)) {
+         return _maps[areaKey];
+      }
+
+      return null;
+   }
+
+   public IEnumerator CO_DownloadMap (string areaKey, Vector3 position) {
+      // Check if we already have the map
+      if (_maps.ContainsKey(areaKey)) {
+         D.log("Map Manager already has map for area: " + areaKey);
+         yield break;
+      }
+
+      // Request the map from the web
+      UnityWebRequest www = UnityWebRequest.Get("http://arcanewaters.com/maps.php?mapName=" + areaKey);
+      yield return www.SendWebRequest();
+
+      if (www.isNetworkError || www.isHttpError) {
+         D.warning(www.error);
+      } else {
+         // Grab the map data from the request
+         string mapData = www.downloadHandler.text;
+
+         // Spawn the Area using the map data
+         spawnLiveMap(areaKey, mapData, position);
+      }
    }
 
    #region Private Variables
 
-   // Keeps track of the Maps we've created, indexed by their Area Key string
-   protected Dictionary<string, GameObject> _maps = new Dictionary<string, GameObject>();
+   // The current map offset being used by the server
+   protected Vector3 _mapOffset = new Vector3(500f, 500f);
+
+   // Keeps track of the map data we've received, indexed by their Area Key string
+   protected Dictionary<string, string> _maps = new Dictionary<string, string>();
 
    #endregion
 }

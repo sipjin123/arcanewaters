@@ -107,6 +107,10 @@ public class DB_MainStub : MonoBehaviour
       return new List<Map>();
    }
 
+   public static Dictionary<string, string> getLiveMaps () {
+      return new Dictionary<string, string>();
+   }
+
    public static List<MapVersion> getMapVersions (Map map) {
       return new List<MapVersion>();
    }

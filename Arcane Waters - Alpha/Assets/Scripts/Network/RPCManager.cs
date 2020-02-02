@@ -641,6 +641,14 @@ public class RPCManager : NetworkBehaviour {
       CannonPanel.self.setAbilityTab(rawAbilityData);
    }
 
+   [TargetRpc]
+   public void Target_ReceiveAreaInfo (NetworkConnection connection, string areaKey, Vector3 position) {
+      // If we don't have the map, download it
+      if (AreaManager.self.getArea(areaKey) == null) {
+         StartCoroutine(MapManager.self.CO_DownloadMap(areaKey, position));
+      }
+   }
+
    [Command]
    public void Cmd_RequestCharacterInfoFromServer (int userId) {
       if (userId == 0) {

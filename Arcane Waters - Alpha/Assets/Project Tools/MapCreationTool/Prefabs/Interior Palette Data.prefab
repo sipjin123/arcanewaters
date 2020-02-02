@@ -4357,7 +4357,7 @@ MonoBehaviour:
       sublayer: 0
       cluster: 1
       collisionType: 0
-    - layer: furniture
+    - layer: trinket
       sublayer: 0
       cluster: 0
       collisionType: 1
@@ -4509,7 +4509,7 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: furniture
+    - layer: trinket
       sublayer: 0
       cluster: 0
       collisionType: 1
@@ -4669,7 +4669,7 @@ MonoBehaviour:
       sublayer: 0
       cluster: 1
       collisionType: 0
-    - layer: furniture
+    - layer: trinket
       sublayer: 0
       cluster: 0
       collisionType: 0

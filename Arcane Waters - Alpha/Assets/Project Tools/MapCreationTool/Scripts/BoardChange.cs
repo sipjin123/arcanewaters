@@ -60,7 +60,7 @@ namespace MapCreationTool
             result.prefabChanges.Add(new PrefabChange { prefabToDestroy = pref.original, positionToDestroy = pref.placedInstance.transform.position });
          }
 
-         return result; 
+         return result;
       }
 
       public static BoardChange calculatePrefabChange (GameObject prefabToPlace, Vector3 positionToPlace) {
@@ -1190,6 +1190,16 @@ namespace MapCreationTool
                adj[pos.x - from.x, pos.y - from.y] = true;
          }
 
+         for (int i = 0; i < size.x; i++) {
+            for (int j = 0; j < size.y; j++) {
+               Vector3Int index = new Vector3Int(i, j, 0) + from;
+
+               // If the position is outside of the map, we will treat this position as if it contains a tile
+               if (index.x < bounds.min.x || index.x > bounds.max.x || index.y < bounds.min.y || index.y > bounds.max.y)
+                  adj[i, j] = true;
+            }
+         }
+
          //--------------------------------------------
          //Ensure no edge cases are present
          List<Vector3Int> added = new List<Vector3Int>();
@@ -1207,6 +1217,23 @@ namespace MapCreationTool
 
             for (int i = 0; i < size.x; i++) {
                for (int j = 0; j < size.y; j++) {
+                  // Some special cases around the edges of the map cause issues, skip them
+                  if (i > 0 && i < size.x - 1 && j < size.y - 1 && j + from.y == bounds.min.y) {
+                     if (!aj[i, j] && !adj[i - 1, j] && !adj[i - 1, j + 1] && !adj[i, j + 1] && adj[i + 1, j] && adj[i + 1, j + 1])
+                        continue;
+
+                     if (!aj[i, j] && !adj[i + 1, j] && !adj[i + 1, j + 1] && !adj[i, j + 1] && adj[i - 1, j] && adj[i - 1, j + 1])
+                        continue;
+                  }
+
+                  if (i > 0 && i < size.x - 1 && j > 0 && j + from.y == bounds.max.y) {
+                     if (!aj[i, j] && !adj[i - 1, j] && !adj[i - 1, j - 1] && !adj[i, j - 1] && adj[i + 1, j] && adj[i + 1, j - 1])
+                        continue;
+
+                     if (!aj[i, j] && !adj[i + 1, j] && !adj[i + 1, j - 1] && !adj[i, j - 1] && adj[i - 1, j] && adj[i - 1, j - 1])
+                        continue;
+                  }
+
                   //2x2 corners
                   if (i > 0 && i < size.x - 1 && j > 0 && j < size.y - 1) {
                      //bottom left
@@ -1327,16 +1354,6 @@ namespace MapCreationTool
          }
 
          addedTiles.AddRange(added.Select(p => p + from));
-
-         for (int i = 0; i < size.x; i++) {
-            for (int j = 0; j < size.y; j++) {
-               Vector3Int index = new Vector3Int(i, j, 0) + from;
-
-               // If the position is outside of the map, we will treat this position as if it contains a tile
-               if (index.x < bounds.min.x || index.x > bounds.max.x || index.y < bounds.min.y || index.y > bounds.max.y)
-                  adj[i, j] = true;
-            }
-         }
 
          //Determine tiles based on the adjacency matrix
          for (int i = sides.left; i < size.x - sides.right; i++) {

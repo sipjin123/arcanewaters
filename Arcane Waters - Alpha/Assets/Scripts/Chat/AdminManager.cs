@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System.Linq;
 using System;
+using MapCreationTool.Serialization;
 
 public class AdminManager : NetworkBehaviour {
    #region Public Variables
@@ -41,6 +42,7 @@ public class AdminManager : NetworkBehaviour {
    protected static string NPC = "test_npc";
    protected static string GET_ITEM = "get_item";
    protected static string GET_ALL_ITEMS = "get_all_items";
+   protected static string MAPS = "maps";
 
    #endregion
 
@@ -127,6 +129,8 @@ public class AdminManager : NetworkBehaviour {
          requestGetItem(parameters);
       } else if (GET_ALL_ITEMS.Equals(adminCommand)) {
          requestGetAllItems(parameters);
+      } else if (MAPS.Equals(adminCommand)) {
+         requestLiveMaps(parameters);
       }
    }
 
@@ -303,24 +307,8 @@ public class AdminManager : NetworkBehaviour {
          return;
       }
 
-      // Get all the area keys
-      List<string> areaKeys = AreaManager.self.getAreaKeys();
-
-      // Try to select area keys whose beginning match exactly with the user input
-      List<string> exactMatchKeys = areaKeys.Where(s => s.StartsWith(partialAreaKey, StringComparison.CurrentCultureIgnoreCase)).ToList();
-      if (exactMatchKeys.Count > 0) {
-         // If there are matchs, use that sub-list instead
-         areaKeys = exactMatchKeys;
-      }
-
-      // Get the area key closest to the given partial key
-      string closestAreaKey = areaKeys.OrderBy(s => Util.compare(s, partialAreaKey)).First();
-
-      // Get the destination area
-      Area destinationArea = AreaManager.self.getArea(closestAreaKey);
-
       // Send the request to the server
-      Cmd_Warp(destinationArea.areaKey);
+      Cmd_Warp(partialAreaKey);
    }
 
    protected void requestGetItem (string parameters) {
@@ -444,6 +432,11 @@ public class AdminManager : NetworkBehaviour {
 
       // Send the request to the server
       Cmd_CreateAllItems(count);
+   }
+
+   protected void requestLiveMaps (string parameters) {
+      // Send the request to the server
+      Cmd_CreateLiveMaps();
    }
 
    [Command]
@@ -595,12 +588,29 @@ public class AdminManager : NetworkBehaviour {
    }
 
    [Command]
-   protected void Cmd_Warp (string areaKey) {
+   protected void Cmd_Warp (string partialAreaKey) {
       // Make sure this is an admin
       if (!_player.isAdmin()) {
          D.warning("Received admin command from non-admin!");
          return;
       }
+
+      // Get all the area keys
+      List<string> areaKeys = AreaManager.self.getAreaKeys();
+
+      // Try to select area keys whose beginning match exactly with the user input
+      List<string> exactMatchKeys = areaKeys.Where(s => s.StartsWith(partialAreaKey, StringComparison.CurrentCultureIgnoreCase)).ToList();
+      if (exactMatchKeys.Count > 0) {
+         // If there are matchs, use that sub-list instead
+         areaKeys = exactMatchKeys;
+      }
+
+      // Get the area key closest to the given partial key
+      string closestAreaKey = areaKeys.OrderBy(s => Util.compare(s, partialAreaKey)).First();
+
+      // Get the destination area
+      Area destinationArea = AreaManager.self.getArea(closestAreaKey);
+      string areaKey = destinationArea.areaKey;
 
       // Get the default spawn for the destination area
       Spawn spawn = SpawnManager.self.getSpawn(areaKey);
@@ -855,6 +865,38 @@ public class AdminManager : NetworkBehaviour {
             string message = string.Format("Added {0} weapons, {1} armors, {2} usable items, {3} ingredients and {4} blueprints to the inventory.",
                weaponsCount, armorCount, usableCount, ingredientsCount, blueprintCount);
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.ItemsAddedToInventory, _player, message);
+         });
+      });
+   }
+
+   [Command]
+   protected void Cmd_CreateLiveMaps () {
+      // Make sure this is an admin
+      if (!_player.isAdmin()) {
+         D.warning("Received admin command from non-admin!");
+         return;
+      }
+
+      // Retrieve the map data from the database
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         Dictionary<string, string> maps = DB_Main.getLiveMaps();
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (string mapName in maps.Keys) {
+               // Make sure it doesn't already exist
+               if (AreaManager.self.getArea(mapName) != null) {
+                  ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, "Map: " + mapName + " has already been created!");
+                  continue;
+               }
+
+               // Create the map here on the server
+               Vector3 nextMapPosition = MapManager.self.getNextMapPosition();
+               MapManager.self.spawnLiveMap(mapName, maps[mapName], nextMapPosition);
+
+               // Send confirmation back to the player who issued the command
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "Spawning map: " + mapName);
+            }
          });
       });
    }

@@ -842,6 +842,27 @@ public class DB_Main : DB_MainStub
       return result;
    }
 
+   public static new Dictionary<string, string> getLiveMaps () {
+      Dictionary<string, string> maps = new Dictionary<string, string>();
+      string cmdText = "SELECT * FROM maps JOIN map_versions ON (maps.name=map_versions.mapName) WHERE (maps.publishedVersion=map_versions.version)";
+
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+         conn.Open();
+         cmd.Prepare();
+
+         using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+            while(dataReader.Read()) {
+               string mapName = dataReader.GetString("mapName");
+               string gameData = dataReader.GetString("gameData");
+               maps[mapName] = gameData;
+            }
+         }
+      }
+
+      return maps;
+   }
+
    public static new List<MapVersion> getMapVersions (Map map) {
       List<MapVersion> result = new List<MapVersion>();
 
