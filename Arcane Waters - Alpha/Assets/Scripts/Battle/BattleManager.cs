@@ -43,21 +43,25 @@ public class BattleManager : MonoBehaviour {
       self = this;
    }
 
-   public void Start () {
+   public void initializeBattleBoards () {
       // Store all of the Battle Boards that exist in the Scene
       foreach (BattleBoard board in FindObjectsOfType<BattleBoard>()) {
-         _boards[board.biomeType] = board;
+         // TODO: Temporary set all boards into custom
+         if (board.biomeType == Biome.Type.Custom) {
+            _boards[board.biomeType] = board;
+            BackgroundGameManager.self.setSpritesToBattleBoard(board);
 
-         // TEMP -- for now, we only have one board for all biome types
-         foreach (Biome.Type biomeType in System.Enum.GetValues(typeof(Biome.Type))) {
-            _boards[biomeType] = board;
+            // TEMP -- for now, we only have one board for all biome types
+            foreach (Biome.Type biomeType in System.Enum.GetValues(typeof(Biome.Type))) {
+               _boards[biomeType] = board;
+            }
          }
       }
 
       // Repeatedly call the tick() function for our Battle objects
       InvokeRepeating("tickBattles", 0f, TICK_INTERVAL);
    }
-   
+
    public Battle createBattle (Area area, Instance instance, Enemy enemy, PlayerBodyEntity playerBody) {
       // We need to make a new one
       Battle battle = Instantiate(battlePrefab);

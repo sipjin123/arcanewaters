@@ -1700,8 +1700,8 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new List<string> getBackgroundXML () {
-      List<string> rawDataList = new List<string>();
+   public static new List<XMLPair> getBackgroundXML () {
+      List<XMLPair> rawDataList = new List<XMLPair>();
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
@@ -1713,14 +1713,19 @@ public class DB_Main : DB_MainStub
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  rawDataList.Add(dataReader.GetString("xmlContent"));
+                  XMLPair newXMLPair = new XMLPair { 
+                     isEnabled = true,
+                     xmlId = dataReader.GetInt32("xml_id"),
+                     rawXmlData = dataReader.GetString("xmlContent")
+                  };
+                  rawDataList.Add(newXMLPair);
                }
             }
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
-      return new List<string>(rawDataList);
+      return rawDataList;
    }
 
    public static new void deleteBackgroundXML (int xmlId) {

@@ -15,8 +15,8 @@ public class DB_MainStub : MonoBehaviour
    public static void updateBackgroundXML (int xmlId, string rawData, string bgName) {
    }
 
-   public static List<string> getBackgroundXML () {
-      return new List<string>();
+   public static List<XMLPair> getBackgroundXML () {
+      return new List<XMLPair>();
    }
 
    public static void deleteBackgroundXML (int xmlId) {

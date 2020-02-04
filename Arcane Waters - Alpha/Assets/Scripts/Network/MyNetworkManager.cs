@@ -145,6 +145,7 @@ public class MyNetworkManager : NetworkManager {
       ShipAbilityManager.self.initializDataCache();
       ShopXMLManager.self.initializDataCache();
       AbilityManager.self.initializeDefaultAbilities();
+      BackgroundGameManager.self.initializeDataCache();
 
       // Schedule the leader boards recalculation
       LeaderBoardsManager.self.scheduleLeaderBoardRecalculation();

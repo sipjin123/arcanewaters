@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System;
 
 namespace BackgroundTool
 {
+   [Serializable]
    public class SpriteTemplateData
    {
       // Scale ratio
@@ -22,5 +24,8 @@ namespace BackgroundTool
 
       // The path of the sprite
       public string spritePath;
+
+      // Position of the obj in the local world
+      public Vector2 position;
    }
 }

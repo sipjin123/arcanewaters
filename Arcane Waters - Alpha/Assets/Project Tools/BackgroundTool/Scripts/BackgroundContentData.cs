@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System;
 
 namespace BackgroundTool
 {
+   [Serializable]
    public class BackgroundContentData 
    {
       // The name of the background content

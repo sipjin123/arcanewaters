@@ -17,18 +17,32 @@ namespace BackgroundTool
       // Data reference
       public SpriteTemplateData spriteTemplateData = new SpriteTemplateData();
 
+      // Determines if the sprite is created from the sprite panel
+      public bool createdFromPanel;
+
       #endregion
 
+      public void setTemplate () {
+         transform.localPosition = new Vector3(spriteTemplateData.position.x, spriteTemplateData.position.y, -spriteTemplateData.layerIndex);
+         transform.localScale = new Vector3(spriteTemplateData.scaleAlteration, spriteTemplateData.scaleAlteration, spriteTemplateData.scaleAlteration);
+         transform.localEulerAngles = new Vector3(0, 0, spriteTemplateData.rotationAlteration);
+         spriteRender.sortingOrder = spriteTemplateData.layerIndex;
+      }
+
       public void OnMouseDown () {
-         ImageManipulator.self.beginDragObj(this);
+         if (!EventSystem.current.IsPointerOverGameObject() || createdFromPanel) {
+            ImageManipulator.self.beginDragObj(this);
+         } 
       }
 
       public void OnMouseEnter () {
-         ImageManipulator.self.beginHoverObj(this);
+         if (!EventSystem.current.IsPointerOverGameObject() || createdFromPanel) {
+            ImageManipulator.self.beginHoverObj(this);
+         }
       }
 
       public void OnMouseExit () {
-         ImageManipulator.self.stopHoverObj();
+         ImageManipulator.self.stopHoverObj(this);
       }
 
       #region Private Variables

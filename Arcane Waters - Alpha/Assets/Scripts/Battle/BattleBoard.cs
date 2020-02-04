@@ -9,6 +9,9 @@ public class BattleBoard : MonoBehaviour {
    // The Biome Type that this Battle Board is for
    public Biome.Type biomeType = Biome.Type.Pine;
 
+   // Central spot where assets will be spawned
+   public Transform centerPoint;
+
    #endregion
 
    public void Start () {
