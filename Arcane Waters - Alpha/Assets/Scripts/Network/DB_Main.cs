@@ -1663,6 +1663,84 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
+   #region Background XML Data
+
+   public static new void updateBackgroundXML (int xmlId, string rawData, string bgName) {
+      try {
+         string xml_id_key = "xml_id, ";
+         string xml_id_value = "@xml_id, ";
+
+         // If this is a newly created data, let sql table auto generate id
+         if (xmlId < 0) {
+            xml_id_key = "";
+            xml_id_value = "";
+         }
+
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "INSERT INTO background_xml_v1 ("+ xml_id_key + "xml_name, xmlContent, creator_userID) " +
+            "VALUES("+ xml_id_value + "@xml_name, @xmlContent, @creator_userID) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@xml_id", xmlId);
+            cmd.Parameters.AddWithValue("@xml_name", bgName);
+            cmd.Parameters.AddWithValue("@xmlContent", rawData);
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self == null ? 0 : MasterToolAccountManager.self.currentAccountID);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         UnityEngine.Debug.LogError(e.ToString());
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<string> getBackgroundXML () {
+      List<string> rawDataList = new List<string>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane.background_xml_v1", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  rawDataList.Add(dataReader.GetString("xmlContent"));
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return new List<string>(rawDataList);
+   }
+
+   public static new void deleteBackgroundXML (int xmlId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM background_xml_v1 WHERE xml_id=@xml_id", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@xml_id", xmlId);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   #endregion
+
    #region Equipment XML Data
 
    public static new void updateEquipmentXML (string rawData, int entryId, EquipmentToolManager.EquipmentType equipType, string equipmentName) {

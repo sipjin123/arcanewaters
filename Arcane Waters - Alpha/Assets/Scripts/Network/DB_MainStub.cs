@@ -12,6 +12,16 @@ public class DB_MainStub : MonoBehaviour
 
    #endregion
 
+   public static void updateBackgroundXML (int xmlId, string rawData, string bgName) {
+   }
+
+   public static List<string> getBackgroundXML () {
+      return new List<string>();
+   }
+
+   public static void deleteBackgroundXML (int xmlId) {
+   }
+
    public static List<SQLEntryNameClass> getSQLDataByName (EditorSQLManager.EditorToolType editorType) {
       return new List<SQLEntryNameClass>();
    }
