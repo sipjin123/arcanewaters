@@ -8,7 +8,7 @@ public class Biome {
    #region Public Variables
 
    // The Type of Biome
-   public enum Type {  None = 0, Forest = 1, Desert = 2, Pine = 3, Snow = 4, Lava = 5, Mushroom = 6 , Custom = 7 }
+   public enum Type {  None = 0, Forest = 1, Desert = 2, Pine = 3, Snow = 4, Lava = 5, Mushroom = 6 }
 
    #endregion
 

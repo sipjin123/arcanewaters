@@ -25,7 +25,7 @@ namespace BackgroundTool
       // The path of the sprite
       public string spritePath;
 
-      // Position of the obj in the local world
-      public Vector2 position;
+      // Position of the obj locally
+      public Vector2 localPosition;
    }
 }

@@ -46,8 +46,8 @@ public class BattleManager : MonoBehaviour {
    public void initializeBattleBoards () {
       // Store all of the Battle Boards that exist in the Scene
       foreach (BattleBoard board in FindObjectsOfType<BattleBoard>()) {
-         // TODO: Temporary set all boards into custom
-         if (board.biomeType == Biome.Type.Custom) {
+         // TODO: Temporary refer to Desert BattleBoard for testing
+         if (board.biomeType == Biome.Type.Desert) {
             _boards[board.biomeType] = board;
             BackgroundGameManager.self.setSpritesToBattleBoard(board);
 

@@ -41,11 +41,11 @@ public class BackgroundGameManager : MonoBehaviour {
    }
 
    public void setSpritesToBattleBoard (BattleBoard board) {
-      // TODO: Temporary set all battlers to have the same custom sprites
+      // TODO: Temporary set all battle boards to have the same custom sprites
       foreach (SpriteTemplateData spriteTempData in backgroundContentList[0].spriteTemplateList) {
          SpriteTemplate spriteTempObj = Instantiate(spriteTemplatePrefab, board.centerPoint).GetComponent<SpriteTemplate>();
          
-         spriteTempObj.transform.localPosition = new Vector3(spriteTempData.position.x, spriteTempData.position.y, -spriteTempData.layerIndex);
+         spriteTempObj.transform.localPosition = new Vector3(spriteTempData.localPosition.x, spriteTempData.localPosition.y, -spriteTempData.layerIndex);
          spriteTempObj.transform.localEulerAngles = new Vector3(0, 0, spriteTempData.rotationAlteration);
          spriteTempObj.spriteRender.sprite = ImageManager.getSprite(spriteTempData.spritePath);
          spriteTempObj.transform.localScale = new Vector3(spriteTempData.scaleAlteration, spriteTempData.scaleAlteration, spriteTempData.scaleAlteration);

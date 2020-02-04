@@ -247,7 +247,7 @@ namespace BackgroundTool
 
             if (Input.GetKeyUp(KeyCode.Mouse0)) {
                cachedTemplate.createdFromPanel = false;
-               cachedTemplate.spriteTemplateData.position = draggedObj.transform.localPosition;
+               cachedTemplate.spriteTemplateData.localPosition = draggedObj.transform.localPosition;
                if (isNewlySpawned) {
                   creationCanvas.gameObject.SetActive(true);
                }

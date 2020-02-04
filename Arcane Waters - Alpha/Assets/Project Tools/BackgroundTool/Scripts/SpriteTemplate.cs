@@ -23,7 +23,7 @@ namespace BackgroundTool
       #endregion
 
       public void setTemplate () {
-         transform.localPosition = new Vector3(spriteTemplateData.position.x, spriteTemplateData.position.y, -spriteTemplateData.layerIndex);
+         transform.localPosition = new Vector3(spriteTemplateData.localPosition.x, spriteTemplateData.localPosition.y, -spriteTemplateData.layerIndex);
          transform.localScale = new Vector3(spriteTemplateData.scaleAlteration, spriteTemplateData.scaleAlteration, spriteTemplateData.scaleAlteration);
          transform.localEulerAngles = new Vector3(0, 0, spriteTemplateData.rotationAlteration);
          spriteRender.sortingOrder = spriteTemplateData.layerIndex;

@@ -41,7 +41,6 @@ namespace BackgroundTool
             string currentOption = dropDownFiles.options[dropDownFiles.value].text;
             BackgroundContentData contentData = backgroundContentList.Find(_ => _.backgroundName == currentOption);
             if (contentData != null) {
-
                ImageManipulator.self.generateSprites(contentData.spriteTemplateList);
             }
          });
