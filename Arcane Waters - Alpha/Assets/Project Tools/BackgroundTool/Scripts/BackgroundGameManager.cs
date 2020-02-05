@@ -46,9 +46,7 @@ public class BackgroundGameManager : MonoBehaviour {
          SpriteTemplate spriteTempObj = Instantiate(spriteTemplatePrefab, board.centerPoint).GetComponent<SpriteTemplate>();
          
          spriteTempObj.transform.localPosition = new Vector3(spriteTempData.localPosition.x, spriteTempData.localPosition.y, -spriteTempData.layerIndex);
-         spriteTempObj.transform.localEulerAngles = new Vector3(0, 0, spriteTempData.rotationAlteration);
          spriteTempObj.spriteRender.sprite = ImageManager.getSprite(spriteTempData.spritePath);
-         spriteTempObj.transform.localScale = new Vector3(spriteTempData.scaleAlteration, spriteTempData.scaleAlteration, spriteTempData.scaleAlteration);
       }
    }
 

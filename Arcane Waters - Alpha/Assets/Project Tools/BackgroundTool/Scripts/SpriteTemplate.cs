@@ -22,27 +22,37 @@ namespace BackgroundTool
 
       #endregion
 
+      public void OnMouseDown () {
+         if (!ImageManipulator.self.isDragging && !EventSystem.current.IsPointerOverGameObject()) {
+            List<SpriteTemplate> spriteTemp = new List<SpriteTemplate>();
+            spriteTemp.Add(this);
+            ImageManipulator.self.beginDragSpawnedGroup(spriteTemp, true);
+         } else {
+            ImageManipulator.self.endClick();
+         }
+      }
+
       public void setTemplate () {
          transform.localPosition = new Vector3(spriteTemplateData.localPosition.x, spriteTemplateData.localPosition.y, -spriteTemplateData.layerIndex);
-         transform.localScale = new Vector3(spriteTemplateData.scaleAlteration, spriteTemplateData.scaleAlteration, spriteTemplateData.scaleAlteration);
-         transform.localEulerAngles = new Vector3(0, 0, spriteTemplateData.rotationAlteration);
          spriteRender.sortingOrder = spriteTemplateData.layerIndex;
       }
 
-      public void OnMouseDown () {
-         if (!EventSystem.current.IsPointerOverGameObject() || createdFromPanel) {
-            ImageManipulator.self.beginDragObj(this);
-         } 
-      }
-
       public void OnMouseEnter () {
-         if (!EventSystem.current.IsPointerOverGameObject() || createdFromPanel) {
+         if ((!spriteTemplateData.isLocked &&
+            !ImageManipulator.self.spriteHighlightObj.activeSelf &&
+            ImageManipulator.self.currentEditType == ImageManipulator.EditType.Move && 
+            !ImageManipulator.self.isDragging &&
+            EventSystem.current.currentSelectedGameObject == null) || createdFromPanel) {
             ImageManipulator.self.beginHoverObj(this);
+         } else {
+            ImageManipulator.self.stopHoverObj(this);
          }
       }
 
       public void OnMouseExit () {
-         ImageManipulator.self.stopHoverObj(this);
+         if (!spriteTemplateData.isLocked && ImageManipulator.self.currentEditType == ImageManipulator.EditType.Move && !ImageManipulator.self.isDragging) {
+            ImageManipulator.self.stopHoverObj(this);
+         }
       }
 
       #region Private Variables

@@ -10,14 +10,8 @@ namespace BackgroundTool
    [Serializable]
    public class SpriteTemplateData
    {
-      // Scale ratio
-      public float scaleAlteration = 1;
-
-      // Rotation ratio
-      public float rotationAlteration = 0;
-
       // Determines the layer of the sprite
-      public int layerIndex = 0;
+      public int layerIndex = 3;
 
       // Determines if the sprite can be moved or not
       public bool isLocked = false;

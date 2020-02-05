@@ -25,7 +25,7 @@ namespace BackgroundTool
       public static string TERRAIN_DIRECTORY = "/Terrain/";
       public static string TREES_DIRECTORY = "/Trees/";
 
-      public static float spacing = .5f;
+      public static float spacing = .25f;
 
       // Empty sprite that will be addressed later
       public GameObject emptySprite;
@@ -42,6 +42,9 @@ namespace BackgroundTool
 
       // Reference to the recently clicked button
       public Button cachedButton;
+
+      // Self
+      public static ImageLoader self;
 
       public enum BGContentType
       {
@@ -60,6 +63,8 @@ namespace BackgroundTool
       #endregion
 
       private void Start () {
+         self = this;
+
          buttonDirectories = new List<ButtonDirectory>();
          foreach (BGContentType contentType in Enum.GetValues(typeof(BGContentType))) {
             ButtonDirectory newButtonDirectory = new ButtonDirectory();
@@ -85,21 +90,33 @@ namespace BackgroundTool
 
       private void setSpriteSelection (string buttonDirectory) {
          spriteParent.gameObject.DestroyChildren();
-         List<ImageManager.ImageData> spriteIconFiles = ImageManager.getSpritesInDirectory(MAIN_DIRECTORY + buttonDirectory);
 
-         float previousBounds = 0;
-         foreach (ImageManager.ImageData imgData in spriteIconFiles) {
-            GameObject prefab = Instantiate(emptySprite, spriteParent);
+         if (buttonDirectory != "") {
+            List<ImageManager.ImageData> spriteIconFiles = ImageManager.getSpritesInDirectory(MAIN_DIRECTORY + buttonDirectory);
 
-            float newXValue = previousBounds ;
-            prefab.transform.localPosition += new Vector3(newXValue, 0, 0);
-            previousBounds = newXValue + spacing +imgData.sprite.bounds.size.x;
+            float previousBounds = 0;
+            foreach (ImageManager.ImageData imgData in spriteIconFiles) {
+               GameObject prefab = Instantiate(emptySprite, spriteParent);
 
-            SpriteSelectionTemplate spriteTemplate = prefab.GetComponent<SpriteSelectionTemplate>();
-            spriteTemplate.imageIcon.sprite = imgData.sprite;
-            spriteTemplate.spritePath = imgData.imagePath;
-            spriteTemplate.gameObject.AddComponent<BoxCollider2D>();
-            prefab.SetActive(true);
+               float newYValue = previousBounds;
+               float spriteWidth = imgData.sprite.bounds.size.x;
+
+               if (spriteWidth > 6) {
+                  // Get corner of the sprite if the sprite is landscape/background
+                  prefab.transform.localPosition = new Vector3((spriteWidth / 2) - 1, newYValue, 0);
+               } else {
+                  // Set sprite as is if it is a background element
+                  prefab.transform.localPosition = new Vector3(0, newYValue, 0);
+               }
+
+               previousBounds = newYValue - spacing - imgData.sprite.bounds.size.y;
+
+               SpriteSelectionTemplate spriteTemplate = prefab.GetComponent<SpriteSelectionTemplate>();
+               spriteTemplate.spriteIcon.sprite = imgData.sprite;
+               spriteTemplate.spritePath = imgData.imagePath;
+               spriteTemplate.gameObject.AddComponent<BoxCollider2D>();
+               prefab.SetActive(true);
+            }
          }
       }
 
