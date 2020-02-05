@@ -9564,141 +9564,141 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   imageDataList:
   - imageName: ability_air_blowback
-    imagePath: Assets/Sprites/Icons/Skills/ability_air_blowback.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_air_blowback
+    imagePath: Assets/Sprites/Icons/Abilities/ability_air_blowback.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/ability_air_blowback
     texture2D: {fileID: 2800000, guid: faaf2984c8d925240b6c6fdd88335f5a, type: 3}
     sprite: {fileID: 21300000, guid: faaf2984c8d925240b6c6fdd88335f5a, type: 3}
     sprites:
     - {fileID: 21300000, guid: faaf2984c8d925240b6c6fdd88335f5a, type: 3}
   - imageName: ability_air_gale_force
-    imagePath: Assets/Sprites/Icons/Skills/ability_air_gale_force.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_air_gale_force
+    imagePath: Assets/Sprites/Icons/Abilities/ability_air_gale_force.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/ability_air_gale_force
     texture2D: {fileID: 2800000, guid: 5c399ec9bbae6d5479a72d8a9298883c, type: 3}
     sprite: {fileID: 21300000, guid: 5c399ec9bbae6d5479a72d8a9298883c, type: 3}
     sprites:
     - {fileID: 21300000, guid: 5c399ec9bbae6d5479a72d8a9298883c, type: 3}
   - imageName: ability_air_levitate
-    imagePath: Assets/Sprites/Icons/Skills/ability_air_levitate.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_air_levitate
+    imagePath: Assets/Sprites/Icons/Abilities/ability_air_levitate.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/ability_air_levitate
     texture2D: {fileID: 2800000, guid: e920cbd5c89bda241a055f4ea4447a3a, type: 3}
     sprite: {fileID: 21300000, guid: e920cbd5c89bda241a055f4ea4447a3a, type: 3}
     sprites:
     - {fileID: 21300000, guid: e920cbd5c89bda241a055f4ea4447a3a, type: 3}
   - imageName: ability_air_pull
-    imagePath: Assets/Sprites/Icons/Skills/ability_air_pull.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_air_pull
+    imagePath: Assets/Sprites/Icons/Abilities/ability_air_pull.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/ability_air_pull
     texture2D: {fileID: 2800000, guid: 1d77e8083624c384d9df12fa2ac2d2a6, type: 3}
     sprite: {fileID: 21300000, guid: 1d77e8083624c384d9df12fa2ac2d2a6, type: 3}
     sprites:
     - {fileID: 21300000, guid: 1d77e8083624c384d9df12fa2ac2d2a6, type: 3}
   - imageName: ability_air_whirlwind
-    imagePath: Assets/Sprites/Icons/Skills/ability_air_whirlwind.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_air_whirlwind
+    imagePath: Assets/Sprites/Icons/Abilities/ability_air_whirlwind.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/ability_air_whirlwind
     texture2D: {fileID: 2800000, guid: 1e1d861b0a5e9e54eb72da9de0665f95, type: 3}
     sprite: {fileID: 21300000, guid: 1e1d861b0a5e9e54eb72da9de0665f95, type: 3}
     sprites:
     - {fileID: 21300000, guid: 1e1d861b0a5e9e54eb72da9de0665f95, type: 3}
   - imageName: ability_earth_rock_hammer
-    imagePath: Assets/Sprites/Icons/Skills/ability_earth_rock_hammer.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_earth_rock_hammer
+    imagePath: Assets/Sprites/Icons/Abilities/ability_earth_rock_hammer.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/ability_earth_rock_hammer
     texture2D: {fileID: 2800000, guid: bc7f32508c3240f45accb8d170e91f3d, type: 3}
     sprite: {fileID: 21300000, guid: bc7f32508c3240f45accb8d170e91f3d, type: 3}
     sprites:
     - {fileID: 21300000, guid: bc7f32508c3240f45accb8d170e91f3d, type: 3}
   - imageName: ability_earth_rolling_stone
-    imagePath: Assets/Sprites/Icons/Skills/ability_earth_rolling_stone.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_earth_rolling_stone
+    imagePath: Assets/Sprites/Icons/Abilities/ability_earth_rolling_stone.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/ability_earth_rolling_stone
     texture2D: {fileID: 2800000, guid: 1e4ccd0cc4c9221439df95161a55b8d8, type: 3}
     sprite: {fileID: 21300000, guid: 1e4ccd0cc4c9221439df95161a55b8d8, type: 3}
     sprites:
     - {fileID: 21300000, guid: 1e4ccd0cc4c9221439df95161a55b8d8, type: 3}
   - imageName: ability_earth_seismic_shake
-    imagePath: Assets/Sprites/Icons/Skills/ability_earth_seismic_shake.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_earth_seismic_shake
+    imagePath: Assets/Sprites/Icons/Abilities/ability_earth_seismic_shake.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/ability_earth_seismic_shake
     texture2D: {fileID: 2800000, guid: c4a769e1aec1f004fbe6a4a71aa99976, type: 3}
     sprite: {fileID: 21300000, guid: c4a769e1aec1f004fbe6a4a71aa99976, type: 3}
     sprites:
     - {fileID: 21300000, guid: c4a769e1aec1f004fbe6a4a71aa99976, type: 3}
   - imageName: ability_earth_tendrils
-    imagePath: Assets/Sprites/Icons/Skills/ability_earth_tendrils.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_earth_tendrils
+    imagePath: Assets/Sprites/Icons/Abilities/ability_earth_tendrils.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/ability_earth_tendrils
     texture2D: {fileID: 2800000, guid: 5193e8b6f10aede468f2316204f3e071, type: 3}
     sprite: {fileID: 21300000, guid: 5193e8b6f10aede468f2316204f3e071, type: 3}
     sprites:
     - {fileID: 21300000, guid: 5193e8b6f10aede468f2316204f3e071, type: 3}
   - imageName: ability_earth_thorn_whip
-    imagePath: Assets/Sprites/Icons/Skills/ability_earth_thorn_whip.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_earth_thorn_whip
+    imagePath: Assets/Sprites/Icons/Abilities/ability_earth_thorn_whip.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/ability_earth_thorn_whip
     texture2D: {fileID: 2800000, guid: 8682d9862285ab8489dc56fdd161f5f8, type: 3}
     sprite: {fileID: 21300000, guid: 8682d9862285ab8489dc56fdd161f5f8, type: 3}
     sprites:
     - {fileID: 21300000, guid: 8682d9862285ab8489dc56fdd161f5f8, type: 3}
   - imageName: ability_fire_burning_hands
-    imagePath: Assets/Sprites/Icons/Skills/ability_fire_burning_hands.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_fire_burning_hands
+    imagePath: Assets/Sprites/Icons/Abilities/ability_fire_burning_hands.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/ability_fire_burning_hands
     texture2D: {fileID: 2800000, guid: 6caeef90c120373409074475d05d848e, type: 3}
     sprite: {fileID: 21300000, guid: 6caeef90c120373409074475d05d848e, type: 3}
     sprites:
     - {fileID: 21300000, guid: 6caeef90c120373409074475d05d848e, type: 3}
   - imageName: ability_fire_fireball
-    imagePath: Assets/Sprites/Icons/Skills/ability_fire_fireball.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_fire_fireball
+    imagePath: Assets/Sprites/Icons/Abilities/ability_fire_fireball.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/ability_fire_fireball
     texture2D: {fileID: 2800000, guid: 92528af7413521746b339743d4bc1162, type: 3}
     sprite: {fileID: 21300000, guid: 92528af7413521746b339743d4bc1162, type: 3}
     sprites:
     - {fileID: 21300000, guid: 92528af7413521746b339743d4bc1162, type: 3}
   - imageName: ability_fire_firespout
-    imagePath: Assets/Sprites/Icons/Skills/ability_fire_firespout.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_fire_firespout
+    imagePath: Assets/Sprites/Icons/Abilities/ability_fire_firespout.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/ability_fire_firespout
     texture2D: {fileID: 2800000, guid: e3a45eb8360aa30419eb54c4e6246ef4, type: 3}
     sprite: {fileID: 21300000, guid: e3a45eb8360aa30419eb54c4e6246ef4, type: 3}
     sprites:
     - {fileID: 21300000, guid: e3a45eb8360aa30419eb54c4e6246ef4, type: 3}
   - imageName: ability_fire_flame_darts
-    imagePath: Assets/Sprites/Icons/Skills/ability_fire_flame_darts.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_fire_flame_darts
+    imagePath: Assets/Sprites/Icons/Abilities/ability_fire_flame_darts.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/ability_fire_flame_darts
     texture2D: {fileID: 2800000, guid: 4119ee35a0d70cc45ad23fcce255e670, type: 3}
     sprite: {fileID: 21300000, guid: 4119ee35a0d70cc45ad23fcce255e670, type: 3}
     sprites:
     - {fileID: 21300000, guid: 4119ee35a0d70cc45ad23fcce255e670, type: 3}
   - imageName: ability_fire_phoenix
-    imagePath: Assets/Sprites/Icons/Skills/ability_fire_phoenix.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_fire_phoenix
+    imagePath: Assets/Sprites/Icons/Abilities/ability_fire_phoenix.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/ability_fire_phoenix
     texture2D: {fileID: 2800000, guid: 8c278f91bd9a1ec4aad467b6f67fe188, type: 3}
     sprite: {fileID: 21300000, guid: 8c278f91bd9a1ec4aad467b6f67fe188, type: 3}
     sprites:
     - {fileID: 21300000, guid: 8c278f91bd9a1ec4aad467b6f67fe188, type: 3}
   - imageName: ability_physical_body_slam
-    imagePath: Assets/Sprites/Icons/Skills/ability_physical_body_slam.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_physical_body_slam
+    imagePath: Assets/Sprites/Icons/Abilities/ability_physical_body_slam.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/ability_physical_body_slam
     texture2D: {fileID: 2800000, guid: fb4b254d365745049b6cef2318fadace, type: 3}
     sprite: {fileID: 21300000, guid: fb4b254d365745049b6cef2318fadace, type: 3}
     sprites:
     - {fileID: 21300000, guid: fb4b254d365745049b6cef2318fadace, type: 3}
   - imageName: ability_physical_bonebreaker
-    imagePath: Assets/Sprites/Icons/Skills/ability_physical_bonebreaker.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_physical_bonebreaker
+    imagePath: Assets/Sprites/Icons/Abilities/ability_physical_bonebreaker.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/ability_physical_bonebreaker
     texture2D: {fileID: 2800000, guid: 747c40389f66e4e468438f87ba34fa88, type: 3}
     sprite: {fileID: 21300000, guid: 747c40389f66e4e468438f87ba34fa88, type: 3}
     sprites:
     - {fileID: 21300000, guid: 747c40389f66e4e468438f87ba34fa88, type: 3}
   - imageName: ability_physical_headlock
-    imagePath: Assets/Sprites/Icons/Skills/ability_physical_headlock.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_physical_headlock
+    imagePath: Assets/Sprites/Icons/Abilities/ability_physical_headlock.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/ability_physical_headlock
     texture2D: {fileID: 2800000, guid: 309b36b9f338cdd40ba9e11157d6a09b, type: 3}
     sprite: {fileID: 21300000, guid: 309b36b9f338cdd40ba9e11157d6a09b, type: 3}
     sprites:
     - {fileID: 21300000, guid: 309b36b9f338cdd40ba9e11157d6a09b, type: 3}
   - imageName: ability_physical_right_hook
-    imagePath: Assets/Sprites/Icons/Skills/ability_physical_right_hook.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_physical_right_hook
+    imagePath: Assets/Sprites/Icons/Abilities/ability_physical_right_hook.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/ability_physical_right_hook
     texture2D: {fileID: 2800000, guid: 14365b40f783644429d91703b07cf6e1, type: 3}
     sprite: {fileID: 21300000, guid: 14365b40f783644429d91703b07cf6e1, type: 3}
     sprites:
     - {fileID: 21300000, guid: 14365b40f783644429d91703b07cf6e1, type: 3}
   - imageName: ability_physical_roundhouse
-    imagePath: Assets/Sprites/Icons/Skills/ability_physical_roundhouse.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_physical_roundhouse
+    imagePath: Assets/Sprites/Icons/Abilities/ability_physical_roundhouse.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/ability_physical_roundhouse
     texture2D: {fileID: 2800000, guid: 7cef0422e14b2664295835dbb94e20ea, type: 3}
     sprite: {fileID: 21300000, guid: 7cef0422e14b2664295835dbb94e20ea, type: 3}
     sprites:
@@ -9718,36 +9718,36 @@ MonoBehaviour:
     sprites:
     - {fileID: 21300000, guid: 3454668f301bed0408862c606678897d, type: 3}
   - imageName: ability_water_blizzard
-    imagePath: Assets/Sprites/Icons/Skills/ability_water_blizzard.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_water_blizzard
+    imagePath: Assets/Sprites/Icons/Abilities/ability_water_blizzard.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/ability_water_blizzard
     texture2D: {fileID: 2800000, guid: 0f5f9b341344d6943ad26c0f85920d05, type: 3}
     sprite: {fileID: 21300000, guid: 0f5f9b341344d6943ad26c0f85920d05, type: 3}
     sprites:
     - {fileID: 21300000, guid: 0f5f9b341344d6943ad26c0f85920d05, type: 3}
   - imageName: ability_water_fog
-    imagePath: Assets/Sprites/Icons/Skills/ability_water_fog.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_water_fog
+    imagePath: Assets/Sprites/Icons/Abilities/ability_water_fog.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/ability_water_fog
     texture2D: {fileID: 2800000, guid: a1e2560583b5d024095976f1f792036e, type: 3}
     sprite: {fileID: 21300000, guid: a1e2560583b5d024095976f1f792036e, type: 3}
     sprites:
     - {fileID: 21300000, guid: a1e2560583b5d024095976f1f792036e, type: 3}
   - imageName: ability_water_ice_knife
-    imagePath: Assets/Sprites/Icons/Skills/ability_water_ice_knife.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_water_ice_knife
+    imagePath: Assets/Sprites/Icons/Abilities/ability_water_ice_knife.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/ability_water_ice_knife
     texture2D: {fileID: 2800000, guid: b0920eabd547ed140a3fc54e632e71a0, type: 3}
     sprite: {fileID: 21300000, guid: b0920eabd547ed140a3fc54e632e71a0, type: 3}
     sprites:
     - {fileID: 21300000, guid: b0920eabd547ed140a3fc54e632e71a0, type: 3}
   - imageName: ability_water_storm
-    imagePath: Assets/Sprites/Icons/Skills/ability_water_storm.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_water_storm
+    imagePath: Assets/Sprites/Icons/Abilities/ability_water_storm.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/ability_water_storm
     texture2D: {fileID: 2800000, guid: 5d892deedd54a5344bbb7130552f0725, type: 3}
     sprite: {fileID: 21300000, guid: 5d892deedd54a5344bbb7130552f0725, type: 3}
     sprites:
     - {fileID: 21300000, guid: 5d892deedd54a5344bbb7130552f0725, type: 3}
   - imageName: ability_water_tsunami
-    imagePath: Assets/Sprites/Icons/Skills/ability_water_tsunami.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/Skills/ability_water_tsunami
+    imagePath: Assets/Sprites/Icons/Abilities/ability_water_tsunami.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/ability_water_tsunami
     texture2D: {fileID: 2800000, guid: 81cdfb4f9bc6ce045a06c1f60559d6d2, type: 3}
     sprite: {fileID: 21300000, guid: 81cdfb4f9bc6ce045a06c1f60559d6d2, type: 3}
     sprites:
@@ -13894,6 +13894,34 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: c4daccb8a911b414eaca7286daed06b3, type: 3}
     sprites:
     - {fileID: 21300000, guid: c4daccb8a911b414eaca7286daed06b3, type: 3}
+  - imageName: desert_outside_area
+    imagePath: Assets/Sprites/Biomable/desert_outside_area.png
+    imagePathWithoutExtension: Assets/Sprites/Biomable/desert_outside_area
+    texture2D: {fileID: 2800000, guid: 9bf40791f1884a44081c56c3fff6c6ba, type: 3}
+    sprite: {fileID: 3601007784051382762, guid: 9bf40791f1884a44081c56c3fff6c6ba,
+      type: 3}
+    sprites:
+    - {fileID: 5931366590717825993, guid: 9bf40791f1884a44081c56c3fff6c6ba, type: 3}
+    - {fileID: 3601007784051382762, guid: 9bf40791f1884a44081c56c3fff6c6ba, type: 3}
+    - {fileID: -1827229250639001231, guid: 9bf40791f1884a44081c56c3fff6c6ba, type: 3}
+    - {fileID: 7649023229069743082, guid: 9bf40791f1884a44081c56c3fff6c6ba, type: 3}
+    - {fileID: -7164756718199925655, guid: 9bf40791f1884a44081c56c3fff6c6ba, type: 3}
+    - {fileID: -399039033624637609, guid: 9bf40791f1884a44081c56c3fff6c6ba, type: 3}
+    - {fileID: 5130444729223440711, guid: 9bf40791f1884a44081c56c3fff6c6ba, type: 3}
+    - {fileID: -6389711648075010245, guid: 9bf40791f1884a44081c56c3fff6c6ba, type: 3}
+    - {fileID: -8200491392649816447, guid: 9bf40791f1884a44081c56c3fff6c6ba, type: 3}
+    - {fileID: 3833938427625472335, guid: 9bf40791f1884a44081c56c3fff6c6ba, type: 3}
+    - {fileID: -4035124974782416602, guid: 9bf40791f1884a44081c56c3fff6c6ba, type: 3}
+    - {fileID: -2907105530357758002, guid: 9bf40791f1884a44081c56c3fff6c6ba, type: 3}
+    - {fileID: -5029767409446948576, guid: 9bf40791f1884a44081c56c3fff6c6ba, type: 3}
+    - {fileID: -109472132482165120, guid: 9bf40791f1884a44081c56c3fff6c6ba, type: 3}
+    - {fileID: 472594639611495210, guid: 9bf40791f1884a44081c56c3fff6c6ba, type: 3}
+    - {fileID: 5970193411932860357, guid: 9bf40791f1884a44081c56c3fff6c6ba, type: 3}
+    - {fileID: -2378699380666978694, guid: 9bf40791f1884a44081c56c3fff6c6ba, type: 3}
+    - {fileID: 799496599258128610, guid: 9bf40791f1884a44081c56c3fff6c6ba, type: 3}
+    - {fileID: -2714972993821162971, guid: 9bf40791f1884a44081c56c3fff6c6ba, type: 3}
+    - {fileID: 7853143663091552056, guid: 9bf40791f1884a44081c56c3fff6c6ba, type: 3}
+    - {fileID: -2135994159487377259, guid: 9bf40791f1884a44081c56c3fff6c6ba, type: 3}
   - imageName: desert_pressed
     imagePath: Assets/Sprites/GUI/Sea Random/desert_pressed.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Sea Random/desert_pressed
@@ -16867,6 +16895,81 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: b80f4b387dd8a864cb43b5bed6368ec4, type: 3}
     sprites:
     - {fileID: 21300000, guid: b80f4b387dd8a864cb43b5bed6368ec4, type: 3}
+  - imageName: forest_interior
+    imagePath: Assets/Sprites/Biomable/forest_interior.png
+    imagePathWithoutExtension: Assets/Sprites/Biomable/forest_interior
+    texture2D: {fileID: 2800000, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    sprite: {fileID: -637417383688732081, guid: f33ad6d1f8cf999448123a58002905ae,
+      type: 3}
+    sprites:
+    - {fileID: -5088337885355641681, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: 8754149281199294149, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: -667970240133171378, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: -8204226666909539769, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: 4807767403394959923, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: 6201311218614832722, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: -5966669313685652861, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: 5661067979574088427, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: 8130202189488412583, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: 5981285831946263636, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: 495748499277344392, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: 7753403418386466570, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: -3423717611486707008, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: -7992055408368574258, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: 2032791834850238878, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: -339797976112722748, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: 1333615224386357549, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: 4181288705335753561, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: -6896577903469675901, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: -382065333563392404, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: 2250945377133944861, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: 1243498541607253169, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: 6369198387900770869, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: -637417383688732081, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: -1556026665326039492, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: 5337512536904949877, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: 6598238256505960243, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: -1783287754114314923, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: -5002639772529203120, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: -8997161421839668736, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: 4159110165775812054, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: 1741087642673460162, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: 9182699689326311241, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: 7875799603427613059, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: 3643446096898515377, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: 7812555876087385696, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: 2856851223808285417, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: 2439094515061929636, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: -2176992211906874706, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: -809185924608111219, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+    - {fileID: -6471825128454853284, guid: f33ad6d1f8cf999448123a58002905ae, type: 3}
+  - imageName: forest_outside_area
+    imagePath: Assets/Sprites/Biomable/forest_outside_area.png
+    imagePathWithoutExtension: Assets/Sprites/Biomable/forest_outside_area
+    texture2D: {fileID: 2800000, guid: 20847479c992f5947ab53416641e75c2, type: 3}
+    sprite: {fileID: 154330775714314006, guid: 20847479c992f5947ab53416641e75c2, type: 3}
+    sprites:
+    - {fileID: -5088337885355641681, guid: 20847479c992f5947ab53416641e75c2, type: 3}
+    - {fileID: 154330775714314006, guid: 20847479c992f5947ab53416641e75c2, type: 3}
+    - {fileID: 3887027102964644550, guid: 20847479c992f5947ab53416641e75c2, type: 3}
+    - {fileID: -5489899356626961395, guid: 20847479c992f5947ab53416641e75c2, type: 3}
+    - {fileID: -5437837768155837488, guid: 20847479c992f5947ab53416641e75c2, type: 3}
+    - {fileID: 4890428931860579675, guid: 20847479c992f5947ab53416641e75c2, type: 3}
+    - {fileID: 7583803771065419974, guid: 20847479c992f5947ab53416641e75c2, type: 3}
+    - {fileID: -5829169691217852696, guid: 20847479c992f5947ab53416641e75c2, type: 3}
+    - {fileID: 7646828838817505765, guid: 20847479c992f5947ab53416641e75c2, type: 3}
+    - {fileID: 6528647299723873850, guid: 20847479c992f5947ab53416641e75c2, type: 3}
+    - {fileID: -522087098365958777, guid: 20847479c992f5947ab53416641e75c2, type: 3}
+    - {fileID: 8219509617029845171, guid: 20847479c992f5947ab53416641e75c2, type: 3}
+    - {fileID: -8646579968066411040, guid: 20847479c992f5947ab53416641e75c2, type: 3}
+    - {fileID: 6343942201512948070, guid: 20847479c992f5947ab53416641e75c2, type: 3}
+    - {fileID: 1248757769047381557, guid: 20847479c992f5947ab53416641e75c2, type: 3}
+    - {fileID: -200918541502192427, guid: 20847479c992f5947ab53416641e75c2, type: 3}
+    - {fileID: 1391816631217348890, guid: 20847479c992f5947ab53416641e75c2, type: 3}
+    - {fileID: 117282668141339027, guid: 20847479c992f5947ab53416641e75c2, type: 3}
+    - {fileID: -5727599040392584130, guid: 20847479c992f5947ab53416641e75c2, type: 3}
+    - {fileID: 740755391891118105, guid: 20847479c992f5947ab53416641e75c2, type: 3}
+    - {fileID: 7804297758460824442, guid: 20847479c992f5947ab53416641e75c2, type: 3}
   - imageName: forest_pressed
     imagePath: Assets/Sprites/GUI/Sea Random/forest_pressed.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Sea Random/forest_pressed
@@ -20202,6 +20305,34 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 788efb92e600aca4bb0ba5839b87b266, type: 3}
     sprites:
     - {fileID: 21300000, guid: 788efb92e600aca4bb0ba5839b87b266, type: 3}
+  - imageName: lava_outside_area
+    imagePath: Assets/Sprites/Biomable/lava_outside_area.png
+    imagePathWithoutExtension: Assets/Sprites/Biomable/lava_outside_area
+    texture2D: {fileID: 2800000, guid: 7011c5d4c218304458460d6c36cecfe1, type: 3}
+    sprite: {fileID: -2488432504167882851, guid: 7011c5d4c218304458460d6c36cecfe1,
+      type: 3}
+    sprites:
+    - {fileID: -5104166979234427165, guid: 7011c5d4c218304458460d6c36cecfe1, type: 3}
+    - {fileID: -4934705375325205151, guid: 7011c5d4c218304458460d6c36cecfe1, type: 3}
+    - {fileID: 1743295386783316463, guid: 7011c5d4c218304458460d6c36cecfe1, type: 3}
+    - {fileID: -2488432504167882851, guid: 7011c5d4c218304458460d6c36cecfe1, type: 3}
+    - {fileID: -624557392669623607, guid: 7011c5d4c218304458460d6c36cecfe1, type: 3}
+    - {fileID: -611476506956698148, guid: 7011c5d4c218304458460d6c36cecfe1, type: 3}
+    - {fileID: 5738010422766610428, guid: 7011c5d4c218304458460d6c36cecfe1, type: 3}
+    - {fileID: -7006683860456926378, guid: 7011c5d4c218304458460d6c36cecfe1, type: 3}
+    - {fileID: 1356985471423656072, guid: 7011c5d4c218304458460d6c36cecfe1, type: 3}
+    - {fileID: -2188655696657154963, guid: 7011c5d4c218304458460d6c36cecfe1, type: 3}
+    - {fileID: -5683931988556712534, guid: 7011c5d4c218304458460d6c36cecfe1, type: 3}
+    - {fileID: -5014812677657202700, guid: 7011c5d4c218304458460d6c36cecfe1, type: 3}
+    - {fileID: 1201613316279888711, guid: 7011c5d4c218304458460d6c36cecfe1, type: 3}
+    - {fileID: 4050339563061824470, guid: 7011c5d4c218304458460d6c36cecfe1, type: 3}
+    - {fileID: -4740296121602672519, guid: 7011c5d4c218304458460d6c36cecfe1, type: 3}
+    - {fileID: 8519500103046382132, guid: 7011c5d4c218304458460d6c36cecfe1, type: 3}
+    - {fileID: -8050638802131577890, guid: 7011c5d4c218304458460d6c36cecfe1, type: 3}
+    - {fileID: 7733844995466174354, guid: 7011c5d4c218304458460d6c36cecfe1, type: 3}
+    - {fileID: 1623398890082530420, guid: 7011c5d4c218304458460d6c36cecfe1, type: 3}
+    - {fileID: -3536954581128049083, guid: 7011c5d4c218304458460d6c36cecfe1, type: 3}
+    - {fileID: 3583682541798665078, guid: 7011c5d4c218304458460d6c36cecfe1, type: 3}
   - imageName: lava_pressed
     imagePath: Assets/Sprites/GUI/Sea Random/lava_pressed.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Sea Random/lava_pressed
@@ -23157,6 +23288,34 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 8a6ff951ae804fd459dbdd1743df2eac, type: 3}
     sprites:
     - {fileID: 21300000, guid: 8a6ff951ae804fd459dbdd1743df2eac, type: 3}
+  - imageName: mushroom_outside_area
+    imagePath: Assets/Sprites/Biomable/mushroom_outside_area.png
+    imagePathWithoutExtension: Assets/Sprites/Biomable/mushroom_outside_area
+    texture2D: {fileID: 2800000, guid: 1ac544d6a686cb94297d5f7ddebbdbfd, type: 3}
+    sprite: {fileID: 6556386088206245893, guid: 1ac544d6a686cb94297d5f7ddebbdbfd,
+      type: 3}
+    sprites:
+    - {fileID: -8383193410224855064, guid: 1ac544d6a686cb94297d5f7ddebbdbfd, type: 3}
+    - {fileID: 1958754738885911761, guid: 1ac544d6a686cb94297d5f7ddebbdbfd, type: 3}
+    - {fileID: -3302943154970714637, guid: 1ac544d6a686cb94297d5f7ddebbdbfd, type: 3}
+    - {fileID: 6556386088206245893, guid: 1ac544d6a686cb94297d5f7ddebbdbfd, type: 3}
+    - {fileID: -3046133033510929705, guid: 1ac544d6a686cb94297d5f7ddebbdbfd, type: 3}
+    - {fileID: -8551706745082289366, guid: 1ac544d6a686cb94297d5f7ddebbdbfd, type: 3}
+    - {fileID: 431303131776831234, guid: 1ac544d6a686cb94297d5f7ddebbdbfd, type: 3}
+    - {fileID: -2447702276957084010, guid: 1ac544d6a686cb94297d5f7ddebbdbfd, type: 3}
+    - {fileID: -8409348213212657902, guid: 1ac544d6a686cb94297d5f7ddebbdbfd, type: 3}
+    - {fileID: -5264796524346447694, guid: 1ac544d6a686cb94297d5f7ddebbdbfd, type: 3}
+    - {fileID: 1576150432833631398, guid: 1ac544d6a686cb94297d5f7ddebbdbfd, type: 3}
+    - {fileID: -3528456519832469393, guid: 1ac544d6a686cb94297d5f7ddebbdbfd, type: 3}
+    - {fileID: -368587712460293274, guid: 1ac544d6a686cb94297d5f7ddebbdbfd, type: 3}
+    - {fileID: -2166662326047418669, guid: 1ac544d6a686cb94297d5f7ddebbdbfd, type: 3}
+    - {fileID: -1655736438942874994, guid: 1ac544d6a686cb94297d5f7ddebbdbfd, type: 3}
+    - {fileID: -7934368152182791655, guid: 1ac544d6a686cb94297d5f7ddebbdbfd, type: 3}
+    - {fileID: 2448658872094400049, guid: 1ac544d6a686cb94297d5f7ddebbdbfd, type: 3}
+    - {fileID: -6833829229951345242, guid: 1ac544d6a686cb94297d5f7ddebbdbfd, type: 3}
+    - {fileID: -6002445944518773108, guid: 1ac544d6a686cb94297d5f7ddebbdbfd, type: 3}
+    - {fileID: -4224822531771535419, guid: 1ac544d6a686cb94297d5f7ddebbdbfd, type: 3}
+    - {fileID: -2781518557592719013, guid: 1ac544d6a686cb94297d5f7ddebbdbfd, type: 3}
   - imageName: mushroom_pressed
     imagePath: Assets/Sprites/GUI/Sea Random/mushroom_pressed.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Sea Random/mushroom_pressed
@@ -24298,6 +24457,34 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 8d624a7a7bd4dd14eb2e0926aae40f51, type: 3}
     sprites:
     - {fileID: 21300000, guid: 8d624a7a7bd4dd14eb2e0926aae40f51, type: 3}
+  - imageName: pine_outside_area
+    imagePath: Assets/Sprites/Biomable/pine_outside_area.png
+    imagePathWithoutExtension: Assets/Sprites/Biomable/pine_outside_area
+    texture2D: {fileID: 2800000, guid: 54bc3cf54f57c4d44baa7cefb355ac51, type: 3}
+    sprite: {fileID: 9217290611811564273, guid: 54bc3cf54f57c4d44baa7cefb355ac51,
+      type: 3}
+    sprites:
+    - {fileID: -6433620814745742088, guid: 54bc3cf54f57c4d44baa7cefb355ac51, type: 3}
+    - {fileID: 6926096475720074989, guid: 54bc3cf54f57c4d44baa7cefb355ac51, type: 3}
+    - {fileID: -6421228022532599459, guid: 54bc3cf54f57c4d44baa7cefb355ac51, type: 3}
+    - {fileID: 9217290611811564273, guid: 54bc3cf54f57c4d44baa7cefb355ac51, type: 3}
+    - {fileID: 407319591855838534, guid: 54bc3cf54f57c4d44baa7cefb355ac51, type: 3}
+    - {fileID: -3537579827072434363, guid: 54bc3cf54f57c4d44baa7cefb355ac51, type: 3}
+    - {fileID: 627632439976557964, guid: 54bc3cf54f57c4d44baa7cefb355ac51, type: 3}
+    - {fileID: -5054571392725308911, guid: 54bc3cf54f57c4d44baa7cefb355ac51, type: 3}
+    - {fileID: -2987249310379689810, guid: 54bc3cf54f57c4d44baa7cefb355ac51, type: 3}
+    - {fileID: -1960310138374836482, guid: 54bc3cf54f57c4d44baa7cefb355ac51, type: 3}
+    - {fileID: -5959356945799260636, guid: 54bc3cf54f57c4d44baa7cefb355ac51, type: 3}
+    - {fileID: -4620538451186351608, guid: 54bc3cf54f57c4d44baa7cefb355ac51, type: 3}
+    - {fileID: 1272865591629582076, guid: 54bc3cf54f57c4d44baa7cefb355ac51, type: 3}
+    - {fileID: 4686894841211001534, guid: 54bc3cf54f57c4d44baa7cefb355ac51, type: 3}
+    - {fileID: -3328737970052172473, guid: 54bc3cf54f57c4d44baa7cefb355ac51, type: 3}
+    - {fileID: -1997575565676164893, guid: 54bc3cf54f57c4d44baa7cefb355ac51, type: 3}
+    - {fileID: 8074574133146145062, guid: 54bc3cf54f57c4d44baa7cefb355ac51, type: 3}
+    - {fileID: -2662361569881932709, guid: 54bc3cf54f57c4d44baa7cefb355ac51, type: 3}
+    - {fileID: -3822751352277623800, guid: 54bc3cf54f57c4d44baa7cefb355ac51, type: 3}
+    - {fileID: 4424909960871108466, guid: 54bc3cf54f57c4d44baa7cefb355ac51, type: 3}
+    - {fileID: -9064856463232936567, guid: 54bc3cf54f57c4d44baa7cefb355ac51, type: 3}
   - imageName: pine_pressed
     imagePath: Assets/Sprites/GUI/Sea Random/pine_pressed.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Sea Random/pine_pressed
@@ -26899,6 +27086,34 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 6728bfdab5e561444b5463cef02be43f, type: 3}
     sprites:
     - {fileID: 21300000, guid: 6728bfdab5e561444b5463cef02be43f, type: 3}
+  - imageName: snow_outside_area
+    imagePath: Assets/Sprites/Biomable/snow_outside_area.png
+    imagePathWithoutExtension: Assets/Sprites/Biomable/snow_outside_area
+    texture2D: {fileID: 2800000, guid: c23ddb6820243ff4e8c8eac61609cb4f, type: 3}
+    sprite: {fileID: 1299098099021325347, guid: c23ddb6820243ff4e8c8eac61609cb4f,
+      type: 3}
+    sprites:
+    - {fileID: -8254186456350230115, guid: c23ddb6820243ff4e8c8eac61609cb4f, type: 3}
+    - {fileID: -7001005834194891676, guid: c23ddb6820243ff4e8c8eac61609cb4f, type: 3}
+    - {fileID: 4223864679490363494, guid: c23ddb6820243ff4e8c8eac61609cb4f, type: 3}
+    - {fileID: 1299098099021325347, guid: c23ddb6820243ff4e8c8eac61609cb4f, type: 3}
+    - {fileID: -8380464490136138142, guid: c23ddb6820243ff4e8c8eac61609cb4f, type: 3}
+    - {fileID: 7473414661559726148, guid: c23ddb6820243ff4e8c8eac61609cb4f, type: 3}
+    - {fileID: 2648542396059082503, guid: c23ddb6820243ff4e8c8eac61609cb4f, type: 3}
+    - {fileID: 5585688065449532480, guid: c23ddb6820243ff4e8c8eac61609cb4f, type: 3}
+    - {fileID: 2625751330802825287, guid: c23ddb6820243ff4e8c8eac61609cb4f, type: 3}
+    - {fileID: -8159895876833627449, guid: c23ddb6820243ff4e8c8eac61609cb4f, type: 3}
+    - {fileID: 6654783288589172719, guid: c23ddb6820243ff4e8c8eac61609cb4f, type: 3}
+    - {fileID: 7309092650531652182, guid: c23ddb6820243ff4e8c8eac61609cb4f, type: 3}
+    - {fileID: 4426619740311895815, guid: c23ddb6820243ff4e8c8eac61609cb4f, type: 3}
+    - {fileID: 1803757915985509011, guid: c23ddb6820243ff4e8c8eac61609cb4f, type: 3}
+    - {fileID: -120017724324134451, guid: c23ddb6820243ff4e8c8eac61609cb4f, type: 3}
+    - {fileID: 3035906761195340658, guid: c23ddb6820243ff4e8c8eac61609cb4f, type: 3}
+    - {fileID: 4093134745392412499, guid: c23ddb6820243ff4e8c8eac61609cb4f, type: 3}
+    - {fileID: 5206477672898300353, guid: c23ddb6820243ff4e8c8eac61609cb4f, type: 3}
+    - {fileID: -7307978042272757297, guid: c23ddb6820243ff4e8c8eac61609cb4f, type: 3}
+    - {fileID: 2047927294284334813, guid: c23ddb6820243ff4e8c8eac61609cb4f, type: 3}
+    - {fileID: -3385862257321778346, guid: c23ddb6820243ff4e8c8eac61609cb4f, type: 3}
   - imageName: snow_pressed
     imagePath: Assets/Sprites/GUI/Sea Random/snow_pressed.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Sea Random/snow_pressed

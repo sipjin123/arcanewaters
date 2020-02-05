@@ -877,28 +877,7 @@ public class AdminManager : NetworkBehaviour {
          return;
       }
 
-      // Retrieve the map data from the database
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         Dictionary<string, string> maps = DB_Main.getLiveMaps();
-
-         // Back to the Unity thread
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            foreach (string mapName in maps.Keys) {
-               // Make sure it doesn't already exist
-               if (AreaManager.self.getArea(mapName) != null) {
-                  ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, "Map: " + mapName + " has already been created!");
-                  continue;
-               }
-
-               // Create the map here on the server
-               Vector3 nextMapPosition = MapManager.self.getNextMapPosition();
-               MapManager.self.spawnLiveMap(mapName, maps[mapName], nextMapPosition);
-
-               // Send confirmation back to the player who issued the command
-               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "Spawning map: " + mapName);
-            }
-         });
-      });
+      MapManager.self.createLiveMaps(_player);
    }
 
    [Server]

@@ -78,7 +78,7 @@ namespace MapCreationTool
          return paletteData.formCollisionDictionary();
       }
 
-      public void populatePalette (PaletteData data) {
+      public void populatePalette (PaletteData data, Biome.Type biome) {
          paletteData = data;
          Tools.changeTileGroup(null, registerUndo: false);
          tilemap.ClearAllTiles();
@@ -105,6 +105,11 @@ namespace MapCreationTool
             GameObject p = Instantiate(pref.refPref, transform);
             if (p.GetComponent<ZSnap>())
                p.GetComponent<ZSnap>().enabled = false;
+
+            foreach (IBiomable biomable in p.GetComponentsInChildren<IBiomable>()) {
+               biomable.setBiome(biome);
+            }
+
             p.layer = LayerMask.NameToLayer("MapEditor_Palette");
             foreach (var child in p.GetComponentsInChildren<Transform>())
                child.gameObject.layer = LayerMask.NameToLayer("MapEditor_Palette");

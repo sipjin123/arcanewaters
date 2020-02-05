@@ -137,7 +137,7 @@ public class EditorUtil : EditorWindow {
          if (name[i] == '_') {
             break;
          }
-         newString.Insert(0, name[i].ToString());
+         newString = newString.Insert(0, name[i].ToString());
       }
 
       try {

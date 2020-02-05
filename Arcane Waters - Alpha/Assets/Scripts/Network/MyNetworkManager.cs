@@ -92,7 +92,7 @@ public class MyNetworkManager : NetworkManager {
    #region Client Functions
 
    public override void OnStartClient () {
-      D.debug("Starting client: " + this.networkAddress);
+      D.debug("Starting client: " + this.networkAddress + " with Cloud Build version: " + Util.getGameVersion());
 
       // We have to register handlers to be able to send and receive messages
       MessageManager.registerClientHandlers();
@@ -121,7 +121,7 @@ public class MyNetworkManager : NetworkManager {
    #region Server Functions
 
    public override void OnStartServer () {
-      D.debug("Server started on port: " + MyNetworkManager.getCurrentPort());
+      D.debug("Server started on port: " + MyNetworkManager.getCurrentPort() + " with Cloud Build version: " + Util.getGameVersion());
 
       // We have to register handlers to be able to send and receive messages
       MessageManager.registerServerHandlers();
@@ -155,6 +155,11 @@ public class MyNetworkManager : NetworkManager {
 
       // Regularly updates the required game version
       GameVersionManager.self.scheduleMinimumGameVersionUpdate();
+
+      // When running a server in batch mode, go ahead and create the live maps from the database
+      if (Application.isBatchMode) {
+         MapManager.self.createLiveMaps(null);
+      }
 
       // Make note that we started up a server
       wasServerStarted = true;

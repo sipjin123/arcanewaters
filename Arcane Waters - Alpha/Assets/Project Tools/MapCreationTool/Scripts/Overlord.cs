@@ -110,7 +110,7 @@ namespace MapCreationTool
 
       private void onLoaded () {
          Destroy(loadCover);
-         palette.populatePalette(currentPaletteData[Tools.biome]);
+         palette.populatePalette(currentPaletteData[Tools.biome], Tools.biome);
       }
 
       private void Update () {
@@ -154,13 +154,13 @@ namespace MapCreationTool
       private void editorTypeChanged (EditorType from, EditorType to) {
          switch (to) {
             case EditorType.Area:
-               palette.populatePalette(areaPaletteData[Tools.biome]);
+               palette.populatePalette(areaPaletteData[Tools.biome], Tools.biome);
                break;
             case EditorType.Interior:
-               palette.populatePalette(interiorPaletteData[Tools.biome]);
+               palette.populatePalette(interiorPaletteData[Tools.biome], Tools.biome);
                break;
             case EditorType.Sea:
-               palette.populatePalette(seaPaletteData[Tools.biome]);
+               palette.populatePalette(seaPaletteData[Tools.biome], Tools.biome);
                break;
             default:
                Debug.LogError("Unrecognized editor type.");
@@ -174,7 +174,7 @@ namespace MapCreationTool
       private void onBiomeChanged (Biome.Type from, Biome.Type to) {
          BiomedPaletteData currentPalette = currentPaletteData;
 
-         palette.populatePalette(currentPalette[to]);
+         palette.populatePalette(currentPalette[to], to);
          drawBoard.changeBiome(currentPalette[from], currentPalette[to]);
       }
 

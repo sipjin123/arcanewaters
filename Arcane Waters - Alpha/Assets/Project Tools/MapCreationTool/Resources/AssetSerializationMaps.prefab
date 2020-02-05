@@ -93234,285 +93234,57 @@ MonoBehaviour:
   mapsDefinitions:
   - tilemap: {fileID: 3999359247487527327}
     prefabGroups:
-    - title: trees
-      index: 0
-      toIndexPrefabs:
-      - {fileID: 7030018983647798537, guid: f3e1b171afe6eee4f9debb359b5b2789, type: 3}
-      - {fileID: 1857891217205292852, guid: 0ea5eb9d1d1b00c4f8371d519d3c7c40, type: 3}
-      - {fileID: 5247813893459141163, guid: b09ff7dd6cfc1414ab49faceb60c5309, type: 3}
-      - {fileID: 8975831810258643839, guid: baec7aaef760c2b49a1bb3cae2d01a7b, type: 3}
-      - {fileID: 2269985634400234142, guid: 47c5c952fe5dde64ba5b3bf3d6e50395, type: 3}
-      - {fileID: 9205348245959253201, guid: be77f572143cfa54fbd05662b666a483, type: 3}
-      - {fileID: 9197236925504270247, guid: c3a866bd655ad9a43a4e0b9956ccba94, type: 3}
-      - {fileID: 1030021964304212171, guid: 447f3195607249742bec7de8d0ac0f68, type: 3}
-      - {fileID: 7915894010028343739, guid: 4aa3fc34ca8848d4286ff5d2325c8ac9, type: 3}
-      - {fileID: 5345267499910024962, guid: e558b9a887f3a5948b5502bd72911818, type: 3}
-      - {fileID: 250223065096325679, guid: f679d75be99aa1e4d8ae6dd38e7dc23b, type: 3}
-      - {fileID: 4912700053630255688, guid: 700a394fd780ec846ae692e4d431fd9b, type: 3}
-      fromIndexPrefabs:
-      - {fileID: 6836209022429192626, guid: c496f8b7e212627429bf99865f5acae2, type: 3}
-      - {fileID: 6836209022429192626, guid: 047de42d4278f654aabd90e076b93f94, type: 3}
-      - {fileID: 6836209022429192626, guid: c7b2effce4320f84b9bd0dec06f7e16e, type: 3}
-      - {fileID: 3561228027261245109, guid: e9e701951343edf45a3e6a0ba3d2b79f, type: 3}
-      - {fileID: 6836209022429192626, guid: dc4d101910e68fb468653ce361520468, type: 3}
-      - {fileID: 2881746948778064981, guid: 35feaee6042877b4b960347662e1f009, type: 3}
-      - {fileID: 6836209022429192626, guid: 304fe3df3e53e0a41b75064ae7c06ca0, type: 3}
-      - {fileID: 6635925670398460494, guid: 7cff545d48c5cbe4396913dca802a4e6, type: 3}
-      - {fileID: 6836209022429192626, guid: c171519f88dcf174aacd54930e1c7b10, type: 3}
-      - {fileID: 963300982259376323, guid: 65ed7991f0e2cc341a81d27d47fac258, type: 3}
-      - {fileID: 6836209022429192626, guid: 92691e2cf84a3fc489d40bf128b36577, type: 3}
-      - {fileID: 723321215577081368, guid: 54cadd6f785401141ba0e9a5770a7c5e, type: 3}
     - title: houses
       index: 2
       toIndexPrefabs:
       - {fileID: 5663650462920956806, guid: 8da36abb80a99ed4e8d417a68904cbb5, type: 3}
       fromIndexPrefabs:
       - {fileID: 5623853440093536416, guid: ef1d36867fe8fbb4b9a8aec1026c7a4a, type: 3}
-    - title: signs
-      index: 3
-      toIndexPrefabs:
-      - {fileID: 5736884039621905186, guid: 7c35d7d7b10e264408481509c1c89e6b, type: 3}
-      - {fileID: 66289831000399328, guid: a689a0c2970d1c143840573b2017c2e1, type: 3}
-      - {fileID: 3931250239663648624, guid: 4c9598f121bd3e146a396c3953029737, type: 3}
-      fromIndexPrefabs:
-      - {fileID: 852583141076585437, guid: 7a71b00c48db70b4dae79094388bec21, type: 3}
-      - {fileID: 1820576471573080406, guid: 470d4ac8bbb842f4ba4ffa0b57edb3aa, type: 3}
-      - {fileID: 533709203131732292, guid: 51487b426fdf4d549bb49c095f0fa081, type: 3}
     biome: 1
   - tilemap: {fileID: 911818922030001466}
     prefabGroups:
-    - title: trees
-      index: 0
-      toIndexPrefabs:
-      - {fileID: 2069553953508776750, guid: 5e1c482121632e248bd7465ddb4eb6ed, type: 3}
-      - {fileID: 3095909213821210160, guid: b75c56321cb3abf419f4e89198008dca, type: 3}
-      - {fileID: 1983811642107808411, guid: cd32b359312fb69488e5d41a21180abd, type: 3}
-      - {fileID: 1820215860681332197, guid: 3a4ced75c19f94949813a4814231dfc8, type: 3}
-      - {fileID: 4255144788506080496, guid: 326b5ab46f2b8ac409bb6f1dab188d54, type: 3}
-      - {fileID: 8299848968821326530, guid: 18477fa843670984d9bf3990316f5834, type: 3}
-      - {fileID: 852083643915526135, guid: 7d9c400531db786408f2104f13b1a186, type: 3}
-      - {fileID: 5644478645375924532, guid: 71e41385ce98ffb4fa53405097e89d39, type: 3}
-      - {fileID: 6251074755755786669, guid: 377f3a18ea8b1a244904bddc271f850b, type: 3}
-      - {fileID: 5457313344884853416, guid: e2a3f0f10d398164ebead2029d5fdaa2, type: 3}
-      - {fileID: 7497876007877521144, guid: 10f025bc47b51a0459955dce30906b2d, type: 3}
-      - {fileID: 2034372313590011888, guid: 776f37a8e6f1e4e4ca2b90ea4d833444, type: 3}
-      fromIndexPrefabs:
-      - {fileID: 5923635663367246853, guid: 6ff9283fa266ad3489def415ebfcf1ae, type: 3}
-      - {fileID: 5923635663367246853, guid: 62531318887c6c847b97013073868b34, type: 3}
-      - {fileID: 5923635663367246853, guid: 171a84a6d968744458e9876b51d518c9, type: 3}
-      - {fileID: 4620485859186961737, guid: 54461d6dd310a8b49b3b6c3b01215473, type: 3}
-      - {fileID: 5923635663367246853, guid: 247744921286a474182663b7db554e2e, type: 3}
-      - {fileID: 1533555621713899254, guid: 287886d51cb0a2344afc8f4fc5003e98, type: 3}
-      - {fileID: 5923635663367246853, guid: 278f3bab4c3934d44ba5c4d6b60276d2, type: 3}
-      - {fileID: 7850335444735413576, guid: 199befc660545ba4988ea2c63403b2ce, type: 3}
-      - {fileID: 5923635663367246853, guid: c3f2dbf12c95207418aeafa423bfcf81, type: 3}
-      - {fileID: 2017162742464969159, guid: e79b3bd936900c841823842bfbb1efc4, type: 3}
-      - {fileID: 5923635663367246853, guid: 47bb3551cfa5ae14794bb1de0ea3698c, type: 3}
-      - {fileID: 3227070067462348364, guid: 7be74c3fb348cb0448eac8ed795d407d, type: 3}
     - title: houses
       index: 2
       toIndexPrefabs:
       - {fileID: 4021854546249159720, guid: ffb35290c2379ea4bafb0af252b624c1, type: 3}
       fromIndexPrefabs:
       - {fileID: 6683451114237964622, guid: 5b03ef76364abe842a2fe0a5d2cdece9, type: 3}
-    - title: signs
-      index: 3
-      toIndexPrefabs:
-      - {fileID: 6377231950184278126, guid: 6fd925d5f2aa7494f961847e60ba691f, type: 3}
-      - {fileID: 2758879516753218530, guid: 2df24253edddfeb41bcd926a5529ab7b, type: 3}
-      - {fileID: 2331921839115589536, guid: 0dc6646788a4c1842b59824d79a4a3bf, type: 3}
-      fromIndexPrefabs:
-      - {fileID: 954504984031511166, guid: efd472a9ae64cd447bf3384bdf5e20c6, type: 3}
-      - {fileID: 2896152329765423870, guid: 58c1c7852e9da3240aaca3a8e33aba4b, type: 3}
-      - {fileID: 8909593567850714488, guid: 035509238c2cbc74591b595b2639ce8c, type: 3}
     biome: 2
   - tilemap: {fileID: 6821355117217435030}
     prefabGroups:
-    - title: trees
-      index: 0
-      toIndexPrefabs:
-      - {fileID: 6835029613054585854, guid: cbdbaa4c92b4f604ba6b4d5fcdea4511, type: 3}
-      - {fileID: 3604822053630103197, guid: 4f8035c08ed5cfa4e8b47b1233208998, type: 3}
-      - {fileID: 2219160642144544736, guid: bd7ad19f71cdd274badf11e1b30f66d3, type: 3}
-      - {fileID: 4249509590600074429, guid: 19c59082abb9d8d459a6ed9400ef2faf, type: 3}
-      - {fileID: 9159567846970806924, guid: 0147148301e23f0429f78c726a5a3968, type: 3}
-      - {fileID: 5754972079832457425, guid: 6db1868748adaa74aa3cf5766a51dd35, type: 3}
-      - {fileID: 3823615166605165939, guid: f87fce3f300d4d44a8d25a4aaa78def8, type: 3}
-      - {fileID: 4302050818693302657, guid: 83a81c9620aa1cf4fb96e6c192e25207, type: 3}
-      - {fileID: 4216685035475796614, guid: 6752c3def62b780428654b42d98d1ea3, type: 3}
-      - {fileID: 8126694087563899344, guid: a858ae603f5bc374a9fbf9a44616e2af, type: 3}
-      - {fileID: 2151026282866498184, guid: b578dabf4f2c72e43935eea8331b5259, type: 3}
-      - {fileID: 8827539631016406816, guid: f6c0cc64994271e40861d5d71ff43e6a, type: 3}
-      fromIndexPrefabs:
-      - {fileID: 5923635663367246853, guid: 335c1eb5be39e404d8334823c2b1b704, type: 3}
-      - {fileID: 5923635663367246853, guid: 2937f3c04c8d1544d8edcfc0817ac0f0, type: 3}
-      - {fileID: 5923635663367246853, guid: cb0255de5a6d6b04fb3b1561bd444078, type: 3}
-      - {fileID: 6908147636261382916, guid: 6baf739bed0f5ef418f882dbbbbce9fb, type: 3}
-      - {fileID: 5923635663367246853, guid: 94e75330889f2ae468c8bcbef25291af, type: 3}
-      - {fileID: 3491084217859965175, guid: 77892705d46b0ed448094e735585e523, type: 3}
-      - {fileID: 5923635663367246853, guid: 5d6f8ef9e88ea3a4f931cdb0c2e18d26, type: 3}
-      - {fileID: 4568792511356725155, guid: e7fea31006b26bd48845b28ebed980aa, type: 3}
-      - {fileID: 5923635663367246853, guid: eb25dc26bc3a14a4086c5b828f7799c7, type: 3}
-      - {fileID: 4691782573831993341, guid: 261e2b5503d2f724790e5df8a15404ab, type: 3}
-      - {fileID: 5923635663367246853, guid: c53f5aee06faefc45bce1ac79e2cd41a, type: 3}
-      - {fileID: 3224650445389934792, guid: eeb8c079c38f3624a927ef3a59e4bab7, type: 3}
     - title: houses
       index: 2
       toIndexPrefabs:
       - {fileID: 1451683548362239122, guid: c60fb9b65d0918f49947be2fd28375f4, type: 3}
       fromIndexPrefabs:
       - {fileID: 4706387372113544311, guid: 7efc8bfafa0f491429e2864bb5dafdc3, type: 3}
-    - title: signs
-      index: 3
-      toIndexPrefabs:
-      - {fileID: 3570236751833492955, guid: bf6360e47ae720b409f2d8ac885b742c, type: 3}
-      - {fileID: 2135892469957591870, guid: 9384a3fa6b8c3484eac8b650b3fc8e91, type: 3}
-      - {fileID: 3761292307098190009, guid: ca391f029cac31746b181670ba4664b4, type: 3}
-      fromIndexPrefabs:
-      - {fileID: 7089998631985693193, guid: 6d05f5a3f460d0f4ba4b46c911213d56, type: 3}
-      - {fileID: 5618358362239157332, guid: 3e268c23f0abcf1478ff92bc5208d15b, type: 3}
-      - {fileID: 7303353363822874398, guid: 3c31e7c6dd4f6364e905c7be9a7f3e2f, type: 3}
     biome: 5
   - tilemap: {fileID: 1380472118748605242}
     prefabGroups:
-    - title: trees
-      index: 0
-      toIndexPrefabs:
-      - {fileID: 5359708029091989616, guid: 07c1decb4421283428793db77cf1797a, type: 3}
-      - {fileID: 557012248752648908, guid: 069288ea8bcc2b24bb3870e8f8a4b28f, type: 3}
-      - {fileID: 9033284576187679474, guid: 15f4ad478edc14a41b7371ea79812620, type: 3}
-      - {fileID: 6096065671017637404, guid: 31f74fc749ec158458ca95daf8469d7a, type: 3}
-      - {fileID: 603254897338117545, guid: 0241d36e8b177b04dafca14e023ab4ae, type: 3}
-      - {fileID: 2464263910686608497, guid: e303d5a2a1a00ad49a2e372df1be0fdf, type: 3}
-      - {fileID: 3057543889125703355, guid: e1a788d1f7fb2f14eb08d5771b0000bd, type: 3}
-      - {fileID: 2730869302938930073, guid: eae45231eeebc444eb384aa2aa873a86, type: 3}
-      - {fileID: 6387177260639449252, guid: d6426b4f824975e43820756beb640c8a, type: 3}
-      - {fileID: 5106304346337024838, guid: 29a249ac5a302c84787e12b8f2bdc0ee, type: 3}
-      - {fileID: 5621206640066553482, guid: bad786cfe11ae634aa99031d3a5de2c8, type: 3}
-      - {fileID: 1781934431298919325, guid: 4c09b33692fda3548b25a66d2c761ac3, type: 3}
-      fromIndexPrefabs:
-      - {fileID: 5923635663367246853, guid: fbd6994edf66d3d46b512634c5e3db3a, type: 3}
-      - {fileID: 5923635663367246853, guid: 247b4a9770014b948953e8c6aa64c119, type: 3}
-      - {fileID: 5923635663367246853, guid: 69e38953fedfe1e4bb3d3453b2d0ab0d, type: 3}
-      - {fileID: 8602898913478179734, guid: 1f6f898388c848d40b7ca932ad584955, type: 3}
-      - {fileID: 5923635663367246853, guid: 042c1ff413aa21d4e92f6d7915be8817, type: 3}
-      - {fileID: 8896971119151267409, guid: 606c45a12d39fce4a985123f45931b7a, type: 3}
-      - {fileID: 5923635663367246853, guid: c19aedec6e2028142bdc857fa5f02c92, type: 3}
-      - {fileID: 4702246456135421419, guid: bd8fd150cc78ac7418ff4460123a2c1f, type: 3}
-      - {fileID: 5923635663367246853, guid: 195fa256322894d46b224aa62995d8f9, type: 3}
-      - {fileID: 1421644154784307836, guid: 182100fdf52fca64e83512027bb21ab2, type: 3}
-      - {fileID: 5923635663367246853, guid: adb15798071298b49a4dc8d439172ad2, type: 3}
-      - {fileID: 5517094300935700014, guid: 87f8458cf47689d4a8583fa44d22611e, type: 3}
     - title: houses
       index: 2
       toIndexPrefabs:
       - {fileID: 6880365461504764757, guid: c763fc1db5e84d44d8204bd21412cee5, type: 3}
       fromIndexPrefabs:
       - {fileID: 6826195856529322001, guid: cbd5dd0cc77ceb643bb55088df990433, type: 3}
-    - title: signs
-      index: 3
-      toIndexPrefabs:
-      - {fileID: 7539427397987936276, guid: 065ed464a8554354fa28fba0f4257357, type: 3}
-      - {fileID: 1698066835996027334, guid: 52787b6bf01cbad41a11398cac3309fc, type: 3}
-      - {fileID: 1339179784386820292, guid: c572aeebb35479a4bba6fc0dc1512e3d, type: 3}
-      fromIndexPrefabs:
-      - {fileID: 307741950614774290, guid: 4698966206c14fc449b08c3165e2af38, type: 3}
-      - {fileID: 1112253755803811049, guid: 69babac696569d34b96be629b9da80ac, type: 3}
-      - {fileID: 7236423260524567094, guid: 46a6910d74094e44ab090b41f5cc8815, type: 3}
     biome: 4
   - tilemap: {fileID: 481428275710942420}
     prefabGroups:
-    - title: trees
-      index: 0
-      toIndexPrefabs:
-      - {fileID: 2340212565337470642, guid: 0ce6db85c9c537642bb2d3be3e42d6f5, type: 3}
-      - {fileID: 7540300274446854518, guid: 5edc5b30b027d8e46a0caa9a5305e343, type: 3}
-      - {fileID: 4351476786650612917, guid: b6ad2c2699599e445a35ae79056f20ba, type: 3}
-      - {fileID: 3599997146153910414, guid: 0cfc43f5bb3d4554abf2eac38de3ae18, type: 3}
-      - {fileID: 3040953414272754192, guid: 67d003693c52c4046b50c285198a715b, type: 3}
-      - {fileID: 3818958936497407066, guid: b9f4d7aa47a21364692bbafc6ef7b26e, type: 3}
-      - {fileID: 121235327576781276, guid: ff6acd113ed64f5459d9d15d50c56c64, type: 3}
-      - {fileID: 2983669050164377639, guid: af7ceb9db39b6974ab8de98bcc1cc177, type: 3}
-      - {fileID: 8265041466154731971, guid: 36cef55f9d9e18d469911a583693d329, type: 3}
-      - {fileID: 2506658063157646177, guid: ed3385147058cfc419adcb6cabe491da, type: 3}
-      - {fileID: 8068812371277198621, guid: 20c36575643e8384691d68cdc7e986b5, type: 3}
-      - {fileID: 7998430745410597867, guid: 0a74352c1381f574da5b67ca1b6892c4, type: 3}
-      fromIndexPrefabs:
-      - {fileID: 5923635663367246853, guid: 7c8b1c0337ae501429314beb006f845c, type: 3}
-      - {fileID: 5923635663367246853, guid: dd90d1873ecb33e4bbaf03cc3658aa05, type: 3}
-      - {fileID: 5923635663367246853, guid: f1f522e05ccee264aa952f3b630418f0, type: 3}
-      - {fileID: 4761230069865658016, guid: 5bbd21367ae9ce644baa9dcc27ea4570, type: 3}
-      - {fileID: 5923635663367246853, guid: 4c88495ad151f7a43888d8801215c7e7, type: 3}
-      - {fileID: 5629639951851671739, guid: 5459e23439cf5694c8ce4c959ec1d4fe, type: 3}
-      - {fileID: 5923635663367246853, guid: a3a0c315f861afe4e82056d619729bbe, type: 3}
-      - {fileID: 8304475458275013562, guid: 649a1a2b26023004e86aa7e6b7d8fb24, type: 3}
-      - {fileID: 5923635663367246853, guid: e17153d0823513a4e939a343a742e5cf, type: 3}
-      - {fileID: 5079171196501485402, guid: c1c329efa6d71e54397bb0277de2a02b, type: 3}
-      - {fileID: 5923635663367246853, guid: 4986c6c60fe438c438e783777dd21b61, type: 3}
-      - {fileID: 3602175419414111868, guid: a7f5e29160173c14d86f0d92aa38bd01, type: 3}
     - title: houses
       index: 2
       toIndexPrefabs:
       - {fileID: 5673885531666727826, guid: 2148b87917dc20245beb83d73fd13b82, type: 3}
       fromIndexPrefabs:
       - {fileID: 6365592799958730610, guid: 6d76f91d946fc334582298b09e5c11ab, type: 3}
-    - title: signs
-      index: 3
-      toIndexPrefabs:
-      - {fileID: 5990447752134299810, guid: 25a468c850b0265409106a251f07b339, type: 3}
-      - {fileID: 1079179771819762296, guid: 5c8b516716d95bb499e61313e948e07b, type: 3}
-      - {fileID: 2804393830074129971, guid: 48592eeaf553f554cb996731dc5ae74d, type: 3}
-      fromIndexPrefabs:
-      - {fileID: 3452058141367066813, guid: 6b48f59448a6db84fb781003b49c7f9b, type: 3}
-      - {fileID: 5870351349207015852, guid: e7383f0d486f73a4fbec8cd2435401cb, type: 3}
-      - {fileID: 1276891071369396975, guid: 946c3306229572940aebfbfb31824f7c, type: 3}
     biome: 3
   - tilemap: {fileID: 4574151143917167768}
     prefabGroups:
-    - title: trees
-      index: 0
-      toIndexPrefabs:
-      - {fileID: 5086436366068341342, guid: 37e475888f05de349a4141a935aa421c, type: 3}
-      - {fileID: 1355704137072287835, guid: 6544832d6d0cd3347ab1e404083d3d99, type: 3}
-      - {fileID: 7574084691656204679, guid: 0e909b92bb0744e438adbaab75897e0f, type: 3}
-      - {fileID: 1383077368441143088, guid: 13b9fd2a7e9d80543af5a2ba138dc1d1, type: 3}
-      - {fileID: 7544715004092151404, guid: 0eb3d80327d83d047b86f07f992a3e11, type: 3}
-      - {fileID: 1742264001860201635, guid: ab1d305232021d046b5d7a028e1ce4c3, type: 3}
-      - {fileID: 8764245317946171125, guid: 96b3e641678fef248bc76a8c1cba1cc2, type: 3}
-      - {fileID: 7630205492465572910, guid: 9fdf350d449a85e4d917ba19d17a56be, type: 3}
-      - {fileID: 6471968093575215145, guid: 6564992c7f2a3dc4b83e5ad22293f6a2, type: 3}
-      - {fileID: 4767097766950389550, guid: 37c30569ab8728a4699d15b00b1496a1, type: 3}
-      - {fileID: 5389171419257780844, guid: ef1fb63816783a84c9da630f5554718a, type: 3}
-      - {fileID: 4740226398354040118, guid: 988b556e9866d6f4c84d735a2a50c531, type: 3}
-      fromIndexPrefabs:
-      - {fileID: 5923635663367246853, guid: a7c46dbecf51c5c4f90d16289849d44d, type: 3}
-      - {fileID: 5923635663367246853, guid: 279f55fdbb856f5479a95b93aded4d19, type: 3}
-      - {fileID: 5923635663367246853, guid: 9864f0c23ca1f3c4aa161db66d71c697, type: 3}
-      - {fileID: 8883987788302219607, guid: fce0bb4683e8e304887f56bd293831c2, type: 3}
-      - {fileID: 5923635663367246853, guid: 0f920637fceb1cb438884e3a153b3a56, type: 3}
-      - {fileID: 6864215583746926894, guid: f2d9df15274e2184ca9e11fffeec8696, type: 3}
-      - {fileID: 5923635663367246853, guid: 5997760b730188949851008e2c6579a1, type: 3}
-      - {fileID: 6196148209226349343, guid: c966649c6207b4a458747079836a8c64, type: 3}
-      - {fileID: 5923635663367246853, guid: 7060f0ce64c7ebc479996b2656fa1175, type: 3}
-      - {fileID: 4479900946777610892, guid: 20869ce5c92f6b44fbd0bb98674dd55d, type: 3}
-      - {fileID: 5923635663367246853, guid: 1b9d0a775f634fb4889ef416857fbcc4, type: 3}
-      - {fileID: 8247158512182991561, guid: b5e2c39a93ac1c948addd7a00b808a71, type: 3}
     - title: houses
       index: 2
       toIndexPrefabs:
       - {fileID: 1141342231038569384, guid: f929627d29ddbf74b8b37c89831b7ed1, type: 3}
       fromIndexPrefabs:
       - {fileID: 7916629007719179707, guid: e8fa33dbd430a734cbb2c50a62c7ad01, type: 3}
-    - title: signs
-      index: 3
-      toIndexPrefabs:
-      - {fileID: 7272649276944875757, guid: 44194cd667eead242b8c5ef65665f83c, type: 3}
-      - {fileID: 4855494558452056186, guid: cae8c4882e8b7bd44904057d2a664663, type: 3}
-      - {fileID: 6042828251236911108, guid: 60df3417de2c33b4da9cafa8ad490a40, type: 3}
-      fromIndexPrefabs:
-      - {fileID: 2051394421515818879, guid: 58798314f253eed44a840930801d036f, type: 3}
-      - {fileID: 5749548634317101366, guid: 99f4ed978dfa05548be48518085b739f, type: 3}
-      - {fileID: 2250911150632424199, guid: cbea841894fe9d34c824dac9bfed8dba, type: 3}
     biome: 6
   allBiomesDefinition:
     tilemap: {fileID: 8031485923113696121}
@@ -93589,6 +93361,44 @@ MonoBehaviour:
       - {fileID: 6512568615480877693, guid: ae9b490f18e903c49836fadf1d6790e0, type: 3}
       - {fileID: 707201633651165828, guid: 325e0070886ff4a4585d50c50dbefc00, type: 3}
       - {fileID: 3729740426784677943, guid: dd657f4eabdb1004e8c8a4a2fb46191d, type: 3}
+    - title: trees
+      index: 0
+      toIndexPrefabs:
+      - {fileID: 7030018983647798537, guid: f3e1b171afe6eee4f9debb359b5b2789, type: 3}
+      - {fileID: 1857891217205292852, guid: 0ea5eb9d1d1b00c4f8371d519d3c7c40, type: 3}
+      - {fileID: 5247813893459141163, guid: b09ff7dd6cfc1414ab49faceb60c5309, type: 3}
+      - {fileID: 8975831810258643839, guid: baec7aaef760c2b49a1bb3cae2d01a7b, type: 3}
+      - {fileID: 2269985634400234142, guid: 47c5c952fe5dde64ba5b3bf3d6e50395, type: 3}
+      - {fileID: 9205348245959253201, guid: be77f572143cfa54fbd05662b666a483, type: 3}
+      - {fileID: 9197236925504270247, guid: c3a866bd655ad9a43a4e0b9956ccba94, type: 3}
+      - {fileID: 1030021964304212171, guid: 447f3195607249742bec7de8d0ac0f68, type: 3}
+      - {fileID: 7915894010028343739, guid: 4aa3fc34ca8848d4286ff5d2325c8ac9, type: 3}
+      - {fileID: 5345267499910024962, guid: e558b9a887f3a5948b5502bd72911818, type: 3}
+      - {fileID: 250223065096325679, guid: f679d75be99aa1e4d8ae6dd38e7dc23b, type: 3}
+      - {fileID: 4912700053630255688, guid: 700a394fd780ec846ae692e4d431fd9b, type: 3}
+      fromIndexPrefabs:
+      - {fileID: 6836209022429192626, guid: c496f8b7e212627429bf99865f5acae2, type: 3}
+      - {fileID: 6836209022429192626, guid: 047de42d4278f654aabd90e076b93f94, type: 3}
+      - {fileID: 6836209022429192626, guid: c7b2effce4320f84b9bd0dec06f7e16e, type: 3}
+      - {fileID: 3561228027261245109, guid: e9e701951343edf45a3e6a0ba3d2b79f, type: 3}
+      - {fileID: 6836209022429192626, guid: dc4d101910e68fb468653ce361520468, type: 3}
+      - {fileID: 2881746948778064981, guid: 35feaee6042877b4b960347662e1f009, type: 3}
+      - {fileID: 6836209022429192626, guid: 304fe3df3e53e0a41b75064ae7c06ca0, type: 3}
+      - {fileID: 6635925670398460494, guid: 7cff545d48c5cbe4396913dca802a4e6, type: 3}
+      - {fileID: 6836209022429192626, guid: c171519f88dcf174aacd54930e1c7b10, type: 3}
+      - {fileID: 963300982259376323, guid: 65ed7991f0e2cc341a81d27d47fac258, type: 3}
+      - {fileID: 6836209022429192626, guid: 92691e2cf84a3fc489d40bf128b36577, type: 3}
+      - {fileID: 723321215577081368, guid: 54cadd6f785401141ba0e9a5770a7c5e, type: 3}
+    - title: signs
+      index: 3
+      toIndexPrefabs:
+      - {fileID: 5736884039621905186, guid: 7c35d7d7b10e264408481509c1c89e6b, type: 3}
+      - {fileID: 66289831000399328, guid: a689a0c2970d1c143840573b2017c2e1, type: 3}
+      - {fileID: 3931250239663648624, guid: 4c9598f121bd3e146a396c3953029737, type: 3}
+      fromIndexPrefabs:
+      - {fileID: 852583141076585437, guid: 7a71b00c48db70b4dae79094388bec21, type: 3}
+      - {fileID: 1820576471573080406, guid: 470d4ac8bbb842f4ba4ffa0b57edb3aa, type: 3}
+      - {fileID: 533709203131732292, guid: 51487b426fdf4d549bb49c095f0fa081, type: 3}
   transparentTile: {fileID: 11400000, guid: 6770d82dbc34c894eb30ee1fd5b3b937, type: 2}
   layerZMultiplier: -0.01
   sublayerZMultiplier: -0.0001

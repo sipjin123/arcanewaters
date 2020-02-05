@@ -19,7 +19,36 @@ public class MapManager : MonoBehaviour {
       self = this;
    }
 
-   public void spawnLiveMap (string areaKey, string mapData, Vector3 mapPosition) {
+   public void createLiveMaps (NetEntity source) {
+      // Retrieve the map data from the database
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         Dictionary<string, string> maps = DB_Main.getLiveMaps();
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (string mapName in maps.Keys) {
+               // Make sure it doesn't already exist
+               if (AreaManager.self.getArea(mapName) != null && source != null) {
+                  ServerMessageManager.sendError(ErrorMessage.Type.Misc, source, "Map: " + mapName + " has already been created!");
+                  continue;
+               }
+
+               // Create the map here on the server
+               Vector3 nextMapPosition = MapManager.self.getNextMapPosition();
+               createLiveMap(mapName, maps[mapName], nextMapPosition);
+
+               // Send confirmation back to the player who issued the command
+               if (source != null) {
+                  ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, source, "Spawning map: " + mapName);
+               }
+            }
+         });
+      });
+   }
+
+   public void createLiveMap (string areaKey, string mapData, Vector3 mapPosition) {
+      D.log("Preparing to create live map: " + areaKey + " at: " + mapPosition);
+
       // If the map already exists, don't create it again
       if (_maps.ContainsKey(areaKey)) {
          D.warning("Map: " + areaKey + " already exists!");
@@ -68,7 +97,7 @@ public class MapManager : MonoBehaviour {
          string mapData = www.downloadHandler.text;
 
          // Spawn the Area using the map data
-         spawnLiveMap(areaKey, mapData, position);
+         createLiveMap(areaKey, mapData, position);
       }
    }
 

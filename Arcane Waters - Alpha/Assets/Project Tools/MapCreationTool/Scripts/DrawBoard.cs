@@ -383,6 +383,10 @@ namespace MapCreationTool
          if (instance.GetComponent<ZSnap>())
             instance.GetComponent<ZSnap>().roundoutPosition();
 
+         foreach (IBiomable biomable in instance.GetComponentsInChildren<IBiomable>()) {
+            biomable.setBiome(Tools.biome);
+         }
+
          if (instance.GetComponent<MapEditorPrefab>())
             instance.GetComponent<MapEditorPrefab>().placedInEditor();
 
@@ -596,6 +600,10 @@ namespace MapCreationTool
 
             foreach (SpriteSwapper swapper in preview.prefabPreviewInstance.GetComponentsInChildren<SpriteSwapper>())
                swapper.Update();
+
+            foreach (IBiomable biomable in preview.prefabPreviewInstance.GetComponentsInChildren<IBiomable>()) {
+               biomable.setBiome(Tools.biome);
+            }
 
             var zSnap = preview.prefabPreviewInstance.GetComponent<ZSnap>();
             if (zSnap != null)

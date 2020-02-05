@@ -37,7 +37,7 @@ namespace MapCreationTool
 
          ExportedProject001 exportedProject = JsonUtility.FromJson<ExportedProject001>(data);
 
-         if(exportedProject.biome == Biome.Type.None) {
+         if (exportedProject.biome == Biome.Type.None) {
             D.warning("Invalid biome type NONE in map data. Setting to 'Forest'.");
             exportedProject.biome = Biome.Type.Forest;
          }
@@ -97,9 +97,9 @@ namespace MapCreationTool
                Quaternion.identity,
                parent);
 
-            //ZSnap zsnap = pref.GetComponent<ZSnap>();
-            //if (zsnap != null)
-            //   zsnap.snapZ();
+            foreach (IBiomable biomable in pref.GetComponentsInChildren<IBiomable>()) {
+               biomable.setBiome(project.biome);
+            }
 
             foreach (ZSnap snap in pref.GetComponentsInChildren<ZSnap>()) {
                snap.snapZ();

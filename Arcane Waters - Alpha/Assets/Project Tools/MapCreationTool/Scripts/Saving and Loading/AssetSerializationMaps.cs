@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SubjectNerd.Utilities;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -72,7 +73,7 @@ namespace MapCreationTool
                for (int j = 0; j < allBiomesDefinition.tilemap.size.y; j++) {
                   var tile = allBiomesDefinition.tilemap.GetTile(new Vector3Int(i, j, 0) + allBiomesDefinition.tilemap.origin);
                   if (tile != null) {
-                     if(!allBiomes.tileToIndex.ContainsKey(tile))
+                     if (!allBiomes.tileToIndex.ContainsKey(tile))
                         allBiomes.tileToIndex.Add(tile, new Vector2Int(i, j));
                      if (!allBiomes.indexToTile.ContainsKey(new Vector2Int(i, j)))
                         allBiomes.indexToTile.Add(new Vector2Int(i, j), tile);
@@ -118,12 +119,11 @@ namespace MapCreationTool
             if (allBiomes.tileToIndex.TryGetValue(tile, out Vector2Int index))
                return index;
             return biomeSpecific[biome].tileToIndex[tile];
-         }
-         catch(Exception ex) {
+         } catch (Exception ex) {
             Debug.Log($"Unable to get index for tile {tile.name}");
             throw ex;
          }
-         
+
       }
 
       public static GameObject getPrefab (int index, Biome.Type biome, bool editorPrefab) {
