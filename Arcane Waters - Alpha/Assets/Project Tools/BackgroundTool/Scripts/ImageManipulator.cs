@@ -4,9 +4,23 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System.Text;
+using System;
 
 namespace BackgroundTool
 {
+   [Serializable]
+   public class DraggableContent
+   {
+      // The reference to the object
+      public GameObject spriteObject;
+
+      // The reference to the sprite renderer
+      public SpriteTemplate cachedSpriteTemplate;
+
+      // The offset position from the mouse click location
+      public Vector3 spriteOffset;
+   }
+
    public class ImageManipulator : MonoBehaviour
    {
       #region Public Variables
@@ -61,7 +75,7 @@ namespace BackgroundTool
       public Transform layerTogglerParent;
 
       // Max distance of the z axis
-      public static int Z_AXIS_MAX_DIST = 10;
+      public static int Z_AXIS_MAX_DIST = 4;
 
       // Shows or hides all layers
       public Toggle toggleAllLayers;
@@ -72,45 +86,27 @@ namespace BackgroundTool
       // Delete sprite template
       public Button deleteSpriteTemplate;
 
-      // Enum type that alters how sprite templates will behave (will move if set to Move mode)
-      public EditType currentEditType;
-
-      // Button for altering the edit type
-      public Button setMoveButton, setEditButton;
-
       // Determines if only one element is being dragged
       public bool singleDrag;
-
-      // Shows what current mode the tool is in
-      public Text modeDisplay;
 
       // Determines if the ui is in foreground/background etc
       public Slider layerTypeSlider;
       public Text layerTypeText;
 
-      // Recently selected sprite template
-      public SpriteTemplate recentSpriteTemp;
-
-      // All UI objects that will be revealed when edit mode
-      public GameObject[] editModeUI;
-
-      // All UI objects that will be revealed when move mode
-      public GameObject[] moveModeUI;
-
       // The sprite object to visualize the drag box
       public GameObject spriteHighlightObj;
 
-      public class DraggableContent
-      {
-         // The reference to the object
-         public GameObject spriteObject;
+      // Determines if the tool is spawning sprites
+      public bool isSpawning;
 
-         // The reference to the sprite renderer
-         public SpriteTemplate cachedSpriteTemplate;
+      // Caches the total spawned objects for ID purposes
+      public int spawnCount = 0;
 
-         // The offset position from the mouse click location
-         public Vector3 spriteOffset;
-      }
+      // Force disable highlighting upon mouse drag
+      public bool disableHighlighting;
+
+      // Determine if the mouse is over any highlighted sprite
+      public bool isHoveringHighlight;
 
       public enum LayerType
       {
@@ -120,29 +116,20 @@ namespace BackgroundTool
          Foreground = 3
       }
 
-      public enum EditType
-      {
-         None = 0,
-         Move = 1,
-         Edit = 2,
-      }
-
       #endregion
 
       private void Start () {
          self = this;
          spriteTemplateDataList = new List<SpriteTemplateData>();
 
-         setMoveButton.onClick.AddListener(() => setEditMode(EditType.Move));
-         setEditButton.onClick.AddListener(() => setEditMode(EditType.Edit));
-
          deleteSpriteTemplate.onClick.AddListener(() => {
-            SpriteTemplateData spriteTempData = spriteTemplateDataList.Find(_ => _ == recentSpriteTemp.spriteTemplateData);
-            if (spriteTempData != null) {
-               spriteTemplateDataList.Remove(spriteTempData);
-               GameObject.Destroy(recentSpriteTemp.gameObject);
+            if (draggedObjList.Count > 0) {
+               foreach (DraggableContent draggableContent in draggedObjList) {
+                  spriteTemplateDataList.Remove(draggableContent.cachedSpriteTemplate.spriteTemplateData);
+                  GameObject.Destroy(draggableContent.cachedSpriteTemplate.gameObject);
+               }
+               clearCache();
             }
-            clearCache();
          });
 
          toggleSelectionPanel.onValueChanged.AddListener(isOn => {
@@ -150,28 +137,29 @@ namespace BackgroundTool
          });
 
          isLockedToggle.onValueChanged.AddListener(_ => {
-            recentSpriteTemp.spriteTemplateData.isLocked = _;
+            if (draggedObjList.Count > 0) {
+               foreach (DraggableContent draggableContent in draggedObjList) {
+                  draggableContent.cachedSpriteTemplate.spriteTemplateData.isLocked = _;
+               }
+            }
          });
 
          zOffsetSlider.onValueChanged.AddListener(currLayer => {
             if (draggedObjList.Count > 0) {
                zOffsetText.text = currLayer.ToString();
                foreach (DraggableContent draggableContent in draggedObjList) {
-                  draggableContent.cachedSpriteTemplate.spriteTemplateData.layerIndex = (int) currLayer;
-                  draggableContent.cachedSpriteTemplate.spriteRender.sortingOrder = (int) currLayer;
+                  draggableContent.cachedSpriteTemplate.spriteTemplateData.zAxisOffset = (int) currLayer;
+
+                  int layerIndex = draggableContent.cachedSpriteTemplate.spriteTemplateData.layerIndex;
+                  float zOffset = layerIndex + (currLayer * .1f);
+
+                  Vector3 localPos = draggableContent.cachedSpriteTemplate.transform.localPosition;
+                  draggableContent.cachedSpriteTemplate.transform.localPosition = new Vector3(localPos.x, localPos.y, -zOffset);
                }
             }
          });
 
-         layerTypeSlider.onValueChanged.AddListener(currLayer => {
-            if (recentSpriteTemp != null) {
-               layerTypeText.text = ((LayerType) currLayer).ToString();
-               Vector3 currPos = recentSpriteTemp.transform.localPosition;
-               recentSpriteTemp.spriteTemplateData.layerIndex = (int) currLayer;
-               recentSpriteTemp.spriteRender.sortingOrder = (int) currLayer;
-               recentSpriteTemp.transform.localPosition = new Vector3(currPos.x, currPos.y, -currLayer);
-            } 
-         });
+         layerTypeSlider.onValueChanged.AddListener(updateLayer);
 
          toggleAllLayers.onValueChanged.AddListener(_ => {
             foreach (Toggle toggle in layerTogglerList) {
@@ -180,10 +168,10 @@ namespace BackgroundTool
          });
 
          layerTogglerList = new List<Toggle>();
-         for (int i = 0; i < Z_AXIS_MAX_DIST; i++) {
+         for (int i = 1; i < Z_AXIS_MAX_DIST; i++) {
             Toggle togglerInstance = Instantiate(layerTogglerPrefab, layerTogglerParent).GetComponentInChildren<Toggle>();
             Text togglerLabel = togglerInstance.GetComponentInChildren<Text>();
-            togglerLabel.text = i.ToString();
+            togglerLabel.text = ((LayerType) i).ToString();
             int cachedID = i;
             layerTogglerList.Add(togglerInstance);
 
@@ -191,20 +179,19 @@ namespace BackgroundTool
                setToggledLayers(cachedID, _);
             });
          }
-
-         setEditMode(EditType.Move);
       }
 
-      public void setEditMode (EditType editType) {
-         modeDisplay.text = editType.ToString();
-         currentEditType = editType;
+      private void updateLayer (float currLayer) {
+         if (draggedObjList.Count > 0) {
+            layerTypeText.text = ((LayerType) currLayer).ToString();
+            foreach (DraggableContent draggableContent in draggedObjList) {
+               float zAxisOffset = draggableContent.cachedSpriteTemplate.spriteTemplateData.zAxisOffset * .1f;
 
-         foreach (GameObject gameObj in editModeUI) {
-            gameObj.SetActive(editType == EditType.Edit);
-         }
-         foreach (GameObject gameObj in moveModeUI) {
-            resetDraggedGroup();
-            gameObj.SetActive(editType == EditType.Move);
+               Vector3 currPos = draggableContent.cachedSpriteTemplate.transform.localPosition;
+               draggableContent.cachedSpriteTemplate.spriteTemplateData.layerIndex = (int) currLayer;
+               draggableContent.cachedSpriteTemplate.spriteRender.sortingOrder = (int) currLayer;
+               draggableContent.cachedSpriteTemplate.transform.localPosition = new Vector3(currPos.x, currPos.y, -(currLayer + zAxisOffset));
+            }
          }
       }
 
@@ -218,26 +205,12 @@ namespace BackgroundTool
       }
 
       public void clearCache () {
-         if (draggedObjList.Count > 0) {
-            foreach (DraggableContent draggableContent in draggedObjList) {
-               draggableContent.cachedSpriteTemplate.spriteRender.color = Color.white;
-            }
-         }
+         resetDraggedGroup();
          draggedObjList.Clear();
          isDragging = false;
       }
 
       #region Mouse Behavior
-
-      public void beginHoverObj (SpriteTemplate spriteTemp) {
-         if (!isDragging) {
-            spriteTemp.spriteRender.color = Color.blue;
-         }
-      }
-
-      public void stopHoverObj (SpriteTemplate spriteTemp) {
-         spriteTemp.spriteRender.color = Color.white;
-      }
 
       public void beginDragSelectionGroup (List<SpriteSelectionTemplate> spriteTempGroup, bool isSingleDrag) {
          singleDrag = isSingleDrag;
@@ -249,7 +222,7 @@ namespace BackgroundTool
             templateObj.transform.position = spriteTemp.transform.position;
 
             Vector3 initOffset = templateObj.transform.localPosition - pos;
-            templateObj.spriteRender.color = Color.red;
+            templateObj.highlightObj(true);
 
             DraggableContent newDragContent = new DraggableContent {
                spriteObject = templateObj.gameObject,
@@ -257,16 +230,14 @@ namespace BackgroundTool
                spriteOffset = initOffset
             };
             draggedObjList.Add(newDragContent);
-            recentSpriteTemp = templateObj;
 
             if (isSingleDrag) {
                break;
             }
          }
 
-         if (currentEditType == EditType.Move) {
-            isDragging = true;
-         }
+         isDragging = true;
+         isSpawning = true;
       }
 
       public void beginDragSpawnedGroup (List<SpriteTemplate> spriteTempGroup, bool isSingleDrag) {
@@ -276,7 +247,7 @@ namespace BackgroundTool
 
          foreach (SpriteTemplate spriteTemp in spriteTempGroup) {
             Vector3 initOffset = spriteTemp.transform.localPosition - pos;
-            spriteTemp.spriteRender.color = Color.red;
+            spriteTemp.highlightObj(true);
 
             DraggableContent dragContent = new DraggableContent { 
                cachedSpriteTemplate = spriteTemp,
@@ -284,25 +255,18 @@ namespace BackgroundTool
                spriteOffset = initOffset
             };
             draggedObjList.Add(dragContent);
-            recentSpriteTemp = spriteTemp;
 
             if (isSingleDrag) {
-               break;
+               isLockedToggle.isOn = spriteTemp.spriteTemplateData.isLocked;
+               layerTypeSlider.value = spriteTemp.spriteTemplateData.layerIndex;
+               zOffsetSlider.value = spriteTemp.spriteTemplateData.zAxisOffset;
             }
-         }
-
-         if (currentEditType == EditType.Move) {
-            isDragging = true;
-         } else if (currentEditType == EditType.Edit) {
-            recentSpriteTemp.spriteRender.color = Color.red;
-            layerTypeSlider.value = recentSpriteTemp.spriteTemplateData.layerIndex;
-            isLockedToggle.isOn = recentSpriteTemp.spriteTemplateData.isLocked;
          }
       }
 
       private void resetDraggedGroup () {
          foreach (DraggableContent dragContent in draggedObjList) {
-            dragContent.cachedSpriteTemplate.spriteRender.color = Color.white;
+            dragContent.cachedSpriteTemplate.highlightObj(false);
          }
          draggedObjList.Clear();
       }
@@ -311,41 +275,70 @@ namespace BackgroundTool
          resetDraggedGroup();
          scrollRect.enabled = true;
          isDragging = false;
+         disableHighlighting = false;
       }
 
       #endregion
       
       public void endClick () {
-         foreach (DraggableContent draggableContent in draggedObjList) {
-            draggableContent.cachedSpriteTemplate.createdFromPanel = false;
-         }
+         if (isSpawning) {
+            foreach (DraggableContent draggable in draggedObjList) {
+               GameObject gameObj = createInstance(draggable.cachedSpriteTemplate.spriteRender.sprite, draggable.cachedSpriteTemplate.spriteTemplateData.spritePath, false, draggable.cachedSpriteTemplate.spriteTemplateData);
+               gameObj.transform.position = draggable.cachedSpriteTemplate.transform.position;
+               draggable.cachedSpriteTemplate.highlightObj(false);
+            }
+         } else {
+            foreach (DraggableContent draggableContent in draggedObjList) {
+               draggableContent.cachedSpriteTemplate.createdFromPanel = false;
+            }
 
-         if (isNewlySpawned) {
-            isNewlySpawned = false;
-            creationPanel.SetActive(true);
+            if (isNewlySpawned) {
+               isNewlySpawned = false;
+               creationPanel.SetActive(true);
+            }
+            stopDrag();
          }
-         stopDrag();
       }
 
       private void Update () {
-         if (draggedObjList.Count > 0 && currentEditType == EditType.Move) {
+         bool dragSpawnableGroup = draggedObjList.Count > 0 && isDragging;
+         bool dragHighlightedSpawnedGroup = !isSpawning && draggedObjList.Count > 0 && Input.GetKey(KeyCode.Mouse0) && isHoveringHighlight;
+
+         if (dragHighlightedSpawnedGroup && Input.GetKeyDown(KeyCode.Mouse0)) {
+            Vector3 pos = _mainCam.ScreenToWorldPoint(Input.mousePosition);
+            foreach (DraggableContent draggableContent in draggedObjList) {
+               Vector3 initOffset = draggableContent.cachedSpriteTemplate.transform.localPosition - pos;
+               draggableContent.spriteOffset = initOffset;
+            }
+         }
+
+         if (dragSpawnableGroup || dragHighlightedSpawnedGroup) {
             Vector3 pos = _mainCam.ScreenToWorldPoint(Input.mousePosition);
 
             foreach (DraggableContent draggableContent in draggedObjList) {
                if (!draggableContent.cachedSpriteTemplate.spriteTemplateData.isLocked) {
-                  pos.z = -draggableContent.cachedSpriteTemplate.spriteTemplateData.layerIndex;
-                  draggableContent.spriteObject.transform.localPosition = new Vector3(draggableContent.spriteOffset.x + pos.x, draggableContent.spriteOffset.y + pos.y, -draggableContent.cachedSpriteTemplate.spriteTemplateData.layerIndex);
+                  float newZOffset = draggableContent.cachedSpriteTemplate.spriteTemplateData.layerIndex + draggableContent.cachedSpriteTemplate.spriteTemplateData.zAxisOffset * .1f;
+
+                  draggableContent.spriteObject.transform.localPosition = new Vector3(draggableContent.spriteOffset.x + pos.x, draggableContent.spriteOffset.y + pos.y, -newZOffset);
                   draggableContent.cachedSpriteTemplate.spriteTemplateData.localPosition = draggableContent.spriteObject.transform.localPosition;
                }
             }
 
-            if (Input.GetKeyDown(KeyCode.Mouse0) && !singleDrag) {
+            if (Input.GetKeyDown(KeyCode.Mouse0) && !singleDrag && !dragHighlightedSpawnedGroup) {
+               isHoveringHighlight = false;
                endClick();
             }
          }
 
+         // Cancel spawn sprite mode
          if (Input.GetKeyDown(KeyCode.Mouse1)) {
-            clearCache();
+            if (isSpawning) {
+               isSpawning = false;
+               foreach (DraggableContent draggableContent in draggedObjList) {
+                  Destroy(draggableContent.cachedSpriteTemplate.gameObject);
+               }
+            }
+            endClick();
          }
       }
 
@@ -360,10 +353,13 @@ namespace BackgroundTool
             Vector3 pos = _mainCam.ScreenToWorldPoint(Input.mousePosition);
             spriteTemplate.transform.localPosition = new Vector3(pos.x, pos.y, -1);
             spriteTemplate.createdFromPanel = true;
+            spriteTemplate.highlightObj(false);
             isNewlySpawned = true;
          }
 
+         spriteTemplate.gameObject.name = spriteContent.name + "_" +spawnCount;
          spriteTemplate.gameObject.SetActive(true);
+         spawnCount++;
          return spriteTemplate.gameObject;
       }
 
@@ -379,7 +375,11 @@ namespace BackgroundTool
             spriteTemplate.spriteTemplateData.isLocked = false;
             spriteTemplate.spriteTemplateData.spritePath = spritePath;
          } else {
-            spriteTemplate.spriteTemplateData = spriteData;
+            spriteTemplate.spriteTemplateData.isLocked = spriteData.isLocked;
+            spriteTemplate.spriteTemplateData.layerIndex = spriteData.layerIndex;
+            spriteTemplate.spriteTemplateData.zAxisOffset = spriteData.zAxisOffset;
+            spriteTemplate.spriteTemplateData.spritePath = spriteData.spritePath;
+            spriteTemplate.spriteTemplateData.localPosition = spriteData.localPosition;
             spriteTemplate.setTemplate();
          }
          spriteTemplate.spriteRender.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;

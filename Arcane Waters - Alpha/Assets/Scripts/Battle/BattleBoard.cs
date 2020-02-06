@@ -12,6 +12,9 @@ public class BattleBoard : MonoBehaviour {
    // Central spot where assets will be spawned
    public Transform centerPoint;
 
+   // Parent of the spawn points
+   public Transform attackersSpotHolder, defendersSpotHolder;
+
    #endregion
 
    public void Start () {
@@ -20,6 +23,32 @@ public class BattleBoard : MonoBehaviour {
       // Look up the Battle Spots for this board
       foreach (BattleSpot spot in GetComponentsInChildren<BattleSpot>()) {
          _spots.Add(spot);
+      }
+   }
+
+   public void recalibrateBattleSpots (List<GameObject> defenderSpots, List<GameObject> attackerSpots) {
+      _spots.Clear();
+      attackersSpotHolder.gameObject.DestroyChildren();
+      defendersSpotHolder.gameObject.DestroyChildren();
+
+      int boardIndex = 1;
+      foreach (GameObject attackerSpot in attackerSpots) {
+         BattleSpot spot = attackerSpot.AddComponent<BattleSpot>();
+         spot.transform.SetParent(attackersSpotHolder);
+         spot.teamType = Battle.TeamType.Attackers;
+         spot.boardPosition = boardIndex;
+         _spots.Add(spot);
+         boardIndex++;
+      }
+
+      boardIndex = 1;
+      foreach (GameObject defendersSpot in defenderSpots) {
+         BattleSpot spot = defendersSpot.AddComponent<BattleSpot>();
+         spot.transform.SetParent(defendersSpotHolder);
+         spot.teamType = Battle.TeamType.Defenders;
+         spot.boardPosition = boardIndex;
+         _spots.Add(spot);
+         boardIndex++;
       }
    }
 

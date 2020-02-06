@@ -42,7 +42,13 @@ namespace BackgroundTool
       #endregion
 
       public void OnMouseDown () {
-         if (!EventSystem.current.IsPointerOverGameObject() && EventSystem.current.currentSelectedGameObject == null) {
+         if (ImageManipulator.self.draggedObjList.Count > 0) {
+            ImageManipulator.self.isHoveringHighlight = false;
+         }
+
+         if (!EventSystem.current.IsPointerOverGameObject() &&
+            EventSystem.current.currentSelectedGameObject == null &&
+            !ImageManipulator.self.disableHighlighting) {
             Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             pos.z = 0;
             dragCounter = 0;
@@ -55,7 +61,7 @@ namespace BackgroundTool
       }
 
       private void Update () {
-         if (isDragging) {
+         if (isDragging && !ImageManipulator.self.disableHighlighting) {
             dragCounter += Time.deltaTime;
             if (dragCounter >= holdTimerMax) {
                Vector3 currentPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);

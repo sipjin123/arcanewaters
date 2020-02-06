@@ -13,6 +13,9 @@ namespace BackgroundTool
       // Determines the layer of the sprite
       public int layerIndex = 3;
 
+      // Determines the z axis of the sprite
+      public int zAxisOffset = 0;
+
       // Determines if the sprite can be moved or not
       public bool isLocked = false;
 

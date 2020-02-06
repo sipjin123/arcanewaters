@@ -24,6 +24,7 @@ namespace BackgroundTool
       public static string SKIES_DIRECTORY = "/Skies/";
       public static string TERRAIN_DIRECTORY = "/Terrain/";
       public static string TREES_DIRECTORY = "/Trees/";
+      public static string FUNCTIONAL_DIRECTORY = "/FunctionalElements/";
 
       public static float spacing = .25f;
 
@@ -57,7 +58,8 @@ namespace BackgroundTool
          RocksDirectory = 6,
          SkiesDirectory = 7,
          TerrainDirectory = 8,
-         TreesDirectory = 9
+         TreesDirectory = 9,
+         FunctionalElements = 10
       }
 
       #endregion
@@ -149,6 +151,9 @@ namespace BackgroundTool
                break;
             case BGContentType.TreesDirectory:
                returnString = TREES_DIRECTORY;
+               break;
+            case BGContentType.FunctionalElements:
+               returnString = FUNCTIONAL_DIRECTORY;
                break;
          }
          return returnString;
