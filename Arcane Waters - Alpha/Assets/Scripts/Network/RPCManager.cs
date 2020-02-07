@@ -552,7 +552,7 @@ public class RPCManager : NetworkBehaviour {
    public void Target_ReceiveBlueprintList (NetworkConnection connection,
       Item[] blueprintArray, Blueprint.Status[] blueprintStatusesArray, int pageNumber, int totalBlueprintCount) {
 
-      // Make sure the panel is showing
+      // Get the panel
       CraftingPanel craftingPanel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);
 
       // Get the reward panel
@@ -574,6 +574,48 @@ public class RPCManager : NetworkBehaviour {
 
       // Refresh the panel
       panel.refreshCurrentlySelectedBlueprint();
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveVoyageMapList (NetworkConnection connection, Voyage[] voyageArray) {
+      List<Voyage> voyageList = new List<Voyage>(voyageArray);
+
+      // Make sure the panel is showing
+      VoyagePanel panel = (VoyagePanel) PanelManager.self.get(Panel.Type.Voyage);
+
+      if (!panel.isShowing()) {
+         PanelManager.self.pushPanel(panel.type);
+      }
+
+      // Pass the data to the panel
+      panel.updatePanelWithVoyageList(voyageList);
+   }
+
+   [TargetRpc]
+   public void Target_CloseVoyagePanel (NetworkConnection connection) {
+      // Get the panel
+      VoyagePanel panel = (VoyagePanel) PanelManager.self.get(Panel.Type.Voyage);
+
+      // Close the panel if it is showing
+      if (panel.isShowing()) {
+         PanelManager.self.popPanel();
+      }
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveVoyageGroupMembers (NetworkConnection connection, UserObjects[] groupMembersArray) {
+      List<UserObjects> membersInfo = new List<UserObjects>(groupMembersArray);
+
+      // Get the panel
+      VoyageGroupPanel panel = VoyageGroupPanel.self;
+
+      // Make sure the panel is showing
+      if (!panel.isShowing()) {
+         panel.show();
+      }
+
+      // Update the panel info
+      panel.updatePanelWithGroupMembers(membersInfo);
    }
 
    [Command]
@@ -2477,6 +2519,160 @@ public class RPCManager : NetworkBehaviour {
 
             // Display the reward panel
             Target_ReceiveItem(_player.connectionToClient, craftedItem);
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_RequestVoyageListFromServer () {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Retrieve the list of voyages
+      List<Voyage> voyageList = VoyageManager.self.getAllVoyages();
+
+      // Send the list to the client
+      Target_ReceiveVoyageMapList(_player.connectionToClient, voyageList.ToArray());
+   }
+
+   [Command]
+   public void Cmd_AddUserToQuickmatchGrouping (string areaKey) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Retrieve the voyage data
+      Voyage voyage = VoyageManager.self.getVoyage(areaKey);
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+
+         // Verify that the user is not already in a group
+         int previousGroupId = DB_Main.getVoyageGroupForMember(_player.userId);
+
+         if (previousGroupId >= 0) {
+            // Remove the player from its previous group
+            DB_Main.deleteMemberFromVoyageGroup(previousGroupId, _player.userId);
+
+            // Update its voyage group in the net entity
+            _player.voyageGroupId = -1;
+         }
+
+         // Find the oldest incomplete group in the given area
+         VoyageGroupInfo voyageGroup = DB_Main.getBestVoyageGroupForQuickmatch(areaKey);
+
+         // If no group is available, create a new one
+         if (voyageGroup == null) {
+            voyageGroup = new VoyageGroupInfo(-1, areaKey, DateTime.UtcNow, true, 0);
+            voyageGroup.groupId = DB_Main.createVoyageGroup(voyageGroup);
+         }
+
+         // Add the user to the group
+         DB_Main.addMemberToVoyageGroup(voyageGroup.groupId, _player.userId);
+
+         // Update its voyage group in the net entity
+         _player.voyageGroupId = voyageGroup.groupId;
+
+         // Increase the member group count for later calculations
+         voyageGroup.memberCount++;
+
+         // If the group is now complete, disable its quickmatch
+         if (voyageGroup.memberCount >= Voyage.getMaxGroupSize(voyage.difficulty)) {
+            DB_Main.updateVoyageGroupQuickmatchStatus(voyageGroup.groupId, false);
+         }
+
+         // Back to the Unity thread to send the results back to the client
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Close the voyage panel
+            Target_CloseVoyagePanel(_player.connectionToClient);
+
+            // Get the area and spawn of the voyage map
+            Area area = AreaManager.self.getArea(areaKey);
+            Spawn spawn = SpawnManager.self.getSpawn(areaKey);
+
+            // Warp to the voyage area
+            _player.spawnInNewMap(areaKey, spawn, Direction.South);
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_RemoveUserFromVoyageGroup () {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // If the player is not in a group, do nothing
+      if (_player.voyageGroupId == -1) {
+         return;
+      }
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+
+         // Retrieve the group info
+         VoyageGroupInfo voyageGroup = DB_Main.getVoyageGroup(_player.voyageGroupId);
+
+         // Remove the player from its group
+         DB_Main.deleteMemberFromVoyageGroup(_player.voyageGroupId, _player.userId);
+
+         // Update the player voyage group id in the net entity
+         _player.voyageGroupId = -1;
+
+         // Update the group member count
+         voyageGroup.memberCount--;
+
+         // If the group is now empty, delete it
+         if (voyageGroup.memberCount <= 0) {
+            DB_Main.deleteVoyageGroup(voyageGroup.groupId);
+         }
+
+         // Back to the Unity thread to send the results back to the client
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+
+            // If the player is in a voyage area, warp him to the starting town
+            if (VoyageManager.self.isVoyageArea(_player.areaKey)) {
+               
+               // Get the area and spawn
+               Area area = AreaManager.self.getArea(VoyageManager.RETURN_AREA_KEY);
+               Spawn spawn = SpawnManager.self.getSpawn(VoyageManager.RETURN_AREA_KEY, 
+                  VoyageManager.RETURN_SPAWN_KEY);
+
+               // Warp to the destination area
+               _player.spawnInNewMap(VoyageManager.RETURN_AREA_KEY, spawn, Direction.South);
+            }
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_RequestVoyageGroupMembersFromServer () {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // If the player is not in a group, send an empty group
+      if (_player.voyageGroupId == -1) {
+         Target_ReceiveVoyageGroupMembers(_player.connectionToClient, new UserObjects[0]);
+         return;
+      }
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+
+         // Retrieve all the group members user info
+         List<UserObjects> groupMembers = DB_Main.getVoyageGroupMembers(_player.voyageGroupId);
+
+         // Back to the Unity thread to send the results back to the client
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+
+            // Send the data to the client
+            Target_ReceiveVoyageGroupMembers(_player.connectionToClient, groupMembers.ToArray());
          });
       });
    }

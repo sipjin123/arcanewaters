@@ -698,6 +698,50 @@ public class DB_MainStub : MonoBehaviour
       return 0;
    }
 
+   public static int getMinimumToolsVersionForWindows () {
+      return 0;
+   }
+
+   public static int getMinimumToolsVersionForMac () {
+      return 0;
+   }
+
+   public static int createVoyageGroup (VoyageGroupInfo groupInfo) {
+      return 0;
+   }
+
+   public static VoyageGroupInfo getVoyageGroup (int groupId) {
+      return null;
+   }
+
+   public static void updateVoyageGroupQuickmatchStatus (int groupId, bool isQuickmatchEnabled) {
+
+   }
+
+   public static void deleteVoyageGroup (int groupId) {
+
+   }
+
+   public static VoyageGroupInfo getBestVoyageGroupForQuickmatch (string areaKey) {
+      return null;
+   }
+
+   public static int getVoyageGroupForMember (int userId) {
+      return 0;
+   }
+
+   public static List<UserObjects> getVoyageGroupMembers (int groupId) {
+      return null;
+   }
+
+   public static void addMemberToVoyageGroup (int groupId, int userId) {
+
+   }
+
+   public static void deleteMemberFromVoyageGroup (int groupId, int userId) {
+
+   }
+
    /*
 
    public static void refillSupplies (int userId) {

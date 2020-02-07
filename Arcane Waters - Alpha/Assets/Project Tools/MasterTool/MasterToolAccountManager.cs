@@ -27,6 +27,7 @@ public class MasterToolAccountManager : MonoBehaviour {
 
    // Login error UI indicator
    public GameObject errorPanel;
+   public Text errorText;
    public Button closeErrorPanel;
 
    public static string USERNAME_PREF = "UserName";
@@ -60,6 +61,9 @@ public class MasterToolAccountManager : MonoBehaviour {
 
       userNameField.text = PlayerPrefs.GetString(USERNAME_PREF);
 
+      // Get the program version from the cloud manifest
+      _programVersion = Util.getGameVersion();
+
       exitButton.onClick.AddListener(() => {
          Application.Quit();
       });
@@ -72,8 +76,22 @@ public class MasterToolAccountManager : MonoBehaviour {
             string hashedPassword = Util.hashPassword(salt, passwordField.text);
             int accID = DB_Main.getAccountId(userNameField.text, hashedPassword);
 
+            // Look up the minimum version of the program required to login
+            int minimumToolsVersion;
+            if (Application.platform == RuntimePlatform.OSXPlayer) {
+               minimumToolsVersion = DB_Main.getMinimumToolsVersionForMac();
+            } else {
+               minimumToolsVersion = DB_Main.getMinimumToolsVersionForWindows();
+            }
+
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               if (accID > 0) {
+
+               // If this build is too old, ask the player to download a newer version
+               if (_programVersion < minimumToolsVersion) {
+                  errorText.text = "Please download the new version!";
+                  errorPanel.SetActive(true);
+                  loadingPanel.SetActive(false);
+               } else if (accID > 0) {
                   proceedToLogin(accID);
                } else {
                   errorPanel.SetActive(true);
@@ -138,6 +156,9 @@ public class MasterToolAccountManager : MonoBehaviour {
    }
 
    #region Private Variables
+
+   // The version of this build
+   private int _programVersion = 0;
 
    #endregion
 }

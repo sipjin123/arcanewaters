@@ -16,27 +16,15 @@ public class BiomableSpriteRenderer : MonoBehaviour, IBiomable
    public void setBiome (Biome.Type biomeType) {
       if (includeChildren) {
          foreach (SpriteRenderer renderer in GetComponentsInChildren<SpriteRenderer>()) {
-            renderer.sprite = switchSpriteBiome(renderer.sprite, currentBiome, biomeType);
+            renderer.sprite = Util.switchSpriteBiome(renderer.sprite, currentBiome, biomeType);
          }
       } else {
          foreach (SpriteRenderer renderer in GetComponents<SpriteRenderer>()) {
-            renderer.sprite = switchSpriteBiome(renderer.sprite, currentBiome, biomeType);
+            renderer.sprite = Util.switchSpriteBiome(renderer.sprite, currentBiome, biomeType);
          }
       }
 
       currentBiome = biomeType;
-   }
-
-   protected Sprite switchSpriteBiome(Sprite sprite, Biome.Type from, Biome.Type to) {
-      try {
-         string textureName = sprite.name.Substring(0, sprite.name.Length - 2).TrimEnd('_');
-         string targetTextureName = textureName.Replace(from.ToString().ToLower(), to.ToString().ToLower());
-         int spriteIndex = int.Parse(sprite.name.Substring(sprite.name.Length - 2).TrimStart('_'));
-
-         return ImageManager.getSprites(@"Biomable/" + targetTextureName)[spriteIndex];
-      } catch {
-         return sprite;
-      }
    }
 
    #region Private Variables

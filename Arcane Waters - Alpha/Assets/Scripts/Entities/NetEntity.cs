@@ -122,6 +122,10 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public int battleId;
 
+   // The ID of the Voyage Group this user is currently in, if any
+   [SyncVar]
+   public int voyageGroupId = -1;
+
    // Gets set to true on the server when we're about to execute a warp
    public bool isAboutToWarpOnServer = false;
 
@@ -167,6 +171,9 @@ public class NetEntity : NetworkBehaviour
 
          // We need the follow text to be lower for ships
          _nameText.GetComponent<RectTransform>().offsetMin = (this is PlayerShipEntity) ? new Vector2(0, 32) : new Vector2(0, 64);
+
+         // Keep track in our Entity Manager
+         EntityManager.self.storeEntity(this);
       }
 
       // Keep track of the Entity that we control

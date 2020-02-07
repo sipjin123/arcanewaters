@@ -190,6 +190,9 @@ public class MyNetworkManager : NetworkManager {
          Armor armor = userObjects.armor;
          ShipInfo shipInfo = userObjects.shipInfo;
 
+         // Get the current voyage group the user is member of
+         int voyageGroupId = DB_Main.getVoyageGroupForMember(authenticatedUserId);
+
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             string previousAreaKey = userInfo.areaKey;
@@ -215,6 +218,7 @@ public class MyNetworkManager : NetworkManager {
             player.facing = (Direction) userInfo.facingDirection;
             player.desiredAngle = DirectionUtil.getAngle(player.facing);
             player.XP = userInfo.XP;
+            player.voyageGroupId = voyageGroupId;
             InstanceManager.self.addPlayerToInstance(player, previousAreaKey);
             NetworkServer.AddPlayerForConnection(conn, player.gameObject);
 

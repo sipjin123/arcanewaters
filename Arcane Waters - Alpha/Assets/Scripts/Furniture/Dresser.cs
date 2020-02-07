@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class Dresser : ClientMonoBehaviour {
+public class Dresser : ClientMonoBehaviour, IBiomable
+{
    #region Public Variables
 
    // The sprite to show when we're open
@@ -16,10 +17,17 @@ public class Dresser : ClientMonoBehaviour {
    // Whether we're open or closed
    public bool isOpen = false;
 
+   // Current biome that is set
+   public Biome.Type currentBiome = Biome.Type.Forest;
+
    #endregion
 
-   private void Start () {
-      _renderer = GetComponent<SpriteRenderer>();
+   protected override void Awake () {
+      base.Awake();
+
+      if (enabled) {
+         _renderer = GetComponent<SpriteRenderer>();
+      }
    }
 
    private void Update () {
@@ -60,6 +68,15 @@ public class Dresser : ClientMonoBehaviour {
 
       // Play a sound
       SoundManager.create3dSound("door_close_", this.transform.position, 3);
+   }
+
+   public void setBiome (Biome.Type biomeType) {
+      openSprite = Util.switchSpriteBiome(openSprite, currentBiome, biomeType);
+      closedSprite = Util.switchSpriteBiome(closedSprite, currentBiome, biomeType);
+
+      _renderer.sprite = Util.switchSpriteBiome(_renderer.sprite, currentBiome, biomeType);
+
+      currentBiome = biomeType;
    }
 
    #region Private Variables

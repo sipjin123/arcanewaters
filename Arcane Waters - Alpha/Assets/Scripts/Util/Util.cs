@@ -41,6 +41,18 @@ public class Util : MonoBehaviour {
       return null;
    }
 
+   public static Sprite switchSpriteBiome (Sprite sprite, Biome.Type from, Biome.Type to) {
+      try {
+         string textureName = sprite.name.Substring(0, sprite.name.Length - 2).TrimEnd('_');
+         string targetTextureName = textureName.Replace(from.ToString().ToLower(), to.ToString().ToLower());
+         int spriteIndex = int.Parse(sprite.name.Substring(sprite.name.Length - 2).TrimStart('_'));
+
+         return ImageManager.getSprites(@"Biomable/" + targetTextureName)[spriteIndex];
+      } catch {
+         return sprite;
+      }
+   }
+
    public static int getMyUserId () {
       if (NetworkClient.connection != null) {
          NetworkIdentity controller = NetworkClient.connection.playerController;

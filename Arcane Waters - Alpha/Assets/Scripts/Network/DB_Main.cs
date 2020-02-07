@@ -4771,6 +4771,283 @@ public class DB_Main : DB_MainStub
       return minVersion;
    }
 
+   public static new int getMinimumToolsVersionForWindows () {
+      int minVersion = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT minToolsVersionWin FROM game_version", conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  minVersion = dataReader.GetInt32("minToolsVersionWin");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return minVersion;
+   }
+
+   public static new int getMinimumToolsVersionForMac () {
+      int minVersion = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT minToolsVersionMac FROM game_version", conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  minVersion = dataReader.GetInt32("minToolsVersionMac");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return minVersion;
+   }
+
+   public static new int createVoyageGroup (VoyageGroupInfo groupInfo) {
+      int groupId = -1;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO voyage_groups (areaKey, creationDate, isQuickmatchEnabled) VALUES " +
+            "(@areaKey, @creationDate, @isQuickmatchEnabled)", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@areaKey", groupInfo.areaKey);
+            cmd.Parameters.AddWithValue("@creationDate", DateTime.FromBinary(groupInfo.creationDate));
+            cmd.Parameters.AddWithValue("@isQuickmatchEnabled", groupInfo.isQuickmatchEnabled);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+            groupId = (int) cmd.LastInsertedId;
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return groupId;
+   }
+
+   public static new VoyageGroupInfo getVoyageGroup (int groupId) {
+      VoyageGroupInfo groupInfo = null;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT *, COUNT(*) AS memberCount FROM voyage_groups " +
+            "JOIN voyage_group_members ON voyage_groups.groupId = voyage_group_members.groupId " +
+            "WHERE voyage_groups.groupId=@groupId GROUP BY voyage_groups.groupId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@groupId", groupId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  groupInfo = new VoyageGroupInfo(dataReader);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return groupInfo;
+   }
+
+   public static new void updateVoyageGroupQuickmatchStatus (int groupId, bool isQuickmatchEnabled) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "UPDATE voyage_groups SET isQuickmatchEnabled=@isQuickmatchEnabled WHERE groupId=@groupId", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@groupId", groupId);
+            cmd.Parameters.AddWithValue("@isQuickmatchEnabled", isQuickmatchEnabled);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void deleteVoyageGroup (int groupId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "DELETE FROM voyage_groups WHERE groupId=@groupId", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@groupId", groupId);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new VoyageGroupInfo getBestVoyageGroupForQuickmatch (string areaKey) {
+      VoyageGroupInfo groupInfo = null;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT *, COUNT(*) AS memberCount FROM voyage_groups " +
+            "JOIN voyage_group_members ON voyage_groups.groupId = voyage_group_members.groupId " +
+            "WHERE areaKey = @areaKey AND isQuickmatchEnabled = 1 " +
+            "GROUP BY voyage_groups.groupId ORDER BY creationDate LIMIT 1", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@areaKey", areaKey);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  groupInfo = new VoyageGroupInfo(dataReader);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return groupInfo;
+   }
+
+   public static new int getVoyageGroupForMember (int userId) {
+      int groupId = -1;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM voyage_group_members WHERE usrId=@usrId", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  groupId = DataUtil.getInt(dataReader, "groupId");
+               }
+            }
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return groupId;
+   }
+
+   public static new List<UserObjects> getVoyageGroupMembers (int groupId) {
+      List<UserObjects> members = new List<UserObjects>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT *, " +
+            "armor.itmId AS armorId, armor.itmType AS armorType, armor.itmColor1 AS armorColor1, armor.itmColor2 AS armorColor2, armor.itmData AS armorData " +
+            "FROM voyage_group_members " +
+            "JOIN users ON voyage_group_members.usrId = users.usrId " +
+            "JOIN accounts ON users.accId = accounts.accId " +
+            "LEFT JOIN items AS armor ON (users.armId=armor.itmId) " +
+            "WHERE voyage_group_members.groupId=@groupId", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@groupId", groupId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  UserObjects userObjects = new UserObjects();
+                  userObjects.userInfo = new UserInfo(dataReader);
+                  userObjects.shipInfo = new ShipInfo();
+                  userObjects.armor = getArmor(dataReader);
+                  userObjects.weapon = new Weapon(-1, Weapon.Type.None);
+                  userObjects.armorColor1 = userObjects.armor.color1;
+                  userObjects.armorColor2 = userObjects.armor.color2;
+                  userObjects.weaponColor1 = ColorType.None;
+                  userObjects.weaponColor2 = ColorType.None;
+
+                  members.Add(userObjects);
+               }
+            }
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return members;
+   }
+
+   public static new void addMemberToVoyageGroup (int groupId, int userId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO voyage_group_members (groupId, usrId) VALUES " +
+            "(@groupId, @usrId)", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@groupId", groupId);
+            cmd.Parameters.AddWithValue("@usrId", userId);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void deleteMemberFromVoyageGroup (int groupId, int userId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "DELETE FROM voyage_group_members WHERE groupId=@groupId AND usrId=@usrId", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@groupId", groupId);
+            cmd.Parameters.AddWithValue("@usrId", userId);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
    public static new void readTest () {
       try {
          using (MySqlConnection conn = getConnection())

@@ -1,0 +1,71 @@
+﻿using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine.UI;
+using Mirror;
+using System;
+
+#if IS_SERVER_BUILD
+using MySql.Data.MySqlClient;
+#endif
+
+public class VoyageGroupInfo
+{
+   #region Public Variables
+
+   // The group ID
+   public int groupId;
+
+   // The area key
+   public string areaKey;
+
+   // The date at which the group was created
+   public long creationDate;
+
+   // Gets set to true when the group is waiting for more quickmatch members
+   public bool isQuickmatchEnabled;
+
+   // The number of group members
+   public int memberCount;
+
+   #endregion
+
+   public VoyageGroupInfo () { }
+
+#if IS_SERVER_BUILD
+
+   public VoyageGroupInfo (MySqlDataReader dataReader) {
+      this.groupId = DataUtil.getInt(dataReader, "groupId");
+      this.areaKey = DataUtil.getString(dataReader, "areaKey");
+      this.creationDate = DataUtil.getDateTime(dataReader, "creationDate").ToBinary();
+      this.isQuickmatchEnabled = DataUtil.getBoolean(dataReader, "isQuickMatchEnabled");
+      this.memberCount = DataUtil.getInt(dataReader, "memberCount");
+   }
+
+#endif
+
+   public VoyageGroupInfo (int groupId, string areaKey, DateTime creationDate, bool isQuickmatchEnabled,
+      int memberCount) {
+      this.groupId = groupId;
+      this.areaKey = areaKey;
+      this.creationDate = creationDate.ToBinary();
+      this.isQuickmatchEnabled = isQuickmatchEnabled;
+      this.memberCount = memberCount;
+   }
+
+   public override bool Equals (object rhs) {
+      if (rhs is VoyageGroupInfo) {
+         var other = rhs as VoyageGroupInfo;
+         return groupId == other.groupId;
+      }
+      return false;
+   }
+
+   public override int GetHashCode () {
+      return groupId.GetHashCode();
+   }
+
+   #region Private Variables
+
+   #endregion
+}

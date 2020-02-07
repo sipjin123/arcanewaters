@@ -96,6 +96,12 @@ public class CharacterStack : MonoBehaviour {
       this.transform.localScale = (_direction == Direction.West) ? new Vector3(-2, 2, 2) : new Vector3(2, 2, 2);
    }
 
+   public void pauseAnimation () {
+      foreach (SimpleAnimation animation in GetComponentsInChildren<SimpleAnimation>()) {
+         animation.isPaused = true;
+      }
+   }
+
    protected int getMinIndexForDirection (Direction direction) {
       switch (direction) {
          case Direction.East:

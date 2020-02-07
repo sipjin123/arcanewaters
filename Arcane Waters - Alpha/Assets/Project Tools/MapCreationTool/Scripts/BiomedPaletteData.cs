@@ -224,6 +224,8 @@ namespace MapCreationTool
       }
 
       private InteriorWallGroup formSpecialGroup (BiomedTileGroup from, BiomedTileData[,] tileMatrix, InteriorWallConfig config, Biome.Type biome) {
+         Tilemap tilemap = config.tilemaps.First(_ => _.biome == biome).tilemap;
+
          InteriorWallGroup newGroup = new InteriorWallGroup {
             tiles = extractBiome(from.tiles, biome),
             start = from.start,
@@ -234,9 +236,9 @@ namespace MapCreationTool
 
          for (int i = 0; i < config.size.x; i++) {
             for (int j = 0; j < config.size.y; j++) {
-               Vector3Int index = new Vector3Int(i, j, 0) - config.tilemap.origin - Vector3Int.RoundToInt(config.tilemap.transform.position);
+               Vector3Int index = new Vector3Int(i, j, 0) - tilemap.origin - Vector3Int.RoundToInt(tilemap.transform.position);
 
-               newGroup.allTiles[i, j] = config.tilemap.GetTile(index);
+               newGroup.allTiles[i, j] = tilemap.GetTile(index);
             }
          }
 
