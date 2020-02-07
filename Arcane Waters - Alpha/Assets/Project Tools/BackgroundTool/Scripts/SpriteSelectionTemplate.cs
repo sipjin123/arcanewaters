@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
+using static BackgroundTool.ImageLoader;
 
 namespace BackgroundTool
 {
@@ -16,6 +17,12 @@ namespace BackgroundTool
 
       // Path of the sprite
       public string spritePath;
+
+      // The layer type of this sprite selection
+      public ImageManipulator.LayerType layerType;
+
+      // Determines the content category of the selection
+      public BGContentCategory contentCategory;
 
       #endregion
 

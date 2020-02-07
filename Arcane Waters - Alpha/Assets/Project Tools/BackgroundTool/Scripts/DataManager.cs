@@ -25,16 +25,29 @@ namespace BackgroundTool
       // List of background data loaded from the server
       public List<BackgroundContentData> backgroundContentList;
 
+      // Reference to the error indicators
+      public GameObject errorPanel;
+      public Text errorText;
+      public Button exitErrorPanelButton;
+
+      // Error Messages
+      public static string SPAWNPOINT_ERROR = "Not enough spawn points in the scene.";
+
       #endregion
 
       private void Start () {
          saveButton.onClick.AddListener(() => {
-            BackgroundContentData newContentData = new BackgroundContentData();
-            newContentData.backgroundName = "Test1";
-            newContentData.xmlId = 1;
-            newContentData.spriteTemplateList = ImageManipulator.self.spriteTemplateDataList;
+            List<SpriteTemplateData> spriteTempList = ImageManipulator.self.spriteTemplateDataList;
+            if (spriteTempList.FindAll(_ => _.contentCategory == ImageLoader.BGContentCategory.SpawnPoints_Defenders).Count >= 6 && spriteTempList.FindAll(_ => _.contentCategory == ImageLoader.BGContentCategory.SpawnPoints_Attackers).Count >= 6) {
+               BackgroundContentData newContentData = new BackgroundContentData();
+               newContentData.backgroundName = "Test1";
+               newContentData.xmlId = 1;
+               newContentData.spriteTemplateList = spriteTempList;
 
-            saveData(newContentData);
+               saveData(newContentData);
+            } else {
+               showErrorPanel(true, SPAWNPOINT_ERROR);
+            }
          });
 
          loadButton.onClick.AddListener(() => {
@@ -45,7 +58,16 @@ namespace BackgroundTool
             }
          });
 
+         exitErrorPanelButton.onClick.AddListener(() => {
+            showErrorPanel(false, "");
+         });
+
          Invoke("loadData", MasterToolScene.loadDelay);
+      }
+
+      private void showErrorPanel (bool isActive, string message) {
+         errorText.text = message;
+         errorPanel.SetActive(isActive);
       }
 
       public void saveData (BackgroundContentData data) {

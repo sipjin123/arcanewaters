@@ -20,7 +20,8 @@ public class BackgroundGameManager : MonoBehaviour {
    // Key sprite names to determine battle positon status
    public static string BATTLE_POS_KEY_LEFT = "Battle_Position_Left";
    public static string BATTLE_POS_KEY_RIGHT = "Battle_Position_Right";
-
+   public static string PLACEHOLDER = "Placeholder";
+   
    #endregion
 
    private void Awake () {
@@ -52,15 +53,17 @@ public class BackgroundGameManager : MonoBehaviour {
       foreach (SpriteTemplateData spriteTempData in backgroundContentList[0].spriteTemplateList) {
          SpriteTemplate spriteTempObj = Instantiate(spriteTemplatePrefab, board.centerPoint).GetComponent<SpriteTemplate>();
 
-         float zOffset = spriteTempData.zAxisOffset * .1f;
-         spriteTempObj.transform.localPosition = new Vector3(spriteTempData.localPosition.x, spriteTempData.localPosition.y, -(spriteTempData.layerIndex + zOffset));
+         float zOffset = -spriteTempData.layerIndex - spriteTempData.zAxisOffset;
+         spriteTempObj.transform.localPosition = new Vector3(spriteTempData.localPositionData.x, spriteTempData.localPositionData.y, zOffset);
          spriteTempObj.spriteRender.sprite = ImageManager.getSprite(spriteTempData.spritePath);
-         
-         if (spriteTempObj.spriteRender.sprite.name.Contains(BATTLE_POS_KEY_LEFT)) {
-            leftBattleSpots.Add(spriteTempObj.gameObject);
-         }
-         if (spriteTempObj.spriteRender.sprite.name.Contains(BATTLE_POS_KEY_RIGHT)) {
-            rightBattleSpots.Add(spriteTempObj.gameObject);
+
+         if (!spriteTempObj.spriteRender.sprite.name.Contains(PLACEHOLDER)) {
+            if (spriteTempObj.spriteRender.sprite.name.Contains(BATTLE_POS_KEY_LEFT)) {
+               leftBattleSpots.Add(spriteTempObj.gameObject);
+            }
+            if (spriteTempObj.spriteRender.sprite.name.Contains(BATTLE_POS_KEY_RIGHT)) {
+               rightBattleSpots.Add(spriteTempObj.gameObject);
+            }
          }
       }
 

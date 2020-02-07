@@ -5,22 +5,10 @@ using UnityEngine.UI;
 using Mirror;
 using System.Text;
 using System;
+using static BackgroundTool.ImageLoader;
 
 namespace BackgroundTool
 {
-   [Serializable]
-   public class DraggableContent
-   {
-      // The reference to the object
-      public GameObject spriteObject;
-
-      // The reference to the sprite renderer
-      public SpriteTemplate cachedSpriteTemplate;
-
-      // The offset position from the mouse click location
-      public Vector3 spriteOffset;
-   }
-
    public class ImageManipulator : MonoBehaviour
    {
       #region Public Variables
@@ -42,10 +30,6 @@ namespace BackgroundTool
 
       // The rect component of the spawnable sprite selection panel
       public RectTransform rectReference;
-
-      // UI reference to the layer of the sprite
-      public Slider zOffsetSlider;
-      public Text zOffsetText;
 
       // Determines if the mouse is on the hover panel
       public bool isHoveringOnSelectionPanel;
@@ -89,10 +73,6 @@ namespace BackgroundTool
       // Determines if only one element is being dragged
       public bool singleDrag;
 
-      // Determines if the ui is in foreground/background etc
-      public Slider layerTypeSlider;
-      public Text layerTypeText;
-
       // The sprite object to visualize the drag box
       public GameObject spriteHighlightObj;
 
@@ -113,10 +93,14 @@ namespace BackgroundTool
          None = 0,
          Background = 1,
          Midground = 2,
-         Foreground = 3
+         Foreground = 3,
+         Overlay = 4,
+         PlaceHolders = 5
       }
 
       #endregion
+
+      #region Initialize Setup
 
       private void Start () {
          self = this;
@@ -125,7 +109,7 @@ namespace BackgroundTool
          deleteSpriteTemplate.onClick.AddListener(() => {
             if (draggedObjList.Count > 0) {
                foreach (DraggableContent draggableContent in draggedObjList) {
-                  spriteTemplateDataList.Remove(draggableContent.cachedSpriteTemplate.spriteTemplateData);
+                  spriteTemplateDataList.Remove(draggableContent.cachedSpriteTemplate.spriteData);
                   GameObject.Destroy(draggableContent.cachedSpriteTemplate.gameObject);
                }
                clearCache();
@@ -139,27 +123,10 @@ namespace BackgroundTool
          isLockedToggle.onValueChanged.AddListener(_ => {
             if (draggedObjList.Count > 0) {
                foreach (DraggableContent draggableContent in draggedObjList) {
-                  draggableContent.cachedSpriteTemplate.spriteTemplateData.isLocked = _;
+                  draggableContent.cachedSpriteTemplate.spriteData.isLocked = _;
                }
             }
          });
-
-         zOffsetSlider.onValueChanged.AddListener(currLayer => {
-            if (draggedObjList.Count > 0) {
-               zOffsetText.text = currLayer.ToString();
-               foreach (DraggableContent draggableContent in draggedObjList) {
-                  draggableContent.cachedSpriteTemplate.spriteTemplateData.zAxisOffset = (int) currLayer;
-
-                  int layerIndex = draggableContent.cachedSpriteTemplate.spriteTemplateData.layerIndex;
-                  float zOffset = layerIndex + (currLayer * .1f);
-
-                  Vector3 localPos = draggableContent.cachedSpriteTemplate.transform.localPosition;
-                  draggableContent.cachedSpriteTemplate.transform.localPosition = new Vector3(localPos.x, localPos.y, -zOffset);
-               }
-            }
-         });
-
-         layerTypeSlider.onValueChanged.AddListener(updateLayer);
 
          toggleAllLayers.onValueChanged.AddListener(_ => {
             foreach (Toggle toggle in layerTogglerList) {
@@ -181,24 +148,10 @@ namespace BackgroundTool
          }
       }
 
-      private void updateLayer (float currLayer) {
-         if (draggedObjList.Count > 0) {
-            layerTypeText.text = ((LayerType) currLayer).ToString();
-            foreach (DraggableContent draggableContent in draggedObjList) {
-               float zAxisOffset = draggableContent.cachedSpriteTemplate.spriteTemplateData.zAxisOffset * .1f;
-
-               Vector3 currPos = draggableContent.cachedSpriteTemplate.transform.localPosition;
-               draggableContent.cachedSpriteTemplate.spriteTemplateData.layerIndex = (int) currLayer;
-               draggableContent.cachedSpriteTemplate.spriteRender.sortingOrder = (int) currLayer;
-               draggableContent.cachedSpriteTemplate.transform.localPosition = new Vector3(currPos.x, currPos.y, -(currLayer + zAxisOffset));
-            }
-         }
-      }
-
       private void setToggledLayers (int layerID, bool isEnabled) {
          foreach (Transform spriteTempObj in contentHolder) {
             SpriteTemplate spriteTemp = spriteTempObj.GetComponent<SpriteTemplate>();
-            if (spriteTemp.spriteTemplateData.layerIndex == layerID) {
+            if (spriteTemp.spriteData.layerIndex == layerID) {
                spriteTemp.gameObject.SetActive(isEnabled);
             }
          }
@@ -210,6 +163,8 @@ namespace BackgroundTool
          isDragging = false;
       }
 
+      #endregion
+
       #region Mouse Behavior
 
       public void beginDragSelectionGroup (List<SpriteSelectionTemplate> spriteTempGroup, bool isSingleDrag) {
@@ -218,15 +173,26 @@ namespace BackgroundTool
          Vector3 pos = _mainCam.ScreenToWorldPoint(Input.mousePosition);
 
          foreach (SpriteSelectionTemplate spriteTemp in spriteTempGroup) {
-            SpriteTemplate templateObj = createInstance(spriteTemp.spriteIcon.sprite, spriteTemp.spritePath, false).GetComponent<SpriteTemplate>();
-            templateObj.transform.position = spriteTemp.transform.position;
+            SpriteTemplate spawnedSprite = createInstance(spriteTemp.spriteIcon.sprite, spriteTemp.spritePath, false, spriteTemp.contentCategory).GetComponent<SpriteTemplate>();
+            spawnedSprite.spriteData.layerIndex = (int) spriteTemp.layerType;
+            spawnedSprite.spriteRender.sortingOrder = (int) spriteTemp.layerType;
+            spawnedSprite.transform.position = spriteTemp.transform.position;
+            
+            Vector3 initOffset = spawnedSprite.transform.localPosition - pos;
+            spawnedSprite.highlightObj(true);
 
-            Vector3 initOffset = templateObj.transform.localPosition - pos;
-            templateObj.highlightObj(true);
+            // Compute Z axis offset
+            int layerOffset = getLayerOffset(spawnedSprite.spriteData.layerIndex);
+            float zAxisOffset = getZAxisOffset(spawnedSprite);
+            float computedZAxis = layerOffset - zAxisOffset;
+
+            // Modify local position after Z offset computation
+            Vector3 newLocalPos = new Vector3(spawnedSprite.transform.localPosition.x, spawnedSprite.transform.localPosition.y, computedZAxis);
+            spawnedSprite.transform.localPosition = newLocalPos;
 
             DraggableContent newDragContent = new DraggableContent {
-               spriteObject = templateObj.gameObject,
-               cachedSpriteTemplate = templateObj,
+               spriteObject = spawnedSprite.gameObject,
+               cachedSpriteTemplate = spawnedSprite,
                spriteOffset = initOffset
             };
             draggedObjList.Add(newDragContent);
@@ -257,9 +223,7 @@ namespace BackgroundTool
             draggedObjList.Add(dragContent);
 
             if (isSingleDrag) {
-               isLockedToggle.isOn = spriteTemp.spriteTemplateData.isLocked;
-               layerTypeSlider.value = spriteTemp.spriteTemplateData.layerIndex;
-               zOffsetSlider.value = spriteTemp.spriteTemplateData.zAxisOffset;
+               isLockedToggle.isOn = spriteTemp.spriteData.isLocked;
             }
          }
       }
@@ -278,16 +242,44 @@ namespace BackgroundTool
          disableHighlighting = false;
       }
 
-      #endregion
-      
       public void endClick () {
          if (isSpawning) {
+            // Create a sprite instance if spawnable sprite was clicked from the panel
             foreach (DraggableContent draggable in draggedObjList) {
-               GameObject gameObj = createInstance(draggable.cachedSpriteTemplate.spriteRender.sprite, draggable.cachedSpriteTemplate.spriteTemplateData.spritePath, false, draggable.cachedSpriteTemplate.spriteTemplateData);
-               gameObj.transform.position = draggable.cachedSpriteTemplate.transform.position;
-               draggable.cachedSpriteTemplate.highlightObj(false);
+               BGContentCategory currentCategory = draggable.cachedSpriteTemplate.spriteData.contentCategory;
+
+               // Overwrite category if it is a defender spawn point sprite
+               if (currentCategory == BGContentCategory.SpawnPoints_Attackers) {
+                  if (draggable.cachedSpriteTemplate.spriteRender.sprite.name.Contains(BackgroundGameManager.BATTLE_POS_KEY_LEFT)) {
+                     currentCategory = BGContentCategory.SpawnPoints_Defenders;
+                  }
+               }
+
+               SpriteTemplate spawnedSprite = createInstance(draggable.cachedSpriteTemplate.spriteRender.sprite, 
+                  draggable.cachedSpriteTemplate.spriteData.spritePath, 
+                  false,
+                  currentCategory, 
+                  null).GetComponent<SpriteTemplate>();
+
+               spawnedSprite.transform.position = draggable.cachedSpriteTemplate.transform.position;
+               spawnedSprite.spriteData.layerIndex = draggable.cachedSpriteTemplate.spriteData.layerIndex;
+
+               // Compute z axis offset
+               int layerOffset = getLayerOffset(spawnedSprite.spriteData.layerIndex);
+               float zAxisOffset = getZAxisOffset(spawnedSprite);
+               float computedZAxis = layerOffset - zAxisOffset;
+
+               // Modify local position after Z offset computation
+               Vector3 newLocalPos = new Vector3(spawnedSprite.transform.localPosition.x, spawnedSprite.transform.localPosition.y, computedZAxis);
+               spawnedSprite.transform.localPosition = newLocalPos;
+
+               // Cache Data
+               spawnedSprite.spriteData.zAxisOffset = zAxisOffset;
+               spawnedSprite.spriteData.localPositionData = newLocalPos;
+               spawnedSprite.highlightObj(false);
             }
          } else {
+            // Stop Dragging a spawned sprite
             foreach (DraggableContent draggableContent in draggedObjList) {
                draggableContent.cachedSpriteTemplate.createdFromPanel = false;
             }
@@ -300,10 +292,13 @@ namespace BackgroundTool
          }
       }
 
+      #endregion
+
       private void Update () {
          bool dragSpawnableGroup = draggedObjList.Count > 0 && isDragging;
          bool dragHighlightedSpawnedGroup = !isSpawning && draggedObjList.Count > 0 && Input.GetKey(KeyCode.Mouse0) && isHoveringHighlight;
 
+         // Cache initial mouse position upon click
          if (dragHighlightedSpawnedGroup && Input.GetKeyDown(KeyCode.Mouse0)) {
             Vector3 pos = _mainCam.ScreenToWorldPoint(Input.mousePosition);
             foreach (DraggableContent draggableContent in draggedObjList) {
@@ -312,15 +307,20 @@ namespace BackgroundTool
             }
          }
 
+         // Drag sprite objects only if a spawnable group is active or a highlighted spawn group
          if (dragSpawnableGroup || dragHighlightedSpawnedGroup) {
-            Vector3 pos = _mainCam.ScreenToWorldPoint(Input.mousePosition);
+            Vector3 mousePos = _mainCam.ScreenToWorldPoint(Input.mousePosition);
 
             foreach (DraggableContent draggableContent in draggedObjList) {
-               if (!draggableContent.cachedSpriteTemplate.spriteTemplateData.isLocked) {
-                  float newZOffset = draggableContent.cachedSpriteTemplate.spriteTemplateData.layerIndex + draggableContent.cachedSpriteTemplate.spriteTemplateData.zAxisOffset * .1f;
+               if (!draggableContent.cachedSpriteTemplate.spriteData.isLocked) {
+                  int layerOffset = getLayerOffset(draggableContent.cachedSpriteTemplate.spriteData.layerIndex);
+                  float zAxisOffset = getZAxisOffset(draggableContent.cachedSpriteTemplate);
+                  float computedZAxis = layerOffset - zAxisOffset;
+                  draggableContent.cachedSpriteTemplate.spriteData.zAxisOffset = zAxisOffset;
 
-                  draggableContent.spriteObject.transform.localPosition = new Vector3(draggableContent.spriteOffset.x + pos.x, draggableContent.spriteOffset.y + pos.y, -newZOffset);
-                  draggableContent.cachedSpriteTemplate.spriteTemplateData.localPosition = draggableContent.spriteObject.transform.localPosition;
+                  Vector3 newPosition = new Vector3(draggableContent.spriteOffset.x + mousePos.x, draggableContent.spriteOffset.y + mousePos.y, computedZAxis);
+                  draggableContent.cachedSpriteTemplate.transform.localPosition = newPosition;
+                  draggableContent.cachedSpriteTemplate.spriteData.localPositionData = newPosition;
                }
             }
 
@@ -335,6 +335,7 @@ namespace BackgroundTool
             if (isSpawning) {
                isSpawning = false;
                foreach (DraggableContent draggableContent in draggedObjList) {
+                  spriteTemplateDataList.Remove(draggableContent.cachedSpriteTemplate.spriteData);
                   Destroy(draggableContent.cachedSpriteTemplate.gameObject);
                }
             }
@@ -342,10 +343,52 @@ namespace BackgroundTool
          }
       }
 
+      public float getZAxisOffset (SpriteTemplate spriteTemp) {
+         Transform objectTransform = spriteTemp.transform;
+
+         // Initialize our new Z position to a truncated version of the Y position
+         float newZ = objectTransform.localPosition.y;
+         newZ = Util.TruncateTo100ths(newZ);
+
+         // Adjust our Z position based on our collider's Y position
+         Vector3 newLocalPosition = new Vector3(
+             objectTransform.localPosition.x,
+             objectTransform.localPosition.y,
+             newZ / 100f
+         );
+
+         return newLocalPosition.z;
+      }
+
+      public int getLayerOffset (int layerIndex) {
+         LayerType layerType = (LayerType) layerIndex;
+         int zOffset = 0;
+
+         switch (layerType) {
+            case LayerType.Background:
+               zOffset = 0;
+               break;
+            case LayerType.Midground:
+               zOffset = -5;
+               break;
+            case LayerType.Foreground:
+               zOffset = -10;
+               break;
+            case LayerType.Overlay:
+               zOffset = -12;
+               break;
+            case LayerType.PlaceHolders:
+               zOffset = -14;
+               break;
+         }
+
+         return zOffset;
+      }
+
       #region Sprite Generation
 
-      public GameObject createInstance (Sprite spriteContent, string newSpritePath, bool selectImmediately,SpriteTemplateData newSpritedata = null) {
-         SpriteTemplate spriteTemplate = createTemplate(newSpritedata, newSpritePath, spriteContent);
+      public GameObject createInstance (Sprite spriteContent, string newSpritePath, bool selectImmediately, BGContentCategory category, SpriteTemplateData newSpritedata = null) {
+         SpriteTemplate spriteTemplate = createTemplate(newSpritedata, newSpritePath, spriteContent, category);
 
          // Only snap to mouse when creating from sprite panel
          if (newSpritedata == null) {
@@ -363,7 +406,7 @@ namespace BackgroundTool
          return spriteTemplate.gameObject;
       }
 
-      private SpriteTemplate createTemplate (SpriteTemplateData spriteData, string spritePath, Sprite spriteContent) {
+      private SpriteTemplate createTemplate (SpriteTemplateData spriteData, string spritePath, Sprite spriteContent, BGContentCategory category) {
          GameObject obj = Instantiate(spritePrefab, contentHolder);
          SpriteTemplate spriteTemplate = obj.GetComponent<SpriteTemplate>();
 
@@ -371,20 +414,23 @@ namespace BackgroundTool
          spriteTemplate.gameObject.AddComponent<BoxCollider2D>();
 
          if (spriteData == null) {
-            spriteTemplate.spriteTemplateData.layerIndex = (int)LayerType.Foreground;
-            spriteTemplate.spriteTemplateData.isLocked = false;
-            spriteTemplate.spriteTemplateData.spritePath = spritePath;
+            spriteTemplate.spriteData.layerIndex = (int) LayerType.Foreground;
+            spriteTemplate.spriteData.zAxisOffset = 0;
+            spriteTemplate.spriteData.isLocked = false;
+            spriteTemplate.spriteData.spritePath = spritePath;
          } else {
-            spriteTemplate.spriteTemplateData.isLocked = spriteData.isLocked;
-            spriteTemplate.spriteTemplateData.layerIndex = spriteData.layerIndex;
-            spriteTemplate.spriteTemplateData.zAxisOffset = spriteData.zAxisOffset;
-            spriteTemplate.spriteTemplateData.spritePath = spriteData.spritePath;
-            spriteTemplate.spriteTemplateData.localPosition = spriteData.localPosition;
+            spriteTemplate.spriteData.isLocked = spriteData.isLocked;
+            spriteTemplate.spriteData.layerIndex = spriteData.layerIndex;
+            spriteTemplate.spriteData.zAxisOffset = spriteData.zAxisOffset;
+            spriteTemplate.spriteData.spritePath = spriteData.spritePath;
+            spriteTemplate.spriteData.localPositionData = spriteData.localPositionData;
             spriteTemplate.setTemplate();
          }
+
+         spriteTemplate.spriteData.contentCategory = category;
          spriteTemplate.spriteRender.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
-         spriteTemplate.spriteRender.sortingOrder = spriteTemplate.spriteTemplateData.layerIndex;
-         spriteTemplateDataList.Add(spriteTemplate.spriteTemplateData);
+         spriteTemplate.spriteRender.sortingOrder = spriteTemplate.spriteData.layerIndex;
+         spriteTemplateDataList.Add(spriteTemplate.spriteData);
 
          return spriteTemplate;
       }
@@ -395,17 +441,30 @@ namespace BackgroundTool
 
          foreach (SpriteTemplateData spriteData in spriteDataList) {
             Sprite loadedSprite = ImageManager.getSprite(spriteData.spritePath);
-            createInstance(loadedSprite, spriteData.spritePath, false, spriteData);
+            createInstance(loadedSprite, spriteData.spritePath, false, spriteData.contentCategory, spriteData);
          }
       }
 
       #endregion
 
       #region Private Variables
-
+#pragma warning disable CS0649
       // Reference to the main camera
       [SerializeField] private Camera _mainCam;
-
+#pragma warning restore CS0649
       #endregion
+   }
+
+   [Serializable]
+   public class DraggableContent
+   {
+      // The reference to the object
+      public GameObject spriteObject;
+
+      // The reference to the sprite renderer
+      public SpriteTemplate cachedSpriteTemplate;
+
+      // The offset position from the mouse click location
+      public Vector3 spriteOffset;
    }
 }

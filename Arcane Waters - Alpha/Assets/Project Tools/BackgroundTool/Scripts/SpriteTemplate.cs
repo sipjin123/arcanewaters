@@ -18,7 +18,7 @@ namespace BackgroundTool
       public SpriteRenderer spriteRender;
 
       // Data reference
-      public SpriteTemplateData spriteTemplateData = new SpriteTemplateData();
+      public SpriteTemplateData spriteData = new SpriteTemplateData();
 
       // Determines if the sprite is created from the sprite panel
       public bool createdFromPanel;
@@ -61,9 +61,10 @@ namespace BackgroundTool
       }
 
       public void setTemplate () {
-         float zAxisOffset = spriteTemplateData.layerIndex + spriteTemplateData.zAxisOffset * .1f;
-         spriteRender.sortingOrder = spriteTemplateData.layerIndex;
-         transform.localPosition = new Vector3(spriteTemplateData.localPosition.x, spriteTemplateData.localPosition.y, -zAxisOffset);
+         float layerOffset = ImageManipulator.self.getLayerOffset(spriteData.layerIndex);
+         float zAxisOffset = layerOffset - spriteData.zAxisOffset;
+         spriteRender.sortingOrder = spriteData.layerIndex;
+         transform.localPosition = new Vector3(spriteData.localPositionData.x, spriteData.localPositionData.y, zAxisOffset);
       }
 
       #region Private Variables
