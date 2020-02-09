@@ -46,16 +46,9 @@ public class BattleManager : MonoBehaviour {
    public void initializeBattleBoards () {
       // Store all of the Battle Boards that exist in the Scene
       foreach (BattleBoard board in FindObjectsOfType<BattleBoard>()) {
-         // TODO: Temporary refer to Desert BattleBoard for testing
-         if (board.biomeType == Biome.Type.Desert) {
-            _boards[board.biomeType] = board;
-            BackgroundGameManager.self.setSpritesToBattleBoard(board);
-
-            // TEMP -- for now, we only have one board for all biome types
-            foreach (Biome.Type biomeType in System.Enum.GetValues(typeof(Biome.Type))) {
-               _boards[biomeType] = board;
-            }
-         }
+         _boards[board.biomeType] = board;
+         BackgroundGameManager.self.setSpritesToBattleBoard(board);
+         board.gameObject.SetActive(false);
       }
 
       // Repeatedly call the tick() function for our Battle objects
@@ -68,7 +61,8 @@ public class BattleManager : MonoBehaviour {
 
       // Look up the Battle Board for this Area's tile type
       Biome.Type biomeType = Area.getBiome(area.areaKey);
-      BattleBoard battleBoard = _boards[biomeType];
+      BattleBoard battleBoard = getBattleBoard(biomeType);
+      battleBoard.gameObject.SetActive(true);
 
       // Set up our initial data and position
       battle.battleId = _id++;
@@ -105,7 +99,8 @@ public class BattleManager : MonoBehaviour {
 
       // Look up the Battle Board for this Area's tile type
       Biome.Type biomeType = Area.getBiome(area.areaKey);
-      BattleBoard battleBoard = _boards[biomeType];
+      BattleBoard battleBoard = getBattleBoard(biomeType);
+      battleBoard.gameObject.SetActive(true);
 
       // Set up our initial data and position
       battle.battleId = _id++;
@@ -184,6 +179,10 @@ public class BattleManager : MonoBehaviour {
    }
 
    public BattleBoard getBattleBoard (Biome.Type biomeType) {
+      if (_boards.ContainsKey(biomeType) == false) {
+         return _boards[Biome.Type.Forest];
+      }
+
       return _boards[biomeType];
    }
    

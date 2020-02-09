@@ -6,6 +6,8 @@ using Mirror;
 using System.Xml.Serialization;
 using System.Text;
 using System.Xml;
+using System.Linq;
+using System;
 
 namespace BackgroundTool
 {
@@ -30,11 +32,23 @@ namespace BackgroundTool
       public Text errorText;
       public Button exitErrorPanelButton;
 
+      // The name of the background template
+      public InputField backgroundName;
+
       // The minimum spawn points required per team
       public const int MIN_SPAWN_COUNT = 6;
 
       // Error Messages
       public static string SPAWNPOINT_ERROR = "Not enough spawn points in the scene.";
+
+      // Links the dropdown option index and xml id
+      public Dictionary<int, int> backgroundXmlPair;
+
+      // The recent xml id used before overwritting data
+      public int cachedXMLId = -1;
+
+      // Determines the biome type of the background
+      public Dropdown biomeDropdown;
 
       #endregion
 
@@ -43,9 +57,18 @@ namespace BackgroundTool
             List<SpriteTemplateData> spriteTempList = ImageManipulator.self.spriteTemplateDataList;
             if (hasValidContent(spriteTempList)) {
                BackgroundContentData newContentData = new BackgroundContentData();
-               newContentData.backgroundName = "Test1";
-               newContentData.xmlId = 1;
+
+               // Set id and name of bg data
+               int currentID = backgroundXmlPair[dropDownFiles.value];
+               newContentData.xmlId = currentID;
+               newContentData.backgroundName = backgroundName.text;
+
+               // Get the sprite data list
                newContentData.spriteTemplateList = spriteTempList;
+
+               // Get biome data
+               string biomeName = biomeDropdown.options[biomeDropdown.value].text;
+               newContentData.biomeType = (Biome.Type) Enum.Parse(typeof(Biome.Type), biomeName);
 
                saveData(newContentData);
             } else {
@@ -57,13 +80,31 @@ namespace BackgroundTool
             string currentOption = dropDownFiles.options[dropDownFiles.value].text;
             BackgroundContentData contentData = backgroundContentList.Find(_ => _.backgroundName == currentOption);
             if (contentData != null) {
+               Dropdown.OptionData optionData = biomeDropdown.options.Find(_ => _.text == contentData.biomeType.ToString());
+               biomeDropdown.value = biomeDropdown.options.IndexOf(optionData);
                ImageManipulator.self.generateSprites(contentData.spriteTemplateList);
             }
+         });
+
+         dropDownFiles.onValueChanged.AddListener(_ => {
+            backgroundName.text = dropDownFiles.options[_].text;
          });
 
          exitErrorPanelButton.onClick.AddListener(() => {
             showErrorPanel(false, "");
          });
+
+         // Setup biome options
+         List<Dropdown.OptionData> biomeOptions = new List<Dropdown.OptionData>();
+         foreach (Biome.Type biomeType in Enum.GetValues(typeof(Biome.Type))) {
+            Dropdown.OptionData newOptionData = new Dropdown.OptionData {
+               image = null,
+               text = biomeType.ToString()
+            };
+
+            biomeOptions.Add(newOptionData);
+         }
+         biomeDropdown.options = biomeOptions;
 
          Invoke("loadData", MasterToolScene.loadDelay);
       }
@@ -85,6 +126,8 @@ namespace BackgroundTool
       }
 
       public void saveData (BackgroundContentData data) {
+         cachedXMLId = data.xmlId;
+
          XmlSerializer ser = new XmlSerializer(data.GetType());
          var sb = new StringBuilder();
          using (var writer = XmlWriter.Create(sb)) {
@@ -93,7 +136,8 @@ namespace BackgroundTool
 
          string xmlContent = sb.ToString();
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            DB_Main.updateBackgroundXML(data.xmlId, xmlContent, data.backgroundName);
+            cachedXMLId = DB_Main.updateBackgroundXML(data.xmlId, xmlContent, data.backgroundName);
+
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                loadData();
             });
@@ -103,6 +147,7 @@ namespace BackgroundTool
       public void loadData () {
          XmlLoadingPanel.self.startLoading();
          backgroundContentList = new List<BackgroundContentData>();
+         backgroundContentList.Add(new BackgroundContentData { backgroundName = MasterToolScene.UNDEFINED, xmlId = -1 });
 
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             List<XMLPair> backgroundData = DB_Main.getBackgroundXML();
@@ -110,6 +155,7 @@ namespace BackgroundTool
                foreach (XMLPair xmlPair in backgroundData) {
                   TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                   BackgroundContentData bgContentData = Util.xmlLoad<BackgroundContentData>(newTextAsset);
+                  bgContentData.xmlId = xmlPair.xmlId;
                   backgroundContentList.Add(bgContentData);
                }
 
@@ -120,16 +166,27 @@ namespace BackgroundTool
 
       private void setUIContent () {
          dropDownFiles.ClearOptions();
-
+         backgroundXmlPair = new Dictionary<int, int>();
          List<Dropdown.OptionData> optionList = new List<Dropdown.OptionData>();
+
+         int index = 0;
+         int cachedIndex = 0;
          foreach (BackgroundContentData bgContentData in backgroundContentList) {
             Dropdown.OptionData newOptionData = new Dropdown.OptionData {
                image = null,
                text = bgContentData.backgroundName
             };
             optionList.Add(newOptionData);
+            backgroundXmlPair.Add(index, bgContentData.xmlId);
+
+            if (bgContentData.xmlId == cachedXMLId) {
+               cachedIndex = index;
+            }
+            index++;
          }
          dropDownFiles.AddOptions(optionList);
+
+         dropDownFiles.value = cachedIndex;
          XmlLoadingPanel.self.finishLoading();
       }
 

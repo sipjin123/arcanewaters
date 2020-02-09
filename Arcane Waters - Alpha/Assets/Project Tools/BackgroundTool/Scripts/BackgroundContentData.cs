@@ -18,5 +18,8 @@ namespace BackgroundTool
 
       // The list of the sprites in this background
       public List<SpriteTemplateData> spriteTemplateList = new List<SpriteTemplateData>();
+
+      // Determines the biome type of this bg data
+      public Biome.Type biomeType = Biome.Type.Forest;
    }
 }

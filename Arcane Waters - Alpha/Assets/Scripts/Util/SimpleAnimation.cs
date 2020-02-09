@@ -57,6 +57,11 @@ public class SimpleAnimation : ClientMonoBehaviour {
       Start();
    }
 
+   public void resetAnimation () {
+      CancelInvoke();
+      Start();
+   }
+
    private void Start () {
       if (!Application.isBatchMode) {
          // Load our sprites

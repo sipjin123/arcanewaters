@@ -28,6 +28,7 @@ public class MasterToolScene : MonoBehaviour {
    public const string shipAbilityScene = "ShipAbility Tool";
    public const string shopScene = "ShopTool";
    public const string tutorialScene = "Tutorial Tool";
+   public const string backgroundScene = "BackgroundToolTool";
 
    // Loading delay before fetching XML Data
    public static float loadDelay = 2;
@@ -59,6 +60,7 @@ public class MasterToolScene : MonoBehaviour {
       clickShipAbilityScene,
       clickShopScene,
       clickTutorialScene,
+      clickBackgroundScene,
       exitButton;
 
    #endregion
@@ -119,7 +121,10 @@ public class MasterToolScene : MonoBehaviour {
       clickTutorialScene.onClick.AddListener(() => {
          SceneManager.LoadScene(tutorialScene);
       });
-      
+      clickBackgroundScene.onClick.AddListener(() => {
+         SceneManager.LoadScene(backgroundScene);
+      });
+
       if (MasterToolAccountManager.self == null) {
          // Login panel will be created only once, if the scene resets and the login panel is already active it will no longer instantiate
          GameObject loginPanel = Instantiate(loginInstance);

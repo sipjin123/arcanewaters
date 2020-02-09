@@ -1665,7 +1665,8 @@ public class DB_Main : DB_MainStub
 
    #region Background XML Data
 
-   public static new void updateBackgroundXML (int xmlId, string rawData, string bgName) {
+   public static new int updateBackgroundXML (int xmlId, string rawData, string bgName) {
+      int latestXMLId = 0;
       try {
          string xml_id_key = "xml_id, ";
          string xml_id_value = "@xml_id, ";
@@ -1681,7 +1682,7 @@ public class DB_Main : DB_MainStub
             // Declaration of table elements
             "INSERT INTO background_xml_v1 ("+ xml_id_key + "xml_name, xmlContent, creator_userID) " +
             "VALUES("+ xml_id_value + "@xml_name, @xmlContent, @creator_userID) " +
-            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, xml_name = @xml_name", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -1693,11 +1694,14 @@ public class DB_Main : DB_MainStub
 
             // Execute the command
             cmd.ExecuteNonQuery();
+            latestXMLId = (int) cmd.LastInsertedId;
          }
       } catch (Exception e) {
          UnityEngine.Debug.LogError(e.ToString());
          D.error("MySQL Error: " + e.ToString());
       }
+
+      return latestXMLId;
    }
 
    public static new List<XMLPair> getBackgroundXML () {

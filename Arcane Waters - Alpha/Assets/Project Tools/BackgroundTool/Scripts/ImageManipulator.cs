@@ -295,6 +295,10 @@ namespace BackgroundTool
       #endregion
 
       private void Update () {
+         if (Input.GetKeyDown(KeyCode.Delete)) {
+            deleteSpriteTemplate.onClick.Invoke();
+         }
+
          bool dragSpawnableGroup = draggedObjList.Count > 0 && isDragging;
          bool dragHighlightedSpawnedGroup = !isSpawning && draggedObjList.Count > 0 && Input.GetKey(KeyCode.Mouse0) && isHoveringHighlight;
 

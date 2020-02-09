@@ -72,7 +72,8 @@ namespace BackgroundTool
          DisplayElements = 2,
          SpawnPoints_Attackers = 3,
          SpawnPoints_Defenders = 4,
-         PlaceHolders = 5
+         PlaceHolders = 5,
+         Animated = 6
       }
 
       public class SpriteSelectionContent
@@ -169,12 +170,12 @@ namespace BackgroundTool
             case BGContentType.Foliage:
                newPath = FOLIAGE_DIRECTORY;
                layerType = ImageManipulator.LayerType.Foreground;
-               newContentCategory = BGContentCategory.DisplayElements;
+               newContentCategory = BGContentCategory.Animated;
                break;
             case BGContentType.Grass:
                newPath = GRASS_DIRECTORY;
                layerType = ImageManipulator.LayerType.Foreground;
-               newContentCategory = BGContentCategory.DisplayElements;
+               newContentCategory = BGContentCategory.Animated;
                break;
             case BGContentType.GroundDetails:
                newPath = GROUND_DETAILS_DIRECTORY;

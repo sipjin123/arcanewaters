@@ -12,7 +12,8 @@ public class DB_MainStub : MonoBehaviour
 
    #endregion
 
-   public static void updateBackgroundXML (int xmlId, string rawData, string bgName) {
+   public static int updateBackgroundXML (int xmlId, string rawData, string bgName) {
+      return 0;
    }
 
    public static List<XMLPair> getBackgroundXML () {
