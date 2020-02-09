@@ -64,6 +64,8 @@ public class BackgroundGameManager : MonoBehaviour {
             if (spriteTempObj.spriteRender.sprite.name.Contains(BATTLE_POS_KEY_RIGHT)) {
                rightBattleSpots.Add(spriteTempObj.gameObject);
             }
+         } else {
+            spriteTempObj.spriteRender.enabled = false;
          }
       }
 

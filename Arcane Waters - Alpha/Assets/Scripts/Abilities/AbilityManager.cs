@@ -83,18 +83,17 @@ public class AbilityManager : MonoBehaviour
 
    public void addNewAbilities (BasicAbilityData[] abilities) {
       foreach (BasicAbilityData ability in abilities) {
-         if (_allGameAbilities.Exists(_ => _.itemName == ability.itemName)) {
-            Debug.LogWarning("Duplicated ability name: " + ability.itemName + " will not add again");
-            return;
-         }
-         if (ability.abilityType == AbilityType.Standard) {
-            AttackAbilityData newInstance = AttackAbilityData.CreateInstance((AttackAbilityData) ability);
-            _attackAbilities.Add(newInstance);
-            _allGameAbilities.Add(newInstance);
-         } else if (ability.abilityType == AbilityType.BuffDebuff) {
-            BuffAbilityData newInstance = BuffAbilityData.CreateInstance((BuffAbilityData) ability);
-            _buffAbilities.Add(newInstance);
-            _allGameAbilities.Add(newInstance);
+         // Only add abilities that are not existing yet in the ability manager
+         if (!_allGameAbilities.Exists(_ => _.itemName == ability.itemName)) {
+            if (ability.abilityType == AbilityType.Standard) {
+               AttackAbilityData newInstance = AttackAbilityData.CreateInstance((AttackAbilityData) ability);
+               _attackAbilities.Add(newInstance);
+               _allGameAbilities.Add(newInstance);
+            } else if (ability.abilityType == AbilityType.BuffDebuff) {
+               BuffAbilityData newInstance = BuffAbilityData.CreateInstance((BuffAbilityData) ability);
+               _buffAbilities.Add(newInstance);
+               _allGameAbilities.Add(newInstance);
+            }
          }
       }
    }
@@ -192,7 +191,7 @@ public class AbilityManager : MonoBehaviour
          default:
             returnAbility = self._allGameAbilities.Find(_ => _.itemID == abilityGlobalID);
             if (returnAbility == null) {
-               Debug.LogWarning("Tried to search an unexisting item");
+               Debug.LogWarning("Tried to search an unexisting item: " + abilityGlobalID + " : " + abilityType);
             }
             return returnAbility;
       }

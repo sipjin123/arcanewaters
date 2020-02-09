@@ -357,7 +357,7 @@ namespace BackgroundTool
              newZ / 100f
          );
 
-         return newLocalPosition.z;
+         return -newLocalPosition.z;
       }
 
       public int getLayerOffset (int layerIndex) {

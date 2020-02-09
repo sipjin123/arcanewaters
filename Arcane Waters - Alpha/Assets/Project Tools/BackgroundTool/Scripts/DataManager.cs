@@ -30,6 +30,9 @@ namespace BackgroundTool
       public Text errorText;
       public Button exitErrorPanelButton;
 
+      // The minimum spawn points required per team
+      public const int MIN_SPAWN_COUNT = 6;
+
       // Error Messages
       public static string SPAWNPOINT_ERROR = "Not enough spawn points in the scene.";
 
@@ -38,7 +41,7 @@ namespace BackgroundTool
       private void Start () {
          saveButton.onClick.AddListener(() => {
             List<SpriteTemplateData> spriteTempList = ImageManipulator.self.spriteTemplateDataList;
-            if (spriteTempList.FindAll(_ => _.contentCategory == ImageLoader.BGContentCategory.SpawnPoints_Defenders).Count >= 6 && spriteTempList.FindAll(_ => _.contentCategory == ImageLoader.BGContentCategory.SpawnPoints_Attackers).Count >= 6) {
+            if (hasValidContent(spriteTempList)) {
                BackgroundContentData newContentData = new BackgroundContentData();
                newContentData.backgroundName = "Test1";
                newContentData.xmlId = 1;
@@ -63,6 +66,17 @@ namespace BackgroundTool
          });
 
          Invoke("loadData", MasterToolScene.loadDelay);
+      }
+
+      private bool hasValidContent (List<SpriteTemplateData> spriteTempList) {
+         bool hasEnoughDefenderSlots = spriteTempList.FindAll(_ => _.contentCategory == ImageLoader.BGContentCategory.SpawnPoints_Defenders).Count >= MIN_SPAWN_COUNT;
+         bool hasEnoughAttackerSlots = spriteTempList.FindAll(_ => _.contentCategory == ImageLoader.BGContentCategory.SpawnPoints_Attackers).Count >= MIN_SPAWN_COUNT;
+
+         if (hasEnoughDefenderSlots && hasEnoughAttackerSlots) {
+            return true;
+         } else {
+            return false;
+         }
       }
 
       private void showErrorPanel (bool isActive, string message) {
