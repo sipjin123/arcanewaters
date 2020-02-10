@@ -7,6 +7,7 @@ using System.Linq;
 using Crosstales.BWF.Manager;
 using System;
 using System.Text;
+using BackgroundTool;
 
 public class RPCManager : NetworkBehaviour {
    #region Public Variables
@@ -75,6 +76,15 @@ public class RPCManager : NetworkBehaviour {
    public void Target_GrantAdminAccess (NetworkConnection connection, bool isEnabled) {
       OptionsPanel panel = (OptionsPanel) PanelManager.self.get(Panel.Type.Options);
       panel.enableAdminButtons(isEnabled);
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveBackgroundsData (NetworkConnection connection, string[] rawInfo) {
+      // Deserialize data
+      BackgroundContentData[] bgContentData = Util.unserialize<BackgroundContentData>(rawInfo).ToArray();
+
+      // Cache to background data manager 
+      BackgroundGameManager.self.receiveServerDataCache(bgContentData);
    }
 
    [TargetRpc]
@@ -3141,6 +3151,10 @@ public class RPCManager : NetworkBehaviour {
             // Host Battler Should know their own ability
             setupAbilitiesForPlayers(new List<PlayerBodyEntity>() { playerBody });
 
+            // Send Battle Bg data
+            int bgXmlID = battle.battleBoard.xmlID;
+            Target_ReceiveBackgroundInfo(playerBody.connectionToClient, battle.battleBoard.biomeType, bgXmlID);
+
             // Provides the client with the info of the Equipped Abilities
             Target_UpdateBattleAbilityUI(playerBody.connectionToClient, Util.serialize(abilityDataList.FindAll(_ => _.equipSlotIndex >= 0)));
 
@@ -3263,6 +3277,13 @@ public class RPCManager : NetworkBehaviour {
 
       // Updates the combat UI 
       BattleUIManager.self.SetupAbilityUI(attackAbilityDataList.OrderBy(_ => _.equipSlotIndex).ToArray());
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveBackgroundInfo (NetworkConnection connection, Biome.Type biomeType, int bgXmlID) {
+      BattleBoard board = BattleManager.self.getBattleBoard(biomeType);
+      BackgroundGameManager.self.setSpritesToClientBoard(bgXmlID, board);
+      board.gameObject.SetActive(true);
    }
 
    [TargetRpc]

@@ -62,6 +62,7 @@ public class BattleManager : MonoBehaviour {
       // Look up the Battle Board for this Area's tile type
       Biome.Type biomeType = Area.getBiome(area.areaKey);
       BattleBoard battleBoard = getBattleBoard(biomeType);
+      BackgroundGameManager.self.setSpritesToRandomBoard(battleBoard);
       battleBoard.gameObject.SetActive(true);
 
       // Set up our initial data and position
@@ -100,6 +101,7 @@ public class BattleManager : MonoBehaviour {
       // Look up the Battle Board for this Area's tile type
       Biome.Type biomeType = Area.getBiome(area.areaKey);
       BattleBoard battleBoard = getBattleBoard(biomeType);
+      BackgroundGameManager.self.setSpritesToRandomBoard(battleBoard);
       battleBoard.gameObject.SetActive(true);
 
       // Set up our initial data and position

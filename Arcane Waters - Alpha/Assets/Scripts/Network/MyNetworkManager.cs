@@ -267,6 +267,9 @@ public class MyNetworkManager : NetworkManager {
             // Tutorial data to the client
             player.rpc.Target_ReceiveTutorialData(player.connectionToClient, Util.serialize(TutorialManager.self.tutorialDataList()));
 
+            // Send background data to the client
+            player.rpc.Target_ReceiveBackgroundsData(player.connectionToClient, Util.serialize(BackgroundGameManager.self.backgroundContentList));
+
             // Gives the user admin features if it has an admin flag
             player.rpc.Target_GrantAdminAccess(player.connectionToClient, player.isAdmin());
 

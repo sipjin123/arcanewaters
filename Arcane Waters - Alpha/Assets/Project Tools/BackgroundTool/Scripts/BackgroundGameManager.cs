@@ -21,7 +21,10 @@ public class BackgroundGameManager : MonoBehaviour {
    public static string BATTLE_POS_KEY_LEFT = "Battle_Position_Left";
    public static string BATTLE_POS_KEY_RIGHT = "Battle_Position_Right";
    public static string PLACEHOLDER = "Placeholder";
-   
+
+   // Determines if data is initialized
+   public bool isInitialized;
+
    #endregion
 
    private void Awake () {
@@ -40,9 +43,39 @@ public class BackgroundGameManager : MonoBehaviour {
                backgroundContentList.Add(bgContentData);
             }
 
+            isInitialized = true;
             BattleManager.self.initializeBattleBoards();
          });
       });
+   }
+
+   public void receiveServerDataCache (BackgroundContentData[] bgContentData) {
+      if (!isInitialized) {
+         foreach (BackgroundContentData bgContent in bgContentData) {
+            backgroundContentList.Add(bgContent);
+         }
+
+         BattleManager.self.initializeBattleBoards();
+      }
+   }
+
+   public void setSpritesToClientBoard (int boardXmlID, BattleBoard board) {
+      BackgroundContentData bgContent = backgroundContentList.Find(_ => _.xmlId == boardXmlID);
+      processBoardContent(bgContent, board);
+   }
+
+   public void setSpritesToRandomBoard (BattleBoard board) {
+      BackgroundContentData bgContentData = new BackgroundContentData();
+      List<BackgroundContentData> contentDataList = backgroundContentList.FindAll(_ => _.biomeType == board.biomeType);
+      if (contentDataList.Count < 2) {
+         bgContentData = contentDataList[0];
+      } else {
+         int contentLength = contentDataList.Count;
+         int randomIndex = Random.Range(0, 2);
+         bgContentData = contentDataList[randomIndex];
+      }
+
+      processBoardContent(bgContentData, board);
    }
 
    public void setSpritesToBattleBoard (BattleBoard board) {
@@ -53,9 +86,17 @@ public class BackgroundGameManager : MonoBehaviour {
          bgContentData = backgroundContentList[0];
       }
 
+      processBoardContent(bgContentData, board);
+   }
+
+   private void processBoardContent (BackgroundContentData bgContentData, BattleBoard board) {
       List<GameObject> leftBattleSpots = new List<GameObject>();
       List<GameObject> rightBattleSpots = new List<GameObject>();
       List<SimpleAnimation> simpleAnimList = new List<SimpleAnimation>();
+      board.centerPoint.gameObject.DestroyChildren();
+      board.attackersSpotHolder.gameObject.DestroyChildren();
+      board.defendersSpotHolder.gameObject.DestroyChildren();
+
       foreach (SpriteTemplateData spriteTempData in bgContentData.spriteTemplateList) {
          bool isAnimatedSprite = spriteTempData.contentCategory == ImageLoader.BGContentCategory.Animated;
          SpriteTemplate spriteTempObj = Instantiate(isAnimatedSprite ? spriteTemplateAnimatedPrefab : spriteTemplatePrefab, board.centerPoint).GetComponent<SpriteTemplate>();
@@ -94,7 +135,7 @@ public class BackgroundGameManager : MonoBehaviour {
       }
 
       if (leftBattleSpots.Count > 0 && rightBattleSpots.Count > 0) {
-         board.recalibrateBattleSpots(leftBattleSpots, rightBattleSpots);
+         board.recalibrateBattleSpots(leftBattleSpots, rightBattleSpots, bgContentData.xmlId);
       }
    }
 

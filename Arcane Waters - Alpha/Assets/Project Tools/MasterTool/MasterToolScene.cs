@@ -28,7 +28,7 @@ public class MasterToolScene : MonoBehaviour {
    public const string shipAbilityScene = "ShipAbility Tool";
    public const string shopScene = "ShopTool";
    public const string tutorialScene = "Tutorial Tool";
-   public const string backgroundScene = "BackgroundToolTool";
+   public const string backgroundScene = "BackgroundTool";
 
    // Loading delay before fetching XML Data
    public static float loadDelay = 2;

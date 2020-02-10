@@ -15,6 +15,9 @@ public class BattleBoard : MonoBehaviour {
    // Parent of the spawn points
    public Transform attackersSpotHolder, defendersSpotHolder;
 
+   // The xml id reference 
+   public int xmlID;
+
    #endregion
 
    public void Start () {
@@ -26,7 +29,8 @@ public class BattleBoard : MonoBehaviour {
       }
    }
 
-   public void recalibrateBattleSpots (List<GameObject> defenderSpots, List<GameObject> attackerSpots) {
+   public void recalibrateBattleSpots (List<GameObject> defenderSpots, List<GameObject> attackerSpots, int newXmlId) {
+      xmlID = newXmlId;
       _spots.Clear();
       attackersSpotHolder.gameObject.DestroyChildren();
       defendersSpotHolder.gameObject.DestroyChildren();
