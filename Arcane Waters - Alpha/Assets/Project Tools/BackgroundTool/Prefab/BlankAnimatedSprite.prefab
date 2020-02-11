@@ -189,6 +189,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   simpleAnimation: {fileID: -1786771876076203341}
+  spriteRenderer: {fileID: 1039780382104856513}
+  isLooping: 0
+  isInteractable: 0
+  isInteracting: 0
+  min_idle_frame: 0
+  max_idle_frame: 0
+  min_interact_frame: 0
+  max_interact_frame: 0
+  spriteArray: []
 --- !u!114 &-1786771876076203341
 MonoBehaviour:
   m_ObjectHideFlags: 0
