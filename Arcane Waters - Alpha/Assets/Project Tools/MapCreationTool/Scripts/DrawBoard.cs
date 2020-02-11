@@ -183,7 +183,7 @@ namespace MapCreationTool
             for (int i = 0; i < 10; i++) {
                Tilemap layer = Instantiate(layerPref, Vector3.zero, Quaternion.identity, layerContainer);
                layer.gameObject.name = l.layer + " " + i;
-               layer.transform.localPosition = new Vector3(0, 0, layerToZ(l.index, i));
+               layer.transform.localPosition = new Vector3(0, 0, layerToZ(l.index, i) + l.zOffset);
                subLayers[i] = layer;
             }
             layers.Add(l.layer, new Layer(subLayers));

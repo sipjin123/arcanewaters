@@ -16,11 +16,6 @@ public class DoorCollider : MonoBehaviour {
       _boxCollider = GetComponent<BoxCollider2D>();
    }
 
-   private void Update () {
-      // The server doesn't need this blocking collider
-      _boxCollider.enabled = !NetworkServer.active;
-   }
-
    void OnTriggerEnter2D (Collider2D other) {
       NetEntity player = other.transform.GetComponent<NetEntity>();
 

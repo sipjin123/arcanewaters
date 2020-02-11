@@ -12,7 +12,9 @@ public class MyNetworkManager : NetworkManager {
    #region Public Variables
 
    // Server addresses
-   public enum ServerType { None = 0, Localhost = 1, AmazonVPC = 2, AmazonSydney = 3 }
+   public enum ServerType {
+      None = 0, Localhost = 1, AmazonVPC = 2, AmazonSydney = 3, ProductionWindows = 4, ProductionLinux = 5
+   }
 
    // The actual server we want to use
    public ServerType serverOverride;

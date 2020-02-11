@@ -10,6 +10,7 @@ namespace MapCreationTool
       public Transform collisionTilemapParent;
       public Transform prefabParent;
       public Transform npcParent;
+      public Transform effectorContainer;
       public PolygonCollider2D camBounds;
       public CinemachineConfiner confiner;
    }

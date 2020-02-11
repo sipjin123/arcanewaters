@@ -38865,11 +38865,11 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: water
+    - layer: dock
       sublayer: 0
       cluster: 1
       collisionType: 0
-    - layer: water
+    - layer: dock
       sublayer: 0
       cluster: 1
       collisionType: 0
@@ -39017,11 +39017,11 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: water
+    - layer: dock
       sublayer: 0
       cluster: 1
       collisionType: 0
-    - layer: water
+    - layer: dock
       sublayer: 0
       cluster: 1
       collisionType: 0

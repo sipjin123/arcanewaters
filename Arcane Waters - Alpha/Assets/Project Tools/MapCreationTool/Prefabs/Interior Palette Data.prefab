@@ -32696,7 +32696,7 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: wall
+    - layer: ceiling
       sublayer: 0
       cluster: 0
       collisionType: 0
@@ -32844,11 +32844,11 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: wall
+    - layer: ceiling
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: wall
+    - layer: ceiling
       sublayer: 0
       cluster: 0
       collisionType: 1

@@ -49,7 +49,14 @@ namespace MapCreationTool
          instantiateTilemaps(exportedProject, result.tilemapParent, result.collisionTilemapParent);
          instantiatePrefabs(exportedProject, result.prefabParent, result.npcParent);
 
-         setCameraBounds(result, exportedProject);
+         if (exportedProject.gravityEffectors != null) {
+            addGravityEffectors(result, exportedProject.gravityEffectors);
+         }
+
+         Bounds bounds = calculateBounds(exportedProject);
+
+         setCameraBounds(result, bounds);
+         addEdgeColliders(result, bounds);
 
          // Destroy the template component
          UnityEngine.Object.Destroy(result);
@@ -57,12 +64,55 @@ namespace MapCreationTool
          return area;
       }
 
+      static void addGravityEffectors (MapTemplate map, ExportedGravityEffector[] effectors) {
+         foreach (ExportedGravityEffector exportedEffector in effectors) {
+            GameObject effector = new GameObject("Gravity Effector");
+            effector.transform.parent = map.effectorContainer;
+            effector.transform.localPosition = exportedEffector.position;
+            effector.transform.localScale = Vector3.one;
+
+            BoxCollider2D collider = effector.AddComponent<BoxCollider2D>();
+            collider.isTrigger = true;
+            collider.usedByEffector = true;
+            collider.size = exportedEffector.size;
+
+            AreaEffector2D areaEffector = effector.AddComponent<AreaEffector2D>();
+            areaEffector.forceAngle = 270;
+            areaEffector.forceMagnitude = 15;
+            areaEffector.forceVariation = 0;
+            areaEffector.forceTarget = EffectorSelection2D.Rigidbody;
+         }
+      }
+
+      static void addEdgeColliders (MapTemplate map, Bounds bounds) {
+         GameObject container = new GameObject("Edge Colliders");
+         container.transform.parent = map.transform;
+         container.transform.localPosition = Vector2.zero;
+         container.transform.localScale = 0.16f * Vector2.one;
+
+         container.AddComponent<EdgeCollider2D>().points = new Vector2[] { new Vector2(bounds.min.x, bounds.max.y), bounds.max };
+         container.AddComponent<EdgeCollider2D>().points = new Vector2[] { bounds.max, new Vector2(bounds.max.x, bounds.min.y) };
+         container.AddComponent<EdgeCollider2D>().points = new Vector2[] { new Vector2(bounds.max.x, bounds.min.y), bounds.min };
+         container.AddComponent<EdgeCollider2D>().points = new Vector2[] { bounds.min, new Vector2(bounds.min.x, bounds.max.y) };
+      }
+
       /// <summary>
       /// Sets the bounds the the camera can move in inside a map
       /// </summary>
       /// <param name="map"></param>
       /// <param name="tiles"></param>
-      static void setCameraBounds (MapTemplate map, ExportedProject001 project) {
+      static void setCameraBounds (MapTemplate map, Bounds bounds) {
+         map.camBounds.points = new Vector2[] {
+            new Vector2(bounds.min.x, bounds.min.y),
+            new Vector2(bounds.min.x, bounds.max.y),
+            new Vector2(bounds.max.x, bounds.max.y),
+            new Vector2(bounds.max.x, bounds.min.y)
+         };
+
+         map.confiner.m_BoundingShape2D = map.camBounds;
+      }
+
+      static Bounds calculateBounds (ExportedProject001 project) {
          Bounds bounds = new Bounds();
 
          foreach (var layer in project.layers) {
@@ -74,14 +124,7 @@ namespace MapCreationTool
 
          bounds.max += new Vector3(1, 1, 0);
 
-         map.camBounds.points = new Vector2[] {
-            new Vector2(bounds.min.x, bounds.min.y),
-            new Vector2(bounds.min.x, bounds.max.y),
-            new Vector2(bounds.max.x, bounds.max.y),
-            new Vector2(bounds.max.x, bounds.min.y)
-         };
-
-         map.confiner.m_BoundingShape2D = map.camBounds;
+         return bounds;
       }
 
       static void instantiatePrefabs (ExportedProject001 project, Transform prefabParent, Transform npcParent) {
@@ -123,6 +166,10 @@ namespace MapCreationTool
             var colTilemap = UnityEngine.Object.Instantiate(AssetSerializationMaps.collisionTilemapTemplate, collisionTilemapParent);
             colTilemap.transform.localPosition = Vector3.zero;
             colTilemap.gameObject.name = "Layer " + layer.z;
+
+            if (layer.type == LayerType.Water) {
+               colTilemap.gameObject.name += " Water";
+            }
 
             // Add all the tiles
             Vector3Int[] positions = layer.tiles.Select(t => new Vector3Int(t.x, t.y, 0)).ToArray();

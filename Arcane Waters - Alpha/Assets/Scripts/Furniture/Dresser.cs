@@ -74,7 +74,9 @@ public class Dresser : ClientMonoBehaviour, IBiomable
       openSprite = Util.switchSpriteBiome(openSprite, currentBiome, biomeType);
       closedSprite = Util.switchSpriteBiome(closedSprite, currentBiome, biomeType);
 
-      _renderer.sprite = Util.switchSpriteBiome(_renderer.sprite, currentBiome, biomeType);
+      if (_renderer != null) {
+         _renderer.sprite = Util.switchSpriteBiome(_renderer.sprite, currentBiome, biomeType);
+      }
 
       currentBiome = biomeType;
    }

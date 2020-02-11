@@ -12,34 +12,34 @@ namespace MapCreationTool
       public Tile[] clusterTiles;
       public TileBase transparentTile;
 
-      public TitleIndex[] areaLayerIndexes;
-      public TitleIndex[] seaLayerIndexes;
-      public TitleIndex[] interiorLayerIndexes;
+      public LayerConfig[] areaLayerIndexes;
+      public LayerConfig[] seaLayerIndexes;
+      public LayerConfig[] interiorLayerIndexes;
 
       public string[] areaLayerNames
       {
-         get { return areaLayerIndexes.Select(l => l.layer).ToArray(); }
+         get { return areaLayerIndexes.OrderBy(l => l.index).Select(l => l.layer).ToArray(); }
       }
 
       public string[] seaLayerNames
       {
-         get { return seaLayerIndexes.Select(l => l.layer).ToArray(); }
+         get { return seaLayerIndexes.OrderBy(l => l.index).Select(l => l.layer).ToArray(); }
       }
 
       public string[] interiorLayerNames
       {
-         get { return interiorLayerIndexes.Select(l => l.layer).ToArray(); }
+         get { return interiorLayerIndexes.OrderBy(l => l.index).Select(l => l.layer).ToArray(); }
       }
 
-      public int getIndex(string layer, EditorType editorType) {
-         foreach(TitleIndex ti in getLayers(editorType)) {
-            if (ti.layer.CompareTo(layer) == 0)
-               return ti.index;
+      public int getIndex (string layer, EditorType editorType) {
+         foreach (LayerConfig lc in getLayers(editorType)) {
+            if (lc.layer.CompareTo(layer) == 0)
+               return lc.index;
          }
          throw new Exception($"Undefined layer {layer}.");
       }
 
-      public TitleIndex[] getLayers (EditorType editorType) {
+      public LayerConfig[] getLayers (EditorType editorType) {
          switch (editorType) {
             case EditorType.Area:
                return areaLayerIndexes;
@@ -66,10 +66,12 @@ namespace MapCreationTool
       }
 
       [System.Serializable]
-      public class TitleIndex
+      public class LayerConfig
       {
          public string layer;
          public int index;
+         public float zOffset;
+         public LayerType layerType = LayerType.Regular;
       }
    }
 }

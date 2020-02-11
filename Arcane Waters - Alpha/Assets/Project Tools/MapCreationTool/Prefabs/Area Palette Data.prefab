@@ -43633,19 +43633,19 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: stair
+    - layer: prop
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: stair
+    - layer: prop
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: stair
+    - layer: prop
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: stair
+    - layer: prop
       sublayer: 0
       cluster: 0
       collisionType: 0
@@ -44438,11 +44438,11 @@ MonoBehaviour:
       cluster: 0
       collisionType: 0
     - layer: prop
-      sublayer: 0
+      sublayer: 1
       cluster: 0
       collisionType: 0
     - layer: prop
-      sublayer: 0
+      sublayer: 1
       cluster: 0
       collisionType: 0
     - layer: 
@@ -45038,11 +45038,11 @@ MonoBehaviour:
       cluster: 0
       collisionType: 0
     - layer: prop
-      sublayer: 0
+      sublayer: 1
       cluster: 0
       collisionType: 0
     - layer: prop
-      sublayer: 0
+      sublayer: 1
       cluster: 0
       collisionType: 0
     - layer: 
@@ -45446,11 +45446,11 @@ MonoBehaviour:
       cluster: 0
       collisionType: 0
     - layer: prop
-      sublayer: 0
+      sublayer: 1
       cluster: 0
       collisionType: 0
     - layer: prop
-      sublayer: 0
+      sublayer: 1
       cluster: 0
       collisionType: 0
     - layer: prop
