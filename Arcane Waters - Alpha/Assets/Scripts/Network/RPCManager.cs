@@ -79,10 +79,10 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_ReceiveBackgroundsData (NetworkConnection connection, string[] rawInfo) {
+   public void Target_ReceiveDefaultBGData (NetworkConnection connection, string[] rawInfo) {
       // Deserialize data
       BackgroundContentData[] bgContentData = Util.unserialize<BackgroundContentData>(rawInfo).ToArray();
-
+      
       // Cache to background data manager 
       BackgroundGameManager.self.receiveServerDataCache(bgContentData);
    }
@@ -3062,6 +3062,11 @@ public class RPCManager : NetworkBehaviour {
             // Provides the client with the info of the Equipped Abilities
             Target_UpdateBattleAbilityUI(_player.connectionToClient, Util.serialize(abilityDataList.FindAll(_ => _.equipSlotIndex >= 0)));
 
+            // Send Battle Bg data
+            int bgXmlID = battle.battleBoard.xmlID;
+            BackgroundContentData fetchedBGData = BackgroundGameManager.self.backgroundContentList.Find(_ => _.xmlId == bgXmlID);
+            Target_ReceiveBackgroundInfo(_player.connectionToClient, Util.serialize(new List<BackgroundContentData>() { fetchedBGData }));
+
             // Send class info to client
             PlayerClassData currentClassData = ClassManager.self.getClassData(localBattler.classType);
             Target_ReceiveClassInfo(_player.connectionToClient, JsonUtility.ToJson(currentClassData));
@@ -3153,7 +3158,8 @@ public class RPCManager : NetworkBehaviour {
 
             // Send Battle Bg data
             int bgXmlID = battle.battleBoard.xmlID;
-            Target_ReceiveBackgroundInfo(playerBody.connectionToClient, battle.battleBoard.biomeType, bgXmlID);
+            BackgroundContentData fetchedBGData = BackgroundGameManager.self.backgroundContentList.Find(_ => _.xmlId == bgXmlID);
+            Target_ReceiveBackgroundInfo(playerBody.connectionToClient, Util.serialize(new List<BackgroundContentData>() { fetchedBGData }));
 
             // Provides the client with the info of the Equipped Abilities
             Target_UpdateBattleAbilityUI(playerBody.connectionToClient, Util.serialize(abilityDataList.FindAll(_ => _.equipSlotIndex >= 0)));
@@ -3280,10 +3286,9 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_ReceiveBackgroundInfo (NetworkConnection connection, Biome.Type biomeType, int bgXmlID) {
-      BattleBoard board = BattleManager.self.getBattleBoard(biomeType);
-      BackgroundGameManager.self.setSpritesToClientBoard(bgXmlID, board);
-      board.gameObject.SetActive(true);
+   public void Target_ReceiveBackgroundInfo (NetworkConnection connection, string[] rawBGData) {
+      List<BackgroundContentData> backgroundContentList = Util.unserialize<BackgroundContentData>(rawBGData); 
+      BackgroundGameManager.self.receiveNewContent(backgroundContentList.ToArray());
    }
 
    [TargetRpc]

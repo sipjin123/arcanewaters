@@ -31,27 +31,18 @@ public class BattleBoard : MonoBehaviour {
 
    public void recalibrateBattleSpots (List<GameObject> defenderSpots, List<GameObject> attackerSpots, int newXmlId) {
       xmlID = newXmlId;
-      _spots.Clear();
-      attackersSpotHolder.gameObject.DestroyChildren();
-      defendersSpotHolder.gameObject.DestroyChildren();
 
-      int boardIndex = 1;
+      int boardIndex = 0;
       foreach (GameObject attackerSpot in attackerSpots) {
-         BattleSpot spot = attackerSpot.AddComponent<BattleSpot>();
-         spot.transform.SetParent(attackersSpotHolder);
-         spot.teamType = Battle.TeamType.Attackers;
-         spot.boardPosition = boardIndex;
-         _spots.Add(spot);
+         Transform attackSpot = attackersSpotHolder.GetChild(boardIndex);
+         attackSpot.transform.position = attackerSpot.transform.position;
          boardIndex++;
       }
 
-      boardIndex = 1;
+      boardIndex = 0;
       foreach (GameObject defendersSpot in defenderSpots) {
-         BattleSpot spot = defendersSpot.AddComponent<BattleSpot>();
-         spot.transform.SetParent(defendersSpotHolder);
-         spot.teamType = Battle.TeamType.Defenders;
-         spot.boardPosition = boardIndex;
-         _spots.Add(spot);
+         Transform defenderSpot = defendersSpotHolder.GetChild(boardIndex);
+         defenderSpot.transform.position = defendersSpot.transform.position;
          boardIndex++;
       }
    }
@@ -69,7 +60,7 @@ public class BattleBoard : MonoBehaviour {
    #region Private Variables
 
    // Stores a list of Battle Spots for this Battle Board
-   protected List<BattleSpot> _spots = new List<BattleSpot>();
+   [SerializeField] protected List<BattleSpot> _spots = new List<BattleSpot>();
 
    #endregion
 }

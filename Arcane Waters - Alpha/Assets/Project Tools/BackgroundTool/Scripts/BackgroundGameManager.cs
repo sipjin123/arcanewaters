@@ -52,12 +52,34 @@ public class BackgroundGameManager : MonoBehaviour {
 
    public void receiveServerDataCache (BackgroundContentData[] bgContentData) {
       if (!isInitialized) {
+         backgroundContentList = new List<BackgroundContentData>();
          foreach (BackgroundContentData bgContent in bgContentData) {
             backgroundContentList.Add(bgContent);
          }
 
          BattleManager.self.initializeBattleBoards();
       }
+   }
+
+   public void receiveNewContent (BackgroundContentData[] bgContentData) {
+      if (!isInitialized) {
+         backgroundContentList = new List<BackgroundContentData>();
+         foreach (BackgroundContentData bgContent in bgContentData) {
+            backgroundContentList.Add(bgContent);
+         }
+
+         BattleManager.self.initializeBattleBoards();
+         StartCoroutine(CO_DelayProcessData());
+      }
+   }
+
+   private IEnumerator CO_DelayProcessData () {
+      yield return new WaitForSeconds(1);
+
+      BackgroundContentData primaryBGData = backgroundContentList[0];
+      BattleBoard board = BattleManager.self.getBattleBoard(primaryBGData.biomeType);
+      setSpritesToClientBoard(primaryBGData.xmlId, board);
+      board.gameObject.SetActive(true);
    }
 
    public void setSpritesToClientBoard (int boardXmlID, BattleBoard board) {
@@ -99,8 +121,6 @@ public class BackgroundGameManager : MonoBehaviour {
       List<GameObject> rightBattleSpots = new List<GameObject>();
       List<SimpleAnimation> simpleAnimList = new List<SimpleAnimation>();
       board.centerPoint.gameObject.DestroyChildren();
-      board.attackersSpotHolder.gameObject.DestroyChildren();
-      board.defendersSpotHolder.gameObject.DestroyChildren();
 
       foreach (SpriteTemplateData spriteTempData in bgContentData.spriteTemplateList) {
          bool isAnimatedSprite = spriteTempData.contentCategory == ImageLoader.BGContentCategory.Interactive || spriteTempData.contentCategory == ImageLoader.BGContentCategory.Animating;
@@ -138,6 +158,11 @@ public class BackgroundGameManager : MonoBehaviour {
 
             spriteTempObj.spriteData.contentCategory = spriteTempData.contentCategory;
             spriteTempObj.gameObject.name = spriteTempObj.spriteRender.sprite.name;
+
+            if (spriteTempData.contentCategory == ImageLoader.BGContentCategory.SpawnPoints_Attackers || spriteTempData.contentCategory == ImageLoader.BGContentCategory.SpawnPoints_Defenders) {
+               spriteTempObj.spriteRender.enabled = false;
+               spriteTempObj.gameObject.name = ImageLoader.BGContentCategory.PlaceHolders.ToString();
+            }
          } else {
             spriteTempObj.spriteRender.enabled = false;
             spriteTempObj.gameObject.name = ImageLoader.BGContentCategory.PlaceHolders.ToString();
