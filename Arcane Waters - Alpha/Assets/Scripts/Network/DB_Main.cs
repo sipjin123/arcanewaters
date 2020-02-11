@@ -1680,7 +1680,7 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO background_xml_v1 ("+ xml_id_key + "xml_name, xmlContent, creator_userID) " +
+            "INSERT INTO background_xml_v2 ("+ xml_id_key + "xml_name, xmlContent, creator_userID) " +
             "VALUES("+ xml_id_value + "@xml_name, @xmlContent, @creator_userID) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, xml_name = @xml_name", conn)) {
 
@@ -1709,7 +1709,7 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.background_xml_v1", conn)) {
+            "SELECT * FROM arcane.background_xml_v2", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -1720,7 +1720,8 @@ public class DB_Main : DB_MainStub
                   XMLPair newXMLPair = new XMLPair { 
                      isEnabled = true,
                      xmlId = dataReader.GetInt32("xml_id"),
-                     rawXmlData = dataReader.GetString("xmlContent")
+                     rawXmlData = dataReader.GetString("xmlContent"),
+                     xmlOwnerId = dataReader.GetInt32("creator_userID")
                   };
                   rawDataList.Add(newXMLPair);
                }
@@ -1735,7 +1736,7 @@ public class DB_Main : DB_MainStub
    public static new void deleteBackgroundXML (int xmlId) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM background_xml_v1 WHERE xml_id=@xml_id", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM background_xml_v2 WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_id", xmlId);

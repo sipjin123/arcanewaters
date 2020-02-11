@@ -88,16 +88,6 @@ namespace BackgroundTool
       // Determine if the mouse is over any highlighted sprite
       public bool isHoveringHighlight;
 
-      public enum LayerType
-      {
-         None = 0,
-         Background = 1,
-         Midground = 2,
-         Foreground = 3,
-         Overlay = 4,
-         PlaceHolders = 5
-      }
-
       #endregion
 
       #region Initialize Setup
@@ -138,7 +128,7 @@ namespace BackgroundTool
          for (int i = 1; i < Z_AXIS_MAX_DIST; i++) {
             Toggle togglerInstance = Instantiate(layerTogglerPrefab, layerTogglerParent).GetComponentInChildren<Toggle>();
             Text togglerLabel = togglerInstance.GetComponentInChildren<Text>();
-            togglerLabel.text = ((LayerType) i).ToString();
+            togglerLabel.text = ((BGLayer) i).ToString();
             int cachedID = i;
             layerTogglerList.Add(togglerInstance);
 
@@ -263,6 +253,7 @@ namespace BackgroundTool
 
                spawnedSprite.transform.position = draggable.cachedSpriteTemplate.transform.position;
                spawnedSprite.spriteData.layerIndex = draggable.cachedSpriteTemplate.spriteData.layerIndex;
+               spawnedSprite.spriteRender.sortingOrder = Mathf.Abs(spawnedSprite.spriteData.layerIndex);
 
                // Compute z axis offset
                int layerOffset = getLayerOffset(spawnedSprite.spriteData.layerIndex);
@@ -365,24 +356,27 @@ namespace BackgroundTool
       }
 
       public int getLayerOffset (int layerIndex) {
-         LayerType layerType = (LayerType) layerIndex;
+         BGLayer layerType = (BGLayer) layerIndex;
          int zOffset = 0;
 
          switch (layerType) {
-            case LayerType.Background:
+            case BGLayer.SkiesAndGround:
                zOffset = 0;
                break;
-            case LayerType.Midground:
-               zOffset = -5;
+            case BGLayer.Background:
+               zOffset = -2;
                break;
-            case LayerType.Foreground:
+            case BGLayer.Midground:
+               zOffset = -4;
+               break;
+            case BGLayer.Foreground:
+               zOffset = -6;
+               break;
+            case BGLayer.Overlay:
+               zOffset = -8;
+               break;
+            case BGLayer.PlaceHolders:
                zOffset = -10;
-               break;
-            case LayerType.Overlay:
-               zOffset = -12;
-               break;
-            case LayerType.PlaceHolders:
-               zOffset = -14;
                break;
          }
 
@@ -418,7 +412,7 @@ namespace BackgroundTool
          spriteTemplate.gameObject.AddComponent<BoxCollider2D>();
 
          if (spriteData == null) {
-            spriteTemplate.spriteData.layerIndex = (int) LayerType.Foreground;
+            spriteTemplate.spriteData.layerIndex = (int) BGLayer.Foreground;
             spriteTemplate.spriteData.zAxisOffset = 0;
             spriteTemplate.spriteData.isLocked = false;
             spriteTemplate.spriteData.spritePath = spritePath;

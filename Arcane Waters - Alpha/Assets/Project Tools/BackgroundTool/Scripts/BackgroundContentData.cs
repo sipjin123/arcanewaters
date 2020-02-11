@@ -16,6 +16,9 @@ namespace BackgroundTool
       // The id of the xml entry
       public int xmlId = 0;
 
+      // The id of the creator of this data
+      public int ownerId = 0;
+
       // The list of the sprites in this background
       public List<SpriteTemplateData> spriteTemplateList = new List<SpriteTemplateData>();
 

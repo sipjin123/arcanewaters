@@ -19,7 +19,7 @@ namespace BackgroundTool
       public string spritePath;
 
       // The layer type of this sprite selection
-      public ImageManipulator.LayerType layerType;
+      public BGLayer layerType;
 
       // Determines the content category of the selection
       public BGContentCategory contentCategory;

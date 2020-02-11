@@ -26,6 +26,9 @@ namespace BackgroundTool
       // Determines if this template is highlighted
       public bool isHighlighted;
 
+      // If the sprite can be clicked on
+      public bool hasActiveClicker = true;
+
       #endregion
 
       private void Start () {
@@ -43,19 +46,21 @@ namespace BackgroundTool
       }
 
       public void OnMouseDown () {
-         if (isHighlighted && ImageManipulator.self.draggedObjList.Count > 0) {
-            ImageManipulator.self.isHoveringHighlight = true;
-            return;
-         }
+         if (hasActiveClicker) {
+            if (isHighlighted && ImageManipulator.self.draggedObjList.Count > 0) {
+               ImageManipulator.self.isHoveringHighlight = true;
+               return;
+            }
 
-         if (!ImageManipulator.self.isDragging && !EventSystem.current.IsPointerOverGameObject() &&
-            !ImageManipulator.self.isSpawning) {
-            List<SpriteTemplate> spriteTemp = new List<SpriteTemplate>();
-            spriteTemp.Add(this);
-            ImageManipulator.self.beginDragSpawnedGroup(spriteTemp, true);
-         } else {
-            if (!ImageManipulator.self.isSpawning || ImageManipulator.self.singleDrag) {
-               ImageManipulator.self.endClick();
+            if (!ImageManipulator.self.isDragging && !EventSystem.current.IsPointerOverGameObject() &&
+               !ImageManipulator.self.isSpawning) {
+               List<SpriteTemplate> spriteTemp = new List<SpriteTemplate>();
+               spriteTemp.Add(this);
+               ImageManipulator.self.beginDragSpawnedGroup(spriteTemp, true);
+            } else {
+               if (!ImageManipulator.self.isSpawning || ImageManipulator.self.singleDrag) {
+                  ImageManipulator.self.endClick();
+               }
             }
          }
       }

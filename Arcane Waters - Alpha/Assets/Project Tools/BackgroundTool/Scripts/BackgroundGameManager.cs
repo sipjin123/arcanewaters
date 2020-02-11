@@ -40,6 +40,7 @@ public class BackgroundGameManager : MonoBehaviour {
             foreach (XMLPair xmlPair in backgroundData) {
                TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                BackgroundContentData bgContentData = Util.xmlLoad<BackgroundContentData>(newTextAsset);
+               bgContentData.xmlId = xmlPair.xmlId;
                backgroundContentList.Add(bgContentData);
             }
 
@@ -67,12 +68,16 @@ public class BackgroundGameManager : MonoBehaviour {
    public void setSpritesToRandomBoard (BattleBoard board) {
       BackgroundContentData bgContentData = new BackgroundContentData();
       List<BackgroundContentData> contentDataList = backgroundContentList.FindAll(_ => _.biomeType == board.biomeType);
-      if (contentDataList.Count < 2) {
-         bgContentData = contentDataList[0];
+      if (contentDataList.Count > 0) {
+         if (contentDataList.Count < 2) {
+            bgContentData = contentDataList[0];
+         } else {
+            int contentLength = contentDataList.Count;
+            int randomIndex = Random.Range(0, 2);
+            bgContentData = contentDataList[randomIndex];
+         }
       } else {
-         int contentLength = contentDataList.Count;
-         int randomIndex = Random.Range(0, 2);
-         bgContentData = contentDataList[randomIndex];
+         bgContentData = backgroundContentList[0];
       }
 
       processBoardContent(bgContentData, board);
@@ -98,12 +103,13 @@ public class BackgroundGameManager : MonoBehaviour {
       board.defendersSpotHolder.gameObject.DestroyChildren();
 
       foreach (SpriteTemplateData spriteTempData in bgContentData.spriteTemplateList) {
-         bool isAnimatedSprite = spriteTempData.contentCategory == ImageLoader.BGContentCategory.Animated;
+         bool isAnimatedSprite = spriteTempData.contentCategory == ImageLoader.BGContentCategory.Interactive || spriteTempData.contentCategory == ImageLoader.BGContentCategory.Animating;
          SpriteTemplate spriteTempObj = Instantiate(isAnimatedSprite ? spriteTemplateAnimatedPrefab : spriteTemplatePrefab, board.centerPoint).GetComponent<SpriteTemplate>();
 
          float zOffset = -spriteTempData.layerIndex - spriteTempData.zAxisOffset;
          spriteTempObj.transform.localPosition = new Vector3(spriteTempData.localPositionData.x, spriteTempData.localPositionData.y, zOffset);
          spriteTempObj.spriteRender.sprite = ImageManager.getSprite(spriteTempData.spritePath);
+         spriteTempObj.hasActiveClicker = false;
 
          if (!spriteTempObj.spriteRender.sprite.name.Contains(PLACEHOLDER)) {
             // Process placeholders
@@ -115,10 +121,19 @@ public class BackgroundGameManager : MonoBehaviour {
             }
 
             // Process animated sprites
-            if (spriteTempData.contentCategory == ImageLoader.BGContentCategory.Animated) {
+            if (spriteTempData.contentCategory == ImageLoader.BGContentCategory.Interactive) {
+               int spriteCount = ImageManager.getSprites(spriteTempData.spritePath).Length;
+               AnimatedSprite animatedSprite = spriteTempObj.GetComponent<AnimatedSprite>();
+               animatedSprite.setToLoop();
+               animatedSprite.setToInteractable();
+               animatedSprite.setSpriteCount(spriteCount);
+
                BoxCollider2D collider2d = spriteTempObj.gameObject.AddComponent<BoxCollider2D>();
                collider2d.isTrigger = true;
                simpleAnimList.Add(spriteTempObj.GetComponent<SimpleAnimation>());
+            } else if (spriteTempData.contentCategory == ImageLoader.BGContentCategory.Animating) {
+               AnimatedSprite animatedSprite = spriteTempObj.GetComponent<AnimatedSprite>();
+               animatedSprite.setToLoop();
             }
 
             spriteTempObj.spriteData.contentCategory = spriteTempData.contentCategory;

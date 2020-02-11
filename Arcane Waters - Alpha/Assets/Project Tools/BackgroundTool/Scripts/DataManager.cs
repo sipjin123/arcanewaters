@@ -50,9 +50,17 @@ namespace BackgroundTool
       // Determines the biome type of the background
       public Dropdown biomeDropdown;
 
+      // The id of the owner of the content
+      public int currentOwnerID;
+
       #endregion
 
       private void Start () {
+         bool canSaveData = MasterToolAccountManager.PERMISSION_LEVEL == AdminManager.Type.ContentWriter 
+            || MasterToolAccountManager.PERMISSION_LEVEL == AdminManager.Type.Admin;
+
+         saveButton.interactable = canSaveData;
+
          saveButton.onClick.AddListener(() => {
             List<SpriteTemplateData> spriteTempList = ImageManipulator.self.spriteTemplateDataList;
             if (hasValidContent(spriteTempList)) {
@@ -83,6 +91,7 @@ namespace BackgroundTool
                Dropdown.OptionData optionData = biomeDropdown.options.Find(_ => _.text == contentData.biomeType.ToString());
                biomeDropdown.value = biomeDropdown.options.IndexOf(optionData);
                ImageManipulator.self.generateSprites(contentData.spriteTemplateList);
+               currentOwnerID = contentData.ownerId;
             }
          });
 
@@ -153,12 +162,19 @@ namespace BackgroundTool
             List<XMLPair> backgroundData = DB_Main.getBackgroundXML();
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                foreach (XMLPair xmlPair in backgroundData) {
-                  TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
-                  BackgroundContentData bgContentData = Util.xmlLoad<BackgroundContentData>(newTextAsset);
-                  bgContentData.xmlId = xmlPair.xmlId;
-                  backgroundContentList.Add(bgContentData);
-               }
 
+                  if ((xmlPair.xmlOwnerId == MasterToolAccountManager.self.currentAccountID
+                  && MasterToolAccountManager.PERMISSION_LEVEL == AdminManager.Type.ContentWriter)
+                  || MasterToolAccountManager.PERMISSION_LEVEL == AdminManager.Type.Admin
+                  || MasterToolAccountManager.PERMISSION_LEVEL == AdminManager.Type.QA) {
+
+                     TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
+                     BackgroundContentData bgContentData = Util.xmlLoad<BackgroundContentData>(newTextAsset);
+                     bgContentData.xmlId = xmlPair.xmlId;
+                     bgContentData.ownerId = xmlPair.xmlOwnerId;
+                     backgroundContentList.Add(bgContentData);
+                  }
+               }
                setUIContent();
             });
          });

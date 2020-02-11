@@ -16,18 +16,19 @@ namespace BackgroundTool
       public static string MAIN_DIRECTORY = "Assets/Sprites/BackgroundEntities";
 
       // Sub Directories for the image selection
-      public static string BGELEMENTS_DIRECTORY = "/BGElements/";
-      public static string BUSH_DIRECTORY = "/Bush/";
-      public static string FOLIAGE_DIRECTORY = "/Foliage/";
-      public static string GRASS_DIRECTORY = "/Grass/";
-      public static string GROUND_DETAILS_DIRECTORY = "/GroundDetails/";
-      public static string ROCKS_DIRECTORY = "/Rocks/";
-      public static string SKIES_DIRECTORY = "/Skies/";
-      public static string TERRAIN_DIRECTORY = "/Terrain/";
-      public static string TREES_DIRECTORY = "/Trees/";
-      public static string FUNCTIONAL_DIRECTORY = "/FunctionalElements/";
-      public static string PLACEHOLDER_DIRECTORY = "/PlaceHolderBattlers/";
-      
+      public static string SKIESANDGROUND_ELEMENTS_DIRECTORY = "/SkiesAndGround/";
+      public static string BACKGROUND_ELEMENTS_DIRECTORY = "/BackgroundElements/";
+      public static string MIDGROUND_ELEMENTS_DIRECTORY = "/MidgroundElements/";
+      public static string FOREGROUND_ELEMENTS_DIRECTORY = "/ForegroundElements/";
+      public static string FUNCTIONAL_ELEMENTS_DIRECTORY = "/FunctionalElements/";
+      public static string GROUND_ELEMENTS_DIRECTORY = "/GroundElements/";
+      public static string PLACEHOLDER_ELEMENTS_DIRECTORY = "/PlaceHolderElements/";
+      public static string MIDGROUND_INTERACTIVE_ELEMENTS_DIRECTORY = "/MidgroundInteractiveElements/";
+      public static string BACKGROUND_ANIMATED_ELEMENTS_DIRECTORY = "/BackgroundAnimatedElements/";
+      public static string MIDGROUND_ANIMATED_ELEMENTS_DIRECTORY = "/MidgroundAnimatedElements/";
+      public static string FOREGROUND_ANIMATED_ELEMENTS_DIRECTORY = "/ForegroundAnimatedElements/";
+
+      // Spacing between sprite selections
       public static float spacing = .25f;
 
       // Empty sprite that will be addressed later
@@ -49,20 +50,30 @@ namespace BackgroundTool
       // Self
       public static ImageLoader self;
 
-      public enum BGContentType
+      public enum BGContentDirectory
       {
          None = 0,
-         BGEelements = 1,
-         Bush = 2,
-         Foliage = 3,
-         Grass = 4,
-         GroundDetails = 5,
-         RocksDirectory = 6,
-         SkiesDirectory = 7,
-         TerrainDirectory = 8,
-         TreesDirectory = 9,
-         FunctionalElements = 10,
-         PlaceholderElements = 11
+         Background = 1,
+         Midground = 2,
+         Foreground = 3,
+         Placeholders = 4,
+         SkiesAndGround = 5,
+         FunctionalElements = 6,
+         BackgroundAnimated = 7,
+         MidgroundAnimated = 8,
+         ForegroundAnimated = 9,
+         MidgroundInteractive = 10,
+      }
+
+      public enum BGLayer
+      {
+         None = 0,
+         SkiesAndGround = 1,
+         Background = 2,
+         Midground = 3,
+         Foreground = 4,
+         Overlay = 5,
+         PlaceHolders = 6
       }
 
       public enum BGContentCategory
@@ -73,7 +84,8 @@ namespace BackgroundTool
          SpawnPoints_Attackers = 3,
          SpawnPoints_Defenders = 4,
          PlaceHolders = 5,
-         Animated = 6
+         Interactive = 6,
+         Animating = 7
       }
 
       public class SpriteSelectionContent
@@ -82,7 +94,7 @@ namespace BackgroundTool
          public string spritePath;
 
          // The layer type of the image
-         public LayerType layerType;
+         public BGLayer layerType;
 
          // Determines the content category
          public BGContentCategory contentCategory;
@@ -94,35 +106,36 @@ namespace BackgroundTool
          self = this;
 
          buttonDirectories = new List<ButtonDirectory>();
-         foreach (BGContentType contentType in Enum.GetValues(typeof(BGContentType))) {
-            ButtonDirectory newButtonDirectory = new ButtonDirectory();
+         foreach (BGContentDirectory contentType in Enum.GetValues(typeof(BGContentDirectory))) {
+            if (contentType != BGContentDirectory.None) {
+               ButtonDirectory newButtonDirectory = new ButtonDirectory();
 
-            Button newButton = Instantiate(directoryButtonPrefab.gameObject, directoryButtonParent).GetComponent<Button>();
-            newButton.GetComponentInChildren<Text>().text = contentType.ToString();
-            newButton.gameObject.SetActive(true);
+               Button newButton = Instantiate(directoryButtonPrefab.gameObject, directoryButtonParent).GetComponent<Button>();
+               newButton.GetComponentInChildren<Text>().text = contentType.ToString();
+               newButton.gameObject.SetActive(true);
 
-            newButtonDirectory.button = newButton;
-            SpriteSelectionContent newContent = translateEnumDirectory(contentType);
-            newButtonDirectory.directory = newContent.spritePath;
-            newButton.onClick.AddListener(() => {
-               if (cachedButton != null) {
-                  cachedButton.image.color = Color.white;
-               }
-               cachedButton = newButton;
-               cachedButton.image.color = Color.red;
-               setSpriteSelection(newButtonDirectory.directory, newContent.layerType, newContent.contentCategory);
-            });
+               newButtonDirectory.button = newButton;
+               SpriteSelectionContent newContent = translateEnumDirectory(contentType);
+               newButtonDirectory.directory = newContent.spritePath;
+               newButton.onClick.AddListener(() => {
+                  if (cachedButton != null) {
+                     cachedButton.image.color = Color.white;
+                  }
+                  cachedButton = newButton;
+                  cachedButton.image.color = Color.red;
+                  setSpriteSelection(newButtonDirectory.directory, newContent.layerType, newContent.contentCategory);
+               });
 
-            buttonDirectories.Add(newButtonDirectory);
+               buttonDirectories.Add(newButtonDirectory);
+            }
          }
       }
 
-      private void setSpriteSelection (string buttonDirectory, LayerType layerType, BGContentCategory contentCategory) {
+      private void setSpriteSelection (string buttonDirectory, BGLayer layerType, BGContentCategory contentCategory) {
          spriteParent.gameObject.DestroyChildren();
 
          if (buttonDirectory != "") {
-            List<ImageManager.ImageData> spriteIconFiles = ImageManager.getSpritesInDirectory(MAIN_DIRECTORY + buttonDirectory);
-
+            List<ImageManager.ImageData> spriteIconFiles = ImageManager.getSpritesInDirectory(buttonDirectory);
             float previousBounds = 0;
             foreach (ImageManager.ImageData imgData in spriteIconFiles) {
                GameObject prefab = Instantiate(emptySprite, spriteParent);
@@ -151,69 +164,70 @@ namespace BackgroundTool
          }
       }
 
-      private SpriteSelectionContent translateEnumDirectory (BGContentType contentType) {
+      private SpriteSelectionContent translateEnumDirectory (BGContentDirectory contentType) {
          string newPath = "";
-         ImageManipulator.LayerType layerType = ImageManipulator.LayerType.None;
+         string extendedPath = "";
+         BGLayer layerType = BGLayer.None;
          BGContentCategory newContentCategory = BGContentCategory.None;
+         newPath = MAIN_DIRECTORY;
 
          switch (contentType) {
-            case BGContentType.BGEelements:
-               newPath = BGELEMENTS_DIRECTORY;
-               layerType = ImageManipulator.LayerType.Background;
+            case BGContentDirectory.SkiesAndGround:
+               layerType = BGLayer.SkiesAndGround;
                newContentCategory = BGContentCategory.BG;
+               extendedPath = SKIESANDGROUND_ELEMENTS_DIRECTORY;
                break;
-            case BGContentType.Bush:
-               newPath = BUSH_DIRECTORY;
-               layerType = ImageManipulator.LayerType.Foreground;
-               newContentCategory = BGContentCategory.DisplayElements;
-               break;
-            case BGContentType.Foliage:
-               newPath = FOLIAGE_DIRECTORY;
-               layerType = ImageManipulator.LayerType.Foreground;
-               newContentCategory = BGContentCategory.Animated;
-               break;
-            case BGContentType.Grass:
-               newPath = GRASS_DIRECTORY;
-               layerType = ImageManipulator.LayerType.Foreground;
-               newContentCategory = BGContentCategory.Animated;
-               break;
-            case BGContentType.GroundDetails:
-               newPath = GROUND_DETAILS_DIRECTORY;
-               layerType = ImageManipulator.LayerType.Foreground;
-               newContentCategory = BGContentCategory.DisplayElements;
-               break;
-            case BGContentType.RocksDirectory:
-               newPath = ROCKS_DIRECTORY;
-               layerType = ImageManipulator.LayerType.Foreground;
-               newContentCategory = BGContentCategory.DisplayElements;
-               break;
-            case BGContentType.SkiesDirectory:
-               newPath = SKIES_DIRECTORY;
-               layerType = ImageManipulator.LayerType.Background;
-               newContentCategory = BGContentCategory.BG;
-               break;
-            case BGContentType.TerrainDirectory:
-               newPath = TERRAIN_DIRECTORY;
-               layerType = ImageManipulator.LayerType.Midground;
-               newContentCategory = BGContentCategory.DisplayElements;
-               break;
-            case BGContentType.TreesDirectory:
-               newPath = TREES_DIRECTORY;
-               layerType = ImageManipulator.LayerType.Foreground;
-               newContentCategory = BGContentCategory.DisplayElements;
-               break;
-            case BGContentType.FunctionalElements:
-               newPath = FUNCTIONAL_DIRECTORY;
-               layerType = ImageManipulator.LayerType.Overlay;
-               newContentCategory = BGContentCategory.SpawnPoints_Attackers;
-               break;
-            case BGContentType.PlaceholderElements:
-               newPath = PLACEHOLDER_DIRECTORY;
-               layerType = ImageManipulator.LayerType.PlaceHolders;
+            case BGContentDirectory.Placeholders:
+               layerType = BGLayer.PlaceHolders;
                newContentCategory = BGContentCategory.PlaceHolders;
+               extendedPath = PLACEHOLDER_ELEMENTS_DIRECTORY;
+               break;
+            case BGContentDirectory.FunctionalElements:
+               layerType = BGLayer.Overlay;
+               newContentCategory = BGContentCategory.SpawnPoints_Attackers;
+               extendedPath = FUNCTIONAL_ELEMENTS_DIRECTORY;
+               break;
+
+            case BGContentDirectory.Background:
+               layerType = BGLayer.Background;
+               newContentCategory = BGContentCategory.DisplayElements;
+               extendedPath = BACKGROUND_ELEMENTS_DIRECTORY;
+               break;
+            case BGContentDirectory.BackgroundAnimated:
+               layerType = BGLayer.Background;
+               newContentCategory = BGContentCategory.Animating;
+               extendedPath = BACKGROUND_ANIMATED_ELEMENTS_DIRECTORY;
+               break;
+
+            case BGContentDirectory.Foreground:
+               layerType = BGLayer.Foreground;
+               newContentCategory = BGContentCategory.DisplayElements;
+               extendedPath = FOREGROUND_ELEMENTS_DIRECTORY;
+               break;
+            case BGContentDirectory.ForegroundAnimated:
+               layerType = BGLayer.Foreground;
+               newContentCategory = BGContentCategory.Animating;
+               extendedPath = FOREGROUND_ANIMATED_ELEMENTS_DIRECTORY;
+               break;
+
+            case BGContentDirectory.Midground:
+               layerType = BGLayer.Midground;
+               newContentCategory = BGContentCategory.DisplayElements;
+               extendedPath = MIDGROUND_ELEMENTS_DIRECTORY;
+               break;
+            case BGContentDirectory.MidgroundAnimated:
+               layerType = BGLayer.Midground;
+               newContentCategory = BGContentCategory.Animating;
+               extendedPath = MIDGROUND_ANIMATED_ELEMENTS_DIRECTORY;
+               break;
+            case BGContentDirectory.MidgroundInteractive:
+               layerType = BGLayer.Midground;
+               newContentCategory = BGContentCategory.Interactive;
+               extendedPath = MIDGROUND_INTERACTIVE_ELEMENTS_DIRECTORY;
                break;
          }
-         return new SpriteSelectionContent { layerType = layerType, spritePath = newPath, contentCategory = newContentCategory};
+         newPath += extendedPath;
+         return new SpriteSelectionContent { layerType = layerType, spritePath = newPath, contentCategory = newContentCategory };
       }
 
       #region Private Variables
