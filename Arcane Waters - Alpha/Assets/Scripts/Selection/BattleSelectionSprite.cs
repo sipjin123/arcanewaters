@@ -42,7 +42,10 @@ public class BattleSelectionSprite : MonoBehaviour {
          // Keep it positioned under the selected Battler
          Vector3 targetPosition = selectedBattler.transform.position;
          targetPosition.z -= .001f;
-         targetPosition.y = initialYaxis;
+
+         if (!selectedBattler.isJumping) {
+            targetPosition.y = initialYaxis;
+         }
          this.transform.position = targetPosition + getOffset(selectedBattler);
 
          // Move the arrows around based on the orientation of our target

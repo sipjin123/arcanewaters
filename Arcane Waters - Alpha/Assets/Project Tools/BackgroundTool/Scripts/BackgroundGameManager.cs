@@ -123,7 +123,7 @@ public class BackgroundGameManager : MonoBehaviour {
          bool isAnimatedSprite = spriteTempData.contentCategory == ImageLoader.BGContentCategory.Interactive || spriteTempData.contentCategory == ImageLoader.BGContentCategory.Animating;
          SpriteTemplate spriteTempObj = Instantiate(isAnimatedSprite ? spriteTemplateAnimatedPrefab : spriteTemplatePrefab, board.centerPoint).GetComponent<SpriteTemplate>();
 
-         float zOffset = -spriteTempData.layerIndex - spriteTempData.zAxisOffset;
+         float zOffset = -(spriteTempData.layerIndex-1) - spriteTempData.zAxisOffset;
          spriteTempObj.transform.localPosition = new Vector3(spriteTempData.localPositionData.x, spriteTempData.localPositionData.y, zOffset);
          spriteTempObj.spriteRender.sprite = ImageManager.getSprite(spriteTempData.spritePath);
          spriteTempObj.hasActiveClicker = false;
@@ -146,11 +146,18 @@ public class BackgroundGameManager : MonoBehaviour {
                animatedSprite.setSpriteCount(spriteCount);
 
                BoxCollider2D collider2d = spriteTempObj.gameObject.AddComponent<BoxCollider2D>();
+               collider2d.size = new Vector2(collider2d.size.x/2, collider2d.size.y);
                collider2d.isTrigger = true;
                simpleAnimList.Add(spriteTempObj.GetComponent<SimpleAnimation>());
             } else if (spriteTempData.contentCategory == ImageLoader.BGContentCategory.Animating) {
                AnimatedSprite animatedSprite = spriteTempObj.GetComponent<AnimatedSprite>();
                animatedSprite.setToLoop();
+            }
+
+            // Add z snap component to interactives to have z axis adjustments with battlers
+            if (spriteTempData.contentCategory == ImageLoader.BGContentCategory.Interactive) {
+               ZSnap zSnap = spriteTempObj.gameObject.AddComponent<ZSnap>();
+               zSnap.isActive = true;
             }
 
             spriteTempObj.spriteData.contentCategory = spriteTempData.contentCategory;

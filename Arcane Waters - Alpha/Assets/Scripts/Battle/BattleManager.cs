@@ -363,6 +363,7 @@ public class BattleManager : MonoBehaviour {
 
       BattlerData data = getAllBattlersData().Find(x => x.enemyType == overrideType);
       Battler battler = Instantiate(enemyPrefab);
+      battler.biomeType = battle.biomeType;
       battler.enemyType = overrideType;
       battler.name = data.enemyName;
 
@@ -387,6 +388,7 @@ public class BattleManager : MonoBehaviour {
       // Actually spawn the Battler as a Network object now
       NetworkServer.Spawn(battler.gameObject);
       battler.transform.SetParent(battle.transform, false);
+      battler.upateBattleSpots();
 
       return battler;
    }

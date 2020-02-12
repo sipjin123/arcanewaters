@@ -288,6 +288,15 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       checkIfSpritesShouldFlip();
    }
 
+   public void upateBattleSpots () {
+      // Look up the Battle Board that contains this Battler
+      BattleBoard battleBoard = BattleManager.self.getBattleBoard(this.biomeType);
+
+      // The client needs to look up and assign the Battle Spot
+      BattleSpot battleSpot = battleBoard.getSpot(teamType, this.boardPosition);
+      this.battleSpot = battleSpot;
+   }
+
    private void Update () {
       // Handle the drawing or hiding of our outline
       handleSpriteOutline();

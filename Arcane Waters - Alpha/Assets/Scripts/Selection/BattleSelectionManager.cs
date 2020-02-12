@@ -80,18 +80,23 @@ public class BattleSelectionManager : MonoBehaviour {
                   if (selectedBattler != null) {
                      selectedBattler.deselectThis();
                   }
-                  
+
+                  Battler currentBattler = BattleManager.self.getBattler(Global.player.userId);
                   selectedBattler = battler;
-                  if (selectedBattler.enemyType != Enemy.Type.PlayerBattler) {
-                     enemySelection.SetActive(true);
-                     allySelection.SetActive(false);
-                  } else {
+                  bool selectedSameTeam = currentBattler.teamType == selectedBattler.teamType;
+
+                  if (selectedBattler.enemyType == Enemy.Type.PlayerBattler || (selectedBattler.enemyType != Enemy.Type.PlayerBattler && selectedSameTeam)) {
                      enemySelection.SetActive(false);
                      allySelection.SetActive(true);
+                  } else {
+                     enemySelection.SetActive(true);
+                     allySelection.SetActive(false);
                   }
                   selectionSprite.initialYaxis = selectedBattler.transform.position.y;
 
-                  selectedBattler.selectThis();
+                  if (!selectedSameTeam) {
+                     selectedBattler.selectThis();
+                  }
                }
 
                break;

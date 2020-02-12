@@ -35,7 +35,7 @@ public class AnimatedSprite : MonoBehaviour {
    public Sprite[] spriteArray;
 
    // Delay between sprite frames
-   public static float SPRITE_DELAY = .05f;
+   public static float SPRITE_DELAY = .025f;
 
    #endregion
 
@@ -65,7 +65,17 @@ public class AnimatedSprite : MonoBehaviour {
    }
 
    private void OnTriggerEnter2D (Collider2D collision) {
-      if (isInteractable && !isInteracting) {
+      // Trigger interact animation when Clickable Box collides with this object (ClickableBox is the collider attached to all battlers)
+      if (isInteractable && !isInteracting && collision.GetComponent<ClickableBox>() != null) {
+         isInteracting = true;
+         simpleAnimation.isPaused = true;
+         StartCoroutine(CO_HandleInteractAnimation());
+      }
+   }
+
+   private void OnTriggerExit2D (Collider2D collision) { 
+      // Trigger interact animation when Clickable Box collides with this object (ClickableBox is the collider attached to all battlers)
+      if (isInteractable && !isInteracting && collision.GetComponent<ClickableBox>() != null) {
          isInteracting = true;
          simpleAnimation.isPaused = true;
          StartCoroutine(CO_HandleInteractAnimation());
@@ -83,12 +93,11 @@ public class AnimatedSprite : MonoBehaviour {
 
       spriteIndex = max_interact_frame - 1;
       while (spriteIndex > min_interact_frame) {
+         yield return new WaitForSeconds(SPRITE_DELAY);
          spriteRenderer.sprite = spriteArray[spriteIndex];
          spriteIndex--;
-         yield return new WaitForSeconds(SPRITE_DELAY);
       }
 
-      yield return new WaitForSeconds(SPRITE_DELAY);
       resetPassiveAnimation();
    }
 

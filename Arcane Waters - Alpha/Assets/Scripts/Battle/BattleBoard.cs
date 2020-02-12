@@ -27,6 +27,12 @@ public class BattleBoard : MonoBehaviour {
       foreach (BattleSpot spot in GetComponentsInChildren<BattleSpot>()) {
          _spots.Add(spot);
       }
+
+      // The layers between the battlers and the midground elements
+      int layerOffset = 2;
+
+      // Adjust z axis to battle manager position to interact with battler sprites
+      centerPoint.transform.position = new Vector3(centerPoint.transform.position.x, centerPoint.transform.position.y, BattleManager.self.transform.position.z + layerOffset);
    }
 
    public void recalibrateBattleSpots (List<GameObject> defenderSpots, List<GameObject> attackerSpots, int newXmlId) {
