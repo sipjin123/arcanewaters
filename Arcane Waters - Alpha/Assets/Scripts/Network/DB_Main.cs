@@ -5081,8 +5081,8 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static void setServer (string server) {
-      _connectionString = buildConnectionString(server);
+   public static void setServer (string server, string database="", string uid="", string password="") {
+      _connectionString = buildConnectionString(server, database, uid, password);
    }
 
    protected static Armor getArmor (MySqlDataReader dataReader) {
@@ -5139,9 +5139,11 @@ public class DB_Main : DB_MainStub
       return new MySqlConnection(_connectionString);
    }
 
-   public static string buildConnectionString (string server) {
-      return "SERVER=" + server + ";" + "DATABASE=" +
-          _database + ";" + "UID=" + _uid + ";" + "PASSWORD=" + _password + ";";
+   public static string buildConnectionString (string server, string database = "", string uid = "", string password = "") {
+      return "SERVER=" + server + ";" + 
+          "DATABASE=" + (database == "" ? _database : database) + ";" + 
+          "UID=" + (uid == "" ? _uid : uid) + ";" + 
+          "PASSWORD=" + (password == "" ? _password : password) + ";";
    }
 
    /*
@@ -5162,7 +5164,8 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new int createAccount (string accountName, string accountPassword, string accountEmail, int validated) {
+   */
+   public static int createAccount (string accountName, string accountPassword, string accountEmail, int validated) {
       int accountId = 0;
 
       try {
@@ -5188,6 +5191,7 @@ public class DB_Main : DB_MainStub
       return accountId;
    }
 
+   /*
    public static new void deleteAccount (int accountId) {
       try {
          using (MySqlConnection conn = getConnection())
