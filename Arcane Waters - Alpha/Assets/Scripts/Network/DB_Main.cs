@@ -1704,12 +1704,14 @@ public class DB_Main : DB_MainStub
       return latestXMLId;
    }
 
-   public static new List<XMLPair> getBackgroundXML () {
+   public static new List<XMLPair> getBackgroundXML (bool ifDefault = false) {
+      string defaultKey = ifDefault ? " WHERE default_bg=1" : "";
+
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.background_xml_v2", conn)) {
+            "SELECT * FROM arcane.background_xml_v2" + defaultKey, conn)) {
 
             conn.Open();
             cmd.Prepare();

@@ -29,13 +29,19 @@ public class BackgroundGameManager : MonoBehaviour {
 
    private void Awake () {
       self = this;
+
+      // Fetch the default background data for clients
+      if (!NetworkServer.active) {
+         initializeDataCache(true);
+      }
    }
 
-   public void initializeDataCache () {
+   public void initializeDataCache (bool ifDefault) {
       backgroundContentList = new List<BackgroundContentData>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<XMLPair> backgroundData = DB_Main.getBackgroundXML();
+         List<XMLPair> backgroundData = DB_Main.getBackgroundXML(ifDefault);
+
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (XMLPair xmlPair in backgroundData) {
                TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
@@ -44,21 +50,12 @@ public class BackgroundGameManager : MonoBehaviour {
                backgroundContentList.Add(bgContentData);
             }
 
-            isInitialized = true;
+            if (!ifDefault) {
+               isInitialized = true;
+            }
             BattleManager.self.initializeBattleBoards();
          });
       });
-   }
-
-   public void receiveServerDataCache (BackgroundContentData[] bgContentData) {
-      if (!isInitialized) {
-         backgroundContentList = new List<BackgroundContentData>();
-         foreach (BackgroundContentData bgContent in bgContentData) {
-            backgroundContentList.Add(bgContent);
-         }
-
-         BattleManager.self.initializeBattleBoards();
-      }
    }
 
    public void receiveNewContent (BackgroundContentData[] bgContentData) {

@@ -79,15 +79,6 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_ReceiveDefaultBGData (NetworkConnection connection, string[] rawInfo) {
-      // Deserialize data
-      BackgroundContentData[] bgContentData = Util.unserialize<BackgroundContentData>(rawInfo).ToArray();
-      
-      // Cache to background data manager 
-      BackgroundGameManager.self.receiveServerDataCache(bgContentData);
-   }
-
-   [TargetRpc]
    public void Target_ReceiveTutorialData (NetworkConnection connection, string[] rawInfo) {
       // Deserialize data
       TutorialData[] tutorialDataList = Util.unserialize<TutorialData>(rawInfo).ToArray();

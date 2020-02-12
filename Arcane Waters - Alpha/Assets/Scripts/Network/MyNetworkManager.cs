@@ -148,7 +148,7 @@ public class MyNetworkManager : NetworkManager {
       ShipAbilityManager.self.initializDataCache();
       ShopXMLManager.self.initializDataCache();
       AbilityManager.self.initializeDefaultAbilities();
-      BackgroundGameManager.self.initializeDataCache();
+      BackgroundGameManager.self.initializeDataCache(false);
 
       // Schedule the leader boards recalculation
       LeaderBoardsManager.self.scheduleLeaderBoardRecalculation();
@@ -269,9 +269,6 @@ public class MyNetworkManager : NetworkManager {
 
             // Tutorial data to the client
             player.rpc.Target_ReceiveTutorialData(player.connectionToClient, Util.serialize(TutorialManager.self.tutorialDataList()));
-
-            // Send only the default bg data to the client
-            player.rpc.Target_ReceiveDefaultBGData(player.connectionToClient, Util.serialize(new List<BackgroundContentData> { BackgroundGameManager.self.backgroundContentList[0] }));
 
             // Gives the user admin features if it has an admin flag
             player.rpc.Target_GrantAdminAccess(player.connectionToClient, player.isAdmin());
