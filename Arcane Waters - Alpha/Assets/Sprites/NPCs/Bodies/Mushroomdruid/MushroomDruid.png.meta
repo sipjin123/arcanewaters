@@ -1,0 +1,679 @@
+fileFormatVersion: 2
+guid: ca7a13880f045f440b75f3fd21367861
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3946597404463533064
+    second: MushroomDruid_0
+  - first:
+      213: 3027826382022666423
+    second: MushroomDruid_1
+  - first:
+      213: -7266526709461588897
+    second: MushroomDruid_2
+  - first:
+      213: -6786701446208623135
+    second: MushroomDruid_3
+  - first:
+      213: 8810863163569578163
+    second: MushroomDruid_4
+  - first:
+      213: 3611782692982603502
+    second: MushroomDruid_5
+  - first:
+      213: 3035843663603772404
+    second: MushroomDruid_6
+  - first:
+      213: 3033016407693498003
+    second: MushroomDruid_7
+  - first:
+      213: -185786238259345551
+    second: MushroomDruid_8
+  - first:
+      213: 5074531401673997750
+    second: MushroomDruid_9
+  - first:
+      213: 4082086204118527094
+    second: MushroomDruid_10
+  - first:
+      213: -1421060433270164505
+    second: MushroomDruid_11
+  - first:
+      213: -87614093239840690
+    second: MushroomDruid_12
+  - first:
+      213: 8073878808720987041
+    second: MushroomDruid_13
+  - first:
+      213: 2071250288945056759
+    second: MushroomDruid_14
+  - first:
+      213: -6258397166960032379
+    second: MushroomDruid_15
+  - first:
+      213: -6777812296453404594
+    second: MushroomDruid_16
+  - first:
+      213: -2099859845669784698
+    second: MushroomDruid_17
+  - first:
+      213: 8872264305825296752
+    second: MushroomDruid_18
+  - first:
+      213: 1743139294659927012
+    second: MushroomDruid_19
+  - first:
+      213: -1526888852994919789
+    second: MushroomDruid_20
+  - first:
+      213: 472824399029932506
+    second: MushroomDruid_21
+  - first:
+      213: -3419865546821547782
+    second: MushroomDruid_22
+  - first:
+      213: 3764813751718202990
+    second: MushroomDruid_23
+  externalObjects: {}
+  serializedVersion: 10
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 1
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: -1
+    mipBias: -100
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: MushroomDruid_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 425
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d2242a53c4105fa41a0747eae104d689
+      internalID: -3946597404463533064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MushroomDruid_1
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 425
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a9792144a665e0148a6962cf5390f56c
+      internalID: 3027826382022666423
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MushroomDruid_2
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 425
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e52e66090547e364fa3e66f76761db89
+      internalID: -7266526709461588897
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MushroomDruid_3
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 425
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f739d7d778613f4484a9489fd6248e2
+      internalID: -6786701446208623135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MushroomDruid_4
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 425
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c439e3b652a33d4fa4f3a578a3af841
+      internalID: 8810863163569578163
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MushroomDruid_5
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 425
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f66d2134f6972d44db622c9637312277
+      internalID: 3611782692982603502
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MushroomDruid_6
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 425
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 95f4fbe97d6b99b4eac525d5b99baf8f
+      internalID: 3035843663603772404
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MushroomDruid_7
+      rect:
+        serializedVersion: 2
+        x: 595
+        y: 425
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bace0452172687b4093d5b391c117c7c
+      internalID: 3033016407693498003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MushroomDruid_8
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 425
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 445cba46c81ad1645aaeea9f73cf52f4
+      internalID: -185786238259345551
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MushroomDruid_9
+      rect:
+        serializedVersion: 2
+        x: 765
+        y: 425
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1372540eea75c3d4282a0be6aefe51c9
+      internalID: 5074531401673997750
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MushroomDruid_10
+      rect:
+        serializedVersion: 2
+        x: 850
+        y: 425
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: acb1889b117706d4f93e2ca72cf3ccf8
+      internalID: 4082086204118527094
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MushroomDruid_11
+      rect:
+        serializedVersion: 2
+        x: 935
+        y: 425
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 75cb6dfb994c74d408c6e0678baaf91e
+      internalID: -1421060433270164505
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MushroomDruid_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 340
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 43c967733b8a7934d92da7a6ffd1084d
+      internalID: -87614093239840690
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MushroomDruid_13
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 340
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 92b3a6a0881667f40964e7b0edcb75c8
+      internalID: 8073878808720987041
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MushroomDruid_14
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 340
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3cb395439f679ab47931e01f7c1b346b
+      internalID: 2071250288945056759
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MushroomDruid_15
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 340
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a873a30b69c8a194a8bf33d6ce2b5f32
+      internalID: -6258397166960032379
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MushroomDruid_16
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 340
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 153b52eb5654e904a897686ccbeed51a
+      internalID: -6777812296453404594
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MushroomDruid_17
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 340
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e05dec5cbbfa5c6458420799032b7b19
+      internalID: -2099859845669784698
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MushroomDruid_18
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 340
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 97b7256c91d185845aeac2039783e448
+      internalID: 8872264305825296752
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MushroomDruid_19
+      rect:
+        serializedVersion: 2
+        x: 595
+        y: 340
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 93024b16ce84d0f4c9eed918c62d7023
+      internalID: 1743139294659927012
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MushroomDruid_20
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 340
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1104e393163af264a9506eacbf1e6703
+      internalID: -1526888852994919789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MushroomDruid_21
+      rect:
+        serializedVersion: 2
+        x: 765
+        y: 340
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 15ffa2cb9aa30134b8a32ec1fbf7e294
+      internalID: 472824399029932506
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MushroomDruid_22
+      rect:
+        serializedVersion: 2
+        x: 850
+        y: 340
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 00203f3bf87e59d44a70e435801cb755
+      internalID: -3419865546821547782
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MushroomDruid_23
+      rect:
+        serializedVersion: 2
+        x: 935
+        y: 340
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 28ee9ea1549962b4e96f52f47195cb40
+      internalID: 3764813751718202990
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
