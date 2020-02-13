@@ -24,6 +24,9 @@ public class BattlerData {
    // Determines the enemy type
    public Enemy.Type enemyType;
 
+   // Determines the anim group type
+   public Anim.Group animGroup = Anim.Group.None;
+
    // Ability Points gained when damaged
    public int apGainWhenDamaged;
 
@@ -73,6 +76,7 @@ public class BattlerData {
    public BattlerData (MySqlDataReader dataReader) {
       this.enemyName = dataReader.GetString("enemyName");
       this.enemyType = (Enemy.Type) dataReader.GetInt32("enemyType");
+      this.animGroup = (Anim.Group) dataReader.GetInt32("animGroup");
 
       this.baseHealth = dataReader.GetInt32("baseHealth");
       this.baseDefense = dataReader.GetInt32("baseDefense");
@@ -121,7 +125,7 @@ public class BattlerData {
       float earthDefMultiplier, float airDefMultiplier, float waterDefMultiplier, float allDefMultiplier, float physicalAtkMultiplier,
       float fireAtkMultiplier, float earthAtkMultiplier, float airAtkMultiplier, float waterAtkMultiplier, float allAtkMultiplier,
       string deathSound, string jumpAtkSound, float preContactLength, float preMagicLength, int baseXPReward, RawGenericLootData lootData,
-      Enemy.Type enemyType, Battler battlerObject, string imagePath) {
+      Enemy.Type enemyType, Battler battlerObject, string imagePath, Anim.Group animGroup) {
 
       BattlerData data = new BattlerData();
 
@@ -129,7 +133,7 @@ public class BattlerData {
        defPerLevel, healthPerLevel, battlerAbilities, physicalDefMultiplier, fireDefMultiplier,
        earthDefMultiplier, airDefMultiplier, waterDefMultiplier, allDefMultiplier, physicalAtkMultiplier,
        fireAtkMultiplier, earthAtkMultiplier, airAtkMultiplier, waterAtkMultiplier, allAtkMultiplier,
-       deathSound, jumpAtkSound, preContactLength, preMagicLength, baseXPReward, lootData, enemyType, battlerObject, imagePath);
+       deathSound, jumpAtkSound, preContactLength, preMagicLength, baseXPReward, lootData, enemyType, battlerObject, imagePath, animGroup);
 
       return data;
    }
@@ -139,6 +143,7 @@ public class BattlerData {
 
       currentXP = datacopy.currentXP;
       enemyType = datacopy.enemyType;
+      animGroup = datacopy.animGroup;
 
       apGainWhenDamaged = datacopy.apGainWhenDamaged;
 
@@ -197,10 +202,11 @@ public class BattlerData {
       float earthDefMultiplier, float airDefMultiplier, float waterDefMultiplier, float allDefMultiplier, float physicalAtkMultiplier,
       float fireAtkMultiplier, float earthAtkMultiplier, float airAtkMultiplier, float waterAtkMultiplier, float allAtkMultiplier,
       string deathSound, string jumpAtkSound, float preContactLength, float preMagicLength, int baseXPReward, RawGenericLootData lootData,
-      Enemy.Type enemyType, Battler battlerObject, string imagePath) {
+      Enemy.Type enemyType, Battler battlerObject, string imagePath, Anim.Group animGroup) {
 
       this.currentXP = xp;
       this.enemyType = enemyType;
+      this.animGroup = animGroup;
 
       this.apGainWhenDamaged = apWhenDamaged;
 

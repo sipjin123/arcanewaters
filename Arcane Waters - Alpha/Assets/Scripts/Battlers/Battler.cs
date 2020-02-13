@@ -340,6 +340,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
             this.cooldownEndTime = Util.netTime() + 5f;
          }
 
+         updateAnimGroup(battlerData.animGroup);
+
          // This function will handle the computed stats of the player depending on their Specialty/Faction/Job/Class
          setupPlayerStats();
 
@@ -675,6 +677,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
       // Make all of our Simple Animation components play the animation
       foreach (SimpleAnimation anim in _anims) {
          anim.playAnimation(animationType);
+      }
+   }
+
+   private void updateAnimGroup (Anim.Group animGroup) {
+      foreach (SimpleAnimation anim in _anims) {
+         anim.group = animGroup;
       }
    }
 

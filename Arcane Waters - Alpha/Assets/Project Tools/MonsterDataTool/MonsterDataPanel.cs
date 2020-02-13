@@ -124,6 +124,10 @@ public class MonsterDataPanel : MonoBehaviour {
    public GameObject errorPanel;
    public Button closeErrorPanel;
 
+   // Anim group altering
+   public Slider animGroupSlider;
+   public Text animGroupText;
+
    #endregion
 
    private void Awake () {
@@ -150,6 +154,12 @@ public class MonsterDataPanel : MonoBehaviour {
       toggleAttackButton.onClick.AddListener(() => toggleAttackStats());
       toggleDefenseButton.onClick.AddListener(() => toggleDefenseStats());
       toggleSkillsButton.onClick.AddListener(() => toggleSkills());
+
+      animGroupSlider.maxValue = Enum.GetValues(typeof(Anim.Group)).Length;
+      animGroupSlider.onValueChanged.AddListener(_ => {
+         animGroupText.text = ((Anim.Group)_).ToString();
+      });
+      animGroupSlider.value = 0;
 
       selectJumpAudioButton.onClick.AddListener(() => toggleAudioSelection(PathType.JumpSfx));
       selectDeathAudioButton.onClick.AddListener(() => toggleAudioSelection(PathType.DeathSfx));
@@ -243,6 +253,8 @@ public class MonsterDataPanel : MonoBehaviour {
       currentXmlId = xml_id;
       startingName = newBattleData.enemyName;
       monsterTypeText.text = ((Enemy.Type) newBattleData.enemyType).ToString();
+      animGroupText.text = ((Anim.Group) newBattleData.animGroup).ToString();
+      animGroupSlider.value = (int) newBattleData.animGroup;
 
       try {
          avatarIcon.sprite = ImageManager.getSprite(newBattleData.imagePath);
@@ -307,6 +319,7 @@ public class MonsterDataPanel : MonoBehaviour {
       BattlerData newBattData = new BattlerData();
 
       newBattData.enemyType = (Enemy.Type) Enum.Parse(typeof(Enemy.Type), monsterTypeText.text);
+      newBattData.animGroup = (Anim.Group) Enum.Parse(typeof(Anim.Group), animGroupText.text);
       newBattData.imagePath = avatarIconPath;
 
       newBattData.baseHealth = int.Parse(_baseHealth.text);

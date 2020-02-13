@@ -16,6 +16,9 @@ public class BattleSelectionSprite : MonoBehaviour {
    // Caches the y axis so when the battler pops up, the battle selector stays on the ground
    public float initialYaxis;
 
+   // Holds the sprite content
+   public GameObject spriteHolder;
+
    #endregion
 
    void Start () {
@@ -43,9 +46,23 @@ public class BattleSelectionSprite : MonoBehaviour {
          Vector3 targetPosition = selectedBattler.transform.position;
          targetPosition.z -= .001f;
 
-         if (!selectedBattler.isJumping) {
+         bool isBattlerJumping = selectedBattler.isJumping;
+
+         // Freeze y axis if the battler is not attacking
+         if (!isBattlerJumping) {
             targetPosition.y = initialYaxis;
          }
+
+         // Disabled sprite UI if the battler is jumping
+         spriteHolder.SetActive(!isBattlerJumping);
+
+         // Hide skill UI if battler is jumping
+         if (selectedBattler.teamType == Battle.TeamType.Attackers) {
+            BattleUIManager.self.playerBattleCG.gameObject.SetActive(!isBattlerJumping);
+         } else {
+            BattleUIManager.self.targetEnemyCG.gameObject.SetActive(!isBattlerJumping);
+         }
+
          this.transform.position = targetPosition + getOffset(selectedBattler);
 
          // Move the arrows around based on the orientation of our target

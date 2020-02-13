@@ -60,13 +60,14 @@ public class AnimatedSprite : MonoBehaviour {
          min_interact_frame = spriteCount / 2;
          max_interact_frame = spriteCount;
       }
-
+      simpleAnimation.minIndex = 0;
+      simpleAnimation.maxIndex = max_idle_frame;
       spriteArray = ImageManager.getSprites(spriteRenderer.sprite.texture);
    }
 
    private void OnTriggerEnter2D (Collider2D collision) {
       // Trigger interact animation when Clickable Box collides with this object (ClickableBox is the collider attached to all battlers)
-      if (isInteractable && !isInteracting && collision.GetComponent<ClickableBox>() != null) {
+      if (isInteractable && !isInteracting && collision.GetComponent<InteractBox>() != null) {
          isInteracting = true;
          simpleAnimation.isPaused = true;
          StartCoroutine(CO_HandleInteractAnimation());
@@ -75,7 +76,7 @@ public class AnimatedSprite : MonoBehaviour {
 
    private void OnTriggerExit2D (Collider2D collision) { 
       // Trigger interact animation when Clickable Box collides with this object (ClickableBox is the collider attached to all battlers)
-      if (isInteractable && !isInteracting && collision.GetComponent<ClickableBox>() != null) {
+      if (isInteractable && !isInteracting && collision.GetComponent<InteractBox>() != null) {
          isInteracting = true;
          simpleAnimation.isPaused = true;
          StartCoroutine(CO_HandleInteractAnimation());

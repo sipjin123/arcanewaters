@@ -62,34 +62,36 @@ public class TeamCombatPanel : Panel
       });
 
       launchBattler.onClick.AddListener(() => {
-         leftBattlers = new List<Enemy.Type>();
-         leftBattlerNames = new List<string>();
-         foreach (Transform template in leftBattlerParent) {
-            BattlerTemplate battlerTemplate = template.GetComponent<BattlerTemplate>();
-            Enemy.Type battlerType = battlerTemplate.battlerDataCache.enemyType;
+         if (leftBattlerParent.childCount > 0) {
+            leftBattlers = new List<Enemy.Type>();
+            leftBattlerNames = new List<string>();
+            foreach (Transform template in leftBattlerParent) {
+               BattlerTemplate battlerTemplate = template.GetComponent<BattlerTemplate>();
+               Enemy.Type battlerType = battlerTemplate.battlerDataCache.enemyType;
 
-            if (battlerType != Enemy.Type.PlayerBattler) {
-               leftBattlers.Add(battlerType);
-            } else {
-               leftBattlerNames.Add(battlerTemplate.userNameText.text);
+               if (battlerType != Enemy.Type.PlayerBattler) {
+                  leftBattlers.Add(battlerType);
+               } else {
+                  leftBattlerNames.Add(battlerTemplate.userNameText.text);
+               }
             }
-         }
 
-         rightBattlers = new List<Enemy.Type>();
-         rightBattlerNames = new List<string>();
-         foreach (Transform template in rightBattlerParent) {
-            BattlerTemplate battlerTemplate = template.GetComponent<BattlerTemplate>();
-            Enemy.Type battlerType = battlerTemplate.battlerDataCache.enemyType;
+            rightBattlers = new List<Enemy.Type>();
+            rightBattlerNames = new List<string>();
+            foreach (Transform template in rightBattlerParent) {
+               BattlerTemplate battlerTemplate = template.GetComponent<BattlerTemplate>();
+               Enemy.Type battlerType = battlerTemplate.battlerDataCache.enemyType;
 
-            if (battlerType != Enemy.Type.PlayerBattler) {
-               rightBattlers.Add(battlerType);
-            } else {
-               rightBattlerNames.Add(battlerTemplate.userNameText.text);
+               if (battlerType != Enemy.Type.PlayerBattler) {
+                  rightBattlers.Add(battlerType);
+               } else {
+                  rightBattlerNames.Add(battlerTemplate.userNameText.text);
+               }
             }
-         }
-         Global.player.rpc.Cmd_StartNewTeamBattle(leftBattlers.ToArray(), rightBattlers.ToArray(), leftBattlerNames.ToArray(), rightBattlerNames.ToArray());
+            Global.player.rpc.Cmd_StartNewTeamBattle(leftBattlers.ToArray(), rightBattlers.ToArray(), leftBattlerNames.ToArray(), rightBattlerNames.ToArray());
 
-         PanelManager.self.popPanel();
+            PanelManager.self.popPanel();
+         }
       });
    }
 

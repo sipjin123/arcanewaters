@@ -8,6 +8,7 @@ using System.Text;
 using System.Xml;
 using System.Linq;
 using System;
+using System.IO;
 
 namespace BackgroundTool
 {
@@ -16,7 +17,7 @@ namespace BackgroundTool
       #region Public Variables
 
       // Button to save the data
-      public Button saveButton;
+      public Button saveButton, saveTextButton;
 
       // Load selected dropdown file
       public Button loadButton;
@@ -53,6 +54,12 @@ namespace BackgroundTool
       // The id of the owner of the content
       public int currentOwnerID;
 
+      // Reference to the prefab holding the default bg file
+      public DefaultBGHolder defaultBGPrefab;
+
+      // Default background data name
+      public static string DEFAULT_BACKGROUND = "Default Background";
+
       #endregion
 
       private void Start () {
@@ -62,27 +69,15 @@ namespace BackgroundTool
          saveButton.interactable = canSaveData;
 
          saveButton.onClick.AddListener(() => {
-            List<SpriteTemplateData> spriteTempList = ImageManipulator.self.spriteTemplateDataList;
-            if (hasValidContent(spriteTempList)) {
-               BackgroundContentData newContentData = new BackgroundContentData();
-
-               // Set id and name of bg data
-               int currentID = backgroundXmlPair[dropDownFiles.value];
-               newContentData.xmlId = currentID;
-               newContentData.backgroundName = backgroundName.text;
-
-               // Get the sprite data list
-               newContentData.spriteTemplateList = spriteTempList;
-
-               // Get biome data
-               string biomeName = biomeDropdown.options[biomeDropdown.value].text;
-               newContentData.biomeType = (Biome.Type) Enum.Parse(typeof(Biome.Type), biomeName);
-
-               saveData(newContentData);
-            } else {
-               showErrorPanel(true, SPAWNPOINT_ERROR);
-            }
+            saveData(false);
          });
+
+#if UNITY_EDITOR
+         saveTextButton.gameObject.SetActive(true);
+         saveTextButton.onClick.AddListener(() => {
+            saveData(true);
+         });
+#endif
 
          loadButton.onClick.AddListener(() => {
             string currentOption = dropDownFiles.options[dropDownFiles.value].text;
@@ -116,6 +111,43 @@ namespace BackgroundTool
          biomeDropdown.options = biomeOptions;
 
          Invoke("loadData", MasterToolScene.loadDelay);
+      }
+
+      private void saveData (bool saveLocally) {
+         List<SpriteTemplateData> spriteTempList = ImageManipulator.self.spriteTemplateDataList;
+         if (hasValidContent(spriteTempList)) {
+            BackgroundContentData newContentData = new BackgroundContentData();
+
+            // Set id and name of bg data
+            int currentID = backgroundXmlPair[dropDownFiles.value];
+            newContentData.xmlId = currentID;
+            newContentData.backgroundName = backgroundName.text;
+
+            // Get the sprite data list
+            newContentData.spriteTemplateList = spriteTempList;
+
+            // Get biome data
+            string biomeName = biomeDropdown.options[biomeDropdown.value].text;
+            newContentData.biomeType = (Biome.Type) Enum.Parse(typeof(Biome.Type), biomeName);
+
+            if (saveLocally) {
+               // As of now only developers with the access to the editor can declare the default background tool
+               // This Function overwrites the content of the prefab data holder
+#if UNITY_EDITOR
+               newContentData.backgroundName = DEFAULT_BACKGROUND;
+               newContentData.xmlId = 0;
+
+               UnityEditor.EditorUtility.SetDirty(defaultBGPrefab);
+               defaultBGPrefab.defaultBGData = newContentData;
+               UnityEditor.AssetDatabase.Refresh();
+#endif
+            } else {
+               // Save to SQL Database
+               saveData(newContentData);
+            }
+         } else {
+            showErrorPanel(true, SPAWNPOINT_ERROR);
+         }
       }
 
       private bool hasValidContent (List<SpriteTemplateData> spriteTempList) {

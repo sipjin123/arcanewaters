@@ -16,7 +16,7 @@ public class DB_MainStub : MonoBehaviour
       return 0;
    }
    
-   public static List<XMLPair> getBackgroundXML (bool ifDefault) {
+   public static List<XMLPair> getBackgroundXML () {
       return new List<XMLPair>();
    }
 

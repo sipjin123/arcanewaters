@@ -25,22 +25,23 @@ public class BackgroundGameManager : MonoBehaviour {
    // Determines if data is initialized
    public bool isInitialized;
 
+   // The reference to the prefab containing the default background data
+   public DefaultBGHolder defaultBGDataHolder;
+
    #endregion
 
    private void Awake () {
       self = this;
 
-      // Fetch the default background data for clients
-      if (!NetworkServer.active) {
-         initializeDataCache(true);
-      }
+      // Auto load the default background data from the data holder prefab
+      resetBackgroundList();
    }
 
-   public void initializeDataCache (bool ifDefault) {
-      backgroundContentList = new List<BackgroundContentData>();
+   public void initializeDataCache () {
+      resetBackgroundList();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<XMLPair> backgroundData = DB_Main.getBackgroundXML(ifDefault);
+         List<XMLPair> backgroundData = DB_Main.getBackgroundXML();
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (XMLPair xmlPair in backgroundData) {
@@ -50,9 +51,7 @@ public class BackgroundGameManager : MonoBehaviour {
                backgroundContentList.Add(bgContentData);
             }
 
-            if (!ifDefault) {
-               isInitialized = true;
-            }
+            isInitialized = true;
             BattleManager.self.initializeBattleBoards();
          });
       });
@@ -60,7 +59,8 @@ public class BackgroundGameManager : MonoBehaviour {
 
    public void receiveNewContent (BackgroundContentData[] bgContentData) {
       if (!isInitialized) {
-         backgroundContentList = new List<BackgroundContentData>();
+         resetBackgroundList();
+
          foreach (BackgroundContentData bgContent in bgContentData) {
             backgroundContentList.Add(bgContent);
          }
@@ -68,6 +68,11 @@ public class BackgroundGameManager : MonoBehaviour {
          BattleManager.self.initializeBattleBoards();
          StartCoroutine(CO_DelayProcessData());
       }
+   }
+
+   private void resetBackgroundList () {
+      backgroundContentList = new List<BackgroundContentData>();
+      backgroundContentList.Add(defaultBGDataHolder.defaultBGData);
    }
 
    private IEnumerator CO_DelayProcessData () {
@@ -146,7 +151,7 @@ public class BackgroundGameManager : MonoBehaviour {
                animatedSprite.setSpriteCount(spriteCount);
 
                BoxCollider2D collider2d = spriteTempObj.gameObject.AddComponent<BoxCollider2D>();
-               collider2d.size = new Vector2(collider2d.size.x/2, collider2d.size.y);
+               collider2d.size = new Vector2(collider2d.size.x/2, collider2d.size.y/2);
                collider2d.isTrigger = true;
                simpleAnimList.Add(spriteTempObj.GetComponent<SimpleAnimation>());
             } else if (spriteTempData.contentCategory == ImageLoader.BGContentCategory.Animating) {

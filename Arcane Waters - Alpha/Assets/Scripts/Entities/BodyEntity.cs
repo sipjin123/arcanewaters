@@ -127,7 +127,7 @@ public class BodyEntity : NetEntity
       if (_waterChecker.inWater()) {
          EffectManager.self.create(Effect.Type.Crop_Water, this.sortPoint.transform.position);
       } else {
-         Instantiate(PrefabsManager.self.requestCannonSmokePrefab(Attack.ImpactMagnitude.Weak), this.sortPoint.transform.position, Quaternion.identity);
+         Instantiate(PrefabsManager.self.requestCannonSmokePrefab(Attack.ImpactMagnitude.None), this.sortPoint.transform.position, Quaternion.identity);
          SoundManager.create3dSound("ledge", this.sortPoint.transform.position);
 
          // Shake the camera
