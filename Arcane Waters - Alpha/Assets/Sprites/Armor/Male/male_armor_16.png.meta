@@ -1,151 +1,151 @@
 fileFormatVersion: 2
-guid: 684e5a0cd568e334ebeb2e0c0c495452
+guid: 1044348b8d780424cb719b86e0edc998
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 21300000
-    second: male_tunic_0
+      213: -7285947524318330638
+    second: male_armor_16_0
   - first:
-      213: 21300002
-    second: male_tunic_1
+      213: -439123721880213657
+    second: male_armor_16_1
   - first:
-      213: 21300004
-    second: male_tunic_2
+      213: -3279444777869891657
+    second: male_armor_16_2
   - first:
-      213: 21300006
-    second: male_tunic_3
+      213: 5461779460787397013
+    second: male_armor_16_3
   - first:
-      213: 21300008
-    second: male_tunic_4
+      213: 894414001970524492
+    second: male_armor_16_4
   - first:
-      213: 21300010
-    second: male_tunic_5
+      213: -2774390296274257511
+    second: male_armor_16_5
   - first:
-      213: 21300012
-    second: male_tunic_6
+      213: -8644526153344265112
+    second: male_armor_16_6
   - first:
-      213: 21300014
-    second: male_tunic_7
+      213: -8893500563670992130
+    second: male_armor_16_7
   - first:
-      213: 21300016
-    second: male_tunic_8
+      213: -2256026973214064233
+    second: male_armor_16_8
   - first:
-      213: 21300018
-    second: male_tunic_9
+      213: -7887836855890710516
+    second: male_armor_16_9
   - first:
-      213: 21300020
-    second: male_tunic_10
+      213: 1882737430849233959
+    second: male_armor_16_10
   - first:
-      213: 21300022
-    second: male_tunic_11
+      213: 6293209758418348866
+    second: male_armor_16_11
   - first:
-      213: 21300024
-    second: male_tunic_12
+      213: -2867413857348389646
+    second: male_armor_16_12
   - first:
-      213: 21300026
-    second: male_tunic_13
+      213: 2078285842826365627
+    second: male_armor_16_13
   - first:
-      213: 21300028
-    second: male_tunic_14
+      213: -472097471242196313
+    second: male_armor_16_14
   - first:
-      213: 21300030
-    second: male_tunic_15
+      213: 5716806040087185308
+    second: male_armor_16_15
   - first:
-      213: 21300032
-    second: male_tunic_16
+      213: 39704235664689924
+    second: male_armor_16_16
   - first:
-      213: 21300034
-    second: male_tunic_17
+      213: -2073772331619716326
+    second: male_armor_16_17
   - first:
-      213: 21300036
-    second: male_tunic_18
+      213: 2740314681322314730
+    second: male_armor_16_18
   - first:
-      213: 21300038
-    second: male_tunic_19
+      213: -5294047997772782384
+    second: male_armor_16_19
   - first:
-      213: 21300040
-    second: male_tunic_20
+      213: -880070003006759509
+    second: male_armor_16_20
   - first:
-      213: 21300042
-    second: male_tunic_21
+      213: -6834429602500961281
+    second: male_armor_16_21
   - first:
-      213: 21300044
-    second: male_tunic_22
+      213: 1417345027991333692
+    second: male_armor_16_22
   - first:
-      213: 21300046
-    second: male_tunic_23
+      213: -2678770242039195817
+    second: male_armor_16_23
   - first:
-      213: 21300048
-    second: male_tunic_24
+      213: -7054329892657438623
+    second: male_armor_16_24
   - first:
-      213: 21300050
-    second: male_tunic_25
+      213: -2540123887987360166
+    second: male_armor_16_25
   - first:
-      213: 21300052
-    second: male_tunic_26
+      213: 77355963500266648
+    second: male_armor_16_26
   - first:
-      213: 21300054
-    second: male_tunic_27
+      213: 7567360056350227691
+    second: male_armor_16_27
   - first:
-      213: 21300056
-    second: male_tunic_28
+      213: -3988234039659428373
+    second: male_armor_16_28
   - first:
-      213: 21300058
-    second: male_tunic_29
+      213: -1891825098148590496
+    second: male_armor_16_29
   - first:
-      213: 21300060
-    second: male_tunic_30
+      213: -7835842161878134920
+    second: male_armor_16_30
   - first:
-      213: 21300062
-    second: male_tunic_31
+      213: 7189800834464622440
+    second: male_armor_16_31
   - first:
-      213: 21300064
-    second: male_tunic_32
+      213: -8170526554952160690
+    second: male_armor_16_32
   - first:
-      213: 21300066
-    second: male_tunic_33
+      213: -517113760044704203
+    second: male_armor_16_33
   - first:
-      213: 21300068
-    second: male_tunic_34
+      213: -6234532199753382455
+    second: male_armor_16_34
   - first:
-      213: 21300070
-    second: male_tunic_35
+      213: 5222153650254755377
+    second: male_armor_16_35
   - first:
-      213: 21300072
-    second: male_tunic_36
+      213: -4646887175093157153
+    second: male_armor_16_36
   - first:
-      213: 21300074
-    second: male_tunic_37
+      213: 6224699523700859603
+    second: male_armor_16_37
   - first:
-      213: 21300076
-    second: male_tunic_38
+      213: 3998435037817236518
+    second: male_armor_16_38
   - first:
-      213: 21300078
-    second: male_tunic_39
+      213: 6798495155924439872
+    second: male_armor_16_39
   - first:
-      213: 21300080
-    second: male_tunic_40
+      213: -2330680903946422589
+    second: male_armor_16_40
   - first:
-      213: 21300082
-    second: male_tunic_41
+      213: 4452627957150132455
+    second: male_armor_16_41
   - first:
-      213: 21300084
-    second: male_tunic_42
+      213: -6575357039106904919
+    second: male_armor_16_42
   - first:
-      213: 21300086
-    second: male_tunic_43
+      213: -2998583725886445811
+    second: male_armor_16_43
   - first:
-      213: 21300088
-    second: male_tunic_44
+      213: -7926444597977712570
+    second: male_armor_16_44
   - first:
-      213: 21300090
-    second: male_tunic_45
+      213: 2692952952385114810
+    second: male_armor_16_45
   - first:
-      213: 21300092
-    second: male_tunic_46
+      213: 8884259504352872278
+    second: male_armor_16_46
   - first:
-      213: 21300094
-    second: male_tunic_47
+      213: 1023180288130307460
+    second: male_armor_16_47
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -171,7 +171,7 @@ TextureImporter:
   generateCubemap: 6
   cubemapConvolution: 0
   seamlessCubemap: 0
-  textureFormat: 5
+  textureFormat: 1
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
@@ -213,7 +213,7 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
     maxTextureSize: 2048
@@ -225,12 +225,12 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: male_tunic_0
+      name: male_armor_16_0
       rect:
         serializedVersion: 2
         x: 0
@@ -242,16 +242,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 02305410000000000800000000000000
-      internalID: 21300000
+      spriteID: 184b5e2c2860f954bb1153f6ead2e043
+      internalID: -7285947524318330638
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_1
+      name: male_armor_16_1
       rect:
         serializedVersion: 2
         x: 85
@@ -263,16 +263,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 22305410000000000800000000000000
-      internalID: 21300002
+      spriteID: e5dc4599acb45214c8a38465fbbefe2b
+      internalID: -439123721880213657
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_2
+      name: male_armor_16_2
       rect:
         serializedVersion: 2
         x: 170
@@ -284,16 +284,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 42305410000000000800000000000000
-      internalID: 21300004
+      spriteID: 426661eb0e9820745bdb7a160c19235c
+      internalID: -3279444777869891657
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_3
+      name: male_armor_16_3
       rect:
         serializedVersion: 2
         x: 255
@@ -305,16 +305,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 62305410000000000800000000000000
-      internalID: 21300006
+      spriteID: 2477daa25f74e5144abf7c19537c528a
+      internalID: 5461779460787397013
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_4
+      name: male_armor_16_4
       rect:
         serializedVersion: 2
         x: 340
@@ -326,16 +326,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 82305410000000000800000000000000
-      internalID: 21300008
+      spriteID: 972e2a621e4639145a06317ada4be296
+      internalID: 894414001970524492
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_5
+      name: male_armor_16_5
       rect:
         serializedVersion: 2
         x: 425
@@ -347,16 +347,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a2305410000000000800000000000000
-      internalID: 21300010
+      spriteID: 4b7ac0f9faf6e4342aba0bb2402c2195
+      internalID: -2774390296274257511
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_6
+      name: male_armor_16_6
       rect:
         serializedVersion: 2
         x: 510
@@ -368,16 +368,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c2305410000000000800000000000000
-      internalID: 21300012
+      spriteID: 67124b9afdc26e64fa3df2a7cf530a01
+      internalID: -8644526153344265112
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_7
+      name: male_armor_16_7
       rect:
         serializedVersion: 2
         x: 595
@@ -389,16 +389,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e2305410000000000800000000000000
-      internalID: 21300014
+      spriteID: 60d6ecf14ac71e74083e525f67469769
+      internalID: -8893500563670992130
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_8
+      name: male_armor_16_8
       rect:
         serializedVersion: 2
         x: 680
@@ -410,16 +410,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 03305410000000000800000000000000
-      internalID: 21300016
+      spriteID: 8c6d47ae52719f84e9f000c3a5e57c25
+      internalID: -2256026973214064233
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_9
+      name: male_armor_16_9
       rect:
         serializedVersion: 2
         x: 765
@@ -431,16 +431,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 23305410000000000800000000000000
-      internalID: 21300018
+      spriteID: ddfca897ccfb3a448a310b6a355597b5
+      internalID: -7887836855890710516
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_10
+      name: male_armor_16_10
       rect:
         serializedVersion: 2
         x: 850
@@ -452,16 +452,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 43305410000000000800000000000000
-      internalID: 21300020
+      spriteID: 5370521e09abbb044a3729ad894a097b
+      internalID: 1882737430849233959
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_11
+      name: male_armor_16_11
       rect:
         serializedVersion: 2
         x: 935
@@ -473,16 +473,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 63305410000000000800000000000000
-      internalID: 21300022
+      spriteID: 96f678e4ae026834ea80418266a12d37
+      internalID: 6293209758418348866
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_12
+      name: male_armor_16_12
       rect:
         serializedVersion: 2
         x: 0
@@ -494,16 +494,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 83305410000000000800000000000000
-      internalID: 21300024
+      spriteID: 6de53501fa448724d915bd4e09b4d7ff
+      internalID: -2867413857348389646
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_13
+      name: male_armor_16_13
       rect:
         serializedVersion: 2
         x: 85
@@ -515,16 +515,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a3305410000000000800000000000000
-      internalID: 21300026
+      spriteID: 9c46b8b5b8bec794985766de89b3de0d
+      internalID: 2078285842826365627
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_14
+      name: male_armor_16_14
       rect:
         serializedVersion: 2
         x: 170
@@ -536,16 +536,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c3305410000000000800000000000000
-      internalID: 21300028
+      spriteID: 85d113de3781ac640bc3d18c3d2c23bd
+      internalID: -472097471242196313
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_15
+      name: male_armor_16_15
       rect:
         serializedVersion: 2
         x: 255
@@ -557,16 +557,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e3305410000000000800000000000000
-      internalID: 21300030
+      spriteID: e5c1af12e785cab468d5d709c7208cf2
+      internalID: 5716806040087185308
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_16
+      name: male_armor_16_16
       rect:
         serializedVersion: 2
         x: 340
@@ -578,16 +578,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 04305410000000000800000000000000
-      internalID: 21300032
+      spriteID: e9c6afd60d508f8409172b5efb108723
+      internalID: 39704235664689924
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_17
+      name: male_armor_16_17
       rect:
         serializedVersion: 2
         x: 425
@@ -599,16 +599,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 24305410000000000800000000000000
-      internalID: 21300034
+      spriteID: 9826b256f5ed9844397d7e208e25c69f
+      internalID: -2073772331619716326
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_18
+      name: male_armor_16_18
       rect:
         serializedVersion: 2
         x: 510
@@ -620,16 +620,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 44305410000000000800000000000000
-      internalID: 21300036
+      spriteID: 284e2e1dfac0f0d48b34991edaac461f
+      internalID: 2740314681322314730
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_19
+      name: male_armor_16_19
       rect:
         serializedVersion: 2
         x: 595
@@ -641,16 +641,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 64305410000000000800000000000000
-      internalID: 21300038
+      spriteID: 0226b0c884adb8543ad3daff08859dd0
+      internalID: -5294047997772782384
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_20
+      name: male_armor_16_20
       rect:
         serializedVersion: 2
         x: 680
@@ -662,16 +662,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 84305410000000000800000000000000
-      internalID: 21300040
+      spriteID: a885b7038ee7e144585c5b7978d5dc37
+      internalID: -880070003006759509
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_21
+      name: male_armor_16_21
       rect:
         serializedVersion: 2
         x: 765
@@ -683,16 +683,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a4305410000000000800000000000000
-      internalID: 21300042
+      spriteID: 7d91a9c86d4c64541b2e743421e4f9ab
+      internalID: -6834429602500961281
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_22
+      name: male_armor_16_22
       rect:
         serializedVersion: 2
         x: 850
@@ -704,16 +704,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c4305410000000000800000000000000
-      internalID: 21300044
+      spriteID: 092e45d7e04d6d64fa34a626510a5611
+      internalID: 1417345027991333692
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_23
+      name: male_armor_16_23
       rect:
         serializedVersion: 2
         x: 935
@@ -725,16 +725,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e4305410000000000800000000000000
-      internalID: 21300046
+      spriteID: 1309518ba99795444b046ed3e112982f
+      internalID: -2678770242039195817
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_24
+      name: male_armor_16_24
       rect:
         serializedVersion: 2
         x: 0
@@ -746,16 +746,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 05305410000000000800000000000000
-      internalID: 21300048
+      spriteID: b6c11437cbe8d1a48a353bbae2a7c576
+      internalID: -7054329892657438623
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_25
+      name: male_armor_16_25
       rect:
         serializedVersion: 2
         x: 85
@@ -767,16 +767,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 25305410000000000800000000000000
-      internalID: 21300050
+      spriteID: 37171383b2e071c4c8a1a36dbde68008
+      internalID: -2540123887987360166
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_26
+      name: male_armor_16_26
       rect:
         serializedVersion: 2
         x: 170
@@ -788,16 +788,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 45305410000000000800000000000000
-      internalID: 21300052
+      spriteID: d23c91b7f6bb76c4092acd45ea176584
+      internalID: 77355963500266648
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_27
+      name: male_armor_16_27
       rect:
         serializedVersion: 2
         x: 255
@@ -809,16 +809,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 65305410000000000800000000000000
-      internalID: 21300054
+      spriteID: 9f641eda19914ee428ad6f9a44f76583
+      internalID: 7567360056350227691
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_28
+      name: male_armor_16_28
       rect:
         serializedVersion: 2
         x: 340
@@ -830,16 +830,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 85305410000000000800000000000000
-      internalID: 21300056
+      spriteID: 98261fd43c0e03841b0bbfcce21ce11f
+      internalID: -3988234039659428373
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_29
+      name: male_armor_16_29
       rect:
         serializedVersion: 2
         x: 425
@@ -851,16 +851,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a5305410000000000800000000000000
-      internalID: 21300058
+      spriteID: 6701a01355de6e14f86d4f1f01df2c1a
+      internalID: -1891825098148590496
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_30
+      name: male_armor_16_30
       rect:
         serializedVersion: 2
         x: 510
@@ -872,16 +872,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c5305410000000000800000000000000
-      internalID: 21300060
+      spriteID: 845513c420845e24898860043a81bbd2
+      internalID: -7835842161878134920
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_31
+      name: male_armor_16_31
       rect:
         serializedVersion: 2
         x: 595
@@ -893,16 +893,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e5305410000000000800000000000000
-      internalID: 21300062
+      spriteID: db907bdfbb5607c439c07b60701b792f
+      internalID: 7189800834464622440
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_32
+      name: male_armor_16_32
       rect:
         serializedVersion: 2
         x: 680
@@ -914,16 +914,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 06305410000000000800000000000000
-      internalID: 21300064
+      spriteID: f54a5b06cdfe3504c90be40e180c3060
+      internalID: -8170526554952160690
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_33
+      name: male_armor_16_33
       rect:
         serializedVersion: 2
         x: 765
@@ -935,16 +935,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 26305410000000000800000000000000
-      internalID: 21300066
+      spriteID: 8b09219b1ce7c0e43a510e0b9828a801
+      internalID: -517113760044704203
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_34
+      name: male_armor_16_34
       rect:
         serializedVersion: 2
         x: 850
@@ -956,16 +956,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 46305410000000000800000000000000
-      internalID: 21300068
+      spriteID: ed5810dba534a4746bb54fb2045cb885
+      internalID: -6234532199753382455
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_35
+      name: male_armor_16_35
       rect:
         serializedVersion: 2
         x: 935
@@ -977,16 +977,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 66305410000000000800000000000000
-      internalID: 21300070
+      spriteID: 7a37c4decaaa786429e6fc543836eed8
+      internalID: 5222153650254755377
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_36
+      name: male_armor_16_36
       rect:
         serializedVersion: 2
         x: 0
@@ -998,16 +998,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 86305410000000000800000000000000
-      internalID: 21300072
+      spriteID: d3537fe1f3d357d45b2421b8c6ca142d
+      internalID: -4646887175093157153
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_37
+      name: male_armor_16_37
       rect:
         serializedVersion: 2
         x: 85
@@ -1019,16 +1019,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a6305410000000000800000000000000
-      internalID: 21300074
+      spriteID: 1176c8fccfef2ff41a144d0e19d5b173
+      internalID: 6224699523700859603
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_38
+      name: male_armor_16_38
       rect:
         serializedVersion: 2
         x: 170
@@ -1040,16 +1040,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c6305410000000000800000000000000
-      internalID: 21300076
+      spriteID: b254c04a19786ca44825de8543af646f
+      internalID: 3998435037817236518
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_39
+      name: male_armor_16_39
       rect:
         serializedVersion: 2
         x: 255
@@ -1061,16 +1061,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e6305410000000000800000000000000
-      internalID: 21300078
+      spriteID: b3c4a74d1ad27ae4abcfba5956f034a4
+      internalID: 6798495155924439872
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_40
+      name: male_armor_16_40
       rect:
         serializedVersion: 2
         x: 340
@@ -1082,16 +1082,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 07305410000000000800000000000000
-      internalID: 21300080
+      spriteID: a569066879c2dc6409756fe06daf0978
+      internalID: -2330680903946422589
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_41
+      name: male_armor_16_41
       rect:
         serializedVersion: 2
         x: 425
@@ -1103,16 +1103,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 27305410000000000800000000000000
-      internalID: 21300082
+      spriteID: 95b5a3c387c56de45baf171e75ae1a11
+      internalID: 4452627957150132455
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_42
+      name: male_armor_16_42
       rect:
         serializedVersion: 2
         x: 510
@@ -1124,16 +1124,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 47305410000000000800000000000000
-      internalID: 21300084
+      spriteID: 04251990561351145a59f35beba3d321
+      internalID: -6575357039106904919
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_43
+      name: male_armor_16_43
       rect:
         serializedVersion: 2
         x: 595
@@ -1145,16 +1145,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 67305410000000000800000000000000
-      internalID: 21300086
+      spriteID: 428cc0d091480314894115014f40ea7b
+      internalID: -2998583725886445811
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_44
+      name: male_armor_16_44
       rect:
         serializedVersion: 2
         x: 680
@@ -1166,16 +1166,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 87305410000000000800000000000000
-      internalID: 21300088
+      spriteID: a4811217088ef0246b94a86189f97294
+      internalID: -7926444597977712570
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_45
+      name: male_armor_16_45
       rect:
         serializedVersion: 2
         x: 765
@@ -1187,16 +1187,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a7305410000000000800000000000000
-      internalID: 21300090
+      spriteID: 3d444165b670ce94f91a00716ce5de66
+      internalID: 2692952952385114810
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_46
+      name: male_armor_16_46
       rect:
         serializedVersion: 2
         x: 850
@@ -1208,16 +1208,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c7305410000000000800000000000000
-      internalID: 21300092
+      spriteID: 68e584e8828cc9444b05604b4756a307
+      internalID: 8884259504352872278
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_tunic_47
+      name: male_armor_16_47
       rect:
         serializedVersion: 2
         x: 935
@@ -1229,10 +1229,10 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e7305410000000000800000000000000
-      internalID: 21300094
+      spriteID: 6248b09425aeab64f801c127261cc0e9
+      internalID: 1023180288130307460
       vertices: []
       indices: 
       edges: []
@@ -1240,7 +1240,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 

@@ -1,151 +1,151 @@
 fileFormatVersion: 2
-guid: 1e9e48f94fc4e994eaf3edbd0e2ad3ab
+guid: 54bb7e4955731cf43b38cc64f57afe82
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 21300000
-    second: female_tunic_0
+      213: -1094249471774181477
+    second: female_armor_10_0
   - first:
-      213: 21300002
-    second: female_tunic_1
+      213: -4888597324869649972
+    second: female_armor_10_1
   - first:
-      213: 21300004
-    second: female_tunic_2
+      213: 5287408807398815555
+    second: female_armor_10_2
   - first:
-      213: 21300006
-    second: female_tunic_3
+      213: 3595611110337417473
+    second: female_armor_10_3
   - first:
-      213: 21300008
-    second: female_tunic_4
+      213: -2666825687168231683
+    second: female_armor_10_4
   - first:
-      213: 21300010
-    second: female_tunic_5
+      213: -6587292883882100972
+    second: female_armor_10_5
   - first:
-      213: 21300012
-    second: female_tunic_6
+      213: 1297830749025586296
+    second: female_armor_10_6
   - first:
-      213: 21300014
-    second: female_tunic_7
+      213: -8711169705764790318
+    second: female_armor_10_7
   - first:
-      213: 21300016
-    second: female_tunic_8
+      213: -7243051639914396190
+    second: female_armor_10_8
   - first:
-      213: 21300018
-    second: female_tunic_9
+      213: 3169853085985189716
+    second: female_armor_10_9
   - first:
-      213: 21300020
-    second: female_tunic_10
+      213: 7471901810671724694
+    second: female_armor_10_10
   - first:
-      213: 21300022
-    second: female_tunic_11
+      213: -2484827497475962788
+    second: female_armor_10_11
   - first:
-      213: 21300024
-    second: female_tunic_12
+      213: 974924196410751549
+    second: female_armor_10_12
   - first:
-      213: 21300026
-    second: female_tunic_13
+      213: 3190435950886140144
+    second: female_armor_10_13
   - first:
-      213: 21300028
-    second: female_tunic_14
+      213: 8492811955146956656
+    second: female_armor_10_14
   - first:
-      213: 21300030
-    second: female_tunic_15
+      213: -887939805557326989
+    second: female_armor_10_15
   - first:
-      213: 21300032
-    second: female_tunic_16
+      213: -6310344649138577062
+    second: female_armor_10_16
   - first:
-      213: 21300034
-    second: female_tunic_17
+      213: -5528356331143948322
+    second: female_armor_10_17
   - first:
-      213: 21300036
-    second: female_tunic_18
+      213: 3772765299837624102
+    second: female_armor_10_18
   - first:
-      213: 21300038
-    second: female_tunic_19
+      213: 568776964918242794
+    second: female_armor_10_19
   - first:
-      213: 21300040
-    second: female_tunic_20
+      213: 7404312852767312605
+    second: female_armor_10_20
   - first:
-      213: 21300042
-    second: female_tunic_21
+      213: 181684636470975598
+    second: female_armor_10_21
   - first:
-      213: 21300044
-    second: female_tunic_22
+      213: 7734247125939489410
+    second: female_armor_10_22
   - first:
-      213: 21300046
-    second: female_tunic_23
+      213: 3424959546441426480
+    second: female_armor_10_23
   - first:
-      213: 21300048
-    second: female_tunic_24
+      213: -761401835056569096
+    second: female_armor_10_24
   - first:
-      213: 21300050
-    second: female_tunic_25
+      213: 1733507820991630928
+    second: female_armor_10_25
   - first:
-      213: 21300052
-    second: female_tunic_26
+      213: -3197359701456682153
+    second: female_armor_10_26
   - first:
-      213: 21300054
-    second: female_tunic_27
+      213: 842426716590178834
+    second: female_armor_10_27
   - first:
-      213: 21300056
-    second: female_tunic_28
+      213: 6631230602309875622
+    second: female_armor_10_28
   - first:
-      213: 21300058
-    second: female_tunic_29
+      213: 7526634525804677306
+    second: female_armor_10_29
   - first:
-      213: 21300060
-    second: female_tunic_30
+      213: 5250626215804803520
+    second: female_armor_10_30
   - first:
-      213: 21300062
-    second: female_tunic_31
+      213: -1478990617514971659
+    second: female_armor_10_31
   - first:
-      213: 21300064
-    second: female_tunic_32
+      213: -7856856207211464382
+    second: female_armor_10_32
   - first:
-      213: 21300066
-    second: female_tunic_33
+      213: 1236909289433073594
+    second: female_armor_10_33
   - first:
-      213: 21300068
-    second: female_tunic_34
+      213: -8437455609064693179
+    second: female_armor_10_34
   - first:
-      213: 21300070
-    second: female_tunic_35
+      213: 2229901171275446222
+    second: female_armor_10_35
   - first:
-      213: 21300072
-    second: female_tunic_36
+      213: 5918374994745555687
+    second: female_armor_10_36
   - first:
-      213: 21300074
-    second: female_tunic_37
+      213: 2212950842818966826
+    second: female_armor_10_37
   - first:
-      213: 21300076
-    second: female_tunic_38
+      213: -5561785728192404937
+    second: female_armor_10_38
   - first:
-      213: 21300078
-    second: female_tunic_39
+      213: -8752417284867424195
+    second: female_armor_10_39
   - first:
-      213: 21300080
-    second: female_tunic_40
+      213: -4665679072767729878
+    second: female_armor_10_40
   - first:
-      213: 21300082
-    second: female_tunic_41
+      213: 2606943143941558898
+    second: female_armor_10_41
   - first:
-      213: 21300084
-    second: female_tunic_42
+      213: -4717191850605597374
+    second: female_armor_10_42
   - first:
-      213: 21300086
-    second: female_tunic_43
+      213: -8091213525706656156
+    second: female_armor_10_43
   - first:
-      213: 21300088
-    second: female_tunic_44
+      213: 3354682880484626129
+    second: female_armor_10_44
   - first:
-      213: 21300090
-    second: female_tunic_45
+      213: -7929610856367892238
+    second: female_armor_10_45
   - first:
-      213: 21300092
-    second: female_tunic_46
+      213: 9090012399812946081
+    second: female_armor_10_46
   - first:
-      213: 21300094
-    second: female_tunic_47
+      213: 662810551469418284
+    second: female_armor_10_47
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -171,7 +171,7 @@ TextureImporter:
   generateCubemap: 6
   cubemapConvolution: 0
   seamlessCubemap: 0
-  textureFormat: 5
+  textureFormat: 1
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
@@ -213,7 +213,7 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
     maxTextureSize: 2048
@@ -225,12 +225,12 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: female_tunic_0
+      name: female_armor_10_0
       rect:
         serializedVersion: 2
         x: 0
@@ -242,16 +242,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 02305410000000000800000000000000
-      internalID: 21300000
+      spriteID: 9ab0cb06f94f1c94c89d3d5897327794
+      internalID: -1094249471774181477
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_1
+      name: female_armor_10_1
       rect:
         serializedVersion: 2
         x: 85
@@ -263,16 +263,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 22305410000000000800000000000000
-      internalID: 21300002
+      spriteID: fbc4793f017b24a44a92041a711c7f84
+      internalID: -4888597324869649972
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_2
+      name: female_armor_10_2
       rect:
         serializedVersion: 2
         x: 170
@@ -284,16 +284,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 42305410000000000800000000000000
-      internalID: 21300004
+      spriteID: b45835577ede6bc4a8f67a20801a8002
+      internalID: 5287408807398815555
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_3
+      name: female_armor_10_3
       rect:
         serializedVersion: 2
         x: 255
@@ -305,16 +305,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 62305410000000000800000000000000
-      internalID: 21300006
+      spriteID: c1513fdbb4fb6b9448db7df2af677a8a
+      internalID: 3595611110337417473
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_4
+      name: female_armor_10_4
       rect:
         serializedVersion: 2
         x: 340
@@ -326,16 +326,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 82305410000000000800000000000000
-      internalID: 21300008
+      spriteID: c6f114909d9ad57428ef62d5a6dfb189
+      internalID: -2666825687168231683
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_5
+      name: female_armor_10_5
       rect:
         serializedVersion: 2
         x: 425
@@ -347,16 +347,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a2305410000000000800000000000000
-      internalID: 21300010
+      spriteID: 9d5d58d112460aa4fb1c3d0a2223c4c2
+      internalID: -6587292883882100972
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_6
+      name: female_armor_10_6
       rect:
         serializedVersion: 2
         x: 510
@@ -368,16 +368,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c2305410000000000800000000000000
-      internalID: 21300012
+      spriteID: 74f46cb48a8eb8847bd53e50c99f859a
+      internalID: 1297830749025586296
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_7
+      name: female_armor_10_7
       rect:
         serializedVersion: 2
         x: 595
@@ -389,16 +389,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e2305410000000000800000000000000
-      internalID: 21300014
+      spriteID: ef06c9b21e8ff6a46bf4397fd93e1f02
+      internalID: -8711169705764790318
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_8
+      name: female_armor_10_8
       rect:
         serializedVersion: 2
         x: 680
@@ -410,16 +410,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 03305410000000000800000000000000
-      internalID: 21300016
+      spriteID: 826892b83b84bbd4eb2938260384fd51
+      internalID: -7243051639914396190
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_9
+      name: female_armor_10_9
       rect:
         serializedVersion: 2
         x: 765
@@ -431,16 +431,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 23305410000000000800000000000000
-      internalID: 21300018
+      spriteID: abf2849d039363448bbcea506540dab1
+      internalID: 3169853085985189716
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_10
+      name: female_armor_10_10
       rect:
         serializedVersion: 2
         x: 850
@@ -452,16 +452,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 43305410000000000800000000000000
-      internalID: 21300020
+      spriteID: b25a5f2f4698f1647ade8a82fdfa95e9
+      internalID: 7471901810671724694
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_11
+      name: female_armor_10_11
       rect:
         serializedVersion: 2
         x: 935
@@ -473,16 +473,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 63305410000000000800000000000000
-      internalID: 21300022
+      spriteID: 6fedd8c42e3d6af42ba39908bc033177
+      internalID: -2484827497475962788
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_12
+      name: female_armor_10_12
       rect:
         serializedVersion: 2
         x: 0
@@ -494,16 +494,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 83305410000000000800000000000000
-      internalID: 21300024
+      spriteID: 92188bb76f84c2b48bd4ebf4e2d762f4
+      internalID: 974924196410751549
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_13
+      name: female_armor_10_13
       rect:
         serializedVersion: 2
         x: 85
@@ -515,16 +515,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a3305410000000000800000000000000
-      internalID: 21300026
+      spriteID: 4f6ee329704b95049a15c342f81c3317
+      internalID: 3190435950886140144
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_14
+      name: female_armor_10_14
       rect:
         serializedVersion: 2
         x: 170
@@ -536,16 +536,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c3305410000000000800000000000000
-      internalID: 21300028
+      spriteID: 715a094421725b04e9ed9b5289c370f0
+      internalID: 8492811955146956656
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_15
+      name: female_armor_10_15
       rect:
         serializedVersion: 2
         x: 255
@@ -557,16 +557,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e3305410000000000800000000000000
-      internalID: 21300030
+      spriteID: fa00fdeb222b5ca4c92a6855b04513d4
+      internalID: -887939805557326989
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_16
+      name: female_armor_10_16
       rect:
         serializedVersion: 2
         x: 340
@@ -578,16 +578,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 04305410000000000800000000000000
-      internalID: 21300032
+      spriteID: 0ee5bb460aef8f3499133d0a68761444
+      internalID: -6310344649138577062
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_17
+      name: female_armor_10_17
       rect:
         serializedVersion: 2
         x: 425
@@ -599,16 +599,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 24305410000000000800000000000000
-      internalID: 21300034
+      spriteID: a80a9bea2ffde4a48a757e71a2b7e05a
+      internalID: -5528356331143948322
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_18
+      name: female_armor_10_18
       rect:
         serializedVersion: 2
         x: 510
@@ -620,16 +620,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 44305410000000000800000000000000
-      internalID: 21300036
+      spriteID: 0c03cfec3d4e3ac4d9695136ee39e00a
+      internalID: 3772765299837624102
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_19
+      name: female_armor_10_19
       rect:
         serializedVersion: 2
         x: 595
@@ -641,16 +641,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 64305410000000000800000000000000
-      internalID: 21300038
+      spriteID: c0c7cf04bccea98409d0a251ca1f2eb8
+      internalID: 568776964918242794
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_20
+      name: female_armor_10_20
       rect:
         serializedVersion: 2
         x: 680
@@ -662,16 +662,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 84305410000000000800000000000000
-      internalID: 21300040
+      spriteID: d528730706af1994e8574711fd6cc2b6
+      internalID: 7404312852767312605
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_21
+      name: female_armor_10_21
       rect:
         serializedVersion: 2
         x: 765
@@ -683,16 +683,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a4305410000000000800000000000000
-      internalID: 21300042
+      spriteID: 950a3913ea2f5f243a933f941e432dd3
+      internalID: 181684636470975598
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_22
+      name: female_armor_10_22
       rect:
         serializedVersion: 2
         x: 850
@@ -704,16 +704,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c4305410000000000800000000000000
-      internalID: 21300044
+      spriteID: 7f6345f3bff7d1b49b137118007813a5
+      internalID: 7734247125939489410
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_23
+      name: female_armor_10_23
       rect:
         serializedVersion: 2
         x: 935
@@ -725,16 +725,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e4305410000000000800000000000000
-      internalID: 21300046
+      spriteID: 3334024a4598113428dc98a07c1ad64e
+      internalID: 3424959546441426480
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_24
+      name: female_armor_10_24
       rect:
         serializedVersion: 2
         x: 0
@@ -746,16 +746,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 05305410000000000800000000000000
-      internalID: 21300048
+      spriteID: 5d6f2a252081d9949971d49b949cddad
+      internalID: -761401835056569096
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_25
+      name: female_armor_10_25
       rect:
         serializedVersion: 2
         x: 85
@@ -767,16 +767,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 25305410000000000800000000000000
-      internalID: 21300050
+      spriteID: e17066779e13426408c8a98c5f0839d9
+      internalID: 1733507820991630928
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_26
+      name: female_armor_10_26
       rect:
         serializedVersion: 2
         x: 170
@@ -788,16 +788,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 45305410000000000800000000000000
-      internalID: 21300052
+      spriteID: 9f8f71e5bdb833d4ca0bfafc7d9c2b82
+      internalID: -3197359701456682153
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_27
+      name: female_armor_10_27
       rect:
         serializedVersion: 2
         x: 255
@@ -809,16 +809,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 65305410000000000800000000000000
-      internalID: 21300054
+      spriteID: 15079fe8487bd314a8d50eb424415526
+      internalID: 842426716590178834
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_28
+      name: female_armor_10_28
       rect:
         serializedVersion: 2
         x: 340
@@ -830,16 +830,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 85305410000000000800000000000000
-      internalID: 21300056
+      spriteID: b9a208736f922294eb4501091b9ce4a6
+      internalID: 6631230602309875622
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_29
+      name: female_armor_10_29
       rect:
         serializedVersion: 2
         x: 425
@@ -851,16 +851,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a5305410000000000800000000000000
-      internalID: 21300058
+      spriteID: 89e16519f22fec241ae9e4448745456e
+      internalID: 7526634525804677306
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_30
+      name: female_armor_10_30
       rect:
         serializedVersion: 2
         x: 510
@@ -872,16 +872,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c5305410000000000800000000000000
-      internalID: 21300060
+      spriteID: f8e285a16a8360f4ea6e8a89a1f6bade
+      internalID: 5250626215804803520
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_31
+      name: female_armor_10_31
       rect:
         serializedVersion: 2
         x: 595
@@ -893,16 +893,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e5305410000000000800000000000000
-      internalID: 21300062
+      spriteID: d2007c2850dcf884f9bbccd216472e61
+      internalID: -1478990617514971659
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_32
+      name: female_armor_10_32
       rect:
         serializedVersion: 2
         x: 680
@@ -914,16 +914,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 06305410000000000800000000000000
-      internalID: 21300064
+      spriteID: 31b8603f22dbc25449619df6b2f0c4ec
+      internalID: -7856856207211464382
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_33
+      name: female_armor_10_33
       rect:
         serializedVersion: 2
         x: 765
@@ -935,16 +935,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 26305410000000000800000000000000
-      internalID: 21300066
+      spriteID: 72c724c4b9097ee4695d45e6c9a8b6f3
+      internalID: 1236909289433073594
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_34
+      name: female_armor_10_34
       rect:
         serializedVersion: 2
         x: 850
@@ -956,16 +956,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 46305410000000000800000000000000
-      internalID: 21300068
+      spriteID: ff5d13155e0269b4fb8401a65069a4f5
+      internalID: -8437455609064693179
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_35
+      name: female_armor_10_35
       rect:
         serializedVersion: 2
         x: 935
@@ -977,16 +977,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 66305410000000000800000000000000
-      internalID: 21300070
+      spriteID: 0d0794f309f2fa6428eadec705ed4d55
+      internalID: 2229901171275446222
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_36
+      name: female_armor_10_36
       rect:
         serializedVersion: 2
         x: 0
@@ -998,16 +998,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 86305410000000000800000000000000
-      internalID: 21300072
+      spriteID: c092bb47604f54b4db050dfd2f85eb08
+      internalID: 5918374994745555687
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_37
+      name: female_armor_10_37
       rect:
         serializedVersion: 2
         x: 85
@@ -1019,16 +1019,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a6305410000000000800000000000000
-      internalID: 21300074
+      spriteID: 97908b4bc5ca6644383b4aef510f395f
+      internalID: 2212950842818966826
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_38
+      name: female_armor_10_38
       rect:
         serializedVersion: 2
         x: 170
@@ -1040,16 +1040,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c6305410000000000800000000000000
-      internalID: 21300076
+      spriteID: a909e8d079eae964d944b637686786b4
+      internalID: -5561785728192404937
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_39
+      name: female_armor_10_39
       rect:
         serializedVersion: 2
         x: 255
@@ -1061,16 +1061,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e6305410000000000800000000000000
-      internalID: 21300078
+      spriteID: 29cbddea533927f48ae17e76bc29e6d1
+      internalID: -8752417284867424195
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_40
+      name: female_armor_10_40
       rect:
         serializedVersion: 2
         x: 340
@@ -1082,16 +1082,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 07305410000000000800000000000000
-      internalID: 21300080
+      spriteID: 567a79275b8e4304fa54a3d2b79a28ba
+      internalID: -4665679072767729878
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_41
+      name: female_armor_10_41
       rect:
         serializedVersion: 2
         x: 425
@@ -1103,16 +1103,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 27305410000000000800000000000000
-      internalID: 21300082
+      spriteID: cbe04825b6aa1434e8aab4c9d15ad99c
+      internalID: 2606943143941558898
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_42
+      name: female_armor_10_42
       rect:
         serializedVersion: 2
         x: 510
@@ -1124,16 +1124,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 47305410000000000800000000000000
-      internalID: 21300084
+      spriteID: 8c5d5450c675f5b4bad639053d43f86f
+      internalID: -4717191850605597374
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_43
+      name: female_armor_10_43
       rect:
         serializedVersion: 2
         x: 595
@@ -1145,16 +1145,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 67305410000000000800000000000000
-      internalID: 21300086
+      spriteID: 91dc4bb9f0d0c1e46a765819ff40bd9b
+      internalID: -8091213525706656156
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_44
+      name: female_armor_10_44
       rect:
         serializedVersion: 2
         x: 680
@@ -1166,16 +1166,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 87305410000000000800000000000000
-      internalID: 21300088
+      spriteID: fe5416ee85466b0448d84ab70eb33bea
+      internalID: 3354682880484626129
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_45
+      name: female_armor_10_45
       rect:
         serializedVersion: 2
         x: 765
@@ -1187,16 +1187,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a7305410000000000800000000000000
-      internalID: 21300090
+      spriteID: a6b74e61882c1ac498ba7e27f3c47fa4
+      internalID: -7929610856367892238
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_46
+      name: female_armor_10_46
       rect:
         serializedVersion: 2
         x: 850
@@ -1208,16 +1208,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c7305410000000000800000000000000
-      internalID: 21300092
+      spriteID: 92ed79450588d0740b1b916d900b39c4
+      internalID: 9090012399812946081
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_tunic_47
+      name: female_armor_10_47
       rect:
         serializedVersion: 2
         x: 935
@@ -1229,10 +1229,10 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e7305410000000000800000000000000
-      internalID: 21300094
+      spriteID: 82a5a62885cd5444d97c0d1eb6b50bdb
+      internalID: 662810551469418284
       vertices: []
       indices: 
       edges: []
@@ -1240,7 +1240,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 

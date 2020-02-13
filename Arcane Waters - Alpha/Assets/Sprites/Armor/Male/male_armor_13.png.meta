@@ -1,151 +1,151 @@
 fileFormatVersion: 2
-guid: 0f9d0b65d641e614b94fe784525ede96
+guid: 21981b8b429553e4cbadd907c4e57955
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 21300000
-    second: female_casual_0
+      213: 767151261252485822
+    second: male_armor_13_0
   - first:
-      213: 21300002
-    second: female_casual_1
+      213: -5526497215851684178
+    second: male_armor_13_1
   - first:
-      213: 21300004
-    second: female_casual_2
+      213: -7659485131022358183
+    second: male_armor_13_2
   - first:
-      213: 21300006
-    second: female_casual_3
+      213: 7214101305405745410
+    second: male_armor_13_3
   - first:
-      213: 21300008
-    second: female_casual_4
+      213: -4499482988291059237
+    second: male_armor_13_4
   - first:
-      213: 21300010
-    second: female_casual_5
+      213: 4686729410638061964
+    second: male_armor_13_5
   - first:
-      213: 21300012
-    second: female_casual_6
+      213: -1677380922070403302
+    second: male_armor_13_6
   - first:
-      213: 21300014
-    second: female_casual_7
+      213: 8070251715442570399
+    second: male_armor_13_7
   - first:
-      213: 21300016
-    second: female_casual_8
+      213: 8776873321660599352
+    second: male_armor_13_8
   - first:
-      213: 21300018
-    second: female_casual_9
+      213: -2967829658445195525
+    second: male_armor_13_9
   - first:
-      213: 21300020
-    second: female_casual_10
+      213: 2468389255580363723
+    second: male_armor_13_10
   - first:
-      213: 21300022
-    second: female_casual_11
+      213: 3599768298654664948
+    second: male_armor_13_11
   - first:
-      213: 21300024
-    second: female_casual_12
+      213: -4341756570129937156
+    second: male_armor_13_12
   - first:
-      213: 21300026
-    second: female_casual_13
+      213: -7118370658332318267
+    second: male_armor_13_13
   - first:
-      213: 21300028
-    second: female_casual_14
+      213: 3812039509917080190
+    second: male_armor_13_14
   - first:
-      213: 21300030
-    second: female_casual_15
+      213: -7950300775912952599
+    second: male_armor_13_15
   - first:
-      213: 21300032
-    second: female_casual_16
+      213: -8010404904539821973
+    second: male_armor_13_16
   - first:
-      213: 21300034
-    second: female_casual_17
+      213: 4800547003876478355
+    second: male_armor_13_17
   - first:
-      213: 21300036
-    second: female_casual_18
+      213: -5257659899027255113
+    second: male_armor_13_18
   - first:
-      213: 21300038
-    second: female_casual_19
+      213: 5777765797046759727
+    second: male_armor_13_19
   - first:
-      213: 21300040
-    second: female_casual_20
+      213: -3375728815686065779
+    second: male_armor_13_20
   - first:
-      213: 21300042
-    second: female_casual_21
+      213: 192288026031551665
+    second: male_armor_13_21
   - first:
-      213: 21300044
-    second: female_casual_22
+      213: 2331318903350531526
+    second: male_armor_13_22
   - first:
-      213: 21300046
-    second: female_casual_23
+      213: -9201678252407686887
+    second: male_armor_13_23
   - first:
-      213: 21300048
-    second: female_casual_24
+      213: -6844219060636380533
+    second: male_armor_13_24
   - first:
-      213: 21300050
-    second: female_casual_25
+      213: 3490790862552233220
+    second: male_armor_13_25
   - first:
-      213: 21300052
-    second: female_casual_26
+      213: -369553505924124593
+    second: male_armor_13_26
   - first:
-      213: 21300054
-    second: female_casual_27
+      213: -1865440954782204084
+    second: male_armor_13_27
   - first:
-      213: 21300056
-    second: female_casual_28
+      213: -3511153296344631007
+    second: male_armor_13_28
   - first:
-      213: 21300058
-    second: female_casual_29
+      213: 424181953383607864
+    second: male_armor_13_29
   - first:
-      213: 21300060
-    second: female_casual_30
+      213: 7884050312186109157
+    second: male_armor_13_30
   - first:
-      213: 21300062
-    second: female_casual_31
+      213: -3581797286242337123
+    second: male_armor_13_31
   - first:
-      213: 21300064
-    second: female_casual_32
+      213: 5658728529303658312
+    second: male_armor_13_32
   - first:
-      213: 21300066
-    second: female_casual_33
+      213: -8628199578438191952
+    second: male_armor_13_33
   - first:
-      213: 21300068
-    second: female_casual_34
+      213: 2005338515044123489
+    second: male_armor_13_34
   - first:
-      213: 21300070
-    second: female_casual_35
+      213: -425769910729522170
+    second: male_armor_13_35
   - first:
-      213: 21300072
-    second: female_casual_36
+      213: 5863897550951887053
+    second: male_armor_13_36
   - first:
-      213: 21300074
-    second: female_casual_37
+      213: 3279393031238211762
+    second: male_armor_13_37
   - first:
-      213: 21300076
-    second: female_casual_38
+      213: -8097470443160091503
+    second: male_armor_13_38
   - first:
-      213: 21300078
-    second: female_casual_39
+      213: 6666033351142207753
+    second: male_armor_13_39
   - first:
-      213: 21300080
-    second: female_casual_40
+      213: 1354249051807172004
+    second: male_armor_13_40
   - first:
-      213: 21300082
-    second: female_casual_41
+      213: -5662144430018612
+    second: male_armor_13_41
   - first:
-      213: 21300084
-    second: female_casual_42
+      213: -3282255295353863043
+    second: male_armor_13_42
   - first:
-      213: 21300086
-    second: female_casual_43
+      213: 59130131925282267
+    second: male_armor_13_43
   - first:
-      213: 21300088
-    second: female_casual_44
+      213: -7844939289761586610
+    second: male_armor_13_44
   - first:
-      213: 21300090
-    second: female_casual_45
+      213: 8426083035485111995
+    second: male_armor_13_45
   - first:
-      213: 21300092
-    second: female_casual_46
+      213: -7300013040792652305
+    second: male_armor_13_46
   - first:
-      213: 21300094
-    second: female_casual_47
+      213: -6344626254366682820
+    second: male_armor_13_47
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -171,7 +171,7 @@ TextureImporter:
   generateCubemap: 6
   cubemapConvolution: 0
   seamlessCubemap: 0
-  textureFormat: 5
+  textureFormat: 1
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
@@ -213,7 +213,7 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
     maxTextureSize: 2048
@@ -225,12 +225,12 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: female_casual_0
+      name: male_armor_13_0
       rect:
         serializedVersion: 2
         x: 0
@@ -242,16 +242,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 02305410000000000800000000000000
-      internalID: 21300000
+      spriteID: 8b131335771d98e418296030d931c070
+      internalID: 767151261252485822
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_1
+      name: male_armor_13_1
       rect:
         serializedVersion: 2
         x: 85
@@ -263,16 +263,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 22305410000000000800000000000000
-      internalID: 21300002
+      spriteID: 6e06e7c7c5c988a4abf1cab234870de4
+      internalID: -5526497215851684178
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_2
+      name: male_armor_13_2
       rect:
         serializedVersion: 2
         x: 170
@@ -284,16 +284,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 42305410000000000800000000000000
-      internalID: 21300004
+      spriteID: 987f61b9f6319644ea173bb632fd290d
+      internalID: -7659485131022358183
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_3
+      name: male_armor_13_3
       rect:
         serializedVersion: 2
         x: 255
@@ -305,16 +305,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 62305410000000000800000000000000
-      internalID: 21300006
+      spriteID: f955753cf2d95594a869542ab2bd5383
+      internalID: 7214101305405745410
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_4
+      name: male_armor_13_4
       rect:
         serializedVersion: 2
         x: 340
@@ -326,16 +326,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 82305410000000000800000000000000
-      internalID: 21300008
+      spriteID: b2612de4649b0ca44aaf799e903124c8
+      internalID: -4499482988291059237
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_5
+      name: male_armor_13_5
       rect:
         serializedVersion: 2
         x: 425
@@ -347,16 +347,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a2305410000000000800000000000000
-      internalID: 21300010
+      spriteID: 454bc9e1a98a1d7428ae1b89bfc53292
+      internalID: 4686729410638061964
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_6
+      name: male_armor_13_6
       rect:
         serializedVersion: 2
         x: 510
@@ -368,16 +368,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c2305410000000000800000000000000
-      internalID: 21300012
+      spriteID: 8c8b546026f52c84fa91ea4296a0485d
+      internalID: -1677380922070403302
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_7
+      name: male_armor_13_7
       rect:
         serializedVersion: 2
         x: 595
@@ -389,16 +389,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e2305410000000000800000000000000
-      internalID: 21300014
+      spriteID: b5cf8eb76378530468291c12adb23701
+      internalID: 8070251715442570399
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_8
+      name: male_armor_13_8
       rect:
         serializedVersion: 2
         x: 680
@@ -410,16 +410,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 03305410000000000800000000000000
-      internalID: 21300016
+      spriteID: 9077fc0a76bc7d14b95f55d751335827
+      internalID: 8776873321660599352
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_9
+      name: male_armor_13_9
       rect:
         serializedVersion: 2
         x: 765
@@ -431,16 +431,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 23305410000000000800000000000000
-      internalID: 21300018
+      spriteID: d09a4d6f703df4a4b8f1eeb931618ed4
+      internalID: -2967829658445195525
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_10
+      name: male_armor_13_10
       rect:
         serializedVersion: 2
         x: 850
@@ -452,16 +452,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 43305410000000000800000000000000
-      internalID: 21300020
+      spriteID: bbebea22a6704084e83d5e3600734564
+      internalID: 2468389255580363723
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_11
+      name: male_armor_13_11
       rect:
         serializedVersion: 2
         x: 935
@@ -473,16 +473,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 63305410000000000800000000000000
-      internalID: 21300022
+      spriteID: c647462725ca9f84189b8d28b44c4fea
+      internalID: 3599768298654664948
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_12
+      name: male_armor_13_12
       rect:
         serializedVersion: 2
         x: 0
@@ -494,16 +494,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 83305410000000000800000000000000
-      internalID: 21300024
+      spriteID: 32d2a4f6636b77d48a271de67e090e4f
+      internalID: -4341756570129937156
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_13
+      name: male_armor_13_13
       rect:
         serializedVersion: 2
         x: 85
@@ -515,16 +515,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a3305410000000000800000000000000
-      internalID: 21300026
+      spriteID: 6186afd1830ebff449133001129d0d97
+      internalID: -7118370658332318267
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_14
+      name: male_armor_13_14
       rect:
         serializedVersion: 2
         x: 170
@@ -536,16 +536,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c3305410000000000800000000000000
-      internalID: 21300028
+      spriteID: be77b41569c28b04ca24810423a0e470
+      internalID: 3812039509917080190
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_15
+      name: male_armor_13_15
       rect:
         serializedVersion: 2
         x: 255
@@ -557,16 +557,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e3305410000000000800000000000000
-      internalID: 21300030
+      spriteID: a137cf8860020c84e82b0bf44e238e67
+      internalID: -7950300775912952599
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_16
+      name: male_armor_13_16
       rect:
         serializedVersion: 2
         x: 340
@@ -578,16 +578,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 04305410000000000800000000000000
-      internalID: 21300032
+      spriteID: c713e73177c152f4ca512c95c0aca688
+      internalID: -8010404904539821973
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_17
+      name: male_armor_13_17
       rect:
         serializedVersion: 2
         x: 425
@@ -599,16 +599,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 24305410000000000800000000000000
-      internalID: 21300034
+      spriteID: 99e544f61ad0d5041999923956d46103
+      internalID: 4800547003876478355
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_18
+      name: male_armor_13_18
       rect:
         serializedVersion: 2
         x: 510
@@ -620,16 +620,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 44305410000000000800000000000000
-      internalID: 21300036
+      spriteID: 483f860a832b7f34ca45ce6f6e556253
+      internalID: -5257659899027255113
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_19
+      name: male_armor_13_19
       rect:
         serializedVersion: 2
         x: 595
@@ -641,16 +641,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 64305410000000000800000000000000
-      internalID: 21300038
+      spriteID: 5cc29478cc7ba464daf7329aa6bcaa62
+      internalID: 5777765797046759727
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_20
+      name: male_armor_13_20
       rect:
         serializedVersion: 2
         x: 680
@@ -662,16 +662,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 84305410000000000800000000000000
-      internalID: 21300040
+      spriteID: 0e2dac684e410ce4fb202d488dc53ec9
+      internalID: -3375728815686065779
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_21
+      name: male_armor_13_21
       rect:
         serializedVersion: 2
         x: 765
@@ -683,16 +683,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a4305410000000000800000000000000
-      internalID: 21300042
+      spriteID: ac4376f4091859a408e54e1354f9449c
+      internalID: 192288026031551665
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_22
+      name: male_armor_13_22
       rect:
         serializedVersion: 2
         x: 850
@@ -704,16 +704,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c4305410000000000800000000000000
-      internalID: 21300044
+      spriteID: f06e5317ecbfb304582e055772f17278
+      internalID: 2331318903350531526
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_23
+      name: male_armor_13_23
       rect:
         serializedVersion: 2
         x: 935
@@ -725,16 +725,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e4305410000000000800000000000000
-      internalID: 21300046
+      spriteID: b23b930ce16ce824e9afcb95f1e0660d
+      internalID: -9201678252407686887
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_24
+      name: male_armor_13_24
       rect:
         serializedVersion: 2
         x: 0
@@ -746,16 +746,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 05305410000000000800000000000000
-      internalID: 21300048
+      spriteID: 515ec8ebcbdcf8643b783300b2de0876
+      internalID: -6844219060636380533
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_25
+      name: male_armor_13_25
       rect:
         serializedVersion: 2
         x: 85
@@ -767,16 +767,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 25305410000000000800000000000000
-      internalID: 21300050
+      spriteID: ab939b99285d3744aa6b7b4ecd834a66
+      internalID: 3490790862552233220
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_26
+      name: male_armor_13_26
       rect:
         serializedVersion: 2
         x: 170
@@ -788,16 +788,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 45305410000000000800000000000000
-      internalID: 21300052
+      spriteID: 2568b06d678cf9b4aadcc10657c0c1b2
+      internalID: -369553505924124593
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_27
+      name: male_armor_13_27
       rect:
         serializedVersion: 2
         x: 255
@@ -809,16 +809,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 65305410000000000800000000000000
-      internalID: 21300054
+      spriteID: 975f4886215787944b4aac1c1f9c95f9
+      internalID: -1865440954782204084
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_28
+      name: male_armor_13_28
       rect:
         serializedVersion: 2
         x: 340
@@ -830,16 +830,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 85305410000000000800000000000000
-      internalID: 21300056
+      spriteID: 8c32b7b0fe8ecc744a6984da56bdad25
+      internalID: -3511153296344631007
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_29
+      name: male_armor_13_29
       rect:
         serializedVersion: 2
         x: 425
@@ -851,16 +851,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a5305410000000000800000000000000
-      internalID: 21300058
+      spriteID: c8aff610175e6e143b17f1bd32ab0c59
+      internalID: 424181953383607864
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_30
+      name: male_armor_13_30
       rect:
         serializedVersion: 2
         x: 510
@@ -872,16 +872,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c5305410000000000800000000000000
-      internalID: 21300060
+      spriteID: f69ac530d83b09e4bbdcfcaba2dd3898
+      internalID: 7884050312186109157
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_31
+      name: male_armor_13_31
       rect:
         serializedVersion: 2
         x: 595
@@ -893,16 +893,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e5305410000000000800000000000000
-      internalID: 21300062
+      spriteID: 2b1544b4f52e68942ae302344c158c23
+      internalID: -3581797286242337123
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_32
+      name: male_armor_13_32
       rect:
         serializedVersion: 2
         x: 680
@@ -914,16 +914,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 06305410000000000800000000000000
-      internalID: 21300064
+      spriteID: bc7b9bceb5f80d34a957683625058dd7
+      internalID: 5658728529303658312
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_33
+      name: male_armor_13_33
       rect:
         serializedVersion: 2
         x: 765
@@ -935,16 +935,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 26305410000000000800000000000000
-      internalID: 21300066
+      spriteID: 8296ba090bf6b894f8c1804b90ce72a1
+      internalID: -8628199578438191952
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_34
+      name: male_armor_13_34
       rect:
         serializedVersion: 2
         x: 850
@@ -956,16 +956,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 46305410000000000800000000000000
-      internalID: 21300068
+      spriteID: 5400247b92efff1469891c4b170b9acd
+      internalID: 2005338515044123489
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_35
+      name: male_armor_13_35
       rect:
         serializedVersion: 2
         x: 935
@@ -977,16 +977,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 66305410000000000800000000000000
-      internalID: 21300070
+      spriteID: 8707e4c9779fe5146ae36b9d46807c34
+      internalID: -425769910729522170
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_36
+      name: male_armor_13_36
       rect:
         serializedVersion: 2
         x: 0
@@ -998,16 +998,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 86305410000000000800000000000000
-      internalID: 21300072
+      spriteID: d04fc65b39c8b924cadd197ce4a72414
+      internalID: 5863897550951887053
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_37
+      name: male_armor_13_37
       rect:
         serializedVersion: 2
         x: 85
@@ -1019,16 +1019,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a6305410000000000800000000000000
-      internalID: 21300074
+      spriteID: 69bb20e9fc012bd4a9852ffe2461de73
+      internalID: 3279393031238211762
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_38
+      name: male_armor_13_38
       rect:
         serializedVersion: 2
         x: 170
@@ -1040,16 +1040,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c6305410000000000800000000000000
-      internalID: 21300076
+      spriteID: 0f89f1cd1890be747a8adccc230c1469
+      internalID: -8097470443160091503
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_39
+      name: male_armor_13_39
       rect:
         serializedVersion: 2
         x: 255
@@ -1061,16 +1061,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e6305410000000000800000000000000
-      internalID: 21300078
+      spriteID: 9762c4fd0f09de0419e95b7e536020aa
+      internalID: 6666033351142207753
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_40
+      name: male_armor_13_40
       rect:
         serializedVersion: 2
         x: 340
@@ -1082,16 +1082,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 07305410000000000800000000000000
-      internalID: 21300080
+      spriteID: f5c8ecc983e774c409ad926bc620140a
+      internalID: 1354249051807172004
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_41
+      name: male_armor_13_41
       rect:
         serializedVersion: 2
         x: 425
@@ -1103,16 +1103,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 27305410000000000800000000000000
-      internalID: 21300082
+      spriteID: 1d080383e626da64aa2ec68c9d741a4b
+      internalID: -5662144430018612
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_42
+      name: male_armor_13_42
       rect:
         serializedVersion: 2
         x: 510
@@ -1124,16 +1124,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 47305410000000000800000000000000
-      internalID: 21300084
+      spriteID: 6b1cd7461c205434a8f34c6084590457
+      internalID: -3282255295353863043
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_43
+      name: male_armor_13_43
       rect:
         serializedVersion: 2
         x: 595
@@ -1145,16 +1145,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 67305410000000000800000000000000
-      internalID: 21300086
+      spriteID: 2e9d9be9f68617649b5ff8bc78185593
+      internalID: 59130131925282267
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_44
+      name: male_armor_13_44
       rect:
         serializedVersion: 2
         x: 680
@@ -1166,16 +1166,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 87305410000000000800000000000000
-      internalID: 21300088
+      spriteID: 5762806de3609254ba5bc6b7ac1c61c3
+      internalID: -7844939289761586610
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_45
+      name: male_armor_13_45
       rect:
         serializedVersion: 2
         x: 765
@@ -1187,16 +1187,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a7305410000000000800000000000000
-      internalID: 21300090
+      spriteID: 1e2f383d2aa533b4f88f2d75989ded54
+      internalID: 8426083035485111995
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_46
+      name: male_armor_13_46
       rect:
         serializedVersion: 2
         x: 850
@@ -1208,16 +1208,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c7305410000000000800000000000000
-      internalID: 21300092
+      spriteID: 2da84508bf2f3064ca82572f2ad93089
+      internalID: -7300013040792652305
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_casual_47
+      name: male_armor_13_47
       rect:
         serializedVersion: 2
         x: 935
@@ -1229,10 +1229,10 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e7305410000000000800000000000000
-      internalID: 21300094
+      spriteID: 462cb4a69032c564e8bc1bce8e9f4498
+      internalID: -6344626254366682820
       vertices: []
       indices: 
       edges: []
@@ -1240,7 +1240,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 

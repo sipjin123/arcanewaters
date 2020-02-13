@@ -1,295 +1,151 @@
 fileFormatVersion: 2
-guid: e7eb0a85f26ecdb4784d124a0b88beb9
+guid: 88152aaf01bede6409264e647ce2ff75
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 21300000
-    second: strapped_male_0
+      213: 6283749822984666450
+    second: male_armor_8_0
   - first:
-      213: 21300002
-    second: strapped_male_1
+      213: 4385954318195179515
+    second: male_armor_8_1
   - first:
-      213: 21300004
-    second: strapped_male_2
+      213: -2831056364134276537
+    second: male_armor_8_2
   - first:
-      213: 21300006
-    second: strapped_male_3
+      213: 637306164897361863
+    second: male_armor_8_3
   - first:
-      213: 21300008
-    second: strapped_male_4
+      213: 1857876066433501890
+    second: male_armor_8_4
   - first:
-      213: 21300010
-    second: strapped_male_5
+      213: 8738881566137208229
+    second: male_armor_8_5
   - first:
-      213: 21300012
-    second: strapped_male_6
+      213: 8351038982169554961
+    second: male_armor_8_6
   - first:
-      213: 21300014
-    second: strapped_male_7
+      213: 3227449041984407815
+    second: male_armor_8_7
   - first:
-      213: 21300016
-    second: strapped_male_8
+      213: -7401832788972470500
+    second: male_armor_8_8
   - first:
-      213: 21300018
-    second: strapped_male_9
+      213: 4919224538662759174
+    second: male_armor_8_9
   - first:
-      213: 21300020
-    second: strapped_male_10
+      213: 6596911758479617074
+    second: male_armor_8_10
   - first:
-      213: 21300022
-    second: strapped_male_11
+      213: 7195061697164718975
+    second: male_armor_8_11
   - first:
-      213: 21300024
-    second: strapped_male_12
+      213: 3003772295521917471
+    second: male_armor_8_12
   - first:
-      213: 21300026
-    second: strapped_male_13
+      213: -9212951620368762217
+    second: male_armor_8_13
   - first:
-      213: 21300028
-    second: strapped_male_14
+      213: -3605919501446718348
+    second: male_armor_8_14
   - first:
-      213: 21300030
-    second: strapped_male_15
+      213: -8797181980578341515
+    second: male_armor_8_15
   - first:
-      213: 21300032
-    second: strapped_male_16
+      213: 504671622183037877
+    second: male_armor_8_16
   - first:
-      213: 21300034
-    second: strapped_male_17
+      213: 8613598224034045102
+    second: male_armor_8_17
   - first:
-      213: 21300036
-    second: strapped_male_18
+      213: -309341995948373357
+    second: male_armor_8_18
   - first:
-      213: 21300038
-    second: strapped_male_19
+      213: -6474415052502750631
+    second: male_armor_8_19
   - first:
-      213: 21300040
-    second: strapped_male_20
+      213: -1837662879362516570
+    second: male_armor_8_20
   - first:
-      213: 21300042
-    second: strapped_male_21
+      213: -3250446092497135026
+    second: male_armor_8_21
   - first:
-      213: 21300044
-    second: strapped_male_22
+      213: -2768781537394452818
+    second: male_armor_8_22
   - first:
-      213: 21300046
-    second: strapped_male_23
+      213: -4902901541666307740
+    second: male_armor_8_23
   - first:
-      213: 21300048
-    second: strapped_male_24
+      213: -4609133982209362164
+    second: male_armor_8_24
   - first:
-      213: 21300050
-    second: strapped_male_25
+      213: 4760251244734106847
+    second: male_armor_8_25
   - first:
-      213: 21300052
-    second: strapped_male_26
+      213: -7532378548031344346
+    second: male_armor_8_26
   - first:
-      213: 21300054
-    second: strapped_male_27
+      213: -4565661152225414905
+    second: male_armor_8_27
   - first:
-      213: 21300056
-    second: strapped_male_28
+      213: 5027936058368123827
+    second: male_armor_8_28
   - first:
-      213: 21300058
-    second: strapped_male_29
+      213: 3733229724919652461
+    second: male_armor_8_29
   - first:
-      213: 21300060
-    second: strapped_male_30
+      213: 7457909072390133240
+    second: male_armor_8_30
   - first:
-      213: 21300062
-    second: strapped_male_31
+      213: 110360009196381904
+    second: male_armor_8_31
   - first:
-      213: 21300064
-    second: strapped_male_32
+      213: 7502017635336180173
+    second: male_armor_8_32
   - first:
-      213: 21300066
-    second: strapped_male_33
+      213: -617342122084947286
+    second: male_armor_8_33
   - first:
-      213: 21300068
-    second: strapped_male_34
+      213: -943820166602160449
+    second: male_armor_8_34
   - first:
-      213: 21300070
-    second: strapped_male_35
+      213: -7518715293913068673
+    second: male_armor_8_35
   - first:
-      213: 21300072
-    second: strapped_male_36
+      213: -2645461537464838805
+    second: male_armor_8_36
   - first:
-      213: 21300074
-    second: strapped_male_37
+      213: -5861636802822975785
+    second: male_armor_8_37
   - first:
-      213: 21300076
-    second: strapped_male_38
+      213: 3640084833378738499
+    second: male_armor_8_38
   - first:
-      213: 21300078
-    second: strapped_male_39
+      213: 7745903514438598657
+    second: male_armor_8_39
   - first:
-      213: 21300080
-    second: strapped_male_40
+      213: 2699494387248228102
+    second: male_armor_8_40
   - first:
-      213: 21300082
-    second: strapped_male_41
+      213: 4815602166751601653
+    second: male_armor_8_41
   - first:
-      213: 21300084
-    second: strapped_male_42
+      213: -1828663685678891431
+    second: male_armor_8_42
   - first:
-      213: 21300086
-    second: strapped_male_43
+      213: -76813567502596829
+    second: male_armor_8_43
   - first:
-      213: 21300088
-    second: strapped_male_44
+      213: -976095397831657575
+    second: male_armor_8_44
   - first:
-      213: 21300090
-    second: strapped_male_45
+      213: 5998024938371189401
+    second: male_armor_8_45
   - first:
-      213: 21300092
-    second: strapped_male_46
+      213: -5404897789589275104
+    second: male_armor_8_46
   - first:
-      213: 21300094
-    second: strapped_male_47
-  - first:
-      213: 21300096
-    second: male_strapped_0
-  - first:
-      213: 21300098
-    second: male_strapped_1
-  - first:
-      213: 21300100
-    second: male_strapped_2
-  - first:
-      213: 21300102
-    second: male_strapped_3
-  - first:
-      213: 21300104
-    second: male_strapped_4
-  - first:
-      213: 21300106
-    second: male_strapped_5
-  - first:
-      213: 21300108
-    second: male_strapped_6
-  - first:
-      213: 21300110
-    second: male_strapped_7
-  - first:
-      213: 21300112
-    second: male_strapped_8
-  - first:
-      213: 21300114
-    second: male_strapped_9
-  - first:
-      213: 21300116
-    second: male_strapped_10
-  - first:
-      213: 21300118
-    second: male_strapped_11
-  - first:
-      213: 21300120
-    second: male_strapped_12
-  - first:
-      213: 21300122
-    second: male_strapped_13
-  - first:
-      213: 21300124
-    second: male_strapped_14
-  - first:
-      213: 21300126
-    second: male_strapped_15
-  - first:
-      213: 21300128
-    second: male_strapped_16
-  - first:
-      213: 21300130
-    second: male_strapped_17
-  - first:
-      213: 21300132
-    second: male_strapped_18
-  - first:
-      213: 21300134
-    second: male_strapped_19
-  - first:
-      213: 21300136
-    second: male_strapped_20
-  - first:
-      213: 21300138
-    second: male_strapped_21
-  - first:
-      213: 21300140
-    second: male_strapped_22
-  - first:
-      213: 21300142
-    second: male_strapped_23
-  - first:
-      213: 21300144
-    second: male_strapped_24
-  - first:
-      213: 21300146
-    second: male_strapped_25
-  - first:
-      213: 21300148
-    second: male_strapped_26
-  - first:
-      213: 21300150
-    second: male_strapped_27
-  - first:
-      213: 21300152
-    second: male_strapped_28
-  - first:
-      213: 21300154
-    second: male_strapped_29
-  - first:
-      213: 21300156
-    second: male_strapped_30
-  - first:
-      213: 21300158
-    second: male_strapped_31
-  - first:
-      213: 21300160
-    second: male_strapped_32
-  - first:
-      213: 21300162
-    second: male_strapped_33
-  - first:
-      213: 21300164
-    second: male_strapped_34
-  - first:
-      213: 21300166
-    second: male_strapped_35
-  - first:
-      213: 21300168
-    second: male_strapped_36
-  - first:
-      213: 21300170
-    second: male_strapped_37
-  - first:
-      213: 21300172
-    second: male_strapped_38
-  - first:
-      213: 21300174
-    second: male_strapped_39
-  - first:
-      213: 21300176
-    second: male_strapped_40
-  - first:
-      213: 21300178
-    second: male_strapped_41
-  - first:
-      213: 21300180
-    second: male_strapped_42
-  - first:
-      213: 21300182
-    second: male_strapped_43
-  - first:
-      213: 21300184
-    second: male_strapped_44
-  - first:
-      213: 21300186
-    second: male_strapped_45
-  - first:
-      213: 21300188
-    second: male_strapped_46
-  - first:
-      213: 21300190
-    second: male_strapped_47
+      213: 6890766131920780183
+    second: male_armor_8_47
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -315,7 +171,7 @@ TextureImporter:
   generateCubemap: 6
   cubemapConvolution: 0
   seamlessCubemap: 0
-  textureFormat: 5
+  textureFormat: 1
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
@@ -357,7 +213,7 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
     maxTextureSize: 2048
@@ -369,12 +225,12 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: male_strapped_0
+      name: male_armor_8_0
       rect:
         serializedVersion: 2
         x: 0
@@ -388,14 +244,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 08305410000000000800000000000000
-      internalID: 21300096
+      spriteID: 85977055024ef4146af7152765e36c5b
+      internalID: 6283749822984666450
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_1
+      name: male_armor_8_1
       rect:
         serializedVersion: 2
         x: 85
@@ -409,14 +265,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 28305410000000000800000000000000
-      internalID: 21300098
+      spriteID: 095bb885de0f9e0468f757fb94f22666
+      internalID: 4385954318195179515
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_2
+      name: male_armor_8_2
       rect:
         serializedVersion: 2
         x: 170
@@ -430,14 +286,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 48305410000000000800000000000000
-      internalID: 21300100
+      spriteID: 0283121c69977784f8ca7582b695c41d
+      internalID: -2831056364134276537
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_3
+      name: male_armor_8_3
       rect:
         serializedVersion: 2
         x: 255
@@ -451,14 +307,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 68305410000000000800000000000000
-      internalID: 21300102
+      spriteID: d51dfa38e31458948a8d78b975ced0b0
+      internalID: 637306164897361863
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_4
+      name: male_armor_8_4
       rect:
         serializedVersion: 2
         x: 340
@@ -472,14 +328,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 88305410000000000800000000000000
-      internalID: 21300104
+      spriteID: 13da7eacd1063cf4387e9722bc41005b
+      internalID: 1857876066433501890
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_5
+      name: male_armor_8_5
       rect:
         serializedVersion: 2
         x: 425
@@ -493,14 +349,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a8305410000000000800000000000000
-      internalID: 21300106
+      spriteID: 2321b87a4362ca74490824cb0def0e18
+      internalID: 8738881566137208229
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_6
+      name: male_armor_8_6
       rect:
         serializedVersion: 2
         x: 510
@@ -514,14 +370,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c8305410000000000800000000000000
-      internalID: 21300108
+      spriteID: 4c6319b7e741f3d48be8bf21f587e584
+      internalID: 8351038982169554961
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_7
+      name: male_armor_8_7
       rect:
         serializedVersion: 2
         x: 595
@@ -535,14 +391,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e8305410000000000800000000000000
-      internalID: 21300110
+      spriteID: b3a95734d3532b047a60303666816155
+      internalID: 3227449041984407815
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_8
+      name: male_armor_8_8
       rect:
         serializedVersion: 2
         x: 680
@@ -556,14 +412,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 09305410000000000800000000000000
-      internalID: 21300112
+      spriteID: 0293591a580d217449751febc0cef0c5
+      internalID: -7401832788972470500
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_9
+      name: male_armor_8_9
       rect:
         serializedVersion: 2
         x: 765
@@ -577,14 +433,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 29305410000000000800000000000000
-      internalID: 21300114
+      spriteID: eec4ffd5a064da445a78f3f37f2d72d0
+      internalID: 4919224538662759174
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_10
+      name: male_armor_8_10
       rect:
         serializedVersion: 2
         x: 850
@@ -598,14 +454,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 49305410000000000800000000000000
-      internalID: 21300116
+      spriteID: 97fc7b42d78d1cf409285a7c85f730f8
+      internalID: 6596911758479617074
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_11
+      name: male_armor_8_11
       rect:
         serializedVersion: 2
         x: 935
@@ -619,14 +475,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 69305410000000000800000000000000
-      internalID: 21300118
+      spriteID: 1e680fd6f3bef9542bd174c89d462cde
+      internalID: 7195061697164718975
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_12
+      name: male_armor_8_12
       rect:
         serializedVersion: 2
         x: 0
@@ -640,14 +496,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 89305410000000000800000000000000
-      internalID: 21300120
+      spriteID: e1d594bae002e744d8d85642bd715b56
+      internalID: 3003772295521917471
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_13
+      name: male_armor_8_13
       rect:
         serializedVersion: 2
         x: 85
@@ -661,14 +517,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a9305410000000000800000000000000
-      internalID: 21300122
+      spriteID: 7a0f58c89151bfb45a5515cdc80065cf
+      internalID: -9212951620368762217
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_14
+      name: male_armor_8_14
       rect:
         serializedVersion: 2
         x: 170
@@ -682,14 +538,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c9305410000000000800000000000000
-      internalID: 21300124
+      spriteID: dbbeb132b4f86d24ca4518cbdb42e48b
+      internalID: -3605919501446718348
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_15
+      name: male_armor_8_15
       rect:
         serializedVersion: 2
         x: 255
@@ -703,14 +559,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e9305410000000000800000000000000
-      internalID: 21300126
+      spriteID: d375520e42b5fde43ad1eb916b07cc26
+      internalID: -8797181980578341515
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_16
+      name: male_armor_8_16
       rect:
         serializedVersion: 2
         x: 340
@@ -724,14 +580,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0a305410000000000800000000000000
-      internalID: 21300128
+      spriteID: 7b344b4a122d90b4e8653037db07415b
+      internalID: 504671622183037877
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_17
+      name: male_armor_8_17
       rect:
         serializedVersion: 2
         x: 425
@@ -745,14 +601,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2a305410000000000800000000000000
-      internalID: 21300130
+      spriteID: 9ee65e9f6098cea4f8e7a901a85bdf6b
+      internalID: 8613598224034045102
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_18
+      name: male_armor_8_18
       rect:
         serializedVersion: 2
         x: 510
@@ -766,14 +622,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4a305410000000000800000000000000
-      internalID: 21300132
+      spriteID: 20d8d6d646183ab439ed4d3c59b30f34
+      internalID: -309341995948373357
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_19
+      name: male_armor_8_19
       rect:
         serializedVersion: 2
         x: 595
@@ -787,14 +643,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6a305410000000000800000000000000
-      internalID: 21300134
+      spriteID: 284102c850de6414e945c9ed54d24d8c
+      internalID: -6474415052502750631
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_20
+      name: male_armor_8_20
       rect:
         serializedVersion: 2
         x: 680
@@ -808,14 +664,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8a305410000000000800000000000000
-      internalID: 21300136
+      spriteID: 3ebdd518a7838104baf0dfcaacdf336b
+      internalID: -1837662879362516570
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_21
+      name: male_armor_8_21
       rect:
         serializedVersion: 2
         x: 765
@@ -829,14 +685,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: aa305410000000000800000000000000
-      internalID: 21300138
+      spriteID: ddbd078a826ab18429796ae9c0065071
+      internalID: -3250446092497135026
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_22
+      name: male_armor_8_22
       rect:
         serializedVersion: 2
         x: 850
@@ -850,14 +706,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ca305410000000000800000000000000
-      internalID: 21300140
+      spriteID: 00457f587dc52204caaea6ce061a54ab
+      internalID: -2768781537394452818
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_23
+      name: male_armor_8_23
       rect:
         serializedVersion: 2
         x: 935
@@ -871,14 +727,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ea305410000000000800000000000000
-      internalID: 21300142
+      spriteID: f88d749f6e139a449b19cad931e78114
+      internalID: -4902901541666307740
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_24
+      name: male_armor_8_24
       rect:
         serializedVersion: 2
         x: 0
@@ -892,14 +748,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0b305410000000000800000000000000
-      internalID: 21300144
+      spriteID: b86c3ba666c017c41a3e03cae28bad49
+      internalID: -4609133982209362164
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_25
+      name: male_armor_8_25
       rect:
         serializedVersion: 2
         x: 85
@@ -913,14 +769,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2b305410000000000800000000000000
-      internalID: 21300146
+      spriteID: 257d76d7449ad36419f13849e1469e76
+      internalID: 4760251244734106847
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_26
+      name: male_armor_8_26
       rect:
         serializedVersion: 2
         x: 170
@@ -934,14 +790,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4b305410000000000800000000000000
-      internalID: 21300148
+      spriteID: 7c0e2b04cf6443148b96d7a9bc71a204
+      internalID: -7532378548031344346
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_27
+      name: male_armor_8_27
       rect:
         serializedVersion: 2
         x: 255
@@ -955,14 +811,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6b305410000000000800000000000000
-      internalID: 21300150
+      spriteID: bec9d62634aeb6c44b121374bb92568c
+      internalID: -4565661152225414905
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_28
+      name: male_armor_8_28
       rect:
         serializedVersion: 2
         x: 340
@@ -976,14 +832,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8b305410000000000800000000000000
-      internalID: 21300152
+      spriteID: e7420b60fc8c76047ac7cff611650df6
+      internalID: 5027936058368123827
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_29
+      name: male_armor_8_29
       rect:
         serializedVersion: 2
         x: 425
@@ -997,14 +853,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ab305410000000000800000000000000
-      internalID: 21300154
+      spriteID: c8a26adebbcd8e24ba8f5552240d5fe2
+      internalID: 3733229724919652461
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_30
+      name: male_armor_8_30
       rect:
         serializedVersion: 2
         x: 510
@@ -1018,14 +874,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cb305410000000000800000000000000
-      internalID: 21300156
+      spriteID: 909fa6b37e277724e91916e0aefc70e8
+      internalID: 7457909072390133240
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_31
+      name: male_armor_8_31
       rect:
         serializedVersion: 2
         x: 595
@@ -1039,14 +895,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: eb305410000000000800000000000000
-      internalID: 21300158
+      spriteID: 74d7dff2b3d430543a7178f281e07536
+      internalID: 110360009196381904
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_32
+      name: male_armor_8_32
       rect:
         serializedVersion: 2
         x: 680
@@ -1060,14 +916,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0c305410000000000800000000000000
-      internalID: 21300160
+      spriteID: 6a63f947c39808a4596f4b1957d12f6e
+      internalID: 7502017635336180173
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_33
+      name: male_armor_8_33
       rect:
         serializedVersion: 2
         x: 765
@@ -1081,14 +937,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2c305410000000000800000000000000
-      internalID: 21300162
+      spriteID: 2a3ea0009a52cc84ba09f92aee2e19ca
+      internalID: -617342122084947286
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_34
+      name: male_armor_8_34
       rect:
         serializedVersion: 2
         x: 850
@@ -1102,14 +958,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4c305410000000000800000000000000
-      internalID: 21300164
+      spriteID: eebe5dc6c4c89c348ab25cfde2a57959
+      internalID: -943820166602160449
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_35
+      name: male_armor_8_35
       rect:
         serializedVersion: 2
         x: 935
@@ -1123,14 +979,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6c305410000000000800000000000000
-      internalID: 21300166
+      spriteID: adcd760c178cf9e47ab0e6db28c285b1
+      internalID: -7518715293913068673
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_36
+      name: male_armor_8_36
       rect:
         serializedVersion: 2
         x: 0
@@ -1144,14 +1000,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8c305410000000000800000000000000
-      internalID: 21300168
+      spriteID: 6939fed29bee4074ab9538a19e379eaa
+      internalID: -2645461537464838805
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_37
+      name: male_armor_8_37
       rect:
         serializedVersion: 2
         x: 85
@@ -1165,14 +1021,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ac305410000000000800000000000000
-      internalID: 21300170
+      spriteID: be07b3376f4abf944843c69889dcb6c9
+      internalID: -5861636802822975785
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_38
+      name: male_armor_8_38
       rect:
         serializedVersion: 2
         x: 170
@@ -1186,14 +1042,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cc305410000000000800000000000000
-      internalID: 21300172
+      spriteID: 9ed6433c72fa3fa4cadf70af9222980d
+      internalID: 3640084833378738499
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_39
+      name: male_armor_8_39
       rect:
         serializedVersion: 2
         x: 255
@@ -1207,14 +1063,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ec305410000000000800000000000000
-      internalID: 21300174
+      spriteID: bd84c7926b4b53645a3188c062602094
+      internalID: 7745903514438598657
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_40
+      name: male_armor_8_40
       rect:
         serializedVersion: 2
         x: 340
@@ -1228,14 +1084,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0d305410000000000800000000000000
-      internalID: 21300176
+      spriteID: 9114836b247a7d249a4efad47fd3d19d
+      internalID: 2699494387248228102
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_41
+      name: male_armor_8_41
       rect:
         serializedVersion: 2
         x: 425
@@ -1249,14 +1105,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2d305410000000000800000000000000
-      internalID: 21300178
+      spriteID: 21015b8fdf88dbb4ca70ceddd5d1f683
+      internalID: 4815602166751601653
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_42
+      name: male_armor_8_42
       rect:
         serializedVersion: 2
         x: 510
@@ -1270,14 +1126,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4d305410000000000800000000000000
-      internalID: 21300180
+      spriteID: 38b2ad02da5031b4e8cdcbd875865633
+      internalID: -1828663685678891431
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_43
+      name: male_armor_8_43
       rect:
         serializedVersion: 2
         x: 595
@@ -1291,14 +1147,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6d305410000000000800000000000000
-      internalID: 21300182
+      spriteID: 2567d9930ca59d84bb21324a404807b7
+      internalID: -76813567502596829
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_44
+      name: male_armor_8_44
       rect:
         serializedVersion: 2
         x: 680
@@ -1312,14 +1168,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8d305410000000000800000000000000
-      internalID: 21300184
+      spriteID: 45f9258fc86ce894f86dbec43b3236b5
+      internalID: -976095397831657575
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_45
+      name: male_armor_8_45
       rect:
         serializedVersion: 2
         x: 765
@@ -1333,14 +1189,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ad305410000000000800000000000000
-      internalID: 21300186
+      spriteID: cfa106f9603d82249ae3ad05e656b194
+      internalID: 5998024938371189401
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_46
+      name: male_armor_8_46
       rect:
         serializedVersion: 2
         x: 850
@@ -1354,14 +1210,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cd305410000000000800000000000000
-      internalID: 21300188
+      spriteID: 193492a22c03c0246ad3eb8aad6b2517
+      internalID: -5404897789589275104
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_strapped_47
+      name: male_armor_8_47
       rect:
         serializedVersion: 2
         x: 935
@@ -1375,8 +1231,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ed305410000000000800000000000000
-      internalID: 21300190
+      spriteID: 380cfcb3700dd344680bfc146f7dca15
+      internalID: 6890766131920780183
       vertices: []
       indices: 
       edges: []
@@ -1384,7 +1240,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 

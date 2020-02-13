@@ -1,151 +1,151 @@
 fileFormatVersion: 2
-guid: 190e3fb11b53bbc4896b492e6f2b883f
+guid: 763cf626bf9e19641bcb4ee7574480d2
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 21300000
-    second: female_steel_0
+      213: 1725991156646053178
+    second: female_armor_9_0
   - first:
-      213: 21300002
-    second: female_steel_1
+      213: -1595420362781831802
+    second: female_armor_9_1
   - first:
-      213: 21300004
-    second: female_steel_2
+      213: -7240567011884746765
+    second: female_armor_9_2
   - first:
-      213: 21300006
-    second: female_steel_3
+      213: 972955196203364699
+    second: female_armor_9_3
   - first:
-      213: 21300008
-    second: female_steel_4
+      213: -2525075902595640546
+    second: female_armor_9_4
   - first:
-      213: 21300010
-    second: female_steel_5
+      213: -2444725728200807290
+    second: female_armor_9_5
   - first:
-      213: 21300012
-    second: female_steel_6
+      213: -8696244133679491819
+    second: female_armor_9_6
   - first:
-      213: 21300014
-    second: female_steel_7
+      213: 2786394682796661132
+    second: female_armor_9_7
   - first:
-      213: 21300016
-    second: female_steel_8
+      213: 8819292568465829473
+    second: female_armor_9_8
   - first:
-      213: 21300018
-    second: female_steel_9
+      213: 2022742249396619485
+    second: female_armor_9_9
   - first:
-      213: 21300020
-    second: female_steel_10
+      213: 2522558990071447652
+    second: female_armor_9_10
   - first:
-      213: 21300022
-    second: female_steel_11
+      213: 5723491861538774412
+    second: female_armor_9_11
   - first:
-      213: 21300024
-    second: female_steel_12
+      213: -283621889509998362
+    second: female_armor_9_12
   - first:
-      213: 21300026
-    second: female_steel_13
+      213: 2441317994864692634
+    second: female_armor_9_13
   - first:
-      213: 21300028
-    second: female_steel_14
+      213: -4813801586151147272
+    second: female_armor_9_14
   - first:
-      213: 21300030
-    second: female_steel_15
+      213: -585865928761335084
+    second: female_armor_9_15
   - first:
-      213: 21300032
-    second: female_steel_16
+      213: -6661196768471505811
+    second: female_armor_9_16
   - first:
-      213: 21300034
-    second: female_steel_17
+      213: 6348055651978961833
+    second: female_armor_9_17
   - first:
-      213: 21300036
-    second: female_steel_18
+      213: -6837332501846359082
+    second: female_armor_9_18
   - first:
-      213: 21300038
-    second: female_steel_19
+      213: -6135555790696861579
+    second: female_armor_9_19
   - first:
-      213: 21300040
-    second: female_steel_20
+      213: -9188090404319954638
+    second: female_armor_9_20
   - first:
-      213: 21300042
-    second: female_steel_21
+      213: -5395258260941049337
+    second: female_armor_9_21
   - first:
-      213: 21300044
-    second: female_steel_22
+      213: 8112956434116458659
+    second: female_armor_9_22
   - first:
-      213: 21300046
-    second: female_steel_23
+      213: -2446172259124628264
+    second: female_armor_9_23
   - first:
-      213: 21300048
-    second: female_steel_24
+      213: -273520958983951478
+    second: female_armor_9_24
   - first:
-      213: 21300050
-    second: female_steel_25
+      213: -1830119702926803105
+    second: female_armor_9_25
   - first:
-      213: 21300052
-    second: female_steel_26
+      213: -229829467845978572
+    second: female_armor_9_26
   - first:
-      213: 21300054
-    second: female_steel_27
+      213: 3599758706014571661
+    second: female_armor_9_27
   - first:
-      213: 21300056
-    second: female_steel_28
+      213: 2329709593702443527
+    second: female_armor_9_28
   - first:
-      213: 21300058
-    second: female_steel_29
+      213: 8060639340336131909
+    second: female_armor_9_29
   - first:
-      213: 21300060
-    second: female_steel_30
+      213: 3198155099887301146
+    second: female_armor_9_30
   - first:
-      213: 21300062
-    second: female_steel_31
+      213: -3326584545171046460
+    second: female_armor_9_31
   - first:
-      213: 21300064
-    second: female_steel_32
+      213: -3307423280508359784
+    second: female_armor_9_32
   - first:
-      213: 21300066
-    second: female_steel_33
+      213: -4082130528220458191
+    second: female_armor_9_33
   - first:
-      213: 21300068
-    second: female_steel_34
+      213: 2538152789602844326
+    second: female_armor_9_34
   - first:
-      213: 21300070
-    second: female_steel_35
+      213: -4342268783376281364
+    second: female_armor_9_35
   - first:
-      213: 21300072
-    second: female_steel_36
+      213: -3999379958015147614
+    second: female_armor_9_36
   - first:
-      213: 21300074
-    second: female_steel_37
+      213: -8712668663959195346
+    second: female_armor_9_37
   - first:
-      213: 21300076
-    second: female_steel_38
+      213: -2605726481512962370
+    second: female_armor_9_38
   - first:
-      213: 21300078
-    second: female_steel_39
+      213: 6295342616866987018
+    second: female_armor_9_39
   - first:
-      213: 21300080
-    second: female_steel_40
+      213: -6780135516545159072
+    second: female_armor_9_40
   - first:
-      213: 21300082
-    second: female_steel_41
+      213: 6001883723353223828
+    second: female_armor_9_41
   - first:
-      213: 21300084
-    second: female_steel_42
+      213: -5953988655254619857
+    second: female_armor_9_42
   - first:
-      213: 21300086
-    second: female_steel_43
+      213: -5589946531163389727
+    second: female_armor_9_43
   - first:
-      213: 21300088
-    second: female_steel_44
+      213: -5884314785246863606
+    second: female_armor_9_44
   - first:
-      213: 21300090
-    second: female_steel_45
+      213: 2425110632800621795
+    second: female_armor_9_45
   - first:
-      213: 21300092
-    second: female_steel_46
+      213: -5991400325959122397
+    second: female_armor_9_46
   - first:
-      213: 21300094
-    second: female_steel_47
+      213: 1629077702234722091
+    second: female_armor_9_47
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -171,7 +171,7 @@ TextureImporter:
   generateCubemap: 6
   cubemapConvolution: 0
   seamlessCubemap: 0
-  textureFormat: 5
+  textureFormat: 1
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
@@ -213,7 +213,7 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
     maxTextureSize: 2048
@@ -225,12 +225,12 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: female_steel_0
+      name: female_armor_9_0
       rect:
         serializedVersion: 2
         x: 0
@@ -242,16 +242,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 02305410000000000800000000000000
-      internalID: 21300000
+      spriteID: 399563803daa1de45943e593ae5732b8
+      internalID: 1725991156646053178
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_1
+      name: female_armor_9_1
       rect:
         serializedVersion: 2
         x: 85
@@ -263,16 +263,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 22305410000000000800000000000000
-      internalID: 21300002
+      spriteID: 206aff654a36914479233f575cd3d76f
+      internalID: -1595420362781831802
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_2
+      name: female_armor_9_2
       rect:
         serializedVersion: 2
         x: 170
@@ -284,16 +284,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 42305410000000000800000000000000
-      internalID: 21300004
+      spriteID: 84a55355d0af5ff4b9b2f19b117ddef5
+      internalID: -7240567011884746765
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_3
+      name: female_armor_9_3
       rect:
         serializedVersion: 2
         x: 255
@@ -305,16 +305,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 62305410000000000800000000000000
-      internalID: 21300006
+      spriteID: baffaffc3ade96e4fa30c32d537a1c88
+      internalID: 972955196203364699
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_4
+      name: female_armor_9_4
       rect:
         serializedVersion: 2
         x: 340
@@ -326,16 +326,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 82305410000000000800000000000000
-      internalID: 21300008
+      spriteID: 1ae5b5e44a763104da2cc4ccdd67f983
+      internalID: -2525075902595640546
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_5
+      name: female_armor_9_5
       rect:
         serializedVersion: 2
         x: 425
@@ -347,16 +347,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a2305410000000000800000000000000
-      internalID: 21300010
+      spriteID: 1363210461ee657418bcc7d1a2984f48
+      internalID: -2444725728200807290
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_6
+      name: female_armor_9_6
       rect:
         serializedVersion: 2
         x: 510
@@ -368,16 +368,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c2305410000000000800000000000000
-      internalID: 21300012
+      spriteID: a5c6677ed32d22746816ad64d3408c43
+      internalID: -8696244133679491819
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_7
+      name: female_armor_9_7
       rect:
         serializedVersion: 2
         x: 595
@@ -389,16 +389,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e2305410000000000800000000000000
-      internalID: 21300014
+      spriteID: 39263d0d28318f0408af6200343ee752
+      internalID: 2786394682796661132
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_8
+      name: female_armor_9_8
       rect:
         serializedVersion: 2
         x: 680
@@ -410,16 +410,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 03305410000000000800000000000000
-      internalID: 21300016
+      spriteID: 113555df4c89ae247ba3166feb648e28
+      internalID: 8819292568465829473
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_9
+      name: female_armor_9_9
       rect:
         serializedVersion: 2
         x: 765
@@ -431,16 +431,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 23305410000000000800000000000000
-      internalID: 21300018
+      spriteID: e09fed5262593ad45b9faa08b9310774
+      internalID: 2022742249396619485
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_10
+      name: female_armor_9_10
       rect:
         serializedVersion: 2
         x: 850
@@ -452,16 +452,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 43305410000000000800000000000000
-      internalID: 21300020
+      spriteID: 5da537ba65d3ae048a24107f71203af2
+      internalID: 2522558990071447652
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_11
+      name: female_armor_9_11
       rect:
         serializedVersion: 2
         x: 935
@@ -473,16 +473,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 63305410000000000800000000000000
-      internalID: 21300022
+      spriteID: 955d4d0ff605caf4cb3d9eb98183bfd4
+      internalID: 5723491861538774412
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_12
+      name: female_armor_9_12
       rect:
         serializedVersion: 2
         x: 0
@@ -494,16 +494,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 83305410000000000800000000000000
-      internalID: 21300024
+      spriteID: 2b4d54e8201ab5048994d214486eea6a
+      internalID: -283621889509998362
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_13
+      name: female_armor_9_13
       rect:
         serializedVersion: 2
         x: 85
@@ -515,16 +515,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a3305410000000000800000000000000
-      internalID: 21300026
+      spriteID: 85352eada51c3d746b7aa310ec1ee79f
+      internalID: 2441317994864692634
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_14
+      name: female_armor_9_14
       rect:
         serializedVersion: 2
         x: 170
@@ -536,16 +536,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c3305410000000000800000000000000
-      internalID: 21300028
+      spriteID: 415f1f85e9ac4a2439df81cda79777c5
+      internalID: -4813801586151147272
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_15
+      name: female_armor_9_15
       rect:
         serializedVersion: 2
         x: 255
@@ -557,16 +557,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e3305410000000000800000000000000
-      internalID: 21300030
+      spriteID: 47cbfbf97694865428975c428950a5a8
+      internalID: -585865928761335084
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_16
+      name: female_armor_9_16
       rect:
         serializedVersion: 2
         x: 340
@@ -578,16 +578,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 04305410000000000800000000000000
-      internalID: 21300032
+      spriteID: 920c24224c34b8f49914b966a62f15c3
+      internalID: -6661196768471505811
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_17
+      name: female_armor_9_17
       rect:
         serializedVersion: 2
         x: 425
@@ -599,16 +599,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 24305410000000000800000000000000
-      internalID: 21300034
+      spriteID: 22a14ef0b00794e42b05ca07e709e53a
+      internalID: 6348055651978961833
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_18
+      name: female_armor_9_18
       rect:
         serializedVersion: 2
         x: 510
@@ -620,16 +620,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 44305410000000000800000000000000
-      internalID: 21300036
+      spriteID: e577ad8fd3fb0444fa867a5723c2c261
+      internalID: -6837332501846359082
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_19
+      name: female_armor_9_19
       rect:
         serializedVersion: 2
         x: 595
@@ -641,16 +641,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 64305410000000000800000000000000
-      internalID: 21300038
+      spriteID: 5acdefa6812a12e418492525b51b7866
+      internalID: -6135555790696861579
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_20
+      name: female_armor_9_20
       rect:
         serializedVersion: 2
         x: 680
@@ -662,16 +662,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 84305410000000000800000000000000
-      internalID: 21300040
+      spriteID: 890ad8dede5ac1542b9af420fd61c556
+      internalID: -9188090404319954638
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_21
+      name: female_armor_9_21
       rect:
         serializedVersion: 2
         x: 765
@@ -683,16 +683,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a4305410000000000800000000000000
-      internalID: 21300042
+      spriteID: 770cc6e8b53cc1748980212a3765fb61
+      internalID: -5395258260941049337
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_22
+      name: female_armor_9_22
       rect:
         serializedVersion: 2
         x: 850
@@ -704,16 +704,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c4305410000000000800000000000000
-      internalID: 21300044
+      spriteID: f99d8eec478c6314bb13b3a62cf9a943
+      internalID: 8112956434116458659
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_23
+      name: female_armor_9_23
       rect:
         serializedVersion: 2
         x: 935
@@ -725,16 +725,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e4305410000000000800000000000000
-      internalID: 21300046
+      spriteID: 3b29c4b32ac1f184ebb34800e5bf79d1
+      internalID: -2446172259124628264
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_24
+      name: female_armor_9_24
       rect:
         serializedVersion: 2
         x: 0
@@ -746,16 +746,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 05305410000000000800000000000000
-      internalID: 21300048
+      spriteID: 2f34967942795154f8ca0058381ac8db
+      internalID: -273520958983951478
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_25
+      name: female_armor_9_25
       rect:
         serializedVersion: 2
         x: 85
@@ -767,16 +767,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 25305410000000000800000000000000
-      internalID: 21300050
+      spriteID: 9c4ecd2a112d5f6409dbf19880e7a6fa
+      internalID: -1830119702926803105
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_26
+      name: female_armor_9_26
       rect:
         serializedVersion: 2
         x: 170
@@ -788,16 +788,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 45305410000000000800000000000000
-      internalID: 21300052
+      spriteID: 500035ff2952e4644ab2c873d74f1755
+      internalID: -229829467845978572
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_27
+      name: female_armor_9_27
       rect:
         serializedVersion: 2
         x: 255
@@ -809,16 +809,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 65305410000000000800000000000000
-      internalID: 21300054
+      spriteID: db31948da3067da40858bf4bed77a9df
+      internalID: 3599758706014571661
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_28
+      name: female_armor_9_28
       rect:
         serializedVersion: 2
         x: 340
@@ -830,16 +830,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 85305410000000000800000000000000
-      internalID: 21300056
+      spriteID: 4489de824751d9849a964c430d25ab37
+      internalID: 2329709593702443527
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_29
+      name: female_armor_9_29
       rect:
         serializedVersion: 2
         x: 425
@@ -851,16 +851,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a5305410000000000800000000000000
-      internalID: 21300058
+      spriteID: 40414c0305012094884df4059758a528
+      internalID: 8060639340336131909
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_30
+      name: female_armor_9_30
       rect:
         serializedVersion: 2
         x: 510
@@ -872,16 +872,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c5305410000000000800000000000000
-      internalID: 21300060
+      spriteID: f25e1734dbebe784dab8d795116b54ef
+      internalID: 3198155099887301146
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_31
+      name: female_armor_9_31
       rect:
         serializedVersion: 2
         x: 595
@@ -893,16 +893,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e5305410000000000800000000000000
-      internalID: 21300062
+      spriteID: 9769636dc6098434dadbe912cb02fab5
+      internalID: -3326584545171046460
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_32
+      name: female_armor_9_32
       rect:
         serializedVersion: 2
         x: 680
@@ -914,16 +914,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 06305410000000000800000000000000
-      internalID: 21300064
+      spriteID: 912b7961f2a5c474d8d06aa605fcff12
+      internalID: -3307423280508359784
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_33
+      name: female_armor_9_33
       rect:
         serializedVersion: 2
         x: 765
@@ -935,16 +935,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 26305410000000000800000000000000
-      internalID: 21300066
+      spriteID: 0329d161b5fb4744d9478169dcd02655
+      internalID: -4082130528220458191
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_34
+      name: female_armor_9_34
       rect:
         serializedVersion: 2
         x: 850
@@ -956,16 +956,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 46305410000000000800000000000000
-      internalID: 21300068
+      spriteID: 796b9ce7f7582f24dae1f656b41c2fe3
+      internalID: 2538152789602844326
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_35
+      name: female_armor_9_35
       rect:
         serializedVersion: 2
         x: 935
@@ -977,16 +977,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 66305410000000000800000000000000
-      internalID: 21300070
+      spriteID: 97afcf0b661735a448bc148e22c40692
+      internalID: -4342268783376281364
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_36
+      name: female_armor_9_36
       rect:
         serializedVersion: 2
         x: 0
@@ -998,16 +998,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 86305410000000000800000000000000
-      internalID: 21300072
+      spriteID: 3f8cd361e9f1e7d40a55a845fd00d92f
+      internalID: -3999379958015147614
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_37
+      name: female_armor_9_37
       rect:
         serializedVersion: 2
         x: 85
@@ -1019,16 +1019,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a6305410000000000800000000000000
-      internalID: 21300074
+      spriteID: 3b5586214cb3bd24699e170d4593cd86
+      internalID: -8712668663959195346
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_38
+      name: female_armor_9_38
       rect:
         serializedVersion: 2
         x: 170
@@ -1040,16 +1040,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c6305410000000000800000000000000
-      internalID: 21300076
+      spriteID: 064e56a7603d86a4cae45965f623f79f
+      internalID: -2605726481512962370
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_39
+      name: female_armor_9_39
       rect:
         serializedVersion: 2
         x: 255
@@ -1061,16 +1061,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e6305410000000000800000000000000
-      internalID: 21300078
+      spriteID: a72fa34ec1fc2ae45a22ede059b88b36
+      internalID: 6295342616866987018
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_40
+      name: female_armor_9_40
       rect:
         serializedVersion: 2
         x: 340
@@ -1082,16 +1082,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 07305410000000000800000000000000
-      internalID: 21300080
+      spriteID: b51aee87112844640835360cd2e3033c
+      internalID: -6780135516545159072
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_41
+      name: female_armor_9_41
       rect:
         serializedVersion: 2
         x: 425
@@ -1103,16 +1103,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 27305410000000000800000000000000
-      internalID: 21300082
+      spriteID: fb64c22fb93b7f345bf0a87b51c3dc38
+      internalID: 6001883723353223828
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_42
+      name: female_armor_9_42
       rect:
         serializedVersion: 2
         x: 510
@@ -1124,16 +1124,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 47305410000000000800000000000000
-      internalID: 21300084
+      spriteID: 243297b972b9a7c4aa33dff5faab8a0a
+      internalID: -5953988655254619857
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_43
+      name: female_armor_9_43
       rect:
         serializedVersion: 2
         x: 595
@@ -1145,16 +1145,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 67305410000000000800000000000000
-      internalID: 21300086
+      spriteID: 973da9022e01a5242a96339e4911f9c7
+      internalID: -5589946531163389727
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_44
+      name: female_armor_9_44
       rect:
         serializedVersion: 2
         x: 680
@@ -1166,16 +1166,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 87305410000000000800000000000000
-      internalID: 21300088
+      spriteID: d546c395ed53bb94aaf5f14482594002
+      internalID: -5884314785246863606
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_45
+      name: female_armor_9_45
       rect:
         serializedVersion: 2
         x: 765
@@ -1187,16 +1187,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a7305410000000000800000000000000
-      internalID: 21300090
+      spriteID: f8b8fe645effd9643b5c215e3d4e7436
+      internalID: 2425110632800621795
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_46
+      name: female_armor_9_46
       rect:
         serializedVersion: 2
         x: 850
@@ -1208,16 +1208,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c7305410000000000800000000000000
-      internalID: 21300092
+      spriteID: db560e10a30002d489a92534664463c9
+      internalID: -5991400325959122397
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_steel_47
+      name: female_armor_9_47
       rect:
         serializedVersion: 2
         x: 935
@@ -1229,10 +1229,10 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e7305410000000000800000000000000
-      internalID: 21300094
+      spriteID: be618fb741b5fcc4c9c1d12bb58b2da8
+      internalID: 1629077702234722091
       vertices: []
       indices: 
       edges: []
@@ -1240,7 +1240,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 

@@ -1,151 +1,151 @@
 fileFormatVersion: 2
-guid: edd435eb60890604f8ff907fe44674b6
+guid: 18d694be31055b44ea2e995d764f244e
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 21300000
-    second: strapped_female_0
+      213: 2070836835090392258
+    second: female_armor_14_0
   - first:
-      213: 21300002
-    second: strapped_female_1
+      213: 3817479299555671784
+    second: female_armor_14_1
   - first:
-      213: 21300004
-    second: strapped_female_2
+      213: -547525068076063961
+    second: female_armor_14_2
   - first:
-      213: 21300006
-    second: strapped_female_3
+      213: 2520939859368531168
+    second: female_armor_14_3
   - first:
-      213: 21300008
-    second: strapped_female_4
+      213: 155408217962475550
+    second: female_armor_14_4
   - first:
-      213: 21300010
-    second: strapped_female_5
+      213: -2651829402678306587
+    second: female_armor_14_5
   - first:
-      213: 21300012
-    second: strapped_female_6
+      213: -4521857502982568816
+    second: female_armor_14_6
   - first:
-      213: 21300014
-    second: strapped_female_7
+      213: -1704306904750300069
+    second: female_armor_14_7
   - first:
-      213: 21300016
-    second: strapped_female_8
+      213: -4612387181094700429
+    second: female_armor_14_8
   - first:
-      213: 21300018
-    second: strapped_female_9
+      213: -1673285327227182079
+    second: female_armor_14_9
   - first:
-      213: 21300020
-    second: strapped_female_10
+      213: -4602890110624379740
+    second: female_armor_14_10
   - first:
-      213: 21300022
-    second: strapped_female_11
+      213: 2958045537098394588
+    second: female_armor_14_11
   - first:
-      213: 21300024
-    second: strapped_female_12
+      213: -185696261579699480
+    second: female_armor_14_12
   - first:
-      213: 21300026
-    second: strapped_female_13
+      213: -1614815484351910734
+    second: female_armor_14_13
   - first:
-      213: 21300028
-    second: strapped_female_14
+      213: 6066624653001318507
+    second: female_armor_14_14
   - first:
-      213: 21300030
-    second: strapped_female_15
+      213: 5379334269219213924
+    second: female_armor_14_15
   - first:
-      213: 21300032
-    second: strapped_female_16
+      213: -250347402160604690
+    second: female_armor_14_16
   - first:
-      213: 21300034
-    second: strapped_female_17
+      213: 3106017391605231477
+    second: female_armor_14_17
   - first:
-      213: 21300036
-    second: strapped_female_18
+      213: -121469064050914828
+    second: female_armor_14_18
   - first:
-      213: 21300038
-    second: strapped_female_19
+      213: -1570556490149343857
+    second: female_armor_14_19
   - first:
-      213: 21300040
-    second: strapped_female_20
+      213: -4178872810255079315
+    second: female_armor_14_20
   - first:
-      213: 21300042
-    second: strapped_female_21
+      213: 9120684929974988921
+    second: female_armor_14_21
   - first:
-      213: 21300044
-    second: strapped_female_22
+      213: -4242738682852696247
+    second: female_armor_14_22
   - first:
-      213: 21300046
-    second: strapped_female_23
+      213: 5198507505688131286
+    second: female_armor_14_23
   - first:
-      213: 21300048
-    second: strapped_female_24
+      213: -5327075530155439564
+    second: female_armor_14_24
   - first:
-      213: 21300050
-    second: strapped_female_25
+      213: -1792723246736564715
+    second: female_armor_14_25
   - first:
-      213: 21300052
-    second: strapped_female_26
+      213: -2804586011644536293
+    second: female_armor_14_26
   - first:
-      213: 21300054
-    second: strapped_female_27
+      213: -7012277265631972945
+    second: female_armor_14_27
   - first:
-      213: 21300056
-    second: strapped_female_28
+      213: -6576989473408370987
+    second: female_armor_14_28
   - first:
-      213: 21300058
-    second: strapped_female_29
+      213: 5497950372098985418
+    second: female_armor_14_29
   - first:
-      213: 21300060
-    second: strapped_female_30
+      213: 3832111701894146137
+    second: female_armor_14_30
   - first:
-      213: 21300062
-    second: strapped_female_31
+      213: -6480872438161168991
+    second: female_armor_14_31
   - first:
-      213: 21300064
-    second: strapped_female_32
+      213: -2094586570960773148
+    second: female_armor_14_32
   - first:
-      213: 21300066
-    second: strapped_female_33
+      213: -2523779691074899359
+    second: female_armor_14_33
   - first:
-      213: 21300068
-    second: strapped_female_34
+      213: -7660534037191483313
+    second: female_armor_14_34
   - first:
-      213: 21300070
-    second: strapped_female_35
+      213: -475249423886256237
+    second: female_armor_14_35
   - first:
-      213: 21300072
-    second: strapped_female_36
+      213: 1806580848300170631
+    second: female_armor_14_36
   - first:
-      213: 21300074
-    second: strapped_female_37
+      213: 4587804535690202258
+    second: female_armor_14_37
   - first:
-      213: 21300076
-    second: strapped_female_38
+      213: -6279907468386914424
+    second: female_armor_14_38
   - first:
-      213: 21300078
-    second: strapped_female_39
+      213: -678981658622506487
+    second: female_armor_14_39
   - first:
-      213: 21300080
-    second: strapped_female_40
+      213: 1249125023160823502
+    second: female_armor_14_40
   - first:
-      213: 21300082
-    second: strapped_female_41
+      213: -217446836658536265
+    second: female_armor_14_41
   - first:
-      213: 21300084
-    second: strapped_female_42
+      213: -840230677478943413
+    second: female_armor_14_42
   - first:
-      213: 21300086
-    second: strapped_female_43
+      213: 2101177905516505407
+    second: female_armor_14_43
   - first:
-      213: 21300088
-    second: strapped_female_44
+      213: -318213031080480420
+    second: female_armor_14_44
   - first:
-      213: 21300090
-    second: strapped_female_45
+      213: 1382799735095674440
+    second: female_armor_14_45
   - first:
-      213: 21300092
-    second: strapped_female_46
+      213: -851187081547342052
+    second: female_armor_14_46
   - first:
-      213: 21300094
-    second: strapped_female_47
+      213: 1737890808873139779
+    second: female_armor_14_47
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -171,7 +171,7 @@ TextureImporter:
   generateCubemap: 6
   cubemapConvolution: 0
   seamlessCubemap: 0
-  textureFormat: 5
+  textureFormat: 1
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
@@ -213,7 +213,7 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
     maxTextureSize: 2048
@@ -225,12 +225,12 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: strapped_female_0
+      name: female_armor_14_0
       rect:
         serializedVersion: 2
         x: 0
@@ -244,14 +244,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 02305410000000000800000000000000
-      internalID: 21300000
+      spriteID: 62275d68f63fa4541ba2df869f6fb0d6
+      internalID: 2070836835090392258
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_1
+      name: female_armor_14_1
       rect:
         serializedVersion: 2
         x: 85
@@ -265,14 +265,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 22305410000000000800000000000000
-      internalID: 21300002
+      spriteID: 09e7bd8a6803e534e9900fa9b0e9f592
+      internalID: 3817479299555671784
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_2
+      name: female_armor_14_2
       rect:
         serializedVersion: 2
         x: 170
@@ -286,14 +286,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 42305410000000000800000000000000
-      internalID: 21300004
+      spriteID: c31d4e3e76a9ff74091493372510e76a
+      internalID: -547525068076063961
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_3
+      name: female_armor_14_3
       rect:
         serializedVersion: 2
         x: 255
@@ -307,14 +307,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 62305410000000000800000000000000
-      internalID: 21300006
+      spriteID: 6c6ca85103bf36e448c915eaab6f9910
+      internalID: 2520939859368531168
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_4
+      name: female_armor_14_4
       rect:
         serializedVersion: 2
         x: 340
@@ -328,14 +328,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 82305410000000000800000000000000
-      internalID: 21300008
+      spriteID: 1af408c57b0c26b418946f42c61d73ed
+      internalID: 155408217962475550
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_5
+      name: female_armor_14_5
       rect:
         serializedVersion: 2
         x: 425
@@ -349,14 +349,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a2305410000000000800000000000000
-      internalID: 21300010
+      spriteID: a7dcbbb789ee9544c8ef45664abc92ba
+      internalID: -2651829402678306587
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_6
+      name: female_armor_14_6
       rect:
         serializedVersion: 2
         x: 510
@@ -370,14 +370,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c2305410000000000800000000000000
-      internalID: 21300012
+      spriteID: 933397bdb62e3634eadc125fe04ce00d
+      internalID: -4521857502982568816
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_7
+      name: female_armor_14_7
       rect:
         serializedVersion: 2
         x: 595
@@ -391,14 +391,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e2305410000000000800000000000000
-      internalID: 21300014
+      spriteID: 6c8b529d6eb39234c994202c2080fdc5
+      internalID: -1704306904750300069
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_8
+      name: female_armor_14_8
       rect:
         serializedVersion: 2
         x: 680
@@ -412,14 +412,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 03305410000000000800000000000000
-      internalID: 21300016
+      spriteID: f6dc19039dc3c51479f09de717e06b51
+      internalID: -4612387181094700429
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_9
+      name: female_armor_14_9
       rect:
         serializedVersion: 2
         x: 765
@@ -433,14 +433,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 23305410000000000800000000000000
-      internalID: 21300018
+      spriteID: 8d23d3d5c7d9dd44c8896f40b7d02eb4
+      internalID: -1673285327227182079
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_10
+      name: female_armor_14_10
       rect:
         serializedVersion: 2
         x: 850
@@ -454,14 +454,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 43305410000000000800000000000000
-      internalID: 21300020
+      spriteID: 5173e646a4ba0dd4a94490b72dba13ca
+      internalID: -4602890110624379740
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_11
+      name: female_armor_14_11
       rect:
         serializedVersion: 2
         x: 935
@@ -475,14 +475,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 63305410000000000800000000000000
-      internalID: 21300022
+      spriteID: 405503bd809ba1647bfc754a0d98274d
+      internalID: 2958045537098394588
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_12
+      name: female_armor_14_12
       rect:
         serializedVersion: 2
         x: 0
@@ -496,14 +496,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 83305410000000000800000000000000
-      internalID: 21300024
+      spriteID: 5bbad7e4e8d76dd4eae33cd333596998
+      internalID: -185696261579699480
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_13
+      name: female_armor_14_13
       rect:
         serializedVersion: 2
         x: 85
@@ -517,14 +517,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a3305410000000000800000000000000
-      internalID: 21300026
+      spriteID: 2e6f30507a21b484bb573aca1f41f517
+      internalID: -1614815484351910734
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_14
+      name: female_armor_14_14
       rect:
         serializedVersion: 2
         x: 170
@@ -538,14 +538,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c3305410000000000800000000000000
-      internalID: 21300028
+      spriteID: 41f15f0a3bf48cf4d8caab1e890bc818
+      internalID: 6066624653001318507
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_15
+      name: female_armor_14_15
       rect:
         serializedVersion: 2
         x: 255
@@ -559,14 +559,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e3305410000000000800000000000000
-      internalID: 21300030
+      spriteID: 579c80858eed337478efb352e82545cd
+      internalID: 5379334269219213924
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_16
+      name: female_armor_14_16
       rect:
         serializedVersion: 2
         x: 340
@@ -580,14 +580,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 04305410000000000800000000000000
-      internalID: 21300032
+      spriteID: 6c954815ff1117345b0bf4e6673cf49d
+      internalID: -250347402160604690
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_17
+      name: female_armor_14_17
       rect:
         serializedVersion: 2
         x: 425
@@ -601,14 +601,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 24305410000000000800000000000000
-      internalID: 21300034
+      spriteID: d253901f60165134491ffa193dc24506
+      internalID: 3106017391605231477
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_18
+      name: female_armor_14_18
       rect:
         serializedVersion: 2
         x: 510
@@ -622,14 +622,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 44305410000000000800000000000000
-      internalID: 21300036
+      spriteID: c987e6c0ebd19014b8da4cfe164c9923
+      internalID: -121469064050914828
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_19
+      name: female_armor_14_19
       rect:
         serializedVersion: 2
         x: 595
@@ -643,14 +643,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 64305410000000000800000000000000
-      internalID: 21300038
+      spriteID: e23666cde6119f74f926a328c9dcd82d
+      internalID: -1570556490149343857
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_20
+      name: female_armor_14_20
       rect:
         serializedVersion: 2
         x: 680
@@ -664,14 +664,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 84305410000000000800000000000000
-      internalID: 21300040
+      spriteID: c2f7e7e999a61714d9355e90dc9dd0c0
+      internalID: -4178872810255079315
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_21
+      name: female_armor_14_21
       rect:
         serializedVersion: 2
         x: 765
@@ -685,14 +685,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a4305410000000000800000000000000
-      internalID: 21300042
+      spriteID: b9b3f3bfac57fdf4db34458d170534c6
+      internalID: 9120684929974988921
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_22
+      name: female_armor_14_22
       rect:
         serializedVersion: 2
         x: 850
@@ -706,14 +706,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c4305410000000000800000000000000
-      internalID: 21300044
+      spriteID: 99570e3cc82a07f45a8094b1b897c5a0
+      internalID: -4242738682852696247
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_23
+      name: female_armor_14_23
       rect:
         serializedVersion: 2
         x: 935
@@ -727,14 +727,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e4305410000000000800000000000000
-      internalID: 21300046
+      spriteID: 72e504aaa8d0f5d47bc49b7e3c608ec6
+      internalID: 5198507505688131286
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_24
+      name: female_armor_14_24
       rect:
         serializedVersion: 2
         x: 0
@@ -748,14 +748,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 05305410000000000800000000000000
-      internalID: 21300048
+      spriteID: 386f16c4934d8d848b1a736bd5aefa94
+      internalID: -5327075530155439564
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_25
+      name: female_armor_14_25
       rect:
         serializedVersion: 2
         x: 85
@@ -769,14 +769,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 25305410000000000800000000000000
-      internalID: 21300050
+      spriteID: 5a6bb6f205931ad4fa23fd950ef33d67
+      internalID: -1792723246736564715
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_26
+      name: female_armor_14_26
       rect:
         serializedVersion: 2
         x: 170
@@ -790,14 +790,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 45305410000000000800000000000000
-      internalID: 21300052
+      spriteID: 83c269f7e5feeee4085d0bb2037a036d
+      internalID: -2804586011644536293
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_27
+      name: female_armor_14_27
       rect:
         serializedVersion: 2
         x: 255
@@ -811,14 +811,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 65305410000000000800000000000000
-      internalID: 21300054
+      spriteID: ce47d01d35d6ac344af0664f665019f3
+      internalID: -7012277265631972945
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_28
+      name: female_armor_14_28
       rect:
         serializedVersion: 2
         x: 340
@@ -832,14 +832,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 85305410000000000800000000000000
-      internalID: 21300056
+      spriteID: dc7f8214ed68ab642a716dadf5b3f4e6
+      internalID: -6576989473408370987
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_29
+      name: female_armor_14_29
       rect:
         serializedVersion: 2
         x: 425
@@ -853,14 +853,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a5305410000000000800000000000000
-      internalID: 21300058
+      spriteID: 0b5f8b58ffc052544988680b954e7776
+      internalID: 5497950372098985418
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_30
+      name: female_armor_14_30
       rect:
         serializedVersion: 2
         x: 510
@@ -874,14 +874,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c5305410000000000800000000000000
-      internalID: 21300060
+      spriteID: 6b0cbc6195b8c9f4aa2d6d20522b4811
+      internalID: 3832111701894146137
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_31
+      name: female_armor_14_31
       rect:
         serializedVersion: 2
         x: 595
@@ -895,14 +895,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e5305410000000000800000000000000
-      internalID: 21300062
+      spriteID: 3110e0b8aa6332e40af0ce8d5fe5344d
+      internalID: -6480872438161168991
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_32
+      name: female_armor_14_32
       rect:
         serializedVersion: 2
         x: 680
@@ -916,14 +916,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 06305410000000000800000000000000
-      internalID: 21300064
+      spriteID: 37baeca2bfa81bb44a7d501a390b267c
+      internalID: -2094586570960773148
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_33
+      name: female_armor_14_33
       rect:
         serializedVersion: 2
         x: 765
@@ -937,14 +937,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 26305410000000000800000000000000
-      internalID: 21300066
+      spriteID: 20b5e1ff587c40c4ab64f817fb75442f
+      internalID: -2523779691074899359
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_34
+      name: female_armor_14_34
       rect:
         serializedVersion: 2
         x: 850
@@ -958,14 +958,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 46305410000000000800000000000000
-      internalID: 21300068
+      spriteID: 106b6f068f21ca24786270f190e2a978
+      internalID: -7660534037191483313
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_35
+      name: female_armor_14_35
       rect:
         serializedVersion: 2
         x: 935
@@ -979,14 +979,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 66305410000000000800000000000000
-      internalID: 21300070
+      spriteID: fe0cfe9134c07bc4da9509125126eb3a
+      internalID: -475249423886256237
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_36
+      name: female_armor_14_36
       rect:
         serializedVersion: 2
         x: 0
@@ -1000,14 +1000,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 86305410000000000800000000000000
-      internalID: 21300072
+      spriteID: 33304b6f8bd40104f967871c2415f6ea
+      internalID: 1806580848300170631
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_37
+      name: female_armor_14_37
       rect:
         serializedVersion: 2
         x: 85
@@ -1021,14 +1021,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a6305410000000000800000000000000
-      internalID: 21300074
+      spriteID: 7d9972c5a7329424fa5d82ab54d07db6
+      internalID: 4587804535690202258
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_38
+      name: female_armor_14_38
       rect:
         serializedVersion: 2
         x: 170
@@ -1042,14 +1042,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c6305410000000000800000000000000
-      internalID: 21300076
+      spriteID: 30bb768d981702540859eb344eae544e
+      internalID: -6279907468386914424
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_39
+      name: female_armor_14_39
       rect:
         serializedVersion: 2
         x: 255
@@ -1063,14 +1063,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e6305410000000000800000000000000
-      internalID: 21300078
+      spriteID: ffb8d41223b7a72478e8206c39071bd4
+      internalID: -678981658622506487
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_40
+      name: female_armor_14_40
       rect:
         serializedVersion: 2
         x: 340
@@ -1084,14 +1084,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 07305410000000000800000000000000
-      internalID: 21300080
+      spriteID: d12a92d057ea19c45be30faed905d614
+      internalID: 1249125023160823502
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_41
+      name: female_armor_14_41
       rect:
         serializedVersion: 2
         x: 425
@@ -1105,14 +1105,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 27305410000000000800000000000000
-      internalID: 21300082
+      spriteID: 1607e9ba308e94b469810079b4793cf7
+      internalID: -217446836658536265
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_42
+      name: female_armor_14_42
       rect:
         serializedVersion: 2
         x: 510
@@ -1126,14 +1126,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 47305410000000000800000000000000
-      internalID: 21300084
+      spriteID: 21e9f158f4d4e6042b9c0a64800883b7
+      internalID: -840230677478943413
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_43
+      name: female_armor_14_43
       rect:
         serializedVersion: 2
         x: 595
@@ -1147,14 +1147,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 67305410000000000800000000000000
-      internalID: 21300086
+      spriteID: 7faed3ce81133674db32c87ccd2f5ea4
+      internalID: 2101177905516505407
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_44
+      name: female_armor_14_44
       rect:
         serializedVersion: 2
         x: 680
@@ -1168,14 +1168,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 87305410000000000800000000000000
-      internalID: 21300088
+      spriteID: b4ef275141cce7a44be9e43b075edef1
+      internalID: -318213031080480420
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_45
+      name: female_armor_14_45
       rect:
         serializedVersion: 2
         x: 765
@@ -1189,14 +1189,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a7305410000000000800000000000000
-      internalID: 21300090
+      spriteID: 35e27365394554b4681dd49241466e78
+      internalID: 1382799735095674440
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_46
+      name: female_armor_14_46
       rect:
         serializedVersion: 2
         x: 850
@@ -1210,14 +1210,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c7305410000000000800000000000000
-      internalID: 21300092
+      spriteID: 8353633fde8435249aeac7cf741ad09a
+      internalID: -851187081547342052
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strapped_female_47
+      name: female_armor_14_47
       rect:
         serializedVersion: 2
         x: 935
@@ -1231,8 +1231,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e7305410000000000800000000000000
-      internalID: 21300094
+      spriteID: 35cd18ab500c8a947a7503831b23aadf
+      internalID: 1737890808873139779
       vertices: []
       indices: 
       edges: []
@@ -1240,7 +1240,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 

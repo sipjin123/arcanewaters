@@ -1,151 +1,151 @@
 fileFormatVersion: 2
-guid: 55350386b2acdaf4c8c4ce3add8e9e08
+guid: 16c220973178530438d7fde4cfdcabf9
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1299833872641472819
-    second: m_armor1_0
+      213: -4826254013329384335
+    second: male_armor_7_0
   - first:
-      213: -5767419193509906598
-    second: m_armor1_1
+      213: 7905855615822852914
+    second: male_armor_7_1
   - first:
-      213: -6310270485731930575
-    second: m_armor1_2
+      213: 1081189170460134446
+    second: male_armor_7_2
   - first:
-      213: 6815561266774682166
-    second: m_armor1_3
+      213: 3696292767277380833
+    second: male_armor_7_3
   - first:
-      213: 1185019470099683967
-    second: m_armor1_4
+      213: -6257121884945451241
+    second: male_armor_7_4
   - first:
-      213: 1265824125070130274
-    second: m_armor1_5
+      213: -188346130003778870
+    second: male_armor_7_5
   - first:
-      213: -3640573271648913192
-    second: m_armor1_6
+      213: -1916818265080770926
+    second: male_armor_7_6
   - first:
-      213: 9038471075194010643
-    second: m_armor1_7
+      213: -5593550335262525133
+    second: male_armor_7_7
   - first:
-      213: 8651741596313513999
-    second: m_armor1_8
+      213: -5038921967647640225
+    second: male_armor_7_8
   - first:
-      213: 5053944877093282786
-    second: m_armor1_9
+      213: -5497455973669889250
+    second: male_armor_7_9
   - first:
-      213: 1185355796497837907
-    second: m_armor1_10
+      213: -1950427538283961316
+    second: male_armor_7_10
   - first:
-      213: -5311803618195508929
-    second: m_armor1_11
+      213: -8661497158229503064
+    second: male_armor_7_11
   - first:
-      213: -4277257209134023058
-    second: m_armor1_12
+      213: 3401577100959211879
+    second: male_armor_7_12
   - first:
-      213: -8901619458213037627
-    second: m_armor1_13
+      213: -8035173877406464146
+    second: male_armor_7_13
   - first:
-      213: -7168694095636082591
-    second: m_armor1_14
+      213: 8011817366519371688
+    second: male_armor_7_14
   - first:
-      213: -2685718090069214918
-    second: m_armor1_15
+      213: 1207062948991286958
+    second: male_armor_7_15
   - first:
-      213: 4007260446100488079
-    second: m_armor1_16
+      213: -926462978110425396
+    second: male_armor_7_16
   - first:
-      213: -7417319433933588178
-    second: m_armor1_17
+      213: -5576361791542568072
+    second: male_armor_7_17
   - first:
-      213: -1058624358187774134
-    second: m_armor1_18
+      213: 4435264917756685118
+    second: male_armor_7_18
   - first:
-      213: 3530408064074530094
-    second: m_armor1_19
+      213: 5702189091561040378
+    second: male_armor_7_19
   - first:
-      213: 1038803885153444562
-    second: m_armor1_20
+      213: 6535783283751103595
+    second: male_armor_7_20
   - first:
-      213: -2566669452772924701
-    second: m_armor1_21
+      213: 5042072549050991475
+    second: male_armor_7_21
   - first:
-      213: 3714897426863093770
-    second: m_armor1_22
+      213: 8158023506674610788
+    second: male_armor_7_22
   - first:
-      213: -1086666158642184253
-    second: m_armor1_23
+      213: 8540424154376630203
+    second: male_armor_7_23
   - first:
-      213: 4582819721284757736
-    second: m_armor1_24
+      213: 362169280233674413
+    second: male_armor_7_24
   - first:
-      213: -3694134794856136348
-    second: m_armor1_25
+      213: 3385576169680386414
+    second: male_armor_7_25
   - first:
-      213: 3561988794836808518
-    second: m_armor1_26
+      213: 3692042566470211908
+    second: male_armor_7_26
   - first:
-      213: 1051528733244406467
-    second: m_armor1_27
+      213: 555351367213863575
+    second: male_armor_7_27
   - first:
-      213: 2528029954869818029
-    second: m_armor1_28
+      213: 8299270035079479126
+    second: male_armor_7_28
   - first:
-      213: -7862573180468329793
-    second: m_armor1_29
+      213: -9014285242067917752
+    second: male_armor_7_29
   - first:
-      213: -6934690008830472364
-    second: m_armor1_30
+      213: 702703816809038881
+    second: male_armor_7_30
   - first:
-      213: -5427238862855470805
-    second: m_armor1_31
+      213: 1419658210121178504
+    second: male_armor_7_31
   - first:
-      213: 7237553411592387490
-    second: m_armor1_32
+      213: -7339192598592743632
+    second: male_armor_7_32
   - first:
-      213: 2346239140481363019
-    second: m_armor1_33
+      213: 6059895516157376178
+    second: male_armor_7_33
   - first:
-      213: 7511536043060717045
-    second: m_armor1_34
+      213: -843389361434981398
+    second: male_armor_7_34
   - first:
-      213: -1344829423398260747
-    second: m_armor1_35
+      213: 7526635507047269999
+    second: male_armor_7_35
   - first:
-      213: 3781549421692176414
-    second: m_armor1_36
+      213: -8215264026124002179
+    second: male_armor_7_36
   - first:
-      213: -2198404235449203388
-    second: m_armor1_37
+      213: -9186410992533475478
+    second: male_armor_7_37
   - first:
-      213: 6493363433481082329
-    second: m_armor1_38
+      213: 6558391734613464118
+    second: male_armor_7_38
   - first:
-      213: 670916378266637785
-    second: m_armor1_39
+      213: 8324352711361906278
+    second: male_armor_7_39
   - first:
-      213: -6066567892858532312
-    second: m_armor1_40
+      213: 4143422917120309568
+    second: male_armor_7_40
   - first:
-      213: -650061250979473454
-    second: m_armor1_41
+      213: -4280009323183188833
+    second: male_armor_7_41
   - first:
-      213: -5787816156815984293
-    second: m_armor1_42
+      213: -6735544287816724183
+    second: male_armor_7_42
   - first:
-      213: 5932054676611727030
-    second: m_armor1_43
+      213: -5198070627444332009
+    second: male_armor_7_43
   - first:
-      213: -4167984160723707602
-    second: m_armor1_44
+      213: 7350233186674649906
+    second: male_armor_7_44
   - first:
-      213: 6883990333054299053
-    second: m_armor1_45
+      213: 3323132375853485259
+    second: male_armor_7_45
   - first:
-      213: -2490978762693165327
-    second: m_armor1_46
+      213: -8140628940769032106
+    second: male_armor_7_46
   - first:
-      213: -1302148705368126000
-    second: m_armor1_47
+      213: 1873504769917566680
+    second: male_armor_7_47
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -230,7 +230,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: m_armor1_0
+      name: male_armor_7_0
       rect:
         serializedVersion: 2
         x: 0
@@ -244,14 +244,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 10ecba7337fc3e742a160fc6a813f85f
-      internalID: 1299833872641472819
+      spriteID: cae25f126863d334e92ee1f9d8f5412a
+      internalID: -4826254013329384335
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_1
+      name: male_armor_7_1
       rect:
         serializedVersion: 2
         x: 85
@@ -265,14 +265,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c12743bed87f6a741927d9ed4db9a867
-      internalID: -5767419193509906598
+      spriteID: 2492092e37e9e36468e5a843af4cdc22
+      internalID: 7905855615822852914
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_2
+      name: male_armor_7_2
       rect:
         serializedVersion: 2
         x: 170
@@ -286,14 +286,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5b4ef81cbf69f5040b25b56c9bcb7b50
-      internalID: -6310270485731930575
+      spriteID: 871106f297d6dde488bb8c35a4cec731
+      internalID: 1081189170460134446
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_3
+      name: male_armor_7_3
       rect:
         serializedVersion: 2
         x: 255
@@ -307,14 +307,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e4fa79b02e294d4468c2228cc38e851b
-      internalID: 6815561266774682166
+      spriteID: 8098ebb6e0054b54ea8edc9276afcd01
+      internalID: 3696292767277380833
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_4
+      name: male_armor_7_4
       rect:
         serializedVersion: 2
         x: 340
@@ -328,14 +328,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e72dc53d8f56c3f478165f8608e15320
-      internalID: 1185019470099683967
+      spriteID: 42707ad6d508dd94ba12fd190156b6a9
+      internalID: -6257121884945451241
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_5
+      name: male_armor_7_5
       rect:
         serializedVersion: 2
         x: 425
@@ -349,14 +349,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9b7738020248874479cadd42ec53d311
-      internalID: 1265824125070130274
+      spriteID: cfa29b3dc360c80439671b52425a1c34
+      internalID: -188346130003778870
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_6
+      name: male_armor_7_6
       rect:
         serializedVersion: 2
         x: 510
@@ -370,14 +370,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d99b179d194978d49aec47ec7fb0b006
-      internalID: -3640573271648913192
+      spriteID: 3aac0af9cff1e2440b0d37e825f20a99
+      internalID: -1916818265080770926
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_7
+      name: male_armor_7_7
       rect:
         serializedVersion: 2
         x: 595
@@ -391,14 +391,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ba568e3a4e1592943be4f2813f3c674c
-      internalID: 9038471075194010643
+      spriteID: eb49b506c36ccd044a471eb8b32c655b
+      internalID: -5593550335262525133
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_8
+      name: male_armor_7_8
       rect:
         serializedVersion: 2
         x: 680
@@ -412,14 +412,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4d04818615bb5f04a896f61c35929079
-      internalID: 8651741596313513999
+      spriteID: 2780660f2b208f7459f8a6dfd948d7f3
+      internalID: -5038921967647640225
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_9
+      name: male_armor_7_9
       rect:
         serializedVersion: 2
         x: 765
@@ -433,14 +433,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 61895129172300540ac68569d30f0bdd
-      internalID: 5053944877093282786
+      spriteID: e52cd03bad6df874fb23b4cb56750220
+      internalID: -5497455973669889250
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_10
+      name: male_armor_7_10
       rect:
         serializedVersion: 2
         x: 850
@@ -454,14 +454,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5e5d2e48d0dd4274299a46b016c382e2
-      internalID: 1185355796497837907
+      spriteID: a5c294e8abd3988429957ac60b4d7527
+      internalID: -1950427538283961316
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_11
+      name: male_armor_7_11
       rect:
         serializedVersion: 2
         x: 935
@@ -475,14 +475,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d12f65f37ca5d7f40a468ad36dc0ac6c
-      internalID: -5311803618195508929
+      spriteID: b24d407116e5e1a448afc5f627c95bb8
+      internalID: -8661497158229503064
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_12
+      name: male_armor_7_12
       rect:
         serializedVersion: 2
         x: 0
@@ -496,14 +496,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: da1f338d8b6a5b84782fe798431f8ba9
-      internalID: -4277257209134023058
+      spriteID: 6c126b3e15e67e34ca22c86b2cdea3ff
+      internalID: 3401577100959211879
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_13
+      name: male_armor_7_13
       rect:
         serializedVersion: 2
         x: 85
@@ -517,14 +517,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d30339da2346c264fb20c7ae715769d2
-      internalID: -8901619458213037627
+      spriteID: 02a1cbc87dea4da4e9394886a60bdba1
+      internalID: -8035173877406464146
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_14
+      name: male_armor_7_14
       rect:
         serializedVersion: 2
         x: 170
@@ -538,14 +538,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3bbb8affe14fa2d44aeea4747ea01c11
-      internalID: -7168694095636082591
+      spriteID: 869e76baff6e73a4c8d612ea4dda962a
+      internalID: 8011817366519371688
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_15
+      name: male_armor_7_15
       rect:
         serializedVersion: 2
         x: 255
@@ -559,14 +559,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 07422d69a7dd3264286d7f1ac993f650
-      internalID: -2685718090069214918
+      spriteID: 02d3536872aacd840a8805f4407dea99
+      internalID: 1207062948991286958
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_16
+      name: male_armor_7_16
       rect:
         serializedVersion: 2
         x: 340
@@ -580,14 +580,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d7dd867803ccda048a06d4f47eb065f8
-      internalID: 4007260446100488079
+      spriteID: 2f42522ee364a304b87fe382dfd8ce57
+      internalID: -926462978110425396
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_17
+      name: male_armor_7_17
       rect:
         serializedVersion: 2
         x: 425
@@ -601,14 +601,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bbedc92a09dfafa45bbefe47fe364363
-      internalID: -7417319433933588178
+      spriteID: d6074ef924c1a1a49abe69ad11073d29
+      internalID: -5576361791542568072
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_18
+      name: male_armor_7_18
       rect:
         serializedVersion: 2
         x: 510
@@ -622,14 +622,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ba25eeee2753ca44a9f10783b1375e69
-      internalID: -1058624358187774134
+      spriteID: 23da8ec86617ab44686749ffdcc18c08
+      internalID: 4435264917756685118
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_19
+      name: male_armor_7_19
       rect:
         serializedVersion: 2
         x: 595
@@ -643,14 +643,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 054196db2dee23649bb4802e411946c8
-      internalID: 3530408064074530094
+      spriteID: 280675de702a21849b641af39ba578f3
+      internalID: 5702189091561040378
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_20
+      name: male_armor_7_20
       rect:
         serializedVersion: 2
         x: 680
@@ -664,14 +664,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9086e5c87f3b299429a11f0dc31da927
-      internalID: 1038803885153444562
+      spriteID: 1e5f85eb780258546a4b5df110c0f3fd
+      internalID: 6535783283751103595
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_21
+      name: male_armor_7_21
       rect:
         serializedVersion: 2
         x: 765
@@ -685,14 +685,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b876f91f09eccd44bb9506868d890710
-      internalID: -2566669452772924701
+      spriteID: df4a1f77982b7024a82da09899d40d46
+      internalID: 5042072549050991475
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_22
+      name: male_armor_7_22
       rect:
         serializedVersion: 2
         x: 850
@@ -706,14 +706,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 98cf32f09f28f5d4c8e9119991d12e16
-      internalID: 3714897426863093770
+      spriteID: 283bedf16e735d1479ca1325d35486f0
+      internalID: 8158023506674610788
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_23
+      name: male_armor_7_23
       rect:
         serializedVersion: 2
         x: 935
@@ -727,14 +727,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 63a08724473d888439c75e1b5651429c
-      internalID: -1086666158642184253
+      spriteID: f75f718f29f08844fa1d5634f50212f5
+      internalID: 8540424154376630203
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_24
+      name: male_armor_7_24
       rect:
         serializedVersion: 2
         x: 0
@@ -748,14 +748,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6662de52a438b54419986fa0daf52c29
-      internalID: 4582819721284757736
+      spriteID: 2e17278c73c3c2f40b6be6f56333acc6
+      internalID: 362169280233674413
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_25
+      name: male_armor_7_25
       rect:
         serializedVersion: 2
         x: 85
@@ -769,14 +769,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: acfac8eb4e375d3429ff28460e5a2a10
-      internalID: -3694134794856136348
+      spriteID: da7b62c3a847cbf45a01782144b7ead3
+      internalID: 3385576169680386414
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_26
+      name: male_armor_7_26
       rect:
         serializedVersion: 2
         x: 170
@@ -790,14 +790,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: caf9a7c28ea72ec4f9e6b272e9e1e4f9
-      internalID: 3561988794836808518
+      spriteID: 340cd31364c780d46ade69708b50c888
+      internalID: 3692042566470211908
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_27
+      name: male_armor_7_27
       rect:
         serializedVersion: 2
         x: 255
@@ -811,14 +811,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 14a5c205a8dafe6439829b6ba6643104
-      internalID: 1051528733244406467
+      spriteID: a2fe35e4b57d2e5488fc331a41e27431
+      internalID: 555351367213863575
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_28
+      name: male_armor_7_28
       rect:
         serializedVersion: 2
         x: 340
@@ -832,14 +832,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5486fb5b18ce0c546bdea7f91eb9022a
-      internalID: 2528029954869818029
+      spriteID: cb6af1cb64c21874d8bb7c074bf10b0f
+      internalID: 8299270035079479126
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_29
+      name: male_armor_7_29
       rect:
         serializedVersion: 2
         x: 425
@@ -853,14 +853,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ca8f960b8550dfc46acaccfd2f647c4a
-      internalID: -7862573180468329793
+      spriteID: 82f3ffe53678fb44886fdbd66be73b93
+      internalID: -9014285242067917752
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_30
+      name: male_armor_7_30
       rect:
         serializedVersion: 2
         x: 510
@@ -874,14 +874,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 143813cb2506c9f48b6e0c54d77bf17a
-      internalID: -6934690008830472364
+      spriteID: cddc0a4f4fd58bf46855e9515bfccda7
+      internalID: 702703816809038881
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_31
+      name: male_armor_7_31
       rect:
         serializedVersion: 2
         x: 595
@@ -895,14 +895,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0e419091f9c629b4b8004de376aa778d
-      internalID: -5427238862855470805
+      spriteID: 9a9be24e49087344ea0041613aa3c1e5
+      internalID: 1419658210121178504
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_32
+      name: male_armor_7_32
       rect:
         serializedVersion: 2
         x: 680
@@ -916,14 +916,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b988aa1540f20564e82f158f989a6829
-      internalID: 7237553411592387490
+      spriteID: d92790409b2317e429ae61e92b118bc7
+      internalID: -7339192598592743632
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_33
+      name: male_armor_7_33
       rect:
         serializedVersion: 2
         x: 765
@@ -937,14 +937,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0b4549e31bfeea24c968961cb42cf7c5
-      internalID: 2346239140481363019
+      spriteID: 657afcd67e998544b80d6aaa47f60491
+      internalID: 6059895516157376178
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_34
+      name: male_armor_7_34
       rect:
         serializedVersion: 2
         x: 850
@@ -958,14 +958,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3a2417a86496afe4a9d3b49ac7ec0a1b
-      internalID: 7511536043060717045
+      spriteID: cbb4a009f0ac31044a3d5adddfd44669
+      internalID: -843389361434981398
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_35
+      name: male_armor_7_35
       rect:
         serializedVersion: 2
         x: 935
@@ -979,14 +979,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 32640d69fd6de8a4e8fdabc233b654f2
-      internalID: -1344829423398260747
+      spriteID: 4b120ed4678457043ac2296792a536d8
+      internalID: 7526635507047269999
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_36
+      name: male_armor_7_36
       rect:
         serializedVersion: 2
         x: 0
@@ -1000,14 +1000,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5903459236278164d9c2b2229b15e5b9
-      internalID: 3781549421692176414
+      spriteID: b294290b0309a37449c37b0be76320f6
+      internalID: -8215264026124002179
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_37
+      name: male_armor_7_37
       rect:
         serializedVersion: 2
         x: 85
@@ -1021,14 +1021,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 50dcbbf1f8c496e4392e7390ec4ea853
-      internalID: -2198404235449203388
+      spriteID: 9e5b227577bcf8f499d4193a5a3b6457
+      internalID: -9186410992533475478
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_38
+      name: male_armor_7_38
       rect:
         serializedVersion: 2
         x: 170
@@ -1042,14 +1042,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f5d22a1a2af567844a6cc4ef6088c2fd
-      internalID: 6493363433481082329
+      spriteID: 512eb1818bb38d14d96755e44c250284
+      internalID: 6558391734613464118
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_39
+      name: male_armor_7_39
       rect:
         serializedVersion: 2
         x: 255
@@ -1063,14 +1063,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0e9e93a13feaffa4d8a676907839c075
-      internalID: 670916378266637785
+      spriteID: aa9fbeefa5906f941bd1c6017a258627
+      internalID: 8324352711361906278
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_40
+      name: male_armor_7_40
       rect:
         serializedVersion: 2
         x: 340
@@ -1084,14 +1084,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 887eda51920806740acf5ec6b88f6d2e
-      internalID: -6066567892858532312
+      spriteID: ab9bfd750aff8514ba76c417e6bb32c5
+      internalID: 4143422917120309568
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_41
+      name: male_armor_7_41
       rect:
         serializedVersion: 2
         x: 425
@@ -1105,14 +1105,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 64d34c093586b4146bc1823f42b0b90c
-      internalID: -650061250979473454
+      spriteID: d373a22fcfc3cbb49a113f0cc53a1030
+      internalID: -4280009323183188833
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_42
+      name: male_armor_7_42
       rect:
         serializedVersion: 2
         x: 510
@@ -1126,14 +1126,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a479f34b72010834581dfb5b77e012f2
-      internalID: -5787816156815984293
+      spriteID: 74e554dcbb10d6647bc355bfc3850220
+      internalID: -6735544287816724183
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_43
+      name: male_armor_7_43
       rect:
         serializedVersion: 2
         x: 595
@@ -1147,14 +1147,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9a3a2473bb8680044a8054f5f984022d
-      internalID: 5932054676611727030
+      spriteID: 9ead8d6b14556754ab35ddeb757c142a
+      internalID: -5198070627444332009
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_44
+      name: male_armor_7_44
       rect:
         serializedVersion: 2
         x: 680
@@ -1168,14 +1168,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 07b90cc7d9bd05941ba3fc6039c87561
-      internalID: -4167984160723707602
+      spriteID: 5395c2d22e3930547b4aa7181c6f684e
+      internalID: 7350233186674649906
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_45
+      name: male_armor_7_45
       rect:
         serializedVersion: 2
         x: 765
@@ -1189,14 +1189,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 78bc7fcfb92e1324b86d2daac84db2c8
-      internalID: 6883990333054299053
+      spriteID: b3143275dab5cfd4c92ea74ff86723ed
+      internalID: 3323132375853485259
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_46
+      name: male_armor_7_46
       rect:
         serializedVersion: 2
         x: 850
@@ -1210,14 +1210,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c18798445239df94bbd3695457f5e4b1
-      internalID: -2490978762693165327
+      spriteID: 8c7aef8dad32d1c42904d840ed86ca97
+      internalID: -8140628940769032106
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: m_armor1_47
+      name: male_armor_7_47
       rect:
         serializedVersion: 2
         x: 935
@@ -1231,8 +1231,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4ee38d16a09ba204a9e35183f27bc486
-      internalID: -1302148705368126000
+      spriteID: a2cb3656f3775534b84220c8edd75958
+      internalID: 1873504769917566680
       vertices: []
       indices: 
       edges: []

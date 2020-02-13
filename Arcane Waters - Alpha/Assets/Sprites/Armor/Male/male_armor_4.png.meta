@@ -1,151 +1,151 @@
 fileFormatVersion: 2
-guid: ad9fb898176d1b14aa5da0dcb1e82e9b
+guid: b2422997bdbfe48469a60703f63dca69
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 21300000
-    second: male_wool_0
+      213: 7899708392916776940
+    second: male_armor_4_0
   - first:
-      213: 21300002
-    second: male_wool_1
+      213: -4953553391807050716
+    second: male_armor_4_1
   - first:
-      213: 21300004
-    second: male_wool_2
+      213: -8416404840914838168
+    second: male_armor_4_2
   - first:
-      213: 21300006
-    second: male_wool_3
+      213: 8387309486397368807
+    second: male_armor_4_3
   - first:
-      213: 21300008
-    second: male_wool_4
+      213: 8630321016535124714
+    second: male_armor_4_4
   - first:
-      213: 21300010
-    second: male_wool_5
+      213: 2881518340268359620
+    second: male_armor_4_5
   - first:
-      213: 21300012
-    second: male_wool_6
+      213: -6593600841530775647
+    second: male_armor_4_6
   - first:
-      213: 21300014
-    second: male_wool_7
+      213: -1068719918006928787
+    second: male_armor_4_7
   - first:
-      213: 21300016
-    second: male_wool_8
+      213: -8205213211342405919
+    second: male_armor_4_8
   - first:
-      213: 21300018
-    second: male_wool_9
+      213: -2222957905995818086
+    second: male_armor_4_9
   - first:
-      213: 21300020
-    second: male_wool_10
+      213: -7336898478677249119
+    second: male_armor_4_10
   - first:
-      213: 21300022
-    second: male_wool_11
+      213: -5133652175791660173
+    second: male_armor_4_11
   - first:
-      213: 21300024
-    second: male_wool_12
+      213: 4680333570250908869
+    second: male_armor_4_12
   - first:
-      213: 21300026
-    second: male_wool_13
+      213: 8827202950749793598
+    second: male_armor_4_13
   - first:
-      213: 21300028
-    second: male_wool_14
+      213: 161696114574882936
+    second: male_armor_4_14
   - first:
-      213: 21300030
-    second: male_wool_15
+      213: -5052403171634015694
+    second: male_armor_4_15
   - first:
-      213: 21300032
-    second: male_wool_16
+      213: 5222494642263291927
+    second: male_armor_4_16
   - first:
-      213: 21300034
-    second: male_wool_17
+      213: 6111848435839587410
+    second: male_armor_4_17
   - first:
-      213: 21300036
-    second: male_wool_18
+      213: 4415489342428064459
+    second: male_armor_4_18
   - first:
-      213: 21300038
-    second: male_wool_19
+      213: 3828912485234054851
+    second: male_armor_4_19
   - first:
-      213: 21300040
-    second: male_wool_20
+      213: 1935181459299384647
+    second: male_armor_4_20
   - first:
-      213: 21300042
-    second: male_wool_21
+      213: -8342894087320312255
+    second: male_armor_4_21
   - first:
-      213: 21300044
-    second: male_wool_22
+      213: 6171784956396091828
+    second: male_armor_4_22
   - first:
-      213: 21300046
-    second: male_wool_23
+      213: -3152021065421837981
+    second: male_armor_4_23
   - first:
-      213: 21300048
-    second: male_wool_24
+      213: -5965487726746205203
+    second: male_armor_4_24
   - first:
-      213: 21300050
-    second: male_wool_25
+      213: -1708522179115752245
+    second: male_armor_4_25
   - first:
-      213: 21300052
-    second: male_wool_26
+      213: -8180638587995384291
+    second: male_armor_4_26
   - first:
-      213: 21300054
-    second: male_wool_27
+      213: -6277426471664034210
+    second: male_armor_4_27
   - first:
-      213: 21300056
-    second: male_wool_28
+      213: 2423894159205352907
+    second: male_armor_4_28
   - first:
-      213: 21300058
-    second: male_wool_29
+      213: 3049180664334147896
+    second: male_armor_4_29
   - first:
-      213: 21300060
-    second: male_wool_30
+      213: 3222712910462342327
+    second: male_armor_4_30
   - first:
-      213: 21300062
-    second: male_wool_31
+      213: -4324448089019688843
+    second: male_armor_4_31
   - first:
-      213: 21300064
-    second: male_wool_32
+      213: 3992960894674360392
+    second: male_armor_4_32
   - first:
-      213: 21300066
-    second: male_wool_33
+      213: 5039032876740895993
+    second: male_armor_4_33
   - first:
-      213: 21300068
-    second: male_wool_34
+      213: -7878019695446928219
+    second: male_armor_4_34
   - first:
-      213: 21300070
-    second: male_wool_35
+      213: 5912600437115078011
+    second: male_armor_4_35
   - first:
-      213: 21300072
-    second: male_wool_36
+      213: -275535046210293951
+    second: male_armor_4_36
   - first:
-      213: 21300074
-    second: male_wool_37
+      213: 3689780024727452593
+    second: male_armor_4_37
   - first:
-      213: 21300076
-    second: male_wool_38
+      213: -2669045228665178573
+    second: male_armor_4_38
   - first:
-      213: 21300078
-    second: male_wool_39
+      213: 8641459349957841661
+    second: male_armor_4_39
   - first:
-      213: 21300080
-    second: male_wool_40
+      213: -7871423366633438657
+    second: male_armor_4_40
   - first:
-      213: 21300082
-    second: male_wool_41
+      213: 35283394356041565
+    second: male_armor_4_41
   - first:
-      213: 21300084
-    second: male_wool_42
+      213: 6036796400273062874
+    second: male_armor_4_42
   - first:
-      213: 21300086
-    second: male_wool_43
+      213: 8203852479094465315
+    second: male_armor_4_43
   - first:
-      213: 21300088
-    second: male_wool_44
+      213: 2648710563035702999
+    second: male_armor_4_44
   - first:
-      213: 21300090
-    second: male_wool_45
+      213: -730497346975465591
+    second: male_armor_4_45
   - first:
-      213: 21300092
-    second: male_wool_46
+      213: -455831165373694022
+    second: male_armor_4_46
   - first:
-      213: 21300094
-    second: male_wool_47
+      213: 6969462190142513829
+    second: male_armor_4_47
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -171,7 +171,7 @@ TextureImporter:
   generateCubemap: 6
   cubemapConvolution: 0
   seamlessCubemap: 0
-  textureFormat: 5
+  textureFormat: 1
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
@@ -213,7 +213,7 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
     maxTextureSize: 2048
@@ -225,12 +225,12 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: male_wool_0
+      name: male_armor_4_0
       rect:
         serializedVersion: 2
         x: 0
@@ -244,14 +244,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 02305410000000000800000000000000
-      internalID: 21300000
+      spriteID: 344fda130b1c3bb4abc63ba97dec9aa3
+      internalID: 7899708392916776940
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_1
+      name: male_armor_4_1
       rect:
         serializedVersion: 2
         x: 85
@@ -265,14 +265,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 22305410000000000800000000000000
-      internalID: 21300002
+      spriteID: 6bb49c5a7213c98458c5bd402625a1cf
+      internalID: -4953553391807050716
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_2
+      name: male_armor_4_2
       rect:
         serializedVersion: 2
         x: 170
@@ -286,14 +286,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 42305410000000000800000000000000
-      internalID: 21300004
+      spriteID: a8c9440bfb9febc43a652c8b250238cd
+      internalID: -8416404840914838168
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_3
+      name: male_armor_4_3
       rect:
         serializedVersion: 2
         x: 255
@@ -307,14 +307,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 62305410000000000800000000000000
-      internalID: 21300006
+      spriteID: 6845e94a03631c541951ecebb73a0576
+      internalID: 8387309486397368807
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_4
+      name: male_armor_4_4
       rect:
         serializedVersion: 2
         x: 340
@@ -328,14 +328,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 82305410000000000800000000000000
-      internalID: 21300008
+      spriteID: 6ba5a5d2267059b4ba231eebce3738fe
+      internalID: 8630321016535124714
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_5
+      name: male_armor_4_5
       rect:
         serializedVersion: 2
         x: 425
@@ -349,14 +349,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a2305410000000000800000000000000
-      internalID: 21300010
+      spriteID: b7d84bbbeb6babe4fa42618e1010ef9a
+      internalID: 2881518340268359620
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_6
+      name: male_armor_4_6
       rect:
         serializedVersion: 2
         x: 510
@@ -370,14 +370,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c2305410000000000800000000000000
-      internalID: 21300012
+      spriteID: b93188da950ed6f4ea9d88d7b400fa4b
+      internalID: -6593600841530775647
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_7
+      name: male_armor_4_7
       rect:
         serializedVersion: 2
         x: 595
@@ -391,14 +391,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e2305410000000000800000000000000
-      internalID: 21300014
+      spriteID: a9454bbf5c6ed6848b625b03e7f207d5
+      internalID: -1068719918006928787
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_8
+      name: male_armor_4_8
       rect:
         serializedVersion: 2
         x: 680
@@ -412,14 +412,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 03305410000000000800000000000000
-      internalID: 21300016
+      spriteID: a230579a3b09adf41814feabfa3e8751
+      internalID: -8205213211342405919
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_9
+      name: male_armor_4_9
       rect:
         serializedVersion: 2
         x: 765
@@ -433,14 +433,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 23305410000000000800000000000000
-      internalID: 21300018
+      spriteID: ce1c656b633b7d34c8d00474adbfccfb
+      internalID: -2222957905995818086
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_10
+      name: male_armor_4_10
       rect:
         serializedVersion: 2
         x: 850
@@ -454,14 +454,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 43305410000000000800000000000000
-      internalID: 21300020
+      spriteID: 3772e990113878747ac8e9232332950d
+      internalID: -7336898478677249119
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_11
+      name: male_armor_4_11
       rect:
         serializedVersion: 2
         x: 935
@@ -475,14 +475,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 63305410000000000800000000000000
-      internalID: 21300022
+      spriteID: 6112f2632d346524699e24fe39728c7d
+      internalID: -5133652175791660173
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_12
+      name: male_armor_4_12
       rect:
         serializedVersion: 2
         x: 0
@@ -496,14 +496,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 83305410000000000800000000000000
-      internalID: 21300024
+      spriteID: c3e3eaaf8de74254480e36bce97f3e04
+      internalID: 4680333570250908869
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_13
+      name: male_armor_4_13
       rect:
         serializedVersion: 2
         x: 85
@@ -517,14 +517,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a3305410000000000800000000000000
-      internalID: 21300026
+      spriteID: f0ffada097bdd6e40b0f55d48956190d
+      internalID: 8827202950749793598
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_14
+      name: male_armor_4_14
       rect:
         serializedVersion: 2
         x: 170
@@ -538,14 +538,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c3305410000000000800000000000000
-      internalID: 21300028
+      spriteID: e1570c5004e3e844090d7cdbfe8fec3c
+      internalID: 161696114574882936
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_15
+      name: male_armor_4_15
       rect:
         serializedVersion: 2
         x: 255
@@ -559,14 +559,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e3305410000000000800000000000000
-      internalID: 21300030
+      spriteID: c0d4773bce281674fb54d0c4ee8275ef
+      internalID: -5052403171634015694
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_16
+      name: male_armor_4_16
       rect:
         serializedVersion: 2
         x: 340
@@ -580,14 +580,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 04305410000000000800000000000000
-      internalID: 21300032
+      spriteID: 53e010d64f518b8439faeedfe3c50287
+      internalID: 5222494642263291927
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_17
+      name: male_armor_4_17
       rect:
         serializedVersion: 2
         x: 425
@@ -601,14 +601,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 24305410000000000800000000000000
-      internalID: 21300034
+      spriteID: 173df0f6edbdc5b4394c43d3e9501b2b
+      internalID: 6111848435839587410
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_18
+      name: male_armor_4_18
       rect:
         serializedVersion: 2
         x: 510
@@ -622,14 +622,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 44305410000000000800000000000000
-      internalID: 21300036
+      spriteID: dfa1883e23642794bbba4f02172c29c5
+      internalID: 4415489342428064459
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_19
+      name: male_armor_4_19
       rect:
         serializedVersion: 2
         x: 595
@@ -643,14 +643,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 64305410000000000800000000000000
-      internalID: 21300038
+      spriteID: 1e808a9c51561ec4e816225acbfd6a3c
+      internalID: 3828912485234054851
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_20
+      name: male_armor_4_20
       rect:
         serializedVersion: 2
         x: 680
@@ -664,14 +664,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 84305410000000000800000000000000
-      internalID: 21300040
+      spriteID: 14443902c6fd49348b25c0e61a9f2ed4
+      internalID: 1935181459299384647
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_21
+      name: male_armor_4_21
       rect:
         serializedVersion: 2
         x: 765
@@ -685,14 +685,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a4305410000000000800000000000000
-      internalID: 21300042
+      spriteID: 5a01a5921234a96448739c981e289095
+      internalID: -8342894087320312255
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_22
+      name: male_armor_4_22
       rect:
         serializedVersion: 2
         x: 850
@@ -706,14 +706,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c4305410000000000800000000000000
-      internalID: 21300044
+      spriteID: 5943b927ae2f5b7419c692b9c6d2d8fc
+      internalID: 6171784956396091828
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_23
+      name: male_armor_4_23
       rect:
         serializedVersion: 2
         x: 935
@@ -727,14 +727,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e4305410000000000800000000000000
-      internalID: 21300046
+      spriteID: 196647f65cdfb814295efb671138c9e3
+      internalID: -3152021065421837981
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_24
+      name: male_armor_4_24
       rect:
         serializedVersion: 2
         x: 0
@@ -748,14 +748,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 05305410000000000800000000000000
-      internalID: 21300048
+      spriteID: adf2c475d8e32994ab7f9912cffe8966
+      internalID: -5965487726746205203
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_25
+      name: male_armor_4_25
       rect:
         serializedVersion: 2
         x: 85
@@ -769,14 +769,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 25305410000000000800000000000000
-      internalID: 21300050
+      spriteID: db5a00673ea4b614fb6808c9bfa604f1
+      internalID: -1708522179115752245
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_26
+      name: male_armor_4_26
       rect:
         serializedVersion: 2
         x: 170
@@ -790,14 +790,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 45305410000000000800000000000000
-      internalID: 21300052
+      spriteID: b4466e2e276179549bab12ecd0e62d63
+      internalID: -8180638587995384291
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_27
+      name: male_armor_4_27
       rect:
         serializedVersion: 2
         x: 255
@@ -811,14 +811,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 65305410000000000800000000000000
-      internalID: 21300054
+      spriteID: 6b5d5831d8dc42c469dfe2a6baec8ff4
+      internalID: -6277426471664034210
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_28
+      name: male_armor_4_28
       rect:
         serializedVersion: 2
         x: 340
@@ -832,14 +832,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 85305410000000000800000000000000
-      internalID: 21300056
+      spriteID: ba6ac39bb2e759b48bdfb20559d74501
+      internalID: 2423894159205352907
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_29
+      name: male_armor_4_29
       rect:
         serializedVersion: 2
         x: 425
@@ -853,14 +853,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a5305410000000000800000000000000
-      internalID: 21300058
+      spriteID: fa0b950be5273ce44aa23a5123298247
+      internalID: 3049180664334147896
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_30
+      name: male_armor_4_30
       rect:
         serializedVersion: 2
         x: 510
@@ -874,14 +874,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c5305410000000000800000000000000
-      internalID: 21300060
+      spriteID: 49a4f6c0c2701e344b104c92966218c3
+      internalID: 3222712910462342327
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_31
+      name: male_armor_4_31
       rect:
         serializedVersion: 2
         x: 595
@@ -895,14 +895,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e5305410000000000800000000000000
-      internalID: 21300062
+      spriteID: 5a65fe81c8a87d34487c50d8055b5e00
+      internalID: -4324448089019688843
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_32
+      name: male_armor_4_32
       rect:
         serializedVersion: 2
         x: 680
@@ -916,14 +916,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 06305410000000000800000000000000
-      internalID: 21300064
+      spriteID: d09c129e9b76f8745a94f2ea9c4c9e3e
+      internalID: 3992960894674360392
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_33
+      name: male_armor_4_33
       rect:
         serializedVersion: 2
         x: 765
@@ -937,14 +937,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 26305410000000000800000000000000
-      internalID: 21300066
+      spriteID: 62950f68d563f73438604bf1d03c9317
+      internalID: 5039032876740895993
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_34
+      name: male_armor_4_34
       rect:
         serializedVersion: 2
         x: 850
@@ -958,14 +958,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 46305410000000000800000000000000
-      internalID: 21300068
+      spriteID: 963c8bbe42eca1d4bb46d760aa0e865e
+      internalID: -7878019695446928219
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_35
+      name: male_armor_4_35
       rect:
         serializedVersion: 2
         x: 935
@@ -979,14 +979,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 66305410000000000800000000000000
-      internalID: 21300070
+      spriteID: 178b193e41d181842b3c9b3e47a9bb29
+      internalID: 5912600437115078011
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_36
+      name: male_armor_4_36
       rect:
         serializedVersion: 2
         x: 0
@@ -1000,14 +1000,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 86305410000000000800000000000000
-      internalID: 21300072
+      spriteID: da0501fc3d703a14ca6a616389efc3b6
+      internalID: -275535046210293951
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_37
+      name: male_armor_4_37
       rect:
         serializedVersion: 2
         x: 85
@@ -1021,14 +1021,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a6305410000000000800000000000000
-      internalID: 21300074
+      spriteID: 5bf8d22dc0e239d4e9f86d83801d95c1
+      internalID: 3689780024727452593
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_38
+      name: male_armor_4_38
       rect:
         serializedVersion: 2
         x: 170
@@ -1042,14 +1042,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c6305410000000000800000000000000
-      internalID: 21300076
+      spriteID: 38e7ae7a8e265664a881af5a1ae0c617
+      internalID: -2669045228665178573
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_39
+      name: male_armor_4_39
       rect:
         serializedVersion: 2
         x: 255
@@ -1063,14 +1063,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e6305410000000000800000000000000
-      internalID: 21300078
+      spriteID: 31776f03e179d2a48b04a6eb0eeeedd5
+      internalID: 8641459349957841661
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_40
+      name: male_armor_4_40
       rect:
         serializedVersion: 2
         x: 340
@@ -1084,14 +1084,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 07305410000000000800000000000000
-      internalID: 21300080
+      spriteID: c7d6d2ac9c2d8e346a71bf3ce7b79833
+      internalID: -7871423366633438657
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_41
+      name: male_armor_4_41
       rect:
         serializedVersion: 2
         x: 425
@@ -1105,14 +1105,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 27305410000000000800000000000000
-      internalID: 21300082
+      spriteID: 38009529cdc41eb44a56beafb4afe3f9
+      internalID: 35283394356041565
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_42
+      name: male_armor_4_42
       rect:
         serializedVersion: 2
         x: 510
@@ -1126,14 +1126,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 47305410000000000800000000000000
-      internalID: 21300084
+      spriteID: d2e36b491084f0845b193b0584f6b240
+      internalID: 6036796400273062874
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_43
+      name: male_armor_4_43
       rect:
         serializedVersion: 2
         x: 595
@@ -1147,14 +1147,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 67305410000000000800000000000000
-      internalID: 21300086
+      spriteID: 57a84b9751ca92c448c3f4ffc1bc03e6
+      internalID: 8203852479094465315
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_44
+      name: male_armor_4_44
       rect:
         serializedVersion: 2
         x: 680
@@ -1168,14 +1168,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 87305410000000000800000000000000
-      internalID: 21300088
+      spriteID: d9c24181b02448a44ab535c472dfa5e6
+      internalID: 2648710563035702999
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_45
+      name: male_armor_4_45
       rect:
         serializedVersion: 2
         x: 765
@@ -1189,14 +1189,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a7305410000000000800000000000000
-      internalID: 21300090
+      spriteID: 0d15beea942d2f042855d14f32d3c198
+      internalID: -730497346975465591
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_46
+      name: male_armor_4_46
       rect:
         serializedVersion: 2
         x: 850
@@ -1210,14 +1210,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c7305410000000000800000000000000
-      internalID: 21300092
+      spriteID: 02be668a473d02745af1b1dd8322d41d
+      internalID: -455831165373694022
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_wool_47
+      name: male_armor_4_47
       rect:
         serializedVersion: 2
         x: 935
@@ -1231,8 +1231,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e7305410000000000800000000000000
-      internalID: 21300094
+      spriteID: 5f91d6f7570f70246a3a6882cb58433a
+      internalID: 6969462190142513829
       vertices: []
       indices: 
       edges: []
@@ -1240,7 +1240,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
