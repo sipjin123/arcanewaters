@@ -129,8 +129,8 @@ public class SeaEntity : NetEntity {
       return false;
    }
 
-   public bool hasAnyCombat () {
-      return (hasAttackers() || _lastAttackTime > 0f);
+   public override bool hasAnyCombat () {
+      return (hasAttackers() || hasRecentCombat());
    }
 
    public void disableCollisions () {

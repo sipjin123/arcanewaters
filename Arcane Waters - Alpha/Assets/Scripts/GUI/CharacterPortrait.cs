@@ -15,8 +15,11 @@ public class CharacterPortrait : MonoBehaviour, IPointerEnterHandler, IPointerEx
    // The character stack
    public CharacterStack characterStack;
 
-   // The icon displayed when the portrait is disabled
-   public GameObject disabledIcon;
+   // The icon displayed when the portrait info is not available
+   public GameObject unknownIcon;
+
+   // The tooltip
+   public Tooltipped tooltip;
 
    // The click events
    public UnityEvent pointerEnterEvent;
@@ -24,23 +27,32 @@ public class CharacterPortrait : MonoBehaviour, IPointerEnterHandler, IPointerEx
 
    #endregion
 
-   public void setPortrait (UserObjects userObjects) {
-      // Update the character stack
-      characterStack.updateLayers(userObjects);
-      characterStack.setDirection(Direction.East);
+   public void Awake () {
       characterStack.pauseAnimation();
    }
 
-   public void enable () {
-      if (disabledIcon.activeSelf) {
-         disabledIcon.SetActive(false);
+   public void setPortrait (NetEntity entity) {
+      // If the entity is null, display a question mark
+      if (entity == null) {
+         unknownIcon.SetActive(true);
+         return;
       }
+      
+      // Update the character stack
+      characterStack.updateLayers(entity);
+      characterStack.setDirection(Direction.East);
+
+      // Set the user name in the tooltip
+      tooltip.text = entity.entityName;
+
+      // Hide the question mark icon
+      unknownIcon.SetActive(false);
    }
 
-   public void disable () {
-      if (!disabledIcon.activeSelf) {
-         disabledIcon.SetActive(true);
-      }
+   public void disableMouseInteraction () {
+      pointerEnterEvent.RemoveAllListeners();
+      pointerExitEvent.RemoveAllListeners();
+      Destroy(tooltip);
    }
 
    public void OnPointerExit (PointerEventData eventData) {

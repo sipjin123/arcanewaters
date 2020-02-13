@@ -731,7 +731,7 @@ public class DB_MainStub : MonoBehaviour
       return 0;
    }
 
-   public static List<UserObjects> getVoyageGroupMembers (int groupId) {
+   public static List<int> getVoyageGroupMembers (int groupId) {
       return null;
    }
 

@@ -36,6 +36,18 @@ public class CharacterStack : MonoBehaviour {
       updateWeapon(info.gender, userObjects.weapon.type, userObjects.weaponColor1, userObjects.weaponColor2);
    }
 
+   public void updateLayers (NetEntity entity) {
+      Armor armor = entity.getEquippedArmor();
+      Weapon weapon = entity.getEquippedWeapon();
+
+      bodyLayer.setType(entity.bodyType);
+      eyesLayer.setType(entity.eyesType);
+      eyesLayer.recolor(entity.eyesColor1, entity.eyesColor1);
+      updateHair(entity.hairType, entity.hairColor1, entity.hairColor2);
+      updateArmor(entity.gender,  armor.type, armor.color1, armor.color2);
+      updateWeapon(entity.gender, weapon.type, weapon.color1, weapon.color2);
+   }
+
    public void updateWeapon (Gender.Type gender, Weapon.Type weaponType, ColorType color1, ColorType color2) {
       weaponBackLayer.setType(gender, weaponType);
       weaponBackLayer.recolor(color1, color2);

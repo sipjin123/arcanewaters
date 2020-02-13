@@ -17,6 +17,18 @@ public class VoyageGroupPanel : ClientMonoBehaviour
    // The prefab we use for creating member cells
    public VoyageGroupMemberCell memberCellPrefab;
 
+   // When the mouse is over this defined zone, we consider that it hovers the panel
+   public RectTransform panelHoveringZone;
+
+   // The exit button
+   public Button xButton;
+
+   // The countdown container
+   public GameObject countdownBox;
+
+   // The countdown text when leaving the group
+   public Text leavingCountdownText;
+
    // Self
    public static VoyageGroupPanel self;
 
@@ -30,38 +42,57 @@ public class VoyageGroupPanel : ClientMonoBehaviour
    public void Start () {
       // Hide the panel by default
       hide();
+
+      // Hide the leaving countdown
+      countdownBox.SetActive(false);
+
+      // Hide the x button
+      xButton.gameObject.SetActive(false);
    }
 
    public void Update () {
-      if (Global.player == null || !Global.player.isLocalPlayer) {
-         return;
+      // Display the X button only if the mouse is over the defined zone
+      if (RectTransformUtility.RectangleContainsScreenPoint(panelHoveringZone, Input.mousePosition)) {
+         xButton.gameObject.SetActive(true);
+      } else {
+         xButton.gameObject.SetActive(false);
       }
 
-      // If the player doesn't belong to any group, hide the panel
-      if (Global.player.voyageGroupId == -1) {
-         hide();
-         return;
+      // If the player is in combat, disable the X button
+      if (Global.player.hasAttackers()) {
+         xButton.interactable = false;
+      } else {
+         xButton.interactable = true;
       }
 
-      // Show the panel
-      show();
-
-      // Get the visible group members
-      List<int> visibleMembers = VoyageManager.self.getVisibleVoyageGroupMembers();
-
-      // Update the user rows depending on which ones are visible by this client
-      foreach (VoyageGroupMemberCell cell in _memberCells) {
-         if (visibleMembers.Contains(cell.getUserId())) {
-            cell.enable();
+      // Check if the leave group countdown is running
+      if (countdownBox.activeSelf) {
+         // Check if the player is in combat
+         if (Global.player.hasAttackers()) {
+            // Stop the countdown
+            countdownBox.SetActive(false);
          } else {
-            cell.disable();
+            // Decrease the countdown
+            _countdown -= Time.deltaTime;
+
+            // Update the countdown text
+            leavingCountdownText.text = Mathf.CeilToInt(_countdown).ToString();
+
+            // Check if we reached the end of the countdown
+            if (_countdown <= 0) {
+               // Hide the countdown
+               countdownBox.SetActive(false);
+
+               // Request the server to remove the user from the group
+               Global.player.rpc.Cmd_RemoveUserFromVoyageGroup();
+            }
          }
       }
    }
 
-   public void updatePanelWithGroupMembers (List<UserObjects> memberInfos) {
+   public void updatePanelWithGroupMembers (List<int> groupMembers) {
       // If the player does not belong to a group, or there are no group members, hide the panel
-      if (Global.player.voyageGroupId == -1 || memberInfos.Count <= 0) {
+      if (Global.player.voyageGroupId == -1 || groupMembers.Count <= 0) {
          hide();
          return;
       }
@@ -71,17 +102,20 @@ public class VoyageGroupPanel : ClientMonoBehaviour
 
       // Clear out any old info
       memberContainer.DestroyChildren();
-      _memberCells.Clear();
 
       // Instantiate the cells
-      foreach(UserObjects memberInfo in memberInfos) {
+      foreach(int memberUserId in groupMembers) {
          VoyageGroupMemberCell cell = Instantiate(memberCellPrefab, memberContainer.transform, false);
-         cell.setCellForGroupMember(memberInfo);
-         _memberCells.Add(cell);
+         cell.setCellForGroupMember(memberUserId);
       }
    }
 
    public void OnLeaveGroupButtonClickedOn () {
+      // Check if the player is already leaving the group or if it is in combat
+      if (countdownBox.activeSelf || Global.player.hasAttackers()) {
+         return;
+      }
+
       // Associate a new function with the confirmation button
       PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
       PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => confirmLeaveGroup());
@@ -94,8 +128,16 @@ public class VoyageGroupPanel : ClientMonoBehaviour
       // Hide the confirm panel
       PanelManager.self.confirmScreen.hide();
 
-      // Request the server to remove the user from the group
-      Global.player.rpc.Cmd_RemoveUserFromVoyageGroup();
+      // Set the countdown start value
+      _countdown = LEAVING_COUNTDOWN_SECONDS;
+
+      // Start the countdown
+      countdownBox.SetActive(true);
+   }
+
+   public void OnCancelLeaveGroupButtonClickedOn () {
+      // Hide the countdown
+      countdownBox.SetActive(false);
    }
 
    public void show () {
@@ -122,8 +164,11 @@ public class VoyageGroupPanel : ClientMonoBehaviour
 
    #region Private Variables
 
-   // The list of member cells
-   private List<VoyageGroupMemberCell> _memberCells = new List<VoyageGroupMemberCell>();
+   // The number of seconds the player must wait when leaving the group
+   private static int LEAVING_COUNTDOWN_SECONDS = 5;
+
+   // The countdown when leaving the group
+   private float _countdown = 0;
 
    #endregion
 }

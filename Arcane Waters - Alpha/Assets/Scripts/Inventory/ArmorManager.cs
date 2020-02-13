@@ -113,7 +113,7 @@ public class ArmorManager : EquipmentManager {
    #region Private Variables
 
    // The equipped armor, if any
-   protected Armor _armor;
+   protected Armor _armor = new Armor(0, Armor.Type.None);
 
    #endregion
 }

@@ -36,6 +36,22 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public Gender.Type gender = Gender.Type.Male;
 
+   // The types associated with our sprite layers
+   [SyncVar]
+   public BodyLayer.Type bodyType;
+   [SyncVar]
+   public EyesLayer.Type eyesType;
+   [SyncVar]
+   public HairLayer.Type hairType;
+
+   // Our colors
+   [SyncVar]
+   public ColorType eyesColor1;
+   [SyncVar]
+   public ColorType hairColor1;
+   [SyncVar]
+   public ColorType hairColor2;
+
    // The Name of this entity
    [SyncVar]
    public string entityName;
@@ -288,6 +304,25 @@ public class NetEntity : NetworkBehaviour
       }
    }
 
+   public virtual void setDataFromUserInfo (UserInfo userInfo, Armor armor, Weapon weapon, 
+      ShipInfo shipInfo) {
+      this.entityName = userInfo.username;
+      this.adminFlag = userInfo.adminFlag;
+      this.classType = userInfo.classType;
+      this.specialty = userInfo.specialty;
+      this.faction = userInfo.faction;
+      this.guildId = userInfo.guildId;
+
+      // Body
+      this.gender = userInfo.gender;
+      this.hairColor1 = userInfo.hairColor1;
+      this.hairColor2 = userInfo.hairColor2;
+      this.hairType = userInfo.hairType;
+      this.eyesType = userInfo.eyesType;
+      this.eyesColor1 = userInfo.eyesColor1;
+      this.bodyType = userInfo.bodyType;
+   }
+
    public bool isMale () {
       return gender == Gender.Type.Male;
    }
@@ -403,6 +438,14 @@ public class NetEntity : NetworkBehaviour
       return null;
    }
 
+   public virtual Armor getEquippedArmor () {
+      return new Armor(0, Armor.Type.None);
+   }
+
+   public virtual Weapon getEquippedWeapon () {
+      return new Weapon(0, Weapon.Type.None);
+   }
+
    protected void updatePlayerCamera () {
       // Only do this for our own player, and never 
       if (!this.isLocalPlayer) {
@@ -442,6 +485,10 @@ public class NetEntity : NetworkBehaviour
 
    public bool hasAttackers () {
       return _attackers.Count > 0;
+   }
+
+   public virtual bool hasAnyCombat () {
+      return hasAttackers();
    }
 
    public bool hasBeenAttackedBy (NetEntity otherEntity) {

@@ -225,13 +225,7 @@ public class MyNetworkManager : NetworkManager {
             InstanceManager.self.addPlayerToInstance(player, previousAreaKey);
             NetworkServer.AddPlayerForConnection(conn, player.gameObject);
 
-            if (player is BodyEntity) {
-               BodyEntity body = (BodyEntity) player;
-               body.setDataFromUserInfo(userInfo, userObjects.armor, userObjects.weapon);
-            } else if (player is PlayerShipEntity) {
-               PlayerShipEntity playerShip = (PlayerShipEntity) player;
-               playerShip.setDataFromUserInfo(userInfo, armor, userObjects.weapon, shipInfo);
-            }
+            player.setDataFromUserInfo(userInfo, userObjects.armor, userObjects.weapon, shipInfo);
 
             // Keep track
             _players[conn.connectionId] = player;

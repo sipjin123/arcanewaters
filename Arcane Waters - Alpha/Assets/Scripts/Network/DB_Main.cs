@@ -4971,18 +4971,13 @@ public class DB_Main : DB_MainStub
       return groupId;
    }
 
-   public static new List<UserObjects> getVoyageGroupMembers (int groupId) {
-      List<UserObjects> members = new List<UserObjects>();
+   public static new List<int> getVoyageGroupMembers (int groupId) {
+      List<int> members = new List<int>();
 
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT *, " +
-            "armor.itmId AS armorId, armor.itmType AS armorType, armor.itmColor1 AS armorColor1, armor.itmColor2 AS armorColor2, armor.itmData AS armorData " +
-            "FROM voyage_group_members " +
-            "JOIN users ON voyage_group_members.usrId = users.usrId " +
-            "JOIN accounts ON users.accId = accounts.accId " +
-            "LEFT JOIN items AS armor ON (users.armId=armor.itmId) " +
+            "SELECT * FROM voyage_group_members " +
             "WHERE voyage_group_members.groupId=@groupId", conn)) {
 
             conn.Open();
@@ -4992,17 +4987,8 @@ public class DB_Main : DB_MainStub
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  UserObjects userObjects = new UserObjects();
-                  userObjects.userInfo = new UserInfo(dataReader);
-                  userObjects.shipInfo = new ShipInfo();
-                  userObjects.armor = getArmor(dataReader);
-                  userObjects.weapon = new Weapon(-1, Weapon.Type.None);
-                  userObjects.armorColor1 = userObjects.armor.color1;
-                  userObjects.armorColor2 = userObjects.armor.color2;
-                  userObjects.weaponColor1 = ColorType.None;
-                  userObjects.weaponColor2 = ColorType.None;
-
-                  members.Add(userObjects);
+                  int userId = DataUtil.getInt(dataReader, "usrId");
+                  members.Add(userId);
                }
             }
 

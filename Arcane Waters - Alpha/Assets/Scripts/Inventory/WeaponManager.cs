@@ -101,7 +101,7 @@ public class WeaponManager : EquipmentManager {
    #region Private Variables
 
    // The equipped weapon, if any
-   protected Weapon _weapon;
+   protected Weapon _weapon = new Weapon (0, Weapon.Type.None);
 
    #endregion
 }

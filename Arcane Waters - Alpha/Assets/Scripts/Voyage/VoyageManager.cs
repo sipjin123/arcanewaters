@@ -49,10 +49,6 @@ public class VoyageManager : MonoBehaviour {
       return voyageList;
    }
 
-   public List<int> getVisibleVoyageGroupMembers () {
-      return _visibleGroupMembers;
-   }
-
    public bool isVoyageArea (string areaKey) {
       foreach(Voyage voyage in _allVoyages.Values) {
          if (string.Equals(voyage.areaKey, areaKey)) {
@@ -67,9 +63,13 @@ public class VoyageManager : MonoBehaviour {
          return;
       }
 
-      // If the player doesn't belong to a group, clear the list of group members
+      // Check if the player is not in a group
       if (Global.player.voyageGroupId == -1) {
-         _visibleGroupMembers.Clear();
+         // If the player just left his group, request an update from the server
+         if (_visibleGroupMembers.Count > 0) {
+            _visibleGroupMembers.Clear();
+            Global.player.rpc.Cmd_RequestVoyageGroupMembersFromServer();
+         }
          return;
       }
 

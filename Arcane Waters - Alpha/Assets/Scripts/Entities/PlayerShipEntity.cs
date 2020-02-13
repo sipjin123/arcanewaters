@@ -7,9 +7,6 @@ using Mirror;
 public class PlayerShipEntity : ShipEntity {
    #region Public Variables
 
-   // The maximum number of scheduled shots at any time
-   public static int MAX_SCHEDULED_SHOTS = 1;
-
    // The ID of this ship in the database
    [SyncVar]
    public int shipId;
@@ -122,14 +119,8 @@ public class PlayerShipEntity : ShipEntity {
       StartCoroutine(CO_FireTimedCannonBall(startTime, velocity));
    }
 
-   public void setDataFromUserInfo (UserInfo userInfo, Armor armor, Weapon weapon, ShipInfo shipInfo) {
-      this.entityName = userInfo.username;
-      this.adminFlag = userInfo.adminFlag;
-      this.classType = userInfo.classType;
-      this.specialty = userInfo.specialty;
-      this.faction = userInfo.faction;
-      this.guildId = userInfo.guildId;
-      this.gender = userInfo.gender;
+   public override void setDataFromUserInfo (UserInfo userInfo, Armor armor, Weapon weapon, ShipInfo shipInfo) {
+      base.setDataFromUserInfo(userInfo, armor, weapon, shipInfo);
 
       // Ship stuff
       this.shipType = shipInfo.shipType;
@@ -143,6 +134,18 @@ public class PlayerShipEntity : ShipEntity {
       this.rarity = shipInfo.rarity;
 
       this.shipAbilities = shipInfo.shipAbilities;
+
+      // Equipped items
+      _equippedWeapon = weapon;
+      _equippedArmor = armor;
+   }
+
+   public override Armor getEquippedArmor () {
+      return _equippedArmor;
+   }
+
+   public override Weapon getEquippedWeapon () {
+      return _equippedWeapon;
    }
 
    protected void adjustMovementAudio() {
@@ -375,6 +378,12 @@ public class PlayerShipEntity : ShipEntity {
 
    // Our ship movement sound
    protected AudioSource _movementAudioSource;
+
+   // The equipped armor
+   protected Armor _equippedArmor = new Armor(0, Armor.Type.None);
+
+   // The equipped weapon
+   protected Weapon _equippedWeapon = new Weapon(0, Weapon.Type.None);
 
    #endregion
 }

@@ -8,22 +8,6 @@ public class BodyEntity : NetEntity
 {
    #region Public Variables
 
-   // The types associated with our sprite layers
-   [SyncVar]
-   public BodyLayer.Type bodyType;
-   [SyncVar]
-   public EyesLayer.Type eyesType;
-   [SyncVar]
-   public HairLayer.Type hairType;
-
-   // Our colors
-   [SyncVar]
-   public ColorType eyesColor1;
-   [SyncVar]
-   public ColorType hairColor1;
-   [SyncVar]
-   public ColorType hairColor2;
-
    // Our Item Managers
    public ArmorManager armorManager;
    public WeaponManager weaponManager;
@@ -60,25 +44,19 @@ public class BodyEntity : NetEntity
       checkFallDirection();
    }
 
-   public void setDataFromUserInfo (UserInfo userInfo, Armor armor, Weapon weapon) {
-      this.entityName = userInfo.username;
-      this.adminFlag = userInfo.adminFlag;
-      this.classType = userInfo.classType;
-      this.specialty = userInfo.specialty;
-      this.faction = userInfo.faction;
-      this.guildId = this.guildId = userInfo.guildId;
-
-      // Body
-      this.gender = userInfo.gender;
-      this.hairColor1 = userInfo.hairColor1;
-      this.hairColor2 = userInfo.hairColor2;
-      this.hairType = userInfo.hairType;
-      this.eyesType = userInfo.eyesType;
-      this.eyesColor1 = userInfo.eyesColor1;
-      this.bodyType = userInfo.bodyType;
-      this.armorManager.updateArmorSyncVars(armor);
+   public override void setDataFromUserInfo (UserInfo userInfo, Armor armor, Weapon weapon, ShipInfo shipInfo) {
+      base.setDataFromUserInfo(userInfo, armor, weapon, shipInfo);
       
+      this.armorManager.updateArmorSyncVars(armor);
       this.weaponManager.updateWeaponSyncVars(weapon);
+   }
+
+   public override Armor getEquippedArmor () {
+      return armorManager.getArmor();
+   }
+
+   public override Weapon getEquippedWeapon () {
+      return weaponManager.getWeapon();
    }
 
    public void updateHair (HairLayer.Type newHairType, ColorType newHairColor1, ColorType newHairColor2) {

@@ -604,8 +604,8 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_ReceiveVoyageGroupMembers (NetworkConnection connection, UserObjects[] groupMembersArray) {
-      List<UserObjects> membersInfo = new List<UserObjects>(groupMembersArray);
+   public void Target_ReceiveVoyageGroupMembers (NetworkConnection connection, int[] groupMembersArray) {
+      List<int> groupMembers = new List<int>(groupMembersArray);
 
       // Get the panel
       VoyageGroupPanel panel = VoyageGroupPanel.self;
@@ -616,7 +616,7 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Update the panel info
-      panel.updatePanelWithGroupMembers(membersInfo);
+      panel.updatePanelWithGroupMembers(groupMembers);
    }
 
    [Command]
@@ -2659,7 +2659,7 @@ public class RPCManager : NetworkBehaviour {
 
       // If the player is not in a group, send an empty group
       if (_player.voyageGroupId == -1) {
-         Target_ReceiveVoyageGroupMembers(_player.connectionToClient, new UserObjects[0]);
+         Target_ReceiveVoyageGroupMembers(_player.connectionToClient, new int[0]);
          return;
       }
 
@@ -2667,11 +2667,10 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
 
          // Retrieve all the group members user info
-         List<UserObjects> groupMembers = DB_Main.getVoyageGroupMembers(_player.voyageGroupId);
+         List<int> groupMembers = DB_Main.getVoyageGroupMembers(_player.voyageGroupId);
 
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-
             // Send the data to the client
             Target_ReceiveVoyageGroupMembers(_player.connectionToClient, groupMembers.ToArray());
          });

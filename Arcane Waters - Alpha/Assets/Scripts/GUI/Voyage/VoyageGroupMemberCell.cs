@@ -14,8 +14,15 @@ public class VoyageGroupMemberCell : MonoBehaviour
    // The character portrait
    public CharacterPortrait characterPortrait;
 
-   // The user name
-   public Text userNameText;
+   // The hp circle
+   public Image hpCircle;
+
+   // The hp circle background
+   public Image hpCircleBackground;
+
+   // The colors of the hp circle
+   public Color normalHpColor;
+   public Color lowHpColor;
 
    #endregion
 
@@ -25,35 +32,65 @@ public class VoyageGroupMemberCell : MonoBehaviour
       characterPortrait.pointerExitEvent.RemoveAllListeners();
       characterPortrait.pointerEnterEvent.AddListener(() => onPointerEnterPortrait());
       characterPortrait.pointerExitEvent.AddListener(() => onPointerExitPortrait());
+
+      // Disable the hp circle
+      hpCircle.enabled = false;
+      hpCircleBackground.enabled = false;
    }
 
-   public void setCellForGroupMember (UserObjects userObjects) {
-      _userId = userObjects.userInfo.userId;
+   public void setCellForGroupMember (int userId) {
+      _userId = userId;
 
-      // Set the user name
-      userNameText.text = userObjects.userInfo.username;
+      // Find the NetEntity of the displayed user
+      NetEntity entity = EntityManager.self.getEntity(_userId);
 
-      // Update the character portrait
-      characterPortrait.setPortrait(userObjects);
+      // Set the portrait
+      characterPortrait.setPortrait(entity);
 
-      // Hide the user name
-      userNameText.enabled = false;
+      // Check if the entity is visible by this client
+      if (entity == null) {
+         _active = false;
+      } else {
+         _active = true;
+      }
    }
 
-   public void enable () {
-      characterPortrait.enable();
-   }
+   public void Update () {
+      if (Global.player == null || !Global.player.isLocalPlayer || Global.player.voyageGroupId == -1 ||
+         !_active) {
+         return;
+      }
 
-   public void disable () {
-      characterPortrait.disable();
+      // Try to find the SeaEntity of the displayed user
+      NetEntity entity = EntityManager.self.getEntity(_userId);
+      if (entity == null) {
+         hpCircle.enabled = false;
+         hpCircleBackground.enabled = false;
+         return;
+      }
+
+      // If the user is in combat, display his hp
+      if (entity.hasAnyCombat()) {
+         hpCircle.enabled = true;
+         hpCircleBackground.enabled = true;
+         hpCircle.fillAmount = (float) entity.currentHealth / entity.maxHealth;
+
+         // Set the color of the hp indicator
+         if (hpCircle.fillAmount > 0.25f) {
+            hpCircle.color = normalHpColor;
+         } else {
+            hpCircle.color = lowHpColor;
+         }
+      } else {
+         hpCircle.enabled = false;
+         hpCircleBackground.enabled = false;
+      }
    }
 
    public void onPointerEnterPortrait () {
-      userNameText.enabled = false;
    }
 
    public void onPointerExitPortrait () {
-      userNameText.enabled = true;
    }
 
    public int getUserId () {
@@ -64,6 +101,9 @@ public class VoyageGroupMemberCell : MonoBehaviour
 
    // The id of the displayed user
    private int _userId = -1;
+
+   // Gets set to true when the cell is updating the group member info
+   private bool _active = true;
 
    #endregion
 }
