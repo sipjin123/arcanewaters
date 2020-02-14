@@ -51,12 +51,12 @@ public class BodyEntity : NetEntity
       this.weaponManager.updateWeaponSyncVars(weapon);
    }
 
-   public override Armor getEquippedArmor () {
-      return armorManager.getArmor();
+   public override Armor getArmorCharacteristics () {
+      return new Armor(0, armorManager.armorType, armorManager.color1, armorManager.color2);
    }
 
-   public override Weapon getEquippedWeapon () {
-      return weaponManager.getWeapon();
+   public override Weapon getWeaponCharacteristics () {
+      return new Weapon(0, weaponManager.weaponType, weaponManager.color1, weaponManager.color2);
    }
 
    public void updateHair (HairLayer.Type newHairType, ColorType newHairColor1, ColorType newHairColor2) {

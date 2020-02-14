@@ -1,12 +1,11 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using MapCreationTool.Serialization;
 
 namespace MapCreationTool
 {
-   public class HouseMapEditor : MapEditorPrefab, IPrefabDataListener, IHighlightable {
-      [SerializeField]
-      private GameObject lockVisual = null;
-
+   public class HouseMapEditor : MapEditorPrefab, IPrefabDataListener, IHighlightable
+   {
       private SpriteOutline outline;
       private Text text;
 
@@ -27,14 +26,12 @@ namespace MapCreationTool
       }
 
       public void dataFieldChanged (string key, string value) {
-         if (key.CompareTo("target map") == 0) {
+         if (key.CompareTo(DataField.HOUSE_TARGET_MAP_KEY) == 0) {
             targetMap = value;
             rewriteText();
-         } else if (key.CompareTo("target spawn") == 0) {
+         } else if (key.CompareTo(DataField.HOUSE_TARGET_SPAWN_KEY) == 0) {
             targetSpawn = value;
             rewriteText();
-         } else if(key.CompareTo("locked") == 0) {
-            lockVisual.SetActive(bool.Parse(value));
          }
       }
 

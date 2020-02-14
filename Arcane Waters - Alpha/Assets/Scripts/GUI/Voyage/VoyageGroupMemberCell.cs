@@ -44,14 +44,17 @@ public class VoyageGroupMemberCell : MonoBehaviour
       // Find the NetEntity of the displayed user
       NetEntity entity = EntityManager.self.getEntity(_userId);
 
-      // Set the portrait
-      characterPortrait.setPortrait(entity);
-
       // Check if the entity is visible by this client
       if (entity == null) {
          _active = false;
+
+         // Initialize the portrait with a question mark
+         characterPortrait.initialize(entity);         
       } else {
          _active = true;
+
+         // Set the portrait when the entity is initialized
+         StartCoroutine(CO_InitializePortrait(entity));
       }
    }
 
@@ -61,7 +64,7 @@ public class VoyageGroupMemberCell : MonoBehaviour
          return;
       }
 
-      // Try to find the SeaEntity of the displayed user
+      // Try to find the entity of the displayed user
       NetEntity entity = EntityManager.self.getEntity(_userId);
       if (entity == null) {
          hpCircle.enabled = false;
@@ -95,6 +98,15 @@ public class VoyageGroupMemberCell : MonoBehaviour
 
    public int getUserId () {
       return _userId;
+   }
+
+   private IEnumerator CO_InitializePortrait (NetEntity entity) {
+      // Wait until the entity has received its initialization data
+      while (Util.isEmpty(entity.entityName)) {
+         yield return null;
+      }
+
+      characterPortrait.initialize(entity);
    }
 
    #region Private Variables

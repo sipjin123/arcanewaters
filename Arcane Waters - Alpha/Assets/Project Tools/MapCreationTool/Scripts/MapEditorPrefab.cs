@@ -4,6 +4,8 @@ namespace MapCreationTool
 {
    public class MapEditorPrefab : MonoBehaviour
    {
+      public virtual void createdInPalette () { }
+
       public virtual void createdForPrieview () { }
 
       public virtual void placedInEditor () { }
@@ -22,7 +24,7 @@ namespace MapCreationTool
          }
       }
 
-      public void setSpriteOutline(SpriteRenderer sr, bool hovered, bool selected) {
+      public void setSpriteOutline (SpriteRenderer sr, bool hovered, bool selected) {
          if (!hovered && !selected) {
             sr.color = new Color(1, 1, 1, 0);
          } else if (hovered) {

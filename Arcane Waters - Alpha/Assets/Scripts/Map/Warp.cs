@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
-using MapCreationTool.Serialization;
 using MapCreationTool;
+using MapCreationTool.Serialization;
 
-public class Warp : MonoBehaviour, MapCreationTool.IMapEditorDataReceiver {
+public class Warp : MonoBehaviour, IMapEditorDataReceiver {
    #region Public Variables
 
    // The area for this warp
@@ -70,26 +70,26 @@ public class Warp : MonoBehaviour, MapCreationTool.IMapEditorDataReceiver {
       return true;
    }
 
-   public void receiveData (MapCreationTool.Serialization.DataField[] dataFields) {
-      foreach (MapCreationTool.Serialization.DataField field in dataFields) {
+   public void receiveData (DataField[] dataFields) {
+      foreach (DataField field in dataFields) {
          switch (field.k.ToLower()) {
-            case "target map":
+            case DataField.WARP_TARGET_MAP_KEY:
                areaTarget = field.v.Trim(' ');
                break;
-            case "target spawn":
+            case DataField.WARP_TARGET_SPAWN_KEY:
                spawnTarget = field.v.Trim(' ');
                break;
-            case "width":
+            case DataField.WARP_WIDTH_KEY:
                _collider.size = new Vector2(float.Parse(field.v), _collider.size.y);
                break;
-            case "height":
+            case DataField.WARP_HEIGHT_KEY:
                _collider.size = new Vector2(_collider.size.x, float.Parse(field.v));
                break;
-            case "arrive facing":
+            case DataField.WARP_ARRIVE_FACING_KEY:
                Direction? dir = MapImporter.ParseDirection(field.v);
                if (dir != null)
                   newFacingDirection = dir.Value;
-               break;                 
+               break;
             default:
                Debug.LogWarning($"Unrecognized data field key: {field.k}");
                break;

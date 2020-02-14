@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
-using MapCreationTool;
+using MapCreationTool.Serialization;
 using System;
 using Random = UnityEngine.Random;
 
@@ -505,20 +505,20 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
       return tradeGossip;
    }
 
-   public void receiveData (MapCreationTool.Serialization.DataField[] dataFields) {
+   public void receiveData (DataField[] dataFields) {
       string shopName = "";
       string panelName = "None";
-      foreach (MapCreationTool.Serialization.DataField field in dataFields) {
-         if (field.k.CompareTo("npc data") == 0) {
+      foreach (DataField field in dataFields) {
+         if (field.k.CompareTo(DataField.NPC_DATA_KEY) == 0) {
             // Get ID from npc data field
             // Field arrives in format <npc id>: <npc name>
             int id = int.Parse(field.v.Split(':')[0]);
             isDebug = true;
             npcId = id;
-         } else if (field.k.CompareTo("shop name") == 0) {
+         } else if (field.k.CompareTo(DataField.NPC_SHOP_NAME_KEY) == 0) {
             // Get Shop Name (if any)
             shopName = field.v.Split(':')[0];
-         } else if (field.k.CompareTo("panel type") == 0) {
+         } else if (field.k.CompareTo(DataField.NPC_PANEL_TYPE_KEY) == 0) {
             // Get Shop Panel Type (if any)
             panelName = field.v.Split(':')[0];
          }

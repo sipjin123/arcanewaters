@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using MapCreationTool.Serialization;
 
-public class Spawn : MonoBehaviour, MapCreationTool.IMapEditorDataReceiver {
+public class Spawn : MonoBehaviour, IMapEditorDataReceiver {
    #region Public Variables
 
    // Hardcoded spawn keys
@@ -43,14 +43,14 @@ public class Spawn : MonoBehaviour, MapCreationTool.IMapEditorDataReceiver {
    public void receiveData (DataField[] dataFields) {
       foreach (DataField field in dataFields) {
          switch (field.k.ToLower()) {
-            case "name":
+            case DataField.SPAWN_NAME_KEY:
                spawnKey = field.v.Trim(' ');
                SpawnManager.get().store(_areaKey, spawnKey, this);
                break;
-            case "width":
+            case DataField.SPAWN_WIDTH_KEY:
                _spawnBox.size = new Vector2(float.Parse(field.v), _spawnBox.size.y);
                break;
-            case "height":
+            case DataField.SPAWN_HEIGHT_KEY:
                _spawnBox.size = new Vector2(_spawnBox.size.x, float.Parse(field.v));
                break;
             default:

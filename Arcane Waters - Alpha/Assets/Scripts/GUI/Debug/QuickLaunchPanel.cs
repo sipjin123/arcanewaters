@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System;
+using System.IO;
+using SimpleJSON;
 
 public class QuickLaunchPanel : MonoBehaviour {
    #region Public Variables
@@ -107,13 +109,27 @@ public class QuickLaunchPanel : MonoBehaviour {
             DB_Main.setServer("127.0.0.1");
             break;
 
-         case 2: 
-            DB_Main.setServer(
-               Environment.GetEnvironmentVariable("AW_DB_SERVER"), 
-               Environment.GetEnvironmentVariable("AW_DB_NAME"), 
-               Environment.GetEnvironmentVariable("AW_DB_USER"), 
-               Environment.GetEnvironmentVariable("AW_DB_PASS") 
-            );
+         case 2:
+            string dbServerConfigFile = Path.Combine(Application.dataPath, "dbConfig.json");
+
+            // Check config file
+            if (File.Exists(dbServerConfigFile)) {
+               string dbServerConfigContent = File.ReadAllText(dbServerConfigFile);
+               JSONNode dbServerConfig = JSON.Parse(dbServerConfigContent);
+
+               DB_Main.setServer(
+                  dbServerConfig["AW_DB_SERVER"].Value,
+                  dbServerConfig["AW_DB_NAME"].Value,
+                  dbServerConfig["AW_DB_USER"].Value,
+                  dbServerConfig["AW_DB_PASS"].Value
+               );
+            }
+
+            // Use default remote server as fallback
+            else { 
+               DB_Main.setServer(DB_Main.RemoteServer);
+            }
+
             break;
       }
       #endif

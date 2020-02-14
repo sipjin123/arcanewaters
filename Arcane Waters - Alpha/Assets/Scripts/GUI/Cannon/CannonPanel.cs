@@ -62,7 +62,7 @@ public class CannonPanel : ClientMonoBehaviour {
 
    private void Update () {
       // Hide this panel when we don't have a body
-      _canvasGroup.alpha = (Global.player is PlayerShipEntity) ? 1f : 0f;
+      _canvasGroup.alpha = (Global.player == null || !(Global.player is PlayerShipEntity)) ? 0f : 1f;
       _canvasGroup.blocksRaycasts = _canvasGroup.alpha > 0f;
    }
 

@@ -68,6 +68,18 @@ TextureImporter:
   - first:
       213: 2747440410333873215
     second: desert_outside_area_5
+  - first:
+      213: 1893634258891936652
+    second: desert_outside_area_21
+  - first:
+      213: 6125325905428789406
+    second: desert_outside_area_22
+  - first:
+      213: 345433894220070776
+    second: desert_outside_area_23
+  - first:
+      213: -7698786901302510552
+    second: desert_outside_area_24
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -612,6 +624,90 @@ TextureImporter:
       bones: []
       spriteID: 19e0b0c0d2df443449c5666f5d0819ee
       internalID: 2747440410333873215
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: desert_outside_area_21
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 272
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f7d3a063904c909409afd618d216e4ca
+      internalID: 1893634258891936652
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: desert_outside_area_22
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 256
+        width: 16
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0eeb511176d3e734f92ca9d15614e172
+      internalID: 6125325905428789406
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: desert_outside_area_23
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 64
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0226ad4a8db5bfb4d86f60d13acda45c
+      internalID: 345433894220070776
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: desert_outside_area_24
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 64
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c99c1d34028fa4242881bb6894ba6f64
+      internalID: -7698786901302510552
       vertices: []
       indices: 
       edges: []

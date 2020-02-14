@@ -65,6 +65,18 @@ TextureImporter:
   - first:
       213: 4223864679490363494
     second: snow_outside_area_5
+  - first:
+      213: -1473842360526715111
+    second: snow_outside_area_21
+  - first:
+      213: -4383656706246526066
+    second: snow_outside_area_22
+  - first:
+      213: 6579406997915785866
+    second: snow_outside_area_23
+  - first:
+      213: -5687214663632653073
+    second: snow_outside_area_24
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -609,6 +621,90 @@ TextureImporter:
       bones: []
       spriteID: 67bb0978393e5464f96d962ce28872f5
       internalID: 4223864679490363494
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: snow_outside_area_21
+      rect:
+        serializedVersion: 2
+        x: 127
+        y: 272
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b15a28cc904529147b7c31b464c222c7
+      internalID: -1473842360526715111
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: snow_outside_area_22
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 256
+        width: 16
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 78bda4952b4efe544b42814361f7472b
+      internalID: -4383656706246526066
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: snow_outside_area_23
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 64
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 39a8677aaf4b22040bf4b0286b4f2e81
+      internalID: 6579406997915785866
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: snow_outside_area_24
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 64
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 35e5e6913b7ebba4185dceeef7a61f46
+      internalID: -5687214663632653073
       vertices: []
       indices: 
       edges: []

@@ -51,6 +51,15 @@ public class VoyageGroupPanel : ClientMonoBehaviour
    }
 
    public void Update () {
+      // Hide the panel when there is no player or he doesn't belong to a group
+      if (Global.player == null || Global.player.voyageGroupId == -1) {
+         hide();
+         return;
+      }
+
+      // Show the panel
+      show();
+
       // Display the X button only if the mouse is over the defined zone
       if (RectTransformUtility.RectangleContainsScreenPoint(panelHoveringZone, Input.mousePosition)) {
          xButton.gameObject.SetActive(true);
@@ -92,7 +101,7 @@ public class VoyageGroupPanel : ClientMonoBehaviour
 
    public void updatePanelWithGroupMembers (List<int> groupMembers) {
       // If the player does not belong to a group, or there are no group members, hide the panel
-      if (Global.player.voyageGroupId == -1 || groupMembers.Count <= 0) {
+      if (Global.player == null || Global.player.voyageGroupId == -1 || groupMembers.Count <= 0) {
          hide();
          return;
       }
@@ -141,21 +150,15 @@ public class VoyageGroupPanel : ClientMonoBehaviour
    }
 
    public void show () {
-      if (!gameObject.activeSelf) {
-         this.canvasGroup.alpha = 1f;
-         this.canvasGroup.blocksRaycasts = true;
-         this.canvasGroup.interactable = true;
-         this.gameObject.SetActive(true);
-      }
+      this.canvasGroup.alpha = 1f;
+      this.canvasGroup.blocksRaycasts = true;
+      this.canvasGroup.interactable = true;
    }
 
    public void hide () {
-      if (gameObject.activeSelf) {
-         this.canvasGroup.alpha = 0f;
-         this.canvasGroup.blocksRaycasts = false;
-         this.canvasGroup.interactable = false;
-         this.gameObject.SetActive(false);
-      }
+      this.canvasGroup.alpha = 0f;
+      this.canvasGroup.blocksRaycasts = false;
+      this.canvasGroup.interactable = false;
    }
 
    public bool isShowing () {

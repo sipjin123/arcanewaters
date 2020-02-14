@@ -34,9 +34,6 @@ public class ShipBars : MonoBehaviour {
    // An alternate sprite we use for the health bar background on non-player ships
    public Sprite barsBackgroundAlt;
 
-   // The user portrait
-   public CharacterPortrait portrait;
-
    #endregion
 
    void Awake () {
@@ -55,12 +52,6 @@ public class ShipBars : MonoBehaviour {
 
       if (factionIcon != null) {
          factionIcon.sprite = Faction.getShipIcon(_entity.faction);
-      }
-
-      if (portrait != null) {
-         portrait.setPortrait(_entity);
-         portrait.disableMouseInteraction();
-         portrait.gameObject.SetActive(false);
       }
    }
 
@@ -85,11 +76,6 @@ public class ShipBars : MonoBehaviour {
 
       // Only show the faction icon if we're in combat
       factionIcon.enabled = _entity.hasAnyCombat();
-
-      // Only show the user portrait if we're in combat
-      if (portrait != null) {
-         portrait.gameObject.SetActive(_entity.hasAnyCombat());
-      }
 
       // Hide our bars if we haven't had a combat action and if the player is not targetting this ship
       barsContainer.SetActive(_entity.hasAnyCombat() || AttackManager.self.isHoveringOver(_entity));

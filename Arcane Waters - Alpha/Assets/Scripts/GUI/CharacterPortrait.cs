@@ -31,7 +31,7 @@ public class CharacterPortrait : MonoBehaviour, IPointerEnterHandler, IPointerEx
       characterStack.pauseAnimation();
    }
 
-   public void setPortrait (NetEntity entity) {
+   public void initialize (NetEntity entity) {
       // If the entity is null, display a question mark
       if (entity == null) {
          unknownIcon.SetActive(true);

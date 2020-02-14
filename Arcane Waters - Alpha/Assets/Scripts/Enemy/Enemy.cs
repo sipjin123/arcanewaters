@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using MapCreationTool.Serialization;
 
-public class Enemy : NetEntity {
+public class Enemy : NetEntity, IMapEditorDataReceiver {
    #region Public Variables
 
    // The Type of Enemy
@@ -230,6 +231,16 @@ public class Enemy : NetEntity {
             return true;
          default:
             return false;
+      }
+   }
+
+   public void receiveData (DataField[] dataFields) {
+      foreach (DataField field in dataFields) {
+         if (field.k.CompareTo(DataField.LAND_ENEMY_DATA_KEY) == 0) {
+            // Get ID from npc data field
+            // Field arrives in format <npc id>: <npc name>
+            int id = int.Parse(field.v.Split(':')[0]);
+         }
       }
    }
 

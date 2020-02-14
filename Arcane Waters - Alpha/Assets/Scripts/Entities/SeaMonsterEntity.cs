@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using AStar;
+using MapCreationTool.Serialization;
 using Mirror;
 using UnityEngine;
 
-public class SeaMonsterEntity : SeaEntity
+public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 {
    #region Public Variables
 
@@ -637,6 +638,16 @@ public class SeaMonsterEntity : SeaEntity
       // Drops the treasure bag if this entity can spawn one
       if (seaMonsterData.shouldDropTreasure) {
          spawnChest();
+      }
+   }
+
+   public void receiveData (DataField[] dataFields) {
+      foreach (DataField field in dataFields) {
+         if (field.k.CompareTo(DataField.SEA_ENEMY_DATA_KEY) == 0) {
+            // Get ID from npc data field
+            // Field arrives in format <npc id>: <npc name>
+            int id = int.Parse(field.v.Split(':')[0]);
+         }
       }
    }
 

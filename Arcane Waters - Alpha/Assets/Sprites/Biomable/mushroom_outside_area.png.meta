@@ -65,6 +65,18 @@ TextureImporter:
   - first:
       213: -3302943154970714637
     second: mushroom_outside_area_5
+  - first:
+      213: -2981225016981788079
+    second: mushroom_outside_area_21
+  - first:
+      213: -5188576307266731658
+    second: mushroom_outside_area_22
+  - first:
+      213: -8377622758524197376
+    second: mushroom_outside_area_23
+  - first:
+      213: 5088174595896903547
+    second: mushroom_outside_area_24
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -609,6 +621,90 @@ TextureImporter:
       bones: []
       spriteID: 57c6a1351575a7847a2ac7d935c4ea4d
       internalID: -3302943154970714637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mushroom_outside_area_21
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 272
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: accb13628ec1f044f8cf779590e8e1d2
+      internalID: -2981225016981788079
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mushroom_outside_area_22
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 256
+        width: 16
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 202137fc98bb35a4a86df1ac5a61bd4d
+      internalID: -5188576307266731658
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mushroom_outside_area_23
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 64
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 67ca7042b3103174c94fe485816ff82e
+      internalID: -8377622758524197376
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mushroom_outside_area_24
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 64
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e796eb519ddc2a04e8eeb495c90aa2c6
+      internalID: 5088174595896903547
       vertices: []
       indices: 
       edges: []

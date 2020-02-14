@@ -9,14 +9,8 @@ public class Door : ClientMonoBehaviour {
    // The child objects that we manage
    public SpriteRenderer doorboard;
 
-   // The door collider
-   public GameObject doorCollider;
-
    // Set to true for interior doors
    public bool isInterior = false;
-
-   // Set to true for locked doors
-   public bool isLocked = false;
 
    #endregion
 
@@ -28,10 +22,6 @@ public class Door : ClientMonoBehaviour {
       InvokeRepeating("checkNearbyEntities", 0f, 1f);
    }
 
-   private void Update () {
-      doorCollider.SetActive(isLocked);
-   }
-
    void OnTriggerEnter2D (Collider2D other) {
       NetEntity player = other.transform.GetComponent<NetEntity>();
 
@@ -41,11 +31,6 @@ public class Door : ClientMonoBehaviour {
 
          // Either open or close the door now
          updateDoorForNearbyCount();
-
-         // If it's our player, play a sound
-         if (player.isLocalPlayer && isLocked) {
-            SoundManager.create3dSound("door_locked", Global.player.transform.position);
-         }
       }
    }
 
@@ -110,11 +95,6 @@ public class Door : ClientMonoBehaviour {
    }
 
    protected void open () {
-      // Don't open the door if it's locked
-      if (isLocked) {
-         return;
-      }
-
       // Make the door disappear, if it's not already open
       if (doorboard != null && doorboard.enabled) {
          doorboard.enabled = false;

@@ -65,6 +65,18 @@ TextureImporter:
   - first:
       213: -6421228022532599459
     second: pine_outside_area_5
+  - first:
+      213: -3375651785467870663
+    second: pine_outside_area_21
+  - first:
+      213: -6019910510965891007
+    second: pine_outside_area_22
+  - first:
+      213: -3543756032597905648
+    second: pine_outside_area_23
+  - first:
+      213: -8677868179239940525
+    second: pine_outside_area_24
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -609,6 +621,90 @@ TextureImporter:
       bones: []
       spriteID: 1bec8545336db6349abe3ff513853b6b
       internalID: -6421228022532599459
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pine_outside_area_21
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 272
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ce64ba8c3370e594b97f7dfc11adcf60
+      internalID: -3375651785467870663
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pine_outside_area_22
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 256
+        width: 16
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f76d8a3ef653944b9d9f7b9644b9258
+      internalID: -6019910510965891007
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pine_outside_area_23
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 64
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 28d3522a1b6e36b4f85ec3ca43d2bf85
+      internalID: -3543756032597905648
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pine_outside_area_24
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 64
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed506da1422266f479eddc65610f82c4
+      internalID: -8677868179239940525
       vertices: []
       indices: 
       edges: []

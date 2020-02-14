@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-using MapCreationTool;
+using MapCreationTool.Serialization;
 
 public class CritterController : MonoBehaviour, IMapEditorDataReceiver
 {
@@ -65,9 +65,9 @@ public class CritterController : MonoBehaviour, IMapEditorDataReceiver
       this.transform.position = _startPos;
    }
 
-   public void receiveData (MapCreationTool.Serialization.DataField[] dataFields) {
-      foreach (MapCreationTool.Serialization.DataField dataField in dataFields) {
-         if (dataField.k.Trim(' ').CompareTo("run direction") == 0) {
+   public void receiveData (DataField[] dataFields) {
+      foreach (DataField dataField in dataFields) {
+         if (dataField.k.Trim(' ').CompareTo(DataField.CRITTER_RUN_DIRECTION_KEY) == 0) {
             if (dataField.v.CompareTo("left") == 0) {
                transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
             } else if (dataField.v.CompareTo("right") == 0) {

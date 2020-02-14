@@ -20,6 +20,25 @@ public class PlayerShipEntity : ShipEntity {
    // Ability Reference
    public ShipAbilityInfo shipAbilities = new ShipAbilityInfo();
 
+   // The user portrait
+   public CharacterPortrait portrait;
+
+   // The equipped weapon characteristics
+   [SyncVar]
+   public Weapon.Type weaponType = Weapon.Type.None;
+   [SyncVar]
+   public ColorType weaponColor1 = ColorType.None;
+   [SyncVar]
+   public ColorType weaponColor2 = ColorType.None;
+
+   // The equipped armor characteristics
+   [SyncVar]
+   public Armor.Type armorType = Armor.Type.None;
+   [SyncVar]
+   public ColorType armorColor1 = ColorType.None;
+   [SyncVar]
+   public ColorType armorColor2 = ColorType.None;
+
    #endregion
 
    protected override void Start () {
@@ -34,10 +53,22 @@ public class PlayerShipEntity : ShipEntity {
          // Notify UI panel to display the current skills this ship has
          rpc.Cmd_RequestShipAbilities(shipId);
       }
+
+      // Initialize the portrait
+      if (portrait != null) {
+         StartCoroutine(CO_InitializePortrait());
+      }
    }
 
    protected override void Update () {
       base.Update();
+
+      // Only show the user portrait when the mouse is over
+      if (MouseManager.self.isHoveringOver(_clickableBox) && !isDead()) {
+         portrait.gameObject.SetActive(true);
+      } else {
+         portrait.gameObject.SetActive(false);
+      }
 
       if (!isLocalPlayer) {
          return;
@@ -135,17 +166,21 @@ public class PlayerShipEntity : ShipEntity {
 
       this.shipAbilities = shipInfo.shipAbilities;
 
-      // Equipped items
-      _equippedWeapon = weapon;
-      _equippedArmor = armor;
+      // Store the equipped items characteristics
+      weaponType = weapon.type;
+      weaponColor1 = weapon.color1;
+      weaponColor2 = weapon.color2;
+      armorType = armor.type;
+      armorColor1 = armor.color1;
+      armorColor2 = armor.color2;
    }
 
-   public override Armor getEquippedArmor () {
-      return _equippedArmor;
+   public override Armor getArmorCharacteristics () {
+      return new Armor(0, armorType, armorColor1, armorColor2);
    }
 
-   public override Weapon getEquippedWeapon () {
-      return _equippedWeapon;
+   public override Weapon getWeaponCharacteristics () {
+      return new Weapon(0, weaponType, weaponColor1, weaponColor2);
    }
 
    protected void adjustMovementAudio() {
@@ -284,6 +319,17 @@ public class PlayerShipEntity : ShipEntity {
       Destroy(ballObject, NetworkedCannonBall.LIFETIME);
    }
 
+   protected IEnumerator CO_InitializePortrait () {
+      // Wait until we receive data
+      while (Util.isEmpty(this.entityName)) {
+         yield return null;
+      }
+
+      portrait.initialize(this);
+      portrait.disableMouseInteraction();
+      portrait.gameObject.SetActive(false);
+   }
+
    [Command]
    void Cmd_FireTimedCannonBall (Vector2 mousePos) {
       if (isDead() || !hasReloaded()) {
@@ -378,12 +424,6 @@ public class PlayerShipEntity : ShipEntity {
 
    // Our ship movement sound
    protected AudioSource _movementAudioSource;
-
-   // The equipped armor
-   protected Armor _equippedArmor = new Armor(0, Armor.Type.None);
-
-   // The equipped weapon
-   protected Weapon _equippedWeapon = new Weapon(0, Weapon.Type.None);
 
    #endregion
 }

@@ -1658,6 +1658,18 @@ TextureImporter:
   - first:
       213: -667970240133171378
     second: forest_outside_area_4
+  - first:
+      213: 3891290342819808485
+    second: forest_outside_area_21
+  - first:
+      213: -3747735184531241514
+    second: forest_outside_area_22
+  - first:
+      213: -2865108748160704870
+    second: forest_outside_area_23
+  - first:
+      213: 2368568548498926641
+    second: forest_outside_area_24
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -2202,6 +2214,90 @@ TextureImporter:
       bones: []
       spriteID: c0744ce31e1248c42b87a4dfe4bf37bc
       internalID: -667970240133171378
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: forest_outside_area_21
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 272
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ce59ae8acba6bab4f8cf01c95ec5bdb3
+      internalID: 3891290342819808485
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: forest_outside_area_22
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 256
+        width: 16
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 901b04b72cd52bb468e06cc71f2cc718
+      internalID: -3747735184531241514
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: forest_outside_area_23
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 64
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0a8e3882d21e8394ca37eab7fbf54fce
+      internalID: -2865108748160704870
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: forest_outside_area_24
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 64
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed169b7f02b1b9f45a0e49563084daa1
+      internalID: 2368568548498926641
       vertices: []
       indices: 
       edges: []

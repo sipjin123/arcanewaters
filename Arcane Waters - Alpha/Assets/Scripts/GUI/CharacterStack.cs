@@ -37,8 +37,8 @@ public class CharacterStack : MonoBehaviour {
    }
 
    public void updateLayers (NetEntity entity) {
-      Armor armor = entity.getEquippedArmor();
-      Weapon weapon = entity.getEquippedWeapon();
+      Armor armor = entity.getArmorCharacteristics();
+      Weapon weapon = entity.getWeaponCharacteristics();
 
       bodyLayer.setType(entity.bodyType);
       eyesLayer.setType(entity.eyesType);

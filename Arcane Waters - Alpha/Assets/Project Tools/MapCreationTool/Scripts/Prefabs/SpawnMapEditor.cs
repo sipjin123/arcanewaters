@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using MapCreationTool.Serialization;
 
 namespace MapCreationTool
 {
@@ -24,7 +25,7 @@ namespace MapCreationTool
       }
 
       public void dataFieldChanged (string key, string value) {
-         if (key.CompareTo("width") == 0) {
+         if (key.CompareTo(DataField.SPAWN_WIDTH_KEY) == 0) {
             float width = value.CompareTo(string.Empty) == 0 ? 1 : Mathf.Clamp(float.Parse(value), 1, 100);
 
             if (canvasRect != null)
@@ -34,7 +35,7 @@ namespace MapCreationTool
             }
             if (col != null)
                col.size = new Vector2(width, col.size.y);
-         } else if (key.CompareTo("height") == 0) {
+         } else if (key.CompareTo(DataField.SPAWN_HEIGHT_KEY) == 0) {
             float height = value.CompareTo(string.Empty) == 0 ? 1 : Mathf.Clamp(float.Parse(value), 1, 100);
 
             if (canvasRect != null)
@@ -43,7 +44,7 @@ namespace MapCreationTool
                ren.size = new Vector2(ren.size.x, height);
             if (col != null)
                col.size = new Vector2(col.size.x, height);
-         } else if (key.CompareTo("name") == 0) {
+         } else if (key.CompareTo(DataField.SPAWN_NAME_KEY) == 0) {
             spawnName = value;
             rewriteText();
          }

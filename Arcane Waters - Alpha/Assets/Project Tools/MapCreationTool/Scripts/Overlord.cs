@@ -71,6 +71,7 @@ namespace MapCreationTool
 
          ShopManager.OnLoaded += onLoaded;
          NPCManager.OnLoaded += onLoaded;
+         MonsterManager.OnLoaded += onLoaded;
       }
 
       private void OnDisable () {
@@ -84,6 +85,7 @@ namespace MapCreationTool
          Tools.EditorTypeChanged -= editorTypeChanged;
          ShopManager.OnLoaded -= onLoaded;
          NPCManager.OnLoaded -= onLoaded;
+         MonsterManager.OnLoaded -= onLoaded;
       }
 
       private void fetchSpawns () {
@@ -109,8 +111,11 @@ namespace MapCreationTool
       }
 
       private void onLoaded () {
-         Destroy(loadCover);
-         palette.populatePalette(currentPaletteData[Tools.biome], Tools.biome);
+         // Check if all managers are loaded
+         if (ShopManager.instance.loaded && NPCManager.instance.loaded && MonsterManager.instance.loaded) {
+            Destroy(loadCover);
+            palette.populatePalette(currentPaletteData[Tools.biome], Tools.biome);
+         }
       }
 
       private void Update () {

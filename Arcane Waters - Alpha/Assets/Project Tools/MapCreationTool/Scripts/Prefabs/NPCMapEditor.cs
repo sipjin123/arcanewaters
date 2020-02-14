@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-
+using MapCreationTool.Serialization;
 
 namespace MapCreationTool
 {
@@ -14,7 +14,7 @@ namespace MapCreationTool
       }
 
       public void dataFieldChanged (string key, string value) {
-         if (key.CompareTo("npc data") == 0) {
+         if (key.CompareTo(DataField.NPC_DATA_KEY) == 0) {
             Texture2D npcTexture = NPCManager.instance.getTexture(int.Parse(value.Split(':')[0]));
 
             if (npcTexture != null) {
@@ -24,6 +24,10 @@ namespace MapCreationTool
       }
 
       public override void createdForPrieview () {
+         setDefaultSprite();
+      }
+
+      public override void createdInPalette () {
          setDefaultSprite();
       }
 
@@ -39,5 +43,4 @@ namespace MapCreationTool
          setOutlineHighlight(outline, hovered, selected);
       }
    }
-
 }

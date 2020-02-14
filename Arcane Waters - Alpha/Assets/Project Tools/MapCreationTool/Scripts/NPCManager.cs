@@ -13,7 +13,6 @@ namespace MapCreationTool
 
       private NPCData[] npcs = new NPCData[0];
       public Dictionary<int, NPCData> idToNpc { get; private set; }
-      public Dictionary<string, Sprite> npcBodySprites { get; private set; }
       public bool loaded { get; private set; }
 
       private void Awake () {
@@ -23,7 +22,6 @@ namespace MapCreationTool
       private IEnumerator Start () {
          yield return new WaitUntil(() => ImageManager.self != null);
 
-         loadBodies();
          loadAllNpcs();
       }
 
@@ -78,18 +76,5 @@ namespace MapCreationTool
 
          OnLoaded?.Invoke();
       }
-
-      private void loadBodies () {
-         string spritePath = "Assets/Sprites/NPCs/Bodies/";
-         npcBodySprites = new Dictionary<string, Sprite>();
-         List<ImageManager.ImageData> spriteFiles = ImageManager.getSpritesInDirectory(spritePath);
-
-         foreach (ImageManager.ImageData imgData in spriteFiles) {
-            Sprite sourceSprite = imgData.sprite;
-            npcBodySprites.Add(imgData.imagePath, sourceSprite);
-         }
-      }
-
    }
-
 }

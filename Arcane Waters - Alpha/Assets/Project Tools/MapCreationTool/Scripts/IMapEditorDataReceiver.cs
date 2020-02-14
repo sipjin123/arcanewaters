@@ -1,7 +1,7 @@
-﻿namespace MapCreationTool
+﻿namespace MapCreationTool.Serialization
 {
    public interface IMapEditorDataReceiver
    {
-      void receiveData (Serialization.DataField[] dataFields);
+      void receiveData (DataField[] dataFields);
    }
 }

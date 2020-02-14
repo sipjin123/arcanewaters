@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
-using MapCreationTool;
+using MapCreationTool.Serialization;
 
 public class TutorialItem : ClientMonoBehaviour, IMapEditorDataReceiver {
    #region Public Variables
@@ -91,10 +91,10 @@ public class TutorialItem : ClientMonoBehaviour, IMapEditorDataReceiver {
       }
    }
 
-   public void receiveData (MapCreationTool.Serialization.DataField[] dataFields) {
-      foreach (MapCreationTool.Serialization.DataField field in dataFields) {
+   public void receiveData (DataField[] dataFields) {
+      foreach (DataField field in dataFields) {
          switch (field.k.ToLower()) {
-            case "step id":
+            case DataField.TUTORIAL_ITEM_STEP_ID_KEY:
                tutorialStepForThisItem = int.Parse(field.v.Trim(' '));
                GetComponent<TutorialLocation>().tutorialStepType = tutorialStepForThisItem;
                break;

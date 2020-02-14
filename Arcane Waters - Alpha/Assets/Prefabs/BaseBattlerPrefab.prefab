@@ -65,8 +65,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: 7471e1c36c266c945816ff7ba5069dae, type: 3}
     m_FontSize: 8
@@ -175,8 +173,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 21300000, guid: ed4be219e0405a24ba9f7ba7f4cadb51, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
@@ -291,6 +287,7 @@ MonoBehaviour:
   timerBar: {fileID: 2967513527851383107}
   timerContainer: {fileID: 5752622142954071729}
   stanceImage: {fileID: 8469027119387432061}
+  isInitialized: 0
 --- !u!225 &2795945241037471970
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -366,8 +363,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 21300000, guid: 5d82f1000a379e94d9ce5c172d500b47, type: 3}
   m_Type: 3
   m_PreserveAspect: 0
@@ -554,8 +549,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 21300000, guid: 723f31d8ea907654aab3b3943db91377, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
@@ -920,7 +913,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300070, guid: edd435eb60890604f8ff907fe44674b6, type: 3}
+  m_Sprite: {fileID: 2415762159171623607, guid: 10be8a04d6050a34289bedd0c6056743,
+    type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -1639,8 +1633,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverOnly: 0
-  localPlayerAuthority: 0
-  m_AssetId: 46c2928bfded7a046b99eaee919556e1
+  m_AssetId: 
   m_SceneId: 0
 --- !u!114 &6527673179465098255
 MonoBehaviour:
@@ -1664,6 +1657,16 @@ MonoBehaviour:
   teamType: 0
   gender: 1
   health: 0
+  bonusFireAttack: 0
+  bonusWaterAttack: 0
+  bonusAirAttack: 0
+  bonusEarthAttack: 0
+  bonusPhysicalAttack: 0
+  bonusFireDefense: 0
+  bonusWaterDefense: 0
+  bonusAirDefense: 0
+  bonusEarthDefense: 0
+  bonusPhysicalDefense: 0
   displayedHealth: 0
   AP: 0
   displayedAP: 0
@@ -1696,29 +1699,23 @@ MonoBehaviour:
   onBattlerSelect:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
   onBattlerDeselect:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
   onBattlerAttackStart:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
   onBattlerAttackEnd:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-  _battlerAttackAbilities: []
-  _initializedBattlerData:
+  battlerAbilitiesInitialized: 0
+  _battlerBasicAbilities: []
+  _alteredBattlerData:
     enemyName: unknown
     imagePath: 
     currentXP: 0
     enemyType: 0
+    animGroup: 0
     apGainWhenDamaged: 0
     baseHealth: 0
     baseDefense: 0
@@ -1735,27 +1732,53 @@ MonoBehaviour:
       attackAbilityRawData: []
       buffAbilityDataList: []
       buffAbilityRawData: []
+    serializedBattlerAbilities: 
     battlerLootData:
       lootList: []
-      defaultLoot: 0
+      defaultLoot:
+        category: 0
+        id: 0
+        itemTypeId: 0
+        color1: 0
+        color2: 0
+        data: 
+        count: 1
       minQuantity: 0
       maxQuantity: 0
-    physicalDefenseMultiplier: 0
-    fireDefenseMultiplier: 0
-    earthDefenseMultiplier: 0
-    airDefenseMultiplier: 0
-    waterDefenseMultiplier: 0
-    allDefenseMultiplier: 0
-    physicalAttackMultiplier: 0
-    fireAttackMultiplier: 0
-    earthAttackMultiplier: 0
-    airAttackMultiplier: 0
-    waterAttackMultiplier: 0
-    allAttackMultiplier: 0
+    baseDamageMultiplierSet:
+      physicalAttackMultiplier: 0
+      fireAttackMultiplier: 0
+      earthAttackMultiplier: 0
+      airAttackMultiplier: 0
+      waterAttackMultiplier: 0
+      allAttackMultiplier: 0
+    perLevelDamageMultiplierSet:
+      physicalAttackMultiplierPerLevel: 0
+      fireAttackMultiplierPerLevel: 0
+      earthAttackMultiplierPerLevel: 0
+      airAttackMultiplierPerLevel: 0
+      waterAttackMultiplierPerLevel: 0
+      allAttackMultiplierPerLevel: 0
+    baseDefenseMultiplierSet:
+      physicalDefenseMultiplier: 0
+      fireDefenseMultiplier: 0
+      earthDefenseMultiplier: 0
+      airDefenseMultiplier: 0
+      waterDefenseMultiplier: 0
+      allDefenseMultiplier: 0
+    perLevelDefenseMultiplierSet:
+      physicalDefenseMultiplierPerLevel: 0
+      fireDefenseMultiplierPerLevel: 0
+      earthDefenseMultiplierPerLevel: 0
+      airDefenseMultiplierPerLevel: 0
+      waterDefenseMultiplierPerLevel: 0
+      allDefenseMultiplierPerLevel: 0
     deathSoundPath: 
     attackJumpSoundPath: 
     preContactLength: 0
     preMagicLength: 0
+    elementalWeakness: 
+    elementalResistance: 
 --- !u!114 &6527673179465098354
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1972,8 +1995,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 21300000, guid: a8bbdb7e66945934183d385cad374f6d, type: 3}
   m_Type: 3
   m_PreserveAspect: 0
@@ -2049,8 +2070,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 21300000, guid: 45c8a75e3d1d4624f9b8d02b36e87f40, type: 3}
   m_Type: 1
   m_PreserveAspect: 0

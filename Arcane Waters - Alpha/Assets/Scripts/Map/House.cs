@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using MapCreationTool;
+using MapCreationTool.Serialization;
 
 public class House : MonoBehaviour, IMapEditorDataReceiver
 {
@@ -12,34 +12,22 @@ public class House : MonoBehaviour, IMapEditorDataReceiver
       door = GetComponentInChildren<Door>(true);
    }
 
-   public void receiveData (MapCreationTool.Serialization.DataField[] dataFields) {
-      foreach (MapCreationTool.Serialization.DataField field in dataFields) {
+   public void receiveData (DataField[] dataFields) {
+      foreach (DataField field in dataFields) {
          switch (field.k.ToLower()) {
-            case "target map":
+            case DataField.HOUSE_TARGET_MAP_KEY:
                if (string.IsNullOrWhiteSpace(field.v)) {
                   continue;
                }
                warp.areaTarget = field.v.Trim(' ');
-               if (!door.isLocked) {
-                  warp.gameObject.SetActive(true);
-               }
+               warp.gameObject.SetActive(true);
                break;
-            case "target spawn":
+            case DataField.HOUSE_TARGET_SPAWN_KEY:
                if (string.IsNullOrWhiteSpace(field.v)) {
                   continue;
                }
                warp.spawnTarget = field.v.Trim(' ');
-               if (!door.isLocked) {
-                  warp.gameObject.SetActive(true);
-               }
-               break;
-            case "locked":
-               if (bool.TryParse(field.v, out bool locked)) {
-                  door.isLocked = locked;
-                  if (!door.isLocked) {
-                     warp.gameObject.SetActive(true);
-                  }
-               }
+               warp.gameObject.SetActive(true);
                break;
             default:
                Debug.LogWarning($"Unrecognized data field key: {field.k}");

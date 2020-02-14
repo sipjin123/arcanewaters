@@ -41,20 +41,20 @@ namespace MapCreationTool
             valueDropdown.onValueChanged.RemoveListener(dropdownValueChanged);
       }
 
-      public void setFieldProperties (DataFieldType type) {
-         if (type == DataFieldType.Int) {
+      public void setFieldProperties (PrefabDataDefinition.DataFieldType type) {
+         if (type == PrefabDataDefinition.DataFieldType.Int) {
             valueInput.contentType = InputField.ContentType.IntegerNumber;
             valueInput.placeholder.GetComponent<Text>().text = "Enter integer...";
             rectT.sizeDelta = new Vector2(290, rectT.sizeDelta.y);
-         } else if (type == DataFieldType.Float) {
+         } else if (type == PrefabDataDefinition.DataFieldType.Float) {
             valueInput.contentType = InputField.ContentType.DecimalNumber;
             valueInput.placeholder.GetComponent<Text>().text = "Enter float...";
             rectT.sizeDelta = new Vector2(290, rectT.sizeDelta.y);
-         } else if (type == DataFieldType.String) {
+         } else if (type == PrefabDataDefinition.DataFieldType.String) {
             valueInput.contentType = InputField.ContentType.Standard;
             valueInput.placeholder.GetComponent<Text>().text = "Enter text...";
             rectT.sizeDelta = new Vector2(450, rectT.sizeDelta.y);
-         } else if (type == DataFieldType.Bool) {
+         } else if (type == PrefabDataDefinition.DataFieldType.Bool) {
             valueInput.gameObject.SetActive(false);
             valueToggle.gameObject.SetActive(true);
             rectT.sizeDelta = new Vector2(180, rectT.sizeDelta.y);
@@ -90,7 +90,7 @@ namespace MapCreationTool
          ValueChanged?.Invoke(valueDropdown.options[value].text);
       }
 
-      private void toggleValueChanged(bool value) {
+      private void toggleValueChanged (bool value) {
          ValueChanged?.Invoke(value.ToString());
       }
    }

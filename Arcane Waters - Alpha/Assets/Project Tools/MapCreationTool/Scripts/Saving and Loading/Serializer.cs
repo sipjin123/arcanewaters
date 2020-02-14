@@ -688,6 +688,36 @@ namespace MapCreationTool.Serialization
    [Serializable]
    public class DataField
    {
+      // For prefabs, the serializable data is saved as key-value pairs
+      // Below are they keys for the defined key-value pairs
+      public const string WARP_TARGET_MAP_KEY = "target map";
+      public const string WARP_TARGET_SPAWN_KEY = "target spawn";
+      public const string WARP_WIDTH_KEY = "width";
+      public const string WARP_HEIGHT_KEY = "height";
+      public const string WARP_ARRIVE_FACING_KEY = "arrive facing";
+
+      public const string SPAWN_NAME_KEY = "name";
+      public const string SPAWN_WIDTH_KEY = "width";
+      public const string SPAWN_HEIGHT_KEY = "height";
+
+      public const string CRITTER_RUN_DIRECTION_KEY = "run direction";
+
+      public const string LAND_ENEMY_DATA_KEY = "enemy data";
+
+      public const string SEA_ENEMY_DATA_KEY = "enemy data";
+
+      public const string HOUSE_TARGET_MAP_KEY = "target map";
+      public const string HOUSE_TARGET_SPAWN_KEY = "target spawn";
+
+      public const string TUTORIAL_ITEM_STEP_ID_KEY = "step id";
+
+      public const string NPC_DATA_KEY = "npc data";
+      public const string NPC_SHOP_NAME_KEY = "shop name";
+      public const string NPC_PANEL_TYPE_KEY = "panel type";
+
+
+
+
       public string k; // Key
       public string v; // Value
    }

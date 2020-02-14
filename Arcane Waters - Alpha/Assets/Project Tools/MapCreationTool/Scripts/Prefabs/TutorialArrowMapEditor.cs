@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using MapCreationTool.Serialization;
 
 namespace MapCreationTool
 {
@@ -23,7 +24,7 @@ namespace MapCreationTool
       }
 
       public void dataFieldChanged (string key, string value) {
-         if (key.CompareTo("step id") == 0) {
+         if (key.CompareTo(DataField.TUTORIAL_ITEM_STEP_ID_KEY) == 0) {
             text.text = "Step ID: " + value;
          }
       }

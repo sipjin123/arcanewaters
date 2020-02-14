@@ -16,7 +16,7 @@ namespace MapCreationTool
       /// <summary>
       /// Turns all custom fields into regular data fields
       /// </summary>
-      public void restructureCustomFields() {
+      public void restructureCustomFields () {
          foreach (var customData in customDataFields) {
             if (customData.type == CustomFieldType.Direction) {
                Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
@@ -49,47 +49,61 @@ namespace MapCreationTool
                   name = customData.name,
                   options = ShopManager.instance.formSelectionOptions()
                };
+            } else if (customData.type == CustomFieldType.LandMonster && MonsterManager.instance.landMonsterCount > 0) {
+               Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
+               selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
+                  name = customData.name,
+                  options = MonsterManager.instance.formLandMonsterSelectionOptions()
+               };
+            } else if (customData.type == CustomFieldType.SeaMonster && MonsterManager.instance.seaMonsterCount > 0) {
+               Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
+               selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
+                  name = customData.name,
+                  options = MonsterManager.instance.formSeaMonsterSelectionOptions()
+               };
             }
          }
       }
-   }
 
-   [System.Serializable]
-   public class DataField
-   {
-      public string name;
-      public string defaultValue;
-      public DataFieldType type;
-   }
+      [Serializable]
+      public class DataField
+      {
+         public string name;
+         public string defaultValue;
+         public DataFieldType type;
+      }
 
-   [System.Serializable]
-   public class SelectDataField
-   {
-      public string name;
-      public int defaultOption;
-      public string[] options;
-   }
+      [Serializable]
+      public class SelectDataField
+      {
+         public string name;
+         public int defaultOption;
+         public string[] options;
+      }
 
-   [System.Serializable]
-   public class CustomDataField
-   {
-      public string name;
-      public CustomFieldType type;
-   }
+      [Serializable]
+      public class CustomDataField
+      {
+         public string name;
+         public CustomFieldType type;
+      }
 
-   public enum DataFieldType
-   {
-      Int,
-      Float,
-      String,
-      Bool
-   }
+      public enum DataFieldType
+      {
+         Int,
+         Float,
+         String,
+         Bool
+      }
 
-   public enum CustomFieldType
-   {
-      Direction,
-      NPC,
-      ShopPanelType,
-      ShopName
+      public enum CustomFieldType
+      {
+         Direction,
+         NPC,
+         ShopPanelType,
+         ShopName,
+         LandMonster,
+         SeaMonster
+      }
    }
 }
