@@ -161,8 +161,8 @@ public class TreasureChest : NetworkBehaviour {
 
          return weapon;
       } else {
-         Armor armor = new Armor(0, (int) Armor.Type.Strapped, ColorType.DarkGray, ColorType.DarkBlue, "");
-         armor.itemTypeId = (int) armor.type;
+         Armor armor = new Armor(0, 1, ColorType.DarkGray, ColorType.DarkBlue, "");
+         armor.itemTypeId = armor.type;
 
          return armor;
       }

@@ -50,7 +50,7 @@ public class BlueprintRow : MonoBehaviour
          case Item.Category.Armor:
          case Item.Category.Helm:
             icon.sprite = ImageManager.getSprite(resultItem.getIconPath());
-            colorKey = new ColorKey(Global.player.gender, (Armor.Type) resultItem.itemTypeId);
+            colorKey = new ColorKey(Global.player.gender, resultItem.itemTypeId);
             break;
          default:
             icon.sprite = null;

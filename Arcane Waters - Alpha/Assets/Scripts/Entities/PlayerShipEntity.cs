@@ -33,7 +33,7 @@ public class PlayerShipEntity : ShipEntity {
 
    // The equipped armor characteristics
    [SyncVar]
-   public Armor.Type armorType = Armor.Type.None;
+   public int armorType = 0;
    [SyncVar]
    public ColorType armorColor1 = ColorType.None;
    [SyncVar]

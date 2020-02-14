@@ -15,7 +15,7 @@ public class ArmorManager : EquipmentManager {
 
    // Armor Type
    [SyncVar]
-   public Armor.Type armorType = Armor.Type.None;
+   public int armorType = 0;
 
    // Armor colors
    [SyncVar]
@@ -33,7 +33,7 @@ public class ArmorManager : EquipmentManager {
    }
 
    public bool hasArmor () {
-      return (armorType != Armor.Type.None);
+      return (armorType != 0);
    }
 
    public Armor getArmor () {
@@ -41,21 +41,21 @@ public class ArmorManager : EquipmentManager {
          return _armor;
       }
 
-      return new Armor(0, Armor.Type.None, ColorType.None, ColorType.None);
+      return new Armor(0, 0, ColorType.None, ColorType.None);
    }
 
    public void updateSprites () {
       this.updateSprites(this.armorType, this.color1, this.color2);
    }
 
-   public void updateSprites (Armor.Type armorType, ColorType color1, ColorType color2) {
+   public void updateSprites (int armorType, ColorType color1, ColorType color2) {
       Gender.Type gender = getGender();
 
       // Set the correct sheet for our gender and armor type
       armorLayer.setType(gender, armorType);
 
       // Update our Material
-      ColorKey colorKey = new ColorKey(gender, armorType);
+      ColorKey colorKey = new ColorKey(gender, armorType.ToString());
       armorLayer.recolor(colorKey, color1, color2);
 
       // Sync up all our animations
@@ -69,7 +69,7 @@ public class ArmorManager : EquipmentManager {
       _armor = newArmor;
 
       // Update the sprites for the new armor type
-      Armor.Type newType = newArmor == null ? Armor.Type.None : newArmor.type;
+      int newType = newArmor == null ?0 : newArmor.type;
       updateSprites(newType, color1, color2);
 
       // Play a sound
@@ -99,7 +99,7 @@ public class ArmorManager : EquipmentManager {
       _armor = newArmor;
 
       // Assign the armor ID
-      this.equippedArmorId = (newArmor.type == Armor.Type.None) ? 0 : newArmor.id;
+      this.equippedArmorId = (newArmor.type == 0) ? 0 : newArmor.id;
 
       // Set the Sync Vars so they get sent to the clients
       this.armorType = newArmor.type;
@@ -113,7 +113,7 @@ public class ArmorManager : EquipmentManager {
    #region Private Variables
 
    // The equipped armor, if any
-   protected Armor _armor = new Armor(0, Armor.Type.None);
+   protected Armor _armor = new Armor(0, 0);
 
    #endregion
 }

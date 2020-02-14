@@ -83,7 +83,7 @@ public class ShopManager : MonoBehaviour {
                Weapon.Type weaponType = getPossibleWeapons(biomeType).ChooseByRandom();
                item = Weapon.generateRandom(_itemId++, weaponType);
             } else {
-               Armor.Type armorType = getPossibleArmor(biomeType).ChooseByRandom();
+               int armorType = getPossibleArmor(biomeType).ChooseByRandom();
                item = Armor.generateRandom(_itemId++, armorType);
             }
 
@@ -440,12 +440,12 @@ public class ShopManager : MonoBehaviour {
       }
    }
 
-   protected List<WeightedItem<Armor.Type>> getPossibleArmor (Biome.Type biomeType) {
+   protected List<WeightedItem<int>> getPossibleArmor (Biome.Type biomeType) {
       switch (biomeType) {
          default:
-            return new List<WeightedItem<Armor.Type>>() {
-               WeightedItem.Create(.60f, Armor.Type.Strapped),
-               WeightedItem.Create(.40f, Armor.Type.Tunic),
+            return new List<WeightedItem<int>>() {
+               WeightedItem.Create(.60f, 2),
+               WeightedItem.Create(.40f, 3),
          };
       }
    }

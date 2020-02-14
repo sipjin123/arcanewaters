@@ -90,7 +90,7 @@ public class ItemInfo {
    public string getName () {
       switch (itemCategory) {
          case Item.Category.Armor:
-            return Armor.getName((Armor.Type) itemType);
+            return Armor.getName(itemType);
          case Item.Category.Weapon:
             return Weapon.getName((Weapon.Type) itemType);
          default:

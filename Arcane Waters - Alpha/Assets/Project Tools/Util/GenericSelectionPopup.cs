@@ -316,7 +316,7 @@ public class GenericSelectionPopup : MonoBehaviour {
             }
             break;
          case selectionType.ArmorType:
-            foreach (Armor.Type armorType in Enum.GetValues(typeof(Armor.Type))) {
+            for (int armorType = 0; armorType < Armor.MAX_ARMOR_COUNT; armorType++) { 
                createTextTemplate(armorType.ToString(), textUI, changeEvent);
             }
             break;
@@ -389,9 +389,9 @@ public class GenericSelectionPopup : MonoBehaviour {
 
       switch (category) {
          case Item.Category.Armor: {
-               foreach (Armor.Type itemType in Enum.GetValues(typeof(Armor.Type))) {
+               for (int itemType = 0; itemType < Armor.MAX_ARMOR_COUNT; itemType++) {
                   string iconPath = new Item { category = Item.Category.Armor, itemTypeId = (int) itemType }.getCastItem().getIconPath();
-                  createItemTextTemplate(itemType.ToString(), (int) itemType, textUI, indexUI, iconPath, icon, changeEvent, itemIconPath);
+                  createItemTextTemplate(itemType.ToString(), itemType, textUI, indexUI, iconPath, icon, changeEvent, itemIconPath);
                }
             }
             break;

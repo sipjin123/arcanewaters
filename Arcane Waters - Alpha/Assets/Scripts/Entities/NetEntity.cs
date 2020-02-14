@@ -439,7 +439,7 @@ public class NetEntity : NetworkBehaviour
    }
 
    public virtual Armor getArmorCharacteristics () {
-      return new Armor(0, Armor.Type.None);
+      return new Armor(0, 0);
    }
 
    public virtual Weapon getWeaponCharacteristics () {

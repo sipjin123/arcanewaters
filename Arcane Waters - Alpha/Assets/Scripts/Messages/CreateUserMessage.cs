@@ -15,7 +15,7 @@ public class CreateUserMessage : MessageBase {
    public UserInfo userInfo;
 
    // The armor type we'll start with
-   public Armor.Type armorType;
+   public int armorType;
    public ColorType armorColor1;
    public ColorType armorColor2;
 
@@ -30,7 +30,7 @@ public class CreateUserMessage : MessageBase {
       this.netId = netId;
    }
 
-   public CreateUserMessage (uint netId, UserInfo userInfo, Armor.Type armorType, ColorType armorColor1, ColorType armorColor2) {
+   public CreateUserMessage (uint netId, UserInfo userInfo, int armorType, ColorType armorColor1, ColorType armorColor2) {
       this.netId = netId;
       this.userInfo = userInfo;
       this.armorType = armorType;

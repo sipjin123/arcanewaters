@@ -164,7 +164,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour {
    }
 
    public void changeArmor (int offset) {
-      List<Armor.Type> list = new List<Armor.Type>() { Armor.Type.Tunic, Armor.Type.Sash, Armor.Type.Formal };
+      List<int> list = new List<int>() { 1, 2, 3 };
 
       // Adjust the index
       int currentIndex = list.IndexOf(_char.armor.getType());

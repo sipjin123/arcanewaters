@@ -110,7 +110,7 @@ public class Blueprint : RecipeItem
       switch (newCategory) {
          case Category.Armor:
             idString = idString.Replace(ARMOR_PREFIX, "");
-            currName = ((Armor.Type) int.Parse(idString)).ToString();
+            currName = int.Parse(idString).ToString();
             break;
          case Category.Weapon:
             idString = idString.Replace(WEAPON_PREFIX, "");
@@ -149,7 +149,7 @@ public class Blueprint : RecipeItem
          stringID = stringID.Substring(ARMOR_PREFIX.Length, (stringID.Length - ARMOR_PREFIX.Length));
 
          // Convert to a weapon type
-         Armor.Type armorType = (Armor.Type) int.Parse(stringID);
+         int armorType = int.Parse(stringID);
 
          // Create the weapon object
          Armor newArmor = new Armor(0, armorType);
@@ -180,9 +180,7 @@ public class Blueprint : RecipeItem
             return Item.Category.Weapon;
          }
       } else if (prefixCategory == Category.Armor) {
-         if (Enum.IsDefined(typeof(Armor.Type), idComparison)) {
-            return Item.Category.Armor;
-         }
+         return Item.Category.Armor;
       }
 
       return Item.Category.None;
@@ -210,7 +208,7 @@ public class Blueprint : RecipeItem
          stringID = stringID.Substring(ARMOR_PREFIX.Length, (stringID.Length - ARMOR_PREFIX.Length));
 
          // Get the icon path based on the armor type
-         return "Icons/Blueprint/" + (Armor.Type) int.Parse(stringID);
+         return "Icons/Blueprint/" + int.Parse(stringID);
       } else {
          return "Icons/Blueprint/" + this.bpTypeID;
       }

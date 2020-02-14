@@ -113,7 +113,7 @@ public class OfflineCharacter : ClientMonoBehaviour {
       }
    }
 
-   public void setArmor (Armor.Type armorType, ColorType color1, ColorType color2) {
+   public void setArmor (int armorType, ColorType color1, ColorType color2) {
       // Set the correct sheet for our gender and armor type
       armor.setType(this.genderType, armorType, true);
 

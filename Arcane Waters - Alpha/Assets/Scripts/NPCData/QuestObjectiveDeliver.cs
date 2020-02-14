@@ -119,10 +119,10 @@ public class QuestObjectiveDeliver : QuestObjective
             builder.Append(Weapon.getName((Weapon.Type) itemTypeId));
             break;
          case Item.Category.Armor:
-            builder.Append(Armor.getName((Armor.Type) itemTypeId));
+            builder.Append(Armor.getName(itemTypeId));
             break;
          case Item.Category.Helm:
-            builder.Append(Armor.getName((Armor.Type) itemTypeId));
+            builder.Append(Armor.getName(itemTypeId));
             break;
          case Item.Category.Potion:
             builder.Append("Potion");

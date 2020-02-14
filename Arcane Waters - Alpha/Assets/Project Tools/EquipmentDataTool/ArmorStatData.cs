@@ -11,7 +11,7 @@ public class ArmorStatData : EquipmentStatData
 {
    // Armor Type
    [XmlElement(Namespace = "ArmorType")]
-   public Armor.Type armorType = Armor.Type.None;
+   public int armorType = 0;
    
    // The defense of the armor
    public int armorBaseDefense;

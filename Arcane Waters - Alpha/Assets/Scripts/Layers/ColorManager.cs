@@ -64,24 +64,14 @@ public class ColorManager : MonoBehaviour {
 
    public void defineArmorColors () {
       foreach (Gender.Type gender in Gender.getTypes()) {
-         foreach (Armor.Type armorType in Enum.GetValues(typeof(Armor.Type))) {
+         for (int armorType = 0; armorType < Armor.MAX_ARMOR_COUNT; armorType++) { 
             ColorKey colorKey = new ColorKey(gender, armorType);
             HashSet<ColorType> primaries = new HashSet<ColorType>();
             HashSet<ColorType> secondaries = new HashSet<ColorType>();
 
             // Define the list of colors for each type
             switch (armorType) {
-               case Armor.Type.Cloth:
-               case Armor.Type.Leather:
-               case Armor.Type.Steel:
-               case Armor.Type.Sash:
-               case Armor.Type.Tunic:
-               case Armor.Type.Posh:
-               case Armor.Type.Formal:
-               case Armor.Type.Casual:
-               case Armor.Type.Plate:
-               case Armor.Type.Wool:
-               case Armor.Type.Strapped:
+               case 5:
                   primaries = secondaries = new HashSet<ColorType>() {
                      ColorType.Green, ColorType.Yellow, ColorType.Blue, ColorType.Red,
                      ColorType.LightRed, ColorType.Pink, ColorType.LightPink, ColorType.Teal,

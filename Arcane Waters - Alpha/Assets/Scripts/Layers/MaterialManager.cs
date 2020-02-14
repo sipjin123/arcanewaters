@@ -53,49 +53,11 @@ public class MaterialManager : MonoBehaviour {
 
    public void defineArmorMaterials () {
       foreach (Gender.Type gender in Gender.getTypes()) {
-         // Cloth
-         ColorKey cloth = new ColorKey(gender, Armor.Type.Cloth);
-         _materials[cloth] = material_G_B;
-
-         // Leather
-         ColorKey leather = new ColorKey(gender, Armor.Type.Leather);
-         _materials[leather] = material_G;
-
-         // Steel
-         ColorKey steel = new ColorKey(gender, Armor.Type.Steel);
-         _materials[steel] = material_G_R;
-
-         // Sash
-         ColorKey sash = new ColorKey(gender, Armor.Type.Sash);
-         _materials[sash] = material_G_B;
-
-         // Tunic
-         ColorKey tunic = new ColorKey(gender, Armor.Type.Tunic);
-         _materials[tunic] = material_G_B;
-
-         // Posh
-         ColorKey posh = new ColorKey(gender, Armor.Type.Posh);
-         _materials[posh] = material_G_B;
-
-         // Formal
-         ColorKey formal = new ColorKey(gender, Armor.Type.Formal);
-         _materials[formal] = material_G_B;
-
-         // Casual
-         ColorKey casual = new ColorKey(gender, Armor.Type.Casual);
-         _materials[casual] = material_G_B;
-
-         // Plate
-         ColorKey plate = new ColorKey(gender, Armor.Type.Plate);
-         _materials[plate] = material_G_B;
-
-         // Wool
-         ColorKey wool = new ColorKey(gender, Armor.Type.Wool);
-         _materials[wool] = material_G_B;
-
-         // Strapped
-         ColorKey strapped = new ColorKey(gender, Armor.Type.Strapped);
-         _materials[strapped] = material_G_B;
+         for (int i = 0; i < Armor.MAX_ARMOR_COUNT; i++) {
+            // Cloth
+            ColorKey cloth = new ColorKey(gender, i.ToString());
+            _materials[cloth] = material_G_B;
+         }
       }
    }
 
@@ -196,8 +158,8 @@ public class MaterialManager : MonoBehaviour {
       return underscoreCount;
    }
 
-   public bool hasTwoColors (Gender.Type gender, Armor.Type armorType) {
-      ColorKey colorKey = new ColorKey(gender, armorType);
+   public bool hasTwoColors (Gender.Type gender, int armorType) {
+      ColorKey colorKey = new ColorKey(gender, armorType.ToString());
 
       if (!_materials.ContainsKey(colorKey)) {
          return false;

@@ -82,7 +82,7 @@ public class Util : MonoBehaviour {
             itemTypeName = ((CraftingIngredients.Type) typeID).ToString();
             break;
          case Item.Category.Armor:
-            itemTypeName = ((Armor.Type) typeID).ToString();
+            itemTypeName = (typeID).ToString();
             break;
          case Item.Category.Blueprint:
             itemTypeName = Blueprint.getEquipmentType(typeID).ToString();
@@ -113,7 +113,7 @@ public class Util : MonoBehaviour {
             newType = typeof(CraftingIngredients.Type);
             break;
          case Item.Category.Armor:
-            newType = typeof(Armor.Type);
+            newType = typeof(int);
             break;
          case Item.Category.Weapon:
             newType = typeof(Weapon.Type);
@@ -122,7 +122,7 @@ public class Util : MonoBehaviour {
             newType = typeof(UsableItem.Type);
             break;
          case Item.Category.Helm:
-            newType = typeof(Armor.Type);
+            newType = typeof(int);
             break;
          case Item.Category.Quest_Item:
             newType = typeof(QuestItem.Type);

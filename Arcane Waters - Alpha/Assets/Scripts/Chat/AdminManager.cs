@@ -842,9 +842,9 @@ public class AdminManager : NetworkBehaviour {
          }
 
          // Create all the armors
-         foreach (Armor.Type armorType in Enum.GetValues(typeof(Armor.Type))) {
-            if (armorType != Armor.Type.None) {
-               if (createItemIfNotExistOrReplenishStack(Item.Category.Armor, (int) armorType, 1)) {
+         for (int armorType = 0; armorType < Armor.MAX_ARMOR_COUNT; armorType++) {
+            if (armorType != 0) {
+               if (createItemIfNotExistOrReplenishStack(Item.Category.Armor, armorType, 1)) {
                   armorCount++;
                }
             }
@@ -906,7 +906,7 @@ public class AdminManager : NetworkBehaviour {
    [Command]
    protected void Cmd_RequestBlueprintListFromServer () {
       List<Weapon.Type> weaponTypes = new List<Weapon.Type>();
-      List<Armor.Type> armorTypes = new List<Armor.Type>();
+      List<int> armorTypes = new List<int>();
 
       // Get all the crafting data
       foreach (CraftableItemRequirements itemRequirements in CraftingManager.self.getAllCraftableData()) {
@@ -918,7 +918,7 @@ public class AdminManager : NetworkBehaviour {
          if (resultItem.category == Item.Category.Weapon) {
             weaponTypes.Add((Weapon.Type) resultItem.itemTypeId);
          } else if (resultItem.category == Item.Category.Armor) {
-            armorTypes.Add((Armor.Type) resultItem.itemTypeId);
+            armorTypes.Add(resultItem.itemTypeId);
          }
       }
 
@@ -927,7 +927,7 @@ public class AdminManager : NetworkBehaviour {
    }
 
    [ClientRpc]
-   public void Rpc_ReceiveBlueprintList (Weapon.Type[] weaponTypes, Armor.Type[] armorTypes) {
+   public void Rpc_ReceiveBlueprintList (Weapon.Type[] weaponTypes, int[] armorTypes) {
       _blueprintNames.Clear();
 
       // Set all the weapon blueprint names
@@ -937,8 +937,8 @@ public class AdminManager : NetworkBehaviour {
       }
 
       // Set all the armor blueprint names
-      foreach (Armor.Type armorType in armorTypes) {
-         string itemTypeStr = Blueprint.ARMOR_PREFIX + ((int) armorType).ToString();
+      for (int armorType = 0; armorType < Armor.MAX_ARMOR_COUNT; armorType++) { 
+         string itemTypeStr = Blueprint.ARMOR_PREFIX + (armorType).ToString();
          addToItemNameDictionary(_blueprintNames, Item.Category.Blueprint, int.Parse(itemTypeStr));
       }
    }
@@ -956,8 +956,8 @@ public class AdminManager : NetworkBehaviour {
       }
 
       // Set all the armor names
-      foreach (Armor.Type armorType in Enum.GetValues(typeof(Armor.Type))) {
-         addToItemNameDictionary(_armorNames, Item.Category.Armor, (int) armorType);
+      for (int armorType = 0; armorType < Armor.MAX_ARMOR_COUNT; armorType++) {
+         addToItemNameDictionary(_armorNames, Item.Category.Armor, armorType);
       }
 
       // Set all the usable items names

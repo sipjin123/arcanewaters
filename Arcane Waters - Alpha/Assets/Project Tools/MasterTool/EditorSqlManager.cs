@@ -57,7 +57,7 @@ public class EditorSQLManager
                case EquipmentType.Weapon:
                   return "equipment_weapon_xml_v2";
                case EquipmentType.Armor:
-                  return "equipment_armor_xml_v2";
+                  return "equipment_armor_xml_v3";
                case EquipmentType.Helm:
                   return "equipment_helm_xml_v2";
                default:

@@ -144,8 +144,8 @@ public class Item {
    public static int getBaseSellPrice (Category category, int itemTypeId) {
       // Armor prices
       if (category == Category.Armor) {
-         switch ((Armor.Type)itemTypeId) {
-            case Armor.Type.Casual:
+         switch (itemTypeId) {
+            case 1:
                return 1000;
             default:
                return 1000;

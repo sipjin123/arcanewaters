@@ -89,7 +89,7 @@ public class CharacterSpot : ClientMonoBehaviour {
       Weapon weapon = new Weapon();
       weapon.type = Weapon.Type.Pitchfork;
       Armor armor = new Armor();
-      armor.type = Armor.Type.Sash;
+      armor.type = 1;
       armor.color1 = ColorType.Brown;
       armor.color2 = ColorType.Black;
       offlineChar.setDataAndLayers(userInfo, weapon, armor, armor.color1, armor.color2);

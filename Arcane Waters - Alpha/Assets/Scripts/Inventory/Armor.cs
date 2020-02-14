@@ -11,26 +11,22 @@ using MySql.Data.MySqlClient;
 public class Armor : EquippableItem {
    #region Public Variables
 
-   // The Type
-   public enum Type {
-      None = 0, Cloth = 1, Leather = 2, Steel = 3, Sash = 4, Tunic = 5,
-      Posh = 6, Formal = 7, Casual = 8, Plate = 9, Wool = 10,
-      Strapped = 11,
-   }
-
    // The type
-   public Type type;
+   public int type;
+
+   // The maximum armor count in the game
+   public static int MAX_ARMOR_COUNT = 16;
 
    #endregion
 
    public Armor () {
-      this.type = Type.None;
+      this.type = 0;
    }
 
    #if IS_SERVER_BUILD
 
    public Armor (MySqlDataReader dataReader) {
-      this.type = (Armor.Type) DataUtil.getInt(dataReader, "itmType");
+      this.type = DataUtil.getInt(dataReader, "itmType");
       this.id = DataUtil.getInt(dataReader, "itmId");
       this.category = (Item.Category) DataUtil.getInt(dataReader, "itmCategory");
       this.itemTypeId = DataUtil.getInt(dataReader, "itmType");
@@ -57,7 +53,7 @@ public class Armor : EquippableItem {
 
    #endif
 
-   public Armor (int id, Type armorType, ColorType color1, ColorType color2) {
+   public Armor (int id, int armorType, ColorType color1, ColorType color2) {
       this.category = Category.Armor;
       this.id = id;
       this.type = armorType;
@@ -73,18 +69,18 @@ public class Armor : EquippableItem {
       this.id = id;
       this.count = count;
       this.itemTypeId = itemTypeId;
-      this.type = (Type) itemTypeId;
+      this.type = itemTypeId;
       this.color1 = color1;
       this.color2 = color2;
       this.data = data;
    }
 
-   public Armor (int id, Type weaponType) {
+   public Armor (int id, int armorType) {
       this.category = Category.Armor;
       this.id = id;
       this.count = 1;
-      this.itemTypeId = (int) weaponType;
-      this.type = weaponType;
+      this.itemTypeId = armorType;
+      this.type = armorType;
       this.color1 = ColorType.None;
       this.color2 = ColorType.None;
       this.data = "";
@@ -150,7 +146,7 @@ public class Armor : EquippableItem {
       return armorData.armorBaseDefense;
    }
 
-   public static int getBaseArmor (Type armorType) {
+   public static int getBaseArmor (int armorType) {
       ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(armorType);
       if (armorData == null) {
          D.warning("Armor data does not exist! Go to Equipment Editor and make new data");
@@ -187,8 +183,8 @@ public class Armor : EquippableItem {
       return (body.armorManager.equippedArmorId == id);
    }
 
-   public static string getName (Armor.Type armorType) {
-      if (armorType == Type.None) {
+   public static string getName (int armorType) {
+      if (armorType == 0) {
          return "None";
       }
 
@@ -201,13 +197,13 @@ public class Armor : EquippableItem {
       return armorData.equipmentName;
    }
 
-   public static List<Type> getTypes (bool includeNone = false) {
-      List<Type> list = new List<Type>();
+   public static List<int> getTypes (bool includeNone = false) {
+      List<int> list = new List<int>();
 
       // Cycle over all of the various Armor types
-      foreach (Type armorType in Enum.GetValues(typeof(Type))) {
+      for (int armorType = 0; armorType < MAX_ARMOR_COUNT; armorType ++) {
          // Only include the "None" type if it was specifically requested
-         if (armorType == Type.None && !includeNone) {
+         if (armorType == 0 && !includeNone) {
             continue;
          }
 
@@ -218,18 +214,19 @@ public class Armor : EquippableItem {
    }
 
    public static Armor getEmpty () {
-      return new Armor(0, Armor.Type.None, ColorType.None, ColorType.None);
+      return new Armor(0, 0, ColorType.None, ColorType.None);
    }
 
    public override string getIconPath () {
-      return "Icons/Armor/" + this.type;
+      string spritePath = EquipmentXMLManager.self.getArmorData(this.type).equipmentIconPath;
+      return spritePath;
    }
 
    public override ColorKey getColorKey () {
-      return new ColorKey(Global.player.gender, this.type);
+      return new ColorKey(Global.player.gender, this.type.ToString());
    }
 
-   public static Armor generateRandom (int itemId, Type armorType) {
+   public static Armor generateRandom (int itemId, int armorType) {
       // Decide what the rarity should be
       Rarity.Type rarity = Rarity.getRandom();
 
@@ -246,7 +243,7 @@ public class Armor : EquippableItem {
 
       string data = string.Format("armor={0}, rarity={1}, price={2}", armorValue, (int) rarity, price);
       int stockCount = Rarity.getRandomItemStockCount(rarity);
-      Armor armor = new Armor(itemId, (int) armorType, ColorType.Black, ColorType.White, data, stockCount);
+      Armor armor = new Armor(itemId, armorType, ColorType.Black, ColorType.White, data, stockCount);
 
       return armor;
    }

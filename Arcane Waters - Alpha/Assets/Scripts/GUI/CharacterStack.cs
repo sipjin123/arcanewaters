@@ -55,7 +55,7 @@ public class CharacterStack : MonoBehaviour {
       weaponFrontLayer.recolor(color1, color2);
    }
 
-   public void updateArmor (Gender.Type gender, Armor.Type armorType, ColorType color1, ColorType color2) {
+   public void updateArmor (Gender.Type gender, int armorType, ColorType color1, ColorType color2) {
       armorLayer.setType(gender,armorType);
       armorLayer.recolor(color1, color2);
    }

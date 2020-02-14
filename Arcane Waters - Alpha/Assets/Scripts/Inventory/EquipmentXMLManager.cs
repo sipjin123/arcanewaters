@@ -53,7 +53,7 @@ public class EquipmentXMLManager : MonoBehaviour {
       return null;
    }
 
-   public ArmorStatData getArmorData (Armor.Type armorType) {
+   public ArmorStatData getArmorData (int armorType) {
       if (_armorStatList == null) {
          return null;
       }
@@ -78,7 +78,7 @@ public class EquipmentXMLManager : MonoBehaviour {
    public void initializeDataCache () {
       equipmentLoadCounter = 0;
       _weaponStatList = new Dictionary<Weapon.Type, WeaponStatData>();
-      _armorStatList = new Dictionary<Armor.Type, ArmorStatData>();
+      _armorStatList = new Dictionary<int, ArmorStatData>();
       _helmStatList = new Dictionary<Helm.Type, HelmStatData>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -107,7 +107,7 @@ public class EquipmentXMLManager : MonoBehaviour {
             foreach (XMLPair xmlPair in rawXMLData) {
                TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                ArmorStatData rawData = Util.xmlLoad<ArmorStatData>(newTextAsset);
-               Armor.Type uniqueID = rawData.armorType;
+               int uniqueID = rawData.armorType;
 
                // Save the data in the memory cache
                if (!_armorStatList.ContainsKey(uniqueID) && xmlPair.isEnabled) {
@@ -153,7 +153,7 @@ public class EquipmentXMLManager : MonoBehaviour {
 
    public void receiveArmorDataFromServer (List<ArmorStatData> statData) {
       foreach (ArmorStatData rawData in statData) {
-         Armor.Type uniqueID = rawData.armorType;
+         int uniqueID = rawData.armorType;
          // Save the data in the memory cache
          if (!_armorStatList.ContainsKey(uniqueID)) {
             _armorStatList.Add(uniqueID, rawData);
@@ -181,7 +181,7 @@ public class EquipmentXMLManager : MonoBehaviour {
    private Dictionary<Weapon.Type, WeaponStatData> _weaponStatList = new Dictionary<Weapon.Type, WeaponStatData>();
 
    // Stores the list of all armor data
-   private Dictionary<Armor.Type, ArmorStatData> _armorStatList = new Dictionary<Armor.Type, ArmorStatData>();
+   private Dictionary<int, ArmorStatData> _armorStatList = new Dictionary<int, ArmorStatData>();
 
    // Stores the list of all helm data
    private Dictionary<Helm.Type, HelmStatData> _helmStatList = new Dictionary<Helm.Type, HelmStatData>();

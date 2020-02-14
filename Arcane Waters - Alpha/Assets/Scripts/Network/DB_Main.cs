@@ -1753,14 +1753,21 @@ public class DB_Main : DB_MainStub
 
    #region Equipment XML Data
 
-   public static new void updateEquipmentXML (string rawData, int entryId, EquipmentToolManager.EquipmentType equipType, string equipmentName) {
+   public static new void updateEquipmentXML (string rawData, int xmlID, EquipmentToolManager.EquipmentType equipType, string equipmentName) {
       string tableName = "";
+      string xmlKey = "xml_id, ";
+      string xmlValue = "@xml_id, ";
+      if (xmlID < 0) {
+         xmlKey = "";
+         xmlValue = "";
+      }
+
       switch (equipType) {
          case EquipmentToolManager.EquipmentType.Weapon:
             tableName = "equipment_weapon_xml_v2";
             break;
          case EquipmentToolManager.EquipmentType.Armor:
-            tableName = "equipment_armor_xml_v2";
+            tableName = "equipment_armor_xml_v3";
             break;
          case EquipmentToolManager.EquipmentType.Helm:
             tableName = "equipment_helm_xml_v2";
@@ -1771,14 +1778,14 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO " + tableName + " (xml_id, xmlContent, creator_userID, equipment_type, equipment_name) " +
-            "VALUES(@xml_id, @xmlContent, @creator_userID, @equipment_type, @equipment_name) " +
+            "INSERT INTO " + tableName + " ("+ xmlKey + "xmlContent, creator_userID, equipment_type, equipment_name) " +
+            "VALUES("+ xmlValue + "@xmlContent, @creator_userID, @equipment_type, @equipment_name) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, equipment_type = @equipment_type, equipment_name = @equipment_name", conn)) {
 
             conn.Open();
             cmd.Prepare();
 
-            cmd.Parameters.AddWithValue("@xml_id", entryId);
+            cmd.Parameters.AddWithValue("@xml_id", xmlID);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
             cmd.Parameters.AddWithValue("@equipment_name", equipmentName);
             cmd.Parameters.AddWithValue("@equipment_type", equipType.ToString());
@@ -1799,7 +1806,7 @@ public class DB_Main : DB_MainStub
             tableName = "equipment_weapon_xml_v2";
             break;
          case EquipmentToolManager.EquipmentType.Armor:
-            tableName = "equipment_armor_xml_v2";
+            tableName = "equipment_armor_xml_v3";
             break;
          case EquipmentToolManager.EquipmentType.Helm:
             tableName = "equipment_helm_xml_v2";
@@ -1828,7 +1835,7 @@ public class DB_Main : DB_MainStub
             tableName = "equipment_weapon_xml_v2";
             break;
          case EquipmentToolManager.EquipmentType.Armor:
-            tableName = "equipment_armor_xml_v2";
+            tableName = "equipment_armor_xml_v3";
             break;
          case EquipmentToolManager.EquipmentType.Helm:
             tableName = "equipment_helm_xml_v2";
@@ -2849,7 +2856,7 @@ public class DB_Main : DB_MainStub
       return newItem;
    }
 
-   public static new int insertNewArmor (int userId, Armor.Type armorType, ColorType color1, ColorType color2) {
+   public static new int insertNewArmor (int userId, int armorType, ColorType color1, ColorType color2) {
       int itemId = 0;
 
       try {
@@ -2861,7 +2868,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@itmCategory", (int) Item.Category.Armor);
-            cmd.Parameters.AddWithValue("@itmType", (int) armorType);
+            cmd.Parameters.AddWithValue("@itmType", armorType);
             cmd.Parameters.AddWithValue("@itmColor1", (int) color1);
             cmd.Parameters.AddWithValue("@itmColor2", (int) color2);
             cmd.Parameters.AddWithValue("@itmData", "");

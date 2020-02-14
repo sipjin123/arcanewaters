@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 using static EquipmentToolManager;
+using UnityEngine.Events;
 
 public class EquipmentToolPanel : MonoBehaviour {
    #region Public Variables
@@ -42,6 +43,12 @@ public class EquipmentToolPanel : MonoBehaviour {
 
    // The current xml id
    public int current_xml_id;
+
+   // Event to notify if the equipment ID has been modified
+   public UnityEvent changeIconEvent;
+
+   // Gender type for preview
+   public Gender.Type genderType = Gender.Type.Female;
 
    #endregion
 
@@ -102,15 +109,19 @@ public class EquipmentToolPanel : MonoBehaviour {
             genericSelectionPopup.callImageTextSelectionPopup(GenericSelectionPopup.selectionType.HelmIcon, _icon, _iconPath);
          }
       });
-      _weaponTypeButton.onClick.AddListener(() => {
+      _equipmentTypeButton.onClick.AddListener(() => {
          if (equipmentType == EquipmentType.Weapon) {
-            genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.WeaponType, _weaponTypeText);
+            genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.WeaponType, _equipmentTypeText);
          } else if (equipmentType == EquipmentType.Armor) {
-            genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.ArmorType, _weaponTypeText);
+            genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.ArmorType, _equipmentTypeText, changeIconEvent);
          } else if (equipmentType == EquipmentType.Helm) {
-            genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.HelmType, _weaponTypeText);
+            genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.HelmType, _equipmentTypeText);
          }
       });
+      changeIconEvent.AddListener(() => {
+         _spriteImage.sprite = ImageManager.getSprite(getInGameSprite(int.Parse(_equipmentTypeText.text)));
+      });
+
       _colorType1Button.onClick.AddListener(() => genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.Color, _colorType1Text));
       _colorType2Button.onClick.AddListener(() => genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.Color, _colorType2Text));
    }
@@ -209,7 +220,8 @@ public class EquipmentToolPanel : MonoBehaviour {
       _attributeAir.text = statData.airResist.ToString();
       _attributeEarth.text = statData.earthResist.ToString();
 
-      _weaponTypeText.text = statData.armorType.ToString();
+      _equipmentTypeText.text = statData.armorType.ToString();
+      _spriteImage.sprite = ImageManager.getSprite(getInGameSprite(statData.armorType));
 
       _weaponClass.onValueChanged.Invoke(_weaponClass.value);
    }
@@ -228,7 +240,7 @@ public class EquipmentToolPanel : MonoBehaviour {
       _attributeAir.text = statData.weaponDamageAir.ToString();
       _attributeEarth.text = statData.weaponDamageEarth.ToString();
 
-      _weaponTypeText.text = statData.weaponType.ToString();
+      _equipmentTypeText.text = statData.weaponType.ToString();
       _weaponClass.value = (int) statData.weaponClass;
       _weaponClassText.text = statData.weaponClass.ToString();
 
@@ -248,7 +260,7 @@ public class EquipmentToolPanel : MonoBehaviour {
       _attributeWater.text = statData.waterResist.ToString();
       _attributeAir.text = statData.airResist.ToString();
       _attributeEarth.text = statData.earthResist.ToString();
-      _weaponTypeText.text = statData.helmType.ToString();
+      _equipmentTypeText.text = statData.helmType.ToString();
 
       _weaponClass.onValueChanged.Invoke(_weaponClass.value);
    }
@@ -351,7 +363,7 @@ public class EquipmentToolPanel : MonoBehaviour {
       weaponStatData.weaponDamageEarth = int.Parse(_attributeEarth.text);
       weaponStatData.weaponDamageFire = int.Parse(_attributeFire.text);
       weaponStatData.weaponDamageAir = int.Parse(_attributeAir.text);
-      weaponStatData.weaponType = (Weapon.Type) Enum.Parse(typeof(Weapon.Type), _weaponTypeText.text);
+      weaponStatData.weaponType = (Weapon.Type) Enum.Parse(typeof(Weapon.Type), _equipmentTypeText.text);
       weaponStatData.weaponClass = (Weapon.Class) Enum.Parse(typeof(Weapon.Class), _weaponClassText.text);
       
       return weaponStatData;
@@ -367,7 +379,7 @@ public class EquipmentToolPanel : MonoBehaviour {
       armorStatData.earthResist = int.Parse(_attributeEarth.text);
       armorStatData.fireResist = int.Parse(_attributeFire.text);
       armorStatData.airResist = int.Parse(_attributeAir.text);
-      armorStatData.armorType = (Armor.Type) Enum.Parse(typeof(Armor.Type), _weaponTypeText.text);
+      armorStatData.armorType = int.Parse(_equipmentTypeText.text);
       
       return armorStatData;
    }
@@ -382,7 +394,7 @@ public class EquipmentToolPanel : MonoBehaviour {
       helmStatData.earthResist = int.Parse(_attributeEarth.text);
       helmStatData.fireResist = int.Parse(_attributeFire.text);
       helmStatData.airResist = int.Parse(_attributeAir.text);
-      helmStatData.helmType = (Helm.Type) Enum.Parse(typeof(Helm.Type), _weaponTypeText.text);
+      helmStatData.helmType = (Helm.Type) Enum.Parse(typeof(Helm.Type), _equipmentTypeText.text);
 
       return helmStatData;
    }
@@ -438,6 +450,12 @@ public class EquipmentToolPanel : MonoBehaviour {
 
    #endregion
 
+   private string getInGameSprite (int equipmentID) {
+      string spritePath = "Assets/Sprites/Armor/" + genderType + "/" + genderType.ToString().ToLower() + "_armor_" + equipmentID;
+  
+      return spritePath;
+   }
+
    #region Private Variables
 #pragma warning disable 0649
    // Enables/Disables Weapon class depending on equipment type
@@ -484,9 +502,9 @@ public class EquipmentToolPanel : MonoBehaviour {
 
    // Type selection UI
    [SerializeField]
-   private Text _weaponTypeText;
+   private Text _equipmentTypeText;
    [SerializeField]
-   private Button _weaponTypeButton;
+   private Button _equipmentTypeButton;
 
    // Color Type
    [SerializeField]
@@ -515,6 +533,10 @@ public class EquipmentToolPanel : MonoBehaviour {
    private InputField _spiritText;
    [SerializeField]
    private InputField _luckText;
+
+   // The preview of how the item looks like
+   [SerializeField]
+   private Image _spriteImage;
 #pragma warning restore 0649
    #endregion
 }

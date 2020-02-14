@@ -424,7 +424,7 @@ public class DB_MainStub : MonoBehaviour
       return null;
    }
 
-   public static int insertNewArmor (int userId, Armor.Type armorType, ColorType color1, ColorType color2) {
+   public static int insertNewArmor (int userId, int armorType, ColorType color1, ColorType color2) {
       return 0;
    }
 

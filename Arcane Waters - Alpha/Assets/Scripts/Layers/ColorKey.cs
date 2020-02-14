@@ -24,7 +24,7 @@ public class ColorKey {
       this.suffix = layerType + "";
    }
 
-   public ColorKey (Gender.Type gender, Armor.Type armorType) {
+   public ColorKey (Gender.Type gender, int armorType) {
       this.prefix = gender + "";
       this.suffix = armorType + "";
    }

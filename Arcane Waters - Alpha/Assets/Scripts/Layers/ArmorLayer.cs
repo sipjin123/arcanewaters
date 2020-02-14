@@ -9,11 +9,11 @@ public class ArmorLayer : SpriteLayer {
 
    #endregion
 
-   public void setType (Gender.Type gender, Armor.Type newType, bool immediate = false) {
+   public void setType (Gender.Type gender, int newType, bool immediate = false) {
       _type = newType;
 
       // Update our Animated Sprite
-      string path = (newType == Armor.Type.None) ? "Empty_Layer" : "Armor/" + gender + "/" + gender + "_armor_" + (int)newType;
+      string path = (newType == 0) ? "Empty_Layer" : "Armor/" + gender + "/" + gender + "_armor_" + (int)newType;
       Texture2D result = ImageManager.getTexture(path);
 
       if (immediate) {
@@ -23,14 +23,14 @@ public class ArmorLayer : SpriteLayer {
       }
    }
 
-   public Armor.Type getType () {
+   public int getType () {
       return _type;
    }
 
    #region Private Variables
 
    // Our current type
-   protected Armor.Type _type;
+   protected int _type;
 
    #endregion
 }
