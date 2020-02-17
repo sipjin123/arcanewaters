@@ -19,9 +19,9 @@ namespace MapCreationTool
             if (!hovered && !selected) {
                ren.color = new Color(0, 0, 0, 0);
             } else if (hovered) {
-               ren.color = Color.white;
+               ren.color = MapEditorPrefab.HOVERED_HIGHLIGHT_COLOR;
             } else if (selected) {
-               ren.color = Color.green;
+               ren.color = MapEditorPrefab.SELECTED_HIGHLIGHT_COLOR;
             }
          }
       }

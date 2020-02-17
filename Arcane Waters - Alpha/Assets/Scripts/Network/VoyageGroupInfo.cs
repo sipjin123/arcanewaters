@@ -25,6 +25,9 @@ public class VoyageGroupInfo
    // Gets set to true when the group is waiting for more quickmatch members
    public bool isQuickmatchEnabled;
 
+   // Gets set to true when the group is private
+   public bool isPrivate;
+
    // The number of group members
    public int memberCount;
 
@@ -39,17 +42,19 @@ public class VoyageGroupInfo
       this.areaKey = DataUtil.getString(dataReader, "areaKey");
       this.creationDate = DataUtil.getDateTime(dataReader, "creationDate").ToBinary();
       this.isQuickmatchEnabled = DataUtil.getBoolean(dataReader, "isQuickMatchEnabled");
+      this.isPrivate = DataUtil.getBoolean(dataReader, "isPrivate");
       this.memberCount = DataUtil.getInt(dataReader, "memberCount");
    }
 
 #endif
 
    public VoyageGroupInfo (int groupId, string areaKey, DateTime creationDate, bool isQuickmatchEnabled,
-      int memberCount) {
+      bool isPrivate, int memberCount) {
       this.groupId = groupId;
       this.areaKey = areaKey;
       this.creationDate = creationDate.ToBinary();
       this.isQuickmatchEnabled = isQuickmatchEnabled;
+      this.isPrivate = isPrivate;
       this.memberCount = memberCount;
    }
 

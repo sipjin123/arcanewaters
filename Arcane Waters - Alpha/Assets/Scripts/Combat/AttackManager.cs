@@ -75,12 +75,11 @@ public class AttackManager : ClientMonoBehaviour {
          // Determine the color of the indicators
          Color indicatorColor = getColorForDistance(_normalizedDistanceToCursor);
 
-         // Set the color of the cursors
+         // Set the color of the cursor
          clampedCursor.setColor(indicatorColor);
-         freeCursor.color = indicatorColor;
 
          // Set the speed of the cursor animation
-         clampedCursor.setAnimationSpeed(1f / _normalizedDistanceToCursor);
+         clampedCursor.setAnimationSpeed(0.5f + 0.5f / _normalizedDistanceToCursor);
 
          // Move the trajectory to the player position
          Util.setXY(trajectory.transform, Global.player.transform.position);

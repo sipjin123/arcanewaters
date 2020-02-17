@@ -8,9 +8,6 @@ public class AttackCircleAimCursor : MonoBehaviour
 {
    #region Public Variables
 
-   // The value of the color alpha, set by the animator
-   public float animatedAlpha = 1f;
-
    // The renderer of the cursor
    public SpriteRenderer cursorRenderer;
 
@@ -58,7 +55,7 @@ public class AttackCircleAimCursor : MonoBehaviour
 
    public void setColor(Color c) {
       cursorRenderer.color = c;
-      auraRenderer.color = new Color(c.r, c.g, c.b, animatedAlpha);
+      auraRenderer.color = new Color(c.r, c.g, c.b, 1f);
    }
 
    public void setAnimationSpeed(float speed) {

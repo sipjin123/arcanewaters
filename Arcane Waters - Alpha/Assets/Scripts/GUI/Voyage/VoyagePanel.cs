@@ -119,9 +119,10 @@ public class VoyagePanel : Panel
       // Join a group with the selected mode
       switch (_selectedVoyageMode) {
          case Voyage.Mode.Quickmatch:
-            Global.player.rpc.Cmd_AddUserToQuickmatchGrouping(_selectedVoyage.areaKey);
+            Global.player.rpc.Cmd_AddUserToQuickmatchVoyageGroup(_selectedVoyage.areaKey);
             break;
          case Voyage.Mode.Private:
+            Global.player.rpc.Cmd_CreatePrivateVoyageGroup(_selectedVoyage.areaKey);
             break;
          default:
             break;

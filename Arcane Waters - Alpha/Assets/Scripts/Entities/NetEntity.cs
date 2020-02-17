@@ -707,6 +707,25 @@ public class NetEntity : NetworkBehaviour
       ChatManager.self.addChatInfo(chatInfo);
    }
 
+   [TargetRpc]
+   public void Target_ReceiveVoyageGroupInvitation (NetworkConnection conn, int voyageGroupId, string inviterName) {
+      // If the user is in battle, do nothing
+      if (isInBattle()) {
+         return;
+      }
+
+      // Associate a new function with the accept button
+      PanelManager.self.voyageInviteScreen.acceptButton.onClick.RemoveAllListeners();
+      PanelManager.self.voyageInviteScreen.acceptButton.onClick.AddListener(() => VoyageManager.self.acceptVoyageInvitation());
+
+      // Associate a new function with the refuse button
+      PanelManager.self.voyageInviteScreen.refuseButton.onClick.RemoveAllListeners();
+      PanelManager.self.voyageInviteScreen.refuseButton.onClick.AddListener(() => PanelManager.self.voyageInviteScreen.hide());
+
+      // Show the voyage invite screen
+      PanelManager.self.voyageInviteScreen.show(voyageGroupId, inviterName);
+   }
+
    [Command]
    public void Cmd_PlantCrop (Crop.Type cropType, int cropNumber) {
       // We have to holding the seed bag

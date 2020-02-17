@@ -17,6 +17,8 @@ public class ServerMessageManager : MonoBehaviour {
       int minClientGameVersion;
       if (logInUserMessage.clientPlatform == RuntimePlatform.OSXPlayer) {
          minClientGameVersion = GameVersionManager.self.minClientGameVersionMac;
+      } else if (logInUserMessage.clientPlatform == RuntimePlatform.LinuxPlayer) {
+         minClientGameVersion = GameVersionManager.self.minClientGameVersionLinux;
       } else {
          minClientGameVersion = GameVersionManager.self.minClientGameVersionWin;
       }

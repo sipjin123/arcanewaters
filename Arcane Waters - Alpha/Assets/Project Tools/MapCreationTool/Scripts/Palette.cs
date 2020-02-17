@@ -119,6 +119,8 @@ namespace MapCreationTool
 
             p.GetComponent<MapEditorPrefab>()?.createdInPalette();
 
+            p.GetComponent<SpriteOutline>()?.setNewColor(new Color(0, 0, 0, 0));
+
             prefabs.Add(p);
          }
 

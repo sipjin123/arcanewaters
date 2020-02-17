@@ -59,7 +59,7 @@ public class VoyageGroupMemberCell : MonoBehaviour
    }
 
    public void Update () {
-      if (Global.player == null || !Global.player.isLocalPlayer || Global.player.voyageGroupId == -1 ||
+      if (Global.player == null || !Global.player.isLocalPlayer || !VoyageManager.isInVoyage(Global.player) ||
          !_active) {
          return;
       }

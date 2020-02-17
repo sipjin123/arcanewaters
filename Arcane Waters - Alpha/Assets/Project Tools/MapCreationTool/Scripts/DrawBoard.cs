@@ -390,6 +390,8 @@ namespace MapCreationTool
          if (instance.GetComponent<MapEditorPrefab>())
             instance.GetComponent<MapEditorPrefab>().placedInEditor();
 
+         instance.GetComponent<SpriteOutline>()?.setNewColor(new Color(0, 0, 0, 0));
+
          return instance;
       }
 
@@ -605,12 +607,14 @@ namespace MapCreationTool
             foreach (IBiomable biomable in preview.prefabPreviewInstance.GetComponentsInChildren<IBiomable>()) {
                biomable.setBiome(Tools.biome);
             }
-
+            
             var zSnap = preview.prefabPreviewInstance.GetComponent<ZSnap>();
             if (zSnap != null)
                zSnap.isActive = true;
 
             preview.prefabPreviewInstance.GetComponent<MapEditorPrefab>()?.createdForPrieview();
+
+            preview.prefabPreviewInstance.GetComponent<SpriteOutline>()?.setNewColor(new Color(0, 0, 0, 0));
          }
 
          //------------------------
@@ -844,19 +848,19 @@ namespace MapCreationTool
                outline.setVisibility(false);
             } else if (hovered) {
                outline.setVisibility(true);
-               outline.setNewColor(Color.white);
+               outline.setNewColor(MapEditorPrefab.HOVERED_HIGHLIGHT_COLOR);
                SpriteRenderer sr = outline.transform.Find("Outline")?.GetComponent<SpriteRenderer>();
                if (sr != null) {
-                  sr.color = Color.white;
+                  sr.color = MapEditorPrefab.HOVERED_HIGHLIGHT_COLOR;
                }
                outline.Regenerate();
             } else if (selected) {
                outline.setVisibility(true);
-               outline.setNewColor(Color.green);
-               outline.color = Color.green;
+               outline.setNewColor(MapEditorPrefab.SELECTED_HIGHLIGHT_COLOR);
+               outline.color = MapEditorPrefab.SELECTED_HIGHLIGHT_COLOR;
                SpriteRenderer sr = outline.transform.Find("Outline")?.GetComponent<SpriteRenderer>();
                if (sr != null) {
-                  sr.color = Color.green;
+                  sr.color = MapEditorPrefab.SELECTED_HIGHLIGHT_COLOR;
                }
                outline.Regenerate();
             }

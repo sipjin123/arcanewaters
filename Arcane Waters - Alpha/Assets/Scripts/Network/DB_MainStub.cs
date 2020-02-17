@@ -699,6 +699,10 @@ public class DB_MainStub : MonoBehaviour
       return 0;
    }
 
+   public static int getMinimumClientGameVersionForLinux () {
+      return 0;
+   }
+
    public static int getMinimumToolsVersionForWindows () {
       return 0;
    }

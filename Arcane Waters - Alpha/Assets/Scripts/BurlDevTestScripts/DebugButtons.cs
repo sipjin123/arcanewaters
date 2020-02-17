@@ -130,8 +130,8 @@ public class DebugButtons : NetworkBehaviour
                      itemTypeName = "Item Type: " + (CraftingIngredients.Type) itemTypeID;
                      break;
                   case Item.Category.Armor:
-                     itemTypeID = Mathf.Clamp(itemTypeID, 0, System.Enum.GetNames(typeof(Armor.Type)).Length - 1);
-                     itemTypeName = "Item Type: " + (Armor.Type) itemTypeID;
+                     itemTypeID = Mathf.Clamp(itemTypeID, 0, Armor.MAX_ARMOR_COUNT - 1);
+                     itemTypeName = "Item Type: " + itemTypeID;
                      break;
                   case Item.Category.Blueprint:
                      Item.Category newCategory = Blueprint.getEquipmentType(itemTypeID);

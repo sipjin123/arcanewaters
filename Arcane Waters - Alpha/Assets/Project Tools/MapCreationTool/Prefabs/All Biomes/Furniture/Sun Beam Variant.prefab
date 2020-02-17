@@ -65,8 +65,8 @@ MonoBehaviour:
     m_Bits: 1
   ignoreChildNames: []
   sortMethod: 1
-  isAnimated: 0
-  useExportedFrame: 1
+  isAnimated: 1
+  useExportedFrame: 0
   customFrameName: 
   generatesOnStart: 0
   generatesOnValidate: 1
@@ -241,7 +241,7 @@ PrefabInstance:
     - target: {fileID: 6497280082256200442, guid: f187730e14791ab4989598d4b5d5abfd,
         type: 3}
       propertyPath: m_Name
-      value: Sun Beam Forest Variant
+      value: Sun Beam Variant
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f187730e14791ab4989598d4b5d5abfd, type: 3}

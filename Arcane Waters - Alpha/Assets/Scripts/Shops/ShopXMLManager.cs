@@ -42,8 +42,8 @@ public class ShopXMLManager : MonoBehaviour {
                      shopDataList.Add(shopData);
                   }
                }
-               finishedDataSetup.Invoke();
                hasInitialized = true;
+               finishedDataSetup.Invoke();
             });
          });
       }
@@ -58,8 +58,8 @@ public class ShopXMLManager : MonoBehaviour {
                shopDataList.Add(data);
             }
          }
-         finishedDataSetup.Invoke();
          hasInitialized = true;
+         finishedDataSetup.Invoke();
       }
    }
 

@@ -89,10 +89,10 @@ public class CannonBall : GenericSeaProjectile {
             }
          }
 
-         // Detach the Trail Renderer so that it contains to show up a little while longer
-         TrailRenderer trail = this.gameObject.GetComponentInChildren<TrailRenderer>();
+         // Detach the Particle System so that its particles have time to die
+         ParticleSystem trail = this.gameObject.GetComponentInChildren<ParticleSystem>();
          trail.transform.parent = null;
-         trail.autodestruct = true;
+         trail.Stop();
 
          // Now destroy
          Destroy(this.gameObject);

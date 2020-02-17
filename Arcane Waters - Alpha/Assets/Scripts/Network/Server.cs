@@ -127,6 +127,16 @@ public class Server : Photon.PunBehaviour {
       }
    }
 
+   [PunRPC]
+   public void HandleVoyageGroupInvite (int voyageGroupId, string inviterName, int inviteeUserId) {
+      // Find the NetEntity of the invitee
+      NetEntity inviteeEntity = EntityManager.self.getEntity(inviteeUserId);
+
+      if (inviteeEntity != null) {
+         inviteeEntity.Target_ReceiveVoyageGroupInvitation(inviteeEntity.connectionToClient, voyageGroupId, inviterName);
+      }
+   }
+
    #region Private Variables
 
    #endregion

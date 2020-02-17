@@ -128,6 +128,15 @@ public class ServerNetwork : MonoBehaviour {
       return isOnline;
    }
 
+   public Server getServerContainingUser (int userId) {
+      foreach (Server server in servers) {
+         if (server.connectedUserIds.Contains(userId)) {
+            return server;
+         }
+      }
+      return null;
+   }
+
    protected IEnumerator CO_checkPhotonConnection () {
       // If we're not running a server, or already in a Photon room, we're done
       if (!NetworkServer.active || PhotonNetwork.room != null) {

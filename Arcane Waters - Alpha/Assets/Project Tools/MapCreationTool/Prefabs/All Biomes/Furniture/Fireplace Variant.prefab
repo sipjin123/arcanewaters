@@ -135,8 +135,8 @@ MonoBehaviour:
     m_Bits: 1
   ignoreChildNames: []
   sortMethod: 1
-  isAnimated: 0
-  useExportedFrame: 1
+  isAnimated: 1
+  useExportedFrame: 0
   customFrameName: 
   generatesOnStart: 0
   generatesOnValidate: 1
@@ -225,7 +225,7 @@ PrefabInstance:
     - target: {fileID: 8821843878745683488, guid: 3bdf1337ed3c00441b4521cd24978a71,
         type: 3}
       propertyPath: m_Name
-      value: Fireplace Forest Variant
+      value: Fireplace Variant
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3699448685775372273, guid: 3bdf1337ed3c00441b4521cd24978a71, type: 3}

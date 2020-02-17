@@ -4783,6 +4783,29 @@ public class DB_Main : DB_MainStub
       return minVersion;
    }
 
+   public static new int getMinimumClientGameVersionForLinux () {
+      int minVersion = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT minClientVersionLinux FROM game_version", conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  minVersion = dataReader.GetInt32("minClientVersionLinux");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return minVersion;
+   }
+
    public static new int getMinimumToolsVersionForWindows () {
       int minVersion = 0;
 
@@ -4835,14 +4858,15 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO voyage_groups (areaKey, creationDate, isQuickmatchEnabled) VALUES " +
-            "(@areaKey, @creationDate, @isQuickmatchEnabled)", conn)) {
+            "INSERT INTO voyage_groups (areaKey, creationDate, isQuickmatchEnabled, isPrivate) VALUES " +
+            "(@areaKey, @creationDate, @isQuickmatchEnabled, @isPrivate)", conn)) {
 
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@areaKey", groupInfo.areaKey);
             cmd.Parameters.AddWithValue("@creationDate", DateTime.FromBinary(groupInfo.creationDate));
             cmd.Parameters.AddWithValue("@isQuickmatchEnabled", groupInfo.isQuickmatchEnabled);
+            cmd.Parameters.AddWithValue("@isPrivate", groupInfo.isPrivate);
 
             // Execute the command
             cmd.ExecuteNonQuery();

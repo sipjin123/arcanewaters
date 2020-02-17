@@ -135,8 +135,8 @@ MonoBehaviour:
     m_Bits: 1
   ignoreChildNames: []
   sortMethod: 1
-  isAnimated: 0
-  useExportedFrame: 1
+  isAnimated: 1
+  useExportedFrame: 0
   customFrameName: 
   generatesOnStart: 0
   generatesOnValidate: 1
@@ -215,7 +215,7 @@ PrefabInstance:
     - target: {fileID: 3422777832017436292, guid: 4f5103ca1044dcc4ca1c36c36f95160f,
         type: 3}
       propertyPath: m_Name
-      value: Chair N Forest Variant
+      value: Chair N Variant
       objectReference: {fileID: 0}
     - target: {fileID: 3422777832017436294, guid: 4f5103ca1044dcc4ca1c36c36f95160f,
         type: 3}

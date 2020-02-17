@@ -32,9 +32,6 @@ public class BackgroundGameManager : MonoBehaviour {
 
    private void Awake () {
       self = this;
-
-      // Auto load the default background data from the data holder prefab
-      resetBackgroundList();
    }
 
    public void initializeDataCache () {
@@ -72,7 +69,7 @@ public class BackgroundGameManager : MonoBehaviour {
 
    private void resetBackgroundList () {
       backgroundContentList = new List<BackgroundContentData>();
-      backgroundContentList.Add(defaultBGDataHolder.defaultBGData);
+      //backgroundContentList.Add(defaultBGDataHolder.defaultBGData);
    }
 
    private IEnumerator CO_DelayProcessData () {

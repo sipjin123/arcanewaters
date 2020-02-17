@@ -42,8 +42,8 @@ MonoBehaviour:
     m_Bits: 1
   ignoreChildNames: []
   sortMethod: 1
-  isAnimated: 0
-  useExportedFrame: 1
+  isAnimated: 1
+  useExportedFrame: 0
   customFrameName: 
   generatesOnStart: 0
   generatesOnValidate: 1
@@ -212,7 +212,7 @@ PrefabInstance:
     - target: {fileID: 8953369135155473566, guid: 8c9061a24ab66ca4e8b02213efe29356,
         type: 3}
       propertyPath: m_Name
-      value: Furnace Forest Variant
+      value: Furnace Variant
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3853578749922075983, guid: 8c9061a24ab66ca4e8b02213efe29356, type: 3}

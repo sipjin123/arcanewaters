@@ -91,8 +91,8 @@ MonoBehaviour:
     m_Bits: 1
   ignoreChildNames: []
   sortMethod: 1
-  isAnimated: 0
-  useExportedFrame: 1
+  isAnimated: 1
+  useExportedFrame: 0
   customFrameName: 
   generatesOnStart: 0
   generatesOnValidate: 1
@@ -186,7 +186,7 @@ PrefabInstance:
     - target: {fileID: 1218459607207346202, guid: cd7c8146cee8b1945ac90e5f511c35d8,
         type: 3}
       propertyPath: m_Name
-      value: Bed 2 Forest Variant
+      value: Bed 2 Variant
       objectReference: {fileID: 0}
     - target: {fileID: 5536094576029166349, guid: cd7c8146cee8b1945ac90e5f511c35d8,
         type: 3}

@@ -122,8 +122,8 @@ MonoBehaviour:
     m_Bits: 1
   ignoreChildNames: []
   sortMethod: 1
-  isAnimated: 0
-  useExportedFrame: 1
+  isAnimated: 1
+  useExportedFrame: 0
   customFrameName: 
   generatesOnStart: 0
   generatesOnValidate: 1
@@ -202,7 +202,7 @@ PrefabInstance:
     - target: {fileID: 1589897520664339773, guid: de332937a01ace3448613aa9f39ca474,
         type: 3}
       propertyPath: m_Name
-      value: Clock Forest Variant
+      value: Clock Variant
       objectReference: {fileID: 0}
     - target: {fileID: 1643214899717405095, guid: de332937a01ace3448613aa9f39ca474,
         type: 3}

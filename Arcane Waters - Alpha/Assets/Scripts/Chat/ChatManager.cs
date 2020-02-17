@@ -16,6 +16,7 @@ public class ChatManager : MonoBehaviour {
       Bug = 2,
       Follow = 3,
       Emote = 4,
+      Invite = 5,
    }
 
    // The Chat Panel, need to have direct reference in case something gets logged during Awake()
@@ -34,6 +35,7 @@ public class ChatManager : MonoBehaviour {
       _commands.Add(Type.Bug, new List<string> { "/bug" });
       _commands.Add(Type.Follow, new List<string> { "/follow" });
       _commands.Add(Type.Emote, new List<string> { "/emote","/em", "/e", "/emo", "/me" });
+      _commands.Add(Type.Invite, new List<string> { "/invite", "/inv" });
    }
 
    private void Start () {
@@ -158,6 +160,8 @@ public class ChatManager : MonoBehaviour {
          Global.player.admin.handleAdminCommandString(trimmedMessage);
       } else if (type == Type.Emote) {
          sendMessageToServer(trimmedMessage, ChatInfo.Type.Emote);
+      } else if (type == Type.Invite) {
+         VoyageManager.self.handleInviteCommand(trimmedMessage);
       }
    }
 

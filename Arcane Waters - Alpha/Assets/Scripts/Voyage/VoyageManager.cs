@@ -58,13 +58,43 @@ public class VoyageManager : MonoBehaviour {
       return false;
    }
 
+   public static bool isInVoyage (NetEntity entity) {
+      return entity != null && entity.voyageGroupId != -1;
+   }
+
+   public void handleInviteCommand (string inputString) {
+      // Split things apart based on spaces
+      string[] sections = inputString.Split(' ');
+
+      // Get the user name
+      string userName = sections[0];
+
+      // Send the invite request to the server
+      Global.player.rpc.Cmd_SendVoyageGroupInvitationToUser(userName);
+   }
+
+   public void acceptVoyageInvitation () {
+      if (Global.player == null || Global.player.isInBattle()) {
+         return;
+      }
+
+      // Retrieve the voyage group id from the invite panel
+      int voyageGroupId = PanelManager.self.voyageInviteScreen.getVoyageGroupId();
+
+      // Hide the invite panel
+      PanelManager.self.voyageInviteScreen.hide();
+
+      // Send the join request to the server
+      Global.player.rpc.Cmd_AddUserToVoyageGroup(voyageGroupId);
+   }
+
    private void updateVoyageGroupMembers () {
       if (Global.player == null || !Global.player.isLocalPlayer) {
          return;
       }
 
       // Check if the player is not in a group
-      if (Global.player.voyageGroupId == -1) {
+      if (!isInVoyage(Global.player)) {
          // If the player just left his group, request an update from the server
          if (_visibleGroupMembers.Count > 0) {
             _visibleGroupMembers.Clear();

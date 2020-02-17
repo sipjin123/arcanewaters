@@ -34,6 +34,11 @@ public class AttackCircle : MonoBehaviour {
 
    #endregion
 
+   void Start () {
+      // Initialize the color of the sprite
+      imageRenderer.color = new Color(color.r, color.g, color.b, alpha);
+   }
+
    void Update () {
       // Update the alpha of the sprite
       imageRenderer.color = new Color(color.r, color.g, color.b, alpha);

@@ -68,8 +68,8 @@ MonoBehaviour:
     m_Bits: 1
   ignoreChildNames: []
   sortMethod: 1
-  isAnimated: 0
-  useExportedFrame: 1
+  isAnimated: 1
+  useExportedFrame: 0
   customFrameName: 
   generatesOnStart: 0
   generatesOnValidate: 1
@@ -241,7 +241,7 @@ PrefabInstance:
     - target: {fileID: 7477386708110376005, guid: 6420f7d94ed93f744b0ee288e81fb10c,
         type: 3}
       propertyPath: m_Name
-      value: Candle Wall Forest Variant
+      value: Candle Wall Variant
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6420f7d94ed93f744b0ee288e81fb10c, type: 3}

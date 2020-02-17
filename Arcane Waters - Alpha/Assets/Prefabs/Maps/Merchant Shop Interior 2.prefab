@@ -147,7 +147,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 144298711323312794}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.57, y: -7.304, z: 0}
+  m_LocalPosition: {x: 4.57, y: -7.148, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8381685333241551209}
@@ -350,6 +350,7 @@ MonoBehaviour:
   townAreaKey: 
   cameraBounds: {fileID: 1239270819330758931}
   vcam: {fileID: 4269930349562724566}
+  isSea: 0
 --- !u!1 &565636162463137896
 GameObject:
   m_ObjectHideFlags: 0
@@ -35783,8 +35784,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 21300000, guid: 7c736385e93358f43ab5feaafa47687e, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
@@ -35849,8 +35848,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-    m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!114 &7010786405265150359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -35912,7 +35909,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 28, y: -48, z: 0}
     second:
       m_TileIndex: 0
@@ -35921,7 +35918,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 29, y: -48, z: 0}
     second:
       m_TileIndex: 0
@@ -35930,7 +35927,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 24, y: -47, z: 0}
     second:
       m_TileIndex: 0
@@ -35939,7 +35936,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 25, y: -47, z: 0}
     second:
       m_TileIndex: 0
@@ -35948,7 +35945,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 26, y: -47, z: 0}
     second:
       m_TileIndex: 0
@@ -35957,7 +35954,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 27, y: -47, z: 0}
     second:
       m_TileIndex: 0
@@ -35966,7 +35963,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 28, y: -47, z: 0}
     second:
       m_TileIndex: 0
@@ -35975,7 +35972,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 29, y: -47, z: 0}
     second:
       m_TileIndex: 0
@@ -35984,7 +35981,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 30, y: -47, z: 0}
     second:
       m_TileIndex: 0
@@ -35993,7 +35990,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 31, y: -47, z: 0}
     second:
       m_TileIndex: 0
@@ -36002,7 +35999,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 32, y: -47, z: 0}
     second:
       m_TileIndex: 0
@@ -36011,7 +36008,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 33, y: -47, z: 0}
     second:
       m_TileIndex: 0
@@ -36020,7 +36017,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 34, y: -47, z: 0}
     second:
       m_TileIndex: 0
@@ -36029,7 +36026,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 35, y: -47, z: 0}
     second:
       m_TileIndex: 0
@@ -36038,7 +36035,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 36, y: -47, z: 0}
     second:
       m_TileIndex: 0
@@ -36047,7 +36044,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 37, y: -47, z: 0}
     second:
       m_TileIndex: 0
@@ -36056,7 +36053,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 38, y: -47, z: 0}
     second:
       m_TileIndex: 0
@@ -36065,7 +36062,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 39, y: -47, z: 0}
     second:
       m_TileIndex: 0
@@ -36074,7 +36071,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 40, y: -47, z: 0}
     second:
       m_TileIndex: 0
@@ -36083,7 +36080,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 41, y: -47, z: 0}
     second:
       m_TileIndex: 0
@@ -36092,7 +36089,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 42, y: -47, z: 0}
     second:
       m_TileIndex: 0
@@ -36101,7 +36098,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   m_AnimatedTiles: {}
   m_TileAssetArray:
   - m_RefCount: 22
@@ -37614,6 +37611,7 @@ MonoBehaviour:
   areaKey: 
   tradeGossip: 
   nameText: {fileID: 5937308701837926187}
+  isDebug: 0
 --- !u!114 &8586374803730988263
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -42117,7 +42115,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   - first: {x: 33, y: -35, z: 0}
     second:
       m_TileIndex: 0
@@ -42126,7 +42124,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
       m_TileFlags: 1
-      m_ColliderType: 0
+      m_ColliderType: 1
   m_AnimatedTiles: {}
   m_TileAssetArray:
   - m_RefCount: 1
@@ -43244,8 +43242,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: 212a7a47fc07116499d8e2fe669a5944, type: 3}
     m_FontSize: 10
@@ -44654,11 +44650,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8381685333241551209}
     m_Modifications:
-    - target: {fileID: 9094603186034252394, guid: 744f8cb8143100245a73844d8d255c13,
-        type: 3}
-      propertyPath: m_Name
-      value: Fireplace
-      objectReference: {fileID: 0}
     - target: {fileID: 4848620429400116641, guid: 744f8cb8143100245a73844d8d255c13,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -44713,6 +44704,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9094603186034252394, guid: 744f8cb8143100245a73844d8d255c13,
+        type: 3}
+      propertyPath: m_Name
+      value: Fireplace
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 744f8cb8143100245a73844d8d255c13, type: 3}

@@ -106,8 +106,8 @@ MonoBehaviour:
     m_Bits: 1
   ignoreChildNames: []
   sortMethod: 1
-  isAnimated: 0
-  useExportedFrame: 1
+  isAnimated: 1
+  useExportedFrame: 0
   customFrameName: 
   generatesOnStart: 0
   generatesOnValidate: 1
@@ -207,7 +207,7 @@ PrefabInstance:
     - target: {fileID: 138263571236388216, guid: fa47db2d7a390fc4c81aec97d67b7ff5,
         type: 3}
       propertyPath: m_Name
-      value: Chair E Forest Variant
+      value: Chair E Variant
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fa47db2d7a390fc4c81aec97d67b7ff5, type: 3}

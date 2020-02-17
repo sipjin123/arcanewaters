@@ -19,6 +19,7 @@ public class PanelManager : MonoBehaviour {
    public NoticeScreen noticeScreen;
    public TradeConfirmScreen tradeConfirmScreen;
    public ItemSelectionScreen itemSelectionScreen;
+   public VoyageInviteScreen voyageInviteScreen;
 
    // Helps Determine which active panel requires inventory data (crafting/inventory)
    public Panel.Type selectedPanel;
