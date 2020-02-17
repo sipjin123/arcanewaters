@@ -24,7 +24,18 @@ public class CraftingToolManager : XmlDataToolManager {
    }
 
    private void Start () {
-      Invoke("loadAllDataFiles", MasterToolScene.loadDelay);
+      // Initialize equipment data first
+      Invoke("initializeEquipmentData", MasterToolScene.loadDelay);
+      XmlLoadingPanel.self.startLoading();
+   }
+
+   private void initializeEquipmentData () {
+      // Initialize all craftable item data after equipment data is setup
+      EquipmentXMLManager.self.finishedDataSetup.AddListener(() => {
+         loadAllDataFiles();
+      });
+
+      EquipmentXMLManager.self.initializeDataCache();
    }
 
    public void loadAllDataFiles () {

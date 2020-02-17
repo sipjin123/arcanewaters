@@ -38,10 +38,18 @@ public class NPCToolManager : XmlDataToolManager {
 
    public void Start () {
       npcSelectionScreen.show();
-      loadAllDataFiles();
-      Invoke("loadAllDataFiles", MasterToolScene.loadDelay);
+      Invoke("initializeEquipmentData", MasterToolScene.loadDelay);
+      XmlLoadingPanel.self.startLoading();
+   }
+
+   private void initializeEquipmentData () {
+      // Initialize all craftable item data after equipment data is setup
+      EquipmentXMLManager.self.finishedDataSetup.AddListener(() => {
+         loadAllDataFiles();
+      });
 
       fetchRecipe();
+      EquipmentXMLManager.self.initializeDataCache();
    }
 
    public void loadAllDataFiles () {

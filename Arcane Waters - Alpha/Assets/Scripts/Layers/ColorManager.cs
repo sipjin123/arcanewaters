@@ -22,8 +22,11 @@ public class ColorManager : MonoBehaviour {
 
       defineHairColors();
       defineEyeColors();
-      defineArmorColors();
       defineWeaponColors();
+
+      EquipmentXMLManager.self.finishedDataSetup.AddListener(() => {
+         defineArmorColors();
+      });
    }
 
    public void defineHairColors () {
@@ -64,26 +67,23 @@ public class ColorManager : MonoBehaviour {
 
    public void defineArmorColors () {
       foreach (Gender.Type gender in Gender.getTypes()) {
-         for (int armorType = 0; armorType < Armor.MAX_ARMOR_COUNT; armorType++) { 
-            ColorKey colorKey = new ColorKey(gender, armorType);
+         for (int armorType = 0; armorType < EquipmentXMLManager.self.armorStatList.Count; armorType++) {
+            ColorKey colorKey = new ColorKey(gender, "armor_" + armorType);
             HashSet<ColorType> primaries = new HashSet<ColorType>();
             HashSet<ColorType> secondaries = new HashSet<ColorType>();
 
             // Define the list of colors for each type
-            switch (armorType) {
-               case 5:
-                  primaries = secondaries = new HashSet<ColorType>() {
+            if (EquipmentXMLManager.self.armorStatList[armorType].setAllColors) {
+               primaries = secondaries = new HashSet<ColorType>() {
                      ColorType.Green, ColorType.Yellow, ColorType.Blue, ColorType.Red,
                      ColorType.LightRed, ColorType.Pink, ColorType.LightPink, ColorType.Teal,
                      ColorType.Orange, ColorType.DarkGreen, ColorType.LightPurple, ColorType.DarkPurple,
                      ColorType.White, ColorType.Black
                   };
-                  break;
-               default:
-                  primaries = secondaries = new HashSet<ColorType>() {
+            } else {
+               primaries = secondaries = new HashSet<ColorType>() {
                      ColorType.White
                   };
-                  break;
             }
 
             _primaries[colorKey] = primaries;

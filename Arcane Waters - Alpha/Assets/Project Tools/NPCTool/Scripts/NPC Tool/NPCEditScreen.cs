@@ -352,7 +352,7 @@ public class NPCEditScreen : MonoBehaviour
                updateTypeOptions(selectionType);
             });
 
-            if ((category == Item.Category.Helm || category == Item.Category.Potion)) {
+            if (category == Item.Category.Potion) {
                categoryTemp.selectButton.interactable = false;
                categoryTemp.selectButton.GetComponent<Image>().color = Color.gray;
             } else {
@@ -408,86 +408,116 @@ public class NPCEditScreen : MonoBehaviour
 
    private void updateTypeOptions (ItemSelectionType selectionType) {
       // Dynamically handles the type of item
-      Type itemType = Util.getItemType(selectedCategory);
       itemTypeParent.gameObject.DestroyChildren();
 
       Dictionary<int, string> itemNameList = new Dictionary<int, string>();
-      if (itemType != null && selectedCategory != Item.Category.Blueprint || selectedCategory == Item.Category.Blueprint) {
-         if (selectedCategory != Item.Category.Blueprint) {
-            foreach (object item in Enum.GetValues(itemType)) {
-               int newVal = (int) item;
-               itemNameList.Add(newVal, item.ToString());
-            }
-         } else {
-            foreach (CraftableItemRequirements item in NPCToolManager.self.craftingDataList) {
+      switch (selectedCategory) {
+         case Item.Category.Blueprint:
+            foreach (CraftableItemRequirements item in NPCToolManager.instance.craftingDataList) {
                string prefix = Blueprint.WEAPON_PREFIX;
                if (item.resultItem.category == Item.Category.Armor) {
                   prefix = Blueprint.ARMOR_PREFIX;
                }
 
                prefix = prefix + item.resultItem.itemTypeId;
-
                itemNameList.Add(int.Parse(prefix), Util.getItemName(item.resultItem.category, item.resultItem.itemTypeId));
             }
-         }
+            break;
+         case Item.Category.Armor:
+            foreach (ArmorStatData armorData in EquipmentXMLManager.self.armorStatList) {
+               itemNameList.Add(armorData.armorType, armorData.equipmentName);
+            }
+            break;
+         case Item.Category.Helm:
+            foreach (HelmStatData helmStatData in EquipmentXMLManager.self.helmStatData) {
+               itemNameList.Add((int) helmStatData.helmType, helmStatData.equipmentName);
+            }
+            break;
+         default:
+            Type itemType = Util.getItemType(selectedCategory);
 
-         var sortedList = itemNameList.OrderBy(r => r.Value);
-         foreach (var item in sortedList) {
-            GameObject template = Instantiate(itemTypePrefab, itemTypeParent);
-            ItemTypeTemplate itemTemp = template.GetComponent<ItemTypeTemplate>();
-            itemTemp.itemTypeText.text = item.Value.ToString();
-            itemTemp.itemIndexText.text = "" + item.Key;
-            itemTemp.spriteIcon.sprite = Util.getRawSpriteIcon(selectedCategory, item.Key);
-
-            itemTemp.selectButton.onClick.AddListener(() => {
-               selectedTypeID = (int) item.Key;
-
-               if (selectionType == ItemSelectionType.Gift) {
-                  giftNode.currentItemModifying.itemCategory.text = ((int) selectedCategory).ToString();
-                  giftNode.currentItemModifying.itemTypeId.text = selectedTypeID.ToString();
-
-                  giftNode.currentItemModifying.itemCategoryName.text = selectedCategory.ToString();
-                  giftNode.currentItemModifying.itemTypeName.text = item.Value.ToString();
-                  giftNode.currentItemModifying.itemIcon.sprite = Util.getRawSpriteIcon(selectedCategory, item.Key);
-
-                  giftNode.cachedGiftData.itemCategory = selectedCategory;
-                  giftNode.cachedGiftData.itemTypeId = selectedTypeID;
-               } else if(selectionType == ItemSelectionType.Reward) {
-                  currentQuestModified.currentQuestNode.currentItemModifying.itemCategory.text = ((int) selectedCategory).ToString();
-                  currentQuestModified.currentQuestNode.currentItemModifying.itemTypeId.text = selectedTypeID.ToString();
-
-                  currentQuestModified.currentQuestNode.currentItemModifying.itemCategoryName.text = selectedCategory.ToString();
-                  currentQuestModified.currentQuestNode.currentItemModifying.itemTypeName.text = item.Value.ToString();
-                  currentQuestModified.currentQuestNode.currentItemModifying.itemIcon.sprite = Util.getRawSpriteIcon(selectedCategory, item.Key);
-
-                  currentQuestModified.currentQuestNode.cachedReward.category = selectedCategory;
-                  currentQuestModified.currentQuestNode.cachedReward.itemTypeId = selectedTypeID;
-
-                  if (selectedCategory == Item.Category.Quest_Item) {
-                     currentQuestModified.currentQuestNode.currentItemModifying.count.text = "1";
-                     currentQuestModified.currentQuestNode.currentItemModifying.count.gameObject.SetActive(false);
-                  } else {
-                     currentQuestModified.currentQuestNode.currentItemModifying.count.gameObject.SetActive(true);
-                  }
-               } else if (selectionType == ItemSelectionType.Delivery) {
-                  currentQuestModified.currentQuestNode.currentDeliverObjective.itemCategory.text = ((int) selectedCategory).ToString();
-                  currentQuestModified.currentQuestNode.currentDeliverObjective.itemTypeId.text = selectedTypeID.ToString();
-
-                  currentQuestModified.currentQuestNode.currentDeliverObjective.itemCategoryName.text = selectedCategory.ToString();
-                  currentQuestModified.currentQuestNode.currentDeliverObjective.itemTypeName.text = item.Value.ToString();
-                  currentQuestModified.currentQuestNode.currentDeliverObjective.itemIcon.sprite = Util.getRawSpriteIcon(selectedCategory, item.Key);
-
-                  if (selectedCategory == Item.Category.Quest_Item) {
-                     currentQuestModified.currentQuestNode.currentDeliverObjective.count.text = "1";
-                     currentQuestModified.currentQuestNode.currentDeliverObjective.count.gameObject.SetActive(false);
-                  } else {
-                     currentQuestModified.currentQuestNode.currentDeliverObjective.count.gameObject.SetActive(true);
-                  }
+            if (itemType != null) {
+               foreach (object item in Enum.GetValues(itemType)) {
+                  int newVal = (int) item;
+                  itemNameList.Add(newVal, item.ToString());
                }
+            }
+            break;
+      }
 
-               confirmSelectionButton.onClick.Invoke();
-            });
+      var sortedList = itemNameList.OrderBy(r => r.Value);
+      foreach (var item in sortedList) {
+         GameObject template = Instantiate(itemTypePrefab, itemTypeParent);
+         ItemTypeTemplate itemTemp = template.GetComponent<ItemTypeTemplate>();
+         itemTemp.itemTypeText.text = item.Value.ToString();
+         itemTemp.itemIndexText.text = "" + item.Key;
+         setupSpriteIcon(itemTemp.spriteIcon, selectedCategory, item.Key);
+
+         itemTemp.selectButton.onClick.AddListener(() => {
+            selectedTypeID = (int) item.Key;
+
+            if (selectionType == ItemSelectionType.Gift) {
+               giftNode.currentItemModifying.itemCategory.text = ((int) selectedCategory).ToString();
+               giftNode.currentItemModifying.itemTypeId.text = selectedTypeID.ToString();
+
+               giftNode.currentItemModifying.itemCategoryName.text = selectedCategory.ToString();
+               giftNode.currentItemModifying.itemTypeName.text = item.Value.ToString();
+               setupSpriteIcon(giftNode.currentItemModifying.itemIcon, selectedCategory, item.Key);
+
+               giftNode.cachedGiftData.itemCategory = selectedCategory;
+               giftNode.cachedGiftData.itemTypeId = selectedTypeID;
+            } else if (selectionType == ItemSelectionType.Reward) {
+               currentQuestModified.currentQuestNode.currentItemModifying.itemCategory.text = ((int) selectedCategory).ToString();
+               currentQuestModified.currentQuestNode.currentItemModifying.itemTypeId.text = selectedTypeID.ToString();
+
+               currentQuestModified.currentQuestNode.currentItemModifying.itemCategoryName.text = selectedCategory.ToString();
+               currentQuestModified.currentQuestNode.currentItemModifying.itemTypeName.text = item.Value.ToString();
+               setupSpriteIcon(currentQuestModified.currentQuestNode.currentItemModifying.itemIcon, selectedCategory, item.Key);
+
+               currentQuestModified.currentQuestNode.cachedReward.category = selectedCategory;
+               currentQuestModified.currentQuestNode.cachedReward.itemTypeId = selectedTypeID;
+
+               if (selectedCategory == Item.Category.Quest_Item) {
+                  currentQuestModified.currentQuestNode.currentItemModifying.count.text = "1";
+                  currentQuestModified.currentQuestNode.currentItemModifying.count.gameObject.SetActive(false);
+               } else {
+                  currentQuestModified.currentQuestNode.currentItemModifying.count.gameObject.SetActive(true);
+               }
+            } else if (selectionType == ItemSelectionType.Delivery) {
+               currentQuestModified.currentQuestNode.currentDeliverObjective.itemCategory.text = ((int) selectedCategory).ToString();
+               currentQuestModified.currentQuestNode.currentDeliverObjective.itemTypeId.text = selectedTypeID.ToString();
+
+               currentQuestModified.currentQuestNode.currentDeliverObjective.itemCategoryName.text = selectedCategory.ToString();
+               currentQuestModified.currentQuestNode.currentDeliverObjective.itemTypeName.text = item.Value.ToString();
+               setupSpriteIcon(currentQuestModified.currentQuestNode.currentDeliverObjective.itemIcon, selectedCategory, item.Key);
+
+               if (selectedCategory == Item.Category.Quest_Item) {
+                  currentQuestModified.currentQuestNode.currentDeliverObjective.count.text = "1";
+                  currentQuestModified.currentQuestNode.currentDeliverObjective.count.gameObject.SetActive(false);
+               } else {
+                  currentQuestModified.currentQuestNode.currentDeliverObjective.count.gameObject.SetActive(true);
+               }
+            }
+
+            confirmSelectionButton.onClick.Invoke();
+         });
+      }
+   }
+
+   private void setupSpriteIcon (Image imageSprite, Item.Category category, int itemID) {
+      if (category == Item.Category.Helm) {
+         string spritePath = EquipmentXMLManager.self.getHelmData(itemID).equipmentIconPath;
+         imageSprite.sprite = ImageManager.getSprite(spritePath);
+      } else if (category == Item.Category.Blueprint) {
+         if (itemID.ToString().StartsWith(Blueprint.WEAPON_PREFIX)) {
+            int resultItemID = int.Parse(itemID.ToString().Replace(Blueprint.WEAPON_PREFIX,""));
+            imageSprite.sprite = Util.getRawSpriteIcon(Item.Category.Weapon, resultItemID);
+         } else if (itemID.ToString().StartsWith(Blueprint.ARMOR_PREFIX)) {
+            int resultItemID = int.Parse(itemID.ToString().Replace(Blueprint.ARMOR_PREFIX, ""));
+            imageSprite.sprite = Util.getRawSpriteIcon(Item.Category.Armor, resultItemID);
          }
+      } else {
+         imageSprite.sprite = Util.getRawSpriteIcon(category, itemID);
       }
    }
    

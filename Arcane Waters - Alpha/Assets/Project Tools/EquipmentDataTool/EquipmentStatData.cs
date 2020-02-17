@@ -38,6 +38,12 @@ public class EquipmentStatData
 
    // The bonus stats earned for wearing the item
    public Stats statsData = new Stats();
+
+   // Determines if all colors should be set
+   public bool setAllColors = false;
+
+   // Caches the material type of the sprite
+   public MaterialType materialType = MaterialType.Material_G_B;
 }
 
 public class RarityModifier
@@ -58,4 +64,16 @@ public class ElementModifier
 
    // The damage multiplier
    public float multiplier;
+}
+
+public enum MaterialType
+{
+   None = 0,
+   Material_G = 1,
+   Material_G_B = 2,
+   Material_G_R = 3,
+   Material_R = 4,
+   Material_R_G = 5,
+   Material_flags = 6,
+   NoRecolorMaterial = 7
 }

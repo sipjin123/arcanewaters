@@ -842,7 +842,7 @@ public class AdminManager : NetworkBehaviour {
          }
 
          // Create all the armors
-         for (int armorType = 0; armorType < Armor.MAX_ARMOR_COUNT; armorType++) {
+         for (int armorType = 0; armorType < EquipmentXMLManager.self.armorStatList.Count; armorType++) {
             if (armorType != 0) {
                if (createItemIfNotExistOrReplenishStack(Item.Category.Armor, armorType, 1)) {
                   armorCount++;
@@ -937,7 +937,7 @@ public class AdminManager : NetworkBehaviour {
       }
 
       // Set all the armor blueprint names
-      for (int armorType = 0; armorType < Armor.MAX_ARMOR_COUNT; armorType++) { 
+      for (int armorType = 0; armorType < EquipmentXMLManager.self.armorStatList.Count; armorType++) { 
          string itemTypeStr = Blueprint.ARMOR_PREFIX + (armorType).ToString();
          addToItemNameDictionary(_blueprintNames, Item.Category.Blueprint, int.Parse(itemTypeStr));
       }
@@ -956,7 +956,7 @@ public class AdminManager : NetworkBehaviour {
       }
 
       // Set all the armor names
-      for (int armorType = 0; armorType < Armor.MAX_ARMOR_COUNT; armorType++) {
+      for (int armorType = 0; armorType < EquipmentXMLManager.self.armorStatList.Count; armorType++) {
          addToItemNameDictionary(_armorNames, Item.Category.Armor, armorType);
       }
 

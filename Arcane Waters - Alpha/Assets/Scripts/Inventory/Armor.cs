@@ -14,9 +14,6 @@ public class Armor : EquippableItem {
    // The type
    public int type;
 
-   // The maximum armor count in the game
-   public static int MAX_ARMOR_COUNT = 16;
-
    #endregion
 
    public Armor () {
@@ -201,7 +198,7 @@ public class Armor : EquippableItem {
       List<int> list = new List<int>();
 
       // Cycle over all of the various Armor types
-      for (int armorType = 0; armorType < MAX_ARMOR_COUNT; armorType ++) {
+      for (int armorType = 0; armorType < EquipmentXMLManager.self.armorStatList.Count; armorType ++) {
          // Only include the "None" type if it was specifically requested
          if (armorType == 0 && !includeNone) {
             continue;

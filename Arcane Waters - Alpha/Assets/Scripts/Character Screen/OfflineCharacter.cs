@@ -118,7 +118,7 @@ public class OfflineCharacter : ClientMonoBehaviour {
       armor.setType(this.genderType, armorType, true);
 
       // Update our Material
-      ColorKey colorKey = new ColorKey(this.genderType, armorType);
+      ColorKey colorKey = new ColorKey(this.genderType, "armor_" + armorType);
       armor.recolor(colorKey, color1, color2);
    }
 

@@ -82,7 +82,7 @@ public class Util : MonoBehaviour {
             itemTypeName = ((CraftingIngredients.Type) typeID).ToString();
             break;
          case Item.Category.Armor:
-            itemTypeName = (typeID).ToString();
+            itemTypeName = EquipmentXMLManager.self.getArmorData(typeID).equipmentName;
             break;
          case Item.Category.Blueprint:
             itemTypeName = Blueprint.getEquipmentType(typeID).ToString();
@@ -109,20 +109,22 @@ public class Util : MonoBehaviour {
    public static Type getItemType (Item.Category category) {
       Type newType = null;
       switch (category) {
+         case Item.Category.Armor:
+            // TODO: Clearly wipe out potential scripts that may call this
+            UnityEngine.Debug.LogWarning("Deprecated Call: " + category);
+            break;
+         case Item.Category.Helm:
+            // TODO: Clearly wipe out potential scripts that may call this
+            UnityEngine.Debug.LogWarning("Deprecated Call: " + category);
+            break;
          case Item.Category.CraftingIngredients:
             newType = typeof(CraftingIngredients.Type);
-            break;
-         case Item.Category.Armor:
-            newType = typeof(int);
             break;
          case Item.Category.Weapon:
             newType = typeof(Weapon.Type);
             break;
          case Item.Category.Usable:
             newType = typeof(UsableItem.Type);
-            break;
-         case Item.Category.Helm:
-            newType = typeof(int);
             break;
          case Item.Category.Quest_Item:
             newType = typeof(QuestItem.Type);

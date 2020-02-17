@@ -28,11 +28,14 @@ public class MaterialManager : MonoBehaviour {
 
       // Body materials
       defineBodyMaterials();
-      defineArmorMaterials();
       defineWeaponMaterials();
 
       // Ship materials
       defineShipMaterials();
+
+      EquipmentXMLManager.self.finishedDataSetup.AddListener(() => {
+         defineArmorMaterials();
+      });
    }
 
    public void defineBodyMaterials () {
@@ -53,11 +56,32 @@ public class MaterialManager : MonoBehaviour {
 
    public void defineArmorMaterials () {
       foreach (Gender.Type gender in Gender.getTypes()) {
-         for (int i = 0; i < Armor.MAX_ARMOR_COUNT; i++) {
+         int index = 0;
+         foreach (ArmorStatData armorData in EquipmentXMLManager.self.armorStatList) {
             // Cloth
-            ColorKey cloth = new ColorKey(gender, i.ToString());
-            _materials[cloth] = material_G_B;
+            ColorKey cloth = new ColorKey(gender, "armor_" + index);
+            _materials[cloth] = translateMaterial(armorData.materialType);
+            index++;
          }
+      }
+   }
+
+   private Material translateMaterial (MaterialType materialType) {
+      switch (materialType) {
+         case MaterialType.Material_G:
+            return material_G;
+         case MaterialType.Material_G_B:
+            return material_G_B;
+         case MaterialType.Material_G_R:
+            return material_G_R;
+         case MaterialType.Material_R:
+            return material_R;
+         case MaterialType.Material_R_G:
+            return material_R_G;
+         case MaterialType.Material_flags:
+            return material_flags;
+         default:
+            return noRecolorMaterial;
       }
    }
 
@@ -159,7 +183,7 @@ public class MaterialManager : MonoBehaviour {
    }
 
    public bool hasTwoColors (Gender.Type gender, int armorType) {
-      ColorKey colorKey = new ColorKey(gender, armorType.ToString());
+      ColorKey colorKey = new ColorKey(gender, "armor_" + armorType.ToString());
 
       if (!_materials.ContainsKey(colorKey)) {
          return false;

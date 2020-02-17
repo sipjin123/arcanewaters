@@ -39,7 +39,7 @@ public class GenericEntryTemplate : MonoBehaviour {
 
    protected void updateDisplay (string templateName, int templateID = 0) {
       nameText.text = templateName;
-      indexText.text = "[" + templateID.ToString() + "]";
+      indexText.text = templateID.ToString();
    }
 
    protected void setNameRestriction (string templateName) {

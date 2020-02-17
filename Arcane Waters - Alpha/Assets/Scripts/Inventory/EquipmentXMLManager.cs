@@ -63,6 +63,16 @@ public class EquipmentXMLManager : MonoBehaviour {
       return null;
    }
 
+   public HelmStatData getHelmData (int helmType) {
+      if (_helmStatList == null) {
+         return null;
+      }
+      if (_helmStatList.ContainsKey((Helm.Type) helmType)) {
+         return _helmStatList[(Helm.Type) helmType];
+      }
+      return null;
+   }
+
    private void finishedLoading () {
       equipmentLoadCounter ++;
       if (equipmentLoadCounter == 3) {
@@ -107,6 +117,7 @@ public class EquipmentXMLManager : MonoBehaviour {
             foreach (XMLPair xmlPair in rawXMLData) {
                TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                ArmorStatData rawData = Util.xmlLoad<ArmorStatData>(newTextAsset);
+               rawData.equipmentID = rawData.armorType;
                int uniqueID = rawData.armorType;
 
                // Save the data in the memory cache
@@ -173,6 +184,16 @@ public class EquipmentXMLManager : MonoBehaviour {
          }
       }
       finishedLoading();
+   }
+
+   public void resetAllData () {
+      _weaponStatList = new Dictionary<Weapon.Type, WeaponStatData>();
+      _armorStatList = new Dictionary<int, ArmorStatData>();
+      _helmStatList = new Dictionary<Helm.Type, HelmStatData>();
+
+      weaponStatData.Clear();
+      armorStatData.Clear();
+      helmStatData.Clear();
    }
 
    #region Private Variables

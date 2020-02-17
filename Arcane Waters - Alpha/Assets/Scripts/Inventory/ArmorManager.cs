@@ -55,7 +55,7 @@ public class ArmorManager : EquipmentManager {
       armorLayer.setType(gender, armorType);
 
       // Update our Material
-      ColorKey colorKey = new ColorKey(gender, armorType.ToString());
+      ColorKey colorKey = new ColorKey(gender, "armor_" + armorType.ToString());
       armorLayer.recolor(colorKey, color1, color2);
 
       // Sync up all our animations
@@ -69,12 +69,12 @@ public class ArmorManager : EquipmentManager {
       _armor = newArmor;
 
       // Update the sprites for the new armor type
-      int newType = newArmor == null ?0 : newArmor.type;
+      int newType = newArmor == null ? 0 : newArmor.type;
       updateSprites(newType, color1, color2);
 
       // Play a sound
       SoundManager.create3dSound("equip_", this.transform.position, 2);
-
+      
       // Check if we completed a tutorial step
       TutorialData tutorialData = TutorialManager.self.currentTutorialData();
       if (_body != null && tutorialData != null) {

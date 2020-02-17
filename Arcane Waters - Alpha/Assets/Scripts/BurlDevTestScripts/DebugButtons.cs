@@ -130,7 +130,7 @@ public class DebugButtons : NetworkBehaviour
                      itemTypeName = "Item Type: " + (CraftingIngredients.Type) itemTypeID;
                      break;
                   case Item.Category.Armor:
-                     itemTypeID = Mathf.Clamp(itemTypeID, 0, Armor.MAX_ARMOR_COUNT - 1);
+                     itemTypeID = Mathf.Clamp(itemTypeID, 0, EquipmentXMLManager.self.armorStatList.Count - 1);
                      itemTypeName = "Item Type: " + itemTypeID;
                      break;
                   case Item.Category.Blueprint:

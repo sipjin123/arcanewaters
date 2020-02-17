@@ -107,7 +107,13 @@ public class CraftingIngredientPanel : MonoBehaviour {
       int resultType = resultItemTypeInt;
       Item resultItem = getItem(resultCategory, resultType, 1);
       craftableRequirements.resultItem = resultItem;
-      resultItemIcon.sprite = Util.getRawSpriteIcon(resultCategory, resultType);
+
+      if (resultCategory == Item.Category.Helm) {
+         string imagePath = EquipmentXMLManager.self.getHelmData(resultType).equipmentIconPath;
+         resultItemIcon.sprite = ImageManager.getSprite(imagePath);
+      } else {
+         resultItemIcon.sprite = Util.getRawSpriteIcon(resultCategory, resultType);
+      }
 
       foreach (ItemRequirementRow item in itemRowList) {
          Item newItem = getItem(item.currentCategory, item.currentType, int.Parse(item.itemCount.text));
@@ -155,23 +161,48 @@ public class CraftingIngredientPanel : MonoBehaviour {
 
    private void updateTypeOptions () {
       // Dynamically handles the type of item
-      Type itemType = Util.getItemType(selectedCategory);
+      Dictionary<int, string> itemNameList = new Dictionary<int, string>();
       typeButtonContainer.gameObject.DestroyChildren();
 
-      Dictionary<int,string> itemNameList = new Dictionary<int,string>();
-      if (itemType != null) {
-         foreach (object item in Enum.GetValues(itemType)) {
-            int newVal = (int) item;
-            itemNameList.Add(newVal, item.ToString());
+      if (selectedCategory == Item.Category.Armor) {
+         foreach (ArmorStatData armorStat in EquipmentXMLManager.self.armorStatList) {
+            int newVal = armorStat.armorType;
+            if (!itemNameList.ContainsKey(newVal)) {
+               itemNameList.Add(newVal, armorStat.equipmentName.ToString());
+            } 
          }
+      } else if (selectedCategory == Item.Category.Helm) {
+         foreach (HelmStatData helmStat in EquipmentXMLManager.self.helmStatData) {
+            int newVal = (int) helmStat.helmType;
+            if (!itemNameList.ContainsKey(newVal)) {
+               itemNameList.Add(newVal, helmStat.equipmentName.ToString());
+            }
+         }
+      } else {
+         Type itemType = Util.getItemType(selectedCategory);
 
+         if (itemType != null) {
+            foreach (object item in Enum.GetValues(itemType)) {
+               int newVal = (int) item;
+               itemNameList.Add(newVal, item.ToString());
+            }
+         }
+      }
+
+      if (itemNameList.Count > 0) {
          var sortedList = itemNameList.OrderBy(r => r.Value);
          foreach (var item in sortedList) {
             GameObject template = Instantiate(typeButtonsPrefab, typeButtonContainer);
             ItemTypeTemplate itemTemp = template.GetComponent<ItemTypeTemplate>();
             itemTemp.itemTypeText.text = item.Value.ToString();
             itemTemp.itemIndexText.text = "" + item.Key;
-            itemTemp.spriteIcon.sprite = Util.getRawSpriteIcon(selectedCategory, item.Key);
+
+            if (selectedCategory == Item.Category.Helm) {
+               string imagePath = EquipmentXMLManager.self.getHelmData(item.Key).equipmentIconPath;
+               itemTemp.spriteIcon.sprite = ImageManager.getSprite(imagePath);
+            } else {
+               itemTemp.spriteIcon.sprite = Util.getRawSpriteIcon(selectedCategory, item.Key);
+            }
 
             itemTemp.selectButton.onClick.AddListener(() => {
                selectedTypeID = (int) item.Key;

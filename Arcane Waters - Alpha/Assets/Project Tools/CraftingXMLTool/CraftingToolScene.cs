@@ -59,7 +59,13 @@ public class CraftingToolScene : MonoBehaviour {
          template.deleteButton.onClick.AddListener(() => {
             toolManager.deleteCraftingDataFile(requirementData);
          });
-         template.itemIcon.sprite = Util.getRawSpriteIcon(requirementData.resultItem.category, requirementData.resultItem.itemTypeId);
+
+         if (requirementData.resultItem.category == Item.Category.Helm) {
+            string helmSprite = EquipmentXMLManager.self.getHelmData(requirementData.resultItem.itemTypeId).equipmentIconPath;
+            template.itemIcon.sprite = ImageManager.getSprite(helmSprite);
+         } else {
+            template.itemIcon.sprite = Util.getRawSpriteIcon(requirementData.resultItem.category, requirementData.resultItem.itemTypeId);
+         }
 
          template.setWarning();
          template.gameObject.SetActive(true);
@@ -93,7 +99,14 @@ public class CraftingToolScene : MonoBehaviour {
          if (craftingRequirement.resultItem.category == Item.Category.None) {
             template.setWarning();
          }
-         template.itemIcon.sprite = Util.getRawSpriteIcon(craftingRequirement.resultItem.category, craftingRequirement.resultItem.itemTypeId);
+
+         if (craftingRequirement.resultItem.category == Item.Category.Helm) {
+            string helmSprite = EquipmentXMLManager.self.getHelmData(craftingRequirement.resultItem.itemTypeId).equipmentIconPath;
+            template.itemIcon.sprite = ImageManager.getSprite(helmSprite);
+         } else {
+            template.itemIcon.sprite = Util.getRawSpriteIcon(craftingRequirement.resultItem.category, craftingRequirement.resultItem.itemTypeId);
+         }
+
          template.gameObject.SetActive(true);
       }
    }

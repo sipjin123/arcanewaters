@@ -65,6 +65,11 @@ public class EquipmentToolPanel : MonoBehaviour {
          _weaponClassText.text = ((Weapon.Class)_).ToString();
       });
 
+      _materialType.maxValue = Enum.GetValues(typeof(Weapon.Class)).Length - 1;
+      _materialType.onValueChanged.AddListener(_ => {
+         _materialTypeText.text = ((MaterialType) _).ToString();
+      });
+
       saveButton.onClick.AddListener(() => {
          if (equipmentType == EquipmentType.Weapon) {
             WeaponStatData newStatData = getWeaponStatData();
@@ -113,7 +118,7 @@ public class EquipmentToolPanel : MonoBehaviour {
          if (equipmentType == EquipmentType.Weapon) {
             genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.WeaponType, _equipmentTypeText);
          } else if (equipmentType == EquipmentType.Armor) {
-            genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.ArmorType, _equipmentTypeText, changeIconEvent);
+            genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.ArmorTypeSprites, _equipmentTypeText, changeIconEvent);
          } else if (equipmentType == EquipmentType.Helm) {
             genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.HelmType, _equipmentTypeText);
          }
@@ -281,6 +286,10 @@ public class EquipmentToolPanel : MonoBehaviour {
       _colorType1Text.text = equipmentData.color1.ToString();
       _colorType2Text.text = equipmentData.color2.ToString();
 
+      _materialType.value = (int) equipmentData.materialType;
+      _materialTypeText.text = equipmentData.materialType.ToString();
+      _declareAllColors.isOn = equipmentData.setAllColors;
+
       if (equipmentData.equipmentIconPath != "") {
          _icon.sprite = ImageManager.getSprite(equipmentData.equipmentIconPath);
       } else {
@@ -399,27 +408,30 @@ public class EquipmentToolPanel : MonoBehaviour {
       return helmStatData;
    }
 
-   private void setEquipmentStatData (EquipmentStatData equpmentData) {
+   private void setEquipmentStatData (EquipmentStatData equipmentData) {
       // Setup base data
-      equpmentData.equipmentName = _itemName.text;
-      equpmentData.equipmentDescription = _itemDescription.text;
-      equpmentData.equipmentID = int.Parse(_itemID.text);
-      equpmentData.equipmentPrice = int.Parse(_itemPrice.text);
-      equpmentData.canBeTrashed = _canBeTrashed.isOn;
-      equpmentData.equipmentIconPath = _iconPath.text;
+      equipmentData.equipmentName = _itemName.text;
+      equipmentData.equipmentDescription = _itemDescription.text;
+      equipmentData.equipmentID = int.Parse(_itemID.text);
+      equipmentData.equipmentPrice = int.Parse(_itemPrice.text);
+      equipmentData.canBeTrashed = _canBeTrashed.isOn;
+      equipmentData.equipmentIconPath = _iconPath.text;
 
-      equpmentData.color1 = (ColorType) Enum.Parse(typeof(ColorType), _colorType1Text.text);
-      equpmentData.color2 = (ColorType) Enum.Parse(typeof(ColorType), _colorType2Text.text);
+      equipmentData.setAllColors = _declareAllColors.isOn;
+      equipmentData.materialType = (MaterialType) _materialType.value;
 
-      equpmentData.rarityModifiers = getRarityModifiers();
-      equpmentData.elementModifiers = getElementalModifiers();
+      equipmentData.color1 = (ColorType) Enum.Parse(typeof(ColorType), _colorType1Text.text);
+      equipmentData.color2 = (ColorType) Enum.Parse(typeof(ColorType), _colorType2Text.text);
 
-      equpmentData.statsData.intelligence = int.Parse(_intelligenceText.text);
-      equpmentData.statsData.vitality = int.Parse(_vitalityText.text);
-      equpmentData.statsData.strength = int.Parse(_strengthText.text);
-      equpmentData.statsData.precision = int.Parse(_precisionText.text);
-      equpmentData.statsData.luck = int.Parse(_luckText.text);
-      equpmentData.statsData.spirit = int.Parse(_spiritText.text);
+      equipmentData.rarityModifiers = getRarityModifiers();
+      equipmentData.elementModifiers = getElementalModifiers();
+
+      equipmentData.statsData.intelligence = int.Parse(_intelligenceText.text);
+      equipmentData.statsData.vitality = int.Parse(_vitalityText.text);
+      equipmentData.statsData.strength = int.Parse(_strengthText.text);
+      equipmentData.statsData.precision = int.Parse(_precisionText.text);
+      equipmentData.statsData.luck = int.Parse(_luckText.text);
+      equipmentData.statsData.spirit = int.Parse(_spiritText.text);
    }
 
    private ElementModifier[] getElementalModifiers () {
@@ -490,6 +502,10 @@ public class EquipmentToolPanel : MonoBehaviour {
    [SerializeField]
    private Toggle _canBeTrashed;
 
+   // Determines if the equipment should set all colros
+   [SerializeField]
+   private Toggle _declareAllColors;
+
    // Input field variables for float and int values
    [SerializeField]
    private InputField _attributePhysical, _attributeFire, _attributeWater, _attributeAir, _attributeEarth;
@@ -499,6 +515,12 @@ public class EquipmentToolPanel : MonoBehaviour {
    private Slider _weaponClass;
    [SerializeField]
    private Text _weaponClassText;
+
+   // Material Type Slider
+   [SerializeField]
+   private Slider _materialType;
+   [SerializeField]
+   private Text _materialTypeText;
 
    // Type selection UI
    [SerializeField]

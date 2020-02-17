@@ -311,6 +311,28 @@ public class EquipmentToolManager : XmlDataToolManager {
    private void finishLoading () {
       loadCounter++;
       if (loadCounter == 3) {
+         if (EquipmentXMLManager.self != null) {
+            // Provide data to generic selection manager
+            List<WeaponStatData> weaponStatDataList = new List<WeaponStatData>();
+            List<ArmorStatData> armorStatDataList = new List<ArmorStatData>();
+            List<HelmStatData> helmStatDataList = new List<HelmStatData>();
+
+            foreach (WeaponXMLContent weaponContent in _weaponStatData) {
+               weaponStatDataList.Add(weaponContent.weaponStatData);
+            }
+            foreach (ArmorXMLContent armorContent in _armorStatData) {
+               armorStatDataList.Add(armorContent.armorStatData);
+            }
+            foreach (HelmXMLContent helmContent in _helmStatData) {
+               helmStatDataList.Add(helmContent.helmStatData);
+            }
+
+            EquipmentXMLManager.self.resetAllData();
+            EquipmentXMLManager.self.receiveWeaponDataFromServer(weaponStatDataList);
+            EquipmentXMLManager.self.receiveArmorDataFromServer(armorStatDataList);
+            EquipmentXMLManager.self.receiveHelmDataFromServer(helmStatDataList);
+         }
+
          XmlLoadingPanel.self.finishLoading();
          loadCounter = 0;
       }

@@ -31,6 +31,9 @@ public class GenericSelectionPopup : MonoBehaviour {
    // Audio source
    public AudioSource audioSource;
 
+   // Maximum item entry for integer types
+   public static int MAX_OPTIONS = 20;
+
    // Sprite dictionary
    public Dictionary<string, Sprite> genericIconSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> shipIconSpriteList = new Dictionary<string, Sprite>();
@@ -89,7 +92,8 @@ public class GenericSelectionPopup : MonoBehaviour {
       ShipAbilityEffect = 34,
       CannonSprites = 35,
       ShopIcon = 36,
-      CropType = 37
+      CropType = 37,
+      ArmorTypeSprites = 38
    }
 
    #endregion
@@ -316,8 +320,15 @@ public class GenericSelectionPopup : MonoBehaviour {
             }
             break;
          case selectionType.ArmorType:
-            for (int armorType = 0; armorType < Armor.MAX_ARMOR_COUNT; armorType++) { 
+            for (int armorType = 0; armorType < EquipmentXMLManager.self.armorStatList.Count; armorType++) { 
                createTextTemplate(armorType.ToString(), textUI, changeEvent);
+            }
+            break;
+         case selectionType.ArmorTypeSprites:
+            for (int armorType = 0; armorType < MAX_OPTIONS; armorType++) {
+               if (EquipmentXMLManager.self.getArmorData(armorType) == null) {
+                  createTextTemplate(armorType.ToString(), textUI, changeEvent);
+               }
             }
             break;
          case selectionType.HelmType:
@@ -389,7 +400,7 @@ public class GenericSelectionPopup : MonoBehaviour {
 
       switch (category) {
          case Item.Category.Armor: {
-               for (int itemType = 0; itemType < Armor.MAX_ARMOR_COUNT; itemType++) {
+               for (int itemType = 0; itemType < EquipmentXMLManager.self.armorStatList.Count; itemType++) {
                   string iconPath = new Item { category = Item.Category.Armor, itemTypeId = (int) itemType }.getCastItem().getIconPath();
                   createItemTextTemplate(itemType.ToString(), itemType, textUI, indexUI, iconPath, icon, changeEvent, itemIconPath);
                }

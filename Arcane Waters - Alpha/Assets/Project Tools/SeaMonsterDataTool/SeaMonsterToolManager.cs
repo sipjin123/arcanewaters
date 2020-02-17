@@ -20,15 +20,29 @@ public class SeaMonsterToolManager : XmlDataToolManager
    // Holds the path of the folder
    public const string FOLDER_PATH = "SeaMonsterStats";
 
+   // Reference to self
+   public static SeaMonsterToolManager instance;
+
    #endregion
 
    private void Awake () {
-      self = this;
-      fetchRecipe();
+      instance = this;
    }
 
    private void Start () {
-      Invoke("loadAllDataFiles", MasterToolScene.loadDelay);
+      // Initialize equipment data first
+      Invoke("initializeEquipmentData", MasterToolScene.loadDelay);
+      XmlLoadingPanel.self.startLoading();
+   }
+
+   private void initializeEquipmentData () {
+      // Initialize all craftable item data after equipment data is setup
+      EquipmentXMLManager.self.finishedDataSetup.AddListener(() => {
+         loadAllDataFiles();
+      });
+
+      fetchRecipe();
+      EquipmentXMLManager.self.initializeDataCache();
    }
 
    public void loadAllDataFiles () {

@@ -28,15 +28,29 @@ public class MonsterToolManager : XmlDataToolManager {
    // Cache buff abilities only
    public List<BuffAbilityData> buffAbilityList = new List<BuffAbilityData>();
 
+   // Reference to self
+   public static MonsterToolManager instance;
+
    #endregion
 
    private void Awake () {
-      self = this;
-      fetchRecipe();
+      instance = this;
    }
 
    private void Start () {
-      Invoke("loadAllDataFiles", MasterToolScene.loadDelay);
+      // Initialize equipment data first
+      Invoke("initializeEquipmentData", MasterToolScene.loadDelay);
+      XmlLoadingPanel.self.startLoading();
+   }
+
+   private void initializeEquipmentData () {
+      // Initialize all craftable item data after equipment data is setup
+      EquipmentXMLManager.self.finishedDataSetup.AddListener(() => {
+         loadAllDataFiles();
+      });
+
+      fetchRecipe();
+      EquipmentXMLManager.self.initializeDataCache();
    }
 
    public void loadAllDataFiles () {

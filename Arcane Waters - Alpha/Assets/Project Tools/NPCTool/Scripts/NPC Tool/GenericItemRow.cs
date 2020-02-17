@@ -51,6 +51,18 @@ public class GenericItemRow : MonoBehaviour {
 
          itemTypeName.text = Util.getItemName(modifiedCategory, modifiedID);
          itemIcon.sprite = Util.getRawSpriteIcon(modifiedCategory, modifiedID);
+      } else if (category == Item.Category.Helm) {
+         itemCategoryName.text = category.ToString();
+         itemTypeName.text = Util.getItemName(category, itemTypeID);
+
+         string spritePath = EquipmentXMLManager.self.getHelmData(itemTypeID).equipmentIconPath;
+         itemIcon.sprite = ImageManager.getSprite(spritePath);
+      } else if (category == Item.Category.Armor) {
+         itemCategoryName.text = category.ToString();
+         itemTypeName.text = EquipmentXMLManager.self.getArmorData(itemTypeID).equipmentName;
+
+         string spritePath = EquipmentXMLManager.self.getArmorData(itemTypeID).equipmentIconPath;
+         itemIcon.sprite = ImageManager.getSprite(spritePath);
       } else {
          itemCategoryName.text = category.ToString();
          itemTypeName.text = Util.getItemName(category, itemTypeID);

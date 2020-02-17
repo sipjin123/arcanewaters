@@ -391,7 +391,8 @@ public class SeaMonsterDataPanel : MonoBehaviour
       itemCategoryParent.gameObject.DestroyChildren();
 
       foreach (Item.Category category in Enum.GetValues(typeof(Item.Category))) {
-         if (category == Item.Category.CraftingIngredients || category == Item.Category.Blueprint) {
+         if (category == Item.Category.CraftingIngredients || category == Item.Category.Blueprint 
+            || category == Item.Category.Armor || category == Item.Category.Weapon || category == Item.Category.Helm) {
             GameObject template = Instantiate(itemCategoryTemplate.gameObject, itemCategoryParent.transform);
             ItemCategoryTemplate categoryTemp = template.GetComponent<ItemCategoryTemplate>();
             categoryTemp.itemCategoryText.text = category.ToString();
@@ -410,42 +411,68 @@ public class SeaMonsterDataPanel : MonoBehaviour
 
    private void updateTypeOptions () {
       // Dynamically handles the type of item
-      Type itemType = Util.getItemType(selectedCategory);
       itemTypeParent.gameObject.DestroyChildren();
 
       Dictionary<int, string> itemNameList = new Dictionary<int, string>();
-      if ((itemType != null && selectedCategory != Item.Category.Blueprint) || selectedCategory == Item.Category.Blueprint) {
-         if (selectedCategory == Item.Category.Blueprint) {
-            foreach (CraftableItemRequirements item in SeaMonsterToolManager.self.craftingDataList) {
+      switch (selectedCategory) {
+         case Item.Category.Blueprint:
+            foreach (CraftableItemRequirements item in SeaMonsterToolManager.instance.craftingDataList) {
                string prefix = Blueprint.WEAPON_PREFIX;
                if (item.resultItem.category == Item.Category.Armor) {
                   prefix = Blueprint.ARMOR_PREFIX;
                }
 
                prefix = prefix + item.resultItem.itemTypeId;
-
                itemNameList.Add(int.Parse(prefix), Util.getItemName(item.resultItem.category, item.resultItem.itemTypeId));
             }
-         } else {
-            foreach (object item in Enum.GetValues(itemType)) {
-               int newVal = (int) item;
-               itemNameList.Add(newVal, item.ToString());
+            break;
+         case Item.Category.Helm:
+            foreach (HelmStatData helmData in EquipmentXMLManager.self.helmStatList) {
+               itemNameList.Add((int) helmData.helmType, helmData.equipmentName);
             }
+            break;
+         case Item.Category.Armor:
+            foreach (ArmorStatData armorStatData in EquipmentXMLManager.self.armorStatList) {
+               itemNameList.Add(armorStatData.armorType, armorStatData.equipmentName);
+            }
+            break;
+         default:
+            Type itemType = Util.getItemType(selectedCategory);
+
+            if (itemType != null) {
+               foreach (object item in Enum.GetValues(itemType)) {
+                  int newVal = (int) item;
+                  itemNameList.Add(newVal, item.ToString());
+               }
+            }
+            break;
+      }
+
+      var sortedList = itemNameList.OrderBy(r => r.Value);
+      foreach (var item in sortedList) {
+         GameObject template = Instantiate(itemTypeTemplate.gameObject, itemTypeParent.transform);
+         ItemTypeTemplate itemTemp = template.GetComponent<ItemTypeTemplate>();
+         itemTemp.itemTypeText.text = item.Value.ToString();
+         itemTemp.itemIndexText.text = "" + item.Key;
+
+         switch (selectedCategory) {
+            case Item.Category.Helm:
+               string spritePath = EquipmentXMLManager.self.getHelmData(item.Key).equipmentIconPath;
+               itemTemp.spriteIcon.sprite = ImageManager.getSprite(spritePath);
+               break;
+            case Item.Category.Armor:
+               spritePath = EquipmentXMLManager.self.getArmorData(item.Key).equipmentIconPath;
+               itemTemp.spriteIcon.sprite = ImageManager.getSprite(spritePath);
+               break;
+            default:
+               itemTemp.spriteIcon.sprite = Util.getRawSpriteIcon(selectedCategory, item.Key);
+               break;
          }
 
-         var sortedList = itemNameList.OrderBy(r => r.Value);
-         foreach (var item in sortedList) {
-            GameObject template = Instantiate(itemTypeTemplate.gameObject, itemTypeParent.transform);
-            ItemTypeTemplate itemTemp = template.GetComponent<ItemTypeTemplate>();
-            itemTemp.itemTypeText.text = item.Value.ToString();
-            itemTemp.itemIndexText.text = "" + item.Key;
-            itemTemp.spriteIcon.sprite = Util.getRawSpriteIcon(selectedCategory, item.Key);
-
-            itemTemp.selectButton.onClick.AddListener(() => {
-               itemTypeIDSelected = (int) item.Key;
-               confirmItemButton.onClick.Invoke();
-            });
-         }
+         itemTemp.selectButton.onClick.AddListener(() => {
+            itemTypeIDSelected = (int) item.Key;
+            confirmItemButton.onClick.Invoke();
+         });
       }
    }
 
