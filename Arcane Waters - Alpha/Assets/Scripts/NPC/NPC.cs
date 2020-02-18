@@ -20,7 +20,10 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
       Gardener = 6, Glasses = 7, Gramps = 8, Hammer = 9, Headband = 10,
       ItemShop = 11, Mapper = 12, Monocle = 13, Parrot = 14, Patch = 15,
       Pegleg = 16, Seagull = 17, Shipyard = 18, Shroom = 19, Skullhat = 20,
-      Stripes = 21, Vest = 22, Dog = 23, Lizard = 24
+      Stripes = 21, Vest = 22, Dog = 23, Lizard = 24, 
+      
+      ExplorerGuy = 25, DesertGuy = 26, TopKnot = 27, SnowGirl = 28, SkullHat = 29,
+      ShamanGirl = 30, Pyromancer = 31, MushroomDruid = 32, 
    }
 
    // The Type of NPC this is
@@ -515,6 +518,14 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
             int id = int.Parse(field.v.Split(':')[0]);
             isDebug = true;
             npcId = id;
+
+            NPCData npcData = NPCManager.self.getNPCData(npcId);
+            if (npcData != null) {
+               string spritePath = npcData.spritePath;
+               if (spritePath != "") {
+                  GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture(spritePath);
+               } 
+            } 
          } else if (field.k.CompareTo(DataField.NPC_SHOP_NAME_KEY) == 0) {
             // Get Shop Name (if any)
             shopName = field.v.Split(':')[0];

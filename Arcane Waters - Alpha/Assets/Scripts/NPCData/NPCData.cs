@@ -75,7 +75,7 @@ public class NPCData
    public string iconPath;
 
    // Holds the address of the image sprite within the game
-   public string spritePath;
+   public string spritePath = "";
 
    #endregion
 

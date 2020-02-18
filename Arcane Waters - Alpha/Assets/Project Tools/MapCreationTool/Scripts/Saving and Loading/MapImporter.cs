@@ -25,7 +25,7 @@ namespace MapCreationTool
       /// Creates an instance of a map from the serialized map data
       /// </summary>
       /// <param name="data"></param>
-      public static Area instantiateMapData (string data, string areaKey, Vector3 position) {
+      public static Area instantiateMapData (string data, string areaKey, Vector3 position, int instanceID = 0) {
 
          ensureSerializationMapsLoaded();
 
@@ -47,7 +47,7 @@ namespace MapCreationTool
          }
 
          instantiateTilemaps(exportedProject, result.tilemapParent, result.collisionTilemapParent);
-         instantiatePrefabs(exportedProject, result.prefabParent, result.npcParent);
+         instantiatePrefabs(exportedProject, result.prefabParent, result.npcParent, instanceID);
 
          if (exportedProject.gravityEffectors != null) {
             addGravityEffectors(result, exportedProject.gravityEffectors);
@@ -127,30 +127,51 @@ namespace MapCreationTool
          return bounds;
       }
 
-      static void instantiatePrefabs (ExportedProject001 project, Transform prefabParent, Transform npcParent) {
+      static void instantiatePrefabs (ExportedProject001 project, Transform prefabParent, Transform npcParent, int instanceID = 0) {
          Func<int, GameObject> indexToPrefab = (index) => { return AssetSerializationMaps.getPrefab(index, project.biome, false); };
+
          foreach (var prefab in project.prefabs) {
             GameObject original = indexToPrefab(prefab.i);
-            Transform parent = original.GetComponent<NPC>() ? npcParent : prefabParent;
-            Vector3 targetLocalPos = new Vector3(prefab.x, prefab.y, 0) * 0.16f + Vector3.back * 10;
 
-            var pref = UnityEngine.Object.Instantiate(
-               original,
-               parent.TransformPoint(targetLocalPos),
-               Quaternion.identity,
-               parent);
+            if (original.GetComponent<Enemy>() != null) {
+               Transform parent = prefabParent;
+               Vector3 targetLocalPos = new Vector3(prefab.x, prefab.y, 0) * 0.16f + Vector3.back * 10;
 
-            foreach (IBiomable biomable in pref.GetComponentsInChildren<IBiomable>()) {
-               biomable.setBiome(project.biome);
+               // Create an Enemy in this instance
+               Enemy enemy = UnityEngine.Object.Instantiate(PrefabsManager.self.enemyPrefab, parent);
+               enemy.enemyType = Enemy.Type.Lizard;
+
+               // Add it to the Instance
+               Instance instance = InstanceManager.self.getInstance(instanceID);
+               InstanceManager.self.addEnemyToInstance(enemy, instance);
+
+               enemy.transform.localPosition = targetLocalPos;
+               enemy.desiredPosition = targetLocalPos;
+               Mirror.NetworkServer.Spawn(enemy.gameObject);
+            } else {
+               Transform parent = original.GetComponent<NPC>() ? npcParent : prefabParent;
+               Vector3 targetLocalPos = new Vector3(prefab.x, prefab.y, 0) * 0.16f + Vector3.back * 10;
+
+               var pref = UnityEngine.Object.Instantiate(
+                  original,
+                  parent.TransformPoint(targetLocalPos),
+                  Quaternion.identity,
+                  parent);
+
+               foreach (IBiomable biomable in pref.GetComponentsInChildren<IBiomable>()) {
+                  biomable.setBiome(project.biome);
+               }
+
+               foreach (ZSnap snap in pref.GetComponentsInChildren<ZSnap>()) {
+                  snap.snapZ();
+               }
+
+               IMapEditorDataReceiver receiver = pref.GetComponent<IMapEditorDataReceiver>();
+               Debug.LogError(pref.gameObject.name+" __ " +prefab.d + " - " + receiver);
+               if (receiver != null && prefab.d != null) {
+                  receiver.receiveData(prefab.d);
+               } 
             }
-
-            foreach (ZSnap snap in pref.GetComponentsInChildren<ZSnap>()) {
-               snap.snapZ();
-            }
-
-            IMapEditorDataReceiver receiver = pref.GetComponent<IMapEditorDataReceiver>();
-            if (receiver != null && prefab.d != null)
-               receiver.receiveData(prefab.d);
          }
       }
 
