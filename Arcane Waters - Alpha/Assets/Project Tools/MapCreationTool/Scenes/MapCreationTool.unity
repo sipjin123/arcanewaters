@@ -1309,6 +1309,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1179257718}
+  - {fileID: 1726909152}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2600,6 +2601,36 @@ Material:
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
+--- !u!1 &264363741
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 264363742}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &264363742
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 264363741}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 723787623}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &268217414
 GameObject:
   m_ObjectHideFlags: 0
@@ -6497,6 +6528,7 @@ Transform:
   - {fileID: 1997639215}
   - {fileID: 54328477}
   - {fileID: 932657814}
+  - {fileID: 264363742}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -11191,15 +11223,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 5c812b2e7b44af247939787ec00c9a46, type: 3}
     sprites:
     - {fileID: 21300000, guid: 5c812b2e7b44af247939787ec00c9a46, type: 3}
-  - imageName: buy-button
-    imagePath: Assets/Sprites/GUI/buy-button.png
-    imagePathWithoutExtension: Assets/Sprites/GUI/buy-button
-    texture2D: {fileID: 2800000, guid: e5b78411767b548a29109977d6a44bc8, type: 3}
-    sprite: {fileID: 21300000, guid: e5b78411767b548a29109977d6a44bc8, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: e5b78411767b548a29109977d6a44bc8, type: 3}
-    - {fileID: 21300002, guid: e5b78411767b548a29109977d6a44bc8, type: 3}
-    - {fileID: 21300004, guid: e5b78411767b548a29109977d6a44bc8, type: 3}
   - imageName: burning_shot
     imagePath: Assets/Sprites/Projectiles/burning_shot.png
     imagePathWithoutExtension: Assets/Sprites/Projectiles/burning_shot
@@ -11642,6 +11665,15 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 780e140bfcfe8424ca5aeaf3fff94dde, type: 3}
     sprites:
     - {fileID: 21300000, guid: 780e140bfcfe8424ca5aeaf3fff94dde, type: 3}
+  - imageName: buy-button
+    imagePath: Assets/Sprites/GUI/buy-button.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/buy-button
+    texture2D: {fileID: 2800000, guid: e5b78411767b548a29109977d6a44bc8, type: 3}
+    sprite: {fileID: 21300000, guid: e5b78411767b548a29109977d6a44bc8, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: e5b78411767b548a29109977d6a44bc8, type: 3}
+    - {fileID: 21300002, guid: e5b78411767b548a29109977d6a44bc8, type: 3}
+    - {fileID: 21300004, guid: e5b78411767b548a29109977d6a44bc8, type: 3}
   - imageName: cancel
     imagePath: Assets/Sprites/Icons/cancel.png
     imagePathWithoutExtension: Assets/Sprites/Icons/cancel
@@ -11758,16 +11790,19 @@ MonoBehaviour:
   - imageName: cannonball_trail
     imagePath: Assets/Sprites/Cannon/cannonball_trail.png
     imagePathWithoutExtension: Assets/Sprites/Cannon/cannonball_trail
-    texture2D: {fileID: 2800000, guid: 2fad20061bf743b4292e95c61d3aa8ca, type: 3}
-    sprite: {fileID: -1400713052799229439, guid: 2fad20061bf743b4292e95c61d3aa8ca,
+    texture2D: {fileID: 2800000, guid: 99ffeb3171dc89443aeb38468cf96686, type: 3}
+    sprite: {fileID: -1400713052799229439, guid: 99ffeb3171dc89443aeb38468cf96686,
       type: 3}
     sprites:
-    - {fileID: -1400713052799229439, guid: 2fad20061bf743b4292e95c61d3aa8ca, type: 3}
-    - {fileID: 9162931405310954428, guid: 2fad20061bf743b4292e95c61d3aa8ca, type: 3}
-    - {fileID: 2031723981837965549, guid: 2fad20061bf743b4292e95c61d3aa8ca, type: 3}
-    - {fileID: -6134250784073070917, guid: 2fad20061bf743b4292e95c61d3aa8ca, type: 3}
-    - {fileID: 8985759560872656725, guid: 2fad20061bf743b4292e95c61d3aa8ca, type: 3}
-    - {fileID: -1127976917113128070, guid: 2fad20061bf743b4292e95c61d3aa8ca, type: 3}
+    - {fileID: -1400713052799229439, guid: 99ffeb3171dc89443aeb38468cf96686, type: 3}
+    - {fileID: 9162931405310954428, guid: 99ffeb3171dc89443aeb38468cf96686, type: 3}
+    - {fileID: 2031723981837965549, guid: 99ffeb3171dc89443aeb38468cf96686, type: 3}
+    - {fileID: -6134250784073070917, guid: 99ffeb3171dc89443aeb38468cf96686, type: 3}
+    - {fileID: 8985759560872656725, guid: 99ffeb3171dc89443aeb38468cf96686, type: 3}
+    - {fileID: -1127976917113128070, guid: 99ffeb3171dc89443aeb38468cf96686, type: 3}
+    - {fileID: 3283678960006911615, guid: 99ffeb3171dc89443aeb38468cf96686, type: 3}
+    - {fileID: -9189793603273116629, guid: 99ffeb3171dc89443aeb38468cf96686, type: 3}
+    - {fileID: -992297166567905070, guid: 99ffeb3171dc89443aeb38468cf96686, type: 3}
   - imageName: cap
     imagePath: Assets/Sprites/Icons/Helm/cap.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Helm/cap
@@ -14120,6 +14155,37 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 1092a0159a6d2174192f98501aa8d47a, type: 3}
     sprites:
     - {fileID: 21300000, guid: 1092a0159a6d2174192f98501aa8d47a, type: 3}
+  - imageName: DesertGuy
+    imagePath: Assets/Sprites/NPCs/Bodies/DesertGuy/DesertGuy.png
+    imagePathWithoutExtension: Assets/Sprites/NPCs/Bodies/DesertGuy/DesertGuy
+    texture2D: {fileID: 2800000, guid: 6c9b3cc53032e3f4ea40812f725ab347, type: 3}
+    sprite: {fileID: 1265674600343062229, guid: 6c9b3cc53032e3f4ea40812f725ab347,
+      type: 3}
+    sprites:
+    - {fileID: 1265674600343062229, guid: 6c9b3cc53032e3f4ea40812f725ab347, type: 3}
+    - {fileID: -75118837113990809, guid: 6c9b3cc53032e3f4ea40812f725ab347, type: 3}
+    - {fileID: -4270032252369355473, guid: 6c9b3cc53032e3f4ea40812f725ab347, type: 3}
+    - {fileID: 865333337091853818, guid: 6c9b3cc53032e3f4ea40812f725ab347, type: 3}
+    - {fileID: 673454133453401597, guid: 6c9b3cc53032e3f4ea40812f725ab347, type: 3}
+    - {fileID: -7284121343237271159, guid: 6c9b3cc53032e3f4ea40812f725ab347, type: 3}
+    - {fileID: -5429681520967976043, guid: 6c9b3cc53032e3f4ea40812f725ab347, type: 3}
+    - {fileID: 6205777034366729833, guid: 6c9b3cc53032e3f4ea40812f725ab347, type: 3}
+    - {fileID: -2444505081741368190, guid: 6c9b3cc53032e3f4ea40812f725ab347, type: 3}
+    - {fileID: 4326118125900931105, guid: 6c9b3cc53032e3f4ea40812f725ab347, type: 3}
+    - {fileID: 6958081151462271256, guid: 6c9b3cc53032e3f4ea40812f725ab347, type: 3}
+    - {fileID: 4445355420599963804, guid: 6c9b3cc53032e3f4ea40812f725ab347, type: 3}
+    - {fileID: 4176061397299327064, guid: 6c9b3cc53032e3f4ea40812f725ab347, type: 3}
+    - {fileID: 1788595836675934301, guid: 6c9b3cc53032e3f4ea40812f725ab347, type: 3}
+    - {fileID: -19599304652422036, guid: 6c9b3cc53032e3f4ea40812f725ab347, type: 3}
+    - {fileID: 2369473709861321179, guid: 6c9b3cc53032e3f4ea40812f725ab347, type: 3}
+    - {fileID: -6694325076856753105, guid: 6c9b3cc53032e3f4ea40812f725ab347, type: 3}
+    - {fileID: -7349526705473920370, guid: 6c9b3cc53032e3f4ea40812f725ab347, type: 3}
+    - {fileID: -2127915832873213244, guid: 6c9b3cc53032e3f4ea40812f725ab347, type: 3}
+    - {fileID: -1333702476399284389, guid: 6c9b3cc53032e3f4ea40812f725ab347, type: 3}
+    - {fileID: 4888594056912260816, guid: 6c9b3cc53032e3f4ea40812f725ab347, type: 3}
+    - {fileID: 9024598517807331435, guid: 6c9b3cc53032e3f4ea40812f725ab347, type: 3}
+    - {fileID: 2245047618216333844, guid: 6c9b3cc53032e3f4ea40812f725ab347, type: 3}
+    - {fileID: -6302142054708562822, guid: 6c9b3cc53032e3f4ea40812f725ab347, type: 3}
   - imageName: desert-sky
     imagePath: Assets/Sprites/BackgroundEntities/SkiesAndGround/desert-sky.png
     imagePathWithoutExtension: Assets/Sprites/BackgroundEntities/SkiesAndGround/desert-sky
@@ -14326,13 +14392,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 3c30b6120d8a04e438f1f10fb1cc2919, type: 3}
     sprites:
     - {fileID: 21300000, guid: 3c30b6120d8a04e438f1f10fb1cc2919, type: 3}
-  - imageName: eyes_text
-    imagePath: Assets/Sprites/GUI/eyes_text.png
-    imagePathWithoutExtension: Assets/Sprites/GUI/eyes_text
-    texture2D: {fileID: 2800000, guid: 7c6e3f75ba8ae6446a661ae4ca8ba583, type: 3}
-    sprite: {fileID: 21300000, guid: 7c6e3f75ba8ae6446a661ae4ca8ba583, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 7c6e3f75ba8ae6446a661ae4ca8ba583, type: 3}
   - imageName: element_air
     imagePath: Assets/Sprites/GUI/Inventory/element_air.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Inventory/element_air
@@ -14515,6 +14574,37 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: a34106f32cd8394418976de09f02901e, type: 3}
     sprites:
     - {fileID: 21300000, guid: a34106f32cd8394418976de09f02901e, type: 3}
+  - imageName: ExplorerGuy
+    imagePath: Assets/Sprites/NPCs/Bodies/ExplorerGuy/ExplorerGuy.png
+    imagePathWithoutExtension: Assets/Sprites/NPCs/Bodies/ExplorerGuy/ExplorerGuy
+    texture2D: {fileID: 2800000, guid: 7f2f846c2e1e1914b870569ea78adb3c, type: 3}
+    sprite: {fileID: 4083729894454245473, guid: 7f2f846c2e1e1914b870569ea78adb3c,
+      type: 3}
+    sprites:
+    - {fileID: 4083729894454245473, guid: 7f2f846c2e1e1914b870569ea78adb3c, type: 3}
+    - {fileID: 2179776218271644596, guid: 7f2f846c2e1e1914b870569ea78adb3c, type: 3}
+    - {fileID: -5085417083270400690, guid: 7f2f846c2e1e1914b870569ea78adb3c, type: 3}
+    - {fileID: -359626201681272208, guid: 7f2f846c2e1e1914b870569ea78adb3c, type: 3}
+    - {fileID: 5007299310706324297, guid: 7f2f846c2e1e1914b870569ea78adb3c, type: 3}
+    - {fileID: 9170672382801962109, guid: 7f2f846c2e1e1914b870569ea78adb3c, type: 3}
+    - {fileID: -1456472115556183447, guid: 7f2f846c2e1e1914b870569ea78adb3c, type: 3}
+    - {fileID: -5112284753925890273, guid: 7f2f846c2e1e1914b870569ea78adb3c, type: 3}
+    - {fileID: -7079877295743211312, guid: 7f2f846c2e1e1914b870569ea78adb3c, type: 3}
+    - {fileID: 5112725398778845234, guid: 7f2f846c2e1e1914b870569ea78adb3c, type: 3}
+    - {fileID: -8050791635032139393, guid: 7f2f846c2e1e1914b870569ea78adb3c, type: 3}
+    - {fileID: -4672996846887524010, guid: 7f2f846c2e1e1914b870569ea78adb3c, type: 3}
+    - {fileID: 227364520608617513, guid: 7f2f846c2e1e1914b870569ea78adb3c, type: 3}
+    - {fileID: 7080945097383469949, guid: 7f2f846c2e1e1914b870569ea78adb3c, type: 3}
+    - {fileID: -2660928140409838779, guid: 7f2f846c2e1e1914b870569ea78adb3c, type: 3}
+    - {fileID: 5607661561195861229, guid: 7f2f846c2e1e1914b870569ea78adb3c, type: 3}
+    - {fileID: -7388443735476726380, guid: 7f2f846c2e1e1914b870569ea78adb3c, type: 3}
+    - {fileID: 9012961223405199382, guid: 7f2f846c2e1e1914b870569ea78adb3c, type: 3}
+    - {fileID: -6282360863750899257, guid: 7f2f846c2e1e1914b870569ea78adb3c, type: 3}
+    - {fileID: -3896150706432118804, guid: 7f2f846c2e1e1914b870569ea78adb3c, type: 3}
+    - {fileID: -6806716769346424255, guid: 7f2f846c2e1e1914b870569ea78adb3c, type: 3}
+    - {fileID: 4338144242604273838, guid: 7f2f846c2e1e1914b870569ea78adb3c, type: 3}
+    - {fileID: 8757992734584721949, guid: 7f2f846c2e1e1914b870569ea78adb3c, type: 3}
+    - {fileID: -8359616538678377720, guid: 7f2f846c2e1e1914b870569ea78adb3c, type: 3}
   - imageName: explosion
     imagePath: Assets/Sprites/Effects/explosion.png
     imagePathWithoutExtension: Assets/Sprites/Effects/explosion
@@ -14525,6 +14615,13 @@ MonoBehaviour:
     - {fileID: 21300002, guid: 800feb9efc137a54c8046e3253707a27, type: 3}
     - {fileID: 21300004, guid: 800feb9efc137a54c8046e3253707a27, type: 3}
     - {fileID: 21300006, guid: 800feb9efc137a54c8046e3253707a27, type: 3}
+  - imageName: eyes_text
+    imagePath: Assets/Sprites/GUI/eyes_text.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/eyes_text
+    texture2D: {fileID: 2800000, guid: 7c6e3f75ba8ae6446a661ae4ca8ba583, type: 3}
+    sprite: {fileID: 21300000, guid: 7c6e3f75ba8ae6446a661ae4ca8ba583, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 7c6e3f75ba8ae6446a661ae4ca8ba583, type: 3}
   - imageName: faction_builders
     imagePath: Assets/Sprites/Icons/Factions/faction_builders.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Factions/faction_builders
@@ -14749,27 +14846,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 6690c9b54dc1c3c4381033e94b648271, type: 3}
     sprites:
     - {fileID: 21300000, guid: 6690c9b54dc1c3c4381033e94b648271, type: 3}
-  - imageName: fancy_yellow_button
-    imagePath: Assets/Sprites/GUI/fancy_yellow_button.png
-    imagePathWithoutExtension: Assets/Sprites/GUI/fancy_yellow_button
-    texture2D: {fileID: 2800000, guid: f39fb1dac00fb8e48a42550e617a2566, type: 3}
-    sprite: {fileID: 21300000, guid: f39fb1dac00fb8e48a42550e617a2566, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: f39fb1dac00fb8e48a42550e617a2566, type: 3}
-  - imageName: fancy_yellow_button_small
-    imagePath: Assets/Sprites/GUI/fancy_yellow_button_small.png
-    imagePathWithoutExtension: Assets/Sprites/GUI/fancy_yellow_button_small
-    texture2D: {fileID: 2800000, guid: 0add63a639515ca45999ee6375d3438b, type: 3}
-    sprite: {fileID: 21300000, guid: 0add63a639515ca45999ee6375d3438b, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 0add63a639515ca45999ee6375d3438b, type: 3}
-  - imageName: fancy_yellow_button_small_1x
-    imagePath: Assets/Sprites/GUI/fancy_yellow_button_small_1x.png
-    imagePathWithoutExtension: Assets/Sprites/GUI/fancy_yellow_button_small_1x
-    texture2D: {fileID: 2800000, guid: a859a145223ba114bb659337ab84d9f1, type: 3}
-    sprite: {fileID: 21300000, guid: a859a145223ba114bb659337ab84d9f1, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: a859a145223ba114bb659337ab84d9f1, type: 3}
   - imageName: fancy_panel_box
     imagePath: Assets/Sprites/GUI/fancy_panel_box.png
     imagePathWithoutExtension: Assets/Sprites/GUI/fancy_panel_box
@@ -14805,6 +14881,27 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 52f7ef60aef6ad045b10eddba7c94df8, type: 3}
     sprites:
     - {fileID: 21300000, guid: 52f7ef60aef6ad045b10eddba7c94df8, type: 3}
+  - imageName: fancy_yellow_button
+    imagePath: Assets/Sprites/GUI/fancy_yellow_button.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/fancy_yellow_button
+    texture2D: {fileID: 2800000, guid: f39fb1dac00fb8e48a42550e617a2566, type: 3}
+    sprite: {fileID: 21300000, guid: f39fb1dac00fb8e48a42550e617a2566, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: f39fb1dac00fb8e48a42550e617a2566, type: 3}
+  - imageName: fancy_yellow_button_small
+    imagePath: Assets/Sprites/GUI/fancy_yellow_button_small.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/fancy_yellow_button_small
+    texture2D: {fileID: 2800000, guid: 0add63a639515ca45999ee6375d3438b, type: 3}
+    sprite: {fileID: 21300000, guid: 0add63a639515ca45999ee6375d3438b, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 0add63a639515ca45999ee6375d3438b, type: 3}
+  - imageName: fancy_yellow_button_small_1x
+    imagePath: Assets/Sprites/GUI/fancy_yellow_button_small_1x.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/fancy_yellow_button_small_1x
+    texture2D: {fileID: 2800000, guid: a859a145223ba114bb659337ab84d9f1, type: 3}
+    sprite: {fileID: 21300000, guid: a859a145223ba114bb659337ab84d9f1, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: a859a145223ba114bb659337ab84d9f1, type: 3}
   - imageName: Farm
     imagePath: Assets/Sprites/Minimaps/Farm.png
     imagePathWithoutExtension: Assets/Sprites/Minimaps/Farm
@@ -20741,20 +20838,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: a2eacec6344c65d41814faf5beb51c14, type: 3}
     sprites:
     - {fileID: 21300000, guid: a2eacec6344c65d41814faf5beb51c14, type: 3}
-  - imageName: ingredient_mycelium_fiber
-    imagePath: Assets/Sprites/Icons/CraftingIngredients/NoBorder/ingredient_mycelium_fiber.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/CraftingIngredients/NoBorder/ingredient_mycelium_fiber
-    texture2D: {fileID: 2800000, guid: 33ab8c4c8badcad4abf51e0c312ab87f, type: 3}
-    sprite: {fileID: 21300000, guid: 33ab8c4c8badcad4abf51e0c312ab87f, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 33ab8c4c8badcad4abf51e0c312ab87f, type: 3}
-  - imageName: ingredient_mycelium_fiber
-    imagePath: Assets/Sprites/Icons/CraftingIngredients/ingredient_mycelium_fiber.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/CraftingIngredients/ingredient_mycelium_fiber
-    texture2D: {fileID: 2800000, guid: 3db97b9c7ebce9946a117fcb6df3f159, type: 3}
-    sprite: {fileID: 21300000, guid: 3db97b9c7ebce9946a117fcb6df3f159, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 3db97b9c7ebce9946a117fcb6df3f159, type: 3}
   - imageName: ingredient_molted_skin
     imagePath: Assets/Sprites/Icons/CraftingIngredients/ingredient_molted_skin.png
     imagePathWithoutExtension: Assets/Sprites/Icons/CraftingIngredients/ingredient_molted_skin
@@ -20769,6 +20852,20 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 87b084dbb36a0114d861559ca2550c46, type: 3}
     sprites:
     - {fileID: 21300000, guid: 87b084dbb36a0114d861559ca2550c46, type: 3}
+  - imageName: ingredient_mycelium_fiber
+    imagePath: Assets/Sprites/Icons/CraftingIngredients/NoBorder/ingredient_mycelium_fiber.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/CraftingIngredients/NoBorder/ingredient_mycelium_fiber
+    texture2D: {fileID: 2800000, guid: 33ab8c4c8badcad4abf51e0c312ab87f, type: 3}
+    sprite: {fileID: 21300000, guid: 33ab8c4c8badcad4abf51e0c312ab87f, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 33ab8c4c8badcad4abf51e0c312ab87f, type: 3}
+  - imageName: ingredient_mycelium_fiber
+    imagePath: Assets/Sprites/Icons/CraftingIngredients/ingredient_mycelium_fiber.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/CraftingIngredients/ingredient_mycelium_fiber
+    texture2D: {fileID: 2800000, guid: 3db97b9c7ebce9946a117fcb6df3f159, type: 3}
+    sprite: {fileID: 21300000, guid: 3db97b9c7ebce9946a117fcb6df3f159, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 3db97b9c7ebce9946a117fcb6df3f159, type: 3}
   - imageName: ingredient_onyx
     imagePath: Assets/Sprites/Icons/CraftingIngredients/ingredient_onyx.png
     imagePathWithoutExtension: Assets/Sprites/Icons/CraftingIngredients/ingredient_onyx
@@ -21284,13 +21381,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: da67e3c3ebc79394ea2324c3506cc27d, type: 3}
     sprites:
     - {fileID: 21300000, guid: da67e3c3ebc79394ea2324c3506cc27d, type: 3}
-  - imageName: yellow_button
-    imagePath: Assets/Sprites/GUI/Chat/yellow_button.png
-    imagePathWithoutExtension: Assets/Sprites/GUI/Chat/yellow_button
-    texture2D: {fileID: 2800000, guid: 81e7050871ae5cb4fa9796804d06c6c8, type: 3}
-    sprite: {fileID: 21300000, guid: 81e7050871ae5cb4fa9796804d06c6c8, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 81e7050871ae5cb4fa9796804d06c6c8, type: 3}
   - imageName: lance_steel
     imagePath: Assets/Sprites/Icons/Weapons/lance_steel.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Weapons/lance_steel
@@ -25051,13 +25141,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 16185a91e11c6154bb45bdce68a467b5, type: 3}
     sprites:
     - {fileID: 21300000, guid: 16185a91e11c6154bb45bdce68a467b5, type: 3}
-  - imageName: mm_yellow_x
-    imagePath: Assets/Sprites/Minimap/mm_yellow_x.png
-    imagePathWithoutExtension: Assets/Sprites/Minimap/mm_yellow_x
-    texture2D: {fileID: 2800000, guid: 826f2bce9513feb44a85aaa61d129895, type: 3}
-    sprite: {fileID: 21300000, guid: 826f2bce9513feb44a85aaa61d129895, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 826f2bce9513feb44a85aaa61d129895, type: 3}
   - imageName: mm_orange_square
     imagePath: Assets/Sprites/Minimap/mm_orange_square.png
     imagePathWithoutExtension: Assets/Sprites/Minimap/mm_orange_square
@@ -25065,6 +25148,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 9cf30c7d3647c1d499d877d25387c363, type: 3}
     sprites:
     - {fileID: 21300000, guid: 9cf30c7d3647c1d499d877d25387c363, type: 3}
+  - imageName: mm_yellow_x
+    imagePath: Assets/Sprites/Minimap/mm_yellow_x.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/mm_yellow_x
+    texture2D: {fileID: 2800000, guid: 826f2bce9513feb44a85aaa61d129895, type: 3}
+    sprite: {fileID: 21300000, guid: 826f2bce9513feb44a85aaa61d129895, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 826f2bce9513feb44a85aaa61d129895, type: 3}
   - imageName: monocle_1
     imagePath: Assets/Sprites/Faces/monocle_1.png
     imagePathWithoutExtension: Assets/Sprites/Faces/monocle_1
@@ -26684,15 +26774,6 @@ MonoBehaviour:
     sprites:
     - {fileID: -8983204569294214185, guid: 1d12b6b531cdabd48901a867ded4705c, type: 3}
     - {fileID: -2326647215978093993, guid: 1d12b6b531cdabd48901a867ded4705c, type: 3}
-  - imageName: ping-yellow
-    imagePath: Assets/Sprites/GUI/ping-yellow.png
-    imagePathWithoutExtension: Assets/Sprites/GUI/ping-yellow
-    texture2D: {fileID: 2800000, guid: 13d23bd42183b304597f5978277873a3, type: 3}
-    sprite: {fileID: 2341427194360183577, guid: 13d23bd42183b304597f5978277873a3,
-      type: 3}
-    sprites:
-    - {fileID: 2341427194360183577, guid: 13d23bd42183b304597f5978277873a3, type: 3}
-    - {fileID: -7482036864869903338, guid: 13d23bd42183b304597f5978277873a3, type: 3}
   - imageName: ping-red
     imagePath: Assets/Sprites/GUI/ping-red.png
     imagePathWithoutExtension: Assets/Sprites/GUI/ping-red
@@ -26702,6 +26783,15 @@ MonoBehaviour:
     sprites:
     - {fileID: 2136949212513261205, guid: 413d352338757f946a22f9a831cc7b03, type: 3}
     - {fileID: 5657112969004850507, guid: 413d352338757f946a22f9a831cc7b03, type: 3}
+  - imageName: ping-yellow
+    imagePath: Assets/Sprites/GUI/ping-yellow.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/ping-yellow
+    texture2D: {fileID: 2800000, guid: 13d23bd42183b304597f5978277873a3, type: 3}
+    sprite: {fileID: 2341427194360183577, guid: 13d23bd42183b304597f5978277873a3,
+      type: 3}
+    sprites:
+    - {fileID: 2341427194360183577, guid: 13d23bd42183b304597f5978277873a3, type: 3}
+    - {fileID: -7482036864869903338, guid: 13d23bd42183b304597f5978277873a3, type: 3}
   - imageName: pinstripe_horizontal
     imagePath: Assets/Sprites/GUI/pinstripe_horizontal.png
     imagePathWithoutExtension: Assets/Sprites/GUI/pinstripe_horizontal
@@ -26901,6 +26991,41 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 9c07cd53fbb133640986b1f55d0f8c1f, type: 3}
     sprites:
     - {fileID: 21300000, guid: 9c07cd53fbb133640986b1f55d0f8c1f, type: 3}
+  - imageName: plaque_bronze
+    imagePath: Assets/Sprites/GUI/Voyages/plaque_bronze.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Voyages/plaque_bronze
+    texture2D: {fileID: 2800000, guid: 56883662134e16841b0489493d0d7a32, type: 3}
+    sprite: {fileID: 21300000, guid: 56883662134e16841b0489493d0d7a32, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 56883662134e16841b0489493d0d7a32, type: 3}
+  - imageName: plaque_gold
+    imagePath: Assets/Sprites/GUI/Voyages/plaque_gold.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Voyages/plaque_gold
+    texture2D: {fileID: 2800000, guid: 591dbbe93db81ec4bb144cee92b14ba7, type: 3}
+    sprite: {fileID: 21300000, guid: 591dbbe93db81ec4bb144cee92b14ba7, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 591dbbe93db81ec4bb144cee92b14ba7, type: 3}
+  - imageName: plaque_silver
+    imagePath: Assets/Sprites/GUI/Voyages/plaque_silver.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Voyages/plaque_silver
+    texture2D: {fileID: 2800000, guid: 2fce0d55effdb6f408c753a2790347dd, type: 3}
+    sprite: {fileID: 21300000, guid: 2fce0d55effdb6f408c753a2790347dd, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 2fce0d55effdb6f408c753a2790347dd, type: 3}
+  - imageName: plate
+    imagePath: Assets/Sprites/Icons/Armor/plate.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Armor/plate
+    texture2D: {fileID: 2800000, guid: 3839f8445865de7429f190ad082b6a4d, type: 3}
+    sprite: {fileID: 21300000, guid: 3839f8445865de7429f190ad082b6a4d, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 3839f8445865de7429f190ad082b6a4d, type: 3}
+  - imageName: platform_dark
+    imagePath: Assets/Sprites/Character Screens/platform_dark.png
+    imagePathWithoutExtension: Assets/Sprites/Character Screens/platform_dark
+    texture2D: {fileID: 2800000, guid: 17dce10cee7aa844da5557a6ad939c12, type: 3}
+    sprite: {fileID: 21300000, guid: 17dce10cee7aa844da5557a6ad939c12, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 17dce10cee7aa844da5557a6ad939c12, type: 3}
   - imageName: player
     imagePath: Assets/Sprites/Minimap/player.png
     imagePathWithoutExtension: Assets/Sprites/Minimap/player
@@ -26997,41 +27122,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: d82e7742bc4a30a4ca6762dde5e0cd67, type: 3}
     sprites:
     - {fileID: 21300000, guid: d82e7742bc4a30a4ca6762dde5e0cd67, type: 3}
-  - imageName: plaque_bronze
-    imagePath: Assets/Sprites/GUI/Voyages/plaque_bronze.png
-    imagePathWithoutExtension: Assets/Sprites/GUI/Voyages/plaque_bronze
-    texture2D: {fileID: 2800000, guid: 56883662134e16841b0489493d0d7a32, type: 3}
-    sprite: {fileID: 21300000, guid: 56883662134e16841b0489493d0d7a32, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 56883662134e16841b0489493d0d7a32, type: 3}
-  - imageName: plaque_gold
-    imagePath: Assets/Sprites/GUI/Voyages/plaque_gold.png
-    imagePathWithoutExtension: Assets/Sprites/GUI/Voyages/plaque_gold
-    texture2D: {fileID: 2800000, guid: 591dbbe93db81ec4bb144cee92b14ba7, type: 3}
-    sprite: {fileID: 21300000, guid: 591dbbe93db81ec4bb144cee92b14ba7, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 591dbbe93db81ec4bb144cee92b14ba7, type: 3}
-  - imageName: plaque_silver
-    imagePath: Assets/Sprites/GUI/Voyages/plaque_silver.png
-    imagePathWithoutExtension: Assets/Sprites/GUI/Voyages/plaque_silver
-    texture2D: {fileID: 2800000, guid: 2fce0d55effdb6f408c753a2790347dd, type: 3}
-    sprite: {fileID: 21300000, guid: 2fce0d55effdb6f408c753a2790347dd, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 2fce0d55effdb6f408c753a2790347dd, type: 3}
-  - imageName: plate
-    imagePath: Assets/Sprites/Icons/Armor/plate.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/Armor/plate
-    texture2D: {fileID: 2800000, guid: 3839f8445865de7429f190ad082b6a4d, type: 3}
-    sprite: {fileID: 21300000, guid: 3839f8445865de7429f190ad082b6a4d, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 3839f8445865de7429f190ad082b6a4d, type: 3}
-  - imageName: platform_dark
-    imagePath: Assets/Sprites/Character Screens/platform_dark.png
-    imagePathWithoutExtension: Assets/Sprites/Character Screens/platform_dark
-    texture2D: {fileID: 2800000, guid: 17dce10cee7aa844da5557a6ad939c12, type: 3}
-    sprite: {fileID: 21300000, guid: 17dce10cee7aa844da5557a6ad939c12, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 17dce10cee7aa844da5557a6ad939c12, type: 3}
   - imageName: pointer_28
     imagePath: Assets/Sprites/GUI/pointer_28.png
     imagePathWithoutExtension: Assets/Sprites/GUI/pointer_28
@@ -27246,6 +27336,37 @@ MonoBehaviour:
     - {fileID: 1934105167074483151, guid: e3df20e2eaa29aa47a201426acdbfbd8, type: 3}
     - {fileID: -3966257881566730632, guid: e3df20e2eaa29aa47a201426acdbfbd8, type: 3}
     - {fileID: 7644630347052300426, guid: e3df20e2eaa29aa47a201426acdbfbd8, type: 3}
+  - imageName: Pyromancer
+    imagePath: Assets/Sprites/NPCs/Bodies/Pyromancer/Pyromancer.png
+    imagePathWithoutExtension: Assets/Sprites/NPCs/Bodies/Pyromancer/Pyromancer
+    texture2D: {fileID: 2800000, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    sprite: {fileID: -8280930210256813200, guid: e835aae9e79521c45aeab99ee9ca5333,
+      type: 3}
+    sprites:
+    - {fileID: -8280930210256813200, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: -5042072422398079296, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: -6658368463445984665, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: -139367979502668700, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: 3927389461569817648, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: 741561707585489214, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: 6133101879309481665, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: -8969277468403195994, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: -1854471461232490973, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: -4713632350927276570, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: -4504753388729371903, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: 5625466388589226849, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: -2189517545299465969, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: 2846859185406889083, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: -5046730554882471296, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: -4402081199677621396, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: 1733409009808470362, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: 8055981457848210764, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: -3192765396832336636, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: 3164782888156768575, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: -254997341455746325, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: -942377444343745740, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: 6600100506331153615, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: -1578443327917309471, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
   - imageName: radio_button_off
     imagePath: Assets/Sprites/GUI/radio_button_off.png
     imagePathWithoutExtension: Assets/Sprites/GUI/radio_button_off
@@ -28061,6 +28182,37 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 8815054ab7184d340ba47a1bb965925b, type: 3}
     sprites:
     - {fileID: 21300000, guid: 8815054ab7184d340ba47a1bb965925b, type: 3}
+  - imageName: ShamanGirl
+    imagePath: Assets/Sprites/NPCs/Bodies/ShamanGirl/ShamanGirl.png
+    imagePathWithoutExtension: Assets/Sprites/NPCs/Bodies/ShamanGirl/ShamanGirl
+    texture2D: {fileID: 2800000, guid: ea6ab4b25f13ac548939fd6a996b4b9e, type: 3}
+    sprite: {fileID: -1797997719687540193, guid: ea6ab4b25f13ac548939fd6a996b4b9e,
+      type: 3}
+    sprites:
+    - {fileID: -1797997719687540193, guid: ea6ab4b25f13ac548939fd6a996b4b9e, type: 3}
+    - {fileID: 8740808712009190975, guid: ea6ab4b25f13ac548939fd6a996b4b9e, type: 3}
+    - {fileID: -8708044057237409810, guid: ea6ab4b25f13ac548939fd6a996b4b9e, type: 3}
+    - {fileID: -1577511802439988059, guid: ea6ab4b25f13ac548939fd6a996b4b9e, type: 3}
+    - {fileID: -8006926559055073901, guid: ea6ab4b25f13ac548939fd6a996b4b9e, type: 3}
+    - {fileID: 2327919062551031057, guid: ea6ab4b25f13ac548939fd6a996b4b9e, type: 3}
+    - {fileID: -8148999290410008158, guid: ea6ab4b25f13ac548939fd6a996b4b9e, type: 3}
+    - {fileID: -1988366192128743748, guid: ea6ab4b25f13ac548939fd6a996b4b9e, type: 3}
+    - {fileID: -2719591145395344924, guid: ea6ab4b25f13ac548939fd6a996b4b9e, type: 3}
+    - {fileID: 7821529151921119693, guid: ea6ab4b25f13ac548939fd6a996b4b9e, type: 3}
+    - {fileID: 2124936652907458752, guid: ea6ab4b25f13ac548939fd6a996b4b9e, type: 3}
+    - {fileID: 4778966576669873103, guid: ea6ab4b25f13ac548939fd6a996b4b9e, type: 3}
+    - {fileID: 8449837229380866252, guid: ea6ab4b25f13ac548939fd6a996b4b9e, type: 3}
+    - {fileID: -5072385537243823060, guid: ea6ab4b25f13ac548939fd6a996b4b9e, type: 3}
+    - {fileID: 5899190426665398094, guid: ea6ab4b25f13ac548939fd6a996b4b9e, type: 3}
+    - {fileID: 70108262057121731, guid: ea6ab4b25f13ac548939fd6a996b4b9e, type: 3}
+    - {fileID: 7275848423782044709, guid: ea6ab4b25f13ac548939fd6a996b4b9e, type: 3}
+    - {fileID: -6694034043769410382, guid: ea6ab4b25f13ac548939fd6a996b4b9e, type: 3}
+    - {fileID: -7836407433420151657, guid: ea6ab4b25f13ac548939fd6a996b4b9e, type: 3}
+    - {fileID: -4130102729442995364, guid: ea6ab4b25f13ac548939fd6a996b4b9e, type: 3}
+    - {fileID: 8628361731351140334, guid: ea6ab4b25f13ac548939fd6a996b4b9e, type: 3}
+    - {fileID: -7910833809360884216, guid: ea6ab4b25f13ac548939fd6a996b4b9e, type: 3}
+    - {fileID: 8334503416175209316, guid: ea6ab4b25f13ac548939fd6a996b4b9e, type: 3}
+    - {fileID: 8902281577554196147, guid: ea6ab4b25f13ac548939fd6a996b4b9e, type: 3}
   - imageName: ship_cannon_smoke
     imagePath: Assets/Sprites/Effects/ship_cannon_smoke.png
     imagePathWithoutExtension: Assets/Sprites/Effects/ship_cannon_smoke
@@ -28201,6 +28353,13 @@ MonoBehaviour:
     - {fileID: 21300014, guid: 41b61a86c8c6de948b7514cedb5253af, type: 3}
     - {fileID: 21300016, guid: 41b61a86c8c6de948b7514cedb5253af, type: 3}
     - {fileID: 21300018, guid: 41b61a86c8c6de948b7514cedb5253af, type: 3}
+  - imageName: ships_button
+    imagePath: Assets/Sprites/GUI/Bottom Buttons/ships_button.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Bottom Buttons/ships_button
+    texture2D: {fileID: 2800000, guid: 2566c43238f2e2d49aba265f4064adfc, type: 3}
+    sprite: {fileID: 21300000, guid: 2566c43238f2e2d49aba265f4064adfc, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 2566c43238f2e2d49aba265f4064adfc, type: 3}
   - imageName: shipyard_1
     imagePath: Assets/Sprites/NPCs/Eyes/Shipyard/shipyard_1.png
     imagePathWithoutExtension: Assets/Sprites/NPCs/Eyes/Shipyard/shipyard_1
@@ -28391,13 +28550,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 5fb73e3031bbd1147b979ddfc347d6e7, type: 3}
     sprites:
     - {fileID: 21300000, guid: 5fb73e3031bbd1147b979ddfc347d6e7, type: 3}
-  - imageName: ships_button
-    imagePath: Assets/Sprites/GUI/Bottom Buttons/ships_button.png
-    imagePathWithoutExtension: Assets/Sprites/GUI/Bottom Buttons/ships_button
-    texture2D: {fileID: 2800000, guid: 2566c43238f2e2d49aba265f4064adfc, type: 3}
-    sprite: {fileID: 21300000, guid: 2566c43238f2e2d49aba265f4064adfc, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 2566c43238f2e2d49aba265f4064adfc, type: 3}
   - imageName: shock_collision
     imagePath: Assets/Sprites/Effects/shock_collision.png
     imagePathWithoutExtension: Assets/Sprites/Effects/shock_collision
@@ -28997,20 +29149,9 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 783ac976b3ff0b44083f82549d3c9b60, type: 3}
     sprites:
     - {fileID: 21300000, guid: 783ac976b3ff0b44083f82549d3c9b60, type: 3}
-  - imageName: skullhat_1
-    imagePath: Assets/Sprites/Faces/skullhat_1.png
-    imagePathWithoutExtension: Assets/Sprites/Faces/skullhat_1
-    texture2D: {fileID: 2800000, guid: 55b279f6920d2d5459322f25d4979815, type: 3}
-    sprite: {fileID: 21300000, guid: 55b279f6920d2d5459322f25d4979815, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 55b279f6920d2d5459322f25d4979815, type: 3}
-    - {fileID: 21300002, guid: 55b279f6920d2d5459322f25d4979815, type: 3}
-    - {fileID: 21300004, guid: 55b279f6920d2d5459322f25d4979815, type: 3}
-    - {fileID: 21300006, guid: 55b279f6920d2d5459322f25d4979815, type: 3}
-    - {fileID: 21300008, guid: 55b279f6920d2d5459322f25d4979815, type: 3}
-  - imageName: skullhat_1
-    imagePath: Assets/Sprites/NPCs/Bodies/Skullhat/skullhat_1.png
-    imagePathWithoutExtension: Assets/Sprites/NPCs/Bodies/Skullhat/skullhat_1
+  - imageName: SkullHat
+    imagePath: Assets/Sprites/NPCs/Bodies/Skullhat/SkullHat.png
+    imagePathWithoutExtension: Assets/Sprites/NPCs/Bodies/Skullhat/SkullHat
     texture2D: {fileID: 2800000, guid: 2e0d1b3bae10b2142bd319de292c461a, type: 3}
     sprite: {fileID: 21300000, guid: 2e0d1b3bae10b2142bd319de292c461a, type: 3}
     sprites:
@@ -29038,6 +29179,17 @@ MonoBehaviour:
     - {fileID: 21300042, guid: 2e0d1b3bae10b2142bd319de292c461a, type: 3}
     - {fileID: 21300044, guid: 2e0d1b3bae10b2142bd319de292c461a, type: 3}
     - {fileID: 21300046, guid: 2e0d1b3bae10b2142bd319de292c461a, type: 3}
+  - imageName: skullhat_1
+    imagePath: Assets/Sprites/Faces/skullhat_1.png
+    imagePathWithoutExtension: Assets/Sprites/Faces/skullhat_1
+    texture2D: {fileID: 2800000, guid: 55b279f6920d2d5459322f25d4979815, type: 3}
+    sprite: {fileID: 21300000, guid: 55b279f6920d2d5459322f25d4979815, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 55b279f6920d2d5459322f25d4979815, type: 3}
+    - {fileID: 21300002, guid: 55b279f6920d2d5459322f25d4979815, type: 3}
+    - {fileID: 21300004, guid: 55b279f6920d2d5459322f25d4979815, type: 3}
+    - {fileID: 21300006, guid: 55b279f6920d2d5459322f25d4979815, type: 3}
+    - {fileID: 21300008, guid: 55b279f6920d2d5459322f25d4979815, type: 3}
   - imageName: slam_physical
     imagePath: Assets/Sprites/Effects/slam_physical.png
     imagePathWithoutExtension: Assets/Sprites/Effects/slam_physical
@@ -32223,9 +32375,9 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: d9c354c214ec65a41bfdd89345f83d64, type: 3}
     sprites:
     - {fileID: 21300000, guid: d9c354c214ec65a41bfdd89345f83d64, type: 3}
-  - imageName: topknot
-    imagePath: Assets/Sprites/NPCs/Bodies/Topknot/topknot.png
-    imagePathWithoutExtension: Assets/Sprites/NPCs/Bodies/Topknot/topknot
+  - imageName: TopKnot
+    imagePath: Assets/Sprites/NPCs/Bodies/Topknot/TopKnot.png
+    imagePathWithoutExtension: Assets/Sprites/NPCs/Bodies/Topknot/TopKnot
     texture2D: {fileID: 2800000, guid: eed14eec5e189084dbfbe27cc583ded2, type: 3}
     sprite: {fileID: 816180231755288678, guid: eed14eec5e189084dbfbe27cc583ded2, type: 3}
     sprites:
@@ -33078,6 +33230,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 76bac14efe8c83f4a8d2ee700ee2b968, type: 3}
     sprites:
     - {fileID: 21300000, guid: 76bac14efe8c83f4a8d2ee700ee2b968, type: 3}
+  - imageName: yellow_button
+    imagePath: Assets/Sprites/GUI/Chat/yellow_button.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Chat/yellow_button
+    texture2D: {fileID: 2800000, guid: 81e7050871ae5cb4fa9796804d06c6c8, type: 3}
+    sprite: {fileID: 21300000, guid: 81e7050871ae5cb4fa9796804d06c6c8, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 81e7050871ae5cb4fa9796804d06c6c8, type: 3}
   blankSprite: {fileID: 21300000, guid: 3016ce2d5bd75a147aa3a66460e33058, type: 3}
   blankTexture: {fileID: 2800000, guid: bbb4cb08a2e7d9f46b4b0d93fbaa469b, type: 3}
 --- !u!1 &1180992914
@@ -38588,6 +38747,36 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -60, y: -10}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1726909151
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1726909152}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1726909152
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1726909151}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 147622740}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1747371646
 GameObject:
   m_ObjectHideFlags: 0
