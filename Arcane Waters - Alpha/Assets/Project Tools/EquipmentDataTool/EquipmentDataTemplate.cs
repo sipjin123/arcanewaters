@@ -14,6 +14,9 @@ public class EquipmentDataTemplate : GenericEntryTemplate {
    // Cached xml id
    public int xmlId;
 
+   // Indicator determining if this template entry is active in the database
+   public GameObject isEnabledIndicator;
+
    #endregion
 
    public void setData (string dataName, int dataID, EquipmentType dataType, int templateID) {

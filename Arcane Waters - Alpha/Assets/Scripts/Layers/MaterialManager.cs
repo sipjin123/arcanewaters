@@ -32,7 +32,9 @@ public class MaterialManager : MonoBehaviour {
 
       // Ship materials
       defineShipMaterials();
+   }
 
+   private void Start () {
       EquipmentXMLManager.self.finishedDataSetup.AddListener(() => {
          defineArmorMaterials();
       });
@@ -56,14 +58,18 @@ public class MaterialManager : MonoBehaviour {
 
    public void defineArmorMaterials () {
       foreach (Gender.Type gender in Gender.getTypes()) {
-         int index = 0;
          foreach (ArmorStatData armorData in EquipmentXMLManager.self.armorStatList) {
             // Cloth
-            ColorKey cloth = new ColorKey(gender, "armor_" + index);
+            ColorKey cloth = new ColorKey(gender, "armor_" + armorData.armorType);
             _materials[cloth] = translateMaterial(armorData.materialType);
-            index++;
          }
       }
+   }
+
+   public void insertArmorMaterial (Gender.Type gender, int armorID, MaterialType materialType) {
+      // Cloth
+      ColorKey cloth = new ColorKey(gender, "armor_" + armorID);
+      _materials[cloth] = translateMaterial(materialType);
    }
 
    private Material translateMaterial (MaterialType materialType) {
@@ -156,7 +162,6 @@ public class MaterialManager : MonoBehaviour {
       if (_materials.ContainsKey(colorKey)) {
          return _materials[colorKey];
       }
-
       return null;
    }
 

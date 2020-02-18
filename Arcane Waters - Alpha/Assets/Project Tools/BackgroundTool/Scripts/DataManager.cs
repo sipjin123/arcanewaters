@@ -54,12 +54,6 @@ namespace BackgroundTool
       // The id of the owner of the content
       public int currentOwnerID;
 
-      // Reference to the prefab holding the default bg file
-      public DefaultBGHolder defaultBGPrefab;
-
-      // Default background data name
-      public static string DEFAULT_BACKGROUND = "Default Background";
-
       #endregion
 
       private void Start () {
@@ -69,15 +63,8 @@ namespace BackgroundTool
          saveButton.interactable = canSaveData;
 
          saveButton.onClick.AddListener(() => {
-            saveData(false);
+            saveData();
          });
-
-#if UNITY_EDITOR
-         saveTextButton.gameObject.SetActive(true);
-         saveTextButton.onClick.AddListener(() => {
-            saveData(true);
-         });
-#endif
 
          loadButton.onClick.AddListener(() => {
             string currentOption = dropDownFiles.options[dropDownFiles.value].text;
@@ -113,7 +100,7 @@ namespace BackgroundTool
          Invoke("loadData", MasterToolScene.loadDelay);
       }
 
-      private void saveData (bool saveLocally) {
+      private void saveData () {
          List<SpriteTemplateData> spriteTempList = ImageManipulator.self.spriteTemplateDataList;
          if (hasValidContent(spriteTempList)) {
             BackgroundContentData newContentData = new BackgroundContentData();
@@ -130,21 +117,8 @@ namespace BackgroundTool
             string biomeName = biomeDropdown.options[biomeDropdown.value].text;
             newContentData.biomeType = (Biome.Type) Enum.Parse(typeof(Biome.Type), biomeName);
 
-            if (saveLocally) {
-               // As of now only developers with the access to the editor can declare the default background tool
-               // This Function overwrites the content of the prefab data holder
-#if UNITY_EDITOR
-               newContentData.backgroundName = DEFAULT_BACKGROUND;
-               newContentData.xmlId = 0;
-
-               UnityEditor.EditorUtility.SetDirty(defaultBGPrefab);
-               defaultBGPrefab.defaultBGData = newContentData;
-               UnityEditor.AssetDatabase.Refresh();
-#endif
-            } else {
-               // Save to SQL Database
-               saveData(newContentData);
-            }
+            // Save to SQL Database
+            saveData(newContentData);
          } else {
             showErrorPanel(true, SPAWNPOINT_ERROR);
          }

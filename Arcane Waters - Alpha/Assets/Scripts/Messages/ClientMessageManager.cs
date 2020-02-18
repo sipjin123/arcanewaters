@@ -267,6 +267,10 @@ public class ClientMessageManager : MonoBehaviour {
       CharacterScreen.self.initializeScreen(msg.userArray, msg.armorArray, msg.weaponArray, msg.armorColors1, msg.armorColors2);
    }
 
+   public static void On_EquipmentList (NetworkConnection conn, CharacterEquipmentMessage msg) {
+      MaterialManager.self.insertArmorMaterial(msg.gender, msg.armorID, msg.materialType);
+   }
+
    public static void On_LoginIsComplete (NetworkConnection conn, LogInCompleteMessage msg) {
       // Set our initial facing direction
       Global.initialFacingDirection = msg.initialFacingDirection;

@@ -56,7 +56,7 @@ public class DB_MainStub : MonoBehaviour
       return new List<string>();
    }
 
-   public static void updateEquipmentXML (string rawData, int typeID, EquipmentToolManager.EquipmentType equipType, string equipmentName) {
+   public static void updateEquipmentXML (string rawData, int typeID, EquipmentToolManager.EquipmentType equipType, string equipmentName, bool isEnabled) {
 
    }
 

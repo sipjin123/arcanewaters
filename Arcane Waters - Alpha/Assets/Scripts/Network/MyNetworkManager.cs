@@ -267,11 +267,9 @@ public class MyNetworkManager : NetworkManager {
             // Gives the user admin features if it has an admin flag
             player.rpc.Target_GrantAdminAccess(player.connectionToClient, player.isAdmin());
 
-            // Sends all equipment info to client
-            player.rpc.Target_ReceiveEquipmentData(player.connectionToClient, Util.serialize(EquipmentXMLManager.self.weaponStatList), EquipmentToolManager.EquipmentType.Weapon);
-            player.rpc.Target_ReceiveEquipmentData(player.connectionToClient, Util.serialize(EquipmentXMLManager.self.armorStatList), EquipmentToolManager.EquipmentType.Armor);
-            player.rpc.Target_ReceiveEquipmentData(player.connectionToClient, Util.serialize(EquipmentXMLManager.self.helmStatList), EquipmentToolManager.EquipmentType.Helm);
-            
+            // Filter equipment before sending info to player
+            filterPlayerEquipment(player);
+
             // Sends monster data to client
             sendMonsterData(player);
         
@@ -280,6 +278,37 @@ public class MyNetworkManager : NetworkManager {
 
             // Give the player local authority so that movement feels instantaneous
             player.netIdent.AssignClientAuthority(conn);
+         });
+      });
+   }
+
+   private void filterPlayerEquipment (NetEntity player) {
+      List<int> weaponIDList = new List<int>();
+      List<int> armorIDList = new List<int>();
+      List<int> helmIDList = new List<int>();
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<Item> itemList = DB_Main.getItems(player.userId, new Item.Category[] { Item.Category.Weapon, Item.Category.Armor, Item.Category.Helm }, 0, 30);
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (Item item in itemList) {
+               switch (item.category) {
+                  case Item.Category.Weapon:
+                     weaponIDList.Add(item.itemTypeId);
+                     break;
+                  case Item.Category.Armor:
+                     armorIDList.Add(item.itemTypeId);
+                     break;
+                  case Item.Category.Helm:
+                     helmIDList.Add(item.itemTypeId);
+                     break;
+               }
+            }
+
+            player.rpc.Target_ReceiveEquipmentData(player.connectionToClient, Util.serialize(EquipmentXMLManager.self.requestWeaponList(weaponIDList)), EquipmentToolManager.EquipmentType.Weapon);
+            player.rpc.Target_ReceiveEquipmentData(player.connectionToClient, Util.serialize(EquipmentXMLManager.self.requestArmorList(armorIDList)), EquipmentToolManager.EquipmentType.Armor);
+            player.rpc.Target_ReceiveEquipmentData(player.connectionToClient, Util.serialize(EquipmentXMLManager.self.requestHelmList(helmIDList)), EquipmentToolManager.EquipmentType.Helm);
          });
       });
    }

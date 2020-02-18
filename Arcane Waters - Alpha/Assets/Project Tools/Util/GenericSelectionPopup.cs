@@ -32,7 +32,7 @@ public class GenericSelectionPopup : MonoBehaviour {
    public AudioSource audioSource;
 
    // Maximum item entry for integer types
-   public static int MAX_OPTIONS = 20;
+   public static int MAX_OPTIONS = 100;
 
    // Sprite dictionary
    public Dictionary<string, Sprite> genericIconSpriteList = new Dictionary<string, Sprite>();
@@ -326,9 +326,7 @@ public class GenericSelectionPopup : MonoBehaviour {
             break;
          case selectionType.ArmorTypeSprites:
             for (int armorType = 0; armorType < MAX_OPTIONS; armorType++) {
-               if (EquipmentXMLManager.self.getArmorData(armorType) == null) {
-                  createTextTemplate(armorType.ToString(), textUI, changeEvent);
-               }
+               createTextTemplate(armorType.ToString(), textUI, changeEvent);
             }
             break;
          case selectionType.HelmType:

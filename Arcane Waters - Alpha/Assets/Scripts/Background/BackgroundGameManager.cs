@@ -25,9 +25,6 @@ public class BackgroundGameManager : MonoBehaviour {
    // Determines if data is initialized
    public bool isInitialized;
 
-   // The reference to the prefab containing the default background data
-   public DefaultBGHolder defaultBGDataHolder;
-
    #endregion
 
    private void Awake () {
@@ -69,7 +66,6 @@ public class BackgroundGameManager : MonoBehaviour {
 
    private void resetBackgroundList () {
       backgroundContentList = new List<BackgroundContentData>();
-      //backgroundContentList.Add(defaultBGDataHolder.defaultBGData);
    }
 
    private IEnumerator CO_DelayProcessData () {

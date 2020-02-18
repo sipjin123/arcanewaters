@@ -1753,7 +1753,7 @@ public class DB_Main : DB_MainStub
 
    #region Equipment XML Data
 
-   public static new void updateEquipmentXML (string rawData, int xmlID, EquipmentToolManager.EquipmentType equipType, string equipmentName) {
+   public static new void updateEquipmentXML (string rawData, int xmlID, EquipmentToolManager.EquipmentType equipType, string equipmentName, bool isEnabled) {
       string tableName = "";
       string xmlKey = "xml_id, ";
       string xmlValue = "@xml_id, ";
@@ -1778,9 +1778,9 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO " + tableName + " ("+ xmlKey + "xmlContent, creator_userID, equipment_type, equipment_name) " +
-            "VALUES("+ xmlValue + "@xmlContent, @creator_userID, @equipment_type, @equipment_name) " +
-            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, equipment_type = @equipment_type, equipment_name = @equipment_name", conn)) {
+            "INSERT INTO " + tableName + " ("+ xmlKey + "xmlContent, creator_userID, equipment_type, equipment_name, is_enabled) " +
+            "VALUES("+ xmlValue + "@xmlContent, @creator_userID, @equipment_type, @equipment_name, @is_enabled) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, equipment_type = @equipment_type, equipment_name = @equipment_name, is_enabled = @is_enabled", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -1789,7 +1789,8 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
             cmd.Parameters.AddWithValue("@equipment_name", equipmentName);
             cmd.Parameters.AddWithValue("@equipment_type", equipType.ToString());
-            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
+            cmd.Parameters.AddWithValue("@is_enabled", isEnabled ? 1 : 0);
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID); 
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1855,7 +1856,7 @@ public class DB_Main : DB_MainStub
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
                   XMLPair xmlPair = new XMLPair {
-                     isEnabled = true,
+                     isEnabled = dataReader.GetInt32("is_enabled") == 1 ? true : false,
                      rawXmlData = dataReader.GetString("xmlContent"),
                      xmlId = dataReader.GetInt32("xml_id")
                   };

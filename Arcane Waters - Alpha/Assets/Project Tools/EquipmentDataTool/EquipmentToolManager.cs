@@ -68,7 +68,7 @@ public class EquipmentToolManager : XmlDataToolManager {
 
    #region Save 
 
-   public void saveWeapon (WeaponStatData data, int xml_id) {
+   public void saveWeapon (WeaponStatData data, int xml_id, bool isEnabled) {
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {
@@ -77,7 +77,7 @@ public class EquipmentToolManager : XmlDataToolManager {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateEquipmentXML(longString, xml_id, EquipmentType.Weapon, data.equipmentName);
+         DB_Main.updateEquipmentXML(longString, xml_id, EquipmentType.Weapon, data.equipmentName, isEnabled);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -85,7 +85,7 @@ public class EquipmentToolManager : XmlDataToolManager {
       });
    }
 
-   public void saveArmor (ArmorStatData data, int xml_id) {
+   public void saveArmor (ArmorStatData data, int xml_id, bool isEnabled) {
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {
@@ -94,7 +94,7 @@ public class EquipmentToolManager : XmlDataToolManager {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateEquipmentXML(longString, xml_id, EquipmentType.Armor, data.equipmentName);
+         DB_Main.updateEquipmentXML(longString, xml_id, EquipmentType.Armor, data.equipmentName, isEnabled);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -102,7 +102,7 @@ public class EquipmentToolManager : XmlDataToolManager {
       });
    }
 
-   public void saveHelm (HelmStatData data, int xml_id) {
+   public void saveHelm (HelmStatData data, int xml_id, bool isEnabled) {
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {
@@ -111,7 +111,7 @@ public class EquipmentToolManager : XmlDataToolManager {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateEquipmentXML(longString, xml_id, EquipmentType.Helm, data.equipmentName);
+         DB_Main.updateEquipmentXML(longString, xml_id, EquipmentType.Helm, data.equipmentName, isEnabled);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -168,7 +168,7 @@ public class EquipmentToolManager : XmlDataToolManager {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateEquipmentXML(longString, -1, EquipmentType.Weapon, data.equipmentName);
+         DB_Main.updateEquipmentXML(longString, -1, EquipmentType.Weapon, data.equipmentName, false);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -187,7 +187,7 @@ public class EquipmentToolManager : XmlDataToolManager {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateEquipmentXML(longString, -1, EquipmentType.Armor, data.equipmentName);
+         DB_Main.updateEquipmentXML(longString, -1, EquipmentType.Armor, data.equipmentName, false);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -206,7 +206,7 @@ public class EquipmentToolManager : XmlDataToolManager {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateEquipmentXML(longString, -1, EquipmentType.Helm, data.equipmentName);
+         DB_Main.updateEquipmentXML(longString, -1, EquipmentType.Helm, data.equipmentName, false);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -243,7 +243,8 @@ public class EquipmentToolManager : XmlDataToolManager {
                if (!_weaponStatData.Exists(_ => _.xml_id == xmlPair.xmlId)) {
                   WeaponXMLContent newXML = new WeaponXMLContent {
                      xml_id = xmlPair.xmlId,
-                     weaponStatData = rawData
+                     weaponStatData = rawData,
+                     isEnabled = xmlPair.isEnabled
                   };
                   _weaponStatData.Add(newXML);
                }
@@ -271,7 +272,8 @@ public class EquipmentToolManager : XmlDataToolManager {
                if (!_armorStatData.Exists(_ => _.xml_id == xmlPair.xmlId)) {
                   ArmorXMLContent newXML = new ArmorXMLContent {
                      xml_id = xmlPair.xmlId,
-                     armorStatData = rawData
+                     armorStatData = rawData,
+                     isEnabled = xmlPair.isEnabled
                   };
                   _armorStatData.Add(newXML);
                }
@@ -297,7 +299,8 @@ public class EquipmentToolManager : XmlDataToolManager {
                if (!_helmStatData.Exists(_=>_.xml_id == xmlPair.xmlId)) {
                   HelmXMLContent newXML = new HelmXMLContent {
                      xml_id = xmlPair.xmlId,
-                     helmStatData = rawData
+                     helmStatData = rawData,
+                     isEnabled = xmlPair.isEnabled
                   };
                   _helmStatData.Add(newXML);
                }
@@ -364,6 +367,9 @@ public class WeaponXMLContent
 
    // Data of the weapon content
    public WeaponStatData weaponStatData;
+
+   // Determines if the entry is enabled in the sql database
+   public bool isEnabled;
 }
 public class ArmorXMLContent
 {
@@ -372,6 +378,9 @@ public class ArmorXMLContent
 
    // Data of the armor content
    public ArmorStatData armorStatData;
+
+   // Determines if the entry is enabled in the sql database
+   public bool isEnabled;
 }
 public class HelmXMLContent
 {
@@ -380,4 +389,7 @@ public class HelmXMLContent
 
    // Data of the helm content
    public HelmStatData helmStatData;
+
+   // Determines if the entry is enabled in the sql database
+   public bool isEnabled;
 }

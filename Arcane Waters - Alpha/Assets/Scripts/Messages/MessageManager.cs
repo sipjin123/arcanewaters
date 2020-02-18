@@ -15,6 +15,7 @@ public class MessageManager : MonoBehaviour {
       NetworkClient.RegisterHandler<ErrorMessage>(ClientMessageManager.On_ErrorMessage);
       NetworkClient.RegisterHandler<ConfirmMessage>(ClientMessageManager.On_ConfirmMessage);
       NetworkClient.RegisterHandler<CharacterListMessage>(ClientMessageManager.On_CharacterList);
+      NetworkClient.RegisterHandler<CharacterEquipmentMessage>(ClientMessageManager.On_EquipmentList);
       NetworkClient.RegisterHandler<LogInCompleteMessage>(ClientMessageManager.On_LoginIsComplete);
       NetworkClient.RegisterHandler<StoreMessage>(ClientMessageManager.On_Store);
       NetworkClient.RegisterHandler<EquipMessage>(ClientMessageManager.On_Equip);

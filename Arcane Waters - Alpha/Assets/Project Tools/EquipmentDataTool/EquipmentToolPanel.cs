@@ -77,7 +77,7 @@ public class EquipmentToolPanel : MonoBehaviour {
                if ((int) newStatData.weaponType != startingType) {
                   equipmentToolManager.deleteWeapon(current_xml_id);
                }
-               equipmentToolManager.saveWeapon(newStatData, current_xml_id);
+               equipmentToolManager.saveWeapon(newStatData, current_xml_id, _isEnabled.isOn);
                gameObject.SetActive(false);
             }
          } else if (equipmentType == EquipmentType.Armor) {
@@ -86,7 +86,7 @@ public class EquipmentToolPanel : MonoBehaviour {
                if ((int) newStatData.armorType != startingType) {
                   equipmentToolManager.deleteArmor(current_xml_id);
                }
-               equipmentToolManager.saveArmor(newStatData, current_xml_id);
+               equipmentToolManager.saveArmor(newStatData, current_xml_id, _isEnabled.isOn);
                gameObject.SetActive(false);
             }
          } else if (equipmentType == EquipmentType.Helm) {
@@ -95,7 +95,7 @@ public class EquipmentToolPanel : MonoBehaviour {
                if ((int) newStatData.helmType != startingType) {
                   equipmentToolManager.deleteHelm(current_xml_id);
                }
-               equipmentToolManager.saveHelm(newStatData, current_xml_id);
+               equipmentToolManager.saveHelm(newStatData, current_xml_id, _isEnabled.isOn);
                gameObject.SetActive(false);
             }
          }
@@ -197,7 +197,7 @@ public class EquipmentToolPanel : MonoBehaviour {
          _itemRawValue.text = "Base Damage";
          _damageClassObj.SetActive(true);
       } else if (equipmentType == EquipmentType.Armor) {
-         _itemTypeValue.text = "Armor Type:";
+         _itemTypeValue.text = "Armor Sprite ID:";
          _titleTabValue.text = "Armor Stats";
          _toolTipValue.message = "The defense of the armor";
          _itemRawValue.text = "Base Defense";
@@ -211,10 +211,11 @@ public class EquipmentToolPanel : MonoBehaviour {
       }
    }
 
-   public void loadArmorData (ArmorStatData statData, int template_id) {
+   public void loadArmorData (ArmorStatData statData, int template_id, bool isEnabled) {
       current_xml_id = template_id;
       startingType = (int) statData.armorType;
       equipmentType = EquipmentType.Armor;
+      _isEnabled.isOn = isEnabled;
 
       loadGenericInfo();
       loadEquipmentData(statData);
@@ -231,10 +232,11 @@ public class EquipmentToolPanel : MonoBehaviour {
       _weaponClass.onValueChanged.Invoke(_weaponClass.value);
    }
 
-   public void loadWeaponData (WeaponStatData statData, int template_id) {
+   public void loadWeaponData (WeaponStatData statData, int template_id, bool isEnabled) {
       current_xml_id = template_id;
       startingType = (int)statData.weaponType;
       equipmentType = EquipmentType.Weapon;
+      _isEnabled.isOn = isEnabled;
 
       loadGenericInfo();
       loadEquipmentData(statData);
@@ -252,10 +254,11 @@ public class EquipmentToolPanel : MonoBehaviour {
       _weaponClass.onValueChanged.Invoke(_weaponClass.value);
    }
 
-   public void loadHelmData (HelmStatData statData, int template_id) {
+   public void loadHelmData (HelmStatData statData, int template_id, bool isEnabled) {
       current_xml_id = template_id;
       startingType = (int) statData.helmType;
       equipmentType = EquipmentType.Helm;
+      _isEnabled.isOn = isEnabled;
 
       loadGenericInfo();
       loadEquipmentData(statData);
@@ -498,11 +501,15 @@ public class EquipmentToolPanel : MonoBehaviour {
    [SerializeField]
    private InputField _itemPrice;
 
+   // Determines if the entry is enabled from the sql table
+   [SerializeField]
+   private Toggle _isEnabled;
+
    // Determines if the item can be trashed
    [SerializeField]
    private Toggle _canBeTrashed;
 
-   // Determines if the equipment should set all colros
+   // Determines if the equipment should set all colors
    [SerializeField]
    private Toggle _declareAllColors;
 

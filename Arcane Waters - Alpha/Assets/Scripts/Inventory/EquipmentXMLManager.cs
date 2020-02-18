@@ -55,6 +55,7 @@ public class EquipmentXMLManager : MonoBehaviour {
 
    public ArmorStatData getArmorData (int armorType) {
       if (_armorStatList == null) {
+         Debug.LogWarning("Does not exist: " + armorType);
          return null;
       }
       if (_armorStatList.ContainsKey(armorType)) {
@@ -96,14 +97,16 @@ public class EquipmentXMLManager : MonoBehaviour {
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (XMLPair xmlPair in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
-               WeaponStatData rawData = Util.xmlLoad<WeaponStatData>(newTextAsset);
-               Weapon.Type uniqueID = rawData.weaponType;
+               if (xmlPair.isEnabled) {
+                  TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
+                  WeaponStatData rawData = Util.xmlLoad<WeaponStatData>(newTextAsset);
+                  Weapon.Type uniqueID = rawData.weaponType;
 
-               // Save the data in the memory cache
-               if (!_weaponStatList.ContainsKey(uniqueID) && xmlPair.isEnabled) {
-                  _weaponStatList.Add(uniqueID, rawData);
-                  weaponStatData.Add(rawData);
+                  // Save the data in the memory cache
+                  if (!_weaponStatList.ContainsKey(uniqueID) && xmlPair.isEnabled) {
+                     _weaponStatList.Add(uniqueID, rawData);
+                     weaponStatData.Add(rawData);
+                  }
                }
             }
             finishedLoading();
@@ -115,15 +118,17 @@ public class EquipmentXMLManager : MonoBehaviour {
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (XMLPair xmlPair in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
-               ArmorStatData rawData = Util.xmlLoad<ArmorStatData>(newTextAsset);
-               rawData.equipmentID = rawData.armorType;
-               int uniqueID = rawData.armorType;
+               if (xmlPair.isEnabled) {
+                  TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
+                  ArmorStatData rawData = Util.xmlLoad<ArmorStatData>(newTextAsset);
+                  rawData.equipmentID = rawData.armorType;
+                  int uniqueID = rawData.armorType;
 
-               // Save the data in the memory cache
-               if (!_armorStatList.ContainsKey(uniqueID) && xmlPair.isEnabled) {
-                  _armorStatList.Add(uniqueID, rawData);
-                  armorStatData.Add(rawData);
+                  // Save the data in the memory cache
+                  if (!_armorStatList.ContainsKey(uniqueID) && xmlPair.isEnabled) {
+                     _armorStatList.Add(uniqueID, rawData);
+                     armorStatData.Add(rawData);
+                  }
                }
             }
             finishedLoading();
@@ -135,14 +140,16 @@ public class EquipmentXMLManager : MonoBehaviour {
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (XMLPair xmlPair in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
-               HelmStatData rawData = Util.xmlLoad<HelmStatData>(newTextAsset);
-               Helm.Type uniqueID = rawData.helmType;
+               if (xmlPair.isEnabled) {
+                  TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
+                  HelmStatData rawData = Util.xmlLoad<HelmStatData>(newTextAsset);
+                  Helm.Type uniqueID = rawData.helmType;
 
-               // Save the data in the memory cache
-               if (!_helmStatList.ContainsKey(uniqueID) && xmlPair.isEnabled) {
-                  _helmStatList.Add(uniqueID, rawData);
-                  helmStatData.Add(rawData);
+                  // Save the data in the memory cache
+                  if (!_helmStatList.ContainsKey(uniqueID) && xmlPair.isEnabled) {
+                     _helmStatList.Add(uniqueID, rawData);
+                     helmStatData.Add(rawData);
+                  }
                }
             }
             finishedLoading();
@@ -194,6 +201,42 @@ public class EquipmentXMLManager : MonoBehaviour {
       weaponStatData.Clear();
       armorStatData.Clear();
       helmStatData.Clear();
+   }
+
+   public List<WeaponStatData> requestWeaponList (List<int> xmlIDList) {
+      List<WeaponStatData> returnWeaponStatList = new List<WeaponStatData>();
+      foreach (int index in xmlIDList) {
+         WeaponStatData searchData = _weaponStatList.Values.ToList().Find(_ => _.equipmentID == index);
+         if (searchData != null) {
+            returnWeaponStatList.Add(searchData);
+         }
+      }
+
+      return returnWeaponStatList;
+   }
+
+   public List<ArmorStatData> requestArmorList (List<int> xmlIDList) {
+      List<ArmorStatData> returnArmorList = new List<ArmorStatData>();
+      foreach (int index in xmlIDList) {
+         ArmorStatData searchData = _armorStatList.Values.ToList().Find(_ => _.equipmentID == index);
+         if (searchData != null) {
+            returnArmorList.Add(searchData);
+         }
+      }
+
+      return returnArmorList;
+   }
+
+   public List<HelmStatData> requestHelmList (List<int> xmlIDList) {
+      List<HelmStatData> returnHelmStatList = new List<HelmStatData>();
+      foreach (int index in xmlIDList) {
+         HelmStatData searchData = _helmStatList.Values.ToList().Find(_ => _.equipmentID == index);
+         if (searchData != null) {
+            returnHelmStatList.Add(searchData);
+         }
+      }
+
+      return returnHelmStatList;
    }
 
    #region Private Variables
