@@ -398,9 +398,12 @@ public class GenericSelectionPopup : MonoBehaviour {
 
       switch (category) {
          case Item.Category.Armor: {
-               for (int itemType = 0; itemType < EquipmentXMLManager.self.armorStatList.Count; itemType++) {
-                  string iconPath = new Item { category = Item.Category.Armor, itemTypeId = (int) itemType }.getCastItem().getIconPath();
-                  createItemTextTemplate(itemType.ToString(), itemType, textUI, indexUI, iconPath, icon, changeEvent, itemIconPath);
+               foreach (ArmorStatData armorData in EquipmentXMLManager.self.armorStatList) {
+                  if (armorData != null) {
+                     string iconPath = new Item { category = Item.Category.Armor, itemTypeId = armorData.equipmentID }.getCastItem().getIconPath();
+                     string armorName = armorData.equipmentName;
+                     createItemTextTemplate(armorName, armorData.equipmentID, textUI, indexUI, iconPath, icon, changeEvent, itemIconPath);
+                  }
                }
             }
             break;

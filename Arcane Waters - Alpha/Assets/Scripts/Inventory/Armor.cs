@@ -215,8 +215,13 @@ public class Armor : EquippableItem {
    }
 
    public override string getIconPath () {
-      string spritePath = EquipmentXMLManager.self.getArmorData(this.type).equipmentIconPath;
-      return spritePath;
+      ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(this.type);
+      if (armorData != null) {
+         string spritePath = armorData.equipmentIconPath;
+         return spritePath;
+      }
+
+      return "";
    }
 
    public override ColorKey getColorKey () {
