@@ -109,13 +109,7 @@ public class Weapon : EquippableItem {
    }
 
    public override string getDescription () {
-      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(this.type);
-      if (weaponData == null) {
-         D.warning("Weapon data does not exist! Go to Equipment Editor and make new data");
-         return "Undefined";
-      }
-
-      return weaponData.equipmentDescription;
+      return itemDescription;
    }
 
    public override string getTooltip () {
@@ -127,7 +121,7 @@ public class Weapon : EquippableItem {
    }
 
    public override string getName () {
-      return getName(type);
+      return itemName;
    }
 
    public override bool isEquipped () {
@@ -265,7 +259,7 @@ public class Weapon : EquippableItem {
    }
 
    public override string getIconPath () {
-      return "Icons/Weapons/" + this.type;
+      return iconPath;
    }
 
    public override ColorKey getColorKey () {

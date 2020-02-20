@@ -30,13 +30,15 @@ public class MM_PlayerIcon : ClientMonoBehaviour {
 
       // Keep the icon in the right position
       Area currentArea = AreaManager.self.getArea(Global.player.areaKey);
-      Vector3 relativePosition = Global.player.transform.position - currentArea.transform.position;
-      relativePosition *= 12f;
-      relativePosition += new Vector3(-128f, 0f);
-      Util.setLocalXY(this.transform, relativePosition);
+      if (currentArea != null) {
+         Vector3 relativePosition = Global.player.transform.position - currentArea.transform.position;
+         relativePosition *= 12f;
+         relativePosition += new Vector3(-128f, 0f);
+         Util.setLocalXY(this.transform, relativePosition);
 
-      // Rotate the player arrow based on our facing direction
-      _image.transform.rotation = Quaternion.Euler(0, 0, getArrowRotation());
+         // Rotate the player arrow based on our facing direction
+         _image.transform.rotation = Quaternion.Euler(0, 0, getArrowRotation());
+      }
    }
 
    protected int getArrowRotation () {

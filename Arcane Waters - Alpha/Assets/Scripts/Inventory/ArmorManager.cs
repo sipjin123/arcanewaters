@@ -13,6 +13,10 @@ public class ArmorManager : EquipmentManager {
    [SyncVar]
    public int equippedArmorId;
 
+   // The type of material the armor is using
+   [SyncVar]
+   public MaterialType materialType;
+
    // Armor Type
    [SyncVar]
    public int armorType = 0;
@@ -57,6 +61,7 @@ public class ArmorManager : EquipmentManager {
       // Update our Material
       ColorKey colorKey = new ColorKey(gender, "armor_" + armorType.ToString());
       armorLayer.recolor(colorKey, color1, color2);
+      armorLayer.setNewMaterial(MaterialManager.self.translateMaterial(materialType));
 
       // Sync up all our animations
       if (_body != null) {
@@ -105,6 +110,11 @@ public class ArmorManager : EquipmentManager {
       this.armorType = newArmor.type;
       this.color1 = newArmor.color1;
       this.color2 = newArmor.color2;
+
+      ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(newArmor.itemTypeId);
+      if (armorData != null) {
+         this.materialType = armorData.materialType;
+      } 
 
       // Send the Info to all clients
       Rpc_EquipArmor(newArmor, newArmor.color1, newArmor.color2);

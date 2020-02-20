@@ -38,36 +38,38 @@ public class GroundChecker : ClientMonoBehaviour {
 
       // Look up the Area and Grid that we're currently in
       Area area = AreaManager.self.getArea(_player.areaKey);
-      Grid grid = area.GetComponentInChildren<Grid>();
-      Vector3Int cellPos = grid.WorldToCell(_player.sortPoint.transform.position);
+      if (area != null) {
+         Grid grid = area.GetComponentInChildren<Grid>();
+         Vector3Int cellPos = grid.WorldToCell(_player.sortPoint.transform.position);
 
-      // Locate the tilemaps within the area
-      foreach (Tilemap tilemap in area.getTilemaps()) {
-         Tile tile = tilemap.GetTile<Tile>(cellPos);
+         // Locate the tilemaps within the area
+         foreach (Tilemap tilemap in area.getTilemaps()) {
+            Tile tile = tilemap.GetTile<Tile>(cellPos);
 
-         if (tile == null) {
-            continue;
-         }
-
-         // If we're in an interior, the floor is always wood
-         if (tile.sprite.name.StartsWith("interior")) {
-            isOnWood = true;
-         }
-         
-         // If we're in one of the outdoor areas, we need to check specific tile numbers
-         if (tile.sprite.name.Contains("_tiles")) {
-            string[] split = tile.name.Split('_');
-            int num = int.Parse(split[split.Length - 1]);
-
-            if (_stoneTiles.Contains(num)) {
-               isOnStone = true;
+            if (tile == null) {
+               continue;
             }
-            if (_woodTiles.Contains(num)) {
+
+            // If we're in an interior, the floor is always wood
+            if (tile.sprite.name.StartsWith("interior")) {
                isOnWood = true;
             }
-            if (_grassTiles.Contains(num)) {
-               isOnGrass = true;
-            } 
+
+            // If we're in one of the outdoor areas, we need to check specific tile numbers
+            if (tile.sprite.name.Contains("_tiles")) {
+               string[] split = tile.name.Split('_');
+               int num = int.Parse(split[split.Length - 1]);
+
+               if (_stoneTiles.Contains(num)) {
+                  isOnStone = true;
+               }
+               if (_woodTiles.Contains(num)) {
+                  isOnWood = true;
+               }
+               if (_grassTiles.Contains(num)) {
+                  isOnGrass = true;
+               }
+            }
          }
       }
    }

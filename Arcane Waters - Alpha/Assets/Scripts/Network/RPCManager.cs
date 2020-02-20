@@ -847,8 +847,10 @@ public class RPCManager : NetworkBehaviour {
 
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            List<Item> processedItemList = EquipmentXMLManager.setEquipmentData(items);
+
             InventoryMessage inventoryMessage = new InventoryMessage(_player.netId, userObjects, categories,
-               pageNumber, userInfo.gold, userInfo.gems, totalItemCount, userInfo.armorId, userInfo.weaponId, items.ToArray());
+               pageNumber, userInfo.gold, userInfo.gems, totalItemCount, userInfo.armorId, userInfo.weaponId, processedItemList.ToArray());
             Target_ReceiveInventoryItemsForInventory(_player.connectionToClient, inventoryMessage);
          });
       });
@@ -887,8 +889,10 @@ public class RPCManager : NetworkBehaviour {
 
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            List<Item> processedItemList = EquipmentXMLManager.setEquipmentData(items);
+
             InventoryMessage inventoryMessage = new InventoryMessage(_player.netId, userObjects, new Item.Category[] { category },
-               pageNumber, userInfo.gold, userInfo.gems, totalItemCount, userInfo.armorId, userInfo.weaponId, items.ToArray());
+               pageNumber, userInfo.gold, userInfo.gems, totalItemCount, userInfo.armorId, userInfo.weaponId, processedItemList.ToArray());
             Target_ReceiveInventoryItemsForItemSelection(_player.connectionToClient, inventoryMessage);
          });
       });

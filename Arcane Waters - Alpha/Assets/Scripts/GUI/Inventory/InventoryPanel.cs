@@ -170,6 +170,10 @@ public class InventoryPanel : Panel, IPointerClickHandler {
          // Get the casted item
          Item castedItem = item.getCastItem();
 
+         if (Item.isUsingEquipmentXML(item.category)) {
+            castedItem.setBasicInfo(item.itemName, item.itemDescription, item.iconPath);
+         }
+
          if (castedItem.category != Item.Category.Blueprint) {
             // Instantiates the cell
             ItemCell cell = Instantiate(itemCellPrefab, itemCellsContainer.transform, false);

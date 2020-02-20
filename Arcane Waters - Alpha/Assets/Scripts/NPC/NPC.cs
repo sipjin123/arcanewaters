@@ -542,6 +542,17 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
       }
    }
 
+   public static int fetchDataFieldID (DataField[] dataFields) {
+      foreach (DataField field in dataFields) {
+         if (field.k.CompareTo(DataField.NPC_DATA_KEY) == 0) {
+            // Get ID from npc data field
+            int id = int.Parse(field.v.Split(':')[0]);
+            return id;
+         }
+      }
+      return 0;
+   }
+
    #region Private Variables
 
    // Our start position

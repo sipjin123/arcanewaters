@@ -103,18 +103,20 @@ public class WaterChecker : ClientMonoBehaviour {
 
       // Look up the Area and Grid that we're currently in
       Area area = AreaManager.self.getArea(_player.areaKey);
-      Grid grid = area.GetComponentInChildren<Grid>();
-      Vector3Int cellPos = grid.WorldToCell(_player.sortPoint.transform.position);
+      if (area != null) {
+         Grid grid = area.GetComponentInChildren<Grid>();
+         Vector3Int cellPos = grid.WorldToCell(_player.sortPoint.transform.position);
 
-      // Locate the Water tilemap within the area
-      foreach (Tilemap tilemap in area.getTilemaps()) {
-         if (tilemap.name.EndsWith("Water")) {
-            TileBase tile = tilemap.GetTile(cellPos);
+         // Locate the Water tilemap within the area
+         foreach (Tilemap tilemap in area.getTilemaps()) {
+            if (tilemap.name.EndsWith("Water")) {
+               TileBase tile = tilemap.GetTile(cellPos);
 
-            if (tile != null) {
-               this.currentTile = tile.name;
-               isInFullWater = _fullWaterTiles.Contains(currentTile) || _waterFallTiles.Contains(currentTile);
-               isInPartialWater = _partialWaterTiles.Contains(currentTile);
+               if (tile != null) {
+                  this.currentTile = tile.name;
+                  isInFullWater = _fullWaterTiles.Contains(currentTile) || _waterFallTiles.Contains(currentTile);
+                  isInPartialWater = _partialWaterTiles.Contains(currentTile);
+               }
             }
          }
       }

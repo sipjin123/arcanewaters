@@ -32,10 +32,25 @@ public class Item {
    // The number of these items that are stacked together
    public int count = 1;
 
+   // Name of the item
+   public string itemName = "";
+
+   // Info of the item
+   public string itemDescription = "";
+
+   // The icon path of the item
+   public string iconPath = "";
+
    #endregion
 
    public Item () {
 
+   }
+
+   public void setBasicInfo (string name, string description, string iconPath) {
+      this.itemName = name;
+      this.itemDescription = description;
+      this.iconPath = iconPath;
    }
 
    public Item (int id, Category category, int itemTypeId, int count, ColorType color1, ColorType color2, string data) {
@@ -211,6 +226,14 @@ public class Item {
       }
 
       return string.Format("<color={0}>x {1}</color>", color, count);
+   }
+
+   public static bool isUsingEquipmentXML (Item.Category category) {
+      if (category == Category.Armor || category == Category.Weapon || category == Category.Helm) {
+         return true;
+      }
+
+      return false;
    }
 
    #region Private Variables

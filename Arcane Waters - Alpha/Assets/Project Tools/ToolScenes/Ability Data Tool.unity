@@ -16512,7 +16512,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 502.265, y: -14.627001}
+  m_AnchoredPosition: {x: 502.265, y: -14.627014}
   m_SizeDelta: {x: 994.53, y: 19.254002}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &641298466
@@ -24329,6 +24329,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioDataList:
+  - audioName: Attack (Firing blunderbuss)
+    audioPath: Assets/Resources/Sound/Effects/Players/Attack (firing blunderbuss)/Attack
+      (Firing blunderbuss).mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Players/Attack (firing
+      blunderbuss)/Attack (Firing blunderbuss)
+    audioClip: {fileID: 8300000, guid: 2f806e91ce78ff84aaf618d264aa4400, type: 3}
+  - audioName: Attack (Swinging club)
+    audioPath: Assets/Resources/Sound/Effects/Lizard Monster/Attack (swinging club)/Attack
+      (Swinging club).mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Lizard Monster/Attack
+      (swinging club)/Attack (Swinging club)
+    audioClip: {fileID: 8300000, guid: f6f44c6f61e116d4e9744db14ee06537, type: 3}
+  - audioName: Attack (Swinging sword)
+    audioPath: Assets/Resources/Sound/Effects/Players/Attack (swinging sword)/Attack
+      (Swinging sword).mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Players/Attack (swinging
+      sword)/Attack (Swinging sword)
+    audioClip: {fileID: 8300000, guid: 55791b0976b79434cbbb9010960c324a, type: 3}
   - audioName: Attack_Blunt
     audioPath: Assets/Resources/Sound/Effects/Attack_Blunt.wav
     audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack_Blunt
@@ -24353,6 +24371,32 @@ MonoBehaviour:
     audioPath: Assets/Resources/Sound/Effects/Boulder.wav
     audioPathWithoutExtension: Assets/Resources/Sound/Effects/Boulder
     audioClip: {fileID: 8300000, guid: e98e6073c9ec12147ad312dcb5eb014f, type: 3}
+  - audioName: Button Pressing
+    audioPath: Assets/Resources/Sound/Effects/Button Pressing/Button Pressing.wav
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Button Pressing/Button
+      Pressing
+    audioClip: {fileID: 8300000, guid: ba156632ecc35f440a7d23df9b9fb2c2, type: 3}
+  - audioName: Button Pressing
+    audioPath: Assets/Resources/Sound/Effects/Button Pressing/Button Pressing.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Button Pressing/Button
+      Pressing
+    audioClip: {fileID: 8300000, guid: 69430be9f8c9b6c4c9e37b1e48ff519d, type: 3}
+  - audioName: Cannonball Impact (ground)
+    audioPath: Assets/Resources/Sound/Effects/Cannonball Impact (ground)/Cannonball
+      Impact (ground).mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Cannonball Impact (ground)/Cannonball
+      Impact (ground)
+    audioClip: {fileID: 8300000, guid: 8214fb78a9ff77f4abc3f40a5512146d, type: 3}
+  - audioName: Cascades-River
+    audioPath: Assets/Resources/Sound/Effects/Cascades-River/Cascades-River.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Cascades-River/Cascades-River
+    audioClip: {fileID: 8300000, guid: b42505e485cb0f64f9c018e6e7beba53, type: 3}
+  - audioName: Cascades-River (loop demo)
+    audioPath: Assets/Resources/Sound/Effects/Cascades-River/Cascades-River (loop
+      demo).mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Cascades-River/Cascades-River
+      (loop demo)
+    audioClip: {fileID: 8300000, guid: 832df8cea2f1b6749aca82dd1cc65787, type: 3}
   - audioName: Character_Block
     audioPath: Assets/Resources/Sound/Effects/Character_Block.wav
     audioPathWithoutExtension: Assets/Resources/Sound/Effects/Character_Block
@@ -24493,10 +24537,57 @@ MonoBehaviour:
     audioPath: Assets/Resources/Sound/Effects/Crusty_Titan_Hurt.ogg
     audioPathWithoutExtension: Assets/Resources/Sound/Effects/Crusty_Titan_Hurt
     audioClip: {fileID: 8300000, guid: b42f1726fd51d81428df535b5e964701, type: 3}
+  - audioName: Death
+    audioPath: Assets/Resources/Sound/Effects/Lizard Monster/Death/Death.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Lizard Monster/Death/Death
+    audioClip: {fileID: 8300000, guid: 1ac310d0ea0cc6342b361abc8327be7a, type: 3}
+  - audioName: Death (female)
+    audioPath: Assets/Resources/Sound/Effects/Players/Death/Female/Death (female).mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Players/Death/Female/Death
+      (female)
+    audioClip: {fileID: 8300000, guid: 83c4997676e871640855665d6f658f54, type: 3}
+  - audioName: Death (male)
+    audioPath: Assets/Resources/Sound/Effects/Players/Death/Male/Death (male).mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Players/Death/Male/Death
+      (male)
+    audioClip: {fileID: 8300000, guid: 7e62375b7eaaa1a46a13b9c9229ece57, type: 3}
+  - audioName: Death 2 (female)
+    audioPath: Assets/Resources/Sound/Effects/Players/Death/Female/Death 2 (female).mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Players/Death/Female/Death
+      2 (female)
+    audioClip: {fileID: 8300000, guid: d4763b378468a644cb9ab4d6a5bc6366, type: 3}
+  - audioName: Death 2 (male)
+    audioPath: Assets/Resources/Sound/Effects/Players/Death/Male/Death 2 (male).mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Players/Death/Male/Death
+      2 (male)
+    audioClip: {fileID: 8300000, guid: 91bff1b8aca97c745b5c508ce426ec7d, type: 3}
   - audioName: Death_Poof
     audioPath: Assets/Resources/Sound/Effects/Death_Poof.wav
     audioPathWithoutExtension: Assets/Resources/Sound/Effects/Death_Poof
     audioClip: {fileID: 8300000, guid: ee9f8d5084aa8ff42871eb377b27a033, type: 3}
+  - audioName: Dialogue-Text Box
+    audioPath: Assets/Resources/Sound/Effects/Dialogue-Text Box/Dialogue-Text Box.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Dialogue-Text Box/Dialogue-Text
+      Box
+    audioClip: {fileID: 8300000, guid: ef6394abb15937841b848cb1b8732218, type: 3}
+  - audioName: Dialogue-Text Box (loop demo)
+    audioPath: Assets/Resources/Sound/Effects/Dialogue-Text Box/Dialogue-Text Box
+      (loop demo).mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Dialogue-Text Box/Dialogue-Text
+      Box (loop demo)
+    audioClip: {fileID: 8300000, guid: 91e20fe83cee84a4ba2b0a02eb43aa07, type: 3}
+  - audioName: Dialogue-Text Box 2
+    audioPath: Assets/Resources/Sound/Effects/Dialogue-Text Box/Dialogue-Text Box
+      2.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Dialogue-Text Box/Dialogue-Text
+      Box 2
+    audioClip: {fileID: 8300000, guid: fce5fb660ad8a7f4fad37141b0e13ca5, type: 3}
+  - audioName: Dialogue-Text Box 2 (loop demo)
+    audioPath: Assets/Resources/Sound/Effects/Dialogue-Text Box/Dialogue-Text Box
+      2 (loop demo).mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Dialogue-Text Box/Dialogue-Text
+      Box 2 (loop demo)
+    audioClip: {fileID: 8300000, guid: f6ef5385c3dbc6141b075c12ee41c9b0, type: 3}
   - audioName: Door_Close
     audioPath: Assets/Resources/Sound/Effects/Door_Close.wav
     audioPathWithoutExtension: Assets/Resources/Sound/Effects/Door_Close
@@ -24541,6 +24632,31 @@ MonoBehaviour:
     audioPath: Assets/Resources/Sound/Effects/door_open_3.ogg
     audioPathWithoutExtension: Assets/Resources/Sound/Effects/door_open_3
     audioClip: {fileID: 8300000, guid: 071383cdaef954a4b80e38b9d81e01f6, type: 3}
+  - audioName: Earth 1
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Earth/Earth 1.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Earth/Earth
+      1
+    audioClip: {fileID: 8300000, guid: 06c1afdcc49b9b847a2dffb2db4d9718, type: 3}
+  - audioName: Earth 2
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Earth/Earth 2.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Earth/Earth
+      2
+    audioClip: {fileID: 8300000, guid: d7ba241f5a4abfe4baa773aed6d4d325, type: 3}
+  - audioName: Earth 3
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Earth/Earth 3.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Earth/Earth
+      3
+    audioClip: {fileID: 8300000, guid: e3d81808a4163eb439724a7868bdb6bf, type: 3}
+  - audioName: Earth 4
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Earth/Earth 4.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Earth/Earth
+      4
+    audioClip: {fileID: 8300000, guid: 9af0336762a0a064db06742ef392bf38, type: 3}
+  - audioName: Earth 5
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Earth/Earth 5.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Earth/Earth
+      5
+    audioClip: {fileID: 8300000, guid: 811bbcc4e71c3d94bb8a3d69cbb678fa, type: 3}
   - audioName: Enemy_Jump
     audioPath: Assets/Resources/Sound/Effects/Enemy_Jump.wav
     audioPathWithoutExtension: Assets/Resources/Sound/Effects/Enemy_Jump
@@ -24561,6 +24677,50 @@ MonoBehaviour:
     audioPath: Assets/Resources/Sound/Effects/equip_2.ogg
     audioPathWithoutExtension: Assets/Resources/Sound/Effects/equip_2
     audioClip: {fileID: 8300000, guid: 3c6625530d3d31543b396f47e3e7ae5b, type: 3}
+  - audioName: Fire 1
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Fire/Fire 1.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Fire/Fire
+      1
+    audioClip: {fileID: 8300000, guid: f24d0c4a6b8c3634eaf75aa63e7887e3, type: 3}
+  - audioName: Fire 2
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Fire/Fire 2.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Fire/Fire
+      2
+    audioClip: {fileID: 8300000, guid: fe9328551f931ad44a73586727324e10, type: 3}
+  - audioName: Fire 3
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Fire/Fire 3.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Fire/Fire
+      3
+    audioClip: {fileID: 8300000, guid: 7c97361655b7b6041bc9600c4d430f86, type: 3}
+  - audioName: Fire 4
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Fire/Fire 4.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Fire/Fire
+      4
+    audioClip: {fileID: 8300000, guid: b9781145430b2e44b996da530092787b, type: 3}
+  - audioName: Fire 5
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Fire/Fire 5.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Fire/Fire
+      5
+    audioClip: {fileID: 8300000, guid: fe88e1a782922f74694f312243e060ab, type: 3}
+  - audioName: Fireplace
+    audioPath: Assets/Resources/Sound/Effects/Fireplace/Fireplace.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Fireplace/Fireplace
+    audioClip: {fileID: 8300000, guid: 61e495cc16d86fa44ad80ee9510322e3, type: 3}
+  - audioName: Fireplace (loop demo)
+    audioPath: Assets/Resources/Sound/Effects/Fireplace/Fireplace (loop demo).mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Fireplace/Fireplace
+      (loop demo)
+    audioClip: {fileID: 8300000, guid: f5ecdafca6a20964da25b2f74ac31cb4, type: 3}
+  - audioName: Fireplace 2
+    audioPath: Assets/Resources/Sound/Effects/Fireplace/Fireplace 2.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Fireplace/Fireplace
+      2
+    audioClip: {fileID: 8300000, guid: 9d88796c15bdd3a408ea7e0409534e89, type: 3}
+  - audioName: Fireplace 2 (loop demo)
+    audioPath: Assets/Resources/Sound/Effects/Fireplace/Fireplace 2 (loop demo).mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Fireplace/Fireplace
+      2 (loop demo)
+    audioClip: {fileID: 8300000, guid: 1fab2eacfd6b6f543ba154f734d8021d, type: 3}
   - audioName: Fishman_Attack
     audioPath: Assets/Resources/Sound/Effects/Fishman_Attack.ogg
     audioPathWithoutExtension: Assets/Resources/Sound/Effects/Fishman_Attack
@@ -24581,14 +24741,74 @@ MonoBehaviour:
     audioPath: Assets/Resources/Sound/Effects/Footstep.wav
     audioPathWithoutExtension: Assets/Resources/Sound/Effects/Footstep
     audioClip: {fileID: 8300000, guid: bdd739d6ffcd3ba4caabcc8fd95ee700, type: 3}
+  - audioName: Footstep 1
+    audioPath: Assets/Resources/Sound/Effects/Lizard Monster/Walking around - Footsteps/Footstep
+      1.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Lizard Monster/Walking
+      around - Footsteps/Footstep 1
+    audioClip: {fileID: 8300000, guid: 44b4d60c245a8564fba88ad012a42aa0, type: 3}
+  - audioName: Footstep 2
+    audioPath: Assets/Resources/Sound/Effects/Lizard Monster/Walking around - Footsteps/Footstep
+      2.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Lizard Monster/Walking
+      around - Footsteps/Footstep 2
+    audioClip: {fileID: 8300000, guid: 47ae9040a37de5c4b800917b7ca3db36, type: 3}
+  - audioName: Footstep 3
+    audioPath: Assets/Resources/Sound/Effects/Lizard Monster/Walking around - Footsteps/Footstep
+      3.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Lizard Monster/Walking
+      around - Footsteps/Footstep 3
+    audioClip: {fileID: 8300000, guid: c439ff1a2854af546889cfb542bbdd01, type: 3}
+  - audioName: Footstep 4
+    audioPath: Assets/Resources/Sound/Effects/Lizard Monster/Walking around - Footsteps/Footstep
+      4.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Lizard Monster/Walking
+      around - Footsteps/Footstep 4
+    audioClip: {fileID: 8300000, guid: fe4e7404deac71d4d9c58f807ddf7518, type: 3}
   - audioName: Footstep_Muffled
     audioPath: Assets/Resources/Sound/Effects/Footstep_Muffled.wav
     audioPathWithoutExtension: Assets/Resources/Sound/Effects/Footstep_Muffled
     audioClip: {fileID: 8300000, guid: 53bf629b2c3bdfb4ea72a5353745765b, type: 3}
+  - audioName: Footsteps (loop demo)
+    audioPath: Assets/Resources/Sound/Effects/Lizard Monster/Walking around - Footsteps/Footsteps
+      (loop demo).mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Lizard Monster/Walking
+      around - Footsteps/Footsteps (loop demo)
+    audioClip: {fileID: 8300000, guid: 6b7946e919f6cb748bb92051b9d9c3ef, type: 3}
   - audioName: Furnace
     audioPath: Assets/Resources/Sound/Effects/Furnace.ogg
     audioPathWithoutExtension: Assets/Resources/Sound/Effects/Furnace
     audioClip: {fileID: 8300000, guid: 0b5790813df9f514ea15879a498b8a54, type: 3}
+  - audioName: Getting Hurt
+    audioPath: Assets/Resources/Sound/Effects/Lizard Monster/Getting Hurt/Getting
+      Hurt.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Lizard Monster/Getting
+      Hurt/Getting Hurt
+    audioClip: {fileID: 8300000, guid: de3a73e925eb65040a33bc2b95763570, type: 3}
+  - audioName: Getting Hurt (female)
+    audioPath: Assets/Resources/Sound/Effects/Players/Getting Hurt/Female/Getting
+      Hurt (female).mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Players/Getting Hurt/Female/Getting
+      Hurt (female)
+    audioClip: {fileID: 8300000, guid: b4987adad997cfa45affd043da2a373b, type: 3}
+  - audioName: Getting Hurt (male)
+    audioPath: Assets/Resources/Sound/Effects/Players/Getting Hurt/Male/Getting Hurt
+      (male).mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Players/Getting Hurt/Male/Getting
+      Hurt (male)
+    audioClip: {fileID: 8300000, guid: 2c712112e1f292546a3a5d9b0d711d9a, type: 3}
+  - audioName: Getting Hurt 2 (female)
+    audioPath: Assets/Resources/Sound/Effects/Players/Getting Hurt/Female/Getting
+      Hurt 2 (female).mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Players/Getting Hurt/Female/Getting
+      Hurt 2 (female)
+    audioClip: {fileID: 8300000, guid: b10d10fda14741a4192865fa8260e815, type: 3}
+  - audioName: Getting Hurt 2 (male)
+    audioPath: Assets/Resources/Sound/Effects/Players/Getting Hurt/Male/Getting Hurt
+      2 (male).mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Players/Getting Hurt/Male/Getting
+      Hurt 2 (male)
+    audioClip: {fileID: 8300000, guid: 697b11c518f8c944d9206f785d79c18a, type: 3}
   - audioName: Golem_Death
     audioPath: Assets/Resources/Sound/Effects/Golem_Death.wav
     audioPathWithoutExtension: Assets/Resources/Sound/Effects/Golem_Death
@@ -24661,6 +24881,52 @@ MonoBehaviour:
     audioPath: Assets/Resources/Sound/Effects/Open.ogg
     audioPathWithoutExtension: Assets/Resources/Sound/Effects/Open
     audioClip: {fileID: 8300000, guid: fc1ad8b89be7fb34cbba0b1d02076c9b, type: 3}
+  - audioName: Pendulum Clock
+    audioPath: Assets/Resources/Sound/Effects/Pendulum Clock/Pendulum Clock.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Pendulum Clock/Pendulum
+      Clock
+    audioClip: {fileID: 8300000, guid: 9e28ab2f27cb56d46bcc6bfbe9166f5d, type: 3}
+  - audioName: Pendulum Clock (loop demo)
+    audioPath: Assets/Resources/Sound/Effects/Pendulum Clock/Pendulum Clock (loop
+      demo).mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Pendulum Clock/Pendulum
+      Clock (loop demo)
+    audioClip: {fileID: 8300000, guid: 175c9f8f22527134bad76038f7d973e0, type: 3}
+  - audioName: Physical 1
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Physical/Physical 1.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Physical/Physical
+      1
+    audioClip: {fileID: 8300000, guid: 961fb7847cb75314ca3332a1cf671ea1, type: 3}
+  - audioName: Physical 1.2
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Physical/Physical 1.2.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Physical/Physical
+      1.2
+    audioClip: {fileID: 8300000, guid: d7ecef661653e6e40a8fe5148791c15e, type: 3}
+  - audioName: Physical 2
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Physical/Physical 2.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Physical/Physical
+      2
+    audioClip: {fileID: 8300000, guid: a93885f9ccc9ff342835b354edfd81e8, type: 3}
+  - audioName: Physical 3
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Physical/Physical 3.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Physical/Physical
+      3
+    audioClip: {fileID: 8300000, guid: 6f85678971bcb234e88e2fdd6296ec04, type: 3}
+  - audioName: Physical 4
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Physical/Physical 4.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Physical/Physical
+      4
+    audioClip: {fileID: 8300000, guid: 6364e1998d44ff74fbf5e528cf46b19d, type: 3}
+  - audioName: Physical 5
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Physical/Physical 5.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Physical/Physical
+      5
+    audioClip: {fileID: 8300000, guid: 17384b079094b904c95fb84f4163bd2d, type: 3}
+  - audioName: Pick Up Silver
+    audioPath: Assets/Resources/Sound/Effects/Pick Up Silver/Pick Up Silver.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Pick Up Silver/Pick
+      Up Silver
+    audioClip: {fileID: 8300000, guid: 6ab51a8ff90492548bc7b7415dedcc49, type: 3}
   - audioName: Plant_Chomp
     audioPath: Assets/Resources/Sound/Effects/Plant_Chomp.wav
     audioPathWithoutExtension: Assets/Resources/Sound/Effects/Plant_Chomp
@@ -24717,6 +24983,31 @@ MonoBehaviour:
     audioPath: Assets/Resources/Sound/Effects/Serpent_Hurt.ogg
     audioPathWithoutExtension: Assets/Resources/Sound/Effects/Serpent_Hurt
     audioClip: {fileID: 8300000, guid: 1aa7554fd82523d43a88c076734f9b3a, type: 3}
+  - audioName: Ship Cannon Firing
+    audioPath: Assets/Resources/Sound/Effects/Ship Cannon Firing/Ship Cannon Firing.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Ship Cannon Firing/Ship
+      Cannon Firing
+    audioClip: {fileID: 8300000, guid: 9db9e0bded54430439ead170f5f7e9fe, type: 3}
+  - audioName: Ship Sounds 1
+    audioPath: Assets/Resources/Sound/Effects/Ship Sounds/Ship Sounds 1.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Ship Sounds/Ship Sounds
+      1
+    audioClip: {fileID: 8300000, guid: 8f841e24b7bec5a41b5a32970adbdf03, type: 3}
+  - audioName: Ship Sounds 2
+    audioPath: Assets/Resources/Sound/Effects/Ship Sounds/Ship Sounds 2.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Ship Sounds/Ship Sounds
+      2
+    audioClip: {fileID: 8300000, guid: 02d69ee67d6f4fb498fbb25f2d7abcab, type: 3}
+  - audioName: Ship Sounds 3
+    audioPath: Assets/Resources/Sound/Effects/Ship Sounds/Ship Sounds 3.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Ship Sounds/Ship Sounds
+      3
+    audioClip: {fileID: 8300000, guid: 9b7df23e64a3a8644a9fae6a17884ef1, type: 3}
+  - audioName: Ship Sounds 3 (loop demo)
+    audioPath: Assets/Resources/Sound/Effects/Ship Sounds/Ship Sounds 3 (loop demo).mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Ship Sounds/Ship Sounds
+      3 (loop demo)
+    audioClip: {fileID: 8300000, guid: da438f400c0cf7a44b5f1e5b5d378f4c, type: 3}
   - audioName: ship_cannon_1
     audioPath: Assets/Resources/Sound/Effects/ship_cannon_1.ogg
     audioPathWithoutExtension: Assets/Resources/Sound/Effects/ship_cannon_1
@@ -24917,6 +25208,66 @@ MonoBehaviour:
     audioPath: Assets/Resources/Sound/Effects/ui_hover.ogg
     audioPathWithoutExtension: Assets/Resources/Sound/Effects/ui_hover
     audioClip: {fileID: 8300000, guid: e3b19581d5cd5e24a9bb3ac474d58134, type: 3}
+  - audioName: Water 1
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Water/Water 1.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Water/Water
+      1
+    audioClip: {fileID: 8300000, guid: 427b83f854242424aa312ed57faf1295, type: 3}
+  - audioName: Water 1
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Water/Water 1.wav
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Water/Water
+      1
+    audioClip: {fileID: 8300000, guid: 10c6c6dc43a09fe40bce9f96284bb0d8, type: 3}
+  - audioName: Water 1.2
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Water/Water 1.2.wav
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Water/Water
+      1.2
+    audioClip: {fileID: 8300000, guid: 42a3d4f4743552f42abae7eefd73fef0, type: 3}
+  - audioName: Water 1.2
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Water/Water 1.2.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Water/Water
+      1.2
+    audioClip: {fileID: 8300000, guid: a248434cdec123846a555b76a8951e06, type: 3}
+  - audioName: Water 2
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Water/Water 2.wav
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Water/Water
+      2
+    audioClip: {fileID: 8300000, guid: f16ff83998d1a2742886ceb2f360a3b8, type: 3}
+  - audioName: Water 2
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Water/Water 2.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Water/Water
+      2
+    audioClip: {fileID: 8300000, guid: 9a06654c7338e8c488ce36f88221e538, type: 3}
+  - audioName: Water 3
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Water/Water 3.wav
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Water/Water
+      3
+    audioClip: {fileID: 8300000, guid: af72a7d2108b80242a3e849000b3e4cc, type: 3}
+  - audioName: Water 3
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Water/Water 3.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Water/Water
+      3
+    audioClip: {fileID: 8300000, guid: 83aeb97f6ca3f2341929aea5eb744d0c, type: 3}
+  - audioName: Water 4
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Water/Water 4.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Water/Water
+      4
+    audioClip: {fileID: 8300000, guid: b0f68d84cce71bc4ea8fb5674249ffb3, type: 3}
+  - audioName: Water 4
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Water/Water 4.wav
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Water/Water
+      4
+    audioClip: {fileID: 8300000, guid: 2a306f25d21f1344ebd3a4c9bedfbbef, type: 3}
+  - audioName: Water 5
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Water/Water 5.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Water/Water
+      5
+    audioClip: {fileID: 8300000, guid: 2e290fdea5b0a144ab0db90e45487a85, type: 3}
+  - audioName: Water 5
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Water/Water 5.wav
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Water/Water
+      5
+    audioClip: {fileID: 8300000, guid: fea6d6fe5743caf478d6d5c3a7c6782f, type: 3}
   - audioName: waterfall
     audioPath: Assets/Resources/Sound/Effects/waterfall.ogg
     audioPathWithoutExtension: Assets/Resources/Sound/Effects/waterfall
@@ -24925,6 +25276,70 @@ MonoBehaviour:
     audioPath: Assets/Resources/Sound/Effects/web_bounce.ogg
     audioPathWithoutExtension: Assets/Resources/Sound/Effects/web_bounce
     audioClip: {fileID: 8300000, guid: 039f16a449694ae4d855fd08ebc63a2b, type: 3}
+  - audioName: Wind 1
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Wind/Wind 1.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Wind/Wind
+      1
+    audioClip: {fileID: 8300000, guid: d88fdd631635a684aa21ded9f9c0020d, type: 3}
+  - audioName: Wind 1
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Wind/Wind 1.wav
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Wind/Wind
+      1
+    audioClip: {fileID: 8300000, guid: 19dc849d5c3c4f84999fc9ff39b328a9, type: 3}
+  - audioName: Wind 1.2
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Wind/Wind 1.2.wav
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Wind/Wind
+      1.2
+    audioClip: {fileID: 8300000, guid: 86a1be64cc483fb4d961bc6f3b0d20d7, type: 3}
+  - audioName: Wind 1.2
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Wind/Wind 1.2.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Wind/Wind
+      1.2
+    audioClip: {fileID: 8300000, guid: 9bbc3dfe1e51ba4408df013d88dd9356, type: 3}
+  - audioName: Wind 2
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Wind/Wind 2.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Wind/Wind
+      2
+    audioClip: {fileID: 8300000, guid: 4de8a2f01be655a47b334f4909c3b028, type: 3}
+  - audioName: Wind 2
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Wind/Wind 2.wav
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Wind/Wind
+      2
+    audioClip: {fileID: 8300000, guid: 8a6ce9931f0735a468422d4903b393f3, type: 3}
+  - audioName: Wind 3
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Wind/Wind 3.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Wind/Wind
+      3
+    audioClip: {fileID: 8300000, guid: 432ce9218223ab043a1b1325deedb465, type: 3}
+  - audioName: Wind 3
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Wind/Wind 3.wav
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Wind/Wind
+      3
+    audioClip: {fileID: 8300000, guid: 028c6ccbd28f008408f328127461c079, type: 3}
+  - audioName: Wind 4
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Wind/Wind 4.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Wind/Wind
+      4
+    audioClip: {fileID: 8300000, guid: 3e0914809e6f2564a85423f99199b976, type: 3}
+  - audioName: Wind 4
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Wind/Wind 4.wav
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Wind/Wind
+      4
+    audioClip: {fileID: 8300000, guid: a8b7d7846849e2c4a81257189ca8fbc6, type: 3}
+  - audioName: Wind 5
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Wind/Wind 5.wav
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Wind/Wind
+      5
+    audioClip: {fileID: 8300000, guid: 98473bf15b65e2b4fab1a3f908cf52fc, type: 3}
+  - audioName: Wind 5
+    audioPath: Assets/Resources/Sound/Effects/Attack Modifiers/Wind/Wind 5.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Attack Modifiers/Wind/Wind
+      5
+    audioClip: {fileID: 8300000, guid: 3827fb3d1be7971439179c83501cdcfe, type: 3}
+  - audioName: Win-Success
+    audioPath: Assets/Resources/Sound/Effects/Win-Success/Win-Success.mp3
+    audioPathWithoutExtension: Assets/Resources/Sound/Effects/Win-Success/Win-Success
+    audioClip: {fileID: 8300000, guid: 256d04fe7270e7d458c5a704d868b6ec, type: 3}
   - audioName: Worm_Attack
     audioPath: Assets/Resources/Sound/Effects/Worm_Attack.ogg
     audioPathWithoutExtension: Assets/Resources/Sound/Effects/Worm_Attack

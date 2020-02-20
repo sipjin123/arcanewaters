@@ -114,8 +114,8 @@ public class BodyEntity : NetEntity
       while (Util.isEmpty(this.entityName)) {
          yield return null;
       }
-      updateBodySpriteSheets();
 
+      updateBodySpriteSheets();
       this.armorManager.updateSprites(this.armorManager.armorType, this.armorManager.color1, this.armorManager.color2);
       this.weaponManager.updateSprites(this.weaponManager.weaponType, this.weaponManager.color1, this.weaponManager.color2);
    }

@@ -132,6 +132,10 @@ public class Minimap : ClientMonoBehaviour {
          return;
       }
       Area area = AreaManager.self.getArea(Global.player.areaKey);
+      if (area == null) {
+         Debug.LogWarning("Area has not yet loaded: " + area);
+         return;
+      }
 
       // Dynamically generate minimap for base map player entered
       if (Area.getBiome(area.areaKey) != Biome.Type.None) {

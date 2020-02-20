@@ -35,7 +35,7 @@ public class MapManager : MonoBehaviour {
 
                // Create the map here on the server
                Vector3 nextMapPosition = MapManager.self.getNextMapPosition();
-               createLiveMap(mapName, maps[mapName], nextMapPosition, source.instanceId);
+               createLiveMap(mapName, maps[mapName], nextMapPosition);
 
                // Send confirmation back to the player who issued the command
                if (source != null) {
@@ -46,7 +46,7 @@ public class MapManager : MonoBehaviour {
       });
    }
 
-   public void createLiveMap (string areaKey, string mapData, Vector3 mapPosition, int instanceID = 0) {
+   public void createLiveMap (string areaKey, string mapData, Vector3 mapPosition) {
       D.log("Preparing to create live map: " + areaKey + " at: " + mapPosition);
 
       // If the map already exists, don't create it again
@@ -56,7 +56,7 @@ public class MapManager : MonoBehaviour {
       }
 
       // Instantiate the map using the map data
-      Area area = MapImporter.instantiateMapData(mapData, areaKey, mapPosition, instanceID);
+      Area area = MapImporter.instantiateMapData(mapData, areaKey, mapPosition);
       AreaManager.self.storeArea(area);
       area.vcam.VirtualCameraGameObject.SetActive(false);
 
@@ -98,6 +98,11 @@ public class MapManager : MonoBehaviour {
 
          // Spawn the Area using the map data
          createLiveMap(areaKey, mapData, position);
+
+         // Send signal to player to update virtual camera after area is created
+         if (Global.player != null) {
+            Global.player.updatePlayerCamera();
+         }
       }
    }
 

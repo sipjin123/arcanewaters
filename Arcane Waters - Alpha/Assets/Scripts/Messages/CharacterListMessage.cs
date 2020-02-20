@@ -20,6 +20,9 @@ public class CharacterListMessage : MessageBase {
    public int[] armorColors1;
    public int[] armorColors2;
 
+   // Sends material type to be used on character select screen
+   public MaterialType[] materialTypeArray;
+
    #endregion
 
    public CharacterListMessage () { }
@@ -28,12 +31,13 @@ public class CharacterListMessage : MessageBase {
       this.netId = netId;
    }
 
-   public CharacterListMessage (uint netId, UserInfo[] userArray, Armor[] armorArray, Weapon[] weaponArray, int[] armorColors1, int[] armorColors2) {
+   public CharacterListMessage (uint netId, UserInfo[] userArray, Armor[] armorArray, Weapon[] weaponArray, int[] armorColors1, int[] armorColors2, MaterialType[] materialTypeArray = null) {
       this.netId = netId;
       this.userArray = userArray;
       this.armorArray = armorArray;
       this.weaponArray = weaponArray;
       this.armorColors1 = armorColors1;
       this.armorColors2 = armorColors2;
+      this.materialTypeArray = materialTypeArray;
    }
 }

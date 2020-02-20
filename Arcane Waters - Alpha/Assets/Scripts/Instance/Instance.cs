@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using MapCreationTool.Serialization;
 
 public class Instance : NetworkBehaviour
 {
@@ -55,33 +56,56 @@ public class Instance : NetworkBehaviour
 
    private void Start () {
       // We only spawn Bots on the Server
+      Area area = AreaManager.self.getArea(this.areaKey);
       if (NetworkServer.active) {
-         Area area = AreaManager.self.getArea(this.areaKey);
-         List<BotSpot> spots = BotManager.self.getSpots(area.areaKey);
+         if (area != null) {
+            if (area.enemyDatafields.Count == 0 && area.npcDatafields.Count == 0) {
+               List<BotSpot> spots = BotManager.self.getSpots(area.areaKey);
 
-         foreach (BotSpot spot in spots) {
-            Vector2 spawnPosition = spot.transform.position;
+               foreach (BotSpot spot in spots) {
+                  Vector2 spawnPosition = spot.transform.position;
 
-            // Figure out which waypoint is the closest
-            if (spot.route != null) {
-               spawnPosition = spot.route.getClosest(spawnPosition).transform.position;
+                  // Figure out which waypoint is the closest
+                  if (spot.route != null) {
+                     spawnPosition = spot.route.getClosest(spawnPosition).transform.position;
+                  }
+
+                  BotShipEntity bot = Instantiate(spot.prefab, spawnPosition, Quaternion.identity);
+                  bot.instanceId = this.id;
+                  bot.areaKey = area.areaKey;
+                  bot.npcType = spot.npcType;
+                  bot.faction = NPC.getFactionFromType(bot.npcType);
+                  bot.route = spot.route;
+                  bot.nationType = spot.nationType;
+                  bot.maxForceOverride = spot.maxForceOverride;
+                  bot.speed = Ship.getBaseSpeed(Ship.Type.Caravel);
+                  bot.attackRangeModifier = Ship.getBaseAttackRange(Ship.Type.Caravel);
+                  bot.entityName = "Bot";
+                  this.entities.Add(bot);
+
+                  // Spawn the bot on the Clients
+                  NetworkServer.Spawn(bot.gameObject);
+               }
+            } else {
+               if (area.enemyDatafields.Count > 0) {
+                  Transform npcParent = Instantiate(new GameObject(), area.transform).transform;
+                  foreach (ExportedPrefab001 dataField in area.enemyDatafields) {
+                     Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;
+
+                     // Add it to the Instance
+                     Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab, npcParent);
+                     enemy.enemyType = (Enemy.Type)Enemy.fetchReceivedData(dataField.d);
+
+                     InstanceManager.self.addEnemyToInstance(enemy, this);
+
+                     //enemy.transform.position = targetLocalPos;
+                     enemy.transform.localPosition = targetLocalPos;
+                     enemy.desiredPosition = targetLocalPos;
+
+                     NetworkServer.Spawn(enemy.gameObject);
+                  }
+               }
             }
-
-            BotShipEntity bot = Instantiate(spot.prefab, spawnPosition, Quaternion.identity);
-            bot.instanceId = this.id;
-            bot.areaKey = area.areaKey;
-            bot.npcType = spot.npcType;
-            bot.faction = NPC.getFactionFromType(bot.npcType);
-            bot.route = spot.route;
-            bot.nationType = spot.nationType;
-            bot.maxForceOverride = spot.maxForceOverride;
-            bot.speed = Ship.getBaseSpeed(Ship.Type.Caravel);
-            bot.attackRangeModifier = Ship.getBaseAttackRange(Ship.Type.Caravel);
-            bot.entityName = "Bot";
-            this.entities.Add(bot);
-
-            // Spawn the bot on the Clients
-            NetworkServer.Spawn(bot.gameObject);
          }
       }
 

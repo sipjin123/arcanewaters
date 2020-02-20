@@ -446,16 +446,18 @@ public class NetEntity : NetworkBehaviour
       return new Weapon(0, Weapon.Type.None);
    }
 
-   protected void updatePlayerCamera () {
+   public void updatePlayerCamera () {
       // Only do this for our own player, and never 
       if (!this.isLocalPlayer) {
          return;
       }
 
       Area area = AreaManager.self.getArea(this.areaKey);
-      CinemachineVirtualCamera vcam = area.vcam;
-      Util.activateVirtualCamera(vcam);
-      vcam.Follow = this.transform;
+      if (area != null) {
+         CinemachineVirtualCamera vcam = area.vcam;
+         Util.activateVirtualCamera(vcam);
+         vcam.Follow = this.transform;
+      }
    }
 
    protected void requestServerTime () {

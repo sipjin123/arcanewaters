@@ -239,6 +239,58 @@ public class EquipmentXMLManager : MonoBehaviour {
       return returnHelmStatList;
    }
 
+   public static List<Item> setEquipmentData (List<Item> itemData) {
+      foreach (Item dataItem in itemData) {
+         string itemName = "";
+         string itemDesc = "";
+         string itemPath = "";
+         
+         switch (dataItem.category) {
+            case Item.Category.Armor:
+               // Basic Info Setup
+               ArmorStatData armorStatData = self.getArmorData(dataItem.itemTypeId);
+               itemName = armorStatData.equipmentName;
+               itemDesc = armorStatData.equipmentDescription;
+               itemPath = armorStatData.equipmentIconPath;
+
+               // Data Setup
+               string data = string.Format("armor={0}, rarity={1}", armorStatData.armorBaseDefense, (int) Rarity.Type.Common);
+               dataItem.data = data;
+
+               dataItem.setBasicInfo(itemName, itemDesc, itemPath);
+               break;
+            case Item.Category.Weapon:
+               // Basic Info Setup
+               WeaponStatData weaponStatData = self.getWeaponData((Weapon.Type) dataItem.itemTypeId);
+               itemName = weaponStatData.equipmentName;
+               itemDesc = weaponStatData.equipmentDescription;
+               itemPath = weaponStatData.equipmentIconPath;
+
+               // Data Setup
+               data = string.Format("damage={0}, rarity={1}", weaponStatData.weaponBaseDamage, (int) Rarity.Type.Common);
+               dataItem.data = data;
+
+               dataItem.setBasicInfo(itemName, itemDesc, itemPath);
+               break;
+            case Item.Category.Helm:
+               // Basic Info Setup
+               HelmStatData helmStatData = self.getHelmData(dataItem.itemTypeId);
+               itemName = helmStatData.equipmentName;
+               itemDesc = helmStatData.equipmentDescription;
+               itemPath = helmStatData.equipmentIconPath;
+
+               // Data Setup
+               data = string.Format("armor={0}, rarity={1}", helmStatData.helmBaseDefense, (int) Rarity.Type.Common);
+               dataItem.data = data;
+
+               dataItem.setBasicInfo(itemName, itemDesc, itemPath);
+               break;
+         }
+      }
+
+      return itemData;
+   }
+
    #region Private Variables
 
    // Stores the list of all weapon data

@@ -25,7 +25,7 @@ namespace MapCreationTool
       /// Creates an instance of a map from the serialized map data
       /// </summary>
       /// <param name="data"></param>
-      public static Area instantiateMapData (string data, string areaKey, Vector3 position, int instanceID = 0) {
+      public static Area instantiateMapData (string data, string areaKey, Vector3 position) {
 
          ensureSerializationMapsLoaded();
 
@@ -47,7 +47,7 @@ namespace MapCreationTool
          }
 
          instantiateTilemaps(exportedProject, result.tilemapParent, result.collisionTilemapParent);
-         instantiatePrefabs(exportedProject, result.prefabParent, result.npcParent, instanceID);
+         instantiatePrefabs(exportedProject, result.prefabParent, result.npcParent, result.area);
 
          if (exportedProject.gravityEffectors != null) {
             addGravityEffectors(result, exportedProject.gravityEffectors);
@@ -127,27 +127,19 @@ namespace MapCreationTool
          return bounds;
       }
 
-      static void instantiatePrefabs (ExportedProject001 project, Transform prefabParent, Transform npcParent, int instanceID = 0) {
+      static void instantiatePrefabs (ExportedProject001 project, Transform prefabParent, Transform npcParent, Area area) {
          Func<int, GameObject> indexToPrefab = (index) => { return AssetSerializationMaps.getPrefab(index, project.biome, false); };
+
+         List<ExportedPrefab001> npcData = new List<ExportedPrefab001>();
+         List<ExportedPrefab001> enemyData = new List<ExportedPrefab001>();
 
          foreach (var prefab in project.prefabs) {
             GameObject original = indexToPrefab(prefab.i);
 
             if (original.GetComponent<Enemy>() != null) {
-               Transform parent = prefabParent;
-               Vector3 targetLocalPos = new Vector3(prefab.x, prefab.y, 0) * 0.16f + Vector3.back * 10;
-
-               // Create an Enemy in this instance
-               Enemy enemy = UnityEngine.Object.Instantiate(PrefabsManager.self.enemyPrefab, parent);
-               enemy.enemyType = Enemy.Type.Lizard;
-
-               // Add it to the Instance
-               Instance instance = InstanceManager.self.getInstance(instanceID);
-               InstanceManager.self.addEnemyToInstance(enemy, instance);
-
-               enemy.transform.localPosition = targetLocalPos;
-               enemy.desiredPosition = targetLocalPos;
-               Mirror.NetworkServer.Spawn(enemy.gameObject);
+               if (prefab.d != null) {
+                  enemyData.Add(prefab);
+               }
             } else {
                Transform parent = original.GetComponent<NPC>() ? npcParent : prefabParent;
                Vector3 targetLocalPos = new Vector3(prefab.x, prefab.y, 0) * 0.16f + Vector3.back * 10;
@@ -167,12 +159,13 @@ namespace MapCreationTool
                }
 
                IMapEditorDataReceiver receiver = pref.GetComponent<IMapEditorDataReceiver>();
-               Debug.LogError(pref.gameObject.name+" __ " +prefab.d + " - " + receiver);
                if (receiver != null && prefab.d != null) {
                   receiver.receiveData(prefab.d);
-               } 
+               }
             }
          }
+
+         area.registerNPCAndEnemyData(npcData, enemyData);
       }
 
       static void instantiateTilemaps (ExportedProject001 project, Transform tilemapParent, Transform collisionTilemapParent) {

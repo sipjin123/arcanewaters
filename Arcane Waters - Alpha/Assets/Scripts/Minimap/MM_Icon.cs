@@ -26,10 +26,12 @@ public class MM_Icon : ClientMonoBehaviour {
       // Keep the icon in the right position
       if (Global.player != null) {
          Area currentArea = AreaManager.self.getArea(Global.player.areaKey);
-         Vector3 relativePosition = target.transform.position - currentArea.transform.position;
-         relativePosition *= 12f;
-         relativePosition += new Vector3(-64f, 64f);
-         Util.setLocalXY(this.transform, relativePosition);
+         if (currentArea != null) {
+            Vector3 relativePosition = target.transform.position - currentArea.transform.position;
+            relativePosition *= 12f;
+            relativePosition += new Vector3(-64f, 64f);
+            Util.setLocalXY(this.transform, relativePosition);
+         }
       }
    }
 

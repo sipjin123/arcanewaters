@@ -58,41 +58,39 @@ public class ServerMessageManager : MonoBehaviour {
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            EquipmentXMLManager.self.initializeDataCache();
-            EquipmentXMLManager.self.finishedDataSetup.AddListener(() => {
-               EquipmentXMLManager.self.finishedDataSetup.RemoveAllListeners();
-               ArmorStatData armorStatData = EquipmentXMLManager.self.getArmorData(armorList[0].itemTypeId);
+            // If there was a valid account ID and a specified user ID, tell the client we authenticated them
+            if (accountId > 0 && logInUserMessage.selectedUserId > 0 && users.Count == 1) {
+               // Keep track of the user ID that's been authenticated for this connection
+               MyNetworkManager.noteUserIdForConnection(logInUserMessage.selectedUserId, conn);
 
-               // If there was a valid account ID and a specified user ID, tell the client we authenticated them
-               if (accountId > 0 && logInUserMessage.selectedUserId > 0 && users.Count == 1) {
-                  // Keep track of the user ID that's been authenticated for this connection
-                  MyNetworkManager.noteUserIdForConnection(logInUserMessage.selectedUserId, conn);
+               // Now tell the client to move forward with the login process
+               LogInCompleteMessage msg = new LogInCompleteMessage(Global.netId, (Direction) users[0].facingDirection,
+                  userObjects.accountEmail, userObjects.accountCreationTime);
+               conn.Send(msg);
 
-                  // Now tell the client to move forward with the login process
-                  LogInCompleteMessage msg = new LogInCompleteMessage(Global.netId, (Direction) users[0].facingDirection,
-                     userObjects.accountEmail, userObjects.accountCreationTime);
-                  conn.Send(msg);
+            } else if (accountId > 0 && logInUserMessage.selectedUserId == 0) {
+               // We have to deal with these separately because of a bug in Unity
+               int[] armorColors1 = new int[armorList.Count];
+               int[] armorColors2 = new int[armorList.Count];
+               MaterialType[] materialTypes = new MaterialType[armorList.Count];
+               for (int i = 0; i < armorList.Count; i++) {
+                  armorColors1[i] = (int) armorList[i].color1;
+                  armorColors2[i] = (int) armorList[i].color2;
 
-               } else if (accountId > 0 && logInUserMessage.selectedUserId == 0) {
-                  // We have to deal with these separately because of a bug in Unity
-                  int[] armorColors1 = new int[armorList.Count];
-                  int[] armorColors2 = new int[armorList.Count];
-                  for (int i = 0; i < armorList.Count; i++) {
-                     armorColors1[i] = (int) armorList[i].color1;
-                     armorColors2[i] = (int) armorList[i].color2;
+                  ArmorStatData armorStat = EquipmentXMLManager.self.getArmorData(armorList[i].itemTypeId);
+                  if (armorStat == null) {
+                     materialTypes[i] = MaterialType.None;
+                  } else {
+                     materialTypes[i] = armorStat.materialType;
                   }
-
-                  // If there was an account ID but not user ID, send the info on all of their characters for display on the Character screen
-                  CharacterEquipmentMessage msg1 = new CharacterEquipmentMessage(Global.netId, (int) armorStatData.materialType, (int) users[0].gender, armorStatData.equipmentID);
-                  conn.Send(msg1);
-
-                  // If there was an account ID but not user ID, send the info on all of their characters for display on the Character screen
-                  CharacterListMessage msg = new CharacterListMessage(Global.netId, users.ToArray(), armorList.ToArray(), weaponList.ToArray(), armorColors1, armorColors2);
-                  conn.Send(msg);
-               } else {
-                  sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);
                }
-            });
+
+               // If there was an account ID but not user ID, send the info on all of their characters for display on the Character screen
+               CharacterListMessage msg = new CharacterListMessage(Global.netId, users.ToArray(), armorList.ToArray(), weaponList.ToArray(), armorColors1, armorColors2, materialTypes);
+               conn.Send(msg);
+            } else {
+               sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);
+            }
          });
       });
    }

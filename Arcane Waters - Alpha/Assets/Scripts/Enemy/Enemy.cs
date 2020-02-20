@@ -244,6 +244,18 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       }
    }
 
+   public static int fetchReceivedData (DataField[] dataFields) {
+      foreach (DataField field in dataFields) {
+         if (field.k.CompareTo(DataField.LAND_ENEMY_DATA_KEY) == 0) {
+            // Get ID from npc data field
+            // Field arrives in format <npc id>: <npc name>
+            int id = int.Parse(field.v.Split(':')[0]);
+            return id;
+         }
+      }
+      return 0;
+   }
+
    #region Private Variables
 
    // Our zSnap component

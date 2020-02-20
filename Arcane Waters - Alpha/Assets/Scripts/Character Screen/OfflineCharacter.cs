@@ -69,11 +69,11 @@ public class OfflineCharacter : ClientMonoBehaviour {
       creationCanvasGroup.blocksRaycasts = creationMode;
    }
 
-   public void setDataAndLayers (UserInfo userInfo, Weapon weapon, Armor armor, ColorType armorColor1, ColorType armorColor2) {
+   public void setDataAndLayers (UserInfo userInfo, Weapon weapon, Armor armor, ColorType armorColor1, ColorType armorColor2, MaterialType materialType = MaterialType.None) {
       this.userId = userInfo.userId;
 
       setBodyLayers(userInfo);
-      setArmor(armor.type, armorColor1, armorColor2);
+      setArmor(armor.type, armorColor1, armorColor2, materialType);
       setWeapon(userInfo, weapon);
    }
 
@@ -113,13 +113,17 @@ public class OfflineCharacter : ClientMonoBehaviour {
       }
    }
 
-   public void setArmor (int armorType, ColorType color1, ColorType color2) {
+   public void setArmor (int armorType, ColorType color1, ColorType color2, MaterialType materialType = MaterialType.None) {
       // Set the correct sheet for our gender and armor type
       armor.setType(this.genderType, armorType, true);
 
       // Update our Material
       ColorKey colorKey = new ColorKey(this.genderType, "armor_" + armorType);
       armor.recolor(colorKey, color1, color2);
+
+      if (materialType != MaterialType.None) {
+         armor.setNewMaterial(MaterialManager.self.translateMaterial(materialType));
+      }
    }
 
    public void cancelCreating () {

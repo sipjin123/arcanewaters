@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.Tilemaps;
 using System;
+using MapCreationTool.Serialization;
 
 public class Area : MonoBehaviour
 {
@@ -34,7 +35,27 @@ public class Area : MonoBehaviour
    // Whether this area is a sea area
    public bool isSea = false;
 
+   // NPC Data fields to be loaded by the server
+   public List<ExportedPrefab001> npcDatafields = new List<ExportedPrefab001>();
+
+   // Enemy Data fields to be loaded by the server
+   public List<ExportedPrefab001> enemyDatafields = new List<ExportedPrefab001>();
+
+   // Cached info of the npc data list
+   public List<NPCData> loadedNPCDataList = new List<NPCData>();
+
    #endregion
+
+   public void registerNPCAndEnemyData (List<ExportedPrefab001> npcDatafields, List<ExportedPrefab001> enemyDatafields) {
+      this.npcDatafields = npcDatafields;
+      this.enemyDatafields = enemyDatafields;
+
+      foreach (ExportedPrefab001 exportedPrefab in npcDatafields) {
+         int npcID = NPC.fetchDataFieldID(exportedPrefab.d);
+         NPCData npcData = NPCManager.self.getNPCData(npcID);
+         loadedNPCDataList.Add(npcData);
+      }
+   }
 
    private void Start () {
       // Regenerate any tilemap colliders

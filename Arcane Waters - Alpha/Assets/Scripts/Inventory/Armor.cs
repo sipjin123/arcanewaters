@@ -84,13 +84,7 @@ public class Armor : EquippableItem {
    }
 
    public override string getDescription () {
-      ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(this.type);
-      if (armorData == null) {
-         D.warning("Armor data does not exist! Go to Equipment Editor and make new data");
-         return "Undefined";
-      }
-
-      return armorData.equipmentDescription;
+      return itemDescription;
    }
 
    public override string getTooltip () {
@@ -102,7 +96,7 @@ public class Armor : EquippableItem {
    }
 
    public override string getName () {
-      return getName(type);
+      return itemName;
    }
 
    public int getArmorValue () {
@@ -215,17 +209,11 @@ public class Armor : EquippableItem {
    }
 
    public override string getIconPath () {
-      ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(this.type);
-      if (armorData != null) {
-         string spritePath = armorData.equipmentIconPath;
-         return spritePath;
-      }
-
-      return "";
+      return iconPath;
    }
 
    public override ColorKey getColorKey () {
-      return new ColorKey(Global.player.gender, this.type.ToString());
+      return new ColorKey(Global.player.gender, "armor_" + this.type.ToString());
    }
 
    public static Armor generateRandom (int itemId, int armorType) {

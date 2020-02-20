@@ -72,7 +72,7 @@ public class MaterialManager : MonoBehaviour {
       _materials[cloth] = translateMaterial(materialType);
    }
 
-   private Material translateMaterial (MaterialType materialType) {
+   public Material translateMaterial (MaterialType materialType) {
       switch (materialType) {
          case MaterialType.Material_G:
             return material_G;
