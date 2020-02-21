@@ -27,7 +27,7 @@ namespace MapCreationTool
 
       public Texture2D getTexture (int npcId) {
          if (!idToNpc.ContainsKey(npcId)) {
-            Debug.LogError("Unrecognized npc ID.");
+            Debug.LogWarning($"Unrecognized npc ID {npcId}.");
             return null;
          }
 

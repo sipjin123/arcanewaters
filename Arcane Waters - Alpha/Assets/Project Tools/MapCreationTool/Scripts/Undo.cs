@@ -22,6 +22,9 @@ namespace MapCreationTool.UndoSystem
       }
 
       public static void register (Action<UndoRedoData>[] handlers, UndoRedoData undoData, UndoRedoData redoData) {
+         undoData.isUndo = true;
+         redoData.isUndo = false;
+
          Log.RemoveRange(head, Log.Count - head);
 
          if (Log.Count == LogLength)
@@ -39,24 +42,39 @@ namespace MapCreationTool.UndoSystem
       }
 
       public static void doUndo () {
-         if (undoCount > 0) {
+         int entiresHandled = 0;
+
+         while (undoCount > 0) {
             foreach (var handler in Log[head - 1].handlers)
                handler(Log[head - 1].undoData);
-            head--;
 
-            UndoPerformed?.Invoke();
+            head--;
+            entiresHandled++;
+
+            if (!Log[head].undoData.cascade) {
+               break;
+            }
          }
+
+         UndoPerformed?.Invoke();
       }
 
       public static void doRedo () {
-         if (redoCount > 0) {
+         int entiresHandled = 0;
+
+         while (redoCount > 0) {
             foreach (var handler in Log[head].handlers)
                handler(Log[head].redoData);
 
             head++;
+            entiresHandled++;
 
-            RedoPerformed?.Invoke();
+            if (redoCount == 0 || !Log[head].redoData.cascade) {
+               break;
+            }
          }
+
+         RedoPerformed?.Invoke();
       }
 
       public static int undoCount
@@ -83,7 +101,14 @@ namespace MapCreationTool.UndoSystem
       public UndoRedoData redoData { get; set; }
    }
 
-   public class UndoRedoData { }
+   public class UndoRedoData
+   {
+      /// <summary>
+      /// When handling, whether to handle to adjacent entriers as well
+      /// </summary>
+      public bool cascade { get; set; }
+      public bool isUndo { get; set; }
+   }
 
    public class BoardUndoRedoData : UndoRedoData
    {

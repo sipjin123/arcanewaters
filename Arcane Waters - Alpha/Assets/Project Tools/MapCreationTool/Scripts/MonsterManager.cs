@@ -30,7 +30,7 @@ namespace MapCreationTool
 
       public Texture2D getLandMonsterTexture (int id) {
          if (!idToLandMonster.ContainsKey(id)) {
-            Debug.LogError("Unrecognized monster ID.");
+            Debug.LogWarning($"Unrecognized monster ID {id}.");
             return null;
          }
 
@@ -39,7 +39,7 @@ namespace MapCreationTool
 
       public Texture2D getSeaMonsterTexture (int id) {
          if (!idToSeaMonster.ContainsKey(id)) {
-            Debug.LogError("Unrecognized monster ID.");
+            Debug.LogWarning($"Unrecognized monster ID {id}.");
             return null;
          }
 

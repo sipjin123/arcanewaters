@@ -129,7 +129,8 @@ namespace MapCreationTool
           IEnumerable<Layer> layers,
           List<PlacedPrefab> prefabs,
           EraserLayerMode eraserMode,
-          Vector3 worldPos) {
+          Vector3 worldPos,
+          Layer deleteOnlyFrom) {
          BoardChange result = new BoardChange();
 
          List<PlacedPrefab> overlapPrefs = new List<PlacedPrefab>();
@@ -164,7 +165,7 @@ namespace MapCreationTool
          }
 
          foreach (Layer layer in layers.Reverse()) {
-            if (layer.hasTile(DrawBoard.worldToCell(worldPos))) {
+            if (layer.hasTile(DrawBoard.worldToCell(worldPos)) && layer == deleteOnlyFrom) {
                result.tileChanges.Add(new TileChange(null, DrawBoard.worldToCell(worldPos), layer));
                if (eraserMode == EraserLayerMode.Top)
                   return result;

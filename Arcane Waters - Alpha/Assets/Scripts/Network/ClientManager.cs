@@ -43,6 +43,11 @@ public class ClientManager : MonoBehaviour {
          MyNetworkManager.self.StartServer();
       }
 
+      if (CommandCodes.get(CommandCodes.Type.AUTO_PRODUCTION)) {
+         DB_Main.setServerFromConfig();
+         MyNetworkManager.self.StartServer();
+      }
+
       if (Global.startAutoHost) {
          QuickLaunchPanel.self.hostToggle.isOn = true;
          QuickLaunchPanel.self.launch();

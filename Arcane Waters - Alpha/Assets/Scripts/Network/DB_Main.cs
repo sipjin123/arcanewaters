@@ -8,6 +8,8 @@ using System.Diagnostics;
 using System.Xml;
 using MapCreationTool;
 using MapCreationTool.Serialization;
+using System.IO;
+using SimpleJSON;
 
 #if IS_SERVER_BUILD
 using MySql.Data.MySqlClient;
@@ -5100,6 +5102,31 @@ public class DB_Main : DB_MainStub
    public static void setServer (string server, string database="", string uid="", string password="") {
       _connectionString = buildConnectionString(server, database, uid, password);
    }
+
+   public static void setServerFromConfig() {
+      string dbServerConfigFile = Path.Combine(Application.dataPath, "dbConfig.json");
+
+      // Check config file
+      if (File.Exists(dbServerConfigFile)) {
+          string dbServerConfigContent = File.ReadAllText(dbServerConfigFile);
+          JSONNode dbServerConfig = JSON.Parse(dbServerConfigContent);
+
+          DB_Main.setServer(
+             dbServerConfig["AW_DB_SERVER"].Value,
+             dbServerConfig["AW_DB_NAME"].Value,
+             dbServerConfig["AW_DB_USER"].Value,
+             dbServerConfig["AW_DB_PASS"].Value
+          );
+      }
+
+      // Use default remote server as fallback
+      else {
+         D.warning("setServerFromConfig() - no production database config file [" + dbServerConfigFile + "] found. Using default db server [" + DB_Main.RemoteServer + "] as fallback." );
+         DB_Main.setServer(DB_Main.RemoteServer);
+      }
+
+   }
+
 
    protected static Armor getArmor (MySqlDataReader dataReader) {
       int itemId = DataUtil.getInt(dataReader, "armorId");

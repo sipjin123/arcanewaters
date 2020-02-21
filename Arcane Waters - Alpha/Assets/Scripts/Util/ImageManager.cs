@@ -199,6 +199,16 @@ public class ImageManager : ClientMonoBehaviour {
       foreach (ImageData imageData in imageDataList) {
          string simplePath = getSimplePath(imageData.imagePath);
 
+         if (simplePath == null) {
+            Debug.LogError($"Image simple path is null. Image path: {imageData.imagePath}");
+            continue;
+         }
+
+         if (imageData.texture2D == null) {
+            Debug.LogError($"Image texture is null. Image path: {imageData.imagePath}");
+            continue;
+         }
+
          _dataByTexture[imageData.texture2D] = imageData;
          _dataByPath[simplePath] = imageData;
       }

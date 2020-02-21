@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5873089731355986663}
   - component: {fileID: 8306933256679723950}
-  - component: {fileID: -3506153902411638669}
+  - component: {fileID: 6516172730270472825}
   m_Layer: 0
   m_Name: Tree5_bur
   m_TagString: Untagged
@@ -50,7 +50,7 @@ MonoBehaviour:
   offsetZ: 0
   isActive: 0
   sortPoint: {fileID: 7740159016713858247}
---- !u!114 &-3506153902411638669
+--- !u!114 &6516172730270472825
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -59,11 +59,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 723321215577081368}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97263249dbb00f4408910244944e4000, type: 3}
+  m_Script: {fileID: 11500000, guid: 451efc8d25227ae4fbc6ac6a75232534, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  includeChildren: 1
-  excludeThis: 1
   currentBiome: 1
 --- !u!1 &1574581208666001667
 GameObject:

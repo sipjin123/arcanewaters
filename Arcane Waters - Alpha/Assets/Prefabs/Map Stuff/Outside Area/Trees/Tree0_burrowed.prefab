@@ -155,7 +155,7 @@ GameObject:
   m_Component:
   - component: {fileID: 384970685727403341}
   - component: {fileID: 4558793016998909698}
-  - component: {fileID: -275038084438837336}
+  - component: {fileID: -2416195341055582337}
   m_Layer: 0
   m_Name: Tree0_burrowed
   m_TagString: Untagged
@@ -195,7 +195,7 @@ MonoBehaviour:
   offsetZ: 0
   isActive: 0
   sortPoint: {fileID: 1016842856855472774}
---- !u!114 &-275038084438837336
+--- !u!114 &-2416195341055582337
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -204,11 +204,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 6836209022429192626}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97263249dbb00f4408910244944e4000, type: 3}
+  m_Script: {fileID: 11500000, guid: 451efc8d25227ae4fbc6ac6a75232534, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  includeChildren: 1
-  excludeThis: 1
   currentBiome: 1
 --- !u!1 &7653092036087069333
 GameObject:

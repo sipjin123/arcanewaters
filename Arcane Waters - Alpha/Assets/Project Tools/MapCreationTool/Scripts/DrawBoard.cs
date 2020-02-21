@@ -62,6 +62,8 @@ namespace MapCreationTool
 
       private Vector3Int? draggingFrom = null;
 
+      private Layer deletingFrom = null;
+
       private void Awake () {
          instance = this;
 
@@ -178,7 +180,7 @@ namespace MapCreationTool
 
          layers = new Dictionary<string, Layer>();
 
-         foreach (var l in config.getLayers(editorType)) {
+         foreach (var l in config.getLayers(editorType).OrderBy(l => l.index)) {
             Tilemap[] subLayers = new Tilemap[10];
             for (int i = 0; i < 10; i++) {
                Tilemap layer = Instantiate(layerPref, Vector3.zero, Quaternion.identity, layerContainer);
@@ -274,7 +276,7 @@ namespace MapCreationTool
          changeLoadedVersion(mapVersion);
       }
 
-      private void changeBoard (BoardChange change, bool registerUndo = true) {
+      private void changeBoard (BoardChange change, bool registerUndo = true, bool isDrag = false) {
          BoardChange undoChange = new BoardChange();
 
          foreach (var group in change.tileChanges.GroupBy(tc => tc.layer)) {
@@ -341,8 +343,8 @@ namespace MapCreationTool
          if (registerUndo && !undoChange.empty)
             Undo.register(
                 performUndoRedo,
-                new BoardUndoRedoData { change = undoChange },
-                new BoardUndoRedoData { change = change });
+                new BoardUndoRedoData { change = undoChange, cascade = isDrag },
+                new BoardUndoRedoData { change = change, cascade = isDrag });
       }
 
       public void setSelectedPrefabData (string key, string value, bool recordUndo = true) {
@@ -463,7 +465,8 @@ namespace MapCreationTool
                 getLayersEnumerator(),
                 excludePrefabs ? new List<PlacedPrefab>() : placedPrefabs,
                 Tools.eraserLayerMode,
-                pointerWorldPosition));
+                pointerWorldPosition,
+                deletingFrom));
          } else if (Tools.toolType == ToolType.Brush) {
             if (Tools.tileGroup != null) {
                if (Tools.tileGroup.type == TileGroupType.Regular) {
@@ -607,7 +610,7 @@ namespace MapCreationTool
             foreach (IBiomable biomable in preview.prefabPreviewInstance.GetComponentsInChildren<IBiomable>()) {
                biomable.setBiome(Tools.biome);
             }
-            
+
             var zSnap = preview.prefabPreviewInstance.GetComponent<ZSnap>();
             if (zSnap != null)
                zSnap.isActive = true;
@@ -729,6 +732,21 @@ namespace MapCreationTool
          return target;
       }
 
+      /// <summary>
+      /// Returns the top-most layer, that has a tile placed at a given position
+      /// </summary>
+      /// <param name="position"></param>
+      /// <returns></returns>
+      private Layer getTopLayerWithTile (Vector3Int position) {
+         foreach (Layer layer in getLayersEnumerator().Reverse()) {
+            if (layer.hasTile(position)) {
+               return layer;
+            }
+         }
+
+         return null;
+      }
+
       public static Vector3Int worldToCell (Vector3 worldPosition) {
          return new Vector3Int(Mathf.FloorToInt(worldPosition.x), Mathf.FloorToInt(worldPosition.y), 0);
       }
@@ -755,10 +773,19 @@ namespace MapCreationTool
 
       private void pointerDown (PointerEventData data) {
          if (data.button == PointerEventData.InputButton.Left) {
-            if (Tools.toolType == ToolType.Brush || Tools.toolType == ToolType.Eraser || Tools.toolType == ToolType.Fill)
+            if (Tools.toolType == ToolType.Brush || Tools.toolType == ToolType.Eraser || Tools.toolType == ToolType.Fill) {
+               if (Tools.toolType == ToolType.Eraser) {
+                  // Ensure following deletion on drag event is only at the current layer
+                  if (getHoveredPrefab() != null) {
+                     deletingFrom = null;
+                  } else {
+                     deletingFrom = getTopLayerWithTile(worldToCell(data.pointerCurrentRaycast.worldPosition));
+                  }
+               }
                changeBoard(getPotentialBoardChange(data.pointerCurrentRaycast.worldPosition));
-            else if (Tools.toolType == ToolType.PrefabData)
+            } else if (Tools.toolType == ToolType.PrefabData) {
                selectPrefab(getHoveredPrefab());
+            }
          }
          updatePreview(data.position);
       }
@@ -786,7 +813,7 @@ namespace MapCreationTool
       private void drag (PointerEventData data) {
          if (data.button == PointerEventData.InputButton.Left) {
             if (Tools.tileGroup == null || Tools.tileGroup.type != TileGroupType.Rect) {
-               changeBoard(getPotentialBoardChange(data.pointerCurrentRaycast.worldPosition, true));
+               changeBoard(getPotentialBoardChange(data.pointerCurrentRaycast.worldPosition, true), isDrag: true);
             }
          } else {
             Vector3 curPos = cam.ScreenToWorldPoint(data.position);
