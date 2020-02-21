@@ -14,6 +14,9 @@ public class Armor : EquippableItem {
    // The type
    public int type;
 
+   // The material type to be used on this equipment
+   public MaterialType materialType;
+
    #endregion
 
    public Armor () {

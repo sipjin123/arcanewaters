@@ -79,14 +79,14 @@ public class ServerMessageManager : MonoBehaviour {
 
                   ArmorStatData armorStat = EquipmentXMLManager.self.getArmorData(armorList[i].itemTypeId);
                   if (armorStat == null) {
-                     materialTypes[i] = MaterialType.None;
+                     armorList[i].materialType = MaterialType.None;
                   } else {
-                     materialTypes[i] = armorStat.materialType;
+                     armorList[i].materialType = armorStat.materialType;
                   }
                }
 
                // If there was an account ID but not user ID, send the info on all of their characters for display on the Character screen
-               CharacterListMessage msg = new CharacterListMessage(Global.netId, users.ToArray(), armorList.ToArray(), weaponList.ToArray(), armorColors1, armorColors2, materialTypes);
+               CharacterListMessage msg = new CharacterListMessage(Global.netId, users.ToArray(), armorList.ToArray(), weaponList.ToArray(), armorColors1, armorColors2);
                conn.Send(msg);
             } else {
                sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);

@@ -52,7 +52,7 @@ public class ArmorManager : EquipmentManager {
       this.updateSprites(this.armorType, this.color1, this.color2);
    }
 
-   public void updateSprites (int armorType, ColorType color1, ColorType color2) {
+   public void updateSprites (int armorType, ColorType color1, ColorType color2, MaterialType overrideMaterialType = MaterialType.None) {
       Gender.Type gender = getGender();
 
       // Set the correct sheet for our gender and armor type
@@ -60,8 +60,7 @@ public class ArmorManager : EquipmentManager {
 
       // Update our Material
       ColorKey colorKey = new ColorKey(gender, "armor_" + armorType.ToString());
-      armorLayer.recolor(colorKey, color1, color2);
-      armorLayer.setNewMaterial(MaterialManager.self.translateMaterial(materialType));
+      armorLayer.recolor(colorKey, color1, color2, overrideMaterialType != MaterialType.None ? overrideMaterialType : materialType);
 
       // Sync up all our animations
       if (_body != null) {
@@ -75,7 +74,7 @@ public class ArmorManager : EquipmentManager {
 
       // Update the sprites for the new armor type
       int newType = newArmor == null ? 0 : newArmor.type;
-      updateSprites(newType, color1, color2);
+      updateSprites(newType, color1, color2, newArmor.materialType);
 
       // Play a sound
       SoundManager.create3dSound("equip_", this.transform.position, 2);
@@ -113,6 +112,7 @@ public class ArmorManager : EquipmentManager {
 
       ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(newArmor.itemTypeId);
       if (armorData != null) {
+         newArmor.materialType = armorData.materialType;
          this.materialType = armorData.materialType;
       } 
 

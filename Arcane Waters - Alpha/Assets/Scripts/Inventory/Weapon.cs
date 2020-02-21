@@ -28,6 +28,9 @@ public class Weapon : EquippableItem {
    // The type
    public Type type;
 
+   // The material type to be used on this equipment
+   public MaterialType materialType;
+
    #endregion
 
    public Weapon () {

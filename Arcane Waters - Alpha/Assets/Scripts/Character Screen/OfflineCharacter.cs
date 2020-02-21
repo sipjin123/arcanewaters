@@ -69,11 +69,11 @@ public class OfflineCharacter : ClientMonoBehaviour {
       creationCanvasGroup.blocksRaycasts = creationMode;
    }
 
-   public void setDataAndLayers (UserInfo userInfo, Weapon weapon, Armor armor, ColorType armorColor1, ColorType armorColor2, MaterialType materialType = MaterialType.None) {
+   public void setDataAndLayers (UserInfo userInfo, Weapon weapon, Armor armor, ColorType armorColor1, ColorType armorColor2) {
       this.userId = userInfo.userId;
 
       setBodyLayers(userInfo);
-      setArmor(armor.type, armorColor1, armorColor2, materialType);
+      setArmor(armor.type, armorColor1, armorColor2, armor.materialType);
       setWeapon(userInfo, weapon);
    }
 

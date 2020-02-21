@@ -21,7 +21,7 @@ public class RecoloredSprite : MonoBehaviour {
       }
    }
 
-   public void recolor (ColorKey colorKey, ColorType color1, ColorType color2) {
+   public void recolor (ColorKey colorKey, ColorType color1, ColorType color2, MaterialType materialType = MaterialType.None) {
       _color1 = color1;
       _color2 = color2;
 
@@ -30,12 +30,13 @@ public class RecoloredSprite : MonoBehaviour {
          MaterialManager.self.getGUIMaterial(colorKey) : MaterialManager.self.get(colorKey);
 
       // Some layers, like the Body layer, aren't recolored
-      if (material == null) {
+      if (material == null && materialType == MaterialType.None) {
          return;
       }
 
       // Assign the color associated with our color id from the database
-      setNewMaterial(material);
+      Material newMaterial = materialType != MaterialType.None ? MaterialManager.self.translateMaterial(materialType) : material;
+      setNewMaterial(newMaterial);
    }
 
    public void setNewMaterial (Material oldMaterial) {

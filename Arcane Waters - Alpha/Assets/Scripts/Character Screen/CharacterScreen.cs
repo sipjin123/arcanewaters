@@ -52,7 +52,7 @@ public class CharacterScreen : MonoBehaviour {
       return false;
    }
 
-   public void initializeScreen (UserInfo[] userArray, Armor[] armorArray, Weapon[] weaponArray, int[] armorColors1, int[] armorColors2, MaterialType[] materialArray) {
+   public void initializeScreen (UserInfo[] userArray, Armor[] armorArray, Weapon[] weaponArray, int[] armorColors1, int[] armorColors2) {
       // Store the data we receive for later reference
       _userArray = userArray;
       _armorArray = armorArray;
@@ -75,7 +75,7 @@ public class CharacterScreen : MonoBehaviour {
          if (_spots.ContainsKey(charSpotNumber)) {
             CharacterSpot spot = _spots[charSpotNumber];
             OfflineCharacter offlineChar = Instantiate(offlineCharacterPrefab, spot.transform.position, Quaternion.identity);
-            offlineChar.setDataAndLayers(userArray[i], weaponArray[i], armorArray[i], (ColorType) armorColors1[i], (ColorType) armorColors2[i], materialArray[i]);
+            offlineChar.setDataAndLayers(userArray[i], weaponArray[i], armorArray[i], (ColorType) armorColors1[i], (ColorType) armorColors2[i]);
             spot.assignCharacter(offlineChar);
          }
       }

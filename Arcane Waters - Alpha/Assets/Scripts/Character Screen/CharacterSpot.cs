@@ -92,9 +92,9 @@ public class CharacterSpot : ClientMonoBehaviour {
       armor.type = 1;
       armor.color1 = ColorType.Brown;
       armor.color2 = ColorType.Black;
-      MaterialType materialType = MaterialType.Material_G;
+      armor.materialType = MaterialType.Material_G;
 
-      offlineChar.setDataAndLayers(userInfo, weapon, armor, armor.color1, armor.color2, materialType);
+      offlineChar.setDataAndLayers(userInfo, weapon, armor, armor.color1, armor.color2);
 
       this.assignCharacter(offlineChar);
    }

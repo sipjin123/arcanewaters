@@ -98,7 +98,6 @@ public class Instance : NetworkBehaviour
 
                      InstanceManager.self.addEnemyToInstance(enemy, this);
 
-                     //enemy.transform.position = targetLocalPos;
                      enemy.transform.localPosition = targetLocalPos;
                      enemy.desiredPosition = targetLocalPos;
 
