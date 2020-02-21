@@ -603,6 +603,11 @@ public class MonsterDataPanel : MonoBehaviour {
                   itemNameList.Add(armorData.armorType, armorData.equipmentName);
                }
                break;
+            case Item.Category.Weapon:
+               foreach (WeaponStatData weaponData in EquipmentXMLManager.self.weaponStatList) {
+                  itemNameList.Add((int) weaponData.weaponType, weaponData.equipmentName);
+               }
+               break;
             default:
                Type itemType = Util.getItemType(selectedCategory);
 
@@ -631,6 +636,10 @@ public class MonsterDataPanel : MonoBehaviour {
                   case Item.Category.Helm:
                      string fetchedHelmSprite = EquipmentXMLManager.self.getHelmData(item.Key).equipmentIconPath;
                      itemTemp.spriteIcon.sprite = ImageManager.getSprite(fetchedHelmSprite);
+                     break;
+                  case Item.Category.Weapon:
+                     string fetchedWeaponSprite = EquipmentXMLManager.self.getWeaponData((Weapon.Type) item.Key).equipmentIconPath;
+                     itemTemp.spriteIcon.sprite = ImageManager.getSprite(fetchedWeaponSprite);
                      break;
                   default:
                      itemTemp.spriteIcon.sprite = Util.getRawSpriteIcon(selectedCategory, item.Key);

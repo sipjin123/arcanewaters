@@ -63,7 +63,24 @@ public class ItemRequirementRow : MonoBehaviour {
          itemTypeString.text = Util.getItemName(currentCategory, currentType).ToString();
       }
       ingredientPanel.popUpSelectionPanel.SetActive(false);
-      itemIcon.sprite = Util.getRawSpriteIcon(currentCategory, currentType);
+
+      if (Item.isUsingEquipmentXML(currentCategory)) {
+         string iconPath = "";
+         switch (currentCategory) {
+            case Item.Category.Weapon:
+               iconPath = EquipmentXMLManager.self.getWeaponData((Weapon.Type) currentType).equipmentIconPath;
+               break;
+            case Item.Category.Armor:
+               iconPath = EquipmentXMLManager.self.getArmorData(currentType).equipmentIconPath;
+               break;
+            case Item.Category.Helm:
+               iconPath = EquipmentXMLManager.self.getHelmData(currentType).equipmentIconPath;
+               break;
+         }
+         itemIcon.sprite = ImageManager.getSprite(iconPath);
+      } else {
+         itemIcon.sprite = Util.getRawSpriteIcon(currentCategory, currentType);
+      }
    }
 
    private void deleteData() {

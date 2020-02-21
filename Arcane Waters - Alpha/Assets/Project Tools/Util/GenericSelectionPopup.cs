@@ -400,7 +400,7 @@ public class GenericSelectionPopup : MonoBehaviour {
          case Item.Category.Armor: {
                foreach (ArmorStatData armorData in EquipmentXMLManager.self.armorStatList) {
                   if (armorData != null) {
-                     string iconPath = new Item { category = Item.Category.Armor, itemTypeId = armorData.equipmentID }.getCastItem().getIconPath();
+                     string iconPath = armorData.equipmentIconPath;
                      string armorName = armorData.equipmentName;
                      createItemTextTemplate(armorName, armorData.equipmentID, textUI, indexUI, iconPath, icon, changeEvent, itemIconPath);
                   }
@@ -408,16 +408,22 @@ public class GenericSelectionPopup : MonoBehaviour {
             }
             break;
          case Item.Category.Weapon: {
-               foreach (Weapon.Type itemType in Enum.GetValues(typeof(Weapon.Type))) {
-                  string iconPath = new Item { category = Item.Category.Weapon, itemTypeId = (int) itemType }.getCastItem().getIconPath();
-                  createItemTextTemplate(itemType.ToString(), (int) itemType, textUI, indexUI, iconPath, icon, changeEvent, itemIconPath);
+               foreach (WeaponStatData weaponData in EquipmentXMLManager.self.weaponStatList) {
+                  if (weaponData != null) {
+                     string iconPath = weaponData.equipmentIconPath;
+                     string equipmentName = weaponData.equipmentName;
+                     createItemTextTemplate(equipmentName, weaponData.equipmentID, textUI, indexUI, iconPath, icon, changeEvent, itemIconPath);
+                  }
                }
             }
             break;
          case Item.Category.Helm: {
-               foreach (Helm.Type itemType in Enum.GetValues(typeof(Helm.Type))) {
-                  string iconPath = new Item { category = Item.Category.Helm, itemTypeId = (int) itemType }.getCastItem().getIconPath();
-                  createItemTextTemplate(itemType.ToString(), (int) itemType, textUI, indexUI, iconPath, icon, changeEvent, itemIconPath);
+               foreach (HelmStatData helmData in EquipmentXMLManager.self.helmStatList) {
+                  if (helmData != null) {
+                     string iconPath = helmData.equipmentIconPath;
+                     string equipmentName = helmData.equipmentName;
+                     createItemTextTemplate(equipmentName, helmData.equipmentID, textUI, indexUI, iconPath, icon, changeEvent, itemIconPath);
+                  }
                }
             }
             break;

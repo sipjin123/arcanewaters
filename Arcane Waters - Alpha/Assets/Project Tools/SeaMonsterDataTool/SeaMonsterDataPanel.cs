@@ -436,6 +436,11 @@ public class SeaMonsterDataPanel : MonoBehaviour
                itemNameList.Add(armorStatData.armorType, armorStatData.equipmentName);
             }
             break;
+         case Item.Category.Weapon:
+            foreach (WeaponStatData weaponData in EquipmentXMLManager.self.weaponStatList) {
+               itemNameList.Add((int) weaponData.weaponType, weaponData.equipmentName);
+            }
+            break;
          default:
             Type itemType = Util.getItemType(selectedCategory);
 
@@ -463,6 +468,10 @@ public class SeaMonsterDataPanel : MonoBehaviour
             case Item.Category.Armor:
                spritePath = EquipmentXMLManager.self.getArmorData(item.Key).equipmentIconPath;
                itemTemp.spriteIcon.sprite = ImageManager.getSprite(spritePath);
+               break;
+            case Item.Category.Weapon:
+               string fetchedWeaponSprite = EquipmentXMLManager.self.getWeaponData((Weapon.Type) item.Key).equipmentIconPath;
+               itemTemp.spriteIcon.sprite = ImageManager.getSprite(fetchedWeaponSprite);
                break;
             default:
                itemTemp.spriteIcon.sprite = Util.getRawSpriteIcon(selectedCategory, item.Key);

@@ -433,6 +433,11 @@ public class NPCEditScreen : MonoBehaviour
                itemNameList.Add((int) helmStatData.helmType, helmStatData.equipmentName);
             }
             break;
+         case Item.Category.Weapon:
+            foreach (WeaponStatData weaponData in EquipmentXMLManager.self.weaponStatData) {
+               itemNameList.Add((int) weaponData.weaponType, weaponData.equipmentName);
+            }
+            break;
          default:
             Type itemType = Util.getItemType(selectedCategory);
 
@@ -508,9 +513,15 @@ public class NPCEditScreen : MonoBehaviour
       if (category == Item.Category.Helm) {
          string spritePath = EquipmentXMLManager.self.getHelmData(itemID).equipmentIconPath;
          imageSprite.sprite = ImageManager.getSprite(spritePath);
+      } else if (category == Item.Category.Weapon) {
+         string spritePath = EquipmentXMLManager.self.getWeaponData((Weapon.Type) itemID).equipmentIconPath;
+         imageSprite.sprite = ImageManager.getSprite(spritePath);
+      } else if (category == Item.Category.Armor) {
+         string spritePath = EquipmentXMLManager.self.getArmorData(itemID).equipmentIconPath;
+         imageSprite.sprite = ImageManager.getSprite(spritePath);
       } else if (category == Item.Category.Blueprint) {
          if (itemID.ToString().StartsWith(Blueprint.WEAPON_PREFIX)) {
-            int resultItemID = int.Parse(itemID.ToString().Replace(Blueprint.WEAPON_PREFIX,""));
+            int resultItemID = int.Parse(itemID.ToString().Replace(Blueprint.WEAPON_PREFIX, ""));
             imageSprite.sprite = Util.getRawSpriteIcon(Item.Category.Weapon, resultItemID);
          } else if (itemID.ToString().StartsWith(Blueprint.ARMOR_PREFIX)) {
             int resultItemID = int.Parse(itemID.ToString().Replace(Blueprint.ARMOR_PREFIX, ""));

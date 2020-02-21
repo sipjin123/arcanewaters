@@ -100,14 +100,29 @@ public class CraftingToolScene : MonoBehaviour {
             template.setWarning();
          }
 
-         if (craftingRequirement.resultItem.category == Item.Category.Helm) {
-            string helmSprite = EquipmentXMLManager.self.getHelmData(craftingRequirement.resultItem.itemTypeId).equipmentIconPath;
-            template.itemIcon.sprite = ImageManager.getSprite(helmSprite);
-         } else {
-            template.itemIcon.sprite = Util.getRawSpriteIcon(craftingRequirement.resultItem.category, craftingRequirement.resultItem.itemTypeId);
-         }
+         updateThisIcon(template.itemIcon, craftingRequirement.resultItem.category, craftingRequirement.resultItem.itemTypeId);
 
          template.gameObject.SetActive(true);
+      }
+   }
+
+   public static void updateThisIcon (Image imageIcon, Item.Category category, int resultType) {
+      switch (category) {
+         case Item.Category.Weapon:
+            string imagePath = EquipmentXMLManager.self.getWeaponData((Weapon.Type) resultType).equipmentIconPath;
+            imageIcon.sprite = ImageManager.getSprite(imagePath);
+            break;
+         case Item.Category.Armor:
+            imagePath = EquipmentXMLManager.self.getArmorData(resultType).equipmentIconPath;
+            imageIcon.sprite = ImageManager.getSprite(imagePath);
+            break;
+         case Item.Category.Helm:
+            imagePath = EquipmentXMLManager.self.getHelmData(resultType).equipmentIconPath;
+            imageIcon.sprite = ImageManager.getSprite(imagePath);
+            break;
+         default:
+            imageIcon.sprite = Util.getRawSpriteIcon(category, resultType);
+            break;
       }
    }
 

@@ -108,12 +108,7 @@ public class CraftingIngredientPanel : MonoBehaviour {
       Item resultItem = getItem(resultCategory, resultType, 1);
       craftableRequirements.resultItem = resultItem;
 
-      if (resultCategory == Item.Category.Helm) {
-         string imagePath = EquipmentXMLManager.self.getHelmData(resultType).equipmentIconPath;
-         resultItemIcon.sprite = ImageManager.getSprite(imagePath);
-      } else {
-         resultItemIcon.sprite = Util.getRawSpriteIcon(resultCategory, resultType);
-      }
+      CraftingToolScene.updateThisIcon(resultItemIcon, resultCategory, resultType);
 
       foreach (ItemRequirementRow item in itemRowList) {
          Item newItem = getItem(item.currentCategory, item.currentType, int.Parse(item.itemCount.text));
@@ -172,10 +167,17 @@ public class CraftingIngredientPanel : MonoBehaviour {
             } 
          }
       } else if (selectedCategory == Item.Category.Helm) {
-         foreach (HelmStatData helmStat in EquipmentXMLManager.self.helmStatData) {
+         foreach (HelmStatData helmStat in EquipmentXMLManager.self.helmStatList) {
             int newVal = (int) helmStat.helmType;
             if (!itemNameList.ContainsKey(newVal)) {
                itemNameList.Add(newVal, helmStat.equipmentName.ToString());
+            }
+         }
+      } else if (selectedCategory == Item.Category.Weapon) {
+         foreach (WeaponStatData weaponStat in EquipmentXMLManager.self.weaponStatList) {
+            int newVal = (int) weaponStat.weaponType;
+            if (!itemNameList.ContainsKey(newVal)) {
+               itemNameList.Add(newVal, weaponStat.equipmentName.ToString());
             }
          }
       } else {
@@ -199,6 +201,12 @@ public class CraftingIngredientPanel : MonoBehaviour {
 
             if (selectedCategory == Item.Category.Helm) {
                string imagePath = EquipmentXMLManager.self.getHelmData(item.Key).equipmentIconPath;
+               itemTemp.spriteIcon.sprite = ImageManager.getSprite(imagePath);
+            } else if (selectedCategory == Item.Category.Armor) {
+               string imagePath = EquipmentXMLManager.self.getArmorData(item.Key).equipmentIconPath;
+               itemTemp.spriteIcon.sprite = ImageManager.getSprite(imagePath);
+            } else if (selectedCategory == Item.Category.Weapon) {
+               string imagePath = EquipmentXMLManager.self.getWeaponData((Weapon.Type) item.Key).equipmentIconPath;
                itemTemp.spriteIcon.sprite = ImageManager.getSprite(imagePath);
             } else {
                itemTemp.spriteIcon.sprite = Util.getRawSpriteIcon(selectedCategory, item.Key);
