@@ -14,9 +14,11 @@ namespace MapCreationTool
          if (ren != null)
             ren.color = new Color(0, 0, 0, 0);
       }
-      public void setHighlight(bool hovered, bool selected) {
+      public void setHighlight (bool hovered, bool selected, bool deleting) {
          if (ren != null) {
-            if (!hovered && !selected) {
+            if (deleting) {
+               ren.color = MapEditorPrefab.DELETING_HIGHLIGHT_COLOR;
+            } else if (!hovered && !selected) {
                ren.color = new Color(0, 0, 0, 0);
             } else if (hovered) {
                ren.color = MapEditorPrefab.HOVERED_HIGHLIGHT_COLOR;

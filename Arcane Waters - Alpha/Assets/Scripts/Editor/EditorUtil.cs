@@ -78,6 +78,7 @@ public class EditorUtil : EditorWindow {
       imageManager.imageDataList = imageManager.imageDataList.OrderBy(o => o.imageName).ToList();
 
       // Save the changes in the scene
+      EditorUtility.SetDirty(imageManager);
       AssetDatabase.SaveAssets();
       AssetDatabase.Refresh();
    }

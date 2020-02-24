@@ -104,6 +104,9 @@ TextureImporter:
   - first:
       213: -5440132320308611671
     second: snow_outside_area_33
+  - first:
+      213: 7673589133884377166
+    second: snow_outside_area_34
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -1060,6 +1063,27 @@ TextureImporter:
       bones: []
       spriteID: 199954183dd990b4f9da20dcbe130fab
       internalID: -5440132320308611671
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: snow_outside_area_34
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 320
+        width: 16
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 62c57a56a2ee0b048903a303eb2a7d17
+      internalID: 7673589133884377166
       vertices: []
       indices: 
       edges: []

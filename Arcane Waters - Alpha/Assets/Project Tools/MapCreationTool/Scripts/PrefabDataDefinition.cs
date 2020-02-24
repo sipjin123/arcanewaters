@@ -22,12 +22,14 @@ namespace MapCreationTool
                Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
                selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
                   name = customData.name,
+                  toolTip = customData.toolTip,
                   options = new string[] { "North", "NorthEast", "East", "SouthEast", "South", "SouthWest", "West", "NorthWest" }
                };
             } else if (customData.type == CustomFieldType.NPC && NPCManager.instance.npcCount > 0) {
                Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
                selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
                   name = customData.name,
+                  toolTip = customData.toolTip,
                   options = NPCManager.instance.formSelectionOptions()
                };
             } else if (customData.type == CustomFieldType.ShopPanelType && NPCManager.instance.npcCount > 0) {
@@ -41,24 +43,28 @@ namespace MapCreationTool
 
                selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
                   name = customData.name,
+                  toolTip = customData.toolTip,
                   options = optionList.ToArray()
                };
             } else if (customData.type == CustomFieldType.ShopName && ShopManager.instance.shopEntryCount > 0 && NPCManager.instance.npcCount > 0) {
                Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
                selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
                   name = customData.name,
+                  toolTip = customData.toolTip,
                   options = ShopManager.instance.formSelectionOptions()
                };
             } else if (customData.type == CustomFieldType.LandMonster && MonsterManager.instance.landMonsterCount > 0) {
                Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
                selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
                   name = customData.name,
+                  toolTip = customData.toolTip,
                   options = MonsterManager.instance.formLandMonsterSelectionOptions()
                };
             } else if (customData.type == CustomFieldType.SeaMonster && MonsterManager.instance.seaMonsterCount > 0) {
                Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
                selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
                   name = customData.name,
+                  toolTip = customData.toolTip,
                   options = MonsterManager.instance.formSeaMonsterSelectionOptions()
                };
             }
@@ -70,6 +76,7 @@ namespace MapCreationTool
       {
          public string name;
          public string defaultValue;
+         public string toolTip;
          public DataFieldType type;
       }
 
@@ -78,6 +85,7 @@ namespace MapCreationTool
       {
          public string name;
          public int defaultOption;
+         public string toolTip;
          public string[] options;
       }
 
@@ -85,6 +93,7 @@ namespace MapCreationTool
       public class CustomDataField
       {
          public string name;
+         public string toolTip;
          public CustomFieldType type;
       }
 

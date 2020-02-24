@@ -685,11 +685,34 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_ReceiveAreaInfo (NetworkConnection connection, string areaKey, Vector3 position) {
-      // If we don't have the map, download it
-      if (AreaManager.self.getArea(areaKey) == null) {
-         StartCoroutine(MapManager.self.CO_DownloadMap(areaKey, position));
+   public void Target_ReceiveAreaInfo (NetworkConnection connection, string areaKey, int latestVersion, Vector3 mapPosition) {
+      D.log($"Client received areaKey {areaKey} with latest version {latestVersion} from the server.");
+
+      // Check if we already have the Area created
+      Area area = AreaManager.self.getArea(areaKey);
+
+      if (area != null && area.version == latestVersion) {
+         return;
       }
+
+      // If our version is outdated (and we're not a server/host), then delete the old version
+      if (area != null && area.version != latestVersion && !NetworkServer.active) {
+         D.log($"Found outdated {areaKey} with version {area.version}, so destroying it.");
+         Destroy(area.gameObject);
+      }
+
+      // Check if we have stored map data for that area and version
+      if (MapCache.hasMap(areaKey, latestVersion)) {
+         D.log($"Found cached map data for {areaKey} and version {latestVersion}, using that.");
+         string mapData = MapCache.getMapData(areaKey, latestVersion);
+         MapManager.self.createLiveMap(areaKey, new MapInfo(areaKey, mapData, latestVersion), mapPosition);
+
+         return;
+      }
+
+      // If we don't have the latest version of the map, download it
+      D.log($"Client did not have area or map data for {areaKey} with latest version {latestVersion}, so downloading and storing it.");
+      StartCoroutine(MapManager.self.CO_DownloadAndCreateMap(areaKey, latestVersion, mapPosition));
    }
 
    [Command]

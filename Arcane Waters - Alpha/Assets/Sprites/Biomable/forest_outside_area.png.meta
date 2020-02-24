@@ -1697,6 +1697,9 @@ TextureImporter:
   - first:
       213: -6283007611845213404
     second: forest_outside_area_33
+  - first:
+      213: 851360903891748763
+    second: forest_outside_area_34
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -2623,6 +2626,27 @@ TextureImporter:
       bones: []
       spriteID: 981c6931bc37f7c4887bce0ea86e86a4
       internalID: -6283007611845213404
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: forest_outside_area_34
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 320
+        width: 16
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d66a3f90556b7e42a1c0d644568746b
+      internalID: 851360903891748763
       vertices: []
       indices: 
       edges: []

@@ -104,6 +104,9 @@ TextureImporter:
   - first:
       213: -667043945629493462
     second: pine_outside_area_33
+  - first:
+      213: 5555833726499615064
+    second: pine_outside_area_34
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -1047,6 +1050,27 @@ TextureImporter:
       bones: []
       spriteID: de29334b6f6c3f342aaf4670a845f8e1
       internalID: -667043945629493462
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pine_outside_area_34
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 320
+        width: 16
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 55e87b7910289754695e59f081204265
+      internalID: 5555833726499615064
       vertices: []
       indices: 
       edges: []

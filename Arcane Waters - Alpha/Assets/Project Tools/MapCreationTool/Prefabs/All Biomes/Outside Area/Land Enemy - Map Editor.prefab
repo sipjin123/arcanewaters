@@ -145,6 +145,7 @@ MonoBehaviour:
   selectDataFields: []
   customDataFields:
   - name: enemy data
+    toolTip: Monster From The Database That Is Spawned Here
     type: 4
 --- !u!114 &1767334834277260193
 MonoBehaviour:

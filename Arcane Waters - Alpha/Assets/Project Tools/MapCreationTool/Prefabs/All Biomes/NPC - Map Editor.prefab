@@ -145,10 +145,13 @@ MonoBehaviour:
   selectDataFields: []
   customDataFields:
   - name: npc data
+    toolTip: NPC From The Database That Is Spawned Here
     type: 1
   - name: panel type
+    toolTip: 
     type: 2
   - name: shop name
+    toolTip: 
     type: 3
 --- !u!114 &1964489795130427793
 MonoBehaviour:

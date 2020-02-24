@@ -124947,6 +124947,8 @@ MonoBehaviour:
       - {fileID: 6870899083421059003, guid: 1d56e7c4fe2f79e44b5887dea23a818c, type: 3}
       - {fileID: 935738348805475725, guid: dfc880bd2d54e0442b43cb27e1b0d2cd, type: 3}
       - {fileID: 5087847509204397849, guid: d3b29e1ae5cbee8478af057677a940a4, type: 3}
+      - {fileID: 7154479679550137313, guid: 329f4e8ea3a7eb849b938e2f8420ed5f, type: 3}
+      - {fileID: 7892265090636271480, guid: b27185bb7c87ab948ae12192559b4031, type: 3}
       fromIndexPrefabs:
       - {fileID: 1322722724978774, guid: f8f35b9f6cbe1fb4d88c39af030bddd4, type: 3}
       - {fileID: 6524891404889324934, guid: 598e4fd7105a2944f84be41bdffc57fc, type: 3}
@@ -124964,6 +124966,8 @@ MonoBehaviour:
       - {fileID: 2285898789244284886, guid: 29834d3bff5b77f4da3d27bf4df1efaa, type: 3}
       - {fileID: 4187118466160962837, guid: 2507c79d24ec6b34083d915791cef5a9, type: 3}
       - {fileID: 3359790180563714629, guid: dca2c6934c5c62a40a7a175a1ac4f343, type: 3}
+      - {fileID: 7898793862239010808, guid: 29540b8321039e640819db8011dbe96b, type: 3}
+      - {fileID: 6726511366790436587, guid: 521bfc9d285bcf940b4f970931258876, type: 3}
     - title: furniture
       index: 4
       toIndexPrefabs:

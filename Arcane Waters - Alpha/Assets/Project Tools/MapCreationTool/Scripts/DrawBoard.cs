@@ -575,11 +575,11 @@ namespace MapCreationTool
          }
          foreach (PlacedPrefab pp in placedPrefabs) {
             pp.placedInstance.SetActive(true);
-            pp.setHighlight(false, false);
+            pp.setHighlight(false, false, false);
          }
 
          if (selectedPrefab != null) {
-            selectedPrefab.setHighlight(false, true);
+            selectedPrefab.setHighlight(false, true, false);
          }
       }
 
@@ -615,7 +615,7 @@ namespace MapCreationTool
             if (zSnap != null)
                zSnap.isActive = true;
 
-            preview.prefabPreviewInstance.GetComponent<MapEditorPrefab>()?.createdForPrieview();
+            preview.prefabPreviewInstance.GetComponent<MapEditorPrefab>()?.createdForPreview();
 
             preview.prefabPreviewInstance.GetComponent<SpriteOutline>()?.setNewColor(new Color(0, 0, 0, 0));
          }
@@ -638,40 +638,48 @@ namespace MapCreationTool
                tc.layer.setPreviewTile(tc.position, tc.tile);
             preview.previewTilesSet = true;
          }
-
-         //--------------------------------
-         //Handle prefab selection
-         if (Tools.toolType == ToolType.PrefabData) {
-            var target = getHoveredPrefab();
-
-            if (target != null && target != selectedPrefab) {
-               target.setHighlight(true, false);
-            }
-         }
       }
 
       private void updateBrushOutline () {
-         brushOutline.enabled =
-             Tools.toolType == ToolType.Eraser ||
-             (Tools.toolType == ToolType.Brush && Tools.tileGroup != null && !(Tools.tileGroup is PrefabGroup));
+         brushOutline.enabled = false;
 
-         if (!brushOutline.enabled)
-            return;
+         if (Tools.toolType == ToolType.Eraser) {
+            PlacedPrefab hoveredPrefab = getHoveredPrefab();
+            if (hoveredPrefab != null) {
+               hoveredPrefab.setHighlight(false, false, true);
+            } else {
+               brushOutline.enabled = true;
+               brushOutline.transform.position = cellToWorldCenter(worldToCell(MainCamera.stwp(Input.mousePosition)));
+               brushOutline.size = Vector2.one;
+               brushOutline.color = Color.red;
+            }
+         } else if (Tools.toolType == ToolType.PrefabData) {
+            var target = getHoveredPrefab();
 
-         brushOutline.transform.position = cellToWorldCenter(worldToCell(MainCamera.stwp(Input.mousePosition)));
+            if (target != null && target != selectedPrefab) {
+               target.setHighlight(true, false, false);
+            }
+         } else {
+            brushOutline.enabled = (Tools.toolType == ToolType.Brush && Tools.tileGroup != null && !(Tools.tileGroup is PrefabGroup));
 
-         if (Tools.toolType == ToolType.Eraser || Tools.tileGroup == null)
-            brushOutline.size = Vector2.one;
-         else {
-            brushOutline.size = Tools.tileGroup.brushSize;
-            //Handle cases where the outline is offset on even number size groups
-            brushOutline.transform.position += new Vector3(
-                Tools.tileGroup.brushSize.x % 2 == 0 ? -0.5f : 0,
-                Tools.tileGroup.brushSize.y % 2 == 0 ? -0.5f : 0,
-                0);
+            if (!brushOutline.enabled)
+               return;
+
+            brushOutline.transform.position = cellToWorldCenter(worldToCell(MainCamera.stwp(Input.mousePosition)));
+
+            if (Tools.tileGroup == null)
+               brushOutline.size = Vector2.one;
+            else {
+               brushOutline.size = Tools.tileGroup.brushSize;
+               //Handle cases where the outline is offset on even number size groups
+               brushOutline.transform.position += new Vector3(
+                   Tools.tileGroup.brushSize.x % 2 == 0 ? -0.5f : 0,
+                   Tools.tileGroup.brushSize.y % 2 == 0 ? -0.5f : 0,
+                   0);
+            }
+
+            brushOutline.color = Color.green;
          }
-
-         brushOutline.color = Tools.toolType == ToolType.Eraser ? Color.red : Color.green;
       }
 
       private Vector3 getPrefabPosition (PrefabGroup group, GameObject prefabToPlace, Vector3 targetPosition) {
@@ -865,13 +873,21 @@ namespace MapCreationTool
          data = new Dictionary<string, string>();
       }
 
-      public void setHighlight (bool hovered, bool selected) {
+      public void setHighlight (bool hovered, bool selected, bool deleting) {
          var outline = placedInstance.GetComponent<SpriteOutline>();
          var highlight = placedInstance.GetComponent<PrefabHighlight>();
          var highlightable = placedInstance.GetComponent<IHighlightable>();
 
          if (outline != null) {
-            if (!hovered && !selected) {
+            if (deleting) {
+               outline.setVisibility(true);
+               outline.setNewColor(MapEditorPrefab.DELETING_HIGHLIGHT_COLOR);
+               SpriteRenderer sr = outline.transform.Find("Outline")?.GetComponent<SpriteRenderer>();
+               if (sr != null) {
+                  sr.color = MapEditorPrefab.DELETING_HIGHLIGHT_COLOR;
+               }
+               outline.Regenerate();
+            } else if (!hovered && !selected) {
                outline.setVisibility(false);
             } else if (hovered) {
                outline.setVisibility(true);
@@ -894,10 +910,10 @@ namespace MapCreationTool
          }
 
          if (highlight != null)
-            highlight.setHighlight(hovered, selected);
+            highlight.setHighlight(hovered, selected, deleting);
 
          if (highlightable != null)
-            highlightable.setHighlight(hovered, selected);
+            highlightable.setHighlight(hovered, selected, deleting);
       }
 
       public void setData (string key, string value) {

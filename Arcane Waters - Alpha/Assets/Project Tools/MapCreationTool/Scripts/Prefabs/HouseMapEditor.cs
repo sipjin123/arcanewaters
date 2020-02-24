@@ -17,7 +17,7 @@ namespace MapCreationTool
          text = GetComponentInChildren<Text>();
       }
 
-      public override void createdForPrieview () {
+      public override void createdForPreview () {
          transform.localScale = new Vector3(6.25f, 6.25f, 1f);
       }
 
@@ -40,8 +40,8 @@ namespace MapCreationTool
             text.text = $"WARP TO\nmap: {targetMap}\nspawn: {targetSpawn}";
       }
 
-      public void setHighlight (bool hovered, bool selected) {
-         setOutlineHighlight(outline, hovered, selected);
+      public void setHighlight (bool hovered, bool selected, bool deleting) {
+         setOutlineHighlight(outline, hovered, selected, deleting);
       }
    }
 }

@@ -25,7 +25,7 @@ namespace MapCreationTool
       /// Creates an instance of a map from the serialized map data
       /// </summary>
       /// <param name="data"></param>
-      public static Area instantiateMapData (string data, string areaKey, Vector3 position) {
+      public static Area instantiateMapData (MapInfo mapInfo, string areaKey, Vector3 position) {
 
          ensureSerializationMapsLoaded();
 
@@ -34,8 +34,9 @@ namespace MapCreationTool
 
          Area area = result.area;
          area.areaKey = areaKey;
+         area.version = mapInfo.version;
 
-         ExportedProject001 exportedProject = JsonUtility.FromJson<ExportedProject001>(data);
+         ExportedProject001 exportedProject = JsonUtility.FromJson<ExportedProject001>(mapInfo.gameData);
 
          if (exportedProject.biome == Biome.Type.None) {
             D.warning("Invalid biome type NONE in map data. Setting to 'Forest'.");

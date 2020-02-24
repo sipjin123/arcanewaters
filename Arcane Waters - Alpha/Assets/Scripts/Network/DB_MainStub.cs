@@ -118,8 +118,8 @@ public class DB_MainStub : MonoBehaviour
       return new List<Map>();
    }
 
-   public static Dictionary<string, string> getLiveMaps () {
-      return new Dictionary<string, string>();
+   public static Dictionary<string, MapInfo> getLiveMaps () {
+      return new Dictionary<string, MapInfo>();
    }
 
    public static List<MapVersion> getMapVersions (Map map) {
@@ -744,6 +744,10 @@ public class DB_MainStub : MonoBehaviour
    }
 
    public static void deleteMemberFromVoyageGroup (int groupId, int userId) {
+
+   }
+
+   public static void setServerFromConfig () {
 
    }
 

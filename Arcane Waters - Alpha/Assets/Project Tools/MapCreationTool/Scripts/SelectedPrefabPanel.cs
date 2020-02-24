@@ -68,12 +68,14 @@ namespace MapCreationTool
             Field mf = Instantiate(dropdownFieldPref, transform);
             mf.fieldName.text = "target map";
             mf.ValueChanged += (value) => valueChanged("target map", value);
+            mf.toolTipMessage = "Target Map to Warp Into";
             fields.Add("target map", mf);
 
             // target spawn
             Field sf = Instantiate(dropdownFieldPref, transform);
             sf.fieldName.text = "target spawn";
             sf.ValueChanged += (value) => valueChanged("target spawn", value);
+            sf.toolTipMessage = "In the Selected 'target map', Which Spawn to Warp into";
             fields.Add("target spawn", sf);
          }
 
@@ -81,6 +83,7 @@ namespace MapCreationTool
             Field f = Instantiate(inputFieldPref, transform);
             f.setFieldProperties(fieldDef.type);
             f.fieldName.text = fieldDef.name + ":";
+            f.toolTipMessage = fieldDef.toolTip;
 
             f.ValueChanged += (value) => valueChanged(fieldDef.name, value);
 
@@ -91,6 +94,7 @@ namespace MapCreationTool
             Field f = Instantiate(dropdownFieldPref, transform);
             f.setFieldProperties(fieldDef.options);
             f.fieldName.text = fieldDef.name + ":";
+            f.toolTipMessage = fieldDef.toolTip;
 
             f.ValueChanged += (value) => valueChanged(fieldDef.name, value);
 

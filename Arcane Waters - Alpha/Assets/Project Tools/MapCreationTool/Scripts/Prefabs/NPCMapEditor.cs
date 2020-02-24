@@ -23,7 +23,7 @@ namespace MapCreationTool
          }
       }
 
-      public override void createdForPrieview () {
+      public override void createdForPreview () {
          setDefaultSprite();
       }
 
@@ -39,8 +39,8 @@ namespace MapCreationTool
          }
       }
 
-      public void setHighlight (bool hovered, bool selected) {
-         setOutlineHighlight(outline, hovered, selected);
+      public void setHighlight (bool hovered, bool selected, bool deleting) {
+         setOutlineHighlight(outline, hovered, selected, deleting);
       }
    }
 }

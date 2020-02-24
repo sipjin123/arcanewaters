@@ -44,6 +44,10 @@ public class AreaManager : MonoBehaviour
       return null;
    }
 
+   public bool hasArea (string areaKey) {
+      return _areas.ContainsKey(areaKey);
+   }
+
    public List<Area> getAreas () {
       return new List<Area>(_areas.Values);
    }

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6248002349354231550}
   - component: {fileID: 1515452360235325470}
   - component: {fileID: 3533793217963009022}
+  - component: {fileID: -2049389545578719438}
   m_Layer: 5
   m_Name: Map List Entry
   m_TagString: Untagged
@@ -141,6 +142,19 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &-2049389545578719438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 444502730548535921}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ab5876efb848244f8f1bc29d6b73a28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  message: 
 --- !u!1 &1402276482555152554
 GameObject:
   m_ObjectHideFlags: 0
@@ -230,6 +244,7 @@ GameObject:
   - component: {fileID: 2102016478784413241}
   - component: {fileID: 2301547104565866837}
   - component: {fileID: 213059753477697862}
+  - component: {fileID: 4369655864312975523}
   m_Layer: 5
   m_Name: Delete Button
   m_TagString: Untagged
@@ -336,6 +351,19 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &4369655864312975523
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1448626546645143741}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ab5876efb848244f8f1bc29d6b73a28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  message: Delete Map, All of It's Versions and Publication
 --- !u!1 &2115694119977493315
 GameObject:
   m_ObjectHideFlags: 0

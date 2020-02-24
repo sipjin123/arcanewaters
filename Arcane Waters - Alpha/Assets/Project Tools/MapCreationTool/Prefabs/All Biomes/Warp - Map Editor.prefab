@@ -155,13 +155,16 @@ MonoBehaviour:
   dataFields:
   - name: width
     defaultValue: 4
+    toolTip: Collider Width, Which Triggers the Warp
     type: 1
   - name: height
     defaultValue: 2
+    toolTip: Collider Height, Which Triggers the Warp
     type: 1
   selectDataFields: []
   customDataFields:
   - name: arrive facing
+    toolTip: Which Direction the Character Faces When Appearing in Spawn
     type: 0
 --- !u!212 &8799846075363890542
 SpriteRenderer:

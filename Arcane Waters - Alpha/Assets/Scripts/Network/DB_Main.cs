@@ -844,8 +844,8 @@ public class DB_Main : DB_MainStub
       return result;
    }
 
-   public static new Dictionary<string, string> getLiveMaps () {
-      Dictionary<string, string> maps = new Dictionary<string, string>();
+   public static new Dictionary<string, MapInfo> getLiveMaps () {
+      Dictionary<string, MapInfo> maps = new Dictionary<string, MapInfo>();
       string cmdText = "SELECT * FROM maps JOIN map_versions ON (maps.name=map_versions.mapName) WHERE (maps.publishedVersion=map_versions.version)";
 
       using (MySqlConnection conn = getConnection())
@@ -857,7 +857,8 @@ public class DB_Main : DB_MainStub
             while(dataReader.Read()) {
                string mapName = dataReader.GetString("mapName");
                string gameData = dataReader.GetString("gameData");
-               maps[mapName] = gameData;
+               int version = dataReader.GetInt32("publishedVersion");
+               maps[mapName] = new MapInfo(mapName, gameData, version);
             }
          }
       }
@@ -5103,7 +5104,7 @@ public class DB_Main : DB_MainStub
       _connectionString = buildConnectionString(server, database, uid, password);
    }
 
-   public static void setServerFromConfig() {
+   public static new void setServerFromConfig() {
       string dbServerConfigFile = Path.Combine(Application.dataPath, "dbConfig.json");
 
       // Check config file

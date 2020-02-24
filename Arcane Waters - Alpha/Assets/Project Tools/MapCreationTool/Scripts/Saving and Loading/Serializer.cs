@@ -152,7 +152,7 @@ namespace MapCreationTool.Serialization
          ExportedProject001 project = new ExportedProject001 {
             version = "0.0.1",
             biome = biome,
-            layers = formExportedLayers(midExportLayers, editorSize).ToArray(),
+            layers = formExportedLayers(midExportLayers, editorSize, tilesBelowSpiderWebEffectors(prefabs)).ToArray(),
             gravityEffectors = formGravityEffectors(midExportLayers, editorSize),
             editorType = editorType,
             prefabs = prefabsSerialized,
@@ -161,12 +161,43 @@ namespace MapCreationTool.Serialization
          return JsonUtility.ToJson(project);
       }
 
-      private static List<ExportedLayer001> formExportedLayers (List<MidExportLayer> midLayers, Vector2Int editorSize) {
+      private static HashSet<Vector2Int> tilesBelowSpiderWebEffectors (List<PlacedPrefab> prefabs) {
+         HashSet<Vector2Int> result = new HashSet<Vector2Int>();
+
+         foreach (PlacedPrefab placedPrefab in prefabs) {
+            SpiderWebMapEditor web = placedPrefab.placedInstance.GetComponent<SpiderWebMapEditor>();
+            if (web == null) {
+               continue;
+            }
+
+            Vector3 from = web.transform.position + Vector3.up + Vector3.left * SpiderWebMapEditor.width * 0.5f;
+            Vector3 to = from + new Vector3(SpiderWebMapEditor.width, web.height);
+
+            Vector3Int fromCell = new Vector3Int(Mathf.FloorToInt(from.x), Mathf.FloorToInt(from.y), 0);
+            Vector3Int toCell = new Vector3Int(Mathf.CeilToInt(to.x), Mathf.CeilToInt(to.y), 0);
+
+            for (int i = fromCell.x; i < toCell.x; i++) {
+               for (int j = fromCell.y; j < toCell.y; j++) {
+                  if (!result.Contains(new Vector2Int(i, j))) {
+                     result.Add(new Vector2Int(i, j));
+                  }
+               }
+            }
+         }
+
+         return result;
+      }
+
+      private static List<ExportedLayer001> formExportedLayers (List<MidExportLayer> midLayers, Vector2Int editorSize, HashSet<Vector2Int> forceIgnoreCollisions) {
          List<ExportedLayer001> result = new List<ExportedLayer001>();
 
          // Set collision flag to tiles inside mid export data structure
          for (int i = 0; i < editorSize.x; i++) {
             for (int j = 0; j < editorSize.y; j++) {
+               if (forceIgnoreCollisions.Contains(new Vector2Int(i - editorSize.x / 2, j - editorSize.x / 2))) {
+                  continue;
+               }
+
                bool hasWater = false;
                for (int k = midLayers.Count - 1; k >= 0; k--) {
                   if (midLayers[k].layer.CompareTo("water") == 0 && midLayers[k].tileMatrix[i, j] != null) {
@@ -715,7 +746,7 @@ namespace MapCreationTool.Serialization
       public const string NPC_SHOP_NAME_KEY = "shop name";
       public const string NPC_PANEL_TYPE_KEY = "panel type";
 
-
+      public const string SPIDER_WEB_HEIGHT_KEY = "height";
 
 
       public string k; // Key

@@ -9910,6 +9910,71 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: a7387687926af4648ae54e12c3068d49, type: 3}
     sprites:
     - {fileID: 21300000, guid: a7387687926af4648ae54e12c3068d49, type: 3}
+  - imageName: air_gun
+    imagePath: Assets/Sprites/Effects/gun FX/air_gun.png
+    imagePathWithoutExtension: Assets/Sprites/Effects/gun FX/air_gun
+    texture2D: {fileID: 2800000, guid: aa02c2c4aa0971a4390b99b975081e0f, type: 3}
+    sprite: {fileID: 7853220708106943015, guid: aa02c2c4aa0971a4390b99b975081e0f,
+      type: 3}
+    sprites:
+    - {fileID: 7853220708106943015, guid: aa02c2c4aa0971a4390b99b975081e0f, type: 3}
+    - {fileID: -2254966964203208034, guid: aa02c2c4aa0971a4390b99b975081e0f, type: 3}
+    - {fileID: -7442624404026922091, guid: aa02c2c4aa0971a4390b99b975081e0f, type: 3}
+    - {fileID: 679488804957985652, guid: aa02c2c4aa0971a4390b99b975081e0f, type: 3}
+    - {fileID: -6145526299993414256, guid: aa02c2c4aa0971a4390b99b975081e0f, type: 3}
+    - {fileID: 3154416482108260388, guid: aa02c2c4aa0971a4390b99b975081e0f, type: 3}
+    - {fileID: -200279342931653809, guid: aa02c2c4aa0971a4390b99b975081e0f, type: 3}
+    - {fileID: -4884196763743178009, guid: aa02c2c4aa0971a4390b99b975081e0f, type: 3}
+    - {fileID: 3199712683124709849, guid: aa02c2c4aa0971a4390b99b975081e0f, type: 3}
+  - imageName: air_gun2
+    imagePath: Assets/Sprites/Effects/gun FX/air_gun2.png
+    imagePathWithoutExtension: Assets/Sprites/Effects/gun FX/air_gun2
+    texture2D: {fileID: 2800000, guid: b6cb7f75de810d44bb114498dcbfc9b1, type: 3}
+    sprite: {fileID: -1936931626530641468, guid: b6cb7f75de810d44bb114498dcbfc9b1,
+      type: 3}
+    sprites:
+    - {fileID: -1936931626530641468, guid: b6cb7f75de810d44bb114498dcbfc9b1, type: 3}
+    - {fileID: 8468894417291625034, guid: b6cb7f75de810d44bb114498dcbfc9b1, type: 3}
+    - {fileID: 437547078195157445, guid: b6cb7f75de810d44bb114498dcbfc9b1, type: 3}
+    - {fileID: -2914966542658448894, guid: b6cb7f75de810d44bb114498dcbfc9b1, type: 3}
+    - {fileID: 2750284017411321402, guid: b6cb7f75de810d44bb114498dcbfc9b1, type: 3}
+    - {fileID: -4135824568723794719, guid: b6cb7f75de810d44bb114498dcbfc9b1, type: 3}
+    - {fileID: -1070109634630312147, guid: b6cb7f75de810d44bb114498dcbfc9b1, type: 3}
+    - {fileID: 561894375879156222, guid: b6cb7f75de810d44bb114498dcbfc9b1, type: 3}
+    - {fileID: -2830981155319391502, guid: b6cb7f75de810d44bb114498dcbfc9b1, type: 3}
+  - imageName: air_slash
+    imagePath: Assets/Sprites/Effects/slash FX/air_slash.png
+    imagePathWithoutExtension: Assets/Sprites/Effects/slash FX/air_slash
+    texture2D: {fileID: 2800000, guid: 8fedffa9d2cb77b4cb56098fe7339a0f, type: 3}
+    sprite: {fileID: -6099104449786370550, guid: 8fedffa9d2cb77b4cb56098fe7339a0f,
+      type: 3}
+    sprites:
+    - {fileID: -6099104449786370550, guid: 8fedffa9d2cb77b4cb56098fe7339a0f, type: 3}
+    - {fileID: 6937691757610354536, guid: 8fedffa9d2cb77b4cb56098fe7339a0f, type: 3}
+    - {fileID: -6590181355118980667, guid: 8fedffa9d2cb77b4cb56098fe7339a0f, type: 3}
+    - {fileID: -9042897281079814478, guid: 8fedffa9d2cb77b4cb56098fe7339a0f, type: 3}
+    - {fileID: 6785228413056774365, guid: 8fedffa9d2cb77b4cb56098fe7339a0f, type: 3}
+    - {fileID: -8329271256067627083, guid: 8fedffa9d2cb77b4cb56098fe7339a0f, type: 3}
+    - {fileID: 1688684935458708559, guid: 8fedffa9d2cb77b4cb56098fe7339a0f, type: 3}
+    - {fileID: 5156365821195589744, guid: 8fedffa9d2cb77b4cb56098fe7339a0f, type: 3}
+    - {fileID: -3978441862964710487, guid: 8fedffa9d2cb77b4cb56098fe7339a0f, type: 3}
+  - imageName: air_slash2
+    imagePath: Assets/Sprites/Effects/slash FX/air_slash2.png
+    imagePathWithoutExtension: Assets/Sprites/Effects/slash FX/air_slash2
+    texture2D: {fileID: 2800000, guid: 97cf978794486ed44b917b1c695d5b63, type: 3}
+    sprite: {fileID: -7464854147723966425, guid: 97cf978794486ed44b917b1c695d5b63,
+      type: 3}
+    sprites:
+    - {fileID: -7464854147723966425, guid: 97cf978794486ed44b917b1c695d5b63, type: 3}
+    - {fileID: -8514509087281095409, guid: 97cf978794486ed44b917b1c695d5b63, type: 3}
+    - {fileID: -6173320613883945549, guid: 97cf978794486ed44b917b1c695d5b63, type: 3}
+    - {fileID: -3524244745753340030, guid: 97cf978794486ed44b917b1c695d5b63, type: 3}
+    - {fileID: 1428518438903109083, guid: 97cf978794486ed44b917b1c695d5b63, type: 3}
+    - {fileID: -5778460455125606520, guid: 97cf978794486ed44b917b1c695d5b63, type: 3}
+    - {fileID: 2641013796893765017, guid: 97cf978794486ed44b917b1c695d5b63, type: 3}
+    - {fileID: -58538464649802457, guid: 97cf978794486ed44b917b1c695d5b63, type: 3}
+    - {fileID: -5759598416571927125, guid: 97cf978794486ed44b917b1c695d5b63, type: 3}
+    - {fileID: -2898945235380669112, guid: 97cf978794486ed44b917b1c695d5b63, type: 3}
   - imageName: ALL_ATK_Buff
     imagePath: Assets/Sprites/Icons/UsableItems/ALL_ATK_Buff.png
     imagePathWithoutExtension: Assets/Sprites/Icons/UsableItems/ALL_ATK_Buff
@@ -14470,6 +14535,71 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: cfe8ea18e2bf2e7438b26a54da45056e, type: 3}
     sprites:
     - {fileID: 21300000, guid: cfe8ea18e2bf2e7438b26a54da45056e, type: 3}
+  - imageName: earth_gun
+    imagePath: Assets/Sprites/Effects/gun FX/earth_gun.png
+    imagePathWithoutExtension: Assets/Sprites/Effects/gun FX/earth_gun
+    texture2D: {fileID: 2800000, guid: 5cf158c0d33674049911352e1a231b62, type: 3}
+    sprite: {fileID: -4200102177348562495, guid: 5cf158c0d33674049911352e1a231b62,
+      type: 3}
+    sprites:
+    - {fileID: -4200102177348562495, guid: 5cf158c0d33674049911352e1a231b62, type: 3}
+    - {fileID: -2507104901648582790, guid: 5cf158c0d33674049911352e1a231b62, type: 3}
+    - {fileID: -856172239472945923, guid: 5cf158c0d33674049911352e1a231b62, type: 3}
+    - {fileID: -4006971991543268721, guid: 5cf158c0d33674049911352e1a231b62, type: 3}
+    - {fileID: 3517899972710609526, guid: 5cf158c0d33674049911352e1a231b62, type: 3}
+    - {fileID: -3006601146701364686, guid: 5cf158c0d33674049911352e1a231b62, type: 3}
+    - {fileID: 9033188184460515788, guid: 5cf158c0d33674049911352e1a231b62, type: 3}
+    - {fileID: -1272571418019889145, guid: 5cf158c0d33674049911352e1a231b62, type: 3}
+    - {fileID: -4601818791397774177, guid: 5cf158c0d33674049911352e1a231b62, type: 3}
+  - imageName: earth_gun2
+    imagePath: Assets/Sprites/Effects/gun FX/earth_gun2.png
+    imagePathWithoutExtension: Assets/Sprites/Effects/gun FX/earth_gun2
+    texture2D: {fileID: 2800000, guid: 54462050e11591d4591a571be097cbfe, type: 3}
+    sprite: {fileID: -3590188182463779077, guid: 54462050e11591d4591a571be097cbfe,
+      type: 3}
+    sprites:
+    - {fileID: -3590188182463779077, guid: 54462050e11591d4591a571be097cbfe, type: 3}
+    - {fileID: 1383980314932397014, guid: 54462050e11591d4591a571be097cbfe, type: 3}
+    - {fileID: 3522076207934940566, guid: 54462050e11591d4591a571be097cbfe, type: 3}
+    - {fileID: -4887243348056044568, guid: 54462050e11591d4591a571be097cbfe, type: 3}
+    - {fileID: 4357351747492923554, guid: 54462050e11591d4591a571be097cbfe, type: 3}
+    - {fileID: 5591131060154729867, guid: 54462050e11591d4591a571be097cbfe, type: 3}
+    - {fileID: 3291782330883516172, guid: 54462050e11591d4591a571be097cbfe, type: 3}
+    - {fileID: 5874834355714580230, guid: 54462050e11591d4591a571be097cbfe, type: 3}
+    - {fileID: 2078255113599966888, guid: 54462050e11591d4591a571be097cbfe, type: 3}
+  - imageName: earth_slash
+    imagePath: Assets/Sprites/Effects/slash FX/earth_slash.png
+    imagePathWithoutExtension: Assets/Sprites/Effects/slash FX/earth_slash
+    texture2D: {fileID: 2800000, guid: 5aaa6dda422849b43a558f0497243f73, type: 3}
+    sprite: {fileID: 1341273149525717634, guid: 5aaa6dda422849b43a558f0497243f73,
+      type: 3}
+    sprites:
+    - {fileID: 1341273149525717634, guid: 5aaa6dda422849b43a558f0497243f73, type: 3}
+    - {fileID: 8600805524191313320, guid: 5aaa6dda422849b43a558f0497243f73, type: 3}
+    - {fileID: 7245219833455321004, guid: 5aaa6dda422849b43a558f0497243f73, type: 3}
+    - {fileID: -8326756972485799892, guid: 5aaa6dda422849b43a558f0497243f73, type: 3}
+    - {fileID: 2292647595619683408, guid: 5aaa6dda422849b43a558f0497243f73, type: 3}
+    - {fileID: -3211321891207303358, guid: 5aaa6dda422849b43a558f0497243f73, type: 3}
+    - {fileID: 2527516550042209846, guid: 5aaa6dda422849b43a558f0497243f73, type: 3}
+    - {fileID: -2606460102129109284, guid: 5aaa6dda422849b43a558f0497243f73, type: 3}
+    - {fileID: 5668303887408462535, guid: 5aaa6dda422849b43a558f0497243f73, type: 3}
+  - imageName: earth_slash2
+    imagePath: Assets/Sprites/Effects/slash FX/earth_slash2.png
+    imagePathWithoutExtension: Assets/Sprites/Effects/slash FX/earth_slash2
+    texture2D: {fileID: 2800000, guid: d8a5d2a2357eb5f45a60f73c4bf2b06e, type: 3}
+    sprite: {fileID: 6089511888483931693, guid: d8a5d2a2357eb5f45a60f73c4bf2b06e,
+      type: 3}
+    sprites:
+    - {fileID: 6089511888483931693, guid: d8a5d2a2357eb5f45a60f73c4bf2b06e, type: 3}
+    - {fileID: 163020040573828949, guid: d8a5d2a2357eb5f45a60f73c4bf2b06e, type: 3}
+    - {fileID: 4509472785302812967, guid: d8a5d2a2357eb5f45a60f73c4bf2b06e, type: 3}
+    - {fileID: 6543746883690338017, guid: d8a5d2a2357eb5f45a60f73c4bf2b06e, type: 3}
+    - {fileID: -5573975281232054213, guid: d8a5d2a2357eb5f45a60f73c4bf2b06e, type: 3}
+    - {fileID: -3534124459120547415, guid: d8a5d2a2357eb5f45a60f73c4bf2b06e, type: 3}
+    - {fileID: 6242422822546025861, guid: d8a5d2a2357eb5f45a60f73c4bf2b06e, type: 3}
+    - {fileID: 1972888783279332744, guid: d8a5d2a2357eb5f45a60f73c4bf2b06e, type: 3}
+    - {fileID: -2273693012118286257, guid: d8a5d2a2357eb5f45a60f73c4bf2b06e, type: 3}
+    - {fileID: 8912582353478696366, guid: d8a5d2a2357eb5f45a60f73c4bf2b06e, type: 3}
   - imageName: eggplants
     imagePath: Assets/Sprites/Cargo/eggplants.png
     imagePathWithoutExtension: Assets/Sprites/Cargo/eggplants
@@ -17793,6 +17923,104 @@ MonoBehaviour:
     - {fileID: 21300000, guid: d85b48073acb7ce4f812290cb1645687, type: 3}
     - {fileID: 21300002, guid: d85b48073acb7ce4f812290cb1645687, type: 3}
     - {fileID: 21300004, guid: d85b48073acb7ce4f812290cb1645687, type: 3}
+  - imageName: fire_gun
+    imagePath: Assets/Sprites/Effects/gun FX/fire_gun.png
+    imagePathWithoutExtension: Assets/Sprites/Effects/gun FX/fire_gun
+    texture2D: {fileID: 2800000, guid: 67dc92b19f7663740bdaacaa5172346a, type: 3}
+    sprite: {fileID: 908066247603193900, guid: 67dc92b19f7663740bdaacaa5172346a, type: 3}
+    sprites:
+    - {fileID: 908066247603193900, guid: 67dc92b19f7663740bdaacaa5172346a, type: 3}
+    - {fileID: 917820779256117401, guid: 67dc92b19f7663740bdaacaa5172346a, type: 3}
+    - {fileID: -5039247830443988796, guid: 67dc92b19f7663740bdaacaa5172346a, type: 3}
+    - {fileID: 2292817283183660413, guid: 67dc92b19f7663740bdaacaa5172346a, type: 3}
+    - {fileID: 2190061469230609488, guid: 67dc92b19f7663740bdaacaa5172346a, type: 3}
+    - {fileID: 942212164970503288, guid: 67dc92b19f7663740bdaacaa5172346a, type: 3}
+    - {fileID: -646712874125917714, guid: 67dc92b19f7663740bdaacaa5172346a, type: 3}
+    - {fileID: -6258147783663378133, guid: 67dc92b19f7663740bdaacaa5172346a, type: 3}
+    - {fileID: -7498593338243447496, guid: 67dc92b19f7663740bdaacaa5172346a, type: 3}
+  - imageName: fire_gun2
+    imagePath: Assets/Sprites/Effects/gun FX/fire_gun2.png
+    imagePathWithoutExtension: Assets/Sprites/Effects/gun FX/fire_gun2
+    texture2D: {fileID: 2800000, guid: 4de20cd849e998c468623ebabaf426df, type: 3}
+    sprite: {fileID: 1310159692899268652, guid: 4de20cd849e998c468623ebabaf426df,
+      type: 3}
+    sprites:
+    - {fileID: 1310159692899268652, guid: 4de20cd849e998c468623ebabaf426df, type: 3}
+    - {fileID: 7470057009536827583, guid: 4de20cd849e998c468623ebabaf426df, type: 3}
+    - {fileID: 2427427714263248033, guid: 4de20cd849e998c468623ebabaf426df, type: 3}
+    - {fileID: 9133135143064254105, guid: 4de20cd849e998c468623ebabaf426df, type: 3}
+    - {fileID: -4491722951470501226, guid: 4de20cd849e998c468623ebabaf426df, type: 3}
+    - {fileID: -3011972829034688661, guid: 4de20cd849e998c468623ebabaf426df, type: 3}
+    - {fileID: -1270170783992771542, guid: 4de20cd849e998c468623ebabaf426df, type: 3}
+    - {fileID: 2488013609275270422, guid: 4de20cd849e998c468623ebabaf426df, type: 3}
+    - {fileID: 5000065422408708620, guid: 4de20cd849e998c468623ebabaf426df, type: 3}
+    - {fileID: -5568236948012182004, guid: 4de20cd849e998c468623ebabaf426df, type: 3}
+  - imageName: fire_OUTLINED_gun2
+    imagePath: Assets/Sprites/Effects/gun FX/fire_OUTLINED_gun2.png
+    imagePathWithoutExtension: Assets/Sprites/Effects/gun FX/fire_OUTLINED_gun2
+    texture2D: {fileID: 2800000, guid: bee9cea3e75bc984fadf20240ec74558, type: 3}
+    sprite: {fileID: 2328378130152635271, guid: bee9cea3e75bc984fadf20240ec74558,
+      type: 3}
+    sprites:
+    - {fileID: 2328378130152635271, guid: bee9cea3e75bc984fadf20240ec74558, type: 3}
+    - {fileID: -6348030901605985629, guid: bee9cea3e75bc984fadf20240ec74558, type: 3}
+    - {fileID: 636874600157827178, guid: bee9cea3e75bc984fadf20240ec74558, type: 3}
+    - {fileID: -402424115064203080, guid: bee9cea3e75bc984fadf20240ec74558, type: 3}
+    - {fileID: 2338720992693977596, guid: bee9cea3e75bc984fadf20240ec74558, type: 3}
+    - {fileID: -4776503226814647864, guid: bee9cea3e75bc984fadf20240ec74558, type: 3}
+    - {fileID: 7727755205132812914, guid: bee9cea3e75bc984fadf20240ec74558, type: 3}
+    - {fileID: 669869880871289675, guid: bee9cea3e75bc984fadf20240ec74558, type: 3}
+    - {fileID: -1175522233380499255, guid: bee9cea3e75bc984fadf20240ec74558, type: 3}
+    - {fileID: -7958356735799663132, guid: bee9cea3e75bc984fadf20240ec74558, type: 3}
+  - imageName: fire_OUTLINED_slash2
+    imagePath: Assets/Sprites/Effects/slash FX/fire_OUTLINED_slash2.png
+    imagePathWithoutExtension: Assets/Sprites/Effects/slash FX/fire_OUTLINED_slash2
+    texture2D: {fileID: 2800000, guid: 552b835615d7da0419c4b8bde9cfb1d2, type: 3}
+    sprite: {fileID: 2119984648356921430, guid: 552b835615d7da0419c4b8bde9cfb1d2,
+      type: 3}
+    sprites:
+    - {fileID: 2119984648356921430, guid: 552b835615d7da0419c4b8bde9cfb1d2, type: 3}
+    - {fileID: -5689961752478698534, guid: 552b835615d7da0419c4b8bde9cfb1d2, type: 3}
+    - {fileID: -3008393999030621353, guid: 552b835615d7da0419c4b8bde9cfb1d2, type: 3}
+    - {fileID: -7354127888683847571, guid: 552b835615d7da0419c4b8bde9cfb1d2, type: 3}
+    - {fileID: 7585572498711526906, guid: 552b835615d7da0419c4b8bde9cfb1d2, type: 3}
+    - {fileID: -9207393272799104928, guid: 552b835615d7da0419c4b8bde9cfb1d2, type: 3}
+    - {fileID: 3938136458645074064, guid: 552b835615d7da0419c4b8bde9cfb1d2, type: 3}
+    - {fileID: 8246933933250052991, guid: 552b835615d7da0419c4b8bde9cfb1d2, type: 3}
+    - {fileID: 3936011839310315483, guid: 552b835615d7da0419c4b8bde9cfb1d2, type: 3}
+    - {fileID: -6446054346130054787, guid: 552b835615d7da0419c4b8bde9cfb1d2, type: 3}
+  - imageName: fire_slash
+    imagePath: Assets/Sprites/Effects/slash FX/fire_slash.png
+    imagePathWithoutExtension: Assets/Sprites/Effects/slash FX/fire_slash
+    texture2D: {fileID: 2800000, guid: 405efb6a4e8ce4e44a0f337fc975c980, type: 3}
+    sprite: {fileID: -6252117107277519976, guid: 405efb6a4e8ce4e44a0f337fc975c980,
+      type: 3}
+    sprites:
+    - {fileID: -6252117107277519976, guid: 405efb6a4e8ce4e44a0f337fc975c980, type: 3}
+    - {fileID: 8386593863939849371, guid: 405efb6a4e8ce4e44a0f337fc975c980, type: 3}
+    - {fileID: 1371913021365767325, guid: 405efb6a4e8ce4e44a0f337fc975c980, type: 3}
+    - {fileID: -8397827353343404430, guid: 405efb6a4e8ce4e44a0f337fc975c980, type: 3}
+    - {fileID: -4124164692845195980, guid: 405efb6a4e8ce4e44a0f337fc975c980, type: 3}
+    - {fileID: 2224673244574682883, guid: 405efb6a4e8ce4e44a0f337fc975c980, type: 3}
+    - {fileID: 1105840668305426542, guid: 405efb6a4e8ce4e44a0f337fc975c980, type: 3}
+    - {fileID: 1401790973032512438, guid: 405efb6a4e8ce4e44a0f337fc975c980, type: 3}
+  - imageName: fire_slash2
+    imagePath: Assets/Sprites/Effects/slash FX/fire_slash2.png
+    imagePathWithoutExtension: Assets/Sprites/Effects/slash FX/fire_slash2
+    texture2D: {fileID: 2800000, guid: 5c4da2f1a3dc72945afceb6b7c623877, type: 3}
+    sprite: {fileID: 3275046139633421911, guid: 5c4da2f1a3dc72945afceb6b7c623877,
+      type: 3}
+    sprites:
+    - {fileID: 3275046139633421911, guid: 5c4da2f1a3dc72945afceb6b7c623877, type: 3}
+    - {fileID: -2999430396388869620, guid: 5c4da2f1a3dc72945afceb6b7c623877, type: 3}
+    - {fileID: -1599539527323679151, guid: 5c4da2f1a3dc72945afceb6b7c623877, type: 3}
+    - {fileID: 6467417486123109866, guid: 5c4da2f1a3dc72945afceb6b7c623877, type: 3}
+    - {fileID: -466847963350629069, guid: 5c4da2f1a3dc72945afceb6b7c623877, type: 3}
+    - {fileID: -1271205587347101035, guid: 5c4da2f1a3dc72945afceb6b7c623877, type: 3}
+    - {fileID: 161328029246947308, guid: 5c4da2f1a3dc72945afceb6b7c623877, type: 3}
+    - {fileID: -4701585573016466774, guid: 5c4da2f1a3dc72945afceb6b7c623877, type: 3}
+    - {fileID: -4520839250266839677, guid: 5c4da2f1a3dc72945afceb6b7c623877, type: 3}
+    - {fileID: -9189972227737004351, guid: 5c4da2f1a3dc72945afceb6b7c623877, type: 3}
   - imageName: fireplace
     imagePath: Assets/Sprites/Map/fireplace.png
     imagePathWithoutExtension: Assets/Sprites/Map/fireplace
@@ -20433,6 +20661,41 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: f048dd06213522f4a9db2e98f670e6cb, type: 3}
     sprites:
     - {fileID: 21300000, guid: f048dd06213522f4a9db2e98f670e6cb, type: 3}
+  - imageName: icon_gun_air
+    imagePath: Assets/Sprites/Icons/Abilities/gun/icon_gun_air.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/gun/icon_gun_air
+    texture2D: {fileID: 2800000, guid: cac32c4f45728224884f1b147ca2542c, type: 3}
+    sprite: {fileID: 21300000, guid: cac32c4f45728224884f1b147ca2542c, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: cac32c4f45728224884f1b147ca2542c, type: 3}
+  - imageName: icon_gun_fire
+    imagePath: Assets/Sprites/Icons/Abilities/gun/icon_gun_fire.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/gun/icon_gun_fire
+    texture2D: {fileID: 2800000, guid: 9a20f205175a1c44c92cd963d00e0cba, type: 3}
+    sprite: {fileID: 21300000, guid: 9a20f205175a1c44c92cd963d00e0cba, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 9a20f205175a1c44c92cd963d00e0cba, type: 3}
+  - imageName: icon_gun_nature
+    imagePath: Assets/Sprites/Icons/Abilities/gun/icon_gun_nature.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/gun/icon_gun_nature
+    texture2D: {fileID: 2800000, guid: 325bc0d5cfcb6ef4783c1d9abbc95f77, type: 3}
+    sprite: {fileID: 21300000, guid: 325bc0d5cfcb6ef4783c1d9abbc95f77, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 325bc0d5cfcb6ef4783c1d9abbc95f77, type: 3}
+  - imageName: icon_gun_physical
+    imagePath: Assets/Sprites/Icons/Abilities/gun/icon_gun_physical.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/gun/icon_gun_physical
+    texture2D: {fileID: 2800000, guid: 60780bed126bc9b42848dada421bd350, type: 3}
+    sprite: {fileID: 21300000, guid: 60780bed126bc9b42848dada421bd350, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 60780bed126bc9b42848dada421bd350, type: 3}
+  - imageName: icon_gun_water
+    imagePath: Assets/Sprites/Icons/Abilities/gun/icon_gun_water.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/gun/icon_gun_water
+    texture2D: {fileID: 2800000, guid: edc5eea549c3de2479c0b2be69daa984, type: 3}
+    sprite: {fileID: 21300000, guid: edc5eea549c3de2479c0b2be69daa984, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: edc5eea549c3de2479c0b2be69daa984, type: 3}
   - imageName: icon_intelligence
     imagePath: Assets/Sprites/Icons/Stats/icon_intelligence.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Stats/icon_intelligence
@@ -20531,6 +20794,41 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 8d6e468d65762d74288105295830c3ba, type: 3}
     sprites:
     - {fileID: 21300000, guid: 8d6e468d65762d74288105295830c3ba, type: 3}
+  - imageName: icon_slash
+    imagePath: Assets/Sprites/Icons/Abilities/slash/icon_slash.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/slash/icon_slash
+    texture2D: {fileID: 2800000, guid: 72c983d8f8f5c38488c57d0f50e0ebb0, type: 3}
+    sprite: {fileID: 21300000, guid: 72c983d8f8f5c38488c57d0f50e0ebb0, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 72c983d8f8f5c38488c57d0f50e0ebb0, type: 3}
+  - imageName: icon_slash_air
+    imagePath: Assets/Sprites/Icons/Abilities/slash/icon_slash_air.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/slash/icon_slash_air
+    texture2D: {fileID: 2800000, guid: 24e569d1b1aecf444be19433bb68c2f7, type: 3}
+    sprite: {fileID: 21300000, guid: 24e569d1b1aecf444be19433bb68c2f7, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 24e569d1b1aecf444be19433bb68c2f7, type: 3}
+  - imageName: icon_slash_fire
+    imagePath: Assets/Sprites/Icons/Abilities/slash/icon_slash_fire.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/slash/icon_slash_fire
+    texture2D: {fileID: 2800000, guid: 2828f6a09e2c1e441ad62f28062bcfd5, type: 3}
+    sprite: {fileID: 21300000, guid: 2828f6a09e2c1e441ad62f28062bcfd5, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 2828f6a09e2c1e441ad62f28062bcfd5, type: 3}
+  - imageName: icon_slash_nature
+    imagePath: Assets/Sprites/Icons/Abilities/slash/icon_slash_nature.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/slash/icon_slash_nature
+    texture2D: {fileID: 2800000, guid: 969d3fdbc7138304bbc36e588bf1d41c, type: 3}
+    sprite: {fileID: 21300000, guid: 969d3fdbc7138304bbc36e588bf1d41c, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 969d3fdbc7138304bbc36e588bf1d41c, type: 3}
+  - imageName: icon_slash_water
+    imagePath: Assets/Sprites/Icons/Abilities/slash/icon_slash_water.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/slash/icon_slash_water
+    texture2D: {fileID: 2800000, guid: d2d85acb7fb66694baf9e56468abbb8e, type: 3}
+    sprite: {fileID: 21300000, guid: d2d85acb7fb66694baf9e56468abbb8e, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: d2d85acb7fb66694baf9e56468abbb8e, type: 3}
   - imageName: icon_spirit
     imagePath: Assets/Sprites/Icons/Stats/icon_spirit.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Stats/icon_spirit
@@ -26626,6 +26924,68 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 1f4063f74d5a82e4e877d93722f5dec4, type: 3}
     sprites:
     - {fileID: 21300000, guid: 1f4063f74d5a82e4e877d93722f5dec4, type: 3}
+  - imageName: physical_gun
+    imagePath: Assets/Sprites/Effects/gun FX/physical_gun.png
+    imagePathWithoutExtension: Assets/Sprites/Effects/gun FX/physical_gun
+    texture2D: {fileID: 2800000, guid: b79b8cc0b3e0f004b81ad45528193c97, type: 3}
+    sprite: {fileID: -2576496198561946209, guid: b79b8cc0b3e0f004b81ad45528193c97,
+      type: 3}
+    sprites:
+    - {fileID: -2576496198561946209, guid: b79b8cc0b3e0f004b81ad45528193c97, type: 3}
+    - {fileID: 9183668045780150304, guid: b79b8cc0b3e0f004b81ad45528193c97, type: 3}
+    - {fileID: 3618052633897635458, guid: b79b8cc0b3e0f004b81ad45528193c97, type: 3}
+    - {fileID: -5183103959534523417, guid: b79b8cc0b3e0f004b81ad45528193c97, type: 3}
+    - {fileID: 3685192406407100425, guid: b79b8cc0b3e0f004b81ad45528193c97, type: 3}
+    - {fileID: -6967227052056107884, guid: b79b8cc0b3e0f004b81ad45528193c97, type: 3}
+    - {fileID: -1253039737520068350, guid: b79b8cc0b3e0f004b81ad45528193c97, type: 3}
+    - {fileID: -5663277361792950330, guid: b79b8cc0b3e0f004b81ad45528193c97, type: 3}
+    - {fileID: -4698258814144269248, guid: b79b8cc0b3e0f004b81ad45528193c97, type: 3}
+  - imageName: physical_gun2
+    imagePath: Assets/Sprites/Effects/gun FX/physical_gun2.png
+    imagePathWithoutExtension: Assets/Sprites/Effects/gun FX/physical_gun2
+    texture2D: {fileID: 2800000, guid: 3ab4b515e87dc764eb2294f19259374d, type: 3}
+    sprite: {fileID: 3810035968981149577, guid: 3ab4b515e87dc764eb2294f19259374d,
+      type: 3}
+    sprites:
+    - {fileID: 3810035968981149577, guid: 3ab4b515e87dc764eb2294f19259374d, type: 3}
+    - {fileID: -4171536270705546923, guid: 3ab4b515e87dc764eb2294f19259374d, type: 3}
+    - {fileID: -8284996328238667097, guid: 3ab4b515e87dc764eb2294f19259374d, type: 3}
+    - {fileID: 3628658622816749372, guid: 3ab4b515e87dc764eb2294f19259374d, type: 3}
+    - {fileID: 5473888737120238727, guid: 3ab4b515e87dc764eb2294f19259374d, type: 3}
+    - {fileID: -1071757621737280583, guid: 3ab4b515e87dc764eb2294f19259374d, type: 3}
+    - {fileID: 6275254008511358351, guid: 3ab4b515e87dc764eb2294f19259374d, type: 3}
+    - {fileID: 5701532992120886748, guid: 3ab4b515e87dc764eb2294f19259374d, type: 3}
+  - imageName: physical_slash
+    imagePath: Assets/Sprites/Effects/slash FX/physical_slash.png
+    imagePathWithoutExtension: Assets/Sprites/Effects/slash FX/physical_slash
+    texture2D: {fileID: 2800000, guid: ba607d869cfd3a44e89b2d4ca0288482, type: 3}
+    sprite: {fileID: -817152425226663744, guid: ba607d869cfd3a44e89b2d4ca0288482,
+      type: 3}
+    sprites:
+    - {fileID: -817152425226663744, guid: ba607d869cfd3a44e89b2d4ca0288482, type: 3}
+    - {fileID: 316579743737807504, guid: ba607d869cfd3a44e89b2d4ca0288482, type: 3}
+    - {fileID: -5259637370167913567, guid: ba607d869cfd3a44e89b2d4ca0288482, type: 3}
+    - {fileID: -6914585817568754430, guid: ba607d869cfd3a44e89b2d4ca0288482, type: 3}
+    - {fileID: 3568017724495178962, guid: ba607d869cfd3a44e89b2d4ca0288482, type: 3}
+    - {fileID: -8891547701319131441, guid: ba607d869cfd3a44e89b2d4ca0288482, type: 3}
+    - {fileID: -7990790871020136904, guid: ba607d869cfd3a44e89b2d4ca0288482, type: 3}
+    - {fileID: 1997086146314669256, guid: ba607d869cfd3a44e89b2d4ca0288482, type: 3}
+    - {fileID: -4659420919837897458, guid: ba607d869cfd3a44e89b2d4ca0288482, type: 3}
+  - imageName: physical_slash2
+    imagePath: Assets/Sprites/Effects/slash FX/physical_slash2.png
+    imagePathWithoutExtension: Assets/Sprites/Effects/slash FX/physical_slash2
+    texture2D: {fileID: 2800000, guid: dbf283d4f4d51474da2f13afa3e8b8f2, type: 3}
+    sprite: {fileID: -4429034477021705650, guid: dbf283d4f4d51474da2f13afa3e8b8f2,
+      type: 3}
+    sprites:
+    - {fileID: -4429034477021705650, guid: dbf283d4f4d51474da2f13afa3e8b8f2, type: 3}
+    - {fileID: -726889953554927810, guid: dbf283d4f4d51474da2f13afa3e8b8f2, type: 3}
+    - {fileID: -2811184226467285290, guid: dbf283d4f4d51474da2f13afa3e8b8f2, type: 3}
+    - {fileID: 3267206994545585106, guid: dbf283d4f4d51474da2f13afa3e8b8f2, type: 3}
+    - {fileID: 2905663687186532118, guid: dbf283d4f4d51474da2f13afa3e8b8f2, type: 3}
+    - {fileID: -4865463824645455440, guid: dbf283d4f4d51474da2f13afa3e8b8f2, type: 3}
+    - {fileID: -6062299108345544355, guid: dbf283d4f4d51474da2f13afa3e8b8f2, type: 3}
+    - {fileID: 4884311210516362668, guid: dbf283d4f4d51474da2f13afa3e8b8f2, type: 3}
   - imageName: Pickaxe
     imagePath: Assets/Sprites/Icons/Weapons/Pickaxe.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Weapons/Pickaxe
@@ -32817,6 +33177,39 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 4de740e219c35b34d8abaa2342488d28, type: 3}
     sprites:
     - {fileID: 21300000, guid: 4de740e219c35b34d8abaa2342488d28, type: 3}
+  - imageName: water_gun
+    imagePath: Assets/Sprites/Effects/gun FX/water_gun.png
+    imagePathWithoutExtension: Assets/Sprites/Effects/gun FX/water_gun
+    texture2D: {fileID: 2800000, guid: bff8d3c3401f18648b286aaec97de1ef, type: 3}
+    sprite: {fileID: 6341224413551630268, guid: bff8d3c3401f18648b286aaec97de1ef,
+      type: 3}
+    sprites:
+    - {fileID: 6341224413551630268, guid: bff8d3c3401f18648b286aaec97de1ef, type: 3}
+    - {fileID: 6466581170460031710, guid: bff8d3c3401f18648b286aaec97de1ef, type: 3}
+    - {fileID: 1166901088712290260, guid: bff8d3c3401f18648b286aaec97de1ef, type: 3}
+    - {fileID: 1135750986106900903, guid: bff8d3c3401f18648b286aaec97de1ef, type: 3}
+    - {fileID: 2425090745681868358, guid: bff8d3c3401f18648b286aaec97de1ef, type: 3}
+    - {fileID: -8434487455793296854, guid: bff8d3c3401f18648b286aaec97de1ef, type: 3}
+    - {fileID: -6314181148581521413, guid: bff8d3c3401f18648b286aaec97de1ef, type: 3}
+    - {fileID: -716906515420164282, guid: bff8d3c3401f18648b286aaec97de1ef, type: 3}
+    - {fileID: 1558484369458135836, guid: bff8d3c3401f18648b286aaec97de1ef, type: 3}
+  - imageName: water_gun2
+    imagePath: Assets/Sprites/Effects/gun FX/water_gun2.png
+    imagePathWithoutExtension: Assets/Sprites/Effects/gun FX/water_gun2
+    texture2D: {fileID: 2800000, guid: 922de51f4a2df6848acfb05e7b4047d9, type: 3}
+    sprite: {fileID: 4507603050060599434, guid: 922de51f4a2df6848acfb05e7b4047d9,
+      type: 3}
+    sprites:
+    - {fileID: 4507603050060599434, guid: 922de51f4a2df6848acfb05e7b4047d9, type: 3}
+    - {fileID: -8318032411086769234, guid: 922de51f4a2df6848acfb05e7b4047d9, type: 3}
+    - {fileID: -8107122723740412171, guid: 922de51f4a2df6848acfb05e7b4047d9, type: 3}
+    - {fileID: -6123276752328389707, guid: 922de51f4a2df6848acfb05e7b4047d9, type: 3}
+    - {fileID: 2795666550111890952, guid: 922de51f4a2df6848acfb05e7b4047d9, type: 3}
+    - {fileID: -746313640513014804, guid: 922de51f4a2df6848acfb05e7b4047d9, type: 3}
+    - {fileID: -5943928100578365165, guid: 922de51f4a2df6848acfb05e7b4047d9, type: 3}
+    - {fileID: 6339454297027944518, guid: 922de51f4a2df6848acfb05e7b4047d9, type: 3}
+    - {fileID: 3182130380530911293, guid: 922de51f4a2df6848acfb05e7b4047d9, type: 3}
+    - {fileID: 3412661264796642578, guid: 922de51f4a2df6848acfb05e7b4047d9, type: 3}
   - imageName: water_level_background
     imagePath: Assets/Sprites/GUI/Crops/water_level_background.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Crops/water_level_background
@@ -32864,6 +33257,39 @@ MonoBehaviour:
     sprites:
     - {fileID: 21300000, guid: 031eef2854b2c0c4a96a343efe84a292, type: 3}
     - {fileID: 21300002, guid: 031eef2854b2c0c4a96a343efe84a292, type: 3}
+  - imageName: water_slash
+    imagePath: Assets/Sprites/Effects/slash FX/water_slash.png
+    imagePathWithoutExtension: Assets/Sprites/Effects/slash FX/water_slash
+    texture2D: {fileID: 2800000, guid: 59064706401e3c5449e8e7bdcb0fc940, type: 3}
+    sprite: {fileID: 2582109357095366969, guid: 59064706401e3c5449e8e7bdcb0fc940,
+      type: 3}
+    sprites:
+    - {fileID: 2582109357095366969, guid: 59064706401e3c5449e8e7bdcb0fc940, type: 3}
+    - {fileID: -5474702944257740970, guid: 59064706401e3c5449e8e7bdcb0fc940, type: 3}
+    - {fileID: -59607176913056231, guid: 59064706401e3c5449e8e7bdcb0fc940, type: 3}
+    - {fileID: -8647941900001693639, guid: 59064706401e3c5449e8e7bdcb0fc940, type: 3}
+    - {fileID: 3678869845116815852, guid: 59064706401e3c5449e8e7bdcb0fc940, type: 3}
+    - {fileID: -2100508606244000645, guid: 59064706401e3c5449e8e7bdcb0fc940, type: 3}
+    - {fileID: -2941843408279918150, guid: 59064706401e3c5449e8e7bdcb0fc940, type: 3}
+    - {fileID: 2779510721794496602, guid: 59064706401e3c5449e8e7bdcb0fc940, type: 3}
+    - {fileID: 5252624610362837642, guid: 59064706401e3c5449e8e7bdcb0fc940, type: 3}
+  - imageName: water_slash2
+    imagePath: Assets/Sprites/Effects/slash FX/water_slash2.png
+    imagePathWithoutExtension: Assets/Sprites/Effects/slash FX/water_slash2
+    texture2D: {fileID: 2800000, guid: d9e8f87f6613bc14394245acc4409d8d, type: 3}
+    sprite: {fileID: 2964386685807731384, guid: d9e8f87f6613bc14394245acc4409d8d,
+      type: 3}
+    sprites:
+    - {fileID: 2964386685807731384, guid: d9e8f87f6613bc14394245acc4409d8d, type: 3}
+    - {fileID: 3539381734826819001, guid: d9e8f87f6613bc14394245acc4409d8d, type: 3}
+    - {fileID: -8598849263939743537, guid: d9e8f87f6613bc14394245acc4409d8d, type: 3}
+    - {fileID: -1888411210850874735, guid: d9e8f87f6613bc14394245acc4409d8d, type: 3}
+    - {fileID: 5058584851927344843, guid: d9e8f87f6613bc14394245acc4409d8d, type: 3}
+    - {fileID: -6093130321548828621, guid: d9e8f87f6613bc14394245acc4409d8d, type: 3}
+    - {fileID: 2646746764123252685, guid: d9e8f87f6613bc14394245acc4409d8d, type: 3}
+    - {fileID: 4651629095000120003, guid: d9e8f87f6613bc14394245acc4409d8d, type: 3}
+    - {fileID: 3855664084901882769, guid: d9e8f87f6613bc14394245acc4409d8d, type: 3}
+    - {fileID: 1499461906909633141, guid: d9e8f87f6613bc14394245acc4409d8d, type: 3}
   - imageName: water_trail_particle
     imagePath: Assets/Sprites/Map/water_trail_particle.png
     imagePathWithoutExtension: Assets/Sprites/Map/water_trail_particle
@@ -35075,8 +35501,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2045203611}
   m_HandleRect: {fileID: 2045203610}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.530642
+  m_Value: 1.0000002
+  m_Size: 0.53064203
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -38431,7 +38857,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2032024596}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: GameObject2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

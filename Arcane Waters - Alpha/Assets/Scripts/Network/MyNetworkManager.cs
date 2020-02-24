@@ -210,9 +210,17 @@ public class MyNetworkManager : NetworkManager {
                return;
             }
 
+            // If we don't have the requested area, we default to the starting area
+            if (!AreaManager.self.hasArea(previousAreaKey)) {
+               D.log($"Server does not have Area {previousAreaKey}, so defaulting player to {Area.HOUSE}");
+               Spawn spawn = SpawnManager.self.getSpawn(Area.HOUSE);
+               previousAreaKey = spawn.AreaKey;
+               userInfo.localPos = spawn.transform.position;
+            }
+
             // Create the Player object
-            Area previousArea = AreaManager.self.getArea(previousAreaKey);
-            GameObject prefab = previousArea?.isSea == true ? PrefabsManager.self.playerShipPrefab : PrefabsManager.self.playerBodyPrefab;
+            Area targetArea = AreaManager.self.getArea(previousAreaKey);
+            GameObject prefab = targetArea?.isSea == true ? PrefabsManager.self.playerShipPrefab : PrefabsManager.self.playerBodyPrefab;
             GameObject playerObject = Instantiate(prefab, userInfo.localPos, Quaternion.identity);
             NetEntity player = playerObject.GetComponent<NetEntity>();
             player.areaKey = previousAreaKey;
@@ -234,14 +242,14 @@ public class MyNetworkManager : NetworkManager {
             Instance instance = InstanceManager.self.getInstance(player.instanceId);
             InstanceManager.self.rebuildInstanceObservers(player, instance);
 
+            // Tell the player information about the Area we're going to send them to
+            player.rpc.Target_ReceiveAreaInfo(player.connectionToClient, targetArea.areaKey, targetArea.version, targetArea.transform.position);
+
             // Server provides clients with info of the npc
             List<NPCData> referenceNPCData = NPCManager.self.getNPCDataInArea(previousAreaKey);
 
             // Sends npc data of the area to the client
             player.rpc.Target_ReceiveNPCsForCurrentArea(player.connectionToClient, serializedNPCData(referenceNPCData));
-            
-            // Tell the player information about the Area we're going to send them to
-            player.rpc.Target_ReceiveAreaInfo(player.connectionToClient, player.areaKey, previousArea.transform.position);
 
             // Send any extra info as targeted RPCs
             player.cropManager.sendSiloInfo();

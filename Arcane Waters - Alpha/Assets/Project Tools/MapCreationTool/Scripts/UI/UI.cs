@@ -14,7 +14,7 @@ namespace MapCreationTool
       const string masterSceneName = "MasterTool";
 
       [SerializeField]
-      private Dropdown toolDropdown = null;
+      private ToolSelect toolSelect = null;
       [SerializeField]
       private Dropdown biomeDropdown = null;
       [SerializeField]
@@ -35,6 +35,8 @@ namespace MapCreationTool
       private Text loadedMapText = null;
       [SerializeField]
       private Button newVersionButton = null;
+      [SerializeField]
+      private Text toolTipText = null;
 
       [SerializeField]
       private Button undoButton = null;
@@ -76,6 +78,7 @@ namespace MapCreationTool
          Undo.LogCleared += updateAllUI;
 
          DrawBoard.loadedVersionChanged += changeLoadedMapUI;
+         toolSelect.OnValueChanged += toolSelect_ValueChanged;
       }
 
       private void OnDisable () {
@@ -87,6 +90,7 @@ namespace MapCreationTool
          Undo.LogCleared -= updateAllUI;
 
          DrawBoard.loadedVersionChanged -= changeLoadedMapUI;
+         toolSelect.OnValueChanged -= toolSelect_ValueChanged;
       }
 
       private void updateAllUI () {
@@ -94,7 +98,7 @@ namespace MapCreationTool
          redoButton.interactable = Undo.redoCount > 0;
 
          burrowedTreesToggle.isOn = Tools.burrowedTrees;
-         toolDropdown.value = (int) Tools.toolType;
+         toolSelect.setValueNoNotify(Tools.toolType);
          mountainLayerDropdown.value = Tools.mountainLayer;
          fillBoundsDropdown.value = (int) Tools.fillBounds;
          for (int i = 0; i < biomeDropdown.options.Count; i++)
@@ -129,6 +133,10 @@ namespace MapCreationTool
          biomeDropdown.options = optionsPacks.Keys.Select(k => new Dropdown.OptionData(k)).ToList();
 
          updateAllUI();
+      }
+
+      private void Update () {
+         toolTipText.text = ToolTipManager.currentMessage;
       }
 
       private void changeLoadedMapUI (MapVersion mapVersion) {
@@ -172,9 +180,9 @@ namespace MapCreationTool
             Tools.changeMountainLayer(mountainLayerDropdown.value);
       }
 
-      public void toolDropdown_ValueChanged () {
-         if (Tools.toolType != (ToolType) toolDropdown.value)
-            Tools.changeTool((ToolType) toolDropdown.value);
+      public void toolSelect_ValueChanged (ToolType value) {
+         if (Tools.toolType != value)
+            Tools.changeTool(value);
       }
 
       public void snapToGridToggle_ValueChanged () {

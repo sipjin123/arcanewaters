@@ -22,7 +22,7 @@ public class MapManager : MonoBehaviour {
    public void createLiveMaps (NetEntity source) {
       // Retrieve the map data from the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         Dictionary<string, string> maps = DB_Main.getLiveMaps();
+         Dictionary<string, MapInfo> maps = DB_Main.getLiveMaps();
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -46,22 +46,24 @@ public class MapManager : MonoBehaviour {
       });
    }
 
-   public void createLiveMap (string areaKey, string mapData, Vector3 mapPosition) {
-      D.log("Preparing to create live map: " + areaKey + " at: " + mapPosition);
+   public void createLiveMap (string areaKey, MapInfo mapInfo, Vector3 mapPosition) {
+      D.log($"Preparing to create live map {areaKey} at {mapPosition} with version {mapInfo.version}");
 
-      // If the map already exists, don't create it again
-      if (_maps.ContainsKey(areaKey)) {
-         D.warning("Map: " + areaKey + " already exists!");
+      // If the area already exists, don't create it again
+      if (AreaManager.self.hasArea(areaKey)) {
+         D.warning($"Area {areaKey} already exists!");
          return;
       }
 
       // Instantiate the map using the map data
-      Area area = MapImporter.instantiateMapData(mapData, areaKey, mapPosition);
+      Area area = MapImporter.instantiateMapData(mapInfo, areaKey, mapPosition);
       AreaManager.self.storeArea(area);
       area.vcam.VirtualCameraGameObject.SetActive(false);
 
-      // Keep track of the maps we create
-      _maps[area.areaKey] = mapData;
+      // Send signal to player to update virtual camera after area is created
+      if (Global.player != null) {
+         Global.player.updatePlayerCamera();
+      }
    }
 
    public Vector3 getNextMapPosition() {
@@ -71,21 +73,7 @@ public class MapManager : MonoBehaviour {
       return _mapOffset;
    }
 
-   public string getMapData (string areaKey) {
-      if (_maps.ContainsKey(areaKey)) {
-         return _maps[areaKey];
-      }
-
-      return null;
-   }
-
-   public IEnumerator CO_DownloadMap (string areaKey, Vector3 position) {
-      // Check if we already have the map
-      if (_maps.ContainsKey(areaKey)) {
-         D.log("Map Manager already has map for area: " + areaKey);
-         yield break;
-      }
-
+   public IEnumerator CO_DownloadAndCreateMap (string areaKey, int version, Vector3 mapPosition) {
       // Request the map from the web
       UnityWebRequest www = UnityWebRequest.Get("http://arcanewaters.com/maps.php?mapName=" + areaKey);
       yield return www.SendWebRequest();
@@ -96,13 +84,11 @@ public class MapManager : MonoBehaviour {
          // Grab the map data from the request
          string mapData = www.downloadHandler.text;
 
-         // Spawn the Area using the map data
-         createLiveMap(areaKey, mapData, position);
+         // Store it for later reference
+         MapCache.storeMapData(areaKey, version, mapData);
 
-         // Send signal to player to update virtual camera after area is created
-         if (Global.player != null) {
-            Global.player.updatePlayerCamera();
-         }
+         // Spawn the Area using the map data
+         createLiveMap(areaKey, new MapInfo(areaKey, mapData, version), mapPosition);
       }
    }
 
@@ -110,9 +96,6 @@ public class MapManager : MonoBehaviour {
 
    // The current map offset being used by the server
    protected Vector3 _mapOffset = new Vector3(500f, 500f);
-
-   // Keeps track of the map data we've received, indexed by their Area Key string
-   protected Dictionary<string, string> _maps = new Dictionary<string, string>();
 
    #endregion
 }

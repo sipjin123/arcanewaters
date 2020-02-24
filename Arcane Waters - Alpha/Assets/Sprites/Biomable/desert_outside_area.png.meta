@@ -107,6 +107,9 @@ TextureImporter:
   - first:
       213: 4266685476010391365
     second: desert_outside_area_33
+  - first:
+      213: -8779490925929850705
+    second: desert_outside_area_34
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -1030,6 +1033,27 @@ TextureImporter:
       bones: []
       spriteID: a4aba0d369c77e74fa86db4e40946504
       internalID: 4266685476010391365
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: desert_outside_area_34
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 320
+        width: 16
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c1eefc49f586d024fa258b5b1a55632a
+      internalID: -8779490925929850705
       vertices: []
       indices: 
       edges: []

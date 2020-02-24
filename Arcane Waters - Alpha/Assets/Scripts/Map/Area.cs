@@ -35,6 +35,9 @@ public class Area : MonoBehaviour
    // Whether this area is a sea area
    public bool isSea = false;
 
+   // The Version number of this Area, as determined by the Map Editor tool
+   public int version;
+
    // NPC Data fields to be loaded by the server
    public List<ExportedPrefab001> npcDatafields = new List<ExportedPrefab001>();
 

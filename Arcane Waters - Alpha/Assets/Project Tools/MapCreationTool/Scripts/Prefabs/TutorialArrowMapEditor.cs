@@ -29,15 +29,15 @@ namespace MapCreationTool
          }
       }
 
-      public override void createdForPrieview () {
+      public override void createdForPreview () {
          setDefaultSprite();
       }
 
       public void setDefaultSprite () {
       }
 
-      public void setHighlight (bool hovered, bool selected) {
-         setSpriteOutline(highlight, hovered, selected);
+      public void setHighlight (bool hovered, bool selected, bool deleting) {
+         setSpriteOutline(highlight, hovered, selected, deleting);
       }
    }
 }

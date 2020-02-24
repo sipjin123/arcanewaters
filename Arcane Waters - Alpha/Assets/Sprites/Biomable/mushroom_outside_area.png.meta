@@ -104,6 +104,9 @@ TextureImporter:
   - first:
       213: -947057057045542823
     second: mushroom_outside_area_33
+  - first:
+      213: -7535056913267499413
+    second: mushroom_outside_area_34
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -1051,6 +1054,27 @@ TextureImporter:
       bones: []
       spriteID: 52c4bb5988f71794da3d265841e764ab
       internalID: -947057057045542823
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mushroom_outside_area_34
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 320
+        width: 16
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 98b9f35a71be8444d89bff64af334139
+      internalID: -7535056913267499413
       vertices: []
       indices: 
       edges: []

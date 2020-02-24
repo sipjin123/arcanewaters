@@ -16,6 +16,12 @@ namespace MapCreationTool
       public Dropdown valueDropdown { get; private set; }
 
       private RectTransform rectT;
+      private UIToolTip toolTip;
+
+      public string toolTipMessage
+      {
+         set { toolTip.message = value; }
+      }
 
       private void Awake () {
          fieldName = GetComponentInChildren<Text>();
@@ -23,6 +29,7 @@ namespace MapCreationTool
          valueDropdown = GetComponentInChildren<Dropdown>();
 
          rectT = GetComponent<RectTransform>();
+         toolTip = GetComponent<UIToolTip>();
       }
 
       private void OnEnable () {
