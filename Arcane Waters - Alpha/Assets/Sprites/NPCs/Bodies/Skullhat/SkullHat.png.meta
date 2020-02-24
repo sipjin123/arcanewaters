@@ -74,6 +74,78 @@ TextureImporter:
   - first:
       213: 21300046
     second: skullhat_1_23
+  - first:
+      213: -4208450079830045611
+    second: SkullHat_0
+  - first:
+      213: -4462045158738980974
+    second: SkullHat_1
+  - first:
+      213: 1340971289169961439
+    second: SkullHat_2
+  - first:
+      213: -5969152987310937456
+    second: SkullHat_3
+  - first:
+      213: 2202013216532538411
+    second: SkullHat_4
+  - first:
+      213: 8925514806363654032
+    second: SkullHat_5
+  - first:
+      213: 9032690084969596373
+    second: SkullHat_6
+  - first:
+      213: 5250663881781931006
+    second: SkullHat_7
+  - first:
+      213: 5751982791101963620
+    second: SkullHat_8
+  - first:
+      213: -743760436193721589
+    second: SkullHat_9
+  - first:
+      213: -5089832587829098429
+    second: SkullHat_10
+  - first:
+      213: 4776939160429763677
+    second: SkullHat_11
+  - first:
+      213: -1492866727879823123
+    second: SkullHat_12
+  - first:
+      213: -5856663437893160593
+    second: SkullHat_13
+  - first:
+      213: 5582173502588540977
+    second: SkullHat_14
+  - first:
+      213: -3418056078604755127
+    second: SkullHat_15
+  - first:
+      213: -1702040228989887390
+    second: SkullHat_16
+  - first:
+      213: -1978511294539825076
+    second: SkullHat_17
+  - first:
+      213: -3196241123230892032
+    second: SkullHat_18
+  - first:
+      213: -7968221526413368704
+    second: SkullHat_19
+  - first:
+      213: -2114286146167133471
+    second: SkullHat_20
+  - first:
+      213: -5373697765614517082
+    second: SkullHat_21
+  - first:
+      213: -4517618012772944155
+    second: SkullHat_22
+  - first:
+      213: -6012080138900714275
+    second: SkullHat_23
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -158,7 +230,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: skullhat_1_0
+      name: SkullHat_0
       rect:
         serializedVersion: 2
         x: 0
@@ -172,14 +244,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 02305410000000000800000000000000
-      internalID: 21300000
+      spriteID: 5ff71581a72afef43b205939cfed6f0e
+      internalID: -4208450079830045611
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: skullhat_1_1
+      name: SkullHat_1
       rect:
         serializedVersion: 2
         x: 85
@@ -193,14 +265,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 22305410000000000800000000000000
-      internalID: 21300002
+      spriteID: a5a55111331e98045bee63644dbca00b
+      internalID: -4462045158738980974
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: skullhat_1_2
+      name: SkullHat_2
       rect:
         serializedVersion: 2
         x: 170
@@ -214,14 +286,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 42305410000000000800000000000000
-      internalID: 21300004
+      spriteID: 4ecf6f7bf01edd741b9be75fff6116fb
+      internalID: 1340971289169961439
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: skullhat_1_3
+      name: SkullHat_3
       rect:
         serializedVersion: 2
         x: 255
@@ -235,14 +307,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 62305410000000000800000000000000
-      internalID: 21300006
+      spriteID: 231262ecc2a2dd449bfa566af39cf64e
+      internalID: -5969152987310937456
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: skullhat_1_4
+      name: SkullHat_4
       rect:
         serializedVersion: 2
         x: 340
@@ -256,14 +328,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 82305410000000000800000000000000
-      internalID: 21300008
+      spriteID: 82fa2d5e5f625ff48a85f6c2a6cc8e25
+      internalID: 2202013216532538411
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: skullhat_1_5
+      name: SkullHat_5
       rect:
         serializedVersion: 2
         x: 425
@@ -277,14 +349,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a2305410000000000800000000000000
-      internalID: 21300010
+      spriteID: 3c1c97c21e5dc9a43a241e895bfc8720
+      internalID: 8925514806363654032
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: skullhat_1_6
+      name: SkullHat_6
       rect:
         serializedVersion: 2
         x: 510
@@ -298,14 +370,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c2305410000000000800000000000000
-      internalID: 21300012
+      spriteID: 8febe19fd90dc3a44ac240084662c373
+      internalID: 9032690084969596373
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: skullhat_1_7
+      name: SkullHat_7
       rect:
         serializedVersion: 2
         x: 595
@@ -319,14 +391,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e2305410000000000800000000000000
-      internalID: 21300014
+      spriteID: 555bce576da7ffa44ae0de31fa3b8373
+      internalID: 5250663881781931006
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: skullhat_1_8
+      name: SkullHat_8
       rect:
         serializedVersion: 2
         x: 680
@@ -340,14 +412,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 03305410000000000800000000000000
-      internalID: 21300016
+      spriteID: 2494f7e4bb690de4297d0cead927d93e
+      internalID: 5751982791101963620
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: skullhat_1_9
+      name: SkullHat_9
       rect:
         serializedVersion: 2
         x: 765
@@ -361,14 +433,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 23305410000000000800000000000000
-      internalID: 21300018
+      spriteID: 342744a02ed19a443bc4c1dc45ddd545
+      internalID: -743760436193721589
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: skullhat_1_10
+      name: SkullHat_10
       rect:
         serializedVersion: 2
         x: 850
@@ -382,14 +454,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 43305410000000000800000000000000
-      internalID: 21300020
+      spriteID: 3bcc488a00eb630419a14181f3672b7d
+      internalID: -5089832587829098429
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: skullhat_1_11
+      name: SkullHat_11
       rect:
         serializedVersion: 2
         x: 935
@@ -403,14 +475,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 63305410000000000800000000000000
-      internalID: 21300022
+      spriteID: 4bf2656ce734a1947a1999df3a7a981a
+      internalID: 4776939160429763677
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: skullhat_1_12
+      name: SkullHat_12
       rect:
         serializedVersion: 2
         x: 0
@@ -424,14 +496,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 83305410000000000800000000000000
-      internalID: 21300024
+      spriteID: 185e4befcddc8f44ba3b5ec0591de1ab
+      internalID: -1492866727879823123
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: skullhat_1_13
+      name: SkullHat_13
       rect:
         serializedVersion: 2
         x: 85
@@ -445,14 +517,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a3305410000000000800000000000000
-      internalID: 21300026
+      spriteID: 54db7f2187d682b4b9bc6e61de1cf130
+      internalID: -5856663437893160593
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: skullhat_1_14
+      name: SkullHat_14
       rect:
         serializedVersion: 2
         x: 170
@@ -466,14 +538,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c3305410000000000800000000000000
-      internalID: 21300028
+      spriteID: a53ac9ca6f7df65438baafd2f75772cf
+      internalID: 5582173502588540977
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: skullhat_1_15
+      name: SkullHat_15
       rect:
         serializedVersion: 2
         x: 255
@@ -487,14 +559,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e3305410000000000800000000000000
-      internalID: 21300030
+      spriteID: 79f88ec756939c04895a7e0a10c80a9a
+      internalID: -3418056078604755127
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: skullhat_1_16
+      name: SkullHat_16
       rect:
         serializedVersion: 2
         x: 340
@@ -508,14 +580,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 04305410000000000800000000000000
-      internalID: 21300032
+      spriteID: 2f65848c0475ba84bae15da7e3962416
+      internalID: -1702040228989887390
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: skullhat_1_17
+      name: SkullHat_17
       rect:
         serializedVersion: 2
         x: 425
@@ -529,14 +601,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 24305410000000000800000000000000
-      internalID: 21300034
+      spriteID: 18760327581649a4390a86e749fb56a0
+      internalID: -1978511294539825076
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: skullhat_1_18
+      name: SkullHat_18
       rect:
         serializedVersion: 2
         x: 510
@@ -550,14 +622,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 44305410000000000800000000000000
-      internalID: 21300036
+      spriteID: d405c68e08416de4ea2cb03be0872dc0
+      internalID: -3196241123230892032
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: skullhat_1_19
+      name: SkullHat_19
       rect:
         serializedVersion: 2
         x: 595
@@ -571,14 +643,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 64305410000000000800000000000000
-      internalID: 21300038
+      spriteID: 8961c7783c15a354da826f8519681d2d
+      internalID: -7968221526413368704
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: skullhat_1_20
+      name: SkullHat_20
       rect:
         serializedVersion: 2
         x: 680
@@ -592,14 +664,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 84305410000000000800000000000000
-      internalID: 21300040
+      spriteID: f6376d45e5b824e45aa41f92eeffa07c
+      internalID: -2114286146167133471
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: skullhat_1_21
+      name: SkullHat_21
       rect:
         serializedVersion: 2
         x: 765
@@ -613,14 +685,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a4305410000000000800000000000000
-      internalID: 21300042
+      spriteID: 7689ba34995ddf94aa9b6c470b22f00f
+      internalID: -5373697765614517082
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: skullhat_1_22
+      name: SkullHat_22
       rect:
         serializedVersion: 2
         x: 850
@@ -634,14 +706,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c4305410000000000800000000000000
-      internalID: 21300044
+      spriteID: 7c4ab6221a0781e4b8a3ea5c84963c90
+      internalID: -4517618012772944155
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: skullhat_1_23
+      name: SkullHat_23
       rect:
         serializedVersion: 2
         x: 935
@@ -655,8 +727,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e4305410000000000800000000000000
-      internalID: 21300046
+      spriteID: 40a1d2e9a6d569a4297d8a91b720f4b7
+      internalID: -6012080138900714275
       vertices: []
       indices: 
       edges: []
@@ -664,7 +736,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: bea626a466ac1a74e8649ca3fc5f2722
     internalID: 0
     vertices: []
     indices: 
