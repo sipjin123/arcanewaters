@@ -74,27 +74,18 @@ public class EquipmentToolPanel : MonoBehaviour {
          if (equipmentType == EquipmentType.Weapon) {
             WeaponStatData newStatData = getWeaponStatData();
             if (newStatData != null) {
-               if ((int) newStatData.weaponType != startingType) {
-                  equipmentToolManager.deleteWeapon(current_xml_id);
-               }
                equipmentToolManager.saveWeapon(newStatData, current_xml_id, _isEnabled.isOn);
                gameObject.SetActive(false);
             }
          } else if (equipmentType == EquipmentType.Armor) {
             ArmorStatData newStatData = getArmorStatData();
             if (newStatData != null) {
-               if ((int) newStatData.armorType != startingType) {
-                  equipmentToolManager.deleteArmor(current_xml_id);
-               }
                equipmentToolManager.saveArmor(newStatData, current_xml_id, _isEnabled.isOn);
                gameObject.SetActive(false);
             }
          } else if (equipmentType == EquipmentType.Helm) {
             HelmStatData newStatData = getHelmStatData();
             if (newStatData != null) {
-               if ((int) newStatData.helmType != startingType) {
-                  equipmentToolManager.deleteHelm(current_xml_id);
-               }
                equipmentToolManager.saveHelm(newStatData, current_xml_id, _isEnabled.isOn);
                gameObject.SetActive(false);
             }

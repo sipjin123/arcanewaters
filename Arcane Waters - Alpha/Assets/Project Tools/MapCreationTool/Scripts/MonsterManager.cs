@@ -55,11 +55,11 @@ namespace MapCreationTool
       }
 
       public string[] formLandMonsterSelectionOptions () {
-         return landMonsters.Select(n => n.xmlId + ": " + n.battler.enemyName).ToArray();
+         return landMonsters.Select(n => (int) n.battler.enemyType + ": " + n.battler.enemyName).ToArray();
       }
 
       public string[] formSeaMonsterSelectionOptions () {
-         return seaMonsters.Select(n => n.xmlId + ": " + n.seaMonsterData.monsterName).ToArray();
+         return seaMonsters.Select(n => (int) n.seaMonsterData.seaMonsterType + ": " + n.seaMonsterData.monsterName).ToArray();
       }
 
       public int seaMonsterCount
@@ -89,9 +89,10 @@ namespace MapCreationTool
 
          foreach (XMLPair data in landMonsterData) {
             BattlerData battler = Util.xmlLoad<BattlerData>(new TextAsset(data.rawXmlData));
+            int battlerID = (int) battler.enemyType;
 
-            if (!idToLandMonster.ContainsKey(data.xmlId)) {
-               idToLandMonster.Add(data.xmlId, new BattlerXMLContent {
+            if (!idToLandMonster.ContainsKey(battlerID)) {
+               idToLandMonster.Add(battlerID, new BattlerXMLContent {
                   xmlId = data.xmlId,
                   battler = battler,
                   isEnabled = data.isEnabled
@@ -101,9 +102,10 @@ namespace MapCreationTool
 
          foreach (XMLPair data in seaMonsterData) {
             SeaMonsterEntityData monster = Util.xmlLoad<SeaMonsterEntityData>(new TextAsset(data.rawXmlData));
+            int monsterID = (int) monster.seaMonsterType;
 
-            if (!idToSeaMonster.ContainsKey(data.xmlId)) {
-               idToSeaMonster.Add(data.xmlId, new SeaMonsterXMLContent {
+            if (!idToSeaMonster.ContainsKey(monsterID)) {
+               idToSeaMonster.Add(monsterID, new SeaMonsterXMLContent {
                   xmlId = data.xmlId,
                   seaMonsterData = monster,
                   isEnabled = data.isEnabled

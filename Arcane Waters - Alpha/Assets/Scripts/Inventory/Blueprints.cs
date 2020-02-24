@@ -139,20 +139,24 @@ public class Blueprint : RecipeItem
 
          // Convert to a weapon type
          Weapon.Type weaponType = (Weapon.Type) int.Parse(stringID);
+         WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponType);
 
          // Create the weapon object
          Weapon newWeapon = new Weapon(0, weaponType);
+         newWeapon.setBasicInfo(weaponData.equipmentName, weaponData.equipmentDescription, weaponData.equipmentIconPath);
 
          return newWeapon;
       } else {
          // Extract the typeId of the armor
          stringID = stringID.Substring(ARMOR_PREFIX.Length, (stringID.Length - ARMOR_PREFIX.Length));
 
-         // Convert to a weapon type
+         // Convert to a armor type
          int armorType = int.Parse(stringID);
+         ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(armorType);
 
-         // Create the weapon object
+         // Create the armor object
          Armor newArmor = new Armor(0, armorType);
+         newArmor.setBasicInfo(armorData.equipmentName, armorData.equipmentDescription, armorData.equipmentIconPath);
 
          return newArmor;
       }

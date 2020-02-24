@@ -931,14 +931,14 @@ public class AdminManager : NetworkBehaviour {
       _blueprintNames.Clear();
 
       // Set all the weapon blueprint names
-      foreach (Weapon.Type weaponType in weaponTypes) {
-         string itemTypeStr = Blueprint.WEAPON_PREFIX + ((int) weaponType).ToString();
+      foreach (WeaponStatData weaponData in EquipmentXMLManager.self.weaponStatList) {
+         string itemTypeStr = Blueprint.WEAPON_PREFIX + (weaponData.equipmentID).ToString();
          addToItemNameDictionary(_blueprintNames, Item.Category.Blueprint, int.Parse(itemTypeStr));
       }
 
       // Set all the armor blueprint names
-      for (int armorType = 0; armorType < EquipmentXMLManager.self.armorStatList.Count; armorType++) { 
-         string itemTypeStr = Blueprint.ARMOR_PREFIX + (armorType).ToString();
+      foreach (ArmorStatData armorData in EquipmentXMLManager.self.armorStatList) {
+         string itemTypeStr = Blueprint.ARMOR_PREFIX + (armorData.equipmentID).ToString();
          addToItemNameDictionary(_blueprintNames, Item.Category.Blueprint, int.Parse(itemTypeStr));
       }
    }
@@ -984,7 +984,7 @@ public class AdminManager : NetworkBehaviour {
          if (!dictionary.ContainsKey(itemName)) {
             dictionary.Add(itemName, itemTypeId);
          } else {
-            D.warning(string.Format("The {0} item name {1} is duplicated.", category.ToString(), itemName));
+            D.warning(string.Format("The {0} item name ({1}) is duplicated.", category.ToString(), itemName));
          }
       }
    }

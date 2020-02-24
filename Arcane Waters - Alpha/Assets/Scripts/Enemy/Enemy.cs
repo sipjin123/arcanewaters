@@ -13,7 +13,8 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       None = 0,
       Plant = 100, Golem = 101, Slime = 102, GolemBoss = 103,
       Coralbow = 200, Entarcher = 201, Flower = 202, Muckspirit = 203, Treeman = 204,
-      Lizard = 205, Shroom = 206, Wisp = 207, PlayerBattler = 305
+      Lizard = 205, Shroom = 206, Wisp = 207, ArmoredLizard = 208, LizardShaman = 209, LizardWizard = 210,
+      SwordLizard = 211, PlayerBattler = 305
    }
 
    // The Type of Enemy
@@ -62,7 +63,8 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       _startPos = this.transform.position;
 
       // Update our sprite
-      bodyAnim.GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture("Enemies/" + this.enemyType);
+      string enemySpriteName = System.Enum.GetName(typeof(Enemy.Type), (int) this.enemyType);
+      bodyAnim.GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture("Enemies/" + enemySpriteName);
 
       // Choose a random desired position every few seconds
       if (isServer) {

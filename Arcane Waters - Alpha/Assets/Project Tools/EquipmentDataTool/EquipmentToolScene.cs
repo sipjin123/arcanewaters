@@ -195,6 +195,8 @@ public class EquipmentToolScene : MonoBehaviour {
             template.setWarning();
          }
          template.gameObject.SetActive(true);
+
+         template.indexText.gameObject.SetActive(MasterToolAccountManager.canAlterData());
       }
    }
 
@@ -234,6 +236,8 @@ public class EquipmentToolScene : MonoBehaviour {
             template.setWarning();
          }
          template.gameObject.SetActive(true);
+
+         template.indexText.gameObject.SetActive(MasterToolAccountManager.canAlterData());
       }
    }
 
@@ -271,6 +275,8 @@ public class EquipmentToolScene : MonoBehaviour {
             template.setWarning();
          }
          template.gameObject.SetActive(true);
+
+         template.indexText.gameObject.SetActive(MasterToolAccountManager.canAlterData());
       }
    }
 }

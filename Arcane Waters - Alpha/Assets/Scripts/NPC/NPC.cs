@@ -437,8 +437,12 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
       
       string[] split = spriteName.Split('_');
       spriteName = split[0];
-      Type npcType = (Type) System.Enum.Parse(typeof(Type), spriteName, true);
-
+      try {
+         Type npcType = (Type) System.Enum.Parse(typeof(Type), spriteName, true);
+      } catch {
+         Debug.LogWarning("Invalid Enum Type: " + spriteName);
+         return Type.Blackbeard;
+      }
       return npcType;
    }
 
