@@ -79,16 +79,16 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
-   public static void updateCraftingXML (string rawData, string name) {
+   public static void updateCraftingXML (int xmlID, string rawData, string name) {
 
    }
 
-   public static void deleteCraftingXML (string name) {
+   public static void deleteCraftingXML (int xmlID) {
 
    }
 
-   public static List<string> getCraftingXML () {
-      return new List<string>();
+   public static List<XMLPair> getCraftingXML () {
+      return new List<XMLPair>();
    }
 
    public static void updateAchievementXML (string rawData, string name) {
@@ -428,7 +428,7 @@ public class DB_MainStub : MonoBehaviour
       return 0;
    }
 
-   public static int insertNewWeapon (int userId, Weapon.Type weaponType, ColorType color1, ColorType color2) {
+   public static int insertNewWeapon (int userId, int weaponType, ColorType color1, ColorType color2) {
       return 0;
    }
 

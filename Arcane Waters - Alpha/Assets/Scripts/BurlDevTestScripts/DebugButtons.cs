@@ -142,8 +142,8 @@ public class DebugButtons : NetworkBehaviour
                      }
                      break;
                   case Item.Category.Weapon:
-                     itemTypeID = Mathf.Clamp(itemTypeID, 0, System.Enum.GetNames(typeof(Weapon.Type)).Length - 1);
-                     itemTypeName = "Item Type: " + (Weapon.Type) itemTypeID;
+                     itemTypeID = Mathf.Clamp(itemTypeID, 0, EquipmentXMLManager.self.weaponStatList.Count - 1);
+                     itemTypeName = "Item Type: " + itemTypeID;
                      break;
 
                }

@@ -16,13 +16,16 @@ public class WeaponManager : EquipmentManager {
 
    // Weapon Type
    [SyncVar]
-   public Weapon.Type weaponType = Weapon.Type.None;
+   public int weaponType = 0;
 
    // Weapon colors
    [SyncVar]
    public ColorType color1;
    [SyncVar]
    public ColorType color2;
+
+   [SyncVar]
+   public Weapon.ActionType actionType = Weapon.ActionType.None;
 
    #endregion
 
@@ -34,7 +37,7 @@ public class WeaponManager : EquipmentManager {
    }
 
    public bool hasWeapon () {
-      return (weaponType != Weapon.Type.None);
+      return (weaponType != 0);
    }
 
    public Weapon getWeapon () {
@@ -45,13 +48,13 @@ public class WeaponManager : EquipmentManager {
       this.updateSprites(this.weaponType, this.color1, this.color2);
    }
 
-   public void updateSprites (Weapon.Type weaponType, ColorType color1, ColorType color2) {
+   public void updateSprites (int weaponType, ColorType color1, ColorType color2) {
       Gender.Type gender = getGender();
 
       // Update our Material
       foreach (WeaponLayer weaponLayer in weaponsLayers) {
          weaponLayer.setType(gender, weaponType);
-         ColorKey colorKey = new ColorKey(gender, weaponType);
+         ColorKey colorKey = new ColorKey(gender, weaponType, new Weapon());
          weaponLayer.recolor(colorKey, color1, color2);
       }
 
@@ -62,6 +65,8 @@ public class WeaponManager : EquipmentManager {
    }
 
    public bool isHoldingWeapon () {
+      //TODO: Fix filtering of weapon types
+      return true;
       if (weaponType.ToString().ToLowerInvariant().Contains("sword") || weaponType.ToString().ToLowerInvariant().Contains("gun")) {
          return true;
       }
@@ -78,7 +83,7 @@ public class WeaponManager : EquipmentManager {
    }
 
    [Server]
-   public void updateWeaponSyncVars (Weapon weapon) {
+   public void updateWeaponSyncVars (Weapon weapon, Weapon.ActionType actionType) {
       if (weapon == null) {
          D.debug("Weapon is null");
          return;
@@ -87,12 +92,13 @@ public class WeaponManager : EquipmentManager {
       _weapon = weapon;
 
       // Assign the weapon ID
-      this.equippedWeaponId = (weapon.type == Weapon.Type.None) ? 0 : weapon.id;
+      this.equippedWeaponId = (weapon.type == 0) ? 0 : weapon.id;
 
       // Set the Sync Vars so they get sent to the clients
       this.weaponType = weapon.type;
       this.color1 = weapon.color1;
       this.color2 = weapon.color2;
+      this.actionType = actionType;
 
       // Send the Weapon Info to all clients
       Rpc_EquipWeapon(weapon, color1, color2);
@@ -101,7 +107,7 @@ public class WeaponManager : EquipmentManager {
    #region Private Variables
 
    // The equipped weapon, if any
-   protected Weapon _weapon = new Weapon (0, Weapon.Type.None);
+   protected Weapon _weapon = new Weapon (0, 0);
 
    #endregion
 }

@@ -51,8 +51,14 @@ public class SeedBag : ClientMonoBehaviour {
          item = JsonUtility.FromJson<Item>(currentTutorialData.rawDataJson);
       }
 
+      Weapon.ActionType actionType = Weapon.ActionType.None;
+      if (Global.player is PlayerBodyEntity) {
+         PlayerBodyEntity body = (PlayerBodyEntity) Global.player;
+         actionType = body.weaponManager.actionType;
+      }
+
       if (item != null) {
-         if (item.category == Item.Category.Weapon && item.itemTypeId == (int)Weapon.Type.Seeds) {
+         if (item.category == Item.Category.Weapon && actionType == Weapon.ActionType.PlantCrop) {
             return true;
          }
       }

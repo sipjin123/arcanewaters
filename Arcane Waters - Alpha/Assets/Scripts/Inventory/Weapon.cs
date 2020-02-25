@@ -12,21 +12,19 @@ using MySql.Data.MySqlClient;
 public class Weapon : EquippableItem {
    #region Public Variables
 
-   // The Type
-   public enum Type {
-      None = 0, Sword_Steel = 1, Staff_Mage = 8, Lance_Steel = 9, Mace_Steel = 10, Mace_Star = 11, Sword_Rune = 12,
-      Sword_1 = 101, Sword_2 = 102, Sword_3 = 103, Sword_4 = 104, Sword_5 = 105,
-      Sword_6 = 106, Sword_7 = 107, Sword_8 = 108,
-      Seeds = 150, Pitchfork = 151, WateringPot = 152,
-
-      Gun_6 = 200, Gun_7 = 201, Gun_2 = 202, Gun_3 = 203,
+   public enum ActionType
+   {
+      None = 0,
+      PlantCrop = 1,
+      WaterCrop = 2,
+      HarvestCrop = 3
    }
 
    // The weapon Class
    public enum Class { Any = 0, Melee = 1, Ranged = 2, Magic = 3 }
 
    // The type
-   public Type type;
+   public int type;
 
    // The material type to be used on this equipment
    public MaterialType materialType;
@@ -34,13 +32,13 @@ public class Weapon : EquippableItem {
    #endregion
 
    public Weapon () {
-      this.type = Type.None;
+      this.type = 0;
    }
 
    #if IS_SERVER_BUILD
 
    public Weapon (MySqlDataReader dataReader) {
-      this.type = (Weapon.Type) DataUtil.getInt(dataReader, "itmType");
+      this.type = DataUtil.getInt(dataReader, "itmType");
       this.id = DataUtil.getInt(dataReader, "itmId");
       this.category = (Item.Category) DataUtil.getInt(dataReader, "itmCategory");
       this.itemTypeId = DataUtil.getInt(dataReader, "itmType");
@@ -67,7 +65,7 @@ public class Weapon : EquippableItem {
 
    #endif
 
-   public Weapon (int id, Weapon.Type weaponType, int primaryColorId, int secondaryColorId) {
+   public Weapon (int id, int weaponType, int primaryColorId, int secondaryColorId) {
       this.category = Category.Weapon;
       this.id = id;
       this.type = weaponType;
@@ -78,7 +76,7 @@ public class Weapon : EquippableItem {
       this.data = "";
    }
 
-   public Weapon (int id, Weapon.Type weaponType, ColorType primaryColorId, ColorType secondaryColorId) {
+   public Weapon (int id, int weaponType, ColorType primaryColorId, ColorType secondaryColorId) {
       this.category = Category.Weapon;
       this.id = id;
       this.type = weaponType;
@@ -94,13 +92,13 @@ public class Weapon : EquippableItem {
       this.id = id;
       this.count = count;
       this.itemTypeId = itemTypeId;
-      this.type = (Type)itemTypeId;
+      this.type = itemTypeId;
       this.color1 = color1;
       this.color2 = color2;
       this.data = data;
    }
 
-   public Weapon (int id, Type weaponType) {
+   public Weapon (int id, int weaponType) {
       this.category = Category.Weapon;
       this.id = id;
       this.count = 1;
@@ -137,8 +135,8 @@ public class Weapon : EquippableItem {
       return (body.weaponManager.equippedWeaponId == id);
    }
 
-   public static string getName (Weapon.Type weaponType) {
-      if (weaponType == Type.None) {
+   public static string getName (int weaponType) {
+      if (weaponType == 0) {
          return "None";
       }
 
@@ -172,7 +170,7 @@ public class Weapon : EquippableItem {
    public virtual float getDamage (Element element) {
       WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(this.type);
       if (weaponData == null) {
-         D.warning("Weapon data does not exist! Go to Equipment Editor and make new data");
+         D.warning("Weapon data does not exist! Go to Equipment Editor and make new data: (" + this.type + ")");
          return 10;
       }
 
@@ -189,10 +187,10 @@ public class Weapon : EquippableItem {
       return weaponData.weaponBaseDamage;
    }
 
-   public static int getBaseDamage (Type weaponType) {
+   public static int getBaseDamage (int weaponType) {
       WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponType);
       if (weaponData == null) {
-         D.warning("Weapon data does not exist! Go to Equipment Editor and make new data");
+         D.warning("Weapon data does not exist! Go to Equipment Editor and make new data: (" + weaponType + ")");
          return 10;
       }
 
@@ -216,7 +214,7 @@ public class Weapon : EquippableItem {
       }
    }
 
-   public static Class getClass (Weapon.Type type) {
+   public static Class getClass (int type) {
       switch (type) {
          default:
             return Class.Melee;
@@ -224,15 +222,16 @@ public class Weapon : EquippableItem {
    }
 
    public static Weapon getEmpty() {
-      return new Weapon(0, Weapon.Type.None, ColorType.None, ColorType.None);
+      return new Weapon(0, 0, ColorType.None, ColorType.None);
    }
 
-   public static Weapon generateRandom (int itemId, Type weaponType) {
+   public static Weapon generateRandom (int itemId, int weaponType) {
       // Decide what the rarity should be
       Rarity.Type rarity = Rarity.getRandom();
 
+      // TODO: Find a way to set item data from server 
       // Alter the damage based on the rarity
-      float baseDamage = getBaseDamage(weaponType);
+      float baseDamage = 10;//getBaseDamage(weaponType);
       int damage = (int) (baseDamage * getDamageModifier(rarity));
 
       // Alter the price based on the rarity
@@ -250,15 +249,7 @@ public class Weapon : EquippableItem {
    }
 
    public override bool canBeTrashed () {
-      switch (this.type) {
-         case Type.Seeds:
-         case Type.WateringPot:
-         case Type.Pitchfork:
-            return false;
-
-         default:
-            return base.canBeTrashed();
-      }
+      return  EquipmentXMLManager.self.getWeaponData(type).canBeTrashed;
    }
 
    public override string getIconPath () {
@@ -266,7 +257,7 @@ public class Weapon : EquippableItem {
    }
 
    public override ColorKey getColorKey () {
-      return new ColorKey(Global.player.gender, this.type);
+      return new ColorKey(Global.player.gender, this.type, new Weapon());
    }
 
    #region Private Variables

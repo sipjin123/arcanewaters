@@ -23,17 +23,19 @@ public class ShortcutBox : MonoBehaviour {
 
    private void Update () {
       // Check what type of weapon the player has equipped
-      Weapon.Type weaponType = Weapon.Type.None;
+      int weaponType = 0;
+      Weapon.ActionType actionType = Weapon.ActionType.None;
       if (Global.player is PlayerBodyEntity) {
          PlayerBodyEntity body = (PlayerBodyEntity) Global.player;
          weaponType = body.weaponManager.weaponType;
+         actionType = body.weaponManager.actionType;
       }
 
       // Make the box highlighted if we've equipped the associated weapon
       _containerImage.color = Color.white;
-      if ((itemNumber == 1 && weaponType == Weapon.Type.Seeds) ||
-         (itemNumber == 2 && weaponType == Weapon.Type.WateringPot) ||
-         (itemNumber == 3 && weaponType == Weapon.Type.Pitchfork)) {
+      if ((itemNumber == 1 && actionType == Weapon.ActionType.PlantCrop) ||
+         (itemNumber == 2 && actionType == Weapon.ActionType.WaterCrop) ||
+         (itemNumber == 3 && actionType == Weapon.ActionType.HarvestCrop)) {
          _containerImage.color = Util.getColor(255, 160, 160);
       }
    }

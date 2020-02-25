@@ -12,32 +12,32 @@ public class WeaponLayer : SpriteLayer {
 
    #endregion
 
-   public static string getSheetName (Gender.Type gender, Weapon.Type newType, bool isFront) {
+   public static string getSheetName (Gender.Type gender, int newType, bool isFront) {
       // Insert "Back" if it's the Back layer
       string adjustedName = gender + "_" + newType + (isFront ? "" : "_Back");
 
       return adjustedName;
    }
 
-   public void setType (Gender.Type gender, Weapon.Type newType) {
+   public void setType (Gender.Type gender, int newType) {
       _type = newType;
 
       // Update our Animated Sprite
       string suffix = (isFront ? "_Front" : "_Back");
-      string path = (newType == Weapon.Type.None) ? "Empty_Layer" : "Weapons/Female/" + newType + suffix;
+      string path = (newType == 0) ? "Empty_Layer" : "Weapons/Female/weapon_" + newType + suffix;
       Texture2D result = ImageManager.getTexture(path);
 
       StartCoroutine(CO_SwapTexture(result));
    }
 
-   public Weapon.Type getType () {
+   public int getType () {
       return _type;
    }
 
    #region Private Variables
 
    // Our current type
-   protected Weapon.Type _type;
+   protected int _type;
 
    #endregion
 }

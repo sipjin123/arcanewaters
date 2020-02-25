@@ -47,13 +47,14 @@ public class PlayerBodyEntity : BodyEntity {
          weaponList = DB_Main.getWeaponsForUser(this.userId);
 
          foreach (Weapon weapon in weaponList) {
-            if (keyNumber == 1 && weapon.type == Weapon.Type.Seeds) {
+            WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weapon.type);
+            if (keyNumber == 1 && weaponData.actionType == Weapon.ActionType.PlantCrop) {
                newWeapon = weapon;
             }
-            if (keyNumber == 2 && weapon.type == Weapon.Type.WateringPot) {
+            if (keyNumber == 2 && weaponData.actionType == Weapon.ActionType.WaterCrop) {
                newWeapon = weapon;
             }
-            if (keyNumber == 3 && weapon.type == Weapon.Type.Pitchfork) {
+            if (keyNumber == 3 && weaponData.actionType == Weapon.ActionType.HarvestCrop) {
                newWeapon = weapon;
             }
          }
@@ -64,8 +65,9 @@ public class PlayerBodyEntity : BodyEntity {
 
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            if (newWeapon.type != Weapon.Type.None) {
-               this.weaponManager.updateWeaponSyncVars(newWeapon);
+            WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(newWeapon.type);
+            if (newWeapon.type != 0) {
+               this.weaponManager.updateWeaponSyncVars(newWeapon, weaponData.actionType);
             }
          });
       });

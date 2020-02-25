@@ -443,7 +443,7 @@ public class NetEntity : NetworkBehaviour
    }
 
    public virtual Weapon getWeaponCharacteristics () {
-      return new Weapon(0, Weapon.Type.None);
+      return new Weapon(0, 0);
    }
 
    public void updatePlayerCamera () {
@@ -733,7 +733,7 @@ public class NetEntity : NetworkBehaviour
       // We have to holding the seed bag
       BodyEntity body = GetComponent<BodyEntity>();
 
-      if (body == null || body.weaponManager.weaponType != Weapon.Type.Seeds) {
+      if (body == null || body.weaponManager.actionType != Weapon.ActionType.PlantCrop) {
          D.warning("Can't plant without seeds equipped!");
          return;
       }
@@ -746,7 +746,7 @@ public class NetEntity : NetworkBehaviour
       // We have to holding the watering pot
       BodyEntity body = GetComponent<BodyEntity>();
 
-      if (body == null || body.weaponManager.weaponType != Weapon.Type.WateringPot) {
+      if (body == null || body.weaponManager.actionType != Weapon.ActionType.WaterCrop) {
          D.warning("Can't water without a watering pot!");
          return;
       }
@@ -759,7 +759,7 @@ public class NetEntity : NetworkBehaviour
       // We have to holding the pitchfork
       BodyEntity body = GetComponent<BodyEntity>();
 
-      if (body == null || body.weaponManager.weaponType != Weapon.Type.Pitchfork) {
+      if (body == null || body.weaponManager.actionType != Weapon.ActionType.HarvestCrop) {
          D.warning("Can't harvest without a pitchfork!");
          return;
       }
@@ -881,7 +881,7 @@ public class NetEntity : NetworkBehaviour
             Item item = JsonUtility.FromJson<Item>(completedStep.rawDataJson);
 
             if (item.category == Item.Category.Weapon) {
-               DB_Main.insertNewWeapon(this.userId, (Weapon.Type) item.itemTypeId, ColorType.White, ColorType.White);
+               DB_Main.insertNewWeapon(this.userId, item.itemTypeId, ColorType.White, ColorType.White);
             } 
          }
          if (completedStep.actionType == ActionType.HarvestCrop) {

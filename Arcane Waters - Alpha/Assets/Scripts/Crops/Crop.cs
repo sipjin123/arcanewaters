@@ -166,7 +166,7 @@ public class Crop : ClientMonoBehaviour {
       if (Global.player != null && Global.player is BodyEntity) {
          BodyEntity playerBody = (BodyEntity) Global.player;
 
-         return (playerBody.weaponManager.weaponType == Weapon.Type.WateringPot) ;
+         return (playerBody.weaponManager.actionType == Weapon.ActionType.WaterCrop);
       }
 
       return false;

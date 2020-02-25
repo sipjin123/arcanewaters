@@ -87,7 +87,7 @@ public class CharacterSpot : ClientMonoBehaviour {
       userInfo.eyesColor2 = ColorType.Green;
       userInfo.bodyType = BodyLayer.Type.Female_Body_1;
       Weapon weapon = new Weapon();
-      weapon.type = Weapon.Type.Pitchfork;
+      weapon.type = 1;
       Armor armor = new Armor();
       armor.type = 1;
       armor.color1 = ColorType.Brown;

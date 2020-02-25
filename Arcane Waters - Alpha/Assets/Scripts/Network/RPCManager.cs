@@ -223,8 +223,11 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_ReceiveShopItems (NetworkConnection connection, int gold, string[] itemArray, string greetingText) {
+      // TODO: Determine if casting is still necessary
+      List<Item> newCastedItems = Util.unserialize<Item>(itemArray); //Item.unserializeAndCast(itemArray)
+
       AdventureShopScreen.self.updateGreetingText(greetingText);
-      AdventureShopScreen.self.updatePanelWithItems(gold, Item.unserializeAndCast(itemArray));
+      AdventureShopScreen.self.updatePanelWithItems(gold, newCastedItems);
    }
 
    [TargetRpc]
@@ -3775,6 +3778,22 @@ public class RPCManager : NetworkBehaviour {
 
       // Sort by rarity
       List<Item> sortedList = list.OrderBy(x => x.getSellPrice()).ToList();
+      foreach (Item item in sortedList) {
+         switch (item.category) {
+            case Item.Category.Weapon:
+               WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
+               if (weaponData != null) {
+                  item.setBasicInfo(weaponData.equipmentName, weaponData.equipmentDescription, weaponData.equipmentIconPath);
+               }
+               break;
+            case Item.Category.Armor:
+               ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(item.itemTypeId);
+               if (armorData != null) {
+                  item.setBasicInfo(armorData.equipmentName, armorData.equipmentDescription, armorData.equipmentIconPath);
+               }
+               break;
+         }
+      }
 
       // Look up their current gold in the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -3789,7 +3808,6 @@ public class RPCManager : NetworkBehaviour {
             }
 
             string greetingText = shopData.shopGreetingText;
-
             _player.rpc.Target_ReceiveShopItems(_player.connectionToClient, gold, Util.serialize(sortedList), greetingText);
          });
       });
@@ -3834,9 +3852,10 @@ public class RPCManager : NetworkBehaviour {
          // Back to Unity Thread to call RPC functions
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             Weapon weapon = userObjects.weapon;
+            WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weapon.itemTypeId);
 
-            if (body != null) {
-               body.weaponManager.updateWeaponSyncVars(weapon);
+            if (body != null && weaponData != null) {
+               body.weaponManager.updateWeaponSyncVars(weapon, weaponData.actionType);
             }
 
             // Let the client know that we're done

@@ -88,7 +88,7 @@ public class Util : MonoBehaviour {
             itemTypeName = Blueprint.getEquipmentType(typeID).ToString();
             break;
          case Item.Category.Weapon:
-            itemTypeName = ((Weapon.Type) typeID).ToString();
+            itemTypeName = EquipmentXMLManager.self.getWeaponData(typeID).equipmentName;
             break;
          case Item.Category.Usable:
             itemTypeName = ((UsableItem.Type) typeID).ToString();
@@ -121,7 +121,8 @@ public class Util : MonoBehaviour {
             newType = typeof(CraftingIngredients.Type);
             break;
          case Item.Category.Weapon:
-            newType = typeof(Weapon.Type);
+            // TODO: Clearly wipe out potential scripts that may call this
+            UnityEngine.Debug.LogWarning("Deprecated Call: " + category);
             break;
          case Item.Category.Usable:
             newType = typeof(UsableItem.Type);

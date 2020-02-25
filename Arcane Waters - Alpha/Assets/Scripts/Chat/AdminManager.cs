@@ -851,9 +851,9 @@ public class AdminManager : NetworkBehaviour {
          }
 
          // Create all the weapons
-         foreach (Weapon.Type weaponType in Enum.GetValues(typeof(Weapon.Type))) {
-            if (weaponType != Weapon.Type.None) {
-               if (createItemIfNotExistOrReplenishStack(Item.Category.Weapon, (int) weaponType, 1)) {
+         foreach (WeaponStatData weaponData in EquipmentXMLManager.self.weaponStatList) {
+            if (weaponData.weaponType != 0) {
+               if (createItemIfNotExistOrReplenishStack(Item.Category.Weapon, (int) weaponData.weaponType, 1)) {
                   weaponsCount++;
                }
             }
@@ -905,7 +905,7 @@ public class AdminManager : NetworkBehaviour {
 
    [Command]
    protected void Cmd_RequestBlueprintListFromServer () {
-      List<Weapon.Type> weaponTypes = new List<Weapon.Type>();
+      List<int> weaponTypes = new List<int>();
       List<int> armorTypes = new List<int>();
 
       // Get all the crafting data
@@ -916,7 +916,7 @@ public class AdminManager : NetworkBehaviour {
 
          // Add the result item type to the correspondent list
          if (resultItem.category == Item.Category.Weapon) {
-            weaponTypes.Add((Weapon.Type) resultItem.itemTypeId);
+            weaponTypes.Add(resultItem.itemTypeId);
          } else if (resultItem.category == Item.Category.Armor) {
             armorTypes.Add(resultItem.itemTypeId);
          }
@@ -927,7 +927,7 @@ public class AdminManager : NetworkBehaviour {
    }
 
    [ClientRpc]
-   public void Rpc_ReceiveBlueprintList (Weapon.Type[] weaponTypes, int[] armorTypes) {
+   public void Rpc_ReceiveBlueprintList (int[] weaponTypes, int[] armorTypes) {
       _blueprintNames.Clear();
 
       // Set all the weapon blueprint names
@@ -951,13 +951,13 @@ public class AdminManager : NetworkBehaviour {
       _craftingIngredientNames.Clear();
 
       // Set all the weapon names
-      foreach (Weapon.Type weaponType in Enum.GetValues(typeof(Weapon.Type))) {
-         addToItemNameDictionary(_weaponNames, Item.Category.Weapon, (int) weaponType);
+      foreach (WeaponStatData weaponData in EquipmentXMLManager.self.weaponStatList) {
+         addToItemNameDictionary(_weaponNames, Item.Category.Weapon, weaponData.equipmentID);
       }
 
       // Set all the armor names
-      for (int armorType = 0; armorType < EquipmentXMLManager.self.armorStatList.Count; armorType++) {
-         addToItemNameDictionary(_armorNames, Item.Category.Armor, armorType);
+      foreach (ArmorStatData armorData in EquipmentXMLManager.self.armorStatList) {
+         addToItemNameDictionary(_armorNames, Item.Category.Armor, armorData.equipmentID);
       }
 
       // Set all the usable items names

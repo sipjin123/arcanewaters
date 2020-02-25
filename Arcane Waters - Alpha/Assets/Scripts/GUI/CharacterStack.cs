@@ -48,7 +48,7 @@ public class CharacterStack : MonoBehaviour {
       updateWeapon(entity.gender, weapon.type, weapon.color1, weapon.color2);
    }
 
-   public void updateWeapon (Gender.Type gender, Weapon.Type weaponType, ColorType color1, ColorType color2) {
+   public void updateWeapon (Gender.Type gender, int weaponType, ColorType color1, ColorType color2) {
       weaponBackLayer.setType(gender, weaponType);
       weaponBackLayer.recolor(color1, color2);
       weaponFrontLayer.setType(gender, weaponType);

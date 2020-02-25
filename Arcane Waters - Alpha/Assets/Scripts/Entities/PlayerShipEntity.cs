@@ -25,7 +25,7 @@ public class PlayerShipEntity : ShipEntity {
 
    // The equipped weapon characteristics
    [SyncVar]
-   public Weapon.Type weaponType = Weapon.Type.None;
+   public int weaponType = 0;
    [SyncVar]
    public ColorType weaponColor1 = ColorType.None;
    [SyncVar]

@@ -169,16 +169,17 @@ public class Item {
 
       // Weapon prices
       if (category == Category.Weapon) {
-         switch ((Weapon.Type) itemTypeId) {
-            case Weapon.Type.Sword_2:
+         // TODO: update to a more dynamic approach
+         switch (itemTypeId) {
+            case 1://Weapon.Type.Sword_2:
                return 160;
-            case Weapon.Type.Sword_3:
+            case 2://Weapon.Type.Sword_3:
                return 1250;
-            case Weapon.Type.Gun_2:
+            case 3://Weapon.Type.Gun_2:
                return 6800;
-            case Weapon.Type.Sword_1:
+            case 4://Weapon.Type.Sword_1:
                return 18200;
-            case Weapon.Type.Gun_3:
+            case 5://Weapon.Type.Gun_3:
                return 56500;
             default:
                return 1000;

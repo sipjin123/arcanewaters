@@ -92,7 +92,7 @@ public class ItemInfo {
          case Item.Category.Armor:
             return Armor.getName(itemType);
          case Item.Category.Weapon:
-            return Weapon.getName((Weapon.Type) itemType);
+            return Weapon.getName(itemType);
          default:
             D.warning("No getName() defined for item type: " + itemType);
             return "Unknown";

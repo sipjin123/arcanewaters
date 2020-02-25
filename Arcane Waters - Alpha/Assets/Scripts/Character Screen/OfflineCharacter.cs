@@ -108,7 +108,7 @@ public class OfflineCharacter : ClientMonoBehaviour {
       // Update our Material
       foreach (WeaponLayer weaponLayer in weaponLayers) {
          weaponLayer.setType(userInfo.gender, weapon.type);
-         ColorKey colorKey = new ColorKey(userInfo.gender, weapon.type);
+         ColorKey colorKey = new ColorKey(userInfo.gender, weapon.type, new Weapon());
          weaponLayer.recolor(colorKey, weapon.color1, weapon.color2);
       }
    }

@@ -80,7 +80,7 @@ public class ShopManager : MonoBehaviour {
             Item item = null;
 
             if (UnityEngine.Random.Range(0f, 1f) > .5f) {
-               Weapon.Type weaponType = getPossibleWeapons(biomeType).ChooseByRandom();
+               int weaponType = getPossibleWeapons(biomeType).ChooseByRandom();
                item = Weapon.generateRandom(_itemId++, weaponType);
             } else {
                int armorType = getPossibleArmor(biomeType).ChooseByRandom();
@@ -427,15 +427,16 @@ public class ShopManager : MonoBehaviour {
       }
    }
 
-   protected List<WeightedItem<Weapon.Type>> getPossibleWeapons (Biome.Type biomeType) {
+   protected List<WeightedItem<int>> getPossibleWeapons (Biome.Type biomeType) {
       switch (biomeType) {
          default:
-            return new List<WeightedItem<Weapon.Type>>() {
-               WeightedItem.Create(.60f, Weapon.Type.Sword_2),
-               WeightedItem.Create(.30f, Weapon.Type.Sword_3),
-               WeightedItem.Create(.5f, Weapon.Type.Gun_2),
-               WeightedItem.Create(.4f, Weapon.Type.Gun_3),
-               WeightedItem.Create(.1f, Weapon.Type.Sword_1),
+            // TODO: Find alternatives to determine these entries
+            return new List<WeightedItem<int>>() {
+               WeightedItem.Create(.60f, 1),//Weapon.Type.Sword_2),
+               WeightedItem.Create(.30f, 2), //Weapon.Type.Sword_3),
+               WeightedItem.Create(.5f, 3),//Weapon.Type.Gun_2),
+               WeightedItem.Create(.4f, 4),//Weapon.Type.Gun_3),
+               WeightedItem.Create(.1f, 5),//Weapon.Type.Sword_1),
          };
       }
    }

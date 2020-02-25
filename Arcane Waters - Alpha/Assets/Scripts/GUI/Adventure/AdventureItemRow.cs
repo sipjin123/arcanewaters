@@ -33,9 +33,9 @@ public class AdventureItemRow : MonoBehaviour {
    public void setRowForItem (Item item) {
       this.item = item;
 
-      string path = item.getIconPath();
+      string path = Item.isUsingEquipmentXML(item.category) ? item.iconPath : item.getIconPath();
       iconImage.sprite = ImageManager.getSprite(path);
-      itemName.text = item.getName();
+      itemName.text = Item.isUsingEquipmentXML(item.category) ? item.itemName : item.getName();
       itemName.color = Rarity.getColor(item.getRarity());
       stockCountText.text = Item.getColoredStockCount(item.count);
       goldAmount.text = item.getSellPrice() + "";
@@ -45,7 +45,7 @@ public class AdventureItemRow : MonoBehaviour {
       iconImage.GetComponent<RecoloredSprite>().recolor(colorKey, item.color1, item.color2);
 
       // Sets the tooltip when hovering the image
-      tooltip.text = item.getTooltip();
+      tooltip.text = Item.isUsingEquipmentXML(item.category) ? item.itemDescription : item.getDescription();
 
       // Associate a new function with the confirmation button
       buyButton.onClick.RemoveAllListeners();

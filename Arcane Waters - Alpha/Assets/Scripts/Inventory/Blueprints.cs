@@ -114,7 +114,7 @@ public class Blueprint : RecipeItem
             break;
          case Category.Weapon:
             idString = idString.Replace(WEAPON_PREFIX, "");
-            currName = ((Weapon.Type) int.Parse(idString)).ToString();
+            currName = (int.Parse(idString)).ToString();
             break;
       }
 
@@ -125,7 +125,11 @@ public class Blueprint : RecipeItem
    }
 
    public static string getName (int recipeTypeID) {
-      return getItemData(recipeTypeID).getName();
+      Item item = getItemData(recipeTypeID);
+      if (item == null) {
+         return MasterToolScene.UNDEFINED;
+      }
+      return item.getName();
    }
 
    public static Item getItemData (int bpTypeID) {
@@ -138,14 +142,18 @@ public class Blueprint : RecipeItem
          stringID = stringID.Substring(WEAPON_PREFIX.Length, (stringID.Length - WEAPON_PREFIX.Length));
 
          // Convert to a weapon type
-         Weapon.Type weaponType = (Weapon.Type) int.Parse(stringID);
+         int weaponType = int.Parse(stringID);
          WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponType);
 
-         // Create the weapon object
-         Weapon newWeapon = new Weapon(0, weaponType);
-         newWeapon.setBasicInfo(weaponData.equipmentName, weaponData.equipmentDescription, weaponData.equipmentIconPath);
-
-         return newWeapon;
+         if (weaponData != null) {
+            // Create the weapon object
+            Weapon newWeapon = new Weapon(0, weaponType);
+            newWeapon.setBasicInfo(weaponData.equipmentName, weaponData.equipmentDescription, weaponData.equipmentIconPath);
+            return newWeapon;
+         } else {
+            Debug.LogError("Does not exist: " + weaponType);
+            return null;
+         }
       } else {
          // Extract the typeId of the armor
          stringID = stringID.Substring(ARMOR_PREFIX.Length, (stringID.Length - ARMOR_PREFIX.Length));
@@ -180,9 +188,7 @@ public class Blueprint : RecipeItem
       int idComparison = int.Parse(blueprintType.ToString().Replace(prefixExtracted,""));
 
       if (prefixCategory == Category.Weapon) {
-         if (Enum.IsDefined(typeof(Weapon.Type), idComparison)) {
-            return Item.Category.Weapon;
-         }
+         return Item.Category.Weapon;
       } else if (prefixCategory == Category.Armor) {
          return Item.Category.Armor;
       }
@@ -206,7 +212,7 @@ public class Blueprint : RecipeItem
          stringID = stringID.Substring(WEAPON_PREFIX.Length, (stringID.Length - WEAPON_PREFIX.Length));
 
          // Get the icon path based on the weapon type
-         return "Icons/Blueprint/" + (Weapon.Type) int.Parse(stringID);
+         return "Icons/Blueprint/" + int.Parse(stringID);
       } else if (bpTypeID.ToString().StartsWith(ARMOR_PREFIX)) {
          // Extract the typeId of the armor
          stringID = stringID.Substring(ARMOR_PREFIX.Length, (stringID.Length - ARMOR_PREFIX.Length));

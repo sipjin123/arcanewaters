@@ -93,47 +93,10 @@ public class MaterialManager : MonoBehaviour {
 
    public void defineWeaponMaterials () {
       foreach (Gender.Type gender in Gender.getTypes()) {
-         foreach (Weapon.Type weaponType in Enum.GetValues(typeof(Weapon.Type))) {
-            Material material = material_G_R;
-
-            // Assign the recolor materials
-            switch (weaponType) {
-               case Weapon.Type.Sword_1:
-               case Weapon.Type.Sword_2:
-               case Weapon.Type.Sword_3:
-               case Weapon.Type.Sword_4:
-               case Weapon.Type.Sword_5:
-               case Weapon.Type.Sword_6:
-               case Weapon.Type.Sword_7:
-               case Weapon.Type.Sword_8:
-               case Weapon.Type.Gun_2:
-               case Weapon.Type.Gun_3:
-               case Weapon.Type.Gun_6:
-               case Weapon.Type.Gun_7:
-               case Weapon.Type.Seeds:
-               case Weapon.Type.Pitchfork:
-               case Weapon.Type.WateringPot:
-               case Weapon.Type.None:
-                  material = noRecolorMaterial;
-                  break;
-               case Weapon.Type.Sword_Rune:
-               case Weapon.Type.Lance_Steel:
-               case Weapon.Type.Mace_Star:
-               case Weapon.Type.Mace_Steel:
-               case Weapon.Type.Staff_Mage:
-                  material = material_G_R;
-                  break;
-               case Weapon.Type.Sword_Steel:
-                  material = material_G;
-                  break;
-               default:
-                  D.warning("No recolor material defined for: " + weaponType);
-                  material = noRecolorMaterial;
-                  break;
-            }
-
-            ColorKey colorKey = new ColorKey(gender, weaponType);
-            _materials[colorKey] = material;
+         foreach (WeaponStatData weaponData in EquipmentXMLManager.self.weaponStatList) {
+            // Cloth
+            ColorKey cloth = new ColorKey(gender, "weapon_" + weaponData.weaponType);
+            _materials[cloth] = translateMaterial(weaponData.materialType);
          }
       }
    }

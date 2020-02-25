@@ -24,12 +24,12 @@ public class ColorKey {
       this.suffix = layerType + "";
    }
 
-   public ColorKey (Gender.Type gender, int armorType) {
+   public ColorKey (Gender.Type gender, int armorType, Armor armor) {
       this.prefix = gender + "";
       this.suffix = armorType + "";
    }
 
-   public ColorKey (Gender.Type gender, Weapon.Type weaponType) {
+   public ColorKey (Gender.Type gender, int weaponType, Weapon weapon) {
       this.prefix = gender + "";
       this.suffix = weaponType + "";
    }

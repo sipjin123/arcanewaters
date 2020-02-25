@@ -50,7 +50,6 @@ public class DB_Main : DB_MainStub
             cmd.ExecuteNonQuery();
          }
       } catch (Exception e) {
-         UnityEngine.Debug.LogError("Error: " + e.ToString());
          D.error("MySQL Error: " + e.ToString());
       }
    }
@@ -199,7 +198,6 @@ public class DB_Main : DB_MainStub
             cmd.ExecuteNonQuery();
          }
       } catch (Exception e) {
-         UnityEngine.Debug.LogError("Error is: " + e.ToString());
          D.error("MySQL Error: " + e.ToString());
       }
    }
@@ -476,7 +474,6 @@ public class DB_Main : DB_MainStub
             }
          }
       } catch (Exception e) {
-         UnityEngine.Debug.LogError(e.ToString());
          D.error("MySQL Error: " + e.ToString());
       }
       return rawDataList;
@@ -1601,19 +1598,29 @@ public class DB_Main : DB_MainStub
 
    #region Crafting XML Data
 
-   public static new void updateCraftingXML (string rawData, string name) {
+   public static new void updateCraftingXML (int xmlID, string rawData, string name) {
+      string xml_id_key = "xml_id, ";
+      string xml_id_value = "@xml_id, ";
+
+      // If this is a newly created data, let sql table auto generate id
+      if (xmlID < 0) {
+         xml_id_key = "";
+         xml_id_value = "";
+      }
+
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO crafting_xml (xml_name, xmlContent, creator_userID) " +
-            "VALUES(@xml_name, @xmlContent, @creator_userID) " +
-            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
+            "INSERT INTO crafting_xml_v2 (" + xml_id_key + "xmlName, xmlContent, creator_userID) " +
+            "VALUES(" + xml_id_value + "@xmlName, @xmlContent, @creator_userID) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, xmlName = @xmlName", conn)) {
 
             conn.Open();
             cmd.Prepare();
 
-            cmd.Parameters.AddWithValue("@xml_name", name);
+            cmd.Parameters.AddWithValue("@xml_id", xmlID);
+            cmd.Parameters.AddWithValue("@xmlName", name);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
 
@@ -1625,12 +1632,12 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new List<string> getCraftingXML () {
-      List<string> rawDataList = new List<string>();
+   public static new List<XMLPair> getCraftingXML () {
+      List<XMLPair> rawDataList = new List<XMLPair>();
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.crafting_xml", conn)) {
+            "SELECT * FROM arcane.crafting_xml_v2", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -1638,23 +1645,29 @@ public class DB_Main : DB_MainStub
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  rawDataList.Add(dataReader.GetString("xmlContent"));
+                  XMLPair newPair = new XMLPair {
+                     isEnabled = true,
+                     rawXmlData = dataReader.GetString("xmlContent"),
+                     xmlId = dataReader.GetInt32("xml_id"),
+                     xmlOwnerId = dataReader.GetInt32("creator_userID"),
+                  };
+                  rawDataList.Add(newPair);
                }
             }
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
-      return new List<string>(rawDataList);
+      return new List<XMLPair>(rawDataList);
    }
 
-   public static new void deleteCraftingXML (string name) {
+   public static new void deleteCraftingXML (int xmlID) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM crafting_xml WHERE xml_name=@xml_name", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM crafting_xml_v2 WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@xml_name", name);
+            cmd.Parameters.AddWithValue("@xml_id", xmlID);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1700,7 +1713,6 @@ public class DB_Main : DB_MainStub
             latestXMLId = (int) cmd.LastInsertedId;
          }
       } catch (Exception e) {
-         UnityEngine.Debug.LogError(e.ToString());
          D.error("MySQL Error: " + e.ToString());
       }
 
@@ -1767,7 +1779,7 @@ public class DB_Main : DB_MainStub
 
       switch (equipType) {
          case EquipmentToolManager.EquipmentType.Weapon:
-            tableName = "equipment_weapon_xml_v2";
+            tableName = "equipment_weapon_xml_v3";
             break;
          case EquipmentToolManager.EquipmentType.Armor:
             tableName = "equipment_armor_xml_v3";
@@ -1807,7 +1819,7 @@ public class DB_Main : DB_MainStub
       string tableName = "";
       switch (equipType) {
          case EquipmentToolManager.EquipmentType.Weapon:
-            tableName = "equipment_weapon_xml_v2";
+            tableName = "equipment_weapon_xml_v3";
             break;
          case EquipmentToolManager.EquipmentType.Armor:
             tableName = "equipment_armor_xml_v3";
@@ -1836,7 +1848,7 @@ public class DB_Main : DB_MainStub
       string tableName = "";
       switch (equipType) {
          case EquipmentToolManager.EquipmentType.Weapon:
-            tableName = "equipment_weapon_xml_v2";
+            tableName = "equipment_weapon_xml_v3";
             break;
          case EquipmentToolManager.EquipmentType.Armor:
             tableName = "equipment_armor_xml_v3";
@@ -2888,7 +2900,7 @@ public class DB_Main : DB_MainStub
       return itemId;
    }
 
-   public static new int insertNewWeapon (int userId, Weapon.Type weaponType, ColorType color1, ColorType color2) {
+   public static new int insertNewWeapon (int userId, int weaponType, ColorType color1, ColorType color2) {
       int itemId = 0;
 
       try {

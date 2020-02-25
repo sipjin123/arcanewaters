@@ -48,7 +48,9 @@ public class BodyEntity : NetEntity
       base.setDataFromUserInfo(userInfo, armor, weapon, shipInfo);
       
       this.armorManager.updateArmorSyncVars(armor);
-      this.weaponManager.updateWeaponSyncVars(weapon);
+
+      WeaponStatData weaponStatData = EquipmentXMLManager.self.getWeaponData(weapon.type);
+      this.weaponManager.updateWeaponSyncVars(weapon, weaponStatData.actionType);
    }
 
    public override Armor getArmorCharacteristics () {

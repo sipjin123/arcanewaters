@@ -42,17 +42,17 @@ public class CropSpot : MonoBehaviour {
       }
 
       // If the player entered this spot holding the watering pot, maybe water something
-      if (this.crop != null && player.weaponManager.weaponType == Weapon.Type.WateringPot && !this.crop.isMaxLevel() && crop.isReadyForWater()) {
+      if (this.crop != null && player.weaponManager.actionType == Weapon.ActionType.WaterCrop && !this.crop.isMaxLevel() && crop.isReadyForWater()) {
          player.Cmd_WaterCrop(this.cropNumber);
       }
 
       // If the player entered this spot holding the pitchfork, maybe harvest something
-      if (this.crop != null && player.weaponManager.weaponType == Weapon.Type.Pitchfork && this.crop.isMaxLevel()) {
+      if (this.crop != null && player.weaponManager.actionType == Weapon.ActionType.HarvestCrop && this.crop.isMaxLevel()) {
          player.Cmd_HarvestCrop(this.cropNumber);
       }
 
       // If a player entered this spot holding a seed bag, maybe plant something
-      if (this.crop == null && player.weaponManager.weaponType == Weapon.Type.Seeds) {
+      if (this.crop == null && player.weaponManager.actionType == Weapon.ActionType.PlantCrop) {
          player.Cmd_PlantCrop(CropManager.STARTING_CROP, this.cropNumber);
       }
    }

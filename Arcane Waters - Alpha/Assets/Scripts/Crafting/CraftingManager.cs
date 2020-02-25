@@ -41,11 +41,11 @@ public class CraftingManager : MonoBehaviour {
       _craftingData = new Dictionary<string, CraftableItemRequirements>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<string> rawXMLData = DB_Main.getCraftingXML();
+         List<XMLPair> rawXMLData = DB_Main.getCraftingXML();
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            foreach (string rawText in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(rawText);
+            foreach (XMLPair xmlData in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(xmlData.rawXmlData);
                CraftableItemRequirements craftingData = Util.xmlLoad<CraftableItemRequirements>(newTextAsset); 
                string keyName = getKey(craftingData.resultItem.category, craftingData.resultItem.itemTypeId);
                

@@ -43,7 +43,7 @@ public class EquipmentXMLManager : MonoBehaviour {
       self = this;
    }
 
-   public WeaponStatData getWeaponData (Weapon.Type weaponType) {
+   public WeaponStatData getWeaponData (int weaponType) {
       if (_weaponStatList == null) {
          return null;
       }
@@ -88,7 +88,7 @@ public class EquipmentXMLManager : MonoBehaviour {
 
    public void initializeDataCache () {
       equipmentLoadCounter = 0;
-      _weaponStatList = new Dictionary<Weapon.Type, WeaponStatData>();
+      _weaponStatList = new Dictionary<int, WeaponStatData>();
       _armorStatList = new Dictionary<int, ArmorStatData>();
       _helmStatList = new Dictionary<Helm.Type, HelmStatData>();
 
@@ -100,7 +100,7 @@ public class EquipmentXMLManager : MonoBehaviour {
                if (xmlPair.isEnabled) {
                   TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                   WeaponStatData rawData = Util.xmlLoad<WeaponStatData>(newTextAsset);
-                  Weapon.Type uniqueID = rawData.weaponType;
+                  int uniqueID = rawData.weaponType;
 
                   // Save the data in the memory cache
                   if (!_weaponStatList.ContainsKey(uniqueID) && xmlPair.isEnabled) {
@@ -159,7 +159,7 @@ public class EquipmentXMLManager : MonoBehaviour {
 
    public void receiveWeaponDataFromServer (List<WeaponStatData> statData) {
       foreach (WeaponStatData rawData in statData) {
-         Weapon.Type uniqueID = rawData.weaponType;
+         int uniqueID = rawData.weaponType;
          // Save the data in the memory cache
          if (!_weaponStatList.ContainsKey(uniqueID)) {
             _weaponStatList.Add(uniqueID, rawData);
@@ -194,7 +194,7 @@ public class EquipmentXMLManager : MonoBehaviour {
    }
 
    public void resetAllData () {
-      _weaponStatList = new Dictionary<Weapon.Type, WeaponStatData>();
+      _weaponStatList = new Dictionary<int, WeaponStatData>();
       _armorStatList = new Dictionary<int, ArmorStatData>();
       _helmStatList = new Dictionary<Helm.Type, HelmStatData>();
 
@@ -261,16 +261,20 @@ public class EquipmentXMLManager : MonoBehaviour {
                break;
             case Item.Category.Weapon:
                // Basic Info Setup
-               WeaponStatData weaponStatData = self.getWeaponData((Weapon.Type) dataItem.itemTypeId);
-               itemName = weaponStatData.equipmentName;
-               itemDesc = weaponStatData.equipmentDescription;
-               itemPath = weaponStatData.equipmentIconPath;
+               WeaponStatData weaponStatData = self.getWeaponData(dataItem.itemTypeId);
+               if (weaponStatData != null) {
+                  itemName = weaponStatData.equipmentName;
+                  itemDesc = weaponStatData.equipmentDescription;
+                  itemPath = weaponStatData.equipmentIconPath;
 
-               // Data Setup
-               data = string.Format("damage={0}, rarity={1}", weaponStatData.weaponBaseDamage, (int) Rarity.Type.Common);
-               dataItem.data = data;
+                  // Data Setup
+                  data = string.Format("damage={0}, rarity={1}", weaponStatData.weaponBaseDamage, (int) Rarity.Type.Common);
+                  dataItem.data = data;
 
-               dataItem.setBasicInfo(itemName, itemDesc, itemPath);
+                  dataItem.setBasicInfo(itemName, itemDesc, itemPath);
+               } else {
+                  Debug.LogError("There is no weapon data for: " + dataItem.id + " - " + dataItem.itemTypeId);
+               }
                break;
             case Item.Category.Helm:
                // Basic Info Setup
@@ -294,7 +298,7 @@ public class EquipmentXMLManager : MonoBehaviour {
    #region Private Variables
 
    // Stores the list of all weapon data
-   private Dictionary<Weapon.Type, WeaponStatData> _weaponStatList = new Dictionary<Weapon.Type, WeaponStatData>();
+   private Dictionary<int, WeaponStatData> _weaponStatList = new Dictionary<int, WeaponStatData>();
 
    // Stores the list of all armor data
    private Dictionary<int, ArmorStatData> _armorStatList = new Dictionary<int, ArmorStatData>();

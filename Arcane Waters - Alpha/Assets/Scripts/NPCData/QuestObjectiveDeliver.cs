@@ -116,7 +116,7 @@ public class QuestObjectiveDeliver : QuestObjective
       // Adds the name of the item
       switch (category) {
          case Item.Category.Weapon:
-            builder.Append(Weapon.getName((Weapon.Type) itemTypeId));
+            builder.Append(Weapon.getName(itemTypeId));
             break;
          case Item.Category.Armor:
             builder.Append(Armor.getName(itemTypeId));

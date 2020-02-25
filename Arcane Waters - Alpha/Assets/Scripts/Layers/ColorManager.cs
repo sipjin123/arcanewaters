@@ -67,13 +67,13 @@ public class ColorManager : MonoBehaviour {
 
    public void defineArmorColors () {
       foreach (Gender.Type gender in Gender.getTypes()) {
-         for (int armorType = 0; armorType < EquipmentXMLManager.self.armorStatList.Count; armorType++) {
-            ColorKey colorKey = new ColorKey(gender, "armor_" + armorType);
+         foreach (ArmorStatData armorData in EquipmentXMLManager.self.armorStatList) {
+            ColorKey colorKey = new ColorKey(gender, "armor_" + armorData.equipmentID);
             HashSet<ColorType> primaries = new HashSet<ColorType>();
             HashSet<ColorType> secondaries = new HashSet<ColorType>();
 
             // Define the list of colors for each type
-            if (EquipmentXMLManager.self.armorStatList[armorType].setAllColors) {
+            if (armorData.setAllColors) {
                primaries = secondaries = new HashSet<ColorType>() {
                      ColorType.Green, ColorType.Yellow, ColorType.Blue, ColorType.Red,
                      ColorType.LightRed, ColorType.Pink, ColorType.LightPink, ColorType.Teal,
@@ -94,45 +94,22 @@ public class ColorManager : MonoBehaviour {
 
    public void defineWeaponColors () {
       foreach (Gender.Type gender in Gender.getTypes()) {
-         foreach (Weapon.Type weaponType in Enum.GetValues(typeof(Weapon.Type))) {
-            ColorKey colorKey = new ColorKey(gender, weaponType);
+         foreach (WeaponStatData weaponData in EquipmentXMLManager.self.weaponStatList) {
+            ColorKey colorKey = new ColorKey(gender, weaponData.equipmentID, new Weapon());
             HashSet<ColorType> primaries = new HashSet<ColorType>();
             HashSet<ColorType> secondaries = new HashSet<ColorType>();
 
             // Define the list of colors for each type
-            switch (weaponType) {
-               case Weapon.Type.Lance_Steel:
-               case Weapon.Type.Mace_Star:
-               case Weapon.Type.Mace_Steel:
-               case Weapon.Type.Staff_Mage:
-               case Weapon.Type.Sword_Rune:
-               case Weapon.Type.Sword_Steel:
-               case Weapon.Type.Sword_1:
-               case Weapon.Type.Sword_2:
-               case Weapon.Type.Sword_3:
-               case Weapon.Type.Sword_4:
-               case Weapon.Type.Sword_5:
-               case Weapon.Type.Sword_6:
-               case Weapon.Type.Sword_7:
-               case Weapon.Type.Sword_8:
-               case Weapon.Type.Gun_2:
-               case Weapon.Type.Gun_3:
-               case Weapon.Type.Gun_6:
-               case Weapon.Type.Gun_7:
-               case Weapon.Type.Seeds:
-               case Weapon.Type.Pitchfork:
-               case Weapon.Type.WateringPot:
-                  primaries = secondaries = new HashSet<ColorType>() {
+            if (weaponData.setAllColors) {
+               primaries = secondaries = new HashSet<ColorType>() {
                      ColorType.SteelBlue, ColorType.LightRed, ColorType.DarkRed, ColorType.LightPink, ColorType.DarkPurple,
                      ColorType.LightBlue, ColorType.DarkBlue, ColorType.LightGreen, ColorType.DarkGreen, ColorType.LightYellow,
                      ColorType.DarkYellow, ColorType.Teal,
                   };
-                  break;
-               default:
-                  primaries = secondaries = new HashSet<ColorType>() {
+            } else {
+               primaries = secondaries = new HashSet<ColorType>() {
                      ColorType.White
                   };
-                  break;
             }
 
             _primaries[colorKey] = primaries;
