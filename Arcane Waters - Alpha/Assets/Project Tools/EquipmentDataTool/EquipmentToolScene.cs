@@ -170,6 +170,9 @@ public class EquipmentToolScene : MonoBehaviour {
          HelmStatData helmData = xmlData.helmStatData;
          EquipmentDataTemplate template = GenericEntryTemplate.createGenericTemplate(helmTemplatePrefab.gameObject, equipmentToolManager, helmTemplateParent.transform).GetComponent<EquipmentDataTemplate>();
          template.setData(helmData.equipmentName, helmData.equipmentID, EquipmentType.Helm, xmlData.xml_id);
+         template.isEnabledIndicator.SetActive(xmlData.isEnabled);
+         template.spriteID.text = ((int)helmData.helmType).ToString();
+
          template.editButton.onClick.AddListener(() => {
             equipmentDataPanel.loadHelmData(helmData, template.xmlId, xmlData.isEnabled);
             equipmentDataPanel.gameObject.SetActive(true);
@@ -197,9 +200,9 @@ public class EquipmentToolScene : MonoBehaviour {
          template.gameObject.SetActive(true);
 
          template.indexText.gameObject.SetActive(MasterToolAccountManager.canAlterData());
+         template.spriteID.gameObject.SetActive(MasterToolAccountManager.canAlterData());
       }
    }
-
 
    public void loadArmorData (List<ArmorXMLContent> armorStats) {
       armorTemplateParent.gameObject.DestroyChildren();
@@ -210,6 +213,7 @@ public class EquipmentToolScene : MonoBehaviour {
          EquipmentDataTemplate template = GenericEntryTemplate.createGenericTemplate(armorTemplatePrefab.gameObject, equipmentToolManager, armorTemplateParent.transform).GetComponent<EquipmentDataTemplate>();
          template.setData(armorData.equipmentName, armorData.equipmentID, EquipmentType.Armor, xmlData.xml_id);
          template.isEnabledIndicator.SetActive(xmlData.isEnabled);
+         template.spriteID.text = armorData.armorType.ToString();
 
          template.editButton.onClick.AddListener(() => {
             equipmentDataPanel.loadArmorData(armorData, template.xmlId, xmlData.isEnabled);
@@ -238,6 +242,7 @@ public class EquipmentToolScene : MonoBehaviour {
          template.gameObject.SetActive(true);
 
          template.indexText.gameObject.SetActive(MasterToolAccountManager.canAlterData());
+         template.spriteID.gameObject.SetActive(MasterToolAccountManager.canAlterData());
       }
    }
 
@@ -249,6 +254,8 @@ public class EquipmentToolScene : MonoBehaviour {
          WeaponStatData weaponData = xmlData.weaponStatData;
          EquipmentDataTemplate template = GenericEntryTemplate.createGenericTemplate(weaponTemplatePrefab.gameObject, equipmentToolManager, weaponTemplateParent.transform).GetComponent<EquipmentDataTemplate>();
          template.setData(weaponData.equipmentName, weaponData.equipmentID, EquipmentType.Weapon, xmlData.xml_id);
+         template.isEnabledIndicator.SetActive(xmlData.isEnabled);
+         template.spriteID.text = weaponData.weaponType.ToString();
 
          template.editButton.onClick.AddListener(() => {
             equipmentDataPanel.loadWeaponData(weaponData, template.xmlId, xmlData.isEnabled);
@@ -277,6 +284,7 @@ public class EquipmentToolScene : MonoBehaviour {
          template.gameObject.SetActive(true);
 
          template.indexText.gameObject.SetActive(MasterToolAccountManager.canAlterData());
+         template.spriteID.gameObject.SetActive(MasterToolAccountManager.canAlterData());
       }
    }
 }

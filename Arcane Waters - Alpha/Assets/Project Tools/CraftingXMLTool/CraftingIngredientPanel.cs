@@ -72,6 +72,9 @@ public class CraftingIngredientPanel : MonoBehaviour {
    // Determines if the template is a new entry
    private bool emptyContent;
 
+   // Current xml id being used
+   public int xmlID;
+
    #endregion
 
    private void Awake () {
@@ -206,7 +209,7 @@ public class CraftingIngredientPanel : MonoBehaviour {
                string imagePath = EquipmentXMLManager.self.getArmorData(item.Key).equipmentIconPath;
                itemTemp.spriteIcon.sprite = ImageManager.getSprite(imagePath);
             } else if (selectedCategory == Item.Category.Weapon) {
-               string imagePath = EquipmentXMLManager.self.getWeaponData((Weapon.Type) item.Key).equipmentIconPath;
+               string imagePath = EquipmentXMLManager.self.getWeaponData(item.Key).equipmentIconPath;
                itemTemp.spriteIcon.sprite = ImageManager.getSprite(imagePath);
             } else {
                itemTemp.spriteIcon.sprite = Util.getRawSpriteIcon(selectedCategory, item.Key);
@@ -244,7 +247,7 @@ public class CraftingIngredientPanel : MonoBehaviour {
       if (currentCombinationData != null) {
          updateRootTemplate();
          updateData();
-         craftingToolManager.saveDataToFile(currentCombinationData, emptyContent);
+         craftingToolManager.saveDataToFile(currentCombinationData, xmlID);
       }
       gameObject.SetActive(false);
    }
@@ -255,8 +258,9 @@ public class CraftingIngredientPanel : MonoBehaviour {
       } 
    }
 
-   public void setData(CraftableItemRequirements currData) {
+   public void setData(CraftableItemRequirements currData, int xmlID) {
       emptyContent = currData.resultItem.category == Item.Category.None;
+      this.xmlID = xmlID;
 
       ingredientTemplateParent.gameObject.DestroyChildren();
       itemRowList = new List<ItemRequirementRow>();

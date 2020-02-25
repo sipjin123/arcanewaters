@@ -7,6 +7,9 @@ using Mirror;
 public class CraftableItemTemplate : GenericEntryTemplate {
    #region Public Variables
 
+   // The xml id of this template
+   public int xmlID;
+
    #endregion
 
    public void updateItemDisplay(Item resultItem) {

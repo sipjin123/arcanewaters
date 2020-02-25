@@ -638,7 +638,7 @@ public class MonsterDataPanel : MonoBehaviour {
                      itemTemp.spriteIcon.sprite = ImageManager.getSprite(fetchedHelmSprite);
                      break;
                   case Item.Category.Weapon:
-                     string fetchedWeaponSprite = EquipmentXMLManager.self.getWeaponData((Weapon.Type) item.Key).equipmentIconPath;
+                     string fetchedWeaponSprite = EquipmentXMLManager.self.getWeaponData(item.Key).equipmentIconPath;
                      itemTemp.spriteIcon.sprite = ImageManager.getSprite(fetchedWeaponSprite);
                      break;
                   default:

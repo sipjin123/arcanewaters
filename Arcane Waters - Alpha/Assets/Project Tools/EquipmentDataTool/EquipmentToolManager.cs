@@ -266,7 +266,6 @@ public class EquipmentToolManager : XmlDataToolManager {
             foreach (XMLPair xmlPair in rawXMLData) {
                TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                ArmorStatData rawData = Util.xmlLoad<ArmorStatData>(newTextAsset);
-               rawData.equipmentID = rawData.armorType;
 
                // Save the data in the memory cache
                if (!_armorStatData.Exists(_ => _.xml_id == xmlPair.xmlId)) {

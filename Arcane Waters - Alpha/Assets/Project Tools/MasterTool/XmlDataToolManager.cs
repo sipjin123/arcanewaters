@@ -47,12 +47,12 @@ public class XmlDataToolManager : MonoBehaviour {
 
    protected void fetchRecipe () {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<string> rawXMLData = DB_Main.getCraftingXML();
+         List<XMLPair> rawXMLData = DB_Main.getCraftingXML();
          userNameData = DB_Main.getSQLDataByName(EditorSQLManager.EditorToolType.Crafting);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            foreach (string rawText in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(rawText);
+            foreach (XMLPair xmlData in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(xmlData.rawXmlData);
                CraftableItemRequirements craftingData = Util.xmlLoad<CraftableItemRequirements>(newTextAsset);
 
                // Save the Crafting data in the memory cache

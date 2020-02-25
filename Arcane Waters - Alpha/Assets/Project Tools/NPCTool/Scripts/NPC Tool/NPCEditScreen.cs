@@ -514,7 +514,7 @@ public class NPCEditScreen : MonoBehaviour
          string spritePath = EquipmentXMLManager.self.getHelmData(itemID).equipmentIconPath;
          imageSprite.sprite = ImageManager.getSprite(spritePath);
       } else if (category == Item.Category.Weapon) {
-         string spritePath = EquipmentXMLManager.self.getWeaponData((Weapon.Type) itemID).equipmentIconPath;
+         string spritePath = EquipmentXMLManager.self.getWeaponData(itemID).equipmentIconPath;
          imageSprite.sprite = ImageManager.getSprite(spritePath);
       } else if (category == Item.Category.Armor) {
          string spritePath = EquipmentXMLManager.self.getArmorData(itemID).equipmentIconPath;

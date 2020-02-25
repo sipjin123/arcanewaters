@@ -17,6 +17,9 @@ public class EquipmentDataTemplate : GenericEntryTemplate {
    // Indicator determining if this template entry is active in the database
    public GameObject isEnabledIndicator;
 
+   // Shows the sprite id being used by the equipment
+   public Text spriteID;
+
    #endregion
 
    public void setData (string dataName, int dataID, EquipmentType dataType, int templateID) {

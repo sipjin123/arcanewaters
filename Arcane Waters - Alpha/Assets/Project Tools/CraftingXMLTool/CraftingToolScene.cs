@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.SceneManagement;
+using static CraftingToolManager;
 
 public class CraftingToolScene : MonoBehaviour {
    #region Public Variables
@@ -49,58 +50,58 @@ public class CraftingToolScene : MonoBehaviour {
       requirementData.resultItem = new Item { category = Item.Category.None, itemTypeId = 0, count = 0 };
       string itemName = "Undefined";
 
-      if (!toolManager.ifExists(itemName)) {
-         CraftableItemTemplate template = GenericEntryTemplate.createGenericTemplate(craftableItemTemplate.gameObject, toolManager, craftableItemParent).GetComponent<CraftableItemTemplate>();
-         template.editButton.onClick.AddListener(() => {
-            craftingPanel.currentXMLTemplate = template;
-            craftingPanel.gameObject.SetActive(true);
-            craftingPanel.setData(requirementData);
-         });
-         template.deleteButton.onClick.AddListener(() => {
-            toolManager.deleteCraftingDataFile(requirementData);
-         });
+      CraftableItemTemplate template = GenericEntryTemplate.createGenericTemplate(craftableItemTemplate.gameObject, toolManager, craftableItemParent).GetComponent<CraftableItemTemplate>();
+      template.xmlID = -1;
+      template.editButton.onClick.AddListener(() => {
+         craftingPanel.currentXMLTemplate = template;
+         craftingPanel.gameObject.SetActive(true);
+         craftingPanel.setData(requirementData, -1);
+      });
+      template.deleteButton.onClick.AddListener(() => {
+         toolManager.deleteCraftingDataFile(template.xmlID);
+      });
 
-         if (requirementData.resultItem.category == Item.Category.Helm) {
-            string helmSprite = EquipmentXMLManager.self.getHelmData(requirementData.resultItem.itemTypeId).equipmentIconPath;
-            template.itemIcon.sprite = ImageManager.getSprite(helmSprite);
-         } else {
-            template.itemIcon.sprite = Util.getRawSpriteIcon(requirementData.resultItem.category, requirementData.resultItem.itemTypeId);
-         }
-
-         template.setWarning();
-         template.gameObject.SetActive(true);
-         toolManager.saveDataToFile(requirementData, false);
+      if (requirementData.resultItem.category == Item.Category.Helm) {
+         string helmSprite = EquipmentXMLManager.self.getHelmData(requirementData.resultItem.itemTypeId).equipmentIconPath;
+         template.itemIcon.sprite = ImageManager.getSprite(helmSprite);
+      } else {
+         template.itemIcon.sprite = Util.getRawSpriteIcon(requirementData.resultItem.category, requirementData.resultItem.itemTypeId);
       }
+
+      template.setWarning();
+      template.gameObject.SetActive(true);
+      toolManager.saveDataToFile(requirementData, template.xmlID);
    }
 
    public void refreshXML() {
       toolManager.loadAllDataFiles();
    }
 
-   public void updatePanelWithCraftingIngredients (Dictionary<string, CraftableItemRequirements> _craftingData) {
+   public void updatePanelWithCraftingIngredients (List<CraftableRequirementXML> craftableList) {
       // Clear all the rows
       craftableItemParent.gameObject.DestroyChildren();
 
       // Create a row for each crafting ingredient
-      foreach (CraftableItemRequirements craftingRequirement in _craftingData.Values) {
+      foreach (CraftableRequirementXML xmlContent in craftableList) {
          CraftableItemTemplate template = GenericEntryTemplate.createGenericTemplate(craftableItemTemplate.gameObject, toolManager, craftableItemParent).GetComponent<CraftableItemTemplate>();
-         template.updateItemDisplay(craftingRequirement.resultItem);
+         template.updateItemDisplay(xmlContent.requirements.resultItem);
+         template.xmlID = xmlContent.xmlID;
          template.editButton.onClick.AddListener(() =>
          {
             craftingPanel.currentXMLTemplate = template;
             craftingPanel.gameObject.SetActive(true);
-            craftingPanel.setData(craftingRequirement);
+            craftingPanel.setData(xmlContent.requirements, xmlContent.xmlID);
          });
          template.deleteButton.onClick.AddListener(() => {
             Destroy(template.gameObject, .5f);
-            toolManager.deleteCraftingDataFile(craftingRequirement);
+            toolManager.deleteCraftingDataFile(xmlContent.xmlID);
          });
 
-         if (craftingRequirement.resultItem.category == Item.Category.None) {
+         if (xmlContent.requirements.resultItem.category == Item.Category.None) {
             template.setWarning();
          }
 
-         updateThisIcon(template.itemIcon, craftingRequirement.resultItem.category, craftingRequirement.resultItem.itemTypeId);
+         updateThisIcon(template.itemIcon, xmlContent.requirements.resultItem.category, xmlContent.requirements.resultItem.itemTypeId);
 
          template.gameObject.SetActive(true);
       }
@@ -109,7 +110,7 @@ public class CraftingToolScene : MonoBehaviour {
    public static void updateThisIcon (Image imageIcon, Item.Category category, int resultType) {
       switch (category) {
          case Item.Category.Weapon:
-            string imagePath = EquipmentXMLManager.self.getWeaponData((Weapon.Type) resultType).equipmentIconPath;
+            string imagePath = EquipmentXMLManager.self.getWeaponData(resultType).equipmentIconPath;
             imageIcon.sprite = ImageManager.getSprite(imagePath);
             break;
          case Item.Category.Armor:

@@ -68,7 +68,7 @@ public class GenericItemRow : MonoBehaviour {
       } else if (category == Item.Category.Weapon) {
          itemCategoryName.text = category.ToString();
 
-         WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData((Weapon.Type) itemTypeID);
+         WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(itemTypeID);
          itemTypeName.text = weaponData.equipmentName;
          string spritePath = weaponData.equipmentIconPath;
 

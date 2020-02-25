@@ -38,8 +38,6 @@ public class EditorSQLManager
             return "ability_xml_v2";
          case EditorToolType.Achievement:
             return "achievement_xml";
-         case EditorToolType.Crafting:
-            return "crafting_xml";
          case EditorToolType.ShipAbility:
             return "ship_ability_xml";
          case EditorToolType.Shop:
@@ -55,7 +53,7 @@ public class EditorSQLManager
          case EditorToolType.Equipment:
             switch (subType) {
                case EquipmentType.Weapon:
-                  return "equipment_weapon_xml_v2";
+                  return "equipment_weapon_xml_v3";
                case EquipmentType.Armor:
                   return "equipment_armor_xml_v3";
                case EquipmentType.Helm:
@@ -63,6 +61,8 @@ public class EditorSQLManager
                default:
                   return "";
             }
+         case EditorToolType.Crafting:
+            return "crafting_xml_v2";
          case EditorToolType.LandMonster:
             return "land_monster_xml_v2";
          case EditorToolType.NPC:

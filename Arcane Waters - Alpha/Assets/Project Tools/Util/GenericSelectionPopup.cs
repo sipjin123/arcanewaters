@@ -93,7 +93,8 @@ public class GenericSelectionPopup : MonoBehaviour {
       CannonSprites = 35,
       ShopIcon = 36,
       CropType = 37,
-      ArmorTypeSprites = 38
+      ArmorTypeSprites = 38,
+      WeaponActionType = 39
    }
 
    #endregion
@@ -284,6 +285,11 @@ public class GenericSelectionPopup : MonoBehaviour {
       templateParent.DestroyChildren();
       previewSelectionIcon.sprite = emptySprite;
       switch (popupType) {
+         case selectionType.WeaponActionType:
+            foreach (Weapon.ActionType weaponActionType in Enum.GetValues(typeof(Weapon.ActionType))) {
+               createTextTemplate(weaponActionType.ToString(), textUI, changeEvent);
+            }
+            break;
          case selectionType.ShipType:
             foreach (Ship.Type shipType in Enum.GetValues(typeof(Ship.Type))) {
                createTextTemplate(shipType.ToString(), textUI, changeEvent);
@@ -309,8 +315,8 @@ public class GenericSelectionPopup : MonoBehaviour {
                createTextTemplate(skinType.ToString(), textUI, changeEvent);
             }
             break;
-         case selectionType.WeaponType: 
-            foreach (Weapon.Type weaponType in Enum.GetValues(typeof(Weapon.Type))) {
+         case selectionType.WeaponType:
+            for (int weaponType = 0; weaponType < MAX_OPTIONS; weaponType++) {
                createTextTemplate(weaponType.ToString(), textUI, changeEvent);
             }
             break;
@@ -320,8 +326,8 @@ public class GenericSelectionPopup : MonoBehaviour {
             }
             break;
          case selectionType.ArmorType:
-            for (int armorType = 0; armorType < EquipmentXMLManager.self.armorStatList.Count; armorType++) { 
-               createTextTemplate(armorType.ToString(), textUI, changeEvent);
+            foreach (ArmorStatData armorType in EquipmentXMLManager.self.armorStatList) {
+               createTextTemplate(armorType.equipmentID.ToString(), textUI, changeEvent);
             }
             break;
          case selectionType.ArmorTypeSprites:

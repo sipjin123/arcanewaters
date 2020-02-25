@@ -7,6 +7,7 @@ using System.IO;
 using System.Xml.Serialization;
 using System.Text;
 using System.Xml;
+using System.Linq;
 
 public class CraftingToolManager : XmlDataToolManager {
    #region Public Variables
@@ -16,6 +17,18 @@ public class CraftingToolManager : XmlDataToolManager {
 
    // Holds the path of the folder
    public const string FOLDER_PATH = "Crafting";
+
+   public class CraftableRequirementXML
+   {
+      // The id of the sql entry
+      public int xmlID;
+
+      // The id of the creator
+      public int creatorID;
+
+      //The content of the sql entry
+      public CraftableItemRequirements requirements;
+   }
 
    #endregion
 
@@ -39,38 +52,38 @@ public class CraftingToolManager : XmlDataToolManager {
    }
 
    public void loadAllDataFiles () {
-      _craftingDataList = new Dictionary<string, CraftableItemRequirements>();
+      _craftingDataList = new Dictionary<int, CraftableRequirementXML>();
       XmlLoadingPanel.self.startLoading();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<string> rawXMLData = DB_Main.getCraftingXML();
-         userNameData = DB_Main.getSQLDataByName(editorToolType);
+         List<XMLPair> rawXMLData = DB_Main.getCraftingXML();
+         userIdData = DB_Main.getSQLDataByID(editorToolType);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            foreach (string rawText in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(rawText);
+            foreach (XMLPair xmlData in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(xmlData.rawXmlData);
                CraftableItemRequirements craftingData = Util.xmlLoad<CraftableItemRequirements>(newTextAsset);
-               string craftingID = craftingData.resultItem.category == Item.Category.None ? "Undefined" : Util.getItemName(craftingData.resultItem.category, craftingData.resultItem.itemTypeId);
+
+               CraftableRequirementXML newRequirementXML = new CraftableRequirementXML {
+                  creatorID = xmlData.xmlOwnerId,
+                  xmlID = xmlData.xmlId,
+                  requirements = craftingData
+               };
 
                // Save the Crafting data in the memory cache
-               if (!_craftingDataList.ContainsKey(craftingID)) {
-                  _craftingDataList.Add(craftingID, craftingData);
-               } else {
-                  craftingID += "_copy";
-                  _craftingDataList.Add(craftingID, craftingData);
-               }
+               if (!_craftingDataList.ContainsKey(xmlData.xmlId)) {
+                  _craftingDataList.Add(xmlData.xmlId, newRequirementXML);
+               } 
             }
-            craftingToolScreen.updatePanelWithCraftingIngredients(_craftingDataList);
+            craftingToolScreen.updatePanelWithCraftingIngredients(_craftingDataList.Values.ToList());
             XmlLoadingPanel.self.finishLoading();
          });
       });
    }
 
-   public void deleteCraftingDataFile (CraftableItemRequirements data) {
-      string craftingID = data.resultItem.category == Item.Category.None ? "Undefined" : Util.getItemName(data.resultItem.category, data.resultItem.itemTypeId);
-
+   public void deleteCraftingDataFile (int xmlID) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.deleteCraftingXML(craftingID);
+         DB_Main.deleteCraftingXML(xmlID);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadAllDataFiles();
@@ -78,11 +91,7 @@ public class CraftingToolManager : XmlDataToolManager {
       });
    }
 
-   public bool ifExists (string nameID) {
-      return _craftingDataList.ContainsKey(nameID);
-   }
-
-   public void saveDataToFile (CraftableItemRequirements data, bool deleteBlankData) {
+   public void saveDataToFile (CraftableItemRequirements data, int xmlID) {
       string fileName = data.resultItem.category == Item.Category.None ? "Undefined" : Util.getItemName(data.resultItem.category, data.resultItem.itemTypeId);
 
       XmlSerializer ser = new XmlSerializer(data.GetType());
@@ -93,11 +102,7 @@ public class CraftingToolManager : XmlDataToolManager {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateCraftingXML(longString, fileName);
-
-         if (deleteBlankData) {
-            deleteCraftingDataFile(new CraftableItemRequirements { resultItem = new Item { category = Item.Category.None } });
-         }
+         DB_Main.updateCraftingXML(xmlID, longString, fileName);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadAllDataFiles();
@@ -108,7 +113,7 @@ public class CraftingToolManager : XmlDataToolManager {
    #region Private Variables
 
    // Cache for craftable items data
-   private Dictionary<string, CraftableItemRequirements> _craftingDataList = new Dictionary<string, CraftableItemRequirements>();
+   private Dictionary<int, CraftableRequirementXML> _craftingDataList = new Dictionary<int, CraftableRequirementXML>();
 
    #endregion
 }
