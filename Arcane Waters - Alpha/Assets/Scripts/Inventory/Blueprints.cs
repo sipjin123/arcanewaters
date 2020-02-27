@@ -103,20 +103,7 @@ public class Blueprint : RecipeItem
    }
 
    public override string getName () {
-      string currName = "";
-      string idString = bpTypeID.ToString();
       Item.Category newCategory = getEquipmentType(bpTypeID);
-
-      switch (newCategory) {
-         case Category.Armor:
-            idString = idString.Replace(ARMOR_PREFIX, "");
-            currName = int.Parse(idString).ToString();
-            break;
-         case Category.Weapon:
-            idString = idString.Replace(WEAPON_PREFIX, "");
-            currName = (int.Parse(idString)).ToString();
-            break;
-      }
 
       if (newCategory == Category.Weapon || newCategory == Category.Armor) {
          return getName(bpTypeID) + " Design";

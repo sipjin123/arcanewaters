@@ -157,10 +157,12 @@ public class AbilityDataScene : MonoBehaviour
 
       MonsterSkillTemplate skillTemplate = skillTemplateList[0];
       if (!idList.Exists(_ => _ == skillTemplate.skillID)) {
-         if (skillTemplateList[0].abilityTypeEnum == AbilityType.Standard) {
-            abilityManager.saveAbility(skillTemplate.getAttackData());
+         if (skillTemplateList[0].abilityTypeEnum == AbilityType.Standard || skillTemplateList[0].abilityTypeEnum == AbilityType.Stance) {
+            AttackAbilityData attackData = skillTemplate.getAttackData();
+            abilityManager.saveAbility(attackData);
          } else if (skillTemplateList[0].abilityTypeEnum == AbilityType.BuffDebuff) {
-            abilityManager.saveAbility(skillTemplate.getBuffData());
+            BuffAbilityData buffData = skillTemplate.getBuffData();
+            abilityManager.saveAbility(buffData);
          }
             
          abilityPanel.SetActive(false);

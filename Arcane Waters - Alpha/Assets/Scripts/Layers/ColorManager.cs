@@ -95,7 +95,7 @@ public class ColorManager : MonoBehaviour {
    public void defineWeaponColors () {
       foreach (Gender.Type gender in Gender.getTypes()) {
          foreach (WeaponStatData weaponData in EquipmentXMLManager.self.weaponStatList) {
-            ColorKey colorKey = new ColorKey(gender, weaponData.equipmentID, new Weapon());
+            ColorKey colorKey = new ColorKey(gender, "weapon_" + weaponData.equipmentID);
             HashSet<ColorType> primaries = new HashSet<ColorType>();
             HashSet<ColorType> secondaries = new HashSet<ColorType>();
 

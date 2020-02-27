@@ -48,7 +48,6 @@ public class CraftingToolScene : MonoBehaviour {
 
    private void createNewTemplate(CraftableItemRequirements requirementData) {
       requirementData.resultItem = new Item { category = Item.Category.None, itemTypeId = 0, count = 0 };
-      string itemName = "Undefined";
 
       CraftableItemTemplate template = GenericEntryTemplate.createGenericTemplate(craftableItemTemplate.gameObject, toolManager, craftableItemParent).GetComponent<CraftableItemTemplate>();
       template.xmlID = -1;

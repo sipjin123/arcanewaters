@@ -48,7 +48,7 @@ public class XmlDataToolManager : MonoBehaviour {
    protected void fetchRecipe () {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<XMLPair> rawXMLData = DB_Main.getCraftingXML();
-         userNameData = DB_Main.getSQLDataByName(EditorSQLManager.EditorToolType.Crafting);
+         userIdData = DB_Main.getSQLDataByID(editorToolType);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (XMLPair xmlData in rawXMLData) {

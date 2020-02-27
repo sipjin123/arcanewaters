@@ -33,7 +33,7 @@ public class BlueprintRow : MonoBehaviour
 
    public void setRowForBlueprint (Item resultItem, Blueprint blueprint, bool isSelected, Blueprint.Status status) {
       _blueprintItemId = blueprint.id;
-      itemNameText.text = resultItem.getName();
+      itemNameText.text = resultItem.itemName;
 
       // Set the 'blueprint selected' background
       if (isSelected) {
@@ -42,19 +42,15 @@ public class BlueprintRow : MonoBehaviour
 
       // Retrieve the icon sprite and coloring depending on the type
       ColorKey colorKey = null;
-      switch (resultItem.category) {
-         case Item.Category.Weapon:
-            icon.sprite = ImageManager.getSprite(resultItem.getIconPath());
-            colorKey = new ColorKey(Global.player.gender, resultItem.itemTypeId, new Weapon());
-            break;
-         case Item.Category.Armor:
-         case Item.Category.Helm:
-            icon.sprite = ImageManager.getSprite(resultItem.getIconPath());
-            colorKey = new ColorKey(Global.player.gender, resultItem.itemTypeId, new Armor());
-            break;
-         default:
-            icon.sprite = null;
-            break;
+
+      if (blueprint.itemTypeId.ToString().StartsWith(Blueprint.WEAPON_PREFIX)) {
+         icon.sprite = ImageManager.getSprite(resultItem.iconPath);
+         colorKey = new ColorKey(Global.player.gender, resultItem.itemTypeId, new Weapon());
+      } else if (blueprint.itemTypeId.ToString().StartsWith(Blueprint.WEAPON_PREFIX)) {
+         icon.sprite = ImageManager.getSprite(resultItem.iconPath);
+         colorKey = new ColorKey(Global.player.gender, resultItem.itemTypeId, new Armor());
+      } else {
+         icon.sprite = null;
       }
 
       // Set the sprite of the shadow

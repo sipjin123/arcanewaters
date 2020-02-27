@@ -150,17 +150,19 @@ public class Weapon : EquippableItem {
    }
 
    public int getDamage () {
-      foreach (string kvp in this.data.Replace(" ", "").Split(',')) {
-         if (!kvp.Contains("=")) {
-            continue;
-         }
+      if (this.data.Length > 0) {
+         foreach (string kvp in this.data.Replace(" ", "").Split(',')) {
+            if (!kvp.Contains("=")) {
+               continue;
+            }
 
-         // Get the left and right side of the equal
-         string key = kvp.Split('=')[0];
-         string value = kvp.Split('=')[1];
+            // Get the left and right side of the equal
+            string key = kvp.Split('=')[0];
+            string value = kvp.Split('=')[1];
 
-         if ("damage".Equals(key)) { 
-            return Convert.ToInt32(value);
+            if ("damage".Equals(key)) {
+               return Convert.ToInt32(value);
+            }
          }
       }
 
@@ -249,6 +251,8 @@ public class Weapon : EquippableItem {
    }
 
    public override bool canBeTrashed () {
+      // TODO: Receive this variable from the server
+      return true;
       return  EquipmentXMLManager.self.getWeaponData(type).canBeTrashed;
    }
 

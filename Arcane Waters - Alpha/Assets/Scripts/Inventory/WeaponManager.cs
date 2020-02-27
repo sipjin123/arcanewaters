@@ -65,17 +65,18 @@ public class WeaponManager : EquipmentManager {
    }
 
    public bool isHoldingWeapon () {
-      //TODO: Fix filtering of weapon types
-      return true;
-      if (weaponType.ToString().ToLowerInvariant().Contains("sword") || weaponType.ToString().ToLowerInvariant().Contains("gun")) {
+      if (_weapon.getDamage() != 0 && actionType == Weapon.ActionType.None) {
          return true;
       }
+
       return false;
    }
 
    [ClientRpc]
-   public void Rpc_EquipWeapon (Weapon newWeapon, ColorType color1, ColorType color2) {
+   public void Rpc_EquipWeapon (Weapon newWeapon, ColorType color1, ColorType color2, WeaponStatData weaponData) {
       _weapon = newWeapon;
+      _weapon.data = string.Format("damage={0}, rarity={1}", weaponData.weaponBaseDamage, (int) Rarity.Type.Common);
+
       updateSprites(newWeapon.type, color1, color2);
 
       // Play a sound
@@ -90,6 +91,7 @@ public class WeaponManager : EquipmentManager {
       }
 
       _weapon = weapon;
+      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(_weapon.itemTypeId);
 
       // Assign the weapon ID
       this.equippedWeaponId = (weapon.type == 0) ? 0 : weapon.id;
@@ -101,7 +103,7 @@ public class WeaponManager : EquipmentManager {
       this.actionType = actionType;
 
       // Send the Weapon Info to all clients
-      Rpc_EquipWeapon(weapon, color1, color2);
+      Rpc_EquipWeapon(weapon, color1, color2, weaponData);
    }
 
    #region Private Variables

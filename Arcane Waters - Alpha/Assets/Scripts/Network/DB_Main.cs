@@ -183,7 +183,7 @@ public class DB_Main : DB_MainStub
             // Declaration of table elements
             "INSERT INTO ability_xml_v2 ("+ skillIdKey + "xml_name, xmlContent, ability_type, creator_userID) " +
             "VALUES("+ skillIdValue + "@xml_name, @xmlContent, @ability_type, @creator_userID) " +
-            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, ability_type = @ability_type, xmlContent = @xmlContent", conn)) {
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, ability_type = @ability_type, xmlContent = @xmlContent, xml_name = @xml_name", conn)) {
 
             conn.Open();
             cmd.Prepare();

@@ -361,7 +361,7 @@ public class MonsterSkillTemplate : MonoBehaviour {
    }
    
    public AttackAbilityData getAttackData () {
-      AbilityType abilityType = (AbilityType) this.abilityType.value;
+      AbilityType abilityType = AbilityType.Standard;
       Element element = (Element) this.elements.value;
       BattleItemType battleItemType = (BattleItemType) this.battleItemType.value;
       Weapon.Class weaponClass = (Weapon.Class) this.weaponClass.value;
@@ -397,7 +397,7 @@ public class MonsterSkillTemplate : MonoBehaviour {
    }
 
    public BuffAbilityData getBuffData () {
-      AbilityType abilityType = (AbilityType) this.abilityType.value;
+      AbilityType abilityType = AbilityType.BuffDebuff;
       Element element = (Element) this.elements.value;
       BattleItemType battleItemType = (BattleItemType) this.battleItemType.value;
       Weapon.Class weaponClass = (Weapon.Class) this.weaponClass.value;

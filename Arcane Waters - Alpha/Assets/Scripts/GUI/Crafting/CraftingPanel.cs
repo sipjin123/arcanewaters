@@ -113,14 +113,11 @@ public class CraftingPanel : Panel
       for (int i = 0; i < blueprintArray.Length; i++) {
          Blueprint blueprint = (Blueprint)(blueprintArray[i].getCastItem());
 
-         // Get the resulting item
-         Item resultItem = Blueprint.getItemData(blueprint.bpTypeID);
-
          // Instantiates the row
          BlueprintRow row = Instantiate(blueprintRowPrefab, blueprintRowsContainer.transform, false);
 
          // Initializes the row
-         row.setRowForBlueprint(resultItem, blueprint, _selectedBlueprintId == blueprint.id, blueprintStatusesArray[i]);
+         row.setRowForBlueprint(blueprintArray[i], blueprint, _selectedBlueprintId == blueprint.id, blueprintStatusesArray[i]);
       }
 
       // Update the craft button
@@ -133,11 +130,8 @@ public class CraftingPanel : Panel
    }
    
    public void updatePanelWithSingleBlueprint (Item blueprint, Item[] equippedItems,
-      List<Item> inventoryIngredients, List<Item> requiredIngredients) {
+      List<Item> inventoryIngredients, List<Item> requiredIngredients, Item resultItem) {
       _selectedBlueprintId = blueprint.id;
-
-      // Get the casted blueprint
-      blueprint = blueprint.getCastItem();
 
       // Configure the panel
       configurePanelForMode(Mode.BlueprintSelected);
@@ -154,17 +148,15 @@ public class CraftingPanel : Panel
          }
       }
       
-      // Get the resulting item
-      Item resultItem = Blueprint.getItemData(((Blueprint)blueprint).bpTypeID);
-
       // Clear any previous result item
       resultItemContainer.DestroyChildren();
 
       // Instantiate a cell for the result item
       ItemCell cell = Instantiate(itemCellPrefab, resultItemContainer.transform, false);
+      blueprint.category = resultItem.category;
 
       // Initialize the cell
-      cell.setCellForItem(resultItem);
+      cell.setCellForItem(blueprint);
 
       // Set the cell click events
       cell.leftClickEvent.RemoveAllListeners();
@@ -172,10 +164,10 @@ public class CraftingPanel : Panel
       cell.doubleClickEvent.RemoveAllListeners();
 
       // Set the result item name
-      itemNameText.text = resultItem.getName();
+      itemNameText.text = blueprint.itemName;
 
       // Set the result item description
-      descriptionText.text = resultItem.getDescription();
+      descriptionText.text = blueprint.itemDescription;
 
       // Clear any existing statistic
       physicalStatColumn.clear();

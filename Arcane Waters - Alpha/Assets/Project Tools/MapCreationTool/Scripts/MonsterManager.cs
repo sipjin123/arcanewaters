@@ -89,10 +89,10 @@ namespace MapCreationTool
 
          foreach (XMLPair data in landMonsterData) {
             BattlerData battler = Util.xmlLoad<BattlerData>(new TextAsset(data.rawXmlData));
-            int battlerID = (int) battler.enemyType;
+            int enemyTypeID = (int) battler.enemyType;
 
-            if (!idToLandMonster.ContainsKey(battlerID)) {
-               idToLandMonster.Add(battlerID, new BattlerXMLContent {
+            if (!idToLandMonster.ContainsKey(enemyTypeID)) {
+               idToLandMonster.Add(enemyTypeID, new BattlerXMLContent {
                   xmlId = data.xmlId,
                   battler = battler,
                   isEnabled = data.isEnabled

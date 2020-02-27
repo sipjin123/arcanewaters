@@ -237,19 +237,8 @@ public class EquipmentToolPanel : MonoBehaviour {
 
       _equipmentTypeText.text = statData.armorType.ToString();
 
-      int spriteIndex = 0;
       string path = getInGameSprite(statData.armorType);
-      Sprite[] sprites = ImageManager.getSprites(path);
-
-      if (equipmentType == EquipmentType.Weapon) {
-         int targetWeaponIndex = WEAPON_SPRITE_INDEX;
-         if (sprites.Length - 1 >= targetWeaponIndex) {
-            spriteIndex = targetWeaponIndex;
-            _weaponSpriteImage.sprite = sprites[spriteIndex];
-         }
-      } else {
-         _armorSpriteImage.sprite = sprites[spriteIndex];
-      }
+      _armorSpriteImage.sprite = ImageManager.getSprite(path);
 
       _weaponClass.onValueChanged.Invoke(_weaponClass.value);
    }
@@ -275,6 +264,16 @@ public class EquipmentToolPanel : MonoBehaviour {
       _equipmentTypeText.text = statData.weaponType.ToString();
       _weaponClass.value = (int) statData.weaponClass;
       _weaponClassText.text = statData.weaponClass.ToString();
+
+      int spriteIndex = 0;
+      string path = getInGameSprite(statData.weaponType);
+      Sprite[] sprites = ImageManager.getSprites(path);
+
+      int targetWeaponIndex = WEAPON_SPRITE_INDEX;
+      if (sprites.Length - 1 >= targetWeaponIndex) {
+         spriteIndex = targetWeaponIndex;
+         _weaponSpriteImage.sprite = sprites[spriteIndex];
+      }
 
       _weaponClass.onValueChanged.Invoke(_weaponClass.value);
    }

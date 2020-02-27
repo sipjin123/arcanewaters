@@ -27,7 +27,7 @@ public class Item {
    public ColorType color2;
 
    // The item data string from the database
-   public string data;
+   public string data = "";
 
    // The number of these items that are stacked together
    public int count = 1;

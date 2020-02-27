@@ -28,7 +28,6 @@ public class MaterialManager : MonoBehaviour {
 
       // Body materials
       defineBodyMaterials();
-      defineWeaponMaterials();
 
       // Ship materials
       defineShipMaterials();
@@ -37,6 +36,7 @@ public class MaterialManager : MonoBehaviour {
    private void Start () {
       EquipmentXMLManager.self.finishedDataSetup.AddListener(() => {
          defineArmorMaterials();
+         defineWeaponMaterials();
       });
    }
 

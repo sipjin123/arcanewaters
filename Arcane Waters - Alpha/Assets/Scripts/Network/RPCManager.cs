@@ -532,7 +532,7 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_ReceiveSingleBlueprint (NetworkConnection connection, Item blueprint,
-      Item[] equippedItems, Item[] inventoryIngredientsArray, Item[] requiredIngredientsArray) {
+      Item[] equippedItems, Item[] inventoryIngredientsArray, Item[] requiredIngredientsArray, Item resultItem) {
       List<Item> inventoryIngredients = new List<Item>(inventoryIngredientsArray);
       List<Item> requiredIngredients = new List<Item>(requiredIngredientsArray);
 
@@ -549,7 +549,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Pass the data to the panel
       craftingPanel.updatePanelWithSingleBlueprint(blueprint, equippedItems,
-         inventoryIngredients, requiredIngredients);
+         inventoryIngredients, requiredIngredients, resultItem);
    }
 
    [TargetRpc]
@@ -2360,6 +2360,51 @@ public class RPCManager : NetworkBehaviour {
             // Get the resulting item
             Item resultItem = Blueprint.getItemData(((Blueprint) blueprint).bpTypeID);
 
+            switch (resultItem.category) {
+               case Item.Category.Weapon:
+                  WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(resultItem.itemTypeId);
+                  blueprint.setBasicInfo(weaponData.equipmentName, weaponData.equipmentDescription, weaponData.equipmentIconPath);
+
+                  // Serialize equipment data
+                  System.Xml.Serialization.XmlSerializer ser = new System.Xml.Serialization.XmlSerializer(weaponData.GetType());
+                  var sb = new StringBuilder();
+                  using (var writer = System.Xml.XmlWriter.Create(sb)) {
+                     ser.Serialize(writer, weaponData);
+                  }
+
+                  string longString = sb.ToString();
+                  blueprint.data = longString;
+                  break;
+               case Item.Category.Armor:
+                  ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(resultItem.itemTypeId);
+                  blueprint.setBasicInfo(armorData.equipmentName, armorData.equipmentDescription, armorData.equipmentIconPath);
+
+                  // Serialize equipment data
+                  ser = new System.Xml.Serialization.XmlSerializer(armorData.GetType());
+                  sb = new StringBuilder();
+                  using (var writer = System.Xml.XmlWriter.Create(sb)) {
+                     ser.Serialize(writer, armorData);
+                  }
+
+                  longString = sb.ToString();
+                  blueprint.data = longString;
+                  break;
+               case Item.Category.Helm:
+                  ArmorStatData helmData = EquipmentXMLManager.self.getArmorData(resultItem.itemTypeId);
+                  blueprint.setBasicInfo(helmData.equipmentName, helmData.equipmentDescription, helmData.equipmentIconPath);
+
+                  // Serialize equipment data
+                  ser = new System.Xml.Serialization.XmlSerializer(helmData.GetType());
+                  sb = new StringBuilder();
+                  using (var writer = System.Xml.XmlWriter.Create(sb)) {
+                     ser.Serialize(writer, helmData);
+                  }
+
+                  longString = sb.ToString();
+                  blueprint.data = longString;
+                  break;
+            }
+
             // Get the crafting requirement data
             CraftableItemRequirements craftingRequirements = CraftingManager.self.getCraftableData(
                resultItem.category, resultItem.itemTypeId);
@@ -2428,6 +2473,17 @@ public class RPCManager : NetworkBehaviour {
          // Get the resulting item
          Item resultItem = Blueprint.getItemData(((Blueprint) blueprint).bpTypeID);
 
+         switch (resultItem.category) {
+            case Item.Category.Weapon:
+               WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(resultItem.itemTypeId);
+               blueprint.setBasicInfo(weaponData.equipmentName, weaponData.equipmentDescription, weaponData.equipmentIconPath);
+               break;
+            case Item.Category.Armor:
+               ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(resultItem.itemTypeId);
+               blueprint.setBasicInfo(armorData.equipmentName, armorData.equipmentDescription, armorData.equipmentIconPath);
+               break;
+         }
+
          // Get the crafting requirement data
          CraftableItemRequirements craftingRequirements = CraftingManager.self.getCraftableData(
                resultItem.category, resultItem.itemTypeId);
@@ -2446,7 +2502,7 @@ public class RPCManager : NetworkBehaviour {
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             Target_ReceiveSingleBlueprint(_player.connectionToClient, blueprint, equippedItems.ToArray(),
-               inventoryIngredients.ToArray(), craftingRequirements.combinationRequirements);
+               inventoryIngredients.ToArray(), craftingRequirements.combinationRequirements, resultItem);
          });
       });
    }
