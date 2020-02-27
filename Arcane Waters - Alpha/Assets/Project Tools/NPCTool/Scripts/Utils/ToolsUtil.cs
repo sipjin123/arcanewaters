@@ -3,6 +3,8 @@ using System.Collections;
 using System.IO;
 using System.Xml.Serialization;
 using System;
+using System.Text;
+using System.Xml;
 
 public static class ToolsUtil
 {
@@ -75,5 +77,33 @@ public static class ToolsUtil
          fileNamesArray[i] = info[i].Name;
       }
       return fileNamesArray;
+   }
+
+   public static string ObjectToXml<T> (T data) {
+      string xml = null;
+
+      XmlSerializer ser = new XmlSerializer(data.GetType());
+      using (MemoryStream ms = new MemoryStream())
+      using (XmlTextWriter tw = new XmlTextWriter(ms, Encoding.UTF8)) {
+         tw.Formatting = Formatting.Indented;
+         ser.Serialize(tw, data);
+         xml = Encoding.UTF8.GetString(ms.ToArray());
+      }
+
+      return xml;
+   }
+
+   public static string ConvertEnumToJson (Type e) {
+      var ret = "{";
+
+      foreach (var val in Enum.GetValues(e)) {
+
+         var name = Enum.GetName(e, val);
+
+         ret += name + ":" + ((int) val).ToString() + ",";
+
+      }
+      ret += "}";
+      return ret;
    }
 }

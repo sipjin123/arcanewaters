@@ -5,7 +5,7 @@ namespace MapCreationTool
 {
    public class MountainGroupConfig : MonoBehaviour
    {
-      public BiomeTilemaps[] biomeTileMaps = new BiomeTilemaps[0];
+      public BiomeTilemaps biomeTileMaps = new BiomeTilemaps();
       public Vector2Int innerSize = Vector2Int.zero;
       public Vector2Int outerSize = Vector2Int.zero;
 

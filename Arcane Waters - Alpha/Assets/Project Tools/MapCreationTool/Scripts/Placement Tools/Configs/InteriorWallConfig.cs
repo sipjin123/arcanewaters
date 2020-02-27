@@ -5,7 +5,7 @@ namespace MapCreationTool
 {
    public class InteriorWallConfig : MonoBehaviour
    {
-      public BiomeTilemap[] tilemaps;
+      public BiomeTilemap biomeTilemap;
       public Vector2Int size = new Vector2Int(5, 9);
 
       [System.Serializable]

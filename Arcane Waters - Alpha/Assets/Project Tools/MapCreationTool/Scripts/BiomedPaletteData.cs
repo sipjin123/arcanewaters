@@ -9,7 +9,7 @@ namespace MapCreationTool
 {
    public class BiomedPaletteData : MonoBehaviour
    {
-      public BiomePaletteResources[] biomePaletteResources = new BiomePaletteResources[0];
+      public BiomePaletteResources biomePaletteResources = new BiomePaletteResources();
 
       public PaletteResources sharedResources = new PaletteResources();
 
@@ -40,17 +40,39 @@ namespace MapCreationTool
          // Form tile groups
          List<BiomedTileGroup> biomedGroups = createGroups(tiles);
 
-         foreach (BiomePaletteResources biomePalette in biomePaletteResources) {
+         foreach (Biome.Type biome in Enum.GetValues(typeof(Biome.Type))) {
+            if (biome == Biome.Type.None) {
+               continue;
+            }
 
             // Form special groups
-            Transform[] prefCons = new Transform[] { biomePalette.prefabsCon, sharedResources.prefabsCon };
-            List<TileGroup> groups = formSpecialGroups(biomedGroups, tiles, specialCon, prefCons, biomePalette.biome);
+            Transform[] prefCons = new Transform[] { biomePaletteResources.prefabsCon, sharedResources.prefabsCon };
+            List<TileGroup> groups = formSpecialGroups(biomedGroups, tiles, specialCon, prefCons, biome);
+
+            // All prefabs will be of the single defined biome, translate it
+            foreach (TileGroup group in groups) {
+               if (group is PrefabGroup) {
+                  PrefabGroup prefGroup = group as PrefabGroup;
+                  prefGroup.refPref = AssetSerializationMaps.getPrefab(
+                     AssetSerializationMaps.getIndex(prefGroup.refPref, biomePaletteResources.biome),
+                     biome,
+                     true);
+               }
+
+               if (group is TreePrefabGroup) {
+                  TreePrefabGroup treeGroup = group as TreePrefabGroup;
+                  treeGroup.burrowedPref = AssetSerializationMaps.getPrefab(
+                     AssetSerializationMaps.getIndex(treeGroup.burrowedPref, biomePaletteResources.biome),
+                     biome,
+                     true);
+               }
+            }
 
             // Create a palette
             PaletteData palette = new PaletteData {
                tileGroups = new TileGroup[tiles.GetLength(0), tiles.GetLength(1)],
                prefabGroups = groups.Select(g => g as PrefabGroup).Where(g => g != null).ToList(),
-               type = biomePalette.biome
+               type = biome
             };
 
             // Set tiles for the palette
@@ -62,11 +84,11 @@ namespace MapCreationTool
                }
             }
 
-            datas.Add(biomePalette.biome, palette);
+            datas.Add(biome, palette);
          }
       }
 
-      private BiomedTileData[,] gatherTiles (BiomePaletteResources[] biomePalettes, PaletteResources sharedPalette, TileSetupContainer setup) {
+      private BiomedTileData[,] gatherTiles (BiomePaletteResources biomedResources, PaletteResources sharedPalette, TileSetupContainer setup) {
          BiomedTileData[,] result = new BiomedTileData[setup.size.x, setup.size.y];
 
          for (int i = 0; i < result.GetLength(0); i++) {
@@ -80,11 +102,22 @@ namespace MapCreationTool
                   collisionType = setup[i, j].collisionType,
                };
 
-               // Add in all the biome versions of tile
-               foreach (BiomePaletteResources bp in biomePalettes) {
-                  TileBase tile = bp.tilesTilemap.GetTile(new Vector3Int(i, j, 0));
-                  if (tile != null)
-                     result[i, j].tile[bp.biome] = tile;
+               // Add all the tiles
+               TileBase tile = biomedResources.tilesTilemap.GetTile(new Vector3Int(i, j, 0));
+               if (tile != null) {
+                  // Add the tile from the defined biome
+                  result[i, j].tile[biomedResources.biome] = tile;
+
+                  // Add in tiles from other biomes
+                  foreach (Biome.Type biome in Enum.GetValues(typeof(Biome.Type))) {
+                     if (biome == biomedResources.biome || biome == Biome.Type.None) {
+                        continue;
+                     }
+
+                     result[i, j].tile[biome] = AssetSerializationMaps.getTile(
+                        AssetSerializationMaps.getIndex(tile, biomedResources.biome),
+                        biome);
+                  }
                }
 
                // Set tile from the shared tilemap if it exists
@@ -224,7 +257,7 @@ namespace MapCreationTool
       }
 
       private InteriorWallGroup formSpecialGroup (BiomedTileGroup from, BiomedTileData[,] tileMatrix, InteriorWallConfig config, Biome.Type biome) {
-         Tilemap tilemap = config.tilemaps.First(_ => _.biome == biome).tilemap;
+         Tilemap tilemap = config.biomeTilemap.tilemap;
 
          InteriorWallGroup newGroup = new InteriorWallGroup {
             tiles = extractBiome(from.tiles, biome),
@@ -237,8 +270,12 @@ namespace MapCreationTool
          for (int i = 0; i < config.size.x; i++) {
             for (int j = 0; j < config.size.y; j++) {
                Vector3Int index = new Vector3Int(i, j, 0) - tilemap.origin - Vector3Int.RoundToInt(tilemap.transform.position);
-
-               newGroup.allTiles[i, j] = tilemap.GetTile(index);
+               TileBase tile = tilemap.GetTile(index);
+               if (tile != null) {
+                  newGroup.allTiles[i, j] = AssetSerializationMaps.getTile(
+                        AssetSerializationMaps.getIndex(tile, config.biomeTilemap.biome),
+                        biome);
+               }
             }
          }
 
@@ -306,9 +343,8 @@ namespace MapCreationTool
       }
 
       private MountainGroup formSpecialGroup (BiomedTileGroup from, MountainGroupConfig config, Biome.Type biome) {
-         var tm = config.biomeTileMaps.First(bm => bm.biome == biome);
-         var outerTilemap = tm.outerTilemap;
-         var innerTilemap = tm.innerTilemap;
+         var outerTilemap = config.biomeTileMaps.outerTilemap;
+         var innerTilemap = config.biomeTileMaps.innerTilemap;
 
          MountainGroup newGroup = new MountainGroup {
             tiles = extractBiome(from.tiles, biome),
@@ -320,17 +356,24 @@ namespace MapCreationTool
          for (int i = 0; i < config.innerSize.x; i++) {
             for (int j = 0; j < config.innerSize.y; j++) {
                Vector3Int index = new Vector3Int(i, j, 0) - innerTilemap.origin - Vector3Int.RoundToInt(innerTilemap.transform.position);
-
-               newGroup.innerTiles[i, j] = innerTilemap.GetTile(index);
+               TileBase configTile = innerTilemap.GetTile(index);
+               if (configTile != null) {
+                  newGroup.innerTiles[i, j] = AssetSerializationMaps.getTile(
+                     AssetSerializationMaps.getIndex(configTile, config.biomeTileMaps.biome),
+                     biome);
+               }
             }
          }
 
-         //Debug.Log(innerTilemap.size);
          for (int i = 0; i < config.outerSize.x; i++) {
             for (int j = 0; j < config.outerSize.y; j++) {
                Vector3Int index = new Vector3Int(i, j, 0) - outerTilemap.origin - Vector3Int.RoundToInt(outerTilemap.transform.position);
-
-               newGroup.outerTiles[i, j] = outerTilemap.GetTile(index);
+               TileBase configTile = outerTilemap.GetTile(index);
+               if (configTile != null) {
+                  newGroup.outerTiles[i, j] = AssetSerializationMaps.getTile(
+                     AssetSerializationMaps.getIndex(configTile, config.biomeTileMaps.biome),
+                     biome);
+               }
             }
          }
 

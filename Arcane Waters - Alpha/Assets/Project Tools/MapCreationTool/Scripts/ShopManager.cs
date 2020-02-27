@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System.Linq;
+using System;
 
 namespace MapCreationTool
 {
@@ -23,9 +24,6 @@ namespace MapCreationTool
       // Finished loading
       public bool loaded { get; private set; }
 
-      // Array of shop data loaded
-      private ShopData[] shopDataArray;
-
       #endregion
 
       private void Awake () {
@@ -39,7 +37,7 @@ namespace MapCreationTool
       }
 
       public string[] formSelectionOptions () {
-         return shopDataArray.Select(n => n.shopName).ToArray();
+         return _shopDataArray.Select(n => n.shopName).ToArray();
       }
 
       private void loadAllShop () {
@@ -49,34 +47,46 @@ namespace MapCreationTool
             List<string> rawXMLData = DB_Main.getShopXML();
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               foreach (string rawText in rawXMLData) {
-                  TextAsset newTextAsset = new TextAsset(rawText);
-                  ShopData shopData = Util.xmlLoad<ShopData>(newTextAsset);
-
-                  // Save the Shop data in the memory cache
-                  if (!shopDataCollection.ContainsKey(shopData.shopName)) {
-                     shopDataCollection.Add(shopData.shopName, shopData);
-                  }
-               }
-
-               instance.finishLoadingShop();
+               setData(rawXMLData);
             });
          });
       }
 
-      public int shopEntryCount
-      {
-         get { return shopDataArray.Length; }
-      }
+      private void setData (List<string> rawXMLData) {
+         try {
+            foreach (string rawText in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(rawText);
+               ShopData shopData = Util.xmlLoad<ShopData>(newTextAsset);
+               if (shopData == null) {
+                  Utilities.warning($"Failed to load shopData");
+                  continue;
+               }
 
-      private void finishLoadingShop () {
-         shopDataArray = shopDataCollection.OrderBy(n => n.Key).Select(n => n.Value).ToArray();
+               // Save the Shop data in the memory cache
+               if (!shopDataCollection.ContainsKey(shopData.shopName)) {
+                  shopDataCollection.Add(shopData.shopName, shopData);
+               }
+            }
+
+            _shopDataArray = shopDataCollection.OrderBy(n => n.Key).Select(n => n.Value).ToArray();
+         } catch (Exception ex) {
+            Utilities.warning("Failed to load shop manager. Exception:\n" + ex);
+            UI.errorDialog.display("Failed to load shop manager. Exception:\n" + ex);
+         }
+
          loaded = true;
-
          OnLoaded?.Invoke();
       }
 
+      public int shopEntryCount
+      {
+         get { return _shopDataArray.Length; }
+      }
+
       #region Private Variables
+
+      // Array of shop data loaded
+      private ShopData[] _shopDataArray = new ShopData[0];
 
       #endregion
    }

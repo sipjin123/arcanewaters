@@ -12,9 +12,6 @@ public class D : MonoBehaviour {
    // Any log files older than this will be deleted
    public static int HOURS_TO_KEEP_LOG_FILES = 72;
 
-   // The Chat Manager for adding lines in the chat panel
-   public ChatManager chatManager;
-
    // Settings
    public static bool WRITE_TO_FILE = true;
    public static bool SHOW_LOGS_IN_CHAT = true;
@@ -26,14 +23,9 @@ public class D : MonoBehaviour {
    public static bool WRITE_DEBUG_TO_LOG_FILE = true;
    public static bool SHOW_DEBUG_IN_CHAT = false;
 
-   // Stores a convenient reference to ourself
-   public static D self;
-
    #endregion
 
    public void Awake () {
-      self = this;
-
       // For now, we can't write to file in the web player
       if (Application.isMobilePlatform) {
          WRITE_TO_FILE = false;
@@ -77,7 +69,7 @@ public class D : MonoBehaviour {
       }
    }
 
-   private void log (string msg, string callingClass, string callingFunction, ChatInfo.Type type) {
+   private static void log (string msg, string callingClass, string callingFunction, ChatInfo.Type type) {
       // We always show all messages in the internal Unity Debug output
       UnityEngine.Debug.Log(msg);
 
@@ -127,8 +119,11 @@ public class D : MonoBehaviour {
       if (showThisInChat && !ClientManager.isApplicationQuitting) {
          // Make sure this happens on the Unity thread and not the Background thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            ChatInfo chatInfo = new ChatInfo(0, countStr + msg, DateTime.Now, type, classStr);
-            chatManager.addChatInfo(chatInfo);
+            ChatManager chatManager = GameObject.FindObjectOfType<ChatManager>();
+            if (chatManager != null) {
+               ChatInfo chatInfo = new ChatInfo(0, countStr + msg, DateTime.Now, type, classStr);
+               chatManager.addChatInfo(chatInfo);
+            }
          });
 
          _lineCount++;
@@ -164,7 +159,7 @@ public class D : MonoBehaviour {
       }
 
       // Do the actual logging
-      self.log(msg, callingClass, callingFunction, ChatInfo.Type.Log);
+      log(msg, callingClass, callingFunction, ChatInfo.Type.Log);
    }
 
    public static void debug (string msg) {
@@ -188,7 +183,7 @@ public class D : MonoBehaviour {
       string callingClass = stackTrace.GetFrame(2).GetMethod().DeclaringType.Name;
 
       // Do the actual logging
-      self.log(msg, callingClass, callingFunction, messageType);
+      log(msg, callingClass, callingFunction, messageType);
    }
 
    public static string getLogString () {

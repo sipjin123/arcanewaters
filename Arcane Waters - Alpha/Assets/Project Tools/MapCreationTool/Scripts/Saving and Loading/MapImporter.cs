@@ -11,16 +11,6 @@ namespace MapCreationTool
    {
       public const string DataFileExtension = "arcane";
 
-      // This was used to automatically generate map files inside the project files. The script must be in the Editor folder for this to work.
-      //static void OnPostprocessAllAssets (string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths) {
-      //   foreach (string str in importedAssets.Union(movedAssets)) {
-      //      string extension = Path.GetExtension(str).Trim('.');
-      //      if (extension.CompareTo(DataFileExtension) == 0) {
-      //         reimportLevel(Path.GetFileNameWithoutExtension(str), Path.GetDirectoryName(str), str);
-      //      }
-      //   }
-      //}
-
       /// <summary>
       /// Creates an instance of a map from the serialized map data
       /// </summary>
@@ -47,8 +37,8 @@ namespace MapCreationTool
             area.isSea = true;
          }
 
-         instantiateTilemaps(exportedProject, result.tilemapParent, result.collisionTilemapParent);
-         instantiatePrefabs(exportedProject, result.prefabParent, result.npcParent, result.area);
+         instantiateTilemaps(mapInfo, exportedProject, result.tilemapParent, result.collisionTilemapParent);
+         instantiatePrefabs(mapInfo, exportedProject, result.prefabParent, result.npcParent, result.area);
 
          if (exportedProject.gravityEffectors != null) {
             addGravityEffectors(result, exportedProject.gravityEffectors);
@@ -128,14 +118,18 @@ namespace MapCreationTool
          return bounds;
       }
 
-      static void instantiatePrefabs (ExportedProject001 project, Transform prefabParent, Transform npcParent, Area area) {
-         Func<int, GameObject> indexToPrefab = (index) => { return AssetSerializationMaps.getPrefab(index, project.biome, false); };
-
+      static void instantiatePrefabs (MapInfo mapInfo, ExportedProject001 project, Transform prefabParent, Transform npcParent, Area area) {
          List<ExportedPrefab001> npcData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> enemyData = new List<ExportedPrefab001>();
 
+         int unrecognizedPrefabs = 0;
+
          foreach (var prefab in project.prefabs) {
-            GameObject original = indexToPrefab(prefab.i);
+            GameObject original = AssetSerializationMaps.tryGetPrefabGame(prefab.i, project.biome);
+            if (original == null) {
+               unrecognizedPrefabs++;
+               continue;
+            }
 
             if (original.GetComponent<Enemy>() != null) {
                if (prefab.d != null) {
@@ -166,11 +160,15 @@ namespace MapCreationTool
             }
          }
 
+         if (unrecognizedPrefabs > 0) {
+            Utilities.warning($"Could not recognize { unrecognizedPrefabs } prefabs of map { mapInfo.mapName }");
+         }
+
          area.registerNPCAndEnemyData(npcData, enemyData);
       }
 
-      static void instantiateTilemaps (ExportedProject001 project, Transform tilemapParent, Transform collisionTilemapParent) {
-         Func<Vector2Int, TileBase> indexToTile = (index) => { return AssetSerializationMaps.getTile(index, project.biome); };
+      static void instantiateTilemaps (MapInfo mapInfo, ExportedProject001 project, Transform tilemapParent, Transform collisionTilemapParent) {
+         int unrecognizedTiles = 0;
 
          foreach (ExportedLayer001 layer in project.layers) {
             // Create the tilemap gameobject
@@ -188,7 +186,12 @@ namespace MapCreationTool
 
             // Add all the tiles
             Vector3Int[] positions = layer.tiles.Select(t => new Vector3Int(t.x, t.y, 0)).ToArray();
-            TileBase[] tiles = layer.tiles.Select(t => indexToTile(new Vector2Int(t.i, t.j))).ToArray();
+            TileBase[] tiles = layer.tiles
+               .Select(t => AssetSerializationMaps.tryGetTile(new Vector2Int(t.i, t.j), project.biome))
+               .Where(t => t != null)
+               .ToArray();
+
+            unrecognizedTiles += layer.tiles.Length - tiles.Length;
 
             // Ensure the 'sprite' of animated tiles is set
             foreach (TileBase tileBase in tiles) {
@@ -203,10 +206,18 @@ namespace MapCreationTool
             tilemap.SetTiles(positions, tiles);
 
             positions = layer.tiles.Where(t => t.c == 1).Select(t => new Vector3Int(t.x, t.y, 0)).ToArray();
-            tiles = layer.tiles.Where(t => t.c == 1).Select(t => indexToTile(new Vector2Int(t.i, t.j))).ToArray();
-            colTilemap.SetTiles(positions, tiles);
+            tiles = layer.tiles
+               .Where(t => t.c == 1)
+               .Select(t => AssetSerializationMaps.tryGetTile(new Vector2Int(t.i, t.j), project.biome))
+               .Where(t => t != null)
+               .ToArray();
 
+            colTilemap.SetTiles(positions, tiles);
             colTilemap.GetComponent<TilemapCollider2D>().enabled = true;
+         }
+
+         if (unrecognizedTiles > 0) {
+            Utilities.warning($"Could not recognize { unrecognizedTiles } tiles of map { mapInfo.mapName }");
          }
       }
 

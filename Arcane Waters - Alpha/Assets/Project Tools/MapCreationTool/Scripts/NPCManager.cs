@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -55,25 +56,34 @@ namespace MapCreationTool
             List<string> rawXMLData = DB_Main.getNPCXML();
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               foreach (string rawText in rawXMLData) {
-                  TextAsset newTextAsset = new TextAsset(rawText);
-                  NPCData npcData = Util.xmlLoad<NPCData>(newTextAsset);
-
-                  // Save the NPC data in the memory cache
-                  if (!idToNpc.ContainsKey(npcData.npcId)) {
-                     idToNpc.Add(npcData.npcId, npcData);
-                  }
-               }
-
-               instance.finishLoadingNpcs();
+               setData(rawXMLData);
             });
          });
       }
 
-      private void finishLoadingNpcs () {
-         npcs = idToNpc.OrderBy(n => n.Key).Select(n => n.Value).ToArray();
-         loaded = true;
+      private void setData (List<string> rawXMLData) {
+         try {
+            foreach (string rawText in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(rawText);
+               NPCData npcData = Util.xmlLoad<NPCData>(newTextAsset);
+               if (npcData == null) {
+                  Utilities.warning($"Failed to load NPCData");
+                  continue;
+               }
 
+               // Save the NPC data in the memory cache
+               if (!idToNpc.ContainsKey(npcData.npcId)) {
+                  idToNpc.Add(npcData.npcId, npcData);
+               }
+            }
+
+            npcs = idToNpc.OrderBy(n => n.Key).Select(n => n.Value).ToArray();
+         } catch (Exception ex) {
+            Utilities.warning("Failed to load NPC manager. Exception:\n" + ex);
+            UI.errorDialog.display("Failed to load NPC manager. Exception:\n" + ex);
+         }
+
+         loaded = true;
          OnLoaded?.Invoke();
       }
    }

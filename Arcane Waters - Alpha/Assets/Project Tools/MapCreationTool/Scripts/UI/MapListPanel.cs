@@ -14,13 +14,15 @@ namespace MapCreationTool
       [SerializeField]
       private Transform entryParent = null;
       [SerializeField]
-      private Text secondTitleText = null;
-      [SerializeField]
       private Text loadingText = null;
       [SerializeField]
       private Text errorText = null;
+      [SerializeField]
+      private Toggle showMyMapsToggle = null;
 
       private List<MapListEntry> entries = new List<MapListEntry>();
+
+      private bool showOnlyMyMaps = true;
 
       private void clearEverything () {
          foreach (MapListEntry entry in entries) {
@@ -28,7 +30,6 @@ namespace MapCreationTool
          }
          entries.Clear();
 
-         secondTitleText.text = "";
          loadingText.text = "";
          errorText.text = "";
       }
@@ -38,6 +39,9 @@ namespace MapCreationTool
          setLoadingText();
          show();
          loadList();
+
+         showMyMapsToggle.SetIsOnWithoutNotify(showOnlyMyMaps);
+         showMyMapsChanged();
       }
 
       private void loadList () {
@@ -55,10 +59,12 @@ namespace MapCreationTool
                if (maps == null) {
                   errorText.text = error;
                } else {
-                  secondTitleText.text = $"Map count - {maps.Count}";
                   foreach (Map map in maps) {
                      MapListEntry entry = Instantiate(entryPref, entryParent);
                      entry.set(map, () => UI.versionListPanel.open(map), () => deleteMap(map));
+                     entry.gameObject.SetActive(
+                        !showOnlyMyMaps ||
+                        entry.target.creatorID == MasterToolAccountManager.self.currentAccountID);
                      entries.Add(entry);
                   }
                }
@@ -106,6 +112,15 @@ namespace MapCreationTool
                }
             });
          });
+      }
+
+      public void showMyMapsChanged () {
+         showOnlyMyMaps = showMyMapsToggle.isOn;
+         foreach (MapListEntry entry in entries) {
+            entry.gameObject.SetActive(
+               !showOnlyMyMaps ||
+               entry.target.creatorID == MasterToolAccountManager.self.currentAccountID);
+         }
       }
 
       public void close () {

@@ -748,6 +748,8 @@ namespace MapCreationTool.Serialization
 
       public const string SPIDER_WEB_HEIGHT_KEY = "height";
 
+      public const string TREASURE_SPOT_SPAWN_CHANCE_KEY = "spawn chance";
+
 
       public string k; // Key
       public string v; // Value

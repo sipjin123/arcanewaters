@@ -1,4 +1,5 @@
-﻿using UnityEngine.Events;
+﻿using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
 namespace MapCreationTool
@@ -14,6 +15,13 @@ namespace MapCreationTool
          entry.callback.AddListener((eventData) => { callback(eventData as PointerEventData); });
          trigger.triggers.Add(entry);
       }
-   }
 
+      public static void warning (string message) {
+         try {
+            D.warning(message);
+         } catch {
+            Debug.LogWarning(message);
+         }
+      }
+   }
 }

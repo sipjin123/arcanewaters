@@ -682,7 +682,7 @@ public class AdminManager : NetworkBehaviour {
       List<SpawnID> allSpawnKeys = SpawnManager.get().getAllSpawnKeys();
       SpawnID spawnKey = allSpawnKeys[UnityEngine.Random.Range(0, allSpawnKeys.Count)];
 
-      handleAdminCommandString("warp " + spawnKey.areaKey + " " + spawnKey.spawnKey);
+      handleAdminCommandString("warp " + spawnKey.areaKey);
    }
 
    [Command]

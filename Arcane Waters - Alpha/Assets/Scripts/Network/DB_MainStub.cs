@@ -15,7 +15,7 @@ public class DB_MainStub : MonoBehaviour
    public static int updateBackgroundXML (int xmlId, string rawData, string bgName) {
       return 0;
    }
-   
+
    public static List<XMLPair> getBackgroundXML () {
       return new List<XMLPair>();
    }
@@ -56,7 +56,7 @@ public class DB_MainStub : MonoBehaviour
       return new List<string>();
    }
 
-   public static void updateEquipmentXML (string rawData, int typeID, EquipmentToolManager.EquipmentType equipType, string equipmentName, bool isEnabled) {
+   public static void updateEquipmentXML (string rawData, int typeID, EquipmentToolManager.EquipmentType equipType, string equipmentName, bool isEnabled, int equipmentTypeID) {
 
    }
 
@@ -751,6 +751,22 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
+   public static void createXmlTemplatesTable () {
+
+   }
+
+   public static void saveXmlTemplate (string xmlName, string xmlContent) {
+
+   }
+
+   public static void createJsonEnumsTable () {
+
+   }
+
+   public static void saveJsonEnum (string jsonName, string jsonContent) {
+
+   }
+
    /*
 
    public static void refillSupplies (int userId) {
@@ -762,11 +778,11 @@ public class DB_MainStub : MonoBehaviour
    }
 
    public static void deleteAccount (int accountId) {
-      
+
    }
 
    public static void setSupplies (int shipId, int suppliesAmount) {
-      
+
    }
 
    public static List<PortInfo> getPorts () {
@@ -790,19 +806,19 @@ public class DB_MainStub : MonoBehaviour
    }
 
    public static void removeCargoFromPort (int portId, Cargo.Type cargoType, Barter.Type barterType, int amount) {
-      
+
    }
 
    public static void addGoldAndXP (int userId, int gold, int XP, int tradePermitChange = 0) {
-      
+
    }
 
    public static void addCargoToShip (int shipId, Barter.Type barterType, Cargo.Type cargoType, int amount) {
-     
+
    }
 
    public static void deleteEmptyCargoRow (int shipId, Cargo.Type cargoType) {
-      
+
    }
 
    public static TradeRecord insertTradeRecord (int userId, int shipId, int portId, Barter.Type barterType, Cargo.Type cargoType, int amount, int unitPrice, int unitXP) {
@@ -814,7 +830,7 @@ public class DB_MainStub : MonoBehaviour
    }
 
    public static void incrementTradePermits () {
-      
+
    }
 
    public static List<int> getTestUserIds () {
@@ -894,7 +910,7 @@ public class DB_MainStub : MonoBehaviour
    }
 
    public static void deleteAllSeaMonsterSpawns () {
-      
+
    }
 
    public static int insertSeaMonsterSpawn (int areaId, SeaMonster.Type monsterType, float localX, float localY) {

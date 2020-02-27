@@ -407,14 +407,13 @@ namespace MapCreationTool
             for (int i = layer.origin.x; i < layer.size.x; i++) {
                for (int j = layer.origin.y; j < layer.size.y; j++) {
                   TileBase tile = layer.getTile(new Vector3Int(i, j, 0));
-                  if (tile != null && tile != transparentTile) {
-                     Vector2Int index = from.indexOf(tile);
-                     if (index.x == -1) {
-                        Debug.LogWarning($"Unrecognized tile - {tile.name}");
-                     } else {
-                        result.tileChanges.Add(new TileChange(to.getTile(index.x, index.y)?.tile, new Vector3Int(i, j, 0), layer));
-                     }
+                  if (tile == null || tile == transparentTile) {
+                     continue;
                   }
+                  Vector2Int index = AssetSerializationMaps.getIndex(tile, from.type.Value);
+                  TileBase newTile = AssetSerializationMaps.getTile(index, to.type.Value);
+
+                  result.tileChanges.Add(new TileChange(newTile, new Vector3Int(i, j, 0), layer));
                }
             }
          }
@@ -555,7 +554,9 @@ namespace MapCreationTool
          return GetComponentsInChildren<SpawnMapEditor>().Select(s => new MapSpawn {
             mapName = mapName,
             mapVersion = mapVersion,
-            name = s.spawnName
+            name = s.spawnName,
+            posX = s.transform.position.x * 0.16f,
+            posY = s.transform.position.y * 0.16f
          }
          ).ToList();
       }

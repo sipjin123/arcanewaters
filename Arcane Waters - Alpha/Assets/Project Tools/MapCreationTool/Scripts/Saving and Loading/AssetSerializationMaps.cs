@@ -114,6 +114,17 @@ namespace MapCreationTool
          return biomeSpecific[biome].indexToTile[index];
       }
 
+      public static TileBase tryGetTile (Vector2Int index, Biome.Type biome) {
+         if (allBiomes.indexToTile.TryGetValue(index, out TileBase t)) {
+            return t;
+         }
+         if (biomeSpecific[biome].indexToTile.TryGetValue(index, out TileBase bt)) {
+            return bt;
+         }
+
+         return null;
+      }
+
       public static Vector2Int getIndex (TileBase tile, Biome.Type biome) {
          try {
             if (allBiomes.tileToIndex.TryGetValue(tile, out Vector2Int index))
@@ -136,6 +147,15 @@ namespace MapCreationTool
                return prefab;
             return biomeSpecific[biome].indexToPrefab[index];
          }
+      }
+
+      public static GameObject tryGetPrefabGame (int index, Biome.Type biome) {
+         if (allBiomes.indexToPrefab.TryGetValue(index, out GameObject prefab))
+            return prefab;
+         if (biomeSpecific[biome].indexToPrefab.TryGetValue(index, out GameObject bPrefab)) {
+            return bPrefab;
+         }
+         return null;
       }
 
       public static int getIndex (GameObject prefab, Biome.Type biome) {
