@@ -10010,52 +10010,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: c7bdbd22df671684da2c78c6b7450c54, type: 3}
     sprites:
     - {fileID: 21300000, guid: c7bdbd22df671684da2c78c6b7450c54, type: 3}
-  - imageName: ArmoredLizard
-    imagePath: Assets/Sprites/Enemies/ArmoredLizard.png
-    imagePathWithoutExtension: Assets/Sprites/Enemies/ArmoredLizard
-    texture2D: {fileID: 2800000, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    sprite: {fileID: -4530435348744159013, guid: adcf4307078545e44a29d8f63d1d0b3b,
-      type: 3}
-    sprites:
-    - {fileID: -4530435348744159013, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: 9004723598952359230, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: 6509231187967417687, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: -3200942147873755408, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: -2788080199475861317, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: -8652115210183822041, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: 8580095074926668709, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: -6885406470826795607, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: 105240442396767299, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: -8118573423606897045, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: 2363538259306309025, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: -748282390956926588, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: -7558634999120150125, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: -2831154465963698648, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: -8113783142755047362, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: -6173195581297471375, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: 3721541082742786218, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: 5826915053672688814, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: -9158779032151184907, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: 7031653255537092818, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: 4427254698891970856, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: -3512521770785434297, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: 7081468928185166477, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: 448323332422305303, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: 6404116597496205309, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: -1171186159364678528, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: -7924350178919732232, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: -7267020947870962488, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: -2196852157953594394, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: 6625447291139841656, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: 2236527141223550855, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: -6557339683946374720, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: 3339276717782668490, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: 4116704295008989004, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: 8391260257166874870, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: -3027105956901175733, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: 2834140308207693007, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: 3675051380793540478, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
-    - {fileID: 1953535441026555113, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
   - imageName: arrow
     imagePath: Assets/Sprites/GUI/Chat/arrow.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Chat/arrow
@@ -19258,8 +19212,8 @@ MonoBehaviour:
     sprites:
     - {fileID: 21300000, guid: 260e695607a72784ea9a26c51021d6d2, type: 3}
   - imageName: golem
-    imagePath: Assets/Sprites/Enemies/golem.png
-    imagePathWithoutExtension: Assets/Sprites/Enemies/golem
+    imagePath: Assets/Sprites/Enemies/LandMonsters/golem.png
+    imagePathWithoutExtension: Assets/Sprites/Enemies/LandMonsters/golem
     texture2D: {fileID: 2800000, guid: 2cb5e2c7ea804fd42988619ab67168bb, type: 3}
     sprite: {fileID: 21300000, guid: 2cb5e2c7ea804fd42988619ab67168bb, type: 3}
     sprites:
@@ -21570,8 +21524,8 @@ MonoBehaviour:
     - {fileID: -7889447743898915756, guid: 1d8c1763ac86ab24fbe6ef2987ab8187, type: 3}
     - {fileID: -2603169505431568370, guid: 1d8c1763ac86ab24fbe6ef2987ab8187, type: 3}
   - imageName: lizard
-    imagePath: Assets/Sprites/Enemies/lizard.png
-    imagePathWithoutExtension: Assets/Sprites/Enemies/lizard
+    imagePath: Assets/Sprites/Enemies/LandMonsters/lizard.png
+    imagePathWithoutExtension: Assets/Sprites/Enemies/LandMonsters/lizard
     texture2D: {fileID: 2800000, guid: fae0a1192a8e3de48be6182ab6ed055a, type: 3}
     sprite: {fileID: 21300000, guid: fae0a1192a8e3de48be6182ab6ed055a, type: 3}
     sprites:
@@ -21614,6 +21568,52 @@ MonoBehaviour:
     - {fileID: 21300072, guid: fae0a1192a8e3de48be6182ab6ed055a, type: 3}
     - {fileID: 5094016138803606139, guid: fae0a1192a8e3de48be6182ab6ed055a, type: 3}
     - {fileID: -1103053666131149229, guid: fae0a1192a8e3de48be6182ab6ed055a, type: 3}
+  - imageName: lizard_armored
+    imagePath: Assets/Sprites/Enemies/LandMonsters/lizard_armored.png
+    imagePathWithoutExtension: Assets/Sprites/Enemies/LandMonsters/lizard_armored
+    texture2D: {fileID: 2800000, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    sprite: {fileID: -4530435348744159013, guid: adcf4307078545e44a29d8f63d1d0b3b,
+      type: 3}
+    sprites:
+    - {fileID: -4530435348744159013, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: 9004723598952359230, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: 6509231187967417687, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: -3200942147873755408, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: -2788080199475861317, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: -8652115210183822041, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: 8580095074926668709, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: -6885406470826795607, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: 105240442396767299, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: -8118573423606897045, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: 2363538259306309025, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: -748282390956926588, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: -7558634999120150125, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: -2831154465963698648, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: -8113783142755047362, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: -6173195581297471375, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: 3721541082742786218, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: 5826915053672688814, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: -9158779032151184907, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: 7031653255537092818, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: 4427254698891970856, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: -3512521770785434297, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: 7081468928185166477, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: 448323332422305303, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: 6404116597496205309, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: -1171186159364678528, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: -7924350178919732232, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: -7267020947870962488, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: -2196852157953594394, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: 6625447291139841656, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: 2236527141223550855, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: -6557339683946374720, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: 3339276717782668490, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: 4116704295008989004, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: 8391260257166874870, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: -3027105956901175733, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: 2834140308207693007, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: 3675051380793540478, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+    - {fileID: 1953535441026555113, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
   - imageName: lizard_king
     imagePath: Assets/Sprites/Animals/lizard_king.png
     imagePathWithoutExtension: Assets/Sprites/Animals/lizard_king
@@ -21645,9 +21645,9 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 6e56a8b46d577b7499da4a9a9f5bc9fd, type: 3}
     sprites:
     - {fileID: 21300000, guid: 6e56a8b46d577b7499da4a9a9f5bc9fd, type: 3}
-  - imageName: LizardShaman
-    imagePath: Assets/Sprites/Enemies/LizardShaman.png
-    imagePathWithoutExtension: Assets/Sprites/Enemies/LizardShaman
+  - imageName: lizard_shaman
+    imagePath: Assets/Sprites/Enemies/LandMonsters/lizard_shaman.png
+    imagePathWithoutExtension: Assets/Sprites/Enemies/LandMonsters/lizard_shaman
     texture2D: {fileID: 2800000, guid: 516c30dc705a0ab4e8d2e216f219320e, type: 3}
     sprite: {fileID: -6551445791048064383, guid: 516c30dc705a0ab4e8d2e216f219320e,
       type: 3}
@@ -21691,9 +21691,55 @@ MonoBehaviour:
     - {fileID: 1711585146172674057, guid: 516c30dc705a0ab4e8d2e216f219320e, type: 3}
     - {fileID: 8623081290896358890, guid: 516c30dc705a0ab4e8d2e216f219320e, type: 3}
     - {fileID: 5011963761583034176, guid: 516c30dc705a0ab4e8d2e216f219320e, type: 3}
-  - imageName: LizardWizard
-    imagePath: Assets/Sprites/Enemies/LizardWizard.png
-    imagePathWithoutExtension: Assets/Sprites/Enemies/LizardWizard
+  - imageName: lizard_sword
+    imagePath: Assets/Sprites/Enemies/LandMonsters/lizard_sword.png
+    imagePathWithoutExtension: Assets/Sprites/Enemies/LandMonsters/lizard_sword
+    texture2D: {fileID: 2800000, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    sprite: {fileID: -9179653722846785706, guid: 2453202902f99f948958bc3fa74f5905,
+      type: 3}
+    sprites:
+    - {fileID: -9179653722846785706, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: 6906325023523400406, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: -716042183101719030, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: -2244073913388981842, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: 5260015323091847400, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: 9127873449253902724, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: -8874412794943529873, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: 4352836356445111896, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: 5299214654185838415, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: 3741103099466205808, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: 7757869154288922168, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: -2339724740295180474, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: -2815093634554945537, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: 6106315896693881761, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: 30275082306254304, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: 7326217002455167819, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: -2160128299325495244, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: -7207178608470076475, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: 3106209496764750887, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: -6401134713810179912, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: 1487626294449736036, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: 5487629428754888760, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: -7663922127729584418, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: -1280432016822110886, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: 2922807150678441287, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: -2596586518873730529, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: 4341278005585831730, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: 1798715713046339717, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: 8232192110950295937, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: -7110184303687130898, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: -5388866303803513161, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: -1587696498737151713, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: -8237818895353320523, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: 3446185890317906002, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: 5891632839486936009, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: -3734455125491770093, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: 8440473577926748508, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: 7092220431059200400, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+    - {fileID: -3689872278539177290, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
+  - imageName: lizard_wizard
+    imagePath: Assets/Sprites/Enemies/LandMonsters/lizard_wizard.png
+    imagePathWithoutExtension: Assets/Sprites/Enemies/LandMonsters/lizard_wizard
     texture2D: {fileID: 2800000, guid: 744510dd9ef2b9343a4b360d4d6b0e88, type: 3}
     sprite: {fileID: 8019610611291054842, guid: 744510dd9ef2b9343a4b360d4d6b0e88,
       type: 3}
@@ -27814,8 +27860,8 @@ MonoBehaviour:
     sprites:
     - {fileID: 21300000, guid: f3e6c4da7d1bd6345ba02a37adbc116d, type: 3}
   - imageName: shroom
-    imagePath: Assets/Sprites/Enemies/shroom.png
-    imagePathWithoutExtension: Assets/Sprites/Enemies/shroom
+    imagePath: Assets/Sprites/Enemies/LandMonsters/shroom.png
+    imagePathWithoutExtension: Assets/Sprites/Enemies/LandMonsters/shroom
     texture2D: {fileID: 2800000, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
     sprite: {fileID: 21300000, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
     sprites:
@@ -29466,52 +29512,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 7162aed81b337e143b5ca9613a92de15, type: 3}
     sprites:
     - {fileID: 21300000, guid: 7162aed81b337e143b5ca9613a92de15, type: 3}
-  - imageName: SwordLizard
-    imagePath: Assets/Sprites/Enemies/SwordLizard.png
-    imagePathWithoutExtension: Assets/Sprites/Enemies/SwordLizard
-    texture2D: {fileID: 2800000, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    sprite: {fileID: -9179653722846785706, guid: 2453202902f99f948958bc3fa74f5905,
-      type: 3}
-    sprites:
-    - {fileID: -9179653722846785706, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: 6906325023523400406, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: -716042183101719030, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: -2244073913388981842, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: 5260015323091847400, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: 9127873449253902724, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: -8874412794943529873, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: 4352836356445111896, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: 5299214654185838415, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: 3741103099466205808, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: 7757869154288922168, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: -2339724740295180474, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: -2815093634554945537, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: 6106315896693881761, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: 30275082306254304, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: 7326217002455167819, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: -2160128299325495244, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: -7207178608470076475, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: 3106209496764750887, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: -6401134713810179912, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: 1487626294449736036, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: 5487629428754888760, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: -7663922127729584418, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: -1280432016822110886, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: 2922807150678441287, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: -2596586518873730529, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: 4341278005585831730, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: 1798715713046339717, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: 8232192110950295937, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: -7110184303687130898, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: -5388866303803513161, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: -1587696498737151713, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: -8237818895353320523, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: 3446185890317906002, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: 5891632839486936009, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: -3734455125491770093, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: 8440473577926748508, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: 7092220431059200400, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
-    - {fileID: -3689872278539177290, guid: 2453202902f99f948958bc3fa74f5905, type: 3}
   - imageName: tab_01
     imagePath: Assets/Sprites/GUI/tab_01.png
     imagePathWithoutExtension: Assets/Sprites/GUI/tab_01
@@ -30719,60 +30719,6 @@ MonoBehaviour:
   - imageName: weapon_10_back
     imagePath: Assets/Sprites/Weapons/Female/weapon_10_back.png
     imagePathWithoutExtension: Assets/Sprites/Weapons/Female/weapon_10_back
-    texture2D: {fileID: 2800000, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    sprite: {fileID: 21300000, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300002, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300004, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300006, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300008, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300010, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300012, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300014, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300016, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300018, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300020, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300022, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300024, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300026, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300028, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300030, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300032, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300034, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300036, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300038, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300040, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300042, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300044, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300046, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300048, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300050, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300052, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300054, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300056, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300058, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300060, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300062, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300064, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300066, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300068, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300070, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300072, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300074, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300076, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300078, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300080, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300082, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300084, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300086, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300088, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300090, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300092, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-    - {fileID: 21300094, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
-  - imageName: weapon_10_front
-    imagePath: Assets/Sprites/Weapons/Female/weapon_10_front.png
-    imagePathWithoutExtension: Assets/Sprites/Weapons/Female/weapon_10_front
     texture2D: {fileID: 2800000, guid: 0979ca629e13c8a4391d1f6fca85675f, type: 3}
     sprite: {fileID: 21300000, guid: 0979ca629e13c8a4391d1f6fca85675f, type: 3}
     sprites:
@@ -30824,6 +30770,60 @@ MonoBehaviour:
     - {fileID: 21300090, guid: 0979ca629e13c8a4391d1f6fca85675f, type: 3}
     - {fileID: 21300092, guid: 0979ca629e13c8a4391d1f6fca85675f, type: 3}
     - {fileID: 21300094, guid: 0979ca629e13c8a4391d1f6fca85675f, type: 3}
+  - imageName: weapon_10_front
+    imagePath: Assets/Sprites/Weapons/Female/weapon_10_front.png
+    imagePathWithoutExtension: Assets/Sprites/Weapons/Female/weapon_10_front
+    texture2D: {fileID: 2800000, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    sprite: {fileID: 21300000, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300002, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300004, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300006, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300008, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300010, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300012, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300014, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300016, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300018, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300020, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300022, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300024, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300026, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300028, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300030, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300032, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300034, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300036, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300038, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300040, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300042, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300044, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300046, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300048, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300050, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300052, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300054, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300056, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300058, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300060, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300062, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300064, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300066, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300068, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300070, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300072, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300074, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300076, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300078, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300080, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300082, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300084, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300086, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300088, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300090, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300092, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
+    - {fileID: 21300094, guid: 696b1fe4443832a46a66f0433905ea3c, type: 3}
   - imageName: weapon_11_back
     imagePath: Assets/Sprites/Weapons/Female/weapon_11_back.png
     imagePathWithoutExtension: Assets/Sprites/Weapons/Female/weapon_11_back
@@ -33675,8 +33675,8 @@ MonoBehaviour:
     sprites:
     - {fileID: 21300000, guid: 1a956684b61cbd74eb751746373a3e6d, type: 3}
   - imageName: wisp
-    imagePath: Assets/Sprites/Enemies/wisp.png
-    imagePathWithoutExtension: Assets/Sprites/Enemies/wisp
+    imagePath: Assets/Sprites/Enemies/LandMonsters/wisp.png
+    imagePathWithoutExtension: Assets/Sprites/Enemies/LandMonsters/wisp
     texture2D: {fileID: 2800000, guid: 8869a50ac6d553343ad5b308a75a2725, type: 3}
     sprite: {fileID: 21300000, guid: 8869a50ac6d553343ad5b308a75a2725, type: 3}
     sprites:
@@ -39020,7 +39020,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2032024596}
   m_Layer: 0
-  m_Name: GameObject1
+  m_Name: GameObject2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
