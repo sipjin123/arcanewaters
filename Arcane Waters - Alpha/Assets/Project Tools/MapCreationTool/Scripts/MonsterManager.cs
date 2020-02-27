@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -84,37 +85,42 @@ namespace MapCreationTool
       }
 
       private void setData (List<XMLPair> landMonsterData, List<XMLPair> seaMonsterData) {
-         idToLandMonster = new Dictionary<int, BattlerXMLContent>();
-         idToSeaMonster = new Dictionary<int, SeaMonsterXMLContent>();
+         try {
+            idToLandMonster = new Dictionary<int, BattlerXMLContent>();
+            idToSeaMonster = new Dictionary<int, SeaMonsterXMLContent>();
 
-         foreach (XMLPair data in landMonsterData) {
-            BattlerData battler = Util.xmlLoad<BattlerData>(new TextAsset(data.rawXmlData));
-            int enemyTypeID = (int) battler.enemyType;
+            foreach (XMLPair data in landMonsterData) {
+               BattlerData battler = Util.xmlLoad<BattlerData>(new TextAsset(data.rawXmlData));
+               int enemyTypeID = (int) battler.enemyType;
 
-            if (!idToLandMonster.ContainsKey(enemyTypeID)) {
-               idToLandMonster.Add(enemyTypeID, new BattlerXMLContent {
-                  xmlId = data.xmlId,
-                  battler = battler,
-                  isEnabled = data.isEnabled
-               });
+               if (!idToLandMonster.ContainsKey(enemyTypeID)) {
+                  idToLandMonster.Add(enemyTypeID, new BattlerXMLContent {
+                     xmlId = data.xmlId,
+                     battler = battler,
+                     isEnabled = data.isEnabled
+                  });
+               }
             }
-         }
 
-         foreach (XMLPair data in seaMonsterData) {
-            SeaMonsterEntityData monster = Util.xmlLoad<SeaMonsterEntityData>(new TextAsset(data.rawXmlData));
-            int monsterID = (int) monster.seaMonsterType;
+            foreach (XMLPair data in seaMonsterData) {
+               SeaMonsterEntityData monster = Util.xmlLoad<SeaMonsterEntityData>(new TextAsset(data.rawXmlData));
+               int monsterID = (int) monster.seaMonsterType;
 
-            if (!idToSeaMonster.ContainsKey(monsterID)) {
-               idToSeaMonster.Add(monsterID, new SeaMonsterXMLContent {
-                  xmlId = data.xmlId,
-                  seaMonsterData = monster,
-                  isEnabled = data.isEnabled
-               });
+               if (!idToSeaMonster.ContainsKey(monsterID)) {
+                  idToSeaMonster.Add(monsterID, new SeaMonsterXMLContent {
+                     xmlId = data.xmlId,
+                     seaMonsterData = monster,
+                     isEnabled = data.isEnabled
+                  });
+               }
             }
-         }
 
-         landMonsters = idToLandMonster.OrderBy(n => n.Key).Select(n => n.Value).ToArray();
-         seaMonsters = idToSeaMonster.OrderBy(n => n.Key).Select(n => n.Value).ToArray();
+            landMonsters = idToLandMonster.OrderBy(n => n.Key).Select(n => n.Value).ToArray();
+            seaMonsters = idToSeaMonster.OrderBy(n => n.Key).Select(n => n.Value).ToArray();
+         } catch (Exception ex) {
+            Utilities.warning("Failed to load monster manager. Exception:\n" + ex);
+            UI.errorDialog.display("Failed to load monster manager. Exception:\n" + ex);
+         }
 
          loaded = true;
          OnLoaded?.Invoke();

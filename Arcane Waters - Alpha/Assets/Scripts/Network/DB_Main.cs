@@ -181,8 +181,8 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO ability_xml_v2 ("+ skillIdKey + "xml_name, xmlContent, ability_type, creator_userID) " +
-            "VALUES("+ skillIdValue + "@xml_name, @xmlContent, @ability_type, @creator_userID) " +
+            "INSERT INTO ability_xml_v2 (" + skillIdKey + "xml_name, xmlContent, ability_type, creator_userID) " +
+            "VALUES(" + skillIdValue + "@xml_name, @xmlContent, @ability_type, @creator_userID) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, ability_type = @ability_type, xmlContent = @xmlContent, xml_name = @xml_name", conn)) {
 
             conn.Open();
@@ -813,10 +813,12 @@ public class DB_Main : DB_MainStub
    public static new List<Map> getMaps () {
       List<Map> result = new List<Map>();
 
-      string cmdText = "SELECT name, createdAt, creatorUserId, publishedVersion, accName " +
+      string cmdText = "SELECT maps.name, maps.createdAt, maps.creatorUserId, maps.publishedVersion, accName, max(map_versions.updatedAt) as updatedAt " +
          "FROM maps " +
             "LEFT JOIN accounts ON maps.creatorUserId = accId " +
-         "ORDER BY createdAt DESC;";
+            "LEFT JOIN map_versions ON maps.name = map_versions.mapName " +
+         "GROUP BY maps.name " +
+         "ORDER BY updatedAt DESC;";
 
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
@@ -851,7 +853,7 @@ public class DB_Main : DB_MainStub
          cmd.Prepare();
 
          using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-            while(dataReader.Read()) {
+            while (dataReader.Read()) {
                string mapName = dataReader.GetString("mapName");
                string gameData = dataReader.GetString("gameData");
                int version = dataReader.GetInt32("publishedVersion");
@@ -938,7 +940,7 @@ public class DB_Main : DB_MainStub
    public static new List<MapSpawn> getMapSpawns () {
       List<MapSpawn> result = new List<MapSpawn>();
 
-      string cmdText = "SELECT mapName, mapVersion, name FROM map_spawns;";
+      string cmdText = "SELECT mapName, mapVersion, name, posX, posY FROM map_spawns;";
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          conn.Open();
@@ -949,7 +951,9 @@ public class DB_Main : DB_MainStub
                result.Add(new MapSpawn {
                   mapName = dataReader.GetString("mapName"),
                   mapVersion = dataReader.GetInt32("mapVersion"),
-                  name = dataReader.GetString("name")
+                  name = dataReader.GetString("name"),
+                  posX = dataReader.GetFloat("posX"),
+                  posY = dataReader.GetFloat("posY")
                });
             }
          }
@@ -989,12 +993,15 @@ public class DB_Main : DB_MainStub
             cmd.ExecuteNonQuery();
 
             // Insert spawns
-            cmd.CommandText = "INSERT INTO map_spawns(mapName, mapVersion, name) Values(@mapName, @mapVersion, @name);";
+            cmd.CommandText = "INSERT INTO map_spawns(mapName, mapVersion, name, posX, posY) " +
+               "Values(@mapName, @mapVersion, @name, @posX, @posY);";
             foreach (MapSpawn spawn in mapVersion.spawns) {
                cmd.Parameters.Clear();
                cmd.Parameters.AddWithValue("@mapName", spawn.mapName);
                cmd.Parameters.AddWithValue("@mapVersion", spawn.mapVersion);
                cmd.Parameters.AddWithValue("@name", spawn.name);
+               cmd.Parameters.AddWithValue("@posX", spawn.posX);
+               cmd.Parameters.AddWithValue("@posY", spawn.posY);
                cmd.ExecuteNonQuery();
             }
 
@@ -1049,12 +1056,15 @@ public class DB_Main : DB_MainStub
             cmd.ExecuteNonQuery();
 
             // Insert spawns
-            cmd.CommandText = "INSERT INTO map_spawns(mapName, mapVersion, name) Values(@mapName, @mapVersion, @name);";
+            cmd.CommandText = "INSERT INTO map_spawns(mapName, mapVersion, name, posX, posY) " +
+               "Values(@mapName, @mapVersion, @name, @posX, @posY);";
             foreach (MapSpawn spawn in result.spawns) {
                cmd.Parameters.Clear();
                cmd.Parameters.AddWithValue("@mapName", spawn.mapName);
                cmd.Parameters.AddWithValue("@mapVersion", result.version);
                cmd.Parameters.AddWithValue("@name", spawn.name);
+               cmd.Parameters.AddWithValue("@posX", spawn.posX);
+               cmd.Parameters.AddWithValue("@posY", spawn.posY);
                cmd.ExecuteNonQuery();
             }
 
@@ -1098,12 +1108,15 @@ public class DB_Main : DB_MainStub
             cmd.ExecuteNonQuery();
 
             // Insert spawns
-            cmd.CommandText = "INSERT INTO map_spawns(mapName, mapVersion, name) Values(@mapName, @mapVersion, @name);";
+            cmd.CommandText = "INSERT INTO map_spawns(mapName, mapVersion, name, posX, posY) " +
+               "Values(@mapName, @mapVersion, @name, @posX, @posY);";
             foreach (MapSpawn spawn in mapVersion.spawns) {
                cmd.Parameters.Clear();
                cmd.Parameters.AddWithValue("@mapName", spawn.mapName);
                cmd.Parameters.AddWithValue("@mapVersion", spawn.mapVersion);
                cmd.Parameters.AddWithValue("@name", spawn.name);
+               cmd.Parameters.AddWithValue("@posX", spawn.posX);
+               cmd.Parameters.AddWithValue("@posY", spawn.posY);
                cmd.ExecuteNonQuery();
             }
 
@@ -1696,8 +1709,8 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO background_xml_v2 ("+ xml_id_key + "xml_name, xmlContent, creator_userID) " +
-            "VALUES("+ xml_id_value + "@xml_name, @xmlContent, @creator_userID) " +
+            "INSERT INTO background_xml_v2 (" + xml_id_key + "xml_name, xmlContent, creator_userID) " +
+            "VALUES(" + xml_id_value + "@xml_name, @xmlContent, @creator_userID) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, xml_name = @xml_name", conn)) {
 
             conn.Open();
@@ -1732,7 +1745,7 @@ public class DB_Main : DB_MainStub
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  XMLPair newXMLPair = new XMLPair { 
+                  XMLPair newXMLPair = new XMLPair {
                      isEnabled = true,
                      xmlId = dataReader.GetInt32("xml_id"),
                      rawXmlData = dataReader.GetString("xmlContent"),
@@ -1768,7 +1781,7 @@ public class DB_Main : DB_MainStub
 
    #region Equipment XML Data
 
-   public static new void updateEquipmentXML (string rawData, int xmlID, EquipmentToolManager.EquipmentType equipType, string equipmentName, bool isEnabled) {
+   public static new void updateEquipmentXML (string rawData, int xmlID, EquipmentToolManager.EquipmentType equipType, string equipmentName, bool isEnabled, int equipmentTypeID) {
       string tableName = "";
       string xmlKey = "xml_id, ";
       string xmlValue = "@xml_id, ";
@@ -1793,19 +1806,20 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO " + tableName + " ("+ xmlKey + "xmlContent, creator_userID, equipment_type, equipment_name, is_enabled) " +
-            "VALUES("+ xmlValue + "@xmlContent, @creator_userID, @equipment_type, @equipment_name, @is_enabled) " +
-            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, equipment_type = @equipment_type, equipment_name = @equipment_name, is_enabled = @is_enabled", conn)) {
+            "INSERT INTO " + tableName + " (" + xmlKey + "xmlContent, creator_userID, equipment_type, equipment_name, is_enabled, equipmentTypeID) " +
+            "VALUES(" + xmlValue + "@xmlContent, @creator_userID, @equipment_type, @equipment_name, @is_enabled, @equipmentTypeID) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, equipment_type = @equipment_type, equipment_name = @equipment_name, is_enabled = @is_enabled, equipmentTypeID = @equipmentTypeID", conn)) {
 
             conn.Open();
             cmd.Prepare();
 
             cmd.Parameters.AddWithValue("@xml_id", xmlID);
+            cmd.Parameters.AddWithValue("@equipmentTypeID", equipmentTypeID);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
             cmd.Parameters.AddWithValue("@equipment_name", equipmentName);
             cmd.Parameters.AddWithValue("@equipment_type", equipType.ToString());
-            cmd.Parameters.AddWithValue("@is_enabled", isEnabled ? 1 : 0);
-            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID); 
+            cmd.Parameters.AddWithValue("@is_enabled", isEnabled ? 1 : 0); 
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -5112,29 +5126,29 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static void setServer (string server, string database="", string uid="", string password="") {
+   public static void setServer (string server, string database = "", string uid = "", string password = "") {
       _connectionString = buildConnectionString(server, database, uid, password);
    }
 
-   public static new void setServerFromConfig() {
+   public static new void setServerFromConfig () {
       string dbServerConfigFile = Path.Combine(Application.dataPath, "dbConfig.json");
 
       // Check config file
       if (File.Exists(dbServerConfigFile)) {
-          string dbServerConfigContent = File.ReadAllText(dbServerConfigFile);
-          JSONNode dbServerConfig = JSON.Parse(dbServerConfigContent);
+         string dbServerConfigContent = File.ReadAllText(dbServerConfigFile);
+         JSONNode dbServerConfig = JSON.Parse(dbServerConfigContent);
 
-          DB_Main.setServer(
-             dbServerConfig["AW_DB_SERVER"].Value,
-             dbServerConfig["AW_DB_NAME"].Value,
-             dbServerConfig["AW_DB_USER"].Value,
-             dbServerConfig["AW_DB_PASS"].Value
-          );
+         DB_Main.setServer(
+            dbServerConfig["AW_DB_SERVER"].Value,
+            dbServerConfig["AW_DB_NAME"].Value,
+            dbServerConfig["AW_DB_USER"].Value,
+            dbServerConfig["AW_DB_PASS"].Value
+         );
       }
 
       // Use default remote server as fallback
       else {
-         D.warning("setServerFromConfig() - no production database config file [" + dbServerConfigFile + "] found. Using default db server [" + DB_Main.RemoteServer + "] as fallback." );
+         D.warning("setServerFromConfig() - no production database config file [" + dbServerConfigFile + "] found. Using default db server [" + DB_Main.RemoteServer + "] as fallback.");
          DB_Main.setServer(DB_Main.RemoteServer);
       }
 
@@ -5185,6 +5199,76 @@ public class DB_Main : DB_MainStub
       return result;
    }
 
+   public static new void createXmlTemplatesTable () {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "DROP TABLE IF EXISTS xml_templates;" +
+            "CREATE TABLE xml_templates(xml_id INTEGER PRIMARY KEY AUTO_INCREMENT, xml_name VARCHAR(50), xml_content TEXT)", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void saveXmlTemplate (string xmlName, string xmlContent) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO xml_templates (xml_name,xml_content) VALUES " +
+            "(@xml_name, @xml_content)", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@xml_name", xmlName);
+            cmd.Parameters.AddWithValue("@xml_content", xmlContent);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void createJsonEnumsTable () {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "DROP TABLE IF EXISTS json_enums;" +
+            "CREATE TABLE json_enums(json_id INTEGER PRIMARY KEY AUTO_INCREMENT, json_name VARCHAR(50), json_content TEXT)", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void saveJsonEnum (string jsonName, string jsonContent) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO json_enums (json_name,json_content) VALUES " +
+            "(@json_name, @json_content)", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@json_name", jsonName);
+            cmd.Parameters.AddWithValue("@json_content", jsonContent);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
    private static MySqlConnection getConnection () {
       // Throws a warning if used in the main thread
       if (UnityThreadHelper.IsMainThread && !ClientManager.isApplicationQuitting) {
@@ -5196,9 +5280,9 @@ public class DB_Main : DB_MainStub
    }
 
    public static string buildConnectionString (string server, string database = "", string uid = "", string password = "") {
-      return "SERVER=" + server + ";" + 
-          "DATABASE=" + (database == "" ? _database : database) + ";" + 
-          "UID=" + (uid == "" ? _uid : uid) + ";" + 
+      return "SERVER=" + server + ";" +
+          "DATABASE=" + (database == "" ? _database : database) + ";" +
+          "UID=" + (uid == "" ? _uid : uid) + ";" +
           "PASSWORD=" + (password == "" ? _password : password) + ";";
    }
 
