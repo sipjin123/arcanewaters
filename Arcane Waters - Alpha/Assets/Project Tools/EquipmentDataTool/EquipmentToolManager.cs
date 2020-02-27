@@ -77,7 +77,7 @@ public class EquipmentToolManager : XmlDataToolManager {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateEquipmentXML(longString, xml_id, EquipmentType.Weapon, data.equipmentName, isEnabled);
+         DB_Main.updateEquipmentXML(longString, xml_id, EquipmentType.Weapon, data.equipmentName, isEnabled, data.equipmentID);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -94,7 +94,7 @@ public class EquipmentToolManager : XmlDataToolManager {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateEquipmentXML(longString, xml_id, EquipmentType.Armor, data.equipmentName, isEnabled);
+         DB_Main.updateEquipmentXML(longString, xml_id, EquipmentType.Armor, data.equipmentName, isEnabled, data.equipmentID);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -111,7 +111,7 @@ public class EquipmentToolManager : XmlDataToolManager {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateEquipmentXML(longString, xml_id, EquipmentType.Helm, data.equipmentName, isEnabled);
+         DB_Main.updateEquipmentXML(longString, xml_id, EquipmentType.Helm, data.equipmentName, isEnabled, data.equipmentID);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -168,7 +168,7 @@ public class EquipmentToolManager : XmlDataToolManager {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateEquipmentXML(longString, -1, EquipmentType.Weapon, data.equipmentName, false);
+         DB_Main.updateEquipmentXML(longString, -1, EquipmentType.Weapon, data.equipmentName, false, data.equipmentID);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -187,7 +187,7 @@ public class EquipmentToolManager : XmlDataToolManager {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateEquipmentXML(longString, -1, EquipmentType.Armor, data.equipmentName, false);
+         DB_Main.updateEquipmentXML(longString, -1, EquipmentType.Armor, data.equipmentName, false, data.equipmentID);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -206,7 +206,7 @@ public class EquipmentToolManager : XmlDataToolManager {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateEquipmentXML(longString, -1, EquipmentType.Helm, data.equipmentName, false);
+         DB_Main.updateEquipmentXML(longString, -1, EquipmentType.Helm, data.equipmentName, false, data.equipmentID);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
