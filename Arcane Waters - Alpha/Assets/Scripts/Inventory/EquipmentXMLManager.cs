@@ -43,12 +43,9 @@ public class EquipmentXMLManager : MonoBehaviour {
       self = this;
    }
 
-   public WeaponStatData getWeaponData (int weaponType) {
-      if (_weaponStatList == null) {
-         return null;
-      }
-      if (_weaponStatList.ContainsKey(weaponType)) {
-         return _weaponStatList[weaponType];
+   public WeaponStatData getWeaponDataByEquipmentID (int equipmentID) {
+      if (_weaponStatList.ContainsKey(equipmentID)) {
+         return _weaponStatList[equipmentID];
       }
       return null;
    }
@@ -100,7 +97,7 @@ public class EquipmentXMLManager : MonoBehaviour {
                if (xmlPair.isEnabled) {
                   TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                   WeaponStatData rawData = Util.xmlLoad<WeaponStatData>(newTextAsset);
-                  int uniqueID = rawData.weaponType;
+                  int uniqueID = rawData.equipmentID;
 
                   // Save the data in the memory cache
                   if (!_weaponStatList.ContainsKey(uniqueID) && xmlPair.isEnabled) {
@@ -261,7 +258,7 @@ public class EquipmentXMLManager : MonoBehaviour {
                break;
             case Item.Category.Weapon:
                // Basic Info Setup
-               WeaponStatData weaponStatData = self.getWeaponData(dataItem.itemTypeId);
+               WeaponStatData weaponStatData = self.getWeaponDataByEquipmentID(dataItem.itemTypeId);
                if (weaponStatData != null) {
                   itemName = weaponStatData.equipmentName;
                   itemDesc = weaponStatData.equipmentDescription;

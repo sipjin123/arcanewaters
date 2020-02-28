@@ -110,7 +110,12 @@ public class Weapon : EquippableItem {
    }
 
    public override string getDescription () {
-      return itemDescription;
+      WeaponStatData weaponData = UserEquipmentCache.self.getWeaponDataByEquipmentID(this.type);
+      if (weaponData == null) {
+         return itemDescription;
+      }
+
+      return weaponData.equipmentDescription;
    }
 
    public override string getTooltip () {
@@ -123,6 +128,15 @@ public class Weapon : EquippableItem {
 
    public override string getName () {
       return itemName;
+   }
+
+   public override Rarity.Type getRarity () {
+      WeaponStatData weaponData = UserEquipmentCache.self.getWeaponDataByEquipmentID(this.type);
+      if (weaponData != null) {
+         return weaponData.rarity;
+      }
+
+      return Rarity.Type.Common;
    }
 
    public override bool isEquipped () {
@@ -140,7 +154,7 @@ public class Weapon : EquippableItem {
          return "None";
       }
 
-      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponType);
+      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponDataByEquipmentID(weaponType);
       if (weaponData == null) {
          D.warning("Weapon data does not exist! Go to Equipment Editor and make new data :: (" + weaponType + ")");
          return "Undefined";
@@ -150,27 +164,17 @@ public class Weapon : EquippableItem {
    }
 
    public int getDamage () {
-      if (this.data.Length > 0) {
-         foreach (string kvp in this.data.Replace(" ", "").Split(',')) {
-            if (!kvp.Contains("=")) {
-               continue;
-            }
-
-            // Get the left and right side of the equal
-            string key = kvp.Split('=')[0];
-            string value = kvp.Split('=')[1];
-
-            if ("damage".Equals(key)) {
-               return Convert.ToInt32(value);
-            }
-         }
+      WeaponStatData weaponData = UserEquipmentCache.self.getWeaponDataByEquipmentID(this.type);
+      if (weaponData != null) {
+         return weaponData.weaponBaseDamage;
       }
 
       return 0;
    }
 
    public virtual float getDamage (Element element) {
-      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(this.type);
+      WeaponStatData weaponData = UserEquipmentCache.self.getWeaponDataByEquipmentID(this.type);
+
       if (weaponData == null) {
          D.warning("Weapon data does not exist! Go to Equipment Editor and make new data: (" + this.type + ")");
          return 10;
@@ -186,11 +190,12 @@ public class Weapon : EquippableItem {
          case Element.Earth:
             return weaponData.weaponDamageEarth;
       }
+
       return weaponData.weaponBaseDamage;
    }
 
    public static int getBaseDamage (int weaponType) {
-      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponType);
+      WeaponStatData weaponData = UserEquipmentCache.self.getWeaponDataByEquipmentID(weaponType);
       if (weaponData == null) {
          D.warning("Weapon data does not exist! Go to Equipment Editor and make new data: (" + weaponType + ")");
          return 10;
@@ -251,17 +256,39 @@ public class Weapon : EquippableItem {
    }
 
    public override bool canBeTrashed () {
-      // TODO: Receive this variable from the server
-      return true;
-      return  EquipmentXMLManager.self.getWeaponData(type).canBeTrashed;
+      WeaponStatData weaponData = UserEquipmentCache.self.getWeaponDataByEquipmentID(type);
+      if (weaponData == null) {
+         return true;
+      }
+
+      return weaponData.canBeTrashed;
    }
 
    public override string getIconPath () {
-      return iconPath;
+      WeaponStatData weaponData = UserEquipmentCache.self.getWeaponDataByEquipmentID(type);
+      if (weaponData == null) {
+         return iconPath;
+      }
+
+      return weaponData.equipmentIconPath;
    }
 
    public override ColorKey getColorKey () {
       return new ColorKey(Global.player.gender, this.type, new Weapon());
+   }
+
+   public static Weapon castItemToWeapon (Item item) {
+      Weapon newWeapon = new Weapon { 
+         category = Category.Weapon,
+         type = item.itemTypeId,
+         itemTypeId = item.itemTypeId,
+         id = item.id,
+         iconPath = item.iconPath,
+         itemDescription = item.itemDescription,
+         itemName = item.itemName,
+      };
+
+      return newWeapon;
    }
 
    #region Private Variables

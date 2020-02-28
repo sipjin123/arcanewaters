@@ -27,13 +27,14 @@ public class CharacterStack : MonoBehaviour {
 
    public void updateLayers (UserObjects userObjects) {
       UserInfo info = userObjects.userInfo;
+      WeaponStatData weaponData = UserEquipmentCache.self.getWeaponDataByEquipmentID(userObjects.weapon.type);
 
       bodyLayer.setType(info.bodyType);
       eyesLayer.setType(info.eyesType);
       eyesLayer.recolor(info.eyesColor1, info.eyesColor1);
       updateHair(info.hairType, info.hairColor1, info.hairColor2);
       updateArmor(info.gender, userObjects.armor.type, userObjects.armorColor1, userObjects.armorColor2);
-      updateWeapon(info.gender, userObjects.weapon.type, userObjects.weaponColor1, userObjects.weaponColor2);
+      updateWeapon(info.gender, weaponData == null ? 0 : weaponData.weaponType, userObjects.weaponColor1, userObjects.weaponColor2);
    }
 
    public void updateLayers (NetEntity entity) {

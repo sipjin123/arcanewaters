@@ -157,7 +157,7 @@ public class TreasureChest : NetworkBehaviour {
       // Create a random item for now
       if (Random.Range(0f, 1f) > .5f) {
          // TODO: This is a fixed loot, proposal: create a tool that will alter options of what loots to randomize
-         int weaponID = EquipmentXMLManager.self.getWeaponData(3).weaponType;
+         int weaponID = EquipmentXMLManager.self.getWeaponDataByEquipmentID(3).weaponType;
          Weapon weapon = new Weapon(0, weaponID, ColorType.DarkGreen, ColorType.DarkPurple, "");
          weapon.itemTypeId = (int) weapon.type;
 

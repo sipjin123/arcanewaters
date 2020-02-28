@@ -21,4 +21,8 @@ public class ArmorStatData : EquipmentStatData
    public int waterResist;
    public int airResist;
    public int earthResist;
+
+   // Item sql id assigned from the database
+   [XmlIgnore]
+   public int itemSqlID;
 }

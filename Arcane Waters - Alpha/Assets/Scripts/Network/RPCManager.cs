@@ -2362,7 +2362,7 @@ public class RPCManager : NetworkBehaviour {
 
             switch (resultItem.category) {
                case Item.Category.Weapon:
-                  WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(resultItem.itemTypeId);
+                  WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponDataByEquipmentID(resultItem.itemTypeId);
                   blueprint.setBasicInfo(weaponData.equipmentName, weaponData.equipmentDescription, weaponData.equipmentIconPath);
 
                   // Serialize equipment data
@@ -2475,7 +2475,7 @@ public class RPCManager : NetworkBehaviour {
 
          switch (resultItem.category) {
             case Item.Category.Weapon:
-               WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(resultItem.itemTypeId);
+               WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponDataByEquipmentID(resultItem.itemTypeId);
                blueprint.setBasicInfo(weaponData.equipmentName, weaponData.equipmentDescription, weaponData.equipmentIconPath);
                break;
             case Item.Category.Armor:
@@ -3837,7 +3837,7 @@ public class RPCManager : NetworkBehaviour {
       foreach (Item item in sortedList) {
          switch (item.category) {
             case Item.Category.Weapon:
-               WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
+               WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponDataByEquipmentID(item.itemTypeId);
                if (weaponData != null) {
                   item.setBasicInfo(weaponData.equipmentName, weaponData.equipmentDescription, weaponData.equipmentIconPath);
                }
@@ -3908,10 +3908,9 @@ public class RPCManager : NetworkBehaviour {
          // Back to Unity Thread to call RPC functions
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             Weapon weapon = userObjects.weapon;
-            WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weapon.itemTypeId);
 
-            if (body != null && weaponData != null) {
-               body.weaponManager.updateWeaponSyncVars(weapon, weaponData.actionType);
+            if (body != null) {
+               body.weaponManager.updateWeaponSyncVars(weapon);
             }
 
             // Let the client know that we're done

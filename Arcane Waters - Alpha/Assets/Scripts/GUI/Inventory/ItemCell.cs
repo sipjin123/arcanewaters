@@ -51,10 +51,12 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
       _colorKey = null;
       switch (item.category) {
          case Item.Category.Weapon:
+            item = Weapon.castItemToWeapon(item);
             icon.sprite = ImageManager.getSprite(item.iconPath);
             _colorKey = new ColorKey(Global.player.gender, item.itemTypeId, new Weapon());
             break;
          case Item.Category.Armor:
+            item = Armor.castItemToArmor(item);
             icon.sprite = ImageManager.getSprite(item.iconPath);
             _colorKey = new ColorKey(Global.player.gender, item.itemTypeId, new Armor());
             break;

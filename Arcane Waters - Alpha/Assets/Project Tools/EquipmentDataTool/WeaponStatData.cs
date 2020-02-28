@@ -18,7 +18,7 @@ public class WeaponStatData : EquipmentStatData
    public Weapon.Class weaponClass = Weapon.Class.Any;
 
    // The damage of the weapon
-   public int weaponBaseDamage;
+   public int weaponBaseDamage = 0;
 
    // The elemental damage of the weapons
    public int weaponDamageFire;
@@ -28,4 +28,8 @@ public class WeaponStatData : EquipmentStatData
 
    // The type of action that comes with the weapon
    public Weapon.ActionType actionType = Weapon.ActionType.None;
+
+   // Item sql id assigned from the database
+   [XmlIgnore]
+   public int itemSqlID;
 }

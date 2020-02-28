@@ -150,8 +150,28 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       goldText.text = string.Format("{0:n0}", gold);
       gemsText.text = string.Format("{0:n0}", gems);
 
-      // Update our character preview stack
-      characterStack.updateLayers(userObjects);
+      UserEquipmentCache.self.finishedLoadingWeapons.RemoveAllListeners();
+      UserEquipmentCache.self.finishedLoadingWeapons.AddListener(() => {
+         // Update our character preview stack
+         characterStack.updateLayers(userObjects);
+      });
+
+      UserEquipmentCache.self.fetchWeaponData(UserEquipmentCache.ItemDataType.Inventory);
+      //receiveItemForDisplay(itemArray);
+
+      // Insert the player's name
+      if (Global.player != null) {
+         characterNameText.text = Global.player.entityName;
+      }
+
+      // Select the correct tab
+      updateCategoryTabs(categories[0]);
+   }
+
+   public void receiveItemForDisplay (Item[] itemArray) {
+      BodyEntity bodyEntity = (BodyEntity) Global.player;
+      _equippedWeaponId = bodyEntity.weaponManager.equippedWeaponId;
+      _equippedArmorId = bodyEntity.armorManager.equippedArmorId;
 
       // Clear stat rows
       physicalStatRow.clear();
@@ -167,27 +187,20 @@ public class InventoryPanel : Panel, IPointerClickHandler {
 
       // Create the item cells
       foreach (Item item in itemArray) {
-         // Get the casted item
-         Item castedItem = item.getCastItem();
-
-         if (Item.isUsingEquipmentXML(item.category)) {
-            castedItem.setBasicInfo(item.itemName, item.itemDescription, item.iconPath);
-         }
-
-         if (castedItem.category != Item.Category.Blueprint) {
+         if (item.category != Item.Category.Blueprint) {
             // Instantiates the cell
             ItemCell cell = Instantiate(itemCellPrefab, itemCellsContainer.transform, false);
 
             // Initializes the cell
-            cell.setCellForItem(castedItem);
+            cell.setCellForItem(item);
 
             // If the item is equipped, place the item cell in the equipped slots
-            if (castedItem.id == equippedWeaponId) {
+            if (item.id == bodyEntity.weaponManager.equippedWeaponId) {
                cell.transform.SetParent(equippedWeaponCellContainer.transform, false);
-               refreshStats((Weapon) castedItem);
-            } else if (castedItem.id == equippedArmorId) {
+               refreshStats(Weapon.castItemToWeapon(item));
+            } else if (item.id == bodyEntity.armorManager.equippedArmorId) {
                cell.transform.SetParent(equippedArmorCellContainer.transform, false);
-               refreshStats((Armor) castedItem);
+               refreshStats(Armor.castItemToArmor(item));
             }
 
             // Set the cell click events
@@ -200,13 +213,11 @@ public class InventoryPanel : Panel, IPointerClickHandler {
          }
       }
 
-      // Insert the player's name
-      if (Global.player != null) {
-         characterNameText.text = Global.player.entityName;
-      }
+      updateCategoryTabs(Item.Category.None);
+   }
 
-      // Select the correct tab
-      switch (categories[0]) {
+   private void updateCategoryTabs (Item.Category itemCategory) {
+      switch (itemCategory) {
          case Item.Category.None:
             allTabRenderer.enabled = true;
             weaponTabRenderer.enabled = false;
@@ -363,13 +374,17 @@ public class InventoryPanel : Panel, IPointerClickHandler {
 
    public void setStatModifiers (Item item) {
       // Skip equipped items
+      if (item == null) {
+         return;
+      }
+
       if (item.id == _equippedArmorId || item.id == _equippedWeaponId) {
          return;
       }
 
       // Determine if the hovered item is a weapon or an armor
-      if (item is Weapon) {
-         Weapon weapon = (Weapon) item;
+      if (item.category == Item.Category.Weapon) {
+         Weapon weapon = Weapon.castItemToWeapon(item);
 
          // Set how the stats would change if the item was equipped
          physicalStatRow.setStatModifiersForWeapon(weapon);
@@ -378,8 +393,8 @@ public class InventoryPanel : Panel, IPointerClickHandler {
          airStatRow.setStatModifiersForWeapon(weapon);
          waterStatRow.setStatModifiersForWeapon(weapon);
 
-      } else if (item is Armor) {
-         Armor armor = (Armor) item;
+      } else if (item.category == Item.Category.Armor) {
+         Armor armor = Armor.castItemToArmor(item);
 
          // Set how the stats would change if the item was equipped
          physicalStatRow.setStatModifiersForArmor(armor);

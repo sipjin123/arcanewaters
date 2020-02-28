@@ -88,7 +88,7 @@ public class Util : MonoBehaviour {
             itemTypeName = Blueprint.getEquipmentType(typeID).ToString();
             break;
          case Item.Category.Weapon:
-            itemTypeName = EquipmentXMLManager.self.getWeaponData(typeID).equipmentName;
+            itemTypeName = EquipmentXMLManager.self.getWeaponDataByEquipmentID(typeID).equipmentName;
             break;
          case Item.Category.Usable:
             itemTypeName = ((UsableItem.Type) typeID).ToString();

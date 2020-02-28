@@ -120,7 +120,7 @@ public class Item {
       return false;
    }
 
-   public Rarity.Type getRarity () {
+   public virtual Rarity.Type getRarity () {
       foreach (string kvp in this.data.Replace(" ", "").Split(',')) {
          if (!kvp.Contains("=")) {
             continue;

@@ -130,7 +130,7 @@ public class Blueprint : RecipeItem
 
          // Convert to a weapon type
          int weaponType = int.Parse(stringID);
-         WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponType);
+         WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponDataByEquipmentID(weaponType);
 
          if (weaponData != null) {
             // Create the weapon object

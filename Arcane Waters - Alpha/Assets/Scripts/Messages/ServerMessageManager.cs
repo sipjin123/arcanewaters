@@ -85,6 +85,15 @@ public class ServerMessageManager : MonoBehaviour {
                   }
                }
 
+               // Assign the appropriate data for the weapons using the equipment ID
+               foreach (Weapon weapon in weaponList) {
+                  if (weapon.type > 0) {
+                     WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponDataByEquipmentID(weapon.type);
+                     weapon.type = weaponData.weaponType;
+                     weapon.itemTypeId = weaponData.weaponType;
+                  }
+               }
+
                // If there was an account ID but not user ID, send the info on all of their characters for display on the Character screen
                CharacterListMessage msg = new CharacterListMessage(Global.netId, users.ToArray(), armorList.ToArray(), weaponList.ToArray(), armorColors1, armorColors2);
                conn.Send(msg);

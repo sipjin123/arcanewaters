@@ -241,6 +241,20 @@ public class Armor : EquippableItem {
       return armor;
    }
 
+   public static Armor castItemToArmor (Item item) {
+      Armor newArmor = new Armor {
+         category = Category.Armor,
+         type = item.itemTypeId,
+         itemTypeId = item.itemTypeId,
+         id = item.id,
+         iconPath = item.iconPath,
+         itemDescription = item.itemDescription,
+         itemName = item.itemName
+      };
+
+      return newArmor;
+   }
+
    #region Private Variables
 
    #endregion

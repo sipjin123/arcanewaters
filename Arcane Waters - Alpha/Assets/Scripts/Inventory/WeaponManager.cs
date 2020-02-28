@@ -18,6 +18,10 @@ public class WeaponManager : EquipmentManager {
    [SyncVar]
    public int weaponType = 0;
 
+   // Equipment ID
+   [SyncVar]
+   public int equipmentDataID = 0;
+
    // Weapon colors
    [SyncVar]
    public ColorType color1;
@@ -75,7 +79,7 @@ public class WeaponManager : EquipmentManager {
    [ClientRpc]
    public void Rpc_EquipWeapon (Weapon newWeapon, ColorType color1, ColorType color2, WeaponStatData weaponData) {
       _weapon = newWeapon;
-      _weapon.data = string.Format("damage={0}, rarity={1}", weaponData.weaponBaseDamage, (int) Rarity.Type.Common);
+      _weapon.data = string.Format("damage={0}, rarity={1}", weaponData == null ? 0 : weaponData.weaponBaseDamage, (int) Rarity.Type.Common);
 
       updateSprites(newWeapon.type, color1, color2);
 
@@ -84,26 +88,31 @@ public class WeaponManager : EquipmentManager {
    }
 
    [Server]
-   public void updateWeaponSyncVars (Weapon weapon, Weapon.ActionType actionType) {
+   public void updateWeaponSyncVars (Weapon weapon) {
       if (weapon == null) {
          D.debug("Weapon is null");
          return;
       }
 
-      _weapon = weapon;
-      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(_weapon.itemTypeId);
+      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponDataByEquipmentID(weapon.itemTypeId);
+      int newWeaponType = weaponData == null ? 0 : weaponData.weaponType;
+
+      weapon.type = newWeaponType;
+      weapon.itemTypeId = newWeaponType;
 
       // Assign the weapon ID
       this.equippedWeaponId = (weapon.type == 0) ? 0 : weapon.id;
 
+      _weapon = weapon;
+
       // Set the Sync Vars so they get sent to the clients
-      this.weaponType = weapon.type;
+      this.weaponType = newWeaponType;
       this.color1 = weapon.color1;
       this.color2 = weapon.color2;
-      this.actionType = actionType;
+      this.actionType = weaponData == null ? Weapon.ActionType.None : weaponData.actionType;
 
       // Send the Weapon Info to all clients
-      Rpc_EquipWeapon(weapon, color1, color2, weaponData);
+      Rpc_EquipWeapon(weapon, color1, color2, weaponData == null ? new WeaponStatData() : weaponData);
    }
 
    #region Private Variables

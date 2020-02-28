@@ -341,8 +341,8 @@ public class BattleManager : MonoBehaviour {
       battler.armorManager.color2 = player.armorManager.color2;
 
       // Copy the Weapon Info
-      WeaponStatData weaponStatData = EquipmentXMLManager.self.getWeaponData(player.weaponManager.equippedWeaponId);
-      battler.weaponManager.updateWeaponSyncVars(player.weaponManager.getWeapon(), weaponStatData == null ? Weapon.ActionType.None : weaponStatData.actionType);
+      WeaponStatData weaponStatData = EquipmentXMLManager.self.getWeaponDataByEquipmentID(player.weaponManager.weaponType);
+      battler.weaponManager.updateWeaponSyncVars(player.weaponManager.getWeapon());
       battler.weaponManager.weaponType = player.weaponManager.weaponType;
       battler.weaponManager.color1 = player.weaponManager.color1;
       battler.weaponManager.color2 = player.weaponManager.color2;

@@ -44,6 +44,9 @@ public class EquipmentStatData
 
    // Caches the material type of the sprite
    public MaterialType materialType = MaterialType.Material_G_B;
+
+   // The current rarity of the equipment data
+   public Rarity.Type rarity = Rarity.Type.Common;
 }
 
 public class RarityModifier
