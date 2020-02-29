@@ -48,8 +48,6 @@ public class BodyEntity : NetEntity
       base.setDataFromUserInfo(userInfo, armor, weapon, shipInfo);
       
       this.armorManager.updateArmorSyncVars(armor);
-
-      WeaponStatData weaponStatData = EquipmentXMLManager.self.getWeaponDataByEquipmentID(weapon.type);
       this.weaponManager.updateWeaponSyncVars(weapon);
    }
 

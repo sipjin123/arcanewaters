@@ -106,13 +106,13 @@ public class MonsterSkillTemplate : MonoBehaviour {
    public Image castSprite, hitSprite;
 
    // Audio Selection Feature
-   public Text hitClipPath;
-   public Text castClipPath;
+   public Text hitSoundEffectName;
+   public Text castSoundEffectName;
    public Button selectHitAudioButton;
    public Button selectCastAudioButton;
    public Button playHitAudioButton;
    public Button playCastAudioButton;
-   public AudioClip hitAudio, castAudio;
+   public SoundEffect hitSoundEffect, castSoundEffect;
 
    // Holds the variables only available to ability types with projectile
    public GameObject[] projectileVariables;
@@ -152,14 +152,18 @@ public class MonsterSkillTemplate : MonoBehaviour {
       selectHitAudioButton.onClick.AddListener(() => toggleAudioSelection(PathType.HitSprite));
       selectCastAudioButton.onClick.AddListener(() => toggleAudioSelection(PathType.CastSprite));
       playHitAudioButton.onClick.AddListener(() => {
-         if (hitAudio != null) {
-            audioSource.clip = hitAudio;
+         if (hitSoundEffect != null) {
+            audioSource.clip = hitSoundEffect.clip;
+            audioSource.volume = hitSoundEffect.volume;
+            audioSource.pitch = hitSoundEffect.pitch;
             audioSource.Play();
          }
       });
       playCastAudioButton.onClick.AddListener(() => {
-         if (castAudio != null) {
-            audioSource.clip = castAudio;
+         if (castSoundEffect != null) {
+            audioSource.clip = castSoundEffect.clip;
+            audioSource.volume = castSoundEffect.volume;
+            audioSource.pitch = castSoundEffect.pitch;
             audioSource.Play();
          }
       });
@@ -352,10 +356,18 @@ public class MonsterSkillTemplate : MonoBehaviour {
          itemIcon.sprite = ImageManager.getSprite(abilityData.itemIconPath);
       }
 
-      hitClipPath.text = abilityData.hitAudioClipPath;
-      castClipPath.text = abilityData.castAudioClipPath;
-      hitAudio = AudioClipManager.self.getAudioClipData(abilityData.hitAudioClipPath).audioClip;
-      castAudio = AudioClipManager.self.getAudioClipData(abilityData.castAudioClipPath).audioClip;
+      hitSoundEffect = SoundEffectManager.self.getSoundEffect(abilityData.hitSoundEffectId);
+      castSoundEffect = SoundEffectManager.self.getSoundEffect(abilityData.castSoundEffectId);
+
+      hitSoundEffectName.text = "";
+      castSoundEffectName.text = "";
+
+      if (hitSoundEffect != null) {
+         hitSoundEffectName.text = hitSoundEffect.name;
+      }
+      if (castSoundEffect != null) {
+         castSoundEffectName.text = castSoundEffect.name;
+      }
 
       loadStance(abilityData);
    }
@@ -366,7 +378,7 @@ public class MonsterSkillTemplate : MonoBehaviour {
       BattleItemType battleItemType = (BattleItemType) this.battleItemType.value;
       Weapon.Class weaponClass = (Weapon.Class) this.weaponClass.value;
 
-      BattleItemData battleItemData = BattleItemData.CreateInstance(int.Parse(itemID.text), itemName.text, itemDescription.text, element, hitClipPath.text,
+      BattleItemData battleItemData = BattleItemData.CreateInstance(int.Parse(itemID.text), itemName.text, itemDescription.text, element, hitSoundEffect.id,
         new string[]{ hitSpritePath.text }, battleItemType, weaponClass, itemIconPath.text, int.Parse(levelRequirement.text));
 
       stanceList = new List<Battler.Stance>();
@@ -378,7 +390,7 @@ public class MonsterSkillTemplate : MonoBehaviour {
       BasicAbilityData basicData = BasicAbilityData.CreateInstance(battleItemData, 
          int.Parse(abilityCost.text), 
          new string[] { castSpritePath.text }, 
-         castClipPath.text, stanceList.ToArray(), 
+         castSoundEffect.id, stanceList.ToArray(), 
          abilityType, 
          int.Parse(abilityCooldown.text), 
          int.Parse(apChange.text),
@@ -402,7 +414,7 @@ public class MonsterSkillTemplate : MonoBehaviour {
       BattleItemType battleItemType = (BattleItemType) this.battleItemType.value;
       Weapon.Class weaponClass = (Weapon.Class) this.weaponClass.value;
 
-      BattleItemData battleItemData = BattleItemData.CreateInstance(int.Parse(itemID.text), itemName.text, itemDescription.text, element, hitClipPath.text,
+      BattleItemData battleItemData = BattleItemData.CreateInstance(int.Parse(itemID.text), itemName.text, itemDescription.text, element, hitSoundEffect.id,
         new string[] { hitSpritePath.text }, battleItemType, weaponClass, itemIconPath.text, int.Parse(levelRequirement.text));
 
       stanceList = new List<Battler.Stance>();
@@ -414,7 +426,7 @@ public class MonsterSkillTemplate : MonoBehaviour {
       BasicAbilityData basicData = BasicAbilityData.CreateInstance(battleItemData,
          int.Parse(abilityCost.text),
          new string[] { castSpritePath.text },
-         castClipPath.text, stanceList.ToArray(),
+         castSoundEffect.id, stanceList.ToArray(),
          abilityType,
          int.Parse(abilityCooldown.text),
          int.Parse(apChange.text),
@@ -516,27 +528,31 @@ public class MonsterSkillTemplate : MonoBehaviour {
       spriteSelectionPanel.SetActive(true);
       spriteSelectionParent.DestroyChildren();
 
-      foreach (AudioClipManager.AudioClipData sourceClip in AudioClipManager.self.audioDataList) {
+      foreach (SoundEffect effect in SoundEffectManager.self.getAllSoundEffects()) {
          GameObject iconTempObj = Instantiate(spriteTemplate.gameObject, spriteSelectionParent.transform);
          ItemTypeTemplate iconTemp = iconTempObj.GetComponent<ItemTypeTemplate>();
-         iconTemp.itemTypeText.text = sourceClip.audioName;
+         iconTemp.itemTypeText.text = effect.name;
 
          iconTemp.previewButton.onClick.AddListener(() => {
-            if (sourceClip.audioClip != null) {
-               audioSource.clip = sourceClip.audioClip;
-               audioSource.Play();
-            }
+            audioSource.clip = effect.clip;
+            audioSource.volume = effect.volume;
+            audioSource.pitch = effect.pitch;
+            audioSource.Play();
          });
 
          iconTemp.selectButton.onClick.AddListener(() => {
             switch (pathType) {
                case PathType.CastSprite:
-                  castClipPath.text = sourceClip.audioPath;
-                  castAudio = sourceClip.audioClip;
+                  castSoundEffect = effect;
+                  if (castSoundEffect != null) {
+                     castSoundEffectName.text = castSoundEffect.name;
+                  }
                   break;
                case PathType.HitSprite:
-                  hitClipPath.text = sourceClip.audioPath;
-                  hitAudio = sourceClip.audioClip;
+                  hitSoundEffect = effect;
+                  if (hitSoundEffect != null) {
+                     hitSoundEffectName.text = hitSoundEffect.name;
+                  }
                   break;
             }
             closeSpriteSelectionButton.onClick.Invoke();

@@ -7,35 +7,45 @@ using ProceduralMap;
 using Mirror;
 using UnityEngine.EventSystems;
 
-public class VoyageGroupMemberCell : MonoBehaviour
+public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
    #region Public Variables
 
    // The character portrait
    public CharacterPortrait characterPortrait;
 
-   // The hp circle
-   public Image hpCircle;
+   // The frame image
+   public Image frameImage;
 
-   // The hp circle background
-   public Image hpCircleBackground;
+   // The frame used if the portrait is the local player's
+   public Sprite localPlayerFrame;
 
-   // The colors of the hp circle
-   public Color normalHpColor;
-   public Color lowHpColor;
+   // The frame used if the portrait is not the local player's
+   public Sprite nonLocalPlayerFrame;
+
+   // The hp bar
+   public Image hpBar;
+
+   // The colors of the hp bar
+   public Gradient hpBarGradient;
+
+   // The tooltip container
+   public GameObject tooltipBox;
+
+   // The name of the player
+   public Text playerNameText;
+
+   // The level of the player
+   public Text playerLevelText;
 
    #endregion
 
    public void Awake () {
-      // Set the portrait pointer events
-      characterPortrait.pointerEnterEvent.RemoveAllListeners();
-      characterPortrait.pointerExitEvent.RemoveAllListeners();
-      characterPortrait.pointerEnterEvent.AddListener(() => onPointerEnterPortrait());
-      characterPortrait.pointerExitEvent.AddListener(() => onPointerExitPortrait());
+      // Disable the hp bar
+      hpBar.enabled = false;
 
-      // Disable the hp circle
-      hpCircle.enabled = false;
-      hpCircleBackground.enabled = false;
+      // Hide the tooltip
+      tooltipBox.SetActive(false);
    }
 
    public void setCellForGroupMember (int userId) {
@@ -49,7 +59,8 @@ public class VoyageGroupMemberCell : MonoBehaviour
          _active = false;
 
          // Initialize the portrait with a question mark
-         characterPortrait.initialize(entity);         
+         characterPortrait.initialize(entity);
+         frameImage.sprite = nonLocalPlayerFrame;
       } else {
          _active = true;
 
@@ -67,33 +78,29 @@ public class VoyageGroupMemberCell : MonoBehaviour
       // Try to find the entity of the displayed user
       NetEntity entity = EntityManager.self.getEntity(_userId);
       if (entity == null) {
-         hpCircle.enabled = false;
-         hpCircleBackground.enabled = false;
+         hpBar.enabled = false;
          return;
       }
 
-      // If the user is in combat, display his hp
-      if (entity.hasAnyCombat()) {
-         hpCircle.enabled = true;
-         hpCircleBackground.enabled = true;
-         hpCircle.fillAmount = (float) entity.currentHealth / entity.maxHealth;
+      // Update the portrait background
+      characterPortrait.updateBackground(entity);
 
-         // Set the color of the hp indicator
-         if (hpCircle.fillAmount > 0.25f) {
-            hpCircle.color = normalHpColor;
-         } else {
-            hpCircle.color = lowHpColor;
-         }
-      } else {
-         hpCircle.enabled = false;
-         hpCircleBackground.enabled = false;
+      // Update the hp bar
+      hpBar.enabled = true;
+      hpBar.fillAmount = (float) entity.currentHealth / entity.maxHealth;
+      hpBar.color = hpBarGradient.Evaluate(hpBar.fillAmount);
+   }
+
+   public void OnPointerEnter (PointerEventData eventData) {
+      if (_active) {
+         tooltipBox.SetActive(true);
       }
    }
 
-   public void onPointerEnterPortrait () {
-   }
-
-   public void onPointerExitPortrait () {
+   public void OnPointerExit (PointerEventData eventData) {
+      if (_active) {
+         tooltipBox.SetActive(false);
+      }
    }
 
    public int getUserId () {
@@ -107,6 +114,15 @@ public class VoyageGroupMemberCell : MonoBehaviour
       }
 
       characterPortrait.initialize(entity);
+      playerNameText.text = entity.entityName;
+      playerLevelText.text = "LvL " + LevelUtil.levelForXp(entity.XP).ToString();
+
+      // Set the portrait frame for local or non local entities
+      if (entity.isLocalPlayer) {
+         frameImage.sprite = localPlayerFrame;
+      } else {
+         frameImage.sprite = nonLocalPlayerFrame;
+      }
    }
 
    #region Private Variables

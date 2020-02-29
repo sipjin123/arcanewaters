@@ -87,6 +87,15 @@ public class RPCManager : NetworkBehaviour {
       TutorialManager.self.receiveListFromServer(tutorialDataList);
    }
 
+   [TargetRpc]
+   public void Target_ReceiveSoundEffects (NetworkConnection connection, string[] rawInfo) {
+      // Deserialize data
+      SoundEffect[] soundEffectsList = Util.unserialize<SoundEffect>(rawInfo).ToArray();
+
+      // Cache to SoundEffectManager
+      SoundEffectManager.self.receiveListFromServer(soundEffectsList);
+   }
+
    [Command]
    public void Cmd_RequestTeamCombatData () {
       // Checks if the user is an admin
@@ -3438,6 +3447,10 @@ public class RPCManager : NetworkBehaviour {
             // Send specialty info to client
             PlayerSpecialtyData currentSpecialtyData = SpecialtyManager.self.getSpecialtyData(playerBody.specialty);
             Target_ReceiveSpecialtyInfo(playerBody.connectionToClient, JsonUtility.ToJson(currentSpecialtyData));
+
+            // Send SoundEffects to the Client
+            List<SoundEffect> currentSoundEffects = SoundEffectManager.self.getAllSoundEffects();
+            Target_ReceiveSoundEffects(playerBody.connectionToClient, Util.serialize(currentSoundEffects));
          });
       });
    }

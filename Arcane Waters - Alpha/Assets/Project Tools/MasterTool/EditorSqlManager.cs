@@ -29,7 +29,8 @@ public class EditorSQLManager
       Ship = 12,
       ShipAbility = 13,
       Shop = 14,
-      Tutorial = 15
+      Tutorial = 15,
+      SoundEffects = 16,
    }
 
    public static string getSQLTableByName (EditorToolType editorType, int subType = 0) {

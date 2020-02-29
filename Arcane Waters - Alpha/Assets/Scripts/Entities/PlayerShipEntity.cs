@@ -20,9 +20,6 @@ public class PlayerShipEntity : ShipEntity {
    // Ability Reference
    public ShipAbilityInfo shipAbilities = new ShipAbilityInfo();
 
-   // The user portrait
-   public CharacterPortrait portrait;
-
    // The equipped weapon characteristics
    [SyncVar]
    public int weaponType = 0;
@@ -53,22 +50,10 @@ public class PlayerShipEntity : ShipEntity {
          // Notify UI panel to display the current skills this ship has
          rpc.Cmd_RequestShipAbilities(shipId);
       }
-
-      // Initialize the portrait
-      if (portrait != null) {
-         StartCoroutine(CO_InitializePortrait());
-      }
    }
 
    protected override void Update () {
       base.Update();
-
-      // Only show the user portrait when the mouse is over
-      if (MouseManager.self.isHoveringOver(_clickableBox) && !isDead()) {
-         portrait.gameObject.SetActive(true);
-      } else {
-         portrait.gameObject.SetActive(false);
-      }
 
       if (!isLocalPlayer) {
          return;
@@ -317,17 +302,6 @@ public class PlayerShipEntity : ShipEntity {
 
       // Destroy the cannon ball after a couple seconds
       Destroy(ballObject, NetworkedCannonBall.LIFETIME);
-   }
-
-   protected IEnumerator CO_InitializePortrait () {
-      // Wait until we receive data
-      while (Util.isEmpty(this.entityName)) {
-         yield return null;
-      }
-
-      portrait.initialize(this);
-      portrait.disableMouseInteraction();
-      portrait.gameObject.SetActive(false);
    }
 
    [Command]

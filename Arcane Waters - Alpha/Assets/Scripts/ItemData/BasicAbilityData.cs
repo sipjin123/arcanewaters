@@ -8,12 +8,13 @@ using UnityEngine;
 /// Please use AttackAbilityData or BuffAbilityData instead.
 /// </summary>
 [System.Serializable]
-public class BasicAbilityData : BattleItemData {
+public class BasicAbilityData : BattleItemData
+{
 
    #region Public Variables
 
-   // Cast parameters, effects that will play whenever we start casting the ability (if required)
-   public string castAudioClipPath;
+   // SoundEffect that will play whenever we start casting the ability (if required) -1 == no effect
+   public int castSoundEffectId = -1;
 
    // Combat stances required to be able to use this ability
    public Battler.Stance[] allowedStances;
@@ -53,8 +54,8 @@ public class BasicAbilityData : BattleItemData {
 
    // Builder for the ability data
    public static BasicAbilityData CreateInstance (BattleItemData basicData, int abCost, string[] castSprites,
-       string castClip, Battler.Stance[] _allowedStances, AbilityType abilityType, float cooldown,
-       int apChange, float fxTimePerFrame) {
+      int castSoundEffectId, Battler.Stance[] _allowedStances, AbilityType abilityType, float cooldown,
+      int apChange, float fxTimePerFrame) {
       BasicAbilityData data = new BasicAbilityData();
 
       // Basic battle item data
@@ -64,7 +65,7 @@ public class BasicAbilityData : BattleItemData {
       data.abilityCost = abCost;
 
       data.castSpritesPath = castSprites;
-      data.castAudioClipPath = castClip;
+      data.castSoundEffectId = castSoundEffectId;
 
       data.allowedStances = _allowedStances;
 
@@ -81,7 +82,7 @@ public class BasicAbilityData : BattleItemData {
       abilityCost = basicAbilityData.abilityCost;
       abilityCooldown = basicAbilityData.abilityCooldown;
 
-      castAudioClipPath = basicAbilityData.castAudioClipPath;
+      castSoundEffectId = basicAbilityData.castSoundEffectId;
 
       allowedStances = basicAbilityData.allowedStances;
 

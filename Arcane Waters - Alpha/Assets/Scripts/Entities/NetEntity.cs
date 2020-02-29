@@ -408,7 +408,7 @@ public class NetEntity : NetworkBehaviour
          // Only show our outline when the mouse is over us
          Color color = this is Enemy ? Color.red : Color.white;
          _outline.setNewColor(color);
-         _outline.setVisibility(MouseManager.self.isHoveringOver(_clickableBox) && !isDead());
+         _outline.setVisibility(isMouseOver() && !isDead());
       }
    }
 
@@ -483,6 +483,10 @@ public class NetEntity : NetworkBehaviour
    public bool isMoving () {
       // The velocity is handled differently for locally controlled and remotely controlled entities
       return getVelocity().magnitude > .01f;
+   }
+
+   public bool isMouseOver () {
+      return MouseManager.self.isHoveringOver(_clickableBox);
    }
 
    public bool hasAttackers () {

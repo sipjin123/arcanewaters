@@ -418,7 +418,7 @@ public class GenericSelectionPopup : MonoBehaviour {
                   if (weaponData != null) {
                      string iconPath = weaponData.equipmentIconPath;
                      string equipmentName = weaponData.equipmentName;
-                     createItemTextTemplate(equipmentName, weaponData.equipmentID, textUI, indexUI, iconPath, icon, changeEvent, itemIconPath);
+                     createItemTextTemplate(equipmentName, weaponData.weaponType, textUI, indexUI, iconPath, icon, changeEvent, itemIconPath);
                   }
                }
             }

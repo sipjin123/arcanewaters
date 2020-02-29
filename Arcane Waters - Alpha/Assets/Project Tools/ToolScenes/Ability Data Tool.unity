@@ -503,6 +503,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 28499848}
   m_CullTransparentMesh: 0
+--- !u!1 &35508942
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 35508943}
+  - component: {fileID: 35508944}
+  m_Layer: 0
+  m_Name: Sound Effect Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &35508943
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 35508942}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2132735011}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &35508944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 35508942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 899515baa9e01ca48a6e07ed9d721bac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  source: {fileID: 0}
 --- !u!1 &35693974
 GameObject:
   m_ObjectHideFlags: 0
@@ -35425,14 +35469,12 @@ MonoBehaviour:
   spriteSelectionPanel: {fileID: 319005825}
   castSprite: {fileID: 1007778115}
   hitSprite: {fileID: 1359331934}
-  hitClipPath: {fileID: 144878746}
-  castClipPath: {fileID: 1736738252}
+  hitSoundEffectName: {fileID: 144878746}
+  castSoundEffectName: {fileID: 1736738252}
   selectHitAudioButton: {fileID: 283851557}
   selectCastAudioButton: {fileID: 122411346}
   playHitAudioButton: {fileID: 755883537}
   playCastAudioButton: {fileID: 1196393137}
-  hitAudio: {fileID: 0}
-  castAudio: {fileID: 0}
   projectileVariables:
   - {fileID: 1096104155196249096}
   - {fileID: 1096104154988536599}
@@ -53707,14 +53749,12 @@ MonoBehaviour:
   spriteSelectionPanel: {fileID: 319005825}
   castSprite: {fileID: 120729119}
   hitSprite: {fileID: 1703013177}
-  hitClipPath: {fileID: 1794852794}
-  castClipPath: {fileID: 1599684320}
+  hitSoundEffectName: {fileID: 0}
+  castSoundEffectName: {fileID: 0}
   selectHitAudioButton: {fileID: 1136745478}
   selectCastAudioButton: {fileID: 598465146}
   playHitAudioButton: {fileID: 1232196236}
   playCastAudioButton: {fileID: 1480785262}
-  hitAudio: {fileID: 0}
-  castAudio: {fileID: 0}
   projectileVariables:
   - {fileID: 191278820}
   - {fileID: 381688317}
@@ -54656,6 +54696,7 @@ Transform:
   m_Children:
   - {fileID: 1213454620}
   - {fileID: 926134837}
+  - {fileID: 35508943}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

@@ -23,6 +23,8 @@ public class TutorialToolManager : XmlDataToolManager {
 
    private void Start () {
       Invoke("loadXMLData", MasterToolScene.loadDelay);
+
+      EquipmentXMLManager.self.initializeDataCache();
    }
 
    public void saveXMLData (TutorialData data) {

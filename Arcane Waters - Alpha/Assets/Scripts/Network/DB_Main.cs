@@ -181,8 +181,8 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO ability_xml_v2 (" + skillIdKey + "xml_name, xmlContent, ability_type, creator_userID) " +
-            "VALUES(" + skillIdValue + "@xml_name, @xmlContent, @ability_type, @creator_userID) " +
+            "INSERT INTO ability_xml_v2 (" + skillIdKey + "xml_name, xmlContent, ability_type, creator_userID, default_ability) " +
+            "VALUES(" + skillIdValue + "@xml_name, @xmlContent, @ability_type, @creator_userID, @default_ability) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, ability_type = @ability_type, xmlContent = @xmlContent, xml_name = @xml_name", conn)) {
 
             conn.Open();
@@ -193,6 +193,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@xmlContent", abilityXML);
             cmd.Parameters.AddWithValue("@ability_type", abilityType);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
+            cmd.Parameters.AddWithValue("@default_ability", 0);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -275,6 +276,84 @@ public class DB_Main : DB_MainStub
       }
 
       return xmlContent;
+   }
+
+   #endregion
+
+   #region Sound Effects
+
+   public static new List<SoundEffect> getSoundEffects () {
+      List<SoundEffect> effects = new List<SoundEffect>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane.soundeffects", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  SoundEffect newEffect = new SoundEffect();
+                  newEffect.id = dataReader.GetInt32("id");
+                  newEffect.name = dataReader.GetString("name");
+                  newEffect.clipName = dataReader.GetString("clipName");
+                  newEffect.volume = dataReader.GetFloat("volume");
+                  newEffect.pitch = dataReader.GetFloat("pitch");
+                  effects.Add(newEffect);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return effects;
+   }
+
+   public static new void updateSoundEffect (SoundEffect effect) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "INSERT INTO arcane.soundeffects (id, name, clipName, volume, pitch) " +
+            "VALUES(@id, @name, @clipName, @volume, @pitch) " +
+            "ON DUPLICATE KEY UPDATE id = @id, name = @name, clipName = @clipName, volume = @volume, pitch = @pitch", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@id", effect.id);
+            cmd.Parameters.AddWithValue("@name", effect.name);
+            cmd.Parameters.AddWithValue("@clipName", effect.clipName);
+            cmd.Parameters.AddWithValue("@volume", effect.volume);
+            cmd.Parameters.AddWithValue("@pitch", effect.pitch);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         UnityEngine.Debug.LogError("Error is: " + e.ToString());
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void deleteSoundEffect (SoundEffect effect) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM arcane.soundeffects WHERE id=@id", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@id", effect.id);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
    }
 
    #endregion

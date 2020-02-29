@@ -6,7 +6,8 @@ using Mirror;
 using System;
 
 [Serializable]
-public class AttackAbilityData : BasicAbilityData {
+public class AttackAbilityData : BasicAbilityData
+{
    #region Public Variables
 
    // Holds the base damage
@@ -93,9 +94,8 @@ public class AttackAbilityData : BasicAbilityData {
    #region Custom Helper Methods
 
    public void playCastClipAtTarget (Vector3 targetPosition) {
-      if (castAudioClipPath != "") {
-         AudioClip castClip = AudioClipManager.self.getAudioClipData(castAudioClipPath).audioClip;
-         SoundManager.playClipOneShotAtPoint(castClip, targetPosition);
+      if (SoundEffectManager.self.isValidSoundEffect(castSoundEffectId)) {
+         SoundEffectManager.self.playSoundEffect(castSoundEffectId);
       } else {
          AudioClip castClip = AudioClipManager.self.getAudioClipData(AudioClipManager.self.defaultCastAudio).audioClip;
          SoundManager.playClipOneShotAtPoint(castClip, targetPosition);
@@ -103,9 +103,8 @@ public class AttackAbilityData : BasicAbilityData {
    }
 
    public void playHitClipAtTarget (Vector3 targetPosition) {
-      if (hitAudioClipPath != "") {
-         AudioClip hitclip = AudioClipManager.self.getAudioClipData(hitAudioClipPath).audioClip;
-         SoundManager.playClipOneShotAtPoint(hitclip, targetPosition);
+      if (SoundEffectManager.self.isValidSoundEffect(hitSoundEffectId)) {
+         SoundEffectManager.self.playSoundEffect(hitSoundEffectId);
       } else {
          AudioClip hitclip = AudioClipManager.self.getAudioClipData(AudioClipManager.self.defaultHitAudio).audioClip;
          SoundManager.playClipOneShotAtPoint(hitclip, targetPosition);

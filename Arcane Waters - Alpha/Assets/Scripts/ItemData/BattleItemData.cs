@@ -2,7 +2,7 @@ using System.Xml.Serialization;
 using UnityEngine;
 
 [System.Serializable]
-public class BattleItemData 
+public class BattleItemData
 {
    #region Public Variables
 
@@ -30,8 +30,8 @@ public class BattleItemData
    // Main combat data that this item holds
    public Element elementType;
 
-   // Holds the path to the audio clip for hit effect
-   public string hitAudioClipPath;
+   // SoundEffect that will play when hitting (if required) -1 == no effect
+   public int hitSoundEffectId = -1;
 
    // Player class required to be able to use this item
    public Weapon.Class classRequirement;
@@ -49,7 +49,7 @@ public class BattleItemData
    /// <returns> Newly created battle item data, not to be used in game
    /// this data needs to be used to create an ability or a weapon. </returns>
    public static BattleItemData CreateInstance (int itemID, string name, string desc, Element elemType,
-       string hitClip, string[] hitSprites, BattleItemType battleItemType, Weapon.Class classRequirement, string itemIcon, int levelRequirement) {
+      int hitSoundEffectId, string[] hitSprites, BattleItemType battleItemType, Weapon.Class classRequirement, string itemIcon, int levelRequirement) {
       BattleItemData data = new BattleItemData();
 
       data.itemName = name;
@@ -60,7 +60,7 @@ public class BattleItemData
 
       data.elementType = elemType;
 
-      data.hitAudioClipPath = hitClip;
+      data.hitSoundEffectId = hitSoundEffectId;
       data.hitSpritesPath = hitSprites;
 
       data.battleItemType = battleItemType;
@@ -85,7 +85,7 @@ public class BattleItemData
       hitSpritesPath = battleItemData.hitSpritesPath;
       itemIconPath = battleItemData.itemIconPath;
       elementType = battleItemData.elementType;
-      hitAudioClipPath = battleItemData.hitAudioClipPath;
+      hitSoundEffectId = battleItemData.hitSoundEffectId;
       classRequirement = battleItemData.classRequirement;
       battleItemType = battleItemData.battleItemType;
    }

@@ -149,6 +149,7 @@ public class MyNetworkManager : NetworkManager {
       AbilityManager.self.initializeDefaultAbilities();
       BackgroundGameManager.self.initializeDataCache();
       EquipmentXMLManager.self.initializeDataCache();
+      SoundEffectManager.self.initializeDataCache();
 
       // Schedule the leader boards recalculation
       LeaderBoardsManager.self.scheduleLeaderBoardRecalculation();

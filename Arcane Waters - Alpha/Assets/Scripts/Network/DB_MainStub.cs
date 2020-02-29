@@ -220,6 +220,18 @@ public class DB_MainStub : MonoBehaviour
       return new List<AbilityXMLContent>();
    }
 
+   public static List<SoundEffect> getSoundEffects () {
+      return new List<SoundEffect>();
+   }
+
+   public static void updateSoundEffect (SoundEffect effect) {
+
+   }
+
+   public static void deleteSoundEffect (SoundEffect effect) {
+
+   }
+
    public static void updateAchievementData (AchievementData achievementData, int userID, bool hasReached, int addedCount) {
 
    }

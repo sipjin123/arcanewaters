@@ -82,12 +82,10 @@ public static class ToolsUtil
    public static string ObjectToXml<T> (T data) {
       string xml = null;
 
-      XmlSerializer ser = new XmlSerializer(data.GetType());
-      using (MemoryStream ms = new MemoryStream())
-      using (XmlTextWriter tw = new XmlTextWriter(ms, Encoding.UTF8)) {
-         tw.Formatting = Formatting.Indented;
-         ser.Serialize(tw, data);
-         xml = Encoding.UTF8.GetString(ms.ToArray());
+      var serializer = new XmlSerializer(data.GetType());
+      using (StringWriter writer = new Utf8StringWriter()) {
+         serializer.Serialize(writer, data);
+         xml = writer.ToString();
       }
 
       return xml;
@@ -100,10 +98,18 @@ public static class ToolsUtil
 
          var name = Enum.GetName(e, val);
 
-         ret += name + ":" + ((int) val).ToString() + ",";
+         ret += '"' + name + '"' + ":" + ((int) val).ToString() + ",";
 
       }
+
+      ret = ret.Remove(ret.Length - 1);
+
       ret += "}";
       return ret;
    }
+}
+
+public class Utf8StringWriter : StringWriter
+{
+   public override Encoding Encoding => Encoding.UTF8;
 }
