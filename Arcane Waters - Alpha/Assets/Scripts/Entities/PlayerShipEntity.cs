@@ -135,7 +135,7 @@ public class PlayerShipEntity : ShipEntity {
       StartCoroutine(CO_FireTimedCannonBall(startTime, velocity));
    }
 
-   public override void setDataFromUserInfo (UserInfo userInfo, Armor armor, Weapon weapon, ShipInfo shipInfo) {
+   public override void setDataFromUserInfo (UserInfo userInfo, Item armor, Item weapon, ShipInfo shipInfo) {
       base.setDataFromUserInfo(userInfo, armor, weapon, shipInfo);
 
       // Ship stuff
@@ -152,10 +152,10 @@ public class PlayerShipEntity : ShipEntity {
       this.shipAbilities = shipInfo.shipAbilities;
 
       // Store the equipped items characteristics
-      weaponType = weapon.type;
+      weaponType = weapon.itemTypeId;
       weaponColor1 = weapon.color1;
       weaponColor2 = weapon.color2;
-      armorType = armor.type;
+      armorType = armor.itemTypeId;
       armorColor1 = armor.color1;
       armorColor2 = armor.color2;
    }

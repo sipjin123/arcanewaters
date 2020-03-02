@@ -23,6 +23,29 @@ public class ArmorStatData : EquipmentStatData
    public int earthResist;
 
    // Item sql id assigned from the database
-   [XmlIgnore]
-   public int itemSqlID;
+   public int itemSqlId = 0;
+
+   public static Armor translateDataToArmor (ArmorStatData armorData) {
+      Armor newArmor = new Armor {
+         id = armorData.itemSqlId,
+         itemTypeId = armorData.armorType,
+         itemName = armorData.equipmentName,
+         itemDescription = armorData.equipmentDescription,
+         category = Item.Category.Armor,
+         iconPath = armorData.equipmentIconPath,
+         materialType = armorData.materialType,
+         data = serializeArmorStatData(armorData)
+      };
+      return newArmor;
+   }
+
+   public static string serializeArmorStatData (ArmorStatData data) {
+      XmlSerializer armorSerializer = new XmlSerializer(data.GetType());
+      var sb = new System.Text.StringBuilder();
+      using (var writer = System.Xml.XmlWriter.Create(sb)) {
+         armorSerializer.Serialize(writer, data);
+      }
+      string armorDataXML = sb.ToString();
+      return armorDataXML;
+   }
 }

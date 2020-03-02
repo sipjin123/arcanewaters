@@ -109,7 +109,7 @@ public class CraftingToolScene : MonoBehaviour {
    public static void updateThisIcon (Image imageIcon, Item.Category category, int resultType) {
       switch (category) {
          case Item.Category.Weapon:
-            string imagePath = EquipmentXMLManager.self.getWeaponDataByEquipmentID(resultType).equipmentIconPath;
+            string imagePath = EquipmentXMLManager.self.getWeaponData(resultType).equipmentIconPath;
             imageIcon.sprite = ImageManager.getSprite(imagePath);
             break;
          case Item.Category.Armor:

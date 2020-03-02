@@ -72,6 +72,11 @@ public class ServerMessageManager : MonoBehaviour {
                // We have to deal with these separately because of a bug in Unity
                int[] armorColors1 = new int[armorList.Count];
                int[] armorColors2 = new int[armorList.Count];
+
+               // Must be casted to items because data transfer using inherited variables loses its data
+               List<Item> weaponItemList = new List<Item>();
+               List<Item> amorItemList = new List<Item>();
+
                MaterialType[] materialTypes = new MaterialType[armorList.Count];
                for (int i = 0; i < armorList.Count; i++) {
                   armorColors1[i] = (int) armorList[i].color1;
@@ -82,20 +87,22 @@ public class ServerMessageManager : MonoBehaviour {
                      armorList[i].materialType = MaterialType.None;
                   } else {
                      armorList[i].materialType = armorStat.materialType;
+                     armorList[i].data = ArmorStatData.serializeArmorStatData(armorStat);
                   }
+                  amorItemList.Add(armorList[i]);
                }
 
-               // Assign the appropriate data for the weapons using the equipment ID
+               // Assign the appropriate data for the weapons using the weapon type id
                foreach (Weapon weapon in weaponList) {
-                  if (weapon.type > 0) {
-                     WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponDataByEquipmentID(weapon.type);
-                     weapon.type = weaponData.weaponType;
-                     weapon.itemTypeId = weaponData.weaponType;
+                  if (weapon.itemTypeId > 0) {
+                     WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weapon.itemTypeId);
+                     weapon.data = WeaponStatData.serializeWeaponStatData(weaponData);
                   }
+                  weaponItemList.Add(weapon);
                }
-
+               
                // If there was an account ID but not user ID, send the info on all of their characters for display on the Character screen
-               CharacterListMessage msg = new CharacterListMessage(Global.netId, users.ToArray(), armorList.ToArray(), weaponList.ToArray(), armorColors1, armorColors2);
+               CharacterListMessage msg = new CharacterListMessage(Global.netId, users.ToArray(), amorItemList.ToArray(), weaponItemList.ToArray(), armorColors1, armorColors2);
                conn.Send(msg);
             } else {
                sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);

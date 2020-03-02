@@ -47,7 +47,7 @@ public class PlayerBodyEntity : BodyEntity {
          weaponList = DB_Main.getWeaponsForUser(this.userId);
 
          foreach (Weapon weapon in weaponList) {
-            WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponDataByEquipmentID(weapon.type);
+            WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weapon.itemTypeId);
             if (keyNumber == 1 && weaponData.actionType == Weapon.ActionType.PlantCrop) {
                newWeapon = weapon;
             }
@@ -65,7 +65,7 @@ public class PlayerBodyEntity : BodyEntity {
 
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            if (newWeapon.type != 0) {
+            if (newWeapon.itemTypeId != 0) {
                this.weaponManager.updateWeaponSyncVars(newWeapon);
             }
          });

@@ -52,11 +52,19 @@ public class CharacterScreen : MonoBehaviour {
       return false;
    }
 
-   public void initializeScreen (UserInfo[] userArray, Armor[] armorArray, Weapon[] weaponArray, int[] armorColors1, int[] armorColors2) {
+   public void initializeScreen (UserInfo[] userArray, Item[] armorArray, Item[] weaponArray, int[] armorColors1, int[] armorColors2) {
       // Store the data we receive for later reference
       _userArray = userArray;
-      _armorArray = armorArray;
-      _weaponArray = weaponArray;
+
+      _armorArray = new Armor[armorArray.Length];
+      for (int i = 0; i < armorArray.Length; i++) {
+         _armorArray[i] = Armor.castItemToArmor(armorArray[i]);
+      }
+
+      _weaponArray = new Weapon[weaponArray.Length];
+      for (int i = 0; i < weaponArray.Length; i++) {
+         _weaponArray[i] = Weapon.castItemToWeapon(weaponArray[i]);
+      }
 
       // Clear out any existing offline characters
       foreach (OfflineCharacter offlineChar in GetComponentsInChildren<OfflineCharacter>(true)) {

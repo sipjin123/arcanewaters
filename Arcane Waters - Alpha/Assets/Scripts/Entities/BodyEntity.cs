@@ -44,11 +44,11 @@ public class BodyEntity : NetEntity
       checkFallDirection();
    }
 
-   public override void setDataFromUserInfo (UserInfo userInfo, Armor armor, Weapon weapon, ShipInfo shipInfo) {
+   public override void setDataFromUserInfo (UserInfo userInfo, Item armor, Item weapon, ShipInfo shipInfo) {
       base.setDataFromUserInfo(userInfo, armor, weapon, shipInfo);
       
-      this.armorManager.updateArmorSyncVars(armor);
-      this.weaponManager.updateWeaponSyncVars(weapon);
+      this.armorManager.updateArmorSyncVars(Armor.castItemToArmor(armor));
+      this.weaponManager.updateWeaponSyncVars(Weapon.castItemToWeapon(weapon));
    }
 
    public override Armor getArmorCharacteristics () {

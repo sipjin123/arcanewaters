@@ -13,8 +13,8 @@ public class UserObjects {
    public long accountCreationTime;
    public UserInfo userInfo;
    public ShipInfo shipInfo;
-   public Armor armor;
-   public Weapon weapon;
+   public Item armor;
+   public Item weapon;
 
    // We have to send these separately because of a Unity serialization bug with class inheritance
    public ColorType armorColor1;

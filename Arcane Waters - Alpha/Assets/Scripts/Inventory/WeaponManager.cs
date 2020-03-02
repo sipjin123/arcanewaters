@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using Mirror;
+using System.Xml.Serialization;
+using System.Text;
+using System.Xml;
 
 public class WeaponManager : EquipmentManager {
    #region Public Variables
@@ -77,11 +80,12 @@ public class WeaponManager : EquipmentManager {
    }
 
    [ClientRpc]
-   public void Rpc_EquipWeapon (Weapon newWeapon, ColorType color1, ColorType color2, WeaponStatData weaponData) {
+   public void Rpc_EquipWeapon (string rawReaponData, ColorType color1, ColorType color2) {
+      WeaponStatData weaponData = Util.xmlLoad<WeaponStatData>(rawReaponData);
+      Weapon newWeapon = WeaponStatData.translateDataToWeapon(weaponData);
       _weapon = newWeapon;
-      _weapon.data = string.Format("damage={0}, rarity={1}", weaponData == null ? 0 : weaponData.weaponBaseDamage, (int) Rarity.Type.Common);
 
-      updateSprites(newWeapon.type, color1, color2);
+      updateSprites(newWeapon.itemTypeId, color1, color2);
 
       // Play a sound
       SoundManager.create3dSound("equip_", this.transform.position, 2);
@@ -94,25 +98,24 @@ public class WeaponManager : EquipmentManager {
          return;
       }
 
-      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponDataByEquipmentID(weapon.itemTypeId);
-      int newWeaponType = weaponData == null ? 0 : weaponData.weaponType;
-
-      weapon.type = newWeaponType;
-      weapon.itemTypeId = newWeaponType;
-
-      // Assign the weapon ID
-      this.equippedWeaponId = (weapon.type == 0) ? 0 : weapon.id;
+      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weapon.itemTypeId);
+      if (weaponData != null) {
+         weaponData.itemSqlId = weapon.id;
+      }
 
       _weapon = weapon;
 
+      // Assign the weapon ID
+      this.equippedWeaponId = (weapon.itemTypeId == 0) ? 0 : weapon.id;
+
       // Set the Sync Vars so they get sent to the clients
-      this.weaponType = newWeaponType;
+      this.weaponType = weaponData.weaponType;
       this.color1 = weapon.color1;
       this.color2 = weapon.color2;
       this.actionType = weaponData == null ? Weapon.ActionType.None : weaponData.actionType;
 
       // Send the Weapon Info to all clients
-      Rpc_EquipWeapon(weapon, color1, color2, weaponData == null ? new WeaponStatData() : weaponData);
+      Rpc_EquipWeapon(WeaponStatData.serializeWeaponStatData(weaponData), color1, color2);
    }
 
    #region Private Variables

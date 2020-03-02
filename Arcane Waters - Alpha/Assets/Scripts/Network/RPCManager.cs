@@ -880,6 +880,15 @@ public class RPCManager : NetworkBehaviour {
             items.Add(DB_Main.getItem(_player.userId, userInfo.armorId));
          }
 
+         WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(userObjects.weapon.itemTypeId);
+         if (weaponData != null) {
+            userObjects.weapon.data = WeaponStatData.serializeWeaponStatData(weaponData);
+         }
+         ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(userObjects.armor.itemTypeId);
+         if (armorData != null) {
+            userObjects.armor.data = ArmorStatData.serializeArmorStatData(armorData);
+         }
+
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             List<Item> processedItemList = EquipmentXMLManager.setEquipmentData(items);
@@ -2371,7 +2380,7 @@ public class RPCManager : NetworkBehaviour {
 
             switch (resultItem.category) {
                case Item.Category.Weapon:
-                  WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponDataByEquipmentID(resultItem.itemTypeId);
+                  WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(resultItem.itemTypeId);
                   blueprint.setBasicInfo(weaponData.equipmentName, weaponData.equipmentDescription, weaponData.equipmentIconPath);
 
                   // Serialize equipment data
@@ -2484,7 +2493,7 @@ public class RPCManager : NetworkBehaviour {
 
          switch (resultItem.category) {
             case Item.Category.Weapon:
-               WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponDataByEquipmentID(resultItem.itemTypeId);
+               WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(resultItem.itemTypeId);
                blueprint.setBasicInfo(weaponData.equipmentName, weaponData.equipmentDescription, weaponData.equipmentIconPath);
                break;
             case Item.Category.Armor:
@@ -3850,7 +3859,7 @@ public class RPCManager : NetworkBehaviour {
       foreach (Item item in sortedList) {
          switch (item.category) {
             case Item.Category.Weapon:
-               WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponDataByEquipmentID(item.itemTypeId);
+               WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
                if (weaponData != null) {
                   item.setBasicInfo(weaponData.equipmentName, weaponData.equipmentDescription, weaponData.equipmentIconPath);
                }
@@ -3894,7 +3903,7 @@ public class RPCManager : NetworkBehaviour {
 
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Armor armor = userObjects.armor;
+            Armor armor = Armor.castItemToArmor(userObjects.armor);
 
             if (body != null) {
                body.armorManager.updateArmorSyncVars(armor);
@@ -3920,7 +3929,7 @@ public class RPCManager : NetworkBehaviour {
 
          // Back to Unity Thread to call RPC functions
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Weapon weapon = userObjects.weapon;
+            Weapon weapon = Weapon.castItemToWeapon(userObjects.weapon);
 
             if (body != null) {
                body.weaponManager.updateWeaponSyncVars(weapon);

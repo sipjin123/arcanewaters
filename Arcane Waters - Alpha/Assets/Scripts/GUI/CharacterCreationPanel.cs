@@ -176,8 +176,8 @@ public class CharacterCreationPanel : ClientMonoBehaviour {
 
       // Update the Info and apply it to the character
       Armor armor = _char.getArmor();
-      armor.type = list[currentIndex];
-      _char.setArmor(armor.type, armor.color1, armor.color2);
+      armor.itemTypeId = list[currentIndex];
+      _char.setArmor(armor.itemTypeId, armor.color1, armor.color2);
    }
 
    public void changeClass (int offset) {

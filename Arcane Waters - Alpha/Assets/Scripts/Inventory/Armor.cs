@@ -11,22 +11,19 @@ using MySql.Data.MySqlClient;
 public class Armor : EquippableItem {
    #region Public Variables
 
-   // The type
-   public int type;
-
    // The material type to be used on this equipment
    public MaterialType materialType;
 
    #endregion
 
    public Armor () {
-      this.type = 0;
+      this.itemTypeId = 0;
    }
 
    #if IS_SERVER_BUILD
 
    public Armor (MySqlDataReader dataReader) {
-      this.type = DataUtil.getInt(dataReader, "itmType");
+      this.itemTypeId = DataUtil.getInt(dataReader, "itmType");
       this.id = DataUtil.getInt(dataReader, "itmId");
       this.category = (Item.Category) DataUtil.getInt(dataReader, "itmCategory");
       this.itemTypeId = DataUtil.getInt(dataReader, "itmType");
@@ -56,7 +53,7 @@ public class Armor : EquippableItem {
    public Armor (int id, int armorType, ColorType color1, ColorType color2) {
       this.category = Category.Armor;
       this.id = id;
-      this.type = armorType;
+      this.itemTypeId = armorType;
       this.itemTypeId = (int) armorType;
       this.count = 1;
       this.color1 = color1;
@@ -69,7 +66,6 @@ public class Armor : EquippableItem {
       this.id = id;
       this.count = count;
       this.itemTypeId = itemTypeId;
-      this.type = itemTypeId;
       this.color1 = color1;
       this.color2 = color2;
       this.data = data;
@@ -80,7 +76,7 @@ public class Armor : EquippableItem {
       this.id = id;
       this.count = 1;
       this.itemTypeId = armorType;
-      this.type = armorType;
+      this.itemTypeId = armorType;
       this.color1 = ColorType.None;
       this.color2 = ColorType.None;
       this.data = "";
@@ -121,9 +117,9 @@ public class Armor : EquippableItem {
    }
 
    public virtual float getDefense (Element element) {
-      ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(type);
+      ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(itemTypeId);
       if (armorData == null) {
-         D.warning("Cannot get Defense, Armor data does not exist! Go to Equipment Editor and make new data: (" + type + ")");
+         D.warning("Cannot get Defense, Armor data does not exist! Go to Equipment Editor and make new data: (" + itemTypeId + ")");
          return 5;
       }
 
@@ -216,7 +212,7 @@ public class Armor : EquippableItem {
    }
 
    public override ColorKey getColorKey () {
-      return new ColorKey(Global.player.gender, "armor_" + this.type.ToString());
+      return new ColorKey(Global.player.gender, "armor_" + this.itemTypeId.ToString());
    }
 
    public static Armor generateRandom (int itemId, int armorType) {
@@ -244,12 +240,12 @@ public class Armor : EquippableItem {
    public static Armor castItemToArmor (Item item) {
       Armor newArmor = new Armor {
          category = Category.Armor,
-         type = item.itemTypeId,
          itemTypeId = item.itemTypeId,
          id = item.id,
          iconPath = item.iconPath,
          itemDescription = item.itemDescription,
-         itemName = item.itemName
+         itemName = item.itemName,
+         data = item.data
       };
 
       return newArmor;

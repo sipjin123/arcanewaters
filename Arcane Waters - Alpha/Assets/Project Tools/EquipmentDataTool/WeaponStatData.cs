@@ -30,6 +30,40 @@ public class WeaponStatData : EquipmentStatData
    public Weapon.ActionType actionType = Weapon.ActionType.None;
 
    // Item sql id assigned from the database
-   [XmlIgnore]
-   public int itemSqlID;
+   public int itemSqlId = 0;
+
+   public static Weapon translateDataToWeapon (WeaponStatData weaponData) {
+      Weapon newWeapon = new Weapon {
+         id = weaponData.itemSqlId,
+         itemTypeId = weaponData.weaponType,
+         itemName = weaponData.equipmentName,
+         itemDescription = weaponData.equipmentDescription,
+         category = Item.Category.Weapon,
+         iconPath = weaponData.equipmentIconPath,
+         materialType = weaponData.materialType,
+         data = serializeWeaponStatData(weaponData)
+      };
+      return newWeapon;
+   }
+
+   public static string serializeWeaponStatData (WeaponStatData data) {
+      XmlSerializer weaponSerializer = new XmlSerializer(data.GetType());
+      var sb = new System.Text.StringBuilder();
+      using (var writer = System.Xml.XmlWriter.Create(sb)) {
+         weaponSerializer.Serialize(writer, data);
+      }
+      string weaponDataXML = sb.ToString();
+      return weaponDataXML;
+   }
+
+   public static WeaponStatData weaponData (string data, int itemTypeId) {
+      TextAsset newTextAsset = new TextAsset(data);
+      try {
+         WeaponStatData castedData = Util.xmlLoad<WeaponStatData>(newTextAsset);
+         return castedData;
+      } catch {
+         Debug.LogWarning("There is no Weapon Data for: " + itemTypeId);
+         return null;
+      }
+   }
 }

@@ -68,7 +68,7 @@ public class ItemRequirementRow : MonoBehaviour {
          string iconPath = "";
          switch (currentCategory) {
             case Item.Category.Weapon:
-               iconPath = EquipmentXMLManager.self.getWeaponDataByEquipmentID(currentType).equipmentIconPath;
+               iconPath = EquipmentXMLManager.self.getWeaponData(currentType).equipmentIconPath;
                break;
             case Item.Category.Armor:
                iconPath = EquipmentXMLManager.self.getArmorData(currentType).equipmentIconPath;

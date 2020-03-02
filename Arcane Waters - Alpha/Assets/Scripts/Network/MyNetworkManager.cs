@@ -191,7 +191,6 @@ public class MyNetworkManager : NetworkManager {
 
          // Store references to the individual info objects for convenience
          UserInfo userInfo = userObjects.userInfo;
-         Armor armor = userObjects.armor;
          ShipInfo shipInfo = userObjects.shipInfo;
 
          // Get the current voyage group the user is member of

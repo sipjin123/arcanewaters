@@ -69,11 +69,13 @@ public class ArmorManager : EquipmentManager {
    }
 
    [ClientRpc]
-   public void Rpc_EquipArmor (Armor newArmor, ColorType color1, ColorType color2) {
+   public void Rpc_EquipArmor (string rawArmorData, ColorType color1, ColorType color2) {
+      ArmorStatData armorData = Util.xmlLoad<ArmorStatData>(rawArmorData);
+      Armor newArmor = ArmorStatData.translateDataToArmor(armorData);
       _armor = newArmor;
 
       // Update the sprites for the new armor type
-      int newType = newArmor == null ? 0 : newArmor.type;
+      int newType = newArmor == null ? 0 : newArmor.itemTypeId;
       updateSprites(newType, color1, color2, newArmor.materialType);
 
       // Play a sound
@@ -100,24 +102,25 @@ public class ArmorManager : EquipmentManager {
          return;
       }
 
+      ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(newArmor.itemTypeId);
+      if (armorData != null) {
+         armorData.itemSqlId = newArmor.id;
+         newArmor.materialType = armorData.materialType;
+         this.materialType = armorData.materialType;
+      }
+
       _armor = newArmor;
 
       // Assign the armor ID
-      this.equippedArmorId = (newArmor.type == 0) ? 0 : newArmor.id;
+      this.equippedArmorId = (newArmor.itemTypeId == 0) ? 0 : newArmor.id;
 
       // Set the Sync Vars so they get sent to the clients
-      this.armorType = newArmor.type;
+      this.armorType = armorData.armorType;
       this.color1 = newArmor.color1;
       this.color2 = newArmor.color2;
 
-      ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(newArmor.itemTypeId);
-      if (armorData != null) {
-         newArmor.materialType = armorData.materialType;
-         this.materialType = armorData.materialType;
-      } 
-
       // Send the Info to all clients
-      Rpc_EquipArmor(newArmor, newArmor.color1, newArmor.color2);
+      Rpc_EquipArmor(ArmorStatData.serializeArmorStatData(armorData), newArmor.color1, newArmor.color2);
    }
 
    #region Private Variables

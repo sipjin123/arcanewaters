@@ -23,22 +23,18 @@ public class Weapon : EquippableItem {
    // The weapon Class
    public enum Class { Any = 0, Melee = 1, Ranged = 2, Magic = 3 }
 
-   // The type
-   public int type;
-
    // The material type to be used on this equipment
    public MaterialType materialType;
 
    #endregion
 
    public Weapon () {
-      this.type = 0;
+      this.itemTypeId = 0;
    }
 
    #if IS_SERVER_BUILD
 
    public Weapon (MySqlDataReader dataReader) {
-      this.type = DataUtil.getInt(dataReader, "itmType");
       this.id = DataUtil.getInt(dataReader, "itmId");
       this.category = (Item.Category) DataUtil.getInt(dataReader, "itmCategory");
       this.itemTypeId = DataUtil.getInt(dataReader, "itmType");
@@ -68,8 +64,7 @@ public class Weapon : EquippableItem {
    public Weapon (int id, int weaponType, int primaryColorId, int secondaryColorId) {
       this.category = Category.Weapon;
       this.id = id;
-      this.type = weaponType;
-      this.itemTypeId = (int) weaponType;
+      this.itemTypeId = weaponType;
       this.count = 1;
       this.color1 = (ColorType) primaryColorId;
       this.color2 = (ColorType) secondaryColorId;
@@ -79,8 +74,7 @@ public class Weapon : EquippableItem {
    public Weapon (int id, int weaponType, ColorType primaryColorId, ColorType secondaryColorId) {
       this.category = Category.Weapon;
       this.id = id;
-      this.type = weaponType;
-      this.itemTypeId = (int) weaponType;
+      this.itemTypeId = weaponType;
       this.count = 1;
       this.color1 = primaryColorId;
       this.color2 = secondaryColorId;
@@ -92,7 +86,6 @@ public class Weapon : EquippableItem {
       this.id = id;
       this.count = count;
       this.itemTypeId = itemTypeId;
-      this.type = itemTypeId;
       this.color1 = color1;
       this.color2 = color2;
       this.data = data;
@@ -102,20 +95,18 @@ public class Weapon : EquippableItem {
       this.category = Category.Weapon;
       this.id = id;
       this.count = 1;
-      this.itemTypeId = (int) weaponType;
-      this.type = weaponType;
+      this.itemTypeId = weaponType;
       this.color1 = ColorType.None;
       this.color2 = ColorType.None;
       this.data = "";
    }
 
    public override string getDescription () {
-      WeaponStatData weaponData = UserEquipmentCache.self.getWeaponDataByEquipmentID(this.type);
-      if (weaponData == null) {
+      if (WeaponStatData.weaponData(data, itemTypeId) == null) {
          return itemDescription;
       }
 
-      return weaponData.equipmentDescription;
+      return WeaponStatData.weaponData(data, itemTypeId).equipmentDescription;
    }
 
    public override string getTooltip () {
@@ -131,9 +122,8 @@ public class Weapon : EquippableItem {
    }
 
    public override Rarity.Type getRarity () {
-      WeaponStatData weaponData = UserEquipmentCache.self.getWeaponDataByEquipmentID(this.type);
-      if (weaponData != null) {
-         return weaponData.rarity;
+      if (WeaponStatData.weaponData(data, itemTypeId) != null) {
+         return WeaponStatData.weaponData(data, itemTypeId).rarity;
       }
 
       return Rarity.Type.Common;
@@ -154,7 +144,7 @@ public class Weapon : EquippableItem {
          return "None";
       }
 
-      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponDataByEquipmentID(weaponType);
+      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponType);
       if (weaponData == null) {
          D.warning("Weapon data does not exist! Go to Equipment Editor and make new data :: (" + weaponType + ")");
          return "Undefined";
@@ -164,44 +154,31 @@ public class Weapon : EquippableItem {
    }
 
    public int getDamage () {
-      WeaponStatData weaponData = UserEquipmentCache.self.getWeaponDataByEquipmentID(this.type);
-      if (weaponData != null) {
-         return weaponData.weaponBaseDamage;
+      if (WeaponStatData.weaponData(data, itemTypeId) != null) {
+         return WeaponStatData.weaponData(data, itemTypeId).weaponBaseDamage;
       }
 
       return 0;
    }
 
    public virtual float getDamage (Element element) {
-      WeaponStatData weaponData = UserEquipmentCache.self.getWeaponDataByEquipmentID(this.type);
-
-      if (weaponData == null) {
-         D.warning("Weapon data does not exist! Go to Equipment Editor and make new data: (" + this.type + ")");
+      if (WeaponStatData.weaponData(data, itemTypeId) == null) {
+         D.warning("Weapon data does not exist! Go to Equipment Editor and make new data: (" + this.itemTypeId + ")");
          return 10;
       }
 
       switch (element) {
          case Element.Air:
-            return weaponData.weaponDamageAir;
+            return WeaponStatData.weaponData(data, itemTypeId).weaponDamageAir;
          case Element.Fire:
-            return weaponData.weaponDamageFire;
+            return WeaponStatData.weaponData(data, itemTypeId).weaponDamageFire;
          case Element.Water:
-            return weaponData.weaponDamageWater;
+            return WeaponStatData.weaponData(data, itemTypeId).weaponDamageWater;
          case Element.Earth:
-            return weaponData.weaponDamageEarth;
+            return WeaponStatData.weaponData(data, itemTypeId).weaponDamageEarth;
       }
 
-      return weaponData.weaponBaseDamage;
-   }
-
-   public static int getBaseDamage (int weaponType) {
-      WeaponStatData weaponData = UserEquipmentCache.self.getWeaponDataByEquipmentID(weaponType);
-      if (weaponData == null) {
-         D.warning("Weapon data does not exist! Go to Equipment Editor and make new data: (" + weaponType + ")");
-         return 10;
-      }
-
-      return weaponData.weaponBaseDamage;
+      return WeaponStatData.weaponData(data, itemTypeId).weaponBaseDamage;
    }
 
    public static float getDamageModifier (Rarity.Type rarity) {
@@ -256,36 +233,34 @@ public class Weapon : EquippableItem {
    }
 
    public override bool canBeTrashed () {
-      WeaponStatData weaponData = UserEquipmentCache.self.getWeaponDataByEquipmentID(type);
-      if (weaponData == null) {
+      if (WeaponStatData.weaponData(data, itemTypeId) == null) {
          return true;
       }
 
-      return weaponData.canBeTrashed;
+      return WeaponStatData.weaponData(data, itemTypeId).canBeTrashed;
    }
 
    public override string getIconPath () {
-      WeaponStatData weaponData = UserEquipmentCache.self.getWeaponDataByEquipmentID(type);
-      if (weaponData == null) {
+      if (WeaponStatData.weaponData(data, itemTypeId) == null) {
          return iconPath;
       }
 
-      return weaponData.equipmentIconPath;
+      return WeaponStatData.weaponData(data, itemTypeId).equipmentIconPath;
    }
 
    public override ColorKey getColorKey () {
-      return new ColorKey(Global.player.gender, this.type, new Weapon());
+      return new ColorKey(Global.player.gender, this.itemTypeId, new Weapon());
    }
 
    public static Weapon castItemToWeapon (Item item) {
-      Weapon newWeapon = new Weapon { 
+      Weapon newWeapon = new Weapon {
          category = Category.Weapon,
-         type = item.itemTypeId,
          itemTypeId = item.itemTypeId,
          id = item.id,
          iconPath = item.iconPath,
          itemDescription = item.itemDescription,
          itemName = item.itemName,
+         data = item.data
       };
 
       return newWeapon;

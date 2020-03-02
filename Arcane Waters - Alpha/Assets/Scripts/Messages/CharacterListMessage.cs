@@ -13,8 +13,8 @@ public class CharacterListMessage : MessageBase {
 
    // The character info
    public UserInfo[] userArray;
-   public Armor[] armorArray;
-   public Weapon[] weaponArray;
+   public Item[] armorArray;
+   public Item[] weaponArray;
 
    // We have to deal with these separately because of a Unity bug
    public int[] armorColors1;
@@ -28,7 +28,7 @@ public class CharacterListMessage : MessageBase {
       this.netId = netId;
    }
 
-   public CharacterListMessage (uint netId, UserInfo[] userArray, Armor[] armorArray, Weapon[] weaponArray, int[] armorColors1, int[] armorColors2) {
+   public CharacterListMessage (uint netId, UserInfo[] userArray, Item[] armorArray, Item[] weaponArray, int[] armorColors1, int[] armorColors2) {
       this.netId = netId;
       this.userArray = userArray;
       this.armorArray = armorArray;

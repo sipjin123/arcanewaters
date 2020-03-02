@@ -470,7 +470,7 @@ public class SeaMonsterDataPanel : MonoBehaviour
                itemTemp.spriteIcon.sprite = ImageManager.getSprite(spritePath);
                break;
             case Item.Category.Weapon:
-               string fetchedWeaponSprite = EquipmentXMLManager.self.getWeaponDataByEquipmentID(item.Key).equipmentIconPath;
+               string fetchedWeaponSprite = EquipmentXMLManager.self.getWeaponData(item.Key).equipmentIconPath;
                itemTemp.spriteIcon.sprite = ImageManager.getSprite(fetchedWeaponSprite);
                break;
             default:

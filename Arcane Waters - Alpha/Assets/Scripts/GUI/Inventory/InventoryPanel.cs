@@ -150,14 +150,13 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       goldText.text = string.Format("{0:n0}", gold);
       gemsText.text = string.Format("{0:n0}", gems);
 
-      UserEquipmentCache.self.finishedLoadingWeapons.RemoveAllListeners();
-      UserEquipmentCache.self.finishedLoadingWeapons.AddListener(() => {
+      UserEquipmentFetcher.self.finishedLoadingEquipment.RemoveAllListeners();
+      UserEquipmentFetcher.self.finishedLoadingEquipment.AddListener(() => {
          // Update our character preview stack
          characterStack.updateLayers(userObjects);
       });
 
-      UserEquipmentCache.self.fetchWeaponData(UserEquipmentCache.ItemDataType.Inventory);
-      //receiveItemForDisplay(itemArray);
+      UserEquipmentFetcher.self.fetchEquipmentData(UserEquipmentFetcher.ItemDataType.Inventory);
 
       // Insert the player's name
       if (Global.player != null) {
@@ -195,10 +194,10 @@ public class InventoryPanel : Panel, IPointerClickHandler {
             cell.setCellForItem(item);
 
             // If the item is equipped, place the item cell in the equipped slots
-            if (item.id == bodyEntity.weaponManager.equippedWeaponId) {
+            if (item.id == bodyEntity.weaponManager.equippedWeaponId && item.id != 0) {
                cell.transform.SetParent(equippedWeaponCellContainer.transform, false);
                refreshStats(Weapon.castItemToWeapon(item));
-            } else if (item.id == bodyEntity.armorManager.equippedArmorId) {
+            } else if (item.id == bodyEntity.armorManager.equippedArmorId && item.id != 0) {
                cell.transform.SetParent(equippedArmorCellContainer.transform, false);
                refreshStats(Armor.castItemToArmor(item));
             }

@@ -69,11 +69,13 @@ public class OfflineCharacter : ClientMonoBehaviour {
       creationCanvasGroup.blocksRaycasts = creationMode;
    }
 
-   public void setDataAndLayers (UserInfo userInfo, Weapon weapon, Armor armor, ColorType armorColor1, ColorType armorColor2) {
+   public void setDataAndLayers (UserInfo userInfo, Item weapon, Item armor, ColorType armorColor1, ColorType armorColor2) {
       this.userId = userInfo.userId;
 
       setBodyLayers(userInfo);
-      setArmor(armor.type, armorColor1, armorColor2, armor.materialType);
+
+      ArmorStatData armorData = Util.xmlLoad<ArmorStatData>(armor.data);
+      setArmor(armorData.armorType, armorData.color1, armorData.color2, armorData.materialType);
       setWeapon(userInfo, weapon);
    }
 
@@ -104,12 +106,14 @@ public class OfflineCharacter : ClientMonoBehaviour {
       eyes.recolor(eyeColorKey, userInfo.eyesColor1, 0);
    }
 
-   public void setWeapon (UserInfo userInfo, Weapon weapon) {
+   public void setWeapon (UserInfo userInfo, Item weapon) {
+      WeaponStatData weaponData = Util.xmlLoad<WeaponStatData>(weapon.data);
+
       // Update our Material
       foreach (WeaponLayer weaponLayer in weaponLayers) {
-         weaponLayer.setType(userInfo.gender, weapon.type);
-         ColorKey colorKey = new ColorKey(userInfo.gender, weapon.type, new Weapon());
-         weaponLayer.recolor(colorKey, weapon.color1, weapon.color2);
+         weaponLayer.setType(userInfo.gender, weaponData.weaponType);
+         ColorKey colorKey = new ColorKey(userInfo.gender, weaponData.weaponType, new Weapon());
+         weaponLayer.recolor(colorKey, weaponData.color1, weaponData.color2);
       }
    }
 
@@ -161,7 +165,7 @@ public class OfflineCharacter : ClientMonoBehaviour {
 
    public Armor getArmor() {
       Armor armor = new Armor();
-      armor.type = this.armor.getType();
+      armor.itemTypeId = this.armor.getType();
       armor.color1 = this.armor.getColor1();
       armor.color2 = this.armor.getColor2();
 
