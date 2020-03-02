@@ -46,7 +46,7 @@ public class BlueprintRow : MonoBehaviour
       if (blueprint.itemTypeId.ToString().StartsWith(Blueprint.WEAPON_PREFIX)) {
          icon.sprite = ImageManager.getSprite(resultItem.iconPath);
          colorKey = new ColorKey(Global.player.gender, resultItem.itemTypeId, new Weapon());
-      } else if (blueprint.itemTypeId.ToString().StartsWith(Blueprint.WEAPON_PREFIX)) {
+      } else if (blueprint.itemTypeId.ToString().StartsWith(Blueprint.ARMOR_PREFIX)) {
          icon.sprite = ImageManager.getSprite(resultItem.iconPath);
          colorKey = new ColorKey(Global.player.gender, resultItem.itemTypeId, new Armor());
       } else {

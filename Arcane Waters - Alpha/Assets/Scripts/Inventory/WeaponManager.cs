@@ -72,7 +72,7 @@ public class WeaponManager : EquipmentManager {
    }
 
    public bool isHoldingWeapon () {
-      if (_weapon.getDamage() != 0 && actionType == Weapon.ActionType.None) {
+      if (_weapon.getDamage() != 0) {
          return true;
       }
 

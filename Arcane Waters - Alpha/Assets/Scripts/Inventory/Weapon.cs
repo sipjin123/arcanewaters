@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Globalization;
+using System.Xml.Serialization;
 
 #if IS_SERVER_BUILD
 using MySql.Data.MySqlClient;
@@ -102,11 +103,11 @@ public class Weapon : EquippableItem {
    }
 
    public override string getDescription () {
-      if (WeaponStatData.weaponData(data, itemTypeId) == null) {
+      if (weaponData() == null) {
          return itemDescription;
       }
 
-      return WeaponStatData.weaponData(data, itemTypeId).equipmentDescription;
+      return weaponData().equipmentDescription;
    }
 
    public override string getTooltip () {
@@ -122,8 +123,8 @@ public class Weapon : EquippableItem {
    }
 
    public override Rarity.Type getRarity () {
-      if (WeaponStatData.weaponData(data, itemTypeId) != null) {
-         return WeaponStatData.weaponData(data, itemTypeId).rarity;
+      if (weaponData() != null) {
+         return weaponData().rarity;
       }
 
       return Rarity.Type.Common;
@@ -154,31 +155,31 @@ public class Weapon : EquippableItem {
    }
 
    public int getDamage () {
-      if (WeaponStatData.weaponData(data, itemTypeId) != null) {
-         return WeaponStatData.weaponData(data, itemTypeId).weaponBaseDamage;
+      if (weaponData() != null) {
+         return weaponData().weaponBaseDamage;
       }
 
       return 0;
    }
 
    public virtual float getDamage (Element element) {
-      if (WeaponStatData.weaponData(data, itemTypeId) == null) {
+      if (weaponData() == null) {
          D.warning("Weapon data does not exist! Go to Equipment Editor and make new data: (" + this.itemTypeId + ")");
          return 10;
       }
 
       switch (element) {
          case Element.Air:
-            return WeaponStatData.weaponData(data, itemTypeId).weaponDamageAir;
+            return weaponData().weaponDamageAir;
          case Element.Fire:
-            return WeaponStatData.weaponData(data, itemTypeId).weaponDamageFire;
+            return weaponData().weaponDamageFire;
          case Element.Water:
-            return WeaponStatData.weaponData(data, itemTypeId).weaponDamageWater;
+            return weaponData().weaponDamageWater;
          case Element.Earth:
-            return WeaponStatData.weaponData(data, itemTypeId).weaponDamageEarth;
+            return weaponData().weaponDamageEarth;
       }
 
-      return WeaponStatData.weaponData(data, itemTypeId).weaponBaseDamage;
+      return weaponData().weaponBaseDamage;
    }
 
    public static float getDamageModifier (Rarity.Type rarity) {
@@ -233,19 +234,19 @@ public class Weapon : EquippableItem {
    }
 
    public override bool canBeTrashed () {
-      if (WeaponStatData.weaponData(data, itemTypeId) == null) {
+      if (weaponData() == null) {
          return true;
       }
 
-      return WeaponStatData.weaponData(data, itemTypeId).canBeTrashed;
+      return weaponData().canBeTrashed;
    }
 
    public override string getIconPath () {
-      if (WeaponStatData.weaponData(data, itemTypeId) == null) {
+      if (weaponData() == null) {
          return iconPath;
       }
 
-      return WeaponStatData.weaponData(data, itemTypeId).equipmentIconPath;
+      return weaponData().equipmentIconPath;
    }
 
    public override ColorKey getColorKey () {
@@ -266,7 +267,19 @@ public class Weapon : EquippableItem {
       return newWeapon;
    }
 
+   private WeaponStatData weaponData () {
+      if (_weaponStatData == null) {
+         _weaponStatData = WeaponStatData.weaponData(data, itemTypeId);
+      }
+
+      return _weaponStatData;
+   }
+
    #region Private Variables
+
+   // Cached weapon data from xml data variable
+   [XmlIgnore]
+   private WeaponStatData _weaponStatData;
 
    #endregion
 }

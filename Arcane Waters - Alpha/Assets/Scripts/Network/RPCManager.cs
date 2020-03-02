@@ -2382,44 +2382,17 @@ public class RPCManager : NetworkBehaviour {
                case Item.Category.Weapon:
                   WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(resultItem.itemTypeId);
                   blueprint.setBasicInfo(weaponData.equipmentName, weaponData.equipmentDescription, weaponData.equipmentIconPath);
-
-                  // Serialize equipment data
-                  System.Xml.Serialization.XmlSerializer ser = new System.Xml.Serialization.XmlSerializer(weaponData.GetType());
-                  var sb = new StringBuilder();
-                  using (var writer = System.Xml.XmlWriter.Create(sb)) {
-                     ser.Serialize(writer, weaponData);
-                  }
-
-                  string longString = sb.ToString();
-                  blueprint.data = longString;
+                  blueprint.data = WeaponStatData.serializeWeaponStatData(weaponData);
                   break;
                case Item.Category.Armor:
                   ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(resultItem.itemTypeId);
                   blueprint.setBasicInfo(armorData.equipmentName, armorData.equipmentDescription, armorData.equipmentIconPath);
-
-                  // Serialize equipment data
-                  ser = new System.Xml.Serialization.XmlSerializer(armorData.GetType());
-                  sb = new StringBuilder();
-                  using (var writer = System.Xml.XmlWriter.Create(sb)) {
-                     ser.Serialize(writer, armorData);
-                  }
-
-                  longString = sb.ToString();
-                  blueprint.data = longString;
+                  blueprint.data = ArmorStatData.serializeArmorStatData(armorData); 
                   break;
                case Item.Category.Helm:
                   ArmorStatData helmData = EquipmentXMLManager.self.getArmorData(resultItem.itemTypeId);
                   blueprint.setBasicInfo(helmData.equipmentName, helmData.equipmentDescription, helmData.equipmentIconPath);
-
-                  // Serialize equipment data
-                  ser = new System.Xml.Serialization.XmlSerializer(helmData.GetType());
-                  sb = new StringBuilder();
-                  using (var writer = System.Xml.XmlWriter.Create(sb)) {
-                     ser.Serialize(writer, helmData);
-                  }
-
-                  longString = sb.ToString();
-                  blueprint.data = longString;
+                  blueprint.data = ArmorStatData.serializeArmorStatData(helmData);
                   break;
             }
 
