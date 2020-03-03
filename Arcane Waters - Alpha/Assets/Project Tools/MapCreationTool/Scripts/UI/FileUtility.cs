@@ -22,10 +22,23 @@ namespace MapCreationTool
          return null;
       }
 
-      public static void exportFile(string data) {
+      public static void exportFile (string data) {
          string path = StandaloneFileBrowser.SaveFilePanel("Export file", "", "new file", "json");
          if (!string.IsNullOrEmpty(path))
             File.WriteAllText(path, data);
+      }
+
+      public static void saveSettings (string data) {
+         string path = StandaloneFileBrowser.SaveFilePanel("Save file", "", "settings", "mes");
+         if (!string.IsNullOrEmpty(path))
+            File.WriteAllText(path, data);
+      }
+
+      public static string loadSettings () {
+         string[] path = StandaloneFileBrowser.OpenFilePanel("Open file", "", "mes", false);
+         if (path.Length == 1)
+            return File.ReadAllText(path[0]);
+         return null;
       }
    }
 }

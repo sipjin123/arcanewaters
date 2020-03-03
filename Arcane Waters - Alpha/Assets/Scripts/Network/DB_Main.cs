@@ -288,7 +288,7 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.soundeffects", conn)) {
+            "SELECT * FROM arcane.soundeffects_v2", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -300,8 +300,11 @@ public class DB_Main : DB_MainStub
                   newEffect.id = dataReader.GetInt32("id");
                   newEffect.name = dataReader.GetString("name");
                   newEffect.clipName = dataReader.GetString("clipName");
-                  newEffect.volume = dataReader.GetFloat("volume");
-                  newEffect.pitch = dataReader.GetFloat("pitch");
+                  newEffect.minVolume = dataReader.GetFloat("minVolume");
+                  newEffect.maxVolume = dataReader.GetFloat("maxVolume");
+                  newEffect.minPitch = dataReader.GetFloat("minPitch");
+                  newEffect.maxPitch = dataReader.GetFloat("maxPitch");
+                  newEffect.offset = dataReader.GetFloat("offset");
                   effects.Add(newEffect);
                }
             }
@@ -318,9 +321,9 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO arcane.soundeffects (id, name, clipName, volume, pitch) " +
-            "VALUES(@id, @name, @clipName, @volume, @pitch) " +
-            "ON DUPLICATE KEY UPDATE id = @id, name = @name, clipName = @clipName, volume = @volume, pitch = @pitch", conn)) {
+            "INSERT INTO arcane.soundeffects_v2 (id, name, clipName, minVolume, maxVolume, minPitch, maxPitch, offset) " +
+            "VALUES(@id, @name, @clipName, @minVolume, @maxVolume, @minPitch, @maxPitch, @offset) " +
+            "ON DUPLICATE KEY UPDATE id = @id, name = @name, clipName = @clipName, minVolume = @minVolume, maxVolume = @maxVolume, minPitch = @minPitch, maxPitch = @maxPitch, offset = @offset", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -328,8 +331,11 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@id", effect.id);
             cmd.Parameters.AddWithValue("@name", effect.name);
             cmd.Parameters.AddWithValue("@clipName", effect.clipName);
-            cmd.Parameters.AddWithValue("@volume", effect.volume);
-            cmd.Parameters.AddWithValue("@pitch", effect.pitch);
+            cmd.Parameters.AddWithValue("@minVolume", effect.minVolume);
+            cmd.Parameters.AddWithValue("@maxVolume", effect.maxVolume);
+            cmd.Parameters.AddWithValue("@minPitch", effect.minPitch);
+            cmd.Parameters.AddWithValue("@maxPitch", effect.maxPitch);
+            cmd.Parameters.AddWithValue("@offset", effect.offset);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -343,7 +349,7 @@ public class DB_Main : DB_MainStub
    public static new void deleteSoundEffect (SoundEffect effect) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM arcane.soundeffects WHERE id=@id", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM arcane.soundeffects_v2 WHERE id=@id", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@id", effect.id);
@@ -892,12 +898,10 @@ public class DB_Main : DB_MainStub
    public static new List<Map> getMaps () {
       List<Map> result = new List<Map>();
 
-      string cmdText = "SELECT maps.name, maps.createdAt, maps.creatorUserId, maps.publishedVersion, accName, max(map_versions.updatedAt) as updatedAt " +
+      string cmdText = "SELECT name, createdAt, creatorUserId, publishedVersion, accName " +
          "FROM maps " +
             "LEFT JOIN accounts ON maps.creatorUserId = accId " +
-            "LEFT JOIN map_versions ON maps.name = map_versions.mapName " +
-         "GROUP BY maps.name " +
-         "ORDER BY updatedAt DESC;";
+         "ORDER BY name;";
 
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
@@ -920,6 +924,30 @@ public class DB_Main : DB_MainStub
       }
 
       return result;
+   }
+
+   public static new MapInfo getMapInfo (string areaKey) {
+      MapInfo mapInfo = null;
+
+      string cmdText = "SELECT * FROM maps JOIN map_versions ON (maps.name=map_versions.mapName) WHERE (maps.publishedVersion=map_versions.version) AND maps.name=@mapName";
+
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+         cmd.Parameters.AddWithValue("@mapName", areaKey);
+         conn.Open();
+         cmd.Prepare();
+
+         using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+            while (dataReader.Read()) {
+               string mapName = dataReader.GetString("mapName");
+               string gameData = dataReader.GetString("gameData");
+               int version = dataReader.GetInt32("publishedVersion");
+               mapInfo = new MapInfo(mapName, gameData, version);
+            }
+         }
+      }
+
+      return mapInfo;
    }
 
    public static new Dictionary<string, MapInfo> getLiveMaps () {
@@ -2364,7 +2392,7 @@ public class DB_Main : DB_MainStub
       return found;
    }
 
-   public static new void setNewPosition (int userId, Vector2 localPosition, Direction facingDirection, string areaKey) {
+   public static new void setNewLocalPosition (int userId, Vector2 localPosition, Direction facingDirection, string areaKey) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
@@ -5350,8 +5378,8 @@ public class DB_Main : DB_MainStub
 
    private static MySqlConnection getConnection () {
       // Throws a warning if used in the main thread
-      if (UnityThreadHelper.IsMainThread && !ClientManager.isApplicationQuitting) {
-         D.warning("A database query is being run in the main thread - use the background thread instead");
+      if (UnityThreadHelper.IsMainThread && !ClientManager.isApplicationQuitting && MyNetworkManager.wasServerStarted) {
+         D.debug("A database query is being run in the main thread - use the background thread instead");
       }
 
       // In order to support threaded DB calls, each function needs its own Connection

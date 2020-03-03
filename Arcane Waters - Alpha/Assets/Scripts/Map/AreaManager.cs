@@ -8,12 +8,6 @@ public class AreaManager : MonoBehaviour
 {
    #region Public Variables
 
-   // The area key of the place we spawn players after their ship sinks
-   public string areaKeyForSunkenPlayers;
-
-   // The spawn key of the place we spawn players after their ship sinks
-   public string spawnKeyForSunkenPlayers;
-
    // Self
    public static AreaManager self;
 
@@ -21,10 +15,6 @@ public class AreaManager : MonoBehaviour
 
    private void Awake () {
       self = this;
-
-      if (areaKeyForSunkenPlayers == "" || spawnKeyForSunkenPlayers == "") {
-         D.debug("Spawn area for sunken ships is not set properly");
-      }
    }
 
    void Start () {
@@ -35,6 +25,14 @@ public class AreaManager : MonoBehaviour
 
       // Routinely check if we can switch off the colliders for any of the areas
       InvokeRepeating("toggleAreaCollidersForPerformanceImprovement", 0f, .25f);
+   }
+
+   public void storeAreaKeys () {
+      Dictionary<string, MapInfo> liveMaps = DB_Main.getLiveMaps();
+
+      foreach (string areaKey in liveMaps.Keys) {
+         _areaKeysFromDatabase.Add(areaKey);
+      }
    }
 
    public Area getArea (string areaKey) {
@@ -53,7 +51,7 @@ public class AreaManager : MonoBehaviour
    }
 
    public List<string> getAreaKeys () {
-      return new List<string>(_areas.Keys);
+      return new List<string>(_areaKeysFromDatabase);
    }
 
    public void storeArea (Area area) {
@@ -83,6 +81,9 @@ public class AreaManager : MonoBehaviour
 
    // The Areas we know about
    protected Dictionary<string, Area> _areas = new Dictionary<string, Area>();
+
+   // A set of all Area Keys from the database
+   protected HashSet<string> _areaKeysFromDatabase = new HashSet<string>();
 
    #endregion
 }

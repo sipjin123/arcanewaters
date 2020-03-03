@@ -655,7 +655,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
                } else {
                   // The user might be offline, in which case we need to modify their position in the DB
                   UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-                     DB_Main.setNewPosition(userId, spawn.transform.position, Direction.North, spawn.AreaKey);
+                     DB_Main.setNewLocalPosition(userId, spawn.transform.localPosition, Direction.North, spawn.AreaKey);
                   });
                }
             }

@@ -19,6 +19,7 @@ public class Area : MonoBehaviour
    public static string DESERT_TOWN = "DesertTown";
    public static string MERCHANT_SHOP_DESERT = "MerchantShop_Desert";
    public static string FOREST_TOWN = "ForestTown";
+   public static string NEW_STARTING_TOWN = "Starting Town New Houses";
 
    // The key determining the type of area this is
    public string areaKey;

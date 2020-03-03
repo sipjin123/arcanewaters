@@ -9,79 +9,81 @@ public class AttackTrajectory : MonoBehaviour
    #region Public Variables
 
    // The number of points used to draw the line
-   public static int POSITIONS_COUNT = 15;
+   public static int POSITIONS_COUNT = 20;
 
-   // The line renderer component
-   public LineRenderer lineRenderer;
+   // The speed of the dot movement
+   public float DOT_MIN_SPEED = 0.1f;
+   public float DOT_MAX_SPEED = 0.5f;
 
-   // The animator component
-   public Animator animator;
+   // The prefab we sue for creating dots
+   public AttackTrajectoryDot dotPrefab;
 
    #endregion
 
    private void Awake () {
-      lineRenderer = GetComponent<LineRenderer>();
-
-      // Initialize the line renderer
-      lineRenderer.positionCount = POSITIONS_COUNT + 1;
-      
-      // Initialize the line points array
-      _positions = new Vector3[POSITIONS_COUNT + 1];
-
-      // Save the base width
-      _baseLineWidth = lineRenderer.widthMultiplier;
+      // Instantiates the dots
+      _allDots = new AttackTrajectoryDot[POSITIONS_COUNT + 1];
+      for (int i = 0; i < _allDots.Length; i++) {
+         _allDots[i] = Instantiate(dotPrefab, transform, false);
+      }
    }
 
-   public void draw (Vector2 startPos, Vector2 endPos, float widthModifier, Color lineColor) {
-      // Calculate the positions relative to the start position
-      endPos = endPos - startPos;
-      startPos = new Vector2(0, 0);
-
-      // Calculate the normalized distance between each point
-      float step = 1f / POSITIONS_COUNT;
-
-      // Determine the position of each line point
-      for (int i = 0; i < POSITIONS_COUNT; i++) {
-         _positions[i] = Vector2.Lerp(startPos, endPos, step * i);
-         _positions[i].y += AttackManager.getArcHeight(startPos, endPos, step * i, true);
+   public void draw (Vector2 startPos, Vector2 endPos, Color lineColor, float maxRange) {
+      // Hide all the dots
+      foreach (AttackTrajectoryDot dot in _allDots) {
+         dot.hide();
       }
 
-      // Set the last position
-      _positions[_positions.Length - 1] = endPos;
+      // Calculate the distance between the dots
+      float dotDistance = maxRange / POSITIONS_COUNT;
 
-      // Set the width
-      lineRenderer.widthMultiplier = _baseLineWidth * widthModifier;
+      // Calculate the distance between the ship and the cursor
+      float distance = Vector2.Distance(startPos, endPos);
 
-      // Set the color of the line by updating its gradient color keys
-      Color c = lineColor;
-      Gradient gradient = lineRenderer.colorGradient;
-      GradientColorKey[] colorKey = new GradientColorKey[2];
-      colorKey[0].color = c;
-      colorKey[0].time = 0.0f;
-      colorKey[1].color = c;
-      colorKey[1].time = 1.0f;
-      gradient.colorKeys = colorKey;
-      lineRenderer.colorGradient = gradient;
+      // Calculate the distance between the ship and the cursor, normalized to the max range
+      float normalizedDistance = distance / maxRange;
 
-      // Draw the line
-      lineRenderer.SetPositions(_positions);
-   }
+      // When aiming close to the ship, the speed of the dot animation increases
+      float dotSpeed = Mathf.Lerp(DOT_MAX_SPEED, DOT_MIN_SPEED, normalizedDistance);
 
-   public void show () {
-      animator.SetBool("visible", true);
+      // Increase the dot offset to animate their movement
+      _offset += dotSpeed * Time.deltaTime;
+      _offset %= dotDistance;
+
+      // Distribute all the dots along the straight line between the ship and the cursor
+      float dotLinearPos = 0f;
+      foreach (AttackTrajectoryDot dot in _allDots) {
+         // If we reached the end of the line, the rest of the dots remain hidden
+         if (dotLinearPos + _offset > distance) {
+            break;
+         }
+
+         // Calculate the normalized position of the dot
+         float normalizedLinearPos = (dotLinearPos + _offset) / distance;
+
+         // Show the dot and set its position
+         dot.show();
+         dot.setPosition(startPos, endPos, lineColor, normalizedLinearPos);
+
+         // Set the position of the next dot
+         dotLinearPos += dotDistance;
+      }
    }
 
    public void hide () {
-      animator.SetBool("visible", false);
+      // Hide all the dots
+      foreach (AttackTrajectoryDot dot in _allDots) {
+         dot.hide();
+      }
    }
 
    #region Private Variables
 
-   // The array of points
-   private Vector3[] _positions;
+   // The array with all the trajectory dots
+   private AttackTrajectoryDot[] _allDots;
 
-   // The base width of the line
-   private float _baseLineWidth;
+   // The offset applied to the dot position, for animation
+   private float _offset = 0f;
 
    #endregion
 }

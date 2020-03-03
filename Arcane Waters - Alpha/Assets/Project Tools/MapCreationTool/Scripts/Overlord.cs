@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using MapCreationTool.Serialization;
 using MapCreationTool.UndoSystem;
 using UnityEngine;
@@ -30,6 +31,10 @@ namespace MapCreationTool
       [SerializeField]
       private GameObject loadCover = null;
 
+      [Space(5)]
+      [SerializeField]
+      private Keybindings.Keybinding[] defaultKeybindings = new Keybindings.Keybinding[0];
+
       public Dictionary<string, List<string>> mapSpawns { get; private set; }
 
       private void Awake () {
@@ -45,6 +50,8 @@ namespace MapCreationTool
          seaPaletteData.collectInformation();
          interiorPaletteData.collectInformation();
 
+         Settings.keybindings.defaultKeybindings = formDefaultKeybindings(defaultKeybindings);
+
          if (MasterToolAccountManager.self == null) {
             MasterToolAccountManager loginPanel = Instantiate(accountManagerPref);
 
@@ -56,6 +63,8 @@ namespace MapCreationTool
       }
 
       private void Start () {
+         Settings.setDefaults();
+         Settings.load();
          fetchSpawns();
       }
 
@@ -86,6 +95,28 @@ namespace MapCreationTool
          ShopManager.OnLoaded -= onLoaded;
          NPCManager.OnLoaded -= onLoaded;
          MonsterManager.OnLoaded -= onLoaded;
+      }
+
+      private Keybindings.Keybinding[] formDefaultKeybindings (Keybindings.Keybinding[] defined) {
+         List<Keybindings.Keybinding> result = new List<Keybindings.Keybinding>();
+
+         foreach (Keybindings.Command command in Enum.GetValues(typeof(Keybindings.Command))) {
+            Keybindings.Keybinding bind = new Keybindings.Keybinding {
+               command = command,
+               primary = KeyCode.None,
+               secondary = KeyCode.None
+            };
+
+            if (defined.Any(d => d.command == command)) {
+               Keybindings.Keybinding toSet = defined.First(k => k.command == command);
+               bind.primary = toSet.primary;
+               bind.secondary = toSet.secondary;
+            }
+
+            result.Add(bind);
+         }
+
+         return result.ToArray();
       }
 
       private void fetchSpawns () {
@@ -123,6 +154,47 @@ namespace MapCreationTool
             Undo.doUndo();
          } else if (Input.GetKeyDown(KeyCode.Y) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))) {
             Undo.doRedo();
+         }
+
+         if (!UI.anyPanelOpen) {
+            if (Settings.keybindings.getAction(Keybindings.Command.PanLeft)) {
+               MainCamera.pan(Vector3.left * 20f * Time.deltaTime);
+            }
+            if (Settings.keybindings.getAction(Keybindings.Command.PanRight)) {
+               MainCamera.pan(Vector3.right * 20f * Time.deltaTime);
+            }
+            if (Settings.keybindings.getAction(Keybindings.Command.PanUp)) {
+               MainCamera.pan(Vector3.up * 20f * Time.deltaTime);
+            }
+            if (Settings.keybindings.getAction(Keybindings.Command.PanDown)) {
+               MainCamera.pan(Vector3.down * 20f * Time.deltaTime);
+            }
+            if (Settings.keybindings.getAction(Keybindings.Command.ZoomIn)) {
+               MainCamera.zoom(-0.3f * Time.deltaTime);
+            }
+            if (Settings.keybindings.getAction(Keybindings.Command.ZoomOut)) {
+               MainCamera.zoom(0.3f * Time.deltaTime);
+            }
+            if (Settings.keybindings.getAction(Keybindings.Command.BrushTool)) {
+               if (Tools.toolType != ToolType.Brush) {
+                  Tools.changeTool(ToolType.Brush);
+               }
+            }
+            if (Settings.keybindings.getAction(Keybindings.Command.EraserTool)) {
+               if (Tools.toolType != ToolType.Eraser) {
+                  Tools.changeTool(ToolType.Eraser);
+               }
+            }
+            if (Settings.keybindings.getAction(Keybindings.Command.FillTool)) {
+               if (Tools.toolType != ToolType.Fill) {
+                  Tools.changeTool(ToolType.Fill);
+               }
+            }
+            if (Settings.keybindings.getAction(Keybindings.Command.SelectTool)) {
+               if (Tools.toolType != ToolType.PrefabData) {
+                  Tools.changeTool(ToolType.PrefabData);
+               }
+            }
          }
       }
 

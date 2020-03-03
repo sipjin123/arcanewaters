@@ -8,13 +8,14 @@ public class CommandCodes : MonoBehaviour {
    #region Public Variables
 
    public enum Type {
-      AUTO_HOST = 1,   // Automatically start up host mode
-      AUTO_CLIENT = 2, // Automatically start up a client
-      AUTO_SERVER = 3, // Automatically start up a server
-      AUTO_TEST = 4,   // Automatically log in to the character in the first slot
-      AUTO_MOVE = 5,   // Automatically move around the scene
-      PHOTON_CLOUD = 6,// Force connection to Photon cloud (rather than self-hosted)
-      AUTO_PRODUCTION = 7 // Automatically start up a server and connect to production DB
+      AUTO_HOST = 1,             // Automatically start up host mode
+      AUTO_CLIENT = 2,           // Automatically start up a client
+      AUTO_SERVER = 3,           // Automatically start up a server
+      AUTO_TEST = 4,             // Automatically log in to the character in the first slot
+      AUTO_MOVE = 5,             // Automatically move around the scene
+      PHOTON_CLOUD = 6,          // Force connection to Photon cloud (rather than self-hosted)
+      AUTO_PRODUCTION = 7,       // Automatically start up a server and connect to production DB
+      MAX_INSTANCE_PLAYERS = 8,  // Sets the maximum number of players allowed in an instance
     }
 
    #endregion

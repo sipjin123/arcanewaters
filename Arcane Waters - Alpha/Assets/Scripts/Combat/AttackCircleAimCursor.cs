@@ -62,6 +62,14 @@ public class AttackCircleAimCursor : MonoBehaviour
       _animator.SetFloat("speed", speed);
    }
 
+   public Color getColor () {
+      return cursorRenderer.color;
+   }
+
+   public bool isActive () {
+      return gameObject.activeSelf;
+   }
+
    public bool isCursorHoveringOver(NetEntity entity) {
       if (_entitiesUnderCursor.Contains(entity)) {
          return true;

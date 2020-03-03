@@ -189,7 +189,7 @@ public class ShipEntity : SeaEntity {
 
       // Calculate shot parameters
       float distanceModifier = getDamageModifierForDistance(normalizedDistance);
-      float projectileFlightDuration = (normalizedDistance * 1f) * ShipAbilityManager.self.getAbility(attackType).projectileSpeed;
+      float projectileFlightDuration = (normalizedDistance * normalizedDistance * 1f) * ShipAbilityManager.self.getAbility(attackType).projectileSpeed;
     
       ShipAbilityData shipData = ShipAbilityManager.self.getAbility(attackType);
       this.currentImpactMagnitude = ShipAbilityData.getImpactType(normalizedDistance);

@@ -80,8 +80,7 @@ public class TutorialManager : MonoBehaviour {
       currentStep = getCurrentStep();
 
       // There are quite a few things that cause the tutorial panel to be hidden
-      bool shouldHideTutorialPanel = TitleScreen.self.isShowing() || CharacterScreen.self.isShowing() ||
-         GrampsManager.isShowing() || !GrampsManager.hasBeenClosedOnce;
+      bool shouldHideTutorialPanel = TitleScreen.self.isShowing() || CharacterScreen.self.isShowing();
 
       // Keep the panel hidden until we're ready for it
       canvasGroup.alpha = shouldHideTutorialPanel ? 0 : 1f;

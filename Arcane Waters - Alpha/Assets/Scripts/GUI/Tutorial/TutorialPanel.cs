@@ -42,7 +42,7 @@ public class TutorialPanel : MonoBehaviour {
 
    private void Update () {
       // Hide the tutorial panel if there's nothing to show
-      _canvasGroup.alpha = Util.isEmpty(titleText.text) || GrampsManager.isShowing() ? 0f : 1f;
+      _canvasGroup.alpha = Util.isEmpty(titleText.text) ? 0f : 1f;
    }
 
    public void updatePanel (List<TutorialInfo> tutorialInfo) {

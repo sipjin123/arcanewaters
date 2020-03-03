@@ -162,7 +162,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       SeaMonsterEntityData monsterData = SeaMonsterManager.self.seaMonsterDataList.Find(_ => _.seaMonsterType == monsterType);
 
       if (monsterData == null) {
-         D.warning("Monster data is null for: " + monsterType);
+         D.debug("Monster data is null for: " + monsterType);
          Destroy(this.gameObject);
          return;
       }

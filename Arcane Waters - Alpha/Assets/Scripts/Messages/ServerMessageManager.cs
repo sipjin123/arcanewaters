@@ -152,11 +152,11 @@ public class ServerMessageManager : MonoBehaviour {
       }*/
 
       // Look up the Area that we're going to place the users into
-      Area area = AreaManager.self.getArea(Area.HOUSE);
+      Area area = AreaManager.self.getArea(Area.NEW_STARTING_TOWN);
 
       // Look up the Spawn position for the map associated with that area
-      Spawn spawn = SpawnManager.self.getSpawn(SpawnManager.self.startingLocationAreaKey, SpawnManager.self.startingLocationSpawnKey);
-      userInfo.localPos = spawn.transform.position;
+      SpawnID spawnID = new SpawnID(Area.NEW_STARTING_TOWN, Spawn.STARTING_SPAWN);
+      userInfo.localPos = SpawnManager.self.getSpawnLocalPosition(spawnID);
 
       // Make sure the name is available
       int existingUserId = -1;
@@ -222,8 +222,13 @@ public class ServerMessageManager : MonoBehaviour {
       int userId = DB_Main.createUser(accountId, adminFlag, userInfo, area);
       DB_Main.insertIntoJobs(userId);
 
-      // Update the armor as belonging to this new user id
+      // Update the armor as belonging to this new user id, and equip it
       DB_Main.setItemOwner(userId, armorId);
+      DB_Main.setArmorId(userId, armorId);
+
+      // Create their starting ship and equip it
+      ShipInfo shipInfo = DB_Main.createStartingShip(userId);
+      DB_Main.setCurrentShip(userId, shipInfo.shipId);
 
       // Grab the latest version of their user objects
       UserObjects userObjects = DB_Main.getUserObjects(userId);

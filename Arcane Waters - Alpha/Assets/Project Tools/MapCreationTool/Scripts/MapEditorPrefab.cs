@@ -8,11 +8,22 @@ namespace MapCreationTool
       public static readonly Color HOVERED_HIGHLIGHT_COLOR = new Color(204 / 255f, 230 / 255f, 255 / 255f);
       public static readonly Color DELETING_HIGHLIGHT_COLOR = Color.red;
 
+      protected bool selected = false;
+      protected bool hovered = false;
+
       public virtual void createdInPalette () { }
 
       public virtual void createdForPreview () { }
 
       public virtual void placedInEditor () { }
+
+      public virtual void setHovered (bool hovered) {
+         this.hovered = hovered;
+      }
+
+      public virtual void setSelected (bool selected) {
+         this.selected = selected;
+      }
 
       public void setOutlineHighlight (SpriteOutline outline, bool hovered, bool selected, bool deleting) {
          if (deleting) {

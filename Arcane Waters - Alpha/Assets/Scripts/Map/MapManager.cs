@@ -19,35 +19,13 @@ public class MapManager : MonoBehaviour {
       self = this;
    }
 
-   public void createLiveMaps (NetEntity source) {
-      // Retrieve the map data from the database
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         Dictionary<string, MapInfo> maps = DB_Main.getLiveMaps();
-
-         // Back to the Unity thread
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            foreach (string mapName in maps.Keys) {
-               // Make sure it doesn't already exist
-               if (AreaManager.self.getArea(mapName) != null && source != null) {
-                  ServerMessageManager.sendError(ErrorMessage.Type.Misc, source, "Map: " + mapName + " has already been created!");
-                  continue;
-               }
-
-               // Create the map here on the server
-               Vector3 nextMapPosition = MapManager.self.getNextMapPosition();
-               createLiveMap(mapName, maps[mapName], nextMapPosition);
-
-               // Send confirmation back to the player who issued the command
-               if (source != null) {
-                  ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, source, "Spawning map: " + mapName);
-               }
-            }
-         });
-      });
+   public void createMapOnServer (string areaKey) {
+      MapInfo mapInfo = DB_Main.getMapInfo(areaKey);
+      createLiveMap(areaKey, mapInfo, getNextMapPosition());
    }
 
    public void createLiveMap (string areaKey, MapInfo mapInfo, Vector3 mapPosition) {
-      D.log($"Preparing to create live map {areaKey} at {mapPosition} with version {mapInfo.version}");
+      D.debug($"Preparing to create live map {areaKey} at {mapPosition} with version {mapInfo.version}");
 
       // If the area already exists, don't create it again
       if (AreaManager.self.hasArea(areaKey)) {

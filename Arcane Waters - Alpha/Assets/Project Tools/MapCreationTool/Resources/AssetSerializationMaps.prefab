@@ -61364,7 +61364,7 @@ Tilemap:
       - {fileID: 21300578, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300580, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300582, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 22, y: 18, z: 0}
@@ -125247,7 +125247,7 @@ MonoBehaviour:
     - title: technical
       index: 9
       toIndexPrefabs:
-      - {fileID: 6928936740555346515, guid: 9610679f8c099574e8580bc7d4be69ef, type: 3}
+      - {fileID: 1536697751256960758, guid: 9610679f8c099574e8580bc7d4be69ef, type: 3}
       - {fileID: 2604347782234788204, guid: b7863808928071c488680a6dc2df578d, type: 3}
       fromIndexPrefabs:
       - {fileID: 3305930792571459559, guid: b7a83615e04eca04da6d3e2b387acb0c, type: 3}
@@ -125276,6 +125276,11 @@ MonoBehaviour:
       - {fileID: 6051782076880570928, guid: 34a4b7243a01c6748ad34d0f29ed0950, type: 3}
       - {fileID: 7563978654119275295, guid: dfcf85cd3b6797f4a97537bced21b1fe, type: 3}
       - {fileID: 5216319541528748832, guid: 0de5464734ad1744b9202639f4bf1e10, type: 3}
+      - {fileID: 7070967949315890988, guid: 384997a9b3d3e794dba8a3f07832eec7, type: 3}
+      - {fileID: 4418135431977302829, guid: 295f2fbd47edce041ba07c263173c6a8, type: 3}
+      - {fileID: 7310757876056521627, guid: 843333936b43ab749a86790fbdb252ed, type: 3}
+      - {fileID: 7553695573505911380, guid: e8bd3b650faf3e7478fcd300e4218a6f, type: 3}
+      - {fileID: 454647585215041753, guid: 3b7cbae73dddf624bb187b39862567d1, type: 3}
       fromIndexPrefabs:
       - {fileID: 1322722724978774, guid: f8f35b9f6cbe1fb4d88c39af030bddd4, type: 3}
       - {fileID: 6524891404889324934, guid: 598e4fd7105a2944f84be41bdffc57fc, type: 3}
@@ -125298,6 +125303,11 @@ MonoBehaviour:
       - {fileID: 5098452519175179506, guid: 0c6f3397a7a053342996b926bfeedc3d, type: 3}
       - {fileID: 854274578729266494, guid: 7790a8cb09c5268479e88b939187f010, type: 3}
       - {fileID: 1468103654775352, guid: 17cb7c4e34f21314dbddf9a86950d047, type: 3}
+      - {fileID: 3608091366082937571, guid: 912972d04bea03848bb3efe2d315d5ab, type: 3}
+      - {fileID: 8851220776166182519, guid: 94c49f6078b713e46b39412b269e3f1b, type: 3}
+      - {fileID: 1573231186106582420, guid: 893db0d2edf6d964994c28ebca9b6dac, type: 3}
+      - {fileID: 7387895447105368303, guid: 772654512ce84834b8cb3312e10a3b93, type: 3}
+      - {fileID: 5350016239835025903, guid: 1da2b6e69555ff94cb2f333f5207e9e4, type: 3}
     - title: furniture
       index: 4
       toIndexPrefabs:
@@ -125389,11 +125399,13 @@ MonoBehaviour:
       - {fileID: 241867156212524382, guid: a45ce2b8611bde9409d96b749df2de8e, type: 3}
       - {fileID: 8291326201182810260, guid: 2bb9df6b914e47143946a2ab6b2f5eb0, type: 3}
       - {fileID: 5548315350627049789, guid: 417d0d86b37a93e48a526da6f9771f67, type: 3}
+      - {fileID: 6278626336270281305, guid: 59355a0ccb733e74e9ff3da951c5df2b, type: 3}
       fromIndexPrefabs:
       - {fileID: 1961926123676996, guid: 1b3459d4a187fe942992708ae21ae748, type: 3}
       - {fileID: 6512568615480877693, guid: ae9b490f18e903c49836fadf1d6790e0, type: 3}
       - {fileID: 707201633651165828, guid: 325e0070886ff4a4585d50c50dbefc00, type: 3}
       - {fileID: 3729740426784677943, guid: dd657f4eabdb1004e8c8a4a2fb46191d, type: 3}
+      - {fileID: 2488558947172901078, guid: ab9b7df235cffb647993e17858e0b87e, type: 3}
     - title: trees
       index: 0
       toIndexPrefabs:

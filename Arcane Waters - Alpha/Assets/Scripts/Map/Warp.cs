@@ -28,46 +28,16 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver {
    void OnTriggerEnter2D (Collider2D other) {
       NetEntity player = other.transform.GetComponent<NetEntity>();
 
-      // Make sure the player meets the requirements to use this warp
-      if (player == null || !meetsRequirements(player)) {
+      if (player == null) {
          return;
       }
 
       // If a player entered this warp on the server, move them
       if (player.isServer && player.connectionToClient != null) {
-         Spawn spawn = SpawnManager.self.getSpawn(areaTarget, spawnTarget);
-         player.spawnInNewMap(spawn.AreaKey, spawn, newFacingDirection);
+         SpawnID spawnID = new SpawnID(areaTarget, spawnTarget);
+         Vector2 localPos = SpawnManager.self.getSpawnLocalPosition(spawnID);
+         player.spawnInNewMap(areaTarget, localPos, newFacingDirection);
       }
-   }
-
-   protected bool meetsRequirements (NetEntity player) {
-      Spawn spawn = SpawnManager.self.getSpawn(areaTarget, spawnTarget);
-      int currentStep = TutorialManager.getHighestCompletedStep(player.userId) + 1;
-      TutorialData currTutData = TutorialManager.self.fetchTutorialData(currentStep);
-      string currArea = "none";
-      if (currTutData != null && currTutData.requirementType == RequirementType.Area) {
-         currArea = currTutData.rawDataJson;
-      }
-
-      // We can't warp to the sea until we've gotten far enough into the tutorial
-      if (AreaManager.self.getArea(spawn.AreaKey)?.isSea == true && currentStep <= HEAD_TO_DOCKS_QUEST_INDEX) {
-         return false;
-      }
-
-      // Requires the player to finish the first quest requirement
-      if (Spawn.HOUSE_EXIT.Equals(spawnTarget) && currentStep == GET_DRESSED_QUEST_INDEX) {
-         if (player.connectionToClient != null) {
-            ServerMessageManager.sendError(ErrorMessage.Type.Misc, player, "You need to get dressed before leaving the house!");
-         }
-         return false;
-      }
-
-      // We can't warp into the treasure site until we clear the gate
-      if (Area.isTreasureSite(spawn.AreaKey) && currentStep < ENTER_TREASURE_SITE_QUEST_INDEX) {
-         return false;
-      }
-
-      return true;
    }
 
    public void receiveData (DataField[] dataFields) {

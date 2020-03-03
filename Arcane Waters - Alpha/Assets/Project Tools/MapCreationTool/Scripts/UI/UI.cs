@@ -58,6 +58,9 @@ namespace MapCreationTool
       public static ErrorDialog errorDialog { get; private set; }
       public static LoadingPanel loadingPanel { get; private set; }
       public static VersionListPanel versionListPanel { get; private set; }
+      public static SettingsPanel settingsPanel { get; private set; }
+
+      private static UIPanel[] uiPanels;
 
       private Dictionary<string, Biome.Type> optionsPacks = new Dictionary<string, Biome.Type>
       {
@@ -125,6 +128,9 @@ namespace MapCreationTool
          errorDialog = GetComponentInChildren<ErrorDialog>();
          loadingPanel = GetComponentInChildren<LoadingPanel>();
          versionListPanel = GetComponentInChildren<VersionListPanel>();
+         settingsPanel = GetComponentInChildren<SettingsPanel>();
+
+         uiPanels = GetComponentsInChildren<UIPanel>();
 
          boardSizeDropdown.options = boardSizes.Select(size => new Dropdown.OptionData { text = "Size: " + size }).ToList();
       }
@@ -164,6 +170,18 @@ namespace MapCreationTool
          snapToGridToggle.gameObject.SetActive(Tools.selectedPrefab != null);
       }
 
+      public static bool anyPanelOpen
+      {
+         get
+         {
+            foreach (UIPanel panel in uiPanels) {
+               if (panel.showing) {
+                  return true;
+               }
+            }
+            return false;
+         }
+      }
 
       public void biomeDropdown_Changes () {
          if (Tools.biome != optionsPacks[biomeDropdown.options[biomeDropdown.value].text])
@@ -308,6 +326,10 @@ namespace MapCreationTool
 
       public void openMapList () {
          mapList.open();
+      }
+
+      public void openSettings () {
+         settingsPanel.open();
       }
 
       public void newVersion () {

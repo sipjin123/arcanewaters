@@ -178,6 +178,10 @@ public class NetEntity : NetworkBehaviour
    }
 
    protected virtual void Start () {
+      // Make the entity a child of the Area
+      Area area = AreaManager.self.getArea(this.areaKey);
+      this.transform.SetParent(area.transform, true);
+
       if (this is PlayerBodyEntity || this is PlayerShipEntity) {
          // Create some name text that will follow us around
          SmoothFollow smoothFollow = Instantiate(PrefabsManager.self.nameTextPrefab);
@@ -210,9 +214,6 @@ public class NetEntity : NetworkBehaviour
 
          // Show the Area name
          LocationBanner.self.setText(Area.getName(this.areaKey));
-
-         // Have Gramps start telling us what to do
-         GrampsManager.startTalkingToPlayerAfterDelay();
 
          // Routinely compare our Time to the Server's time
          if (!isServer) {
@@ -292,7 +293,7 @@ public class NetEntity : NetworkBehaviour
    }
 
    protected virtual void OnDestroy () {
-      Vector3 pos = this.transform.position;
+      Vector3 localPos = this.transform.localPosition;
 
       if (isLocalPlayer && !TitleScreen.self.isShowing() && Application.platform != RuntimePlatform.OSXPlayer) {
          CircleFader.self.doCircleFade();
@@ -300,7 +301,7 @@ public class NetEntity : NetworkBehaviour
 
       // Make sure the server saves our position and health when a player is disconnected (by any means other than a warp)
       if (MyNetworkManager.wasServerStarted && !isAboutToWarpOnServer) {
-         Util.tryToRunInServerBackground(() => DB_Main.setNewPosition(this.userId, pos, this.facing, this.areaKey));
+         Util.tryToRunInServerBackground(() => DB_Main.setNewLocalPosition(this.userId, localPos, this.facing, this.areaKey));
       }
    }
 
@@ -823,25 +824,27 @@ public class NetEntity : NetworkBehaviour
    public void Cmd_SpawnInNewMap (string newArea, string spawnKey, Direction newFacingDirection) {
       Spawn spawn = SpawnManager.self.getSpawn(newArea, spawnKey);
 
-      spawnInNewMap(newArea, spawn.transform.position, newFacingDirection);
+      spawnInNewMap(newArea, spawn.transform.localPosition, newFacingDirection);
    }
 
    [Server]
    public void spawnInNewMap (string newArea, Spawn spawn, Direction newFacingDirection) {
-      spawnInNewMap(newArea, spawn.transform.position, newFacingDirection);
+      spawnInNewMap(newArea, spawn.transform.localPosition, newFacingDirection);
    }
 
    [Server]
-   public void spawnInNewMap (string newArea, Vector2 newPosition, Direction newFacingDirection) {
+   public void spawnInNewMap (string newArea, Vector2 newLocalPosition, Direction newFacingDirection) {
       // Check which server we're likely to redirect to
       Server bestServer = ServerNetwork.self.findBestServerForConnectingPlayer(newArea, this.entityName, this.userId, this.connectionToClient.address);
 
       // Now that we know the target server, redirect them there
-      spawnOnSpecificServer(bestServer, newArea, newPosition, newFacingDirection);
+      spawnOnSpecificServer(bestServer, newArea, newLocalPosition, newFacingDirection);
    }
 
    [Server]
-   public void spawnOnSpecificServer (Server newServer, string newArea, Vector2 newPosition, Direction newFacingDirection) {
+   public void spawnOnSpecificServer (Server newServer, string newArea, Vector2 newLocalPosition, Direction newFacingDirection) {
+      GameObject entityObject = this.gameObject;
+
       // Make a note that we're about to proceed with a warp
       this.isAboutToWarpOnServer = true;
 
@@ -850,7 +853,7 @@ public class NetEntity : NetworkBehaviour
 
       // Update the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.setNewPosition(this.userId, newPosition, newFacingDirection, newArea);
+         DB_Main.setNewLocalPosition(this.userId, newLocalPosition, newFacingDirection, newArea);
 
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -859,7 +862,7 @@ public class NetEntity : NetworkBehaviour
 
             // Destroy the old Player object
             NetworkServer.DestroyPlayerForConnection(connectionToClient);
-            NetworkServer.Destroy(this.gameObject);
+            NetworkServer.Destroy(entityObject);
 
             // Send a Redirect message to the client
             RedirectMessage redirectMessage = new RedirectMessage(this.netId, newServer.ipAddress, newServer.port);

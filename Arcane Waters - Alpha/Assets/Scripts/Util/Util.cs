@@ -14,6 +14,8 @@ using System.Linq;
 using System.IO;
 using System.Xml.Serialization;
 using TMPro;
+using System.Text;
+using System.Xml;
 
 public class Util : MonoBehaviour {
    public static NetEntity getPlayer () {

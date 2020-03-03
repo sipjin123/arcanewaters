@@ -42,7 +42,6 @@ public class AdminManager : NetworkBehaviour {
    protected static string NPC = "test_npc";
    protected static string GET_ITEM = "get_item";
    protected static string GET_ALL_ITEMS = "get_all_items";
-   protected static string MAPS = "maps";
 
    #endregion
 
@@ -129,8 +128,6 @@ public class AdminManager : NetworkBehaviour {
          requestGetItem(parameters);
       } else if (GET_ALL_ITEMS.Equals(adminCommand)) {
          requestGetAllItems(parameters);
-      } else if (MAPS.Equals(adminCommand)) {
-         requestLiveMaps(parameters);
       }
    }
 
@@ -434,11 +431,6 @@ public class AdminManager : NetworkBehaviour {
       Cmd_CreateAllItems(count);
    }
 
-   protected void requestLiveMaps (string parameters) {
-      // Send the request to the server
-      Cmd_CreateLiveMaps();
-   }
-
    [Command]
    protected void Cmd_AddGold (int gold, string username) {
       // Make sure this is an admin
@@ -579,7 +571,7 @@ public class AdminManager : NetworkBehaviour {
          return;
       }
 
-      _player.spawnInNewMap(targetBody.areaKey, targetBody.transform.position, Direction.South);
+      _player.spawnInNewMap(targetBody.areaKey, targetBody.transform.localPosition, Direction.South);
    }
 
    [Command]
@@ -608,19 +600,15 @@ public class AdminManager : NetworkBehaviour {
       // Get the area key closest to the given partial key
       string closestAreaKey = areaKeys.OrderBy(s => Util.compare(s, partialAreaKey)).First();
 
-      // Get the destination area
-      Area destinationArea = AreaManager.self.getArea(closestAreaKey);
-      string areaKey = destinationArea.areaKey;
-
       // Get the default spawn for the destination area
-      Spawn spawn = SpawnManager.self.getSpawn(areaKey);
+      Vector2 spawnLocalPos = SpawnManager.self.getDefaultSpawnLocalPosition(closestAreaKey);
 
-      if (spawn == null) {
-         ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "Could not determine the warp destination. Area Name: " + areaKey);
+      if (spawnLocalPos == Vector2.zero) {
+         ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "Could not determine the warp destination. Area Name: " + closestAreaKey);
          return;
       }
 
-      _player.spawnInNewMap(areaKey, spawn, Direction.South);
+      _player.spawnInNewMap(closestAreaKey, spawnLocalPos, Direction.South);
    }
 
    [Command]
@@ -867,17 +855,6 @@ public class AdminManager : NetworkBehaviour {
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.ItemsAddedToInventory, _player, message);
          });
       });
-   }
-
-   [Command]
-   protected void Cmd_CreateLiveMaps () {
-      // Make sure this is an admin
-      if (!_player.isAdmin()) {
-         D.warning("Received admin command from non-admin!");
-         return;
-      }
-
-      MapManager.self.createLiveMaps(_player);
    }
 
    [Server]

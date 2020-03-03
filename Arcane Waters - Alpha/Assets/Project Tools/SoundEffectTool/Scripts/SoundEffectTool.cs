@@ -67,8 +67,20 @@ public class SoundEffectTool : XmlDataToolManager
 
    public void playEffect (SoundEffect effect) {
       soundAudioSource.clip = effect.clip;
-      soundAudioSource.volume = effect.volume;
-      soundAudioSource.pitch = effect.pitch;
+      soundAudioSource.volume = effect.calculateValue(SoundEffect.ValueType.VOLUME);
+      soundAudioSource.pitch = effect.calculateValue(SoundEffect.ValueType.PITCH);
+
+      if (soundAudioSource.pitch < 0.0f) {
+         soundAudioSource.timeSamples = Mathf.Clamp(
+            Mathf.FloorToInt(soundAudioSource.clip.samples - 1 - soundAudioSource.clip.samples * effect.offset),
+            0,
+            soundAudioSource.clip.samples - 1);
+      } else {
+         soundAudioSource.timeSamples = Mathf.Clamp(
+            Mathf.FloorToInt(soundAudioSource.clip.samples * effect.offset),
+            0,
+            soundAudioSource.clip.samples - 1);
+      }
 
       soundAudioSource.loop = false;
       soundAudioSource.Play();
@@ -115,8 +127,11 @@ public class SoundEffectTool : XmlDataToolManager
 
       newSoundEffect.clip = effect.clip;
       newSoundEffect.clipName = effect.clipName;
-      newSoundEffect.volume = effect.volume;
-      newSoundEffect.pitch = effect.pitch;
+      newSoundEffect.minVolume = effect.minVolume;
+      newSoundEffect.maxVolume = effect.maxVolume;
+      newSoundEffect.minPitch = effect.minPitch;
+      newSoundEffect.maxPitch = effect.maxPitch;
+      newSoundEffect.offset = effect.offset;
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.updateSoundEffect(newSoundEffect);

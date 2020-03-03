@@ -1,15 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using MapCreationTool.Serialization;
 
 public partial class SpawnManager : MonoBehaviour {
    #region Public Variables
-
-   // New character starting location area key 
-   public string startingLocationAreaKey;
-
-   // New character starting location spawn key 
-   public string startingLocationSpawnKey;
 
    // Self
    public static SpawnManager self;
@@ -18,6 +13,15 @@ public partial class SpawnManager : MonoBehaviour {
 
    void Awake () {
       self = this;
+   }
+
+   public void storeSpawnPositions () {
+       List<MapSpawn> spawnList = DB_Main.getMapSpawns();
+
+      foreach (MapSpawn mapSpawn in spawnList) {
+         SpawnID spawnID = new SpawnID(mapSpawn.mapName, mapSpawn.name);
+         _spawnLocalPositions[spawnID] = new Vector2(mapSpawn.posX, mapSpawn.posY);
+      }
    }
 
    public static SpawnManager get () {
@@ -48,7 +52,7 @@ public partial class SpawnManager : MonoBehaviour {
       if (_spawns.ContainsKey(spawnID)) {
          return _spawns[spawnID];
       } else {
-         D.warning("Spawn ID is missing: " + areaKey+" - "+spawnKey);
+         D.debug("Spawn ID is missing: " + areaKey+" - "+spawnKey);
          return _spawns.Values.ToList()[0];
       }
    }
@@ -62,6 +66,31 @@ public partial class SpawnManager : MonoBehaviour {
       }
    }
 
+   public Vector2 getSpawnLocalPosition (SpawnID spawnID) {
+      if (_spawns.ContainsKey(spawnID)) {
+         return _spawns[spawnID].transform.localPosition;
+      }
+
+      if (_spawnLocalPositions.ContainsKey(spawnID)) {
+         return _spawnLocalPositions[spawnID];
+      }
+
+      D.warning($"Could not find position of spawn {spawnID}");
+
+      return Vector2.zero;
+   }
+
+   public Vector2 getDefaultSpawnLocalPosition (string areaKey) {
+      foreach (SpawnID spawnID in _spawnLocalPositions.Keys) {
+         if (spawnID.areaKey == areaKey) {
+            return _spawnLocalPositions[spawnID];
+         }
+      }
+
+      D.warning("Could not find default spawn position for area key: " + areaKey);
+      return Vector2.zero;
+   }
+
    public List<SpawnID> getAllSpawnKeys () {
       return new List<SpawnID>(_spawns.Keys);
    }
@@ -69,7 +98,6 @@ public partial class SpawnManager : MonoBehaviour {
    #region Private Variables
 
    // Keeps track of the Spawns that we know about
-   // Dictionary key - <areaKey, spawnKey>
    protected Dictionary<SpawnID, Spawn> _spawns = new Dictionary<SpawnID, Spawn>();
 
    // Editor preview of data list
@@ -78,6 +106,9 @@ public partial class SpawnManager : MonoBehaviour {
 
    // Contains one spawn per area, accessible by area id
    protected Dictionary<string, Spawn> _defaultSpawn = new Dictionary<string, Spawn>();
+
+   // The Server keeps track of all local spawn positions from the database
+   protected Dictionary<SpawnID, Vector2> _spawnLocalPositions = new Dictionary<SpawnID, Vector2>();
 
    #endregion
 }

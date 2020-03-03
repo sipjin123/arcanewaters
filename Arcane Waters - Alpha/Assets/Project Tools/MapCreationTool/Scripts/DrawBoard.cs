@@ -33,12 +33,6 @@ namespace MapCreationTool
       [SerializeField]
       private SpriteRenderer brushOutline = null;
       [SerializeField]
-      private float minZoom = 0;
-      [SerializeField]
-      private float maxZoom = 0;
-      [SerializeField]
-      private AnimationCurve zoomSpeed = null;
-      [SerializeField]
       private TileBase transparentTile = null;
       [SerializeField]
       private SpriteRenderer sizeCover = null;
@@ -51,7 +45,6 @@ namespace MapCreationTool
       private Vector3 lastMouseHoverPos = Vector2.zero;
       private Vector3Int lastHoverCellPos = new Vector3Int(0, 0, -1);
 
-      private Rect camBounds;
       private Preview preview = new Preview();
 
       private Dictionary<string, Layer> layers;
@@ -71,9 +64,6 @@ namespace MapCreationTool
          grid = GetComponentInChildren<Grid>();
          cam = GetComponentInChildren<Camera>();
 
-         recalculateCamBounds();
-         clampCamPos();
-
          Utilities.addPointerListener(eventCanvas, EventTriggerType.PointerDown, pointerDown);
          Utilities.addPointerListener(eventCanvas, EventTriggerType.Drag, drag);
          Utilities.addPointerListener(eventCanvas, EventTriggerType.PointerEnter, pointerEnter);
@@ -90,7 +80,6 @@ namespace MapCreationTool
       }
 
       private void OnEnable () {
-         MainCamera.SizeChanged += mainCamSizeChanged;
          Tools.AnythingChanged += toolsAnythingChanged;
          Tools.ToolChanged += toolChanged;
          Tools.EditorTypeChanged += editorTypeChanged;
@@ -98,7 +87,6 @@ namespace MapCreationTool
       }
 
       private void OnDisable () {
-         MainCamera.SizeChanged -= mainCamSizeChanged;
          Tools.AnythingChanged -= toolsAnythingChanged;
          Tools.ToolChanged -= toolChanged;
          Tools.EditorTypeChanged -= editorTypeChanged;
@@ -140,11 +128,6 @@ namespace MapCreationTool
             selectPrefab(null, false);
       }
 
-      private void mainCamSizeChanged (Vector2Int newSize) {
-         recalculateCamBounds();
-         clampCamPos();
-      }
-
       private void toolsAnythingChanged () {
          updateBrushOutline();
       }
@@ -152,13 +135,6 @@ namespace MapCreationTool
       public static void changeLoadedVersion (MapVersion version) {
          loadedVersion = version;
          loadedVersionChanged?.Invoke(loadedVersion);
-      }
-
-      private void recalculateCamBounds () {
-         var canvasRectT = eventCanvas.GetComponent<RectTransform>();
-         camBounds = new Rect(
-             new Vector2(-canvasRectT.sizeDelta.x * 0.5f, -canvasRectT.sizeDelta.y * 0.5f),
-             canvasRectT.sizeDelta);
       }
 
       private void setBoardSize (Vector2Int size) {
@@ -194,33 +170,6 @@ namespace MapCreationTool
 
       private float layerToZ (int layer, int subLayer = 0) {
          return layer * -0.01f + subLayer * -0.001f;
-      }
-
-      private void clampCamPos () {
-         Vector2 camHalfSize = new Vector2(
-             cam.orthographicSize * cam.pixelWidth / cam.pixelHeight,
-             cam.orthographicSize);
-
-         if (camHalfSize.x * 2 > camBounds.width || camHalfSize.y * 2 > camBounds.height) {
-            cam.orthographicSize = Mathf.Min(
-                camBounds.width * 0.5f * cam.pixelHeight / cam.pixelWidth,
-                camBounds.height * 0.5f);
-
-            camHalfSize = new Vector2(
-            cam.orthographicSize * cam.pixelWidth / cam.pixelHeight,
-            cam.orthographicSize);
-         }
-
-         cam.transform.localPosition = new Vector3(
-                 Mathf.Clamp(
-                     cam.transform.localPosition.x,
-                     camBounds.x + camHalfSize.x,
-                     camBounds.x + camBounds.width - camHalfSize.x),
-                 Mathf.Clamp(
-                     cam.transform.localPosition.y,
-                     camBounds.y + camHalfSize.y,
-                     camBounds.y + camBounds.height - camHalfSize.y),
-                 cam.transform.localPosition.z);
       }
 
       public void performUndoRedo (UndoRedoData undoRedoData) {
@@ -577,6 +526,7 @@ namespace MapCreationTool
          foreach (PlacedPrefab pp in placedPrefabs) {
             pp.placedInstance.SetActive(true);
             pp.setHighlight(false, false, false);
+            pp.placedInstance.GetComponent<MapEditorPrefab>()?.setHovered(false);
          }
 
          if (selectedPrefab != null) {
@@ -657,8 +607,11 @@ namespace MapCreationTool
          } else if (Tools.toolType == ToolType.PrefabData) {
             var target = getHoveredPrefab();
 
-            if (target != null && target != selectedPrefab) {
-               target.setHighlight(true, false, false);
+            if (target != null) {
+               if (target != selectedPrefab) {
+                  target.setHighlight(true, false, false);
+               }
+               target.placedInstance.GetComponent<MapEditorPrefab>()?.setHovered(true);
             }
          } else {
             brushOutline.enabled = (Tools.toolType == ToolType.Brush && Tools.tileGroup != null && !(Tools.tileGroup is PrefabGroup));
@@ -714,8 +667,16 @@ namespace MapCreationTool
                 });
          }
 
+         if (selectedPrefab != null) {
+            selectedPrefab.placedInstance.GetComponent<MapEditorPrefab>()?.setSelected(false);
+         }
+
          selectedPrefab = prefab;
          SelectedPrefabChanged?.Invoke(selectedPrefab?.placedInstance.GetComponent<PrefabDataDefinition>(), selectedPrefab);
+
+         if (selectedPrefab != null) {
+            selectedPrefab.placedInstance.GetComponent<MapEditorPrefab>()?.setSelected(true);
+         }
       }
 
       private void selectPrefab (GameObject prefab, Vector3 position, bool recordUndo = true) {
@@ -827,9 +788,8 @@ namespace MapCreationTool
          } else {
             Vector3 curPos = cam.ScreenToWorldPoint(data.position);
             Vector3 prevPos = cam.ScreenToWorldPoint(data.position + data.delta);
-            cam.transform.localPosition += curPos - prevPos;
 
-            clampCamPos();
+            MainCamera.pan(curPos - prevPos);
          }
          updatePreview(data.position);
       }
@@ -839,12 +799,7 @@ namespace MapCreationTool
       }
 
       private void pointerScroll (float scroll) {
-         cam.orthographicSize = Mathf.Clamp(
-             cam.orthographicSize + scroll * -zoomSpeed.Evaluate(cam.orthographicSize) * Time.deltaTime,
-             minZoom,
-             maxZoom);
-
-         clampCamPos();
+         MainCamera.zoom(-scroll * Time.deltaTime);
       }
       #endregion
    }

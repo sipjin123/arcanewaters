@@ -118,6 +118,10 @@ public class DB_MainStub : MonoBehaviour
       return new List<Map>();
    }
 
+   public static MapInfo getMapInfo (string areaKey) {
+      return null;
+   }
+
    public static Dictionary<string, MapInfo> getLiveMaps () {
       return new Dictionary<string, MapInfo>();
    }
@@ -348,7 +352,7 @@ public class DB_MainStub : MonoBehaviour
       return false;
    }
 
-   public static void setNewPosition (int userId, Vector2 localPosition, Direction facingDirection, string areaKey) {
+   public static void setNewLocalPosition (int userId, Vector2 localPosition, Direction facingDirection, string areaKey) {
 
    }
 

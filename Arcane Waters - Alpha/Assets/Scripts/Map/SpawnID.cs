@@ -27,4 +27,8 @@ public struct SpawnID
    public override int GetHashCode () {
       return areaKey.GetHashCode() ^ spawnKey.GetHashCode();
    }
+
+   public override string ToString () {
+      return $"[SpawnID: {areaKey} - {spawnKey}]";
+   }
 }

@@ -16,14 +16,14 @@ public class AttackManager : ClientMonoBehaviour {
    // The max range dotted circle
    public AttackRangeCircle maxRangeCircle;
 
-   // The line that shows the trajectory of the projectile
-   public AttackTrajectory trajectory;
-
    // The next shot indicator
    public GameObject nextShotIndicator;
 
-   // The line color of the indicators over the target distance
+   // The color of the indicators over the target distance
    public Gradient colorOverDistance;
+
+   // The trajectory dotted line
+   public AttackTrajectory trajectory;
 
    // Self
    public static AttackManager self;
@@ -42,8 +42,8 @@ public class AttackManager : ClientMonoBehaviour {
          PanelManager.self.hasPanelInStack()) {
          freeCursor.enabled = false;
          maxRangeCircle.hide();
-         trajectory.hide();
          clampedCursor.deactivate();
+         trajectory.hide();
          Cursor.visible = true;
          return;
       }
@@ -81,29 +81,28 @@ public class AttackManager : ClientMonoBehaviour {
          // Set the speed of the cursor animation
          clampedCursor.setAnimationSpeed(0.5f + 0.5f / _normalizedDistanceToCursor);
 
-         // Move the trajectory to the player position
-         Util.setXY(trajectory.transform, Global.player.transform.position);
-
-         // Draw the trajectory
-         trajectory.draw(Global.player.transform.position, clampedCursor.transform.position,
-            (1.2f / _normalizedDistanceToCursor), getColorForDistance(_normalizedDistanceToCursor));
-
          // Move the free aim indicator to the mouse position
          Util.setXY(freeCursor.transform, mousePosition);
 
          // Display the range circle
          maxRangeCircle.show();
 
+         // Move the trajectory to the player position
+         Util.setXY(trajectory.transform, Global.player.transform.position);
+
+         // Draw the trajectory
+         trajectory.draw(Global.player.transform.position, clampedCursor.transform.position,
+            indicatorColor, playerShipEntity.getAttackRange());
+
          // Display the relevant indicators
          freeCursor.enabled =true;
-         trajectory.show();
          clampedCursor.activate();
       } else {
          // Hide the indicators
          freeCursor.enabled = false;
-         trajectory.hide();
          clampedCursor.deactivate();
          maxRangeCircle.hide();
+         trajectory.hide();
       }
 
       // Check if the next shot is defined
@@ -133,6 +132,10 @@ public class AttackManager : ClientMonoBehaviour {
 
    public Color getColorForDistance(float normalizedDistance) {
       return colorOverDistance.Evaluate(normalizedDistance);
+   }
+
+   public float getNormalizedDistanceToCursor () {
+      return _normalizedDistanceToCursor;
    }
 
    public static float getArcHeight (Vector2 startPos, Vector2 endPos, float lerpTime, bool applyHeightModifier) {

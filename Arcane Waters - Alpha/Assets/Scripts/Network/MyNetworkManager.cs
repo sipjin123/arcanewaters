@@ -129,13 +129,17 @@ public class MyNetworkManager : NetworkManager {
       // We have to register handlers to be able to send and receive messages
       MessageManager.registerServerHandlers();
 
+      // Look up and store all of the area keys and spawn positions from the database
+      AreaManager.self.storeAreaKeys();
+      SpawnManager.self.storeSpawnPositions();
+
       // Start up Photon so the servers can talk to each other
       connectToPhotonMaster();
 
       // Loads all SQL Data from server
       NPCManager.self.initializeQuestCache();
       ShipDataManager.self.initializeDataCache();
-      TutorialManager.self.initializeDataCache();
+      // TutorialManager.self.initializeDataCache();
       ClassManager.self.initializeDataCache();
       FactionManager.self.initializeDataCache();
       SpecialtyManager.self.initializeDataCache();
@@ -160,10 +164,8 @@ public class MyNetworkManager : NetworkManager {
       // Regularly updates the required game version
       GameVersionManager.self.scheduleMinimumGameVersionUpdate();
 
-      // When running a server in batch mode, go ahead and create the live maps from the database
-      if (Application.isBatchMode) {
-         MapManager.self.createLiveMaps(null);
-      }
+      // Create the initial map that everyone starts in
+      MapManager.self.createMapOnServer(Area.NEW_STARTING_TOWN);
 
       // Make note that we started up a server
       wasServerStarted = true;
@@ -210,18 +212,25 @@ public class MyNetworkManager : NetworkManager {
                return;
             }
 
-            // If we don't have the requested area, we default to the starting area
+            // If we don't have the requested area, we need to create it now
             if (!AreaManager.self.hasArea(previousAreaKey)) {
-               D.log($"Server does not have Area {previousAreaKey}, so defaulting player to {Area.HOUSE}");
-               Spawn spawn = SpawnManager.self.getSpawn(Area.HOUSE);
-               previousAreaKey = spawn.AreaKey;
-               userInfo.localPos = spawn.transform.position;
+               D.debug($"Server does not have Area {previousAreaKey}, creating it now.");
+               MapManager.self.createMapOnServer(previousAreaKey);
             }
 
-            // Create the Player object
+            // If we don't have the requested area, we default to the starting area
+            if (!AreaManager.self.hasArea(previousAreaKey)) {
+               D.log($"Server still does not have Area {previousAreaKey}, so defaulting player to {Area.NEW_STARTING_TOWN}");
+               previousAreaKey = Area.NEW_STARTING_TOWN;
+            }
+
+            // Note where we're going to create the player
             Area targetArea = AreaManager.self.getArea(previousAreaKey);
+            Vector3 playerCreationPos = (Vector2) targetArea.transform.position + userInfo.localPos;
+
+            // Create the Player object
             GameObject prefab = targetArea?.isSea == true ? PrefabsManager.self.playerShipPrefab : PrefabsManager.self.playerBodyPrefab;
-            GameObject playerObject = Instantiate(prefab, userInfo.localPos, Quaternion.identity);
+            GameObject playerObject = Instantiate(prefab, playerCreationPos, Quaternion.identity);
             NetEntity player = playerObject.GetComponent<NetEntity>();
             player.areaKey = previousAreaKey;
             player.userId = userInfo.userId;
@@ -269,17 +278,11 @@ public class MyNetworkManager : NetworkManager {
             // Ability data to the client
             player.rpc.Target_ReceiveAbilities(player.connectionToClient, Util.serialize(AbilityManager.self.allAttackbilities), Util.serialize(AbilityManager.self.allBuffAbilities));
 
-            // Tutorial data to the client
-            player.rpc.Target_ReceiveTutorialData(player.connectionToClient, Util.serialize(TutorialManager.self.tutorialDataList()));
-
             // Gives the user admin features if it has an admin flag
             player.rpc.Target_GrantAdminAccess(player.connectionToClient, player.isAdmin());
 
             // Sends monster data to client
             sendMonsterData(player);
-        
-            // Set tutorial info
-            TutorialManager.self.sendTutorialInfo(player, false);
 
             // Give the player local authority so that movement feels instantaneous
             player.netIdent.AssignClientAuthority(conn);

@@ -154,16 +154,16 @@ public class MonsterSkillTemplate : MonoBehaviour {
       playHitAudioButton.onClick.AddListener(() => {
          if (hitSoundEffect != null) {
             audioSource.clip = hitSoundEffect.clip;
-            audioSource.volume = hitSoundEffect.volume;
-            audioSource.pitch = hitSoundEffect.pitch;
+            audioSource.volume = hitSoundEffect.calculateValue(SoundEffect.ValueType.VOLUME);
+            audioSource.pitch = hitSoundEffect.calculateValue(SoundEffect.ValueType.PITCH);
             audioSource.Play();
          }
       });
       playCastAudioButton.onClick.AddListener(() => {
          if (castSoundEffect != null) {
             audioSource.clip = castSoundEffect.clip;
-            audioSource.volume = castSoundEffect.volume;
-            audioSource.pitch = castSoundEffect.pitch;
+            audioSource.volume = castSoundEffect.calculateValue(SoundEffect.ValueType.VOLUME);
+            audioSource.pitch = castSoundEffect.calculateValue(SoundEffect.ValueType.PITCH);
             audioSource.Play();
          }
       });
@@ -535,8 +535,8 @@ public class MonsterSkillTemplate : MonoBehaviour {
 
          iconTemp.previewButton.onClick.AddListener(() => {
             audioSource.clip = effect.clip;
-            audioSource.volume = effect.volume;
-            audioSource.pitch = effect.pitch;
+            audioSource.volume = effect.calculateValue(SoundEffect.ValueType.VOLUME);
+            audioSource.pitch = effect.calculateValue(SoundEffect.ValueType.PITCH);
             audioSource.Play();
          });
 

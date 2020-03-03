@@ -55,6 +55,12 @@ public class Instance : NetworkBehaviour
    }
 
    private void Start () {
+      // Check if we've specified a max player count on the command line
+      if (CommandCodes.get(CommandCodes.Type.MAX_INSTANCE_PLAYERS)) {
+         _maxPlayerCount = Util.getCommandLineInt(CommandCodes.Type.MAX_INSTANCE_PLAYERS + "");
+         D.log("Setting max players-per-instance to: " + _maxPlayerCount);
+      }
+
       // We only spawn Bots on the Server
       Area area = AreaManager.self.getArea(this.areaKey);
       if (NetworkServer.active) {
@@ -129,7 +135,7 @@ public class Instance : NetworkBehaviour
          return 1;
       }
 
-      return 50;
+      return _maxPlayerCount;
    }
 
    public void removeEntityFromInstance (NetworkBehaviour entity) {
@@ -163,6 +169,9 @@ public class Instance : NetworkBehaviour
 
    // The number of consecutive times we've checked this instance and found it empty
    protected int _consecutiveEmptyChecks = 0;
+
+   // The maximum number of players allowed in an instance
+   protected int _maxPlayerCount = 50;
 
    #endregion
 }

@@ -340,8 +340,9 @@ public class PlayerShipEntity : ShipEntity {
 
    [Command]
    void Cmd_RequestRespawn () {
-      Spawn spawn = SpawnManager.self.getSpawn(AreaManager.self.areaKeyForSunkenPlayers, AreaManager.self.spawnKeyForSunkenPlayers);
-      this.spawnInNewMap(Area.STARTING_TOWN, spawn, Direction.North);
+      SpawnID spawnID = new SpawnID(Area.NEW_STARTING_TOWN, Spawn.STARTING_SPAWN);
+      Vector2 localPos = SpawnManager.self.getSpawnLocalPosition(spawnID);
+      this.spawnInNewMap(spawnID.areaKey, localPos, Direction.North);
 
       // Set the ship health back to max
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
