@@ -1718,7 +1718,7 @@ public class DB_Main : DB_MainStub
 
    #region Crafting XML Data
 
-   public static new void updateCraftingXML (int xmlID, string rawData, string name) {
+   public static new void updateCraftingXML (int xmlID, string rawData, string name, int typeId, int category) {
       string xml_id_key = "xml_id, ";
       string xml_id_value = "@xml_id, ";
 
@@ -1734,13 +1734,15 @@ public class DB_Main : DB_MainStub
             // Declaration of table elements
             "INSERT INTO crafting_xml_v2 (" + xml_id_key + "xmlName, xmlContent, creator_userID) " +
             "VALUES(" + xml_id_value + "@xmlName, @xmlContent, @creator_userID) " +
-            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, xmlName = @xmlName", conn)) {
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, xmlName = @xmlName, equipmentTypeID = @equipmentTypeID, equipmentCategory = @equipmentCategory", conn)) {
 
             conn.Open();
             cmd.Prepare();
 
             cmd.Parameters.AddWithValue("@xml_id", xmlID);
             cmd.Parameters.AddWithValue("@xmlName", name);
+            cmd.Parameters.AddWithValue("@equipmentTypeID", typeId);
+            cmd.Parameters.AddWithValue("@equipmentCategory", category);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
 

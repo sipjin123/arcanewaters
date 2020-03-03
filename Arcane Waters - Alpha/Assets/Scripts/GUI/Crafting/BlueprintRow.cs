@@ -31,9 +31,8 @@ public class BlueprintRow : MonoBehaviour
 
    #endregion Public Variables
 
-   public void setRowForBlueprint (Item resultItem, Blueprint blueprint, bool isSelected, Blueprint.Status status) {
-      _blueprintItemId = blueprint.id;
-      itemNameText.text = resultItem.itemName;
+   public void setRowForBlueprint (Item resultItem, bool isSelected, Blueprint.Status status) {
+      _blueprintItemId = resultItem.id;
 
       // Set the 'blueprint selected' background
       if (isSelected) {
@@ -43,11 +42,15 @@ public class BlueprintRow : MonoBehaviour
       // Retrieve the icon sprite and coloring depending on the type
       ColorKey colorKey = null;
 
-      if (blueprint.itemTypeId.ToString().StartsWith(Blueprint.WEAPON_PREFIX)) {
-         icon.sprite = ImageManager.getSprite(resultItem.iconPath);
+      if (resultItem.category == Item.Category.Weapon) {
+         WeaponStatData weaponData = WeaponStatData.getStatData(resultItem.data, resultItem.itemTypeId);
+         itemNameText.text = weaponData.equipmentName;
+         icon.sprite = ImageManager.getSprite(weaponData.equipmentIconPath);
          colorKey = new ColorKey(Global.player.gender, resultItem.itemTypeId, new Weapon());
-      } else if (blueprint.itemTypeId.ToString().StartsWith(Blueprint.ARMOR_PREFIX)) {
-         icon.sprite = ImageManager.getSprite(resultItem.iconPath);
+      } else if (resultItem.category == Item.Category.Armor) {
+         ArmorStatData armorData = ArmorStatData.getStatData(resultItem.data, resultItem.itemTypeId);
+         itemNameText.text = armorData.equipmentName;
+         icon.sprite = ImageManager.getSprite(armorData.equipmentIconPath);
          colorKey = new ColorKey(Global.player.gender, resultItem.itemTypeId, new Armor());
       } else {
          icon.sprite = null;

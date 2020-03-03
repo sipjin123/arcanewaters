@@ -74,15 +74,15 @@ public class CraftingPanel : Panel
    }
 
    public void refreshBlueprintList () {
-      Global.player.rpc.Cmd_RequestBlueprintsFromServer(_currentPage, ROWS_PER_PAGE);
+      UserEquipmentFetcher.self.fetchCraftableData(_currentPage, ROWS_PER_PAGE);
    }
 
    public void displayBlueprint (int itemId) {
-      Global.player.rpc.Cmd_RequestSingleBlueprintFromServer(itemId);
+      UserEquipmentFetcher.self.checkCraftingInfo(itemId);
    }
 
    public void refreshCurrentlySelectedBlueprint () {
-      Global.player.rpc.Cmd_RequestSingleBlueprintFromServer(_selectedBlueprintId);
+      UserEquipmentFetcher.self.checkCraftingInfo(_selectedBlueprintId);
    }
 
    public void clearSelectedBlueprint () {
@@ -111,13 +111,11 @@ public class CraftingPanel : Panel
 
       // Create the blueprint rows
       for (int i = 0; i < blueprintArray.Length; i++) {
-         Blueprint blueprint = (Blueprint)(blueprintArray[i].getCastItem());
-
          // Instantiates the row
          BlueprintRow row = Instantiate(blueprintRowPrefab, blueprintRowsContainer.transform, false);
 
          // Initializes the row
-         row.setRowForBlueprint(blueprintArray[i], blueprint, _selectedBlueprintId == blueprint.id, blueprintStatusesArray[i]);
+         row.setRowForBlueprint(blueprintArray[i], _selectedBlueprintId == blueprintArray[i].id, blueprintStatusesArray[i]);
       }
 
       // Update the craft button
@@ -129,9 +127,9 @@ public class CraftingPanel : Panel
       }
    }
    
-   public void updatePanelWithSingleBlueprint (Item blueprint, Item[] equippedItems,
-      List<Item> inventoryIngredients, List<Item> requiredIngredients, Item resultItem) {
-      _selectedBlueprintId = blueprint.id;
+   public void updatePanelWithSingleBlueprintWebRequest (Item resultItem, List<Item> equippedItems,
+     List<Item> inventoryIngredients, Item[] requiredIngredients) {
+      _selectedBlueprintId = resultItem.id;
 
       // Configure the panel
       configurePanelForMode(Mode.BlueprintSelected);
@@ -140,23 +138,21 @@ public class CraftingPanel : Panel
       _equippedArmor = null;
       _equippedWeapon = null;
       foreach (Item equippedItem in equippedItems) {
-         Item castedEquippedItem = equippedItem.getCastItem();
-         if (castedEquippedItem is Weapon) {
-            _equippedWeapon = (Weapon) castedEquippedItem;
-         } else if (castedEquippedItem is Armor) {
-            _equippedArmor = (Armor) castedEquippedItem;
+         if (equippedItem.category == Item.Category.Weapon) {
+            _equippedWeapon = Weapon.castItemToWeapon(equippedItem);
+         } else if (equippedItem.category == Item.Category.Armor) {
+            _equippedArmor = Armor.castItemToArmor(equippedItem);
          }
       }
-      
+
       // Clear any previous result item
       resultItemContainer.DestroyChildren();
 
       // Instantiate a cell for the result item
       ItemCell cell = Instantiate(itemCellPrefab, resultItemContainer.transform, false);
-      blueprint.category = resultItem.category;
 
       // Initialize the cell
-      cell.setCellForItem(blueprint);
+      cell.setCellForItem(resultItem);
 
       // Set the cell click events
       cell.leftClickEvent.RemoveAllListeners();
@@ -164,10 +160,10 @@ public class CraftingPanel : Panel
       cell.doubleClickEvent.RemoveAllListeners();
 
       // Set the result item name
-      itemNameText.text = blueprint.itemName;
+      itemNameText.text = resultItem.itemName;
 
       // Set the result item description
-      descriptionText.text = blueprint.itemDescription;
+      descriptionText.text = resultItem.itemDescription;
 
       // Clear any existing statistic
       physicalStatColumn.clear();
@@ -177,16 +173,16 @@ public class CraftingPanel : Panel
       waterStatColumn.clear();
 
       // Set the result item statistics
-      if (resultItem is Weapon) {
-         Weapon weapon = (Weapon) resultItem;
+      if (resultItem.category == Item.Category.Weapon) {
+         Weapon weapon = Weapon.castItemToWeapon(resultItem);
 
          physicalStatColumn.setColumnForWeapon(weapon, _equippedWeapon);
          fireStatColumn.setColumnForWeapon(weapon, _equippedWeapon);
          earthStatColumn.setColumnForWeapon(weapon, _equippedWeapon);
          airStatColumn.setColumnForWeapon(weapon, _equippedWeapon);
          waterStatColumn.setColumnForWeapon(weapon, _equippedWeapon);
-      } else if (resultItem is Armor) {
-         Armor armor = (Armor) resultItem;
+      } else if (resultItem.category == Item.Category.Armor) {
+         Armor armor = Armor.castItemToArmor(resultItem);
 
          physicalStatColumn.setColumnForArmor(armor, _equippedArmor);
          fireStatColumn.setColumnForArmor(armor, _equippedArmor);

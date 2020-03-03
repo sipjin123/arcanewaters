@@ -7,10 +7,6 @@ using System;
 using UnityEngine.Networking;
 using static EquipmentToolManager;
 using System.Linq;
-using UnityEngine.Events;
-using System.Xml.Serialization;
-using System.Text;
-using System.Xml;
 
 public class UserEquipmentFetcher : MonoBehaviour {
    #region Public Variables
@@ -18,14 +14,13 @@ public class UserEquipmentFetcher : MonoBehaviour {
    // Self
    public static UserEquipmentFetcher self;
 
-   // Events to signal if loading is finished
-   public UnityEvent finishedLoadingEquipment = new UnityEvent();
-
    // Host and PHP File directories
    public const string WEB_DIRECTORY = "http://localhost/arcane";//"http://arcanewaters.com";
    public const string WEAPON_DIRECTORY = "/user_equipment_weapon_v1.php?usrId=";
    public const string ARMOR_DIRECTORY = "/user_equipment_armor_v1.php?usrId=";
    public const string USER_DIRECTORY = "/user_data_v1.php?usrId=";
+   public const string CRAFTING_DIRECTORY = "/crafting_data_v1.php?usrId=";
+   public const string CONFIRM_CRAFTING_DIRECTORY = "/confirm_crafting_v1.php";
 
    // The category types that are being fetched
    public Item.Category categoryFilter;
@@ -36,11 +31,11 @@ public class UserEquipmentFetcher : MonoBehaviour {
    // The current page of the item preview
    public int pageIndex;
 
-   public enum ItemDataType
-   {
+   public enum ItemDataType {
       None = 0,
       Inventory = 1,
-      Crafting = 2
+      Crafting = 2,
+      SingleCrafting = 3
    }
 
    #endregion
@@ -48,6 +43,177 @@ public class UserEquipmentFetcher : MonoBehaviour {
    private void Awake () {
       self = this;
    }
+
+   #region Craftable Item Fetching
+
+   public void checkCraftingInfo (int bluePrintId) {
+      StartCoroutine(CO_ConfirmCraftingData(bluePrintId));
+   }
+
+   private IEnumerator CO_ConfirmCraftingData (int bluePrintId) {
+      int userID = Global.player == null ? 0 : Global.player.userId;
+
+      // Request the user info from the web
+      UnityWebRequest www = UnityWebRequest.Get(WEB_DIRECTORY + CONFIRM_CRAFTING_DIRECTORY +
+         "?bpId=" + bluePrintId + "&usrId=" + userID);
+      yield return www.SendWebRequest();
+
+      _itemList = new List<Item>();
+      _bluePrintStatuses = new List<Blueprint.Status>();
+      _craftableList = new List<CraftableItemRequirements>();
+      _ingredientItems = new List<Item>();
+
+      if (www.isNetworkError || www.isHttpError) {
+         D.warning(www.error);
+      } else {
+         // Grab the map data from the request
+         string rawData = www.downloadHandler.text;
+         string splitter = "[next]";
+         string[] xmlGroup = rawData.Split(new string[] { splitter }, StringSplitOptions.None);
+
+         for (int i = 0; i < xmlGroup.Length; i++) {
+            string xmlSubGroup = xmlGroup[i];
+            processSubGroup(xmlSubGroup);
+         }
+
+         processCraftableItems();
+
+         finalizeItemList(ItemDataType.SingleCrafting);
+      }
+   }
+
+   public void fetchCraftableData (int pageIndex, int itemsPerPage) {
+      if (itemsPerPage > 200) {
+         D.warning("Requesting too many items per page.");
+         return;
+      }
+      this.pageIndex = pageIndex;
+      this.itemsPerPage = itemsPerPage;
+      StartCoroutine(CO_DownloadCraftingData());
+   }
+
+   private IEnumerator CO_DownloadCraftingData () {
+      int userID = Global.player == null ? 0 : Global.player.userId;
+
+      // Request the user info from the web
+      UnityWebRequest www = UnityWebRequest.Get(WEB_DIRECTORY + CRAFTING_DIRECTORY + userID);
+      yield return www.SendWebRequest();
+
+      _itemList = new List<Item>();
+      _bluePrintStatuses = new List<Blueprint.Status>();
+      _craftableList = new List<CraftableItemRequirements>();
+      _ingredientItems = new List<Item>();
+
+      if (www.isNetworkError || www.isHttpError) {
+         D.warning(www.error);
+      } else {
+         // Grab the map data from the request
+         string rawData = www.downloadHandler.text;
+         string splitter = "[next]";
+         string[] xmlGroup = rawData.Split(new string[] { splitter }, StringSplitOptions.None);
+
+         for (int i = 0; i < xmlGroup.Length; i++) {
+            string xmlSubGroup = xmlGroup[i];
+            processSubGroup(xmlSubGroup);
+         }
+
+         processCraftableItems();
+         finalizeItemList(ItemDataType.Crafting);
+      }
+   }
+
+   private void processSubGroup (string xmlSubGroup) {
+      string subSplitter = "[space]";
+      string[] xmlPair = xmlSubGroup.Split(new string[] { subSplitter }, StringSplitOptions.None);
+
+      if (xmlPair.Length > 0) {
+         // Crafting ingredients have no crafting data
+         if (xmlPair.Length == 6) {
+            int itemID = int.Parse(xmlPair[0]);
+            Item.Category itemCategory = (Item.Category) int.Parse(xmlPair[1]);
+            int itemTypeID = int.Parse(xmlPair[2]);
+
+            CraftableItemRequirements craftableRequirements = xmlPair[3] == "" ? null : Util.xmlLoad<CraftableItemRequirements>(xmlPair[3]);
+            if (craftableRequirements != null) {
+               string itemName = "";
+               string itemDesc = "";
+               string itemIconPath = "";
+               if (craftableRequirements.resultItem.category == Item.Category.Weapon) {
+                  WeaponStatData weaponData = Util.xmlLoad<WeaponStatData>(xmlPair[4]);
+                  itemName = weaponData.equipmentName;
+                  itemDesc = weaponData.equipmentDescription;
+                  itemIconPath = weaponData.equipmentIconPath;
+               }
+               if (craftableRequirements.resultItem.category == Item.Category.Armor) {
+                  ArmorStatData armorData = Util.xmlLoad<ArmorStatData>(xmlPair[4]);
+                  itemName = armorData.equipmentName;
+                  itemDesc = armorData.equipmentDescription;
+                  itemIconPath = armorData.equipmentIconPath;
+               }
+
+               Item item = craftableRequirements.resultItem;
+               item.id = itemID;
+               item.data = xmlPair[4];
+               item.itemName = itemName;
+               item.itemDescription = itemDesc;
+               item.iconPath = itemIconPath;
+
+               _craftableList.Add(craftableRequirements);
+               this._itemList.Add(item);
+            }
+
+            switch (itemCategory) {
+               case Item.Category.CraftingIngredients:
+                  _ingredientItems.Add(new Item {
+                     category = Item.Category.CraftingIngredients,
+                     itemTypeId = itemTypeID
+                  });
+                  break;
+               case Item.Category.Weapon:
+                  _equippedWeaponItem = new Item {
+                     category = Item.Category.Weapon,
+                     itemTypeId = itemTypeID,
+                     data = xmlPair[4]
+                  };
+                  break;
+               case Item.Category.Armor:
+                  _equippedArmorItem = new Item {
+                     category = Item.Category.Armor,
+                     itemTypeId = itemTypeID,
+                     data = xmlPair[4]
+                  };
+                  break;
+            }
+         } 
+      }
+   }
+
+   private void processCraftableItems () {
+      foreach (CraftableItemRequirements craftable in _craftableList) {
+         Blueprint.Status status = Blueprint.Status.Craftable;
+         if (craftable == null) {
+            status = Blueprint.Status.MissingRecipe;
+         } else {
+            // Compare the ingredients present in the inventory with the requisites
+            foreach (Item requiredIngredient in craftable.combinationRequirements) {
+               // Get the inventory ingredient, if there is any
+               Item inventoryIngredient = _ingredientItems.Find(s =>
+                  s.itemTypeId == requiredIngredient.itemTypeId);
+
+               // Verify that there are enough items in the inventory stack
+               if (inventoryIngredient == null || inventoryIngredient.count < requiredIngredient.count) {
+                  status = Blueprint.Status.NotCraftable;
+                  break;
+               }
+            }
+         }
+         _bluePrintStatuses.Add(status);
+      }
+   }
+
+   #endregion
+
+   #region Inventory Fetching
 
    public void fetchEquipmentData (ItemDataType itemType, int pageIndex = 0, int itemsPerPage = 0, Item.Category[] categoryFilter = null) {
       if (itemsPerPage > 200) {
@@ -202,10 +368,12 @@ public class UserEquipmentFetcher : MonoBehaviour {
       }
    }
 
+   #endregion
+
    private void finalizeItemList (ItemDataType itemType) {
-      if (_hasFinishedUserData && _hasFinishedEquipmentData) {
-         switch (itemType) {
-            case ItemDataType.Inventory:
+      switch (itemType) {
+         case ItemDataType.Inventory:
+            if (_hasFinishedUserData && _hasFinishedEquipmentData) {
                // Get the inventory panel
                InventoryPanel panel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
 
@@ -234,13 +402,33 @@ public class UserEquipmentFetcher : MonoBehaviour {
                pageIndex = Mathf.Clamp(pageIndex, 1, maxPage);
 
                panel.receiveItemForDisplay(_itemList.ToArray(), userObjects, categoryFilter, pageIndex);
-               break;
-            case ItemDataType.Crafting:
-               // TODO: Insert crafting logic here
-               break;
-         }
+            }
+            break;
+         case ItemDataType.Crafting:
+            // Get the panel
+            CraftingPanel craftingPanel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);
 
-         finishedLoadingEquipment.Invoke();
+            // Show the crafting panel, except if the reward panel is showing
+            if (!craftingPanel.isShowing()) {
+               PanelManager.self.pushPanel(craftingPanel.type);
+            }
+
+            craftingPanel.updatePanelWithBlueprintList(_itemList.ToArray(), _bluePrintStatuses.ToArray(), pageIndex, itemsPerPage);
+            break;
+         case ItemDataType.SingleCrafting:
+            // Get the panel
+            craftingPanel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);
+
+            // Show the crafting panel, except if the reward panel is showing
+            if (!craftingPanel.isShowing()) {
+               PanelManager.self.pushPanel(craftingPanel.type);
+            }
+
+            List<Item> equippedItems = new List<Item>();
+            equippedItems.Add(_equippedWeaponItem);
+            equippedItems.Add(_equippedArmorItem);
+            craftingPanel.updatePanelWithSingleBlueprintWebRequest(_craftableList[0].resultItem, equippedItems, _ingredientItems, _craftableList[0].combinationRequirements);
+            break;
       }
    }
 
@@ -248,6 +436,14 @@ public class UserEquipmentFetcher : MonoBehaviour {
 
    // The fetched Item list
    private List<Item> _itemList = new List<Item>();
+
+   // Crafting data lists
+   private List<Blueprint.Status> _bluePrintStatuses = new List<Blueprint.Status>();
+   private List<CraftableItemRequirements> _craftableList = new List<CraftableItemRequirements>();
+   private List<Item> _ingredientItems = new List<Item>();
+
+   // Equipped items
+   private Item _equippedWeaponItem, _equippedArmorItem;
 
    // The fetched user info
    private UserInfo _userInfo = null;

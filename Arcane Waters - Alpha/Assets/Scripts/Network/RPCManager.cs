@@ -526,28 +526,6 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_ReceiveSingleBlueprint (NetworkConnection connection, Item blueprint,
-      Item[] equippedItems, Item[] inventoryIngredientsArray, Item[] requiredIngredientsArray, Item resultItem) {
-      List<Item> inventoryIngredients = new List<Item>(inventoryIngredientsArray);
-      List<Item> requiredIngredients = new List<Item>(requiredIngredientsArray);
-
-      // Get the crafting panel
-      CraftingPanel craftingPanel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);
-
-      // Get the reward panel
-      RewardScreen rewardScreen = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
-
-      // Make sure the crafting panel is showing, except if the reward panel is showing
-      if (!craftingPanel.isShowing() && !rewardScreen.isShowing()) {
-         PanelManager.self.pushPanel(craftingPanel.type);
-      }
-
-      // Pass the data to the panel
-      craftingPanel.updatePanelWithSingleBlueprint(blueprint, equippedItems,
-         inventoryIngredients, requiredIngredients, resultItem);
-   }
-
-   [TargetRpc]
    public void Target_ReceiveBlueprintList (NetworkConnection connection,
       Item[] blueprintArray, Blueprint.Status[] blueprintStatusesArray, int pageNumber, int totalBlueprintCount) {
 
@@ -2351,77 +2329,6 @@ public class RPCManager : NetworkBehaviour {
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             Target_ReceiveBlueprintList(_player.connectionToClient, blueprints.ToArray(), blueprintStatuses.ToArray(), pageNumber, totalItemCount);
-         });
-      });
-   }
-
-   [Command]
-   public void Cmd_RequestSingleBlueprintFromServer (int itemId) {
-      if (_player == null) {
-         D.warning("No player object found.");
-         return;
-      }
-
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-
-         // Retrieve the blueprint from the player's inventory
-         Item blueprint = DB_Main.getItem(_player.userId, itemId);
-
-         // Verify if the player has the blueprint in his inventory
-         if (blueprint == null) {
-            string feedbackMessage = "The blueprint is not present in your inventory!";
-            sendError(feedbackMessage);
-            return;
-         }
-
-         // Get the user equipped items
-         UserInfo userInfo = DB_Main.getUserInfo(_player.userId);
-         List<Item> equippedItems = new List<Item>(2);
-
-         // Get the equipped weapon
-         if (userInfo.weaponId != 0) {
-            equippedItems.Add(DB_Main.getItem(_player.userId, userInfo.weaponId));
-         }
-
-         // Get the equipped armor
-         if (userInfo.armorId != 0) {
-            equippedItems.Add(DB_Main.getItem(_player.userId, userInfo.armorId));
-         }
-
-         // Get the resulting item
-         Item resultItem = Blueprint.getItemData(((Blueprint) blueprint).bpTypeID);
-
-         switch (resultItem.category) {
-            case Item.Category.Weapon:
-               WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(resultItem.itemTypeId);
-               blueprint.setBasicInfo(weaponData.equipmentName, weaponData.equipmentDescription, weaponData.equipmentIconPath);
-               break;
-            case Item.Category.Armor:
-               ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(resultItem.itemTypeId);
-               blueprint.setBasicInfo(armorData.equipmentName, armorData.equipmentDescription, armorData.equipmentIconPath);
-               break;
-         }
-
-         // Get the crafting requirement data
-         CraftableItemRequirements craftingRequirements = CraftingManager.self.getCraftableData(
-               resultItem.category, resultItem.itemTypeId);
-
-         // Build the list of ingredients
-         List<CraftingIngredients.Type> ingredientsList = new List<CraftingIngredients.Type>();
-         if (craftingRequirements != null) {
-            foreach (Item item in craftingRequirements.combinationRequirements) {
-               ingredientsList.Add((CraftingIngredients.Type) item.itemTypeId);
-            }
-         }
-
-         // Get the ingredients present in the user inventory
-         List<Item> inventoryIngredients = DB_Main.getCraftingIngredients(_player.userId, ingredientsList);
-
-         // Back to the Unity thread to send the results back to the client
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_ReceiveSingleBlueprint(_player.connectionToClient, blueprint, equippedItems.ToArray(),
-               inventoryIngredients.ToArray(), craftingRequirements.combinationRequirements, resultItem);
          });
       });
    }

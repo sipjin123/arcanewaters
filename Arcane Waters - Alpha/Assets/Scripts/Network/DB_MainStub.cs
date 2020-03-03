@@ -79,7 +79,7 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
-   public static void updateCraftingXML (int xmlID, string rawData, string name) {
+   public static void updateCraftingXML (int xmlID, string rawData, string name, int typeId, int category) {
 
    }
 

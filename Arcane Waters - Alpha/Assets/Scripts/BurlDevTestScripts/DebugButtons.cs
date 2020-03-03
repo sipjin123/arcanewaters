@@ -63,6 +63,18 @@ public class DebugButtons : NetworkBehaviour
             }
          }
 
+         if (GUILayout.Button("Open Crafting")) {
+            // Get the crafting panel
+            PanelManager.self.selectedPanel = Panel.Type.Craft;
+            CraftingPanel panel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);
+
+            // If the panel is not showing, send a request to the server to get the crafting data
+            if (!panel.isShowing()) {
+               panel.clearSelectedBlueprint();
+               panel.refreshBlueprintList();
+            }
+         }
+
          if (GUILayout.Button("Update Skill")) {
             AbilitySQLData newSQL = new AbilitySQLData();
             newSQL.abilityID = int.Parse( abilityIDData );

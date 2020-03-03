@@ -51,6 +51,11 @@ public class ArmorStatData : EquipmentStatData
 
    public static ArmorStatData getStatData (string data, int itemTypeId) {
       TextAsset newTextAsset = new TextAsset(data);
+
+      if (data == "") {
+         return null;
+      }
+
       try {
          ArmorStatData castedData = Util.xmlLoad<ArmorStatData>(newTextAsset);
          return castedData;

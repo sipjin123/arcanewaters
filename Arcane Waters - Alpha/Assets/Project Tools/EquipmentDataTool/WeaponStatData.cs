@@ -58,6 +58,11 @@ public class WeaponStatData : EquipmentStatData
 
    public static WeaponStatData getStatData (string data, int itemTypeId) {
       TextAsset newTextAsset = new TextAsset(data);
+
+      if (data == "") {
+         return null;
+      }
+
       try {
          WeaponStatData castedData = Util.xmlLoad<WeaponStatData>(newTextAsset);
          return castedData;

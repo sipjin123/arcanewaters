@@ -102,7 +102,7 @@ public class CraftingToolManager : XmlDataToolManager {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateCraftingXML(xmlID, longString, fileName);
+         DB_Main.updateCraftingXML(xmlID, longString, fileName, data.resultItem.itemTypeId, (int)data.resultItem.category);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadAllDataFiles();
