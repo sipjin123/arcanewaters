@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.Xml.Serialization;
 
 #if IS_SERVER_BUILD
 using MySql.Data.MySqlClient;
@@ -83,7 +84,11 @@ public class Armor : EquippableItem {
    }
 
    public override string getDescription () {
-      return itemDescription;
+      if (getArmorData() == null) {
+         return itemDescription;
+      }
+
+      return getArmorData().equipmentDescription;
    }
 
    public override string getTooltip () {
@@ -99,41 +104,30 @@ public class Armor : EquippableItem {
    }
 
    public int getArmorValue () {
-      foreach (string kvp in this.data.Replace(" ", "").Split(',')) {
-         if (!kvp.Contains("=")) {
-            continue;
-         }
-
-         // Get the left and right side of the equal
-         string key = kvp.Split('=')[0];
-         string value = kvp.Split('=')[1];
-
-         if ("armor".Equals(key)) {
-            return Convert.ToInt32(value);
-         }
+      if (getArmorData() != null) {
+         return getArmorData().armorBaseDefense;
       }
 
       return 0;
    }
 
    public virtual float getDefense (Element element) {
-      ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(itemTypeId);
-      if (armorData == null) {
+      if (getArmorData() == null) {
          D.warning("Cannot get Defense, Armor data does not exist! Go to Equipment Editor and make new data: (" + itemTypeId + ")");
          return 5;
       }
 
       switch (element) {
          case Element.Air:
-            return armorData.airResist;
+            return getArmorData().airResist;
          case Element.Fire:
-            return armorData.fireResist;
+            return getArmorData().fireResist;
          case Element.Water:
-            return armorData.waterResist;
+            return getArmorData().waterResist;
          case Element.Earth:
-            return armorData.earthResist;
+            return getArmorData().earthResist;
       }
-      return armorData.armorBaseDefense;
+      return getArmorData().armorBaseDefense;
    }
 
    public static int getBaseArmor (int armorType) {
@@ -208,7 +202,11 @@ public class Armor : EquippableItem {
    }
 
    public override string getIconPath () {
-      return iconPath;
+      if (getArmorData() == null) {
+         return iconPath;
+      }
+
+      return getArmorData().equipmentIconPath;
    }
 
    public override ColorKey getColorKey () {
@@ -251,7 +249,19 @@ public class Armor : EquippableItem {
       return newArmor;
    }
 
+   private ArmorStatData getArmorData () {
+      if (_armorStatData == null) {
+         _armorStatData = ArmorStatData.getStatData(data, itemTypeId);
+      }
+
+      return _armorStatData;
+   }
+
    #region Private Variables
+
+   // Cached armor data from xml data variable
+   [XmlIgnore]
+   private ArmorStatData _armorStatData;
 
    #endregion
 }

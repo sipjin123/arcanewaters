@@ -68,7 +68,7 @@ public class EquipmentToolPanel : MonoBehaviour {
          _weaponClassText.text = ((Weapon.Class)_).ToString();
       });
 
-      _materialType.maxValue = Enum.GetValues(typeof(Weapon.Class)).Length - 1;
+      _materialType.maxValue = Enum.GetValues(typeof(MaterialType)).Length - 1;
       _materialType.onValueChanged.AddListener(_ => {
          _materialTypeText.text = ((MaterialType) _).ToString();
       });

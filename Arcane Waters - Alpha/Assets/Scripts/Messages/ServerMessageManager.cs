@@ -87,7 +87,11 @@ public class ServerMessageManager : MonoBehaviour {
                      armorList[i].materialType = MaterialType.None;
                   } else {
                      armorList[i].materialType = armorStat.materialType;
-                     armorList[i].data = ArmorStatData.serializeArmorStatData(armorStat);
+                     if (armorList[i].data != null) {
+                        armorList[i].data = ArmorStatData.serializeArmorStatData(armorStat);
+                     } else {
+                        D.warning("There is no data for: " + armorList[i].itemTypeId);
+                     }
                   }
                   amorItemList.Add(armorList[i]);
                }
@@ -96,7 +100,11 @@ public class ServerMessageManager : MonoBehaviour {
                foreach (Weapon weapon in weaponList) {
                   if (weapon.itemTypeId > 0) {
                      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weapon.itemTypeId);
-                     weapon.data = WeaponStatData.serializeWeaponStatData(weaponData);
+                     if (weaponData != null) {
+                        weapon.data = WeaponStatData.serializeWeaponStatData(weaponData);
+                     } else {
+                        D.warning("There is no data for: " + weapon.itemTypeId);
+                     }
                   }
                   weaponItemList.Add(weapon);
                }

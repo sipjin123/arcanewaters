@@ -75,7 +75,11 @@ public class OfflineCharacter : ClientMonoBehaviour {
       setBodyLayers(userInfo);
 
       ArmorStatData armorData = Util.xmlLoad<ArmorStatData>(armor.data);
-      setArmor(armorData.armorType, armorData.color1, armorData.color2, armorData.materialType);
+      if (armorData == null) {
+         setArmor(0, ColorType.None, ColorType.None, MaterialType.None);
+      } else {
+         setArmor(armorData.armorType, armorData.color1, armorData.color2, armorData.materialType);
+      }
       setWeapon(userInfo, weapon);
    }
 
@@ -108,6 +112,9 @@ public class OfflineCharacter : ClientMonoBehaviour {
 
    public void setWeapon (UserInfo userInfo, Item weapon) {
       WeaponStatData weaponData = Util.xmlLoad<WeaponStatData>(weapon.data);
+      if (weaponData == null) {
+         weaponData = WeaponStatData.getDefaultData();
+      }
 
       // Update our Material
       foreach (WeaponLayer weaponLayer in weaponLayers) {

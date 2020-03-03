@@ -56,7 +56,7 @@ public class WeaponStatData : EquipmentStatData
       return weaponDataXML;
    }
 
-   public static WeaponStatData weaponData (string data, int itemTypeId) {
+   public static WeaponStatData getStatData (string data, int itemTypeId) {
       TextAsset newTextAsset = new TextAsset(data);
       try {
          WeaponStatData castedData = Util.xmlLoad<WeaponStatData>(newTextAsset);
@@ -65,5 +65,14 @@ public class WeaponStatData : EquipmentStatData
          Debug.LogWarning("There is no Weapon Data for: " + itemTypeId);
          return null;
       }
+   }
+
+   public static WeaponStatData getDefaultData () {
+      return new WeaponStatData { 
+         weaponType = 0,
+         color1 = ColorType.None,
+         color2 = ColorType.None,
+         actionType = Weapon.ActionType.None,
+      };
    }
 }

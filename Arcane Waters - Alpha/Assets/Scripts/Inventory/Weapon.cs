@@ -103,11 +103,11 @@ public class Weapon : EquippableItem {
    }
 
    public override string getDescription () {
-      if (weaponData() == null) {
+      if (getWeaponData() == null) {
          return itemDescription;
       }
 
-      return weaponData().equipmentDescription;
+      return getWeaponData().equipmentDescription;
    }
 
    public override string getTooltip () {
@@ -123,8 +123,8 @@ public class Weapon : EquippableItem {
    }
 
    public override Rarity.Type getRarity () {
-      if (weaponData() != null) {
-         return weaponData().rarity;
+      if (getWeaponData() != null) {
+         return getWeaponData().rarity;
       }
 
       return Rarity.Type.Common;
@@ -155,31 +155,31 @@ public class Weapon : EquippableItem {
    }
 
    public int getDamage () {
-      if (weaponData() != null) {
-         return weaponData().weaponBaseDamage;
+      if (getWeaponData() != null) {
+         return getWeaponData().weaponBaseDamage;
       }
 
       return 0;
    }
 
    public virtual float getDamage (Element element) {
-      if (weaponData() == null) {
+      if (getWeaponData() == null) {
          D.warning("Weapon data does not exist! Go to Equipment Editor and make new data: (" + this.itemTypeId + ")");
          return 10;
       }
 
       switch (element) {
          case Element.Air:
-            return weaponData().weaponDamageAir;
+            return getWeaponData().weaponDamageAir;
          case Element.Fire:
-            return weaponData().weaponDamageFire;
+            return getWeaponData().weaponDamageFire;
          case Element.Water:
-            return weaponData().weaponDamageWater;
+            return getWeaponData().weaponDamageWater;
          case Element.Earth:
-            return weaponData().weaponDamageEarth;
+            return getWeaponData().weaponDamageEarth;
       }
 
-      return weaponData().weaponBaseDamage;
+      return getWeaponData().weaponBaseDamage;
    }
 
    public static float getDamageModifier (Rarity.Type rarity) {
@@ -234,19 +234,19 @@ public class Weapon : EquippableItem {
    }
 
    public override bool canBeTrashed () {
-      if (weaponData() == null) {
+      if (getWeaponData() == null) {
          return true;
       }
 
-      return weaponData().canBeTrashed;
+      return getWeaponData().canBeTrashed;
    }
 
    public override string getIconPath () {
-      if (weaponData() == null) {
+      if (getWeaponData() == null) {
          return iconPath;
       }
 
-      return weaponData().equipmentIconPath;
+      return getWeaponData().equipmentIconPath;
    }
 
    public override ColorKey getColorKey () {
@@ -267,9 +267,9 @@ public class Weapon : EquippableItem {
       return newWeapon;
    }
 
-   private WeaponStatData weaponData () {
+   private WeaponStatData getWeaponData () {
       if (_weaponStatData == null) {
-         _weaponStatData = WeaponStatData.weaponData(data, itemTypeId);
+         _weaponStatData = WeaponStatData.getStatData(data, itemTypeId);
       }
 
       return _weaponStatData;

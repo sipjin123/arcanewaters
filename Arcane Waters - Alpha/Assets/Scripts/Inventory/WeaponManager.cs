@@ -101,6 +101,8 @@ public class WeaponManager : EquipmentManager {
       WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weapon.itemTypeId);
       if (weaponData != null) {
          weaponData.itemSqlId = weapon.id;
+      } else {
+         weaponData = WeaponStatData.getDefaultData();
       }
 
       _weapon = weapon;

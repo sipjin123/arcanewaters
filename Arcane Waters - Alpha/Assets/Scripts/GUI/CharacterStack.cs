@@ -33,10 +33,16 @@ public class CharacterStack : MonoBehaviour {
       eyesLayer.recolor(info.eyesColor1, info.eyesColor1);
       updateHair(info.hairType, info.hairColor1, info.hairColor2);
 
-      ArmorStatData armorData = Util.xmlLoad<ArmorStatData>(userObjects.armor.data);
+      ArmorStatData armorData = Util.xmlLoad<ArmorStatData>(userObjects.armor.data); 
+      if (armorData == null) {
+         armorData = ArmorStatData.getDefaultData();
+      }
       updateArmor(info.gender, armorData.armorType, armorData.color1, armorData.color2);
 
       WeaponStatData weaponData = Util.xmlLoad<WeaponStatData>(userObjects.weapon.data);
+      if (weaponData == null) {
+         weaponData = WeaponStatData.getDefaultData();
+      }
       updateWeapon(info.gender, weaponData.weaponType, weaponData.color1, weaponData.color2);
    }
 

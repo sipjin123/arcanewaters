@@ -77,9 +77,20 @@ public class ClientManager : MonoBehaviour {
    }
 
    public static void sendAccountNameAndUserId () {
+      // Check if the equipment data is finished loading
+      if (EquipmentXMLManager.self.loadedAllEquipment) {
+         sendLoginMsg();
+      } else {
+         EquipmentXMLManager.self.finishedDataSetup.AddListener(() => {
+            sendLoginMsg();
+         });
+      }
+   }
+
+   private static void sendLoginMsg () {
       LogInUserMessage msg = new LogInUserMessage(Global.netId,
          Global.lastUsedAccountName, Global.lastUserAccountPassword, Global.clientGameVersion, Global.currentlySelectedUserId, Application.platform);
-
+      
       // Send a message to the Server letting them know which of our Users we want to log in to
       NetworkClient.Send(msg);
    }

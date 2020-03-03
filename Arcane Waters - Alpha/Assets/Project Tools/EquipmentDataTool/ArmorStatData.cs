@@ -48,4 +48,23 @@ public class ArmorStatData : EquipmentStatData
       string armorDataXML = sb.ToString();
       return armorDataXML;
    }
+
+   public static ArmorStatData getStatData (string data, int itemTypeId) {
+      TextAsset newTextAsset = new TextAsset(data);
+      try {
+         ArmorStatData castedData = Util.xmlLoad<ArmorStatData>(newTextAsset);
+         return castedData;
+      } catch {
+         Debug.LogWarning("There is no Armor Data for: " + itemTypeId);
+         return null;
+      }
+   }
+
+   public static ArmorStatData getDefaultData () {
+      return new ArmorStatData {
+         armorType = 0,
+         color1 = ColorType.None,
+         color2 = ColorType.None,
+      };
+   }
 }

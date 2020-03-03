@@ -125,20 +125,19 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       // Hide the context menu
       hideContextMenu();
 
-      Global.player.rpc.Cmd_RequestItemsFromServerForInventory(_currentPage, ITEMS_PER_PAGE, _categoryFilters.ToArray());
+      UserEquipmentFetcher.self.fetchEquipmentData(UserEquipmentFetcher.ItemDataType.Inventory, _currentPage, ITEMS_PER_PAGE, _categoryFilters.ToArray());
    }
 
-   public void receiveItemsFromServer (UserObjects userObjects, Item.Category[] categories, int pageNumber,
-      int gold, int gems, int totalItemCount, int equippedWeaponId, int equippedArmorId, Item[] itemArray) {
-      _userObjects = userObjects;
-      _equippedWeaponId = equippedWeaponId;
-      _equippedArmorId = equippedArmorId;
+   public void receiveItemForDisplay (Item[] itemArray, UserObjects userObjects, Item.Category category, int pageIndex) {
+      BodyEntity bodyEntity = (BodyEntity) Global.player;
+      _equippedWeaponId = bodyEntity.weaponManager.equippedWeaponId;
+      _equippedArmorId = bodyEntity.armorManager.equippedArmorId;
 
       // Update the current page number
-      _currentPage = pageNumber;
+      _currentPage = pageIndex;
 
       // Calculate the maximum page number
-      _maxPage = Mathf.CeilToInt((float) totalItemCount / ITEMS_PER_PAGE);
+      _maxPage = Mathf.CeilToInt((float) itemArray.Length / ITEMS_PER_PAGE);
 
       // Update the current page text
       pageNumberText.text = "Page " + _currentPage.ToString() + " of " + _maxPage.ToString();
@@ -147,16 +146,11 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       updateNavigationButtons();
 
       // Update the gold and gems count, with commas in thousands place
-      goldText.text = string.Format("{0:n0}", gold);
-      gemsText.text = string.Format("{0:n0}", gems);
+      goldText.text = string.Format("{0:n0}", userObjects.userInfo.gold);
+      gemsText.text = string.Format("{0:n0}", userObjects.userInfo.gems);
 
-      UserEquipmentFetcher.self.finishedLoadingEquipment.RemoveAllListeners();
-      UserEquipmentFetcher.self.finishedLoadingEquipment.AddListener(() => {
-         // Update our character preview stack
-         characterStack.updateLayers(userObjects);
-      });
-
-      UserEquipmentFetcher.self.fetchEquipmentData(UserEquipmentFetcher.ItemDataType.Inventory);
+      // Update the character preview
+      characterStack.updateLayers(userObjects);
 
       // Insert the player's name
       if (Global.player != null) {
@@ -164,13 +158,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       }
 
       // Select the correct tab
-      updateCategoryTabs(categories[0]);
-   }
-
-   public void receiveItemForDisplay (Item[] itemArray) {
-      BodyEntity bodyEntity = (BodyEntity) Global.player;
-      _equippedWeaponId = bodyEntity.weaponManager.equippedWeaponId;
-      _equippedArmorId = bodyEntity.armorManager.equippedArmorId;
+      updateCategoryTabs(category);
 
       // Clear stat rows
       physicalStatRow.clear();
@@ -211,8 +199,6 @@ public class InventoryPanel : Panel, IPointerClickHandler {
             cell.doubleClickEvent.AddListener(() => tryEquipOrUseItem(cell.getItem()));
          }
       }
-
-      updateCategoryTabs(Item.Category.None);
    }
 
    private void updateCategoryTabs (Item.Category itemCategory) {
@@ -670,9 +656,6 @@ public class InventoryPanel : Panel, IPointerClickHandler {
 
    // The list of categories listed by the 'others' tab
    private List<Item.Category> _othersTabCategories;
-
-   // The last set of User Objects that we received
-   private UserObjects _userObjects;
 
    // The item for which the context menu was activated
    private Item _selectedItem;

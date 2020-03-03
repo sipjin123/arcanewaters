@@ -99,6 +99,8 @@ public class ArmorManager : EquipmentManager {
          armorData.itemSqlId = newArmor.id;
          newArmor.materialType = armorData.materialType;
          this.materialType = armorData.materialType;
+      } else {
+         armorData = ArmorStatData.getDefaultData();
       }
 
       _armor = newArmor;
