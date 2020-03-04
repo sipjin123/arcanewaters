@@ -129,9 +129,8 @@ public class InventoryPanel : Panel, IPointerClickHandler {
    }
 
    public void receiveItemForDisplay (Item[] itemArray, UserObjects userObjects, Item.Category category, int pageIndex) {
-      BodyEntity bodyEntity = (BodyEntity) Global.player;
-      _equippedWeaponId = bodyEntity.weaponManager.equippedWeaponId;
-      _equippedArmorId = bodyEntity.armorManager.equippedArmorId;
+      _equippedWeaponId = userObjects.weapon.id;
+      _equippedArmorId = userObjects.armor.id;
 
       // Update the current page number
       _currentPage = pageIndex;
@@ -182,10 +181,10 @@ public class InventoryPanel : Panel, IPointerClickHandler {
             cell.setCellForItem(item);
 
             // If the item is equipped, place the item cell in the equipped slots
-            if (item.id == bodyEntity.weaponManager.equippedWeaponId && item.id != 0) {
+            if (item.id == _equippedWeaponId && item.id != 0) {
                cell.transform.SetParent(equippedWeaponCellContainer.transform, false);
                refreshStats(Weapon.castItemToWeapon(item));
-            } else if (item.id == bodyEntity.armorManager.equippedArmorId && item.id != 0) {
+            } else if (item.id == _equippedArmorId && item.id != 0) {
                cell.transform.SetParent(equippedArmorCellContainer.transform, false);
                refreshStats(Armor.castItemToArmor(item));
             }

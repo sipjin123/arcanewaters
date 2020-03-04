@@ -107,7 +107,7 @@ public class UserEquipmentFetcher : MonoBehaviour {
       if (www.isNetworkError || www.isHttpError) {
          D.warning(www.error);
       } else {
-         // Grab the map data from the request
+         // Grab the crafting data from the request
          string rawData = www.downloadHandler.text;
          string splitter = "[next]";
          string[] xmlGroup = rawData.Split(new string[] { splitter }, StringSplitOptions.None);
@@ -352,7 +352,7 @@ public class UserEquipmentFetcher : MonoBehaviour {
             gold = int.Parse(xmlPairCollection["usrGold"]),
             gems = int.Parse(xmlPairCollection["accGems"]),
             gender = (Gender.Type) int.Parse(xmlPairCollection["usrGender"]),
-            accountName = xmlPairCollection["usrName"],
+            username = xmlPairCollection["usrName"],
             bodyType = (BodyLayer.Type) int.Parse(xmlPairCollection["bodyType"]),
             hairType = (HairLayer.Type) int.Parse(xmlPairCollection["hairType"]),
             hairColor1 = (ColorType) int.Parse(xmlPairCollection["hairColor1"]),
