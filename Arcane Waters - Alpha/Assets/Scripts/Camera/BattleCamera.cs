@@ -17,6 +17,8 @@ public class BattleCamera : BaseCamera {
    }
 
    private void Start () {
+      // TODO: Review if this is still needed (Disabled so the bg content of the bg tool will render all sprites)
+      return;
       // Check if the current resolution width is bigger than 1024, or the height greater than 768
       float sizeDiff = Mathf.Max(Screen.width / 1024f, Screen.height / 768f);
 
