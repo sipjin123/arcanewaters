@@ -19,8 +19,12 @@ public class UserEquipmentFetcher : MonoBehaviour {
    public const string WEAPON_DIRECTORY = "/user_equipment_weapon_v1.php?usrId=";
    public const string ARMOR_DIRECTORY = "/user_equipment_armor_v1.php?usrId=";
    public const string USER_DIRECTORY = "/user_data_v1.php?usrId=";
-   public const string CRAFTING_DIRECTORY = "/crafting_data_v1.php?usrId=";
-   public const string CONFIRM_CRAFTING_DIRECTORY = "/confirm_crafting_v1.php";
+
+   public const string FETCH_CRAFTABLE_WEAPONS = "/fetch_craftable_weapons_v1.php?usrId=";
+   public const string FETCH_CRAFTABLE_ARMORS = "/fetch_craftable_armors_v1.php?usrId=";
+   public const string FETCH_CRAFTING_INGREDIENTS = "/fetch_crafting_ingredients_v1.php?usrId=";
+   public const string FETCH_EQUIPPED_ITEMS = "/fetch_equipped_items_v1.php?usrId=";
+   public const string FETCH_SINGLE_BP = "/fetch_single_blueprint_v1.php?";
 
    // The category types that are being fetched
    public Item.Category categoryFilter;
@@ -30,6 +34,12 @@ public class UserEquipmentFetcher : MonoBehaviour {
 
    // The current page of the item preview
    public int pageIndex;
+
+   // Determines if the crafting dl progress is complete
+   public int craftingProgress = 0;
+
+   // The current data procedure being implemented
+   public ItemDataType currentItemData;
 
    public enum ItemDataType {
       None = 0,
@@ -47,21 +57,26 @@ public class UserEquipmentFetcher : MonoBehaviour {
    #region Craftable Item Fetching
 
    public void checkCraftingInfo (int bluePrintId) {
-      StartCoroutine(CO_ConfirmCraftingData(bluePrintId));
-   }
-
-   private IEnumerator CO_ConfirmCraftingData (int bluePrintId) {
-      int userID = Global.player == null ? 0 : Global.player.userId;
-
-      // Request the user info from the web
-      UnityWebRequest www = UnityWebRequest.Get(WEB_DIRECTORY + CONFIRM_CRAFTING_DIRECTORY +
-         "?bpId=" + bluePrintId + "&usrId=" + userID);
-      yield return www.SendWebRequest();
-
       _itemList = new List<Item>();
       _bluePrintStatuses = new List<Blueprint.Status>();
       _craftableList = new List<CraftableItemRequirements>();
       _ingredientItems = new List<Item>();
+      craftingProgress = 0;
+
+      currentItemData = ItemDataType.SingleCrafting;
+
+      StartCoroutine(CO_DownloadEquippedItems());
+      StartCoroutine(CO_DownloadCraftingIngredients());
+      StartCoroutine(CO_Fetch_Single_BP(bluePrintId));
+   }
+
+   private IEnumerator CO_Fetch_Single_BP (int bluePrintId) {
+      int userID = Global.player == null ? 0 : Global.player.userId;
+
+      // Request the user info from the web
+      UnityWebRequest www = UnityWebRequest.Get(WEB_DIRECTORY + FETCH_SINGLE_BP +
+         "bpId=" + bluePrintId + "&usrId=" + userID);
+      yield return www.SendWebRequest();
 
       if (www.isNetworkError || www.isHttpError) {
          D.warning(www.error);
@@ -73,36 +88,66 @@ public class UserEquipmentFetcher : MonoBehaviour {
 
          for (int i = 0; i < xmlGroup.Length; i++) {
             string xmlSubGroup = xmlGroup[i];
-            processSubGroup(xmlSubGroup);
+            processCraftableGroups(xmlSubGroup);
          }
 
-         processCraftableItems();
-
-         finalizeItemList(ItemDataType.SingleCrafting);
+         craftingProgress++;
+         finalizeSingleCraftingProcedure();
       }
    }
+
+   private void finalizeSingleCraftingProcedure () {
+      if (craftingProgress == 3) {
+         processCraftableItems();
+
+         // Get the panel
+         CraftingPanel craftingPanel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);
+
+         // Show the crafting panel, except if the reward panel is showing
+         if (!craftingPanel.isShowing()) {
+            PanelManager.self.pushPanel(craftingPanel.type);
+         }
+
+         List<Item> equippedItems = new List<Item>();
+         equippedItems.Add(_equippedWeaponItem);
+         equippedItems.Add(_equippedArmorItem);
+         craftingPanel.updatePanelWithSingleBlueprintWebRequest(_craftableList[0].resultItem, equippedItems, _ingredientItems, _craftableList[0].combinationRequirements);
+      }
+   }
+
+   #endregion
+
+   #region Populate crafting panel
 
    public void fetchCraftableData (int pageIndex, int itemsPerPage) {
       if (itemsPerPage > 200) {
          D.warning("Requesting too many items per page.");
          return;
       }
-      this.pageIndex = pageIndex;
-      this.itemsPerPage = itemsPerPage;
-      StartCoroutine(CO_DownloadCraftingData());
-   }
-
-   private IEnumerator CO_DownloadCraftingData () {
-      int userID = Global.player == null ? 0 : Global.player.userId;
-
-      // Request the user info from the web
-      UnityWebRequest www = UnityWebRequest.Get(WEB_DIRECTORY + CRAFTING_DIRECTORY + userID);
-      yield return www.SendWebRequest();
 
       _itemList = new List<Item>();
       _bluePrintStatuses = new List<Blueprint.Status>();
       _craftableList = new List<CraftableItemRequirements>();
       _ingredientItems = new List<Item>();
+      craftingProgress = 0;
+
+      currentItemData = ItemDataType.Crafting;
+
+      this.pageIndex = pageIndex;
+      this.itemsPerPage = itemsPerPage;
+
+      StartCoroutine(CO_DownloadCraftableWeapons());
+      StartCoroutine(CO_DownloadCraftableArmors());
+      StartCoroutine(CO_DownloadEquippedItems());
+      StartCoroutine(CO_DownloadCraftingIngredients());
+   }
+
+   private IEnumerator CO_DownloadCraftingIngredients () {
+      int userID = Global.player == null ? 0 : Global.player.userId;
+
+      // Request the user info from the web
+      UnityWebRequest www = UnityWebRequest.Get(WEB_DIRECTORY + FETCH_CRAFTING_INGREDIENTS + userID);
+      yield return www.SendWebRequest();
 
       if (www.isNetworkError || www.isHttpError) {
          D.warning(www.error);
@@ -114,15 +159,116 @@ public class UserEquipmentFetcher : MonoBehaviour {
 
          for (int i = 0; i < xmlGroup.Length; i++) {
             string xmlSubGroup = xmlGroup[i];
-            processSubGroup(xmlSubGroup);
+            processCraftingIngredientGroups(xmlSubGroup);
          }
+         craftingProgress++;
 
-         processCraftableItems();
-         finalizeItemList(ItemDataType.Crafting);
+         if (currentItemData == ItemDataType.Crafting) {
+            finalizeCraftingProcedure();
+         } else if (currentItemData == ItemDataType.SingleCrafting) {
+            finalizeSingleCraftingProcedure();
+         }
       }
    }
 
-   private void processSubGroup (string xmlSubGroup) {
+   private IEnumerator CO_DownloadEquippedItems () {
+      int userID = Global.player == null ? 0 : Global.player.userId;
+
+      // Request the user info from the web
+      UnityWebRequest www = UnityWebRequest.Get(WEB_DIRECTORY + FETCH_EQUIPPED_ITEMS + userID);
+      yield return www.SendWebRequest();
+
+      if (www.isNetworkError || www.isHttpError) {
+         D.warning(www.error);
+      } else {
+         // Grab the crafting data from the request
+         string rawData = www.downloadHandler.text;
+         string splitter = "[next]";
+         string[] xmlGroup = rawData.Split(new string[] { splitter }, StringSplitOptions.None);
+
+         for (int i = 0; i < xmlGroup.Length; i++) {
+            string xmlSubGroup = xmlGroup[i];
+            processEquippedItemGroups(xmlSubGroup);
+         }
+         craftingProgress++;
+
+         if (currentItemData == ItemDataType.Crafting) {
+            finalizeCraftingProcedure();
+         } else if (currentItemData == ItemDataType.SingleCrafting) {
+            finalizeSingleCraftingProcedure();
+         }
+      }
+   }
+
+   private IEnumerator CO_DownloadCraftableWeapons () {
+      int userID = Global.player == null ? 0 : Global.player.userId;
+
+      // Request the user info from the web
+      UnityWebRequest www = UnityWebRequest.Get(WEB_DIRECTORY + FETCH_CRAFTABLE_WEAPONS + userID);
+      yield return www.SendWebRequest();
+
+      if (www.isNetworkError || www.isHttpError) {
+         D.warning(www.error);
+      } else {
+         // Grab the crafting data from the request
+         string rawData = www.downloadHandler.text;
+         string splitter = "[next]";
+         string[] xmlGroup = rawData.Split(new string[] { splitter }, StringSplitOptions.None);
+
+         for (int i = 0; i < xmlGroup.Length; i++) {
+            string xmlSubGroup = xmlGroup[i];
+            processCraftableGroups(xmlSubGroup);
+         }
+         craftingProgress++;
+         finalizeCraftingProcedure();
+      }
+   }
+
+   private IEnumerator CO_DownloadCraftableArmors () {
+      int userID = Global.player == null ? 0 : Global.player.userId;
+
+      // Request the user info from the web
+      UnityWebRequest www = UnityWebRequest.Get(WEB_DIRECTORY + FETCH_CRAFTABLE_ARMORS + userID);
+      yield return www.SendWebRequest();
+
+      if (www.isNetworkError || www.isHttpError) {
+         D.warning(www.error);
+      } else {
+         // Grab the crafting data from the request
+         string rawData = www.downloadHandler.text;
+         string splitter = "[next]";
+         string[] xmlGroup = rawData.Split(new string[] { splitter }, StringSplitOptions.None);
+
+         for (int i = 0; i < xmlGroup.Length; i++) {
+            string xmlSubGroup = xmlGroup[i];
+            processCraftableGroups(xmlSubGroup);
+         }
+         craftingProgress++;
+         finalizeCraftingProcedure();
+      }
+   }
+
+   private void finalizeCraftingProcedure () {
+      if (craftingProgress == 4) {
+         processCraftableItems();
+
+         // Get the panel
+         CraftingPanel craftingPanel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);
+
+         // Show the crafting panel, except if the reward panel is showing
+         if (!craftingPanel.isShowing()) {
+            PanelManager.self.pushPanel(craftingPanel.type);
+         }
+
+         craftingPanel.updatePanelWithBlueprintList(_itemList.ToArray(), _bluePrintStatuses.ToArray(), pageIndex, itemsPerPage);
+      }
+   }
+
+   #endregion
+
+   #region Subgroup translations
+
+   private void processCraftableGroups (string xmlSubGroup) {
       string subSplitter = "[space]";
       string[] xmlPair = xmlSubGroup.Split(new string[] { subSplitter }, StringSplitOptions.None);
 
@@ -161,30 +307,58 @@ public class UserEquipmentFetcher : MonoBehaviour {
                _craftableList.Add(craftableRequirements);
                this._itemList.Add(item);
             }
+         } 
+      }
+   }
+
+   private void processEquippedItemGroups (string xmlSubGroup) {
+      string subSplitter = "[space]";
+      string[] xmlPair = xmlSubGroup.Split(new string[] { subSplitter }, StringSplitOptions.None);
+
+      if (xmlPair.Length > 0) {
+         // Crafting ingredients have no crafting data
+         if (xmlPair.Length == 5) {
+            int itemID = int.Parse(xmlPair[0]);
+            Item.Category itemCategory = (Item.Category) int.Parse(xmlPair[1]);
+            int itemTypeID = int.Parse(xmlPair[2]);
 
             switch (itemCategory) {
-               case Item.Category.CraftingIngredients:
-                  _ingredientItems.Add(new Item {
-                     category = Item.Category.CraftingIngredients,
-                     itemTypeId = itemTypeID
-                  });
-                  break;
                case Item.Category.Weapon:
                   _equippedWeaponItem = new Item {
                      category = Item.Category.Weapon,
                      itemTypeId = itemTypeID,
-                     data = xmlPair[4]
+                     data = xmlPair[3]
                   };
                   break;
                case Item.Category.Armor:
                   _equippedArmorItem = new Item {
                      category = Item.Category.Armor,
                      itemTypeId = itemTypeID,
-                     data = xmlPair[4]
+                     data = xmlPair[3]
                   };
                   break;
             }
-         } 
+         }
+      }
+   }
+
+   private void processCraftingIngredientGroups (string xmlSubGroup) {
+      string subSplitter = "[space]";
+      string[] xmlPair = xmlSubGroup.Split(new string[] { subSplitter }, StringSplitOptions.None);
+
+      if (xmlPair.Length > 0) {
+         // Crafting ingredients have no crafting data
+         if (xmlPair.Length == 4) {
+            int itemID = int.Parse(xmlPair[0]);
+            Item.Category itemCategory = (Item.Category) int.Parse(xmlPair[1]);
+            int itemTypeID = int.Parse(xmlPair[2]);
+
+            _ingredientItems.Add(new Item {
+               id = itemID,
+               category = itemCategory,
+               itemTypeId = itemTypeID
+            });
+         }
       }
    }
 
@@ -215,7 +389,7 @@ public class UserEquipmentFetcher : MonoBehaviour {
 
    #region Inventory Fetching
 
-   public void fetchEquipmentData (ItemDataType itemType, int pageIndex = 0, int itemsPerPage = 0, Item.Category[] categoryFilter = null) {
+   public void fetchEquipmentData (int pageIndex = 0, int itemsPerPage = 0, Item.Category[] categoryFilter = null) {
       if (itemsPerPage > 200) {
          D.warning("Requesting too many items per page.");
          return;
@@ -225,15 +399,17 @@ public class UserEquipmentFetcher : MonoBehaviour {
       this.pageIndex = pageIndex;
       this.itemsPerPage = itemsPerPage;
 
+      currentItemData = ItemDataType.Inventory;
+
       _itemList = new List<Item>();
       _hasFinishedEquipmentData = false;
       _hasFinishedUserData = false;
 
-      StartCoroutine(CO_DownloadUserData(itemType));
-      StartCoroutine(CO_DownloadEquipmentData(EquipmentType.Weapon, itemType));
+      StartCoroutine(CO_DownloadUserData());
+      StartCoroutine(CO_DownloadEquipmentData(EquipmentType.Weapon));
    }
 
-   private IEnumerator CO_DownloadEquipmentData (EquipmentType equipmentType, ItemDataType itemType) {
+   private IEnumerator CO_DownloadEquipmentData (EquipmentType equipmentType) {
       // Request the map from the web
       int userID = Global.player == null ? 0 : Global.player.userId;
       string newPath = WEB_DIRECTORY;
@@ -311,16 +487,16 @@ public class UserEquipmentFetcher : MonoBehaviour {
             }
 
             if (equipmentType == EquipmentType.Weapon) {
-               StartCoroutine(CO_DownloadEquipmentData(EquipmentType.Armor, itemType));
+               StartCoroutine(CO_DownloadEquipmentData(EquipmentType.Armor));
             } else if (equipmentType == EquipmentType.Armor) {
                _hasFinishedEquipmentData = true;
-               finalizeItemList(itemType);
+               finalizeInventory();
             }
          }
       }
    }
 
-   private IEnumerator CO_DownloadUserData (ItemDataType itemType) {
+   private IEnumerator CO_DownloadUserData () {
       int userID = Global.player == null ? 0 : Global.player.userId;
 
       // Request the user info from the web
@@ -364,73 +540,44 @@ public class UserEquipmentFetcher : MonoBehaviour {
             armorId = int.Parse(xmlPairCollection["armId"])
          };
          _hasFinishedUserData = true;
-         finalizeItemList(itemType);
+         finalizeInventory();
+      }
+   }
+
+   private void finalizeInventory () {
+      if (_hasFinishedUserData && _hasFinishedEquipmentData) {
+         // Get the inventory panel
+         InventoryPanel panel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
+
+         // Make sure the inventory panel is showing
+         if (!panel.isShowing()) {
+            PanelManager.self.pushPanel(Panel.Type.Inventory);
+         }
+
+         Item equippedWeapon = _itemList.Find(_ => _.id == _userInfo.weaponId);
+         if (equippedWeapon == null) {
+            equippedWeapon = new Item { itemTypeId = 0, color1 = ColorType.None, color2 = ColorType.None };
+         }
+         Item equippedArmor = _itemList.Find(_ => _.id == _userInfo.armorId);
+         if (equippedArmor == null) {
+            equippedArmor = new Item { itemTypeId = 0, color1 = ColorType.None, color2 = ColorType.None };
+         }
+         UserObjects userObjects = new UserObjects { userInfo = _userInfo, weapon = equippedWeapon, armor = equippedArmor };
+
+         // Calculate the maximum page number
+         int maxPage = Mathf.CeilToInt((float) _itemList.Count / itemsPerPage);
+         if (maxPage == 0) {
+            maxPage = 1;
+         }
+
+         // Clamp the requested page number to the max page - the number of items could have changed
+         pageIndex = Mathf.Clamp(pageIndex, 1, maxPage);
+
+         panel.receiveItemForDisplay(_itemList.ToArray(), userObjects, categoryFilter, pageIndex);
       }
    }
 
    #endregion
-
-   private void finalizeItemList (ItemDataType itemType) {
-      switch (itemType) {
-         case ItemDataType.Inventory:
-            if (_hasFinishedUserData && _hasFinishedEquipmentData) {
-               // Get the inventory panel
-               InventoryPanel panel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
-
-               // Make sure the inventory panel is showing
-               if (!panel.isShowing()) {
-                  PanelManager.self.pushPanel(Panel.Type.Inventory);
-               }
-
-               Item equippedWeapon = _itemList.Find(_ => _.id == _userInfo.weaponId);
-               if (equippedWeapon == null) {
-                  equippedWeapon = new Item { itemTypeId = 0, color1 = ColorType.None, color2 = ColorType.None };
-               }
-               Item equippedArmor = _itemList.Find(_ => _.id == _userInfo.armorId);
-               if (equippedArmor == null) {
-                  equippedArmor = new Item { itemTypeId = 0, color1 = ColorType.None, color2 = ColorType.None };
-               }
-               UserObjects userObjects = new UserObjects { userInfo = _userInfo, weapon = equippedWeapon, armor = equippedArmor };
-
-               // Calculate the maximum page number
-               int maxPage = Mathf.CeilToInt((float) _itemList.Count / itemsPerPage);
-               if (maxPage == 0) {
-                  maxPage = 1;
-               }
-
-               // Clamp the requested page number to the max page - the number of items could have changed
-               pageIndex = Mathf.Clamp(pageIndex, 1, maxPage);
-
-               panel.receiveItemForDisplay(_itemList.ToArray(), userObjects, categoryFilter, pageIndex);
-            }
-            break;
-         case ItemDataType.Crafting:
-            // Get the panel
-            CraftingPanel craftingPanel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);
-
-            // Show the crafting panel, except if the reward panel is showing
-            if (!craftingPanel.isShowing()) {
-               PanelManager.self.pushPanel(craftingPanel.type);
-            }
-
-            craftingPanel.updatePanelWithBlueprintList(_itemList.ToArray(), _bluePrintStatuses.ToArray(), pageIndex, itemsPerPage);
-            break;
-         case ItemDataType.SingleCrafting:
-            // Get the panel
-            craftingPanel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);
-
-            // Show the crafting panel, except if the reward panel is showing
-            if (!craftingPanel.isShowing()) {
-               PanelManager.self.pushPanel(craftingPanel.type);
-            }
-
-            List<Item> equippedItems = new List<Item>();
-            equippedItems.Add(_equippedWeaponItem);
-            equippedItems.Add(_equippedArmorItem);
-            craftingPanel.updatePanelWithSingleBlueprintWebRequest(_craftableList[0].resultItem, equippedItems, _ingredientItems, _craftableList[0].combinationRequirements);
-            break;
-      }
-   }
 
    #region Private Variables
 

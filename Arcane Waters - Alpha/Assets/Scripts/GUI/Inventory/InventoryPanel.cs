@@ -125,7 +125,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       // Hide the context menu
       hideContextMenu();
 
-      UserEquipmentFetcher.self.fetchEquipmentData(UserEquipmentFetcher.ItemDataType.Inventory, _currentPage, ITEMS_PER_PAGE, _categoryFilters.ToArray());
+      UserEquipmentFetcher.self.fetchEquipmentData(_currentPage, ITEMS_PER_PAGE, _categoryFilters.ToArray());
    }
 
    public void receiveItemForDisplay (Item[] itemArray, UserObjects userObjects, Item.Category category, int pageIndex) {
