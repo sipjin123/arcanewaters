@@ -42,8 +42,8 @@ public class SoundEffect
 
    public enum ValueType
    {
-      VOLUME,
-      PITCH
+      VOLUME = 0,
+      PITCH = 1,
    }
 
    #endregion
@@ -56,6 +56,23 @@ public class SoundEffect
             return Random.Range(minPitch, maxPitch);
          default:
             return 1.0f;
+      }
+   }
+
+   public void calibrateSource (AudioSource toCalibrate) {
+      toCalibrate.volume = calculateValue(SoundEffect.ValueType.VOLUME);
+      toCalibrate.pitch = calculateValue(SoundEffect.ValueType.PITCH);
+
+      if (toCalibrate.pitch < 0.0f) {
+         toCalibrate.timeSamples = Mathf.Clamp(
+            Mathf.FloorToInt(toCalibrate.clip.samples - 1 - toCalibrate.clip.samples * offset),
+            0,
+            toCalibrate.clip.samples - 1);
+      } else {
+         toCalibrate.timeSamples = Mathf.Clamp(
+            Mathf.FloorToInt(toCalibrate.clip.samples * offset),
+            0,
+            toCalibrate.clip.samples - 1);
       }
    }
 

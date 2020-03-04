@@ -6,7 +6,8 @@ using Mirror;
 using System;
 using Random = UnityEngine.Random;
 
-public class MonsterSkillTemplate : MonoBehaviour {
+public class MonsterSkillTemplate : MonoBehaviour
+{
    #region Public Variables
 
    // The unique skill id of this template
@@ -148,7 +149,7 @@ public class MonsterSkillTemplate : MonoBehaviour {
       selectBuffIconButton.onClick.AddListener(() => toggleSpriteSelection(PathType.BuffIcon));
       selectCastSpriteButton.onClick.AddListener(() => toggleSpriteSelection(PathType.CastSprite));
       selectHitSpriteButton.onClick.AddListener(() => toggleSpriteSelection(PathType.HitSprite));
-      selectSkillIconButton.onClick.AddListener(() => toggleSpriteSelection(PathType.ItemIcon)); 
+      selectSkillIconButton.onClick.AddListener(() => toggleSpriteSelection(PathType.ItemIcon));
       selectHitAudioButton.onClick.AddListener(() => toggleAudioSelection(PathType.HitSprite));
       selectCastAudioButton.onClick.AddListener(() => toggleAudioSelection(PathType.CastSprite));
       playHitAudioButton.onClick.AddListener(() => {
@@ -167,7 +168,7 @@ public class MonsterSkillTemplate : MonoBehaviour {
             audioSource.Play();
          }
       });
-   
+
       elements.maxValue = Enum.GetValues(typeof(Element)).Length - 1;
       battleItemType.maxValue = Enum.GetValues(typeof(BattleItemType)).Length - 1;
       weaponClass.maxValue = Enum.GetValues(typeof(Weapon.Class)).Length - 1;
@@ -197,7 +198,7 @@ public class MonsterSkillTemplate : MonoBehaviour {
       });
       abilityActionType.onValueChanged.AddListener(_ => {
          abilityActionTypeText.text = ((AbilityActionType) abilityActionType.value).ToString() + countSliderValue(abilityActionType);
-         if ((AbilityActionType) abilityActionType.value == AbilityActionType.CastToTarget || (AbilityActionType) abilityActionType.value == AbilityActionType.Ranged) { 
+         if ((AbilityActionType) abilityActionType.value == AbilityActionType.CastToTarget || (AbilityActionType) abilityActionType.value == AbilityActionType.Ranged) {
             foreach (GameObject obj in projectileVariables) {
                obj.SetActive(true);
             }
@@ -219,7 +220,7 @@ public class MonsterSkillTemplate : MonoBehaviour {
       }
    }
 
-   private void initializeSliderValues() {
+   private void initializeSliderValues () {
       elements.onValueChanged.Invoke(elements.value);
       battleItemType.onValueChanged.Invoke(battleItemType.value);
       weaponClass.onValueChanged.Invoke(weaponClass.value);
@@ -233,12 +234,12 @@ public class MonsterSkillTemplate : MonoBehaviour {
 
    #region Ability Stances
 
-   private void addStance() {
+   private void addStance () {
       GameObject template = Instantiate(stanceTemplate, stanceTemplateParent.transform);
       StanceTemplate stanceTemp = template.GetComponent<StanceTemplate>();
       stanceTemp.Init();
       stanceTemp.deleteButton.onClick.AddListener(() => {
-         StanceTemplate currentTemp = stanceSlidierList.Find(_=>_ == stanceTemp);
+         StanceTemplate currentTemp = stanceSlidierList.Find(_ => _ == stanceTemp);
          stanceSlidierList.Remove(currentTemp);
          Destroy(template);
       });
@@ -246,7 +247,7 @@ public class MonsterSkillTemplate : MonoBehaviour {
       stanceSlidierList.Add(stanceTemp);
    }
 
-   private void loadStance(BasicAbilityData ability) {
+   private void loadStance (BasicAbilityData ability) {
       stanceSlidierList = new List<StanceTemplate>();
       if (ability.allowedStances != null) {
          foreach (Battler.Stance stance in ability.allowedStances) {
@@ -269,7 +270,7 @@ public class MonsterSkillTemplate : MonoBehaviour {
 
    #region Retrieve and Load Data
 
-   public void loadAttackData(AttackAbilityData attackData) {
+   public void loadAttackData (AttackAbilityData attackData) {
       if (attackData.abilityType == AbilityType.Standard) {
          skillLabel.text = "Attack Ability";
          abilityTypeIcon.sprite = attackSprite;
@@ -283,7 +284,7 @@ public class MonsterSkillTemplate : MonoBehaviour {
       loadGenericData(attackData);
 
       baseDamage.text = attackData.baseDamage.ToString();
-      abilityActionType.value = (int)attackData.abilityActionType;
+      abilityActionType.value = (int) attackData.abilityActionType;
       hasShake.isOn = attackData.hasShake;
       hasKnockup.isOn = attackData.hasKnockup;
       canBeBlocked.isOn = attackData.canBeBlocked;
@@ -309,7 +310,7 @@ public class MonsterSkillTemplate : MonoBehaviour {
       loadGenericData(buffData);
 
       buffDuration.text = buffData.duration.ToString();
-      buffType.value = (int)buffData.buffType;
+      buffType.value = (int) buffData.buffType;
       buffActionType.value = (int) buffData.buffActionType;
       bonusStatType.value = (int) buffData.bonusStatType;
 
@@ -371,37 +372,45 @@ public class MonsterSkillTemplate : MonoBehaviour {
 
       loadStance(abilityData);
    }
-   
+
    public AttackAbilityData getAttackData () {
       AbilityType abilityType = AbilityType.Standard;
       Element element = (Element) this.elements.value;
       BattleItemType battleItemType = (BattleItemType) this.battleItemType.value;
       Weapon.Class weaponClass = (Weapon.Class) this.weaponClass.value;
 
-      BattleItemData battleItemData = BattleItemData.CreateInstance(int.Parse(itemID.text), itemName.text, itemDescription.text, element, hitSoundEffect.id,
-        new string[]{ hitSpritePath.text }, battleItemType, weaponClass, itemIconPath.text, int.Parse(levelRequirement.text));
+      int hitSoundEffectId = -1;
+      if (hitSoundEffect != null) {
+         hitSoundEffectId = hitSoundEffect.id;
+      }
+      BattleItemData battleItemData = BattleItemData.CreateInstance(int.Parse(itemID.text), itemName.text, itemDescription.text, element, hitSoundEffectId,
+        new string[] { hitSpritePath.text }, battleItemType, weaponClass, itemIconPath.text, int.Parse(levelRequirement.text));
 
       stanceList = new List<Battler.Stance>();
-      foreach(StanceTemplate templateStance in stanceSlidierList) {
+      foreach (StanceTemplate templateStance in stanceSlidierList) {
          Battler.Stance stance = (Battler.Stance) System.Enum.Parse(typeof(Battler.Stance), templateStance.label.text);
          stanceList.Add(stance);
       }
 
-      BasicAbilityData basicData = BasicAbilityData.CreateInstance(battleItemData, 
-         int.Parse(abilityCost.text), 
-         new string[] { castSpritePath.text }, 
-         castSoundEffect.id, stanceList.ToArray(), 
-         abilityType, 
-         int.Parse(abilityCooldown.text), 
+      int castSoundEffectId = -1;
+      if (castSoundEffect != null) {
+         castSoundEffectId = castSoundEffect.id;
+      }
+      BasicAbilityData basicData = BasicAbilityData.CreateInstance(battleItemData,
+         int.Parse(abilityCost.text),
+         new string[] { castSpritePath.text },
+         castSoundEffectId, stanceList.ToArray(),
+         abilityType,
+         int.Parse(abilityCooldown.text),
          int.Parse(apChange.text),
          float.Parse(fxTimerPerFrame.text));
 
-      AttackAbilityData attackData = AttackAbilityData.CreateInstance(basicData, 
-         hasKnockup.isOn, 
-         int.Parse(baseDamage.text), 
-         hasShake.isOn, (AbilityActionType) abilityActionType.value, 
-         canBeBlocked.isOn, hasKnockBack.isOn, 
-         float.Parse(projectileSpeed.text), 
+      AttackAbilityData attackData = AttackAbilityData.CreateInstance(basicData,
+         hasKnockup.isOn,
+         int.Parse(baseDamage.text),
+         hasShake.isOn, (AbilityActionType) abilityActionType.value,
+         canBeBlocked.isOn, hasKnockBack.isOn,
+         float.Parse(projectileSpeed.text),
          projectileSpritePath.text,
          float.Parse(projectileScale.text));
 
@@ -414,7 +423,11 @@ public class MonsterSkillTemplate : MonoBehaviour {
       BattleItemType battleItemType = (BattleItemType) this.battleItemType.value;
       Weapon.Class weaponClass = (Weapon.Class) this.weaponClass.value;
 
-      BattleItemData battleItemData = BattleItemData.CreateInstance(int.Parse(itemID.text), itemName.text, itemDescription.text, element, hitSoundEffect.id,
+      int hitSoundEffectId = -1;
+      if (hitSoundEffect != null) {
+         hitSoundEffectId = hitSoundEffect.id;
+      }
+      BattleItemData battleItemData = BattleItemData.CreateInstance(int.Parse(itemID.text), itemName.text, itemDescription.text, element, hitSoundEffectId,
         new string[] { hitSpritePath.text }, battleItemType, weaponClass, itemIconPath.text, int.Parse(levelRequirement.text));
 
       stanceList = new List<Battler.Stance>();
@@ -423,10 +436,14 @@ public class MonsterSkillTemplate : MonoBehaviour {
          stanceList.Add(stance);
       }
 
+      int castSoundEffectId = -1;
+      if (castSoundEffect != null) {
+         castSoundEffectId = castSoundEffect.id;
+      }
       BasicAbilityData basicData = BasicAbilityData.CreateInstance(battleItemData,
          int.Parse(abilityCost.text),
          new string[] { castSpritePath.text },
-         castSoundEffect.id, stanceList.ToArray(),
+         castSoundEffectId, stanceList.ToArray(),
          abilityType,
          int.Parse(abilityCooldown.text),
          int.Parse(apChange.text),

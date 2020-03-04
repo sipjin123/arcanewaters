@@ -67,21 +67,7 @@ public class SoundEffectTool : XmlDataToolManager
 
    public void playEffect (SoundEffect effect) {
       soundAudioSource.clip = effect.clip;
-      soundAudioSource.volume = effect.calculateValue(SoundEffect.ValueType.VOLUME);
-      soundAudioSource.pitch = effect.calculateValue(SoundEffect.ValueType.PITCH);
-
-      if (soundAudioSource.pitch < 0.0f) {
-         soundAudioSource.timeSamples = Mathf.Clamp(
-            Mathf.FloorToInt(soundAudioSource.clip.samples - 1 - soundAudioSource.clip.samples * effect.offset),
-            0,
-            soundAudioSource.clip.samples - 1);
-      } else {
-         soundAudioSource.timeSamples = Mathf.Clamp(
-            Mathf.FloorToInt(soundAudioSource.clip.samples * effect.offset),
-            0,
-            soundAudioSource.clip.samples - 1);
-      }
-
+      effect.calibrateSource(soundAudioSource);
       soundAudioSource.loop = false;
       soundAudioSource.Play();
    }

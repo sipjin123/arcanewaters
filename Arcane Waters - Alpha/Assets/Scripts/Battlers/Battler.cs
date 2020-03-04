@@ -9,7 +9,8 @@ using Random = UnityEngine.Random;
 using System.Linq;
 
 // Will load Battler Data and use that accordingly in all actions.
-public class Battler : NetworkBehaviour, IAttackBehaviour {
+public class Battler : NetworkBehaviour, IAttackBehaviour
+{
    #region Public Variables
 
    // Battler type (AI controlled or player controlled)
@@ -623,14 +624,14 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    #region Battle Callers
 
    public void playDeathSound () {
-      AudioClip deathSound = AudioClipManager.self.getAudioClipData(getBattlerData().deathSoundPath).audioClip;
+      SoundEffect deathSoundEffect = SoundEffectManager.self.getSoundEffect(getBattlerData().deathSoundEffectId);
 
-      if (deathSound == null) {
-         Debug.LogWarning("Battler does not have a death sound");
+      if (deathSoundEffect == null) {
+         Debug.LogWarning("Battler does not have a death sound effect");
          return;
       }
 
-      SoundManager.playClipOneShotAtPoint(deathSound, transform.position);
+      SoundEffectManager.self.playSoundEffect(deathSoundEffect.id);
    }
 
    public void handleEndOfBattle (Battle.TeamType winningTeam) {
@@ -664,13 +665,14 @@ public class Battler : NetworkBehaviour, IAttackBehaviour {
    }
 
    public void playJumpSound () {
-      AudioClip attackJumpSound = AudioClipManager.self.getAudioClipData(getBattlerData().attackJumpSoundPath).audioClip;
+      SoundEffect jumpSoundEffect = SoundEffectManager.self.getSoundEffect(getBattlerData().jumpSoundEffectId);
 
-      if (attackJumpSound == null) {
-         Debug.LogWarning("Battler does not have a jump sound");
+      if (jumpSoundEffect == null) {
+         Debug.LogWarning("Battler does not have a jump sound effect");
          return;
       }
-      SoundManager.playClipOneShotAtPoint(attackJumpSound, transform.position);
+
+      SoundEffectManager.self.playSoundEffect(jumpSoundEffect.id);
    }
 
    public void playAnim (Anim.Type animationType) {

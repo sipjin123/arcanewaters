@@ -179,8 +179,7 @@ public class NetEntity : NetworkBehaviour
 
    protected virtual void Start () {
       // Make the entity a child of the Area
-      Area area = AreaManager.self.getArea(this.areaKey);
-      this.transform.SetParent(area.transform, true);
+      StartCoroutine(CO_SetAreaParent());
 
       if (this is PlayerBodyEntity || this is PlayerShipEntity) {
          // Create some name text that will follow us around
@@ -904,6 +903,19 @@ public class NetEntity : NetworkBehaviour
             }
          });
       });
+   }
+
+   protected IEnumerator CO_SetAreaParent () {
+      Vector3 initialPosition = this.transform.position;
+
+      // Wait until we have finished instantiating the area
+      while (AreaManager.self.getArea(this.areaKey) == null) {
+         yield return 0;
+      }
+
+      Area area = AreaManager.self.getArea(this.areaKey);
+      bool worldPositionStays = area.cameraBounds.bounds.Contains(initialPosition);
+      this.transform.SetParent(area.transform, worldPositionStays);
    }
 
    #region Private Variables

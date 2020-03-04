@@ -69,20 +69,7 @@ public class SoundEffectManager : MonoBehaviour
       SoundEffect effect;
       if (_soundEffects.TryGetValue(id, out effect)) {
          source.clip = effect.clip;
-         source.volume = effect.calculateValue(SoundEffect.ValueType.VOLUME);
-         source.pitch = effect.calculateValue(SoundEffect.ValueType.PITCH);
-
-         if (source.pitch < 0.0f) {
-            source.timeSamples = Mathf.Clamp(
-               Mathf.FloorToInt(source.clip.samples - 1 - source.clip.samples * effect.offset),
-               0,
-               source.clip.samples - 1);
-         } else {
-            source.timeSamples = Mathf.Clamp(
-               Mathf.FloorToInt(source.clip.samples * effect.offset),
-               0,
-               source.clip.samples - 1);
-         }
+         effect.calibrateSource(source);
 
          source.loop = false;
          source.Play();

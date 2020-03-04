@@ -54,8 +54,8 @@ public class BattlerData {
    public PerLevelDefenseMultiplierSet perLevelDefenseMultiplierSet = new PerLevelDefenseMultiplierSet();
 
    // Sounds
-   public string deathSoundPath;
-   public string attackJumpSoundPath;
+   public int deathSoundEffectId = -1;
+   public int jumpSoundEffectId = -1;
 
    // The amount of time our attack takes depends the type of Battler
    public float preContactLength;
@@ -90,8 +90,8 @@ public class BattlerData {
       this.preContactLength = dataReader.GetFloat("preContactLength");
       this.preMagicLength = dataReader.GetFloat("preMagicLength");
 
-      this.deathSoundPath = dataReader.GetString("deathSoundPath");
-      this.attackJumpSoundPath = dataReader.GetString("attackJumpSoundPath");
+      this.deathSoundEffectId = dataReader.GetInt32("deathSoundEffectId");
+      this.jumpSoundEffectId = dataReader.GetInt32("jumpSoundEffectId");
       this.imagePath = dataReader.GetString("imagePath");
 
       string baseDmg = dataReader.GetString("baseDamageMultiplierSet");
@@ -124,7 +124,7 @@ public class BattlerData {
       int defPerLevel, int healthPerLevel, AbilityDataRecord battlerAbilities, float physicalDefMultiplier, float fireDefMultiplier,
       float earthDefMultiplier, float airDefMultiplier, float waterDefMultiplier, float allDefMultiplier, float physicalAtkMultiplier,
       float fireAtkMultiplier, float earthAtkMultiplier, float airAtkMultiplier, float waterAtkMultiplier, float allAtkMultiplier,
-      string deathSound, string jumpAtkSound, float preContactLength, float preMagicLength, int baseXPReward, RawGenericLootData lootData,
+      int deathSoundEffectId, int jumpSoundEffectId, float preContactLength, float preMagicLength, int baseXPReward, RawGenericLootData lootData,
       Enemy.Type enemyType, Battler battlerObject, string imagePath, Anim.Group animGroup) {
 
       BattlerData data = new BattlerData();
@@ -133,7 +133,7 @@ public class BattlerData {
        defPerLevel, healthPerLevel, battlerAbilities, physicalDefMultiplier, fireDefMultiplier,
        earthDefMultiplier, airDefMultiplier, waterDefMultiplier, allDefMultiplier, physicalAtkMultiplier,
        fireAtkMultiplier, earthAtkMultiplier, airAtkMultiplier, waterAtkMultiplier, allAtkMultiplier,
-       deathSound, jumpAtkSound, preContactLength, preMagicLength, baseXPReward, lootData, enemyType, battlerObject, imagePath, animGroup);
+       deathSoundEffectId, jumpSoundEffectId, preContactLength, preMagicLength, baseXPReward, lootData, enemyType, battlerObject, imagePath, animGroup);
 
       return data;
    }
@@ -188,8 +188,8 @@ public class BattlerData {
       perLevelDamageMultiplierSet.waterAttackMultiplierPerLevel = datacopy.perLevelDamageMultiplierSet.waterAttackMultiplierPerLevel;
       perLevelDamageMultiplierSet.allAttackMultiplierPerLevel = datacopy.perLevelDamageMultiplierSet.allAttackMultiplierPerLevel;
 
-      deathSoundPath = datacopy.deathSoundPath;
-      attackJumpSoundPath = datacopy.attackJumpSoundPath;
+      deathSoundEffectId = datacopy.deathSoundEffectId;
+      jumpSoundEffectId = datacopy.jumpSoundEffectId;
 
       preContactLength = datacopy.preContactLength;
       preMagicLength = datacopy.preMagicLength;
@@ -201,7 +201,7 @@ public class BattlerData {
       int defPerLevel, int healthPerLevel, AbilityDataRecord battlerAbilities, float physicalDefMultiplier, float fireDefMultiplier,
       float earthDefMultiplier, float airDefMultiplier, float waterDefMultiplier, float allDefMultiplier, float physicalAtkMultiplier,
       float fireAtkMultiplier, float earthAtkMultiplier, float airAtkMultiplier, float waterAtkMultiplier, float allAtkMultiplier,
-      string deathSound, string jumpAtkSound, float preContactLength, float preMagicLength, int baseXPReward, RawGenericLootData lootData,
+      int deathSoundEffectId, int jumpSoundEffectId, float preContactLength, float preMagicLength, int baseXPReward, RawGenericLootData lootData,
       Enemy.Type enemyType, Battler battlerObject, string imagePath, Anim.Group animGroup) {
 
       this.currentXP = xp;
@@ -237,8 +237,8 @@ public class BattlerData {
       this.baseDamageMultiplierSet.waterAttackMultiplier = waterAtkMultiplier;
       this.baseDamageMultiplierSet.allAttackMultiplier = allAtkMultiplier;
 
-      this.deathSoundPath = deathSound;
-      this.attackJumpSoundPath = jumpAtkSound;
+      this.deathSoundEffectId = deathSoundEffectId;
+      this.jumpSoundEffectId = jumpSoundEffectId;
 
       this.preContactLength = preContactLength;
       this.preMagicLength = preMagicLength;

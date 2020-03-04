@@ -8,7 +8,8 @@ using System.Linq;
 using static MonsterSkillTemplate;
 using UnityEngine.SceneManagement;
 
-public class MonsterDataPanel : MonoBehaviour {
+public class MonsterDataPanel : MonoBehaviour
+{
    #region Public Variables
 
    // Reference to the ability manager
@@ -103,13 +104,13 @@ public class MonsterDataPanel : MonoBehaviour {
    List<MonsterSkillTemplate> monsterSkillTemplateList = new List<MonsterSkillTemplate>();
 
    // Audio Related updates
-   public Text jumpClipPath;
-   public Text deathClipPath;
+   public Text jumpSoundEffectName;
+   public Text deathSoundEffectName;
    public Button selectJumpAudioButton;
    public Button selectDeathAudioButton;
    public Button playJumpAudioButton;
    public Button playDeathAudioButton;
-   public AudioClip jumpAudio, deathAudio;
+   public SoundEffect jumpSoundEffect, deathSoundEffect;
 
    // Audio source to play the sample clips
    public AudioSource audioSource;
@@ -157,21 +158,25 @@ public class MonsterDataPanel : MonoBehaviour {
 
       animGroupSlider.maxValue = Enum.GetValues(typeof(Anim.Group)).Length;
       animGroupSlider.onValueChanged.AddListener(_ => {
-         animGroupText.text = ((Anim.Group)_).ToString();
+         animGroupText.text = ((Anim.Group) _).ToString();
       });
       animGroupSlider.value = 0;
 
       selectJumpAudioButton.onClick.AddListener(() => toggleAudioSelection(PathType.JumpSfx));
       selectDeathAudioButton.onClick.AddListener(() => toggleAudioSelection(PathType.DeathSfx));
       playJumpAudioButton.onClick.AddListener(() => {
-         if (jumpAudio != null) {
-            audioSource.clip = jumpAudio;
+         if (jumpSoundEffect != null) {
+            audioSource.clip = jumpSoundEffect.clip;
+            jumpSoundEffect.calibrateSource(audioSource);
+            audioSource.loop = false;
             audioSource.Play();
          }
       });
       playDeathAudioButton.onClick.AddListener(() => {
-         if (deathAudio != null) {
-            audioSource.clip = deathAudio;
+         if (deathSoundEffect != null) {
+            audioSource.clip = deathSoundEffect.clip;
+            deathSoundEffect.calibrateSource(audioSource);
+            audioSource.loop = false;
             audioSource.Play();
          }
       });
@@ -218,27 +223,31 @@ public class MonsterDataPanel : MonoBehaviour {
       selectionPanel.SetActive(true);
       monsterTypeParent.DestroyChildren();
 
-      foreach (AudioClipManager.AudioClipData sourceClip in AudioClipManager.self.audioDataList) {
+      foreach (SoundEffect effect in SoundEffectManager.self.getAllSoundEffects()) {
          GameObject iconTempObj = Instantiate(monsterTypeTemplate.gameObject, monsterTypeParent.transform);
          ItemTypeTemplate iconTemp = iconTempObj.GetComponent<ItemTypeTemplate>();
-         iconTemp.itemTypeText.text = sourceClip.audioName;
+         iconTemp.itemTypeText.text = effect.name;
 
          iconTemp.previewButton.onClick.AddListener(() => {
-            if (sourceClip.audioClip != null) {
-               audioSource.clip = sourceClip.audioClip;
-               audioSource.Play();
-            }
+            audioSource.clip = effect.clip;
+            effect.calibrateSource(audioSource);
+            audioSource.loop = false;
+            audioSource.Play();
          });
 
          iconTemp.selectButton.onClick.AddListener(() => {
             switch (pathType) {
                case PathType.DeathSfx:
-                  deathClipPath.text = sourceClip.audioPath;
-                  deathAudio = sourceClip.audioClip;
+                  deathSoundEffect = effect;
+                  if (deathSoundEffect != null) {
+                     deathSoundEffectName.text = effect.name;
+                  }
                   break;
                case PathType.JumpSfx:
-                  jumpClipPath.text = sourceClip.audioPath;
-                  jumpAudio = sourceClip.audioClip;
+                  jumpSoundEffect = effect;
+                  if (jumpSoundEffect != null) {
+                     jumpSoundEffectName.text = effect.name;
+                  }
                   break;
             }
             closeAvatarSelectionButton.onClick.Invoke();
@@ -248,7 +257,7 @@ public class MonsterDataPanel : MonoBehaviour {
 
    #region Save and Load Data
 
-   public void loadData(BattlerData newBattleData, int xml_id, bool isActive) {
+   public void loadData (BattlerData newBattleData, int xml_id, bool isActive) {
       xml_toggler.isOn = isActive;
       currentXmlId = xml_id;
       startingName = newBattleData.enemyName;
@@ -262,7 +271,7 @@ public class MonsterDataPanel : MonoBehaviour {
          avatarIcon.sprite = emptySprite;
       }
       avatarIconPath = newBattleData.imagePath;
-      
+
       _baseHealth.text = newBattleData.baseHealth.ToString();
       _baseDefense.text = newBattleData.baseDefense.ToString();
       _baseDamage.text = newBattleData.baseDamage.ToString();
@@ -304,10 +313,18 @@ public class MonsterDataPanel : MonoBehaviour {
       _preContactLength.text = newBattleData.preContactLength.ToString();
       _preMagicLength.text = newBattleData.preMagicLength.ToString();
 
-      deathClipPath.text = newBattleData.deathSoundPath;
-      jumpClipPath.text = newBattleData.attackJumpSoundPath;
-      jumpAudio = AudioClipManager.self.getAudioClipData(newBattleData.attackJumpSoundPath).audioClip;
-      deathAudio = AudioClipManager.self.getAudioClipData(newBattleData.deathSoundPath).audioClip;
+      deathSoundEffect = SoundEffectManager.self.getSoundEffect(newBattleData.deathSoundEffectId);
+      jumpSoundEffect = SoundEffectManager.self.getSoundEffect(newBattleData.jumpSoundEffectId);
+
+      jumpSoundEffectName.text = "";
+      if (jumpSoundEffect != null) {
+         jumpSoundEffectName.text = jumpSoundEffect.name;
+      }
+
+      deathSoundEffectName.text = "";
+      if (deathSoundEffect != null) {
+         deathSoundEffectName.text = deathSoundEffect.name;
+      }
 
       _name.text = newBattleData.enemyName;
 
@@ -362,8 +379,8 @@ public class MonsterDataPanel : MonoBehaviour {
       newBattData.preContactLength = int.Parse(_preContactLength.text);
       newBattData.preMagicLength = int.Parse(_preMagicLength.text);
 
-      newBattData.deathSoundPath = deathClipPath.text;
-      newBattData.attackJumpSoundPath = jumpClipPath.text;
+      newBattData.deathSoundEffectId = deathSoundEffect.id;
+      newBattData.jumpSoundEffectId = jumpSoundEffect.id;
 
       newBattData.enemyName = _name.text;
 
@@ -371,7 +388,7 @@ public class MonsterDataPanel : MonoBehaviour {
       List<AttackAbilityData> attackAbilityList = new List<AttackAbilityData>();
       List<BuffAbilityData> buffAbilityList = new List<BuffAbilityData>();
       foreach (MonsterSkillTemplate skillTemplate in monsterSkillTemplateList) {
-         if(skillTemplate.abilityTypeEnum == AbilityType.Standard) {
+         if (skillTemplate.abilityTypeEnum == AbilityType.Standard) {
             attackAbilityList.Add(skillTemplate.getAttackData());
             basicAbilityList.Add(skillTemplate.getAttackData());
          } else if (skillTemplate.abilityTypeEnum == AbilityType.BuffDebuff) {
@@ -388,7 +405,7 @@ public class MonsterDataPanel : MonoBehaviour {
       return newBattData;
    }
 
-   public void saveData() {
+   public void saveData () {
       BattlerData battlerData = getBattlerData();
       battlerData.battlerLootData = getRawLootData();
 
@@ -403,7 +420,7 @@ public class MonsterDataPanel : MonoBehaviour {
    private bool isValidData (BattlerData battleData) {
       if (battleData.imagePath != string.Empty
          && battleData.enemyName != string.Empty
-         && battleData.battlerLootData.defaultLoot.category != Item.Category.None 
+         && battleData.battlerLootData.defaultLoot.category != Item.Category.None
          && battleData.enemyType != Enemy.Type.None) {
          return true;
       }
@@ -411,7 +428,7 @@ public class MonsterDataPanel : MonoBehaviour {
       return false;
    }
 
-   private RawGenericLootData getRawLootData() {
+   private RawGenericLootData getRawLootData () {
       RawGenericLootData rawData = new RawGenericLootData();
       List<LootInfo> tempLootInfo = new List<LootInfo>();
 
@@ -502,7 +519,7 @@ public class MonsterDataPanel : MonoBehaviour {
 
    #region Loots Feature
 
-   public void addLootTemplate() {
+   public void addLootTemplate () {
       GameObject lootTemp = Instantiate(lootTemplate.gameObject, lootTemplateParent.transform);
       MonsterLootRow row = lootTemp.GetComponent<MonsterLootRow>();
       row.currentCategory = Item.Category.None;
@@ -512,7 +529,7 @@ public class MonsterDataPanel : MonoBehaviour {
       monsterLootList.Add(row);
    }
 
-   public void loadLootTemplates(BattlerData rawData) {
+   public void loadLootTemplates (BattlerData rawData) {
       lootTemplateParent.DestroyChildren();
       monsterLootList = new List<MonsterLootRow>();
 
@@ -544,7 +561,7 @@ public class MonsterDataPanel : MonoBehaviour {
       monsterLootRowDefault.updateDisplayName();
    }
 
-   private void updateMainItemDisplay() {
+   private void updateMainItemDisplay () {
       lootSelectionPanel.SetActive(false);
       currentLootTemplate.itemTypeName.text = itemTypeIDSelected.ToString();
       currentLootTemplate.itemCategoryName.text = selectedCategory.ToString();
@@ -579,7 +596,7 @@ public class MonsterDataPanel : MonoBehaviour {
       // Dynamically handles the type of item
       itemTypeParent.gameObject.DestroyChildren();
       Dictionary<int, string> itemNameList = new Dictionary<int, string>();
-      if (selectedCategory == Item.Category.Armor || selectedCategory == Item.Category.Helm || selectedCategory == Item.Category.Weapon || 
+      if (selectedCategory == Item.Category.Armor || selectedCategory == Item.Category.Helm || selectedCategory == Item.Category.Weapon ||
          selectedCategory == Item.Category.Blueprint || selectedCategory == Item.Category.CraftingIngredients) {
          switch (selectedCategory) {
             case Item.Category.Blueprint:
@@ -595,7 +612,7 @@ public class MonsterDataPanel : MonoBehaviour {
                break;
             case Item.Category.Helm:
                foreach (HelmStatData helmData in EquipmentXMLManager.self.helmStatList) {
-                  itemNameList.Add((int)helmData.helmType, helmData.equipmentName);
+                  itemNameList.Add((int) helmData.helmType, helmData.equipmentName);
                }
                break;
             case Item.Category.Armor:
@@ -659,7 +676,7 @@ public class MonsterDataPanel : MonoBehaviour {
 
    #region Skill Feature
 
-   private void loadSkillTemplates(BattlerData battlerData) {
+   private void loadSkillTemplates (BattlerData battlerData) {
       skillIndex = 0;
       skillTemplateParent.gameObject.DestroyChildren();
       monsterSkillTemplateList = new List<MonsterSkillTemplate>();
@@ -691,8 +708,8 @@ public class MonsterDataPanel : MonoBehaviour {
       }
    }
 
-   private void addSkillTemplate(AbilityType type) {
-      switch(type) {
+   private void addSkillTemplate (AbilityType type) {
+      switch (type) {
          case AbilityType.Standard: {
                // Basic data set
                BattleItemData battleItemData = BattleItemData.CreateInstance(1, "Name", "Desc", Element.ALL, -1, null, BattleItemType.UNDEFINED, Weapon.Class.Any, String.Empty, 1);

@@ -5683,14 +5683,12 @@ MonoBehaviour:
   addTemplateSkillButton: {fileID: 1939058106}
   skillTemplateParent: {fileID: 1157192572}
   skillTemplatePrefab: {fileID: 2095715097}
-  jumpClipPath: {fileID: 1147609486}
-  deathClipPath: {fileID: 1433504345}
+  jumpSoundEffectName: {fileID: 1147609486}
+  deathSoundEffectName: {fileID: 1433504345}
   selectJumpAudioButton: {fileID: 984848573}
   selectDeathAudioButton: {fileID: 642985750}
   playJumpAudioButton: {fileID: 204867021}
   playDeathAudioButton: {fileID: 1686031258}
-  jumpAudio: {fileID: 0}
-  deathAudio: {fileID: 0}
   audioSource: {fileID: 197409596}
   currentXmlId: 0
   xml_toggler: {fileID: 1495856861}

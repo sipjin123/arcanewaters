@@ -81,7 +81,7 @@ public class SoundEffectToolUI : MonoBehaviour
    // The displayed Maximum Pitch amount
    public Text maxPitchAmountText;
 
-   // The Starting Offset of the AudipClip when  playing
+   // The Starting Offset of the AudipClip when playing
    public Slider offsetSlider;
 
    // The displayed Starting Offset amount in Seconds
@@ -166,7 +166,6 @@ public class SoundEffectToolUI : MonoBehaviour
       nonRandomVolumeContainer.SetActive(!randomVolumeToggle.isOn);
       randomVolumeContainer.SetActive(randomVolumeToggle.isOn);
       if (randomVolumeToggle.isOn) {
-
          onSoundEffectEditMinVolumeSliderChanged();
          onSoundEffectEditMaxVolumeSliderChanged();
       } else {
@@ -180,7 +179,6 @@ public class SoundEffectToolUI : MonoBehaviour
       nonRandomPitchContainer.SetActive(!randomPitchToggle.isOn);
       randomPitchContainer.SetActive(randomPitchToggle.isOn);
       if (randomPitchToggle.isOn) {
-
          onSoundEffectEditMinPitchSliderChanged();
          onSoundEffectEditMaxPitchSliderChanged();
       } else {
@@ -316,7 +314,6 @@ public class SoundEffectToolUI : MonoBehaviour
    }
 
    public void onSoundEffectEditOffsetSliderChanged () {
-
       float offsetAmount = offsetSlider.value;
       if (_currentEditingSoundEffectUI.effect.clip != null) {
          offsetAmount = offsetAmount * _currentEditingSoundEffectUI.effect.clip.length;
