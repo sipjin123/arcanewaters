@@ -13,13 +13,12 @@
 		FROM items 
 		left join users on itmCategory = 6
 		where users.usrId = ?");
-		
 	$query->bind_param("s", $usrId);
 	$query -> execute();
 	$query->bind_result($itmId, $itmCategory, $itmType);
 	
 	$result = $query->get_result();
-	while ($row = $result->fetch_row()) {
+	while ($row = $result->fetch_array(MYSQLI_NUM)) {
 		printf ("[next]%s[space]%s[space]%s[space]", $row[0], $row[1], $row[2]);
 	}
 	$result->close();

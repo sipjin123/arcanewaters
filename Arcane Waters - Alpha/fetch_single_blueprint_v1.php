@@ -28,7 +28,7 @@
 	$query->bind_result($itmId, $itmCategory, $itmType, $craftingXML, $equipmentXML);
 	
 	$result = $query->get_result();
-	while ($row = $result->fetch_row()) {
+	while ($row = $result->fetch_array(MYSQLI_NUM)) {
 		printf ("[next]%s[space]%s[space]%s[space]%s[space]%s[space]", $row[0], $row[1], $row[2], $row[3], $row[4]);
 	}
 	$result->close();

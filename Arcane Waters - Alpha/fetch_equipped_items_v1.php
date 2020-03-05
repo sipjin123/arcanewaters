@@ -19,13 +19,12 @@
 		left join arcane.equipment_armor_xml_v3 on (itmCategory = 2 and itmType = arcane.equipment_armor_xml_v3.equipmentTypeID)
 		left join arcane.users on armId = itmId or wpnId = itmId
 		where (armId = itmId or wpnId = itmId) and items.usrId = ?");
-		
 	$query->bind_param("s", $usrId);
 	$query -> execute();
 	$query->bind_result($itmId, $itmCategory, $itmType, $equipmentXML);
 	
 	$result = $query->get_result();
-	while ($row = $result->fetch_row()) {
+	while ($row = $result->fetch_array(MYSQLI_NUM)) {
 		printf ("[next]%s[space]%s[space]%s[space]%s[space]", $row[0], $row[1], $row[2], $row[3]);
 	}
 	$result->close();
