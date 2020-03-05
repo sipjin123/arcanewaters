@@ -140,6 +140,10 @@ namespace BackgroundTool
             foreach (ImageManager.ImageData imgData in spriteIconFiles) {
                GameObject prefab = Instantiate(emptySprite, spriteParent);
 
+               if (imgData.imageName.ToLower().Contains("tree")) {
+                  prefab.transform.localScale = new Vector3(.5f, .5f, 1);
+               }
+
                float newYValue = previousBounds;
                float spriteWidth = imgData.sprite.bounds.size.x;
 

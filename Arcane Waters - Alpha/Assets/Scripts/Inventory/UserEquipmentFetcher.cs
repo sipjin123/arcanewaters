@@ -16,15 +16,15 @@ public class UserEquipmentFetcher : MonoBehaviour {
 
    // Host and PHP File directories
    public const string WEB_DIRECTORY = "http://localhost/arcane";//"http://arcanewaters.com";
-   public const string WEAPON_DIRECTORY = "/user_equipment_weapon_v1.php?usrId=";
-   public const string ARMOR_DIRECTORY = "/user_equipment_armor_v1.php?usrId=";
+   public const string WEAPON_DIRECTORY = "/user_equipment_weapon_v2.php?usrId=";
+   public const string ARMOR_DIRECTORY = "/user_equipment_armor_v2.php?usrId=";
    public const string USER_DIRECTORY = "/user_data_v1.php?usrId=";
 
-   public const string FETCH_CRAFTABLE_WEAPONS = "/fetch_craftable_weapons_v1.php?usrId=";
-   public const string FETCH_CRAFTABLE_ARMORS = "/fetch_craftable_armors_v1.php?usrId=";
-   public const string FETCH_CRAFTING_INGREDIENTS = "/fetch_crafting_ingredients_v1.php?usrId=";
-   public const string FETCH_EQUIPPED_ITEMS = "/fetch_equipped_items_v1.php?usrId=";
-   public const string FETCH_SINGLE_BP = "/fetch_single_blueprint_v1.php?";
+   public const string FETCH_CRAFTABLE_WEAPONS = "/fetch_craftable_weapons_v2.php?usrId=";
+   public const string FETCH_CRAFTABLE_ARMORS = "/fetch_craftable_armors_v2.php?usrId=";
+   public const string FETCH_CRAFTING_INGREDIENTS = "/fetch_crafting_ingredients_v2.php?usrId=";
+   public const string FETCH_EQUIPPED_ITEMS = "/fetch_equipped_items_v2.php?usrId=";
+   public const string FETCH_SINGLE_BP = "/fetch_single_blueprint_v2.php?";
 
    // The category types that are being fetched
    public Item.Category categoryFilter;
@@ -34,9 +34,6 @@ public class UserEquipmentFetcher : MonoBehaviour {
 
    // The current page of the item preview
    public int pageIndex;
-
-   // Determines if the crafting dl progress is complete
-   public int craftingProgress = 0;
 
    // The current data procedure being implemented
    public ItemDataType currentItemData;
@@ -48,26 +45,53 @@ public class UserEquipmentFetcher : MonoBehaviour {
       SingleCrafting = 3
    }
 
+   public enum RequestType
+   {
+      None = 0,
+      EquippedItems = 1,
+      CraftingIngredients = 2,
+      SingleBP = 3,
+      CraftableWeapons = 4,
+      CraftableArmors = 5,
+   }
+
    #endregion
 
    private void Awake () {
       self = this;
    }
 
+   private void initializeRequest (RequestType requestType, int id = 0) {
+      switch (requestType) {
+         case RequestType.CraftableWeapons:
+            StartCoroutine(CO_DownloadCraftableWeapons());
+            break;
+         case RequestType.CraftableArmors:
+            StartCoroutine(CO_DownloadCraftableArmors());
+            break;
+         case RequestType.EquippedItems:
+            StartCoroutine(CO_DownloadEquippedItems());
+            break;
+         case RequestType.CraftingIngredients:
+            StartCoroutine(CO_DownloadCraftingIngredients());
+            break;
+         case RequestType.SingleBP:
+            StartCoroutine(CO_Fetch_Single_BP(id));
+            break;
+      }
+      _requiredRequests.Add(requestType);
+   }
+
    #region Craftable Item Fetching
 
    public void checkCraftingInfo (int bluePrintId) {
-      _itemList = new List<Item>();
-      _bluePrintStatuses = new List<Blueprint.Status>();
-      _craftableList = new List<CraftableItemRequirements>();
-      _ingredientItems = new List<Item>();
-      craftingProgress = 0;
+      resetValues();
 
       currentItemData = ItemDataType.SingleCrafting;
 
-      StartCoroutine(CO_DownloadEquippedItems());
-      StartCoroutine(CO_DownloadCraftingIngredients());
-      StartCoroutine(CO_Fetch_Single_BP(bluePrintId));
+      initializeRequest(RequestType.EquippedItems);
+      initializeRequest(RequestType.CraftingIngredients);
+      initializeRequest(RequestType.SingleBP, bluePrintId);
    }
 
    private IEnumerator CO_Fetch_Single_BP (int bluePrintId) {
@@ -91,13 +115,21 @@ public class UserEquipmentFetcher : MonoBehaviour {
             processCraftableGroups(xmlSubGroup);
          }
 
-         craftingProgress++;
+         _finishedRequests.Add(RequestType.SingleBP);
          finalizeSingleCraftingProcedure();
       }
    }
 
    private void finalizeSingleCraftingProcedure () {
-      if (craftingProgress == 3) {
+      bool hasCompletedRequests = true;
+
+      foreach (RequestType request in _requiredRequests) {
+         if (!_finishedRequests.Contains(request)) {
+            hasCompletedRequests = false;
+         }
+      }
+
+      if (hasCompletedRequests) {
          processCraftableItems();
 
          // Get the panel
@@ -125,21 +157,17 @@ public class UserEquipmentFetcher : MonoBehaviour {
          return;
       }
 
-      _itemList = new List<Item>();
-      _bluePrintStatuses = new List<Blueprint.Status>();
-      _craftableList = new List<CraftableItemRequirements>();
-      _ingredientItems = new List<Item>();
-      craftingProgress = 0;
+      resetValues();
 
       currentItemData = ItemDataType.Crafting;
 
       this.pageIndex = pageIndex;
       this.itemsPerPage = itemsPerPage;
 
-      StartCoroutine(CO_DownloadCraftableWeapons());
-      StartCoroutine(CO_DownloadCraftableArmors());
-      StartCoroutine(CO_DownloadEquippedItems());
-      StartCoroutine(CO_DownloadCraftingIngredients());
+      initializeRequest(RequestType.CraftableWeapons);
+      initializeRequest(RequestType.CraftableArmors);
+      initializeRequest(RequestType.EquippedItems);
+      initializeRequest(RequestType.CraftingIngredients);
    }
 
    private IEnumerator CO_DownloadCraftingIngredients () {
@@ -161,8 +189,8 @@ public class UserEquipmentFetcher : MonoBehaviour {
             string xmlSubGroup = xmlGroup[i];
             processCraftingIngredientGroups(xmlSubGroup);
          }
-         craftingProgress++;
 
+         _finishedRequests.Add(RequestType.CraftingIngredients);
          if (currentItemData == ItemDataType.Crafting) {
             finalizeCraftingProcedure();
          } else if (currentItemData == ItemDataType.SingleCrafting) {
@@ -190,8 +218,8 @@ public class UserEquipmentFetcher : MonoBehaviour {
             string xmlSubGroup = xmlGroup[i];
             processEquippedItemGroups(xmlSubGroup);
          }
-         craftingProgress++;
 
+         _finishedRequests.Add(RequestType.EquippedItems);
          if (currentItemData == ItemDataType.Crafting) {
             finalizeCraftingProcedure();
          } else if (currentItemData == ItemDataType.SingleCrafting) {
@@ -219,7 +247,8 @@ public class UserEquipmentFetcher : MonoBehaviour {
             string xmlSubGroup = xmlGroup[i];
             processCraftableGroups(xmlSubGroup);
          }
-         craftingProgress++;
+
+         _finishedRequests.Add(RequestType.CraftableWeapons);
          finalizeCraftingProcedure();
       }
    }
@@ -243,13 +272,22 @@ public class UserEquipmentFetcher : MonoBehaviour {
             string xmlSubGroup = xmlGroup[i];
             processCraftableGroups(xmlSubGroup);
          }
-         craftingProgress++;
+
+         _finishedRequests.Add(RequestType.CraftableArmors);
          finalizeCraftingProcedure();
       }
    }
 
    private void finalizeCraftingProcedure () {
-      if (craftingProgress == 4) {
+      bool hasCompletedRequests = true;
+
+      foreach (RequestType request in _requiredRequests) {
+         if (!_finishedRequests.Contains(request)) {
+            hasCompletedRequests = false;
+         }
+      }
+
+      if (hasCompletedRequests) {
          processCraftableItems();
 
          // Get the panel
@@ -579,6 +617,15 @@ public class UserEquipmentFetcher : MonoBehaviour {
 
    #endregion
 
+   private void resetValues () {
+      _itemList = new List<Item>();
+      _bluePrintStatuses = new List<Blueprint.Status>();
+      _craftableList = new List<CraftableItemRequirements>();
+      _ingredientItems = new List<Item>();
+      _requiredRequests.Clear();
+      _finishedRequests.Clear();
+   }
+
    #region Private Variables
 
    // The fetched Item list
@@ -598,6 +645,10 @@ public class UserEquipmentFetcher : MonoBehaviour {
    // Determines if the data fetch is complete
    private bool _hasFinishedEquipmentData;
    private bool _hasFinishedUserData;
+
+   // Request handling hashsets
+   private HashSet<RequestType> _finishedRequests = new HashSet<RequestType>();
+   private HashSet<RequestType> _requiredRequests = new HashSet<RequestType>();
 
    #endregion
 }
