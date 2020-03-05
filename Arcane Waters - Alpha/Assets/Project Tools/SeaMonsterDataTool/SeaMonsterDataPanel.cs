@@ -80,6 +80,7 @@ public class SeaMonsterDataPanel : MonoBehaviour
    public ItemTypeTemplate itemTypeTemplate;
    public Button confirmItemButton, addLootButton, closeItemPanelButton;
    public Item.Category selectedCategory;
+   public string itemDataSelected;
    public int itemTypeIDSelected;
    public SeaMonsterLootRow monsterLootRowDefault;
    public InputField rewardItemMin, rewardItemMax;
@@ -328,6 +329,7 @@ public class SeaMonsterDataPanel : MonoBehaviour
       GameObject lootTemp = Instantiate(lootTemplate.gameObject, lootTemplateParent.transform);
       SeaMonsterLootRow row = lootTemp.GetComponent<SeaMonsterLootRow>();
       row.currentCategory = Item.Category.None;
+      row.itemData = "";
       row.initializeSetup();
       row.updateDisplayName();
       lootTemp.SetActive(true);
@@ -340,12 +342,13 @@ public class SeaMonsterDataPanel : MonoBehaviour
 
       foreach (SeaMonsterLootRow lootRow in monsterLootList) {
          LootInfo newLootInfo = new LootInfo();
-         newLootInfo.lootType = new Item { category = lootRow.currentCategory, itemTypeId = lootRow.currentType };
+         int modifiedID = Blueprint.modifyID(lootRow.currentCategory, lootRow.currentType);
+         newLootInfo.lootType = new Item { category = lootRow.currentCategory, itemTypeId = modifiedID, data = lootRow.itemData };
          newLootInfo.quantity = int.Parse(lootRow.itemCount.text);
          newLootInfo.chanceRatio = (float) lootRow.chanceRatio.value;
          tempLootInfo.Add(newLootInfo);
       }
-      rawData.defaultLoot = new Item { category = monsterLootRowDefault.currentCategory, itemTypeId = monsterLootRowDefault.currentType };
+      rawData.defaultLoot = new Item { category = monsterLootRowDefault.currentCategory, itemTypeId = monsterLootRowDefault.currentType, data = monsterLootRowDefault.itemData };
       rawData.lootList = tempLootInfo.ToArray();
       rawData.minQuantity = int.Parse(rewardItemMin.text);
       rawData.maxQuantity = int.Parse(rewardItemMax.text);
@@ -362,6 +365,7 @@ public class SeaMonsterDataPanel : MonoBehaviour
             GameObject lootTemp = Instantiate(lootTemplate.gameObject, lootTemplateParent.transform);
             SeaMonsterLootRow row = lootTemp.GetComponent<SeaMonsterLootRow>();
             row.currentCategory = lootInfo.lootType.category;
+            row.itemData = lootInfo.lootType.data;
             row.currentType = lootInfo.lootType.itemTypeId;
             row.itemCount.text = lootInfo.quantity.ToString();
             row.chanceRatio.value = lootInfo.chanceRatio;
@@ -373,11 +377,13 @@ public class SeaMonsterDataPanel : MonoBehaviour
          }
 
          monsterLootRowDefault.currentCategory = lootData.defaultLoot.category;
+         monsterLootRowDefault.itemData = lootData.defaultLoot.data;
          monsterLootRowDefault.currentType = lootData.defaultLoot.itemTypeId;
          rewardItemMin.text = lootData.minQuantity.ToString();
          rewardItemMax.text = lootData.maxQuantity.ToString();
       } else {
          monsterLootRowDefault.currentCategory = Item.Category.CraftingIngredients;
+         monsterLootRowDefault.itemData = "";
          monsterLootRowDefault.currentType = 0;
       }
       monsterLootRowDefault.initializeSetup();
@@ -413,51 +419,12 @@ public class SeaMonsterDataPanel : MonoBehaviour
       // Dynamically handles the type of item
       itemTypeParent.gameObject.DestroyChildren();
 
-      Dictionary<int, string> itemNameList = new Dictionary<int, string>();
-      switch (selectedCategory) {
-         case Item.Category.Blueprint:
-            foreach (CraftableItemRequirements item in SeaMonsterToolManager.instance.craftingDataList) {
-               string prefix = Blueprint.WEAPON_PREFIX;
-               if (item.resultItem.category == Item.Category.Armor) {
-                  prefix = Blueprint.ARMOR_PREFIX;
-               }
-
-               prefix = prefix + item.resultItem.itemTypeId;
-               itemNameList.Add(int.Parse(prefix), Util.getItemName(item.resultItem.category, item.resultItem.itemTypeId));
-            }
-            break;
-         case Item.Category.Helm:
-            foreach (HelmStatData helmData in EquipmentXMLManager.self.helmStatList) {
-               itemNameList.Add((int) helmData.helmType, helmData.equipmentName);
-            }
-            break;
-         case Item.Category.Armor:
-            foreach (ArmorStatData armorStatData in EquipmentXMLManager.self.armorStatList) {
-               itemNameList.Add(armorStatData.armorType, armorStatData.equipmentName);
-            }
-            break;
-         case Item.Category.Weapon:
-            foreach (WeaponStatData weaponData in EquipmentXMLManager.self.weaponStatList) {
-               itemNameList.Add((int) weaponData.weaponType, weaponData.equipmentName);
-            }
-            break;
-         default:
-            Type itemType = Util.getItemType(selectedCategory);
-
-            if (itemType != null) {
-               foreach (object item in Enum.GetValues(itemType)) {
-                  int newVal = (int) item;
-                  itemNameList.Add(newVal, item.ToString());
-               }
-            }
-            break;
-      }
-
-      var sortedList = itemNameList.OrderBy(r => r.Value);
+      Dictionary<int, Item> itemNameList = GenericSelectionPopup.getItemCollection(selectedCategory, SeaMonsterToolManager.instance.craftingDataList);
+      var sortedList = itemNameList.OrderBy(r => r.Value.itemName);
       foreach (var item in sortedList) {
          GameObject template = Instantiate(itemTypeTemplate.gameObject, itemTypeParent.transform);
          ItemTypeTemplate itemTemp = template.GetComponent<ItemTypeTemplate>();
-         itemTemp.itemTypeText.text = item.Value.ToString();
+         itemTemp.itemTypeText.text = item.Value.itemName;
          itemTemp.itemIndexText.text = "" + item.Key;
 
          switch (selectedCategory) {
@@ -479,7 +446,8 @@ public class SeaMonsterDataPanel : MonoBehaviour
          }
 
          itemTemp.selectButton.onClick.AddListener(() => {
-            itemTypeIDSelected = (int) item.Key;
+            itemTypeIDSelected = item.Key;
+            itemDataSelected = item.Value.data;
             confirmItemButton.onClick.Invoke();
          });
       }

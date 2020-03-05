@@ -93,6 +93,7 @@ public class MonsterDataPanel : MonoBehaviour
    public Button confirmItemButton, addLootButton, closeItemPanelButton;
    public Item.Category selectedCategory;
    public int itemTypeIDSelected;
+   public string itemDataSelected;
    public MonsterLootRow monsterLootRowDefault;
    public InputField rewardItemMin, rewardItemMax;
    public Sprite emptySprite;
@@ -434,12 +435,14 @@ public class MonsterDataPanel : MonoBehaviour
 
       foreach (MonsterLootRow lootRow in monsterLootList) {
          LootInfo newLootInfo = new LootInfo();
-         newLootInfo.lootType = new Item { category = lootRow.currentCategory, itemTypeId = lootRow.currentType };
+
+         int modifiedID = Blueprint.modifyID(lootRow.currentCategory, lootRow.currentType);
+         newLootInfo.lootType = new Item { category = lootRow.currentCategory, itemTypeId = modifiedID, data = lootRow.itemData };
          newLootInfo.quantity = int.Parse(lootRow.itemCount.text);
          newLootInfo.chanceRatio = (float) lootRow.chanceRatio.value;
          tempLootInfo.Add(newLootInfo);
       }
-      rawData.defaultLoot = new Item { category = monsterLootRowDefault.currentCategory, itemTypeId = monsterLootRowDefault.currentType };
+      rawData.defaultLoot = new Item { category = monsterLootRowDefault.currentCategory, itemTypeId = monsterLootRowDefault.currentType, data = monsterLootRowDefault.itemData };
       rawData.lootList = tempLootInfo.ToArray();
       rawData.minQuantity = int.Parse(rewardItemMin.text);
       rawData.maxQuantity = int.Parse(rewardItemMax.text);
@@ -522,6 +525,7 @@ public class MonsterDataPanel : MonoBehaviour
    public void addLootTemplate () {
       GameObject lootTemp = Instantiate(lootTemplate.gameObject, lootTemplateParent.transform);
       MonsterLootRow row = lootTemp.GetComponent<MonsterLootRow>();
+      row.itemData = "";
       row.currentCategory = Item.Category.None;
       row.initializeSetup();
       row.updateDisplayName();
@@ -539,6 +543,7 @@ public class MonsterDataPanel : MonoBehaviour
             MonsterLootRow row = lootTemp.GetComponent<MonsterLootRow>();
             row.currentCategory = lootInfo.lootType.category;
             row.currentType = lootInfo.lootType.itemTypeId;
+            row.itemData = lootInfo.lootType.data;
             row.itemCount.text = lootInfo.quantity.ToString();
             row.chanceRatio.value = lootInfo.chanceRatio;
 
@@ -551,10 +556,12 @@ public class MonsterDataPanel : MonoBehaviour
       if (rawData.battlerLootData != null) {
          monsterLootRowDefault.currentCategory = rawData.battlerLootData.defaultLoot.category;
          monsterLootRowDefault.currentType = rawData.battlerLootData.defaultLoot.itemTypeId;
+         monsterLootRowDefault.itemData = rawData.battlerLootData.defaultLoot.data;
          rewardItemMin.text = rawData.battlerLootData.minQuantity.ToString();
          rewardItemMax.text = rawData.battlerLootData.maxQuantity.ToString();
       } else {
          monsterLootRowDefault.currentCategory = Item.Category.CraftingIngredients;
+         monsterLootRowDefault.itemData = "";
          monsterLootRowDefault.currentType = 0;
       }
       monsterLootRowDefault.initializeSetup();
@@ -595,80 +602,39 @@ public class MonsterDataPanel : MonoBehaviour
    private void updateTypeOptions () {
       // Dynamically handles the type of item
       itemTypeParent.gameObject.DestroyChildren();
-      Dictionary<int, string> itemNameList = new Dictionary<int, string>();
-      if (selectedCategory == Item.Category.Armor || selectedCategory == Item.Category.Helm || selectedCategory == Item.Category.Weapon ||
-         selectedCategory == Item.Category.Blueprint || selectedCategory == Item.Category.CraftingIngredients) {
-         switch (selectedCategory) {
-            case Item.Category.Blueprint:
-               foreach (CraftableItemRequirements item in MonsterToolManager.instance.craftingDataList) {
-                  string prefix = Blueprint.WEAPON_PREFIX;
-                  if (item.resultItem.category == Item.Category.Armor) {
-                     prefix = Blueprint.ARMOR_PREFIX;
-                  }
 
-                  prefix = prefix + item.resultItem.itemTypeId;
-                  itemNameList.Add(int.Parse(prefix), Util.getItemName(item.resultItem.category, item.resultItem.itemTypeId));
-               }
+      Dictionary<int, Item> itemNameList = GenericSelectionPopup.getItemCollection(selectedCategory, MonsterToolManager.instance.craftingDataList);
+      var sortedList = itemNameList.OrderBy(r => r.Value.itemName);
+      foreach (var item in sortedList) {
+         GameObject template = Instantiate(itemTypeTemplate.gameObject, itemTypeParent.transform);
+         ItemTypeTemplate itemTemp = template.GetComponent<ItemTypeTemplate>();
+         itemTemp.itemTypeText.text = item.Value.itemName;
+         itemTemp.itemIndexText.text = "" + item.Key;
+
+         switch (selectedCategory) {
+            case Item.Category.Armor:
+               string fetchedArmorSprite = EquipmentXMLManager.self.getArmorData(item.Key).equipmentIconPath;
+               itemTemp.spriteIcon.sprite = ImageManager.getSprite(fetchedArmorSprite);
                break;
             case Item.Category.Helm:
-               foreach (HelmStatData helmData in EquipmentXMLManager.self.helmStatList) {
-                  itemNameList.Add((int) helmData.helmType, helmData.equipmentName);
-               }
-               break;
-            case Item.Category.Armor:
-               foreach (ArmorStatData armorData in EquipmentXMLManager.self.armorStatList) {
-                  itemNameList.Add(armorData.armorType, armorData.equipmentName);
-               }
+               string fetchedHelmSprite = EquipmentXMLManager.self.getHelmData(item.Key).equipmentIconPath;
+               itemTemp.spriteIcon.sprite = ImageManager.getSprite(fetchedHelmSprite);
                break;
             case Item.Category.Weapon:
-               foreach (WeaponStatData weaponData in EquipmentXMLManager.self.weaponStatList) {
-                  itemNameList.Add((int) weaponData.weaponType, weaponData.equipmentName);
-               }
+               string fetchedWeaponSprite = EquipmentXMLManager.self.getWeaponData(item.Key).equipmentIconPath;
+               itemTemp.spriteIcon.sprite = ImageManager.getSprite(fetchedWeaponSprite);
                break;
             default:
-               Type itemType = Util.getItemType(selectedCategory);
-
-               if (itemType != null) {
-                  foreach (object item in Enum.GetValues(itemType)) {
-                     int newVal = (int) item;
-                     itemNameList.Add(newVal, item.ToString());
-                  }
-               }
+               itemTemp.spriteIcon.sprite = Util.getRawSpriteIcon(selectedCategory, item.Key);
                break;
          }
 
-         if (itemNameList.Count > 0) {
-            var sortedList = itemNameList.OrderBy(r => r.Value);
-            foreach (var item in sortedList) {
-               GameObject template = Instantiate(itemTypeTemplate.gameObject, itemTypeParent.transform);
-               ItemTypeTemplate itemTemp = template.GetComponent<ItemTypeTemplate>();
-               itemTemp.itemTypeText.text = item.Value.ToString();
-               itemTemp.itemIndexText.text = "" + item.Key;
+         itemTemp.selectButton.onClick.AddListener(() => {
+            itemTypeIDSelected = item.Key;
+            itemDataSelected = item.Value.data;
 
-               switch (selectedCategory) {
-                  case Item.Category.Armor:
-                     string fetchedArmorSprite = EquipmentXMLManager.self.getArmorData(item.Key).equipmentIconPath;
-                     itemTemp.spriteIcon.sprite = ImageManager.getSprite(fetchedArmorSprite);
-                     break;
-                  case Item.Category.Helm:
-                     string fetchedHelmSprite = EquipmentXMLManager.self.getHelmData(item.Key).equipmentIconPath;
-                     itemTemp.spriteIcon.sprite = ImageManager.getSprite(fetchedHelmSprite);
-                     break;
-                  case Item.Category.Weapon:
-                     string fetchedWeaponSprite = EquipmentXMLManager.self.getWeaponData(item.Key).equipmentIconPath;
-                     itemTemp.spriteIcon.sprite = ImageManager.getSprite(fetchedWeaponSprite);
-                     break;
-                  default:
-                     itemTemp.spriteIcon.sprite = Util.getRawSpriteIcon(selectedCategory, item.Key);
-                     break;
-               }
-
-               itemTemp.selectButton.onClick.AddListener(() => {
-                  itemTypeIDSelected = (int) item.Key;
-                  confirmItemButton.onClick.Invoke();
-               });
-            }
-         }
+            confirmItemButton.onClick.Invoke();
+         });
       }
    }
 

@@ -13,6 +13,9 @@ public class GenericItemRow : MonoBehaviour {
    public Text itemCategoryName;
    public Text itemTypeName;
 
+   // The data of the item
+   public string itemData;
+
    // Holds the icon of the item
    public Image itemIcon;
 
@@ -27,7 +30,7 @@ public class GenericItemRow : MonoBehaviour {
 
    #endregion
 
-   protected void modifyContent (Item.Category category, int itemTypeID) {
+   protected void modifyContent (Item.Category category, int itemTypeID, string data) {
       if (category == Item.Category.None || itemTypeID == 0) {
          itemCategory.text = "(Select)";
          itemTypeId.text = "(Select)";
@@ -38,19 +41,29 @@ public class GenericItemRow : MonoBehaviour {
 
       if (category == Item.Category.Blueprint) {
          itemCategoryName.text = category.ToString();
-         Item.Category modifiedCategory = Item.Category.None;
+         int modifiedID = itemTypeID;
 
-         int modifiedID = 0;
-         if (itemTypeID.ToString().StartsWith(Blueprint.WEAPON_PREFIX)) {
-            modifiedID = int.Parse(itemTypeID.ToString().Replace(Blueprint.WEAPON_PREFIX, ""));
-            modifiedCategory = Item.Category.Weapon;
-         } else {
-            modifiedID = int.Parse(itemTypeID.ToString().Replace(Blueprint.ARMOR_PREFIX, ""));
-            modifiedCategory = Item.Category.Armor;
+         if (data != "") {
+            if (data.StartsWith(Blueprint.WEAPON_DATA_PREFIX)) {
+               if (itemTypeID.ToString().StartsWith(Blueprint.WEAPON_ID_PREFIX)) {
+                  modifiedID = int.Parse(itemTypeID.ToString().Replace(Blueprint.WEAPON_ID_PREFIX, ""));
+               }
+               WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(modifiedID);
+
+               itemTypeName.text = weaponData.equipmentName;
+               string spritePath = weaponData.equipmentIconPath;
+               itemIcon.sprite = ImageManager.getSprite(spritePath);
+            } else if (data.StartsWith(Blueprint.ARMOR_DATA_PREFIX)) {
+               if (itemTypeID.ToString().StartsWith(Blueprint.ARMOR_ID_PREFIX)) {
+                  modifiedID = int.Parse(itemTypeID.ToString().Replace(Blueprint.ARMOR_ID_PREFIX, ""));
+               }
+               ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(modifiedID);
+
+               itemTypeName.text = armorData.equipmentName;
+               string spritePath = armorData.equipmentIconPath;
+               itemIcon.sprite = ImageManager.getSprite(spritePath);
+            }
          }
-
-         itemTypeName.text = Util.getItemName(modifiedCategory, modifiedID);
-         itemIcon.sprite = Util.getRawSpriteIcon(modifiedCategory, modifiedID);
       } else if (category == Item.Category.Helm) {
          itemCategoryName.text = category.ToString();
          itemTypeName.text = Util.getItemName(category, itemTypeID);

@@ -17,6 +17,9 @@ public class MonsterLootRow : GenericItemRow
    // Current category of the item
    public Item.Category currentCategory;
 
+   // The item data of the loot
+   public string itemData;
+
    // Current type of the item
    public int currentType;
 
@@ -47,12 +50,13 @@ public class MonsterLootRow : GenericItemRow
       monsterPanel.confirmItemButton.onClick.AddListener(() => {
          currentType = monsterPanel.itemTypeIDSelected;
          currentCategory = monsterPanel.selectedCategory;
+         itemData = monsterPanel.itemDataSelected;
          updateDisplayName();
       });
    }
 
    public void updateDisplayName () {
-      modifyContent(currentCategory, currentType);
+      modifyContent(currentCategory, currentType, itemData);
    }
 
    private void deleteData () {

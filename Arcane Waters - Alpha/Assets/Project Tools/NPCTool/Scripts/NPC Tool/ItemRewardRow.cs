@@ -16,7 +16,8 @@ public class ItemRewardRow : GenericItemRow
    #endregion
 
    public void setRowForItemReward (QuestRewardItem itemReward) {
-      modifyContent(itemReward.category, itemReward.itemTypeId);
+      itemData = itemReward.data;
+      modifyContent(itemReward.category, itemReward.itemTypeId, itemReward.data);
 
       count.text = itemReward.count.ToString();
       if (itemReward.category == Item.Category.Quest_Item) {
@@ -28,10 +29,18 @@ public class ItemRewardRow : GenericItemRow
    }
 
    public QuestRewardItem getModifiedItemReward () {
+      int newID = int.Parse(itemTypeId.text);
+      Item.Category category = (Item.Category) int.Parse(itemCategory.text);
+
       // Create a new item reward object and initialize it with the modified values
       QuestRewardItem itemReward = new QuestRewardItem (
-         (Item.Category) int.Parse(itemCategory.text), int.Parse(itemTypeId.text), int.Parse(count.text));
+         category, newID, int.Parse(count.text));
 
+      itemReward.data = itemData;
+
+      if (category == Item.Category.Blueprint) {
+         itemReward.itemTypeId = Blueprint.modifyID(category, newID);
+      }
       return itemReward;
    }
 

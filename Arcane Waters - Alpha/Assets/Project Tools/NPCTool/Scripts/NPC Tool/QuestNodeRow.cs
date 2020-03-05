@@ -59,7 +59,7 @@ public class QuestNodeRow : MonoBehaviour
    public NPCEditScreen npcEditScreen;
 
    // Reference to the item being modified
-   public ItemRewardRow currentItemModifying;
+   public ItemRewardRow currentRewardRow;
 
    // Quest Row Reference
    public QuestRow questRow;
@@ -146,7 +146,7 @@ public class QuestNodeRow : MonoBehaviour
 
             itemRewardRow.updateCategoryButton.onClick.AddListener(() => {
                npcEditScreen.toggleItemSelectionPanel(NPCEditScreen.ItemSelectionType.Reward);
-               currentItemModifying = itemRewardRow;
+               currentRewardRow = itemRewardRow;
                questRow.currentQuestNode = this;
                questRow.npcEditionScreen.currentQuestModified = questRow;
             });
@@ -177,7 +177,7 @@ public class QuestNodeRow : MonoBehaviour
 
       itemRewardRow.updateCategoryButton.onClick.AddListener(() => {
          npcEditScreen.toggleItemSelectionPanel(NPCEditScreen.ItemSelectionType.Reward);
-         currentItemModifying = itemRewardRow;
+         currentRewardRow = itemRewardRow;
          questRow.currentQuestNode = this;
          questRow.npcEditionScreen.currentQuestModified = questRow;
       });
@@ -268,13 +268,15 @@ public class QuestNodeRow : MonoBehaviour
       // Retrieve every quest objective
       List<QuestObjectiveDeliver> deliverObjectiveList = new List<QuestObjectiveDeliver>();
       foreach(DeliverObjectiveRow deliverObjectiveRow in deliverObjectivesRowsContainer.GetComponentsInChildren<DeliverObjectiveRow>()) {
-         deliverObjectiveList.Add(deliverObjectiveRow.getModifiedDeliverObjective());
+         QuestObjectiveDeliver objectdeliver = deliverObjectiveRow.getModifiedDeliverObjective();
+         deliverObjectiveList.Add(objectdeliver);
       }
 
       // Retrieve every item reward
       List<QuestRewardItem> itemRewardList = new List<QuestRewardItem>();
       foreach (ItemRewardRow itemRewardRow in itemRewardRowsContainer.GetComponentsInChildren<ItemRewardRow>()) {
-         itemRewardList.Add(itemRewardRow.getModifiedItemReward());
+         QuestRewardItem rewardItem = itemRewardRow.getModifiedItemReward();
+         itemRewardList.Add(rewardItem);
       }
 
       // Create an array with the friendship reward value, if any

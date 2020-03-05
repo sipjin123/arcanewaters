@@ -549,6 +549,62 @@ public class GenericSelectionPopup : MonoBehaviour {
       selectionPanel.SetActive(false);
    }
 
+   public static Dictionary<int, Item> getItemCollection (Item.Category selectedCategory, List<CraftableItemRequirements> craftingRequirementList) {
+      Dictionary<int, Item> itemNameList = new Dictionary<int, Item>();
+      switch (selectedCategory) {
+         case Item.Category.Blueprint:
+            foreach (CraftableItemRequirements item in craftingRequirementList) {
+               string itemData = "";
+               string itemName = "";
+               string prefix = "";
+
+               if (item.resultItem.category == Item.Category.Weapon) {
+                  WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(item.resultItem.itemTypeId);
+                  itemData = Blueprint.createData(Item.Category.Weapon, item.resultItem.itemTypeId);
+                  itemName = weaponData.equipmentName;
+                  prefix = Blueprint.WEAPON_ID_PREFIX;
+               } else if (item.resultItem.category == Item.Category.Armor) {
+                  ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(item.resultItem.itemTypeId);
+                  itemData = Blueprint.createData(Item.Category.Armor, item.resultItem.itemTypeId);
+                  itemName = armorData.equipmentName;
+                  prefix = Blueprint.ARMOR_ID_PREFIX;
+               }
+
+               prefix = prefix + item.resultItem.itemTypeId;
+               if (!itemNameList.ContainsKey(int.Parse(prefix))) {
+                  itemNameList.Add(int.Parse(prefix), new Item { itemName = itemName, data = itemData, category = Item.Category.Blueprint, itemTypeId = item.resultItem.itemTypeId });
+               }
+            }
+            break;
+         case Item.Category.Helm:
+            foreach (HelmStatData helmData in EquipmentXMLManager.self.helmStatList) {
+               itemNameList.Add((int) helmData.helmType, new Item { itemName = helmData.equipmentName });
+            }
+            break;
+         case Item.Category.Armor:
+            foreach (ArmorStatData armorStatData in EquipmentXMLManager.self.armorStatList) {
+               itemNameList.Add(armorStatData.equipmentID, new Item { itemName = armorStatData.equipmentName });
+            }
+            break;
+         case Item.Category.Weapon:
+            foreach (WeaponStatData weaponData in EquipmentXMLManager.self.weaponStatList) {
+               itemNameList.Add(weaponData.equipmentID, new Item { itemName = weaponData.equipmentName });
+            }
+            break;
+         default:
+            Type itemType = Util.getItemType(selectedCategory);
+
+            if (itemType != null) {
+               foreach (object item in Enum.GetValues(itemType)) {
+                  int newVal = (int) item;
+                  itemNameList.Add(newVal, new Item { itemName = item.ToString() });
+               }
+            }
+            break;
+      }
+      return itemNameList;
+   }
+
    #region Private Variables
       
    #endregion

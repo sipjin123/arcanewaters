@@ -16,7 +16,8 @@ public class DeliverObjectiveRow : GenericItemRow
    #endregion
 
    public void setRowForDeliverObjective (QuestObjectiveDeliver deliverObjective) {
-      modifyContent(deliverObjective.category, deliverObjective.itemTypeId);
+      itemData = deliverObjective.data;
+      modifyContent(deliverObjective.category, deliverObjective.itemTypeId, deliverObjective.data);
          
       count.text = deliverObjective.count.ToString();
       if (deliverObjective.category == Item.Category.Quest_Item) {
@@ -28,9 +29,17 @@ public class DeliverObjectiveRow : GenericItemRow
    }
 
    public QuestObjectiveDeliver getModifiedDeliverObjective () {
+      int newID = int.Parse(itemTypeId.text);
+      Item.Category category = (Item.Category) int.Parse(itemCategory.text);
+
       // Create a new deliver objective object and initialize it with the modified values
       QuestObjectiveDeliver deliverObjective = new QuestObjectiveDeliver(
-         (Item.Category) int.Parse(itemCategory.text), int.Parse(itemTypeId.text), int.Parse(count.text));
+         category, newID, int.Parse(count.text));
+      deliverObjective.data = itemData;
+
+      if (category == Item.Category.Blueprint) {
+         deliverObjective.itemTypeId = Blueprint.modifyID(category, newID);
+      }
 
       return deliverObjective;
    }

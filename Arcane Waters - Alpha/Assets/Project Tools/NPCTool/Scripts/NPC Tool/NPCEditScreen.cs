@@ -84,6 +84,9 @@ public class NPCEditScreen : MonoBehaviour
    // Cached item type selected in the popup
    public int selectedTypeID;
 
+   // Cached item data selected in the popup
+   public string selectedData;
+
    // Cached item category selected in the popup
    public Item.Category selectedCategory;
 
@@ -410,91 +413,59 @@ public class NPCEditScreen : MonoBehaviour
       // Dynamically handles the type of item
       itemTypeParent.gameObject.DestroyChildren();
 
-      Dictionary<int, string> itemNameList = new Dictionary<int, string>();
-      switch (selectedCategory) {
-         case Item.Category.Blueprint:
-            foreach (CraftableItemRequirements item in NPCToolManager.instance.craftingDataList) {
-               string prefix = Blueprint.WEAPON_PREFIX;
-               if (item.resultItem.category == Item.Category.Armor) {
-                  prefix = Blueprint.ARMOR_PREFIX;
-               }
-
-               prefix = prefix + item.resultItem.itemTypeId;
-               itemNameList.Add(int.Parse(prefix), Util.getItemName(item.resultItem.category, item.resultItem.itemTypeId));
-            }
-            break;
-         case Item.Category.Armor:
-            foreach (ArmorStatData armorData in EquipmentXMLManager.self.armorStatList) {
-               itemNameList.Add(armorData.armorType, armorData.equipmentName);
-            }
-            break;
-         case Item.Category.Helm:
-            foreach (HelmStatData helmStatData in EquipmentXMLManager.self.helmStatData) {
-               itemNameList.Add((int) helmStatData.helmType, helmStatData.equipmentName);
-            }
-            break;
-         case Item.Category.Weapon:
-            foreach (WeaponStatData weaponData in EquipmentXMLManager.self.weaponStatData) {
-               itemNameList.Add((int) weaponData.weaponType, weaponData.equipmentName);
-            }
-            break;
-         default:
-            Type itemType = Util.getItemType(selectedCategory);
-
-            if (itemType != null) {
-               foreach (object item in Enum.GetValues(itemType)) {
-                  int newVal = (int) item;
-                  itemNameList.Add(newVal, item.ToString());
-               }
-            }
-            break;
-      }
-
-      var sortedList = itemNameList.OrderBy(r => r.Value);
+      Dictionary<int, Item> itemNameList = GenericSelectionPopup.getItemCollection(selectedCategory, NPCToolManager.instance.craftingDataList);
+      var sortedList = itemNameList.OrderBy(r => r.Value.itemName);
       foreach (var item in sortedList) {
          GameObject template = Instantiate(itemTypePrefab, itemTypeParent);
          ItemTypeTemplate itemTemp = template.GetComponent<ItemTypeTemplate>();
-         itemTemp.itemTypeText.text = item.Value.ToString();
+         itemTemp.itemTypeText.text = item.Value.itemName;
          itemTemp.itemIndexText.text = "" + item.Key;
-         setupSpriteIcon(itemTemp.spriteIcon, selectedCategory, item.Key);
+         setupSpriteIcon(itemTemp.spriteIcon, selectedCategory, item.Key, item.Value.data);
 
          itemTemp.selectButton.onClick.AddListener(() => {
-            selectedTypeID = (int) item.Key;
+            selectedTypeID = item.Key;
+            selectedData = item.Value.data;
+            int newID = selectedTypeID;
 
             if (selectionType == ItemSelectionType.Gift) {
                giftNode.currentItemModifying.itemCategory.text = ((int) selectedCategory).ToString();
                giftNode.currentItemModifying.itemTypeId.text = selectedTypeID.ToString();
 
                giftNode.currentItemModifying.itemCategoryName.text = selectedCategory.ToString();
-               giftNode.currentItemModifying.itemTypeName.text = item.Value.ToString();
-               setupSpriteIcon(giftNode.currentItemModifying.itemIcon, selectedCategory, item.Key);
+               giftNode.currentItemModifying.itemTypeName.text = item.Value.itemName.ToString();
+               setupSpriteIcon(giftNode.currentItemModifying.itemIcon, selectedCategory, item.Key, item.Value.data);
 
                giftNode.cachedGiftData.itemCategory = selectedCategory;
                giftNode.cachedGiftData.itemTypeId = selectedTypeID;
             } else if (selectionType == ItemSelectionType.Reward) {
-               currentQuestModified.currentQuestNode.currentItemModifying.itemCategory.text = ((int) selectedCategory).ToString();
-               currentQuestModified.currentQuestNode.currentItemModifying.itemTypeId.text = selectedTypeID.ToString();
+               currentQuestModified.currentQuestNode.currentRewardRow.itemCategory.text = ((int) selectedCategory).ToString();
+               currentQuestModified.currentQuestNode.currentRewardRow.itemTypeId.text = newID.ToString();
+               currentQuestModified.currentQuestNode.currentRewardRow.itemData = selectedData;
 
-               currentQuestModified.currentQuestNode.currentItemModifying.itemCategoryName.text = selectedCategory.ToString();
-               currentQuestModified.currentQuestNode.currentItemModifying.itemTypeName.text = item.Value.ToString();
-               setupSpriteIcon(currentQuestModified.currentQuestNode.currentItemModifying.itemIcon, selectedCategory, item.Key);
+               currentQuestModified.currentQuestNode.currentRewardRow.itemCategoryName.text = selectedCategory.ToString();
+               currentQuestModified.currentQuestNode.currentRewardRow.itemTypeName.text = item.Value.itemName.ToString();
+               setupSpriteIcon(currentQuestModified.currentQuestNode.currentRewardRow.itemIcon, selectedCategory, item.Key, item.Value.data);
 
                currentQuestModified.currentQuestNode.cachedReward.category = selectedCategory;
-               currentQuestModified.currentQuestNode.cachedReward.itemTypeId = selectedTypeID;
+               currentQuestModified.currentQuestNode.cachedReward.itemTypeId = newID;
 
                if (selectedCategory == Item.Category.Quest_Item) {
-                  currentQuestModified.currentQuestNode.currentItemModifying.count.text = "1";
-                  currentQuestModified.currentQuestNode.currentItemModifying.count.gameObject.SetActive(false);
+                  currentQuestModified.currentQuestNode.currentRewardRow.count.text = "1";
+                  currentQuestModified.currentQuestNode.currentRewardRow.count.gameObject.SetActive(false);
                } else {
-                  currentQuestModified.currentQuestNode.currentItemModifying.count.gameObject.SetActive(true);
+                  currentQuestModified.currentQuestNode.currentRewardRow.count.gameObject.SetActive(true);
                }
             } else if (selectionType == ItemSelectionType.Delivery) {
                currentQuestModified.currentQuestNode.currentDeliverObjective.itemCategory.text = ((int) selectedCategory).ToString();
-               currentQuestModified.currentQuestNode.currentDeliverObjective.itemTypeId.text = selectedTypeID.ToString();
+               currentQuestModified.currentQuestNode.currentDeliverObjective.itemTypeId.text = newID.ToString();
+               currentQuestModified.currentQuestNode.currentDeliverObjective.itemData = selectedData;
 
                currentQuestModified.currentQuestNode.currentDeliverObjective.itemCategoryName.text = selectedCategory.ToString();
-               currentQuestModified.currentQuestNode.currentDeliverObjective.itemTypeName.text = item.Value.ToString();
-               setupSpriteIcon(currentQuestModified.currentQuestNode.currentDeliverObjective.itemIcon, selectedCategory, item.Key);
+               currentQuestModified.currentQuestNode.currentDeliverObjective.itemTypeName.text = item.Value.itemName.ToString();
+               setupSpriteIcon(currentQuestModified.currentQuestNode.currentDeliverObjective.itemIcon, selectedCategory, item.Key, item.Value.data);
+
+               currentQuestModified.currentQuestNode.cachedDeliverObjective.category = selectedCategory;
+               currentQuestModified.currentQuestNode.cachedDeliverObjective.itemTypeId = newID;
 
                if (selectedCategory == Item.Category.Quest_Item) {
                   currentQuestModified.currentQuestNode.currentDeliverObjective.count.text = "1";
@@ -509,7 +480,7 @@ public class NPCEditScreen : MonoBehaviour
       }
    }
 
-   private void setupSpriteIcon (Image imageSprite, Item.Category category, int itemID) {
+   private void setupSpriteIcon (Image imageSprite, Item.Category category, int itemID, string data) {
       if (category == Item.Category.Helm) {
          string spritePath = EquipmentXMLManager.self.getHelmData(itemID).equipmentIconPath;
          imageSprite.sprite = ImageManager.getSprite(spritePath);
@@ -520,12 +491,22 @@ public class NPCEditScreen : MonoBehaviour
          string spritePath = EquipmentXMLManager.self.getArmorData(itemID).equipmentIconPath;
          imageSprite.sprite = ImageManager.getSprite(spritePath);
       } else if (category == Item.Category.Blueprint) {
-         if (itemID.ToString().StartsWith(Blueprint.WEAPON_PREFIX)) {
-            int resultItemID = int.Parse(itemID.ToString().Replace(Blueprint.WEAPON_PREFIX, ""));
-            imageSprite.sprite = Util.getRawSpriteIcon(Item.Category.Weapon, resultItemID);
-         } else if (itemID.ToString().StartsWith(Blueprint.ARMOR_PREFIX)) {
-            int resultItemID = int.Parse(itemID.ToString().Replace(Blueprint.ARMOR_PREFIX, ""));
-            imageSprite.sprite = Util.getRawSpriteIcon(Item.Category.Armor, resultItemID);
+         if (data.StartsWith(Blueprint.WEAPON_DATA_PREFIX)) {
+            int modifiedID = Blueprint.modifyID(Item.Category.Blueprint, itemID);
+            WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(modifiedID);
+            if (weaponData != null) {
+               imageSprite.sprite = ImageManager.getSprite(weaponData.equipmentIconPath);
+            } else {
+               Debug.LogError("Cant find this: " + modifiedID);
+            }
+         } else if (data.StartsWith(Blueprint.ARMOR_DATA_PREFIX)) {
+            int modifiedID = Blueprint.modifyID(Item.Category.Blueprint, itemID);
+            ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(modifiedID);
+            if (armorData != null) {
+               imageSprite.sprite = ImageManager.getSprite(armorData.equipmentIconPath);
+            } else {
+               Debug.LogError("Cant find this: " + modifiedID);
+            }
          }
       } else {
          imageSprite.sprite = Util.getRawSpriteIcon(category, itemID);
