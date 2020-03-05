@@ -24,6 +24,9 @@ public class QuestRewardItem : QuestReward
    // The number of items to reward
    public int count;
 
+   // The data content of this item
+   public string data;
+
    #endregion
 
    public QuestRewardItem () {

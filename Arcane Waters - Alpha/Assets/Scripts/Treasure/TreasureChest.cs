@@ -218,17 +218,11 @@ public class TreasureChest : NetworkBehaviour {
       if (item.category != Item.Category.Blueprint) {
          image.sprite = ImageManager.getSprite(item.getIconPath());
       } else {
-         Item.Category modifiedCategory = Item.Category.None;
-         string prefix = "";
-         if (item.itemTypeId.ToString().StartsWith(Blueprint.WEAPON_PREFIX)) {
-            modifiedCategory = Item.Category.Weapon;
-            prefix = Blueprint.WEAPON_PREFIX;
-         } else {
-            modifiedCategory = Item.Category.Armor;
-            prefix = Blueprint.ARMOR_PREFIX;
+         if (item.data.StartsWith(Blueprint.WEAPON_DATA_PREFIX)) {
+            image.sprite = ImageManager.getSprite(Blueprint.BLUEPRINT_WEAPON_ICON);
+         } else if (item.data.StartsWith(Blueprint.ARMOR_DATA_PREFIX)) {
+            image.sprite = ImageManager.getSprite(Blueprint.BLUEPRINT_ARMOR_ICON);
          }
-
-         image.sprite = ImageManager.getSprite(new Item { category = modifiedCategory, itemTypeId = int.Parse(item.itemTypeId.ToString().Replace(prefix, "")) }.getIconPath());
       }
 
       // Create a new instance of the material we can use for recoloring

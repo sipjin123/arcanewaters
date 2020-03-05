@@ -55,7 +55,7 @@ public class AdminManager : NetworkBehaviour {
 
       // Request the list of blueprints from the server
       if (isLocalPlayer && _blueprintNames.Count == 0) {
-         Cmd_RequestBlueprintListFromServer();
+         // TODO: Insert fetch blueprint data here
       }
    }
 
@@ -805,25 +805,13 @@ public class AdminManager : NetworkBehaviour {
 
             // Determine if the result item is a weapon or an armor
             if (resultItem.category == Item.Category.Weapon) {
-               // Convert the type id into a string and add the weapon prefix
-               string itemTypeIdStr = Blueprint.WEAPON_PREFIX + resultItem.itemTypeId.ToString();
-
-               // Reconvert the type id into an integer
-               int itemTypeId = int.Parse(itemTypeIdStr);
-
                // Create the item
-               if (createItemIfNotExistOrReplenishStack(Item.Category.Blueprint, itemTypeId, count)) {
+               if (createItemIfNotExistOrReplenishStack(Item.Category.Blueprint, resultItem.itemTypeId, count)) {
                   blueprintCount++;
                }
             } else if (resultItem.category == Item.Category.Armor) {
-               // Convert the type id into a string and add the armor prefix
-               string itemTypeIdStr = Blueprint.ARMOR_PREFIX + resultItem.itemTypeId.ToString();
-
-               // Reconvert the type id into an integer
-               int itemTypeId = int.Parse(itemTypeIdStr);
-
                // Create the item
-               if (createItemIfNotExistOrReplenishStack(Item.Category.Blueprint, itemTypeId, count)) {
+               if (createItemIfNotExistOrReplenishStack(Item.Category.Blueprint, resultItem.itemTypeId, count)) {
                   blueprintCount++;
                }
             }
@@ -878,46 +866,6 @@ public class AdminManager : NetworkBehaviour {
       }
 
       return wasItemCreated;
-   }
-
-   [Command]
-   protected void Cmd_RequestBlueprintListFromServer () {
-      List<int> weaponTypes = new List<int>();
-      List<int> armorTypes = new List<int>();
-
-      // Get all the crafting data
-      foreach (CraftableItemRequirements itemRequirements in CraftingManager.self.getAllCraftableData()) {
-
-         // Get the result item
-         Item resultItem = itemRequirements.resultItem;
-
-         // Add the result item type to the correspondent list
-         if (resultItem.category == Item.Category.Weapon) {
-            weaponTypes.Add(resultItem.itemTypeId);
-         } else if (resultItem.category == Item.Category.Armor) {
-            armorTypes.Add(resultItem.itemTypeId);
-         }
-      }
-
-      // Send the data to the client
-      Rpc_ReceiveBlueprintList(weaponTypes.ToArray(), armorTypes.ToArray());
-   }
-
-   [ClientRpc]
-   public void Rpc_ReceiveBlueprintList (int[] weaponTypes, int[] armorTypes) {
-      _blueprintNames.Clear();
-
-      // Set all the weapon blueprint names
-      foreach (WeaponStatData weaponData in EquipmentXMLManager.self.weaponStatList) {
-         string itemTypeStr = Blueprint.WEAPON_PREFIX + (weaponData.equipmentID).ToString();
-         addToItemNameDictionary(_blueprintNames, Item.Category.Blueprint, int.Parse(itemTypeStr));
-      }
-
-      // Set all the armor blueprint names
-      foreach (ArmorStatData armorData in EquipmentXMLManager.self.armorStatList) {
-         string itemTypeStr = Blueprint.ARMOR_PREFIX + (armorData.equipmentID).ToString();
-         addToItemNameDictionary(_blueprintNames, Item.Category.Blueprint, int.Parse(itemTypeStr));
-      }
    }
 
    public void buildItemNamesDictionary() {

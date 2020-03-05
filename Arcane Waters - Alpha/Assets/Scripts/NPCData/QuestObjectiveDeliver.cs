@@ -25,6 +25,9 @@ public class QuestObjectiveDeliver : QuestObjective
    // The number of items to deliver
    public int count;
 
+   // The data content of this item
+   public string data;
+
    // Currency Path
    public const string GOLD_ICON_PATH = "Assets/Sprites/Icons/gold_icon.png";
 
@@ -134,7 +137,9 @@ public class QuestObjectiveDeliver : QuestObjective
             builder.Append(CraftingIngredients.getName((CraftingIngredients.Type) itemTypeId));
             break;
          case Item.Category.Blueprint:
-            builder.Append(Blueprint.getName(itemTypeId));
+            // TODO: Ensure this is never called
+            Debug.LogWarning("Deprecated Call");
+            //builder.Append(Blueprint.getName(itemTypeId));
             break;
          case Item.Category.Currency:
             builder.Append("Gold");

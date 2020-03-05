@@ -2228,112 +2228,6 @@ public class RPCManager : NetworkBehaviour {
    #endregion
 
    [Command]
-   public void Cmd_RequestBlueprintsFromServer (int pageNumber, int itemsPerPage) {
-      // Enforce a reasonable max here
-      if (itemsPerPage > 200) {
-         D.warning("Requesting too many items per page.");
-         return;
-      }
-
-      // Set the category filter
-      Item.Category[] categories = new Item.Category[] { Item.Category.Blueprint };
-
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Get the item count
-         int totalItemCount = DB_Main.getItemCount(_player.userId, categories);
-
-         // Calculate the maximum page number
-         int maxPage = Mathf.CeilToInt((float) totalItemCount / itemsPerPage);
-         if (maxPage == 0) {
-            maxPage = 1;
-         }
-
-         // Clamp the requested page number to the max page - the number of items could have changed
-         pageNumber = Mathf.Clamp(pageNumber, 1, maxPage);
-
-         // Get the blueprints from the database
-         List<Item> blueprints = DB_Main.getItems(_player.userId, categories, pageNumber, itemsPerPage);
-
-         // Build the list of ingredients needed for all the blueprints in the page
-         List<CraftingIngredients.Type> ingredientsList = new List<CraftingIngredients.Type>();
-         foreach (Item blueprint in blueprints) {
-            // Get the resulting item
-            Item resultItem = Blueprint.getItemData(((Blueprint) blueprint).bpTypeID);
-
-            // Get the crafting requirement data
-            CraftableItemRequirements craftingRequirements = CraftingManager.self.getCraftableData(
-               resultItem.category, resultItem.itemTypeId);
-
-            // Add the required ingredients to the common list
-            if (craftingRequirements != null) {
-               foreach (Item item in craftingRequirements.combinationRequirements) {
-                  ingredientsList.Add((CraftingIngredients.Type) item.itemTypeId);
-               }
-            }
-         }
-
-         // Get the ingredients present in the user inventory
-         List<Item> inventoryIngredients = DB_Main.getCraftingIngredients(_player.userId, ingredientsList);
-
-         // Determine if each blueprint can be crafted, not crafted or if the data is missing
-         List<Blueprint.Status> blueprintStatuses = new List<Blueprint.Status>();
-         foreach (Item blueprint in blueprints) {
-            Blueprint.Status status = Blueprint.Status.Craftable;
-
-            // Get the resulting item
-            Item resultItem = Blueprint.getItemData(((Blueprint) blueprint).bpTypeID);
-
-            switch (resultItem.category) {
-               case Item.Category.Weapon:
-                  WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(resultItem.itemTypeId);
-                  blueprint.setBasicInfo(weaponData.equipmentName, weaponData.equipmentDescription, weaponData.equipmentIconPath);
-                  blueprint.data = WeaponStatData.serializeWeaponStatData(weaponData);
-                  break;
-               case Item.Category.Armor:
-                  ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(resultItem.itemTypeId);
-                  blueprint.setBasicInfo(armorData.equipmentName, armorData.equipmentDescription, armorData.equipmentIconPath);
-                  blueprint.data = ArmorStatData.serializeArmorStatData(armorData); 
-                  break;
-               case Item.Category.Helm:
-                  ArmorStatData helmData = EquipmentXMLManager.self.getArmorData(resultItem.itemTypeId);
-                  blueprint.setBasicInfo(helmData.equipmentName, helmData.equipmentDescription, helmData.equipmentIconPath);
-                  blueprint.data = ArmorStatData.serializeArmorStatData(helmData);
-                  break;
-            }
-
-            // Get the crafting requirement data
-            CraftableItemRequirements craftingRequirements = CraftingManager.self.getCraftableData(
-               resultItem.category, resultItem.itemTypeId);
-
-            if (craftingRequirements == null) {
-               status = Blueprint.Status.MissingRecipe;
-            } else {
-               // Compare the ingredients present in the inventory with the requisites
-               foreach (Item requiredIngredient in craftingRequirements.combinationRequirements) {
-
-                  // Get the inventory ingredient, if there is any
-                  Item inventoryIngredient = inventoryIngredients.Find(s =>
-                     s.itemTypeId == requiredIngredient.itemTypeId);
-
-                  // Verify that there are enough items in the inventory stack
-                  if (inventoryIngredient == null || inventoryIngredient.count < requiredIngredient.count) {
-                     status = Blueprint.Status.NotCraftable;
-                     break;
-                  }
-               }
-            }
-
-            blueprintStatuses.Add(status);
-         }
-         // Back to the Unity thread to send the results back to the client
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_ReceiveBlueprintList(_player.connectionToClient, blueprints.ToArray(), blueprintStatuses.ToArray(), pageNumber, totalItemCount);
-         });
-      });
-   }
-
-   [Command]
    public void Cmd_CraftItem (int blueprintItemId) {
       if (_player == null) {
          D.warning("No player object found.");
@@ -2352,7 +2246,14 @@ public class RPCManager : NetworkBehaviour {
          }
 
          // Get the resulting item
-         Item resultItem = Blueprint.getItemData(blueprint.bpTypeID);
+         Item resultItem = new Item();
+         if (blueprint.data.StartsWith(Blueprint.WEAPON_DATA_PREFIX)) {
+            WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(blueprint.itemTypeId);
+            resultItem = WeaponStatData.translateDataToWeapon(weaponData);
+         } else if (blueprint.data.StartsWith(Blueprint.ARMOR_DATA_PREFIX)) {
+            ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(blueprint.itemTypeId);
+            resultItem = ArmorStatData.translateDataToArmor(armorData);
+         }
 
          // Randomize the colors
          resultItem.color1 = Util.randomEnum<ColorType>();
@@ -2398,7 +2299,7 @@ public class RPCManager : NetworkBehaviour {
          // If the item could not be created, stop the process
          if (craftedItem == null) {
             D.warning(string.Format("Could not create the crafted item in the user inventory. Blueprint id: {0}, item category: {1}, item type id: {2}.",
-               blueprint.bpTypeID, resultItem.category, resultItem.itemTypeId));
+               blueprint.itemTypeId, resultItem.category, resultItem.itemTypeId));
             return;
          }
 

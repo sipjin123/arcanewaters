@@ -87,7 +87,8 @@ public class Util : MonoBehaviour {
             itemTypeName = EquipmentXMLManager.self.getArmorData(typeID).equipmentName;
             break;
          case Item.Category.Blueprint:
-            itemTypeName = Blueprint.getEquipmentType(typeID).ToString();
+            // TODO: Ensure this is never called
+            UnityEngine.Debug.LogWarning("Deprecated Call");
             break;
          case Item.Category.Weapon:
             itemTypeName = EquipmentXMLManager.self.getWeaponData(typeID).equipmentName;
