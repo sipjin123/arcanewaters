@@ -48,21 +48,14 @@ public class AttackManager : ClientMonoBehaviour {
          return;
       }
 
-      // Update the range circles if the range has changed
+      // Get the player ship
       PlayerShipEntity playerShipEntity = (PlayerShipEntity) Global.player;
-      if (playerShipEntity.getAttackRange() != _attackRange) {
-         _attackRange = playerShipEntity.getAttackRange();
-         maxRangeCircle.draw(_attackRange);
-      }
-
-      // Move the range circle to the player position
-      Util.setXY(maxRangeCircle.transform, Global.player.transform.position);
 
       // Hide the cursor when the right mouse is down
       Cursor.visible = !Input.GetMouseButton(1);
 
       // Get the mouse position
-      Vector2 mousePosition = Util.getMousePos();
+      Vector2 mousePosition = Util.getMousePos();      
 
       // Check if the mouse right button is pressed
       if (Input.GetMouseButton(1)) {
@@ -75,11 +68,8 @@ public class AttackManager : ClientMonoBehaviour {
          // Determine the color of the indicators
          Color indicatorColor = getColorForDistance(_normalizedDistanceToCursor);
 
-         // Set the color of the cursor
-         clampedCursor.setColor(indicatorColor);
-
-         // Set the speed of the cursor animation
-         clampedCursor.setAnimationSpeed(0.5f + 0.5f / _normalizedDistanceToCursor);
+         // Set the color and animation speed of the cursor
+         clampedCursor.update(indicatorColor, 0.5f + 0.5f / _normalizedDistanceToCursor);
 
          // Move the free aim indicator to the mouse position
          Util.setXY(freeCursor.transform, mousePosition);
@@ -104,6 +94,9 @@ public class AttackManager : ClientMonoBehaviour {
          maxRangeCircle.hide();
          trajectory.hide();
       }
+
+      // Update the max range circle
+      maxRangeCircle.update();
 
       // Check if the next shot is defined
       if (playerShipEntity.isNextShotDefined) {

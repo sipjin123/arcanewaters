@@ -146,6 +146,168 @@ TextureImporter:
   - first:
       213: 21300094
     second: Mace_Steel_47
+  - first:
+      213: 2785636241421726358
+    second: weapon_14_front_0
+  - first:
+      213: 5761608954069983584
+    second: weapon_14_front_1
+  - first:
+      213: 7901647374061778550
+    second: weapon_14_front_2
+  - first:
+      213: 7977387755604599402
+    second: weapon_14_front_3
+  - first:
+      213: 8113833770032940251
+    second: weapon_14_front_4
+  - first:
+      213: -8106811176919490324
+    second: weapon_14_front_5
+  - first:
+      213: -2766199345283412758
+    second: weapon_14_front_6
+  - first:
+      213: -2842695065598237664
+    second: weapon_14_front_7
+  - first:
+      213: -2211406528993905157
+    second: weapon_14_front_8
+  - first:
+      213: -2253745753822635960
+    second: weapon_14_front_9
+  - first:
+      213: -7895976648854877814
+    second: weapon_14_front_10
+  - first:
+      213: 6720620987493392375
+    second: weapon_14_front_11
+  - first:
+      213: 6538173785587161931
+    second: weapon_14_front_12
+  - first:
+      213: 412899444484639613
+    second: weapon_14_front_13
+  - first:
+      213: 3311045896460633119
+    second: weapon_14_front_14
+  - first:
+      213: 3462211871022733935
+    second: weapon_14_front_15
+  - first:
+      213: 5467562005552013744
+    second: weapon_14_front_16
+  - first:
+      213: -4001612116424525232
+    second: weapon_14_front_17
+  - first:
+      213: -7917936585099289450
+    second: weapon_14_front_18
+  - first:
+      213: 8332886890702551351
+    second: weapon_14_front_19
+  - first:
+      213: -5980193951003483416
+    second: weapon_14_front_20
+  - first:
+      213: -5180151157702626299
+    second: weapon_14_front_21
+  - first:
+      213: -8505620541061484082
+    second: weapon_14_front_22
+  - first:
+      213: 5455635574817220152
+    second: weapon_14_front_23
+  - first:
+      213: 8711699082559185346
+    second: weapon_14_front_24
+  - first:
+      213: 5082499489969593363
+    second: weapon_14_front_25
+  - first:
+      213: -7844604684441354139
+    second: weapon_14_front_26
+  - first:
+      213: -236167269353097497
+    second: weapon_14_front_27
+  - first:
+      213: -1354462857835537302
+    second: weapon_14_front_28
+  - first:
+      213: 7748188700532709053
+    second: weapon_14_front_29
+  - first:
+      213: -1999910759365684890
+    second: weapon_14_front_30
+  - first:
+      213: 8154409906448295514
+    second: weapon_14_front_31
+  - first:
+      213: -7914557965842427927
+    second: weapon_14_front_32
+  - first:
+      213: 7522895171348847963
+    second: weapon_14_front_33
+  - first:
+      213: 708657518139147296
+    second: weapon_14_front_34
+  - first:
+      213: 4175395657896942265
+    second: weapon_14_front_35
+  - first:
+      213: 8519204665529569807
+    second: weapon_14_front_36
+  - first:
+      213: 2850162638881060980
+    second: weapon_14_front_37
+  - first:
+      213: 5366446916114173398
+    second: weapon_14_front_38
+  - first:
+      213: -3564579133309931934
+    second: weapon_14_front_39
+  - first:
+      213: -1444257056042483102
+    second: weapon_14_front_40
+  - first:
+      213: 8706130910059935367
+    second: weapon_14_front_41
+  - first:
+      213: -5668527340657077868
+    second: weapon_14_front_42
+  - first:
+      213: 5456737064956384371
+    second: weapon_14_front_43
+  - first:
+      213: -3239474911106048112
+    second: weapon_14_front_44
+  - first:
+      213: 8053504328425087622
+    second: weapon_14_front_45
+  - first:
+      213: -6310179604715278860
+    second: weapon_14_front_46
+  - first:
+      213: -3352147757739783757
+    second: weapon_14_front_47
+  - first:
+      213: 3755101424217982132
+    second: weapon_14_front_48
+  - first:
+      213: 6088282501679691460
+    second: weapon_14_front_49
+  - first:
+      213: -4465211255138245075
+    second: weapon_14_front_50
+  - first:
+      213: -4877536656079284721
+    second: weapon_14_front_51
+  - first:
+      213: -6178863907894380024
+    second: weapon_14_front_52
+  - first:
+      213: 4092625622903806910
+    second: weapon_14_front_53
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -213,7 +375,7 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
     maxTextureSize: 2048
@@ -225,12 +387,12 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Mace_Steel_0
+      name: weapon_14_front_0
       rect:
         serializedVersion: 2
         x: 0
@@ -242,16 +404,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 02305410000000000800000000000000
-      internalID: 21300000
+      spriteID: f59c17a55e4c28246af48f821ac1d793
+      internalID: 2785636241421726358
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_1
+      name: weapon_14_front_1
       rect:
         serializedVersion: 2
         x: 85
@@ -263,16 +425,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 22305410000000000800000000000000
-      internalID: 21300002
+      spriteID: c30c3e9c35b9997418c1551704acb2b9
+      internalID: 5761608954069983584
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_2
+      name: weapon_14_front_2
       rect:
         serializedVersion: 2
         x: 170
@@ -284,16 +446,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 42305410000000000800000000000000
-      internalID: 21300004
+      spriteID: 54600013350bfaa45a6f6474f8cf6353
+      internalID: 7901647374061778550
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_3
+      name: weapon_14_front_3
       rect:
         serializedVersion: 2
         x: 255
@@ -305,16 +467,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 62305410000000000800000000000000
-      internalID: 21300006
+      spriteID: 9e845e7a702a4cb4b9087ed5b4d1d5f7
+      internalID: 7977387755604599402
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_4
+      name: weapon_14_front_4
       rect:
         serializedVersion: 2
         x: 340
@@ -326,16 +488,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 82305410000000000800000000000000
-      internalID: 21300008
+      spriteID: 800ae9ea4aa846f4f87f241a7917ec22
+      internalID: 8113833770032940251
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_5
+      name: weapon_14_front_5
       rect:
         serializedVersion: 2
         x: 425
@@ -347,16 +509,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a2305410000000000800000000000000
-      internalID: 21300010
+      spriteID: 6ec1cd0b9bea6dd4ba6f5faac2d1e5e5
+      internalID: -8106811176919490324
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_6
+      name: weapon_14_front_6
       rect:
         serializedVersion: 2
         x: 510
@@ -368,16 +530,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c2305410000000000800000000000000
-      internalID: 21300012
+      spriteID: d59b17e9b42d190418011ba4a849ea19
+      internalID: -2766199345283412758
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_7
+      name: weapon_14_front_7
       rect:
         serializedVersion: 2
         x: 595
@@ -389,16 +551,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e2305410000000000800000000000000
-      internalID: 21300014
+      spriteID: 7e35cf27ec29891418226cca5a945b31
+      internalID: -2842695065598237664
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_8
+      name: weapon_14_front_8
       rect:
         serializedVersion: 2
         x: 680
@@ -410,16 +572,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 03305410000000000800000000000000
-      internalID: 21300016
+      spriteID: f9fc91ded5589774c96a43d211f2a467
+      internalID: -2211406528993905157
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_9
+      name: weapon_14_front_9
       rect:
         serializedVersion: 2
         x: 765
@@ -431,16 +593,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 23305410000000000800000000000000
-      internalID: 21300018
+      spriteID: c2d77682524412d4dbbb2ddeabde5571
+      internalID: -2253745753822635960
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_10
+      name: weapon_14_front_10
       rect:
         serializedVersion: 2
         x: 850
@@ -452,16 +614,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 43305410000000000800000000000000
-      internalID: 21300020
+      spriteID: 138d745942a45274baca079e859f0254
+      internalID: -7895976648854877814
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_11
+      name: weapon_14_front_11
       rect:
         serializedVersion: 2
         x: 935
@@ -473,16 +635,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 63305410000000000800000000000000
-      internalID: 21300022
+      spriteID: dd6cc956f2d0e0548b1cd8bcf7ff7736
+      internalID: 6720620987493392375
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_12
+      name: weapon_14_front_12
       rect:
         serializedVersion: 2
         x: 0
@@ -494,16 +656,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 83305410000000000800000000000000
-      internalID: 21300024
+      spriteID: fd29d84045a84d74bb3039591440acbc
+      internalID: 6538173785587161931
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_13
+      name: weapon_14_front_13
       rect:
         serializedVersion: 2
         x: 85
@@ -515,16 +677,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a3305410000000000800000000000000
-      internalID: 21300026
+      spriteID: 5faa88bcd40994a4b8aa65c1e0f26fa8
+      internalID: 412899444484639613
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_14
+      name: weapon_14_front_14
       rect:
         serializedVersion: 2
         x: 170
@@ -536,16 +698,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c3305410000000000800000000000000
-      internalID: 21300028
+      spriteID: de31035e37053964395816fe4e991462
+      internalID: 3311045896460633119
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_15
+      name: weapon_14_front_15
       rect:
         serializedVersion: 2
         x: 255
@@ -557,16 +719,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e3305410000000000800000000000000
-      internalID: 21300030
+      spriteID: 092c69b7199ff3043ad9e7e352ae594f
+      internalID: 3462211871022733935
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_16
+      name: weapon_14_front_16
       rect:
         serializedVersion: 2
         x: 340
@@ -578,16 +740,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 04305410000000000800000000000000
-      internalID: 21300032
+      spriteID: ee24eabc7213ebe4081332a6fa41831c
+      internalID: 5467562005552013744
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_17
+      name: weapon_14_front_17
       rect:
         serializedVersion: 2
         x: 425
@@ -599,16 +761,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 24305410000000000800000000000000
-      internalID: 21300034
+      spriteID: addeca77c72a2984bad1abc8491784d3
+      internalID: -4001612116424525232
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_18
+      name: weapon_14_front_18
       rect:
         serializedVersion: 2
         x: 510
@@ -620,16 +782,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 44305410000000000800000000000000
-      internalID: 21300036
+      spriteID: 987d1ad1b6315e14791b39947c95c035
+      internalID: -7917936585099289450
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_19
+      name: weapon_14_front_19
       rect:
         serializedVersion: 2
         x: 595
@@ -641,16 +803,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 64305410000000000800000000000000
-      internalID: 21300038
+      spriteID: f884b96f2b09fa44cae56a9927be8b4d
+      internalID: 8332886890702551351
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_20
+      name: weapon_14_front_20
       rect:
         serializedVersion: 2
         x: 680
@@ -662,16 +824,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 84305410000000000800000000000000
-      internalID: 21300040
+      spriteID: 9ac43edbbd7afb54e9f0a543348b9bed
+      internalID: -5980193951003483416
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_21
+      name: weapon_14_front_21
       rect:
         serializedVersion: 2
         x: 765
@@ -683,16 +845,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a4305410000000000800000000000000
-      internalID: 21300042
+      spriteID: 035a46a79cae9264798c863ed1b95117
+      internalID: -5180151157702626299
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_22
+      name: weapon_14_front_22
       rect:
         serializedVersion: 2
         x: 850
@@ -704,16 +866,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c4305410000000000800000000000000
-      internalID: 21300044
+      spriteID: 72766a3f25d7caa478f9fd61b5f38f9f
+      internalID: -8505620541061484082
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_23
+      name: weapon_14_front_23
       rect:
         serializedVersion: 2
         x: 935
@@ -725,16 +887,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e4305410000000000800000000000000
-      internalID: 21300046
+      spriteID: d35880b80ebc0d246960aa9a58c99e90
+      internalID: 5455635574817220152
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_24
+      name: weapon_14_front_24
       rect:
         serializedVersion: 2
         x: 0
@@ -746,16 +908,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 05305410000000000800000000000000
-      internalID: 21300048
+      spriteID: 84885a09730b09049a78d23eb36ab5c2
+      internalID: 8711699082559185346
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_25
+      name: weapon_14_front_25
       rect:
         serializedVersion: 2
         x: 85
@@ -767,16 +929,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 25305410000000000800000000000000
-      internalID: 21300050
+      spriteID: 2c24957abdcb76d48a079631d6b882a2
+      internalID: 5082499489969593363
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_26
+      name: weapon_14_front_26
       rect:
         serializedVersion: 2
         x: 170
@@ -788,16 +950,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 45305410000000000800000000000000
-      internalID: 21300052
+      spriteID: bae911a9f1360f64ca9ff1118746eca1
+      internalID: -7844604684441354139
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_27
+      name: weapon_14_front_27
       rect:
         serializedVersion: 2
         x: 255
@@ -809,16 +971,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 65305410000000000800000000000000
-      internalID: 21300054
+      spriteID: e31c186b472e6f64bbfeac47098b6ab8
+      internalID: -236167269353097497
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_28
+      name: weapon_14_front_28
       rect:
         serializedVersion: 2
         x: 340
@@ -830,16 +992,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 85305410000000000800000000000000
-      internalID: 21300056
+      spriteID: 639726c94502e34459a53c0bda28ffca
+      internalID: -1354462857835537302
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_29
+      name: weapon_14_front_29
       rect:
         serializedVersion: 2
         x: 425
@@ -851,16 +1013,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a5305410000000000800000000000000
-      internalID: 21300058
+      spriteID: e93d2b9a7f89cb04a9a7a4e73587a4d8
+      internalID: 7748188700532709053
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_30
+      name: weapon_14_front_30
       rect:
         serializedVersion: 2
         x: 510
@@ -872,16 +1034,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c5305410000000000800000000000000
-      internalID: 21300060
+      spriteID: 850acdf362dbfe846806e04607fa33fa
+      internalID: -1999910759365684890
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_31
+      name: weapon_14_front_31
       rect:
         serializedVersion: 2
         x: 595
@@ -893,16 +1055,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e5305410000000000800000000000000
-      internalID: 21300062
+      spriteID: f9362c35d7a827e4f89f411a63dd63ec
+      internalID: 8154409906448295514
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_32
+      name: weapon_14_front_32
       rect:
         serializedVersion: 2
         x: 680
@@ -914,16 +1076,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 06305410000000000800000000000000
-      internalID: 21300064
+      spriteID: 02a8364a8d0da1741b4547b95f1dc0fd
+      internalID: -7914557965842427927
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_33
+      name: weapon_14_front_33
       rect:
         serializedVersion: 2
         x: 765
@@ -935,16 +1097,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 26305410000000000800000000000000
-      internalID: 21300066
+      spriteID: af856a7691450524a91386ae3eedc637
+      internalID: 7522895171348847963
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_34
+      name: weapon_14_front_34
       rect:
         serializedVersion: 2
         x: 850
@@ -956,16 +1118,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 46305410000000000800000000000000
-      internalID: 21300068
+      spriteID: dfc55e358ded310478ea5650294a8223
+      internalID: 708657518139147296
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_35
+      name: weapon_14_front_35
       rect:
         serializedVersion: 2
         x: 935
@@ -977,16 +1139,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 66305410000000000800000000000000
-      internalID: 21300070
+      spriteID: f8cf0203e4985114b935ab794aafa192
+      internalID: 4175395657896942265
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_36
+      name: weapon_14_front_36
       rect:
         serializedVersion: 2
         x: 0
@@ -998,16 +1160,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 86305410000000000800000000000000
-      internalID: 21300072
+      spriteID: 9f61e10b788cac945ae207cfec065821
+      internalID: 8519204665529569807
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_37
+      name: weapon_14_front_37
       rect:
         serializedVersion: 2
         x: 85
@@ -1019,16 +1181,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a6305410000000000800000000000000
-      internalID: 21300074
+      spriteID: 151e646f993569c41a0343e60af682c5
+      internalID: 2850162638881060980
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_38
+      name: weapon_14_front_38
       rect:
         serializedVersion: 2
         x: 170
@@ -1040,16 +1202,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c6305410000000000800000000000000
-      internalID: 21300076
+      spriteID: da24790c779df9543b83fb5d8e03fc07
+      internalID: 5366446916114173398
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_39
+      name: weapon_14_front_39
       rect:
         serializedVersion: 2
         x: 255
@@ -1061,16 +1223,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e6305410000000000800000000000000
-      internalID: 21300078
+      spriteID: 7c77b4f66d4e3ae4f814882db403f76a
+      internalID: -3564579133309931934
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_40
+      name: weapon_14_front_40
       rect:
         serializedVersion: 2
         x: 340
@@ -1082,16 +1244,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 07305410000000000800000000000000
-      internalID: 21300080
+      spriteID: e745fcd48905c4740952b3e4c61739ba
+      internalID: -1444257056042483102
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_41
+      name: weapon_14_front_41
       rect:
         serializedVersion: 2
         x: 425
@@ -1103,16 +1265,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 27305410000000000800000000000000
-      internalID: 21300082
+      spriteID: 4bf8d6b96fb649b4f990fa8351ce552f
+      internalID: 8706130910059935367
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_42
+      name: weapon_14_front_42
       rect:
         serializedVersion: 2
         x: 510
@@ -1124,16 +1286,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 47305410000000000800000000000000
-      internalID: 21300084
+      spriteID: 287f9f56679ab414096ffb221e00f20a
+      internalID: -5668527340657077868
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_43
+      name: weapon_14_front_43
       rect:
         serializedVersion: 2
         x: 595
@@ -1145,16 +1307,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 67305410000000000800000000000000
-      internalID: 21300086
+      spriteID: 554db88ae1fa1e246a7cae929230fa1c
+      internalID: 5456737064956384371
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_44
+      name: weapon_14_front_44
       rect:
         serializedVersion: 2
         x: 680
@@ -1166,16 +1328,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 87305410000000000800000000000000
-      internalID: 21300088
+      spriteID: 5892b12cd06c580418efc478efddaf04
+      internalID: -3239474911106048112
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_45
+      name: weapon_14_front_45
       rect:
         serializedVersion: 2
         x: 765
@@ -1187,16 +1349,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a7305410000000000800000000000000
-      internalID: 21300090
+      spriteID: 2482c64f5e9b0e34798280090157124f
+      internalID: 8053504328425087622
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_46
+      name: weapon_14_front_46
       rect:
         serializedVersion: 2
         x: 850
@@ -1208,16 +1370,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c7305410000000000800000000000000
-      internalID: 21300092
+      spriteID: 37638d54efeb34d458d65779afe39363
+      internalID: -6310179604715278860
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mace_Steel_47
+      name: weapon_14_front_47
       rect:
         serializedVersion: 2
         x: 935
@@ -1229,10 +1391,136 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e7305410000000000800000000000000
-      internalID: 21300094
+      spriteID: b22cfd6442940c649b8753cfce3abc16
+      internalID: -3352147757739783757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weapon_14_front_48
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 654eb3188fabf864b811d85a08dd0547
+      internalID: 3755101424217982132
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weapon_14_front_49
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e933faa2b5fedae47b0203ff6241e8a2
+      internalID: 6088282501679691460
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weapon_14_front_50
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0e4f1a66dfc335b48b98698c12ce53c1
+      internalID: -4465211255138245075
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weapon_14_front_51
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9e3d66c66afbad2498059b2a48c130b7
+      internalID: -4877536656079284721
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weapon_14_front_52
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f380a7337e64f7a45be01e085a6eaccc
+      internalID: -6178863907894380024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weapon_14_front_53
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3249f9f06680c8b49a683142fe44c38d
+      internalID: 4092625622903806910
       vertices: []
       indices: 
       edges: []
@@ -1240,7 +1528,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 4071e4c74c8a6e64fb406c6f82469d27
     internalID: 0
     vertices: []
     indices: 

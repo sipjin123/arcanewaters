@@ -3,149 +3,167 @@ guid: 3649cf138f2b02848b7dfa20354a391b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 21300000
-    second: female_hair_5_front_0
+      213: 6770958955348772591
+    second: female_hair_front_5_0
   - first:
-      213: 21300002
-    second: female_hair_5_front_1
+      213: -3181234744655817474
+    second: female_hair_front_5_1
   - first:
-      213: 21300004
-    second: female_hair_5_front_2
+      213: -124312290307431678
+    second: female_hair_front_5_2
   - first:
-      213: 21300006
-    second: female_hair_5_front_3
+      213: 1628177800108237611
+    second: female_hair_front_5_3
   - first:
-      213: 21300008
-    second: female_hair_5_front_4
+      213: 1597100489821116603
+    second: female_hair_front_5_4
   - first:
-      213: 21300010
-    second: female_hair_5_front_5
+      213: -2719981522806531661
+    second: female_hair_front_5_5
   - first:
-      213: 21300012
-    second: female_hair_5_front_6
+      213: -1283252247709743161
+    second: female_hair_front_5_6
   - first:
-      213: 21300014
-    second: female_hair_5_front_7
+      213: -5182666914096780144
+    second: female_hair_front_5_7
   - first:
-      213: 21300016
-    second: female_hair_5_front_8
+      213: 119782980269188121
+    second: female_hair_front_5_8
   - first:
-      213: 21300018
-    second: female_hair_5_front_9
+      213: -3640068144053590638
+    second: female_hair_front_5_9
   - first:
-      213: 21300020
-    second: female_hair_5_front_10
+      213: 4616329394743017229
+    second: female_hair_front_5_10
   - first:
-      213: 21300022
-    second: female_hair_5_front_11
+      213: -8504691395157855553
+    second: female_hair_front_5_11
   - first:
-      213: 21300024
-    second: female_hair_5_front_12
+      213: -720228279722679538
+    second: female_hair_front_5_12
   - first:
-      213: 21300026
-    second: female_hair_5_front_13
+      213: 1380159049794165871
+    second: female_hair_front_5_13
   - first:
-      213: 21300028
-    second: female_hair_5_front_14
+      213: -581550407291968331
+    second: female_hair_front_5_14
   - first:
-      213: 21300030
-    second: female_hair_5_front_15
+      213: 8756855348564261499
+    second: female_hair_front_5_15
   - first:
-      213: 21300032
-    second: female_hair_5_front_16
+      213: -311812907195253165
+    second: female_hair_front_5_16
   - first:
-      213: 21300034
-    second: female_hair_5_front_17
+      213: -7090481194777550584
+    second: female_hair_front_5_17
   - first:
-      213: 21300036
-    second: female_hair_5_front_18
+      213: 4015429386430429876
+    second: female_hair_front_5_18
   - first:
-      213: 21300038
-    second: female_hair_5_front_19
+      213: -2067916841024707001
+    second: female_hair_front_5_19
   - first:
-      213: 21300040
-    second: female_hair_5_front_20
+      213: -4448685031510166707
+    second: female_hair_front_5_20
   - first:
-      213: 21300042
-    second: female_hair_5_front_21
+      213: 8411361212733780928
+    second: female_hair_front_5_21
   - first:
-      213: 21300044
-    second: female_hair_5_front_22
+      213: -8603974727576404937
+    second: female_hair_front_5_22
   - first:
-      213: 21300046
-    second: female_hair_5_front_23
+      213: 2583822566380712380
+    second: female_hair_front_5_23
   - first:
-      213: 21300048
-    second: female_hair_5_front_24
+      213: 5501419605860364360
+    second: female_hair_front_5_24
   - first:
-      213: 21300050
-    second: female_hair_5_front_25
+      213: 5466668068973060896
+    second: female_hair_front_5_25
   - first:
-      213: 21300052
-    second: female_hair_5_front_26
+      213: 4301730966751347302
+    second: female_hair_front_5_26
   - first:
-      213: 21300054
-    second: female_hair_5_front_27
+      213: 5854002174689789721
+    second: female_hair_front_5_27
   - first:
-      213: 21300056
-    second: female_hair_5_front_28
+      213: 6975025066071153179
+    second: female_hair_front_5_28
   - first:
-      213: 21300058
-    second: female_hair_5_front_29
+      213: 6204770101235175300
+    second: female_hair_front_5_29
   - first:
-      213: 21300060
-    second: female_hair_5_front_30
+      213: -2882824698169867469
+    second: female_hair_front_5_30
   - first:
-      213: 21300062
-    second: female_hair_5_front_31
+      213: -1696961727993309721
+    second: female_hair_front_5_31
   - first:
-      213: 21300064
-    second: female_hair_5_front_32
+      213: 649532350277706991
+    second: female_hair_front_5_32
   - first:
-      213: 21300066
-    second: female_hair_5_front_33
+      213: -5133171079469500548
+    second: female_hair_front_5_33
   - first:
-      213: 21300068
-    second: female_hair_5_front_34
+      213: -5466708599693690655
+    second: female_hair_front_5_34
   - first:
-      213: 21300070
-    second: female_hair_5_front_35
+      213: 4277995614499603940
+    second: female_hair_front_5_35
   - first:
-      213: 21300072
-    second: female_hair_5_front_36
+      213: 6302339433750515844
+    second: female_hair_front_5_36
   - first:
-      213: 21300074
-    second: female_hair_5_front_37
+      213: 8587880633351316335
+    second: female_hair_front_5_37
   - first:
-      213: 21300076
-    second: female_hair_5_front_38
+      213: 7804975798414813815
+    second: female_hair_front_5_38
   - first:
-      213: 21300078
-    second: female_hair_5_front_39
+      213: 4597369581284373071
+    second: female_hair_front_5_39
   - first:
-      213: 21300080
-    second: female_hair_5_front_40
+      213: -6312075239723946125
+    second: female_hair_front_5_40
   - first:
-      213: 21300082
-    second: female_hair_5_front_41
+      213: 762645536498740814
+    second: female_hair_front_5_41
   - first:
-      213: 21300084
-    second: female_hair_5_front_42
+      213: 4952846109532317860
+    second: female_hair_front_5_42
   - first:
-      213: 21300086
-    second: female_hair_5_front_43
+      213: 423788753598312034
+    second: female_hair_front_5_43
   - first:
-      213: 21300088
-    second: female_hair_5_front_44
+      213: 6009119126331175733
+    second: female_hair_front_5_44
   - first:
-      213: 21300090
-    second: female_hair_5_front_45
+      213: -8434329353061517912
+    second: female_hair_front_5_45
   - first:
-      213: 21300092
-    second: female_hair_5_front_46
+      213: -7578954699914878776
+    second: female_hair_front_5_46
   - first:
-      213: 21300094
-    second: female_hair_5_front_47
+      213: -5369386582480050969
+    second: female_hair_front_5_47
+  - first:
+      213: -2616804867325521744
+    second: female_hair_front_5_48
+  - first:
+      213: 235754908587929159
+    second: female_hair_front_5_49
+  - first:
+      213: -6415747049904858656
+    second: female_hair_front_5_50
+  - first:
+      213: -5788475419026737143
+    second: female_hair_front_5_51
+  - first:
+      213: 5955539836913206652
+    second: female_hair_front_5_52
+  - first:
+      213: 3775751115672837638
+    second: female_hair_front_5_53
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -171,7 +189,7 @@ TextureImporter:
   generateCubemap: 6
   cubemapConvolution: 0
   seamlessCubemap: 0
-  textureFormat: 5
+  textureFormat: 1
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
@@ -213,7 +231,7 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
     maxTextureSize: 2048
@@ -225,12 +243,12 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: female_hair_5_front_0
+      name: female_hair_front_5_0
       rect:
         serializedVersion: 2
         x: 0
@@ -242,16 +260,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 02305410000000000800000000000000
-      internalID: 21300000
+      spriteID: 954f3d891891fa44fa5464d3ae65487d
+      internalID: 6770958955348772591
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_1
+      name: female_hair_front_5_1
       rect:
         serializedVersion: 2
         x: 85
@@ -263,16 +281,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 22305410000000000800000000000000
-      internalID: 21300002
+      spriteID: 85f43a38a9441a44ea9bcda32cb15a52
+      internalID: -3181234744655817474
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_2
+      name: female_hair_front_5_2
       rect:
         serializedVersion: 2
         x: 170
@@ -284,16 +302,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 42305410000000000800000000000000
-      internalID: 21300004
+      spriteID: 74f00057ec5c681488f413e07a126c52
+      internalID: -124312290307431678
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_3
+      name: female_hair_front_5_3
       rect:
         serializedVersion: 2
         x: 255
@@ -305,16 +323,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 62305410000000000800000000000000
-      internalID: 21300006
+      spriteID: a0bfafa0ad277254ca9763ca66f9e12c
+      internalID: 1628177800108237611
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_4
+      name: female_hair_front_5_4
       rect:
         serializedVersion: 2
         x: 340
@@ -326,16 +344,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 82305410000000000800000000000000
-      internalID: 21300008
+      spriteID: 6044c2857a4093143aa5dc135e4f0594
+      internalID: 1597100489821116603
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_5
+      name: female_hair_front_5_5
       rect:
         serializedVersion: 2
         x: 425
@@ -347,16 +365,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a2305410000000000800000000000000
-      internalID: 21300010
+      spriteID: 88dd44c52be4fe64dabcdc9889938ae2
+      internalID: -2719981522806531661
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_6
+      name: female_hair_front_5_6
       rect:
         serializedVersion: 2
         x: 510
@@ -368,16 +386,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c2305410000000000800000000000000
-      internalID: 21300012
+      spriteID: faf66acf68cece346959d1b1cbaf354c
+      internalID: -1283252247709743161
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_7
+      name: female_hair_front_5_7
       rect:
         serializedVersion: 2
         x: 595
@@ -389,16 +407,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e2305410000000000800000000000000
-      internalID: 21300014
+      spriteID: 7e3408285fc0acd49944f8246c212f5e
+      internalID: -5182666914096780144
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_8
+      name: female_hair_front_5_8
       rect:
         serializedVersion: 2
         x: 680
@@ -410,16 +428,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 03305410000000000800000000000000
-      internalID: 21300016
+      spriteID: e469ca73ee052ac438ca1c5a90625a27
+      internalID: 119782980269188121
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_9
+      name: female_hair_front_5_9
       rect:
         serializedVersion: 2
         x: 765
@@ -431,16 +449,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 23305410000000000800000000000000
-      internalID: 21300018
+      spriteID: 2f9f2713be650da4d91aa3748e32b30a
+      internalID: -3640068144053590638
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_10
+      name: female_hair_front_5_10
       rect:
         serializedVersion: 2
         x: 850
@@ -452,16 +470,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 43305410000000000800000000000000
-      internalID: 21300020
+      spriteID: 7636fcc3f944d0c438f1245ca42a809b
+      internalID: 4616329394743017229
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_11
+      name: female_hair_front_5_11
       rect:
         serializedVersion: 2
         x: 935
@@ -473,16 +491,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 63305410000000000800000000000000
-      internalID: 21300022
+      spriteID: 43fbb1f0e43ec95428afcfcedf3b58ca
+      internalID: -8504691395157855553
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_12
+      name: female_hair_front_5_12
       rect:
         serializedVersion: 2
         x: 0
@@ -494,16 +512,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 83305410000000000800000000000000
-      internalID: 21300024
+      spriteID: f19a6c26be4f27c4d996d8953adfd790
+      internalID: -720228279722679538
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_13
+      name: female_hair_front_5_13
       rect:
         serializedVersion: 2
         x: 85
@@ -515,16 +533,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a3305410000000000800000000000000
-      internalID: 21300026
+      spriteID: 94669a6ce949c8344a8a3efa211cce98
+      internalID: 1380159049794165871
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_14
+      name: female_hair_front_5_14
       rect:
         serializedVersion: 2
         x: 170
@@ -536,16 +554,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c3305410000000000800000000000000
-      internalID: 21300028
+      spriteID: 698e3a8dc1b2dc74db0db00540102323
+      internalID: -581550407291968331
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_15
+      name: female_hair_front_5_15
       rect:
         serializedVersion: 2
         x: 255
@@ -557,16 +575,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e3305410000000000800000000000000
-      internalID: 21300030
+      spriteID: f71b2ac350d4f0e4587fd7c0cf9ba1ed
+      internalID: 8756855348564261499
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_16
+      name: female_hair_front_5_16
       rect:
         serializedVersion: 2
         x: 340
@@ -578,16 +596,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 04305410000000000800000000000000
-      internalID: 21300032
+      spriteID: 67b1ce3194abb4d4e993ae8161d919ce
+      internalID: -311812907195253165
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_17
+      name: female_hair_front_5_17
       rect:
         serializedVersion: 2
         x: 425
@@ -599,16 +617,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 24305410000000000800000000000000
-      internalID: 21300034
+      spriteID: 1ec6ede566eb0034c8981e2dd4f6a9bf
+      internalID: -7090481194777550584
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_18
+      name: female_hair_front_5_18
       rect:
         serializedVersion: 2
         x: 510
@@ -620,16 +638,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 44305410000000000800000000000000
-      internalID: 21300036
+      spriteID: e3c0ec6349711424fa97823254860ac8
+      internalID: 4015429386430429876
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_19
+      name: female_hair_front_5_19
       rect:
         serializedVersion: 2
         x: 595
@@ -641,16 +659,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 64305410000000000800000000000000
-      internalID: 21300038
+      spriteID: e3fe557752c150a47b83ef723f170ce0
+      internalID: -2067916841024707001
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_20
+      name: female_hair_front_5_20
       rect:
         serializedVersion: 2
         x: 680
@@ -662,16 +680,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 84305410000000000800000000000000
-      internalID: 21300040
+      spriteID: 8fc82f5e7d5336d44b0f000fbe06cc6f
+      internalID: -4448685031510166707
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_21
+      name: female_hair_front_5_21
       rect:
         serializedVersion: 2
         x: 765
@@ -683,16 +701,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a4305410000000000800000000000000
-      internalID: 21300042
+      spriteID: bd9ab6b95ceacab40a5b85250cf0219a
+      internalID: 8411361212733780928
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_22
+      name: female_hair_front_5_22
       rect:
         serializedVersion: 2
         x: 850
@@ -704,16 +722,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c4305410000000000800000000000000
-      internalID: 21300044
+      spriteID: 7b8febba968590e45a86f31c97bfad56
+      internalID: -8603974727576404937
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_23
+      name: female_hair_front_5_23
       rect:
         serializedVersion: 2
         x: 935
@@ -725,16 +743,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e4305410000000000800000000000000
-      internalID: 21300046
+      spriteID: 05558b1c259df97429bd5afc7a242b53
+      internalID: 2583822566380712380
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_24
+      name: female_hair_front_5_24
       rect:
         serializedVersion: 2
         x: 0
@@ -746,16 +764,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 05305410000000000800000000000000
-      internalID: 21300048
+      spriteID: b658ff6afda50b0419c1b7de37f43154
+      internalID: 5501419605860364360
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_25
+      name: female_hair_front_5_25
       rect:
         serializedVersion: 2
         x: 85
@@ -767,16 +785,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 25305410000000000800000000000000
-      internalID: 21300050
+      spriteID: ea74df311e909444a95592c97b165ff4
+      internalID: 5466668068973060896
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_26
+      name: female_hair_front_5_26
       rect:
         serializedVersion: 2
         x: 170
@@ -788,16 +806,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 45305410000000000800000000000000
-      internalID: 21300052
+      spriteID: 3fc362d7c47612a4394e23dbaf9c6b3b
+      internalID: 4301730966751347302
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_27
+      name: female_hair_front_5_27
       rect:
         serializedVersion: 2
         x: 255
@@ -809,16 +827,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 65305410000000000800000000000000
-      internalID: 21300054
+      spriteID: 5136d7f0ce4f2cb469de3f4c0812dc39
+      internalID: 5854002174689789721
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_28
+      name: female_hair_front_5_28
       rect:
         serializedVersion: 2
         x: 340
@@ -830,16 +848,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 85305410000000000800000000000000
-      internalID: 21300056
+      spriteID: 82834b25ccb6b9745b334e455aea2a91
+      internalID: 6975025066071153179
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_29
+      name: female_hair_front_5_29
       rect:
         serializedVersion: 2
         x: 425
@@ -851,16 +869,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a5305410000000000800000000000000
-      internalID: 21300058
+      spriteID: 28175b3d44cf40043b845912a7afc4d3
+      internalID: 6204770101235175300
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_30
+      name: female_hair_front_5_30
       rect:
         serializedVersion: 2
         x: 510
@@ -872,16 +890,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c5305410000000000800000000000000
-      internalID: 21300060
+      spriteID: 3b01bb5815c8fae4fa2af6b187cbcca4
+      internalID: -2882824698169867469
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_31
+      name: female_hair_front_5_31
       rect:
         serializedVersion: 2
         x: 595
@@ -893,16 +911,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e5305410000000000800000000000000
-      internalID: 21300062
+      spriteID: 2e66435b035e8ef4395f83971e525541
+      internalID: -1696961727993309721
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_32
+      name: female_hair_front_5_32
       rect:
         serializedVersion: 2
         x: 680
@@ -914,16 +932,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 06305410000000000800000000000000
-      internalID: 21300064
+      spriteID: 9fd5235bc8da71c4fa46c25420041579
+      internalID: 649532350277706991
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_33
+      name: female_hair_front_5_33
       rect:
         serializedVersion: 2
         x: 765
@@ -935,16 +953,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 26305410000000000800000000000000
-      internalID: 21300066
+      spriteID: 3dd95ba883e379449b51b7efbeea1c62
+      internalID: -5133171079469500548
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_34
+      name: female_hair_front_5_34
       rect:
         serializedVersion: 2
         x: 850
@@ -956,16 +974,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 46305410000000000800000000000000
-      internalID: 21300068
+      spriteID: 373cd52125e36864699070b825860da7
+      internalID: -5466708599693690655
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_35
+      name: female_hair_front_5_35
       rect:
         serializedVersion: 2
         x: 935
@@ -977,16 +995,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 66305410000000000800000000000000
-      internalID: 21300070
+      spriteID: dab915f8edd906147913a2e733a0750e
+      internalID: 4277995614499603940
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_36
+      name: female_hair_front_5_36
       rect:
         serializedVersion: 2
         x: 0
@@ -998,16 +1016,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 86305410000000000800000000000000
-      internalID: 21300072
+      spriteID: bd187999212a3964fbfa5dca5b488e31
+      internalID: 6302339433750515844
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_37
+      name: female_hair_front_5_37
       rect:
         serializedVersion: 2
         x: 85
@@ -1019,16 +1037,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a6305410000000000800000000000000
-      internalID: 21300074
+      spriteID: 626adae5674fffa4baf02982731d1d15
+      internalID: 8587880633351316335
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_38
+      name: female_hair_front_5_38
       rect:
         serializedVersion: 2
         x: 170
@@ -1040,16 +1058,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c6305410000000000800000000000000
-      internalID: 21300076
+      spriteID: 44918d4ac52e5a14a94856a70fd305d2
+      internalID: 7804975798414813815
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_39
+      name: female_hair_front_5_39
       rect:
         serializedVersion: 2
         x: 255
@@ -1061,16 +1079,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e6305410000000000800000000000000
-      internalID: 21300078
+      spriteID: 00460fc21e73a9c47b1fe6c4456f8a06
+      internalID: 4597369581284373071
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_40
+      name: female_hair_front_5_40
       rect:
         serializedVersion: 2
         x: 340
@@ -1082,16 +1100,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 07305410000000000800000000000000
-      internalID: 21300080
+      spriteID: d5d967720b27c3e47b8f57c68b9014b1
+      internalID: -6312075239723946125
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_41
+      name: female_hair_front_5_41
       rect:
         serializedVersion: 2
         x: 425
@@ -1103,16 +1121,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 27305410000000000800000000000000
-      internalID: 21300082
+      spriteID: 797cc287c8cdad241bf2f4a861e2a74f
+      internalID: 762645536498740814
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_42
+      name: female_hair_front_5_42
       rect:
         serializedVersion: 2
         x: 510
@@ -1124,16 +1142,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 47305410000000000800000000000000
-      internalID: 21300084
+      spriteID: a7ffc54712fe25945a043ffe961c4569
+      internalID: 4952846109532317860
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_43
+      name: female_hair_front_5_43
       rect:
         serializedVersion: 2
         x: 595
@@ -1145,16 +1163,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 67305410000000000800000000000000
-      internalID: 21300086
+      spriteID: 6dc56a6627fa80e4f8e5839d644ff1d0
+      internalID: 423788753598312034
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_44
+      name: female_hair_front_5_44
       rect:
         serializedVersion: 2
         x: 680
@@ -1166,16 +1184,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 87305410000000000800000000000000
-      internalID: 21300088
+      spriteID: 814e2a50b157f2b41b199a3f4e097c55
+      internalID: 6009119126331175733
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_45
+      name: female_hair_front_5_45
       rect:
         serializedVersion: 2
         x: 765
@@ -1187,16 +1205,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a7305410000000000800000000000000
-      internalID: 21300090
+      spriteID: 3eddb7ea5be43994a96ad5298d389bd2
+      internalID: -8434329353061517912
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_46
+      name: female_hair_front_5_46
       rect:
         serializedVersion: 2
         x: 850
@@ -1208,16 +1226,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c7305410000000000800000000000000
-      internalID: 21300092
+      spriteID: 83972f6098f4a564fb538304197a1b62
+      internalID: -7578954699914878776
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: female_hair_5_front_47
+      name: female_hair_front_5_47
       rect:
         serializedVersion: 2
         x: 935
@@ -1229,10 +1247,136 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e7305410000000000800000000000000
-      internalID: 21300094
+      spriteID: 5b0bd7185aa3e0e4c81bba83ea012ae6
+      internalID: -5369386582480050969
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: female_hair_front_5_48
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0d3045b31d64c6c4a97aa2af39373bf0
+      internalID: -2616804867325521744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: female_hair_front_5_49
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a19e56b7aee3892449ecf040bb9c53d7
+      internalID: 235754908587929159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: female_hair_front_5_50
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4df99a12d9c415d459c744aa88e504e2
+      internalID: -6415747049904858656
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: female_hair_front_5_51
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f98955ed066aa31408b36fa951c9576c
+      internalID: -5788475419026737143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: female_hair_front_5_52
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b630714375a849f4b945c7f7b89bac2b
+      internalID: 5955539836913206652
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: female_hair_front_5_53
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a545ca883e4ef68448e4d814ca2e475c
+      internalID: 3775751115672837638
       vertices: []
       indices: 
       edges: []
@@ -1240,7 +1384,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 

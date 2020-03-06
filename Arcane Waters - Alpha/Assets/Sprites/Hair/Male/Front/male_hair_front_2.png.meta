@@ -146,6 +146,168 @@ TextureImporter:
   - first:
       213: 21300094
     second: male_hair_2_front_47
+  - first:
+      213: 415766253741810361
+    second: male_hair_front_2_0
+  - first:
+      213: 7248586739129018599
+    second: male_hair_front_2_1
+  - first:
+      213: -1431255842122550484
+    second: male_hair_front_2_2
+  - first:
+      213: 8724173217110650690
+    second: male_hair_front_2_3
+  - first:
+      213: 311211981110756736
+    second: male_hair_front_2_4
+  - first:
+      213: -6322990348546080665
+    second: male_hair_front_2_5
+  - first:
+      213: 8680623023053032162
+    second: male_hair_front_2_6
+  - first:
+      213: 6077378764970528421
+    second: male_hair_front_2_7
+  - first:
+      213: -719703210502264214
+    second: male_hair_front_2_8
+  - first:
+      213: -3454900153123383327
+    second: male_hair_front_2_9
+  - first:
+      213: 4908538997686868282
+    second: male_hair_front_2_10
+  - first:
+      213: 1741077562072344155
+    second: male_hair_front_2_11
+  - first:
+      213: -1487428891226798549
+    second: male_hair_front_2_12
+  - first:
+      213: -6402591384418460583
+    second: male_hair_front_2_13
+  - first:
+      213: -7419770214008443313
+    second: male_hair_front_2_14
+  - first:
+      213: 1071228862302433085
+    second: male_hair_front_2_15
+  - first:
+      213: 165641274175678596
+    second: male_hair_front_2_16
+  - first:
+      213: 2099966712306368543
+    second: male_hair_front_2_17
+  - first:
+      213: 3916050467376458965
+    second: male_hair_front_2_18
+  - first:
+      213: 4678090045136636124
+    second: male_hair_front_2_19
+  - first:
+      213: 216494404754091675
+    second: male_hair_front_2_20
+  - first:
+      213: 6823679484319847959
+    second: male_hair_front_2_21
+  - first:
+      213: 3028827024360042037
+    second: male_hair_front_2_22
+  - first:
+      213: -6455049169153060348
+    second: male_hair_front_2_23
+  - first:
+      213: -9164737457050512290
+    second: male_hair_front_2_24
+  - first:
+      213: 566880237785776604
+    second: male_hair_front_2_25
+  - first:
+      213: -2221018273278201730
+    second: male_hair_front_2_26
+  - first:
+      213: -140415541444364666
+    second: male_hair_front_2_27
+  - first:
+      213: 1507455225380274653
+    second: male_hair_front_2_28
+  - first:
+      213: 6753053888962456532
+    second: male_hair_front_2_29
+  - first:
+      213: -983359030798743709
+    second: male_hair_front_2_30
+  - first:
+      213: 8626335172775580773
+    second: male_hair_front_2_31
+  - first:
+      213: -8879457051750342064
+    second: male_hair_front_2_32
+  - first:
+      213: -8927849926345008823
+    second: male_hair_front_2_33
+  - first:
+      213: -5574761114134369274
+    second: male_hair_front_2_34
+  - first:
+      213: 943992382016390927
+    second: male_hair_front_2_35
+  - first:
+      213: 6482782006814917558
+    second: male_hair_front_2_36
+  - first:
+      213: 2485564190116503111
+    second: male_hair_front_2_37
+  - first:
+      213: 1679405912563114773
+    second: male_hair_front_2_38
+  - first:
+      213: 6723169770159194318
+    second: male_hair_front_2_39
+  - first:
+      213: 1842615952195162460
+    second: male_hair_front_2_40
+  - first:
+      213: 5302188516365840715
+    second: male_hair_front_2_41
+  - first:
+      213: -1754252827232695972
+    second: male_hair_front_2_42
+  - first:
+      213: 2814956213878133687
+    second: male_hair_front_2_43
+  - first:
+      213: 8596104541457975857
+    second: male_hair_front_2_44
+  - first:
+      213: -4409375469274792567
+    second: male_hair_front_2_45
+  - first:
+      213: -7822466213091747366
+    second: male_hair_front_2_46
+  - first:
+      213: -5826889636088249017
+    second: male_hair_front_2_47
+  - first:
+      213: -8583566403388311849
+    second: male_hair_front_2_48
+  - first:
+      213: 3985235185272373281
+    second: male_hair_front_2_49
+  - first:
+      213: 7523081118109370683
+    second: male_hair_front_2_50
+  - first:
+      213: 1189516684741686874
+    second: male_hair_front_2_51
+  - first:
+      213: -7958256358532647667
+    second: male_hair_front_2_52
+  - first:
+      213: 5054494442280122467
+    second: male_hair_front_2_53
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -230,7 +392,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: male_hair_2_front_0
+      name: male_hair_front_2_0
       rect:
         serializedVersion: 2
         x: 0
@@ -242,16 +404,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 02305410000000000800000000000000
-      internalID: 21300000
+      spriteID: 564a8750413daa3439c7dfc41e342cb3
+      internalID: 415766253741810361
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_1
+      name: male_hair_front_2_1
       rect:
         serializedVersion: 2
         x: 85
@@ -263,16 +425,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 22305410000000000800000000000000
-      internalID: 21300002
+      spriteID: 8df300ffd2a9a6b47a8dd3561fe588b8
+      internalID: 7248586739129018599
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_2
+      name: male_hair_front_2_2
       rect:
         serializedVersion: 2
         x: 170
@@ -284,16 +446,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 42305410000000000800000000000000
-      internalID: 21300004
+      spriteID: ed2a32bd6b98fbd4da1b5a74d97d9ded
+      internalID: -1431255842122550484
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_3
+      name: male_hair_front_2_3
       rect:
         serializedVersion: 2
         x: 255
@@ -305,16 +467,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 62305410000000000800000000000000
-      internalID: 21300006
+      spriteID: e982374ada0e8a74c92f220387153b7c
+      internalID: 8724173217110650690
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_4
+      name: male_hair_front_2_4
       rect:
         serializedVersion: 2
         x: 340
@@ -326,16 +488,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 82305410000000000800000000000000
-      internalID: 21300008
+      spriteID: eeec1e17ad03cfc4ba266c107769f562
+      internalID: 311211981110756736
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_5
+      name: male_hair_front_2_5
       rect:
         serializedVersion: 2
         x: 425
@@ -347,16 +509,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a2305410000000000800000000000000
-      internalID: 21300010
+      spriteID: bb9fe6b2521be9e43b6722429fa04d89
+      internalID: -6322990348546080665
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_6
+      name: male_hair_front_2_6
       rect:
         serializedVersion: 2
         x: 510
@@ -368,16 +530,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c2305410000000000800000000000000
-      internalID: 21300012
+      spriteID: 664f5d41ac51d79459448a2ef3078e75
+      internalID: 8680623023053032162
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_7
+      name: male_hair_front_2_7
       rect:
         serializedVersion: 2
         x: 595
@@ -389,16 +551,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e2305410000000000800000000000000
-      internalID: 21300014
+      spriteID: 07e2822e01f887a4ea35ca3c6c259811
+      internalID: 6077378764970528421
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_8
+      name: male_hair_front_2_8
       rect:
         serializedVersion: 2
         x: 680
@@ -410,16 +572,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 03305410000000000800000000000000
-      internalID: 21300016
+      spriteID: 238df6013c2712f4da90ecd87e9035ae
+      internalID: -719703210502264214
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_9
+      name: male_hair_front_2_9
       rect:
         serializedVersion: 2
         x: 765
@@ -431,16 +593,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 23305410000000000800000000000000
-      internalID: 21300018
+      spriteID: db6992f0496848f4982b511b7a67f7fb
+      internalID: -3454900153123383327
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_10
+      name: male_hair_front_2_10
       rect:
         serializedVersion: 2
         x: 850
@@ -452,16 +614,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 43305410000000000800000000000000
-      internalID: 21300020
+      spriteID: ffd2abb03c554944fb7334842a3625bb
+      internalID: 4908538997686868282
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_11
+      name: male_hair_front_2_11
       rect:
         serializedVersion: 2
         x: 935
@@ -473,16 +635,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 63305410000000000800000000000000
-      internalID: 21300022
+      spriteID: 8612ffc94e2e3d14280cc2309569c520
+      internalID: 1741077562072344155
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_12
+      name: male_hair_front_2_12
       rect:
         serializedVersion: 2
         x: 0
@@ -494,16 +656,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 83305410000000000800000000000000
-      internalID: 21300024
+      spriteID: fbb745f9e33003046a83f9d8c337fdb1
+      internalID: -1487428891226798549
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_13
+      name: male_hair_front_2_13
       rect:
         serializedVersion: 2
         x: 85
@@ -515,16 +677,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a3305410000000000800000000000000
-      internalID: 21300026
+      spriteID: c8c9d1d576454c148a1d621975608de3
+      internalID: -6402591384418460583
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_14
+      name: male_hair_front_2_14
       rect:
         serializedVersion: 2
         x: 170
@@ -536,16 +698,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c3305410000000000800000000000000
-      internalID: 21300028
+      spriteID: 2085f8217e981e244ba8bf9b1b388aab
+      internalID: -7419770214008443313
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_15
+      name: male_hair_front_2_15
       rect:
         serializedVersion: 2
         x: 255
@@ -557,16 +719,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e3305410000000000800000000000000
-      internalID: 21300030
+      spriteID: 4f5d6fbda0e3d3a45a2809ae50f04964
+      internalID: 1071228862302433085
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_16
+      name: male_hair_front_2_16
       rect:
         serializedVersion: 2
         x: 340
@@ -578,16 +740,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 04305410000000000800000000000000
-      internalID: 21300032
+      spriteID: ba19e5616b8bbca4183dc4db05e0aa52
+      internalID: 165641274175678596
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_17
+      name: male_hair_front_2_17
       rect:
         serializedVersion: 2
         x: 425
@@ -599,16 +761,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 24305410000000000800000000000000
-      internalID: 21300034
+      spriteID: c3da57e91691fce468cc74a278517ec7
+      internalID: 2099966712306368543
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_18
+      name: male_hair_front_2_18
       rect:
         serializedVersion: 2
         x: 510
@@ -620,16 +782,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 44305410000000000800000000000000
-      internalID: 21300036
+      spriteID: ae7a8ff1ac7d22a48ac85787c9263a1c
+      internalID: 3916050467376458965
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_19
+      name: male_hair_front_2_19
       rect:
         serializedVersion: 2
         x: 595
@@ -641,16 +803,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 64305410000000000800000000000000
-      internalID: 21300038
+      spriteID: a3cb9347677bd944e9279b45bbcfc559
+      internalID: 4678090045136636124
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_20
+      name: male_hair_front_2_20
       rect:
         serializedVersion: 2
         x: 680
@@ -662,16 +824,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 84305410000000000800000000000000
-      internalID: 21300040
+      spriteID: b850882ac0463ce44a14c2090ed71dd4
+      internalID: 216494404754091675
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_21
+      name: male_hair_front_2_21
       rect:
         serializedVersion: 2
         x: 765
@@ -683,16 +845,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a4305410000000000800000000000000
-      internalID: 21300042
+      spriteID: 64ec7d8d56451b54bbbc0f35748985ac
+      internalID: 6823679484319847959
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_22
+      name: male_hair_front_2_22
       rect:
         serializedVersion: 2
         x: 850
@@ -704,16 +866,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c4305410000000000800000000000000
-      internalID: 21300044
+      spriteID: 7b4856e20585d7b4fa9430287b19e982
+      internalID: 3028827024360042037
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_23
+      name: male_hair_front_2_23
       rect:
         serializedVersion: 2
         x: 935
@@ -725,16 +887,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e4305410000000000800000000000000
-      internalID: 21300046
+      spriteID: b9675a9d78fe9984aa9ec58f03528d30
+      internalID: -6455049169153060348
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_24
+      name: male_hair_front_2_24
       rect:
         serializedVersion: 2
         x: 0
@@ -746,16 +908,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 05305410000000000800000000000000
-      internalID: 21300048
+      spriteID: 4133310821088e34c9c1a9f8b9ec012e
+      internalID: -9164737457050512290
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_25
+      name: male_hair_front_2_25
       rect:
         serializedVersion: 2
         x: 85
@@ -767,16 +929,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 25305410000000000800000000000000
-      internalID: 21300050
+      spriteID: 53ed063f3bc6e534d9dd953ca548d22a
+      internalID: 566880237785776604
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_26
+      name: male_hair_front_2_26
       rect:
         serializedVersion: 2
         x: 170
@@ -788,16 +950,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 45305410000000000800000000000000
-      internalID: 21300052
+      spriteID: 9492e20d38d25b14792277e461db0115
+      internalID: -2221018273278201730
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_27
+      name: male_hair_front_2_27
       rect:
         serializedVersion: 2
         x: 255
@@ -809,16 +971,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 65305410000000000800000000000000
-      internalID: 21300054
+      spriteID: 6572ee37469e4eb439897c7ef8878baf
+      internalID: -140415541444364666
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_28
+      name: male_hair_front_2_28
       rect:
         serializedVersion: 2
         x: 340
@@ -830,16 +992,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 85305410000000000800000000000000
-      internalID: 21300056
+      spriteID: fc1cb3b07fef6b44c9bb06609cdda649
+      internalID: 1507455225380274653
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_29
+      name: male_hair_front_2_29
       rect:
         serializedVersion: 2
         x: 425
@@ -851,16 +1013,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a5305410000000000800000000000000
-      internalID: 21300058
+      spriteID: e788c08617ec6784eae3f371bee3ad41
+      internalID: 6753053888962456532
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_30
+      name: male_hair_front_2_30
       rect:
         serializedVersion: 2
         x: 510
@@ -872,16 +1034,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c5305410000000000800000000000000
-      internalID: 21300060
+      spriteID: 365287cfe9131db4fbd57f9c0ff9e033
+      internalID: -983359030798743709
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_31
+      name: male_hair_front_2_31
       rect:
         serializedVersion: 2
         x: 595
@@ -893,16 +1055,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e5305410000000000800000000000000
-      internalID: 21300062
+      spriteID: f83c48040037c0a4992e40024dbf9bad
+      internalID: 8626335172775580773
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_32
+      name: male_hair_front_2_32
       rect:
         serializedVersion: 2
         x: 680
@@ -914,16 +1076,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 06305410000000000800000000000000
-      internalID: 21300064
+      spriteID: a59c3b7f1aed0304f9eb98ead94da99f
+      internalID: -8879457051750342064
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_33
+      name: male_hair_front_2_33
       rect:
         serializedVersion: 2
         x: 765
@@ -935,16 +1097,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 26305410000000000800000000000000
-      internalID: 21300066
+      spriteID: 2f66e240113e7544b8634e8b4e94ffb7
+      internalID: -8927849926345008823
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_34
+      name: male_hair_front_2_34
       rect:
         serializedVersion: 2
         x: 850
@@ -956,16 +1118,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 46305410000000000800000000000000
-      internalID: 21300068
+      spriteID: cce219b353bced849a19e40792ba2c3b
+      internalID: -5574761114134369274
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_35
+      name: male_hair_front_2_35
       rect:
         serializedVersion: 2
         x: 935
@@ -977,16 +1139,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 66305410000000000800000000000000
-      internalID: 21300070
+      spriteID: c74f3abd33a108144a003fe8a7a7fcf9
+      internalID: 943992382016390927
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_36
+      name: male_hair_front_2_36
       rect:
         serializedVersion: 2
         x: 0
@@ -998,16 +1160,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 86305410000000000800000000000000
-      internalID: 21300072
+      spriteID: bdbeaf4cbf120e3428dbc9b57a969320
+      internalID: 6482782006814917558
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_37
+      name: male_hair_front_2_37
       rect:
         serializedVersion: 2
         x: 85
@@ -1019,16 +1181,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a6305410000000000800000000000000
-      internalID: 21300074
+      spriteID: f473698641a365b40ae123cd2065d067
+      internalID: 2485564190116503111
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_38
+      name: male_hair_front_2_38
       rect:
         serializedVersion: 2
         x: 170
@@ -1040,16 +1202,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c6305410000000000800000000000000
-      internalID: 21300076
+      spriteID: 679caae26413e714ca50f0b1efdef21a
+      internalID: 1679405912563114773
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_39
+      name: male_hair_front_2_39
       rect:
         serializedVersion: 2
         x: 255
@@ -1061,16 +1223,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e6305410000000000800000000000000
-      internalID: 21300078
+      spriteID: 8334f4ee8cd8b2b4690a32a77e294601
+      internalID: 6723169770159194318
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_40
+      name: male_hair_front_2_40
       rect:
         serializedVersion: 2
         x: 340
@@ -1082,16 +1244,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 07305410000000000800000000000000
-      internalID: 21300080
+      spriteID: 4baa30f4321837c4da9c9c4066ef7aad
+      internalID: 1842615952195162460
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_41
+      name: male_hair_front_2_41
       rect:
         serializedVersion: 2
         x: 425
@@ -1103,16 +1265,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 27305410000000000800000000000000
-      internalID: 21300082
+      spriteID: bf0eb76084027314dbe29881b49fd86c
+      internalID: 5302188516365840715
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_42
+      name: male_hair_front_2_42
       rect:
         serializedVersion: 2
         x: 510
@@ -1124,16 +1286,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 47305410000000000800000000000000
-      internalID: 21300084
+      spriteID: 4b741ec7ed20f9b40836bd2c2d654ecd
+      internalID: -1754252827232695972
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_43
+      name: male_hair_front_2_43
       rect:
         serializedVersion: 2
         x: 595
@@ -1145,16 +1307,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 67305410000000000800000000000000
-      internalID: 21300086
+      spriteID: c59b76f6a528b8044ac3aa10cd7a9a54
+      internalID: 2814956213878133687
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_44
+      name: male_hair_front_2_44
       rect:
         serializedVersion: 2
         x: 680
@@ -1166,16 +1328,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 87305410000000000800000000000000
-      internalID: 21300088
+      spriteID: 551d4b687225e514585d6dc2deb4767d
+      internalID: 8596104541457975857
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_45
+      name: male_hair_front_2_45
       rect:
         serializedVersion: 2
         x: 765
@@ -1187,16 +1349,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a7305410000000000800000000000000
-      internalID: 21300090
+      spriteID: e8be3eaff19f8314fa6c929ae7a394cf
+      internalID: -4409375469274792567
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_46
+      name: male_hair_front_2_46
       rect:
         serializedVersion: 2
         x: 850
@@ -1208,16 +1370,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c7305410000000000800000000000000
-      internalID: 21300092
+      spriteID: 6f80988d45333854c8f74881d09ac72a
+      internalID: -7822466213091747366
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: male_hair_2_front_47
+      name: male_hair_front_2_47
       rect:
         serializedVersion: 2
         x: 935
@@ -1229,10 +1391,136 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e7305410000000000800000000000000
-      internalID: 21300094
+      spriteID: e4d5c90b76d2aed46aaa3cf0b3b57a72
+      internalID: -5826889636088249017
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: male_hair_front_2_48
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: def9da9debd399648b0396e4e6726457
+      internalID: -8583566403388311849
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: male_hair_front_2_49
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e5eda57d572cc941996e83cff995409
+      internalID: 3985235185272373281
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: male_hair_front_2_50
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1bfc6e71ed77a894aacba33d3dc63fb8
+      internalID: 7523081118109370683
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: male_hair_front_2_51
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5e7617158a3d53047979a54aa3da2f98
+      internalID: 1189516684741686874
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: male_hair_front_2_52
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b5135362bf57deb4a99449fcca281eff
+      internalID: -7958256358532647667
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: male_hair_front_2_53
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: db24b6e82ebfd7e4db89d7d8bd64bdda
+      internalID: 5054494442280122467
       vertices: []
       indices: 
       edges: []
@@ -1240,7 +1528,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 629287f015433a94c8e9afb0417f8a4d
     internalID: 0
     vertices: []
     indices: 

@@ -146,6 +146,168 @@ TextureImporter:
   - first:
       213: 21300094
     second: Staff_Mage_Back_47
+  - first:
+      213: -3898288416192733159
+    second: weapon_17_back_0
+  - first:
+      213: -6153373264051751104
+    second: weapon_17_back_1
+  - first:
+      213: 6194349501314125276
+    second: weapon_17_back_2
+  - first:
+      213: -7263304731846838085
+    second: weapon_17_back_3
+  - first:
+      213: -5181266103827349037
+    second: weapon_17_back_4
+  - first:
+      213: -8396346324046974517
+    second: weapon_17_back_5
+  - first:
+      213: -2449129324321285056
+    second: weapon_17_back_6
+  - first:
+      213: 5252081269728745368
+    second: weapon_17_back_7
+  - first:
+      213: 3225263171276982451
+    second: weapon_17_back_8
+  - first:
+      213: -7494777976440063747
+    second: weapon_17_back_9
+  - first:
+      213: 6756897112682410528
+    second: weapon_17_back_10
+  - first:
+      213: -1374664633480334411
+    second: weapon_17_back_11
+  - first:
+      213: -225903283743333938
+    second: weapon_17_back_12
+  - first:
+      213: 5955724794697398004
+    second: weapon_17_back_13
+  - first:
+      213: 4942642139761457978
+    second: weapon_17_back_14
+  - first:
+      213: 1411631494708175930
+    second: weapon_17_back_15
+  - first:
+      213: 843136451782559234
+    second: weapon_17_back_16
+  - first:
+      213: 5272994768190897380
+    second: weapon_17_back_17
+  - first:
+      213: -1370291576070573643
+    second: weapon_17_back_18
+  - first:
+      213: -8259264323508756082
+    second: weapon_17_back_19
+  - first:
+      213: -2898572197213657246
+    second: weapon_17_back_20
+  - first:
+      213: 2284750319215195063
+    second: weapon_17_back_21
+  - first:
+      213: -8667768382765138195
+    second: weapon_17_back_22
+  - first:
+      213: -7555380684030193636
+    second: weapon_17_back_23
+  - first:
+      213: -7811416481700244793
+    second: weapon_17_back_24
+  - first:
+      213: 4770905723478084298
+    second: weapon_17_back_25
+  - first:
+      213: -291191221643076384
+    second: weapon_17_back_26
+  - first:
+      213: -2703320405253654089
+    second: weapon_17_back_27
+  - first:
+      213: 812271973234229582
+    second: weapon_17_back_28
+  - first:
+      213: -2103662967353487051
+    second: weapon_17_back_29
+  - first:
+      213: -4701579577769010054
+    second: weapon_17_back_30
+  - first:
+      213: 6068276190611909854
+    second: weapon_17_back_31
+  - first:
+      213: 1406431837661381529
+    second: weapon_17_back_32
+  - first:
+      213: 3521332907711887026
+    second: weapon_17_back_33
+  - first:
+      213: 8072212475423026655
+    second: weapon_17_back_34
+  - first:
+      213: -7021999417473317389
+    second: weapon_17_back_35
+  - first:
+      213: -2787859329885546780
+    second: weapon_17_back_36
+  - first:
+      213: -7517935836745483891
+    second: weapon_17_back_37
+  - first:
+      213: 8215739191979893984
+    second: weapon_17_back_38
+  - first:
+      213: 6401838583711184338
+    second: weapon_17_back_39
+  - first:
+      213: -9220058471263292165
+    second: weapon_17_back_40
+  - first:
+      213: 4800284672675960920
+    second: weapon_17_back_41
+  - first:
+      213: 6648717931326901477
+    second: weapon_17_back_42
+  - first:
+      213: 4977850020347159945
+    second: weapon_17_back_43
+  - first:
+      213: -686845250025758814
+    second: weapon_17_back_44
+  - first:
+      213: 7371693052241963653
+    second: weapon_17_back_45
+  - first:
+      213: 4510909228313944480
+    second: weapon_17_back_46
+  - first:
+      213: -1579655449775172319
+    second: weapon_17_back_47
+  - first:
+      213: 4132500784811771308
+    second: weapon_17_back_48
+  - first:
+      213: 1575042406766201953
+    second: weapon_17_back_49
+  - first:
+      213: 557428571198813645
+    second: weapon_17_back_50
+  - first:
+      213: 5258003504796933017
+    second: weapon_17_back_51
+  - first:
+      213: 7052205155739099924
+    second: weapon_17_back_52
+  - first:
+      213: -6850780796184018963
+    second: weapon_17_back_53
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -213,7 +375,7 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
     maxTextureSize: 2048
@@ -225,12 +387,12 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Staff_Mage_Back_0
+      name: weapon_17_back_0
       rect:
         serializedVersion: 2
         x: 0
@@ -242,16 +404,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 02305410000000000800000000000000
-      internalID: 21300000
+      spriteID: ffb58d599fe0d81409c5f956bca96ace
+      internalID: -3898288416192733159
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_1
+      name: weapon_17_back_1
       rect:
         serializedVersion: 2
         x: 85
@@ -263,16 +425,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 22305410000000000800000000000000
-      internalID: 21300002
+      spriteID: f4c601b2d1de48d4e99eb49cc7474b63
+      internalID: -6153373264051751104
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_2
+      name: weapon_17_back_2
       rect:
         serializedVersion: 2
         x: 170
@@ -284,16 +446,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 42305410000000000800000000000000
-      internalID: 21300004
+      spriteID: 6d6f8250c53b96040a3c37d72f9813e1
+      internalID: 6194349501314125276
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_3
+      name: weapon_17_back_3
       rect:
         serializedVersion: 2
         x: 255
@@ -305,16 +467,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 62305410000000000800000000000000
-      internalID: 21300006
+      spriteID: fea9f63fdaf552f4eb1828769e5fe61f
+      internalID: -7263304731846838085
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_4
+      name: weapon_17_back_4
       rect:
         serializedVersion: 2
         x: 340
@@ -326,16 +488,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 82305410000000000800000000000000
-      internalID: 21300008
+      spriteID: 57acafcf2b6d5454c9c802d05facb817
+      internalID: -5181266103827349037
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_5
+      name: weapon_17_back_5
       rect:
         serializedVersion: 2
         x: 425
@@ -347,16 +509,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a2305410000000000800000000000000
-      internalID: 21300010
+      spriteID: 74beacdc528e51441afb7f50cf6f8849
+      internalID: -8396346324046974517
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_6
+      name: weapon_17_back_6
       rect:
         serializedVersion: 2
         x: 510
@@ -368,16 +530,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c2305410000000000800000000000000
-      internalID: 21300012
+      spriteID: 641510fe40f20e741b0e4d92a60d703a
+      internalID: -2449129324321285056
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_7
+      name: weapon_17_back_7
       rect:
         serializedVersion: 2
         x: 595
@@ -389,16 +551,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e2305410000000000800000000000000
-      internalID: 21300014
+      spriteID: cdedcd63dfaeb4b428c9204b02d29625
+      internalID: 5252081269728745368
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_8
+      name: weapon_17_back_8
       rect:
         serializedVersion: 2
         x: 680
@@ -410,16 +572,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 03305410000000000800000000000000
-      internalID: 21300016
+      spriteID: f3af15d762ac0194ea4cddbde9c3575d
+      internalID: 3225263171276982451
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_9
+      name: weapon_17_back_9
       rect:
         serializedVersion: 2
         x: 765
@@ -431,16 +593,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 23305410000000000800000000000000
-      internalID: 21300018
+      spriteID: b7670689c79e39649a4a06ea27d98910
+      internalID: -7494777976440063747
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_10
+      name: weapon_17_back_10
       rect:
         serializedVersion: 2
         x: 850
@@ -452,16 +614,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 43305410000000000800000000000000
-      internalID: 21300020
+      spriteID: 3114a23e496f3ab418ef38b65e8452ed
+      internalID: 6756897112682410528
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_11
+      name: weapon_17_back_11
       rect:
         serializedVersion: 2
         x: 935
@@ -473,16 +635,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 63305410000000000800000000000000
-      internalID: 21300022
+      spriteID: 6ddeaf089466e0e49bbbdfedbde1dd5e
+      internalID: -1374664633480334411
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_12
+      name: weapon_17_back_12
       rect:
         serializedVersion: 2
         x: 0
@@ -494,16 +656,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 83305410000000000800000000000000
-      internalID: 21300024
+      spriteID: 5512c3ed5b6f218478093f4e14eeed8d
+      internalID: -225903283743333938
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_13
+      name: weapon_17_back_13
       rect:
         serializedVersion: 2
         x: 85
@@ -515,16 +677,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a3305410000000000800000000000000
-      internalID: 21300026
+      spriteID: fdc223cd6790abe43a0c101d4ba24a0b
+      internalID: 5955724794697398004
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_14
+      name: weapon_17_back_14
       rect:
         serializedVersion: 2
         x: 170
@@ -536,16 +698,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c3305410000000000800000000000000
-      internalID: 21300028
+      spriteID: 3143b0c2ec1942d4cb99d7b64c32b3e9
+      internalID: 4942642139761457978
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_15
+      name: weapon_17_back_15
       rect:
         serializedVersion: 2
         x: 255
@@ -557,16 +719,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e3305410000000000800000000000000
-      internalID: 21300030
+      spriteID: 2c4b19d9c56278843a564f5eab1c51a3
+      internalID: 1411631494708175930
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_16
+      name: weapon_17_back_16
       rect:
         serializedVersion: 2
         x: 340
@@ -578,16 +740,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 04305410000000000800000000000000
-      internalID: 21300032
+      spriteID: 4d3f20b0a0c59874b884e19a3528b30d
+      internalID: 843136451782559234
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_17
+      name: weapon_17_back_17
       rect:
         serializedVersion: 2
         x: 425
@@ -599,16 +761,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 24305410000000000800000000000000
-      internalID: 21300034
+      spriteID: cd3baa97762e90640a753efd8ba5ddf5
+      internalID: 5272994768190897380
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_18
+      name: weapon_17_back_18
       rect:
         serializedVersion: 2
         x: 510
@@ -620,16 +782,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 44305410000000000800000000000000
-      internalID: 21300036
+      spriteID: 7fea5158065f2d34ead589578de8b5de
+      internalID: -1370291576070573643
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_19
+      name: weapon_17_back_19
       rect:
         serializedVersion: 2
         x: 595
@@ -641,16 +803,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 64305410000000000800000000000000
-      internalID: 21300038
+      spriteID: 4e5553d4a96926d4bbae579c6270513b
+      internalID: -8259264323508756082
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_20
+      name: weapon_17_back_20
       rect:
         serializedVersion: 2
         x: 680
@@ -662,16 +824,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 84305410000000000800000000000000
-      internalID: 21300040
+      spriteID: 0fd09eaf38db3f149a11d51ddc0a2ef6
+      internalID: -2898572197213657246
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_21
+      name: weapon_17_back_21
       rect:
         serializedVersion: 2
         x: 765
@@ -683,16 +845,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a4305410000000000800000000000000
-      internalID: 21300042
+      spriteID: 85faaad6053366944bc1e46f5fb124f9
+      internalID: 2284750319215195063
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_22
+      name: weapon_17_back_22
       rect:
         serializedVersion: 2
         x: 850
@@ -704,16 +866,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c4305410000000000800000000000000
-      internalID: 21300044
+      spriteID: 8f9c77bf950a85a4491340c91464bc59
+      internalID: -8667768382765138195
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_23
+      name: weapon_17_back_23
       rect:
         serializedVersion: 2
         x: 935
@@ -725,16 +887,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e4305410000000000800000000000000
-      internalID: 21300046
+      spriteID: 6bfd7e4ec71f3bc4faee83ce9837e036
+      internalID: -7555380684030193636
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_24
+      name: weapon_17_back_24
       rect:
         serializedVersion: 2
         x: 0
@@ -746,16 +908,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 05305410000000000800000000000000
-      internalID: 21300048
+      spriteID: a8eefb84844610849833d323ba9dfc2a
+      internalID: -7811416481700244793
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_25
+      name: weapon_17_back_25
       rect:
         serializedVersion: 2
         x: 85
@@ -767,16 +929,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 25305410000000000800000000000000
-      internalID: 21300050
+      spriteID: 85c79ee301d6d0447981894ea9bf2255
+      internalID: 4770905723478084298
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_26
+      name: weapon_17_back_26
       rect:
         serializedVersion: 2
         x: 170
@@ -788,16 +950,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 45305410000000000800000000000000
-      internalID: 21300052
+      spriteID: e5f406e6a4a4e3a4a8d0009464fc251e
+      internalID: -291191221643076384
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_27
+      name: weapon_17_back_27
       rect:
         serializedVersion: 2
         x: 255
@@ -809,16 +971,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 65305410000000000800000000000000
-      internalID: 21300054
+      spriteID: b80df099f331480418eef6daefad4b8c
+      internalID: -2703320405253654089
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_28
+      name: weapon_17_back_28
       rect:
         serializedVersion: 2
         x: 340
@@ -830,16 +992,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 85305410000000000800000000000000
-      internalID: 21300056
+      spriteID: dd08b40e3e35da64695883656d35ad49
+      internalID: 812271973234229582
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_29
+      name: weapon_17_back_29
       rect:
         serializedVersion: 2
         x: 425
@@ -851,16 +1013,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a5305410000000000800000000000000
-      internalID: 21300058
+      spriteID: a7bcd3b6092fa7141aec4043d5933be9
+      internalID: -2103662967353487051
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_30
+      name: weapon_17_back_30
       rect:
         serializedVersion: 2
         x: 510
@@ -872,16 +1034,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c5305410000000000800000000000000
-      internalID: 21300060
+      spriteID: 03710b00ff024024a8d0e11400d82410
+      internalID: -4701579577769010054
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_31
+      name: weapon_17_back_31
       rect:
         serializedVersion: 2
         x: 595
@@ -893,16 +1055,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e5305410000000000800000000000000
-      internalID: 21300062
+      spriteID: 33b2ecf86f4b22c41ba631cfc5a3fdb9
+      internalID: 6068276190611909854
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_32
+      name: weapon_17_back_32
       rect:
         serializedVersion: 2
         x: 680
@@ -914,16 +1076,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 06305410000000000800000000000000
-      internalID: 21300064
+      spriteID: ab5b77d07fbc071419e3609bdef54736
+      internalID: 1406431837661381529
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_33
+      name: weapon_17_back_33
       rect:
         serializedVersion: 2
         x: 765
@@ -935,16 +1097,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 26305410000000000800000000000000
-      internalID: 21300066
+      spriteID: 0bd667803f8613748ad21d29055f2284
+      internalID: 3521332907711887026
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_34
+      name: weapon_17_back_34
       rect:
         serializedVersion: 2
         x: 850
@@ -956,16 +1118,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 46305410000000000800000000000000
-      internalID: 21300068
+      spriteID: e28b4a9f7bddce14ca52a5e259edefee
+      internalID: 8072212475423026655
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_35
+      name: weapon_17_back_35
       rect:
         serializedVersion: 2
         x: 935
@@ -977,16 +1139,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 66305410000000000800000000000000
-      internalID: 21300070
+      spriteID: 06a75f337b3e3824faf377a7a7a72032
+      internalID: -7021999417473317389
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_36
+      name: weapon_17_back_36
       rect:
         serializedVersion: 2
         x: 0
@@ -998,16 +1160,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 86305410000000000800000000000000
-      internalID: 21300072
+      spriteID: 7f4f793660b783a448cba4cd91261d49
+      internalID: -2787859329885546780
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_37
+      name: weapon_17_back_37
       rect:
         serializedVersion: 2
         x: 85
@@ -1019,16 +1181,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a6305410000000000800000000000000
-      internalID: 21300074
+      spriteID: d5d573b9557430643b8c41d32c6ddc78
+      internalID: -7517935836745483891
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_38
+      name: weapon_17_back_38
       rect:
         serializedVersion: 2
         x: 170
@@ -1040,16 +1202,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c6305410000000000800000000000000
-      internalID: 21300076
+      spriteID: 625528f6ce42b024e8e42bf62d24e05f
+      internalID: 8215739191979893984
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_39
+      name: weapon_17_back_39
       rect:
         serializedVersion: 2
         x: 255
@@ -1061,16 +1223,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e6305410000000000800000000000000
-      internalID: 21300078
+      spriteID: f584541b33aa0ff418a0416378db99b5
+      internalID: 6401838583711184338
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_40
+      name: weapon_17_back_40
       rect:
         serializedVersion: 2
         x: 340
@@ -1082,16 +1244,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 07305410000000000800000000000000
-      internalID: 21300080
+      spriteID: 6d9741680d393e5448ac61b02b7274e6
+      internalID: -9220058471263292165
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_41
+      name: weapon_17_back_41
       rect:
         serializedVersion: 2
         x: 425
@@ -1103,16 +1265,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 27305410000000000800000000000000
-      internalID: 21300082
+      spriteID: b44d59caf09bb034190366db9d7dfa2a
+      internalID: 4800284672675960920
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_42
+      name: weapon_17_back_42
       rect:
         serializedVersion: 2
         x: 510
@@ -1124,16 +1286,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 47305410000000000800000000000000
-      internalID: 21300084
+      spriteID: 9a8f560bb22846e41a0d9691770f2f30
+      internalID: 6648717931326901477
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_43
+      name: weapon_17_back_43
       rect:
         serializedVersion: 2
         x: 595
@@ -1145,16 +1307,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 67305410000000000800000000000000
-      internalID: 21300086
+      spriteID: adbfb801797b8c74f856770b67683abb
+      internalID: 4977850020347159945
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_44
+      name: weapon_17_back_44
       rect:
         serializedVersion: 2
         x: 680
@@ -1166,16 +1328,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 87305410000000000800000000000000
-      internalID: 21300088
+      spriteID: 5dedb002ba650ce428e2ecdb192b5ffc
+      internalID: -686845250025758814
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_45
+      name: weapon_17_back_45
       rect:
         serializedVersion: 2
         x: 765
@@ -1187,16 +1349,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a7305410000000000800000000000000
-      internalID: 21300090
+      spriteID: cb34291a3b588a142a3f59137e08e93c
+      internalID: 7371693052241963653
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_46
+      name: weapon_17_back_46
       rect:
         serializedVersion: 2
         x: 850
@@ -1208,16 +1370,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c7305410000000000800000000000000
-      internalID: 21300092
+      spriteID: de4bcae935a9bb54fa97dff4dce84f4b
+      internalID: 4510909228313944480
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Staff_Mage_Back_47
+      name: weapon_17_back_47
       rect:
         serializedVersion: 2
         x: 935
@@ -1229,10 +1391,136 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e7305410000000000800000000000000
-      internalID: 21300094
+      spriteID: d8680a1b31c7df64d8133fb253b99cb8
+      internalID: -1579655449775172319
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weapon_17_back_48
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c1bd5e325e213154e9eeef651eb1d64d
+      internalID: 4132500784811771308
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weapon_17_back_49
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8e1c353f0eeed3c4091da30cd84fa2c9
+      internalID: 1575042406766201953
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weapon_17_back_50
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2c013a4d8f9b766469127ce24aef9c23
+      internalID: 557428571198813645
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weapon_17_back_51
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9e03ad5cddea9c742b1e13fdca452ee2
+      internalID: 5258003504796933017
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weapon_17_back_52
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 36e3faafb415d614ea5618be2d18b57e
+      internalID: 7052205155739099924
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weapon_17_back_53
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 65962e8898485cc4ebb4f02f0c3db3a3
+      internalID: -6850780796184018963
       vertices: []
       indices: 
       edges: []
@@ -1240,7 +1528,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: c1306dd157001ec4aba631502fe10da4
     internalID: 0
     vertices: []
     indices: 

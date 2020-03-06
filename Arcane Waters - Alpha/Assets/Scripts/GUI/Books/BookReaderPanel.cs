@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,31 +14,45 @@ public class BookReaderPanel : Panel
    // The right page text
    public BookPage rightPage;
 
+   // The image used for the turning page animation
+   public Image turnPageAnimationGameObject;
+
    // A default book (for testing purposes)
    public BookData defaultBook;
 
+   // The arrow to navigate back
+   public Image leftArrow;
+
+   // The arrow to navigate forward
+   public Image rightArrow;
+
+   // Our components
+   public Animator _animator;   
+
    #endregion
-
-   public override void Awake () {
-      _animator = GetComponent<Animator>();
-   }
-
-   public override void Update () {
-      if (Input.GetButtonDown("Horizontal")) {
-         if (Input.GetAxisRaw("Horizontal") > 0) {
-            setNextPages();
-         } else if (Input.GetAxisRaw("Horizontal") < 0) {
-            setPreviousPages();
-         }
-      }
-   }
 
    public override void show () {
       if (_currentBook == null) {
          Debug.LogError("A book must be set before showing this screen. Use setBook(BookData book) before calling this method or show(BookData book) instead.");
       }
 
-      setNextPages();
+      // Set up the first two pages without playing the animation
+      if (_pages.Count > 0) {
+         leftPage.setUpPage(_pages[0]);
+
+         if (_pages.Count > 1) {
+            rightPage.setUpPage(_pages[1]);
+         }
+
+         _lastPage = 1;
+      }
+
+      // Disable the left arrow since we can't go back
+      leftArrow.gameObject.SetActive(false);
+
+      // Force disabling the turning page animation game object just in case it got enabled
+      turnPageAnimationGameObject.gameObject.SetActive(false);
+
       base.show();
    }
 
@@ -111,64 +126,87 @@ public class BookReaderPanel : Panel
       _contentImages.Clear();
    }
 
-   private void setNextPages () {
+   public void setNextPages () {
       if (_lastPage + 1 < _pages.Count) {
+         turnPageAnimationGameObject.gameObject.SetActive(true);
+         _animator.SetTrigger("NextPages");
+
          _lastPage++;
-
-         // Set up left page
-         leftPage.setUpPage(_pages[_lastPage]);
-
-         if (_lastPage + 1 < _pages.Count) {
-            _lastPage++;
-
-            // Set up right page
-            rightPage.setUpPage(_pages[_lastPage]);
-         } else {
-            rightPage.clearPage();
-         }
+         updatePages();
       }
    }
 
-   private void setPreviousPages () {
+   private void updatePages () {
+      leftPage.setUpPage(_pages[_lastPage]);
+
+      if (_lastPage + 1 < _pages.Count) {
+         _lastPage++;
+         rightPage.setUpPage(_pages[_lastPage]);
+      } else {
+         rightPage.clearPage();
+      }
+            
+      updateNavigationArrows();
+   }
+
+   private void updateNavigationArrows () {
+      // Enable or disable navigation arrows depending on whether or not you can keep navigating
+      leftArrow.gameObject.SetActive(_lastPage > 1);
+      rightArrow.gameObject.SetActive(_lastPage + 1 < _pages.Count);
+   }
+
+   public void setPreviousPages () {
+      int previousIndex = _lastPage;
+
       if (_lastPage % 2 == 0) {
          // If the last page of the book was the left one we only go back 2 pages
-         _lastPage -= 3;
+         _lastPage = Mathf.Max(_lastPage - 2, 0);
       } else {
-         // Otherwise, we go back 4 pages
-         _lastPage -= 4;
+         // Otherwise, we go back 3 pages
+         _lastPage = Mathf.Max(_lastPage - 3, 0);
       }
 
+      // Only play the animation if we actually switched pages
+      if (_lastPage + 1 != previousIndex) {
+         updatePages();
+         turnPageAnimationGameObject.gameObject.SetActive(true);
+         _animator.SetTrigger("PreviousPages");
+      }
+            
       // Make sure we don't go out of bounds
-      _lastPage = Mathf.Max(_lastPage, -1);
-
-      setNextPages();
+      _lastPage = Mathf.Max(_lastPage, 1);
    }
 
    private string getNextPage (out PageImageData image) {
       string pageContent = "";
 
-      bool containsImage = rangeContainsImage(_lastContentIndex, _lastContentIndex + MAX_FULLPAGE_CHARACTERS);
+      // Update the layout values that will be used for calculations
+      leftPage.updateLayoutValues();
+
+      // Calculate the max number of lines that can fit in the page
+      int maxLines = 0;
+
+      bool containsImage = rangeContainsImage(_lastContentIndex, _lastContentIndex + leftPage.maxCharactersFullPage);
 
       // Determine how much space can be used by text depending on the image size
       if (containsImage) {
          image = _contentImages[_nextImageIndex];
-         leftPage.setImageWithHeight(image.sprite, image.height);
+
+         // Since there's an image, the text container will be smaller
+         leftPage.textContainerFullHeight -= image.height;
+
          _nextImageIndex++;
       } else {
-         leftPage.imageContainer.gameObject.SetActive(false);
          image = null;
       }
 
-      // Set the entire book text to the page
-      leftPage.text.SetText(_currentBookContent);
-
-      // Force VerticalLayoutGroup and TextMeshPro component to rebuild so we get accurate values
-      LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform) leftPage.transform);
-      leftPage.text.ForceMeshUpdate();
-
-      // Determine how many characters we can actually see
-      int visibleCharacters = leftPage.text.textInfo.characterCount;
-      pageContent = _currentBookContent.Substring(0, visibleCharacters);
+      // Calculate the maximum number of lines based on the height of the container
+      maxLines = Mathf.FloorToInt(leftPage.textContainerFullHeight / leftPage.textLineHeight);
+      
+      // Calculate the max number of characters that can fit in a page
+      int maxCharacters = maxLines * leftPage.maxCharactersPerLine;
+      
+      pageContent = _currentBookContent.Substring(0, Mathf.Min(maxCharacters, _currentBookContent.Length));
 
       // If this is not the last page
       if (pageContent.Length < _currentBookContent.Length) {
@@ -194,6 +232,18 @@ public class BookReaderPanel : Panel
       }
    }
 
+   public void showPages() {
+      leftPage.gameObject.SetActive(true);
+      rightPage.gameObject.SetActive(true);
+
+      turnPageAnimationGameObject.gameObject.SetActive(false);
+   }
+
+   public void hidePages() {
+      leftPage.gameObject.SetActive(false);
+      rightPage.gameObject.SetActive(false);
+   }
+
    #region Private Variables
 
    // The book being currently read
@@ -216,12 +266,6 @@ public class BookReaderPanel : Panel
 
    // The content of each page
    private List<PageContent> _pages = new List<PageContent>();
-
-   // Our components
-   private Animator _animator;
-
-   // The maximum number of characters that can fit a page if there are no images
-   private const int MAX_FULLPAGE_CHARACTERS = 875;
-
+   
    #endregion
 }

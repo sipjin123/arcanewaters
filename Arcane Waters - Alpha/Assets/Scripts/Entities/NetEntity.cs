@@ -351,20 +351,24 @@ public class NetEntity : NetworkBehaviour
       interactingAnimation = true;
       foreach (Animator animator in _animators) {
          switch (animType) {
-            case Anim.Type.Mining:
-               animator.SetBool("mining", true);
+            case Anim.Type.Interact_East:
+            case Anim.Type.Interact_North:
+            case Anim.Type.Interact_South:
+               animator.SetBool("interact", true);
+               StartCoroutine(CO_DelayExitAnim(animType, 0.4f));
                break;
          }
       }
-      StartCoroutine(CO_DelayExitAnim(animType));
    }
 
-   IEnumerator CO_DelayExitAnim(Anim.Type animType) {
-      yield return new WaitForSeconds(.2f);
+   IEnumerator CO_DelayExitAnim(Anim.Type animType, float delay) {
+      yield return new WaitForSeconds(delay);
       foreach (Animator animator in _animators) {
          switch (animType) {
-            case Anim.Type.Mining:
-               animator.SetBool("mining", false);
+            case Anim.Type.Interact_East:
+            case Anim.Type.Interact_North:
+            case Anim.Type.Interact_South:
+               animator.SetBool("interact", false);
                break;
          }
       }
@@ -715,21 +719,7 @@ public class NetEntity : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ReceiveVoyageGroupInvitation (NetworkConnection conn, int voyageGroupId, string inviterName) {
-      // If the user is in battle, do nothing
-      if (isInBattle()) {
-         return;
-      }
-
-      // Associate a new function with the accept button
-      PanelManager.self.voyageInviteScreen.acceptButton.onClick.RemoveAllListeners();
-      PanelManager.self.voyageInviteScreen.acceptButton.onClick.AddListener(() => VoyageManager.self.acceptVoyageInvitation());
-
-      // Associate a new function with the refuse button
-      PanelManager.self.voyageInviteScreen.refuseButton.onClick.RemoveAllListeners();
-      PanelManager.self.voyageInviteScreen.refuseButton.onClick.AddListener(() => PanelManager.self.voyageInviteScreen.hide());
-
-      // Show the voyage invite screen
-      PanelManager.self.voyageInviteScreen.show(voyageGroupId, inviterName);
+      VoyageManager.self.receiveVoyageInvitation(voyageGroupId, inviterName);
    }
 
    [Command]

@@ -42,8 +42,8 @@ public class SoundEffect
 
    public enum ValueType
    {
-      VOLUME = 0,
-      PITCH = 1,
+      VOLUME = 1,
+      PITCH = 2,
    }
 
    #endregion

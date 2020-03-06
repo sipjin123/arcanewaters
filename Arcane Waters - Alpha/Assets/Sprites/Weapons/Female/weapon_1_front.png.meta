@@ -146,6 +146,168 @@ TextureImporter:
   - first:
       213: 21300094
     second: Sword_1_Front_47
+  - first:
+      213: -2816098800683473699
+    second: weapon_1_front_0
+  - first:
+      213: -175078087503149634
+    second: weapon_1_front_1
+  - first:
+      213: -2887454541914249619
+    second: weapon_1_front_2
+  - first:
+      213: -9209474005449857508
+    second: weapon_1_front_3
+  - first:
+      213: -5367047765180850352
+    second: weapon_1_front_4
+  - first:
+      213: 4486589894262766688
+    second: weapon_1_front_5
+  - first:
+      213: -1072838030850508333
+    second: weapon_1_front_6
+  - first:
+      213: 117125521163095758
+    second: weapon_1_front_7
+  - first:
+      213: -8915656938312098303
+    second: weapon_1_front_8
+  - first:
+      213: -5389452060096972259
+    second: weapon_1_front_9
+  - first:
+      213: 4964047789142963631
+    second: weapon_1_front_10
+  - first:
+      213: 5743157538277005992
+    second: weapon_1_front_11
+  - first:
+      213: 9177951505188270029
+    second: weapon_1_front_12
+  - first:
+      213: 8374867385882140231
+    second: weapon_1_front_13
+  - first:
+      213: -1828186701662485477
+    second: weapon_1_front_14
+  - first:
+      213: -4594838479827911493
+    second: weapon_1_front_15
+  - first:
+      213: -5452972645683931050
+    second: weapon_1_front_16
+  - first:
+      213: -5204554330106997747
+    second: weapon_1_front_17
+  - first:
+      213: -3853123356800529080
+    second: weapon_1_front_18
+  - first:
+      213: 8783880242760295423
+    second: weapon_1_front_19
+  - first:
+      213: -5330437767680197095
+    second: weapon_1_front_20
+  - first:
+      213: -3775865131539426186
+    second: weapon_1_front_21
+  - first:
+      213: 138523621951124283
+    second: weapon_1_front_22
+  - first:
+      213: 2691076079368066446
+    second: weapon_1_front_23
+  - first:
+      213: -313358159054146596
+    second: weapon_1_front_24
+  - first:
+      213: -7233257221978247409
+    second: weapon_1_front_25
+  - first:
+      213: -5846109344202971135
+    second: weapon_1_front_26
+  - first:
+      213: -549558596494943137
+    second: weapon_1_front_27
+  - first:
+      213: -2126368419947051934
+    second: weapon_1_front_28
+  - first:
+      213: 904733411478342192
+    second: weapon_1_front_29
+  - first:
+      213: -4424066523537629103
+    second: weapon_1_front_30
+  - first:
+      213: 2200655409305676620
+    second: weapon_1_front_31
+  - first:
+      213: -4005623055634987558
+    second: weapon_1_front_32
+  - first:
+      213: 742931472475116202
+    second: weapon_1_front_33
+  - first:
+      213: -7299502078803787714
+    second: weapon_1_front_34
+  - first:
+      213: -1617471207453695649
+    second: weapon_1_front_35
+  - first:
+      213: -2786107274483404008
+    second: weapon_1_front_36
+  - first:
+      213: 4043090194211355405
+    second: weapon_1_front_37
+  - first:
+      213: 6797415834130050699
+    second: weapon_1_front_38
+  - first:
+      213: 3293313252897122475
+    second: weapon_1_front_39
+  - first:
+      213: -890232755732266817
+    second: weapon_1_front_40
+  - first:
+      213: 7985262903204061593
+    second: weapon_1_front_41
+  - first:
+      213: 9106136749783803768
+    second: weapon_1_front_42
+  - first:
+      213: -730644841006950307
+    second: weapon_1_front_43
+  - first:
+      213: 6335265585279726064
+    second: weapon_1_front_44
+  - first:
+      213: 2965501216647493113
+    second: weapon_1_front_45
+  - first:
+      213: -8737636739934347276
+    second: weapon_1_front_46
+  - first:
+      213: -8664868409990707895
+    second: weapon_1_front_47
+  - first:
+      213: 824434171772569834
+    second: weapon_1_front_48
+  - first:
+      213: 2303065357436817951
+    second: weapon_1_front_49
+  - first:
+      213: -2926287470500805414
+    second: weapon_1_front_50
+  - first:
+      213: 7129753040106532810
+    second: weapon_1_front_51
+  - first:
+      213: 4081326979349210264
+    second: weapon_1_front_52
+  - first:
+      213: 5894967746976353159
+    second: weapon_1_front_53
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -213,7 +375,7 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
     maxTextureSize: 2048
@@ -225,12 +387,12 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Sword_1_Front_0
+      name: weapon_1_front_0
       rect:
         serializedVersion: 2
         x: 0
@@ -244,14 +406,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0bdbfd4270e16664297769965e6ba532
-      internalID: 21300000
+      spriteID: 377dcce08da90c2449d30ce140c34cab
+      internalID: -2816098800683473699
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_1
+      name: weapon_1_front_1
       rect:
         serializedVersion: 2
         x: 85
@@ -265,14 +427,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f9a0f8caf52f8054f8cc15b924156004
-      internalID: 21300002
+      spriteID: c8ba65e002612444d9df284b769ca37a
+      internalID: -175078087503149634
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_2
+      name: weapon_1_front_2
       rect:
         serializedVersion: 2
         x: 170
@@ -286,14 +448,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f187d90840f6cd54ead35a2968e28160
-      internalID: 21300004
+      spriteID: c60be8f9d7e48b44bae42a17dfeaf61f
+      internalID: -2887454541914249619
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_3
+      name: weapon_1_front_3
       rect:
         serializedVersion: 2
         x: 255
@@ -307,14 +469,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ef24784c97693444089b550229779dda
-      internalID: 21300006
+      spriteID: fef245d6811b1d74aaf7111f511675d7
+      internalID: -9209474005449857508
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_4
+      name: weapon_1_front_4
       rect:
         serializedVersion: 2
         x: 340
@@ -328,14 +490,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 72de88961d2404241bf96b962286fc98
-      internalID: 21300008
+      spriteID: 76f4acbcd69a2824593417b81e8ed6c4
+      internalID: -5367047765180850352
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_5
+      name: weapon_1_front_5
       rect:
         serializedVersion: 2
         x: 425
@@ -349,14 +511,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7b8258884b0fc4242bf40a29c0560dbb
-      internalID: 21300010
+      spriteID: 6608b86309910b14f83be298d54904d4
+      internalID: 4486589894262766688
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_6
+      name: weapon_1_front_6
       rect:
         serializedVersion: 2
         x: 510
@@ -370,14 +532,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 22d28891bbc6a1b438e47f6c801d180d
-      internalID: 21300012
+      spriteID: 3a4f5a24907205d4e96993ee01e0e466
+      internalID: -1072838030850508333
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_7
+      name: weapon_1_front_7
       rect:
         serializedVersion: 2
         x: 595
@@ -391,14 +553,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a496037e8bdc8f1419ab1b093e955f34
-      internalID: 21300014
+      spriteID: e0b15e6ff59dcda4e823baf191e2031d
+      internalID: 117125521163095758
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_8
+      name: weapon_1_front_8
       rect:
         serializedVersion: 2
         x: 680
@@ -412,14 +574,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cb04f6d9982ca4b49a43ecc2a251919e
-      internalID: 21300016
+      spriteID: bef810e8e8186f74691ae47da9b6012d
+      internalID: -8915656938312098303
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_9
+      name: weapon_1_front_9
       rect:
         serializedVersion: 2
         x: 765
@@ -433,14 +595,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5dcb5141c3f829f4880878e489249489
-      internalID: 21300018
+      spriteID: b2e1379f219f2fe4bae00834eb3fa300
+      internalID: -5389452060096972259
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_10
+      name: weapon_1_front_10
       rect:
         serializedVersion: 2
         x: 850
@@ -454,14 +616,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8b6eefd91426bf74c963ec49e0f106eb
-      internalID: 21300020
+      spriteID: 0347f4e736352454cab941a0979f6058
+      internalID: 4964047789142963631
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_11
+      name: weapon_1_front_11
       rect:
         serializedVersion: 2
         x: 935
@@ -475,14 +637,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5994dc8300a41234d89071daaf620ac9
-      internalID: 21300022
+      spriteID: d97dc6fc47d7e314fb4ede2acef0dcad
+      internalID: 5743157538277005992
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_12
+      name: weapon_1_front_12
       rect:
         serializedVersion: 2
         x: 0
@@ -496,14 +658,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ad1c50720766d734abd31b8daf8e9f5b
-      internalID: 21300024
+      spriteID: c491e7dd377aaf940a7f052ae10bee8f
+      internalID: 9177951505188270029
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_13
+      name: weapon_1_front_13
       rect:
         serializedVersion: 2
         x: 85
@@ -517,14 +679,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: da0e9157529a466428cbb32583f0f848
-      internalID: 21300026
+      spriteID: 3149f3232fa45334b9f0029414b5484c
+      internalID: 8374867385882140231
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_14
+      name: weapon_1_front_14
       rect:
         serializedVersion: 2
         x: 170
@@ -538,14 +700,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d39bac2f62ae97b43a7a33db6bdffcac
-      internalID: 21300028
+      spriteID: ce8ff92a3e087d449993202ad534b041
+      internalID: -1828186701662485477
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_15
+      name: weapon_1_front_15
       rect:
         serializedVersion: 2
         x: 255
@@ -559,14 +721,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c56e72e3f63f0f44a99cbd29a07ceadb
-      internalID: 21300030
+      spriteID: aec43187826954342878a3855981ecb7
+      internalID: -4594838479827911493
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_16
+      name: weapon_1_front_16
       rect:
         serializedVersion: 2
         x: 340
@@ -580,14 +742,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d11201e3f19e2aa4c8328591f9b22d0e
-      internalID: 21300032
+      spriteID: be6ef99a53177454d8c7bb11f390e729
+      internalID: -5452972645683931050
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_17
+      name: weapon_1_front_17
       rect:
         serializedVersion: 2
         x: 425
@@ -601,14 +763,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a99b3615bf3f4434795f6a7ca0f0155d
-      internalID: 21300034
+      spriteID: 8f3a48e1fcd27014b899a2aefa304f3b
+      internalID: -5204554330106997747
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_18
+      name: weapon_1_front_18
       rect:
         serializedVersion: 2
         x: 510
@@ -622,14 +784,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: baed642c191c98043a9015811a072e8b
-      internalID: 21300036
+      spriteID: ce083bba7bbd0ca44bda4a7968997d85
+      internalID: -3853123356800529080
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_19
+      name: weapon_1_front_19
       rect:
         serializedVersion: 2
         x: 595
@@ -643,14 +805,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 06fa44bc2241a2b4daab23f6473fe9b9
-      internalID: 21300038
+      spriteID: bd44e7ab742fd3d469ee4f8887fd0ce5
+      internalID: 8783880242760295423
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_20
+      name: weapon_1_front_20
       rect:
         serializedVersion: 2
         x: 680
@@ -664,14 +826,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0e95cf29bf0004a4bafc3c902dc7750f
-      internalID: 21300040
+      spriteID: 6057ac8f555cf9b40bdcbe704aad889c
+      internalID: -5330437767680197095
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_21
+      name: weapon_1_front_21
       rect:
         serializedVersion: 2
         x: 765
@@ -685,14 +847,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 156988c876868e646a978880d57e26c1
-      internalID: 21300042
+      spriteID: 3a2b04f8665cb5c49baffd087befadac
+      internalID: -3775865131539426186
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_22
+      name: weapon_1_front_22
       rect:
         serializedVersion: 2
         x: 850
@@ -706,14 +868,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 47573985033a5ae45b8b1df752054251
-      internalID: 21300044
+      spriteID: ee2e65a3e7e1b714aa3631aeab518b1f
+      internalID: 138523621951124283
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_23
+      name: weapon_1_front_23
       rect:
         serializedVersion: 2
         x: 935
@@ -727,14 +889,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6e84d40dd8d58d445bfbc5818477ab6c
-      internalID: 21300046
+      spriteID: 8f4d49a1901596b4db18e22ea76ed02b
+      internalID: 2691076079368066446
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_24
+      name: weapon_1_front_24
       rect:
         serializedVersion: 2
         x: 0
@@ -748,14 +910,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7eee019cf7613254288bbb6a28a7eb64
-      internalID: 21300048
+      spriteID: e34ac6fb37e1f2a4cbf78f3b3feb50ea
+      internalID: -313358159054146596
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_25
+      name: weapon_1_front_25
       rect:
         serializedVersion: 2
         x: 85
@@ -769,14 +931,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: abc3ecce2c3d7034ba3182693a4b007d
-      internalID: 21300050
+      spriteID: 1cb6d324f177c1e4fa654b2ffc3fd124
+      internalID: -7233257221978247409
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_26
+      name: weapon_1_front_26
       rect:
         serializedVersion: 2
         x: 170
@@ -790,14 +952,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f7a6491210a7df04ebea714054292848
-      internalID: 21300052
+      spriteID: 6a00e00b1607a2941865a9a12c17f0b6
+      internalID: -5846109344202971135
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_27
+      name: weapon_1_front_27
       rect:
         serializedVersion: 2
         x: 255
@@ -811,14 +973,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7d8009c2ebbc9424bacd7c40cccc2008
-      internalID: 21300054
+      spriteID: 2ddd737232dcacd43b0c17cb6658f712
+      internalID: -549558596494943137
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_28
+      name: weapon_1_front_28
       rect:
         serializedVersion: 2
         x: 340
@@ -832,14 +994,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 460df32ffecd18f40bd98999c061595d
-      internalID: 21300056
+      spriteID: c743985211092f848b256741bd485821
+      internalID: -2126368419947051934
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_29
+      name: weapon_1_front_29
       rect:
         serializedVersion: 2
         x: 425
@@ -853,14 +1015,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ef347acc37443a340a1ba3fa8a6a23c6
-      internalID: 21300058
+      spriteID: b0d9aed4a8606e44b9cd805919b38df6
+      internalID: 904733411478342192
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_30
+      name: weapon_1_front_30
       rect:
         serializedVersion: 2
         x: 510
@@ -874,14 +1036,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: baea2dfac3b00f047b5105d585c9dcfc
-      internalID: 21300060
+      spriteID: de62a489824f96541be6e0dfadee057f
+      internalID: -4424066523537629103
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_31
+      name: weapon_1_front_31
       rect:
         serializedVersion: 2
         x: 595
@@ -895,14 +1057,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4205545ad0d996f4b9b2ebe891886cc0
-      internalID: 21300062
+      spriteID: a5d49fa1ca0111f45ae99ec061a5f202
+      internalID: 2200655409305676620
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_32
+      name: weapon_1_front_32
       rect:
         serializedVersion: 2
         x: 680
@@ -916,14 +1078,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d74d02516a52eb0468dce3586a4824ee
-      internalID: 21300064
+      spriteID: a498a7c900c427d4e9319ab0eb390427
+      internalID: -4005623055634987558
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_33
+      name: weapon_1_front_33
       rect:
         serializedVersion: 2
         x: 765
@@ -937,14 +1099,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d58a857790ba21c428cd01616cab0dab
-      internalID: 21300066
+      spriteID: 3ba354af0c894ac4e812e2ea156de9de
+      internalID: 742931472475116202
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_34
+      name: weapon_1_front_34
       rect:
         serializedVersion: 2
         x: 850
@@ -958,14 +1120,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 28ffd10d2d49e174581d1115ef22a42e
-      internalID: 21300068
+      spriteID: 65c7fd76d4f412a47b28afca19b9061c
+      internalID: -7299502078803787714
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_35
+      name: weapon_1_front_35
       rect:
         serializedVersion: 2
         x: 935
@@ -979,14 +1141,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6ace9187f627b2d45ba07b497bcafab0
-      internalID: 21300070
+      spriteID: 6ff101bff78e2fa47ac500598bad73a6
+      internalID: -1617471207453695649
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_36
+      name: weapon_1_front_36
       rect:
         serializedVersion: 2
         x: 0
@@ -1000,14 +1162,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8062854093132a5408d8fdfe2139f5d0
-      internalID: 21300072
+      spriteID: 4eae5e5bc472bf34ba484b150956b456
+      internalID: -2786107274483404008
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_37
+      name: weapon_1_front_37
       rect:
         serializedVersion: 2
         x: 85
@@ -1021,14 +1183,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 837fd0891a732e046a094cfbbd0e5614
-      internalID: 21300074
+      spriteID: d58e8a6fe63866949b41615f6d5c6856
+      internalID: 4043090194211355405
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_38
+      name: weapon_1_front_38
       rect:
         serializedVersion: 2
         x: 170
@@ -1042,14 +1204,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ab59e66a6d91f9a4a90b664ae61c754c
-      internalID: 21300076
+      spriteID: f6385ff30a49bfd4b9a951aac2a90858
+      internalID: 6797415834130050699
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_39
+      name: weapon_1_front_39
       rect:
         serializedVersion: 2
         x: 255
@@ -1063,14 +1225,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 561932d5a8bc893498113e29fac86446
-      internalID: 21300078
+      spriteID: 6950028555cf15a44a4dbec97b93a824
+      internalID: 3293313252897122475
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_40
+      name: weapon_1_front_40
       rect:
         serializedVersion: 2
         x: 340
@@ -1084,14 +1246,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a7eee1bad5767b343a9e6363cc319080
-      internalID: 21300080
+      spriteID: 527b084af70bf14429b7259e5c42ccba
+      internalID: -890232755732266817
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_41
+      name: weapon_1_front_41
       rect:
         serializedVersion: 2
         x: 425
@@ -1105,14 +1267,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d9f424092b9739142b3f369614ff6123
-      internalID: 21300082
+      spriteID: 917fd32a5a221ad4d985b600d259c452
+      internalID: 7985262903204061593
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_42
+      name: weapon_1_front_42
       rect:
         serializedVersion: 2
         x: 510
@@ -1126,14 +1288,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4bf3d2731c9ba5a4f959282d39a8149c
-      internalID: 21300084
+      spriteID: 355fe0714b1459c43b2790ed0e258c2e
+      internalID: 9106136749783803768
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_43
+      name: weapon_1_front_43
       rect:
         serializedVersion: 2
         x: 595
@@ -1147,14 +1309,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f5a6572862bd58a40b1a8b010e3538ba
-      internalID: 21300086
+      spriteID: d3c6584d520519445a56774ac27f522a
+      internalID: -730644841006950307
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_44
+      name: weapon_1_front_44
       rect:
         serializedVersion: 2
         x: 680
@@ -1168,14 +1330,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f1c27fec8a3fcd04a9b913d1bb3a62c4
-      internalID: 21300088
+      spriteID: ab83062affe2a10458b1c1ce3edac3cb
+      internalID: 6335265585279726064
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_45
+      name: weapon_1_front_45
       rect:
         serializedVersion: 2
         x: 765
@@ -1189,14 +1351,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9df501eafa54df142a4a9717e6dd1325
-      internalID: 21300090
+      spriteID: ccc12b07b86548d48a33f5c3e738b9d1
+      internalID: 2965501216647493113
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_46
+      name: weapon_1_front_46
       rect:
         serializedVersion: 2
         x: 850
@@ -1210,14 +1372,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d2aa2207f7553da4d9c371c490783254
-      internalID: 21300092
+      spriteID: f0220ab8ec31de8449335ddee021d698
+      internalID: -8737636739934347276
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_1_Front_47
+      name: weapon_1_front_47
       rect:
         serializedVersion: 2
         x: 935
@@ -1231,8 +1393,134 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 82e77dd6959c9ce4996411029b61e92d
-      internalID: 21300094
+      spriteID: bee181baede009748a77c9554a9fe79c
+      internalID: -8664868409990707895
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weapon_1_front_48
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 66a8a6c237a13db4d96c539b55cd0c03
+      internalID: 824434171772569834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weapon_1_front_49
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a57498604bc11cb44bc60840fa4baf0a
+      internalID: 2303065357436817951
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weapon_1_front_50
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0cee3e72d8afcc54cb06b1cb762de888
+      internalID: -2926287470500805414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weapon_1_front_51
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ab5fd7326e43e41418e8aff2da5c5dd2
+      internalID: 7129753040106532810
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weapon_1_front_52
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6477bf2a2746b934c847673974e6ce98
+      internalID: 4081326979349210264
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weapon_1_front_53
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64a1a4738dcd1cd49a740befd101c170
+      internalID: 5894967746976353159
       vertices: []
       indices: 
       edges: []

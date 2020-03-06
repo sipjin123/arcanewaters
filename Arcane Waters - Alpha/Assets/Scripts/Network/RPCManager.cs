@@ -2422,12 +2422,11 @@ public class RPCManager : NetworkBehaviour {
             // Close the voyage panel
             Target_CloseVoyagePanel(_player.connectionToClient);
 
-            // Get the area and spawn of the voyage map
-            Area area = AreaManager.self.getArea(areaKey);
-            Spawn spawn = SpawnManager.self.getSpawn(areaKey);
+            // Get the spawn of the voyage map
+            Vector2 spawnLocalPosition = SpawnManager.self.getDefaultSpawnLocalPosition(areaKey);
 
             // Warp to the voyage area
-            _player.spawnInNewMap(areaKey, spawn, Direction.South);
+            _player.spawnInNewMap(areaKey, spawnLocalPosition, Direction.South);
          });
       });
    }
@@ -2471,12 +2470,11 @@ public class RPCManager : NetworkBehaviour {
             // Close the voyage panel
             Target_CloseVoyagePanel(_player.connectionToClient);
 
-            // Get the area and spawn of the voyage map
-            Area area = AreaManager.self.getArea(areaKey);
-            Spawn spawn = SpawnManager.self.getSpawn(areaKey);
+            // Get the spawn of the voyage map
+            Vector2 spawnLocalPosition = SpawnManager.self.getDefaultSpawnLocalPosition(areaKey);
 
             // Warp to the voyage area
-            _player.spawnInNewMap(areaKey, spawn, Direction.South);
+            _player.spawnInNewMap(areaKey, spawnLocalPosition, Direction.South);
          });
       });
    }
@@ -2609,12 +2607,11 @@ public class RPCManager : NetworkBehaviour {
 
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Get the area and spawn of the voyage map
-            Area area = AreaManager.self.getArea(voyageGroup.areaKey);
-            Spawn spawn = SpawnManager.self.getSpawn(voyageGroup.areaKey);
+            // Get the spawn of the voyage map
+            Vector2 spawnLocalPosition = SpawnManager.self.getDefaultSpawnLocalPosition(voyageGroup.areaKey);
 
             // Warp to the voyage area
-            _player.spawnInNewMap(voyageGroup.areaKey, spawn, Direction.South);
+            _player.spawnInNewMap(voyageGroup.areaKey, spawnLocalPosition, Direction.South);
          });
       });
    }

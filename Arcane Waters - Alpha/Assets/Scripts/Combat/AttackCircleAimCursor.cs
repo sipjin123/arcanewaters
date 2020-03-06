@@ -53,13 +53,16 @@ public class AttackCircleAimCursor : MonoBehaviour
       gameObject.SetActive(false);
    }
 
-   public void setColor(Color c) {
+   public void update(Color c, float speed) {
+      // Set the color
       cursorRenderer.color = c;
-      auraRenderer.color = new Color(c.r, c.g, c.b, 1f);
-   }
+      auraRenderer.color = new Color(c.r, c.g, c.b, 1f);      
 
-   public void setAnimationSpeed(float speed) {
+      // Set the animation speed
       _animator.SetFloat("speed", speed);
+
+      // Set the z position of the aura, above water and below the land
+      Util.setZ(auraRenderer.transform, Util.getTilemapZ("water", MapCreationTool.EditorType.Sea) - 0.05f);
    }
 
    public Color getColor () {

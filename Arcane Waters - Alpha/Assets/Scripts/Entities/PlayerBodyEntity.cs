@@ -5,7 +5,8 @@ using UnityEngine.UI;
 using Mirror;
 using System.Linq;
 
-public class PlayerBodyEntity : BodyEntity {
+public class PlayerBodyEntity : BodyEntity
+{
    #region Public Variables
 
    #endregion
@@ -34,6 +35,17 @@ public class PlayerBodyEntity : BodyEntity {
          Cmd_EquipWeapon(2);
       } else if (Input.GetKeyUp(KeyCode.Alpha3)) {
          Cmd_EquipWeapon(3);
+      }
+
+      if (InputManager.isActionKeyPressed()) {
+         if (facing == Direction.East || facing == Direction.SouthEast || facing == Direction.NorthEast
+            || facing == Direction.West || facing == Direction.SouthWest || facing == Direction.NorthWest) {
+            rpc.Cmd_InteractAnimation(Anim.Type.Interact_East);
+         } else if (facing == Direction.North) {
+            rpc.Cmd_InteractAnimation(Anim.Type.Interact_North);
+         } else if (facing == Direction.South) {
+            rpc.Cmd_InteractAnimation(Anim.Type.Interact_South);
+         }
       }
    }
 

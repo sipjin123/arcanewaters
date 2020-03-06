@@ -40,11 +40,6 @@ public partial class SpawnManager : MonoBehaviour {
 
       _spawnIDList.Add(new SpawnID(areaKey, spawnKey));
       _spawns[new SpawnID(areaKey, spawnKey)] = spawn;
-
-      // Add this spawn as the default for this area, if none exist yet
-      if (!_defaultSpawn.ContainsKey(areaKey)) {
-         _defaultSpawn.Add(areaKey, spawn);
-      }
    }
 
    public Spawn getSpawn (string areaKey, string spawnKey) {
@@ -54,15 +49,6 @@ public partial class SpawnManager : MonoBehaviour {
       } else {
          D.debug("Spawn ID is missing: " + areaKey+" - "+spawnKey);
          return _spawns.Values.ToList()[0];
-      }
-   }
-
-   public Spawn getSpawn (string areaKey) {
-      if (_defaultSpawn.ContainsKey(areaKey)) {
-         return _defaultSpawn[areaKey];
-      } else {
-         D.warning("No default spawn is defined for area " + areaKey);
-         return null;
       }
    }
 
@@ -103,9 +89,6 @@ public partial class SpawnManager : MonoBehaviour {
    // Editor preview of data list
    [SerializeField]
    protected List<SpawnID> _spawnIDList = new List<SpawnID>();
-
-   // Contains one spawn per area, accessible by area id
-   protected Dictionary<string, Spawn> _defaultSpawn = new Dictionary<string, Spawn>();
 
    // The Server keeps track of all local spawn positions from the database
    protected Dictionary<SpawnID, Vector2> _spawnLocalPositions = new Dictionary<SpawnID, Vector2>();

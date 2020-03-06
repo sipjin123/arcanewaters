@@ -146,6 +146,168 @@ TextureImporter:
   - first:
       213: 21300094
     second: Lance_Steel_Back_47
+  - first:
+      213: -972543169362604258
+    second: weapon_12_back_0
+  - first:
+      213: 4014403719357961787
+    second: weapon_12_back_1
+  - first:
+      213: 6080197361095089027
+    second: weapon_12_back_2
+  - first:
+      213: -8146179497859546868
+    second: weapon_12_back_3
+  - first:
+      213: -457947563803165727
+    second: weapon_12_back_4
+  - first:
+      213: -6491533922565869336
+    second: weapon_12_back_5
+  - first:
+      213: -6613707251465930777
+    second: weapon_12_back_6
+  - first:
+      213: -5008946581606895978
+    second: weapon_12_back_7
+  - first:
+      213: 8221316023469769330
+    second: weapon_12_back_8
+  - first:
+      213: 1832014102554903300
+    second: weapon_12_back_9
+  - first:
+      213: 486636860440840486
+    second: weapon_12_back_10
+  - first:
+      213: -2359959440247151801
+    second: weapon_12_back_11
+  - first:
+      213: 3378605397811483754
+    second: weapon_12_back_12
+  - first:
+      213: 2490278783053831052
+    second: weapon_12_back_13
+  - first:
+      213: -7374221339913752013
+    second: weapon_12_back_14
+  - first:
+      213: -31385506131846754
+    second: weapon_12_back_15
+  - first:
+      213: 1972409709015814087
+    second: weapon_12_back_16
+  - first:
+      213: 1539421207446717589
+    second: weapon_12_back_17
+  - first:
+      213: 6043978295255757352
+    second: weapon_12_back_18
+  - first:
+      213: 7432000643068356468
+    second: weapon_12_back_19
+  - first:
+      213: -6447140055900328373
+    second: weapon_12_back_20
+  - first:
+      213: -2225537080864508039
+    second: weapon_12_back_21
+  - first:
+      213: -1836966123981185
+    second: weapon_12_back_22
+  - first:
+      213: 4146214306148771943
+    second: weapon_12_back_23
+  - first:
+      213: -5122710506544382534
+    second: weapon_12_back_24
+  - first:
+      213: -7388689766558020060
+    second: weapon_12_back_25
+  - first:
+      213: 2324903032097902178
+    second: weapon_12_back_26
+  - first:
+      213: 5646188566038012100
+    second: weapon_12_back_27
+  - first:
+      213: 2618970193480977800
+    second: weapon_12_back_28
+  - first:
+      213: -1927500257735706627
+    second: weapon_12_back_29
+  - first:
+      213: 2809213703758714947
+    second: weapon_12_back_30
+  - first:
+      213: 7707522918988974836
+    second: weapon_12_back_31
+  - first:
+      213: 1759196062632860971
+    second: weapon_12_back_32
+  - first:
+      213: 3790402226873763666
+    second: weapon_12_back_33
+  - first:
+      213: 7343074142440457433
+    second: weapon_12_back_34
+  - first:
+      213: 1573242209829885761
+    second: weapon_12_back_35
+  - first:
+      213: 7689593811762226595
+    second: weapon_12_back_36
+  - first:
+      213: 8183487225518383481
+    second: weapon_12_back_37
+  - first:
+      213: 3752962291753660389
+    second: weapon_12_back_38
+  - first:
+      213: -3375609865888351163
+    second: weapon_12_back_39
+  - first:
+      213: 7094990419416523757
+    second: weapon_12_back_40
+  - first:
+      213: -6111070292886498469
+    second: weapon_12_back_41
+  - first:
+      213: 6975616943314420142
+    second: weapon_12_back_42
+  - first:
+      213: 3679109703568022536
+    second: weapon_12_back_43
+  - first:
+      213: -7234797401027546128
+    second: weapon_12_back_44
+  - first:
+      213: -990552818622808940
+    second: weapon_12_back_45
+  - first:
+      213: 3406002107687730614
+    second: weapon_12_back_46
+  - first:
+      213: -4372224721450998386
+    second: weapon_12_back_47
+  - first:
+      213: 7987408921235075375
+    second: weapon_12_back_48
+  - first:
+      213: 5173956011115709750
+    second: weapon_12_back_49
+  - first:
+      213: -7857663825633634059
+    second: weapon_12_back_50
+  - first:
+      213: -7890814540443417196
+    second: weapon_12_back_51
+  - first:
+      213: 6386407888184764331
+    second: weapon_12_back_52
+  - first:
+      213: -7393619847094739555
+    second: weapon_12_back_53
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -213,7 +375,7 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
     maxTextureSize: 2048
@@ -225,12 +387,12 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Lance_Steel_Back_0
+      name: weapon_12_back_0
       rect:
         serializedVersion: 2
         x: 0
@@ -242,16 +404,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 02305410000000000800000000000000
-      internalID: 21300000
+      spriteID: 2b2963493e3b66842ad102db68d533f1
+      internalID: -972543169362604258
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_1
+      name: weapon_12_back_1
       rect:
         serializedVersion: 2
         x: 85
@@ -263,16 +425,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 22305410000000000800000000000000
-      internalID: 21300002
+      spriteID: e1202bff879a57a4a84d2ec2442ac837
+      internalID: 4014403719357961787
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_2
+      name: weapon_12_back_2
       rect:
         serializedVersion: 2
         x: 170
@@ -284,16 +446,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 42305410000000000800000000000000
-      internalID: 21300004
+      spriteID: 18217a27ce2e13b408f573fb4f841194
+      internalID: 6080197361095089027
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_3
+      name: weapon_12_back_3
       rect:
         serializedVersion: 2
         x: 255
@@ -305,16 +467,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 62305410000000000800000000000000
-      internalID: 21300006
+      spriteID: bd0ae22c94806f04badecd2bbedb02e5
+      internalID: -8146179497859546868
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_4
+      name: weapon_12_back_4
       rect:
         serializedVersion: 2
         x: 340
@@ -326,16 +488,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 82305410000000000800000000000000
-      internalID: 21300008
+      spriteID: c49f197ffc0550343839a68b795125b1
+      internalID: -457947563803165727
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_5
+      name: weapon_12_back_5
       rect:
         serializedVersion: 2
         x: 425
@@ -347,16 +509,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a2305410000000000800000000000000
-      internalID: 21300010
+      spriteID: f941abd8c155c2d4ea1827f4c4e96ad3
+      internalID: -6491533922565869336
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_6
+      name: weapon_12_back_6
       rect:
         serializedVersion: 2
         x: 510
@@ -368,16 +530,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c2305410000000000800000000000000
-      internalID: 21300012
+      spriteID: 5863091be6c0ee141825f2477cf85d53
+      internalID: -6613707251465930777
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_7
+      name: weapon_12_back_7
       rect:
         serializedVersion: 2
         x: 595
@@ -389,16 +551,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e2305410000000000800000000000000
-      internalID: 21300014
+      spriteID: 47ce7174983937b4b8082470a05b091f
+      internalID: -5008946581606895978
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_8
+      name: weapon_12_back_8
       rect:
         serializedVersion: 2
         x: 680
@@ -410,16 +572,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 03305410000000000800000000000000
-      internalID: 21300016
+      spriteID: 4df6e72f86109144ca015141540ec505
+      internalID: 8221316023469769330
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_9
+      name: weapon_12_back_9
       rect:
         serializedVersion: 2
         x: 765
@@ -431,16 +593,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 23305410000000000800000000000000
-      internalID: 21300018
+      spriteID: 0dc8de6f67840f743a6b967268dea1be
+      internalID: 1832014102554903300
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_10
+      name: weapon_12_back_10
       rect:
         serializedVersion: 2
         x: 850
@@ -452,16 +614,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 43305410000000000800000000000000
-      internalID: 21300020
+      spriteID: e10641e390b50a34c8d88dc29e5f4976
+      internalID: 486636860440840486
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_11
+      name: weapon_12_back_11
       rect:
         serializedVersion: 2
         x: 935
@@ -473,16 +635,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 63305410000000000800000000000000
-      internalID: 21300022
+      spriteID: 7a995bfe83dd0d6419f65f6587a46349
+      internalID: -2359959440247151801
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_12
+      name: weapon_12_back_12
       rect:
         serializedVersion: 2
         x: 0
@@ -494,16 +656,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 83305410000000000800000000000000
-      internalID: 21300024
+      spriteID: 7ffa592a9a9b5024c828c91d7f134808
+      internalID: 3378605397811483754
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_13
+      name: weapon_12_back_13
       rect:
         serializedVersion: 2
         x: 85
@@ -515,16 +677,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a3305410000000000800000000000000
-      internalID: 21300026
+      spriteID: 810fe519428a73647b5cab60118ebff3
+      internalID: 2490278783053831052
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_14
+      name: weapon_12_back_14
       rect:
         serializedVersion: 2
         x: 170
@@ -536,16 +698,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c3305410000000000800000000000000
-      internalID: 21300028
+      spriteID: b3d3214e50d668b4980c8ec4a93436c5
+      internalID: -7374221339913752013
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_15
+      name: weapon_12_back_15
       rect:
         serializedVersion: 2
         x: 255
@@ -557,16 +719,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e3305410000000000800000000000000
-      internalID: 21300030
+      spriteID: 9c3b9e3f284a1cb458c952aacd1ff5d2
+      internalID: -31385506131846754
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_16
+      name: weapon_12_back_16
       rect:
         serializedVersion: 2
         x: 340
@@ -578,16 +740,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 04305410000000000800000000000000
-      internalID: 21300032
+      spriteID: 511981e9029d26f448099ea50e8fce03
+      internalID: 1972409709015814087
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_17
+      name: weapon_12_back_17
       rect:
         serializedVersion: 2
         x: 425
@@ -599,16 +761,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 24305410000000000800000000000000
-      internalID: 21300034
+      spriteID: 693e884021ef6734a8acae0cc85d8121
+      internalID: 1539421207446717589
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_18
+      name: weapon_12_back_18
       rect:
         serializedVersion: 2
         x: 510
@@ -620,16 +782,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 44305410000000000800000000000000
-      internalID: 21300036
+      spriteID: be781afe2a81f864ca1a91b4063919fd
+      internalID: 6043978295255757352
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_19
+      name: weapon_12_back_19
       rect:
         serializedVersion: 2
         x: 595
@@ -641,16 +803,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 64305410000000000800000000000000
-      internalID: 21300038
+      spriteID: c7bf11bbe9f3df941b3e9423e1d801dc
+      internalID: 7432000643068356468
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_20
+      name: weapon_12_back_20
       rect:
         serializedVersion: 2
         x: 680
@@ -662,16 +824,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 84305410000000000800000000000000
-      internalID: 21300040
+      spriteID: e89968f968617ee41b187139052ba7ab
+      internalID: -6447140055900328373
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_21
+      name: weapon_12_back_21
       rect:
         serializedVersion: 2
         x: 765
@@ -683,16 +845,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a4305410000000000800000000000000
-      internalID: 21300042
+      spriteID: 87d3e3a18adb579469d08cee3d6dd84c
+      internalID: -2225537080864508039
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_22
+      name: weapon_12_back_22
       rect:
         serializedVersion: 2
         x: 850
@@ -704,16 +866,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c4305410000000000800000000000000
-      internalID: 21300044
+      spriteID: 374c6c187ce354848865fc256337fd2c
+      internalID: -1836966123981185
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_23
+      name: weapon_12_back_23
       rect:
         serializedVersion: 2
         x: 935
@@ -725,16 +887,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e4305410000000000800000000000000
-      internalID: 21300046
+      spriteID: 96cbdb3b815ce0945bd950bd5bb6026c
+      internalID: 4146214306148771943
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_24
+      name: weapon_12_back_24
       rect:
         serializedVersion: 2
         x: 0
@@ -746,16 +908,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 05305410000000000800000000000000
-      internalID: 21300048
+      spriteID: 58047472d6bd9ab44bdb353d5c6dc0af
+      internalID: -5122710506544382534
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_25
+      name: weapon_12_back_25
       rect:
         serializedVersion: 2
         x: 85
@@ -767,16 +929,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 25305410000000000800000000000000
-      internalID: 21300050
+      spriteID: a675078f87112ae4f8a939c997634967
+      internalID: -7388689766558020060
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_26
+      name: weapon_12_back_26
       rect:
         serializedVersion: 2
         x: 170
@@ -788,16 +950,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 45305410000000000800000000000000
-      internalID: 21300052
+      spriteID: c3be0ada7a0807c45bf129a9dbc8d4a9
+      internalID: 2324903032097902178
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_27
+      name: weapon_12_back_27
       rect:
         serializedVersion: 2
         x: 255
@@ -809,16 +971,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 65305410000000000800000000000000
-      internalID: 21300054
+      spriteID: ea28cc43e586c64488834a3439523af6
+      internalID: 5646188566038012100
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_28
+      name: weapon_12_back_28
       rect:
         serializedVersion: 2
         x: 340
@@ -830,16 +992,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 85305410000000000800000000000000
-      internalID: 21300056
+      spriteID: bab6916fae9ffc04ba5cd035071a645e
+      internalID: 2618970193480977800
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_29
+      name: weapon_12_back_29
       rect:
         serializedVersion: 2
         x: 425
@@ -851,16 +1013,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a5305410000000000800000000000000
-      internalID: 21300058
+      spriteID: 7fbca51c18efb7e459648d5f6dff1dfc
+      internalID: -1927500257735706627
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_30
+      name: weapon_12_back_30
       rect:
         serializedVersion: 2
         x: 510
@@ -872,16 +1034,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c5305410000000000800000000000000
-      internalID: 21300060
+      spriteID: 5f115cb59991a7c46b50e77c1cdd8051
+      internalID: 2809213703758714947
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_31
+      name: weapon_12_back_31
       rect:
         serializedVersion: 2
         x: 595
@@ -893,16 +1055,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e5305410000000000800000000000000
-      internalID: 21300062
+      spriteID: ebf26a10ead120747a0910dfabf1d417
+      internalID: 7707522918988974836
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_32
+      name: weapon_12_back_32
       rect:
         serializedVersion: 2
         x: 680
@@ -914,16 +1076,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 06305410000000000800000000000000
-      internalID: 21300064
+      spriteID: f6957c99e3dd4c54bb5e656ddccc6a52
+      internalID: 1759196062632860971
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_33
+      name: weapon_12_back_33
       rect:
         serializedVersion: 2
         x: 765
@@ -935,16 +1097,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 26305410000000000800000000000000
-      internalID: 21300066
+      spriteID: 82840b46d133eef468cb323b1eecfede
+      internalID: 3790402226873763666
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_34
+      name: weapon_12_back_34
       rect:
         serializedVersion: 2
         x: 850
@@ -956,16 +1118,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 46305410000000000800000000000000
-      internalID: 21300068
+      spriteID: d6cce6e80618ae843b0580dc33701967
+      internalID: 7343074142440457433
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_35
+      name: weapon_12_back_35
       rect:
         serializedVersion: 2
         x: 935
@@ -977,16 +1139,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 66305410000000000800000000000000
-      internalID: 21300070
+      spriteID: d4438eb66e412a54bbe6dfcd8cce8142
+      internalID: 1573242209829885761
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_36
+      name: weapon_12_back_36
       rect:
         serializedVersion: 2
         x: 0
@@ -998,16 +1160,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 86305410000000000800000000000000
-      internalID: 21300072
+      spriteID: f96bca07feb224747955419f367c87a1
+      internalID: 7689593811762226595
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_37
+      name: weapon_12_back_37
       rect:
         serializedVersion: 2
         x: 85
@@ -1019,16 +1181,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a6305410000000000800000000000000
-      internalID: 21300074
+      spriteID: dd02651c154ff364bafd88a482fc2bca
+      internalID: 8183487225518383481
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_38
+      name: weapon_12_back_38
       rect:
         serializedVersion: 2
         x: 170
@@ -1040,16 +1202,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c6305410000000000800000000000000
-      internalID: 21300076
+      spriteID: 56095ca96a61a8641bc936644f9501f0
+      internalID: 3752962291753660389
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_39
+      name: weapon_12_back_39
       rect:
         serializedVersion: 2
         x: 255
@@ -1061,16 +1223,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e6305410000000000800000000000000
-      internalID: 21300078
+      spriteID: 3d80eaf811b060241acac2c2eae22e20
+      internalID: -3375609865888351163
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_40
+      name: weapon_12_back_40
       rect:
         serializedVersion: 2
         x: 340
@@ -1082,16 +1244,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 07305410000000000800000000000000
-      internalID: 21300080
+      spriteID: 3f7d87e10ba0b21429a8f7e2c830ba11
+      internalID: 7094990419416523757
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_41
+      name: weapon_12_back_41
       rect:
         serializedVersion: 2
         x: 425
@@ -1103,16 +1265,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 27305410000000000800000000000000
-      internalID: 21300082
+      spriteID: 3dad6498115f93b479a3546c2f535c41
+      internalID: -6111070292886498469
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_42
+      name: weapon_12_back_42
       rect:
         serializedVersion: 2
         x: 510
@@ -1124,16 +1286,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 47305410000000000800000000000000
-      internalID: 21300084
+      spriteID: b26063549afd41c46bb77a485f90a69b
+      internalID: 6975616943314420142
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_43
+      name: weapon_12_back_43
       rect:
         serializedVersion: 2
         x: 595
@@ -1145,16 +1307,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 67305410000000000800000000000000
-      internalID: 21300086
+      spriteID: b2ca41e812e0db5408eb08c536412fb4
+      internalID: 3679109703568022536
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_44
+      name: weapon_12_back_44
       rect:
         serializedVersion: 2
         x: 680
@@ -1166,16 +1328,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 87305410000000000800000000000000
-      internalID: 21300088
+      spriteID: e88ee0f81d5aa384fab28f246bd8f2ee
+      internalID: -7234797401027546128
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_45
+      name: weapon_12_back_45
       rect:
         serializedVersion: 2
         x: 765
@@ -1187,16 +1349,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a7305410000000000800000000000000
-      internalID: 21300090
+      spriteID: 2dae32abe1e135041aa62648853fb14c
+      internalID: -990552818622808940
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_46
+      name: weapon_12_back_46
       rect:
         serializedVersion: 2
         x: 850
@@ -1208,16 +1370,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c7305410000000000800000000000000
-      internalID: 21300092
+      spriteID: 4f572b673415ba1469747c9b21073cef
+      internalID: 3406002107687730614
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lance_Steel_Back_47
+      name: weapon_12_back_47
       rect:
         serializedVersion: 2
         x: 935
@@ -1229,10 +1391,136 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e7305410000000000800000000000000
-      internalID: 21300094
+      spriteID: 5a6cd9281ca68664e9e3d35cf6e587d5
+      internalID: -4372224721450998386
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weapon_12_back_48
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 23af30da35c2d7f4797df8562ac0008f
+      internalID: 7987408921235075375
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weapon_12_back_49
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f0eb440bf3a8a284996d740dbfef548e
+      internalID: 5173956011115709750
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weapon_12_back_50
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 985d6d759984e1f48825d2201b43ce89
+      internalID: -7857663825633634059
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weapon_12_back_51
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d36b6a769e044d49ace40d0f25009de
+      internalID: -7890814540443417196
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weapon_12_back_52
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: afefd5cc8282e94409577c1248ce356c
+      internalID: 6386407888184764331
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weapon_12_back_53
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64ba7a96b85882b47846d98a617621e3
+      internalID: -7393619847094739555
       vertices: []
       indices: 
       edges: []
@@ -1240,7 +1528,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 3649647235b203e4380e3e845ce5a093
     internalID: 0
     vertices: []
     indices: 

@@ -897,6 +897,25 @@ public class Util : MonoBehaviour {
       return gameVersion;
    }
 
+   public static float getTilemapZ (string layerName, MapCreationTool.EditorType editorType) {
+      // Load the map config if needed
+      if (_mapEditorConfig == null) {
+         _mapEditorConfig = Resources.Load<MapCreationTool.EditorConfig>("MapEditorConfig");
+      }
+
+      // Get the z position of the tilemap parent transform
+      float parentOffset = MapCreationTool.AssetSerializationMaps.mapTemplate.tilemapParent.position.z;
+
+      // Get the z position of the requested tilemap layer
+      float layerZ = MapCreationTool.Serialization.Serializer.getZ(
+         _mapEditorConfig.getIndex(layerName, editorType), 0);
+      
+      return layerZ + parentOffset;
+   }
+
    // A Random instance we can use for generating random numbers
    private static System.Random r = new System.Random();
+
+   // The map editor config containing terrain layer parameters
+   private static MapCreationTool.EditorConfig _mapEditorConfig = null;   
 }

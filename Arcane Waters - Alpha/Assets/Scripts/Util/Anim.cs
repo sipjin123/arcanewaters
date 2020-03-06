@@ -21,7 +21,10 @@ public class Anim : MonoBehaviour {
       Attack_North = 16,
       Attack_South = 17,
       Ready_Attack = 18,
-      Finish_Attack = 19
+      Finish_Attack = 19,
+      Interact_East = 20,
+      Interact_North = 21,
+      Interact_South = 22,
    }
 
    // The different animation groups

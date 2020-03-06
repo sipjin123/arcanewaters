@@ -396,7 +396,7 @@ namespace MapCreationTool.Serialization
          return tiles;
       }
 
-      static float getZ (int layer, int sublayer) {
+      public static float getZ (int layer, int sublayer) {
          return
             AssetSerializationMaps.layerZFirst +
             layer * AssetSerializationMaps.layerZMultip +

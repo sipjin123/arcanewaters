@@ -125,6 +125,9 @@ public class OptionsPanel : Panel, IPointerClickHandler {
       // Close this panel
       PanelManager.self.popPanel();
 
+      // Hide the voyage group invite panel, if opened
+      VoyageManager.self.refuseVoyageInvitation();
+
       // Stop any client or server that may have been running
       MyNetworkManager.self.StopHost();
 

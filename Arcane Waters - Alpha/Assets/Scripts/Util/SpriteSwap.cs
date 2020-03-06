@@ -3,7 +3,8 @@ using UnityEngine;
 using System.Linq;
 using UnityEngine.UI;
 
-public class SpriteSwap : ClientMonoBehaviour {
+public class SpriteSwap : ClientMonoBehaviour
+{
    #region Public Variables
 
    // The Texture we want to swap to
@@ -40,8 +41,13 @@ public class SpriteSwap : ClientMonoBehaviour {
       // Swap in the replacement sprite using our Dictionary indexed by frame number (supports up to 99 frames)
       Sprite oldSprite = getSprite();
       string currentFrameNumber = Util.getFrameNumber(oldSprite);
-      Sprite newSprite = _spritesToSwapIn[currentFrameNumber];
-      setNewSprite(newSprite);
+      Sprite newSprite = null;
+      _spritesToSwapIn.TryGetValue(currentFrameNumber, out newSprite);
+      if (newSprite != null) {
+         setNewSprite(newSprite);
+      } else {
+         D.log("Sprite Frame '" + currentFrameNumber + "' did not exist in the Sheet '" + newTexture.name + "'. Please update the Sprite Sheet.");
+      }
    }
 
    protected void loadSprites (Texture2D newTexture) {

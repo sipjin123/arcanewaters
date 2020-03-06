@@ -20,11 +20,11 @@ public class UserEquipmentFetcher : MonoBehaviour {
    public const string ARMOR_DIRECTORY = "/user_equipment_armor_v3.php?usrId=";
    public const string USER_DIRECTORY = "/user_data_v1.php?usrId=";
 
-   public const string FETCH_CRAFTABLE_WEAPONS = "/fetch_craftable_weapons_v3.php?usrId=";
-   public const string FETCH_CRAFTABLE_ARMORS = "/fetch_craftable_armors_v3.php?usrId=";
+   public const string FETCH_CRAFTABLE_WEAPONS = "/fetch_craftable_weapons_v4.php?usrId=";
+   public const string FETCH_CRAFTABLE_ARMORS = "/fetch_craftable_armors_v4.php?usrId=";
    public const string FETCH_CRAFTING_INGREDIENTS = "/fetch_crafting_ingredients_v3.php?usrId=";
    public const string FETCH_EQUIPPED_ITEMS = "/fetch_equipped_items_v3.php?usrId=";
-   public const string FETCH_SINGLE_BP = "/fetch_single_blueprint_v3.php?";
+   public const string FETCH_SINGLE_BP = "/fetch_single_blueprint_v4.php?";
 
    // The category types that are being fetched
    public Item.Category categoryFilter;

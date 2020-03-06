@@ -15,7 +15,7 @@ public class AttackTrajectory : MonoBehaviour
    public float DOT_MIN_SPEED = 0.1f;
    public float DOT_MAX_SPEED = 0.5f;
 
-   // The prefab we sue for creating dots
+   // The prefab we use for creating dots
    public AttackTrajectoryDot dotPrefab;
 
    #endregion

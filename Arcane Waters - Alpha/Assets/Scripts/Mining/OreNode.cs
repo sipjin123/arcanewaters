@@ -84,26 +84,6 @@ public class OreNode : NetworkBehaviour
          return;
       }
 
-      Vector2 pos = Global.player.transform.position;
-
-      // Force direction if not facing the ore
-      if (Global.player.facing == Direction.North || Global.player.facing == Direction.South) {
-         if (pos.x < transform.position.x) {
-            Global.player.Cmd_ForceFaceDirection(Direction.East);
-            Global.player.facing = Direction.East;
-         } else {
-            Global.player.Cmd_ForceFaceDirection(Direction.West);
-            Global.player.facing = Direction.West;
-         }
-      }
-
-      if ((Global.player.facing == Direction.East && pos.x < transform.position.x) || (Global.player.facing == Direction.West && pos.x > transform.position.x)) {
-         Global.player.rpc.Cmd_InteractAnimation(Anim.Type.Mining);
-      } else {
-         D.warning("Player must face left or right!");
-         return;
-      }
-
       // Increment our current sprite index
       spriteRenderer.sprite = oreSprites[getNextSpriteIndex()];
 

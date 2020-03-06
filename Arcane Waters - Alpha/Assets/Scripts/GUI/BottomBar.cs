@@ -139,6 +139,16 @@ public class BottomBar : MonoBehaviour {
       }
    }
 
+   public void toggleVoyagePanel () {
+      VoyagePanel panel = (VoyagePanel) PanelManager.self.get(Panel.Type.Voyage);
+
+      if (!panel.isShowing()) {
+         panel.displayVoyagesSelection();
+      } else {
+         PanelManager.self.togglePanel(Panel.Type.Voyage);
+      }
+   }
+
    #region Private Variables
 
    #endregion

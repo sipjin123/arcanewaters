@@ -10,8 +10,8 @@ public class VoyageManager : MonoBehaviour {
    #region Public Variables
 
    // The area and spawn the user is warped to when leaving a voyage group
-   public static string RETURN_AREA_KEY = "StartingTown";
-   public static string RETURN_SPAWN_KEY = "ForestTownDock";
+   public static string RETURN_AREA_KEY = "Starting Town New Houses";
+   public static string RETURN_SPAWN_KEY = "new dock";
 
    // Self
    public static VoyageManager self;
@@ -22,9 +22,9 @@ public class VoyageManager : MonoBehaviour {
       self = this;
 
       // Hardcoded data for testing purposes
-      store(new Voyage("SeaMiddle", Voyage.Difficulty.Easy, true));
-      store(new Voyage("SeaTop", Voyage.Difficulty.Medium, false));
-      store(new Voyage("SeaBottom", Voyage.Difficulty.Hard, true));
+      //store(new Voyage("Starting Sea Map", Voyage.Difficulty.Easy, true));
+      //store(new Voyage("Starting Sea Map", Voyage.Difficulty.Medium, false));
+      store(new Voyage("Starting Sea Map", Voyage.Difficulty.Hard, true));
    }
 
    public void Start () {
@@ -73,19 +73,60 @@ public class VoyageManager : MonoBehaviour {
       Global.player.rpc.Cmd_SendVoyageGroupInvitationToUser(userName);
    }
 
-   public void acceptVoyageInvitation () {
-      if (Global.player == null || Global.player.isInBattle()) {
+   public void receiveVoyageInvitation (int voyageGroupId, string inviterName) {
+      // Test if the player is already being invited to a voyage
+      if (_invitationVoyageGroupId != -1) {
          return;
       }
 
-      // Retrieve the voyage group id from the invite panel
-      int voyageGroupId = PanelManager.self.voyageInviteScreen.getVoyageGroupId();
+      // Store the voyage group id
+      _invitationVoyageGroupId = voyageGroupId;
 
-      // Hide the invite panel
-      PanelManager.self.voyageInviteScreen.hide();
+      // Associate a new function with the accept button
+      PanelManager.self.voyageInviteScreen.acceptButton.onClick.RemoveAllListeners();
+      PanelManager.self.voyageInviteScreen.acceptButton.onClick.AddListener(() => acceptVoyageInvitation());
+
+      // Associate a new function with the refuse button
+      PanelManager.self.voyageInviteScreen.refuseButton.onClick.RemoveAllListeners();
+      PanelManager.self.voyageInviteScreen.refuseButton.onClick.AddListener(() => refuseVoyageInvitation());
+
+      // Show the voyage invite screen
+      PanelManager.self.voyageInviteScreen.activate(inviterName);
+   }
+
+   public void acceptVoyageInvitation () {
+      if (Global.player == null) {
+         return;
+      }
+
+      if (Global.player.isInBattle()) {
+         PanelManager.self.noticeScreen.show("You must exit battle before joining a voyage group");
+         return;
+      }
+
+      if (isInVoyage(Global.player)) {
+         PanelManager.self.noticeScreen.show("You must leave your current group before joining another");
+         return;
+      }
+
+      // Deactivate the invite panel
+      PanelManager.self.voyageInviteScreen.deactivate();
 
       // Send the join request to the server
-      Global.player.rpc.Cmd_AddUserToVoyageGroup(voyageGroupId);
+      Global.player.rpc.Cmd_AddUserToVoyageGroup(_invitationVoyageGroupId);
+
+      // Clear the invitation group id so that we can receive more invitations
+      _invitationVoyageGroupId = -1;
+   }
+
+   public void refuseVoyageInvitation () {
+      if (_invitationVoyageGroupId != -1) {
+         // Deactivate the invite panel
+         PanelManager.self.voyageInviteScreen.deactivate();
+
+         // Clear the invitation group id so that we can receive more invitations
+         _invitationVoyageGroupId = -1;
+      }
    }
 
    private void updateVoyageGroupMembers () {
@@ -134,6 +175,9 @@ public class VoyageManager : MonoBehaviour {
 
    // Keeps track of the group members visible by this client
    private List<int> _visibleGroupMembers = new List<int>();
+
+   // The id of the group the player is being invited to, if any
+   private int _invitationVoyageGroupId = -1;
 
    #endregion
 }
