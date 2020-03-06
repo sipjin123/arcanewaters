@@ -74,18 +74,24 @@ public class GenericItemRow : MonoBehaviour {
          itemCategoryName.text = category.ToString();
 
          ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(itemTypeID);
-         itemTypeName.text = armorData.equipmentName;
-         string spritePath = armorData.equipmentIconPath;
-
-         itemIcon.sprite = ImageManager.getSprite(spritePath);
+         if (armorData != null) {
+            itemTypeName.text = armorData.equipmentName;
+            string spritePath = armorData.equipmentIconPath;
+            itemIcon.sprite = ImageManager.getSprite(spritePath);
+         } else {
+            itemTypeName.text = "Error";
+         }
       } else if (category == Item.Category.Weapon) {
          itemCategoryName.text = category.ToString();
 
          WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(itemTypeID);
-         itemTypeName.text = weaponData.equipmentName;
-         string spritePath = weaponData.equipmentIconPath;
-
-         itemIcon.sprite = ImageManager.getSprite(spritePath);
+         if (weaponData != null) {
+            itemTypeName.text = weaponData.equipmentName;
+            string spritePath = weaponData.equipmentIconPath;
+            itemIcon.sprite = ImageManager.getSprite(spritePath);
+         } else {
+            itemTypeName.text = "Error";
+         }
       } else {
          itemCategoryName.text = category.ToString();
          itemTypeName.text = Util.getItemName(category, itemTypeID);

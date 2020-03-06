@@ -20,9 +20,6 @@ public class SeaMonsterLootRow : GenericItemRow
    // Current type of the item
    public int currentType;
 
-   // The item data of the loot
-   public string itemData;
-
    // Change ratio slider
    public Slider chanceRatio;
 

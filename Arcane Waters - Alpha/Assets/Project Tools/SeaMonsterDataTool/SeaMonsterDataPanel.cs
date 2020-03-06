@@ -420,8 +420,8 @@ public class SeaMonsterDataPanel : MonoBehaviour
       itemTypeParent.gameObject.DestroyChildren();
 
       Dictionary<int, Item> itemNameList = GenericSelectionPopup.getItemCollection(selectedCategory, SeaMonsterToolManager.instance.craftingDataList);
-      var sortedList = itemNameList.OrderBy(r => r.Value.itemName);
-      foreach (var item in sortedList) {
+      IOrderedEnumerable<KeyValuePair<int, Item>> sortedList = itemNameList.OrderBy(r => r.Value.itemName);
+      foreach (KeyValuePair<int, Item> item in sortedList) {
          GameObject template = Instantiate(itemTypeTemplate.gameObject, itemTypeParent.transform);
          ItemTypeTemplate itemTemp = template.GetComponent<ItemTypeTemplate>();
          itemTemp.itemTypeText.text = item.Value.itemName;

@@ -15,16 +15,16 @@ public class UserEquipmentFetcher : MonoBehaviour {
    public static UserEquipmentFetcher self;
 
    // Host and PHP File directories
-   public const string WEB_DIRECTORY = "http://localhost/arcane";//"http://arcanewaters.com";
-   public const string WEAPON_DIRECTORY = "/user_equipment_weapon_v2.php?usrId=";
-   public const string ARMOR_DIRECTORY = "/user_equipment_armor_v2.php?usrId=";
+   public const string WEB_DIRECTORY = "http://localhost/arcane2";//"http://arcanewaters.com";
+   public const string WEAPON_DIRECTORY = "/user_equipment_weapon_v3.php?usrId=";
+   public const string ARMOR_DIRECTORY = "/user_equipment_armor_v3.php?usrId=";
    public const string USER_DIRECTORY = "/user_data_v1.php?usrId=";
 
-   public const string FETCH_CRAFTABLE_WEAPONS = "/fetch_craftable_weapons_v2.php?usrId=";
-   public const string FETCH_CRAFTABLE_ARMORS = "/fetch_craftable_armors_v2.php?usrId=";
-   public const string FETCH_CRAFTING_INGREDIENTS = "/fetch_crafting_ingredients_v2.php?usrId=";
-   public const string FETCH_EQUIPPED_ITEMS = "/fetch_equipped_items_v2.php?usrId=";
-   public const string FETCH_SINGLE_BP = "/fetch_single_blueprint_v2.php?";
+   public const string FETCH_CRAFTABLE_WEAPONS = "/fetch_craftable_weapons_v3.php?usrId=";
+   public const string FETCH_CRAFTABLE_ARMORS = "/fetch_craftable_armors_v3.php?usrId=";
+   public const string FETCH_CRAFTING_INGREDIENTS = "/fetch_crafting_ingredients_v3.php?usrId=";
+   public const string FETCH_EQUIPPED_ITEMS = "/fetch_equipped_items_v3.php?usrId=";
+   public const string FETCH_SINGLE_BP = "/fetch_single_blueprint_v3.php?";
 
    // The category types that are being fetched
    public Item.Category categoryFilter;
@@ -50,7 +50,7 @@ public class UserEquipmentFetcher : MonoBehaviour {
       None = 0,
       EquippedItems = 1,
       CraftingIngredients = 2,
-      SingleBP = 3,
+      SingleBlueprint = 3,
       CraftableWeapons = 4,
       CraftableArmors = 5,
    }
@@ -75,8 +75,8 @@ public class UserEquipmentFetcher : MonoBehaviour {
          case RequestType.CraftingIngredients:
             StartCoroutine(CO_DownloadCraftingIngredients());
             break;
-         case RequestType.SingleBP:
-            StartCoroutine(CO_Fetch_Single_BP(id));
+         case RequestType.SingleBlueprint:
+            StartCoroutine(CO_FetchSingleBlueprint(id));
             break;
       }
       _requiredRequests.Add(requestType);
@@ -91,10 +91,10 @@ public class UserEquipmentFetcher : MonoBehaviour {
 
       initializeRequest(RequestType.EquippedItems);
       initializeRequest(RequestType.CraftingIngredients);
-      initializeRequest(RequestType.SingleBP, bluePrintId);
+      initializeRequest(RequestType.SingleBlueprint, bluePrintId);
    }
 
-   private IEnumerator CO_Fetch_Single_BP (int bluePrintId) {
+   private IEnumerator CO_FetchSingleBlueprint (int bluePrintId) {
       int userID = Global.player == null ? 0 : Global.player.userId;
 
       // Request the user info from the web
@@ -115,7 +115,7 @@ public class UserEquipmentFetcher : MonoBehaviour {
             processCraftableGroups(xmlSubGroup);
          }
 
-         _finishedRequests.Add(RequestType.SingleBP);
+         _finishedRequests.Add(RequestType.SingleBlueprint);
          finalizeSingleCraftingProcedure();
       }
    }

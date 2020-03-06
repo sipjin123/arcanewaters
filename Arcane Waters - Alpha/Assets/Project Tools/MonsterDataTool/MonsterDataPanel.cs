@@ -436,8 +436,8 @@ public class MonsterDataPanel : MonoBehaviour
       foreach (MonsterLootRow lootRow in monsterLootList) {
          LootInfo newLootInfo = new LootInfo();
 
-         int modifiedID = Blueprint.modifyID(lootRow.currentCategory, lootRow.currentType);
-         newLootInfo.lootType = new Item { category = lootRow.currentCategory, itemTypeId = modifiedID, data = lootRow.itemData };
+         int modifiedId = Blueprint.modifyID(lootRow.currentCategory, lootRow.currentType);
+         newLootInfo.lootType = new Item { category = lootRow.currentCategory, itemTypeId = modifiedId, data = lootRow.itemData };
          newLootInfo.quantity = int.Parse(lootRow.itemCount.text);
          newLootInfo.chanceRatio = (float) lootRow.chanceRatio.value;
          tempLootInfo.Add(newLootInfo);
@@ -604,8 +604,8 @@ public class MonsterDataPanel : MonoBehaviour
       itemTypeParent.gameObject.DestroyChildren();
 
       Dictionary<int, Item> itemNameList = GenericSelectionPopup.getItemCollection(selectedCategory, MonsterToolManager.instance.craftingDataList);
-      var sortedList = itemNameList.OrderBy(r => r.Value.itemName);
-      foreach (var item in sortedList) {
+      IOrderedEnumerable<KeyValuePair<int, Item>> sortedList = itemNameList.OrderBy(r => r.Value.itemName);
+      foreach (KeyValuePair<int, Item> item in sortedList) {
          GameObject template = Instantiate(itemTypeTemplate.gameObject, itemTypeParent.transform);
          ItemTypeTemplate itemTemp = template.GetComponent<ItemTypeTemplate>();
          itemTemp.itemTypeText.text = item.Value.itemName;

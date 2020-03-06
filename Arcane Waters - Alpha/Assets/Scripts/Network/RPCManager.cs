@@ -2250,10 +2250,15 @@ public class RPCManager : NetworkBehaviour {
          if (blueprint.data.StartsWith(Blueprint.WEAPON_DATA_PREFIX)) {
             WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(blueprint.itemTypeId);
             resultItem = WeaponStatData.translateDataToWeapon(weaponData);
+            resultItem.data = "";
          } else if (blueprint.data.StartsWith(Blueprint.ARMOR_DATA_PREFIX)) {
             ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(blueprint.itemTypeId);
             resultItem = ArmorStatData.translateDataToArmor(armorData);
+            resultItem.data = "";
          }
+
+         // Blueprint ID is now same to a craftable equipment ID
+         resultItem.itemTypeId = blueprint.itemTypeId;
 
          // Randomize the colors
          resultItem.color1 = Util.randomEnum<ColorType>();
@@ -2271,17 +2276,16 @@ public class RPCManager : NetworkBehaviour {
          }
 
          // Build the list of ingredients
-         List<CraftingIngredients.Type> ingredientsList = new List<CraftingIngredients.Type>();
+         List<CraftingIngredients.Type> requiredIngredients = new List<CraftingIngredients.Type>();
          foreach (Item item in craftingRequirements.combinationRequirements) {
-            ingredientsList.Add((CraftingIngredients.Type) item.itemTypeId);
+            requiredIngredients.Add((CraftingIngredients.Type) item.itemTypeId);
          }
 
          // Get the ingredients present in the user inventory
-         List<Item> inventoryIngredients = DB_Main.getCraftingIngredients(_player.userId, ingredientsList);
+         List<Item> inventoryIngredients = DB_Main.getCraftingIngredients(_player.userId, requiredIngredients);
 
          // Compare the ingredients present in the inventory with the requisites
          foreach (Item requiredIngredient in craftingRequirements.combinationRequirements) {
-
             // Get the inventory ingredient, if there is any
             Item inventoryIngredient = inventoryIngredients.Find(s =>
                s.itemTypeId == requiredIngredient.itemTypeId);
@@ -2330,6 +2334,21 @@ public class RPCManager : NetworkBehaviour {
 
             // Update the available ingredients for the displayed blueprint
             Target_RefreshCraftingPanel(_player.connectionToClient);
+
+            switch (craftedItem.category) {
+               case Item.Category.Weapon:
+                  WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(craftedItem.itemTypeId);
+                  if (weaponData != null) {
+                     craftedItem.data = WeaponStatData.serializeWeaponStatData(weaponData);
+                  }
+                  break;
+               case Item.Category.Armor:
+                  ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(craftedItem.itemTypeId);
+                  if (armorData != null) {
+                     craftedItem.data = ArmorStatData.serializeArmorStatData(armorData);
+                  }
+                  break;
+            }
 
             // Display the reward panel
             Target_ReceiveItem(_player.connectionToClient, craftedItem);

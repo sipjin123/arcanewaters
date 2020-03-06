@@ -194,7 +194,7 @@ public class TreasureChest : NetworkBehaviour {
          itemLoots.Add(info.lootType);
       }
 
-      Item itemToCreate = new Item { category = itemLoots[0].category, itemTypeId = itemLoots[0].itemTypeId };
+      Item itemToCreate = new Item { category = itemLoots[0].category, itemTypeId = itemLoots[0].itemTypeId, data = itemLoots[0].data };
       return itemToCreate;
    }
 

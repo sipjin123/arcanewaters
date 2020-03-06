@@ -414,8 +414,8 @@ public class NPCEditScreen : MonoBehaviour
       itemTypeParent.gameObject.DestroyChildren();
 
       Dictionary<int, Item> itemNameList = GenericSelectionPopup.getItemCollection(selectedCategory, NPCToolManager.instance.craftingDataList);
-      var sortedList = itemNameList.OrderBy(r => r.Value.itemName);
-      foreach (var item in sortedList) {
+      IOrderedEnumerable<KeyValuePair<int, Item>> sortedList = itemNameList.OrderBy(r => r.Value.itemName);
+      foreach (KeyValuePair<int, Item> item in sortedList) {
          GameObject template = Instantiate(itemTypePrefab, itemTypeParent);
          ItemTypeTemplate itemTemp = template.GetComponent<ItemTypeTemplate>();
          itemTemp.itemTypeText.text = item.Value.itemName;

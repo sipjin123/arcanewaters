@@ -96,7 +96,7 @@ public class Blueprint : RecipeItem
    public static Item.Category getEquipmentType (string data) {
       if (data.StartsWith(WEAPON_DATA_PREFIX)) {
          return Item.Category.Weapon;
-      } else if (data.StartsWith(WEAPON_DATA_PREFIX)) {
+      } else if (data.StartsWith(ARMOR_DATA_PREFIX)) {
          return Item.Category.Armor;
       }
       

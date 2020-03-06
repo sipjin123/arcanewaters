@@ -17,9 +17,6 @@ public class MonsterLootRow : GenericItemRow
    // Current category of the item
    public Item.Category currentCategory;
 
-   // The item data of the loot
-   public string itemData;
-
    // Current type of the item
    public int currentType;
 

@@ -6,6 +6,7 @@ using Mirror;
 using System;
 using System.Xml.Serialization;
 
+[Serializable]
 public class EquipmentStatData
 {
    // Name of the item
