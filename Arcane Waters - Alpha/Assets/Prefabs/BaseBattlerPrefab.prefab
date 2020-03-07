@@ -1115,7 +1115,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300070, guid: 79c8bae54c14a7d4fab571dbc30b95e3, type: 3}
+  m_Sprite: {fileID: -3101795268378610807, guid: 79c8bae54c14a7d4fab571dbc30b95e3,
+    type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -1317,7 +1318,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300070, guid: 8282e73bc91b0b54eb98de924d8e19fb, type: 3}
+  m_Sprite: {fileID: -8597200370163009952, guid: 8282e73bc91b0b54eb98de924d8e19fb,
+    type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -1449,7 +1451,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300070, guid: 5e45b37f6748b4d4faabe1e93116869d, type: 3}
+  m_Sprite: {fileID: 788110222861073526, guid: 903c096515f937848bddf72f35431304, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -1581,7 +1583,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300070, guid: 7d6f66f6e69832949ac4d8af25e65348, type: 3}
+  m_Sprite: {fileID: -2816098800683473699, guid: dcfcf3cb46e85d144bb23f65e6bf9202,
+    type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -1847,8 +1850,8 @@ MonoBehaviour:
       airDefenseMultiplierPerLevel: 0
       waterDefenseMultiplierPerLevel: 0
       allDefenseMultiplierPerLevel: 0
-    deathSoundPath: 
-    attackJumpSoundPath: 
+    deathSoundEffectId: -1
+    jumpSoundEffectId: -1
     preContactLength: 0
     preMagicLength: 0
     elementalWeakness: 
@@ -1910,6 +1913,7 @@ MonoBehaviour:
   - {fileID: 6527673179423663349}
   equippedWeaponId: 0
   weaponType: 0
+  equipmentDataID: 0
   color1: 0
   color2: 0
   actionType: 0
@@ -2250,7 +2254,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.87, y: 0.87}
+  m_Size: {x: 0.88, y: 0.88}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 0
