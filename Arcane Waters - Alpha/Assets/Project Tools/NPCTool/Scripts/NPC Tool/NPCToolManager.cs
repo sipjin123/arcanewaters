@@ -26,6 +26,12 @@ public class NPCToolManager : XmlDataToolManager {
    // Holds the path of the folder
    public const string FOLDER_PATH = "NPC";
 
+   // Collection of achievements fetched from the database
+   public Dictionary<int, AchievementData> achievementCollection;
+
+   // Determines if achievement data is loaded
+   public bool hasLoadedAchievements;
+
    #endregion
 
    public void Awake () {
@@ -40,6 +46,14 @@ public class NPCToolManager : XmlDataToolManager {
       npcSelectionScreen.show();
       Invoke("initializeEquipmentData", MasterToolScene.loadDelay);
       XmlLoadingPanel.self.startLoading();
+   }
+
+   public AchievementData getAchievementData (int id) {
+      if (achievementCollection.ContainsKey(id)) {
+         return achievementCollection[id];
+      }
+
+      return new AchievementData();
    }
 
    private void initializeEquipmentData () {
@@ -57,6 +71,7 @@ public class NPCToolManager : XmlDataToolManager {
       XmlLoadingPanel.self.startLoading();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<XMLPair> achievementXML = DB_Main.getAchievementXML();
          List<string> rawXMLData = DB_Main.getNPCXML();
          userIdData = DB_Main.getSQLDataByID(editorToolType);
 
@@ -69,6 +84,13 @@ public class NPCToolManager : XmlDataToolManager {
                if (!_npcData.ContainsKey(npcData.npcId)) {
                   _npcData.Add(npcData.npcId, npcData);
                }
+            }
+
+            achievementCollection = new Dictionary<int, AchievementData>();
+            foreach (XMLPair xmlPair in achievementXML) {
+               TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
+               AchievementData achievementData = Util.xmlLoad<AchievementData>(newTextAsset);
+               achievementCollection.Add(xmlPair.xmlId, achievementData);
             }
 
             npcSelectionScreen.updatePanelWithNPCs(_npcData);

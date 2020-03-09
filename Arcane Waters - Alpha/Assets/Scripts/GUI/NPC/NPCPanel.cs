@@ -73,6 +73,9 @@ public class NPCPanel : Panel {
    // The color for dialogue options that cannot be clicked
    public Color disabledClickableRowColor;
 
+   // The default texture if there is an issue with sql texture loading
+   public Texture2D defaultTexture;
+
    // Self
    public static NPCPanel self;
 
@@ -88,8 +91,10 @@ public class NPCPanel : Panel {
       base.show();
 
       // Update the head image based on the type of NPC this is
-      string path = "Faces/" + _npc.GetComponent<SpriteSwap>().newTexture.name;
-      Texture2D newTexture = ImageManager.getTexture(path);
+      Texture2D newTexture = ImageManager.getTexture(NPCManager.self.getNPCData(_npc.npcId).iconPath);
+      if (newTexture == ImageManager.self.blankTexture) {
+         newTexture = defaultTexture;
+      }
       headAnim.GetComponent<SimpleAnimation>().setNewTexture(newTexture);
 
       // Start typing out our intro text

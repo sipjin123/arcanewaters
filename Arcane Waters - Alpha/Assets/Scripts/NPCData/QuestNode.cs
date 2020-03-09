@@ -31,6 +31,9 @@ public class QuestNode
    [XmlArray("ItemRewards"), XmlArrayItem("Item")]
    public QuestRewardItem[] itemRewards = null;
 
+   [XmlArray("ActionRequirements"), XmlArrayItem("Action")]
+   public QuestActionRequirement[] actionRequirements = null;
+
    [XmlArray("FriendshipRewards"), XmlArrayItem("Friendship")]
    public QuestRewardFriendship[] friendshipRewards = null;
 
@@ -47,7 +50,7 @@ public class QuestNode
 
    public QuestNode (int id, int nextNodeId, string npcText, string userText,
       QuestObjectiveDeliver[] deliverObjectives, QuestRewardItem[] itemRewards,
-      QuestRewardFriendship[] friendshipRewards, int goldRequired, int goldReward) {
+      QuestRewardFriendship[] friendshipRewards, int goldRequired, int goldReward, QuestActionRequirement[] actionRequirement) {
       this.nodeId = id;
       this.nextNodeId = nextNodeId;
       this.npcText = npcText;
@@ -57,6 +60,7 @@ public class QuestNode
       this.friendshipRewards = friendshipRewards;
       this.goldRequirement = goldRequired;
       this.goldReward = goldReward;
+      this.actionRequirements = actionRequirement;
    }
 
    public List<QuestObjective> getAllQuestObjectives () {

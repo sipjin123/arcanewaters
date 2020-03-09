@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.SceneManagement;
 using System.Linq;
+using static AchievementToolManager;
 
 public class AchievementToolScene : MonoBehaviour {
    #region Public Variables
@@ -59,7 +60,7 @@ public class AchievementToolScene : MonoBehaviour {
 
       AchievementToolTemplate template = GenericEntryTemplate.createGenericTemplate(achievementTemplatePrefab.gameObject, toolManager, itemTemplateParent.transform).GetComponent<AchievementToolTemplate>();
       template.editButton.onClick.AddListener(() => {
-         achievementDataPanel.loadData(usableItemData);
+         achievementDataPanel.loadData(usableItemData, -1);
          achievementDataPanel.gameObject.SetActive(true);
       });
 
@@ -83,13 +84,14 @@ public class AchievementToolScene : MonoBehaviour {
       template.gameObject.SetActive(true);
    }
 
-   public void loadAchievementData (Dictionary<string, AchievementData> achievementDataCollection) {
+   public void loadAchievementData (List<AchievementDataPair> achievementDataCollection) {
       itemTemplateParent.gameObject.DestroyChildren();
 
-      List<AchievementData> sortedList = achievementDataCollection.Values.ToList().OrderBy(w => w.actionType).ToList();
+      List<AchievementDataPair> sortedList = achievementDataCollection.OrderBy(w => w.xmlId).ToList();
 
       // Create a row for each achievement element
-      foreach (AchievementData achievementData in sortedList) {
+      foreach (AchievementDataPair achievementDataPair in sortedList) {
+         AchievementData achievementData = achievementDataPair.achivementData;
          AchievementToolTemplate template = GenericEntryTemplate.createGenericTemplate(achievementTemplatePrefab.gameObject, toolManager, itemTemplateParent.transform).GetComponent<AchievementToolTemplate>();
          if (isShowingDetails) {
             template.nameText.text = achievementData.achievementName + "\n[" + achievementData.tier + "] (" + achievementData.actionType + ")";
@@ -98,7 +100,7 @@ public class AchievementToolScene : MonoBehaviour {
          }
 
          template.editButton.onClick.AddListener(() => {
-            achievementDataPanel.loadData(achievementData);
+            achievementDataPanel.loadData(achievementData, achievementDataPair.xmlId);
             achievementDataPanel.gameObject.SetActive(true);
          });
 

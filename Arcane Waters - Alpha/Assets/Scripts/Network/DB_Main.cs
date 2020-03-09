@@ -1536,18 +1536,28 @@ public class DB_Main : DB_MainStub
 
    #region Achievement XML Data
 
-   public static new void updateAchievementXML (string rawData, string name) {
+   public static new void updateAchievementXML (string rawData, string name, int xmlId) {
+      string xml_id_key = "xml_id, ";
+      string xml_id_value = "@xml_id, ";
+
+      // If this is a newly created data, let sql table auto generate id
+      if (xmlId < 0) {
+         xml_id_key = "";
+         xml_id_value = "";
+      }
+
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO achievement_xml (xml_name, xmlContent, creator_userID) " +
-            "VALUES(@xml_name, @xmlContent, @creator_userID) " +
+            "INSERT INTO achievement_xml_v2 (" + xml_id_key + "xml_name, xmlContent, creator_userID) " +
+            "VALUES(" + xml_id_value + "@xml_name, @xmlContent, @creator_userID) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
 
             conn.Open();
             cmd.Prepare();
 
+            cmd.Parameters.AddWithValue("@xml_id", xmlId);
             cmd.Parameters.AddWithValue("@xml_name", name);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
@@ -1563,7 +1573,7 @@ public class DB_Main : DB_MainStub
    public static new void deleteAchievementXML (string name) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM achievement_xml WHERE xml_name=@xml_name", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM achievement_xml_v2 WHERE xml_name=@xml_name", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_name", name);
@@ -1576,12 +1586,12 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new List<string> getAchievementXML () {
-      List<string> rawDataList = new List<string>();
+   public static new List<XMLPair> getAchievementXML () {
+      List<XMLPair> rawDataList = new List<XMLPair>();
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.achievement_xml", conn)) {
+            "SELECT * FROM arcane.achievement_xml_v2", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -1589,14 +1599,20 @@ public class DB_Main : DB_MainStub
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  rawDataList.Add(dataReader.GetString("xmlContent"));
+                  XMLPair newXML = new XMLPair {
+                     isEnabled = true,
+                     rawXmlData = dataReader.GetString("xmlContent"),
+                     xmlId = dataReader.GetInt32("xml_id"),
+                     xmlOwnerId = dataReader.GetInt32("creator_userID"),
+                  };
+                  rawDataList.Add(newXML);
                }
             }
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
-      return new List<string>(rawDataList);
+      return rawDataList;
    }
 
    #endregion

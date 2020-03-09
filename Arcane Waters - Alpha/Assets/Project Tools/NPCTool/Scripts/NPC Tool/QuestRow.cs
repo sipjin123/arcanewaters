@@ -117,7 +117,7 @@ public class QuestRow : MonoBehaviour
       _lastUsedNodeId++;
 
       // Create a new empty node
-      QuestNode node = new QuestNode(_lastUsedNodeId, -1, "", "", null, null, null, 0, 0);
+      QuestNode node = new QuestNode(_lastUsedNodeId, -1, "", "", null, null, null, 0, 0, null);
 
       // Create a new node row
       QuestNodeRow row = Instantiate(questNodePrefab, rowsContainer.transform, false);

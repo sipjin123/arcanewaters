@@ -51,11 +51,11 @@ public class AchievementManager : MonoBehaviour {
       _achievementDataCollection = new Dictionary<string, AchievementData>();
       
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<string> rawXMLData = DB_Main.getAchievementXML();
+         List<XMLPair> rawXMLData = DB_Main.getAchievementXML();
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            foreach (string rawText in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(rawText);
+            foreach (XMLPair rawXmlData in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(rawXmlData.rawXmlData);
                AchievementData achievementData = Util.xmlLoad<AchievementData>(newTextAsset);
                string actionKey = achievementData.actionType.ToString() + achievementData.tier.ToString();
 

@@ -18,8 +18,8 @@ public class AchievementToolPanel : MonoBehaviour {
    // Buttons for saving and canceling
    public Button saveButton, cancelButton;
 
-   // Caches the initial type incase it is changed
-   public string startingName;
+   // Caches the xml Id of the selected template
+   public int currentXmlId;
 
    // List for toggle able tabs
    public List<TogglerClass> togglerList;
@@ -37,13 +37,8 @@ public class AchievementToolPanel : MonoBehaviour {
       saveButton.onClick.AddListener(() => {
          AchievementData itemData = getAchievementData();
          if (itemData != null) {
-            if (itemData.achievementName != startingName) {
-               toolManager.overwriteData(itemData, startingName);
-               gameObject.SetActive(false);
-            } else {
-               toolManager.saveXMLData(itemData);
-               gameObject.SetActive(false);
-            }
+            toolManager.saveXMLData(itemData, currentXmlId);
+            gameObject.SetActive(false);
          }
       });
       cancelButton.onClick.AddListener(() => {
@@ -70,8 +65,8 @@ public class AchievementToolPanel : MonoBehaviour {
       }
    }
 
-   public void loadData (AchievementData achievementData) {
-      startingName = achievementData.achievementName;
+   public void loadData (AchievementData achievementData, int xmlId) {
+      currentXmlId = xmlId;
       Item.Category category = (Item.Category) achievementData.itemCategory;
       string itemName = Util.getItemName(category, achievementData.itemType);
 

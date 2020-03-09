@@ -37,8 +37,6 @@ public class EditorSQLManager
       switch (editorType) {
          case EditorToolType.BattlerAbility:
             return "ability_xml_v2";
-         case EditorToolType.Achievement:
-            return "achievement_xml";
          case EditorToolType.ShipAbility:
             return "ship_ability_xml";
          case EditorToolType.Shop:
@@ -62,6 +60,8 @@ public class EditorSQLManager
                default:
                   return "";
             }
+         case EditorToolType.Achievement:
+            return "achievement_xml_v2";
          case EditorToolType.Crafting:
             return "crafting_xml_v2";
          case EditorToolType.LandMonster:

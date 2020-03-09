@@ -17,6 +17,18 @@ public class AchievementToolManager : XmlDataToolManager {
    // Holds the path of the folder
    public const string FOLDER_PATH = "Achievement";
 
+   public class AchievementDataPair
+   {
+      // The xml ID of the template
+      public int xmlId;
+
+      // The userID of the content creator
+      public int creatorID;
+
+      // Data of the achievement template
+      public AchievementData achivementData;
+   }
+
    #endregion
 
    private void Awake () {
@@ -27,7 +39,7 @@ public class AchievementToolManager : XmlDataToolManager {
       Invoke("loadXMLData", MasterToolScene.loadDelay);
    }
 
-   public void saveXMLData (AchievementData data) {
+   public void saveXMLData (AchievementData data, int xmlID) {
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {
@@ -36,27 +48,10 @@ public class AchievementToolManager : XmlDataToolManager {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateAchievementXML(longString, data.achievementName);
+         DB_Main.updateAchievementXML(longString, data.achievementName, xmlID);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
-         });
-      });
-   }
-
-   public void overwriteData (AchievementData data, string nameToDelete) {
-      XmlSerializer ser = new XmlSerializer(data.GetType());
-      var sb = new StringBuilder();
-      using (var writer = XmlWriter.Create(sb)) {
-         ser.Serialize(writer, data);
-      }
-
-      string longString = sb.ToString();
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateAchievementXML(longString, data.achievementName);
-
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            deleteAchievementDataFile(new AchievementData { achievementName = nameToDelete });
          });
       });
    }
@@ -81,7 +76,7 @@ public class AchievementToolManager : XmlDataToolManager {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateAchievementXML(longString, data.achievementName);
+         DB_Main.updateAchievementXML(longString, data.achievementName, -1);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData ();
@@ -90,24 +85,25 @@ public class AchievementToolManager : XmlDataToolManager {
    }
 
    public void loadXMLData () {
-      _achievementDataList = new Dictionary<string, AchievementData>();
+      _achievementDataList = new List<AchievementDataPair>();
 
       XmlLoadingPanel.self.startLoading();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<string> rawXMLData = DB_Main.getAchievementXML();
-         userNameData = DB_Main.getSQLDataByName(editorToolType);
+         List<XMLPair> rawXMLData = DB_Main.getAchievementXML();
+         userIdData = DB_Main.getSQLDataByID(editorToolType);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            foreach (string rawText in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(rawText);
+            foreach (XMLPair xmlPair in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                AchievementData achievementData = Util.xmlLoad<AchievementData>(newTextAsset);
 
                // Save the achievement data in the memory cache
-               if (_achievementDataList.ContainsKey(achievementData.achievementName)) {
-                  Debug.LogWarning("Duplicated ID: " + achievementData.achievementName + " : " + achievementData.achievementName);
-               } else {
-                  _achievementDataList.Add(achievementData.achievementName, achievementData);
-               }
+               AchievementDataPair newDataPair = new AchievementDataPair { 
+                  achivementData = achievementData,
+                  creatorID = xmlPair.xmlOwnerId,
+                  xmlId = xmlPair.xmlId
+               };
+               _achievementDataList.Add(newDataPair);
             }
             achievementToolScene.loadAchievementData(_achievementDataList);
             XmlLoadingPanel.self.finishLoading();
@@ -118,7 +114,7 @@ public class AchievementToolManager : XmlDataToolManager {
    #region Private Variables
 
    // Holds the list of achievement data
-   private Dictionary<string, AchievementData> _achievementDataList = new Dictionary<string, AchievementData>();
+   private List<AchievementDataPair> _achievementDataList = new List<AchievementDataPair>();
 
    #endregion
 }

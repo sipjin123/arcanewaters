@@ -153,7 +153,8 @@ public class NPCEditScreen : MonoBehaviour
       None,
       Gift,
       Reward,
-      Delivery
+      Delivery,
+      QuestRequirement
    }
 
    #endregion
@@ -363,6 +364,24 @@ public class NPCEditScreen : MonoBehaviour
             }
       }
       updateTypeOptions(selectionType);
+   }
+
+   public void toggleActionSelectionPanel () {
+      itemTypeSelectionPanel.SetActive(true);
+      itemCategoryParent.gameObject.DestroyChildren();
+
+      foreach (KeyValuePair<int, AchievementData> achievementData in NPCToolManager.instance.achievementCollection) {
+         GameObject template = Instantiate(itemCategoryPrefab, itemTypeParent);
+         ItemCategoryTemplate actionTemplate = template.GetComponent<ItemCategoryTemplate>();
+         actionTemplate.itemCategoryText.text = achievementData.Value.achievementName;
+         actionTemplate.itemIndexText.text = achievementData.Key.ToString();
+
+         actionTemplate.selectButton.onClick.AddListener(() => {
+            currentQuestModified.currentQuestNode.cachedRequiredActionRow.actionTypeIndex = achievementData.Key;
+            currentQuestModified.currentQuestNode.cachedRequiredActionRow.actionTypeLabel.text = achievementData.Value.achievementName;
+            confirmSelectionButton.onClick.Invoke();
+         });
+      }
    }
 
    public void showIconSelector () {

@@ -14,6 +14,9 @@ public class QuestNodeRow : MonoBehaviour
    public InputField friendshipReward;
 
    // The container for the deliver objectives
+   public GameObject actionRequirementContainer;
+
+   // The container for the deliver objectives
    public GameObject deliverObjectivesRowsContainer;
 
    // The container for the item rewards
@@ -31,11 +34,17 @@ public class QuestNodeRow : MonoBehaviour
    // The prefab we use for creating item rewards
    public ItemRewardRow itemRewardPrefab;
 
+   // The prefab we use for creating action requirements
+   public ActionRequirementRow actionRequirementPrefab;
+
    // The button for triggering creation of quest delivery
    public Button createDeliveryQuestButton;
 
    // The button for triggering creation of reward
    public Button createRewardButton;
+
+   // The button for triggering creation of quest requirement
+   public Button createRequirementButton;
 
    // The cached Quest Delivery Objective
    public QuestObjectiveDeliver cachedDeliverObjective = new QuestObjectiveDeliver();
@@ -48,6 +57,9 @@ public class QuestNodeRow : MonoBehaviour
 
    // The current quest node being edited
    public QuestNode cachedQuestNode;
+
+   // The current quest action requirement
+   public ActionRequirementRow cachedRequiredActionRow;
 
    // The list of reward being edited
    public List<QuestRewardItem> cachedRewardList;
@@ -162,11 +174,31 @@ public class QuestNodeRow : MonoBehaviour
       }
       cachedQuestNode.itemRewards = cachedRewardList.ToArray();
 
+      actionRequirementContainer.DestroyChildren();
+      if (node.actionRequirements != null) {
+         foreach (QuestActionRequirement actionRequirement in node.actionRequirements) {
+            // Create a new row
+            ActionRequirementRow actionRow = Instantiate(actionRequirementPrefab, actionRequirementContainer.transform, false);
+            actionRow.setData(actionRequirement);
+
+            actionRow.actionTypeButton.onClick.AddListener(() => {
+               cachedRequiredActionRow = actionRow;
+               questRow.currentQuestNode = this;
+               questRow.npcEditionScreen.currentQuestModified = questRow;
+               npcEditScreen.toggleActionSelectionPanel();
+            });
+            actionRow.deleteTypeButton.onClick.AddListener(() => {
+               Destroy(actionRow.gameObject);
+            });
+         }
+      }
+
       requiredGold.text = node.goldRequirement.ToString();
       rewardGold.text = node.goldReward.ToString();
 
       createRewardButton.onClick.AddListener(() => createRewardButtonClickedOn());
       createDeliveryQuestButton.onClick.AddListener(() => createDeliveryQuestButtonClickedOn());
+      createRequirementButton.onClick.AddListener(() => createActionRequirementClickedOn());
    }
 
    private void createRewardButtonClickedOn() {
@@ -191,6 +223,20 @@ public class QuestNodeRow : MonoBehaviour
       cachedRewardRowList.Add(itemRewardRow);
 
       itemRewardRow.updateButton.onClick.AddListener(() => updateRewardButtonClicked(itemRewardRow));
+   }
+
+   public void createActionRequirementClickedOn () {
+      ActionRequirementRow newRequirementRow = Instantiate(actionRequirementPrefab, actionRequirementContainer.transform, false);
+      newRequirementRow.actionTypeButton.onClick.AddListener(() => {
+         cachedRequiredActionRow = newRequirementRow;
+         questRow.currentQuestNode = this;
+         questRow.npcEditionScreen.currentQuestModified = questRow;
+         npcEditScreen.toggleActionSelectionPanel();
+      }); 
+      newRequirementRow.deleteTypeButton.onClick.AddListener(() => {
+         Destroy(newRequirementRow.gameObject);
+      });
+      newRequirementRow.setData(new QuestActionRequirement());
    }
 
    public void toggleContents() {
@@ -279,6 +325,13 @@ public class QuestNodeRow : MonoBehaviour
          itemRewardList.Add(rewardItem);
       }
 
+      // Retrieve every action requirement
+      List<QuestActionRequirement> actionRequirementList = new List<QuestActionRequirement>();
+      foreach (ActionRequirementRow actionRequirementRow in actionRequirementContainer.GetComponentsInChildren<ActionRequirementRow>()) {
+         QuestActionRequirement actionRequirement = actionRequirementRow.getModifiedItemReward();
+         actionRequirementList.Add(actionRequirement);
+      }
+
       // Create an array with the friendship reward value, if any
       QuestRewardFriendship[] friendshipRewardArray = null;
       int friendshipRewardValue = int.Parse(friendshipReward.text);
@@ -289,7 +342,7 @@ public class QuestNodeRow : MonoBehaviour
 
       // Create a new quest node object
       QuestNode node = new QuestNode(_questNodeId, -1, npcText.text, userText.text, deliverObjectiveList.ToArray(),
-         itemRewardList.ToArray(), friendshipRewardArray, int.Parse(requiredGold.text), int.Parse(rewardGold.text));
+         itemRewardList.ToArray(), friendshipRewardArray, int.Parse(requiredGold.text), int.Parse(rewardGold.text), actionRequirementList.ToArray());
 
       return node;
    }

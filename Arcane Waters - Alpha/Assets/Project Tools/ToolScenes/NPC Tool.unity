@@ -4890,6 +4890,7 @@ MonoBehaviour:
   itemTypeParent: {fileID: 2099401251}
   resultItemTypeInt: 0
   selectedTypeID: 0
+  selectedData: 
   selectedCategory: 0
   confirmSelectionButton: {fileID: 1627939855}
   exitSelectionButton: {fileID: 1927464164}
@@ -17759,7 +17760,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.0000038146973, y: -5}
+  m_AnchoredPosition: {x: 0, y: -5}
   m_SizeDelta: {x: -10, y: 40}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &2068432218
@@ -23573,6 +23574,7 @@ MonoBehaviour:
   itemTypeId: {fileID: 495167225646018287}
   itemCategoryName: {fileID: 3055660231526836922}
   itemTypeName: {fileID: 3601631658259811787}
+  itemData: 
   itemIcon: {fileID: 3773293470551714789}
   updateCategoryButton: {fileID: 7713259374094933900}
   updateTypeButton: {fileID: 1842622706664967764}

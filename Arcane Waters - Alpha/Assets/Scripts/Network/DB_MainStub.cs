@@ -91,15 +91,15 @@ public class DB_MainStub : MonoBehaviour
       return new List<XMLPair>();
    }
 
-   public static void updateAchievementXML (string rawData, string name) {
+   public static void updateAchievementXML (string rawData, string name, int xmlId) {
 
    }
 
    public static void deleteAchievementXML (string name) {
    }
 
-   public static List<string> getAchievementXML () {
-      return new List<string>();
+   public static List<XMLPair> getAchievementXML () {
+      return new List<XMLPair>();
    }
 
    public static void updateNPCXML (string rawData, int typeIndex) {
