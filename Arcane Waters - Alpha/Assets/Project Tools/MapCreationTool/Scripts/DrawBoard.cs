@@ -11,8 +11,8 @@ namespace MapCreationTool
 {
    public class DrawBoard : MonoBehaviour
    {
-      public static event System.Action<PrefabDataDefinition, PlacedPrefab> SelectedPrefabChanged;
-      public static event System.Action<PlacedPrefab> SelectedPrefabDataChanged;
+      public static event System.Action<Selection> SelectionChanged;
+      public static event System.Action<PlacedPrefab> PrefabDataChanged;
       public static event System.Action<MapVersion> loadedVersionChanged;
 
       public static DrawBoard instance { get; private set; }
@@ -36,6 +36,12 @@ namespace MapCreationTool
       private TileBase transparentTile = null;
       [SerializeField]
       private SpriteRenderer sizeCover = null;
+      [SerializeField]
+      private Tilemap tileSelectionTilemap = null;
+      [SerializeField]
+      private TileBase selectedTileHighlight = null;
+      [SerializeField]
+      private TileBase hoveredTileHighlight = null;
 
       private EventTrigger eventCanvas;
       private Camera cam;
@@ -51,11 +57,13 @@ namespace MapCreationTool
 
       private List<PlacedPrefab> placedPrefabs = new List<PlacedPrefab>();
 
-      private PlacedPrefab selectedPrefab;
+      private Selection currentSelection = new Selection();
 
-      private Vector3Int? draggingFrom = null;
+      private Vector3? draggingFrom = null;
 
       private Layer deletingFrom = null;
+
+      private Layer tileSelectionLayer;
 
       private void Awake () {
          instance = this;
@@ -70,6 +78,9 @@ namespace MapCreationTool
          Utilities.addPointerListener(eventCanvas, EventTriggerType.PointerExit, pointerExit);
          Utilities.addPointerListener(eventCanvas, EventTriggerType.BeginDrag, pointerBeginDrag);
          Utilities.addPointerListener(eventCanvas, EventTriggerType.EndDrag, pointerEndDrag);
+         Utilities.addPointerListener(eventCanvas, EventTriggerType.PointerClick, pointerClick);
+
+         tileSelectionLayer = new Layer(tileSelectionTilemap);
       }
 
       private void Start () {
@@ -114,18 +125,17 @@ namespace MapCreationTool
       }
 
       private void boardSizeChanged (Vector2Int from, Vector2Int to) {
-         changeBoard(BoardChange.calculateClearAllChange(layers, placedPrefabs));
+         changeBoard(BoardChange.calculateClearAllChange(layers, placedPrefabs, currentSelection));
          setBoardSize(to);
       }
 
       private void editorTypeChanged (EditorType from, EditorType to) {
-         changeBoard(BoardChange.calculateClearAllChange(layers, placedPrefabs));
+         changeBoard(BoardChange.calculateClearAllChange(layers, placedPrefabs, currentSelection));
          setUpLayers(to);
       }
 
       private void toolChanged (ToolType from, ToolType to) {
-         if (from == ToolType.PrefabData && selectedPrefab != null)
-            selectPrefab(null, false);
+
       }
 
       private void toolsAnythingChanged () {
@@ -177,11 +187,6 @@ namespace MapCreationTool
          changeBoard(data.change, false);
       }
 
-      public void performUndoRedoPrefabSelection (UndoRedoData undoRedoData) {
-         SelectedPrefabUndoRedoData data = undoRedoData as SelectedPrefabUndoRedoData;
-         selectPrefab(data.prefab, data.position, false);
-      }
-
       public void performUndoRedoPrefabData (UndoRedoData undoRedoData) {
          PrefabDataUndoRedoData data = undoRedoData as PrefabDataUndoRedoData;
 
@@ -197,8 +202,7 @@ namespace MapCreationTool
       }
 
       public void clearAll () {
-
-         changeBoard(BoardChange.calculateClearAllChange(layers, placedPrefabs));
+         changeBoard(BoardChange.calculateClearAllChange(layers, placedPrefabs, currentSelection));
       }
 
       public void newMap () {
@@ -210,7 +214,7 @@ namespace MapCreationTool
       public void applyDeserializedData (DeserializedProject data, MapVersion mapVersion) {
          changeLoadedVersion(null);
 
-         changeBoard(BoardChange.calculateDeserializedDataChange(data, layers, placedPrefabs));
+         changeBoard(BoardChange.calculateDeserializedDataChange(data, layers, placedPrefabs, currentSelection));
          foreach (var pref in data.prefabs) {
             PlacedPrefab pp = placedPrefabs.FirstOrDefault(p => p.original == pref.prefab &&
                      (Vector2) p.placedInstance.transform.position == (Vector2) pref.position);
@@ -274,8 +278,7 @@ namespace MapCreationTool
                    (Vector2) p.placedInstance.transform.position == (Vector2) pc.positionToDestroy);
 
                if (prefabToDestroy != null) {
-                  if (prefabToDestroy == selectedPrefab)
-                     selectPrefab(null);
+                  currentSelection.remove(prefabToDestroy);
 
                   undoChange.prefabChanges.Add(new PrefabChange {
                      prefabToPlace = prefabToDestroy.original,
@@ -289,15 +292,32 @@ namespace MapCreationTool
             }
          }
 
+         currentSelection.remove(change.selectionToRemove.tiles);
+         currentSelection.remove(change.selectionToRemove.prefabs);
+         currentSelection.add(change.selectionToAdd.tiles);
+         currentSelection.add(change.selectionToAdd.prefabs);
+
+         undoChange.selectionToRemove.add(change.selectionToAdd.tiles);
+         undoChange.selectionToRemove.add(change.selectionToAdd.prefabs);
+         undoChange.selectionToAdd.add(change.selectionToRemove.tiles);
+         undoChange.selectionToAdd.add(change.selectionToRemove.prefabs);
+
+         tileSelectionLayer.setTiles(
+            change.selectionToRemove.tiles.ToArray(),
+            Enumerable.Repeat<TileBase>(null, change.selectionToRemove.tiles.Count).ToArray());
+         tileSelectionLayer.setTiles(
+            change.selectionToAdd.tiles.ToArray(),
+            Enumerable.Repeat<TileBase>(selectedTileHighlight, change.selectionToAdd.tiles.Count).ToArray());
+
          if (registerUndo && !undoChange.empty)
             Undo.register(
                 performUndoRedo,
                 new BoardUndoRedoData { change = undoChange, cascade = isDrag },
                 new BoardUndoRedoData { change = change, cascade = isDrag });
-      }
 
-      public void setSelectedPrefabData (string key, string value, bool recordUndo = true) {
-         setPrefabData(selectedPrefab, key, value, recordUndo);
+         if (!change.selectionToAdd.empty || !change.selectionToRemove.empty) {
+            SelectionChanged?.Invoke(currentSelection);
+         }
       }
 
       public void setPrefabData (PlacedPrefab prefab, string key, string value, bool recordUndo = true) {
@@ -323,8 +343,7 @@ namespace MapCreationTool
          if (listener != null)
             listener.dataFieldChanged(key, value);
 
-         if (prefab == selectedPrefab)
-            SelectedPrefabDataChanged(prefab);
+         PrefabDataChanged(prefab);
       }
 
       private GameObject instantiatePlacedPrefab (GameObject original, Vector3 position) {
@@ -457,7 +476,7 @@ namespace MapCreationTool
                } else if (Tools.tileGroup.type == TileGroupType.Rect && draggingFrom != null) {
                   var group = Tools.tileGroup as RectTileGroup;
                   Vector3Int to = worldToCell(pointerWorldPosition);
-                  result.add(BoardChange.calculateRectChanges(group, layers[group.layer].subLayers[group.subLayer], draggingFrom.Value, to));
+                  result.add(BoardChange.calculateRectChanges(group, layers[group.layer].subLayers[group.subLayer], worldToCell(draggingFrom.Value), to));
                }
             }
          } else if (Tools.toolType == ToolType.Fill) {
@@ -472,6 +491,88 @@ namespace MapCreationTool
                }
             }
          }
+         return result;
+      }
+
+      private BoardChange getSelectionBoardChange (Vector3 p1, Vector3 p2, bool add, bool rem, bool selectTiles, bool selectPrefabs, bool topMostPref = false) {
+         BoardChange result = new BoardChange();
+
+         if (selectTiles) {
+            Vector3Int cell1 = worldToCell(p1);
+            Vector3Int cell2 = worldToCell(p2);
+            if (add) {
+               foreach (Vector3Int tile in BoardChange.getRectTilePositions(cell1, cell2)) {
+                  if (!currentSelection.contains(tile)) {
+                     result.selectionToAdd.add(tile);
+                  }
+               }
+            } else if (rem) {
+               foreach (Vector3Int tile in BoardChange.getRectTilePositions(cell1, cell2)) {
+                  if (currentSelection.contains(tile)) {
+                     result.selectionToRemove.add(tile);
+                  }
+               }
+            } else {
+               HashSet<Vector3Int> rect = new HashSet<Vector3Int>(BoardChange.getRectTilePositions(cell1, cell2));
+               foreach (Vector3Int tile in currentSelection.tiles) {
+                  if (!rect.Contains(tile)) {
+                     result.selectionToRemove.add(tile);
+                  }
+               }
+               foreach (Vector3Int tile in rect) {
+                  if (!currentSelection.contains(tile)) {
+                     result.selectionToAdd.add(tile);
+                  }
+               }
+
+               if (!selectPrefabs) {
+                  result.selectionToRemove.add(currentSelection.prefabs);
+               }
+            }
+         }
+
+         if (selectPrefabs) {
+            List<PlacedPrefab> prefs = null;
+            if (topMostPref) {
+               prefs = new List<PlacedPrefab>();
+               PlacedPrefab hovered = getHoveredPrefab(p2);
+               if (hovered != null) {
+                  prefs.Add(hovered);
+               }
+            } else {
+               prefs = prefabsBetween(p1, p2);
+            }
+            if (add) {
+               foreach (PlacedPrefab pref in prefs) {
+                  if (!currentSelection.contains(pref)) {
+                     result.selectionToAdd.add(pref);
+                  }
+               }
+            } else if (rem) {
+               foreach (PlacedPrefab pref in prefs) {
+                  if (currentSelection.contains(pref)) {
+                     result.selectionToRemove.add(pref);
+                  }
+               }
+            } else {
+               HashSet<PlacedPrefab> rect = new HashSet<PlacedPrefab>(prefs);
+               foreach (PlacedPrefab pref in currentSelection.prefabs) {
+                  if (!rect.Contains(pref)) {
+                     result.selectionToRemove.add(pref);
+                  }
+               }
+               foreach (PlacedPrefab pref in rect) {
+                  if (!currentSelection.contains(pref)) {
+                     result.selectionToAdd.add(pref);
+                  }
+               }
+
+               if (!selectTiles) {
+                  result.selectionToRemove.add(currentSelection.tiles);
+               }
+            }
+         }
+
          return result;
       }
 
@@ -523,23 +624,43 @@ namespace MapCreationTool
             preview.prefabPreviewInstance = null;
             preview.targetPrefab = null;
          }
+
          foreach (PlacedPrefab pp in placedPrefabs) {
             pp.placedInstance.SetActive(true);
-            pp.setHighlight(false, false, false);
+            if (!currentSelection.contains(pp)) {
+               pp.setHighlight(false, false, false);
+            } else {
+               pp.setHighlight(false, true, false);
+            }
             pp.placedInstance.GetComponent<MapEditorPrefab>()?.setHovered(false);
          }
 
-         if (selectedPrefab != null) {
-            selectedPrefab.setHighlight(false, true, false);
-         }
+         tileSelectionLayer.clearAllPreviewTiles();
       }
 
-      private void updatePreview (Vector3 pointerScreenPos) {
+      private void updatePreview (Vector3 pointerScreenPos, bool isDrag) {
          ensurePreviewCleared();
          Vector2 worldPos = cam.ScreenToWorldPoint(pointerScreenPos);
          BoardChange change = Tools.toolType == ToolType.Brush
              ? getPotentialBoardChange(worldPos)
              : new BoardChange();
+
+         if (Tools.toolType == ToolType.Selection) {
+            bool selectTiles = Tools.selectionTarget == SelectionTarget.Both || Tools.selectionTarget == SelectionTarget.Tiles;
+            bool selectPrefabs = Tools.selectionTarget == SelectionTarget.Both || Tools.selectionTarget == SelectionTarget.Prefabs;
+
+            bool add = Settings.keybindings.getAction(Keybindings.Command.SelectionAdd);
+            bool rem = Settings.keybindings.getAction(Keybindings.Command.SelectionRemove);
+
+            if (!add && !rem)
+               add = true;
+
+            if (draggingFrom != null) {
+               change = getSelectionBoardChange(draggingFrom.Value, worldPos, add, rem, selectTiles, selectPrefabs);
+            } else {
+               change = getSelectionBoardChange(worldPos, worldPos, add, rem, false, selectPrefabs);
+            }
+         }
 
          updateBrushOutline();
 
@@ -589,6 +710,19 @@ namespace MapCreationTool
                tc.layer.setPreviewTile(tc.position, tc.tile);
             preview.previewTilesSet = true;
          }
+
+         foreach (Vector3Int tile in change.selectionToAdd.tiles) {
+            tileSelectionLayer.setPreviewTile(tile, hoveredTileHighlight);
+         }
+
+         foreach (Vector3Int tile in change.selectionToRemove.tiles) {
+            tileSelectionLayer.setPreviewTile(tile, hoveredTileHighlight);
+         }
+
+         foreach (PlacedPrefab prefab in change.selectionToAdd.prefabs.Union(change.selectionToRemove.prefabs)) {
+            prefab.setHighlight(true, false, false);
+            prefab.placedInstance.GetComponent<MapEditorPrefab>()?.setHovered(true);
+         }
       }
 
       private void updateBrushOutline () {
@@ -604,14 +738,27 @@ namespace MapCreationTool
                brushOutline.size = Vector2.one;
                brushOutline.color = Color.red;
             }
-         } else if (Tools.toolType == ToolType.PrefabData) {
-            var target = getHoveredPrefab();
+         } else if (Tools.toolType == ToolType.Selection) {
+            brushOutline.enabled = draggingFrom != null;
 
-            if (target != null) {
-               if (target != selectedPrefab) {
-                  target.setHighlight(true, false, false);
-               }
-               target.placedInstance.GetComponent<MapEditorPrefab>()?.setHovered(true);
+            if (!brushOutline.enabled)
+               return;
+
+            Vector3 wp = MainCamera.stwp(Input.mousePosition);
+            Bounds bounds = new Bounds {
+               min = new Vector3(Mathf.Min(wp.x, draggingFrom.Value.x), Mathf.Min(wp.y, draggingFrom.Value.y), 0),
+               max = new Vector3(Mathf.Max(wp.x, draggingFrom.Value.x), Mathf.Max(wp.y, draggingFrom.Value.y), 0)
+            };
+
+            brushOutline.transform.position = bounds.center;
+            brushOutline.size = bounds.size;
+
+            if (Settings.keybindings.getAction(Keybindings.Command.SelectionAdd)) {
+               brushOutline.color = Color.green;
+            } else if (Settings.keybindings.getAction(Keybindings.Command.SelectionRemove)) {
+               brushOutline.color = Color.red;
+            } else {
+               brushOutline.color = Color.blue;
             }
          } else {
             brushOutline.enabled = (Tools.toolType == ToolType.Brush && Tools.tileGroup != null && !(Tools.tileGroup is PrefabGroup));
@@ -653,39 +800,8 @@ namespace MapCreationTool
          return targetPosition;
       }
 
-      private void selectPrefab (PlacedPrefab prefab, bool recordUndo = true) {
-         if (recordUndo) {
-            Undo.register(
-                performUndoRedoPrefabSelection,
-                new SelectedPrefabUndoRedoData {
-                   prefab = selectedPrefab?.original,
-                   position = selectedPrefab == null ? Vector3.zero : selectedPrefab.placedInstance.transform.position
-                },
-                new SelectedPrefabUndoRedoData {
-                   prefab = prefab?.original,
-                   position = prefab == null ? Vector3.zero : prefab.placedInstance.transform.position
-                });
-         }
-
-         if (selectedPrefab != null) {
-            selectedPrefab.placedInstance.GetComponent<MapEditorPrefab>()?.setSelected(false);
-         }
-
-         selectedPrefab = prefab;
-         SelectedPrefabChanged?.Invoke(selectedPrefab?.placedInstance.GetComponent<PrefabDataDefinition>(), selectedPrefab);
-
-         if (selectedPrefab != null) {
-            selectedPrefab.placedInstance.GetComponent<MapEditorPrefab>()?.setSelected(true);
-         }
-      }
-
-      private void selectPrefab (GameObject prefab, Vector3 position, bool recordUndo = true) {
-         selectPrefab(placedPrefabs.FirstOrDefault(p => p.original == prefab &&
-                     (Vector2) p.placedInstance.transform.position == (Vector2) position), recordUndo);
-      }
-
-      private PlacedPrefab getHoveredPrefab () {
-         Vector2 pointerPos = MainCamera.stwp(Input.mousePosition);
+      private PlacedPrefab getHoveredPrefab (Vector3? mousePostion = null) {
+         Vector2 pointerPos = mousePostion ?? MainCamera.stwp(Input.mousePosition);
          PlacedPrefab target = null;
          float minZ = float.MaxValue;
 
@@ -700,6 +816,22 @@ namespace MapCreationTool
          }
 
          return target;
+      }
+
+      private List<PlacedPrefab> prefabsBetween (Vector3 p1, Vector3 p2) {
+         List<PlacedPrefab> result = new List<PlacedPrefab>();
+         Bounds bounds = new Bounds();
+         bounds.min = new Vector3(Mathf.Min(p1.x, p2.x), Mathf.Min(p1.y, p2.y), -1000f);
+         bounds.max = new Vector3(Mathf.Max(p1.x, p2.x), Mathf.Max(p1.y, p2.y), 1000f);
+
+         foreach (var pp in placedPrefabs) {
+            var col = pp.placedInstance.GetComponent<Collider2D>();
+            if (col != null && col.bounds.Intersects(bounds)) {
+               result.Add(pp);
+            }
+         }
+
+         return result;
       }
 
       /// <summary>
@@ -743,7 +875,7 @@ namespace MapCreationTool
 
       private void pointerDown (PointerEventData data) {
          if (data.button == PointerEventData.InputButton.Left) {
-            if (Tools.toolType == ToolType.Brush || Tools.toolType == ToolType.Eraser || Tools.toolType == ToolType.Fill) {
+            if (Tools.toolType == ToolType.Brush || Tools.toolType == ToolType.Eraser || Tools.toolType == ToolType.Fill || Tools.toolType == ToolType.Selection) {
                if (Tools.toolType == ToolType.Eraser) {
                   // Ensure following deletion on drag event is only at the current layer
                   if (getHoveredPrefab() != null) {
@@ -753,18 +885,15 @@ namespace MapCreationTool
                   }
                }
                changeBoard(getPotentialBoardChange(data.pointerCurrentRaycast.worldPosition));
-            } else if (Tools.toolType == ToolType.PrefabData) {
-               selectPrefab(getHoveredPrefab());
             }
          }
-         updatePreview(data.position);
+         updatePreview(data.position, false);
       }
 
       public void pointerBeginDrag (PointerEventData data) {
          if (data.button == PointerEventData.InputButton.Left) {
-            if (Tools.tileGroup != null && Tools.tileGroup.type == TileGroupType.Rect) {
-               var pos = worldToCell(data.pointerPressRaycast.worldPosition);
-               draggingFrom = pos;
+            if ((Tools.tileGroup != null && Tools.tileGroup.type == TileGroupType.Rect) || Tools.toolType == ToolType.Selection) {
+               draggingFrom = data.pointerPressRaycast.worldPosition;
             }
          }
       }
@@ -774,7 +903,19 @@ namespace MapCreationTool
             return;
 
          if (data.button == PointerEventData.InputButton.Left) {
-            changeBoard(getPotentialBoardChange(data.pointerCurrentRaycast.worldPosition, true));
+            if (Tools.toolType == ToolType.Selection) {
+               bool selectTiles = Tools.selectionTarget == SelectionTarget.Both || Tools.selectionTarget == SelectionTarget.Tiles;
+               bool selectPrefabs = Tools.selectionTarget == SelectionTarget.Both || Tools.selectionTarget == SelectionTarget.Prefabs;
+
+               bool add = Settings.keybindings.getAction(Keybindings.Command.SelectionAdd);
+               bool rem = Settings.keybindings.getAction(Keybindings.Command.SelectionRemove);
+               changeBoard(getSelectionBoardChange(
+                  draggingFrom.Value,
+                  data.pointerCurrentRaycast.worldPosition,
+                  add, rem, selectTiles, selectPrefabs));
+            } else {
+               changeBoard(getPotentialBoardChange(data.pointerCurrentRaycast.worldPosition, true));
+            }
          }
 
          draggingFrom = null;
@@ -791,11 +932,23 @@ namespace MapCreationTool
 
             MainCamera.pan(curPos - prevPos);
          }
-         updatePreview(data.position);
+         updatePreview(data.position, true);
+      }
+
+      private void pointerClick (PointerEventData data) {
+         if (Tools.toolType == ToolType.Selection && draggingFrom == null && data.button == PointerEventData.InputButton.Left) {
+            Vector3 pos = data.pointerPressRaycast.worldPosition;
+            bool selectPrefabs = Tools.selectionTarget == SelectionTarget.Both || Tools.selectionTarget == SelectionTarget.Prefabs;
+            bool add = Settings.keybindings.getAction(Keybindings.Command.SelectionAdd);
+            bool rem = Settings.keybindings.getAction(Keybindings.Command.SelectionRemove);
+            changeBoard(getSelectionBoardChange(pos, pos, add, rem, false, selectPrefabs, true));
+         }
+
+         updatePreview(data.position, false);
       }
 
       private void pointerMove (Vector3 screenPos) {
-         updatePreview(screenPos);
+         updatePreview(screenPos, draggingFrom != null);
       }
 
       private void pointerScroll (float scroll) {
@@ -815,6 +968,10 @@ namespace MapCreationTool
       public GameObject prefabPreviewInstance { get; set; }
       public GameObject targetPrefab { get; set; }
       public bool previewTilesSet { get; set; }
+
+      public Preview () {
+
+      }
    }
 
    public class PlacedPrefab
@@ -910,6 +1067,7 @@ namespace MapCreationTool
             top = n
          };
       }
+
       public override string ToString () {
          return $"left = {left}, right = {right}, bot = {bot}, top = {top}";
       }

@@ -43,8 +43,8 @@ public class GroundChecker : ClientMonoBehaviour {
          Vector3Int cellPos = grid.WorldToCell(_player.sortPoint.transform.position);
 
          // Locate the tilemaps within the area
-         foreach (Tilemap tilemap in area.getTilemaps()) {
-            Tile tile = tilemap.GetTile<Tile>(cellPos);
+         foreach (TilemapLayer layer in area.getTilemapLayers()) {
+            Tile tile = layer.tilemap.GetTile<Tile>(cellPos);
 
             if (tile == null) {
                continue;

@@ -87,22 +87,6 @@ namespace MapCreationTool
          Settings.save();
       }
 
-      public void exportSettings () {
-         FileUtility.saveSettings(Settings.serialize());
-      }
-
-      public void loadSettings () {
-         try {
-            string data = FileUtility.loadSettings();
-            if (data != null) {
-               Settings.load(data);
-               Settings.save();
-            }
-         } catch (Exception ex) {
-            UI.errorDialog.display("Error while loading settings:\n" + ex.Message);
-         }
-      }
-
       public void restoreDefaults () {
          Settings.setDefaults();
          Settings.save();

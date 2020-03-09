@@ -25,7 +25,7 @@ namespace MapCreationTool
          this.subLayers = subLayers.Select(tl => new Layer(tl)).ToArray();
       }
 
-      public void Destroy() {
+      public void Destroy () {
          if (tilemap != null)
             Object.Destroy(tilemap.gameObject);
          foreach (Layer layer in subLayers)
@@ -114,6 +114,10 @@ namespace MapCreationTool
       /// <param name="positions"></param>
       /// <param name="tiles"></param>
       public void setTiles (Vector3Int[] positions, TileBase[] tiles) {
+         if (positions.Length == 0) {
+            return;
+         }
+
          encapsulate(positions);
 
          for (int i = 0; i < positions.Length; i++) {

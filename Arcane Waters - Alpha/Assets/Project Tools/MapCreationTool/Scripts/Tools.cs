@@ -18,6 +18,7 @@ namespace MapCreationTool
       public static event Action<EditorType, EditorType> EditorTypeChanged;
       public static event Action<Vector2Int, Vector2Int> BoardSizeChanged;
       public static event Action<bool, bool> SnapToGridChanged;
+      public static event Action<SelectionTarget, SelectionTarget> SelectionTargetChanged;
 
       public static event Action AnythingChanged;
 
@@ -27,8 +28,8 @@ namespace MapCreationTool
       public static Biome.Type biome { get; private set; }
       public static EraserLayerMode eraserLayerMode { get; private set; }
       public static FillBounds fillBounds { get; private set; }
-
       public static EditorType editorType { get; private set; }
+      public static SelectionTarget selectionTarget { get; private set; }
 
       public static TileGroup tileGroup { get; private set; }
 
@@ -61,6 +62,7 @@ namespace MapCreationTool
          editorType = EditorType.Area;
          boardSize = new Vector2Int(64, 64);
          snapToGrid = false;
+         selectionTarget = SelectionTarget.Both;
       }
 
       public static void performUndoRedo (UndoRedoData undoRedoData) {
@@ -71,6 +73,7 @@ namespace MapCreationTool
          burrowedTrees = data.burrowedTrees ?? burrowedTrees;
          fillBounds = data.fillBounds ?? fillBounds;
          snapToGrid = data.snapToGrid ?? snapToGrid;
+         selectionTarget = data.selectionTarget ?? selectionTarget;
 
          if (data.biome != null) {
             changeBiome(data.biome.Value, false);
@@ -233,6 +236,21 @@ namespace MapCreationTool
          Undo.clear();
       }
 
+      public static void changeSelectionTarget (SelectionTarget type, bool registerUndo = true) {
+         SelectionTarget oldType = selectionTarget;
+         selectionTarget = type;
+
+         SelectionTargetChanged?.Invoke(oldType, selectionTarget);
+         AnythingChanged?.Invoke();
+
+         if (registerUndo) {
+            Undo.register(
+                performUndoRedo,
+                new ToolUndoRedoData { selectionTarget = oldType },
+                new ToolUndoRedoData { selectionTarget = selectionTarget });
+         }
+      }
+
       public static void changeBoardSize (Vector2Int size) {
          Vector2Int oldSize = boardSize;
          boardSize = size;
@@ -249,7 +267,8 @@ namespace MapCreationTool
       Brush = 0,
       Eraser = 1,
       Fill = 2,
-      PrefabData = 3
+      Selection = 3,
+      Move = 4
    }
 
    public enum EraserLayerMode
@@ -269,5 +288,12 @@ namespace MapCreationTool
       Area = 0,
       Interior = 1,
       Sea = 2
+   }
+
+   public enum SelectionTarget
+   {
+      Both = 1,
+      Tiles = 2,
+      Prefabs = 3
    }
 }

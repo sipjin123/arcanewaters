@@ -15,7 +15,7 @@ public class UserEquipmentFetcher : MonoBehaviour {
    public static UserEquipmentFetcher self;
 
    // Host and PHP File directories
-   public const string WEB_DIRECTORY = "http://localhost/arcane2";//"http://arcanewaters.com";
+   public const string WEB_DIRECTORY = "http://arcanewaters.com";//"http://localhost/arcane2";
    public const string WEAPON_DIRECTORY = "/user_equipment_weapon_v3.php?usrId=";
    public const string ARMOR_DIRECTORY = "/user_equipment_armor_v3.php?usrId=";
    public const string USER_DIRECTORY = "/user_data_v1.php?usrId=";

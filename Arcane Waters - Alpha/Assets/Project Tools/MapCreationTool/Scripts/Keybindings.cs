@@ -122,7 +122,9 @@ namespace MapCreationTool
          EraserTool = 7,
          FillTool = 8,
          SelectTool = 9,
-         MoveTool = 10
+         MoveTool = 10,
+         SelectionAdd = 11,
+         SelectionRemove = 12
       }
 
       [System.Serializable]

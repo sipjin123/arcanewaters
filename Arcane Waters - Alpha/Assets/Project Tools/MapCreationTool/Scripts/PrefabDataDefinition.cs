@@ -67,6 +67,13 @@ namespace MapCreationTool
                   toolTip = customData.toolTip,
                   options = MonsterManager.instance.formSeaMonsterSelectionOptions()
                };
+            } else if (customData.type == CustomFieldType.ActionName) {
+               Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
+               selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
+                  name = customData.name,
+                  toolTip = customData.toolTip,
+                  options = GenericActionTrigger.actions.Keys.ToArray()
+               };
             }
          }
       }
@@ -112,7 +119,8 @@ namespace MapCreationTool
          ShopPanelType,
          ShopName,
          LandMonster,
-         SeaMonster
+         SeaMonster,
+         ActionName
       }
    }
 }

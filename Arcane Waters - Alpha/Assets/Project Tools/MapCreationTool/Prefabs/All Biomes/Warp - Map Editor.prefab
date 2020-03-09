@@ -74,6 +74,7 @@ GameObject:
   - component: {fileID: 2375129391239885516}
   - component: {fileID: 2634567558379703915}
   - component: {fileID: 7229528483941549060}
+  - component: {fileID: 7105107861911183516}
   m_Layer: 0
   m_Name: Warp - Map Editor
   m_TagString: Untagged
@@ -249,6 +250,21 @@ MonoBehaviour:
   customFrameName: 
   generatesOnStart: 0
   generatesOnValidate: 1
+--- !u!114 &7105107861911183516
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1536697751256960758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e851007333b54a4190716c035b83695, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  offsetZ: -3
+  isActive: 0
+  sortPoint: {fileID: 0}
 --- !u!1 &2183461680854745428
 GameObject:
   m_ObjectHideFlags: 0

@@ -156,7 +156,7 @@ namespace MapCreationTool
             Undo.doRedo();
          }
 
-         if (!UI.anyPanelOpen) {
+         if (!UI.anyPanelOpen && !UI.anyInputFieldFocused) {
             if (Settings.keybindings.getAction(Keybindings.Command.PanLeft)) {
                MainCamera.pan(Vector3.left * 20f * Time.deltaTime);
             }
@@ -191,8 +191,8 @@ namespace MapCreationTool
                }
             }
             if (Settings.keybindings.getAction(Keybindings.Command.SelectTool)) {
-               if (Tools.toolType != ToolType.PrefabData) {
-                  Tools.changeTool(ToolType.PrefabData);
+               if (Tools.toolType != ToolType.Selection) {
+                  Tools.changeTool(ToolType.Selection);
                }
             }
          }

@@ -12,20 +12,30 @@ namespace MapCreationTool
    {
       public List<TileChange> tileChanges { get; set; }
       public List<PrefabChange> prefabChanges { get; set; }
+      public Selection selectionToAdd { get; set; }
+      public Selection selectionToRemove { get; set; }
 
       public BoardChange () {
          tileChanges = new List<TileChange>();
          prefabChanges = new List<PrefabChange>();
+
+         selectionToAdd = new Selection();
+         selectionToRemove = new Selection();
       }
 
       public bool empty
       {
-         get { return tileChanges.Count == 0 && prefabChanges.Count == 0; }
+         get { return tileChanges.Count == 0 && prefabChanges.Count == 0 && selectionToAdd.empty && selectionToRemove.empty; }
       }
 
       public void add (BoardChange change) {
          tileChanges.AddRange(change.tileChanges);
          prefabChanges.AddRange(change.prefabChanges);
+
+         selectionToAdd.add(change.selectionToAdd.tiles);
+         selectionToAdd.add(change.selectionToAdd.prefabs);
+         selectionToRemove.add(change.selectionToRemove.tiles);
+         selectionToRemove.add(change.selectionToRemove.prefabs);
       }
 
       private static BoundsInt getBoardBoundsInt () {
@@ -41,7 +51,7 @@ namespace MapCreationTool
          return result;
       }
 
-      public static BoardChange calculateClearAllChange (Dictionary<string, Layer> layers, List<PlacedPrefab> prefabs) {
+      public static BoardChange calculateClearAllChange (Dictionary<string, Layer> layers, List<PlacedPrefab> prefabs, Selection currentSelection) {
          BoardChange result = new BoardChange();
 
          foreach (Layer layer in layers.Values) {
@@ -58,6 +68,14 @@ namespace MapCreationTool
 
          foreach (PlacedPrefab pref in prefabs) {
             result.prefabChanges.Add(new PrefabChange { prefabToDestroy = pref.original, positionToDestroy = pref.placedInstance.transform.position });
+         }
+
+         foreach (PlacedPrefab pref in currentSelection.prefabs) {
+            result.selectionToRemove.add(pref);
+         }
+
+         foreach (Vector3Int tile in currentSelection.tiles) {
+            result.selectionToRemove.add(tile);
          }
 
          return result;
@@ -93,8 +111,8 @@ namespace MapCreationTool
          return result;
       }
 
-      public static BoardChange calculateDeserializedDataChange (DeserializedProject data, Dictionary<string, Layer> layers, List<PlacedPrefab> prefabs) {
-         BoardChange result = calculateClearAllChange(layers, prefabs);
+      public static BoardChange calculateDeserializedDataChange (DeserializedProject data, Dictionary<string, Layer> layers, List<PlacedPrefab> prefabs, Selection currentSelection) {
+         BoardChange result = calculateClearAllChange(layers, prefabs, currentSelection);
          BoundsInt boundsInt = getBoardBoundsInt();
          Bounds boundsFloat = getPrefabBounds();
 
@@ -311,6 +329,27 @@ namespace MapCreationTool
          }
 
          return change;
+      }
+
+      public static IEnumerable<Vector3Int> getRectTilePositions (Vector3Int p1, Vector3Int p2) {
+         BoundsInt bounds = getBoardBoundsInt();
+
+         // Clamp points inside board bounds
+         p1.Set(Math.Max(p1.x, bounds.min.x), Math.Max(p1.y, bounds.min.y), 0);
+         p1.Set(Math.Min(p1.x, bounds.max.x), Math.Min(p1.y, bounds.max.y), 0);
+         p2.Set(Math.Max(p2.x, bounds.min.x), Math.Max(p2.y, bounds.min.y), 0);
+         p2.Set(Math.Min(p2.x, bounds.max.x), Math.Min(p2.y, bounds.max.y), 0);
+
+         // Find min and max corners of the bounding box
+         Vector3Int min = new Vector3Int(Math.Min(p1.x, p2.x), Mathf.Min(p1.y, p2.y), 0);
+         Vector3Int max = new Vector3Int(Math.Max(p1.x, p2.x), Mathf.Max(p1.y, p2.y), 0);
+         Vector2Int size = new Vector2Int(max.x - min.x + 1, max.y - min.y + 1);
+
+         for (int i = 0; i < size.x; i++) {
+            for (int j = 0; j < size.y; j++) {
+               yield return min + new Vector3Int(i, j, 0);
+            }
+         }
       }
 
       public static BoardChange calculateRectChanges (RectTileGroup group, Layer layer, Vector3Int p1, Vector3Int p2) {

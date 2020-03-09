@@ -783,6 +783,19 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
+   public static bool updateDeploySchedule (long scheduleDateAsTicks, int buildVersion) {
+      return false;
+   }
+
+   public static DeployScheduleInfo getDeploySchedule () {
+      return null;
+   }
+
+
+   public static bool cancelDeploySchedule () {
+      return false;
+   }
+
    /*
 
    public static void refillSupplies (int userId) {

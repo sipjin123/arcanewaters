@@ -6,6 +6,7 @@ using Mirror;
 using UnityEngine.Tilemaps;
 using System;
 using MapCreationTool.Serialization;
+using System.Linq;
 
 public class Area : MonoBehaviour
 {
@@ -67,8 +68,15 @@ public class Area : MonoBehaviour
          compositeCollider.GenerateGeometry();
       }
 
-      // Store all of our Tilemaps
-      _tilemaps = new List<Tilemap>(GetComponentsInChildren<Tilemap>(true));
+      // Store all of our Tilemaps if they haven't been set already
+      if (_tilemapLayers == null) {
+         _tilemapLayers = GetComponentsInChildren<Tilemap>(true)
+            .Select(t => new TilemapLayer {
+               tilemap = t,
+               name = t.gameObject.name,
+               type = MapCreationTool.LayerType.Regular
+            }).ToList();
+      }
 
       // Store all of our tilemap colliders
       _tilemapColliders = new List<TilemapCollider2D>(GetComponentsInChildren<TilemapCollider2D>());
@@ -129,8 +137,12 @@ public class Area : MonoBehaviour
       return isShop(areaKey) || isHouse(areaKey);
    }
 
-   public List<Tilemap> getTilemaps () {
-      return _tilemaps;
+   public List<TilemapLayer> getTilemapLayers () {
+      return _tilemapLayers;
+   }
+
+   public void setTilemapLayers (List<TilemapLayer> layers) {
+      _tilemapLayers = layers;
    }
 
    public static string getName (string areaKey) {
@@ -247,7 +259,7 @@ public class Area : MonoBehaviour
    #region Private Variables
 
    // Stores the Tilemaps for this area
-   protected List<Tilemap> _tilemaps = new List<Tilemap>();
+   protected List<TilemapLayer> _tilemapLayers = new List<TilemapLayer>();
 
    // The Tilemap Colliders for this area
    protected List<TilemapCollider2D> _tilemapColliders = new List<TilemapCollider2D>();

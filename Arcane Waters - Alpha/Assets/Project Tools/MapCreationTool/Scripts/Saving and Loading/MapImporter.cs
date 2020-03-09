@@ -37,7 +37,7 @@ namespace MapCreationTool
             area.isSea = true;
          }
 
-         instantiateTilemaps(mapInfo, exportedProject, result.tilemapParent, result.collisionTilemapParent);
+         result.area.setTilemapLayers(instantiateTilemaps(mapInfo, exportedProject, result.tilemapParent, result.collisionTilemapParent));
          instantiatePrefabs(mapInfo, exportedProject, result.prefabParent, result.npcParent, result.area);
 
          if (exportedProject.gravityEffectors != null) {
@@ -167,8 +167,10 @@ namespace MapCreationTool
          area.registerNPCAndEnemyData(npcData, enemyData);
       }
 
-      static void instantiateTilemaps (MapInfo mapInfo, ExportedProject001 project, Transform tilemapParent, Transform collisionTilemapParent) {
+      static List<TilemapLayer> instantiateTilemaps (MapInfo mapInfo, ExportedProject001 project, Transform tilemapParent, Transform collisionTilemapParent) {
          int unrecognizedTiles = 0;
+
+         List<TilemapLayer> result = new List<TilemapLayer>();
 
          foreach (ExportedLayer001 layer in project.layers) {
             // Create the tilemap gameobject
@@ -179,10 +181,6 @@ namespace MapCreationTool
             var colTilemap = UnityEngine.Object.Instantiate(AssetSerializationMaps.collisionTilemapTemplate, collisionTilemapParent);
             colTilemap.transform.localPosition = Vector3.zero;
             colTilemap.gameObject.name = "Layer " + layer.z;
-
-            if (layer.type == LayerType.Water) {
-               colTilemap.gameObject.name += " Water";
-            }
 
             // Add all the tiles
             Vector3Int[] positions = layer.tiles.Select(t => new Vector3Int(t.x, t.y, 0)).ToArray();
@@ -205,6 +203,12 @@ namespace MapCreationTool
 
             tilemap.SetTiles(positions, tiles);
 
+            result.Add(new TilemapLayer {
+               tilemap = tilemap,
+               name = layer.name ?? "",
+               type = layer.type
+            });
+
             positions = layer.tiles.Where(t => t.c == 1).Select(t => new Vector3Int(t.x, t.y, 0)).ToArray();
             tiles = layer.tiles
                .Where(t => t.c == 1)
@@ -219,9 +223,11 @@ namespace MapCreationTool
          if (unrecognizedTiles > 0) {
             Utilities.warning($"Could not recognize { unrecognizedTiles } tiles of map { mapInfo.mapName }");
          }
+
+         return result;
       }
 
-      public static Direction? ParseDirection (string data) {
+      public static Direction? parseDirection (string data) {
          switch (data.Trim(' ')) {
             case "":
                return Direction.North;
@@ -242,6 +248,20 @@ namespace MapCreationTool
             default:
                Debug.LogWarning($"Unable to parse direction. Data:{data}");
                return null;
+         }
+      }
+
+      public static GenericActionTrigger.InteractionType parseInteractionType (string data) {
+         switch (data.Trim(' ')) {
+            case "Enter":
+               return GenericActionTrigger.InteractionType.Enter;
+            case "Exit":
+               return GenericActionTrigger.InteractionType.Exit;
+            case "Stay":
+               return GenericActionTrigger.InteractionType.Stay;
+            default:
+               Debug.LogWarning($"Unable to parse direction. Data:{data}");
+               return GenericActionTrigger.InteractionType.Enter;
          }
       }
 

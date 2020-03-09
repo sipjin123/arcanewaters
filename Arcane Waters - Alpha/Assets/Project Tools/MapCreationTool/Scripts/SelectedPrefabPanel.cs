@@ -17,10 +17,13 @@ namespace MapCreationTool
       private DrawBoard drawBoard = null;
 
       private CanvasGroup cGroup;
-      private PrefabDataDefinition data;
       private Image bg;
 
       private Dictionary<string, Field> fields = new Dictionary<string, Field>();
+
+      private Selection selection;
+      private PlacedPrefab prefab;
+      private PrefabDataDefinition dataDef;
 
       private void Awake () {
          cGroup = GetComponent<CanvasGroup>();
@@ -30,21 +33,33 @@ namespace MapCreationTool
       }
 
       private void OnEnable () {
-         DrawBoard.SelectedPrefabChanged += prefabChanged;
-         DrawBoard.SelectedPrefabDataChanged += setData;
+         DrawBoard.SelectionChanged += selectionChanged;
+         DrawBoard.PrefabDataChanged += prefabDataChanged;
       }
 
       private void OnDisable () {
-         DrawBoard.SelectedPrefabChanged -= prefabChanged;
-         DrawBoard.SelectedPrefabDataChanged -= setData;
+         DrawBoard.SelectionChanged -= selectionChanged;
+         DrawBoard.PrefabDataChanged -= prefabDataChanged;
       }
 
-      private void prefabChanged (PrefabDataDefinition data, PlacedPrefab placedPrefab) {
-         this.data = data;
-
-         if (data == null) {
+      private void selectionChanged (Selection selection) {
+         if (selection.empty) {
             hide();
             return;
+         }
+
+         this.selection = selection;
+         prefab = null;
+
+         if (selection.tiles.Count > 0 && selection.prefabs.Count > 0) {
+            titleText.text = "Multiple Objects";
+         } else if (selection.tiles.Count > 0) {
+            titleText.text = "Tiles";
+         } else if (selection.prefabs.Count > 1) {
+            titleText.text = "Multiple Prefabs";
+         } else {
+            titleText.text = "Prefab";
+            prefab = selection.prefabs.First();
          }
 
          foreach (var f in fields) {
@@ -55,13 +70,23 @@ namespace MapCreationTool
 
          show();
 
-         setLayout(data);
-         setData(placedPrefab);
+         if (prefab != null) {
+            dataDef = prefab.placedInstance.GetComponent<PrefabDataDefinition>();
+            if (dataDef != null) {
+               setLayout(dataDef);
+               setData(prefab, dataDef);
+            }
+         }
+      }
+
+      private void prefabDataChanged (PlacedPrefab prefab) {
+         if (prefab == this.prefab && dataDef != null) {
+            setData(prefab, dataDef);
+         }
       }
 
       private void setLayout (PrefabDataDefinition data) {
-         titleText.text = string.IsNullOrWhiteSpace(data.title) ? "Unnamed" : data.title;
-
+         titleText.text = data.title;
          // Custom logic for warps
          if (data.title.CompareTo("Warp") == 0 || data.title.CompareTo("House") == 0) {
             // target map
@@ -102,7 +127,7 @@ namespace MapCreationTool
          }
       }
 
-      private void setData (PlacedPrefab placedPrefab) {
+      private void setData (PlacedPrefab placedPrefab, PrefabDataDefinition data) {
          foreach (var f in fields) {
             f.Value.setValue(placedPrefab.getData(f.Key));
          }
@@ -123,9 +148,13 @@ namespace MapCreationTool
       }
 
       private void valueChanged (string key, string value) {
-         drawBoard.setSelectedPrefabData(key, value);
+         if (dataDef == null) {
+            return;
+         }
 
-         if (titleText.text.CompareTo("Warp") == 0 || data.title.CompareTo("House") == 0) {
+         drawBoard.setPrefabData(prefab, key, value);
+
+         if (titleText.text.CompareTo("Warp") == 0 || dataDef.title.CompareTo("House") == 0) {
             if (key.CompareTo("target map") == 0) {
                if (Overlord.instance.mapSpawns.ContainsKey(value)) {
                   fields["target spawn"].setFieldProperties(Enumerable.Repeat("", 1).Union(Overlord.instance.mapSpawns[value]).ToArray());

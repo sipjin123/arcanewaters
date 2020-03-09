@@ -153,7 +153,7 @@ namespace MapCreationTool.Serialization
             version = "0.0.1",
             biome = biome,
             layers = formExportedLayers(midExportLayers, editorSize, tilesBelowSpiderWebEffectors(prefabs)).ToArray(),
-            gravityEffectors = formGravityEffectors(midExportLayers, editorSize),
+            gravityEffectors = formGravityEffectors(midExportLayers, editorSize, editorType),
             editorType = editorType,
             prefabs = prefabsSerialized,
          };
@@ -241,6 +241,7 @@ namespace MapCreationTool.Serialization
                }
             }
             result.Add(new ExportedLayer001 {
+               name = midLayer.layer,
                z = midLayer.z,
                tiles = exportedTiles.ToArray(),
                type = midLayer.type
@@ -273,6 +274,7 @@ namespace MapCreationTool.Serialization
                   z = getZ(config.getIndex(layerkv.Key, editorType), 0) + zOffset,
                   layer = layerkv.Key,
                   tileMatrix = getTilesWithCollisions(layerkv.Value, tileToIndex, collisionDictionary, editorOrigin, editorSize),
+                  type = config.getLayerConfig(editorType, layerkv.Key).layerType,
                   subLayer = 0
                });
             } else {
@@ -284,7 +286,7 @@ namespace MapCreationTool.Serialization
                      z = getZ(config.getIndex(layerkv.Key, editorType), i) + zOffset,
                      layer = layerkv.Key,
                      tileMatrix = getTilesWithCollisions(layerkv.Value.subLayers[i], tileToIndex, collisionDictionary, editorOrigin, editorSize),
-                     type = LayerType.Water,
+                     type = config.getLayerConfig(editorType, layerkv.Key).layerType,
                      subLayer = i
                   });
                }
@@ -294,7 +296,7 @@ namespace MapCreationTool.Serialization
          return midLayers;
       }
 
-      private static ExportedGravityEffector[] formGravityEffectors (List<MidExportLayer> midLayers, Vector2Int editorSize) {
+      private static ExportedGravityEffector[] formGravityEffectors (List<MidExportLayer> midLayers, Vector2Int editorSize, EditorType editorType) {
          List<ExportedGravityEffector> effectors = new List<ExportedGravityEffector>();
          // Find out which tiles have to be effected
          bool[,] effectorMatrix = new bool[editorSize.x, editorSize.y];
@@ -303,7 +305,7 @@ namespace MapCreationTool.Serialization
             for (int j = 0; j < editorSize.y; j++) {
                foreach (MidExportLayer layer in midLayers) {
                   if (layer.tileMatrix[i, j] != null) {
-                     if (layer.layer.CompareTo("stair") == 0 || (layer.layer.CompareTo("water") == 0 && layer.subLayer == 4)) {
+                     if (layer.layer.CompareTo("stair") == 0 || (layer.layer.CompareTo("water") == 0 && layer.subLayer == 4 && editorType == EditorType.Area)) {
                         effectorMatrix[i, j] = true;
                         break;
                      }
@@ -607,6 +609,7 @@ namespace MapCreationTool.Serialization
    [Serializable]
    public class ExportedLayer001
    {
+      public string name;
       public float z;
       public ExportedTile001[] tiles;
       public LayerType type;
@@ -750,6 +753,10 @@ namespace MapCreationTool.Serialization
 
       public const string TREASURE_SPOT_SPAWN_CHANCE_KEY = "spawn chance";
 
+      public const string GENERIC_ACTION_TRIGGER_INTERACTION_TYPE = "interaction type";
+      public const string GENERIC_ACTION_TRIGGER_ACTION_NAME = "action name";
+      public const string GENERIC_ACTION_TRIGGER_WIDTH_KEY = "width";
+      public const string GENERIC_ACTION_TRIGGER_HEIGHT_KEY = "height";
 
       public string k; // Key
       public string v; // Value

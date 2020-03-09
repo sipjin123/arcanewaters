@@ -56,7 +56,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver {
                _collider.size = new Vector2(_collider.size.x, float.Parse(field.v));
                break;
             case DataField.WARP_ARRIVE_FACING_KEY:
-               Direction? dir = MapImporter.ParseDirection(field.v);
+               Direction? dir = MapImporter.parseDirection(field.v);
                if (dir != null)
                   newFacingDirection = dir.Value;
                break;

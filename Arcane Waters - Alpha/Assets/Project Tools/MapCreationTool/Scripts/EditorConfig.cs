@@ -65,6 +65,10 @@ namespace MapCreationTool
          }
       }
 
+      public LayerConfig getLayerConfig (EditorType editorType, string layerName) {
+         return getLayers(editorType).First(l => l.layer.CompareTo(layerName) == 0);
+      }
+
       [System.Serializable]
       public class LayerConfig
       {

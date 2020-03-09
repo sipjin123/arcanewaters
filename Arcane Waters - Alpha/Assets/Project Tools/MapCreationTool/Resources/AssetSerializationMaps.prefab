@@ -61805,7 +61805,7 @@ Tilemap:
       - {fileID: 21300154, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300160, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300166, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 25, y: 28, z: 0}
@@ -125189,57 +125189,81 @@ MonoBehaviour:
   mapsDefinitions:
   - tilemap: {fileID: 3999359247487527327}
     prefabGroups:
-    - title: houses
+    - title: various
       index: 2
       toIndexPrefabs:
       - {fileID: 5663650462920956806, guid: 8da36abb80a99ed4e8d417a68904cbb5, type: 3}
+      - {fileID: 7380726851273777901, guid: bfab65833578823449de336b208a1312, type: 3}
+      - {fileID: 939827310229271155, guid: 857026db557087e449e9c9f01f21b0bb, type: 3}
       fromIndexPrefabs:
       - {fileID: 5623853440093536416, guid: ef1d36867fe8fbb4b9a8aec1026c7a4a, type: 3}
+      - {fileID: 1982424199618921564, guid: 7470596891d13694db1e4a176fd427eb, type: 3}
+      - {fileID: 4236297865724973642, guid: aa699ada58e5d074599812a59a089ed3, type: 3}
     biome: 1
   - tilemap: {fileID: 911818922030001466}
     prefabGroups:
-    - title: houses
+    - title: various
       index: 2
       toIndexPrefabs:
       - {fileID: 4021854546249159720, guid: ffb35290c2379ea4bafb0af252b624c1, type: 3}
+      - {fileID: 1362888312386420268, guid: fb52eb60f589d9645a1679b60b0e9df0, type: 3}
+      - {fileID: 6190934032088856617, guid: 32e940de3117e344caa40a9e6dcd418f, type: 3}
       fromIndexPrefabs:
       - {fileID: 6683451114237964622, guid: 5b03ef76364abe842a2fe0a5d2cdece9, type: 3}
+      - {fileID: 1660695667483039210, guid: 5f6bb145c0494794c902c83e03a44376, type: 3}
+      - {fileID: 595059002581415714, guid: 84bb80575399b60469428bc5b39f97e9, type: 3}
     biome: 2
   - tilemap: {fileID: 6821355117217435030}
     prefabGroups:
-    - title: houses
+    - title: various
       index: 2
       toIndexPrefabs:
       - {fileID: 1451683548362239122, guid: c60fb9b65d0918f49947be2fd28375f4, type: 3}
+      - {fileID: 3708236900898025647, guid: 0bc6c4e437aee614782c2fc22843f215, type: 3}
+      - {fileID: 7711339766846447278, guid: 319091aa798a8f44d97603ace120cc87, type: 3}
       fromIndexPrefabs:
       - {fileID: 4706387372113544311, guid: 7efc8bfafa0f491429e2864bb5dafdc3, type: 3}
+      - {fileID: 1989141873397232159, guid: 957f7004f7ec3b745be3cbfab906d09d, type: 3}
+      - {fileID: 3077007016996699591, guid: 0cb6a839d723b924ca2c33e7e85eeac7, type: 3}
     biome: 5
   - tilemap: {fileID: 1380472118748605242}
     prefabGroups:
-    - title: houses
+    - title: various
       index: 2
       toIndexPrefabs:
       - {fileID: 6880365461504764757, guid: c763fc1db5e84d44d8204bd21412cee5, type: 3}
+      - {fileID: 7654599807211785814, guid: 73bdec442e5bb1c418637e42764c5d09, type: 3}
+      - {fileID: 6082980646450026191, guid: 291276beee093e34e9cc832aca4041a5, type: 3}
       fromIndexPrefabs:
       - {fileID: 6826195856529322001, guid: cbd5dd0cc77ceb643bb55088df990433, type: 3}
+      - {fileID: 2039113505139598213, guid: faa2a8a0804ef4e4a97f3c90adf4f885, type: 3}
+      - {fileID: 2721504618270732058, guid: e8ab30945feccf141b75143c7602648b, type: 3}
     biome: 4
   - tilemap: {fileID: 481428275710942420}
     prefabGroups:
-    - title: houses
+    - title: various
       index: 2
       toIndexPrefabs:
       - {fileID: 5673885531666727826, guid: 2148b87917dc20245beb83d73fd13b82, type: 3}
+      - {fileID: 5409130557299216190, guid: 0e1d419d867bc5741968ce51c1a8ca64, type: 3}
+      - {fileID: 5537701701361677655, guid: 70039353a81fac24cb8fc08268b7d24b, type: 3}
       fromIndexPrefabs:
       - {fileID: 6365592799958730610, guid: 6d76f91d946fc334582298b09e5c11ab, type: 3}
+      - {fileID: 5685551512867833880, guid: a4f2b99d0acae7344a9518702a9a44cd, type: 3}
+      - {fileID: 6982181060855198897, guid: c6949d78bc6bead46968d1a4aef8e798, type: 3}
     biome: 3
   - tilemap: {fileID: 4574151143917167768}
     prefabGroups:
-    - title: houses
+    - title: various
       index: 2
       toIndexPrefabs:
       - {fileID: 1141342231038569384, guid: f929627d29ddbf74b8b37c89831b7ed1, type: 3}
+      - {fileID: 3905627861082580302, guid: 5ac19efbdb70ac548a19a26b818a95a4, type: 3}
+      - {fileID: 2243048051221507897, guid: dedd10515b03ab74d87631ee6751f135, type: 3}
       fromIndexPrefabs:
       - {fileID: 7916629007719179707, guid: e8fa33dbd430a734cbb2c50a62c7ad01, type: 3}
+      - {fileID: 3787837379884018895, guid: cc169fec29c836b44aad9e665d222f0c, type: 3}
+      - {fileID: 2589363368672140895, guid: 829829d7d1deade4f9366e98a3658801, type: 3}
     biome: 6
   allBiomesDefinition:
     tilemap: {fileID: 8031485923113696121}
@@ -125281,6 +125305,7 @@ MonoBehaviour:
       - {fileID: 7310757876056521627, guid: 843333936b43ab749a86790fbdb252ed, type: 3}
       - {fileID: 7553695573505911380, guid: e8bd3b650faf3e7478fcd300e4218a6f, type: 3}
       - {fileID: 454647585215041753, guid: 3b7cbae73dddf624bb187b39862567d1, type: 3}
+      - {fileID: 1811325571479324519, guid: 0221eb820441d2d48a0c50ca948b17e0, type: 3}
       fromIndexPrefabs:
       - {fileID: 1322722724978774, guid: f8f35b9f6cbe1fb4d88c39af030bddd4, type: 3}
       - {fileID: 6524891404889324934, guid: 598e4fd7105a2944f84be41bdffc57fc, type: 3}
@@ -125308,6 +125333,7 @@ MonoBehaviour:
       - {fileID: 1573231186106582420, guid: 893db0d2edf6d964994c28ebca9b6dac, type: 3}
       - {fileID: 7387895447105368303, guid: 772654512ce84834b8cb3312e10a3b93, type: 3}
       - {fileID: 5350016239835025903, guid: 1da2b6e69555ff94cb2f333f5207e9e4, type: 3}
+      - {fileID: 4211660781053854453, guid: adbfe661461073d4f8343fe6a7c94fa2, type: 3}
     - title: furniture
       index: 4
       toIndexPrefabs:

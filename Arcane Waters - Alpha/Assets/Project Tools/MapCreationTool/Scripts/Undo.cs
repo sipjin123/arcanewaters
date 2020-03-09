@@ -115,12 +115,6 @@ namespace MapCreationTool.UndoSystem
       public BoardChange change { get; set; }
    }
 
-   public class SelectedPrefabUndoRedoData : UndoRedoData
-   {
-      public GameObject prefab { get; set; }
-      public Vector3 position { get; set; }
-   }
-
    public class PrefabDataUndoRedoData : UndoRedoData
    {
       public GameObject prefab { get; set; }
@@ -139,6 +133,7 @@ namespace MapCreationTool.UndoSystem
       public EraserLayerMode? eraserLayerMode { get; set; }
       public FillBounds? fillBounds { get; set; }
       public bool? snapToGrid { get; set; }
+      public SelectionTarget? selectionTarget { get; set; }
 
       public bool hasTileGroup { get; set; }
       public TileGroup tileGroup { get; set; }

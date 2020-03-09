@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using MapCreationTool.Serialization;
+using UnityEngine.EventSystems;
 
 namespace MapCreationTool
 {
@@ -29,6 +30,8 @@ namespace MapCreationTool
       private Dropdown boardSizeDropdown = null;
       [SerializeField]
       private Toggle snapToGridToggle = null;
+      [SerializeField]
+      private Dropdown selectionTargetDropdown = null;
       [SerializeField]
       private Button saveButton = null;
       [SerializeField]
@@ -70,7 +73,7 @@ namespace MapCreationTool
             {"Shroom", Biome.Type.Mushroom },
             {"Pine", Biome.Type.Pine },
             {"Snow", Biome.Type.Snow }
-        };
+      };
 
       private void OnEnable () {
          Tools.AnythingChanged += updateAllUI;
@@ -109,6 +112,8 @@ namespace MapCreationTool
                biomeDropdown.value = i;
 
          editorTypeDropdown.SetValueWithoutNotify((int) Tools.editorType);
+
+         selectionTargetDropdown.SetValueWithoutNotify((int) Tools.selectionTarget - 1);
 
          for (int i = 0; i < boardSizes.Length; i++) {
             if (boardSizes[i] == Tools.boardSize.x)
@@ -168,6 +173,7 @@ namespace MapCreationTool
          fillBoundsDropdown.gameObject.SetActive(Tools.toolType == ToolType.Fill);
 
          snapToGridToggle.gameObject.SetActive(Tools.selectedPrefab != null);
+         selectionTargetDropdown.gameObject.SetActive(Tools.toolType == ToolType.Selection);
       }
 
       public static bool anyPanelOpen
@@ -180,6 +186,17 @@ namespace MapCreationTool
                }
             }
             return false;
+         }
+      }
+
+      public static bool anyInputFieldFocused
+      {
+         get
+         {
+            if (EventSystem.current.currentSelectedGameObject == null) {
+               return false;
+            }
+            return EventSystem.current.currentSelectedGameObject.GetComponent<InputField>() != null;
          }
       }
 
@@ -235,6 +252,11 @@ namespace MapCreationTool
          }
       }
 
+      public void selectionTargetDropdown_ValueChanged () {
+         if (Tools.selectionTarget != (SelectionTarget) (selectionTargetDropdown.value + 1))
+            Tools.changeSelectionTarget((SelectionTarget) (selectionTargetDropdown.value + 1));
+      }
+
       public void undoButton_Click () {
          Undo.doUndo();
       }
@@ -249,17 +271,6 @@ namespace MapCreationTool
              "Are you sure you want to start a new map?\nAll unsaved progress will be lost.",
              drawBoard.newMap,
              null);
-      }
-
-      public void openButton_Click () {
-         string data = FileUtility.openFile();
-         if (data != null) {
-            yesNoDialog.display(
-             "Opening a map",
-             "Are you sure you want to open a map?\nAll unsaved progress will be permanently lost.",
-             () => overlord.applyFileData(data),
-             null);
-         }
       }
 
       public void saveButton_Click () {

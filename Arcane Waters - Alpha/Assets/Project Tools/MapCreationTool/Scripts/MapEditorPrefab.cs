@@ -4,8 +4,8 @@ namespace MapCreationTool
 {
    public class MapEditorPrefab : MonoBehaviour
    {
-      public static readonly Color SELECTED_HIGHLIGHT_COLOR = Color.green;
-      public static readonly Color HOVERED_HIGHLIGHT_COLOR = new Color(204 / 255f, 230 / 255f, 255 / 255f);
+      public static readonly Color SELECTED_HIGHLIGHT_COLOR = new Color(0 / 255f, 138 / 255f, 244 / 255f);
+      public static readonly Color HOVERED_HIGHLIGHT_COLOR = new Color(199 / 255f, 255 / 255f, 246 / 255f);
       public static readonly Color DELETING_HIGHLIGHT_COLOR = Color.red;
 
       protected bool selected = false;

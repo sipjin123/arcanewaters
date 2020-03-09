@@ -3,26 +3,38 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityEditor.SceneManagement;
 
 public class EditorUtil : EditorWindow {
    #region Public Variables
 
    #endregion
 
-   [MenuItem("Util/Clear Image Manager")]
-   public static void clearImagerManager () {
-      // Find the Image Manager and clear out the stored paths
-      ImageManager imageManager = FindObjectOfType<ImageManager>();
-
-      if (imageManager == null) {
-         Debug.Log("Couldn't find the Image Manager in the scene, so not updating it.");
+   [MenuItem("Util/Launch: Main Scene (Ctrl+J) %j")]
+   public static void PlayMainScene () {
+      if (EditorApplication.isPlaying == true) {
+         EditorApplication.isPlaying = false;
          return;
       }
 
-      imageManager.imageDataList.Clear();
+      EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
+      EditorSceneManager.OpenScene("Assets/Scenes/Main.unity");
+      EditorApplication.isPlaying = true;
    }
 
-   [MenuItem("Util/Update Image Manager")]
+   [MenuItem("Util/Launch: Master Tool (Ctrl+K) %k")]
+   public static void PlayMasterToolScene () {
+      if (EditorApplication.isPlaying == true) {
+         EditorApplication.isPlaying = false;
+         return;
+      }
+
+      EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
+      EditorSceneManager.OpenScene("Assets/Project Tools/ToolScenes/MasterTool.unity");
+      EditorApplication.isPlaying = true;
+   }
+
+   [MenuItem("Util/Update Image Manager (Ctrl+L) %l")]
    public static void updateImagerManager () {
       // Find the Image Manager and clear out the stored paths
       ImageManager imageManager = FindObjectOfType<ImageManager>();

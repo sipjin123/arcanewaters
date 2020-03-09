@@ -4759,6 +4759,74 @@ public class DB_Main : DB_MainStub
       return mailId;
    }
 
+   public static new bool updateDeploySchedule (long scheduleDateAsTicks, int buildVersion) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("UPDATE deploy_schedule SET schedule_date=@scheduleDate, schedule_version=@scheduleVersion WHERE id=1", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@scheduleVersion", buildVersion.ToString());
+            cmd.Parameters.AddWithValue("@scheduleDate", scheduleDateAsTicks.ToString());
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+         return true;
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+         return false;
+      }
+   }
+
+   public static new DeployScheduleInfo getDeploySchedule () {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * deploy_schedule WHERE id=1", conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            // Execute the command
+            using (var reader = cmd.ExecuteReader()) {
+               try {
+                  while (reader.Read()) {
+                     var info = new DeployScheduleInfo(
+                        reader.GetInt32("schedule_date"),
+                        reader.GetInt32("schedule_version"));
+                     return info;
+                  }
+               } catch (Exception ex) {
+                  return null;
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+         return null;
+      }
+
+      return null;
+   }
+
+   public static new bool cancelDeploySchedule () {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("UPDATE deploy_schedule SET schedule_date=@scheduleDate, schedule_version=@scheduleVersion WHERE id=1", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@scheduleVersion", string.Empty);
+            cmd.Parameters.AddWithValue("@scheduleDate", string.Empty);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+
+         return true;
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+         return false;
+      }
+   }
+
    public static new void updateMailReadStatus (int mailId, bool isRead) {
       try {
          using (MySqlConnection conn = getConnection())

@@ -61,7 +61,7 @@ MonoBehaviour:
   - layer: water
     index: 25
     zOffset: 0
-    layerType: 0
+    layerType: 1
   - layer: dock
     index: 30
     zOffset: 0
@@ -114,11 +114,11 @@ MonoBehaviour:
   - layer: water
     index: 5
     zOffset: 0
-    layerType: 0
+    layerType: 1
   - layer: river
     index: 25
     zOffset: 0
-    layerType: 0
+    layerType: 1
   - layer: dock
     index: 30
     zOffset: 0

@@ -108,15 +108,16 @@ public class WaterChecker : ClientMonoBehaviour {
          Vector3Int cellPos = grid.WorldToCell(_player.sortPoint.transform.position);
 
          // Locate the Water tilemap within the area
-         foreach (Tilemap tilemap in area.getTilemaps()) {
-            if (tilemap.name.EndsWith("Water")) {
-               TileBase tile = tilemap.GetTile(cellPos);
-
-               if (tile != null) {
+         List<TilemapLayer> layers = area.getTilemapLayers();
+         for (int i = layers.Count - 1; i >= 0; i--) {
+            TileBase tile = layers[i].tilemap.GetTile(cellPos);
+            if (tile != null) {
+               if (layers[i].name.ToLower().EndsWith("water")) {
                   this.currentTile = tile.name;
                   isInFullWater = _fullWaterTiles.Contains(currentTile) || _waterFallTiles.Contains(currentTile);
                   isInPartialWater = _partialWaterTiles.Contains(currentTile);
                }
+               break;
             }
          }
       }
