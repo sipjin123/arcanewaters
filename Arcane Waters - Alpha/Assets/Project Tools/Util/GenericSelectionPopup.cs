@@ -52,7 +52,8 @@ public class GenericSelectionPopup : MonoBehaviour {
    public Dictionary<string, Sprite> shipAbilityEffectSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> cannonSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> shopIconSpriteList = new Dictionary<string, Sprite>();
-
+   public Dictionary<string, Sprite> cropIconSpriteList = new Dictionary<string, Sprite>();
+   
    public enum selectionType
    {
       None = 0,
@@ -94,7 +95,8 @@ public class GenericSelectionPopup : MonoBehaviour {
       ShopIcon = 36,
       CropType = 37,
       ArmorTypeSprites = 38,
-      WeaponActionType = 39
+      WeaponActionType = 39,
+      CropsIcon = 40
    }
 
    #endregion
@@ -159,7 +161,10 @@ public class GenericSelectionPopup : MonoBehaviour {
       setupSpriteContent(cannonSpriteList, cannonSpritePath);
 
       string shopIconPath = "Assets/Sprites/Icons/";
-      setupSpriteContent(shopIconSpriteList, shopIconPath); 
+      setupSpriteContent(shopIconSpriteList, shopIconPath);
+
+      string cropIconPath = "Assets/Sprites/Crops/";
+      setupSpriteContent(cropIconSpriteList, cropIconPath);
    }
 
    private void setupSpriteContent (Dictionary<string, Sprite> spriteCollection, string spritePath) {
@@ -273,6 +278,12 @@ public class GenericSelectionPopup : MonoBehaviour {
          }
       } else if (popupType == selectionType.ShopIcon) {
          foreach (KeyValuePair<string, Sprite> sourceSprite in shopIconSpriteList) {
+            string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
+            Sprite icon = ImageManager.getSprite(sourceSprite.Key);
+            createImageTemplate(sourceSprite.Key, shortName, icon, imageIcon, textUI);
+         }
+      } else if (popupType == selectionType.CropsIcon) {
+         foreach (KeyValuePair<string, Sprite> sourceSprite in cropIconSpriteList) {
             string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
             Sprite icon = ImageManager.getSprite(sourceSprite.Key);
             createImageTemplate(sourceSprite.Key, shortName, icon, imageIcon, textUI);

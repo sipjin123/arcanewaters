@@ -31,6 +31,7 @@ public class EditorSQLManager
       Shop = 14,
       Tutorial = 15,
       SoundEffects = 16,
+      Crops = 17,
    }
 
    public static string getSQLTableByName (EditorToolType editorType, int subType = 0) {
@@ -62,6 +63,8 @@ public class EditorSQLManager
             }
          case EditorToolType.Achievement:
             return "achievement_xml_v2";
+         case EditorToolType.Crops:
+            return "crops_xml_v1";
          case EditorToolType.Crafting:
             return "crafting_xml_v2";
          case EditorToolType.LandMonster:

@@ -12,6 +12,16 @@ public class DB_MainStub : MonoBehaviour
 
    #endregion
 
+   public static void updateCropsXML (string rawData, int xmlId, int cropsType, bool isEnabled, string cropsName) {
+   }
+
+   public static List<XMLPair> getCropsXML () {
+      return new List<XMLPair>();
+   }
+
+   public static void deleteCropsXML (int xmlId) {
+   }
+
    public static int updateBackgroundXML (int xmlId, string rawData, string bgName) {
       return 0;
    }

@@ -590,6 +590,90 @@ public class DB_Main : DB_MainStub
       return rawDataList;
    }
 
+   #region Crops XML Data
+
+   public static new void updateCropsXML (string rawData, int xmlId, int cropsType, bool isEnabled, string cropsName) {
+      string xml_id_key = "xml_id, ";
+      string xml_id_value = "@xml_id, ";
+
+      // If this is a newly created data, let sql table auto generate id
+      if (xmlId < 0) {
+         xml_id_key = "";
+         xml_id_value = "";
+      }
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "INSERT INTO crops_xml_v1 ("+ xml_id_key + "xml_name, xmlContent, creator_userID, is_enabled, crops_type) " +
+            "VALUES("+ xml_id_value + "@xml_name, @xmlContent, @creator_userID, @is_enabled, @crops_type) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, crops_type = @crops_type, is_enabled = @is_enabled, xml_name = @xml_name", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@xml_id", xmlId);
+            cmd.Parameters.AddWithValue("@xml_name", cropsName);
+            cmd.Parameters.AddWithValue("@xmlContent", rawData);
+            cmd.Parameters.AddWithValue("@crops_type", cropsType);
+            cmd.Parameters.AddWithValue("@is_enabled", isEnabled);
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<XMLPair> getCropsXML () {
+      List<XMLPair> rawDataList = new List<XMLPair>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane.crops_xml_v1", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  XMLPair newPair = new XMLPair {
+                     isEnabled = dataReader.GetInt32("is_enabled") == 0 ? false : true,
+                     xmlId = dataReader.GetInt32("xml_id"),
+                     rawXmlData = dataReader.GetString("xmlContent"),
+                     xmlOwnerId = dataReader.GetInt32("creator_userID")
+                  };
+                  rawDataList.Add(newPair);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return new List<XMLPair>(rawDataList);
+   }
+
+   public static new void deleteCropsXML (int xmlId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM crops_xml_v1 WHERE xml_id=@xml_id", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@xml_id", xmlId);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   #endregion
    #region Ship Ability XML Data
 
    public static new void updateShipAbilityXML (string rawData, string shipAbilityName) {

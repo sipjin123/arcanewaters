@@ -91,7 +91,8 @@ public class NPCPanel : Panel {
       base.show();
 
       // Update the head image based on the type of NPC this is
-      Texture2D newTexture = ImageManager.getTexture(NPCManager.self.getNPCData(_npc.npcId).iconPath);
+      string spritePath = "Faces/" + _npc.GetComponent<SpriteSwap>().name;
+      Texture2D newTexture = ImageManager.getTexture(spritePath);
       if (newTexture == ImageManager.self.blankTexture) {
          newTexture = defaultTexture;
       }
