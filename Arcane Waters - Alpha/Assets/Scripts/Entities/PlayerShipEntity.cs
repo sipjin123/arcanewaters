@@ -340,7 +340,7 @@ public class PlayerShipEntity : ShipEntity {
 
    [Command]
    void Cmd_RequestRespawn () {
-      SpawnID spawnID = new SpawnID(Area.NEW_STARTING_TOWN, Spawn.STARTING_SPAWN);
+      SpawnID spawnID = new SpawnID(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
       Vector2 localPos = SpawnManager.self.getSpawnLocalPosition(spawnID);
       this.spawnInNewMap(spawnID.areaKey, localPos, Direction.North);
 

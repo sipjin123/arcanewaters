@@ -3119,7 +3119,7 @@ public class DB_Main : DB_MainStub
    }
 
    public static new ShipInfo createStartingShip (int userId) {
-      Ship.Type shipType = Ship.Type.Caravel;
+      Ship.Type shipType = Ship.Type.Type_1;
       ShipInfo shipInfo = new ShipInfo(0, userId, shipType, Ship.SkinType.None, Ship.MastType.Caravel_1, Ship.SailType.Caravel_1, shipType + "",
             ColorType.HullBrown, ColorType.HullBrown, ColorType.SailWhite, ColorType.SailWhite, 100, 100, 20,
             80, 80, 15, 100, 90, 10, Rarity.Type.Common, new ShipAbilityInfo(false));

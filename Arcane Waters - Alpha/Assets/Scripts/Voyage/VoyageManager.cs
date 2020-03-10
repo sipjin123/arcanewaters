@@ -9,10 +9,6 @@ public class VoyageManager : MonoBehaviour {
 
    #region Public Variables
 
-   // The area and spawn the user is warped to when leaving a voyage group
-   public static string RETURN_AREA_KEY = "Starting Town New Houses";
-   public static string RETURN_SPAWN_KEY = "new dock";
-
    // Self
    public static VoyageManager self;
 

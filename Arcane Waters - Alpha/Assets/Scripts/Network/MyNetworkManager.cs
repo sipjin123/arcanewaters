@@ -165,7 +165,7 @@ public class MyNetworkManager : NetworkManager {
       GameVersionManager.self.scheduleMinimumGameVersionUpdate();
 
       // Create the initial map that everyone starts in
-      MapManager.self.createMapOnServer(Area.NEW_STARTING_TOWN);
+      MapManager.self.createMapOnServer(Area.STARTING_TOWN);
 
       // Make note that we started up a server
       wasServerStarted = true;
@@ -220,8 +220,8 @@ public class MyNetworkManager : NetworkManager {
 
             // If we don't have the requested area, we default to the starting area
             if (!AreaManager.self.hasArea(previousAreaKey)) {
-               D.log($"Server still does not have Area {previousAreaKey}, so defaulting player to {Area.NEW_STARTING_TOWN}");
-               previousAreaKey = Area.NEW_STARTING_TOWN;
+               D.log($"Server still does not have Area {previousAreaKey}, so defaulting player to {Area.STARTING_TOWN}");
+               previousAreaKey = Area.STARTING_TOWN;
             }
 
             // Note where we're going to create the player

@@ -13,14 +13,9 @@ public class Area : MonoBehaviour
    #region Public Variables
 
    // Hardcoded area keys
-   public static string STARTING_TOWN = "StartingTown";
    public static string FARM = "Farm";
    public static string HOUSE = "House";
-   public static string TREASURE_PINE = "TreasurePine";
-   public static string DESERT_TOWN = "DesertTown";
-   public static string MERCHANT_SHOP_DESERT = "MerchantShop_Desert";
-   public static string FOREST_TOWN = "ForestTown";
-   public static string NEW_STARTING_TOWN = "Starting Town New Houses";
+   public static string STARTING_TOWN = "Snow Town Lite";
 
    // The key determining the type of area this is
    public string areaKey;

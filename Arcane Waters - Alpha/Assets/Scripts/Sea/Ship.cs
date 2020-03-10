@@ -11,7 +11,8 @@ public class Ship : SeaEntity {
    public static int SUPPLIES_STARVE_COUNT = -3;
 
    // The Type of Ship
-   public enum Type { None = 0, Caravel = 100, Brigantine = 101, Carrack = 102, Nao = 103, Buss = 104, Galleon = 105, Cutter = 106, Barge = 107 }
+   public enum Type { None = 0, Caravel = 100, Brigantine = 101, Carrack = 102, Nao = 103, Buss = 104, Galleon = 105, Cutter = 106, Barge = 107,
+                      Type_1 = 108, Type_2 = 109, Type_3 = 110, Type_4 = 111, Type_5 = 112, Type_6 = 113, Type_7 = 114, Type_8 = 115 }
 
    // The Type of Skin
    public enum SkinType {

@@ -33,7 +33,7 @@ public class MM_PlayerIcon : ClientMonoBehaviour {
       if (currentArea != null) {
          Vector3 relativePosition = Global.player.transform.position - currentArea.transform.position;
          relativePosition *= 12f;
-         relativePosition += new Vector3(-128f, 0f);
+         relativePosition += new Vector3(-64f, -64f);
          Util.setLocalXY(this.transform, relativePosition);
 
          // Rotate the player arrow based on our facing direction

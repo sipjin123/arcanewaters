@@ -76,7 +76,7 @@ public class Door : ClientMonoBehaviour {
       Area area = GetComponentInParent<Area>();
 
       // Different sounds based on the area type
-      if (Area.DESERT_TOWN.Equals(area.areaKey)) {
+      if (Area.getBiome(area.areaKey) == Biome.Type.Desert) {
          SoundManager.create3dSound("door_cloth_open", this.transform.position);
       } else {
          SoundManager.create3dSound("door_open_", this.transform.position, 3);
@@ -87,7 +87,7 @@ public class Door : ClientMonoBehaviour {
       Area area = GetComponentInParent<Area>();
 
       // Different sounds based on the area type
-      if (Area.DESERT_TOWN.Equals(area.areaKey)) {
+      if (Area.getBiome(area.areaKey) == Biome.Type.Desert) {
          SoundManager.create3dSound("door_cloth_close", this.transform.position);
       } else {
          SoundManager.create3dSound("door_close_", this.transform.position, 3);

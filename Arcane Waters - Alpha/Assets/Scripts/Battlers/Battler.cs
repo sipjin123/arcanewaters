@@ -647,7 +647,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
          } else {
             // Player battler
-            Spawn spawn = SpawnManager.self.getSpawn(Area.FOREST_TOWN, Spawn.FOREST_TOWN_DOCK);
+            Spawn spawn = SpawnManager.self.getSpawn(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
 
             if (isLocalBattler()) {
                // If they're still connected, we can warp them directly

@@ -25,7 +25,7 @@ public class AttackRangeCircle : MonoBehaviour
 
    public void Awake() {
       // Get the material
-      _circleMaterial = meshRenderer.sharedMaterial;
+      _circleMaterial = meshRenderer.material;
 
       // Store the base color
       _circleColor = _circleMaterial.GetColor("_Color");

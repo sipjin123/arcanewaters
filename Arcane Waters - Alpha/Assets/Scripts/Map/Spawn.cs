@@ -5,9 +5,7 @@ public class Spawn : MonoBehaviour, IMapEditorDataReceiver {
    #region Public Variables
 
    // Hardcoded spawn keys
-   public static string FOREST_TOWN_DOCK = "ForestTownDock";
-   public static string HOUSE_EXIT = "HouseExit";
-   public static string STARTING_SPAWN = "new dock";
+   public static string STARTING_SPAWN = "Starting Spawn";
 
    // The key determining the type of spawn this is
    public string spawnKey;

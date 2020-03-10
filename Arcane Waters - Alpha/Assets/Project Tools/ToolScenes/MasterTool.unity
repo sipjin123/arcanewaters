@@ -31679,6 +31679,733 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 6821596791cdbe44bb1de7566e0b50ea, type: 3}
     sprites:
     - {fileID: 21300000, guid: 6821596791cdbe44bb1de7566e0b50ea, type: 3}
+  - imageName: type_1_1
+    imagePath: Assets/Sprites/Ships/Type_1/type_1_1.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_1/type_1_1
+    texture2D: {fileID: 2800000, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    sprite: {fileID: 901226652086336602, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    sprites:
+    - {fileID: 901226652086336602, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: 344834258756510035, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: -9011343381605860834, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: 1085560227320328220, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: 8300233884534355254, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: 1765907781965870432, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: 7332652106315966801, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: 7121979191087036093, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: 2657018406521286336, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: -287143904060225295, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: 4028608261977011307, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: -595201580201577510, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: 633742071897731605, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: 1028756748384848609, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: -2572181138367384706, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: 3603168607390942442, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: -3653313040819533281, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: 9142895801468173694, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: 9007181771913084563, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: 4091274845053255815, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+  - imageName: type_1_moving
+    imagePath: Assets/Sprites/Ships/Type_1/type_1_moving.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_1/type_1_moving
+    texture2D: {fileID: 2800000, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    sprite: {fileID: 3425014404607796279, guid: 1063404876563294cbd488bfe885d20e,
+      type: 3}
+    sprites:
+    - {fileID: 3425014404607796279, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: -6710775023615798347, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: 3027404371180703651, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: -4096043366105005283, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: 379712819390416041, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: -8301374252401561785, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: -3434522366028465263, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: -2792883542464849335, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: -7451393340999875302, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: -1970175672139415247, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: -3064526779286613033, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: -6852938096268237287, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: 7109049273466214563, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: 193423640157301997, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: 5579798438682094277, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: 1929064638006435317, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: -6500651061478273586, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: 7215918934872218836, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: -8192235652453315635, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: -6913332975289286730, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+  - imageName: type_1_moving_ripples
+    imagePath: Assets/Sprites/Ships/Type_1/type_1_moving_ripples.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_1/type_1_moving_ripples
+    texture2D: {fileID: 2800000, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    sprite: {fileID: -1500839821503219301, guid: b3d4551fa2af8d545bdb71b9a9992327,
+      type: 3}
+    sprites:
+    - {fileID: -1500839821503219301, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: 6965735083274596770, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: -6160851068333214570, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: 8727037186835110876, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: -5533779128545276099, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: -4506226582030156453, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: 6681429636896376123, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: -2494151142443240925, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: -5717681288170746834, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: -4345802775870521468, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: -390647204813566739, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: 2256843351427192649, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: -8326702301390750257, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: -4340405740346584624, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: 19375996646348224, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: 4137447656933458285, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: -6385802309213825426, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: 2018910978193215961, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: 6999792945703500202, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: -2877829710537548909, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+  - imageName: type_1_ripples
+    imagePath: Assets/Sprites/Ships/Type_1/type_1_ripples.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_1/type_1_ripples
+    texture2D: {fileID: 2800000, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    sprite: {fileID: -4802271823134674523, guid: f24866d8e6e408e4baf862c481e42e80,
+      type: 3}
+    sprites:
+    - {fileID: -4802271823134674523, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: 783435178443298614, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: 7547979815247733672, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: 5238324226476715574, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: -5366666160908564858, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: 2225649861200387486, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: -5797663561429367524, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: 1309838954898107222, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: 7872108486974560809, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: 5632665095766251435, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: 3316952621765068267, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: -8677936723559173822, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: 144617842429927356, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: 7082099030693218386, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: 2594853108142368393, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: -7802190479012303980, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: -7196322580502302460, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: 8254915804695872168, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: 4997869799808915023, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: -5343604784391061655, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+  - imageName: type_2_1
+    imagePath: Assets/Sprites/Ships/Type_2/type_2_1.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_2/type_2_1
+    texture2D: {fileID: 2800000, guid: 2e171118c8064e14d9ef03e7eb5b8584, type: 3}
+    sprite: {fileID: 3250111429794476244, guid: 2e171118c8064e14d9ef03e7eb5b8584,
+      type: 3}
+    sprites:
+    - {fileID: 3250111429794476244, guid: 2e171118c8064e14d9ef03e7eb5b8584, type: 3}
+    - {fileID: -2105153522177923446, guid: 2e171118c8064e14d9ef03e7eb5b8584, type: 3}
+    - {fileID: -8168605842325259748, guid: 2e171118c8064e14d9ef03e7eb5b8584, type: 3}
+    - {fileID: -5445752882626052580, guid: 2e171118c8064e14d9ef03e7eb5b8584, type: 3}
+    - {fileID: 2558604446178401820, guid: 2e171118c8064e14d9ef03e7eb5b8584, type: 3}
+    - {fileID: 6875712215840690372, guid: 2e171118c8064e14d9ef03e7eb5b8584, type: 3}
+    - {fileID: -4005039795575760059, guid: 2e171118c8064e14d9ef03e7eb5b8584, type: 3}
+    - {fileID: 3070084009113930710, guid: 2e171118c8064e14d9ef03e7eb5b8584, type: 3}
+    - {fileID: -8178990625616789255, guid: 2e171118c8064e14d9ef03e7eb5b8584, type: 3}
+    - {fileID: -4346165191152599902, guid: 2e171118c8064e14d9ef03e7eb5b8584, type: 3}
+    - {fileID: 440857522471014085, guid: 2e171118c8064e14d9ef03e7eb5b8584, type: 3}
+    - {fileID: -1687125652261008578, guid: 2e171118c8064e14d9ef03e7eb5b8584, type: 3}
+    - {fileID: 1976534199378585320, guid: 2e171118c8064e14d9ef03e7eb5b8584, type: 3}
+    - {fileID: -9109387481401886169, guid: 2e171118c8064e14d9ef03e7eb5b8584, type: 3}
+    - {fileID: -503086359028658248, guid: 2e171118c8064e14d9ef03e7eb5b8584, type: 3}
+    - {fileID: 240995376434721049, guid: 2e171118c8064e14d9ef03e7eb5b8584, type: 3}
+    - {fileID: -1926376978548518203, guid: 2e171118c8064e14d9ef03e7eb5b8584, type: 3}
+    - {fileID: -3333818538984944602, guid: 2e171118c8064e14d9ef03e7eb5b8584, type: 3}
+    - {fileID: -1300393428323853815, guid: 2e171118c8064e14d9ef03e7eb5b8584, type: 3}
+    - {fileID: 5729061826831240215, guid: 2e171118c8064e14d9ef03e7eb5b8584, type: 3}
+  - imageName: type_2_moving
+    imagePath: Assets/Sprites/Ships/Type_2/type_2_moving.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_2/type_2_moving
+    texture2D: {fileID: 2800000, guid: 437cae7c1f4b8c84ab8c04159fba6591, type: 3}
+    sprite: {fileID: 5718361573684441355, guid: 437cae7c1f4b8c84ab8c04159fba6591,
+      type: 3}
+    sprites:
+    - {fileID: 5718361573684441355, guid: 437cae7c1f4b8c84ab8c04159fba6591, type: 3}
+    - {fileID: 4967394757837761054, guid: 437cae7c1f4b8c84ab8c04159fba6591, type: 3}
+    - {fileID: -4225732431919595771, guid: 437cae7c1f4b8c84ab8c04159fba6591, type: 3}
+    - {fileID: 6313582974443182725, guid: 437cae7c1f4b8c84ab8c04159fba6591, type: 3}
+    - {fileID: -2216079627951196320, guid: 437cae7c1f4b8c84ab8c04159fba6591, type: 3}
+    - {fileID: -988065120242646804, guid: 437cae7c1f4b8c84ab8c04159fba6591, type: 3}
+    - {fileID: -6333169583959941135, guid: 437cae7c1f4b8c84ab8c04159fba6591, type: 3}
+    - {fileID: -5157417851551275970, guid: 437cae7c1f4b8c84ab8c04159fba6591, type: 3}
+    - {fileID: -2538357392156883870, guid: 437cae7c1f4b8c84ab8c04159fba6591, type: 3}
+    - {fileID: -2732777945277572806, guid: 437cae7c1f4b8c84ab8c04159fba6591, type: 3}
+    - {fileID: 3718536587837797569, guid: 437cae7c1f4b8c84ab8c04159fba6591, type: 3}
+    - {fileID: -4377025141713882450, guid: 437cae7c1f4b8c84ab8c04159fba6591, type: 3}
+    - {fileID: 61948363706303053, guid: 437cae7c1f4b8c84ab8c04159fba6591, type: 3}
+    - {fileID: -493242745774574157, guid: 437cae7c1f4b8c84ab8c04159fba6591, type: 3}
+    - {fileID: 1661934544827387920, guid: 437cae7c1f4b8c84ab8c04159fba6591, type: 3}
+    - {fileID: 7407910644469475171, guid: 437cae7c1f4b8c84ab8c04159fba6591, type: 3}
+    - {fileID: -4029033331162520089, guid: 437cae7c1f4b8c84ab8c04159fba6591, type: 3}
+    - {fileID: 8112636029662150842, guid: 437cae7c1f4b8c84ab8c04159fba6591, type: 3}
+    - {fileID: -2219230142187709587, guid: 437cae7c1f4b8c84ab8c04159fba6591, type: 3}
+    - {fileID: 8492947977361607028, guid: 437cae7c1f4b8c84ab8c04159fba6591, type: 3}
+  - imageName: type_2_moving_ripples
+    imagePath: Assets/Sprites/Ships/Type_2/type_2_moving_ripples.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_2/type_2_moving_ripples
+    texture2D: {fileID: 2800000, guid: a43cc99d1ecf1fe4abfecc194c42a367, type: 3}
+    sprite: {fileID: -1551936224959405450, guid: a43cc99d1ecf1fe4abfecc194c42a367,
+      type: 3}
+    sprites:
+    - {fileID: -1551936224959405450, guid: a43cc99d1ecf1fe4abfecc194c42a367, type: 3}
+    - {fileID: 1607914585551169134, guid: a43cc99d1ecf1fe4abfecc194c42a367, type: 3}
+    - {fileID: 987634729591455241, guid: a43cc99d1ecf1fe4abfecc194c42a367, type: 3}
+    - {fileID: 8425551172772628332, guid: a43cc99d1ecf1fe4abfecc194c42a367, type: 3}
+    - {fileID: -1856675820283736243, guid: a43cc99d1ecf1fe4abfecc194c42a367, type: 3}
+    - {fileID: 1510301659949943571, guid: a43cc99d1ecf1fe4abfecc194c42a367, type: 3}
+    - {fileID: 8957798521390357119, guid: a43cc99d1ecf1fe4abfecc194c42a367, type: 3}
+    - {fileID: 7141044984644392800, guid: a43cc99d1ecf1fe4abfecc194c42a367, type: 3}
+    - {fileID: -1728575808926447679, guid: a43cc99d1ecf1fe4abfecc194c42a367, type: 3}
+    - {fileID: -944564797788849852, guid: a43cc99d1ecf1fe4abfecc194c42a367, type: 3}
+    - {fileID: 8107722160684750942, guid: a43cc99d1ecf1fe4abfecc194c42a367, type: 3}
+    - {fileID: 8272389924561372995, guid: a43cc99d1ecf1fe4abfecc194c42a367, type: 3}
+    - {fileID: 7267262939190001694, guid: a43cc99d1ecf1fe4abfecc194c42a367, type: 3}
+    - {fileID: 1827710624805176501, guid: a43cc99d1ecf1fe4abfecc194c42a367, type: 3}
+    - {fileID: -3992808973681480907, guid: a43cc99d1ecf1fe4abfecc194c42a367, type: 3}
+    - {fileID: 4174593169003527955, guid: a43cc99d1ecf1fe4abfecc194c42a367, type: 3}
+    - {fileID: 2268766951703057435, guid: a43cc99d1ecf1fe4abfecc194c42a367, type: 3}
+    - {fileID: -8467908888757511299, guid: a43cc99d1ecf1fe4abfecc194c42a367, type: 3}
+    - {fileID: -6118587546870750428, guid: a43cc99d1ecf1fe4abfecc194c42a367, type: 3}
+    - {fileID: -5175528960156579052, guid: a43cc99d1ecf1fe4abfecc194c42a367, type: 3}
+  - imageName: type_2_ripples
+    imagePath: Assets/Sprites/Ships/Type_2/type_2_ripples.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_2/type_2_ripples
+    texture2D: {fileID: 2800000, guid: c3d4f2d623f6aec4a989667417de07d2, type: 3}
+    sprite: {fileID: -638247945490680148, guid: c3d4f2d623f6aec4a989667417de07d2,
+      type: 3}
+    sprites:
+    - {fileID: -638247945490680148, guid: c3d4f2d623f6aec4a989667417de07d2, type: 3}
+    - {fileID: 3241454679614818962, guid: c3d4f2d623f6aec4a989667417de07d2, type: 3}
+    - {fileID: 5673727462340387338, guid: c3d4f2d623f6aec4a989667417de07d2, type: 3}
+    - {fileID: -1096055230832739343, guid: c3d4f2d623f6aec4a989667417de07d2, type: 3}
+    - {fileID: 2611254165226918474, guid: c3d4f2d623f6aec4a989667417de07d2, type: 3}
+    - {fileID: 513371514657211488, guid: c3d4f2d623f6aec4a989667417de07d2, type: 3}
+    - {fileID: -9126483498917239136, guid: c3d4f2d623f6aec4a989667417de07d2, type: 3}
+    - {fileID: 5712140177194151403, guid: c3d4f2d623f6aec4a989667417de07d2, type: 3}
+    - {fileID: -6028885563036356735, guid: c3d4f2d623f6aec4a989667417de07d2, type: 3}
+    - {fileID: -7272831722166739417, guid: c3d4f2d623f6aec4a989667417de07d2, type: 3}
+    - {fileID: -1288462682374911154, guid: c3d4f2d623f6aec4a989667417de07d2, type: 3}
+    - {fileID: 7560309298458342465, guid: c3d4f2d623f6aec4a989667417de07d2, type: 3}
+    - {fileID: -7476775778642840912, guid: c3d4f2d623f6aec4a989667417de07d2, type: 3}
+    - {fileID: -4980890217794512060, guid: c3d4f2d623f6aec4a989667417de07d2, type: 3}
+    - {fileID: 7747768766311447809, guid: c3d4f2d623f6aec4a989667417de07d2, type: 3}
+    - {fileID: -4762196136392650514, guid: c3d4f2d623f6aec4a989667417de07d2, type: 3}
+    - {fileID: 592986643186456511, guid: c3d4f2d623f6aec4a989667417de07d2, type: 3}
+    - {fileID: 4687097321753428184, guid: c3d4f2d623f6aec4a989667417de07d2, type: 3}
+    - {fileID: 7107981711144354274, guid: c3d4f2d623f6aec4a989667417de07d2, type: 3}
+    - {fileID: 6719211045766069847, guid: c3d4f2d623f6aec4a989667417de07d2, type: 3}
+  - imageName: type_3_1
+    imagePath: Assets/Sprites/Ships/Type_3/type_3_1.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_3/type_3_1
+    texture2D: {fileID: 2800000, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    sprite: {fileID: -5415697348894064498, guid: 7b776c2258777dd4f84ef19bf2bf2103,
+      type: 3}
+    sprites:
+    - {fileID: -5415697348894064498, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: -3047697145324321015, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: -1899925920034279039, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: 6357916099945416011, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: -5790874136087593194, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: 2799280419011451512, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: 1549220179229565281, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: 819051865188071251, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: -7785079325895896815, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: -7312963861041959203, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: 2206190917345105550, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: -1741603608338438369, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: -270633547756164322, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: -2408457953847414408, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: -2179900690204993820, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: 3314148035985340058, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: -2644188854784257368, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: 8725788316462290987, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: 7990593346222223428, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: 8845268340526005058, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+  - imageName: type_3_moving
+    imagePath: Assets/Sprites/Ships/Type_3/type_3_moving.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_3/type_3_moving
+    texture2D: {fileID: 2800000, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    sprite: {fileID: -5387965871771504689, guid: 07f4a6549d0b273458f422c129cb1ca8,
+      type: 3}
+    sprites:
+    - {fileID: -5387965871771504689, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: -7903161806661623574, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: -907755862434503076, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: 1712806722578249879, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: -4063338960179228496, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: 6604683163598437435, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: 8753176141069741689, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: -3994462681339794894, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: -6900615279532978804, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: 8356173433386991874, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: -3935213897727062905, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: -3517333365452097193, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: 7250242203003782965, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: -6647135538961040197, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: 5248011220854358699, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: -5102259639575839423, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: 8479905452796831834, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: -244728927525354118, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: -6626530045630064569, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: 2275802338775106379, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+  - imageName: type_3_moving_ripples
+    imagePath: Assets/Sprites/Ships/Type_3/type_3_moving_ripples.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_3/type_3_moving_ripples
+    texture2D: {fileID: 2800000, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    sprite: {fileID: -4610863520239878965, guid: 2449752e5be6c1548837c007e6f20505,
+      type: 3}
+    sprites:
+    - {fileID: -4610863520239878965, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: 4492067521423429340, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: 274394531083350064, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: -7285484722515379013, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: 3072437046788332567, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: 6416676445552360123, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: -8614470089442728543, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: 1442503854707328281, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: -807370420689453265, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: 3840710722087422096, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: 6454532590009883582, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: -8407588062182904022, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: 4707354054024100174, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: -893399856679458816, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: -2290159634990566342, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: 8116523754783879713, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: 8502531718987911445, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: -4451571650029556309, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: 4289262647495436312, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: -2559250612964897449, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+  - imageName: type_3_ripples
+    imagePath: Assets/Sprites/Ships/Type_3/type_3_ripples.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_3/type_3_ripples
+    texture2D: {fileID: 2800000, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    sprite: {fileID: -2524215660882740902, guid: e15a55e304d012c419eb3978dfd4dda1,
+      type: 3}
+    sprites:
+    - {fileID: -2524215660882740902, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: 5519377499762503026, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: -8295087408258889110, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: 861339384973443167, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: 8011380537640910941, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: 788913312749195807, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: 6429290678951045093, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: -6391355095345470333, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: 2060793133905299328, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: -9031172148650990617, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: 7594912935445824015, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: 2921745309043264935, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: 8222637728731767535, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: -1887952403855123186, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: 7699114506436850608, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: 4854618758582469256, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: -1372453496616290655, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: -1780381049049908058, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: -6296764856086694731, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: 6846383423922653883, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+  - imageName: type_4_1
+    imagePath: Assets/Sprites/Ships/Type_4/type_4_1.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_4/type_4_1
+    texture2D: {fileID: 2800000, guid: 8f0c4ded0cc10124ab97cbcb8eb649dc, type: 3}
+    sprite: {fileID: -4142646801363432840, guid: 8f0c4ded0cc10124ab97cbcb8eb649dc,
+      type: 3}
+    sprites:
+    - {fileID: -4142646801363432840, guid: 8f0c4ded0cc10124ab97cbcb8eb649dc, type: 3}
+    - {fileID: 6877327858658358130, guid: 8f0c4ded0cc10124ab97cbcb8eb649dc, type: 3}
+    - {fileID: -3517978891466579040, guid: 8f0c4ded0cc10124ab97cbcb8eb649dc, type: 3}
+    - {fileID: 1832884453313145506, guid: 8f0c4ded0cc10124ab97cbcb8eb649dc, type: 3}
+    - {fileID: 4710526762936145663, guid: 8f0c4ded0cc10124ab97cbcb8eb649dc, type: 3}
+    - {fileID: -7087275466883249351, guid: 8f0c4ded0cc10124ab97cbcb8eb649dc, type: 3}
+    - {fileID: -3645817979494634510, guid: 8f0c4ded0cc10124ab97cbcb8eb649dc, type: 3}
+    - {fileID: -8262491998799160702, guid: 8f0c4ded0cc10124ab97cbcb8eb649dc, type: 3}
+    - {fileID: -2616865874904537631, guid: 8f0c4ded0cc10124ab97cbcb8eb649dc, type: 3}
+    - {fileID: 3730487557419467113, guid: 8f0c4ded0cc10124ab97cbcb8eb649dc, type: 3}
+    - {fileID: -7817524506263136231, guid: 8f0c4ded0cc10124ab97cbcb8eb649dc, type: 3}
+    - {fileID: 9072035341485120746, guid: 8f0c4ded0cc10124ab97cbcb8eb649dc, type: 3}
+    - {fileID: 446510424418310161, guid: 8f0c4ded0cc10124ab97cbcb8eb649dc, type: 3}
+    - {fileID: -3987873446917411901, guid: 8f0c4ded0cc10124ab97cbcb8eb649dc, type: 3}
+    - {fileID: -4861094620857080245, guid: 8f0c4ded0cc10124ab97cbcb8eb649dc, type: 3}
+    - {fileID: 4004210921515454877, guid: 8f0c4ded0cc10124ab97cbcb8eb649dc, type: 3}
+    - {fileID: -1265530169324331538, guid: 8f0c4ded0cc10124ab97cbcb8eb649dc, type: 3}
+    - {fileID: 7671323114085864101, guid: 8f0c4ded0cc10124ab97cbcb8eb649dc, type: 3}
+    - {fileID: -6617545258778914217, guid: 8f0c4ded0cc10124ab97cbcb8eb649dc, type: 3}
+    - {fileID: -3423475928786282164, guid: 8f0c4ded0cc10124ab97cbcb8eb649dc, type: 3}
+  - imageName: type_4_ripples
+    imagePath: Assets/Sprites/Ships/Type_4/type_4_ripples.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_4/type_4_ripples
+    texture2D: {fileID: 2800000, guid: 9da93ffbf2fbe1d4ab7de1d28cdab538, type: 3}
+    sprite: {fileID: -2341691246801563210, guid: 9da93ffbf2fbe1d4ab7de1d28cdab538,
+      type: 3}
+    sprites:
+    - {fileID: -2341691246801563210, guid: 9da93ffbf2fbe1d4ab7de1d28cdab538, type: 3}
+    - {fileID: 5171847202071116045, guid: 9da93ffbf2fbe1d4ab7de1d28cdab538, type: 3}
+    - {fileID: -3331782721411971157, guid: 9da93ffbf2fbe1d4ab7de1d28cdab538, type: 3}
+    - {fileID: 1548885177937521711, guid: 9da93ffbf2fbe1d4ab7de1d28cdab538, type: 3}
+    - {fileID: -9091407499526824228, guid: 9da93ffbf2fbe1d4ab7de1d28cdab538, type: 3}
+    - {fileID: 210752627489827512, guid: 9da93ffbf2fbe1d4ab7de1d28cdab538, type: 3}
+    - {fileID: -365428460262392043, guid: 9da93ffbf2fbe1d4ab7de1d28cdab538, type: 3}
+    - {fileID: -3422786444845235734, guid: 9da93ffbf2fbe1d4ab7de1d28cdab538, type: 3}
+    - {fileID: 2759124304291019568, guid: 9da93ffbf2fbe1d4ab7de1d28cdab538, type: 3}
+    - {fileID: 6745388178908357986, guid: 9da93ffbf2fbe1d4ab7de1d28cdab538, type: 3}
+    - {fileID: -6144513988539991441, guid: 9da93ffbf2fbe1d4ab7de1d28cdab538, type: 3}
+    - {fileID: 709331902140164521, guid: 9da93ffbf2fbe1d4ab7de1d28cdab538, type: 3}
+    - {fileID: 3090951944513082405, guid: 9da93ffbf2fbe1d4ab7de1d28cdab538, type: 3}
+    - {fileID: 5745813545045297179, guid: 9da93ffbf2fbe1d4ab7de1d28cdab538, type: 3}
+    - {fileID: 7940890238319176208, guid: 9da93ffbf2fbe1d4ab7de1d28cdab538, type: 3}
+    - {fileID: 2150222590648332945, guid: 9da93ffbf2fbe1d4ab7de1d28cdab538, type: 3}
+    - {fileID: -1560308584725010819, guid: 9da93ffbf2fbe1d4ab7de1d28cdab538, type: 3}
+    - {fileID: 1025061583042271322, guid: 9da93ffbf2fbe1d4ab7de1d28cdab538, type: 3}
+    - {fileID: 8282995759793270690, guid: 9da93ffbf2fbe1d4ab7de1d28cdab538, type: 3}
+    - {fileID: 4454891529249475841, guid: 9da93ffbf2fbe1d4ab7de1d28cdab538, type: 3}
+  - imageName: type_4_ripples_moving
+    imagePath: Assets/Sprites/Ships/Type_4/type_4_ripples_moving.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_4/type_4_ripples_moving
+    texture2D: {fileID: 2800000, guid: 01f926d3fab8e0345b5efc696c01dd1b, type: 3}
+    sprite: {fileID: 8304873546715908338, guid: 01f926d3fab8e0345b5efc696c01dd1b,
+      type: 3}
+    sprites:
+    - {fileID: 8304873546715908338, guid: 01f926d3fab8e0345b5efc696c01dd1b, type: 3}
+    - {fileID: 1288603573238358220, guid: 01f926d3fab8e0345b5efc696c01dd1b, type: 3}
+    - {fileID: -2143052212183525859, guid: 01f926d3fab8e0345b5efc696c01dd1b, type: 3}
+    - {fileID: 2602936657492987034, guid: 01f926d3fab8e0345b5efc696c01dd1b, type: 3}
+    - {fileID: 4746682269543010256, guid: 01f926d3fab8e0345b5efc696c01dd1b, type: 3}
+    - {fileID: 6682062304764417396, guid: 01f926d3fab8e0345b5efc696c01dd1b, type: 3}
+    - {fileID: 5857496237714412354, guid: 01f926d3fab8e0345b5efc696c01dd1b, type: 3}
+    - {fileID: 6534428775075859760, guid: 01f926d3fab8e0345b5efc696c01dd1b, type: 3}
+    - {fileID: -917391478748152452, guid: 01f926d3fab8e0345b5efc696c01dd1b, type: 3}
+    - {fileID: 341299338258102739, guid: 01f926d3fab8e0345b5efc696c01dd1b, type: 3}
+    - {fileID: 5696578060811267516, guid: 01f926d3fab8e0345b5efc696c01dd1b, type: 3}
+    - {fileID: -6389807978512670082, guid: 01f926d3fab8e0345b5efc696c01dd1b, type: 3}
+    - {fileID: -5693582294215588120, guid: 01f926d3fab8e0345b5efc696c01dd1b, type: 3}
+    - {fileID: -714391417703154523, guid: 01f926d3fab8e0345b5efc696c01dd1b, type: 3}
+    - {fileID: -5911659301205122610, guid: 01f926d3fab8e0345b5efc696c01dd1b, type: 3}
+    - {fileID: -3482886037395434821, guid: 01f926d3fab8e0345b5efc696c01dd1b, type: 3}
+    - {fileID: -3462531632604382217, guid: 01f926d3fab8e0345b5efc696c01dd1b, type: 3}
+    - {fileID: 5386650436290312876, guid: 01f926d3fab8e0345b5efc696c01dd1b, type: 3}
+    - {fileID: 4026083272267276743, guid: 01f926d3fab8e0345b5efc696c01dd1b, type: 3}
+    - {fileID: -3970844065354769921, guid: 01f926d3fab8e0345b5efc696c01dd1b, type: 3}
+  - imageName: type_5_1
+    imagePath: Assets/Sprites/Ships/Type_5/type_5_1.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_5/type_5_1
+    texture2D: {fileID: 2800000, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    sprite: {fileID: 316798150929270498, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    sprites:
+    - {fileID: 316798150929270498, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: 6660856425969823883, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: 3822664299692729853, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: 1081115985751915401, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: -7468985143250982473, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: 2679881292879543643, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: 3339639812981823334, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: -7746495226359038134, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: -1778915203102544217, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: -1700140297500785845, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: 63448077612064672, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: -6228108486682618354, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: 8687252419304464988, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: 2305945753798123866, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: 6250425407315424143, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: 267861482958510931, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: 9141627880620786579, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: 177202381580242783, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: -5973358662501088834, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: 8915625802005415292, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+  - imageName: type_5_ripples
+    imagePath: Assets/Sprites/Ships/Type_5/type_5_ripples.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_5/type_5_ripples
+    texture2D: {fileID: 2800000, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    sprite: {fileID: 6653307815793750982, guid: 902edb05cdb6178428779a0f67cc849c,
+      type: 3}
+    sprites:
+    - {fileID: 6653307815793750982, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: 7359445326793791513, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: -5456392027717299878, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: 7385526169983454164, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: 8578696373591535674, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: 3385061034248718424, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: -8954259654332308788, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: 1366948273221803766, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: -8100487113946721566, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: 2895169187682681083, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: 3935115235770167945, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: 2235244102538318513, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: 1207058660713855441, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: -4842401099567850402, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: -5578007109278879059, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: -1447755735230415700, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: 7934097133530020512, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: 4582050122763548855, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: -8551680421231702191, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: 6910232201441847072, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+  - imageName: type_5_ripples_moving
+    imagePath: Assets/Sprites/Ships/Type_5/type_5_ripples_moving.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_5/type_5_ripples_moving
+    texture2D: {fileID: 2800000, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    sprite: {fileID: -2558570441496525672, guid: ab700c10f15f2b347910552be6bd83f4,
+      type: 3}
+    sprites:
+    - {fileID: -2558570441496525672, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: 4232979313800295442, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: -4758990529005462269, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: -5304188786964617455, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: -4379371225950514114, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: -1825956192221383837, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: -519756680952471661, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: 308581310882579830, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: -2578367416091203703, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: 6074483474219091491, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: 728570157088290159, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: 8520659099652070641, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: 289381348192523275, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: 8646865670906284097, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: -580670292398217092, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: -4738229866130543173, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: 6298910442077816686, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: 4042361955228401444, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: 6827499866272596855, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: 9178600152217789606, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+  - imageName: type_6_1
+    imagePath: Assets/Sprites/Ships/Type_6/type_6_1.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_6/type_6_1
+    texture2D: {fileID: 2800000, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    sprite: {fileID: 4773038194961117453, guid: ae3a9cbc775ae724c923c27a72029694,
+      type: 3}
+    sprites:
+    - {fileID: 4773038194961117453, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: -7677841393573005474, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: 2407376058897076423, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: -4581144721394794728, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: -704915879564783306, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: -1957807773439732671, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: -5784633220120082332, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: 4485927026857513633, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: -7337181817930026643, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: -2276754616201752373, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: 551414175813580175, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: 1885974343073264703, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: -5733991664567314233, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: -5558085685651285777, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: -437415167816936689, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: 9146495527919546469, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: -86506925437708148, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: 6721480699168342739, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: -7611129009648466043, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: 2942724302700807451, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+  - imageName: type_6_ripples
+    imagePath: Assets/Sprites/Ships/Type_6/type_6_ripples.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_6/type_6_ripples
+    texture2D: {fileID: 2800000, guid: c00c16f019611d948bad38438a609871, type: 3}
+    sprite: {fileID: 2081815182804597449, guid: c00c16f019611d948bad38438a609871,
+      type: 3}
+    sprites:
+    - {fileID: 2081815182804597449, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: -6606801501351544583, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: 8553367056534837030, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: -7630440729820636729, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: 8597641645739409294, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: 8894850811681101987, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: -4681514107339100929, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: -2655066997972123322, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: 2895855657570357479, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: 1519199866549292649, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: -6720776124899097931, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: -3736512804979365463, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: -627707928607152589, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: 1557471348045607587, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: -8296509788843946906, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: -8710626040565899828, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: 5150815395240455646, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: -991793585723165262, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: -7114399331987863278, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: -1425519815769154490, guid: c00c16f019611d948bad38438a609871, type: 3}
+  - imageName: type_6_ripples_moving
+    imagePath: Assets/Sprites/Ships/Type_6/type_6_ripples_moving.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_6/type_6_ripples_moving
+    texture2D: {fileID: 2800000, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    sprite: {fileID: -6109697626978637996, guid: 5e6374f3382e94544b22018848ea4a1e,
+      type: 3}
+    sprites:
+    - {fileID: -6109697626978637996, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: 5421309969408082691, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: 190547823889457954, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: -3051114392044002388, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: 3944052021345409408, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: -8732144580209821413, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: 1936876824526485358, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: 1229466669951975638, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: 6277462932148351615, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: 5762751106574175534, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: 1910943887015946233, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: 7233777010929147941, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: 4830878792905300315, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: -2092011058536729844, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: 8157190853552024460, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: 2809542785805734196, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: 2889941949674727164, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: -7899504535007735799, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: -4461452910878024188, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: 1117786050220109315, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+  - imageName: type_7_1
+    imagePath: Assets/Sprites/Ships/Type_7/type_7_1.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_7/type_7_1
+    texture2D: {fileID: 2800000, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    sprite: {fileID: 6085262766591137304, guid: 02dc810930da9d849aae210e0e98b971,
+      type: 3}
+    sprites:
+    - {fileID: 6085262766591137304, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: 3272441717949082871, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: 2023941057604022560, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: -3374480389165259384, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: 148330160712223589, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: 5164387116733320779, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: 5002415506638093640, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: 6141329684971050582, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: 4203640273089677243, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: -8603936846995706873, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: 8362919153701452227, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: 2316639854566429121, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: -3988920643990827759, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: 5539716333865991600, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: -8419964166739998807, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: -1203839556727543469, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: 8696173305167214779, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: -2557463640958564958, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: -8814977963089768507, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: 2533408078402615385, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+  - imageName: type_7_ripples
+    imagePath: Assets/Sprites/Ships/Type_7/type_7_ripples.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_7/type_7_ripples
+    texture2D: {fileID: 2800000, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    sprite: {fileID: -1679815108052774003, guid: de7e9876ca9f619468f239d9612fbe4f,
+      type: 3}
+    sprites:
+    - {fileID: -1679815108052774003, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: 182417770800369410, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: -6615242657166016593, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: -3347156984896879691, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: -3724553358226470728, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: 8069401463682835474, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: 2689184672584857106, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: 287477640716068158, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: 4400499420351192420, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: 8557224145081499958, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: 5899475508714580415, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: 3990090961613355677, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: 8391974332416271497, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: -6218824950820547232, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: -3467707042731174392, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: 1167660901119844450, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: 3115403456955174233, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: 3180459817852415584, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: -7163666381477954642, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: 3913587852323066320, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+  - imageName: type_7_ripples_moving
+    imagePath: Assets/Sprites/Ships/Type_7/type_7_ripples_moving.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_7/type_7_ripples_moving
+    texture2D: {fileID: 2800000, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    sprite: {fileID: 3238168660761684162, guid: ab364322b6fb63649b5c8f97280b661f,
+      type: 3}
+    sprites:
+    - {fileID: 3238168660761684162, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: -4538973139573620930, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: 4830862206697022240, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: 5583561169299714544, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: -4587243265908813512, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: 8102064351823168656, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: 7451232405477509595, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: 9141739248926992355, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: -8465359224257000021, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: 1353775761571929690, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: -3923419823218004653, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: -776757245807907945, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: -721302435375231596, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: 7130517434092293299, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: 2965561893923096821, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: -8924837258395230367, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: 3275514631702035386, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: -7706376938204406905, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: -4903771094218370308, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: 1608124902449491833, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+  - imageName: type_8_1
+    imagePath: Assets/Sprites/Ships/Type_8/type_8_1.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_8/type_8_1
+    texture2D: {fileID: 2800000, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    sprite: {fileID: -3040656918543940320, guid: aa0885fe30f75224ba51843451306359,
+      type: 3}
+    sprites:
+    - {fileID: -3040656918543940320, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: -729545608447407103, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: 3667006204637869537, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: 3648332483201836590, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: 3648156210134048020, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: 1142333019500429384, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: -3026850069905990488, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: -7948195291360314896, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: 8273162718500309707, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: -2512275828273211921, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: 2588968918092965601, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: -4094655412172606387, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: -1985179500560578987, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: 6043614483814419677, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: 7556448757095556863, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: -6601233382539570498, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: 7338959247606188992, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: 3667936352544322919, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: -2520298148856357524, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: -7066302703748969449, guid: aa0885fe30f75224ba51843451306359, type: 3}
+  - imageName: type_8_ripples
+    imagePath: Assets/Sprites/Ships/Type_8/type_8_ripples.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_8/type_8_ripples
+    texture2D: {fileID: 2800000, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    sprite: {fileID: 8224845117667411344, guid: 02f7bdd20b74dcf4caa2158b3e148332,
+      type: 3}
+    sprites:
+    - {fileID: 8224845117667411344, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: -4530615807694339004, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: -2792556599261096086, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: -737729911336262746, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: 4394621735020350530, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: -7019358483321068612, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: -4024252996944464922, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: 4997138127974831590, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: 6343083937679985121, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: -1691514107546860917, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: 3767021375032282395, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: -1116123928446311634, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: 7668409573173485797, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: -8977020648232820987, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: -7662784893014962961, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: 4417425814095233932, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: 7248073895133786403, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: -8236704251445576828, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: -9021588359645622229, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: -7526438830793622111, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+  - imageName: type_8_ripples_moving
+    imagePath: Assets/Sprites/Ships/Type_8/type_8_ripples_moving.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_8/type_8_ripples_moving
+    texture2D: {fileID: 2800000, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    sprite: {fileID: 7718405315327998246, guid: 57bb126098696a748bf9ef04bdbfef3d,
+      type: 3}
+    sprites:
+    - {fileID: 7718405315327998246, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: -2247221266094976984, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: 2533590884985225778, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: -3215272491206524173, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: -4248496468197578184, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: 7051323779235330500, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: -8549383959766066211, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: 7040453352530358085, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: -8614359097362799863, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: 55202737470820545, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: 4950548010253711587, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: -2432710032912893788, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: -2375014569628407413, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: 6428762334393670774, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: 4642325581574546595, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: -2825977743308739700, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: -1476883581867505387, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: 7116605046064780826, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: 4829402177537313913, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: -2350072073638465216, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
   - imageName: unknown_discovery
     imagePath: Assets/Sprites/Minimap/unknown_discovery.png
     imagePathWithoutExtension: Assets/Sprites/Minimap/unknown_discovery

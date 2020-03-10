@@ -258,14 +258,6 @@ public class ShopManager : MonoBehaviour {
             pricePerUnit = Util.roundToPrettyNumber(pricePerUnit);
             CropOffer offer = new CropOffer(_offerId++, areaKey, cropType, stockCount, pricePerUnit, rarity);
 
-            // For the sake of the tutorial, there will always be an offer for the starting crop in the desert town
-            if (Area.MERCHANT_SHOP_DESERT.Equals(areaKey) && i == 0) {
-               offer.cropType = CropManager.STARTING_CROP;
-               offer.rarity = Rarity.Type.Common;
-               offer.pricePerUnit = 80;
-               offer.amount = int.MaxValue;
-            }
-
             // Store the offer
             _offers[offer.id] = offer;
 

@@ -9,7 +9,7 @@ using System;
 public class ShipData
 {
    // Type of ship, key value
-   public Ship.Type shipType = Ship.Type.Barge;
+   public Ship.Type shipType = Ship.Type.Type_1;
 
    // The custom name of the ship
    public string shipName = "GenericShip";
@@ -18,7 +18,7 @@ public class ShipData
    public int shipID = 0;
 
    // Type of skin the ship uses
-   public Ship.SkinType skinType = Ship.SkinType.Barge_Dragon;
+   public Ship.SkinType skinType = Ship.SkinType.None;
 
    // Base hp of the ship
    public int baseHealth = 100;

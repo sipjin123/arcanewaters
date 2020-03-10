@@ -160,10 +160,10 @@ public class ServerMessageManager : MonoBehaviour {
       }*/
 
       // Look up the Area that we're going to place the users into
-      Area area = AreaManager.self.getArea(Area.NEW_STARTING_TOWN);
+      Area area = AreaManager.self.getArea(Area.STARTING_TOWN);
 
       // Look up the Spawn position for the map associated with that area
-      SpawnID spawnID = new SpawnID(Area.NEW_STARTING_TOWN, Spawn.STARTING_SPAWN);
+      SpawnID spawnID = new SpawnID(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
       userInfo.localPos = SpawnManager.self.getSpawnLocalPosition(spawnID);
 
       // Make sure the name is available

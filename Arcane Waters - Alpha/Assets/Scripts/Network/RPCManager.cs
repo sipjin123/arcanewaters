@@ -2653,14 +2653,8 @@ public class RPCManager : NetworkBehaviour {
 
             // If the player is in a voyage area, warp him to the starting town
             if (VoyageManager.self.isVoyageArea(_player.areaKey)) {
-               
-               // Get the area and spawn
-               Area area = AreaManager.self.getArea(VoyageManager.RETURN_AREA_KEY);
-               Spawn spawn = SpawnManager.self.getSpawn(VoyageManager.RETURN_AREA_KEY, 
-                  VoyageManager.RETURN_SPAWN_KEY);
-
-               // Warp to the destination area
-               _player.spawnInNewMap(VoyageManager.RETURN_AREA_KEY, spawn, Direction.South);
+               Spawn spawn = SpawnManager.self.getSpawn(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
+               _player.spawnInNewMap(Area.STARTING_TOWN, spawn, Direction.South);
             }
          });
       });
