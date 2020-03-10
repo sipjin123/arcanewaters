@@ -49,6 +49,7 @@ public class AchievementData
       this.achievementUniqueID = DataUtil.getString(dataReader, "achievementUniqueID");
       this.itemType = DataUtil.getInt(dataReader, "achievementItemTypeID");
       this.itemCategory = DataUtil.getInt(dataReader, "achievementItemCategoryID");
+      this.tier = DataUtil.getInt(dataReader, "tier");
    }
 
 #endif

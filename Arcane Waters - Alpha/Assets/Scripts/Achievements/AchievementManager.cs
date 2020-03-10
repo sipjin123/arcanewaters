@@ -10,12 +10,23 @@ public class AchievementManager : MonoBehaviour {
 
    // Self
    public static AchievementManager self;
-   
+
    // Determines how many tiers will be setup for all the achievements (Example: Bronze Minerx100, Silver Minerx500, Gold Minerx500, Platinum Minerx1000)
    public const int MAX_TIER_COUNT = 4;
 
    // List of achievement data for editor review
    public List<AchievementData> achievmentDataList;
+
+   public class AchievementGroupData {
+      // The xml id of the achievement
+      public int achievementXmlId;
+
+      // The whole data content of each data
+      public AchievementData achievementData;
+
+      // The unique Id of each action type
+      public string uniqueKey;
+   }
 
    #endregion
 
@@ -23,9 +34,24 @@ public class AchievementManager : MonoBehaviour {
       self = this;
    }
 
-   public AchievementData getAchievementData (string uniqueID) {
-      AchievementData returnData = _achievementDataCollection[uniqueID];
+   public AchievementData getAchievementData (string uniqueKey) {
+      AchievementData returnData = _achievementDataCollection.Find(_=>_.uniqueKey == uniqueKey).achievementData;
       return returnData;
+   }
+
+   public AchievementData getAchievementData (int xmlId) {
+      AchievementData returnData = _achievementDataCollection.Find(_ => _.achievementXmlId == xmlId).achievementData;
+      return returnData;
+   }
+
+   public AchievementData getAchievementData (ActionType actionType, int tier) {
+      List<AchievementGroupData> actionTierGroup = _achievementDataCollection.FindAll(_ => _.achievementData.actionType == actionType);
+      foreach (AchievementGroupData achievement in actionTierGroup) {
+         if (tier == achievement.achievementData.tier) {
+            return achievement.achievementData;
+         }
+      }
+      return null;
    }
 
    public static List<AchievementData> castData (ActionType actionType, Item item) {
@@ -34,8 +60,8 @@ public class AchievementManager : MonoBehaviour {
       // Gathers all the achievement that uses the same Action Type such as ([ActionType.Mining]Mine1x, Mine10x, Mine100x)
       for (int i = 1; i < MAX_TIER_COUNT; i++) {
          string actionKey = actionType.ToString() + i.ToString();
-         if (self._achievementDataCollection.ContainsKey(actionKey)) {
-            newDataList.Add(self._achievementDataCollection[actionKey]);
+         if (self._achievementDataCollection.Exists(_=>_.uniqueKey == actionKey)) {
+            newDataList.Add(self._achievementDataCollection.Find(_=>_.uniqueKey == actionKey).achievementData);
          }
       }
 
@@ -48,7 +74,7 @@ public class AchievementManager : MonoBehaviour {
    }
 
    public void initializeDataCache () {
-      _achievementDataCollection = new Dictionary<string, AchievementData>();
+      _achievementDataCollection = new List<AchievementGroupData>();
       
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<XMLPair> rawXMLData = DB_Main.getAchievementXML();
@@ -60,8 +86,13 @@ public class AchievementManager : MonoBehaviour {
                string actionKey = achievementData.actionType.ToString() + achievementData.tier.ToString();
 
                // Save the achievement data in the memory cache
-               if (!_achievementDataCollection.ContainsKey(actionKey)) {
-                  _achievementDataCollection.Add(actionKey, achievementData);
+               if (!_achievementDataCollection.Exists(_=>_.uniqueKey == actionKey)) {
+                  AchievementGroupData newGroupData = new AchievementGroupData {
+                     uniqueKey = actionKey,
+                     achievementData = achievementData,
+                     achievementXmlId = rawXmlData.xmlId
+                  };
+                  _achievementDataCollection.Add(newGroupData);
                   achievmentDataList.Add(achievementData);
                }
             }
@@ -169,7 +200,7 @@ public class AchievementManager : MonoBehaviour {
    #region Private Variables
 
    // Holds the collection of the xml translated data
-   private Dictionary<string, AchievementData> _achievementDataCollection;
+   private List<AchievementGroupData> _achievementDataCollection;
 
    #endregion
 }

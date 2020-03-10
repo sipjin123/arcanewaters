@@ -11,6 +11,9 @@ public class QuestActionRequirement {
    [XmlElement("actionType")]
    public int actionTypeIndex;
 
+   [XmlElement("actionTypeTitle")]
+   public string actionTitle;
+
    #endregion
 
    public QuestActionRequirement () {

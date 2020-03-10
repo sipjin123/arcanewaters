@@ -10,11 +10,11 @@ public class NPCData
 {
    #region Public Variables
 
-   // The NPC ID
-   public int npcId;
-
    // The name of the NPC
    public string name = "";
+
+   // The NPC ID
+   public int npcId;
 
    // The faction of the NPC
    [XmlIgnore]

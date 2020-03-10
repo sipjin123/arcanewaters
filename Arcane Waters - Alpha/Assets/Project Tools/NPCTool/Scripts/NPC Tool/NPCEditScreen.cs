@@ -369,6 +369,7 @@ public class NPCEditScreen : MonoBehaviour
    public void toggleActionSelectionPanel () {
       itemTypeSelectionPanel.SetActive(true);
       itemCategoryParent.gameObject.DestroyChildren();
+      itemTypeParent.gameObject.DestroyChildren();
 
       foreach (KeyValuePair<int, AchievementData> achievementData in NPCToolManager.instance.achievementCollection) {
          GameObject template = Instantiate(itemCategoryPrefab, itemTypeParent);

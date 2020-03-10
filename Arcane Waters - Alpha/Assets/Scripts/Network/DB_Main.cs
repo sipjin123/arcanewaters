@@ -114,8 +114,8 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO achievement_data (userID, actionTypeId, achievementName, achievementUniqueID, achievementDescription, achievementCount, achievementItemTypeID, achievementItemCategoryID, isCompleted) " +
-            "VALUES(@userID, @actionTypeId, @achievementName, @achievementUniqueID, @achievementDescription, @achievementCount, @achievementItemTypeID, @achievementItemCategoryID, @isCompleted) " +
+            "INSERT INTO achievement_data (userID, tier, actionTypeId, achievementName, achievementUniqueID, achievementDescription, achievementCount, achievementItemTypeID, achievementItemCategoryID, isCompleted) " +
+            "VALUES(@userID, @tier, @actionTypeId, @achievementName, @achievementUniqueID, @achievementDescription, @achievementCount, @achievementItemTypeID, @achievementItemCategoryID, @isCompleted) " +
             "ON DUPLICATE KEY UPDATE achievementCount = achievementCount + " + addedCount + ", isCompleted = @isCompleted", conn)) {
 
             conn.Open();
@@ -129,6 +129,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@achievementItemTypeID", (int) achievementData.itemType);
             cmd.Parameters.AddWithValue("@achievementItemCategoryID", (int) achievementData.itemCategory);
             cmd.Parameters.AddWithValue("@isCompleted", isCompleted == true ? 1 : 0);
+            cmd.Parameters.AddWithValue("@tier", achievementData.tier);
 
             // Execute the command
             cmd.ExecuteNonQuery();

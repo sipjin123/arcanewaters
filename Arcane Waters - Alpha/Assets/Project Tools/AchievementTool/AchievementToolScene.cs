@@ -63,6 +63,7 @@ public class AchievementToolScene : MonoBehaviour {
          achievementDataPanel.loadData(usableItemData, -1);
          achievementDataPanel.gameObject.SetActive(true);
       });
+      template.indexText.text = "None - 0";
 
       template.deleteButton.onClick.AddListener(() => {
          Destroy(template.gameObject, .5f);
@@ -87,7 +88,7 @@ public class AchievementToolScene : MonoBehaviour {
    public void loadAchievementData (List<AchievementDataPair> achievementDataCollection) {
       itemTemplateParent.gameObject.DestroyChildren();
 
-      List<AchievementDataPair> sortedList = achievementDataCollection.OrderBy(w => w.xmlId).ToList();
+      List<AchievementDataPair> sortedList = achievementDataCollection.OrderBy(w => w.achivementData.actionType).ToList();
 
       // Create a row for each achievement element
       foreach (AchievementDataPair achievementDataPair in sortedList) {
@@ -98,6 +99,7 @@ public class AchievementToolScene : MonoBehaviour {
          } else {
             template.nameText.text = achievementData.achievementName;
          }
+         template.indexText.text = "[" + achievementData.actionType + "] (" + achievementData.tier + ")";
 
          template.editButton.onClick.AddListener(() => {
             achievementDataPanel.loadData(achievementData, achievementDataPair.xmlId);

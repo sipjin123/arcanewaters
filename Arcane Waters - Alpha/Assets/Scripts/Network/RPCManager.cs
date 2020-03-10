@@ -156,13 +156,13 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_ReceiveNPCQuestNode (NetworkConnection connection, int questId,
-      QuestNode questNode, int friendshipLevel, bool areObjectivesCompleted, int[] objectivesProgress) {
+      QuestNode questNode, int friendshipLevel, bool areObjectivesCompleted, int[] objectivesProgress, bool isEnabled) {
       // Get the NPC panel
       NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
 
       // Pass the data to the panel
       panel.updatePanelWithQuestNode(friendshipLevel, questId, questNode, areObjectivesCompleted,
-         objectivesProgress);
+         objectivesProgress, isEnabled);
 
       // Make sure the panel is showing
       if (!panel.isShowing()) {
@@ -1204,6 +1204,7 @@ public class RPCManager : NetworkBehaviour {
 
          // Retrieve the status of all running and completed quests
          List<QuestStatusInfo> questStatuses = DB_Main.getQuestStatuses(npcId, _player.userId);
+         List<AchievementData> achievementDataList = DB_Main.getAchievementDataList(_player.userId);
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -1268,6 +1269,7 @@ public class RPCManager : NetworkBehaviour {
 
          // Get the quest status
          QuestStatusInfo status = DB_Main.getQuestStatus(npcId, _player.userId, questId);
+         List<AchievementData> userAchievementList = DB_Main.getAchievementDataList(_player.userId);
 
          // Determine the destination node
          int destinationNodeId;
@@ -1305,11 +1307,20 @@ public class RPCManager : NetworkBehaviour {
             }
          }
 
+         bool canInteractDialogue = true;
+         foreach (QuestActionRequirement questRequirements in destinationNode.actionRequirements) {
+            AchievementData achievementData = AchievementManager.self.getAchievementData(questRequirements.actionTypeIndex);
+            AchievementData userAchievement = userAchievementList.Find(_ => _.actionType == achievementData.actionType && _.tier == achievementData.tier);
+            if (userAchievement == null) {
+               canInteractDialogue = false;
+            }
+         }
+
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Send the new quest status to the client
             Target_ReceiveNPCQuestNode(_player.connectionToClient, questId, destinationNode,
-               friendshipLevel, areObjectivesCompleted, objectivesProgress.ToArray());
+               friendshipLevel, areObjectivesCompleted, objectivesProgress.ToArray(), canInteractDialogue);
          });
       });
    }
@@ -1324,6 +1335,7 @@ public class RPCManager : NetworkBehaviour {
 
          // Get the quest status
          QuestStatusInfo status = DB_Main.getQuestStatus(npcId, _player.userId, currentQuest.questId);
+         List<AchievementData> userAchievementList = DB_Main.getAchievementDataList(_player.userId);
 
          // If there is no quest status, throw an error
          if (status == null) {
@@ -1392,6 +1404,18 @@ public class RPCManager : NetworkBehaviour {
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            bool canInteractDialogue = true;
+            if (nextNode != null) {
+               if (nextNode.actionRequirements != null) {
+                  foreach (QuestActionRequirement questRequirements in nextNode.actionRequirements) {
+                     AchievementData achievementData = AchievementManager.self.getAchievementData(questRequirements.actionTypeIndex);
+                     AchievementData userAchievement = userAchievementList.Find(_ => _.actionType == achievementData.actionType && _.tier == achievementData.tier);
+                     if (userAchievement == null) {
+                        canInteractDialogue = false;
+                     }
+                  }
+               }
+            }
 
             // If this is the end of the conversation, close the dialogue panel
             if (currentNode.nextNodeId == -1) {
@@ -1399,7 +1423,7 @@ public class RPCManager : NetworkBehaviour {
             } else {
                // Send the new quest status to the client
                Target_ReceiveNPCQuestNode(_player.connectionToClient, questId, nextNode,
-                  friendshipLevel, areObjectivesCompleted, objectivesProgress.ToArray());
+                  friendshipLevel, areObjectivesCompleted, objectivesProgress.ToArray(), canInteractDialogue);
             }
 
             // If items have been rewarded, show the reward panel

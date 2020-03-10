@@ -158,12 +158,16 @@ public class NPCPanel : Panel {
    }
 
    public void updatePanelWithQuestNode (int friendshipLevel, int questId, QuestNode node,
-      bool areObjectivesCompleted, int[] objectivesProgress) {
+      bool areObjectivesCompleted, int[] objectivesProgress, bool isEnabled) {
+      if (areObjectivesCompleted && !isEnabled) {
+         areObjectivesCompleted = false;
+      }
+
       // Show the correct section
       configurePanelForMode(Mode.QuestNode);
 
       // Set the panel content common to the different modes
-      setCommonPanelContent(node.npcText, friendshipLevel);
+      setCommonPanelContent(node.npcText, friendshipLevel, isEnabled, node.actionRequirements);
 
       // Clear out the old clickable options
       clearDialogueOptions();
@@ -199,10 +203,10 @@ public class NPCPanel : Panel {
 
             // Test if we received the progress for this objective from the server
             if (k < objectivesProgress.Length) {
-               cell.setCellForQuestObjective(o, objectivesProgress[k]);
+               cell.setCellForQuestObjective(o, objectivesProgress[k], isEnabled);
             } else {
                D.warning("The quest objectives progress received from the server is inconsistent with the client's quest data");
-               cell.setCellForQuestObjective(o, -1);
+               cell.setCellForQuestObjective(o, -1, isEnabled);
             }
             k++;
          }
@@ -319,7 +323,7 @@ public class NPCPanel : Panel {
       }
    }
 
-   private void setCommonPanelContent(string npcText, int friendshipLevel) {
+   private void setCommonPanelContent(string npcText, int friendshipLevel, bool hasFinishedAchievements = true, QuestActionRequirement[] actionRequirements = null) {
       // If the friendship level changed, play an animation
       if (_friendshipLevel != -1 && _friendshipLevel != friendshipLevel) {
          friendshipIncreaseAnimator.SetTrigger("friendshipChanged");
@@ -329,6 +333,17 @@ public class NPCPanel : Panel {
             friendshipLevel > _friendshipLevel &&
             _friendshipRank != NPCFriendship.getRank(friendshipLevel))  {
             PanelManager.self.noticeScreen.show(string.Format("Your friendship with {0} raised to {1}", _npc.getName(), NPCFriendship.getRankName(friendshipLevel)));
+         }
+      }
+
+      if (actionRequirements != null) {
+         string requirementContent = "";
+         foreach (QuestActionRequirement requirement in actionRequirements) {
+            requirementContent += "\n" + requirement.actionTitle;
+         }
+
+         if (!hasFinishedAchievements) {
+            PanelManager.self.noticeScreen.show(string.Format("This Quest requires you to finish {0}", requirementContent));
          }
       }
 

@@ -25,13 +25,13 @@ public class NPCPanelQuestObjectiveCell : MonoBehaviour
 
    #endregion
 
-   public void setCellForQuestObjective(QuestObjective objective, int progress) {
+   public void setCellForQuestObjective(QuestObjective objective, int progress, bool isEnabled) {
       icon.sprite = objective.getIcon();
       progressText.text = objective.getProgressString(progress);
       tooltip.text = objective.getObjectiveDescription();
 
       // Set the color of the progress text
-      if (objective.canObjectiveBeCompleted(progress)) {
+      if (objective.canObjectiveBeCompleted(progress) && isEnabled) {
          progressText.color = completedObjectiveColor;
       } else {
          progressText.color = incompletedObjectivesColor;

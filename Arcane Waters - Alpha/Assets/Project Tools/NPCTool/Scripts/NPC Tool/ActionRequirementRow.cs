@@ -23,6 +23,7 @@ public class ActionRequirementRow : MonoBehaviour {
    public QuestActionRequirement getModifiedItemReward () {
       QuestActionRequirement newRequirementRow = new QuestActionRequirement();
       newRequirementRow.actionTypeIndex = actionTypeIndex;
+      newRequirementRow.actionTitle = NPCToolManager.instance.getAchievementData(actionTypeIndex).achievementName;
 
       return newRequirementRow;
    }
