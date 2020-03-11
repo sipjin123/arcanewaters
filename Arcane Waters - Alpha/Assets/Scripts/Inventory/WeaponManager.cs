@@ -34,6 +34,9 @@ public class WeaponManager : EquipmentManager {
    [SyncVar]
    public Weapon.ActionType actionType = Weapon.ActionType.None;
 
+   [SyncVar]
+   public int actionTypeValue;
+
    #endregion
 
    public void Update () {
@@ -105,6 +108,7 @@ public class WeaponManager : EquipmentManager {
          weaponData = WeaponStatData.getDefaultData();
       }
 
+      actionTypeValue = weaponData.actionTypeValue;
       _weapon = weapon;
 
       // Assign the weapon ID

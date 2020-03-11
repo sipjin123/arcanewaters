@@ -29,6 +29,9 @@ public class WeaponStatData : EquipmentStatData
    // The type of action that comes with the weapon
    public Weapon.ActionType actionType = Weapon.ActionType.None;
 
+   // The generic value of the action type
+   public int actionTypeValue = 0;
+
    // Item sql id assigned from the database
    public int itemSqlId = 0;
 
@@ -41,6 +44,7 @@ public class WeaponStatData : EquipmentStatData
          category = Item.Category.Weapon,
          iconPath = weaponData.equipmentIconPath,
          materialType = weaponData.materialType,
+         actionTypeValue = weaponData.actionTypeValue,
          data = serializeWeaponStatData(weaponData)
       };
       return newWeapon;

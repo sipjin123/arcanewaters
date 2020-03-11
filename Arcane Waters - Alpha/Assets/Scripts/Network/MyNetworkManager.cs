@@ -145,6 +145,7 @@ public class MyNetworkManager : NetworkManager {
       SpecialtyManager.self.initializeDataCache();
       JobManager.self.initializeDataCache();
       CraftingManager.self.initializeDataCache();
+      CropsDataManager.self.initializeDataCache();
       AchievementManager.self.initializeDataCache();
       SeaMonsterManager.self.initializeSeaMonsterCache();
       MonsterManager.self.initializeLandMonsterDataCache();

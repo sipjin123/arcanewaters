@@ -23,7 +23,7 @@ public class EquipmentToolPanel : MonoBehaviour {
    public Button createElementalModifierButton, createRarityModifierButton;
 
    // The sprite that the weapon will preview
-   public static int WEAPON_SPRITE_INDEX = 27;
+   public static int WEAPON_SPRITE_INDEX = 47;
 
    public enum ModifierType
    {
@@ -45,10 +45,13 @@ public class EquipmentToolPanel : MonoBehaviour {
    public EquipmentType equipmentType;
 
    // The current xml id
-   public int current_xml_id;
+   public int currentXmlId;
 
    // Event to notify if the equipment ID has been modified
-   public UnityEvent changeIconEvent;
+   public UnityEvent changeIconEvent = new UnityEvent();
+
+   // Event to notify if the action type has been modified
+   public UnityEvent changeActionTypeEvent = new UnityEvent();
 
    // Gender type for preview
    public Gender.Type genderType = Gender.Type.Female;
@@ -77,23 +80,24 @@ public class EquipmentToolPanel : MonoBehaviour {
          if (equipmentType == EquipmentType.Weapon) {
             WeaponStatData newStatData = getWeaponStatData();
             if (newStatData != null) {
-               equipmentToolManager.saveWeapon(newStatData, current_xml_id, _isEnabled.isOn);
+               equipmentToolManager.saveWeapon(newStatData, currentXmlId, _isEnabled.isOn);
                gameObject.SetActive(false);
             }
          } else if (equipmentType == EquipmentType.Armor) {
             ArmorStatData newStatData = getArmorStatData();
             if (newStatData != null) {
-               equipmentToolManager.saveArmor(newStatData, current_xml_id, _isEnabled.isOn);
+               equipmentToolManager.saveArmor(newStatData, currentXmlId, _isEnabled.isOn);
                gameObject.SetActive(false);
             }
          } else if (equipmentType == EquipmentType.Helm) {
             HelmStatData newStatData = getHelmStatData();
             if (newStatData != null) {
-               equipmentToolManager.saveHelm(newStatData, current_xml_id, _isEnabled.isOn);
+               equipmentToolManager.saveHelm(newStatData, currentXmlId, _isEnabled.isOn);
                gameObject.SetActive(false);
             }
          }
       });
+
       cancelButton.onClick.AddListener(() => {
          gameObject.SetActive(false);
          equipmentToolManager.loadXMLData();
@@ -108,6 +112,7 @@ public class EquipmentToolPanel : MonoBehaviour {
             genericSelectionPopup.callImageTextSelectionPopup(GenericSelectionPopup.selectionType.HelmIcon, _icon, _iconPath);
          }
       });
+
       _equipmentTypeButton.onClick.AddListener(() => {
          if (equipmentType == EquipmentType.Weapon) {
             genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.WeaponType, _equipmentTypeText, changeIconEvent);
@@ -117,6 +122,7 @@ public class EquipmentToolPanel : MonoBehaviour {
             genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.HelmType, _equipmentTypeText);
          }
       });
+
       changeIconEvent.AddListener(() => {
          int spriteIndex = 0;
          string path = getInGameSprite(int.Parse(_equipmentTypeText.text));
@@ -133,9 +139,25 @@ public class EquipmentToolPanel : MonoBehaviour {
          }
       });
 
-      _actionTypeButton.onClick.AddListener(() => genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.WeaponActionType, _actionType));
+      _actionTypeButton.onClick.AddListener(() => genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.WeaponActionType, _actionType, changeActionTypeEvent));
       _colorType1Button.onClick.AddListener(() => genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.Color, _colorType1Text));
       _colorType2Button.onClick.AddListener(() => genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.Color, _colorType2Text));
+
+      changeActionTypeEvent.AddListener(() => updateActionValueEquivalent());
+      _actionTypeValue.onValueChanged.AddListener(_ => updateActionValueEquivalent());
+      updateActionValueEquivalent();
+   }
+
+   private void updateActionValueEquivalent () {
+      if ((Weapon.ActionType) Enum.Parse(typeof(Weapon.ActionType), _actionType.text) == Weapon.ActionType.PlantCrop) {
+         try {
+            _actionValueEquivalent.text = ((Crop.Type) int.Parse(_actionTypeValue.text)).ToString();
+         } catch {
+            _actionValueEquivalent.text = "None";
+         }
+      } else {
+         _actionValueEquivalent.text = "None";
+      }
    }
 
    private void createModifierTemplate (ModifierType modifierType) {
@@ -219,12 +241,14 @@ public class EquipmentToolPanel : MonoBehaviour {
    }
 
    public void loadArmorData (ArmorStatData statData, int template_id, bool isEnabled) {
-      current_xml_id = template_id;
+      currentXmlId = template_id;
       startingType = (int) statData.armorType;
       equipmentType = EquipmentType.Armor;
       _isEnabled.isOn = isEnabled;
 
-      _actionTypeGroup.SetActive(false);
+      foreach (GameObject obj in _actionTypeGroup) {
+         obj.SetActive(false);
+      }
 
       loadGenericInfo();
       loadEquipmentData(statData);
@@ -244,13 +268,16 @@ public class EquipmentToolPanel : MonoBehaviour {
    }
 
    public void loadWeaponData (WeaponStatData statData, int template_id, bool isEnabled) {
-      current_xml_id = template_id;
+      currentXmlId = template_id;
       startingType = (int)statData.weaponType;
       equipmentType = EquipmentType.Weapon;
       _isEnabled.isOn = isEnabled;
 
-      _actionTypeGroup.SetActive(true);
+      foreach (GameObject obj in _actionTypeGroup) {
+         obj.SetActive(true);
+      }
       _actionType.text = statData.actionType.ToString();
+      _actionTypeValue.text = statData.actionTypeValue.ToString();
 
       loadGenericInfo();
       loadEquipmentData(statData);
@@ -279,12 +306,14 @@ public class EquipmentToolPanel : MonoBehaviour {
    }
 
    public void loadHelmData (HelmStatData statData, int template_id, bool isEnabled) {
-      current_xml_id = template_id;
+      currentXmlId = template_id;
       startingType = (int) statData.helmType;
       equipmentType = EquipmentType.Helm;
       _isEnabled.isOn = isEnabled;
 
-      _actionTypeGroup.SetActive(false);
+      foreach (GameObject obj in _actionTypeGroup) {
+         obj.SetActive(false);
+      }
 
       loadGenericInfo();
       loadEquipmentData(statData);
@@ -404,6 +433,7 @@ public class EquipmentToolPanel : MonoBehaviour {
       weaponStatData.weaponType = int.Parse(_equipmentTypeText.text);
       weaponStatData.weaponClass = (Weapon.Class) Enum.Parse(typeof(Weapon.Class), _weaponClassText.text);
       weaponStatData.actionType = (Weapon.ActionType) Enum.Parse(typeof(Weapon.ActionType), _actionType.text);
+      weaponStatData.actionTypeValue = int.Parse(_actionTypeValue.text);
       return weaponStatData;
    }
 
@@ -586,11 +616,15 @@ public class EquipmentToolPanel : MonoBehaviour {
 
    // Action Type
    [SerializeField]
+   private InputField _actionTypeValue;
+   [SerializeField]
+   private Text _actionValueEquivalent;
+   [SerializeField]
    private Text _actionType;
    [SerializeField]
    private Button _actionTypeButton;
    [SerializeField]
-   private GameObject _actionTypeGroup;
+   private GameObject[] _actionTypeGroup;
 
    // Stats UI
    [SerializeField]

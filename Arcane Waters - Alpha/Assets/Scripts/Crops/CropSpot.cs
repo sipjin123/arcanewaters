@@ -26,6 +26,8 @@ public class CropSpot : MonoBehaviour {
       if (Application.isBatchMode) {
          this.gameObject.SetActive(false);
       }
+
+      CropSpotManager.self.storeCropSpot(this);
    }
 
    private void Update() {
@@ -48,7 +50,7 @@ public class CropSpot : MonoBehaviour {
 
       // If a player tried to plant on this spot holding a seed bag, maybe plant something
       if (this.crop == null && (Global.player as PlayerBodyEntity).weaponManager.actionType == Weapon.ActionType.PlantCrop) {
-         Global.player.Cmd_PlantCrop(CropManager.STARTING_CROP, this.cropNumber);
+         Global.player.Cmd_PlantCrop((Crop.Type)(Global.player as PlayerBodyEntity).weaponManager.actionTypeValue, this.cropNumber);
       }
 
       // If the player tried to water this spot holding the watering pot, maybe water something

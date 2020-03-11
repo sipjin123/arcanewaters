@@ -327,8 +327,9 @@ public class GenericSelectionPopup : MonoBehaviour {
             }
             break;
          case selectionType.WeaponType:
-            for (int weaponType = 0; weaponType < MAX_OPTIONS; weaponType++) {
-               createTextTemplate(weaponType.ToString(), textUI, changeEvent);
+            for (int weaponType = 1; weaponType < MAX_OPTIONS; weaponType++) {
+               string spritePath = "Assets/Sprites/Weapons/" + Gender.Type.Female + "/" + "weapon_" + weaponType + "_front";
+               createTextTemplate(weaponType.ToString(), textUI, changeEvent, spritePath, null, EquipmentToolPanel.WEAPON_SPRITE_INDEX);
             }
             break;
          case selectionType.Color:
@@ -496,7 +497,7 @@ public class GenericSelectionPopup : MonoBehaviour {
       }
    }
 
-   private void createTextTemplate (string selectionName, Text textUI, UnityEvent changeEvent = null, string imagePath = "", Image imageUI = null) {
+   private void createTextTemplate (string selectionName, Text textUI, UnityEvent changeEvent = null, string imagePath = "", Image imageUI = null, int spriteIndex = 0) {
       GameObject selectionObj = Instantiate(templatePrefab.gameObject, templateParent.transform);
       ItemTypeTemplate selectionTemplate = selectionObj.GetComponent<ItemTypeTemplate>();
       selectionTemplate.itemTypeText.text = selectionName;
@@ -513,7 +514,21 @@ public class GenericSelectionPopup : MonoBehaviour {
       });
 
       if (imagePath != "") {
-         selectionTemplate.spriteIcon.sprite = ImageManager.getSprite(imagePath);
+         if (spriteIndex > 0) {
+            selectionTemplate.previewButton.gameObject.SetActive(true);
+            selectionTemplate.previewButton.onClick.AddListener(() => {
+               previewSelectionIcon.sprite = selectionTemplate.spriteIcon.sprite;
+            });
+            Sprite[] sprites = ImageManager.getSprites(imagePath);
+            if (sprites.Length > 0) {
+               if (spriteIndex > sprites.Length) {
+                  spriteIndex = sprites.Length - 1;
+               }
+               selectionTemplate.spriteIcon.sprite = sprites[spriteIndex];
+            }
+         } else {
+            selectionTemplate.spriteIcon.sprite = ImageManager.getSprite(imagePath);
+         }
       }
    }
 

@@ -122,19 +122,8 @@ public class Crop : ClientMonoBehaviour {
    }
 
    public static int getXP (Crop.Type cropType) {
-      // For now, we'll have all crops be worth the same XP, and have the varying supply/demand be what creates variety
-      return 25;
-
-      /*switch (cropType) {
-         case Type.Carrots:
-            return 25;
-         case Type.Onions:
-            return 50;
-         case Type.Potatoes:
-            return 100;
-      }
-
-      return 25;*/
+      CropsData cropData = CropsDataManager.self.getCropData(cropType);
+      return cropData.rewardXp;
    }
 
    protected void updateWaterLevelDisplay () {

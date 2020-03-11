@@ -16,6 +16,14 @@ public class CropSpotManager : MonoBehaviour {
       self = this;
    }
 
+   public void resetCropSpots () {
+      _cropSpots.Clear();
+
+      foreach (CropSpot cropSpot in FindObjectsOfType<CropSpot>()) {
+         storeCropSpot(cropSpot);
+      }
+   }
+
    private void Start () {
       // Look up all of our Crop Spots and store them
       foreach (CropSpot cropSpot in FindObjectsOfType<CropSpot>()) {

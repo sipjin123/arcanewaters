@@ -99,7 +99,7 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
 
       // Initially hides name ui for npc name
       Util.setAlpha(nameText, 0f);
-      
+
       // Keep track of the NPC in the Manager
       NPCManager.self.storeNPC(this);
 
@@ -528,8 +528,11 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
                string spritePath = npcData.spritePath;
                if (spritePath != "") {
                   GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture(spritePath);
-               } 
-            } 
+               }
+            }
+            Area area = GetComponentInParent<Area>();
+            this.areaKey = area.areaKey;
+            NPCManager.self.storeNPC(this);
          } else if (field.k.CompareTo(DataField.NPC_SHOP_NAME_KEY) == 0) {
             // Get Shop Name (if any)
             shopName = field.v.Split(':')[0];

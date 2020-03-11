@@ -53,6 +53,7 @@ public class CropsDataPanel : MonoBehaviour {
    public void loadData (CropsData cropData, int xml_id) {
       currentXmlId = xml_id;
 
+      _cropXP.text = cropData.rewardXp.ToString();
       _cropTypeSlider.value = cropData.cropsType;
       _cropIconPath.text = cropData.iconPath;
       _isEnabled.isOn = cropData.isEnabled;
@@ -77,6 +78,7 @@ public class CropsDataPanel : MonoBehaviour {
       cropData.xmlDescription = _cropDescriptionField.text;
       cropData.cost = int.Parse(_cropCost.text);
       cropData.growthRate = float.Parse(_cropGrowthRate.text);
+      cropData.rewardXp = int.Parse(_cropXP.text);
 
       return cropData;
    }
@@ -107,6 +109,10 @@ public class CropsDataPanel : MonoBehaviour {
    // The cost of the crop
    [SerializeField]
    private InputField _cropCost;
+
+   // The reward xp of the crop
+   [SerializeField]
+   private InputField _cropXP;
 
    // The Crop image
    [SerializeField]

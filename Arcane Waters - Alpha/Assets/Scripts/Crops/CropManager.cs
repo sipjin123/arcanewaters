@@ -122,7 +122,7 @@ public class CropManager : NetworkBehaviour {
 
                // Let them know they gained experience
                _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Farmer, cropNumber);
-            }
+            } 
          });
       });
    }
@@ -423,21 +423,23 @@ public class CropManager : NetworkBehaviour {
    [TargetRpc]
    public void Target_ReceiveCrop (NetworkConnection connection, CropInfo cropInfo, bool justGrew) {
       // If we're on the planting step and just received one of our own crops, we can move on to the next step
-      bool ifPlantSeeds = TutorialManager.self.currentTutorialData().actionType == ActionType.PlantCrop;
-      if (Global.player != null && cropInfo.userId == Global.player.userId && ifPlantSeeds) {
-         Global.player.Cmd_CompletedTutorialStep(TutorialManager.currentStep);
-      }
+      if (TutorialManager.self != null) {
+         bool ifPlantSeeds = TutorialManager.self.currentTutorialData().actionType == ActionType.PlantCrop;
+         if (Global.player != null && cropInfo.userId == Global.player.userId && ifPlantSeeds) {
+            Global.player.Cmd_CompletedTutorialStep(TutorialManager.currentStep);
+         }
 
-      // If we're on the watering step and the crop grew, we can move on to the next step
-      bool ifStartedWateringCrops = TutorialManager.self.currentTutorialData().actionType == ActionType.WaterCrop && TutorialManager.self.currentTutorialData().countRequirement == 1;
-      if (Global.player != null && cropInfo.userId == Global.player.userId && ifStartedWateringCrops && justGrew) {
-         Global.player.Cmd_CompletedTutorialStep(TutorialManager.currentStep);
-      }
+         // If we're on the watering step and the crop grew, we can move on to the next step
+         bool ifStartedWateringCrops = TutorialManager.self.currentTutorialData().actionType == ActionType.WaterCrop && TutorialManager.self.currentTutorialData().countRequirement == 1;
+         if (Global.player != null && cropInfo.userId == Global.player.userId && ifStartedWateringCrops && justGrew) {
+            Global.player.Cmd_CompletedTutorialStep(TutorialManager.currentStep);
+         }
 
-      // If we're on the watering step and the crop finished, we can move on to the next step
-      bool ifFinishedWateringCrops = TutorialManager.self.currentTutorialData().actionType == ActionType.WaterCrop && TutorialManager.self.currentTutorialData().countRequirement > 1;
-      if (Global.player != null && cropInfo.userId == Global.player.userId && ifFinishedWateringCrops && justGrew && cropInfo.isMaxLevel()) {
-         Global.player.Cmd_CompletedTutorialStep(TutorialManager.currentStep);
+         // If we're on the watering step and the crop finished, we can move on to the next step
+         bool ifFinishedWateringCrops = TutorialManager.self.currentTutorialData().actionType == ActionType.WaterCrop && TutorialManager.self.currentTutorialData().countRequirement > 1;
+         if (Global.player != null && cropInfo.userId == Global.player.userId && ifFinishedWateringCrops && justGrew && cropInfo.isMaxLevel()) {
+            Global.player.Cmd_CompletedTutorialStep(TutorialManager.currentStep);
+         }
       }
 
       createCrop(cropInfo, justGrew, true);
@@ -445,6 +447,8 @@ public class CropManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_ReceiveCrops (NetworkConnection connection, CropInfo[] crops) {
+      CropSpotManager.self.resetCropSpots();
+
       // Destroy any existing crops on the client
       foreach (Crop crop in FindObjectsOfType<Crop>()) {
          Destroy(crop.gameObject);
@@ -478,15 +482,17 @@ public class CropManager : NetworkBehaviour {
 
    protected static int getWaterIntervalSeconds (Crop.Type cropType, int highestCompletedTutorialStep) {
       // When they're just getting started, make the crops grow fast
-      TutorialData tutorialData = TutorialManager.self.fetchTutorialData(highestCompletedTutorialStep);
-      if (tutorialData.actionType == ActionType.WaterCrop && tutorialData.countRequirement == 1) {
-         return 6;
+      try {
+         TutorialData tutorialData = TutorialManager.self.fetchTutorialData(highestCompletedTutorialStep);
+         if (tutorialData.actionType == ActionType.WaterCrop && tutorialData.countRequirement == 1) {
+            return 6;
+         }
+      } catch {
+         D.warning("Tutorial Manager failed to process");
       }
 
-      switch (cropType) {
-         default:
-            return 12;
-      }
+      CropsData cropData = CropsDataManager.self.getCropData(cropType);
+      return (int)cropData.growthRate;
    }
 
    public static int getCropSellXP (Crop.Type cropType, string areaKey, int cropCount, CropOffer offer) {
