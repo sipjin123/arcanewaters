@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,7 +26,7 @@ public class BookReaderPanel : Panel
    public Image rightArrow;
 
    // Our components
-   public Animator _animator;   
+   public Animator _animator;
 
    #endregion
 
@@ -108,12 +107,12 @@ public class BookReaderPanel : Panel
       List<PageImageData> images = new List<PageImageData>();
 
       // Use regular expressions to find all matches of the special image tag (e.g. [i=ImageName])
-      Regex regex = new Regex("\\[i=(\\w*) height=(\\w*)\\]");
+      Regex regex = new Regex("\\[i=(\\S*) height=(\\w*)\\]");
       MatchCollection matches = regex.Matches(content);
 
       foreach (Match match in matches) {
          // Create the PageImageData with the index at which the tag began and the image from the BookManager
-         images.Add(new PageImageData(match.Index, match.Groups[0].Length, BooksManager.self.getImage(match.Groups[1].Value), int.Parse(match.Groups[2].Value)));
+         images.Add(new PageImageData(match.Index, match.Groups[0].Length, ImageManager.getSprite(match.Groups[1].Value), int.Parse(match.Groups[2].Value)));
       }
 
       return images;
@@ -145,7 +144,7 @@ public class BookReaderPanel : Panel
       } else {
          rightPage.clearPage();
       }
-            
+
       updateNavigationArrows();
    }
 
@@ -172,7 +171,7 @@ public class BookReaderPanel : Panel
          turnPageAnimationGameObject.gameObject.SetActive(true);
          _animator.SetTrigger("PreviousPages");
       }
-            
+
       // Make sure we don't go out of bounds
       _lastPage = Mathf.Max(_lastPage, 1);
    }
@@ -202,10 +201,10 @@ public class BookReaderPanel : Panel
 
       // Calculate the maximum number of lines based on the height of the container
       maxLines = Mathf.FloorToInt(leftPage.textContainerFullHeight / leftPage.textLineHeight);
-      
+
       // Calculate the max number of characters that can fit in a page
       int maxCharacters = maxLines * leftPage.maxCharactersPerLine;
-      
+
       pageContent = _currentBookContent.Substring(0, Mathf.Min(maxCharacters, _currentBookContent.Length));
 
       // If this is not the last page
@@ -232,14 +231,14 @@ public class BookReaderPanel : Panel
       }
    }
 
-   public void showPages() {
+   public void showPages () {
       leftPage.gameObject.SetActive(true);
       rightPage.gameObject.SetActive(true);
 
       turnPageAnimationGameObject.gameObject.SetActive(false);
    }
 
-   public void hidePages() {
+   public void hidePages () {
       leftPage.gameObject.SetActive(false);
       rightPage.gameObject.SetActive(false);
    }
@@ -266,6 +265,6 @@ public class BookReaderPanel : Panel
 
    // The content of each page
    private List<PageContent> _pages = new List<PageContent>();
-   
+
    #endregion
 }

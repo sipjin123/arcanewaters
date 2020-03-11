@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using TMPro;
+using UnityEngine.EventSystems;
 
 public class NoticeScreen : MonoBehaviour {
    #region Public Variables
@@ -11,13 +13,13 @@ public class NoticeScreen : MonoBehaviour {
    public CanvasGroup canvasGroup;
 
    // Our various components that we need references to
-   public Text text;
+   public TextMeshProUGUI text;
    public Button confirmButton;
 
    #endregion
 
    public void show (string newText) {
-      text.text = newText;
+      text.SetText(newText);
 
       // Now make us visible
       show();

@@ -3,22 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
-using System.Linq;
 
-public class BooksManager : MonoBehaviour
-{
+public class BooksToolListTemplate : GenericEntryTemplate {
    #region Public Variables
 
-   // Self
-   public static BooksManager self;
-
    #endregion
-
-   private void Awake () {
-      self = this;
+   
+   private void OnEnable () {
+      setNameRestriction(nameText.text);
    }
 
    #region Private Variables
-   
+
    #endregion
 }

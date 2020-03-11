@@ -22,6 +22,9 @@ public class TitleScreen : MonoBehaviour {
    // The Virtual Camera we use for the Title Screen
    public Cinemachine.CinemachineVirtualCamera virtualCamera;
 
+   // The link we redirect the users to download a new version
+   public string downloadNewVersionLink;
+
    // Self
    public static TitleScreen self;
 
@@ -59,7 +62,7 @@ public class TitleScreen : MonoBehaviour {
       }
    }
 
-   public void startUpNetworkClient() {
+   public void startUpNetworkClient () {
       // Start up the Network Client, which triggers the rest of the login process
       MyNetworkManager.self.StartClient();
    }
@@ -78,7 +81,7 @@ public class TitleScreen : MonoBehaviour {
 
       switch (errorType) {
          case ErrorMessage.Type.ClientOutdated:
-            PanelManager.self.noticeScreen.show("Please download the new version!");
+            PanelManager.self.noticeScreen.show($"Please download the new version <link=\"{ downloadNewVersionLink }\"><u>here</u></link>");
             break;
          case ErrorMessage.Type.FailedUserOrPass:
             PanelManager.self.noticeScreen.show("Invalid account/password combination.");

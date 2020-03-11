@@ -7,11 +7,12 @@ using System.Linq;
 using System;
 using MapCreationTool.Serialization;
 
-public class AdminManager : NetworkBehaviour {
+public class AdminManager : NetworkBehaviour
+{
    #region Public Variables
 
    // The types of administration privileges
-   public enum Type { None = 0, Admin = 1 , QA = 2, ContentWriter = 3 }
+   public enum Type { None = 0, Admin = 1, QA = 2, ContentWriter = 3 }
 
    // The email address we use for test accounts
    public static string TEST_EMAIL_DOMAIN = "codecommode.com";
@@ -42,11 +43,8 @@ public class AdminManager : NetworkBehaviour {
    protected static string NPC = "test_npc";
    protected static string GET_ITEM = "get_item";
    protected static string GET_ALL_ITEMS = "get_all_items";
-   
-   
-    
    protected static string SCHEDULE_SERVER_RESTART = "schedule_server_restart";
-   protected static string CANCEL_SERVER_RESTART   = "cancel_server_restart";
+   protected static string CANCEL_SERVER_RESTART = "cancel_server_restart";
 
    #endregion
 
@@ -92,7 +90,7 @@ public class AdminManager : NetworkBehaviour {
          parameters = inputString.Remove(0, adminCommand.Length + 1); // +1 for the space
       }
       adminCommand = adminCommand.Trim();
-      
+
       // Note the command we're about to request
       D.debug("Requesting admin command: " + adminCommand + " with parameters: " + parameters);
       adminCommand = adminCommand.ToLower();
@@ -133,14 +131,9 @@ public class AdminManager : NetworkBehaviour {
          requestGetItem(parameters);
       } else if (GET_ALL_ITEMS.Equals(adminCommand)) {
          requestGetAllItems(parameters);
-      }
-      
-      else if (SCHEDULE_SERVER_RESTART.Equals(adminCommand))
-      {
+      } else if (SCHEDULE_SERVER_RESTART.Equals(adminCommand)) {
          requestScheduleServerRestart(parameters);
-      }
-      else if (CANCEL_SERVER_RESTART.Equals(adminCommand))
-      {
+      } else if (CANCEL_SERVER_RESTART.Equals(adminCommand)) {
          Cmd_CancelServerRestart();
       }
    }
@@ -479,38 +472,34 @@ public class AdminManager : NetworkBehaviour {
          }
       });
    }
-   
+
    // Ken
-   protected void requestScheduleServerRestart(string parameters)
-   {
-      string[] list         = parameters.Split(' ');
-      int      buildVersion = 0;
-      int      delayMinutes = -1;
-      if (list.Length < 2)
-      {
+   protected void requestScheduleServerRestart (string parameters) {
+      string[] list = parameters.Split(' ');
+      int buildVersion = 0;
+      int delayMinutes = -1;
+      if (list.Length < 2) {
          D.warning($"Too few parameters. Given: {list.Length} - Expected: 2");
          ChatManager.self.addChat("Invalid parameters", ChatInfo.Type.Error);
          return;
       }
-        
+
 
       bool delayMinutesIsValid = int.TryParse(list[0], out delayMinutes);
-      if (!delayMinutesIsValid || delayMinutes <= 0)
-      {
+      if (!delayMinutesIsValid || delayMinutes <= 0) {
          D.warning($"The specified delay is not valid.");
          ChatManager.self.addChat("Invalid Delay", ChatInfo.Type.Error);
          return;
       }
-        
+
       bool buildVersionIsValid = int.TryParse(list[1], out buildVersion);
-        
-      if (!buildVersionIsValid || buildVersion <=0)
-      {
+
+      if (!buildVersionIsValid || buildVersion <= 0) {
          D.warning($"The specified build is not valid.");
          ChatManager.self.addChat("Invalid Build", ChatInfo.Type.Error);
          return;
       }
-        
+
       // Send the request to the server
       Cmd_ScheduleServerRestart(delayMinutes, buildVersion);
    }
@@ -628,34 +617,30 @@ public class AdminManager : NetworkBehaviour {
    protected void Cmd_BotWaypoint () {
 
    }
-   
+
    [Command]
-   protected void Cmd_ScheduleServerRestart(int delay, int build)
-   {
-      if (!_player.isAdmin())
-      {
+   protected void Cmd_ScheduleServerRestart (int delay, int build) {
+      if (!_player.isAdmin()) {
          return;
       }
-        
+
       // request to schedule a restart. - use ButlerClient.
       //ButlerClient.ScheduleServerRestart(delay, version, success=>{
       // the schedule
       //});
 
       var timePoint = DateTime.Now + TimeSpan.FromMinutes(delay);
-      var ticks     = timePoint.Ticks;
+      var ticks = timePoint.Ticks;
       DB_Main.updateDeploySchedule(ticks, build);
-        
+
    }
-    
+
    [Command]
-   protected void Cmd_CancelServerRestart()
-   {
-      if (!_player.isAdmin())
-      {
+   protected void Cmd_CancelServerRestart () {
+      if (!_player.isAdmin()) {
          return;
       }
-        
+
       // request to schedule a restart. - use ButlerClient
       //ButlerClient.CancelServerRestart((success)=>{
       //});
@@ -741,7 +726,7 @@ public class AdminManager : NetworkBehaviour {
          yield break;
       }
 
-      foreach (TutorialData tutData in  TutorialManager.self.tutorialDataList()) {
+      foreach (TutorialData tutData in TutorialManager.self.tutorialDataList()) {
          if (tutData.stepOrder == 0) {
             continue;
          }
@@ -759,16 +744,14 @@ public class AdminManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_NpcTest(string messg)
-   {
+   public void Cmd_NpcTest (string messg) {
       spawnNPCs();
       string[] serialize = MyNetworkManager.self.serializedNPCData(NPCManager.self.npcDataList);
       Rpc_NpcTestReceive(serialize);
    }
 
    [ClientRpc]
-   public void Rpc_NpcTestReceive(string[] npcDataSerialized)
-   {
+   public void Rpc_NpcTestReceive (string[] npcDataSerialized) {
       NPCData[] npcDataList = Util.unserialize<NPCData>(npcDataSerialized).ToArray();
       NPCManager.self.initializeNPCClientData(npcDataList);
       spawnNPCs();
@@ -785,7 +768,7 @@ public class AdminManager : NetworkBehaviour {
       foreach (NPCData npcData in NPCManager.self.npcDataList) {
          if (NPCManager.self.getNPC(npcData.npcId) == null) {
             Sprite npcSprite = null;
-            
+
             if (npcData.spritePath != null && npcData.spritePath != "") {
                npcSprite = ImageManager.getSprite(npcData.spritePath);
                if (npcSprite == null || npcSprite.name.Contains("empty_layer")) {
@@ -953,7 +936,7 @@ public class AdminManager : NetworkBehaviour {
       return wasItemCreated;
    }
 
-   public void buildItemNamesDictionary() {
+   public void buildItemNamesDictionary () {
       // Clear all the dictionaries
       _weaponNames.Clear();
       _armorNames.Clear();

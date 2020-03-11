@@ -4,8 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-[CreateAssetMenu(fileName ="BookData.asset", menuName ="Data/Book Data", order = 1)]
-public class BookData : ScriptableObject {
+public class BookData {
    #region Public Variables
 
    // The book title

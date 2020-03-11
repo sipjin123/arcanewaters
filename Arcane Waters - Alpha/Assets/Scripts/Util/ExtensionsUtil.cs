@@ -167,6 +167,14 @@ public static class ExtensionsUtil {
       return (T) System.Enum.Parse(typeof(T), str, true);
    }
 
+   public static bool Includes<T> (this string thisString, string otherString) {
+      if (otherString == null) {
+         return false;
+      }
+
+      return thisString.ToLower().Contains(otherString.ToLower());
+   }
+
    public static string SplitCamelCase (this string str) {
       return Regex.Replace(
           Regex.Replace(
