@@ -115,7 +115,7 @@ public class MonsterDataScene : MonoBehaviour {
          monsterPanel.gameObject.SetActive(true);
       });
       template.deleteButton.onClick.AddListener(() => {
-            toolManager.deleteMonsterDataFile(template.xml_id);
+            toolManager.deleteMonsterDataFile(template.xmlId);
       });
       template.duplicateButton.onClick.AddListener(() => {
          toolManager.duplicateData(monsterData);
@@ -153,7 +153,7 @@ public class MonsterDataScene : MonoBehaviour {
             Destroy(template.gameObject, .5f);
 
             Enemy.Type type = battler.enemyType;
-            toolManager.deleteMonsterDataFile(template.xml_id);
+            toolManager.deleteMonsterDataFile(template.xmlId);
          });
 
          try {

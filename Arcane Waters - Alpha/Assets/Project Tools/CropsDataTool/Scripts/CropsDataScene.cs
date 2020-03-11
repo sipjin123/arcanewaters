@@ -52,7 +52,7 @@ public class CropsDataScene : MonoBehaviour {
 
       CropsDataTemplate template = GenericEntryTemplate.createGenericTemplate(cropsTemplatePrefab.gameObject, cropsToolManager, cropsTemplateParent.transform).GetComponent<CropsDataTemplate>();
       template.updateItemDisplay(cropData, false);
-      template.xml_id = -1;
+      template.xmlId = -1;
       template.editButton.onClick.AddListener(() => {
          cropsPanel.loadData(cropData, -1);
          cropsPanel.gameObject.SetActive(true);
@@ -60,7 +60,7 @@ public class CropsDataScene : MonoBehaviour {
 
       template.deleteButton.onClick.AddListener(() => {
          Destroy(template.gameObject, .5f);
-         cropsToolManager.deleteDataFile(template.xml_id);
+         cropsToolManager.deleteDataFile(template.xmlId);
       });
 
       template.duplicateButton.onClick.AddListener(() => {
@@ -85,7 +85,7 @@ public class CropsDataScene : MonoBehaviour {
       foreach (CropsDataGroup rawXmlGroup in cropDataList) {
          CropsData cropData = rawXmlGroup.cropsData;
          CropsDataTemplate template = GenericEntryTemplate.createGenericTemplate(cropsTemplatePrefab.gameObject, cropsToolManager, cropsTemplateParent.transform).GetComponent<CropsDataTemplate>();
-         template.xml_id = rawXmlGroup.xmlId;
+         template.xmlId = rawXmlGroup.xmlId;
          template.updateItemDisplay(cropData, rawXmlGroup.isEnabled);
          template.editButton.onClick.AddListener(() => {
             cropsPanel.loadData(cropData, rawXmlGroup.xmlId);
@@ -94,7 +94,7 @@ public class CropsDataScene : MonoBehaviour {
 
          template.deleteButton.onClick.AddListener(() => {
             Destroy(template.gameObject, .5f);
-            cropsToolManager.deleteDataFile(template.xml_id);
+            cropsToolManager.deleteDataFile(template.xmlId);
          });
 
          template.duplicateButton.onClick.AddListener(() => {

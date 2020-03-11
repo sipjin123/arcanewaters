@@ -53,7 +53,7 @@ public class ShipDataScene : MonoBehaviour {
 
       ShipDataTemplate template = GenericEntryTemplate.createGenericTemplate(shipTemplatePrefab.gameObject, shipToolManager, shipTemplateParent.transform).GetComponent<ShipDataTemplate>();
       template.updateItemDisplay(shipData, false);
-      template.xml_id = -1;
+      template.xmlId = -1;
       template.editButton.onClick.AddListener(() => {
          shipDataPanel.loadData(shipData, -1, false);
          shipDataPanel.gameObject.SetActive(true);
@@ -61,7 +61,7 @@ public class ShipDataScene : MonoBehaviour {
 
       template.deleteButton.onClick.AddListener(() => {
          Destroy(template.gameObject, .5f);
-         shipToolManager.deleteDataFile(template.xml_id);
+         shipToolManager.deleteDataFile(template.xmlId);
       });
 
       template.duplicateButton.onClick.AddListener(() => {
@@ -86,7 +86,7 @@ public class ShipDataScene : MonoBehaviour {
       foreach (ShipXMLContent xmlContent in shipDataList) {
          ShipData shipData = xmlContent.shipData;
          ShipDataTemplate template = GenericEntryTemplate.createGenericTemplate(shipTemplatePrefab.gameObject, shipToolManager, shipTemplateParent.transform).GetComponent<ShipDataTemplate>();
-         template.xml_id = xmlContent.xmlId;
+         template.xmlId = xmlContent.xmlId;
          template.updateItemDisplay(shipData, xmlContent.isEnabled);
          template.editButton.onClick.AddListener(() => {
             shipDataPanel.loadData(shipData, xmlContent.xmlId, xmlContent.isEnabled);
@@ -95,7 +95,7 @@ public class ShipDataScene : MonoBehaviour {
 
          template.deleteButton.onClick.AddListener(() => {
             Destroy(template.gameObject, .5f);
-            shipToolManager.deleteDataFile(template.xml_id);
+            shipToolManager.deleteDataFile(template.xmlId);
          });
 
          template.duplicateButton.onClick.AddListener(() => {

@@ -16,7 +16,7 @@ public class NPCSelectionRow : GenericEntryTemplate
       _npcId = npcId;
 
       updateDisplay(npcName, npcId);
-      setIDRestriction(npcId);
+      setIdRestriction(npcId);
    }
 
    public void editButtonClickedOn () {

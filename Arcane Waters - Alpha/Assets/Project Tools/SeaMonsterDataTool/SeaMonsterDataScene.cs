@@ -87,14 +87,14 @@ public class SeaMonsterDataScene : MonoBehaviour
       monsterData.seaMonsterType = SeaMonsterEntity.Type.None;
 
       SeaMonsterDataTemplate template = GenericEntryTemplate.createGenericTemplate(monsterTemplate.gameObject, toolManager, monsterTemplateParent.transform).GetComponent<SeaMonsterDataTemplate>();
-      template.xml_id = -1;
+      template.xmlId = -1;
       template.editButton.onClick.AddListener(() => {
          monsterPanel.currentXMLTemplate = template;
          monsterPanel.loadData(monsterData, -1, false);
          monsterPanel.gameObject.SetActive(true);
       });
       template.deleteButton.onClick.AddListener(() => {
-         toolManager.deleteMonsterDataFile(template.xml_id);
+         toolManager.deleteMonsterDataFile(template.xmlId);
       });
       template.duplicateButton.onClick.AddListener(() => {
          toolManager.duplicateFile(monsterData);
@@ -113,7 +113,7 @@ public class SeaMonsterDataScene : MonoBehaviour
          SeaMonsterEntityData seaMonsterData = rawData.seaMonsterData;
 
          SeaMonsterDataTemplate template = GenericEntryTemplate.createGenericTemplate(monsterTemplate.gameObject, toolManager, monsterTemplateParent.transform).GetComponent<SeaMonsterDataTemplate>();
-         template.xml_id = rawData.xmlId;
+         template.xmlId = rawData.xmlId;
          template.updateItemDisplay(seaMonsterData, rawData.isEnabled);
          template.editButton.onClick.AddListener(() => {
             monsterPanel.currentXMLTemplate = template;
@@ -124,7 +124,7 @@ public class SeaMonsterDataScene : MonoBehaviour
          template.deleteButton.onClick.AddListener(() => {
             Destroy(template.gameObject, .5f);
             
-            toolManager.deleteMonsterDataFile(template.xml_id);
+            toolManager.deleteMonsterDataFile(template.xmlId);
          });
 
          template.duplicateButton.onClick.AddListener(() => {

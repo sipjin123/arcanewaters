@@ -593,21 +593,21 @@ public class DB_Main : DB_MainStub
    #region Crops XML Data
 
    public static new void updateCropsXML (string rawData, int xmlId, int cropsType, bool isEnabled, string cropsName) {
-      string xml_id_key = "xml_id, ";
-      string xml_id_value = "@xml_id, ";
+      string xmlIdKey = "xml_id, ";
+      string xmlIdValue = "@xml_id, ";
 
       // If this is a newly created data, let sql table auto generate id
       if (xmlId < 0) {
-         xml_id_key = "";
-         xml_id_value = "";
+         xmlIdKey = "";
+         xmlIdValue = "";
       }
 
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO crops_xml_v1 ("+ xml_id_key + "xml_name, xmlContent, creator_userID, is_enabled, crops_type) " +
-            "VALUES("+ xml_id_value + "@xml_name, @xmlContent, @creator_userID, @is_enabled, @crops_type) " +
+            "INSERT INTO crops_xml_v1 ("+ xmlIdKey + "xml_name, xmlContent, creator_userID, is_enabled, crops_type) " +
+            "VALUES("+ xmlIdValue + "@xml_name, @xmlContent, @creator_userID, @is_enabled, @crops_type) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, crops_type = @crops_type, is_enabled = @is_enabled, xml_name = @xml_name", conn)) {
 
             conn.Open();
@@ -674,6 +674,7 @@ public class DB_Main : DB_MainStub
    }
 
    #endregion
+
    #region Ship Ability XML Data
 
    public static new void updateShipAbilityXML (string rawData, string shipAbilityName) {

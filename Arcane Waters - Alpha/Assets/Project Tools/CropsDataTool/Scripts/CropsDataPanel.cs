@@ -95,6 +95,8 @@ public class CropsDataPanel : MonoBehaviour {
    // The crop type if it is a tomato etc
    [SerializeField]
    private Slider _cropTypeSlider;
+
+   // The type of crop associated with the slider
    [SerializeField]
    private Text _cropTypeLabel;
 
@@ -109,8 +111,12 @@ public class CropsDataPanel : MonoBehaviour {
    // The Crop image
    [SerializeField]
    private Button _cropIconButton;
+
+   // The string path of the icon
    [SerializeField]
    private Text _cropIconPath;
+
+   // The Image of the crop
    [SerializeField]
    private Image _cropImage;
 

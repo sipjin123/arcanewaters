@@ -8,7 +8,7 @@ public class EnemyDataTemplate : GenericEntryTemplate {
    #region Public Variables
 
    // The xml id of this template
-   public int xml_id;
+   public int xmlId;
 
    // An object to determine if the sql data is enabled
    public GameObject enabledIndicator;
@@ -17,11 +17,11 @@ public class EnemyDataTemplate : GenericEntryTemplate {
 
    public void updateItemDisplay (BattlerData resultItem, bool isActive, int xmlId) {
       string newName = "Undefined";
-      xml_id = xmlId;
+      this.xmlId = xmlId;
       newName = resultItem.enemyName + "\n(" + ((Enemy.Type) resultItem.enemyType).ToString() + ")";
 
       updateDisplay(newName, (int) resultItem.enemyType);
-      setIDRestriction(xml_id);
+      setIdRestriction(xmlId);
       enabledIndicator.SetActive(isActive);
    }
 

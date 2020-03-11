@@ -9,7 +9,7 @@ public class SeaMonsterDataTemplate : GenericEntryTemplate
    #region Public Variables
 
    // The xml id of this template
-   public int xml_id;
+   public int xmlId;
 
    // An object to determine if the sql data is enabled
    public GameObject enabledIndicator;
@@ -20,7 +20,7 @@ public class SeaMonsterDataTemplate : GenericEntryTemplate
       string newName = resultItem.monsterName + " (" + ((Enemy.Type) resultItem.seaMonsterType).ToString() + ")";
 
       updateDisplay(newName, (int) resultItem.seaMonsterType);
-      setIDRestriction(xml_id);
+      setIdRestriction(xmlId);
       enabledIndicator.SetActive(isActive);
    }
 

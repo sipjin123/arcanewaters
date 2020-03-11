@@ -8,7 +8,7 @@ public class ShipDataTemplate : GenericEntryTemplate {
    #region Public Variables
 
    // The xml id of this template
-   public int xml_id;
+   public int xmlId;
 
    // An object to determine if the sql data is enabled
    public GameObject enabledIndicator;
@@ -19,7 +19,7 @@ public class ShipDataTemplate : GenericEntryTemplate {
       string newName = resultItem.shipName + " (" + ((Ship.Type) resultItem.shipType).ToString() + ")";
 
       updateDisplay(newName, (int) resultItem.shipID);
-      setIDRestriction(xml_id);
+      setIdRestriction(xmlId);
       enabledIndicator.SetActive(isActive);
    }
 }

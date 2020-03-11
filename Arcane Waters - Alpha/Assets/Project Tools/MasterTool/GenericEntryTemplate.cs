@@ -56,14 +56,14 @@ public class GenericEntryTemplate : MonoBehaviour {
       }
    }
 
-   protected void setIDRestriction (int xml_id) {
+   protected void setIdRestriction (int xmlId) {
       if (!MasterToolAccountManager.canAlterData()) {
          deleteButton.gameObject.SetActive(false);
          duplicateButton.gameObject.SetActive(false);
       }
 
       if (MasterToolAccountManager.PERMISSION_LEVEL == AdminManager.Type.ContentWriter) {
-         if (Util.hasValidEntryName(nameText.text) && !_xmlToolReference.didUserCreateData(xml_id)) {
+         if (Util.hasValidEntryName(nameText.text) && !_xmlToolReference.didUserCreateData(xmlId)) {
             deleteButton.gameObject.SetActive(false);
             editButton.gameObject.SetActive(false);
          } 

@@ -8,7 +8,7 @@ public class CropsDataTemplate : GenericEntryTemplate {
    #region Public Variables
 
    // The xml id of this template
-   public int xml_id;
+   public int xmlId;
 
    // An object to determine if the sql data is enabled
    public GameObject enabledIndicator;
@@ -19,7 +19,7 @@ public class CropsDataTemplate : GenericEntryTemplate {
       string newName = resultItem.xmlName + " (" + ((Crop.Type) resultItem.cropsType).ToString() + ")";
 
       updateDisplay(newName, (int) resultItem.xmlId);
-      setIDRestriction(xml_id);
+      setIdRestriction(xmlId);
       enabledIndicator.SetActive(!isActive);
    }
 }
