@@ -31,9 +31,11 @@ public class WeaponManager : EquipmentManager {
    [SyncVar]
    public ColorType color2;
 
+   // The type of action this weapon is associated with
    [SyncVar]
    public Weapon.ActionType actionType = Weapon.ActionType.None;
 
+   // The action value of the action type
    [SyncVar]
    public int actionTypeValue;
 

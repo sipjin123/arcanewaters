@@ -44,14 +44,18 @@ public class ShipDataManager : MonoBehaviour {
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                foreach (XMLPair xmlPair in rawXMLData) {
-                  TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
-                  ShipData shipData = Util.xmlLoad<ShipData>(newTextAsset);
-                  Ship.Type uniqueID = shipData.shipType;
+                  try {
+                     TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
+                     ShipData shipData = Util.xmlLoad<ShipData>(newTextAsset);
+                     Ship.Type uniqueID = shipData.shipType;
 
-                  // Save the ship data in the memory cache
-                  if (!_shipData.ContainsKey(uniqueID) && xmlPair.isEnabled) {
-                     _shipData.Add(uniqueID, shipData);
-                     shipDataList.Add(shipData);
+                     // Save the ship data in the memory cache
+                     if (!_shipData.ContainsKey(uniqueID) && xmlPair.isEnabled) {
+                        _shipData.Add(uniqueID, shipData);
+                        shipDataList.Add(shipData);
+                     }
+                  } catch {
+                     D.warning("Failed to load ship xml data for: " + xmlPair.xmlId);
                   }
                }
                hasInitialized = true;

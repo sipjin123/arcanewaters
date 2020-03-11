@@ -40,7 +40,7 @@ public class InstanceManager : MonoBehaviour {
       }
 
       // IF they're entering their farm, send them their crops
-      if (areaKey.Contains(Area.FARM.ToLower())) {
+      if (areaKey.Includes<string>(Area.FARM)) {
          player.cropManager.loadCrops();
       } 
 

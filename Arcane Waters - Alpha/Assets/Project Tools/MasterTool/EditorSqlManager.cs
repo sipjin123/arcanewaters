@@ -32,6 +32,7 @@ public class EditorSQLManager
       Tutorial = 15,
       SoundEffects = 16,
       Crops = 17,
+      Books = 18
    }
 
    public static string getSQLTableByName (EditorToolType editorType, int subType = 0) {
@@ -44,6 +45,8 @@ public class EditorSQLManager
             return "shop_xml";
          case EditorToolType.Tutorial:
             return "tutorial_xml";
+         case EditorToolType.Books:
+            return "books_xml";
       }
       return "";
    }
