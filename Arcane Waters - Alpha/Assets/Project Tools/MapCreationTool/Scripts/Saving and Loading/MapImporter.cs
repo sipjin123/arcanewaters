@@ -123,12 +123,18 @@ namespace MapCreationTool
          List<ExportedPrefab001> enemyData = new List<ExportedPrefab001>();
 
          int unrecognizedPrefabs = 0;
+         int cropSpotCounter = 0;
 
          foreach (var prefab in project.prefabs) {
             GameObject original = AssetSerializationMaps.tryGetPrefabGame(prefab.i, project.biome);
             if (original == null) {
                unrecognizedPrefabs++;
                continue;
+            }
+
+            if (original.GetComponent<CropSpot>() != null) {
+               cropSpotCounter++;
+               original.GetComponent<CropSpot>().cropNumber = cropSpotCounter;
             }
 
             if (original.GetComponent<Enemy>() != null) {

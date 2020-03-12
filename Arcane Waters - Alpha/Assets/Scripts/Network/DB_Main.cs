@@ -1016,21 +1016,24 @@ public class DB_Main : DB_MainStub
       MapInfo mapInfo = null;
 
       string cmdText = "SELECT * FROM maps JOIN map_versions ON (maps.name=map_versions.mapName) WHERE (maps.publishedVersion=map_versions.version) AND maps.name=@mapName";
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+            cmd.Parameters.AddWithValue("@mapName", areaKey);
+            conn.Open();
+            cmd.Prepare();
 
-      using (MySqlConnection conn = getConnection())
-      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
-         cmd.Parameters.AddWithValue("@mapName", areaKey);
-         conn.Open();
-         cmd.Prepare();
-
-         using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-            while (dataReader.Read()) {
-               string mapName = dataReader.GetString("mapName");
-               string gameData = dataReader.GetString("gameData");
-               int version = dataReader.GetInt32("publishedVersion");
-               mapInfo = new MapInfo(mapName, gameData, version);
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  string mapName = dataReader.GetString("mapName");
+                  string gameData = dataReader.GetString("gameData");
+                  int version = dataReader.GetInt32("publishedVersion");
+                  mapInfo = new MapInfo(mapName, gameData, version);
+               }
             }
          }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
       }
 
       return mapInfo;
@@ -2264,8 +2267,8 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "INSERT INTO crops (usrId, crpType, cropNumber, creationTime, lastWaterTimestamp, waterInterval) " +
-            "VALUES (@usrId, @crpType, @cropNumber, FROM_UNIXTIME(@creationTime), UNIX_TIMESTAMP(), @waterInterval);", conn)) {
-
+            "VALUES (@usrId, @crpType, @cropNumber, IFNULL(FROM_UNIXTIME(@creationTime), FROM_UNIXTIME(1)), UNIX_TIMESTAMP(), @waterInterval);", conn)) {
+         
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", cropInfo.userId);

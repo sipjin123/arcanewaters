@@ -36,7 +36,11 @@ public class CropSpotManager : MonoBehaviour {
    }
 
    public CropSpot getCropSpot (int number) {
-      return _cropSpots[number];
+      if (_cropSpots.ContainsKey(number)) {
+         return _cropSpots[number];
+      }
+      D.warning("Failed to return crop slot: " + number);
+      return null;
    }
 
    #region Private Variables

@@ -36,5 +36,8 @@ public class CropsData {
    // The xp reward for the crop
    public int rewardXp = 1;
 
+   // The number of levels before the crop reaches max level
+   public int maxGrowthLevel = 2;
+
    #endregion
 }

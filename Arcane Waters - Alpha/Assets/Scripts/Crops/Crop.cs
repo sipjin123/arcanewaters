@@ -101,12 +101,8 @@ public class Crop : ClientMonoBehaviour {
    }
 
    public static int getMaxGrowthLevel (Crop.Type cropType) {
-      switch (cropType) {
-         case Type.Carrots:
-            return 3;
-         default:
-            return 3;
-      }
+      CropsData newCropData = CropsDataManager.self.getCropData(cropType);
+      return newCropData.maxGrowthLevel;
    }
 
    public bool isMaxLevel () {

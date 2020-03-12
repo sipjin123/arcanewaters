@@ -414,9 +414,11 @@ public class CropManager : NetworkBehaviour {
       }
 
       // If we're on the harvest step, we can move on to the next step
-      bool ifHarvestCrops = TutorialManager.self.currentTutorialData().actionType == ActionType.HarvestCrop;
-      if (Global.player != null && cropInfo.userId == Global.player.userId && ifHarvestCrops) {
-         Global.player.Cmd_CompletedTutorialStep(TutorialManager.currentStep);
+      if (TutorialManager.self != null) {
+         bool ifHarvestCrops = TutorialManager.self.currentTutorialData().actionType == ActionType.HarvestCrop;
+         if (Global.player != null && cropInfo.userId == Global.player.userId && ifHarvestCrops) {
+            Global.player.Cmd_CompletedTutorialStep(TutorialManager.currentStep);
+         }
       }
    }
 

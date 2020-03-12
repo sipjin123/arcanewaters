@@ -20,8 +20,13 @@ public class MapManager : MonoBehaviour {
    }
 
    public void createMapOnServer (string areaKey) {
-      MapInfo mapInfo = DB_Main.getMapInfo(areaKey);
-      createLiveMap(areaKey, mapInfo, getNextMapPosition());
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         MapInfo mapInfo = DB_Main.getMapInfo(areaKey);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            createLiveMap(areaKey, mapInfo, getNextMapPosition());
+         });
+      });
    }
 
    public void createLiveMap (string areaKey, MapInfo mapInfo, Vector3 mapPosition) {
