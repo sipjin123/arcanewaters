@@ -136,6 +136,26 @@ public class MyNetworkManager : NetworkManager {
       // Start up Photon so the servers can talk to each other
       connectToPhotonMaster();
 
+      // Initialize all xml managers to fetch from database
+      initializeXmlData();
+
+      // Schedule the leader boards recalculation
+      LeaderBoardsManager.self.scheduleLeaderBoardRecalculation();
+
+      // Delete old records in the job_history table
+      LeaderBoardsManager.self.pruneJobHistory();
+
+      // Regularly updates the required game version
+      GameVersionManager.self.scheduleMinimumGameVersionUpdate();
+
+      // Create the initial map that everyone starts in
+      MapManager.self.createMapOnServer(Area.STARTING_TOWN);
+
+      // Make note that we started up a server
+      wasServerStarted = true;
+   }
+
+   private void initializeXmlData () {
       // Loads all SQL Data from server
       NPCManager.self.initializeQuestCache();
       ShipDataManager.self.initializeDataCache();
@@ -155,21 +175,6 @@ public class MyNetworkManager : NetworkManager {
       BackgroundGameManager.self.initializeDataCache();
       EquipmentXMLManager.self.initializeDataCache();
       SoundEffectManager.self.initializeDataCache();
-
-      // Schedule the leader boards recalculation
-      LeaderBoardsManager.self.scheduleLeaderBoardRecalculation();
-
-      // Delete old records in the job_history table
-      LeaderBoardsManager.self.pruneJobHistory();
-
-      // Regularly updates the required game version
-      GameVersionManager.self.scheduleMinimumGameVersionUpdate();
-
-      // Create the initial map that everyone starts in
-      MapManager.self.createMapOnServer(Area.STARTING_TOWN);
-
-      // Make note that we started up a server
-      wasServerStarted = true;
    }
 
    public override void OnStopServer () {

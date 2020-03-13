@@ -54,7 +54,7 @@ public class CropsDataManager : MonoBehaviour {
    #region Private Variables
 
    // The data collection of crops data
-   protected Dictionary<Crop.Type, CropsData> _cropDataCollection;
+   protected Dictionary<Crop.Type, CropsData> _cropDataCollection = new Dictionary<Crop.Type, CropsData>();
 
    #endregion
 }

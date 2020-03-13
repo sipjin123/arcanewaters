@@ -61,6 +61,7 @@ public class CropsDataPanel : MonoBehaviour {
       _cropDescriptionField.text = cropData.xmlDescription;
       _cropGrowthRate.text = cropData.growthRate.ToString();
       _cropCost.text = cropData.cost.ToString();
+      _cropMaxGrowth.text = cropData.maxGrowthLevel.ToString();
 
       if (cropData.iconPath != "") {
          _cropImage.sprite = ImageManager.getSprite(cropData.iconPath);
@@ -70,6 +71,7 @@ public class CropsDataPanel : MonoBehaviour {
    public CropsData getCropData () {
       CropsData cropData = new CropsData();
 
+      cropData.maxGrowthLevel = int.Parse(_cropMaxGrowth.text);
       cropData.cropsType = (int) _cropTypeSlider.value;
       cropData.iconPath = _cropIconPath.text;
       cropData.isEnabled = _isEnabled.isOn;
@@ -105,6 +107,10 @@ public class CropsDataPanel : MonoBehaviour {
    // The growth rate of the crop
    [SerializeField]
    private InputField _cropGrowthRate;
+
+   // The max growth level this crop can reach
+   [SerializeField]
+   private InputField _cropMaxGrowth;
 
    // The cost of the crop
    [SerializeField]

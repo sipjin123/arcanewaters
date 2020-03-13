@@ -77,6 +77,8 @@ public class OfflineCharacter : ClientMonoBehaviour {
       ArmorStatData armorData = ArmorStatData.getDefaultData();
       if (armor.data != "") {
          armorData = Util.xmlLoad<ArmorStatData>(armor.data);
+         armorData.color1 = armorColor1;
+         armorData.color1 = armorColor2;
       }
 
       setArmor(armorData.armorType, armorData.color1, armorData.color2, armorData.materialType);

@@ -59,6 +59,8 @@ public class CharacterScreen : MonoBehaviour {
       _armorArray = new Armor[armorArray.Length];
       for (int i = 0; i < armorArray.Length; i++) {
          _armorArray[i] = Armor.castItemToArmor(armorArray[i]);
+         _armorArray[i].color1 = (ColorType) armorColors1[i];
+         _armorArray[i].color2 = (ColorType) armorColors2[i];
       }
 
       _weaponArray = new Weapon[weaponArray.Length];

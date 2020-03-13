@@ -264,7 +264,9 @@ public class Weapon : EquippableItem {
          iconPath = item.iconPath,
          itemDescription = item.itemDescription,
          itemName = item.itemName,
-         data = item.data
+         data = item.data,
+         color1 = item.color1,
+         color2 = item.color2,
       };
 
       return newWeapon;

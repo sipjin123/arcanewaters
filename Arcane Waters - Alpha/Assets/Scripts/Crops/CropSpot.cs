@@ -34,20 +34,9 @@ public class CropSpot : MonoBehaviour {
       // Only show the hole sprite if there's no Crop planted here yet
       float alpha = (crop == null) ? (_renderer.color.a + Time.smoothDeltaTime * .5f) : 0f;
       Util.setAlpha(_renderer, alpha);
-
-      // Allow pressing keyboard to interact with the crop
-      if (InputManager.isActionKeyPressed() && isGlobalPlayerNearby()) {
-         tryToInteractWithCropOnClient();
-      }
    }
 
    public void tryToInteractWithCropOnClient () {
-      // The player has to be close enough
-      if (!isGlobalPlayerNearby()) {
-         Instantiate(PrefabsManager.self.tooFarPrefab, this.transform.position + new Vector3(0f, .24f), Quaternion.identity);
-         return;
-      }
-
       // If a player tried to plant on this spot holding a seed bag, maybe plant something
       if (this.crop == null && (Global.player as PlayerBodyEntity).weaponManager.actionType == Weapon.ActionType.PlantCrop) {
          Global.player.Cmd_PlantCrop((Crop.Type)(Global.player as PlayerBodyEntity).weaponManager.actionTypeValue, this.cropNumber);

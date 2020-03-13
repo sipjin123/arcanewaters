@@ -9,6 +9,9 @@ public class PlayerBodyEntity : BodyEntity
 {
    #region Public Variables
 
+   // The farming trigger component used for detecting crops
+   public FarmingTrigger farmingTrigger;
+
    #endregion
 
    protected override void Update () {
@@ -46,6 +49,8 @@ public class PlayerBodyEntity : BodyEntity
          } else if (facing == Direction.South) {
             rpc.Cmd_InteractAnimation(Anim.Type.Interact_South);
          }
+
+         farmingTrigger.interactFarming();
       }
    }
 
