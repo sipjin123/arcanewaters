@@ -1784,7 +1784,7 @@ MonoBehaviour:
   interactingAnimation: 0
   armorManager: {fileID: 114737132631157730}
   weaponManager: {fileID: 114313576142768070}
-  farmingTrigger: {fileID: 3542386827760738861}
+  farmingTrigger: {fileID: 4476756568812448969}
 --- !u!58 &58574232978621698
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -7410,6 +7410,62 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdd399ff4912c0c4f9662af9104d4d70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &2303740727528456134
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1497313367445100641}
+  - component: {fileID: 4476756568812448969}
+  m_Layer: 9
+  m_Name: FarmingCollisions
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1497313367445100641
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2303740727528456134}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 3153367175898136785}
+  - {fileID: 4285692327299894517}
+  m_Father: {fileID: 5758002716507084920}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4476756568812448969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2303740727528456134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66f709c6a7aa3284995a69378705c908, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bodyEntity: {fileID: 114566659995724206}
+  coneCollider: {fileID: 7618361904784166695}
+  arcCollider: {fileID: 6044580327817217326}
+  effectSpawnList:
+  - {fileID: 2526565459354726488}
+  - {fileID: 4882683074603596138}
+  - {fileID: 281873912194125363}
+  - {fileID: 4271087485532141608}
+  - {fileID: 7358148920078571285}
+  - {fileID: 7504897712973258018}
+  animator: {fileID: 95463498748125442}
 --- !u!1 &4244924497257453005
 GameObject:
   m_ObjectHideFlags: 0
@@ -8038,7 +8094,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5758002716507084920}
   m_Layer: 9
-  m_Name: ConePivot
+  m_Name: ColliderPivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8055,7 +8111,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 3153367175898136785}
+  - {fileID: 1497313367445100641}
   m_Father: {fileID: 4953967745697658}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
@@ -8105,15 +8161,14 @@ GameObject:
   m_Component:
   - component: {fileID: 3153367175898136785}
   - component: {fileID: 7618361904784166695}
-  - component: {fileID: 3542386827760738861}
   - component: {fileID: 60646098841796493}
   m_Layer: 9
-  m_Name: Collider
+  m_Name: ConeCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3153367175898136785
 Transform:
   m_ObjectHideFlags: 0
@@ -8121,12 +8176,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7320545207840759424}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 9165292634778177870}
-  m_Father: {fileID: 5758002716507084920}
+  m_Father: {fileID: 1497313367445100641}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!60 &7618361904784166695
@@ -8157,28 +8212,6 @@ PolygonCollider2D:
     - - {x: 0.5, y: 0.3}
       - {x: 0.5, y: -0.3}
       - {x: 0.1, y: 0}
---- !u!114 &3542386827760738861
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7320545207840759424}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 66f709c6a7aa3284995a69378705c908, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bodyEntity: {fileID: 114566659995724206}
-  myCollider: {fileID: 7618361904784166695}
-  effectSpawnList:
-  - {fileID: 2526565459354726488}
-  - {fileID: 4882683074603596138}
-  - {fileID: 281873912194125363}
-  - {fileID: 4271087485532141608}
-  - {fileID: 7358148920078571285}
-  - {fileID: 7504897712973258018}
-  animator: {fileID: 95463498748125442}
 --- !u!50 &60646098841796493
 Rigidbody2D:
   serializedVersion: 4
@@ -8408,3 +8441,87 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 0
+--- !u!1 &9121914068043213830
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4285692327299894517}
+  - component: {fileID: 6044580327817217326}
+  - component: {fileID: 7724429323979993782}
+  m_Layer: 9
+  m_Name: ArcCollider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &4285692327299894517
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9121914068043213830}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1497313367445100641}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!60 &6044580327817217326
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9121914068043213830}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: 0.31, y: -0.2}
+      - {x: 0.17, y: -0.25}
+      - {x: 0.1, y: 0}
+      - {x: 0.17, y: 0.25}
+      - {x: 0.31, y: 0.2}
+      - {x: 0.38, y: 0}
+--- !u!50 &7724429323979993782
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9121914068043213830}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0

@@ -98,12 +98,14 @@ public class QuickLaunchPanel : MonoBehaviour {
 
    public void refreshDatabaseServer () {
       #if IS_SERVER_BUILD
+      DB_Main.isLocalServer = false;
       switch (dbServerDropDown.value) {
-         case 0: 
+         case 0:
             DB_Main.setServer(DB_Main.RemoteServer);
             break;
 
-         case 1: 
+         case 1:
+            DB_Main.isLocalServer = true;
             DB_Main.setServer("127.0.0.1");
             break;
 

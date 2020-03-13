@@ -10,8 +10,8 @@ public class FarmingTrigger : MonoBehaviour {
    // Reference to the player body
    public BodyEntity bodyEntity;
 
-   // The reference to the cone collision
-   public Collider2D myCollider;
+   // The reference to the colliders
+   public Collider2D coneCollider, arcCollider;
 
    // The spawn positions for the sprite effects
    public Transform[] effectSpawnList;
@@ -21,6 +21,9 @@ public class FarmingTrigger : MonoBehaviour {
 
    // The main reference to the coroutine
    public IEnumerator processingCoroutine;
+
+   // The particle sprite fading speed
+   public static float fadeSpeed = 1.5f;
 
    #endregion
 
@@ -32,6 +35,9 @@ public class FarmingTrigger : MonoBehaviour {
 
       // Make sure the player is not moving
       if (bodyEntity.getVelocity().magnitude < .07f) {
+         coneCollider.gameObject.SetActive(false);
+         arcCollider.gameObject.SetActive(false);
+
          processingCoroutine = CO_ProcessInteraction();
          StartCoroutine(processingCoroutine);
       }
@@ -40,7 +46,9 @@ public class FarmingTrigger : MonoBehaviour {
    private IEnumerator CO_ProcessInteraction () {
       yield return new WaitForSeconds(.1f);
 
+      Weapon.ActionType currentActionType = bodyEntity.weaponManager.actionType;
       AnimatorClipInfo[] m_AnimatorClipInfo = animator.GetCurrentAnimatorClipInfo(0);
+      Collider2D currentCollider = coneCollider;
       if (m_AnimatorClipInfo[0].clip.name.ToLower().Contains("interact")) {
          // Handle the angle of the cone shaped collider
          float currentAngle = 0;
@@ -55,25 +63,34 @@ public class FarmingTrigger : MonoBehaviour {
 
          // Handle the effect to spawn
          foreach (Transform spawnPoint in effectSpawnList) {
-            switch (bodyEntity.weaponManager.actionType) {
+            switch (currentActionType) {
                case Weapon.ActionType.PlantCrop:
-                  EffectManager.self.create(Effect.Type.Crop_Dirt_Small, spawnPoint.position);
+                  ExplosionManager.createFarmingParticle(currentActionType, spawnPoint.position, fadeSpeed, 4);
                   break;
                case Weapon.ActionType.WaterCrop:
-                  EffectManager.self.create(Effect.Type.Crop_Water, spawnPoint.position);
-                  break;
-               case Weapon.ActionType.HarvestCrop:
-                  EffectManager.self.create(Effect.Type.Crop_Harvest, spawnPoint.position);
+                  ExplosionManager.createFarmingParticle(currentActionType, spawnPoint.position, fadeSpeed, 2, false, 30, 60);
                   break;
             }
          }
 
+         // Using pitch fork uses a different collider since it requires a closer range contact
+         if (currentActionType == Weapon.ActionType.HarvestCrop) {
+            currentCollider = arcCollider;
+         }
+         currentCollider.gameObject.SetActive(true);
+
          // Interact with crops overlapping the cone collider
          RaycastHit2D[] rayHits = new RaycastHit2D[10];
-         int hitNum = myCollider.Cast(new Vector2(0, 0), rayHits);
+         int hitNum = currentCollider.Cast(new Vector2(0, 0), rayHits);
          foreach (RaycastHit2D hit in rayHits) {
             if (hit.collider != null && hit.collider.GetComponent<CropSpot>() != null) {
-               hit.collider.GetComponent<CropSpot>().tryToInteractWithCropOnClient();
+               CropSpot cropSpot = hit.collider.GetComponent<CropSpot>();
+               cropSpot.tryToInteractWithCropOnClient();
+
+               // Create dirt particle when colliding with crop spots with crops using a pitchfork
+               if (currentActionType == Weapon.ActionType.HarvestCrop && cropSpot.crop != null) {
+                  ExplosionManager.createFarmingParticle(currentActionType, hit.collider.transform.position, fadeSpeed, 4, false);
+               }
             }
          }
       }

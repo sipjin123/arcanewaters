@@ -18,6 +18,9 @@ public class DB_Main : DB_MainStub
 {
    #region Public Variables
 
+   // Determines if the local server is being used
+   public static bool isLocalServer = false;
+
    public static string RemoteServer
    {
       get { return _remoteServer; }
@@ -2262,12 +2265,17 @@ public class DB_Main : DB_MainStub
 
    public static new int insertCrop (CropInfo cropInfo) {
       int cropId = 0;
+      string unixString = "FROM_UNIXTIME(@creationTime)";
+      if (isLocalServer) {
+         // Local server fails to process query because it cannot accept null
+         unixString = "IFNULL(FROM_UNIXTIME(@creationTime), FROM_UNIXTIME(1))";
+      }
 
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "INSERT INTO crops (usrId, crpType, cropNumber, creationTime, lastWaterTimestamp, waterInterval) " +
-            "VALUES (@usrId, @crpType, @cropNumber, IFNULL(FROM_UNIXTIME(@creationTime), FROM_UNIXTIME(1)), UNIX_TIMESTAMP(), @waterInterval);", conn)) {
+            "VALUES (@usrId, @crpType, @cropNumber, " + unixString + ", UNIX_TIMESTAMP(), @waterInterval);", conn)) {
          
             conn.Open();
             cmd.Prepare();
