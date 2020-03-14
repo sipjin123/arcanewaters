@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class ShipEntity : SeaEntity {
+public class ShipEntity : SeaEntity
+{
    #region Public Variables
 
    // The lower limit of the range zone
@@ -52,8 +53,8 @@ public class ShipEntity : SeaEntity {
       return this.shipType.ToString().ToLower().Contains(skinClass.ToLower());
    }
 
-   public bool isInRange(Vector2 spot) {
-      if (Vector2.SqrMagnitude(spot - (Vector2)transform.position) < getAttackRange() * getAttackRange()) {
+   public bool isInRange (Vector2 spot) {
+      if (Vector2.SqrMagnitude(spot - (Vector2) transform.position) < getAttackRange() * getAttackRange()) {
          return true;
       } else {
          return false;
@@ -74,21 +75,21 @@ public class ShipEntity : SeaEntity {
 
    public override float getTurnDelay () {
       switch (this.shipType) {
-         case Ship.Type.Caravel:
+         case Ship.Type.Type_1:
             return .25f;
-         case Ship.Type.Brigantine:
+         case Ship.Type.Type_2:
             return .30f;
-         case Ship.Type.Nao:
+         case Ship.Type.Type_3:
             return .35f;
-         case Ship.Type.Carrack:
+         case Ship.Type.Type_4:
             return .40f;
-         case Ship.Type.Cutter:
+         case Ship.Type.Type_5:
             return .45f;
-         case Ship.Type.Buss:
+         case Ship.Type.Type_6:
             return .50f;
-         case Ship.Type.Galleon:
+         case Ship.Type.Type_7:
             return .60f;
-         case Ship.Type.Barge:
+         case Ship.Type.Type_8:
             return .75f;
          default:
             return .25f;
@@ -97,7 +98,7 @@ public class ShipEntity : SeaEntity {
 
    public Vector2 clampToRange (Vector2 targetPoint) {
       // Compute the relative position
-      Vector2 relativePosition = (targetPoint - (Vector2)transform.position);
+      Vector2 relativePosition = (targetPoint - (Vector2) transform.position);
 
       // Compute the magnitude
       float magnitude = relativePosition.magnitude;
@@ -109,7 +110,7 @@ public class ShipEntity : SeaEntity {
       Vector2 clampedRelativePosition = relativePosition.normalized * magnitude;
 
       // Return the world space position
-      return (Vector2)transform.position + clampedRelativePosition;
+      return (Vector2) transform.position + clampedRelativePosition;
    }
 
    public float getNormalizedTargetDistance (Vector2 target) {
@@ -137,7 +138,7 @@ public class ShipEntity : SeaEntity {
       _lastAttackTime = Time.time;
 
       ShipAbilityData shipData = ShipAbilityManager.self.getAbility(attackType);
-      
+
       // Attributes set up by server only
       switch (attackType) {
          case Attack.Type.Heal:
@@ -190,7 +191,7 @@ public class ShipEntity : SeaEntity {
       // Calculate shot parameters
       float distanceModifier = getDamageModifierForDistance(normalizedDistance);
       float projectileFlightDuration = (normalizedDistance * normalizedDistance * 1f) * ShipAbilityManager.self.getAbility(attackType).projectileSpeed;
-    
+
       ShipAbilityData shipData = ShipAbilityManager.self.getAbility(attackType);
       this.currentImpactMagnitude = ShipAbilityData.getImpactType(normalizedDistance);
 
@@ -207,7 +208,7 @@ public class ShipEntity : SeaEntity {
 
    [ClientRpc]
    public void Rpc_CreateCannonBall (Vector2 startPos, Vector2 endPos, float startTime, float endTime, Attack.Type attackType, Color color, ShipAbilityData shipAbilityData, float normalizedDistance) {
-      this.currentImpactMagnitude = ShipAbilityData.getImpactType(normalizedDistance);      
+      this.currentImpactMagnitude = ShipAbilityData.getImpactType(normalizedDistance);
 
       // Create a new Attack Circle object from the prefab
       AttackCircle attackCircle;
@@ -261,7 +262,35 @@ public class ShipEntity : SeaEntity {
       }
    }
 
+   protected override void updateSprites () {
+      base.updateSprites();
+
+      // Store the ripple sprites for later so we can quickly swap them once the entity starts/stops moving
+      _ripplesStillSprites = ImageManager.getTexture(Ship.getRipplesPath(shipType));
+      _ripplesMovingSprites = ImageManager.getTexture(Ship.getRipplesMovingPath(shipType));
+
+      // Set the initial idle sprites
+      spritesContainer.GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture(Ship.getSkinPath(shipType, skinType));
+      ripplesContainer.GetComponent<SpriteSwap>().newTexture = _ripplesStillSprites;
+   }
+
+   protected override void onStartMoving () {
+      base.onStartMoving();
+
+      ripplesContainer.GetComponent<SpriteSwap>().newTexture = _ripplesMovingSprites;
+   }
+
+   protected override void onEndMoving () {
+      base.onEndMoving();
+
+      ripplesContainer.GetComponent<SpriteSwap>().newTexture = _ripplesStillSprites;
+   }
+
    #region Private Variables
+
+   // Ship Ripple SpriteSheets
+   private Texture2D _ripplesStillSprites;
+   private Texture2D _ripplesMovingSprites;
 
    #endregion
 }

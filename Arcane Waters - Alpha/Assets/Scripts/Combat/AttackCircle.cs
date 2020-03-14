@@ -38,8 +38,15 @@ public class AttackCircle : MonoBehaviour {
       // Initialize the color of the sprite
       imageRenderer.color = new Color(color.r, color.g, color.b, alpha);
 
-      // Set the z position, above water and below the land
-      GetComponent<FixedZ>().newZ = Util.getTilemapZ("water", MapCreationTool.EditorType.Sea) - 0.05f;
+      if (Global.player != null) {
+         // Get the current area
+         Area area = AreaManager.self.getArea(Global.player.areaKey);
+
+         // Set the z position, above the sea and below the land
+         if (area != null) {
+            GetComponent<FixedZ>().newZ = area.waterZ - 0.01f;
+         }
+      }
    }
 
    void Update () {

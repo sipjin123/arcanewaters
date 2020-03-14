@@ -10,7 +10,14 @@ public class VersionInfoUI : MonoBehaviour {
    #endregion
 
    private void Start () {
-      _text.SetText($"Version info: { Util.getGameVersion() }");
+      int gameVersion = Util.getGameVersion();
+
+      // Display version information only if build manifest is available
+      if (gameVersion != int.MaxValue) {
+         _text.SetText($"v { Util.getGameVersion() }");
+      } else {
+         gameObject.SetActive(false);
+      }
    }
 
    #region Private Variables

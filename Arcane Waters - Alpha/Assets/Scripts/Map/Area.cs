@@ -23,6 +23,9 @@ public class Area : MonoBehaviour
    // When the area is a shop, keep also at hand the town's name
    public string townAreaKey;
 
+   // The area biome
+   public Biome.Type biome;
+
    // The Camera Bounds associated with this area
    public PolygonCollider2D cameraBounds;
 
@@ -31,6 +34,9 @@ public class Area : MonoBehaviour
 
    // Whether this area is a sea area
    public bool isSea = false;
+
+   // The z coordinate of the water layer
+   public float waterZ = 0f;
 
    // The Version number of this Area, as determined by the Map Editor tool
    public int version;
@@ -41,14 +47,19 @@ public class Area : MonoBehaviour
    // Enemy Data fields to be loaded by the server
    public List<ExportedPrefab001> enemyDatafields = new List<ExportedPrefab001>();
 
+   // Treasure sites to be loaded by the server
+   public List<ExportedPrefab001> treasureSiteDataFields = new List<ExportedPrefab001>();
+
    // Cached info of the npc data list
    public List<NPCData> loadedNPCDataList = new List<NPCData>();
 
    #endregion
 
-   public void registerNPCAndEnemyData (List<ExportedPrefab001> npcDatafields, List<ExportedPrefab001> enemyDatafields) {
+   public void registerNetworkPrefabData (List<ExportedPrefab001> npcDatafields, List<ExportedPrefab001> enemyDatafields,
+      List<ExportedPrefab001> treasureSiteDataFields) {
       this.npcDatafields = npcDatafields;
       this.enemyDatafields = enemyDatafields;
+      this.treasureSiteDataFields = treasureSiteDataFields;
 
       foreach (ExportedPrefab001 exportedPrefab in npcDatafields) {
          int npcID = NPC.fetchDataFieldID(exportedPrefab.d);
@@ -84,6 +95,14 @@ public class Area : MonoBehaviour
       // Check if area is a sea area
       if (!isSea) {
          isSea = areaKey.StartsWith("Ocean") || areaKey.StartsWith("Sea");
+      }
+
+      // Retrieve the z coordinate of the water tilemap
+      foreach (TilemapLayer layer in getTilemapLayers()) {
+         if (layer.name.ToLower().EndsWith("water")) {
+            waterZ = layer.tilemap.transform.position.z;
+            break;
+         }
       }
 
       // If the area is a town, lists all the areas that can be accessed from it
@@ -169,26 +188,11 @@ public class Area : MonoBehaviour
    }
 
    public static Biome.Type getBiome (string areaKey) {
-      switch (areaKey) {
-         case "AdventureShop_Forest":
-         case "Farm":
-         case "House":
-         case "MerchantShop_Forest":
-         case "Ocean1":
-         case "SeaBottom":
-         case "Shipyard_Forest":
-         case "StartingTown":
-            return Biome.Type.Forest;
-         case "AdventureShop_Desert":
-         case "MerchantShop_Desert":
-         case "DesertTown":
-         case "SeaMiddle":
-            return Biome.Type.Desert;
-         case "SeaTop":
-         case "TreasurePine":
-            return Biome.Type.Pine;
-         default:
-            return Biome.Type.None;
+      Area area = AreaManager.self.getArea(areaKey);
+      if (area != null) {
+         return area.biome;
+      } else {
+         return Biome.Type.None;
       }
    }
 
@@ -238,6 +242,23 @@ public class Area : MonoBehaviour
          "CollisionTest",
          "BurlTestMap"
       };
+   }
+
+   public static float getTilemapZ (string areaKey, string layerName) {
+      float tilemapZ = 0;
+
+      Area area = AreaManager.self.getArea(areaKey);
+      if (area != null) {
+         // Locate the tilemaps within the area
+         foreach (TilemapLayer layer in area.getTilemapLayers()) {
+            if (layer.name.ToLower().EndsWith(layerName)) {
+               tilemapZ = layer.tilemap.transform.position.z;
+               break;
+            }
+         }
+      }
+
+      return tilemapZ;
    }
 
    public void setColliders (bool newState) {

@@ -61,8 +61,13 @@ public class AttackCircleAimCursor : MonoBehaviour
       // Set the animation speed
       _animator.SetFloat("speed", speed);
 
-      // Set the z position of the aura, above water and below the land
-      Util.setZ(auraRenderer.transform, Util.getTilemapZ("water", MapCreationTool.EditorType.Sea) - 0.05f);
+      // Get the current area
+      Area area = AreaManager.self.getArea(Global.player.areaKey);
+
+      // Set the z position of the aura, above the sea and below the land
+      if (area != null) {
+         Util.setZ(auraRenderer.transform, area.waterZ - 0.01f);
+      }
    }
 
    public Color getColor () {

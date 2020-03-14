@@ -84,8 +84,8 @@ public class Instance : NetworkBehaviour
                   bot.route = spot.route;
                   bot.nationType = spot.nationType;
                   bot.maxForceOverride = spot.maxForceOverride;
-                  bot.speed = Ship.getBaseSpeed(Ship.Type.Caravel);
-                  bot.attackRangeModifier = Ship.getBaseAttackRange(Ship.Type.Caravel);
+                  bot.speed = Ship.getBaseSpeed(Ship.Type.Type_1);
+                  bot.attackRangeModifier = Ship.getBaseAttackRange(Ship.Type.Type_1);
                   bot.entityName = "Bot";
                   this.entities.Add(bot);
 
@@ -109,6 +109,21 @@ public class Instance : NetworkBehaviour
 
                      NetworkServer.Spawn(enemy.gameObject);
                   }
+               }
+            }
+            
+            if (area.treasureSiteDataFields.Count > 0) {
+               foreach (ExportedPrefab001 dataField in area.treasureSiteDataFields) {
+                  Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
+
+                  // Instantiate the treasure site
+                  TreasureSite site = Instantiate(PrefabsManager.self.treasureSitePrefab, transform);
+                  site.areaKey = area.areaKey;
+                  site.setBiome(area.biome);
+                  site.transform.localPosition = targetLocalPos;
+
+                  // Spawn the site on the clients
+                  NetworkServer.Spawn(site.gameObject);
                }
             }
          }

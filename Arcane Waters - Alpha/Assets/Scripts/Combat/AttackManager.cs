@@ -37,6 +37,7 @@ public class AttackManager : ClientMonoBehaviour {
    }
 
    void Update () {
+      // Disable the sea combat UI when not relevant
       if (Global.player == null || Global.player.isDead() || !(Global.player is ShipEntity) ||
          SeaManager.combatMode != SeaManager.CombatMode.Circle || SeaManager.selectedAttackType == Attack.Type.Air ||
          PanelManager.self.hasPanelInStack()) {
@@ -145,9 +146,6 @@ public class AttackManager : ClientMonoBehaviour {
    }
 
    #region Private Variables
-
-   // The attack range of the player's ship entity
-   private float _attackRange = 0;
 
    // The current distance between the player and the aiming cursor, normalized to the max range
    private float _normalizedDistanceToCursor = 0f;

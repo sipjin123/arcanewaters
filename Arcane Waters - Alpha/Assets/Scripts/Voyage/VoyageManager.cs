@@ -18,9 +18,7 @@ public class VoyageManager : MonoBehaviour {
       self = this;
 
       // Hardcoded data for testing purposes
-      //store(new Voyage("Starting Sea Map", Voyage.Difficulty.Easy, true));
-      //store(new Voyage("Starting Sea Map", Voyage.Difficulty.Medium, false));
-      store(new Voyage("Starting Sea Map", Voyage.Difficulty.Hard, true));
+      store(new Voyage("Snow Sea Map Lite", Voyage.Difficulty.Hard, true));
    }
 
    public void Start () {

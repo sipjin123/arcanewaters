@@ -139,6 +139,9 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab we use for creating Enemies
    public Enemy enemyPrefab;
 
+   // The prefab we use for creating treasure sites
+   public TreasureSite treasureSitePrefab;
+
    // The prefab we use for creating Status effects
    public Status statusPrefab;
 

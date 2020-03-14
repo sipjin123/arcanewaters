@@ -32,8 +32,13 @@ public class AttackRangeCircle : MonoBehaviour
    }
 
    public void update() {
-      // Set the z position, above water and below the land
-      Util.setZ(transform, Util.getTilemapZ("water", MapCreationTool.EditorType.Sea) - 0.05f);
+      // Get the current area
+      Area area = AreaManager.self.getArea(Global.player.areaKey);
+
+      // Set the z position, above the sea and below the land
+      if (area != null) {
+         Util.setZ(transform, area.waterZ - 0.01f);
+      }
 
       // Move to the player position
       Util.setXY(transform, Global.player.transform.position);

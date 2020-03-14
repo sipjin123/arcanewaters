@@ -172,7 +172,7 @@ public class ShopManager : MonoBehaviour {
             price = Util.roundToPrettyNumber(price);
             attackRange = Util.roundToPrettyNumber(attackRange);
 
-            ShipInfo ship = new ShipInfo(_shipId--, 0, shipType, Ship.SkinType.None, Ship.MastType.Caravel_1, Ship.SailType.Caravel_1, shipType + "",
+            ShipInfo ship = new ShipInfo(_shipId--, 0, shipType, Ship.SkinType.None, Ship.MastType.Type_1, Ship.SailType.Type_1, shipType + "",
                ColorType.None, ColorType.None, ColorType.None, ColorType.None, suppliesRoom, suppliesRoom, cargoRoom, health, health, damage, attackRange, speed, sailors, rarity, new ShipAbilityInfo(true));
 
             // We note the price separately, since it's only used in this context
@@ -208,7 +208,7 @@ public class ShopManager : MonoBehaviour {
                   int attackRange = (int) (Ship.getBaseAttackRange(shipType) * Rarity.getIncreasingModifier(rarity));
                   int price = UnityEngine.Random.Range(shopItem.shopItemCostMin, shopItem.shopItemCostMax);
 
-                  ShipInfo ship = new ShipInfo(_shipId--, 0, shipType, Ship.SkinType.None, Ship.MastType.Caravel_1, Ship.SailType.Caravel_1, shipType + "",
+                  ShipInfo ship = new ShipInfo(_shipId--, 0, shipType, Ship.SkinType.None, Ship.MastType.Type_1, Ship.SailType.Type_1, shipType + "",
                        ColorType.None, ColorType.None, ColorType.None, ColorType.None, suppliesRoom, suppliesRoom, cargoRoom, health, health, damage, attackRange, speed, sailors, rarity, new ShipAbilityInfo(true));
 
                   // We note the price separately, since it's only used in this context

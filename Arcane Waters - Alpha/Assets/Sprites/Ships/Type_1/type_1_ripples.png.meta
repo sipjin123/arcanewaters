@@ -1,67 +1,127 @@
 fileFormatVersion: 2
-guid: f24866d8e6e408e4baf862c481e42e80
+guid: 3045212b0933e4b46a5e185bf3ac115a
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4802271823134674523
-    second: ship_1_still_ripples_0
+      213: -638247945490680148
+    second: ship_2_still_ripples_0
   - first:
-      213: 783435178443298614
-    second: ship_1_still_ripples_1
+      213: 3241454679614818962
+    second: ship_2_still_ripples_1
   - first:
-      213: 7547979815247733672
-    second: ship_1_still_ripples_2
+      213: 5673727462340387338
+    second: ship_2_still_ripples_2
   - first:
-      213: 5238324226476715574
-    second: ship_1_still_ripples_3
+      213: -1096055230832739343
+    second: ship_2_still_ripples_3
   - first:
-      213: -5366666160908564858
-    second: ship_1_still_ripples_4
+      213: 2611254165226918474
+    second: ship_2_still_ripples_4
   - first:
-      213: 2225649861200387486
-    second: ship_1_still_ripples_5
+      213: 513371514657211488
+    second: ship_2_still_ripples_5
   - first:
-      213: -5797663561429367524
-    second: ship_1_still_ripples_6
+      213: -9126483498917239136
+    second: ship_2_still_ripples_6
   - first:
-      213: 1309838954898107222
-    second: ship_1_still_ripples_7
+      213: 5712140177194151403
+    second: ship_2_still_ripples_7
   - first:
-      213: 7872108486974560809
-    second: ship_1_still_ripples_8
+      213: -6028885563036356735
+    second: ship_2_still_ripples_8
   - first:
-      213: 5632665095766251435
-    second: ship_1_still_ripples_9
+      213: -7272831722166739417
+    second: ship_2_still_ripples_9
   - first:
-      213: 3316952621765068267
-    second: ship_1_still_ripples_10
+      213: -1288462682374911154
+    second: ship_2_still_ripples_10
   - first:
-      213: -8677936723559173822
-    second: ship_1_still_ripples_11
+      213: 7560309298458342465
+    second: ship_2_still_ripples_11
   - first:
-      213: 144617842429927356
-    second: ship_1_still_ripples_12
+      213: -7476775778642840912
+    second: ship_2_still_ripples_12
   - first:
-      213: 7082099030693218386
-    second: ship_1_still_ripples_13
+      213: -4980890217794512060
+    second: ship_2_still_ripples_13
   - first:
-      213: 2594853108142368393
-    second: ship_1_still_ripples_14
+      213: 7747768766311447809
+    second: ship_2_still_ripples_14
   - first:
-      213: -7802190479012303980
-    second: ship_1_still_ripples_15
+      213: -4762196136392650514
+    second: ship_2_still_ripples_15
   - first:
-      213: -7196322580502302460
-    second: ship_1_still_ripples_16
+      213: 592986643186456511
+    second: ship_2_still_ripples_16
   - first:
-      213: 8254915804695872168
-    second: ship_1_still_ripples_17
+      213: 4687097321753428184
+    second: ship_2_still_ripples_17
   - first:
-      213: 4997869799808915023
-    second: ship_1_still_ripples_18
+      213: 7107981711144354274
+    second: ship_2_still_ripples_18
   - first:
-      213: -5343604784391061655
-    second: ship_1_still_ripples_19
+      213: 6719211045766069847
+    second: ship_2_still_ripples_19
+  - first:
+      213: -6519797044500898686
+    second: type_1_ripples_0
+  - first:
+      213: -6803568413583739193
+    second: type_1_ripples_1
+  - first:
+      213: 5714936684100230140
+    second: type_1_ripples_2
+  - first:
+      213: 3694526673797104585
+    second: type_1_ripples_3
+  - first:
+      213: -1159035762595997966
+    second: type_1_ripples_4
+  - first:
+      213: -641032881161599801
+    second: type_1_ripples_5
+  - first:
+      213: 4381487417676541530
+    second: type_1_ripples_6
+  - first:
+      213: -6175294176515418091
+    second: type_1_ripples_7
+  - first:
+      213: -1538056015037334956
+    second: type_1_ripples_8
+  - first:
+      213: -9045455574687879429
+    second: type_1_ripples_9
+  - first:
+      213: 8387062443791950698
+    second: type_1_ripples_10
+  - first:
+      213: 4885390407497827551
+    second: type_1_ripples_11
+  - first:
+      213: 8866090113101311721
+    second: type_1_ripples_12
+  - first:
+      213: -129234927305322717
+    second: type_1_ripples_13
+  - first:
+      213: -1464192641744655472
+    second: type_1_ripples_14
+  - first:
+      213: -8053564822367414649
+    second: type_1_ripples_15
+  - first:
+      213: 658904878690959070
+    second: type_1_ripples_16
+  - first:
+      213: 5121816209714787442
+    second: type_1_ripples_17
+  - first:
+      213: -3477510786266087128
+    second: type_1_ripples_18
+  - first:
+      213: -1271328500594301904
+    second: type_1_ripples_19
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -146,7 +206,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ship_1_still_ripples_0
+      name: type_1_ripples_0
       rect:
         serializedVersion: 2
         x: 0
@@ -160,14 +220,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2b68124194096fa4191351a4a595e466
-      internalID: -4802271823134674523
+      spriteID: 3b1c608ca806d7946a7d868c05eabff0
+      internalID: -6519797044500898686
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_1_still_ripples_1
+      name: type_1_ripples_1
       rect:
         serializedVersion: 2
         x: 128
@@ -181,14 +241,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a5c4587357fae6d4dafca8ca1ab939e2
-      internalID: 783435178443298614
+      spriteID: 5f36499aefb296242ab814070ebe47b5
+      internalID: -6803568413583739193
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_1_still_ripples_2
+      name: type_1_ripples_2
       rect:
         serializedVersion: 2
         x: 256
@@ -202,14 +262,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b671f61d4c7d5424fb9eb08fbc5e9351
-      internalID: 7547979815247733672
+      spriteID: 199e8c149aa27b24a9154584fc4fe68d
+      internalID: 5714936684100230140
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_1_still_ripples_3
+      name: type_1_ripples_3
       rect:
         serializedVersion: 2
         x: 384
@@ -223,14 +283,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6c67aeb72f4ffc145a15672b687ee67f
-      internalID: 5238324226476715574
+      spriteID: cfa5adcf1344bfb4cb269fa80e12a939
+      internalID: 3694526673797104585
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_1_still_ripples_4
+      name: type_1_ripples_4
       rect:
         serializedVersion: 2
         x: 0
@@ -244,14 +304,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bb56c18abd20eaa4590e499e5b8b0de1
-      internalID: -5366666160908564858
+      spriteID: a611513a71065fc40b35a40f228a3e46
+      internalID: -1159035762595997966
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_1_still_ripples_5
+      name: type_1_ripples_5
       rect:
         serializedVersion: 2
         x: 128
@@ -265,14 +325,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 924a84df10d0f724087d6c64be46f30b
-      internalID: 2225649861200387486
+      spriteID: f573236254ddb3a4e90eebb4d2deb2e1
+      internalID: -641032881161599801
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_1_still_ripples_6
+      name: type_1_ripples_6
       rect:
         serializedVersion: 2
         x: 256
@@ -286,14 +346,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cd40c81e4828a4b45af1f8c8d23b134f
-      internalID: -5797663561429367524
+      spriteID: f27d853914ac1b04e9fb154f667d1cc9
+      internalID: 4381487417676541530
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_1_still_ripples_7
+      name: type_1_ripples_7
       rect:
         serializedVersion: 2
         x: 384
@@ -307,14 +367,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bbc6a85f280b1574ea9946251ca544f9
-      internalID: 1309838954898107222
+      spriteID: b81672d8236d05a41baf0330dce76d37
+      internalID: -6175294176515418091
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_1_still_ripples_8
+      name: type_1_ripples_8
       rect:
         serializedVersion: 2
         x: 0
@@ -328,14 +388,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ac61561dcc19eaf48abb73c9eb119241
-      internalID: 7872108486974560809
+      spriteID: e85b83322720e024f87f1790df0bf7ed
+      internalID: -1538056015037334956
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_1_still_ripples_9
+      name: type_1_ripples_9
       rect:
         serializedVersion: 2
         x: 128
@@ -349,14 +409,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fd05c2d527da6174eb0123202cca4d9f
-      internalID: 5632665095766251435
+      spriteID: 4eb3ee55b25d14741841c377e0ec9b99
+      internalID: -9045455574687879429
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_1_still_ripples_10
+      name: type_1_ripples_10
       rect:
         serializedVersion: 2
         x: 256
@@ -370,14 +430,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 660b5c3b48855f04c9609067dc4269fe
-      internalID: 3316952621765068267
+      spriteID: 37fc43dc045abb04996185fc64380d8f
+      internalID: 8387062443791950698
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_1_still_ripples_11
+      name: type_1_ripples_11
       rect:
         serializedVersion: 2
         x: 384
@@ -391,14 +451,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2131e5f77943590459a46259809ab8c4
-      internalID: -8677936723559173822
+      spriteID: ed3a5d4f9beeff14bb4454b841372c26
+      internalID: 4885390407497827551
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_1_still_ripples_12
+      name: type_1_ripples_12
       rect:
         serializedVersion: 2
         x: 0
@@ -412,14 +472,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f4c0b84af6de86f459ca7b314f019d2a
-      internalID: 144617842429927356
+      spriteID: 0e14cf5735259d54d9ea0bf63a8ae08b
+      internalID: 8866090113101311721
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_1_still_ripples_13
+      name: type_1_ripples_13
       rect:
         serializedVersion: 2
         x: 128
@@ -433,14 +493,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 97b56a3c4e6275546b9a84cc39e91190
-      internalID: 7082099030693218386
+      spriteID: 5d964871f2c52fa46b5c647313d59ed0
+      internalID: -129234927305322717
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_1_still_ripples_14
+      name: type_1_ripples_14
       rect:
         serializedVersion: 2
         x: 256
@@ -454,14 +514,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 61cde49b85c22454d8ad395f6e420620
-      internalID: 2594853108142368393
+      spriteID: 16c66a9ed019bfb42ab3b5dd659df59b
+      internalID: -1464192641744655472
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_1_still_ripples_15
+      name: type_1_ripples_15
       rect:
         serializedVersion: 2
         x: 384
@@ -475,14 +535,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f3e2782d49e162f438b63c8c34bf3b1c
-      internalID: -7802190479012303980
+      spriteID: 1981a46b9159c834da8b3d7eab8098be
+      internalID: -8053564822367414649
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_1_still_ripples_16
+      name: type_1_ripples_16
       rect:
         serializedVersion: 2
         x: 0
@@ -496,14 +556,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b356ef46500e9804fa402feb001fee49
-      internalID: -7196322580502302460
+      spriteID: 58aa59daf8ff562449f429cff3b434d1
+      internalID: 658904878690959070
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_1_still_ripples_17
+      name: type_1_ripples_17
       rect:
         serializedVersion: 2
         x: 128
@@ -517,14 +577,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ec6c71ac8650b8a4486a097840dad900
-      internalID: 8254915804695872168
+      spriteID: 74e0fefd79595d546b700d34bafdb5f2
+      internalID: 5121816209714787442
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_1_still_ripples_18
+      name: type_1_ripples_18
       rect:
         serializedVersion: 2
         x: 256
@@ -538,14 +598,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6b2ca4455e896024aac65b8b1081070a
-      internalID: 4997869799808915023
+      spriteID: b8abaabecc73fdd4993372975e3bc86a
+      internalID: -3477510786266087128
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_1_still_ripples_19
+      name: type_1_ripples_19
       rect:
         serializedVersion: 2
         x: 384
@@ -559,8 +619,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0a34a0e3c27de36428af305d041a6206
-      internalID: -5343604784391061655
+      spriteID: a47982d578d15bc43be45be4ea5bba2a
+      internalID: -1271328500594301904
       vertices: []
       indices: 
       edges: []

@@ -1,67 +1,127 @@
 fileFormatVersion: 2
-guid: ab700c10f15f2b347910552be6bd83f4
+guid: ab364322b6fb63649b5c8f97280b661f
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2558570441496525672
-    second: ship_5_ripples_moving_0
+      213: 3238168660761684162
+    second: ship_7_ripples_moving_0
   - first:
-      213: 4232979313800295442
-    second: ship_5_ripples_moving_1
+      213: -4538973139573620930
+    second: ship_7_ripples_moving_1
   - first:
-      213: -4758990529005462269
-    second: ship_5_ripples_moving_2
+      213: 4830862206697022240
+    second: ship_7_ripples_moving_2
   - first:
-      213: -5304188786964617455
-    second: ship_5_ripples_moving_3
+      213: 5583561169299714544
+    second: ship_7_ripples_moving_3
   - first:
-      213: -4379371225950514114
-    second: ship_5_ripples_moving_4
+      213: -4587243265908813512
+    second: ship_7_ripples_moving_4
   - first:
-      213: -1825956192221383837
-    second: ship_5_ripples_moving_5
+      213: 8102064351823168656
+    second: ship_7_ripples_moving_5
   - first:
-      213: -519756680952471661
-    second: ship_5_ripples_moving_6
+      213: 7451232405477509595
+    second: ship_7_ripples_moving_6
   - first:
-      213: 308581310882579830
-    second: ship_5_ripples_moving_7
+      213: 9141739248926992355
+    second: ship_7_ripples_moving_7
   - first:
-      213: -2578367416091203703
-    second: ship_5_ripples_moving_8
+      213: -8465359224257000021
+    second: ship_7_ripples_moving_8
   - first:
-      213: 6074483474219091491
-    second: ship_5_ripples_moving_9
+      213: 1353775761571929690
+    second: ship_7_ripples_moving_9
   - first:
-      213: 728570157088290159
-    second: ship_5_ripples_moving_10
+      213: -3923419823218004653
+    second: ship_7_ripples_moving_10
   - first:
-      213: 8520659099652070641
-    second: ship_5_ripples_moving_11
+      213: -776757245807907945
+    second: ship_7_ripples_moving_11
   - first:
-      213: 289381348192523275
-    second: ship_5_ripples_moving_12
+      213: -721302435375231596
+    second: ship_7_ripples_moving_12
   - first:
-      213: 8646865670906284097
-    second: ship_5_ripples_moving_13
+      213: 7130517434092293299
+    second: ship_7_ripples_moving_13
   - first:
-      213: -580670292398217092
-    second: ship_5_ripples_moving_14
+      213: 2965561893923096821
+    second: ship_7_ripples_moving_14
   - first:
-      213: -4738229866130543173
-    second: ship_5_ripples_moving_15
+      213: -8924837258395230367
+    second: ship_7_ripples_moving_15
   - first:
-      213: 6298910442077816686
-    second: ship_5_ripples_moving_16
+      213: 3275514631702035386
+    second: ship_7_ripples_moving_16
   - first:
-      213: 4042361955228401444
-    second: ship_5_ripples_moving_17
+      213: -7706376938204406905
+    second: ship_7_ripples_moving_17
   - first:
-      213: 6827499866272596855
-    second: ship_5_ripples_moving_18
+      213: -4903771094218370308
+    second: ship_7_ripples_moving_18
   - first:
-      213: 9178600152217789606
-    second: ship_5_ripples_moving_19
+      213: 1608124902449491833
+    second: ship_7_ripples_moving_19
+  - first:
+      213: 6842294509930764113
+    second: type_5_ripples_moving_0
+  - first:
+      213: -8624931994970102408
+    second: type_5_ripples_moving_1
+  - first:
+      213: 6367992537836180409
+    second: type_5_ripples_moving_2
+  - first:
+      213: -2594855292003206607
+    second: type_5_ripples_moving_3
+  - first:
+      213: -2855873634565757992
+    second: type_5_ripples_moving_4
+  - first:
+      213: 8026836077737859439
+    second: type_5_ripples_moving_5
+  - first:
+      213: -2974149829051739599
+    second: type_5_ripples_moving_6
+  - first:
+      213: 3799266161996446380
+    second: type_5_ripples_moving_7
+  - first:
+      213: -4330999285332507649
+    second: type_5_ripples_moving_8
+  - first:
+      213: -8856107817829319338
+    second: type_5_ripples_moving_9
+  - first:
+      213: 8901343170242685717
+    second: type_5_ripples_moving_10
+  - first:
+      213: 2935450888658477894
+    second: type_5_ripples_moving_11
+  - first:
+      213: -8449754807937965278
+    second: type_5_ripples_moving_12
+  - first:
+      213: 3394580225902464768
+    second: type_5_ripples_moving_13
+  - first:
+      213: 9050139117739664556
+    second: type_5_ripples_moving_14
+  - first:
+      213: -6614670070444484426
+    second: type_5_ripples_moving_15
+  - first:
+      213: 253661405311130559
+    second: type_5_ripples_moving_16
+  - first:
+      213: -2467525547692895102
+    second: type_5_ripples_moving_17
+  - first:
+      213: 8470820731547154326
+    second: type_5_ripples_moving_18
+  - first:
+      213: -4133296138552519317
+    second: type_5_ripples_moving_19
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -146,7 +206,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ship_5_ripples_moving_0
+      name: type_5_ripples_moving_0
       rect:
         serializedVersion: 2
         x: 0
@@ -160,14 +220,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: dc9d558637518e941a9ff9ce16772ce1
-      internalID: -2558570441496525672
+      spriteID: 7c3e2d749ed9ead4282ef435e43adf15
+      internalID: 6842294509930764113
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_5_ripples_moving_1
+      name: type_5_ripples_moving_1
       rect:
         serializedVersion: 2
         x: 128
@@ -181,14 +241,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9a58a93c46965b74a8c9c7b6ba74ab26
-      internalID: 4232979313800295442
+      spriteID: 53b6f0b39d21a6f42a9fdd25bd456609
+      internalID: -8624931994970102408
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_5_ripples_moving_2
+      name: type_5_ripples_moving_2
       rect:
         serializedVersion: 2
         x: 256
@@ -202,14 +262,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2bf11883c697c6641a572483b378eedd
-      internalID: -4758990529005462269
+      spriteID: b37ef7ff94ad2be449bf08dfa224855d
+      internalID: 6367992537836180409
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_5_ripples_moving_3
+      name: type_5_ripples_moving_3
       rect:
         serializedVersion: 2
         x: 384
@@ -223,14 +283,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 029eef4197b500544aa746d13939d8d4
-      internalID: -5304188786964617455
+      spriteID: 5b22eaec451a00d47b05328dc91f7d6a
+      internalID: -2594855292003206607
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_5_ripples_moving_4
+      name: type_5_ripples_moving_4
       rect:
         serializedVersion: 2
         x: 0
@@ -244,14 +304,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e40b3938d525fed4c9c30ce298fbfb0d
-      internalID: -4379371225950514114
+      spriteID: 4ca76ec159ea9514596cae582fb7dea5
+      internalID: -2855873634565757992
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_5_ripples_moving_5
+      name: type_5_ripples_moving_5
       rect:
         serializedVersion: 2
         x: 128
@@ -265,14 +325,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 23fb31adafc65824589b2af1b4c26fc5
-      internalID: -1825956192221383837
+      spriteID: a0142964336b1e54cb750f1b0c887062
+      internalID: 8026836077737859439
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_5_ripples_moving_6
+      name: type_5_ripples_moving_6
       rect:
         serializedVersion: 2
         x: 256
@@ -286,14 +346,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7e9c46f0f20efac419d62a25b24a48aa
-      internalID: -519756680952471661
+      spriteID: adf2639a3eb06604c9e5f35b2761ef17
+      internalID: -2974149829051739599
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_5_ripples_moving_7
+      name: type_5_ripples_moving_7
       rect:
         serializedVersion: 2
         x: 384
@@ -307,14 +367,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 72e0fe695d1c27d4c9c1b8cdce07bcdf
-      internalID: 308581310882579830
+      spriteID: e921b4d1ee952ce42b89367db8f7ca7b
+      internalID: 3799266161996446380
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_5_ripples_moving_8
+      name: type_5_ripples_moving_8
       rect:
         serializedVersion: 2
         x: 0
@@ -328,14 +388,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 18bacee02c99e8445a87125b435b2e1e
-      internalID: -2578367416091203703
+      spriteID: 840b2454027993d408ddf446e6aa410d
+      internalID: -4330999285332507649
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_5_ripples_moving_9
+      name: type_5_ripples_moving_9
       rect:
         serializedVersion: 2
         x: 128
@@ -349,14 +409,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f1c7f20bf2d568441a9c93951697dad4
-      internalID: 6074483474219091491
+      spriteID: 1014d4f1a0203494eb3a5a15af24b680
+      internalID: -8856107817829319338
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_5_ripples_moving_10
+      name: type_5_ripples_moving_10
       rect:
         serializedVersion: 2
         x: 256
@@ -370,14 +430,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 30987bacf50eab34788c7c301ca258d8
-      internalID: 728570157088290159
+      spriteID: fa18096a461dcf14ebe261f4644153c0
+      internalID: 8901343170242685717
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_5_ripples_moving_11
+      name: type_5_ripples_moving_11
       rect:
         serializedVersion: 2
         x: 384
@@ -391,14 +451,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f5ccbfcc2cf46444fb526d6811035568
-      internalID: 8520659099652070641
+      spriteID: 2d85f139f9781fb4fad12203f7316542
+      internalID: 2935450888658477894
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_5_ripples_moving_12
+      name: type_5_ripples_moving_12
       rect:
         serializedVersion: 2
         x: 0
@@ -412,14 +472,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e9b9811bff40c324a903cc42c575e9b9
-      internalID: 289381348192523275
+      spriteID: 0eb48b76fe2a9114d8646ece8c61f2c8
+      internalID: -8449754807937965278
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_5_ripples_moving_13
+      name: type_5_ripples_moving_13
       rect:
         serializedVersion: 2
         x: 128
@@ -433,14 +493,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8cfb97313eb155d43b9a4e47f2d17642
-      internalID: 8646865670906284097
+      spriteID: 01bf8111dc07e6241bb0570ff8659220
+      internalID: 3394580225902464768
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_5_ripples_moving_14
+      name: type_5_ripples_moving_14
       rect:
         serializedVersion: 2
         x: 256
@@ -454,14 +514,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 93548c5c12675ea43bc7b20c28a46595
-      internalID: -580670292398217092
+      spriteID: 5057d7f32bdf9c842b6c42c6f1824dfa
+      internalID: 9050139117739664556
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_5_ripples_moving_15
+      name: type_5_ripples_moving_15
       rect:
         serializedVersion: 2
         x: 384
@@ -475,14 +535,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1307acb5ae6c175459f5d556185b51c6
-      internalID: -4738229866130543173
+      spriteID: b3aca462829790445a1ce11c71ee04a0
+      internalID: -6614670070444484426
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_5_ripples_moving_16
+      name: type_5_ripples_moving_16
       rect:
         serializedVersion: 2
         x: 0
@@ -496,14 +556,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f780af6d0964a7247bfa9cbad9809a32
-      internalID: 6298910442077816686
+      spriteID: 750c9dc60fa589e4f82dec8eaf4b1125
+      internalID: 253661405311130559
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_5_ripples_moving_17
+      name: type_5_ripples_moving_17
       rect:
         serializedVersion: 2
         x: 128
@@ -517,14 +577,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 190a04aaf0ed14f41bed68cad41ada6b
-      internalID: 4042361955228401444
+      spriteID: 06d750bdf54b025448da9d04ec119431
+      internalID: -2467525547692895102
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_5_ripples_moving_18
+      name: type_5_ripples_moving_18
       rect:
         serializedVersion: 2
         x: 256
@@ -538,14 +598,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 65413879dc1bce041a82dfbc10c99dea
-      internalID: 6827499866272596855
+      spriteID: 494c2b35c49a0aa43be0be6571e3583a
+      internalID: 8470820731547154326
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_5_ripples_moving_19
+      name: type_5_ripples_moving_19
       rect:
         serializedVersion: 2
         x: 384
@@ -559,8 +619,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 73c672388e379a84b8aab11d783a443e
-      internalID: 9178600152217789606
+      spriteID: 94aa40c4c3f20bf4c9ab978b7b3d70d6
+      internalID: -4133296138552519317
       vertices: []
       indices: 
       edges: []

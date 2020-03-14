@@ -106,7 +106,7 @@ public class ShipDataPanel : MonoBehaviour {
          selectionPopup.callImageTextSelectionPopup(GenericSelectionPopup.selectionType.ShipSprite, _spriteIcon, _spritePath);
       });
       _changeRippleSpriteButton.onClick.AddListener(() => {
-         selectionPopup.callImageTextSelectionPopup(GenericSelectionPopup.selectionType.ShipRippleSprite, _rippleSpriteIcon, _ripplePath);
+         selectionPopup.callImageTextSelectionPopup(GenericSelectionPopup.selectionType.ShipWakeSprite, _rippleSpriteIcon, _ripplePath);
       });
       _changeAvatarSpriteButton.onClick.AddListener(() => {
          selectionPopup.callImageTextSelectionPopup(GenericSelectionPopup.selectionType.ShipAvatarIcon, _avatarIcon, _avatarPath);

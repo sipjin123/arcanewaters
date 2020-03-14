@@ -7,10 +7,13 @@ using Mirror;
 public class CloudShadow : MonoBehaviour {
    #region Public Variables
 
+   // The manager
+   [HideInInspector]
+   public CloudShadowManager manager;
+
    #endregion
 
    void Start () {
-      _area = GetComponentInParent<Area>();
       _renderer = GetComponent<SpriteRenderer>();
 
       // Pick a random offset for this cloud
@@ -24,8 +27,8 @@ public class CloudShadow : MonoBehaviour {
    void Update () {
       Vector3 pos = this.transform.position;
 
-      // Look up the camera bounds
-      Bounds bounds = _area.cameraBounds.bounds;
+      // The manager's cloud bounds
+      Bounds bounds = manager.expandedBounds;
 
       // Add a bit of a buffer so that we don't see the clouds jump around
       bounds.Expand(3f);
@@ -50,9 +53,6 @@ public class CloudShadow : MonoBehaviour {
    }
 
    #region Private Variables
-
-   // Our associated Area
-   protected Area _area;
 
    // Our renderer
    protected SpriteRenderer _renderer;

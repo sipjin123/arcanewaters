@@ -4337,7 +4337,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000012755653}
+  m_AnchoredPosition: {x: 0, y: 0.0007365463}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &402859952
@@ -13073,118 +13073,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 726e5c6428d606046b55022c1ed7912c, type: 3}
     sprites:
     - {fileID: 21300000, guid: 726e5c6428d606046b55022c1ed7912c, type: 3}
-  - imageName: barge_1
-    imagePath: Assets/Sprites/Ships/Barge/barge_1.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Barge/barge_1
-    texture2D: {fileID: 2800000, guid: c6e9f66cc32aac74981b2bc1e7d64c77, type: 3}
-    sprite: {fileID: 21300000, guid: c6e9f66cc32aac74981b2bc1e7d64c77, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: c6e9f66cc32aac74981b2bc1e7d64c77, type: 3}
-    - {fileID: 21300002, guid: c6e9f66cc32aac74981b2bc1e7d64c77, type: 3}
-    - {fileID: 21300004, guid: c6e9f66cc32aac74981b2bc1e7d64c77, type: 3}
-    - {fileID: 21300006, guid: c6e9f66cc32aac74981b2bc1e7d64c77, type: 3}
-    - {fileID: 21300008, guid: c6e9f66cc32aac74981b2bc1e7d64c77, type: 3}
-    - {fileID: 21300010, guid: c6e9f66cc32aac74981b2bc1e7d64c77, type: 3}
-    - {fileID: 21300012, guid: c6e9f66cc32aac74981b2bc1e7d64c77, type: 3}
-    - {fileID: 21300014, guid: c6e9f66cc32aac74981b2bc1e7d64c77, type: 3}
-    - {fileID: 21300016, guid: c6e9f66cc32aac74981b2bc1e7d64c77, type: 3}
-    - {fileID: 21300018, guid: c6e9f66cc32aac74981b2bc1e7d64c77, type: 3}
-  - imageName: barge_dragon
-    imagePath: Assets/Sprites/Ships/Barge/barge_dragon.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Barge/barge_dragon
-    texture2D: {fileID: 2800000, guid: 970f753858abbe340987b30cb4ec1bd3, type: 3}
-    sprite: {fileID: 21300000, guid: 970f753858abbe340987b30cb4ec1bd3, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 970f753858abbe340987b30cb4ec1bd3, type: 3}
-    - {fileID: 21300002, guid: 970f753858abbe340987b30cb4ec1bd3, type: 3}
-    - {fileID: 21300004, guid: 970f753858abbe340987b30cb4ec1bd3, type: 3}
-    - {fileID: 21300006, guid: 970f753858abbe340987b30cb4ec1bd3, type: 3}
-    - {fileID: 21300008, guid: 970f753858abbe340987b30cb4ec1bd3, type: 3}
-    - {fileID: 21300010, guid: 970f753858abbe340987b30cb4ec1bd3, type: 3}
-    - {fileID: 21300012, guid: 970f753858abbe340987b30cb4ec1bd3, type: 3}
-    - {fileID: 21300014, guid: 970f753858abbe340987b30cb4ec1bd3, type: 3}
-    - {fileID: 21300016, guid: 970f753858abbe340987b30cb4ec1bd3, type: 3}
-    - {fileID: 21300018, guid: 970f753858abbe340987b30cb4ec1bd3, type: 3}
-  - imageName: barge_regal
-    imagePath: Assets/Sprites/Ships/Barge/barge_regal.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Barge/barge_regal
-    texture2D: {fileID: 2800000, guid: 009b95cd672ee6748960a292c92925d6, type: 3}
-    sprite: {fileID: 21300000, guid: 009b95cd672ee6748960a292c92925d6, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 009b95cd672ee6748960a292c92925d6, type: 3}
-    - {fileID: 21300002, guid: 009b95cd672ee6748960a292c92925d6, type: 3}
-    - {fileID: 21300004, guid: 009b95cd672ee6748960a292c92925d6, type: 3}
-    - {fileID: 21300006, guid: 009b95cd672ee6748960a292c92925d6, type: 3}
-    - {fileID: 21300008, guid: 009b95cd672ee6748960a292c92925d6, type: 3}
-    - {fileID: 21300010, guid: 009b95cd672ee6748960a292c92925d6, type: 3}
-    - {fileID: 21300012, guid: 009b95cd672ee6748960a292c92925d6, type: 3}
-    - {fileID: 21300014, guid: 009b95cd672ee6748960a292c92925d6, type: 3}
-    - {fileID: 21300016, guid: 009b95cd672ee6748960a292c92925d6, type: 3}
-    - {fileID: 21300018, guid: 009b95cd672ee6748960a292c92925d6, type: 3}
-  - imageName: barge_ripples
-    imagePath: Assets/Sprites/Ships/Barge/barge_ripples.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Barge/barge_ripples
-    texture2D: {fileID: 2800000, guid: 68ad180f0088ec543af73b4d5d50ba45, type: 3}
-    sprite: {fileID: 21300000, guid: 68ad180f0088ec543af73b4d5d50ba45, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 68ad180f0088ec543af73b4d5d50ba45, type: 3}
-    - {fileID: 21300002, guid: 68ad180f0088ec543af73b4d5d50ba45, type: 3}
-    - {fileID: 21300004, guid: 68ad180f0088ec543af73b4d5d50ba45, type: 3}
-    - {fileID: 21300006, guid: 68ad180f0088ec543af73b4d5d50ba45, type: 3}
-    - {fileID: 21300008, guid: 68ad180f0088ec543af73b4d5d50ba45, type: 3}
-    - {fileID: 21300010, guid: 68ad180f0088ec543af73b4d5d50ba45, type: 3}
-    - {fileID: 21300012, guid: 68ad180f0088ec543af73b4d5d50ba45, type: 3}
-    - {fileID: 21300014, guid: 68ad180f0088ec543af73b4d5d50ba45, type: 3}
-    - {fileID: 21300016, guid: 68ad180f0088ec543af73b4d5d50ba45, type: 3}
-    - {fileID: 21300018, guid: 68ad180f0088ec543af73b4d5d50ba45, type: 3}
-  - imageName: barge_royal
-    imagePath: Assets/Sprites/Ships/Barge/barge_royal.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Barge/barge_royal
-    texture2D: {fileID: 2800000, guid: 27ad5b38861722e4f8e5ec66be813abd, type: 3}
-    sprite: {fileID: 21300000, guid: 27ad5b38861722e4f8e5ec66be813abd, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 27ad5b38861722e4f8e5ec66be813abd, type: 3}
-    - {fileID: 21300002, guid: 27ad5b38861722e4f8e5ec66be813abd, type: 3}
-    - {fileID: 21300004, guid: 27ad5b38861722e4f8e5ec66be813abd, type: 3}
-    - {fileID: 21300006, guid: 27ad5b38861722e4f8e5ec66be813abd, type: 3}
-    - {fileID: 21300008, guid: 27ad5b38861722e4f8e5ec66be813abd, type: 3}
-    - {fileID: 21300010, guid: 27ad5b38861722e4f8e5ec66be813abd, type: 3}
-    - {fileID: 21300012, guid: 27ad5b38861722e4f8e5ec66be813abd, type: 3}
-    - {fileID: 21300014, guid: 27ad5b38861722e4f8e5ec66be813abd, type: 3}
-    - {fileID: 21300016, guid: 27ad5b38861722e4f8e5ec66be813abd, type: 3}
-    - {fileID: 21300018, guid: 27ad5b38861722e4f8e5ec66be813abd, type: 3}
-  - imageName: barge_tropical
-    imagePath: Assets/Sprites/Ships/Barge/barge_tropical.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Barge/barge_tropical
-    texture2D: {fileID: 2800000, guid: a229ad51a276e2f44afb4b1cf67f3f25, type: 3}
-    sprite: {fileID: 21300020, guid: a229ad51a276e2f44afb4b1cf67f3f25, type: 3}
-    sprites:
-    - {fileID: 21300020, guid: a229ad51a276e2f44afb4b1cf67f3f25, type: 3}
-    - {fileID: 21300022, guid: a229ad51a276e2f44afb4b1cf67f3f25, type: 3}
-    - {fileID: 21300024, guid: a229ad51a276e2f44afb4b1cf67f3f25, type: 3}
-    - {fileID: 21300026, guid: a229ad51a276e2f44afb4b1cf67f3f25, type: 3}
-    - {fileID: 21300028, guid: a229ad51a276e2f44afb4b1cf67f3f25, type: 3}
-    - {fileID: 21300030, guid: a229ad51a276e2f44afb4b1cf67f3f25, type: 3}
-    - {fileID: 21300032, guid: a229ad51a276e2f44afb4b1cf67f3f25, type: 3}
-    - {fileID: 21300034, guid: a229ad51a276e2f44afb4b1cf67f3f25, type: 3}
-    - {fileID: 21300036, guid: a229ad51a276e2f44afb4b1cf67f3f25, type: 3}
-    - {fileID: 21300038, guid: a229ad51a276e2f44afb4b1cf67f3f25, type: 3}
-  - imageName: barge_warlord
-    imagePath: Assets/Sprites/Ships/Barge/barge_warlord.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Barge/barge_warlord
-    texture2D: {fileID: 2800000, guid: 16db332d0f405044b9ca4e1394b6c8c0, type: 3}
-    sprite: {fileID: 21300000, guid: 16db332d0f405044b9ca4e1394b6c8c0, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 16db332d0f405044b9ca4e1394b6c8c0, type: 3}
-    - {fileID: 21300002, guid: 16db332d0f405044b9ca4e1394b6c8c0, type: 3}
-    - {fileID: 21300004, guid: 16db332d0f405044b9ca4e1394b6c8c0, type: 3}
-    - {fileID: 21300006, guid: 16db332d0f405044b9ca4e1394b6c8c0, type: 3}
-    - {fileID: 21300008, guid: 16db332d0f405044b9ca4e1394b6c8c0, type: 3}
-    - {fileID: 21300010, guid: 16db332d0f405044b9ca4e1394b6c8c0, type: 3}
-    - {fileID: 21300012, guid: 16db332d0f405044b9ca4e1394b6c8c0, type: 3}
-    - {fileID: 21300014, guid: 16db332d0f405044b9ca4e1394b6c8c0, type: 3}
-    - {fileID: 21300016, guid: 16db332d0f405044b9ca4e1394b6c8c0, type: 3}
-    - {fileID: 21300018, guid: 16db332d0f405044b9ca4e1394b6c8c0, type: 3}
   - imageName: bars_background_bots
     imagePath: Assets/Sprites/GUI/Ship/bars_background_bots.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Ship/bars_background_bots
@@ -13206,6 +13094,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 59134e3f39e95254c971103f392509e0, type: 3}
     sprites:
     - {fileID: 21300000, guid: 59134e3f39e95254c971103f392509e0, type: 3}
+  - imageName: bars_container_treasure_site
+    imagePath: Assets/Sprites/GUI/Voyages/bars_container_treasure_site.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Voyages/bars_container_treasure_site
+    texture2D: {fileID: 2800000, guid: 8679930b96c83b64e981fd9cec5a2a9f, type: 3}
+    sprite: {fileID: 21300000, guid: 8679930b96c83b64e981fd9cec5a2a9f, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 8679930b96c83b64e981fd9cec5a2a9f, type: 3}
   - imageName: basic_attack_button_click
     imagePath: Assets/Sprites/GUI/Battle/basic_attack_button_click.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Battle/basic_attack_button_click
@@ -13752,118 +13647,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 8a500890f1c59d64982299fbe05908eb, type: 3}
     sprites:
     - {fileID: 21300000, guid: 8a500890f1c59d64982299fbe05908eb, type: 3}
-  - imageName: brigantine_1
-    imagePath: Assets/Sprites/Ships/Brigantine/brigantine_1.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Brigantine/brigantine_1
-    texture2D: {fileID: 2800000, guid: d115c28f25a517a4480f76bbf071695f, type: 3}
-    sprite: {fileID: 21300000, guid: d115c28f25a517a4480f76bbf071695f, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: d115c28f25a517a4480f76bbf071695f, type: 3}
-    - {fileID: 21300002, guid: d115c28f25a517a4480f76bbf071695f, type: 3}
-    - {fileID: 21300004, guid: d115c28f25a517a4480f76bbf071695f, type: 3}
-    - {fileID: 21300006, guid: d115c28f25a517a4480f76bbf071695f, type: 3}
-    - {fileID: 21300008, guid: d115c28f25a517a4480f76bbf071695f, type: 3}
-    - {fileID: 21300010, guid: d115c28f25a517a4480f76bbf071695f, type: 3}
-    - {fileID: 21300012, guid: d115c28f25a517a4480f76bbf071695f, type: 3}
-    - {fileID: 21300014, guid: d115c28f25a517a4480f76bbf071695f, type: 3}
-    - {fileID: 21300016, guid: d115c28f25a517a4480f76bbf071695f, type: 3}
-    - {fileID: 21300018, guid: d115c28f25a517a4480f76bbf071695f, type: 3}
-  - imageName: brigantine_blue
-    imagePath: Assets/Sprites/Ships/Brigantine/brigantine_blue.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Brigantine/brigantine_blue
-    texture2D: {fileID: 2800000, guid: c9892704be440df44b5be1febba1a133, type: 3}
-    sprite: {fileID: 21300000, guid: c9892704be440df44b5be1febba1a133, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: c9892704be440df44b5be1febba1a133, type: 3}
-    - {fileID: 21300002, guid: c9892704be440df44b5be1febba1a133, type: 3}
-    - {fileID: 21300004, guid: c9892704be440df44b5be1febba1a133, type: 3}
-    - {fileID: 21300006, guid: c9892704be440df44b5be1febba1a133, type: 3}
-    - {fileID: 21300008, guid: c9892704be440df44b5be1febba1a133, type: 3}
-    - {fileID: 21300010, guid: c9892704be440df44b5be1febba1a133, type: 3}
-    - {fileID: 21300012, guid: c9892704be440df44b5be1febba1a133, type: 3}
-    - {fileID: 21300014, guid: c9892704be440df44b5be1febba1a133, type: 3}
-    - {fileID: 21300016, guid: c9892704be440df44b5be1febba1a133, type: 3}
-    - {fileID: 21300018, guid: c9892704be440df44b5be1febba1a133, type: 3}
-  - imageName: brigantine_emerald
-    imagePath: Assets/Sprites/Ships/Brigantine/brigantine_emerald.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Brigantine/brigantine_emerald
-    texture2D: {fileID: 2800000, guid: ad4fb714412240e4fbeb90966f7f88a5, type: 3}
-    sprite: {fileID: 21300020, guid: ad4fb714412240e4fbeb90966f7f88a5, type: 3}
-    sprites:
-    - {fileID: 21300020, guid: ad4fb714412240e4fbeb90966f7f88a5, type: 3}
-    - {fileID: 21300022, guid: ad4fb714412240e4fbeb90966f7f88a5, type: 3}
-    - {fileID: 21300024, guid: ad4fb714412240e4fbeb90966f7f88a5, type: 3}
-    - {fileID: 21300026, guid: ad4fb714412240e4fbeb90966f7f88a5, type: 3}
-    - {fileID: 21300028, guid: ad4fb714412240e4fbeb90966f7f88a5, type: 3}
-    - {fileID: 21300030, guid: ad4fb714412240e4fbeb90966f7f88a5, type: 3}
-    - {fileID: 21300032, guid: ad4fb714412240e4fbeb90966f7f88a5, type: 3}
-    - {fileID: 21300034, guid: ad4fb714412240e4fbeb90966f7f88a5, type: 3}
-    - {fileID: 21300036, guid: ad4fb714412240e4fbeb90966f7f88a5, type: 3}
-    - {fileID: 21300038, guid: ad4fb714412240e4fbeb90966f7f88a5, type: 3}
-  - imageName: brigantine_orange
-    imagePath: Assets/Sprites/Ships/Brigantine/brigantine_orange.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Brigantine/brigantine_orange
-    texture2D: {fileID: 2800000, guid: ef33cd82f630eef4f9e171e3c541bb02, type: 3}
-    sprite: {fileID: 21300000, guid: ef33cd82f630eef4f9e171e3c541bb02, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: ef33cd82f630eef4f9e171e3c541bb02, type: 3}
-    - {fileID: 21300002, guid: ef33cd82f630eef4f9e171e3c541bb02, type: 3}
-    - {fileID: 21300004, guid: ef33cd82f630eef4f9e171e3c541bb02, type: 3}
-    - {fileID: 21300006, guid: ef33cd82f630eef4f9e171e3c541bb02, type: 3}
-    - {fileID: 21300008, guid: ef33cd82f630eef4f9e171e3c541bb02, type: 3}
-    - {fileID: 21300010, guid: ef33cd82f630eef4f9e171e3c541bb02, type: 3}
-    - {fileID: 21300012, guid: ef33cd82f630eef4f9e171e3c541bb02, type: 3}
-    - {fileID: 21300014, guid: ef33cd82f630eef4f9e171e3c541bb02, type: 3}
-    - {fileID: 21300016, guid: ef33cd82f630eef4f9e171e3c541bb02, type: 3}
-    - {fileID: 21300018, guid: ef33cd82f630eef4f9e171e3c541bb02, type: 3}
-  - imageName: brigantine_pale
-    imagePath: Assets/Sprites/Ships/Brigantine/brigantine_pale.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Brigantine/brigantine_pale
-    texture2D: {fileID: 2800000, guid: 34ca7dabe1f5c5749b2efbfd7d77fecb, type: 3}
-    sprite: {fileID: 21300000, guid: 34ca7dabe1f5c5749b2efbfd7d77fecb, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 34ca7dabe1f5c5749b2efbfd7d77fecb, type: 3}
-    - {fileID: 21300002, guid: 34ca7dabe1f5c5749b2efbfd7d77fecb, type: 3}
-    - {fileID: 21300004, guid: 34ca7dabe1f5c5749b2efbfd7d77fecb, type: 3}
-    - {fileID: 21300006, guid: 34ca7dabe1f5c5749b2efbfd7d77fecb, type: 3}
-    - {fileID: 21300008, guid: 34ca7dabe1f5c5749b2efbfd7d77fecb, type: 3}
-    - {fileID: 21300010, guid: 34ca7dabe1f5c5749b2efbfd7d77fecb, type: 3}
-    - {fileID: 21300012, guid: 34ca7dabe1f5c5749b2efbfd7d77fecb, type: 3}
-    - {fileID: 21300014, guid: 34ca7dabe1f5c5749b2efbfd7d77fecb, type: 3}
-    - {fileID: 21300016, guid: 34ca7dabe1f5c5749b2efbfd7d77fecb, type: 3}
-    - {fileID: 21300018, guid: 34ca7dabe1f5c5749b2efbfd7d77fecb, type: 3}
-  - imageName: brigantine_ripples
-    imagePath: Assets/Sprites/Ships/Brigantine/brigantine_ripples.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Brigantine/brigantine_ripples
-    texture2D: {fileID: 2800000, guid: fcda7eb244e27ca4f9d2dd1fd2a2cb84, type: 3}
-    sprite: {fileID: 21300000, guid: fcda7eb244e27ca4f9d2dd1fd2a2cb84, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: fcda7eb244e27ca4f9d2dd1fd2a2cb84, type: 3}
-    - {fileID: 21300002, guid: fcda7eb244e27ca4f9d2dd1fd2a2cb84, type: 3}
-    - {fileID: 21300004, guid: fcda7eb244e27ca4f9d2dd1fd2a2cb84, type: 3}
-    - {fileID: 21300006, guid: fcda7eb244e27ca4f9d2dd1fd2a2cb84, type: 3}
-    - {fileID: 21300008, guid: fcda7eb244e27ca4f9d2dd1fd2a2cb84, type: 3}
-    - {fileID: 21300010, guid: fcda7eb244e27ca4f9d2dd1fd2a2cb84, type: 3}
-    - {fileID: 21300012, guid: fcda7eb244e27ca4f9d2dd1fd2a2cb84, type: 3}
-    - {fileID: 21300014, guid: fcda7eb244e27ca4f9d2dd1fd2a2cb84, type: 3}
-    - {fileID: 21300016, guid: fcda7eb244e27ca4f9d2dd1fd2a2cb84, type: 3}
-    - {fileID: 21300018, guid: fcda7eb244e27ca4f9d2dd1fd2a2cb84, type: 3}
-  - imageName: brigantine_royal
-    imagePath: Assets/Sprites/Ships/Brigantine/brigantine_royal.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Brigantine/brigantine_royal
-    texture2D: {fileID: 2800000, guid: c96d2a69d32c68243b114fb390b6c4ba, type: 3}
-    sprite: {fileID: 21300000, guid: c96d2a69d32c68243b114fb390b6c4ba, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: c96d2a69d32c68243b114fb390b6c4ba, type: 3}
-    - {fileID: 21300002, guid: c96d2a69d32c68243b114fb390b6c4ba, type: 3}
-    - {fileID: 21300004, guid: c96d2a69d32c68243b114fb390b6c4ba, type: 3}
-    - {fileID: 21300006, guid: c96d2a69d32c68243b114fb390b6c4ba, type: 3}
-    - {fileID: 21300008, guid: c96d2a69d32c68243b114fb390b6c4ba, type: 3}
-    - {fileID: 21300010, guid: c96d2a69d32c68243b114fb390b6c4ba, type: 3}
-    - {fileID: 21300012, guid: c96d2a69d32c68243b114fb390b6c4ba, type: 3}
-    - {fileID: 21300014, guid: c96d2a69d32c68243b114fb390b6c4ba, type: 3}
-    - {fileID: 21300016, guid: c96d2a69d32c68243b114fb390b6c4ba, type: 3}
-    - {fileID: 21300018, guid: c96d2a69d32c68243b114fb390b6c4ba, type: 3}
   - imageName: bronze_frame_default
     imagePath: Assets/Sprites/GUI/Voyages/bronze_frame_default.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Voyages/bronze_frame_default
@@ -14186,15 +13969,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 5c812b2e7b44af247939787ec00c9a46, type: 3}
     sprites:
     - {fileID: 21300000, guid: 5c812b2e7b44af247939787ec00c9a46, type: 3}
-  - imageName: buy-button
-    imagePath: Assets/Sprites/GUI/buy-button.png
-    imagePathWithoutExtension: Assets/Sprites/GUI/buy-button
-    texture2D: {fileID: 2800000, guid: e5b78411767b548a29109977d6a44bc8, type: 3}
-    sprite: {fileID: 21300000, guid: e5b78411767b548a29109977d6a44bc8, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: e5b78411767b548a29109977d6a44bc8, type: 3}
-    - {fileID: 21300002, guid: e5b78411767b548a29109977d6a44bc8, type: 3}
-    - {fileID: 21300004, guid: e5b78411767b548a29109977d6a44bc8, type: 3}
   - imageName: burning_shot
     imagePath: Assets/Sprites/Projectiles/burning_shot.png
     imagePathWithoutExtension: Assets/Sprites/Projectiles/burning_shot
@@ -14242,118 +14016,6 @@ MonoBehaviour:
     - {fileID: 1516158513016141124, guid: 94e168a4b45582540bb38dbe212cb951, type: 3}
     - {fileID: -527473144944943052, guid: 94e168a4b45582540bb38dbe212cb951, type: 3}
     - {fileID: 6870231068906041618, guid: 94e168a4b45582540bb38dbe212cb951, type: 3}
-  - imageName: buss_1
-    imagePath: Assets/Sprites/Ships/Buss/buss_1.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Buss/buss_1
-    texture2D: {fileID: 2800000, guid: d7af95bcc4e7d2c4fa57e3305042607b, type: 3}
-    sprite: {fileID: 21300000, guid: d7af95bcc4e7d2c4fa57e3305042607b, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: d7af95bcc4e7d2c4fa57e3305042607b, type: 3}
-    - {fileID: 21300002, guid: d7af95bcc4e7d2c4fa57e3305042607b, type: 3}
-    - {fileID: 21300004, guid: d7af95bcc4e7d2c4fa57e3305042607b, type: 3}
-    - {fileID: 21300006, guid: d7af95bcc4e7d2c4fa57e3305042607b, type: 3}
-    - {fileID: 21300008, guid: d7af95bcc4e7d2c4fa57e3305042607b, type: 3}
-    - {fileID: 21300010, guid: d7af95bcc4e7d2c4fa57e3305042607b, type: 3}
-    - {fileID: 21300012, guid: d7af95bcc4e7d2c4fa57e3305042607b, type: 3}
-    - {fileID: 21300014, guid: d7af95bcc4e7d2c4fa57e3305042607b, type: 3}
-    - {fileID: 21300016, guid: d7af95bcc4e7d2c4fa57e3305042607b, type: 3}
-    - {fileID: 21300018, guid: d7af95bcc4e7d2c4fa57e3305042607b, type: 3}
-  - imageName: buss_blue
-    imagePath: Assets/Sprites/Ships/Buss/buss_blue.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Buss/buss_blue
-    texture2D: {fileID: 2800000, guid: 055e0ca1193f6e0438b6f3ed36a5ffc4, type: 3}
-    sprite: {fileID: 21300000, guid: 055e0ca1193f6e0438b6f3ed36a5ffc4, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 055e0ca1193f6e0438b6f3ed36a5ffc4, type: 3}
-    - {fileID: 21300002, guid: 055e0ca1193f6e0438b6f3ed36a5ffc4, type: 3}
-    - {fileID: 21300004, guid: 055e0ca1193f6e0438b6f3ed36a5ffc4, type: 3}
-    - {fileID: 21300006, guid: 055e0ca1193f6e0438b6f3ed36a5ffc4, type: 3}
-    - {fileID: 21300008, guid: 055e0ca1193f6e0438b6f3ed36a5ffc4, type: 3}
-    - {fileID: 21300010, guid: 055e0ca1193f6e0438b6f3ed36a5ffc4, type: 3}
-    - {fileID: 21300012, guid: 055e0ca1193f6e0438b6f3ed36a5ffc4, type: 3}
-    - {fileID: 21300014, guid: 055e0ca1193f6e0438b6f3ed36a5ffc4, type: 3}
-    - {fileID: 21300016, guid: 055e0ca1193f6e0438b6f3ed36a5ffc4, type: 3}
-    - {fileID: 21300018, guid: 055e0ca1193f6e0438b6f3ed36a5ffc4, type: 3}
-  - imageName: buss_green
-    imagePath: Assets/Sprites/Ships/Buss/buss_green.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Buss/buss_green
-    texture2D: {fileID: 2800000, guid: 4a0bf653abe31ee418252abdca487766, type: 3}
-    sprite: {fileID: 21300000, guid: 4a0bf653abe31ee418252abdca487766, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 4a0bf653abe31ee418252abdca487766, type: 3}
-    - {fileID: 21300002, guid: 4a0bf653abe31ee418252abdca487766, type: 3}
-    - {fileID: 21300004, guid: 4a0bf653abe31ee418252abdca487766, type: 3}
-    - {fileID: 21300006, guid: 4a0bf653abe31ee418252abdca487766, type: 3}
-    - {fileID: 21300008, guid: 4a0bf653abe31ee418252abdca487766, type: 3}
-    - {fileID: 21300010, guid: 4a0bf653abe31ee418252abdca487766, type: 3}
-    - {fileID: 21300012, guid: 4a0bf653abe31ee418252abdca487766, type: 3}
-    - {fileID: 21300014, guid: 4a0bf653abe31ee418252abdca487766, type: 3}
-    - {fileID: 21300016, guid: 4a0bf653abe31ee418252abdca487766, type: 3}
-    - {fileID: 21300018, guid: 4a0bf653abe31ee418252abdca487766, type: 3}
-  - imageName: buss_marlin
-    imagePath: Assets/Sprites/Ships/Buss/buss_marlin.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Buss/buss_marlin
-    texture2D: {fileID: 2800000, guid: 9797cc7155413874eb0a13f1c7a85ec5, type: 3}
-    sprite: {fileID: 21300000, guid: 9797cc7155413874eb0a13f1c7a85ec5, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 9797cc7155413874eb0a13f1c7a85ec5, type: 3}
-    - {fileID: 21300002, guid: 9797cc7155413874eb0a13f1c7a85ec5, type: 3}
-    - {fileID: 21300004, guid: 9797cc7155413874eb0a13f1c7a85ec5, type: 3}
-    - {fileID: 21300006, guid: 9797cc7155413874eb0a13f1c7a85ec5, type: 3}
-    - {fileID: 21300008, guid: 9797cc7155413874eb0a13f1c7a85ec5, type: 3}
-    - {fileID: 21300010, guid: 9797cc7155413874eb0a13f1c7a85ec5, type: 3}
-    - {fileID: 21300012, guid: 9797cc7155413874eb0a13f1c7a85ec5, type: 3}
-    - {fileID: 21300014, guid: 9797cc7155413874eb0a13f1c7a85ec5, type: 3}
-    - {fileID: 21300016, guid: 9797cc7155413874eb0a13f1c7a85ec5, type: 3}
-    - {fileID: 21300018, guid: 9797cc7155413874eb0a13f1c7a85ec5, type: 3}
-  - imageName: buss_orange
-    imagePath: Assets/Sprites/Ships/Buss/buss_orange.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Buss/buss_orange
-    texture2D: {fileID: 2800000, guid: 33b80a89396b17b47ad37807969b19b4, type: 3}
-    sprite: {fileID: 21300000, guid: 33b80a89396b17b47ad37807969b19b4, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 33b80a89396b17b47ad37807969b19b4, type: 3}
-    - {fileID: 21300002, guid: 33b80a89396b17b47ad37807969b19b4, type: 3}
-    - {fileID: 21300004, guid: 33b80a89396b17b47ad37807969b19b4, type: 3}
-    - {fileID: 21300006, guid: 33b80a89396b17b47ad37807969b19b4, type: 3}
-    - {fileID: 21300008, guid: 33b80a89396b17b47ad37807969b19b4, type: 3}
-    - {fileID: 21300010, guid: 33b80a89396b17b47ad37807969b19b4, type: 3}
-    - {fileID: 21300012, guid: 33b80a89396b17b47ad37807969b19b4, type: 3}
-    - {fileID: 21300014, guid: 33b80a89396b17b47ad37807969b19b4, type: 3}
-    - {fileID: 21300016, guid: 33b80a89396b17b47ad37807969b19b4, type: 3}
-    - {fileID: 21300018, guid: 33b80a89396b17b47ad37807969b19b4, type: 3}
-  - imageName: buss_purple
-    imagePath: Assets/Sprites/Ships/Buss/buss_purple.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Buss/buss_purple
-    texture2D: {fileID: 2800000, guid: 4798d4417da3c884d81267abd894343f, type: 3}
-    sprite: {fileID: 21300000, guid: 4798d4417da3c884d81267abd894343f, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 4798d4417da3c884d81267abd894343f, type: 3}
-    - {fileID: 21300002, guid: 4798d4417da3c884d81267abd894343f, type: 3}
-    - {fileID: 21300004, guid: 4798d4417da3c884d81267abd894343f, type: 3}
-    - {fileID: 21300006, guid: 4798d4417da3c884d81267abd894343f, type: 3}
-    - {fileID: 21300008, guid: 4798d4417da3c884d81267abd894343f, type: 3}
-    - {fileID: 21300010, guid: 4798d4417da3c884d81267abd894343f, type: 3}
-    - {fileID: 21300012, guid: 4798d4417da3c884d81267abd894343f, type: 3}
-    - {fileID: 21300014, guid: 4798d4417da3c884d81267abd894343f, type: 3}
-    - {fileID: 21300016, guid: 4798d4417da3c884d81267abd894343f, type: 3}
-    - {fileID: 21300018, guid: 4798d4417da3c884d81267abd894343f, type: 3}
-  - imageName: buss_ripples
-    imagePath: Assets/Sprites/Ships/Buss/buss_ripples.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Buss/buss_ripples
-    texture2D: {fileID: 2800000, guid: d89cf1dac7d1fbe43af88f51e8226044, type: 3}
-    sprite: {fileID: 21300000, guid: d89cf1dac7d1fbe43af88f51e8226044, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: d89cf1dac7d1fbe43af88f51e8226044, type: 3}
-    - {fileID: 21300002, guid: d89cf1dac7d1fbe43af88f51e8226044, type: 3}
-    - {fileID: 21300004, guid: d89cf1dac7d1fbe43af88f51e8226044, type: 3}
-    - {fileID: 21300006, guid: d89cf1dac7d1fbe43af88f51e8226044, type: 3}
-    - {fileID: 21300008, guid: d89cf1dac7d1fbe43af88f51e8226044, type: 3}
-    - {fileID: 21300010, guid: d89cf1dac7d1fbe43af88f51e8226044, type: 3}
-    - {fileID: 21300012, guid: d89cf1dac7d1fbe43af88f51e8226044, type: 3}
-    - {fileID: 21300014, guid: d89cf1dac7d1fbe43af88f51e8226044, type: 3}
-    - {fileID: 21300016, guid: d89cf1dac7d1fbe43af88f51e8226044, type: 3}
-    - {fileID: 21300018, guid: d89cf1dac7d1fbe43af88f51e8226044, type: 3}
   - imageName: Butterfly_Blue
     imagePath: Assets/Sprites/Butteflies/Butterfly_Blue.png
     imagePathWithoutExtension: Assets/Sprites/Butteflies/Butterfly_Blue
@@ -14637,6 +14299,15 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 780e140bfcfe8424ca5aeaf3fff94dde, type: 3}
     sprites:
     - {fileID: 21300000, guid: 780e140bfcfe8424ca5aeaf3fff94dde, type: 3}
+  - imageName: buy-button
+    imagePath: Assets/Sprites/GUI/buy-button.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/buy-button
+    texture2D: {fileID: 2800000, guid: e5b78411767b548a29109977d6a44bc8, type: 3}
+    sprite: {fileID: 21300000, guid: e5b78411767b548a29109977d6a44bc8, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: e5b78411767b548a29109977d6a44bc8, type: 3}
+    - {fileID: 21300002, guid: e5b78411767b548a29109977d6a44bc8, type: 3}
+    - {fileID: 21300004, guid: e5b78411767b548a29109977d6a44bc8, type: 3}
   - imageName: cancel
     imagePath: Assets/Sprites/Icons/cancel.png
     imagePathWithoutExtension: Assets/Sprites/Icons/cancel
@@ -14815,358 +14486,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 83d7fcf5676ddfc4f93885c5216e0c98, type: 3}
     sprites:
     - {fileID: 21300000, guid: 83d7fcf5676ddfc4f93885c5216e0c98, type: 3}
-  - imageName: caravel_1
-    imagePath: Assets/Sprites/Ships/Caravel/caravel_1.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Caravel/caravel_1
-    texture2D: {fileID: 2800000, guid: 0c2cad0c0a7a9d9429ef6bb877f46ff0, type: 3}
-    sprite: {fileID: 21300020, guid: 0c2cad0c0a7a9d9429ef6bb877f46ff0, type: 3}
+  - imageName: capture_bar
+    imagePath: Assets/Sprites/GUI/Voyages/capture_bar.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Voyages/capture_bar
+    texture2D: {fileID: 2800000, guid: 0ae413fcdfdb6964ba3f8b2b2dfe8898, type: 3}
+    sprite: {fileID: 21300000, guid: 0ae413fcdfdb6964ba3f8b2b2dfe8898, type: 3}
     sprites:
-    - {fileID: 21300020, guid: 0c2cad0c0a7a9d9429ef6bb877f46ff0, type: 3}
-    - {fileID: 21300022, guid: 0c2cad0c0a7a9d9429ef6bb877f46ff0, type: 3}
-    - {fileID: 21300024, guid: 0c2cad0c0a7a9d9429ef6bb877f46ff0, type: 3}
-    - {fileID: 21300026, guid: 0c2cad0c0a7a9d9429ef6bb877f46ff0, type: 3}
-    - {fileID: 21300028, guid: 0c2cad0c0a7a9d9429ef6bb877f46ff0, type: 3}
-    - {fileID: 21300030, guid: 0c2cad0c0a7a9d9429ef6bb877f46ff0, type: 3}
-    - {fileID: 21300032, guid: 0c2cad0c0a7a9d9429ef6bb877f46ff0, type: 3}
-    - {fileID: 21300034, guid: 0c2cad0c0a7a9d9429ef6bb877f46ff0, type: 3}
-    - {fileID: 21300036, guid: 0c2cad0c0a7a9d9429ef6bb877f46ff0, type: 3}
-    - {fileID: 21300038, guid: 0c2cad0c0a7a9d9429ef6bb877f46ff0, type: 3}
-  - imageName: caravel_armored
-    imagePath: Assets/Sprites/Ships/Caravel/caravel_armored.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Caravel/caravel_armored
-    texture2D: {fileID: 2800000, guid: 8382d4b9ae018d444b421f2549c05a00, type: 3}
-    sprite: {fileID: 21300000, guid: 8382d4b9ae018d444b421f2549c05a00, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 8382d4b9ae018d444b421f2549c05a00, type: 3}
-    - {fileID: 21300002, guid: 8382d4b9ae018d444b421f2549c05a00, type: 3}
-    - {fileID: 21300004, guid: 8382d4b9ae018d444b421f2549c05a00, type: 3}
-    - {fileID: 21300006, guid: 8382d4b9ae018d444b421f2549c05a00, type: 3}
-    - {fileID: 21300008, guid: 8382d4b9ae018d444b421f2549c05a00, type: 3}
-    - {fileID: 21300010, guid: 8382d4b9ae018d444b421f2549c05a00, type: 3}
-    - {fileID: 21300012, guid: 8382d4b9ae018d444b421f2549c05a00, type: 3}
-    - {fileID: 21300014, guid: 8382d4b9ae018d444b421f2549c05a00, type: 3}
-    - {fileID: 21300016, guid: 8382d4b9ae018d444b421f2549c05a00, type: 3}
-    - {fileID: 21300018, guid: 8382d4b9ae018d444b421f2549c05a00, type: 3}
-  - imageName: caravel_fancy
-    imagePath: Assets/Sprites/Ships/Caravel/caravel_fancy.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Caravel/caravel_fancy
-    texture2D: {fileID: 2800000, guid: 6aad3f85f39c500418c45a8b690df69a, type: 3}
-    sprite: {fileID: 21300000, guid: 6aad3f85f39c500418c45a8b690df69a, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 6aad3f85f39c500418c45a8b690df69a, type: 3}
-    - {fileID: 21300002, guid: 6aad3f85f39c500418c45a8b690df69a, type: 3}
-    - {fileID: 21300004, guid: 6aad3f85f39c500418c45a8b690df69a, type: 3}
-    - {fileID: 21300006, guid: 6aad3f85f39c500418c45a8b690df69a, type: 3}
-    - {fileID: 21300008, guid: 6aad3f85f39c500418c45a8b690df69a, type: 3}
-    - {fileID: 21300010, guid: 6aad3f85f39c500418c45a8b690df69a, type: 3}
-    - {fileID: 21300012, guid: 6aad3f85f39c500418c45a8b690df69a, type: 3}
-    - {fileID: 21300014, guid: 6aad3f85f39c500418c45a8b690df69a, type: 3}
-    - {fileID: 21300016, guid: 6aad3f85f39c500418c45a8b690df69a, type: 3}
-    - {fileID: 21300018, guid: 6aad3f85f39c500418c45a8b690df69a, type: 3}
-  - imageName: caravel_ghost
-    imagePath: Assets/Sprites/Ships/Caravel/caravel_ghost.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Caravel/caravel_ghost
-    texture2D: {fileID: 2800000, guid: a777b95543ecfb641b2458759b9f5381, type: 3}
-    sprite: {fileID: 21300000, guid: a777b95543ecfb641b2458759b9f5381, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: a777b95543ecfb641b2458759b9f5381, type: 3}
-    - {fileID: 21300002, guid: a777b95543ecfb641b2458759b9f5381, type: 3}
-    - {fileID: 21300004, guid: a777b95543ecfb641b2458759b9f5381, type: 3}
-    - {fileID: 21300006, guid: a777b95543ecfb641b2458759b9f5381, type: 3}
-    - {fileID: 21300008, guid: a777b95543ecfb641b2458759b9f5381, type: 3}
-    - {fileID: 21300010, guid: a777b95543ecfb641b2458759b9f5381, type: 3}
-    - {fileID: 21300012, guid: a777b95543ecfb641b2458759b9f5381, type: 3}
-    - {fileID: 21300014, guid: a777b95543ecfb641b2458759b9f5381, type: 3}
-    - {fileID: 21300016, guid: a777b95543ecfb641b2458759b9f5381, type: 3}
-    - {fileID: 21300018, guid: a777b95543ecfb641b2458759b9f5381, type: 3}
-  - imageName: caravel_green
-    imagePath: Assets/Sprites/Ships/Caravel/caravel_green.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Caravel/caravel_green
-    texture2D: {fileID: 2800000, guid: 6ade973082000654e805b3034c549d42, type: 3}
-    sprite: {fileID: 21300000, guid: 6ade973082000654e805b3034c549d42, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 6ade973082000654e805b3034c549d42, type: 3}
-    - {fileID: 21300002, guid: 6ade973082000654e805b3034c549d42, type: 3}
-    - {fileID: 21300004, guid: 6ade973082000654e805b3034c549d42, type: 3}
-    - {fileID: 21300006, guid: 6ade973082000654e805b3034c549d42, type: 3}
-    - {fileID: 21300008, guid: 6ade973082000654e805b3034c549d42, type: 3}
-    - {fileID: 21300010, guid: 6ade973082000654e805b3034c549d42, type: 3}
-    - {fileID: 21300012, guid: 6ade973082000654e805b3034c549d42, type: 3}
-    - {fileID: 21300014, guid: 6ade973082000654e805b3034c549d42, type: 3}
-    - {fileID: 21300016, guid: 6ade973082000654e805b3034c549d42, type: 3}
-    - {fileID: 21300018, guid: 6ade973082000654e805b3034c549d42, type: 3}
-  - imageName: caravel_ice
-    imagePath: Assets/Sprites/Ships/Caravel/caravel_ice.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Caravel/caravel_ice
-    texture2D: {fileID: 2800000, guid: 07774556002138943beefeecf69ceb5e, type: 3}
-    sprite: {fileID: 21300000, guid: 07774556002138943beefeecf69ceb5e, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 07774556002138943beefeecf69ceb5e, type: 3}
-    - {fileID: 21300002, guid: 07774556002138943beefeecf69ceb5e, type: 3}
-    - {fileID: 21300004, guid: 07774556002138943beefeecf69ceb5e, type: 3}
-    - {fileID: 21300006, guid: 07774556002138943beefeecf69ceb5e, type: 3}
-    - {fileID: 21300008, guid: 07774556002138943beefeecf69ceb5e, type: 3}
-    - {fileID: 21300010, guid: 07774556002138943beefeecf69ceb5e, type: 3}
-    - {fileID: 21300012, guid: 07774556002138943beefeecf69ceb5e, type: 3}
-    - {fileID: 21300014, guid: 07774556002138943beefeecf69ceb5e, type: 3}
-    - {fileID: 21300016, guid: 07774556002138943beefeecf69ceb5e, type: 3}
-    - {fileID: 21300018, guid: 07774556002138943beefeecf69ceb5e, type: 3}
-  - imageName: caravel_marlin
-    imagePath: Assets/Sprites/Ships/Caravel/caravel_marlin.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Caravel/caravel_marlin
-    texture2D: {fileID: 2800000, guid: b0381f0cdc2a57842b22090561687e61, type: 3}
-    sprite: {fileID: 21300000, guid: b0381f0cdc2a57842b22090561687e61, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: b0381f0cdc2a57842b22090561687e61, type: 3}
-    - {fileID: 21300002, guid: b0381f0cdc2a57842b22090561687e61, type: 3}
-    - {fileID: 21300004, guid: b0381f0cdc2a57842b22090561687e61, type: 3}
-    - {fileID: 21300006, guid: b0381f0cdc2a57842b22090561687e61, type: 3}
-    - {fileID: 21300008, guid: b0381f0cdc2a57842b22090561687e61, type: 3}
-    - {fileID: 21300010, guid: b0381f0cdc2a57842b22090561687e61, type: 3}
-    - {fileID: 21300012, guid: b0381f0cdc2a57842b22090561687e61, type: 3}
-    - {fileID: 21300014, guid: b0381f0cdc2a57842b22090561687e61, type: 3}
-    - {fileID: 21300016, guid: b0381f0cdc2a57842b22090561687e61, type: 3}
-    - {fileID: 21300018, guid: b0381f0cdc2a57842b22090561687e61, type: 3}
-  - imageName: caravel_oak
-    imagePath: Assets/Sprites/Ships/Caravel/caravel_oak.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Caravel/caravel_oak
-    texture2D: {fileID: 2800000, guid: 4a260da7411043047ae16afb209a5fae, type: 3}
-    sprite: {fileID: 21300000, guid: 4a260da7411043047ae16afb209a5fae, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 4a260da7411043047ae16afb209a5fae, type: 3}
-    - {fileID: 21300002, guid: 4a260da7411043047ae16afb209a5fae, type: 3}
-    - {fileID: 21300004, guid: 4a260da7411043047ae16afb209a5fae, type: 3}
-    - {fileID: 21300006, guid: 4a260da7411043047ae16afb209a5fae, type: 3}
-    - {fileID: 21300008, guid: 4a260da7411043047ae16afb209a5fae, type: 3}
-    - {fileID: 21300010, guid: 4a260da7411043047ae16afb209a5fae, type: 3}
-    - {fileID: 21300012, guid: 4a260da7411043047ae16afb209a5fae, type: 3}
-    - {fileID: 21300014, guid: 4a260da7411043047ae16afb209a5fae, type: 3}
-    - {fileID: 21300016, guid: 4a260da7411043047ae16afb209a5fae, type: 3}
-    - {fileID: 21300018, guid: 4a260da7411043047ae16afb209a5fae, type: 3}
-  - imageName: caravel_oceanic
-    imagePath: Assets/Sprites/Ships/Caravel/caravel_oceanic.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Caravel/caravel_oceanic
-    texture2D: {fileID: 2800000, guid: 83b1efabc0c4eef4eb060d689000a45e, type: 3}
-    sprite: {fileID: 21300000, guid: 83b1efabc0c4eef4eb060d689000a45e, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 83b1efabc0c4eef4eb060d689000a45e, type: 3}
-    - {fileID: 21300002, guid: 83b1efabc0c4eef4eb060d689000a45e, type: 3}
-    - {fileID: 21300004, guid: 83b1efabc0c4eef4eb060d689000a45e, type: 3}
-    - {fileID: 21300006, guid: 83b1efabc0c4eef4eb060d689000a45e, type: 3}
-    - {fileID: 21300008, guid: 83b1efabc0c4eef4eb060d689000a45e, type: 3}
-    - {fileID: 21300010, guid: 83b1efabc0c4eef4eb060d689000a45e, type: 3}
-    - {fileID: 21300012, guid: 83b1efabc0c4eef4eb060d689000a45e, type: 3}
-    - {fileID: 21300014, guid: 83b1efabc0c4eef4eb060d689000a45e, type: 3}
-    - {fileID: 21300016, guid: 83b1efabc0c4eef4eb060d689000a45e, type: 3}
-    - {fileID: 21300018, guid: 83b1efabc0c4eef4eb060d689000a45e, type: 3}
-  - imageName: caravel_orange
-    imagePath: Assets/Sprites/Ships/Caravel/caravel_orange.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Caravel/caravel_orange
-    texture2D: {fileID: 2800000, guid: e5d57ed50b2ff8c4fb7e22cba49abce0, type: 3}
-    sprite: {fileID: 21300000, guid: e5d57ed50b2ff8c4fb7e22cba49abce0, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: e5d57ed50b2ff8c4fb7e22cba49abce0, type: 3}
-    - {fileID: 21300002, guid: e5d57ed50b2ff8c4fb7e22cba49abce0, type: 3}
-    - {fileID: 21300004, guid: e5d57ed50b2ff8c4fb7e22cba49abce0, type: 3}
-    - {fileID: 21300006, guid: e5d57ed50b2ff8c4fb7e22cba49abce0, type: 3}
-    - {fileID: 21300008, guid: e5d57ed50b2ff8c4fb7e22cba49abce0, type: 3}
-    - {fileID: 21300010, guid: e5d57ed50b2ff8c4fb7e22cba49abce0, type: 3}
-    - {fileID: 21300012, guid: e5d57ed50b2ff8c4fb7e22cba49abce0, type: 3}
-    - {fileID: 21300014, guid: e5d57ed50b2ff8c4fb7e22cba49abce0, type: 3}
-    - {fileID: 21300016, guid: e5d57ed50b2ff8c4fb7e22cba49abce0, type: 3}
-    - {fileID: 21300018, guid: e5d57ed50b2ff8c4fb7e22cba49abce0, type: 3}
-  - imageName: caravel_painted
-    imagePath: Assets/Sprites/Ships/Caravel/caravel_painted.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Caravel/caravel_painted
-    texture2D: {fileID: 2800000, guid: d3e3bdbf572895c499f06f3d44de8fa1, type: 3}
-    sprite: {fileID: 21300000, guid: d3e3bdbf572895c499f06f3d44de8fa1, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: d3e3bdbf572895c499f06f3d44de8fa1, type: 3}
-    - {fileID: 21300002, guid: d3e3bdbf572895c499f06f3d44de8fa1, type: 3}
-    - {fileID: 21300004, guid: d3e3bdbf572895c499f06f3d44de8fa1, type: 3}
-    - {fileID: 21300006, guid: d3e3bdbf572895c499f06f3d44de8fa1, type: 3}
-    - {fileID: 21300008, guid: d3e3bdbf572895c499f06f3d44de8fa1, type: 3}
-    - {fileID: 21300010, guid: d3e3bdbf572895c499f06f3d44de8fa1, type: 3}
-    - {fileID: 21300012, guid: d3e3bdbf572895c499f06f3d44de8fa1, type: 3}
-    - {fileID: 21300014, guid: d3e3bdbf572895c499f06f3d44de8fa1, type: 3}
-    - {fileID: 21300016, guid: d3e3bdbf572895c499f06f3d44de8fa1, type: 3}
-    - {fileID: 21300018, guid: d3e3bdbf572895c499f06f3d44de8fa1, type: 3}
-  - imageName: caravel_pale
-    imagePath: Assets/Sprites/Ships/Caravel/caravel_pale.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Caravel/caravel_pale
-    texture2D: {fileID: 2800000, guid: 228ef8417e7172048b2a97eada95a302, type: 3}
-    sprite: {fileID: 21300000, guid: 228ef8417e7172048b2a97eada95a302, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 228ef8417e7172048b2a97eada95a302, type: 3}
-    - {fileID: 21300002, guid: 228ef8417e7172048b2a97eada95a302, type: 3}
-    - {fileID: 21300004, guid: 228ef8417e7172048b2a97eada95a302, type: 3}
-    - {fileID: 21300006, guid: 228ef8417e7172048b2a97eada95a302, type: 3}
-    - {fileID: 21300008, guid: 228ef8417e7172048b2a97eada95a302, type: 3}
-    - {fileID: 21300010, guid: 228ef8417e7172048b2a97eada95a302, type: 3}
-    - {fileID: 21300012, guid: 228ef8417e7172048b2a97eada95a302, type: 3}
-    - {fileID: 21300014, guid: 228ef8417e7172048b2a97eada95a302, type: 3}
-    - {fileID: 21300016, guid: 228ef8417e7172048b2a97eada95a302, type: 3}
-    - {fileID: 21300018, guid: 228ef8417e7172048b2a97eada95a302, type: 3}
-  - imageName: caravel_pink
-    imagePath: Assets/Sprites/Ships/Caravel/caravel_pink.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Caravel/caravel_pink
-    texture2D: {fileID: 2800000, guid: 52efb20b0226ad641b22d655be75ae5e, type: 3}
-    sprite: {fileID: 21300000, guid: 52efb20b0226ad641b22d655be75ae5e, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 52efb20b0226ad641b22d655be75ae5e, type: 3}
-    - {fileID: 21300002, guid: 52efb20b0226ad641b22d655be75ae5e, type: 3}
-    - {fileID: 21300004, guid: 52efb20b0226ad641b22d655be75ae5e, type: 3}
-    - {fileID: 21300006, guid: 52efb20b0226ad641b22d655be75ae5e, type: 3}
-    - {fileID: 21300008, guid: 52efb20b0226ad641b22d655be75ae5e, type: 3}
-    - {fileID: 21300010, guid: 52efb20b0226ad641b22d655be75ae5e, type: 3}
-    - {fileID: 21300012, guid: 52efb20b0226ad641b22d655be75ae5e, type: 3}
-    - {fileID: 21300014, guid: 52efb20b0226ad641b22d655be75ae5e, type: 3}
-    - {fileID: 21300016, guid: 52efb20b0226ad641b22d655be75ae5e, type: 3}
-    - {fileID: 21300018, guid: 52efb20b0226ad641b22d655be75ae5e, type: 3}
-  - imageName: caravel_purple
-    imagePath: Assets/Sprites/Ships/Caravel/caravel_purple.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Caravel/caravel_purple
-    texture2D: {fileID: 2800000, guid: 69bbe1a4848f1cf49b70e60894e6c647, type: 3}
-    sprite: {fileID: 21300000, guid: 69bbe1a4848f1cf49b70e60894e6c647, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 69bbe1a4848f1cf49b70e60894e6c647, type: 3}
-    - {fileID: 21300002, guid: 69bbe1a4848f1cf49b70e60894e6c647, type: 3}
-    - {fileID: 21300004, guid: 69bbe1a4848f1cf49b70e60894e6c647, type: 3}
-    - {fileID: 21300006, guid: 69bbe1a4848f1cf49b70e60894e6c647, type: 3}
-    - {fileID: 21300008, guid: 69bbe1a4848f1cf49b70e60894e6c647, type: 3}
-    - {fileID: 21300010, guid: 69bbe1a4848f1cf49b70e60894e6c647, type: 3}
-    - {fileID: 21300012, guid: 69bbe1a4848f1cf49b70e60894e6c647, type: 3}
-    - {fileID: 21300014, guid: 69bbe1a4848f1cf49b70e60894e6c647, type: 3}
-    - {fileID: 21300016, guid: 69bbe1a4848f1cf49b70e60894e6c647, type: 3}
-    - {fileID: 21300018, guid: 69bbe1a4848f1cf49b70e60894e6c647, type: 3}
-  - imageName: caravel_ripples
-    imagePath: Assets/Sprites/Ships/Caravel/caravel_ripples.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Caravel/caravel_ripples
-    texture2D: {fileID: 2800000, guid: a5e38fbbe13ccfa439885422786de4a1, type: 3}
-    sprite: {fileID: 21300000, guid: a5e38fbbe13ccfa439885422786de4a1, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: a5e38fbbe13ccfa439885422786de4a1, type: 3}
-    - {fileID: 21300002, guid: a5e38fbbe13ccfa439885422786de4a1, type: 3}
-    - {fileID: 21300004, guid: a5e38fbbe13ccfa439885422786de4a1, type: 3}
-    - {fileID: 21300006, guid: a5e38fbbe13ccfa439885422786de4a1, type: 3}
-    - {fileID: 21300008, guid: a5e38fbbe13ccfa439885422786de4a1, type: 3}
-    - {fileID: 21300010, guid: a5e38fbbe13ccfa439885422786de4a1, type: 3}
-    - {fileID: 21300012, guid: a5e38fbbe13ccfa439885422786de4a1, type: 3}
-    - {fileID: 21300014, guid: a5e38fbbe13ccfa439885422786de4a1, type: 3}
-    - {fileID: 21300016, guid: a5e38fbbe13ccfa439885422786de4a1, type: 3}
-    - {fileID: 21300018, guid: a5e38fbbe13ccfa439885422786de4a1, type: 3}
-  - imageName: caravel_shadow
-    imagePath: Assets/Sprites/Ships/Caravel/caravel_shadow.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Caravel/caravel_shadow
-    texture2D: {fileID: 2800000, guid: 282391bf9370df24ca810c3283cb6cb2, type: 3}
-    sprite: {fileID: 21300000, guid: 282391bf9370df24ca810c3283cb6cb2, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 282391bf9370df24ca810c3283cb6cb2, type: 3}
-    - {fileID: 21300002, guid: 282391bf9370df24ca810c3283cb6cb2, type: 3}
-    - {fileID: 21300004, guid: 282391bf9370df24ca810c3283cb6cb2, type: 3}
-    - {fileID: 21300006, guid: 282391bf9370df24ca810c3283cb6cb2, type: 3}
-    - {fileID: 21300008, guid: 282391bf9370df24ca810c3283cb6cb2, type: 3}
-    - {fileID: 21300010, guid: 282391bf9370df24ca810c3283cb6cb2, type: 3}
-    - {fileID: 21300012, guid: 282391bf9370df24ca810c3283cb6cb2, type: 3}
-    - {fileID: 21300014, guid: 282391bf9370df24ca810c3283cb6cb2, type: 3}
-    - {fileID: 21300016, guid: 282391bf9370df24ca810c3283cb6cb2, type: 3}
-    - {fileID: 21300018, guid: 282391bf9370df24ca810c3283cb6cb2, type: 3}
-  - imageName: caravel_snow
-    imagePath: Assets/Sprites/Ships/Caravel/caravel_snow.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Caravel/caravel_snow
-    texture2D: {fileID: 2800000, guid: 7b58885b9f0d14041b51fbff049e18d1, type: 3}
-    sprite: {fileID: 21300000, guid: 7b58885b9f0d14041b51fbff049e18d1, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 7b58885b9f0d14041b51fbff049e18d1, type: 3}
-    - {fileID: 21300002, guid: 7b58885b9f0d14041b51fbff049e18d1, type: 3}
-    - {fileID: 21300004, guid: 7b58885b9f0d14041b51fbff049e18d1, type: 3}
-    - {fileID: 21300006, guid: 7b58885b9f0d14041b51fbff049e18d1, type: 3}
-    - {fileID: 21300008, guid: 7b58885b9f0d14041b51fbff049e18d1, type: 3}
-    - {fileID: 21300010, guid: 7b58885b9f0d14041b51fbff049e18d1, type: 3}
-    - {fileID: 21300012, guid: 7b58885b9f0d14041b51fbff049e18d1, type: 3}
-    - {fileID: 21300014, guid: 7b58885b9f0d14041b51fbff049e18d1, type: 3}
-    - {fileID: 21300016, guid: 7b58885b9f0d14041b51fbff049e18d1, type: 3}
-    - {fileID: 21300018, guid: 7b58885b9f0d14041b51fbff049e18d1, type: 3}
-  - imageName: caravel_sunset
-    imagePath: Assets/Sprites/Ships/Caravel/caravel_sunset.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Caravel/caravel_sunset
-    texture2D: {fileID: 2800000, guid: 2a27b4ea36f18984c899d0636872d9c8, type: 3}
-    sprite: {fileID: 21300000, guid: 2a27b4ea36f18984c899d0636872d9c8, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 2a27b4ea36f18984c899d0636872d9c8, type: 3}
-    - {fileID: 21300002, guid: 2a27b4ea36f18984c899d0636872d9c8, type: 3}
-    - {fileID: 21300004, guid: 2a27b4ea36f18984c899d0636872d9c8, type: 3}
-    - {fileID: 21300006, guid: 2a27b4ea36f18984c899d0636872d9c8, type: 3}
-    - {fileID: 21300008, guid: 2a27b4ea36f18984c899d0636872d9c8, type: 3}
-    - {fileID: 21300010, guid: 2a27b4ea36f18984c899d0636872d9c8, type: 3}
-    - {fileID: 21300012, guid: 2a27b4ea36f18984c899d0636872d9c8, type: 3}
-    - {fileID: 21300014, guid: 2a27b4ea36f18984c899d0636872d9c8, type: 3}
-    - {fileID: 21300016, guid: 2a27b4ea36f18984c899d0636872d9c8, type: 3}
-    - {fileID: 21300018, guid: 2a27b4ea36f18984c899d0636872d9c8, type: 3}
-  - imageName: caravel_teal
-    imagePath: Assets/Sprites/Ships/Caravel/caravel_teal.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Caravel/caravel_teal
-    texture2D: {fileID: 2800000, guid: 7634642c56fe4884c87df14b95be4ab2, type: 3}
-    sprite: {fileID: 21300000, guid: 7634642c56fe4884c87df14b95be4ab2, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 7634642c56fe4884c87df14b95be4ab2, type: 3}
-    - {fileID: 21300002, guid: 7634642c56fe4884c87df14b95be4ab2, type: 3}
-    - {fileID: 21300004, guid: 7634642c56fe4884c87df14b95be4ab2, type: 3}
-    - {fileID: 21300006, guid: 7634642c56fe4884c87df14b95be4ab2, type: 3}
-    - {fileID: 21300008, guid: 7634642c56fe4884c87df14b95be4ab2, type: 3}
-    - {fileID: 21300010, guid: 7634642c56fe4884c87df14b95be4ab2, type: 3}
-    - {fileID: 21300012, guid: 7634642c56fe4884c87df14b95be4ab2, type: 3}
-    - {fileID: 21300014, guid: 7634642c56fe4884c87df14b95be4ab2, type: 3}
-    - {fileID: 21300016, guid: 7634642c56fe4884c87df14b95be4ab2, type: 3}
-    - {fileID: 21300018, guid: 7634642c56fe4884c87df14b95be4ab2, type: 3}
-  - imageName: caravel_tiger
-    imagePath: Assets/Sprites/Ships/Caravel/caravel_tiger.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Caravel/caravel_tiger
-    texture2D: {fileID: 2800000, guid: 49ac201eeb4fdeb4a875d22dde482b54, type: 3}
-    sprite: {fileID: 21300000, guid: 49ac201eeb4fdeb4a875d22dde482b54, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 49ac201eeb4fdeb4a875d22dde482b54, type: 3}
-    - {fileID: 21300002, guid: 49ac201eeb4fdeb4a875d22dde482b54, type: 3}
-    - {fileID: 21300004, guid: 49ac201eeb4fdeb4a875d22dde482b54, type: 3}
-    - {fileID: 21300006, guid: 49ac201eeb4fdeb4a875d22dde482b54, type: 3}
-    - {fileID: 21300008, guid: 49ac201eeb4fdeb4a875d22dde482b54, type: 3}
-    - {fileID: 21300010, guid: 49ac201eeb4fdeb4a875d22dde482b54, type: 3}
-    - {fileID: 21300012, guid: 49ac201eeb4fdeb4a875d22dde482b54, type: 3}
-    - {fileID: 21300014, guid: 49ac201eeb4fdeb4a875d22dde482b54, type: 3}
-    - {fileID: 21300016, guid: 49ac201eeb4fdeb4a875d22dde482b54, type: 3}
-    - {fileID: 21300018, guid: 49ac201eeb4fdeb4a875d22dde482b54, type: 3}
-  - imageName: caravel_tropical
-    imagePath: Assets/Sprites/Ships/Caravel/caravel_tropical.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Caravel/caravel_tropical
-    texture2D: {fileID: 2800000, guid: dd859fe0e3c5a27488c131605452fa23, type: 3}
-    sprite: {fileID: 21300000, guid: dd859fe0e3c5a27488c131605452fa23, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: dd859fe0e3c5a27488c131605452fa23, type: 3}
-    - {fileID: 21300002, guid: dd859fe0e3c5a27488c131605452fa23, type: 3}
-    - {fileID: 21300004, guid: dd859fe0e3c5a27488c131605452fa23, type: 3}
-    - {fileID: 21300006, guid: dd859fe0e3c5a27488c131605452fa23, type: 3}
-    - {fileID: 21300008, guid: dd859fe0e3c5a27488c131605452fa23, type: 3}
-    - {fileID: 21300010, guid: dd859fe0e3c5a27488c131605452fa23, type: 3}
-    - {fileID: 21300012, guid: dd859fe0e3c5a27488c131605452fa23, type: 3}
-    - {fileID: 21300014, guid: dd859fe0e3c5a27488c131605452fa23, type: 3}
-    - {fileID: 21300016, guid: dd859fe0e3c5a27488c131605452fa23, type: 3}
-    - {fileID: 21300018, guid: dd859fe0e3c5a27488c131605452fa23, type: 3}
-  - imageName: caravel_zebra
-    imagePath: Assets/Sprites/Ships/Caravel/caravel_zebra.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Caravel/caravel_zebra
-    texture2D: {fileID: 2800000, guid: 1a26c4ba2db6e0e4c98794eb99339099, type: 3}
-    sprite: {fileID: 21300000, guid: 1a26c4ba2db6e0e4c98794eb99339099, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 1a26c4ba2db6e0e4c98794eb99339099, type: 3}
-    - {fileID: 21300002, guid: 1a26c4ba2db6e0e4c98794eb99339099, type: 3}
-    - {fileID: 21300004, guid: 1a26c4ba2db6e0e4c98794eb99339099, type: 3}
-    - {fileID: 21300006, guid: 1a26c4ba2db6e0e4c98794eb99339099, type: 3}
-    - {fileID: 21300008, guid: 1a26c4ba2db6e0e4c98794eb99339099, type: 3}
-    - {fileID: 21300010, guid: 1a26c4ba2db6e0e4c98794eb99339099, type: 3}
-    - {fileID: 21300012, guid: 1a26c4ba2db6e0e4c98794eb99339099, type: 3}
-    - {fileID: 21300014, guid: 1a26c4ba2db6e0e4c98794eb99339099, type: 3}
-    - {fileID: 21300016, guid: 1a26c4ba2db6e0e4c98794eb99339099, type: 3}
-    - {fileID: 21300018, guid: 1a26c4ba2db6e0e4c98794eb99339099, type: 3}
+    - {fileID: 21300000, guid: 0ae413fcdfdb6964ba3f8b2b2dfe8898, type: 3}
   - imageName: cargo_box
     imagePath: Assets/Sprites/GUI/cargo_box.png
     imagePathWithoutExtension: Assets/Sprites/GUI/cargo_box
@@ -15174,134 +14500,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 7aa3b22288e80a14e98ff3af3fb06d94, type: 3}
     sprites:
     - {fileID: 21300000, guid: 7aa3b22288e80a14e98ff3af3fb06d94, type: 3}
-  - imageName: carrack_1
-    imagePath: Assets/Sprites/Ships/Carrack/carrack_1.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Carrack/carrack_1
-    texture2D: {fileID: 2800000, guid: 4f015d6141c06bb47bbde1f031ffac78, type: 3}
-    sprite: {fileID: 21300000, guid: 4f015d6141c06bb47bbde1f031ffac78, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 4f015d6141c06bb47bbde1f031ffac78, type: 3}
-    - {fileID: 21300002, guid: 4f015d6141c06bb47bbde1f031ffac78, type: 3}
-    - {fileID: 21300004, guid: 4f015d6141c06bb47bbde1f031ffac78, type: 3}
-    - {fileID: 21300006, guid: 4f015d6141c06bb47bbde1f031ffac78, type: 3}
-    - {fileID: 21300008, guid: 4f015d6141c06bb47bbde1f031ffac78, type: 3}
-    - {fileID: 21300010, guid: 4f015d6141c06bb47bbde1f031ffac78, type: 3}
-    - {fileID: 21300012, guid: 4f015d6141c06bb47bbde1f031ffac78, type: 3}
-    - {fileID: 21300014, guid: 4f015d6141c06bb47bbde1f031ffac78, type: 3}
-    - {fileID: 21300016, guid: 4f015d6141c06bb47bbde1f031ffac78, type: 3}
-    - {fileID: 21300018, guid: 4f015d6141c06bb47bbde1f031ffac78, type: 3}
-  - imageName: carrack_green
-    imagePath: Assets/Sprites/Ships/Carrack/carrack_green.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Carrack/carrack_green
-    texture2D: {fileID: 2800000, guid: 01c7ab76522b1e84d89a6328bcbf273d, type: 3}
-    sprite: {fileID: 21300000, guid: 01c7ab76522b1e84d89a6328bcbf273d, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 01c7ab76522b1e84d89a6328bcbf273d, type: 3}
-    - {fileID: 21300002, guid: 01c7ab76522b1e84d89a6328bcbf273d, type: 3}
-    - {fileID: 21300004, guid: 01c7ab76522b1e84d89a6328bcbf273d, type: 3}
-    - {fileID: 21300006, guid: 01c7ab76522b1e84d89a6328bcbf273d, type: 3}
-    - {fileID: 21300008, guid: 01c7ab76522b1e84d89a6328bcbf273d, type: 3}
-    - {fileID: 21300010, guid: 01c7ab76522b1e84d89a6328bcbf273d, type: 3}
-    - {fileID: 21300012, guid: 01c7ab76522b1e84d89a6328bcbf273d, type: 3}
-    - {fileID: 21300014, guid: 01c7ab76522b1e84d89a6328bcbf273d, type: 3}
-    - {fileID: 21300016, guid: 01c7ab76522b1e84d89a6328bcbf273d, type: 3}
-    - {fileID: 21300018, guid: 01c7ab76522b1e84d89a6328bcbf273d, type: 3}
-  - imageName: carrack_harbringer
-    imagePath: Assets/Sprites/Ships/Carrack/carrack_harbringer.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Carrack/carrack_harbringer
-    texture2D: {fileID: 2800000, guid: 85aa6fed62e69f844a46aca8fe22eb7b, type: 3}
-    sprite: {fileID: 21300000, guid: 85aa6fed62e69f844a46aca8fe22eb7b, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 85aa6fed62e69f844a46aca8fe22eb7b, type: 3}
-    - {fileID: 21300002, guid: 85aa6fed62e69f844a46aca8fe22eb7b, type: 3}
-    - {fileID: 21300004, guid: 85aa6fed62e69f844a46aca8fe22eb7b, type: 3}
-    - {fileID: 21300006, guid: 85aa6fed62e69f844a46aca8fe22eb7b, type: 3}
-    - {fileID: 21300008, guid: 85aa6fed62e69f844a46aca8fe22eb7b, type: 3}
-    - {fileID: 21300010, guid: 85aa6fed62e69f844a46aca8fe22eb7b, type: 3}
-    - {fileID: 21300012, guid: 85aa6fed62e69f844a46aca8fe22eb7b, type: 3}
-    - {fileID: 21300014, guid: 85aa6fed62e69f844a46aca8fe22eb7b, type: 3}
-    - {fileID: 21300016, guid: 85aa6fed62e69f844a46aca8fe22eb7b, type: 3}
-    - {fileID: 21300018, guid: 85aa6fed62e69f844a46aca8fe22eb7b, type: 3}
-  - imageName: carrack_oak
-    imagePath: Assets/Sprites/Ships/Carrack/carrack_oak.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Carrack/carrack_oak
-    texture2D: {fileID: 2800000, guid: 3991425b7a0095445ac98a95850acd3e, type: 3}
-    sprite: {fileID: 21300000, guid: 3991425b7a0095445ac98a95850acd3e, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 3991425b7a0095445ac98a95850acd3e, type: 3}
-    - {fileID: 21300002, guid: 3991425b7a0095445ac98a95850acd3e, type: 3}
-    - {fileID: 21300004, guid: 3991425b7a0095445ac98a95850acd3e, type: 3}
-    - {fileID: 21300006, guid: 3991425b7a0095445ac98a95850acd3e, type: 3}
-    - {fileID: 21300008, guid: 3991425b7a0095445ac98a95850acd3e, type: 3}
-    - {fileID: 21300010, guid: 3991425b7a0095445ac98a95850acd3e, type: 3}
-    - {fileID: 21300012, guid: 3991425b7a0095445ac98a95850acd3e, type: 3}
-    - {fileID: 21300014, guid: 3991425b7a0095445ac98a95850acd3e, type: 3}
-    - {fileID: 21300016, guid: 3991425b7a0095445ac98a95850acd3e, type: 3}
-    - {fileID: 21300018, guid: 3991425b7a0095445ac98a95850acd3e, type: 3}
-  - imageName: carrack_pale
-    imagePath: Assets/Sprites/Ships/Carrack/carrack_pale.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Carrack/carrack_pale
-    texture2D: {fileID: 2800000, guid: 93e778ce79ef84d4a8c7a24f2a686317, type: 3}
-    sprite: {fileID: 21300000, guid: 93e778ce79ef84d4a8c7a24f2a686317, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 93e778ce79ef84d4a8c7a24f2a686317, type: 3}
-    - {fileID: 21300002, guid: 93e778ce79ef84d4a8c7a24f2a686317, type: 3}
-    - {fileID: 21300004, guid: 93e778ce79ef84d4a8c7a24f2a686317, type: 3}
-    - {fileID: 21300006, guid: 93e778ce79ef84d4a8c7a24f2a686317, type: 3}
-    - {fileID: 21300008, guid: 93e778ce79ef84d4a8c7a24f2a686317, type: 3}
-    - {fileID: 21300010, guid: 93e778ce79ef84d4a8c7a24f2a686317, type: 3}
-    - {fileID: 21300012, guid: 93e778ce79ef84d4a8c7a24f2a686317, type: 3}
-    - {fileID: 21300014, guid: 93e778ce79ef84d4a8c7a24f2a686317, type: 3}
-    - {fileID: 21300016, guid: 93e778ce79ef84d4a8c7a24f2a686317, type: 3}
-    - {fileID: 21300018, guid: 93e778ce79ef84d4a8c7a24f2a686317, type: 3}
-  - imageName: carrack_pink
-    imagePath: Assets/Sprites/Ships/Carrack/carrack_pink.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Carrack/carrack_pink
-    texture2D: {fileID: 2800000, guid: 42bb3d4817f79094781f6fb922cea1f0, type: 3}
-    sprite: {fileID: 21300000, guid: 42bb3d4817f79094781f6fb922cea1f0, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 42bb3d4817f79094781f6fb922cea1f0, type: 3}
-    - {fileID: 21300002, guid: 42bb3d4817f79094781f6fb922cea1f0, type: 3}
-    - {fileID: 21300004, guid: 42bb3d4817f79094781f6fb922cea1f0, type: 3}
-    - {fileID: 21300006, guid: 42bb3d4817f79094781f6fb922cea1f0, type: 3}
-    - {fileID: 21300008, guid: 42bb3d4817f79094781f6fb922cea1f0, type: 3}
-    - {fileID: 21300010, guid: 42bb3d4817f79094781f6fb922cea1f0, type: 3}
-    - {fileID: 21300012, guid: 42bb3d4817f79094781f6fb922cea1f0, type: 3}
-    - {fileID: 21300014, guid: 42bb3d4817f79094781f6fb922cea1f0, type: 3}
-    - {fileID: 21300016, guid: 42bb3d4817f79094781f6fb922cea1f0, type: 3}
-    - {fileID: 21300018, guid: 42bb3d4817f79094781f6fb922cea1f0, type: 3}
-  - imageName: carrack_purple
-    imagePath: Assets/Sprites/Ships/Carrack/carrack_purple.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Carrack/carrack_purple
-    texture2D: {fileID: 2800000, guid: de2004466b0298949a85d679dddad2c3, type: 3}
-    sprite: {fileID: 21300000, guid: de2004466b0298949a85d679dddad2c3, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: de2004466b0298949a85d679dddad2c3, type: 3}
-    - {fileID: 21300002, guid: de2004466b0298949a85d679dddad2c3, type: 3}
-    - {fileID: 21300004, guid: de2004466b0298949a85d679dddad2c3, type: 3}
-    - {fileID: 21300006, guid: de2004466b0298949a85d679dddad2c3, type: 3}
-    - {fileID: 21300008, guid: de2004466b0298949a85d679dddad2c3, type: 3}
-    - {fileID: 21300010, guid: de2004466b0298949a85d679dddad2c3, type: 3}
-    - {fileID: 21300012, guid: de2004466b0298949a85d679dddad2c3, type: 3}
-    - {fileID: 21300014, guid: de2004466b0298949a85d679dddad2c3, type: 3}
-    - {fileID: 21300016, guid: de2004466b0298949a85d679dddad2c3, type: 3}
-    - {fileID: 21300018, guid: de2004466b0298949a85d679dddad2c3, type: 3}
-  - imageName: carrack_ripples
-    imagePath: Assets/Sprites/Ships/Carrack/carrack_ripples.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Carrack/carrack_ripples
-    texture2D: {fileID: 2800000, guid: bef1baca3c0df854b98a6622c726f79b, type: 3}
-    sprite: {fileID: 21300000, guid: bef1baca3c0df854b98a6622c726f79b, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: bef1baca3c0df854b98a6622c726f79b, type: 3}
-    - {fileID: 21300002, guid: bef1baca3c0df854b98a6622c726f79b, type: 3}
-    - {fileID: 21300004, guid: bef1baca3c0df854b98a6622c726f79b, type: 3}
-    - {fileID: 21300006, guid: bef1baca3c0df854b98a6622c726f79b, type: 3}
-    - {fileID: 21300008, guid: bef1baca3c0df854b98a6622c726f79b, type: 3}
-    - {fileID: 21300010, guid: bef1baca3c0df854b98a6622c726f79b, type: 3}
-    - {fileID: 21300012, guid: bef1baca3c0df854b98a6622c726f79b, type: 3}
-    - {fileID: 21300014, guid: bef1baca3c0df854b98a6622c726f79b, type: 3}
-    - {fileID: 21300016, guid: bef1baca3c0df854b98a6622c726f79b, type: 3}
-    - {fileID: 21300018, guid: bef1baca3c0df854b98a6622c726f79b, type: 3}
   - imageName: Carrot-Full
     imagePath: Assets/Sprites/Crops/Carrot-Full.png
     imagePathWithoutExtension: Assets/Sprites/Crops/Carrot-Full
@@ -16796,118 +15994,6 @@ MonoBehaviour:
     - {fileID: 21300006, guid: 3822b7acde89c16498330dcecc859160, type: 3}
     - {fileID: 21300008, guid: 3822b7acde89c16498330dcecc859160, type: 3}
     - {fileID: 21300010, guid: 3822b7acde89c16498330dcecc859160, type: 3}
-  - imageName: cutter_1
-    imagePath: Assets/Sprites/Ships/Cutter/cutter_1.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Cutter/cutter_1
-    texture2D: {fileID: 2800000, guid: 38762ea0ceacdbb4b97b3a2324e8c8c2, type: 3}
-    sprite: {fileID: 21300000, guid: 38762ea0ceacdbb4b97b3a2324e8c8c2, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 38762ea0ceacdbb4b97b3a2324e8c8c2, type: 3}
-    - {fileID: 21300002, guid: 38762ea0ceacdbb4b97b3a2324e8c8c2, type: 3}
-    - {fileID: 21300004, guid: 38762ea0ceacdbb4b97b3a2324e8c8c2, type: 3}
-    - {fileID: 21300006, guid: 38762ea0ceacdbb4b97b3a2324e8c8c2, type: 3}
-    - {fileID: 21300008, guid: 38762ea0ceacdbb4b97b3a2324e8c8c2, type: 3}
-    - {fileID: 21300010, guid: 38762ea0ceacdbb4b97b3a2324e8c8c2, type: 3}
-    - {fileID: 21300012, guid: 38762ea0ceacdbb4b97b3a2324e8c8c2, type: 3}
-    - {fileID: 21300014, guid: 38762ea0ceacdbb4b97b3a2324e8c8c2, type: 3}
-    - {fileID: 21300016, guid: 38762ea0ceacdbb4b97b3a2324e8c8c2, type: 3}
-    - {fileID: 21300018, guid: 38762ea0ceacdbb4b97b3a2324e8c8c2, type: 3}
-  - imageName: cutter_dark
-    imagePath: Assets/Sprites/Ships/Cutter/cutter_dark.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Cutter/cutter_dark
-    texture2D: {fileID: 2800000, guid: 136c5cea1e3fa784b86519f25a71e99f, type: 3}
-    sprite: {fileID: 21300000, guid: 136c5cea1e3fa784b86519f25a71e99f, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 136c5cea1e3fa784b86519f25a71e99f, type: 3}
-    - {fileID: 21300002, guid: 136c5cea1e3fa784b86519f25a71e99f, type: 3}
-    - {fileID: 21300004, guid: 136c5cea1e3fa784b86519f25a71e99f, type: 3}
-    - {fileID: 21300006, guid: 136c5cea1e3fa784b86519f25a71e99f, type: 3}
-    - {fileID: 21300008, guid: 136c5cea1e3fa784b86519f25a71e99f, type: 3}
-    - {fileID: 21300010, guid: 136c5cea1e3fa784b86519f25a71e99f, type: 3}
-    - {fileID: 21300012, guid: 136c5cea1e3fa784b86519f25a71e99f, type: 3}
-    - {fileID: 21300014, guid: 136c5cea1e3fa784b86519f25a71e99f, type: 3}
-    - {fileID: 21300016, guid: 136c5cea1e3fa784b86519f25a71e99f, type: 3}
-    - {fileID: 21300018, guid: 136c5cea1e3fa784b86519f25a71e99f, type: 3}
-  - imageName: cutter_dragon
-    imagePath: Assets/Sprites/Ships/Cutter/cutter_dragon.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Cutter/cutter_dragon
-    texture2D: {fileID: 2800000, guid: 541630268f1d1b5469e5beef4dae8741, type: 3}
-    sprite: {fileID: 21300000, guid: 541630268f1d1b5469e5beef4dae8741, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 541630268f1d1b5469e5beef4dae8741, type: 3}
-    - {fileID: 21300002, guid: 541630268f1d1b5469e5beef4dae8741, type: 3}
-    - {fileID: 21300004, guid: 541630268f1d1b5469e5beef4dae8741, type: 3}
-    - {fileID: 21300006, guid: 541630268f1d1b5469e5beef4dae8741, type: 3}
-    - {fileID: 21300008, guid: 541630268f1d1b5469e5beef4dae8741, type: 3}
-    - {fileID: 21300010, guid: 541630268f1d1b5469e5beef4dae8741, type: 3}
-    - {fileID: 21300012, guid: 541630268f1d1b5469e5beef4dae8741, type: 3}
-    - {fileID: 21300014, guid: 541630268f1d1b5469e5beef4dae8741, type: 3}
-    - {fileID: 21300016, guid: 541630268f1d1b5469e5beef4dae8741, type: 3}
-    - {fileID: 21300018, guid: 541630268f1d1b5469e5beef4dae8741, type: 3}
-  - imageName: cutter_orange
-    imagePath: Assets/Sprites/Ships/Cutter/cutter_orange.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Cutter/cutter_orange
-    texture2D: {fileID: 2800000, guid: a63bbaa4245f0c64784c8459d4d303f6, type: 3}
-    sprite: {fileID: 21300000, guid: a63bbaa4245f0c64784c8459d4d303f6, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: a63bbaa4245f0c64784c8459d4d303f6, type: 3}
-    - {fileID: 21300002, guid: a63bbaa4245f0c64784c8459d4d303f6, type: 3}
-    - {fileID: 21300004, guid: a63bbaa4245f0c64784c8459d4d303f6, type: 3}
-    - {fileID: 21300006, guid: a63bbaa4245f0c64784c8459d4d303f6, type: 3}
-    - {fileID: 21300008, guid: a63bbaa4245f0c64784c8459d4d303f6, type: 3}
-    - {fileID: 21300010, guid: a63bbaa4245f0c64784c8459d4d303f6, type: 3}
-    - {fileID: 21300012, guid: a63bbaa4245f0c64784c8459d4d303f6, type: 3}
-    - {fileID: 21300014, guid: a63bbaa4245f0c64784c8459d4d303f6, type: 3}
-    - {fileID: 21300016, guid: a63bbaa4245f0c64784c8459d4d303f6, type: 3}
-    - {fileID: 21300018, guid: a63bbaa4245f0c64784c8459d4d303f6, type: 3}
-  - imageName: cutter_purple
-    imagePath: Assets/Sprites/Ships/Cutter/cutter_purple.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Cutter/cutter_purple
-    texture2D: {fileID: 2800000, guid: 0ad975a162ce79f46b18ac975f974d29, type: 3}
-    sprite: {fileID: 21300000, guid: 0ad975a162ce79f46b18ac975f974d29, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 0ad975a162ce79f46b18ac975f974d29, type: 3}
-    - {fileID: 21300002, guid: 0ad975a162ce79f46b18ac975f974d29, type: 3}
-    - {fileID: 21300004, guid: 0ad975a162ce79f46b18ac975f974d29, type: 3}
-    - {fileID: 21300006, guid: 0ad975a162ce79f46b18ac975f974d29, type: 3}
-    - {fileID: 21300008, guid: 0ad975a162ce79f46b18ac975f974d29, type: 3}
-    - {fileID: 21300010, guid: 0ad975a162ce79f46b18ac975f974d29, type: 3}
-    - {fileID: 21300012, guid: 0ad975a162ce79f46b18ac975f974d29, type: 3}
-    - {fileID: 21300014, guid: 0ad975a162ce79f46b18ac975f974d29, type: 3}
-    - {fileID: 21300016, guid: 0ad975a162ce79f46b18ac975f974d29, type: 3}
-    - {fileID: 21300018, guid: 0ad975a162ce79f46b18ac975f974d29, type: 3}
-  - imageName: cutter_ripples
-    imagePath: Assets/Sprites/Ships/Cutter/cutter_ripples.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Cutter/cutter_ripples
-    texture2D: {fileID: 2800000, guid: 034d46d61af7ebb4097109972d570af4, type: 3}
-    sprite: {fileID: 21300000, guid: 034d46d61af7ebb4097109972d570af4, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 034d46d61af7ebb4097109972d570af4, type: 3}
-    - {fileID: 21300002, guid: 034d46d61af7ebb4097109972d570af4, type: 3}
-    - {fileID: 21300004, guid: 034d46d61af7ebb4097109972d570af4, type: 3}
-    - {fileID: 21300006, guid: 034d46d61af7ebb4097109972d570af4, type: 3}
-    - {fileID: 21300008, guid: 034d46d61af7ebb4097109972d570af4, type: 3}
-    - {fileID: 21300010, guid: 034d46d61af7ebb4097109972d570af4, type: 3}
-    - {fileID: 21300012, guid: 034d46d61af7ebb4097109972d570af4, type: 3}
-    - {fileID: 21300014, guid: 034d46d61af7ebb4097109972d570af4, type: 3}
-    - {fileID: 21300016, guid: 034d46d61af7ebb4097109972d570af4, type: 3}
-    - {fileID: 21300018, guid: 034d46d61af7ebb4097109972d570af4, type: 3}
-  - imageName: cutter_toxic
-    imagePath: Assets/Sprites/Ships/Cutter/cutter_toxic.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Cutter/cutter_toxic
-    texture2D: {fileID: 2800000, guid: 1f3f726178af05d48989e9287673b306, type: 3}
-    sprite: {fileID: 21300000, guid: 1f3f726178af05d48989e9287673b306, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 1f3f726178af05d48989e9287673b306, type: 3}
-    - {fileID: 21300002, guid: 1f3f726178af05d48989e9287673b306, type: 3}
-    - {fileID: 21300004, guid: 1f3f726178af05d48989e9287673b306, type: 3}
-    - {fileID: 21300006, guid: 1f3f726178af05d48989e9287673b306, type: 3}
-    - {fileID: 21300008, guid: 1f3f726178af05d48989e9287673b306, type: 3}
-    - {fileID: 21300010, guid: 1f3f726178af05d48989e9287673b306, type: 3}
-    - {fileID: 21300012, guid: 1f3f726178af05d48989e9287673b306, type: 3}
-    - {fileID: 21300014, guid: 1f3f726178af05d48989e9287673b306, type: 3}
-    - {fileID: 21300016, guid: 1f3f726178af05d48989e9287673b306, type: 3}
-    - {fileID: 21300018, guid: 1f3f726178af05d48989e9287673b306, type: 3}
   - imageName: day_tab_1x
     imagePath: Assets/Sprites/GUI/Leader Boards/day_tab_1x.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Leader Boards/day_tab_1x
@@ -17463,13 +16549,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 3c30b6120d8a04e438f1f10fb1cc2919, type: 3}
     sprites:
     - {fileID: 21300000, guid: 3c30b6120d8a04e438f1f10fb1cc2919, type: 3}
-  - imageName: eyes_text
-    imagePath: Assets/Sprites/GUI/eyes_text.png
-    imagePathWithoutExtension: Assets/Sprites/GUI/eyes_text
-    texture2D: {fileID: 2800000, guid: 7c6e3f75ba8ae6446a661ae4ca8ba583, type: 3}
-    sprite: {fileID: 21300000, guid: 7c6e3f75ba8ae6446a661ae4ca8ba583, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 7c6e3f75ba8ae6446a661ae4ca8ba583, type: 3}
   - imageName: element_air
     imagePath: Assets/Sprites/GUI/Inventory/element_air.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Inventory/element_air
@@ -17699,6 +16778,13 @@ MonoBehaviour:
     - {fileID: 21300002, guid: 800feb9efc137a54c8046e3253707a27, type: 3}
     - {fileID: 21300004, guid: 800feb9efc137a54c8046e3253707a27, type: 3}
     - {fileID: 21300006, guid: 800feb9efc137a54c8046e3253707a27, type: 3}
+  - imageName: eyes_text
+    imagePath: Assets/Sprites/GUI/eyes_text.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/eyes_text
+    texture2D: {fileID: 2800000, guid: 7c6e3f75ba8ae6446a661ae4ca8ba583, type: 3}
+    sprite: {fileID: 21300000, guid: 7c6e3f75ba8ae6446a661ae4ca8ba583, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 7c6e3f75ba8ae6446a661ae4ca8ba583, type: 3}
   - imageName: faction_builders
     imagePath: Assets/Sprites/Icons/Factions/faction_builders.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Factions/faction_builders
@@ -17923,27 +17009,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 6690c9b54dc1c3c4381033e94b648271, type: 3}
     sprites:
     - {fileID: 21300000, guid: 6690c9b54dc1c3c4381033e94b648271, type: 3}
-  - imageName: fancy_yellow_button
-    imagePath: Assets/Sprites/GUI/fancy_yellow_button.png
-    imagePathWithoutExtension: Assets/Sprites/GUI/fancy_yellow_button
-    texture2D: {fileID: 2800000, guid: f39fb1dac00fb8e48a42550e617a2566, type: 3}
-    sprite: {fileID: 21300000, guid: f39fb1dac00fb8e48a42550e617a2566, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: f39fb1dac00fb8e48a42550e617a2566, type: 3}
-  - imageName: fancy_yellow_button_small
-    imagePath: Assets/Sprites/GUI/fancy_yellow_button_small.png
-    imagePathWithoutExtension: Assets/Sprites/GUI/fancy_yellow_button_small
-    texture2D: {fileID: 2800000, guid: 0add63a639515ca45999ee6375d3438b, type: 3}
-    sprite: {fileID: 21300000, guid: 0add63a639515ca45999ee6375d3438b, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 0add63a639515ca45999ee6375d3438b, type: 3}
-  - imageName: fancy_yellow_button_small_1x
-    imagePath: Assets/Sprites/GUI/fancy_yellow_button_small_1x.png
-    imagePathWithoutExtension: Assets/Sprites/GUI/fancy_yellow_button_small_1x
-    texture2D: {fileID: 2800000, guid: a859a145223ba114bb659337ab84d9f1, type: 3}
-    sprite: {fileID: 21300000, guid: a859a145223ba114bb659337ab84d9f1, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: a859a145223ba114bb659337ab84d9f1, type: 3}
   - imageName: fancy_panel_box
     imagePath: Assets/Sprites/GUI/fancy_panel_box.png
     imagePathWithoutExtension: Assets/Sprites/GUI/fancy_panel_box
@@ -17979,6 +17044,27 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 52f7ef60aef6ad045b10eddba7c94df8, type: 3}
     sprites:
     - {fileID: 21300000, guid: 52f7ef60aef6ad045b10eddba7c94df8, type: 3}
+  - imageName: fancy_yellow_button
+    imagePath: Assets/Sprites/GUI/fancy_yellow_button.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/fancy_yellow_button
+    texture2D: {fileID: 2800000, guid: f39fb1dac00fb8e48a42550e617a2566, type: 3}
+    sprite: {fileID: 21300000, guid: f39fb1dac00fb8e48a42550e617a2566, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: f39fb1dac00fb8e48a42550e617a2566, type: 3}
+  - imageName: fancy_yellow_button_small
+    imagePath: Assets/Sprites/GUI/fancy_yellow_button_small.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/fancy_yellow_button_small
+    texture2D: {fileID: 2800000, guid: 0add63a639515ca45999ee6375d3438b, type: 3}
+    sprite: {fileID: 21300000, guid: 0add63a639515ca45999ee6375d3438b, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 0add63a639515ca45999ee6375d3438b, type: 3}
+  - imageName: fancy_yellow_button_small_1x
+    imagePath: Assets/Sprites/GUI/fancy_yellow_button_small_1x.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/fancy_yellow_button_small_1x
+    texture2D: {fileID: 2800000, guid: a859a145223ba114bb659337ab84d9f1, type: 3}
+    sprite: {fileID: 21300000, guid: a859a145223ba114bb659337ab84d9f1, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: a859a145223ba114bb659337ab84d9f1, type: 3}
   - imageName: Farm
     imagePath: Assets/Sprites/Minimaps/Farm.png
     imagePathWithoutExtension: Assets/Sprites/Minimaps/Farm
@@ -21906,102 +20992,6 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 19e5a4fd8cb4e434c94dbd30f3cda342, type: 3}
     - {fileID: 21300002, guid: 19e5a4fd8cb4e434c94dbd30f3cda342, type: 3}
     - {fileID: 21300004, guid: 19e5a4fd8cb4e434c94dbd30f3cda342, type: 3}
-  - imageName: galleon_1
-    imagePath: Assets/Sprites/Ships/Galleon/galleon_1.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Galleon/galleon_1
-    texture2D: {fileID: 2800000, guid: b78a69499b80d4548866963a2b6ded29, type: 3}
-    sprite: {fileID: 21300020, guid: b78a69499b80d4548866963a2b6ded29, type: 3}
-    sprites:
-    - {fileID: 21300020, guid: b78a69499b80d4548866963a2b6ded29, type: 3}
-    - {fileID: 21300022, guid: b78a69499b80d4548866963a2b6ded29, type: 3}
-    - {fileID: 21300024, guid: b78a69499b80d4548866963a2b6ded29, type: 3}
-    - {fileID: 21300026, guid: b78a69499b80d4548866963a2b6ded29, type: 3}
-    - {fileID: 21300028, guid: b78a69499b80d4548866963a2b6ded29, type: 3}
-    - {fileID: 21300030, guid: b78a69499b80d4548866963a2b6ded29, type: 3}
-    - {fileID: 21300032, guid: b78a69499b80d4548866963a2b6ded29, type: 3}
-    - {fileID: 21300034, guid: b78a69499b80d4548866963a2b6ded29, type: 3}
-    - {fileID: 21300036, guid: b78a69499b80d4548866963a2b6ded29, type: 3}
-    - {fileID: 21300038, guid: b78a69499b80d4548866963a2b6ded29, type: 3}
-  - imageName: galleon_armored
-    imagePath: Assets/Sprites/Ships/Galleon/galleon_armored.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Galleon/galleon_armored
-    texture2D: {fileID: 2800000, guid: e01f4d8d513e5644586e9a1dafe6498f, type: 3}
-    sprite: {fileID: 21300000, guid: e01f4d8d513e5644586e9a1dafe6498f, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: e01f4d8d513e5644586e9a1dafe6498f, type: 3}
-    - {fileID: 21300002, guid: e01f4d8d513e5644586e9a1dafe6498f, type: 3}
-    - {fileID: 21300004, guid: e01f4d8d513e5644586e9a1dafe6498f, type: 3}
-    - {fileID: 21300006, guid: e01f4d8d513e5644586e9a1dafe6498f, type: 3}
-    - {fileID: 21300008, guid: e01f4d8d513e5644586e9a1dafe6498f, type: 3}
-    - {fileID: 21300010, guid: e01f4d8d513e5644586e9a1dafe6498f, type: 3}
-    - {fileID: 21300012, guid: e01f4d8d513e5644586e9a1dafe6498f, type: 3}
-    - {fileID: 21300014, guid: e01f4d8d513e5644586e9a1dafe6498f, type: 3}
-    - {fileID: 21300016, guid: e01f4d8d513e5644586e9a1dafe6498f, type: 3}
-    - {fileID: 21300018, guid: e01f4d8d513e5644586e9a1dafe6498f, type: 3}
-  - imageName: galleon_dark
-    imagePath: Assets/Sprites/Ships/Galleon/galleon_dark.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Galleon/galleon_dark
-    texture2D: {fileID: 2800000, guid: f20144134040bfe4a82efac52b599a7b, type: 3}
-    sprite: {fileID: 21300000, guid: f20144134040bfe4a82efac52b599a7b, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: f20144134040bfe4a82efac52b599a7b, type: 3}
-    - {fileID: 21300002, guid: f20144134040bfe4a82efac52b599a7b, type: 3}
-    - {fileID: 21300004, guid: f20144134040bfe4a82efac52b599a7b, type: 3}
-    - {fileID: 21300006, guid: f20144134040bfe4a82efac52b599a7b, type: 3}
-    - {fileID: 21300008, guid: f20144134040bfe4a82efac52b599a7b, type: 3}
-    - {fileID: 21300010, guid: f20144134040bfe4a82efac52b599a7b, type: 3}
-    - {fileID: 21300012, guid: f20144134040bfe4a82efac52b599a7b, type: 3}
-    - {fileID: 21300014, guid: f20144134040bfe4a82efac52b599a7b, type: 3}
-    - {fileID: 21300016, guid: f20144134040bfe4a82efac52b599a7b, type: 3}
-    - {fileID: 21300018, guid: f20144134040bfe4a82efac52b599a7b, type: 3}
-  - imageName: galleon_frost
-    imagePath: Assets/Sprites/Ships/Galleon/galleon_frost.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Galleon/galleon_frost
-    texture2D: {fileID: 2800000, guid: a898480a2eb4ba946b89a97d42afd73c, type: 3}
-    sprite: {fileID: 21300000, guid: a898480a2eb4ba946b89a97d42afd73c, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: a898480a2eb4ba946b89a97d42afd73c, type: 3}
-    - {fileID: 21300002, guid: a898480a2eb4ba946b89a97d42afd73c, type: 3}
-    - {fileID: 21300004, guid: a898480a2eb4ba946b89a97d42afd73c, type: 3}
-    - {fileID: 21300006, guid: a898480a2eb4ba946b89a97d42afd73c, type: 3}
-    - {fileID: 21300008, guid: a898480a2eb4ba946b89a97d42afd73c, type: 3}
-    - {fileID: 21300010, guid: a898480a2eb4ba946b89a97d42afd73c, type: 3}
-    - {fileID: 21300012, guid: a898480a2eb4ba946b89a97d42afd73c, type: 3}
-    - {fileID: 21300014, guid: a898480a2eb4ba946b89a97d42afd73c, type: 3}
-    - {fileID: 21300016, guid: a898480a2eb4ba946b89a97d42afd73c, type: 3}
-    - {fileID: 21300018, guid: a898480a2eb4ba946b89a97d42afd73c, type: 3}
-  - imageName: galleon_light
-    imagePath: Assets/Sprites/Ships/Galleon/galleon_light.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Galleon/galleon_light
-    texture2D: {fileID: 2800000, guid: 56c5678db3af0fa46aa3bef01c220ee9, type: 3}
-    sprite: {fileID: 21300000, guid: 56c5678db3af0fa46aa3bef01c220ee9, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 56c5678db3af0fa46aa3bef01c220ee9, type: 3}
-    - {fileID: 21300002, guid: 56c5678db3af0fa46aa3bef01c220ee9, type: 3}
-    - {fileID: 21300004, guid: 56c5678db3af0fa46aa3bef01c220ee9, type: 3}
-    - {fileID: 21300006, guid: 56c5678db3af0fa46aa3bef01c220ee9, type: 3}
-    - {fileID: 21300008, guid: 56c5678db3af0fa46aa3bef01c220ee9, type: 3}
-    - {fileID: 21300010, guid: 56c5678db3af0fa46aa3bef01c220ee9, type: 3}
-    - {fileID: 21300012, guid: 56c5678db3af0fa46aa3bef01c220ee9, type: 3}
-    - {fileID: 21300014, guid: 56c5678db3af0fa46aa3bef01c220ee9, type: 3}
-    - {fileID: 21300016, guid: 56c5678db3af0fa46aa3bef01c220ee9, type: 3}
-    - {fileID: 21300018, guid: 56c5678db3af0fa46aa3bef01c220ee9, type: 3}
-  - imageName: galleon_ripples
-    imagePath: Assets/Sprites/Ships/Galleon/galleon_ripples.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Galleon/galleon_ripples
-    texture2D: {fileID: 2800000, guid: 9a43d63fae847514d8c35f71ccb22bce, type: 3}
-    sprite: {fileID: 21300000, guid: 9a43d63fae847514d8c35f71ccb22bce, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 9a43d63fae847514d8c35f71ccb22bce, type: 3}
-    - {fileID: 21300002, guid: 9a43d63fae847514d8c35f71ccb22bce, type: 3}
-    - {fileID: 21300004, guid: 9a43d63fae847514d8c35f71ccb22bce, type: 3}
-    - {fileID: 21300006, guid: 9a43d63fae847514d8c35f71ccb22bce, type: 3}
-    - {fileID: 21300008, guid: 9a43d63fae847514d8c35f71ccb22bce, type: 3}
-    - {fileID: 21300010, guid: 9a43d63fae847514d8c35f71ccb22bce, type: 3}
-    - {fileID: 21300012, guid: 9a43d63fae847514d8c35f71ccb22bce, type: 3}
-    - {fileID: 21300014, guid: 9a43d63fae847514d8c35f71ccb22bce, type: 3}
-    - {fileID: 21300016, guid: 9a43d63fae847514d8c35f71ccb22bce, type: 3}
-    - {fileID: 21300018, guid: 9a43d63fae847514d8c35f71ccb22bce, type: 3}
   - imageName: gardener_1
     imagePath: Assets/Sprites/NPCs/Bodies/Gardener/gardener_1.png
     imagePathWithoutExtension: Assets/Sprites/NPCs/Bodies/Gardener/gardener_1
@@ -22576,13 +21566,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 95a9f6f10a8d59c4eba19c96e2fba43e, type: 3}
     sprites:
     - {fileID: 21300000, guid: 95a9f6f10a8d59c4eba19c96e2fba43e, type: 3}
-  - imageName: group_frame_inner_yellow
-    imagePath: Assets/Sprites/GUI/Voyage Groups/group_frame_inner_yellow.png
-    imagePathWithoutExtension: Assets/Sprites/GUI/Voyage Groups/group_frame_inner_yellow
-    texture2D: {fileID: 2800000, guid: a2c6f4727b92af64a9a27c8dd69b4cdc, type: 3}
-    sprite: {fileID: 21300000, guid: a2c6f4727b92af64a9a27c8dd69b4cdc, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: a2c6f4727b92af64a9a27c8dd69b4cdc, type: 3}
   - imageName: group_frame_inner_orange
     imagePath: Assets/Sprites/GUI/Voyage Groups/group_frame_inner_orange.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Voyage Groups/group_frame_inner_orange
@@ -22618,6 +21601,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: aa9f5169fb5ca7141a7849b424bf19ad, type: 3}
     sprites:
     - {fileID: 21300000, guid: aa9f5169fb5ca7141a7849b424bf19ad, type: 3}
+  - imageName: group_frame_inner_yellow
+    imagePath: Assets/Sprites/GUI/Voyage Groups/group_frame_inner_yellow.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Voyage Groups/group_frame_inner_yellow
+    texture2D: {fileID: 2800000, guid: a2c6f4727b92af64a9a27c8dd69b4cdc, type: 3}
+    sprite: {fileID: 21300000, guid: a2c6f4727b92af64a9a27c8dd69b4cdc, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: a2c6f4727b92af64a9a27c8dd69b4cdc, type: 3}
   - imageName: group_frame_power_bar
     imagePath: Assets/Sprites/GUI/Voyage Groups/group_frame_power_bar.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Voyage Groups/group_frame_power_bar
@@ -23896,20 +22886,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: a2eacec6344c65d41814faf5beb51c14, type: 3}
     sprites:
     - {fileID: 21300000, guid: a2eacec6344c65d41814faf5beb51c14, type: 3}
-  - imageName: ingredient_mycelium_fiber
-    imagePath: Assets/Sprites/Icons/CraftingIngredients/NoBorder/ingredient_mycelium_fiber.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/CraftingIngredients/NoBorder/ingredient_mycelium_fiber
-    texture2D: {fileID: 2800000, guid: 33ab8c4c8badcad4abf51e0c312ab87f, type: 3}
-    sprite: {fileID: 21300000, guid: 33ab8c4c8badcad4abf51e0c312ab87f, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 33ab8c4c8badcad4abf51e0c312ab87f, type: 3}
-  - imageName: ingredient_mycelium_fiber
-    imagePath: Assets/Sprites/Icons/CraftingIngredients/ingredient_mycelium_fiber.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/CraftingIngredients/ingredient_mycelium_fiber
-    texture2D: {fileID: 2800000, guid: 3db97b9c7ebce9946a117fcb6df3f159, type: 3}
-    sprite: {fileID: 21300000, guid: 3db97b9c7ebce9946a117fcb6df3f159, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 3db97b9c7ebce9946a117fcb6df3f159, type: 3}
   - imageName: ingredient_molted_skin
     imagePath: Assets/Sprites/Icons/CraftingIngredients/ingredient_molted_skin.png
     imagePathWithoutExtension: Assets/Sprites/Icons/CraftingIngredients/ingredient_molted_skin
@@ -23924,6 +22900,20 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 87b084dbb36a0114d861559ca2550c46, type: 3}
     sprites:
     - {fileID: 21300000, guid: 87b084dbb36a0114d861559ca2550c46, type: 3}
+  - imageName: ingredient_mycelium_fiber
+    imagePath: Assets/Sprites/Icons/CraftingIngredients/NoBorder/ingredient_mycelium_fiber.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/CraftingIngredients/NoBorder/ingredient_mycelium_fiber
+    texture2D: {fileID: 2800000, guid: 33ab8c4c8badcad4abf51e0c312ab87f, type: 3}
+    sprite: {fileID: 21300000, guid: 33ab8c4c8badcad4abf51e0c312ab87f, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 33ab8c4c8badcad4abf51e0c312ab87f, type: 3}
+  - imageName: ingredient_mycelium_fiber
+    imagePath: Assets/Sprites/Icons/CraftingIngredients/ingredient_mycelium_fiber.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/CraftingIngredients/ingredient_mycelium_fiber
+    texture2D: {fileID: 2800000, guid: 3db97b9c7ebce9946a117fcb6df3f159, type: 3}
+    sprite: {fileID: 21300000, guid: 3db97b9c7ebce9946a117fcb6df3f159, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 3db97b9c7ebce9946a117fcb6df3f159, type: 3}
   - imageName: ingredient_onyx
     imagePath: Assets/Sprites/Icons/CraftingIngredients/ingredient_onyx.png
     imagePathWithoutExtension: Assets/Sprites/Icons/CraftingIngredients/ingredient_onyx
@@ -24439,13 +23429,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: da67e3c3ebc79394ea2324c3506cc27d, type: 3}
     sprites:
     - {fileID: 21300000, guid: da67e3c3ebc79394ea2324c3506cc27d, type: 3}
-  - imageName: yellow_button
-    imagePath: Assets/Sprites/GUI/Chat/yellow_button.png
-    imagePathWithoutExtension: Assets/Sprites/GUI/Chat/yellow_button
-    texture2D: {fileID: 2800000, guid: 81e7050871ae5cb4fa9796804d06c6c8, type: 3}
-    sprite: {fileID: 21300000, guid: 81e7050871ae5cb4fa9796804d06c6c8, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 81e7050871ae5cb4fa9796804d06c6c8, type: 3}
   - imageName: lance_1
     imagePath: Assets/Sprites/Icons/Weapons/Lance/lance_1.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Weapons/Lance/lance_1
@@ -27986,13 +26969,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 16185a91e11c6154bb45bdce68a467b5, type: 3}
     sprites:
     - {fileID: 21300000, guid: 16185a91e11c6154bb45bdce68a467b5, type: 3}
-  - imageName: mm_yellow_x
-    imagePath: Assets/Sprites/Minimap/mm_yellow_x.png
-    imagePathWithoutExtension: Assets/Sprites/Minimap/mm_yellow_x
-    texture2D: {fileID: 2800000, guid: 826f2bce9513feb44a85aaa61d129895, type: 3}
-    sprite: {fileID: 21300000, guid: 826f2bce9513feb44a85aaa61d129895, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 826f2bce9513feb44a85aaa61d129895, type: 3}
   - imageName: mm_orange_square
     imagePath: Assets/Sprites/Minimap/mm_orange_square.png
     imagePathWithoutExtension: Assets/Sprites/Minimap/mm_orange_square
@@ -28000,6 +26976,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 9cf30c7d3647c1d499d877d25387c363, type: 3}
     sprites:
     - {fileID: 21300000, guid: 9cf30c7d3647c1d499d877d25387c363, type: 3}
+  - imageName: mm_yellow_x
+    imagePath: Assets/Sprites/Minimap/mm_yellow_x.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/mm_yellow_x
+    texture2D: {fileID: 2800000, guid: 826f2bce9513feb44a85aaa61d129895, type: 3}
+    sprite: {fileID: 21300000, guid: 826f2bce9513feb44a85aaa61d129895, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 826f2bce9513feb44a85aaa61d129895, type: 3}
   - imageName: monocle_1
     imagePath: Assets/Sprites/Faces/monocle_1.png
     imagePathWithoutExtension: Assets/Sprites/Faces/monocle_1
@@ -28318,358 +27301,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 5effd6bb0d6a51f4dbfe42028e55e64e, type: 3}
     sprites:
     - {fileID: 21300000, guid: 5effd6bb0d6a51f4dbfe42028e55e64e, type: 3}
-  - imageName: nao_1
-    imagePath: Assets/Sprites/Ships/Nao/nao_1.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Nao/nao_1
-    texture2D: {fileID: 2800000, guid: c33b33c7404b20c42ab646439d98823b, type: 3}
-    sprite: {fileID: 21300020, guid: c33b33c7404b20c42ab646439d98823b, type: 3}
-    sprites:
-    - {fileID: 21300020, guid: c33b33c7404b20c42ab646439d98823b, type: 3}
-    - {fileID: 21300022, guid: c33b33c7404b20c42ab646439d98823b, type: 3}
-    - {fileID: 21300024, guid: c33b33c7404b20c42ab646439d98823b, type: 3}
-    - {fileID: 21300026, guid: c33b33c7404b20c42ab646439d98823b, type: 3}
-    - {fileID: 21300028, guid: c33b33c7404b20c42ab646439d98823b, type: 3}
-    - {fileID: 21300030, guid: c33b33c7404b20c42ab646439d98823b, type: 3}
-    - {fileID: 21300032, guid: c33b33c7404b20c42ab646439d98823b, type: 3}
-    - {fileID: 21300034, guid: c33b33c7404b20c42ab646439d98823b, type: 3}
-    - {fileID: 21300036, guid: c33b33c7404b20c42ab646439d98823b, type: 3}
-    - {fileID: 21300038, guid: c33b33c7404b20c42ab646439d98823b, type: 3}
-  - imageName: nao_armored
-    imagePath: Assets/Sprites/Ships/Nao/nao_armored.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Nao/nao_armored
-    texture2D: {fileID: 2800000, guid: d374399b479d91b41993bb3dec709546, type: 3}
-    sprite: {fileID: 21300000, guid: d374399b479d91b41993bb3dec709546, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: d374399b479d91b41993bb3dec709546, type: 3}
-    - {fileID: 21300002, guid: d374399b479d91b41993bb3dec709546, type: 3}
-    - {fileID: 21300004, guid: d374399b479d91b41993bb3dec709546, type: 3}
-    - {fileID: 21300006, guid: d374399b479d91b41993bb3dec709546, type: 3}
-    - {fileID: 21300008, guid: d374399b479d91b41993bb3dec709546, type: 3}
-    - {fileID: 21300010, guid: d374399b479d91b41993bb3dec709546, type: 3}
-    - {fileID: 21300012, guid: d374399b479d91b41993bb3dec709546, type: 3}
-    - {fileID: 21300014, guid: d374399b479d91b41993bb3dec709546, type: 3}
-    - {fileID: 21300016, guid: d374399b479d91b41993bb3dec709546, type: 3}
-    - {fileID: 21300018, guid: d374399b479d91b41993bb3dec709546, type: 3}
-  - imageName: nao_crimson
-    imagePath: Assets/Sprites/Ships/Nao/nao_crimson.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Nao/nao_crimson
-    texture2D: {fileID: 2800000, guid: 530ac7d19a468f94b9cb45f60f5c3295, type: 3}
-    sprite: {fileID: 21300000, guid: 530ac7d19a468f94b9cb45f60f5c3295, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 530ac7d19a468f94b9cb45f60f5c3295, type: 3}
-    - {fileID: 21300002, guid: 530ac7d19a468f94b9cb45f60f5c3295, type: 3}
-    - {fileID: 21300004, guid: 530ac7d19a468f94b9cb45f60f5c3295, type: 3}
-    - {fileID: 21300006, guid: 530ac7d19a468f94b9cb45f60f5c3295, type: 3}
-    - {fileID: 21300008, guid: 530ac7d19a468f94b9cb45f60f5c3295, type: 3}
-    - {fileID: 21300010, guid: 530ac7d19a468f94b9cb45f60f5c3295, type: 3}
-    - {fileID: 21300012, guid: 530ac7d19a468f94b9cb45f60f5c3295, type: 3}
-    - {fileID: 21300014, guid: 530ac7d19a468f94b9cb45f60f5c3295, type: 3}
-    - {fileID: 21300016, guid: 530ac7d19a468f94b9cb45f60f5c3295, type: 3}
-    - {fileID: 21300018, guid: 530ac7d19a468f94b9cb45f60f5c3295, type: 3}
-  - imageName: nao_dragon
-    imagePath: Assets/Sprites/Ships/Nao/nao_dragon.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Nao/nao_dragon
-    texture2D: {fileID: 2800000, guid: ede7400253f9ad549a737328a46b15ae, type: 3}
-    sprite: {fileID: 21300000, guid: ede7400253f9ad549a737328a46b15ae, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: ede7400253f9ad549a737328a46b15ae, type: 3}
-    - {fileID: 21300002, guid: ede7400253f9ad549a737328a46b15ae, type: 3}
-    - {fileID: 21300004, guid: ede7400253f9ad549a737328a46b15ae, type: 3}
-    - {fileID: 21300006, guid: ede7400253f9ad549a737328a46b15ae, type: 3}
-    - {fileID: 21300008, guid: ede7400253f9ad549a737328a46b15ae, type: 3}
-    - {fileID: 21300010, guid: ede7400253f9ad549a737328a46b15ae, type: 3}
-    - {fileID: 21300012, guid: ede7400253f9ad549a737328a46b15ae, type: 3}
-    - {fileID: 21300014, guid: ede7400253f9ad549a737328a46b15ae, type: 3}
-    - {fileID: 21300016, guid: ede7400253f9ad549a737328a46b15ae, type: 3}
-    - {fileID: 21300018, guid: ede7400253f9ad549a737328a46b15ae, type: 3}
-  - imageName: nao_emerald
-    imagePath: Assets/Sprites/Ships/Nao/nao_emerald.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Nao/nao_emerald
-    texture2D: {fileID: 2800000, guid: fdbd5bb27cc6f8840b002837fd498b0b, type: 3}
-    sprite: {fileID: 21300000, guid: fdbd5bb27cc6f8840b002837fd498b0b, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: fdbd5bb27cc6f8840b002837fd498b0b, type: 3}
-    - {fileID: 21300002, guid: fdbd5bb27cc6f8840b002837fd498b0b, type: 3}
-    - {fileID: 21300004, guid: fdbd5bb27cc6f8840b002837fd498b0b, type: 3}
-    - {fileID: 21300006, guid: fdbd5bb27cc6f8840b002837fd498b0b, type: 3}
-    - {fileID: 21300008, guid: fdbd5bb27cc6f8840b002837fd498b0b, type: 3}
-    - {fileID: 21300010, guid: fdbd5bb27cc6f8840b002837fd498b0b, type: 3}
-    - {fileID: 21300012, guid: fdbd5bb27cc6f8840b002837fd498b0b, type: 3}
-    - {fileID: 21300014, guid: fdbd5bb27cc6f8840b002837fd498b0b, type: 3}
-    - {fileID: 21300016, guid: fdbd5bb27cc6f8840b002837fd498b0b, type: 3}
-    - {fileID: 21300018, guid: fdbd5bb27cc6f8840b002837fd498b0b, type: 3}
-  - imageName: nao_fancy
-    imagePath: Assets/Sprites/Ships/Nao/nao_fancy.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Nao/nao_fancy
-    texture2D: {fileID: 2800000, guid: 4e115fe8fab978b45b530c6c3d86e41b, type: 3}
-    sprite: {fileID: 21300000, guid: 4e115fe8fab978b45b530c6c3d86e41b, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 4e115fe8fab978b45b530c6c3d86e41b, type: 3}
-    - {fileID: 21300002, guid: 4e115fe8fab978b45b530c6c3d86e41b, type: 3}
-    - {fileID: 21300004, guid: 4e115fe8fab978b45b530c6c3d86e41b, type: 3}
-    - {fileID: 21300006, guid: 4e115fe8fab978b45b530c6c3d86e41b, type: 3}
-    - {fileID: 21300008, guid: 4e115fe8fab978b45b530c6c3d86e41b, type: 3}
-    - {fileID: 21300010, guid: 4e115fe8fab978b45b530c6c3d86e41b, type: 3}
-    - {fileID: 21300012, guid: 4e115fe8fab978b45b530c6c3d86e41b, type: 3}
-    - {fileID: 21300014, guid: 4e115fe8fab978b45b530c6c3d86e41b, type: 3}
-    - {fileID: 21300016, guid: 4e115fe8fab978b45b530c6c3d86e41b, type: 3}
-    - {fileID: 21300018, guid: 4e115fe8fab978b45b530c6c3d86e41b, type: 3}
-  - imageName: nao_green
-    imagePath: Assets/Sprites/Ships/Nao/nao_green.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Nao/nao_green
-    texture2D: {fileID: 2800000, guid: 0933bf67f3a471848b424011a55d5e95, type: 3}
-    sprite: {fileID: 21300000, guid: 0933bf67f3a471848b424011a55d5e95, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 0933bf67f3a471848b424011a55d5e95, type: 3}
-    - {fileID: 21300002, guid: 0933bf67f3a471848b424011a55d5e95, type: 3}
-    - {fileID: 21300004, guid: 0933bf67f3a471848b424011a55d5e95, type: 3}
-    - {fileID: 21300006, guid: 0933bf67f3a471848b424011a55d5e95, type: 3}
-    - {fileID: 21300008, guid: 0933bf67f3a471848b424011a55d5e95, type: 3}
-    - {fileID: 21300010, guid: 0933bf67f3a471848b424011a55d5e95, type: 3}
-    - {fileID: 21300012, guid: 0933bf67f3a471848b424011a55d5e95, type: 3}
-    - {fileID: 21300014, guid: 0933bf67f3a471848b424011a55d5e95, type: 3}
-    - {fileID: 21300016, guid: 0933bf67f3a471848b424011a55d5e95, type: 3}
-    - {fileID: 21300018, guid: 0933bf67f3a471848b424011a55d5e95, type: 3}
-  - imageName: nao_grey
-    imagePath: Assets/Sprites/Ships/Nao/nao_grey.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Nao/nao_grey
-    texture2D: {fileID: 2800000, guid: 909d09eeb99e0934294dad764a16bafb, type: 3}
-    sprite: {fileID: 21300000, guid: 909d09eeb99e0934294dad764a16bafb, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 909d09eeb99e0934294dad764a16bafb, type: 3}
-    - {fileID: 21300002, guid: 909d09eeb99e0934294dad764a16bafb, type: 3}
-    - {fileID: 21300004, guid: 909d09eeb99e0934294dad764a16bafb, type: 3}
-    - {fileID: 21300006, guid: 909d09eeb99e0934294dad764a16bafb, type: 3}
-    - {fileID: 21300008, guid: 909d09eeb99e0934294dad764a16bafb, type: 3}
-    - {fileID: 21300010, guid: 909d09eeb99e0934294dad764a16bafb, type: 3}
-    - {fileID: 21300012, guid: 909d09eeb99e0934294dad764a16bafb, type: 3}
-    - {fileID: 21300014, guid: 909d09eeb99e0934294dad764a16bafb, type: 3}
-    - {fileID: 21300016, guid: 909d09eeb99e0934294dad764a16bafb, type: 3}
-    - {fileID: 21300018, guid: 909d09eeb99e0934294dad764a16bafb, type: 3}
-  - imageName: nao_ice
-    imagePath: Assets/Sprites/Ships/Nao/nao_ice.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Nao/nao_ice
-    texture2D: {fileID: 2800000, guid: d02b8880abdaa674ca5b5738a9b75327, type: 3}
-    sprite: {fileID: 21300000, guid: d02b8880abdaa674ca5b5738a9b75327, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: d02b8880abdaa674ca5b5738a9b75327, type: 3}
-    - {fileID: 21300002, guid: d02b8880abdaa674ca5b5738a9b75327, type: 3}
-    - {fileID: 21300004, guid: d02b8880abdaa674ca5b5738a9b75327, type: 3}
-    - {fileID: 21300006, guid: d02b8880abdaa674ca5b5738a9b75327, type: 3}
-    - {fileID: 21300008, guid: d02b8880abdaa674ca5b5738a9b75327, type: 3}
-    - {fileID: 21300010, guid: d02b8880abdaa674ca5b5738a9b75327, type: 3}
-    - {fileID: 21300012, guid: d02b8880abdaa674ca5b5738a9b75327, type: 3}
-    - {fileID: 21300014, guid: d02b8880abdaa674ca5b5738a9b75327, type: 3}
-    - {fileID: 21300016, guid: d02b8880abdaa674ca5b5738a9b75327, type: 3}
-    - {fileID: 21300018, guid: d02b8880abdaa674ca5b5738a9b75327, type: 3}
-  - imageName: nao_lagoon
-    imagePath: Assets/Sprites/Ships/Nao/nao_lagoon.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Nao/nao_lagoon
-    texture2D: {fileID: 2800000, guid: 36747a2ab72320041996223b080529fa, type: 3}
-    sprite: {fileID: 21300000, guid: 36747a2ab72320041996223b080529fa, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 36747a2ab72320041996223b080529fa, type: 3}
-    - {fileID: 21300002, guid: 36747a2ab72320041996223b080529fa, type: 3}
-    - {fileID: 21300004, guid: 36747a2ab72320041996223b080529fa, type: 3}
-    - {fileID: 21300006, guid: 36747a2ab72320041996223b080529fa, type: 3}
-    - {fileID: 21300008, guid: 36747a2ab72320041996223b080529fa, type: 3}
-    - {fileID: 21300010, guid: 36747a2ab72320041996223b080529fa, type: 3}
-    - {fileID: 21300012, guid: 36747a2ab72320041996223b080529fa, type: 3}
-    - {fileID: 21300014, guid: 36747a2ab72320041996223b080529fa, type: 3}
-    - {fileID: 21300016, guid: 36747a2ab72320041996223b080529fa, type: 3}
-    - {fileID: 21300018, guid: 36747a2ab72320041996223b080529fa, type: 3}
-  - imageName: nao_magma
-    imagePath: Assets/Sprites/Ships/Nao/nao_magma.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Nao/nao_magma
-    texture2D: {fileID: 2800000, guid: 098b37b84dc8e0242a40610c2472b631, type: 3}
-    sprite: {fileID: 21300000, guid: 098b37b84dc8e0242a40610c2472b631, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 098b37b84dc8e0242a40610c2472b631, type: 3}
-    - {fileID: 21300002, guid: 098b37b84dc8e0242a40610c2472b631, type: 3}
-    - {fileID: 21300004, guid: 098b37b84dc8e0242a40610c2472b631, type: 3}
-    - {fileID: 21300006, guid: 098b37b84dc8e0242a40610c2472b631, type: 3}
-    - {fileID: 21300008, guid: 098b37b84dc8e0242a40610c2472b631, type: 3}
-    - {fileID: 21300010, guid: 098b37b84dc8e0242a40610c2472b631, type: 3}
-    - {fileID: 21300012, guid: 098b37b84dc8e0242a40610c2472b631, type: 3}
-    - {fileID: 21300014, guid: 098b37b84dc8e0242a40610c2472b631, type: 3}
-    - {fileID: 21300016, guid: 098b37b84dc8e0242a40610c2472b631, type: 3}
-    - {fileID: 21300018, guid: 098b37b84dc8e0242a40610c2472b631, type: 3}
-  - imageName: nao_oak
-    imagePath: Assets/Sprites/Ships/Nao/nao_oak.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Nao/nao_oak
-    texture2D: {fileID: 2800000, guid: 8ded5349a3a71d147b0bc446928683ea, type: 3}
-    sprite: {fileID: 21300000, guid: 8ded5349a3a71d147b0bc446928683ea, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 8ded5349a3a71d147b0bc446928683ea, type: 3}
-    - {fileID: 21300002, guid: 8ded5349a3a71d147b0bc446928683ea, type: 3}
-    - {fileID: 21300004, guid: 8ded5349a3a71d147b0bc446928683ea, type: 3}
-    - {fileID: 21300006, guid: 8ded5349a3a71d147b0bc446928683ea, type: 3}
-    - {fileID: 21300008, guid: 8ded5349a3a71d147b0bc446928683ea, type: 3}
-    - {fileID: 21300010, guid: 8ded5349a3a71d147b0bc446928683ea, type: 3}
-    - {fileID: 21300012, guid: 8ded5349a3a71d147b0bc446928683ea, type: 3}
-    - {fileID: 21300014, guid: 8ded5349a3a71d147b0bc446928683ea, type: 3}
-    - {fileID: 21300016, guid: 8ded5349a3a71d147b0bc446928683ea, type: 3}
-    - {fileID: 21300018, guid: 8ded5349a3a71d147b0bc446928683ea, type: 3}
-  - imageName: nao_oceanic
-    imagePath: Assets/Sprites/Ships/Nao/nao_oceanic.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Nao/nao_oceanic
-    texture2D: {fileID: 2800000, guid: 52446f5626cfb9b4bb4e70c1aece152c, type: 3}
-    sprite: {fileID: 21300000, guid: 52446f5626cfb9b4bb4e70c1aece152c, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 52446f5626cfb9b4bb4e70c1aece152c, type: 3}
-    - {fileID: 21300002, guid: 52446f5626cfb9b4bb4e70c1aece152c, type: 3}
-    - {fileID: 21300004, guid: 52446f5626cfb9b4bb4e70c1aece152c, type: 3}
-    - {fileID: 21300006, guid: 52446f5626cfb9b4bb4e70c1aece152c, type: 3}
-    - {fileID: 21300008, guid: 52446f5626cfb9b4bb4e70c1aece152c, type: 3}
-    - {fileID: 21300010, guid: 52446f5626cfb9b4bb4e70c1aece152c, type: 3}
-    - {fileID: 21300012, guid: 52446f5626cfb9b4bb4e70c1aece152c, type: 3}
-    - {fileID: 21300014, guid: 52446f5626cfb9b4bb4e70c1aece152c, type: 3}
-    - {fileID: 21300016, guid: 52446f5626cfb9b4bb4e70c1aece152c, type: 3}
-    - {fileID: 21300018, guid: 52446f5626cfb9b4bb4e70c1aece152c, type: 3}
-  - imageName: nao_pine
-    imagePath: Assets/Sprites/Ships/Nao/nao_pine.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Nao/nao_pine
-    texture2D: {fileID: 2800000, guid: 213bf4667e3b8ab4d8acd149f2c085ed, type: 3}
-    sprite: {fileID: 21300000, guid: 213bf4667e3b8ab4d8acd149f2c085ed, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 213bf4667e3b8ab4d8acd149f2c085ed, type: 3}
-    - {fileID: 21300002, guid: 213bf4667e3b8ab4d8acd149f2c085ed, type: 3}
-    - {fileID: 21300004, guid: 213bf4667e3b8ab4d8acd149f2c085ed, type: 3}
-    - {fileID: 21300006, guid: 213bf4667e3b8ab4d8acd149f2c085ed, type: 3}
-    - {fileID: 21300008, guid: 213bf4667e3b8ab4d8acd149f2c085ed, type: 3}
-    - {fileID: 21300010, guid: 213bf4667e3b8ab4d8acd149f2c085ed, type: 3}
-    - {fileID: 21300012, guid: 213bf4667e3b8ab4d8acd149f2c085ed, type: 3}
-    - {fileID: 21300014, guid: 213bf4667e3b8ab4d8acd149f2c085ed, type: 3}
-    - {fileID: 21300016, guid: 213bf4667e3b8ab4d8acd149f2c085ed, type: 3}
-    - {fileID: 21300018, guid: 213bf4667e3b8ab4d8acd149f2c085ed, type: 3}
-  - imageName: nao_pink
-    imagePath: Assets/Sprites/Ships/Nao/nao_pink.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Nao/nao_pink
-    texture2D: {fileID: 2800000, guid: 6326d65596cbcf24f8d30e114a15f701, type: 3}
-    sprite: {fileID: 21300000, guid: 6326d65596cbcf24f8d30e114a15f701, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 6326d65596cbcf24f8d30e114a15f701, type: 3}
-    - {fileID: 21300002, guid: 6326d65596cbcf24f8d30e114a15f701, type: 3}
-    - {fileID: 21300004, guid: 6326d65596cbcf24f8d30e114a15f701, type: 3}
-    - {fileID: 21300006, guid: 6326d65596cbcf24f8d30e114a15f701, type: 3}
-    - {fileID: 21300008, guid: 6326d65596cbcf24f8d30e114a15f701, type: 3}
-    - {fileID: 21300010, guid: 6326d65596cbcf24f8d30e114a15f701, type: 3}
-    - {fileID: 21300012, guid: 6326d65596cbcf24f8d30e114a15f701, type: 3}
-    - {fileID: 21300014, guid: 6326d65596cbcf24f8d30e114a15f701, type: 3}
-    - {fileID: 21300016, guid: 6326d65596cbcf24f8d30e114a15f701, type: 3}
-    - {fileID: 21300018, guid: 6326d65596cbcf24f8d30e114a15f701, type: 3}
-  - imageName: nao_purple
-    imagePath: Assets/Sprites/Ships/Nao/nao_purple.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Nao/nao_purple
-    texture2D: {fileID: 2800000, guid: 7b87b1ebdd16e4944b528194e92a77dc, type: 3}
-    sprite: {fileID: 21300000, guid: 7b87b1ebdd16e4944b528194e92a77dc, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 7b87b1ebdd16e4944b528194e92a77dc, type: 3}
-    - {fileID: 21300002, guid: 7b87b1ebdd16e4944b528194e92a77dc, type: 3}
-    - {fileID: 21300004, guid: 7b87b1ebdd16e4944b528194e92a77dc, type: 3}
-    - {fileID: 21300006, guid: 7b87b1ebdd16e4944b528194e92a77dc, type: 3}
-    - {fileID: 21300008, guid: 7b87b1ebdd16e4944b528194e92a77dc, type: 3}
-    - {fileID: 21300010, guid: 7b87b1ebdd16e4944b528194e92a77dc, type: 3}
-    - {fileID: 21300012, guid: 7b87b1ebdd16e4944b528194e92a77dc, type: 3}
-    - {fileID: 21300014, guid: 7b87b1ebdd16e4944b528194e92a77dc, type: 3}
-    - {fileID: 21300016, guid: 7b87b1ebdd16e4944b528194e92a77dc, type: 3}
-    - {fileID: 21300018, guid: 7b87b1ebdd16e4944b528194e92a77dc, type: 3}
-  - imageName: nao_rainbow
-    imagePath: Assets/Sprites/Ships/Nao/nao_rainbow.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Nao/nao_rainbow
-    texture2D: {fileID: 2800000, guid: 77b3f05cf17db534c981ba853096ac8e, type: 3}
-    sprite: {fileID: 21300000, guid: 77b3f05cf17db534c981ba853096ac8e, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 77b3f05cf17db534c981ba853096ac8e, type: 3}
-    - {fileID: 21300002, guid: 77b3f05cf17db534c981ba853096ac8e, type: 3}
-    - {fileID: 21300004, guid: 77b3f05cf17db534c981ba853096ac8e, type: 3}
-    - {fileID: 21300006, guid: 77b3f05cf17db534c981ba853096ac8e, type: 3}
-    - {fileID: 21300008, guid: 77b3f05cf17db534c981ba853096ac8e, type: 3}
-    - {fileID: 21300010, guid: 77b3f05cf17db534c981ba853096ac8e, type: 3}
-    - {fileID: 21300012, guid: 77b3f05cf17db534c981ba853096ac8e, type: 3}
-    - {fileID: 21300014, guid: 77b3f05cf17db534c981ba853096ac8e, type: 3}
-    - {fileID: 21300016, guid: 77b3f05cf17db534c981ba853096ac8e, type: 3}
-    - {fileID: 21300018, guid: 77b3f05cf17db534c981ba853096ac8e, type: 3}
-  - imageName: nao_ripples
-    imagePath: Assets/Sprites/Ships/Nao/nao_ripples.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Nao/nao_ripples
-    texture2D: {fileID: 2800000, guid: fa1c7eb9e8417a241912819e818d629f, type: 3}
-    sprite: {fileID: 21300000, guid: fa1c7eb9e8417a241912819e818d629f, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: fa1c7eb9e8417a241912819e818d629f, type: 3}
-    - {fileID: 21300002, guid: fa1c7eb9e8417a241912819e818d629f, type: 3}
-    - {fileID: 21300004, guid: fa1c7eb9e8417a241912819e818d629f, type: 3}
-    - {fileID: 21300006, guid: fa1c7eb9e8417a241912819e818d629f, type: 3}
-    - {fileID: 21300008, guid: fa1c7eb9e8417a241912819e818d629f, type: 3}
-    - {fileID: 21300010, guid: fa1c7eb9e8417a241912819e818d629f, type: 3}
-    - {fileID: 21300012, guid: fa1c7eb9e8417a241912819e818d629f, type: 3}
-    - {fileID: 21300014, guid: fa1c7eb9e8417a241912819e818d629f, type: 3}
-    - {fileID: 21300016, guid: fa1c7eb9e8417a241912819e818d629f, type: 3}
-    - {fileID: 21300018, guid: fa1c7eb9e8417a241912819e818d629f, type: 3}
-  - imageName: nao_royal
-    imagePath: Assets/Sprites/Ships/Nao/nao_royal.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Nao/nao_royal
-    texture2D: {fileID: 2800000, guid: 8716a0384fb0c3148b63f11aa5cf4851, type: 3}
-    sprite: {fileID: 21300000, guid: 8716a0384fb0c3148b63f11aa5cf4851, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 8716a0384fb0c3148b63f11aa5cf4851, type: 3}
-    - {fileID: 21300002, guid: 8716a0384fb0c3148b63f11aa5cf4851, type: 3}
-    - {fileID: 21300004, guid: 8716a0384fb0c3148b63f11aa5cf4851, type: 3}
-    - {fileID: 21300006, guid: 8716a0384fb0c3148b63f11aa5cf4851, type: 3}
-    - {fileID: 21300008, guid: 8716a0384fb0c3148b63f11aa5cf4851, type: 3}
-    - {fileID: 21300010, guid: 8716a0384fb0c3148b63f11aa5cf4851, type: 3}
-    - {fileID: 21300012, guid: 8716a0384fb0c3148b63f11aa5cf4851, type: 3}
-    - {fileID: 21300014, guid: 8716a0384fb0c3148b63f11aa5cf4851, type: 3}
-    - {fileID: 21300016, guid: 8716a0384fb0c3148b63f11aa5cf4851, type: 3}
-    - {fileID: 21300018, guid: 8716a0384fb0c3148b63f11aa5cf4851, type: 3}
-  - imageName: nao_tiger
-    imagePath: Assets/Sprites/Ships/Nao/nao_tiger.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Nao/nao_tiger
-    texture2D: {fileID: 2800000, guid: 7d7328f17f68e3248831f1b76f0688a8, type: 3}
-    sprite: {fileID: 21300000, guid: 7d7328f17f68e3248831f1b76f0688a8, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 7d7328f17f68e3248831f1b76f0688a8, type: 3}
-    - {fileID: 21300002, guid: 7d7328f17f68e3248831f1b76f0688a8, type: 3}
-    - {fileID: 21300004, guid: 7d7328f17f68e3248831f1b76f0688a8, type: 3}
-    - {fileID: 21300006, guid: 7d7328f17f68e3248831f1b76f0688a8, type: 3}
-    - {fileID: 21300008, guid: 7d7328f17f68e3248831f1b76f0688a8, type: 3}
-    - {fileID: 21300010, guid: 7d7328f17f68e3248831f1b76f0688a8, type: 3}
-    - {fileID: 21300012, guid: 7d7328f17f68e3248831f1b76f0688a8, type: 3}
-    - {fileID: 21300014, guid: 7d7328f17f68e3248831f1b76f0688a8, type: 3}
-    - {fileID: 21300016, guid: 7d7328f17f68e3248831f1b76f0688a8, type: 3}
-    - {fileID: 21300018, guid: 7d7328f17f68e3248831f1b76f0688a8, type: 3}
-  - imageName: nao_war
-    imagePath: Assets/Sprites/Ships/Nao/nao_war.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Nao/nao_war
-    texture2D: {fileID: 2800000, guid: 6c0e4ca0045fab643a40665c97a15a5a, type: 3}
-    sprite: {fileID: 21300000, guid: 6c0e4ca0045fab643a40665c97a15a5a, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 6c0e4ca0045fab643a40665c97a15a5a, type: 3}
-    - {fileID: 21300002, guid: 6c0e4ca0045fab643a40665c97a15a5a, type: 3}
-    - {fileID: 21300004, guid: 6c0e4ca0045fab643a40665c97a15a5a, type: 3}
-    - {fileID: 21300006, guid: 6c0e4ca0045fab643a40665c97a15a5a, type: 3}
-    - {fileID: 21300008, guid: 6c0e4ca0045fab643a40665c97a15a5a, type: 3}
-    - {fileID: 21300010, guid: 6c0e4ca0045fab643a40665c97a15a5a, type: 3}
-    - {fileID: 21300012, guid: 6c0e4ca0045fab643a40665c97a15a5a, type: 3}
-    - {fileID: 21300014, guid: 6c0e4ca0045fab643a40665c97a15a5a, type: 3}
-    - {fileID: 21300016, guid: 6c0e4ca0045fab643a40665c97a15a5a, type: 3}
-    - {fileID: 21300018, guid: 6c0e4ca0045fab643a40665c97a15a5a, type: 3}
-  - imageName: nao_zebra
-    imagePath: Assets/Sprites/Ships/Nao/nao_zebra.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Nao/nao_zebra
-    texture2D: {fileID: 2800000, guid: eb20f77d4de9849499551b6beb00186e, type: 3}
-    sprite: {fileID: 21300000, guid: eb20f77d4de9849499551b6beb00186e, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: eb20f77d4de9849499551b6beb00186e, type: 3}
-    - {fileID: 21300002, guid: eb20f77d4de9849499551b6beb00186e, type: 3}
-    - {fileID: 21300004, guid: eb20f77d4de9849499551b6beb00186e, type: 3}
-    - {fileID: 21300006, guid: eb20f77d4de9849499551b6beb00186e, type: 3}
-    - {fileID: 21300008, guid: eb20f77d4de9849499551b6beb00186e, type: 3}
-    - {fileID: 21300010, guid: eb20f77d4de9849499551b6beb00186e, type: 3}
-    - {fileID: 21300012, guid: eb20f77d4de9849499551b6beb00186e, type: 3}
-    - {fileID: 21300014, guid: eb20f77d4de9849499551b6beb00186e, type: 3}
-    - {fileID: 21300016, guid: eb20f77d4de9849499551b6beb00186e, type: 3}
-    - {fileID: 21300018, guid: eb20f77d4de9849499551b6beb00186e, type: 3}
   - imageName: none
     imagePath: Assets/Sprites/Mining/none.png
     imagePathWithoutExtension: Assets/Sprites/Mining/none
@@ -29725,15 +28356,6 @@ MonoBehaviour:
     sprites:
     - {fileID: -8983204569294214185, guid: 1d12b6b531cdabd48901a867ded4705c, type: 3}
     - {fileID: -2326647215978093993, guid: 1d12b6b531cdabd48901a867ded4705c, type: 3}
-  - imageName: ping-yellow
-    imagePath: Assets/Sprites/GUI/ping-yellow.png
-    imagePathWithoutExtension: Assets/Sprites/GUI/ping-yellow
-    texture2D: {fileID: 2800000, guid: 13d23bd42183b304597f5978277873a3, type: 3}
-    sprite: {fileID: 2341427194360183577, guid: 13d23bd42183b304597f5978277873a3,
-      type: 3}
-    sprites:
-    - {fileID: 2341427194360183577, guid: 13d23bd42183b304597f5978277873a3, type: 3}
-    - {fileID: -7482036864869903338, guid: 13d23bd42183b304597f5978277873a3, type: 3}
   - imageName: ping-red
     imagePath: Assets/Sprites/GUI/ping-red.png
     imagePathWithoutExtension: Assets/Sprites/GUI/ping-red
@@ -29743,6 +28365,15 @@ MonoBehaviour:
     sprites:
     - {fileID: 2136949212513261205, guid: 413d352338757f946a22f9a831cc7b03, type: 3}
     - {fileID: 5657112969004850507, guid: 413d352338757f946a22f9a831cc7b03, type: 3}
+  - imageName: ping-yellow
+    imagePath: Assets/Sprites/GUI/ping-yellow.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/ping-yellow
+    texture2D: {fileID: 2800000, guid: 13d23bd42183b304597f5978277873a3, type: 3}
+    sprite: {fileID: 2341427194360183577, guid: 13d23bd42183b304597f5978277873a3,
+      type: 3}
+    sprites:
+    - {fileID: 2341427194360183577, guid: 13d23bd42183b304597f5978277873a3, type: 3}
+    - {fileID: -7482036864869903338, guid: 13d23bd42183b304597f5978277873a3, type: 3}
   - imageName: pinstripe_horizontal
     imagePath: Assets/Sprites/GUI/pinstripe_horizontal.png
     imagePathWithoutExtension: Assets/Sprites/GUI/pinstripe_horizontal
@@ -29813,37 +28444,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 52dcd4e8fe8b64dd18bbbeca809b1861, type: 3}
     sprites:
     - {fileID: 21300000, guid: 52dcd4e8fe8b64dd18bbbeca809b1861, type: 3}
-  - imageName: Pyromancer
-    imagePath: Assets/Sprites/NPCs/Bodies/Pyromancer/Pyromancer.png
-    imagePathWithoutExtension: Assets/Sprites/NPCs/Bodies/Pyromancer/Pyromancer
-    texture2D: {fileID: 2800000, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
-    sprite: {fileID: -8280930210256813200, guid: e835aae9e79521c45aeab99ee9ca5333,
-      type: 3}
-    sprites:
-    - {fileID: -8280930210256813200, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
-    - {fileID: -5042072422398079296, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
-    - {fileID: -6658368463445984665, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
-    - {fileID: -139367979502668700, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
-    - {fileID: 3927389461569817648, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
-    - {fileID: 741561707585489214, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
-    - {fileID: 6133101879309481665, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
-    - {fileID: -8969277468403195994, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
-    - {fileID: -1854471461232490973, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
-    - {fileID: -4713632350927276570, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
-    - {fileID: -4504753388729371903, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
-    - {fileID: 5625466388589226849, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
-    - {fileID: -2189517545299465969, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
-    - {fileID: 2846859185406889083, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
-    - {fileID: -5046730554882471296, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
-    - {fileID: -4402081199677621396, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
-    - {fileID: 1733409009808470362, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
-    - {fileID: 8055981457848210764, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
-    - {fileID: -3192765396832336636, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
-    - {fileID: 3164782888156768575, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
-    - {fileID: -254997341455746325, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
-    - {fileID: -942377444343745740, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
-    - {fileID: 6600100506331153615, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
-    - {fileID: -1578443327917309471, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
   - imageName: Placeholder_Golem
     imagePath: Assets/Sprites/BackgroundEntities/PlaceHolderElements/Placeholder_Golem.png
     imagePathWithoutExtension: Assets/Sprites/BackgroundEntities/PlaceHolderElements/Placeholder_Golem
@@ -29865,6 +28465,41 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 9c07cd53fbb133640986b1f55d0f8c1f, type: 3}
     sprites:
     - {fileID: 21300000, guid: 9c07cd53fbb133640986b1f55d0f8c1f, type: 3}
+  - imageName: plaque_bronze
+    imagePath: Assets/Sprites/GUI/Voyages/plaque_bronze.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Voyages/plaque_bronze
+    texture2D: {fileID: 2800000, guid: 56883662134e16841b0489493d0d7a32, type: 3}
+    sprite: {fileID: 21300000, guid: 56883662134e16841b0489493d0d7a32, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 56883662134e16841b0489493d0d7a32, type: 3}
+  - imageName: plaque_gold
+    imagePath: Assets/Sprites/GUI/Voyages/plaque_gold.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Voyages/plaque_gold
+    texture2D: {fileID: 2800000, guid: 591dbbe93db81ec4bb144cee92b14ba7, type: 3}
+    sprite: {fileID: 21300000, guid: 591dbbe93db81ec4bb144cee92b14ba7, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 591dbbe93db81ec4bb144cee92b14ba7, type: 3}
+  - imageName: plaque_silver
+    imagePath: Assets/Sprites/GUI/Voyages/plaque_silver.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Voyages/plaque_silver
+    texture2D: {fileID: 2800000, guid: 2fce0d55effdb6f408c753a2790347dd, type: 3}
+    sprite: {fileID: 21300000, guid: 2fce0d55effdb6f408c753a2790347dd, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 2fce0d55effdb6f408c753a2790347dd, type: 3}
+  - imageName: plate
+    imagePath: Assets/Sprites/Icons/Armor/plate.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Armor/plate
+    texture2D: {fileID: 2800000, guid: 3839f8445865de7429f190ad082b6a4d, type: 3}
+    sprite: {fileID: 21300000, guid: 3839f8445865de7429f190ad082b6a4d, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 3839f8445865de7429f190ad082b6a4d, type: 3}
+  - imageName: platform_dark
+    imagePath: Assets/Sprites/Character Screens/platform_dark.png
+    imagePathWithoutExtension: Assets/Sprites/Character Screens/platform_dark
+    texture2D: {fileID: 2800000, guid: 17dce10cee7aa844da5557a6ad939c12, type: 3}
+    sprite: {fileID: 21300000, guid: 17dce10cee7aa844da5557a6ad939c12, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 17dce10cee7aa844da5557a6ad939c12, type: 3}
   - imageName: player
     imagePath: Assets/Sprites/Minimap/player.png
     imagePathWithoutExtension: Assets/Sprites/Minimap/player
@@ -29961,41 +28596,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: d82e7742bc4a30a4ca6762dde5e0cd67, type: 3}
     sprites:
     - {fileID: 21300000, guid: d82e7742bc4a30a4ca6762dde5e0cd67, type: 3}
-  - imageName: plaque_bronze
-    imagePath: Assets/Sprites/GUI/Voyages/plaque_bronze.png
-    imagePathWithoutExtension: Assets/Sprites/GUI/Voyages/plaque_bronze
-    texture2D: {fileID: 2800000, guid: 56883662134e16841b0489493d0d7a32, type: 3}
-    sprite: {fileID: 21300000, guid: 56883662134e16841b0489493d0d7a32, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 56883662134e16841b0489493d0d7a32, type: 3}
-  - imageName: plaque_gold
-    imagePath: Assets/Sprites/GUI/Voyages/plaque_gold.png
-    imagePathWithoutExtension: Assets/Sprites/GUI/Voyages/plaque_gold
-    texture2D: {fileID: 2800000, guid: 591dbbe93db81ec4bb144cee92b14ba7, type: 3}
-    sprite: {fileID: 21300000, guid: 591dbbe93db81ec4bb144cee92b14ba7, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 591dbbe93db81ec4bb144cee92b14ba7, type: 3}
-  - imageName: plaque_silver
-    imagePath: Assets/Sprites/GUI/Voyages/plaque_silver.png
-    imagePathWithoutExtension: Assets/Sprites/GUI/Voyages/plaque_silver
-    texture2D: {fileID: 2800000, guid: 2fce0d55effdb6f408c753a2790347dd, type: 3}
-    sprite: {fileID: 21300000, guid: 2fce0d55effdb6f408c753a2790347dd, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 2fce0d55effdb6f408c753a2790347dd, type: 3}
-  - imageName: plate
-    imagePath: Assets/Sprites/Icons/Armor/plate.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/Armor/plate
-    texture2D: {fileID: 2800000, guid: 3839f8445865de7429f190ad082b6a4d, type: 3}
-    sprite: {fileID: 21300000, guid: 3839f8445865de7429f190ad082b6a4d, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 3839f8445865de7429f190ad082b6a4d, type: 3}
-  - imageName: platform_dark
-    imagePath: Assets/Sprites/Character Screens/platform_dark.png
-    imagePathWithoutExtension: Assets/Sprites/Character Screens/platform_dark
-    texture2D: {fileID: 2800000, guid: 17dce10cee7aa844da5557a6ad939c12, type: 3}
-    sprite: {fileID: 21300000, guid: 17dce10cee7aa844da5557a6ad939c12, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 17dce10cee7aa844da5557a6ad939c12, type: 3}
   - imageName: pointer_28
     imagePath: Assets/Sprites/GUI/pointer_28.png
     imagePathWithoutExtension: Assets/Sprites/GUI/pointer_28
@@ -30196,6 +28796,37 @@ MonoBehaviour:
     - {fileID: 1934105167074483151, guid: e3df20e2eaa29aa47a201426acdbfbd8, type: 3}
     - {fileID: -3966257881566730632, guid: e3df20e2eaa29aa47a201426acdbfbd8, type: 3}
     - {fileID: 7644630347052300426, guid: e3df20e2eaa29aa47a201426acdbfbd8, type: 3}
+  - imageName: Pyromancer
+    imagePath: Assets/Sprites/NPCs/Bodies/Pyromancer/Pyromancer.png
+    imagePathWithoutExtension: Assets/Sprites/NPCs/Bodies/Pyromancer/Pyromancer
+    texture2D: {fileID: 2800000, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    sprite: {fileID: -8280930210256813200, guid: e835aae9e79521c45aeab99ee9ca5333,
+      type: 3}
+    sprites:
+    - {fileID: -8280930210256813200, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: -5042072422398079296, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: -6658368463445984665, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: -139367979502668700, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: 3927389461569817648, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: 741561707585489214, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: 6133101879309481665, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: -8969277468403195994, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: -1854471461232490973, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: -4713632350927276570, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: -4504753388729371903, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: 5625466388589226849, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: -2189517545299465969, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: 2846859185406889083, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: -5046730554882471296, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: -4402081199677621396, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: 1733409009808470362, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: 8055981457848210764, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: -3192765396832336636, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: 3164782888156768575, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: -254997341455746325, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: -942377444343745740, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: 6600100506331153615, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
+    - {fileID: -1578443327917309471, guid: e835aae9e79521c45aeab99ee9ca5333, type: 3}
   - imageName: radio_button_off
     imagePath: Assets/Sprites/GUI/radio_button_off.png
     imagePathWithoutExtension: Assets/Sprites/GUI/radio_button_off
@@ -31021,13 +29652,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: af71366d469d337448e94972b26f5cf2, type: 3}
     sprites:
     - {fileID: 21300000, guid: af71366d469d337448e94972b26f5cf2, type: 3}
-  - imageName: ship_frame_inner_yellow
-    imagePath: Assets/Sprites/GUI/Voyage Groups/ship_frame_inner_yellow.png
-    imagePathWithoutExtension: Assets/Sprites/GUI/Voyage Groups/ship_frame_inner_yellow
-    texture2D: {fileID: 2800000, guid: db5b79ce24b29414db8d6608f37334be, type: 3}
-    sprite: {fileID: 21300000, guid: db5b79ce24b29414db8d6608f37334be, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: db5b79ce24b29414db8d6608f37334be, type: 3}
   - imageName: ship_frame_inner_orange
     imagePath: Assets/Sprites/GUI/Voyage Groups/ship_frame_inner_orange.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Voyage Groups/ship_frame_inner_orange
@@ -31063,6 +29687,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 8357abf751d083845b456c6c06ed444f, type: 3}
     sprites:
     - {fileID: 21300000, guid: 8357abf751d083845b456c6c06ed444f, type: 3}
+  - imageName: ship_frame_inner_yellow
+    imagePath: Assets/Sprites/GUI/Voyage Groups/ship_frame_inner_yellow.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Voyage Groups/ship_frame_inner_yellow
+    texture2D: {fileID: 2800000, guid: db5b79ce24b29414db8d6608f37334be, type: 3}
+    sprite: {fileID: 21300000, guid: db5b79ce24b29414db8d6608f37334be, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: db5b79ce24b29414db8d6608f37334be, type: 3}
   - imageName: ship_frame_silver
     imagePath: Assets/Sprites/GUI/Voyage Groups/ship_frame_silver.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Voyage Groups/ship_frame_silver
@@ -31134,8 +29765,8 @@ MonoBehaviour:
     sprites:
     - {fileID: 21300000, guid: 313edf820008b484faa074043c41bb95, type: 3}
   - imageName: ship_wake_curve
-    imagePath: Assets/Sprites/Ship/ship_wake_curve.png
-    imagePathWithoutExtension: Assets/Sprites/Ship/ship_wake_curve
+    imagePath: Assets/Sprites/ShipWakes/ship_wake_curve.png
+    imagePathWithoutExtension: Assets/Sprites/ShipWakes/ship_wake_curve
     texture2D: {fileID: 2800000, guid: 48ff64dad0db9bd46aab8161710c3e4a, type: 3}
     sprite: {fileID: 21300040, guid: 48ff64dad0db9bd46aab8161710c3e4a, type: 3}
     sprites:
@@ -31150,8 +29781,8 @@ MonoBehaviour:
     - {fileID: 21300056, guid: 48ff64dad0db9bd46aab8161710c3e4a, type: 3}
     - {fileID: 21300058, guid: 48ff64dad0db9bd46aab8161710c3e4a, type: 3}
   - imageName: ship_waves
-    imagePath: Assets/Sprites/Ship/ship_waves.png
-    imagePathWithoutExtension: Assets/Sprites/Ship/ship_waves
+    imagePath: Assets/Sprites/ShipWakes/ship_waves.png
+    imagePathWithoutExtension: Assets/Sprites/ShipWakes/ship_waves
     texture2D: {fileID: 2800000, guid: 41b61a86c8c6de948b7514cedb5253af, type: 3}
     sprite: {fileID: 21300000, guid: 41b61a86c8c6de948b7514cedb5253af, type: 3}
     sprites:
@@ -31165,6 +29796,13 @@ MonoBehaviour:
     - {fileID: 21300014, guid: 41b61a86c8c6de948b7514cedb5253af, type: 3}
     - {fileID: 21300016, guid: 41b61a86c8c6de948b7514cedb5253af, type: 3}
     - {fileID: 21300018, guid: 41b61a86c8c6de948b7514cedb5253af, type: 3}
+  - imageName: ships_button
+    imagePath: Assets/Sprites/GUI/Bottom Buttons/ships_button.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Bottom Buttons/ships_button
+    texture2D: {fileID: 2800000, guid: 2566c43238f2e2d49aba265f4064adfc, type: 3}
+    sprite: {fileID: 21300000, guid: 2566c43238f2e2d49aba265f4064adfc, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 2566c43238f2e2d49aba265f4064adfc, type: 3}
   - imageName: shipyard_1
     imagePath: Assets/Sprites/NPCs/Eyes/Shipyard/shipyard_1.png
     imagePathWithoutExtension: Assets/Sprites/NPCs/Eyes/Shipyard/shipyard_1
@@ -31355,13 +29993,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 5fb73e3031bbd1147b979ddfc347d6e7, type: 3}
     sprites:
     - {fileID: 21300000, guid: 5fb73e3031bbd1147b979ddfc347d6e7, type: 3}
-  - imageName: ships_button
-    imagePath: Assets/Sprites/GUI/Bottom Buttons/ships_button.png
-    imagePathWithoutExtension: Assets/Sprites/GUI/Bottom Buttons/ships_button
-    texture2D: {fileID: 2800000, guid: 2566c43238f2e2d49aba265f4064adfc, type: 3}
-    sprite: {fileID: 21300000, guid: 2566c43238f2e2d49aba265f4064adfc, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 2566c43238f2e2d49aba265f4064adfc, type: 3}
   - imageName: shock_collision
     imagePath: Assets/Sprites/Effects/shock_collision.png
     imagePathWithoutExtension: Assets/Sprites/Effects/shock_collision
@@ -32787,6 +31418,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: c931b607076a68e41a545ea404d85b3e, type: 3}
     sprites:
     - {fileID: 21300000, guid: c931b607076a68e41a545ea404d85b3e, type: 3}
+  - imageName: Starting Town New Houses
+    imagePath: Assets/Sprites/Minimaps/Starting Town New Houses.png
+    imagePathWithoutExtension: Assets/Sprites/Minimaps/Starting Town New Houses
+    texture2D: {fileID: 2800000, guid: eb3c22a3b05aac042acb9ee4712269d1, type: 3}
+    sprite: {fileID: 21300000, guid: eb3c22a3b05aac042acb9ee4712269d1, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: eb3c22a3b05aac042acb9ee4712269d1, type: 3}
   - imageName: StartingTown
     imagePath: Assets/Sprites/Minimaps/StartingTown.png
     imagePathWithoutExtension: Assets/Sprites/Minimaps/StartingTown
@@ -33908,6 +32546,735 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 6821596791cdbe44bb1de7566e0b50ea, type: 3}
     sprites:
     - {fileID: 21300000, guid: 6821596791cdbe44bb1de7566e0b50ea, type: 3}
+  - imageName: type_1_1
+    imagePath: Assets/Sprites/Ships/Type_1/type_1_1.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_1/type_1_1
+    texture2D: {fileID: 2800000, guid: 7b6ec5be4aaf27847b0701a95054d3ea, type: 3}
+    sprite: {fileID: 8106666463214275111, guid: 7b6ec5be4aaf27847b0701a95054d3ea,
+      type: 3}
+    sprites:
+    - {fileID: 8106666463214275111, guid: 7b6ec5be4aaf27847b0701a95054d3ea, type: 3}
+    - {fileID: -4480327904050915893, guid: 7b6ec5be4aaf27847b0701a95054d3ea, type: 3}
+    - {fileID: 5384237380020438217, guid: 7b6ec5be4aaf27847b0701a95054d3ea, type: 3}
+    - {fileID: -2331677671208450627, guid: 7b6ec5be4aaf27847b0701a95054d3ea, type: 3}
+    - {fileID: 8225674080479079154, guid: 7b6ec5be4aaf27847b0701a95054d3ea, type: 3}
+    - {fileID: 3925454556943604737, guid: 7b6ec5be4aaf27847b0701a95054d3ea, type: 3}
+    - {fileID: -1346817764355882676, guid: 7b6ec5be4aaf27847b0701a95054d3ea, type: 3}
+    - {fileID: 8266763636295803516, guid: 7b6ec5be4aaf27847b0701a95054d3ea, type: 3}
+    - {fileID: 5567657215743735386, guid: 7b6ec5be4aaf27847b0701a95054d3ea, type: 3}
+    - {fileID: 187726166850489840, guid: 7b6ec5be4aaf27847b0701a95054d3ea, type: 3}
+    - {fileID: 7713381486532970037, guid: 7b6ec5be4aaf27847b0701a95054d3ea, type: 3}
+    - {fileID: -2184385649509732263, guid: 7b6ec5be4aaf27847b0701a95054d3ea, type: 3}
+    - {fileID: 7660045202446127341, guid: 7b6ec5be4aaf27847b0701a95054d3ea, type: 3}
+    - {fileID: -6614498275708264876, guid: 7b6ec5be4aaf27847b0701a95054d3ea, type: 3}
+    - {fileID: -7529779355826492247, guid: 7b6ec5be4aaf27847b0701a95054d3ea, type: 3}
+    - {fileID: 306998705272805267, guid: 7b6ec5be4aaf27847b0701a95054d3ea, type: 3}
+    - {fileID: 4739686117650319102, guid: 7b6ec5be4aaf27847b0701a95054d3ea, type: 3}
+    - {fileID: 907786474508749007, guid: 7b6ec5be4aaf27847b0701a95054d3ea, type: 3}
+    - {fileID: 5201367454657069939, guid: 7b6ec5be4aaf27847b0701a95054d3ea, type: 3}
+    - {fileID: -3488861744611862785, guid: 7b6ec5be4aaf27847b0701a95054d3ea, type: 3}
+  - imageName: type_1_moving
+    imagePath: Assets/Sprites/Ships/Type_1/type_1_moving.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_1/type_1_moving
+    texture2D: {fileID: 2800000, guid: e072d855d121cf5469edfff45a615ff0, type: 3}
+    sprite: {fileID: -2076661448007483511, guid: e072d855d121cf5469edfff45a615ff0,
+      type: 3}
+    sprites:
+    - {fileID: -2076661448007483511, guid: e072d855d121cf5469edfff45a615ff0, type: 3}
+    - {fileID: -6173558876478690147, guid: e072d855d121cf5469edfff45a615ff0, type: 3}
+    - {fileID: -9194450450462365447, guid: e072d855d121cf5469edfff45a615ff0, type: 3}
+    - {fileID: -320686021225412224, guid: e072d855d121cf5469edfff45a615ff0, type: 3}
+    - {fileID: 1114311214607409211, guid: e072d855d121cf5469edfff45a615ff0, type: 3}
+    - {fileID: 5962915364009599173, guid: e072d855d121cf5469edfff45a615ff0, type: 3}
+    - {fileID: 6412390493991260835, guid: e072d855d121cf5469edfff45a615ff0, type: 3}
+    - {fileID: -1013350782498120417, guid: e072d855d121cf5469edfff45a615ff0, type: 3}
+    - {fileID: 133335467469647109, guid: e072d855d121cf5469edfff45a615ff0, type: 3}
+    - {fileID: -7175464289995291677, guid: e072d855d121cf5469edfff45a615ff0, type: 3}
+    - {fileID: 4637773141478736808, guid: e072d855d121cf5469edfff45a615ff0, type: 3}
+    - {fileID: -6361055049982610968, guid: e072d855d121cf5469edfff45a615ff0, type: 3}
+    - {fileID: -7322646646135319252, guid: e072d855d121cf5469edfff45a615ff0, type: 3}
+    - {fileID: -8199135224346599446, guid: e072d855d121cf5469edfff45a615ff0, type: 3}
+    - {fileID: 8458823821377412569, guid: e072d855d121cf5469edfff45a615ff0, type: 3}
+    - {fileID: 5860417707169568822, guid: e072d855d121cf5469edfff45a615ff0, type: 3}
+    - {fileID: 908715184119912024, guid: e072d855d121cf5469edfff45a615ff0, type: 3}
+    - {fileID: 2632862156761172387, guid: e072d855d121cf5469edfff45a615ff0, type: 3}
+    - {fileID: 4654734969711462639, guid: e072d855d121cf5469edfff45a615ff0, type: 3}
+    - {fileID: -7432051045114821871, guid: e072d855d121cf5469edfff45a615ff0, type: 3}
+  - imageName: type_1_ripples
+    imagePath: Assets/Sprites/Ships/Type_1/type_1_ripples.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_1/type_1_ripples
+    texture2D: {fileID: 2800000, guid: 3045212b0933e4b46a5e185bf3ac115a, type: 3}
+    sprite: {fileID: -6519797044500898686, guid: 3045212b0933e4b46a5e185bf3ac115a,
+      type: 3}
+    sprites:
+    - {fileID: -6519797044500898686, guid: 3045212b0933e4b46a5e185bf3ac115a, type: 3}
+    - {fileID: -6803568413583739193, guid: 3045212b0933e4b46a5e185bf3ac115a, type: 3}
+    - {fileID: 5714936684100230140, guid: 3045212b0933e4b46a5e185bf3ac115a, type: 3}
+    - {fileID: 3694526673797104585, guid: 3045212b0933e4b46a5e185bf3ac115a, type: 3}
+    - {fileID: -1159035762595997966, guid: 3045212b0933e4b46a5e185bf3ac115a, type: 3}
+    - {fileID: -641032881161599801, guid: 3045212b0933e4b46a5e185bf3ac115a, type: 3}
+    - {fileID: 4381487417676541530, guid: 3045212b0933e4b46a5e185bf3ac115a, type: 3}
+    - {fileID: -6175294176515418091, guid: 3045212b0933e4b46a5e185bf3ac115a, type: 3}
+    - {fileID: -1538056015037334956, guid: 3045212b0933e4b46a5e185bf3ac115a, type: 3}
+    - {fileID: -9045455574687879429, guid: 3045212b0933e4b46a5e185bf3ac115a, type: 3}
+    - {fileID: 8387062443791950698, guid: 3045212b0933e4b46a5e185bf3ac115a, type: 3}
+    - {fileID: 4885390407497827551, guid: 3045212b0933e4b46a5e185bf3ac115a, type: 3}
+    - {fileID: 8866090113101311721, guid: 3045212b0933e4b46a5e185bf3ac115a, type: 3}
+    - {fileID: -129234927305322717, guid: 3045212b0933e4b46a5e185bf3ac115a, type: 3}
+    - {fileID: -1464192641744655472, guid: 3045212b0933e4b46a5e185bf3ac115a, type: 3}
+    - {fileID: -8053564822367414649, guid: 3045212b0933e4b46a5e185bf3ac115a, type: 3}
+    - {fileID: 658904878690959070, guid: 3045212b0933e4b46a5e185bf3ac115a, type: 3}
+    - {fileID: 5121816209714787442, guid: 3045212b0933e4b46a5e185bf3ac115a, type: 3}
+    - {fileID: -3477510786266087128, guid: 3045212b0933e4b46a5e185bf3ac115a, type: 3}
+    - {fileID: -1271328500594301904, guid: 3045212b0933e4b46a5e185bf3ac115a, type: 3}
+  - imageName: type_1_ripples_moving
+    imagePath: Assets/Sprites/Ships/Type_1/type_1_ripples_moving.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_1/type_1_ripples_moving
+    texture2D: {fileID: 2800000, guid: 86f05595db29d1246ab08081a3bf378c, type: 3}
+    sprite: {fileID: -6567682754672985023, guid: 86f05595db29d1246ab08081a3bf378c,
+      type: 3}
+    sprites:
+    - {fileID: -6567682754672985023, guid: 86f05595db29d1246ab08081a3bf378c, type: 3}
+    - {fileID: -1891493131878482172, guid: 86f05595db29d1246ab08081a3bf378c, type: 3}
+    - {fileID: -3024070598402329916, guid: 86f05595db29d1246ab08081a3bf378c, type: 3}
+    - {fileID: -7211842992566014839, guid: 86f05595db29d1246ab08081a3bf378c, type: 3}
+    - {fileID: 336936156394894930, guid: 86f05595db29d1246ab08081a3bf378c, type: 3}
+    - {fileID: -8935778245295913676, guid: 86f05595db29d1246ab08081a3bf378c, type: 3}
+    - {fileID: -6257015721340077649, guid: 86f05595db29d1246ab08081a3bf378c, type: 3}
+    - {fileID: 963950409751479070, guid: 86f05595db29d1246ab08081a3bf378c, type: 3}
+    - {fileID: -2224257633535920728, guid: 86f05595db29d1246ab08081a3bf378c, type: 3}
+    - {fileID: -7862740351901795110, guid: 86f05595db29d1246ab08081a3bf378c, type: 3}
+    - {fileID: 2883967056195171753, guid: 86f05595db29d1246ab08081a3bf378c, type: 3}
+    - {fileID: 7750265242090138009, guid: 86f05595db29d1246ab08081a3bf378c, type: 3}
+    - {fileID: 1959003228800663314, guid: 86f05595db29d1246ab08081a3bf378c, type: 3}
+    - {fileID: -6520277514336157316, guid: 86f05595db29d1246ab08081a3bf378c, type: 3}
+    - {fileID: 4655271589902601923, guid: 86f05595db29d1246ab08081a3bf378c, type: 3}
+    - {fileID: 2113964765225058793, guid: 86f05595db29d1246ab08081a3bf378c, type: 3}
+    - {fileID: -5403483217216914628, guid: 86f05595db29d1246ab08081a3bf378c, type: 3}
+    - {fileID: -104263071239714884, guid: 86f05595db29d1246ab08081a3bf378c, type: 3}
+    - {fileID: -807666800907605285, guid: 86f05595db29d1246ab08081a3bf378c, type: 3}
+    - {fileID: 3570252229574748515, guid: 86f05595db29d1246ab08081a3bf378c, type: 3}
+  - imageName: type_2_1
+    imagePath: Assets/Sprites/Ships/Type_2/type_2_1.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_2/type_2_1
+    texture2D: {fileID: 2800000, guid: 073c7da7f6a509e4783df0f33e11ca04, type: 3}
+    sprite: {fileID: -1810810032674464113, guid: 073c7da7f6a509e4783df0f33e11ca04,
+      type: 3}
+    sprites:
+    - {fileID: -1810810032674464113, guid: 073c7da7f6a509e4783df0f33e11ca04, type: 3}
+    - {fileID: 7836896170919135729, guid: 073c7da7f6a509e4783df0f33e11ca04, type: 3}
+    - {fileID: -4790598335753248501, guid: 073c7da7f6a509e4783df0f33e11ca04, type: 3}
+    - {fileID: -7700955675030553698, guid: 073c7da7f6a509e4783df0f33e11ca04, type: 3}
+    - {fileID: 4844206014120029444, guid: 073c7da7f6a509e4783df0f33e11ca04, type: 3}
+    - {fileID: 6762848688031126263, guid: 073c7da7f6a509e4783df0f33e11ca04, type: 3}
+    - {fileID: -994585104885777981, guid: 073c7da7f6a509e4783df0f33e11ca04, type: 3}
+    - {fileID: 7892188755198221861, guid: 073c7da7f6a509e4783df0f33e11ca04, type: 3}
+    - {fileID: 8035231406154778210, guid: 073c7da7f6a509e4783df0f33e11ca04, type: 3}
+    - {fileID: 8413946459724719973, guid: 073c7da7f6a509e4783df0f33e11ca04, type: 3}
+    - {fileID: -5230428276374079285, guid: 073c7da7f6a509e4783df0f33e11ca04, type: 3}
+    - {fileID: -3264132905976010283, guid: 073c7da7f6a509e4783df0f33e11ca04, type: 3}
+    - {fileID: 7873213476324568908, guid: 073c7da7f6a509e4783df0f33e11ca04, type: 3}
+    - {fileID: -2251232031698295755, guid: 073c7da7f6a509e4783df0f33e11ca04, type: 3}
+    - {fileID: 1786907204170614855, guid: 073c7da7f6a509e4783df0f33e11ca04, type: 3}
+    - {fileID: 8525729978456482214, guid: 073c7da7f6a509e4783df0f33e11ca04, type: 3}
+    - {fileID: -2987104274709621636, guid: 073c7da7f6a509e4783df0f33e11ca04, type: 3}
+    - {fileID: -856381685190175522, guid: 073c7da7f6a509e4783df0f33e11ca04, type: 3}
+    - {fileID: 2070162723207236342, guid: 073c7da7f6a509e4783df0f33e11ca04, type: 3}
+    - {fileID: 5181171198983362303, guid: 073c7da7f6a509e4783df0f33e11ca04, type: 3}
+  - imageName: type_2_ripples
+    imagePath: Assets/Sprites/Ships/Type_2/type_2_ripples.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_2/type_2_ripples
+    texture2D: {fileID: 2800000, guid: 7b9e8b5445685d34aa34c01b9b8206e2, type: 3}
+    sprite: {fileID: -6017518871404137746, guid: 7b9e8b5445685d34aa34c01b9b8206e2,
+      type: 3}
+    sprites:
+    - {fileID: -6017518871404137746, guid: 7b9e8b5445685d34aa34c01b9b8206e2, type: 3}
+    - {fileID: 1305037100683183136, guid: 7b9e8b5445685d34aa34c01b9b8206e2, type: 3}
+    - {fileID: -8347254009628328595, guid: 7b9e8b5445685d34aa34c01b9b8206e2, type: 3}
+    - {fileID: 8385358768453073215, guid: 7b9e8b5445685d34aa34c01b9b8206e2, type: 3}
+    - {fileID: -4522555809447390193, guid: 7b9e8b5445685d34aa34c01b9b8206e2, type: 3}
+    - {fileID: -4775742746303981050, guid: 7b9e8b5445685d34aa34c01b9b8206e2, type: 3}
+    - {fileID: -1641269752206354344, guid: 7b9e8b5445685d34aa34c01b9b8206e2, type: 3}
+    - {fileID: 846394061619164956, guid: 7b9e8b5445685d34aa34c01b9b8206e2, type: 3}
+    - {fileID: -2628152496011194101, guid: 7b9e8b5445685d34aa34c01b9b8206e2, type: 3}
+    - {fileID: 8115630088963054583, guid: 7b9e8b5445685d34aa34c01b9b8206e2, type: 3}
+    - {fileID: -4085438628974318214, guid: 7b9e8b5445685d34aa34c01b9b8206e2, type: 3}
+    - {fileID: -1444327677815728017, guid: 7b9e8b5445685d34aa34c01b9b8206e2, type: 3}
+    - {fileID: 306822238643068591, guid: 7b9e8b5445685d34aa34c01b9b8206e2, type: 3}
+    - {fileID: -2591924353291148680, guid: 7b9e8b5445685d34aa34c01b9b8206e2, type: 3}
+    - {fileID: 7704006539155616111, guid: 7b9e8b5445685d34aa34c01b9b8206e2, type: 3}
+    - {fileID: 4854501543388670802, guid: 7b9e8b5445685d34aa34c01b9b8206e2, type: 3}
+    - {fileID: -8409039518098998265, guid: 7b9e8b5445685d34aa34c01b9b8206e2, type: 3}
+    - {fileID: 8971481388713673215, guid: 7b9e8b5445685d34aa34c01b9b8206e2, type: 3}
+    - {fileID: 7540322874516613626, guid: 7b9e8b5445685d34aa34c01b9b8206e2, type: 3}
+    - {fileID: 2880390967907902101, guid: 7b9e8b5445685d34aa34c01b9b8206e2, type: 3}
+  - imageName: type_2_ripples_moving
+    imagePath: Assets/Sprites/Ships/Type_2/type_2_ripples_moving.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_2/type_2_ripples_moving
+    texture2D: {fileID: 2800000, guid: 2db48bc8c2d82b046a58835ab1c8103f, type: 3}
+    sprite: {fileID: 4713404375510816009, guid: 2db48bc8c2d82b046a58835ab1c8103f,
+      type: 3}
+    sprites:
+    - {fileID: 4713404375510816009, guid: 2db48bc8c2d82b046a58835ab1c8103f, type: 3}
+    - {fileID: -3343795038739839593, guid: 2db48bc8c2d82b046a58835ab1c8103f, type: 3}
+    - {fileID: 1857357911249993375, guid: 2db48bc8c2d82b046a58835ab1c8103f, type: 3}
+    - {fileID: 7273067323478431690, guid: 2db48bc8c2d82b046a58835ab1c8103f, type: 3}
+    - {fileID: 1952576079854504473, guid: 2db48bc8c2d82b046a58835ab1c8103f, type: 3}
+    - {fileID: 6420122709340026911, guid: 2db48bc8c2d82b046a58835ab1c8103f, type: 3}
+    - {fileID: -3076467580231863301, guid: 2db48bc8c2d82b046a58835ab1c8103f, type: 3}
+    - {fileID: -2467158837235848637, guid: 2db48bc8c2d82b046a58835ab1c8103f, type: 3}
+    - {fileID: -5217016289005243454, guid: 2db48bc8c2d82b046a58835ab1c8103f, type: 3}
+    - {fileID: -6598664794244398587, guid: 2db48bc8c2d82b046a58835ab1c8103f, type: 3}
+    - {fileID: 4676133163151292050, guid: 2db48bc8c2d82b046a58835ab1c8103f, type: 3}
+    - {fileID: 2519878190028015083, guid: 2db48bc8c2d82b046a58835ab1c8103f, type: 3}
+    - {fileID: -6931203990600952774, guid: 2db48bc8c2d82b046a58835ab1c8103f, type: 3}
+    - {fileID: -524193488543371867, guid: 2db48bc8c2d82b046a58835ab1c8103f, type: 3}
+    - {fileID: -2981674333873217308, guid: 2db48bc8c2d82b046a58835ab1c8103f, type: 3}
+    - {fileID: -7682529872864520982, guid: 2db48bc8c2d82b046a58835ab1c8103f, type: 3}
+    - {fileID: -6591444095527283426, guid: 2db48bc8c2d82b046a58835ab1c8103f, type: 3}
+    - {fileID: 4807645337981843318, guid: 2db48bc8c2d82b046a58835ab1c8103f, type: 3}
+    - {fileID: 5972445357059703972, guid: 2db48bc8c2d82b046a58835ab1c8103f, type: 3}
+    - {fileID: -5109406289399558174, guid: 2db48bc8c2d82b046a58835ab1c8103f, type: 3}
+  - imageName: type_3_1
+    imagePath: Assets/Sprites/Ships/Type_3/type_3_1.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_3/type_3_1
+    texture2D: {fileID: 2800000, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    sprite: {fileID: 6413935764032136155, guid: ae3a9cbc775ae724c923c27a72029694,
+      type: 3}
+    sprites:
+    - {fileID: 6413935764032136155, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: 3810577975443639091, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: 8976180305022193988, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: 4932318579794145924, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: 152257024680827098, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: 6879428925943820457, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: -2000585943037075903, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: 4186608973316942179, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: -860954946611534340, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: -33511529587115143, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: 4046288992337997235, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: 7927316611281423995, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: 3887967630837633153, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: 5644029601074721796, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: -8169515828143633062, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: -7927125948958215594, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: 5490273047940322000, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: 7243908210387391082, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: 4618869745365266340, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+    - {fileID: -1142044946411219241, guid: ae3a9cbc775ae724c923c27a72029694, type: 3}
+  - imageName: type_3_ripples
+    imagePath: Assets/Sprites/Ships/Type_3/type_3_ripples.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_3/type_3_ripples
+    texture2D: {fileID: 2800000, guid: c00c16f019611d948bad38438a609871, type: 3}
+    sprite: {fileID: 1746795823973588533, guid: c00c16f019611d948bad38438a609871,
+      type: 3}
+    sprites:
+    - {fileID: 1746795823973588533, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: -3943892616407503081, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: 1992996287044177829, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: -2739595160222389562, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: -7758802956004323956, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: -9038877646486951670, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: 7283418343074721121, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: -4203159459581658047, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: 1509912745605335596, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: 191041391609469188, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: 1385450506558175649, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: 4689336983872703784, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: -332245612545990449, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: 9174109436151227302, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: 8480763997600687854, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: -5844129741225733688, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: -1792453675392412591, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: -6326857619971604269, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: -8414272986395882089, guid: c00c16f019611d948bad38438a609871, type: 3}
+    - {fileID: 3397062566295628283, guid: c00c16f019611d948bad38438a609871, type: 3}
+  - imageName: type_3_ripples_moving
+    imagePath: Assets/Sprites/Ships/Type_3/type_3_ripples_moving.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_3/type_3_ripples_moving
+    texture2D: {fileID: 2800000, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    sprite: {fileID: -4008786028715573821, guid: 5e6374f3382e94544b22018848ea4a1e,
+      type: 3}
+    sprites:
+    - {fileID: -4008786028715573821, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: 5733412021311897826, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: -2399224982483170866, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: -648346343978898461, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: 3539416641902925597, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: -3620206550934639438, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: 7377093109935286687, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: 4781116505785071133, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: -4676520201688506010, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: 3414756977985963090, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: 7785177384530130307, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: -2994347458871206398, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: -4191470607321698361, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: -6468701489827194169, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: -1540874436897352654, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: 2748252818985026554, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: 4597345266528174139, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: 3738403534279602756, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: 5812645759808026964, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+    - {fileID: -8991986803047644522, guid: 5e6374f3382e94544b22018848ea4a1e, type: 3}
+  - imageName: type_4_1
+    imagePath: Assets/Sprites/Ships/Type_4/type_4_1.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_4/type_4_1
+    texture2D: {fileID: 2800000, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    sprite: {fileID: -9128439386246882567, guid: 440b10a5db4dc764890ea7f60b7f0e0c,
+      type: 3}
+    sprites:
+    - {fileID: -9128439386246882567, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: 6058123489442763659, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: -1616047270480128676, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: -1566459476563758407, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: -6066356586388881866, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: 4719044589267161919, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: -4887158668844690111, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: -6997524386746130731, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: -9130986184891978556, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: -3285310386394384923, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: -4934761963657927746, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: 7860554498039095549, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: 1935241354598823993, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: -8964689252475077735, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: 2882031834177482800, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: -1626715013626319211, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: -4259978750850108945, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: 8809630216217834186, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: 3373107828176518912, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+    - {fileID: -1131966330283553626, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
+  - imageName: type_4_moving
+    imagePath: Assets/Sprites/Ships/Type_4/type_4_moving.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_4/type_4_moving
+    texture2D: {fileID: 2800000, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    sprite: {fileID: -5556105365460711022, guid: 1063404876563294cbd488bfe885d20e,
+      type: 3}
+    sprites:
+    - {fileID: -5556105365460711022, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: 6779643130589524203, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: 8337616546355532426, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: 7306257670535055226, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: 4899280712433964971, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: -941103580330020988, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: 652145441279884645, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: 3720500779869761631, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: -7114158661621052024, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: -5073867626599125534, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: 3458287040612438968, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: 6827116868932511339, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: 702023150288707903, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: 2836954163252897555, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: 4979887177249142864, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: 6163458785697359732, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: -4529449382793049869, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: 854946555104383588, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: -7139358632799885775, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+    - {fileID: 1724643311219563368, guid: 1063404876563294cbd488bfe885d20e, type: 3}
+  - imageName: type_4_ripples
+    imagePath: Assets/Sprites/Ships/Type_4/type_4_ripples.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_4/type_4_ripples
+    texture2D: {fileID: 2800000, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    sprite: {fileID: 8693487509295452275, guid: f24866d8e6e408e4baf862c481e42e80,
+      type: 3}
+    sprites:
+    - {fileID: 8693487509295452275, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: 7603884982945101942, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: -6343168230658772094, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: -3492848875846537983, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: -2110109635991231825, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: 1569088515648838649, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: -7726801926963061331, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: 7610347107860862426, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: -5953440788231531539, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: 4871668782948238798, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: -3377569194306346977, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: -5904001160430097171, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: -7579210668231084762, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: 1246287163468515058, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: -4815519210116198399, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: 5853753013805453772, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: -3192314814890038296, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: 5714416339792240586, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: -2248166526425281698, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+    - {fileID: -5614329726359177954, guid: f24866d8e6e408e4baf862c481e42e80, type: 3}
+  - imageName: type_4_ripples_moving
+    imagePath: Assets/Sprites/Ships/Type_4/type_4_ripples_moving.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_4/type_4_ripples_moving
+    texture2D: {fileID: 2800000, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    sprite: {fileID: -5500215153209877277, guid: b3d4551fa2af8d545bdb71b9a9992327,
+      type: 3}
+    sprites:
+    - {fileID: -5500215153209877277, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: -5777741245607806887, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: 3208741813693727834, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: -5649887413190138264, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: 644635721331066730, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: 8391772729027159941, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: 2764770275249505804, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: 5097701138492622587, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: 3297127205003844801, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: 3382113163701701508, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: 6395801811919046179, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: -5398043470119440305, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: -5025958361160786552, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: 6837825956357763911, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: 615640444594868011, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: 6745970727604295120, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: -1035184030779553569, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: 3219662127713844565, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: 101458093053888051, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+    - {fileID: -8974858905321688927, guid: b3d4551fa2af8d545bdb71b9a9992327, type: 3}
+  - imageName: type_5_1
+    imagePath: Assets/Sprites/Ships/Type_5/type_5_1.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_5/type_5_1
+    texture2D: {fileID: 2800000, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    sprite: {fileID: -5284486829403217179, guid: 02dc810930da9d849aae210e0e98b971,
+      type: 3}
+    sprites:
+    - {fileID: -5284486829403217179, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: -3358318413329539719, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: 5944607397980746392, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: 5410155956745549768, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: -1158410175955328045, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: -889387379336683885, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: 3721020654472909317, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: -3318242219223971395, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: 6483909148049137985, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: 7290765132232310437, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: 6467618188825702363, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: -1620550916631018049, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: -7556305009791122128, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: -3718783700392354560, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: 332509167581444761, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: -4402416165581466, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: -7012067570830652756, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: -6266220401241419008, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: 1481018431566078171, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+    - {fileID: 7879320176353429571, guid: 02dc810930da9d849aae210e0e98b971, type: 3}
+  - imageName: type_5_ripples
+    imagePath: Assets/Sprites/Ships/Type_5/type_5_ripples.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_5/type_5_ripples
+    texture2D: {fileID: 2800000, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    sprite: {fileID: 6033682655480630972, guid: de7e9876ca9f619468f239d9612fbe4f,
+      type: 3}
+    sprites:
+    - {fileID: 6033682655480630972, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: -818547637452598424, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: 5887412327908353788, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: 1858713250026859866, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: -6869625578696969958, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: -8211356760276389470, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: -4125395851656732859, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: -3664488126121000685, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: 3518928236174687820, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: 4471249861510550987, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: 2259435448741716828, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: -7298177570947349047, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: -4710136529282902445, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: -6846750041800109872, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: 5180608544415902712, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: 2920379057024784632, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: -157152097856291096, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: -9049421634177077237, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: -5793076802651878295, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+    - {fileID: -6107420545697068684, guid: de7e9876ca9f619468f239d9612fbe4f, type: 3}
+  - imageName: type_5_ripples_moving
+    imagePath: Assets/Sprites/Ships/Type_5/type_5_ripples_moving.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_5/type_5_ripples_moving
+    texture2D: {fileID: 2800000, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    sprite: {fileID: 6842294509930764113, guid: ab364322b6fb63649b5c8f97280b661f,
+      type: 3}
+    sprites:
+    - {fileID: 6842294509930764113, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: -8624931994970102408, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: 6367992537836180409, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: -2594855292003206607, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: -2855873634565757992, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: 8026836077737859439, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: -2974149829051739599, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: 3799266161996446380, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: -4330999285332507649, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: -8856107817829319338, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: 8901343170242685717, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: 2935450888658477894, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: -8449754807937965278, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: 3394580225902464768, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: 9050139117739664556, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: -6614670070444484426, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: 253661405311130559, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: -2467525547692895102, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: 8470820731547154326, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+    - {fileID: -4133296138552519317, guid: ab364322b6fb63649b5c8f97280b661f, type: 3}
+  - imageName: type_6_1
+    imagePath: Assets/Sprites/Ships/Type_6/type_6_1.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_6/type_6_1
+    texture2D: {fileID: 2800000, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    sprite: {fileID: -1935847060876954497, guid: 2ac11799418a4434b8e75d5b893810e8,
+      type: 3}
+    sprites:
+    - {fileID: -1935847060876954497, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: 8991673777776436010, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: 3095374566611098415, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: 9214815852270801477, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: 4095254012006187441, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: 2442715143394630938, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: -4780813350049659605, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: -5123831870558752580, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: -7091458901096949831, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: -8029427253659618884, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: -2432444530563912070, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: -3504585341806633756, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: 8204456708678019008, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: 7929909680758116388, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: -3870004344871660690, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: -1083405991735923269, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: -674307079210535019, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: 2118019705035099667, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: -2807983728585009775, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+    - {fileID: 1563889222855916112, guid: 2ac11799418a4434b8e75d5b893810e8, type: 3}
+  - imageName: type_6_ripples
+    imagePath: Assets/Sprites/Ships/Type_6/type_6_ripples.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_6/type_6_ripples
+    texture2D: {fileID: 2800000, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    sprite: {fileID: 6663352838857967657, guid: 902edb05cdb6178428779a0f67cc849c,
+      type: 3}
+    sprites:
+    - {fileID: 6663352838857967657, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: 1579162725276468555, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: -6173423832582405503, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: 9082448613680507847, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: -6597448773433599060, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: -4068521120946968535, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: 111359182912372256, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: 6030193030092291066, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: -5507546594644148588, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: 960660414818351899, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: -6280407233536352815, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: -8993328588764931039, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: 9134316721732127224, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: 6612915008822768229, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: 2220001949431974165, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: 5902609243770213864, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: 114938119248498302, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: -6453579852888195686, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: 2862294624412749687, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+    - {fileID: -3668087207401074271, guid: 902edb05cdb6178428779a0f67cc849c, type: 3}
+  - imageName: type_6_ripples_moving
+    imagePath: Assets/Sprites/Ships/Type_6/type_6_ripples_moving.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_6/type_6_ripples_moving
+    texture2D: {fileID: 2800000, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    sprite: {fileID: -1899126767923027458, guid: ab700c10f15f2b347910552be6bd83f4,
+      type: 3}
+    sprites:
+    - {fileID: -1899126767923027458, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: 3054872140581412662, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: 1053276209801577144, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: 2702211752309832490, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: 6762724204366735664, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: -3924096534739097184, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: -345984302665833961, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: -2719970856894613837, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: 5964565391933602353, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: 2636142978996505485, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: -5980296921242625345, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: 4221625518825266652, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: 2806231974138517213, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: -4516179453173704995, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: 1703070082884351943, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: 1179222244583540877, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: -5050374323300581819, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: 3470566908759089977, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: -2164912731118985917, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+    - {fileID: 3800267830177352388, guid: ab700c10f15f2b347910552be6bd83f4, type: 3}
+  - imageName: type_7_1
+    imagePath: Assets/Sprites/Ships/Type_7/type_7_1.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_7/type_7_1
+    texture2D: {fileID: 2800000, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    sprite: {fileID: -5348352839646364704, guid: 7b776c2258777dd4f84ef19bf2bf2103,
+      type: 3}
+    sprites:
+    - {fileID: -5348352839646364704, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: -7689057961189157526, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: 5112184768536963733, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: -3397969508792354745, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: -3493749733558117143, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: -391760447796231419, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: -4962525042048151467, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: 6718067430506097684, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: 4782710361766115053, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: -2780746270146276024, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: 2533821651893282956, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: -2589653051973877530, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: 834682257587694998, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: -2089784347475671925, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: -8335386996041333210, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: 2041786600478231835, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: -3291236678214784301, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: -8104751429976329011, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: -6903508241471658611, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+    - {fileID: 1672567026682705080, guid: 7b776c2258777dd4f84ef19bf2bf2103, type: 3}
+  - imageName: type_7_moving
+    imagePath: Assets/Sprites/Ships/Type_7/type_7_moving.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_7/type_7_moving
+    texture2D: {fileID: 2800000, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    sprite: {fileID: -7629082385894528750, guid: 07f4a6549d0b273458f422c129cb1ca8,
+      type: 3}
+    sprites:
+    - {fileID: -7629082385894528750, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: -6854757360102115172, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: -4574946073257761701, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: -5887249820831924477, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: 7832385727606296187, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: 933451462803500076, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: 4103894609403371231, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: 7468072853204368926, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: 3849882438435215152, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: 5232334270292013135, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: -2602968064656869251, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: -4683501687665599711, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: -4696677344227953110, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: 7311183583529641479, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: 3347322290874959237, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: -3055090733433687385, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: -1478632115456071657, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: -3009682020791345902, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: -8572910006662542318, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+    - {fileID: 6610135323797933344, guid: 07f4a6549d0b273458f422c129cb1ca8, type: 3}
+  - imageName: type_7_ripples
+    imagePath: Assets/Sprites/Ships/Type_7/type_7_ripples.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_7/type_7_ripples
+    texture2D: {fileID: 2800000, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    sprite: {fileID: 6853535724209485423, guid: e15a55e304d012c419eb3978dfd4dda1,
+      type: 3}
+    sprites:
+    - {fileID: 6853535724209485423, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: -3500845911155539197, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: -8534383304361791438, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: -3442942172468218421, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: 504817452762191311, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: 2390150813162777041, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: -8718811491021369247, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: -4548481309906636976, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: 8750038947448447460, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: 63683610717230712, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: 5760881357924801800, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: -3961315285141032490, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: -1955607092781785524, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: -5868285167537562848, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: -1556650741591630046, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: -3096762288214344036, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: 1370813554957353688, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: 3629307020473346014, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: -626362087528984386, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+    - {fileID: 3396982128667703709, guid: e15a55e304d012c419eb3978dfd4dda1, type: 3}
+  - imageName: type_7_ripples_moving
+    imagePath: Assets/Sprites/Ships/Type_7/type_7_ripples_moving.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_7/type_7_ripples_moving
+    texture2D: {fileID: 2800000, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    sprite: {fileID: -8180335603667304243, guid: 2449752e5be6c1548837c007e6f20505,
+      type: 3}
+    sprites:
+    - {fileID: -8180335603667304243, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: 9090396058193815154, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: -4057800072359323792, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: -3495975717496638419, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: -2541235825223556917, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: -2273875187905913048, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: 7368429907106753376, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: -5615111429386596152, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: -3663119561230632972, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: 3019508353853048970, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: 4638795865537645683, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: -4740181303676645687, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: 2591395461240719822, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: 5332612179448825578, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: -7370270299189048015, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: -8478361046205090259, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: 8504663383777989357, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: -6430617190488271512, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: -1302031109744004648, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+    - {fileID: -70457407033258768, guid: 2449752e5be6c1548837c007e6f20505, type: 3}
+  - imageName: type_8_1
+    imagePath: Assets/Sprites/Ships/Type_8/type_8_1.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_8/type_8_1
+    texture2D: {fileID: 2800000, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    sprite: {fileID: -5378309077247000513, guid: aa0885fe30f75224ba51843451306359,
+      type: 3}
+    sprites:
+    - {fileID: -5378309077247000513, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: 4710975157904045756, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: 3509943409512425310, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: -1582253750088338932, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: -8086114295128971471, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: -6163210428911502871, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: 5470747564945270368, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: -6001337634270681747, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: -6564322922046462837, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: 7238584941929458585, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: -1625118280329783574, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: -6009849826268062907, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: -3882696738632010531, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: 5967259849040072942, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: -6134278829476335803, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: 3307182730302979011, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: -7392311126163371358, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: -9164025809692053604, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: 3891549725233338680, guid: aa0885fe30f75224ba51843451306359, type: 3}
+    - {fileID: 6251058355934791952, guid: aa0885fe30f75224ba51843451306359, type: 3}
+  - imageName: type_8_ripples
+    imagePath: Assets/Sprites/Ships/Type_8/type_8_ripples.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_8/type_8_ripples
+    texture2D: {fileID: 2800000, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    sprite: {fileID: 7530402257902657469, guid: 02f7bdd20b74dcf4caa2158b3e148332,
+      type: 3}
+    sprites:
+    - {fileID: 7530402257902657469, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: -6464595449677187909, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: -2550856235803785664, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: 2281794850239962798, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: 7434784846694126031, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: -7049113162545848639, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: 5134133153700421198, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: -8510111640475608472, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: -4876030121888673877, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: 7352638259666615690, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: 4764211987833571475, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: -1651511565125174064, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: -4853122790786447750, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: -2454529478190211362, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: -2859551037533839947, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: 3253064312525849755, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: 1820030827501884925, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: -5338913549902081784, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: 1174184688109167036, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+    - {fileID: 5454793258040967689, guid: 02f7bdd20b74dcf4caa2158b3e148332, type: 3}
+  - imageName: type_8_ripples_moving
+    imagePath: Assets/Sprites/Ships/Type_8/type_8_ripples_moving.png
+    imagePathWithoutExtension: Assets/Sprites/Ships/Type_8/type_8_ripples_moving
+    texture2D: {fileID: 2800000, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    sprite: {fileID: 2236079013575752586, guid: 57bb126098696a748bf9ef04bdbfef3d,
+      type: 3}
+    sprites:
+    - {fileID: 2236079013575752586, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: 1019028731426923281, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: -6097860001747533474, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: 1218694148341157149, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: -7761837111613949965, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: 7391107706730251904, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: 8598609266618042921, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: -5385720667955507588, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: -1281438008137407719, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: 250684806039761167, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: -8919876806195475517, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: -6373494085133709832, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: -8695600555494097490, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: -7940227436893563975, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: -3287461527851919783, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: 622079400625071183, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: -8894739014031481376, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: 7327958474336020294, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: 8204415920410305248, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
+    - {fileID: -4151769865115840038, guid: 57bb126098696a748bf9ef04bdbfef3d, type: 3}
   - imageName: unknown_discovery
     imagePath: Assets/Sprites/Minimap/unknown_discovery.png
     imagePathWithoutExtension: Assets/Sprites/Minimap/unknown_discovery
@@ -34137,8 +33504,8 @@ MonoBehaviour:
     - {fileID: 21300004, guid: efbb22228a1a29e4a8fe70e1e0c110b0, type: 3}
     - {fileID: 21300006, guid: efbb22228a1a29e4a8fe70e1e0c110b0, type: 3}
   - imageName: water_wake
-    imagePath: Assets/Sprites/Ship/water_wake.png
-    imagePathWithoutExtension: Assets/Sprites/Ship/water_wake
+    imagePath: Assets/Sprites/ShipWakes/water_wake.png
+    imagePathWithoutExtension: Assets/Sprites/ShipWakes/water_wake
     texture2D: {fileID: 2800000, guid: b96f928e8ebd0294cb3548eafe53bf55, type: 3}
     sprite: {fileID: 21300000, guid: b96f928e8ebd0294cb3548eafe53bf55, type: 3}
     sprites:
@@ -34151,8 +33518,8 @@ MonoBehaviour:
     - {fileID: 21300012, guid: b96f928e8ebd0294cb3548eafe53bf55, type: 3}
     - {fileID: 21300014, guid: b96f928e8ebd0294cb3548eafe53bf55, type: 3}
   - imageName: water_wake_2
-    imagePath: Assets/Sprites/Ship/water_wake_2.png
-    imagePathWithoutExtension: Assets/Sprites/Ship/water_wake_2
+    imagePath: Assets/Sprites/ShipWakes/water_wake_2.png
+    imagePathWithoutExtension: Assets/Sprites/ShipWakes/water_wake_2
     texture2D: {fileID: 2800000, guid: c71cfd71bd7ef57448f37afedf0b9fc6, type: 3}
     sprite: {fileID: 21300000, guid: c71cfd71bd7ef57448f37afedf0b9fc6, type: 3}
     sprites:
@@ -37882,6 +37249,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 76bac14efe8c83f4a8d2ee700ee2b968, type: 3}
     sprites:
     - {fileID: 21300000, guid: 76bac14efe8c83f4a8d2ee700ee2b968, type: 3}
+  - imageName: yellow_button
+    imagePath: Assets/Sprites/GUI/Chat/yellow_button.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Chat/yellow_button
+    texture2D: {fileID: 2800000, guid: 81e7050871ae5cb4fa9796804d06c6c8, type: 3}
+    sprite: {fileID: 21300000, guid: 81e7050871ae5cb4fa9796804d06c6c8, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 81e7050871ae5cb4fa9796804d06c6c8, type: 3}
   blankSprite: {fileID: 21300000, guid: 3016ce2d5bd75a147aa3a66460e33058, type: 3}
   blankTexture: {fileID: 2800000, guid: bbb4cb08a2e7d9f46b4b0d93fbaa469b, type: 3}
 --- !u!1 &1180992914
@@ -45581,7 +44955,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 374256074}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.98466974
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

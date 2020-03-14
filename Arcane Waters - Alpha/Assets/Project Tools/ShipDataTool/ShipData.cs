@@ -45,10 +45,10 @@ public class ShipData
    public int baseSupplyRoom = 10;
 
    // Type of sail the ship uses
-   public Ship.SailType sailType = Ship.SailType.Caravel_1;
+   public Ship.SailType sailType = Ship.SailType.Type_1;
 
    // Type of mast the ship uses
-   public Ship.MastType mastType = Ship.MastType.Caravel_1;
+   public Ship.MastType mastType = Ship.MastType.Type_1;
 
    // Sprite paths
    public string spritePath;

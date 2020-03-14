@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class CloudShadowManager : ClientMonoBehaviour {
+public class CloudShadowManager : ClientMonoBehaviour
+{
    #region Public Variables
 
    // The prefab we use for creating Cloud Shadows
@@ -23,9 +24,14 @@ public class CloudShadowManager : ClientMonoBehaviour {
       // Look up components
       _area = GetComponentInParent<Area>();
 
-      // Look up our area's camera bounds, and expand that for the area we're going to work with
-      expandedBounds = GetComponentInParent<Area>().cameraBounds.bounds;
-      expandedBounds.Expand(3f);
+      if (_area != null) {
+         // Look up our area's camera bounds, and expand that for the area we're going to work with
+         expandedBounds = _area.cameraBounds.bounds;
+         expandedBounds.Expand(3f);
+      } else {
+         // If there's no Area present(like at the title screen), define a makeshift area
+         expandedBounds = new Bounds(transform.position + new Vector3(5.0f, -5.0f, 0.0f), Vector3.one * 10.0f);
+      }
 
       // Store any clouds that we already made in the Editor
       _shadows = new List<CloudShadow>(GetComponentsInChildren<CloudShadow>());
@@ -39,6 +45,7 @@ public class CloudShadowManager : ClientMonoBehaviour {
             Vector2 spawnPos = Util.randFromCenter(x, y, .75f);
             CloudShadow shadow = Instantiate(shadowPrefab, spawnPos, Quaternion.identity);
             shadow.transform.parent = this.transform;
+            shadow.manager = this;
             _shadows.Add(shadow);
          }
       }

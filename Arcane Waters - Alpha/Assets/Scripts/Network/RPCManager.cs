@@ -2880,8 +2880,8 @@ public class RPCManager : NetworkBehaviour {
       bot.route = null;
       bot.autoMove = true;
       bot.nationType = Nation.Type.Pirate;
-      bot.speed = Ship.getBaseSpeed(Ship.Type.Caravel);
-      bot.attackRangeModifier = Ship.getBaseAttackRange(Ship.Type.Caravel);
+      bot.speed = Ship.getBaseSpeed(Ship.Type.Type_1);
+      bot.attackRangeModifier = Ship.getBaseAttackRange(Ship.Type.Type_1);
       bot.entityName = "Pirate";
 
       // Set up the movement route

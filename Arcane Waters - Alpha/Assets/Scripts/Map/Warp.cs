@@ -34,6 +34,11 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver {
 
       // If a player entered this warp on the server, move them
       if (player.isServer && player.connectionToClient != null) {
+         // If this warp is controlled by a treasure site, verify that the player is allowed to use it
+         if (_treasureSite != null && !(VoyageManager.isInVoyage(player) && _treasureSite.voyageGroupId == player.voyageGroupId)) {
+            return;
+         }
+
          SpawnID spawnID = new SpawnID(areaTarget, spawnTarget);
          Vector2 localPos = SpawnManager.self.getSpawnLocalPosition(spawnID);
          player.spawnInNewMap(areaTarget, localPos, newFacingDirection);
@@ -67,11 +72,17 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver {
       }
    }
 
+   public void setTreasureSite(TreasureSite treasureSite) {
+      _treasureSite = treasureSite;
+   }
 
    #region Private Variables
 
    // The the collider, which will trigger the warp to activate
    protected BoxCollider2D _collider;
+
+   // The associated treasure site, if any
+   protected TreasureSite _treasureSite = null;
 
    #endregion
 }

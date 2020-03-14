@@ -231,18 +231,31 @@ public class NetEntity : NetworkBehaviour
       }
 
       if (!interactingAnimation) {
+         bool moving = isMoving();
+         bool battling = isInBattle();
+
          // Pass our angle and rigidbody velocity on to the Animator
          foreach (Animator animator in _animators) {
             animator.SetFloat("velocityX", _body.velocity.x);
             animator.SetFloat("velocityY", _body.velocity.y);
-            animator.SetBool("isMoving", isMoving());
+            animator.SetBool("isMoving", moving);
             animator.SetInteger("facing", (int) this.facing);
-            animator.SetBool("inBattle", isInBattle());
+            animator.SetBool("inBattle", battling);
 
             if (this is BodyEntity) {
                animator.SetInteger("fallDirection", (int) this.fallDirection);
             }
          }
+
+         if (moving != _movedLastFrame) {
+            if (moving) {
+               onStartMoving();
+            } else {
+               onEndMoving();
+            }
+         }
+
+         _movedLastFrame = moving;
       }
 
       // Hide our name while we're dead
@@ -304,7 +317,7 @@ public class NetEntity : NetworkBehaviour
       }
    }
 
-   public virtual void setDataFromUserInfo (UserInfo userInfo, Item armor, Item weapon, 
+   public virtual void setDataFromUserInfo (UserInfo userInfo, Item armor, Item weapon,
       ShipInfo shipInfo) {
       this.entityName = userInfo.username;
       this.adminFlag = userInfo.adminFlag;
@@ -361,7 +374,7 @@ public class NetEntity : NetworkBehaviour
       }
    }
 
-   IEnumerator CO_DelayExitAnim(Anim.Type animType, float delay) {
+   IEnumerator CO_DelayExitAnim (Anim.Type animType, float delay) {
       yield return new WaitForSeconds(delay);
       foreach (Animator animator in _animators) {
          switch (animType) {
@@ -374,7 +387,7 @@ public class NetEntity : NetworkBehaviour
       }
       interactingAnimation = false;
    }
-   
+
    public virtual float getMoveSpeed () {
       // Figure out our base movement speed
       float baseSpeed = (this is SeaEntity) ? 70f : 135f;
@@ -563,7 +576,7 @@ public class NetEntity : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_ForceFaceDirection(Direction direction) {
+   public void Cmd_ForceFaceDirection (Direction direction) {
       Rpc_ForceLookat(direction);
    }
 
@@ -878,7 +891,7 @@ public class NetEntity : NetworkBehaviour
 
             if (item.category == Item.Category.Weapon) {
                DB_Main.insertNewWeapon(this.userId, item.itemTypeId, ColorType.White, ColorType.White);
-            } 
+            }
          }
          if (completedStep.actionType == ActionType.HarvestCrop) {
             ShipInfo shipInfo = DB_Main.createStartingShip(userId);
@@ -907,6 +920,9 @@ public class NetEntity : NetworkBehaviour
       bool worldPositionStays = area.cameraBounds.bounds.Contains(initialPosition);
       this.transform.SetParent(area.transform, worldPositionStays);
    }
+
+   protected virtual void onStartMoving () { }
+   protected virtual void onEndMoving () { }
 
    #region Private Variables
 
@@ -944,6 +960,9 @@ public class NetEntity : NetworkBehaviour
 
    // Used by the server to keep track of which tutorial steps have already been processed
    protected Dictionary<int, bool> _processedTutorialSteps = new Dictionary<int, bool>();
+
+   // Did the Entity move last frame?
+   private bool _movedLastFrame;
 
    #endregion
 }

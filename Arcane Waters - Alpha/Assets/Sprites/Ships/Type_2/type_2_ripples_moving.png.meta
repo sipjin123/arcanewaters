@@ -1,0 +1,643 @@
+fileFormatVersion: 2
+guid: 2db48bc8c2d82b046a58835ab1c8103f
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8304873546715908338
+    second: ship_4_ripples_moving_0
+  - first:
+      213: 1288603573238358220
+    second: ship_4_ripples_moving_1
+  - first:
+      213: -2143052212183525859
+    second: ship_4_ripples_moving_2
+  - first:
+      213: 2602936657492987034
+    second: ship_4_ripples_moving_3
+  - first:
+      213: 4746682269543010256
+    second: ship_4_ripples_moving_4
+  - first:
+      213: 6682062304764417396
+    second: ship_4_ripples_moving_5
+  - first:
+      213: 5857496237714412354
+    second: ship_4_ripples_moving_6
+  - first:
+      213: 6534428775075859760
+    second: ship_4_ripples_moving_7
+  - first:
+      213: -917391478748152452
+    second: ship_4_ripples_moving_8
+  - first:
+      213: 341299338258102739
+    second: ship_4_ripples_moving_9
+  - first:
+      213: 5696578060811267516
+    second: ship_4_ripples_moving_10
+  - first:
+      213: -6389807978512670082
+    second: ship_4_ripples_moving_11
+  - first:
+      213: -5693582294215588120
+    second: ship_4_ripples_moving_12
+  - first:
+      213: -714391417703154523
+    second: ship_4_ripples_moving_13
+  - first:
+      213: -5911659301205122610
+    second: ship_4_ripples_moving_14
+  - first:
+      213: -3482886037395434821
+    second: ship_4_ripples_moving_15
+  - first:
+      213: -3462531632604382217
+    second: ship_4_ripples_moving_16
+  - first:
+      213: 5386650436290312876
+    second: ship_4_ripples_moving_17
+  - first:
+      213: 4026083272267276743
+    second: ship_4_ripples_moving_18
+  - first:
+      213: -3970844065354769921
+    second: ship_4_ripples_moving_19
+  - first:
+      213: 4713404375510816009
+    second: type_2_ripples_moving_0
+  - first:
+      213: -3343795038739839593
+    second: type_2_ripples_moving_1
+  - first:
+      213: 1857357911249993375
+    second: type_2_ripples_moving_2
+  - first:
+      213: 7273067323478431690
+    second: type_2_ripples_moving_3
+  - first:
+      213: 1952576079854504473
+    second: type_2_ripples_moving_4
+  - first:
+      213: 6420122709340026911
+    second: type_2_ripples_moving_5
+  - first:
+      213: -3076467580231863301
+    second: type_2_ripples_moving_6
+  - first:
+      213: -2467158837235848637
+    second: type_2_ripples_moving_7
+  - first:
+      213: -5217016289005243454
+    second: type_2_ripples_moving_8
+  - first:
+      213: -6598664794244398587
+    second: type_2_ripples_moving_9
+  - first:
+      213: 4676133163151292050
+    second: type_2_ripples_moving_10
+  - first:
+      213: 2519878190028015083
+    second: type_2_ripples_moving_11
+  - first:
+      213: -6931203990600952774
+    second: type_2_ripples_moving_12
+  - first:
+      213: -524193488543371867
+    second: type_2_ripples_moving_13
+  - first:
+      213: -2981674333873217308
+    second: type_2_ripples_moving_14
+  - first:
+      213: -7682529872864520982
+    second: type_2_ripples_moving_15
+  - first:
+      213: -6591444095527283426
+    second: type_2_ripples_moving_16
+  - first:
+      213: 4807645337981843318
+    second: type_2_ripples_moving_17
+  - first:
+      213: 5972445357059703972
+    second: type_2_ripples_moving_18
+  - first:
+      213: -5109406289399558174
+    second: type_2_ripples_moving_19
+  externalObjects: {}
+  serializedVersion: 10
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 1
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: -1
+    mipBias: -100
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: type_2_ripples_moving_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 512
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e833105a1fedc9f47a55a783881e9886
+      internalID: 4713404375510816009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: type_2_ripples_moving_1
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 512
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ac70414e7fa01a24c921fbf0c8c8cffe
+      internalID: -3343795038739839593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: type_2_ripples_moving_2
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 512
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6be9bf415b36b32428556dc9254b0540
+      internalID: 1857357911249993375
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: type_2_ripples_moving_3
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 512
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ca1a7d2baef16064b9bc38c648cde572
+      internalID: 7273067323478431690
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: type_2_ripples_moving_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 384
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8b6492167d80f5e41b94fb2a7195dbb7
+      internalID: 1952576079854504473
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: type_2_ripples_moving_5
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 384
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a41c1c0af5204484891e20d0ef190b98
+      internalID: 6420122709340026911
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: type_2_ripples_moving_6
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 384
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0f9d92e10a17bef4c86c42a64018b2eb
+      internalID: -3076467580231863301
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: type_2_ripples_moving_7
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 384
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 35cf7eb034ce94b49ad32e438ae3de91
+      internalID: -2467158837235848637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: type_2_ripples_moving_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 256
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1f9f8e848a538474d82cd5556d5c5ef0
+      internalID: -5217016289005243454
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: type_2_ripples_moving_9
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 256
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b73f4230dc0e59a46ad03c57c7ea875b
+      internalID: -6598664794244398587
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: type_2_ripples_moving_10
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 256
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 50ce01f46468d884e91a32cbdffd3726
+      internalID: 4676133163151292050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: type_2_ripples_moving_11
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 256
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4dc6658d2dae045409fbce236d0c1249
+      internalID: 2519878190028015083
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: type_2_ripples_moving_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 128
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6e93431315d69db4e99e7e0f926f4de5
+      internalID: -6931203990600952774
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: type_2_ripples_moving_13
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 128
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8f2a08a2e0fb2a04694faaadd2d99b32
+      internalID: -524193488543371867
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: type_2_ripples_moving_14
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 128
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 185b6974b5b849d429d8db69e9c9c848
+      internalID: -2981674333873217308
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: type_2_ripples_moving_15
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 128
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 14fe3c47422177e478f33cf5211ec255
+      internalID: -7682529872864520982
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: type_2_ripples_moving_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e37ecc0b12339664a98a2b96b430f4f7
+      internalID: -6591444095527283426
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: type_2_ripples_moving_17
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 96bf3d84c96fd1d468e316a3e241e32c
+      internalID: 4807645337981843318
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: type_2_ripples_moving_18
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ccf3723541c64ee4db377c26b942e42b
+      internalID: 5972445357059703972
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: type_2_ripples_moving_19
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c09d8b97d88f1df46b46698ae4ce2687
+      internalID: -5109406289399558174
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

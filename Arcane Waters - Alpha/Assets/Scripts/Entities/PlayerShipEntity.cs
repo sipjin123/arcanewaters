@@ -175,21 +175,21 @@ public class PlayerShipEntity : ShipEntity {
 
    public float getAngleChangeSpeed () {
       switch (this.shipType) {
-         case Ship.Type.Caravel:
+         case Ship.Type.Type_1:
             return 20f;
-         case Ship.Type.Brigantine:
+         case Ship.Type.Type_2:
             return 15f;
-         case Ship.Type.Nao:
+         case Ship.Type.Type_3:
             return 10f;
-         case Ship.Type.Carrack:
+         case Ship.Type.Type_4:
             return 9f;
-         case Ship.Type.Cutter:
+         case Ship.Type.Type_5:
             return 8f;
-         case Ship.Type.Buss:
+         case Ship.Type.Type_6:
             return 7f;
-         case Ship.Type.Galleon:
+         case Ship.Type.Type_7:
             return 6f;
-         case Ship.Type.Barge:
+         case Ship.Type.Type_8:
             return 5f;
          default:
             return 10f;
@@ -231,35 +231,35 @@ public class PlayerShipEntity : ShipEntity {
 
       // Customize the settings for the different ship types
       switch (this.shipType) {
-         case Ship.Type.Caravel:
+         case Ship.Type.Type_1:
             mass = 1f;
             drag = 50f;
             break;
-         case Ship.Type.Brigantine:
+         case Ship.Type.Type_2:
             mass = 2f;
             drag = 32f;
             break;
-         case Ship.Type.Nao:
+         case Ship.Type.Type_3:
             mass = 4f;
             drag = 19f;
             break;
-         case Ship.Type.Carrack:
+         case Ship.Type.Type_4:
             mass = 8f;
             drag = 6.25f;
             break;
-         case Ship.Type.Cutter:
+         case Ship.Type.Type_5:
             mass = 16f;
             drag = 3.125f;
             break;
-         case Ship.Type.Buss:
+         case Ship.Type.Type_6:
             mass = 32f;
             drag = 1.5f;
             break;
-         case Ship.Type.Galleon:
+         case Ship.Type.Type_7:
             mass = 64f;
             drag = .9f;
             break;
-         case Ship.Type.Barge:
+         case Ship.Type.Type_8:
             mass = 100f;
             drag = .5f;
             break;

@@ -590,7 +590,7 @@ public class AdminManager : NetworkBehaviour
          attackRange = Util.roundToPrettyNumber(attackRange);
 
          // Set up the Ship Info
-         ShipInfo ship = new ShipInfo(0, _player.userId, shipType, Ship.SkinType.None, Ship.MastType.Caravel_1, Ship.SailType.Caravel_1, shipType + "",
+         ShipInfo ship = new ShipInfo(0, _player.userId, shipType, Ship.SkinType.None, Ship.MastType.Type_1, Ship.SailType.Type_1, shipType + "",
             ColorType.None, ColorType.None, ColorType.None, ColorType.None, suppliesRoom, suppliesRoom, cargoRoom, health, health, damage, attackRange, speed, sailors, rarity, new ShipAbilityInfo(true));
 
          // Create the ship in the database

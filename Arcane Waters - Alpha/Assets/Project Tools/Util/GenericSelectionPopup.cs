@@ -38,7 +38,7 @@ public class GenericSelectionPopup : MonoBehaviour {
    public Dictionary<string, Sprite> genericIconSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> shipIconSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> shipSpriteList = new Dictionary<string, Sprite>();
-   public Dictionary<string, Sprite> shipRippleSpriteList = new Dictionary<string, Sprite>();
+   public Dictionary<string, Sprite> shipWakeSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> weaponSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> armorSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> helmSpriteList = new Dictionary<string, Sprite>();
@@ -63,7 +63,7 @@ public class GenericSelectionPopup : MonoBehaviour {
       ShipSkinType = 4,
       ShipAvatarIcon = 5,
       ShipSprite = 6,
-      ShipRippleSprite = 7,
+      ShipWakeSprite = 7,
       WeaponType = 8,
       Color = 9,
       WeaponIcon = 10,
@@ -130,8 +130,8 @@ public class GenericSelectionPopup : MonoBehaviour {
       string shipsPath = "Assets/Sprites/Ships/";
       setupSpriteContent(shipSpriteList, shipsPath);
 
-      string shipsRipplePath = "Assets/Sprites/Ship/";
-      setupSpriteContent(shipRippleSpriteList, shipsRipplePath);
+      string shipsWakePath = "Assets/Sprites/ShipWakes/";
+      setupSpriteContent(shipWakeSpriteList, shipsWakePath);
 
       string usableItemPath = "Assets/Sprites/Icons/UsableItems/";
       setupSpriteContent(usableItemSpriteList, usableItemPath);
@@ -187,8 +187,8 @@ public class GenericSelectionPopup : MonoBehaviour {
             Sprite shipSprite = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].sprites[3];
             createImageTemplate(sourceSprite.Key, shortName, shipSprite, imageIcon, textUI);
          }
-      } else if (popupType == selectionType.ShipRippleSprite) {
-         foreach (KeyValuePair<string, Sprite> sourceSprite in shipRippleSpriteList) {
+      } else if (popupType == selectionType.ShipWakeSprite) {
+         foreach (KeyValuePair<string, Sprite> sourceSprite in shipWakeSpriteList) {
             string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
             createImageTemplate(sourceSprite.Key, shortName, sourceSprite.Value, imageIcon, textUI);
          }

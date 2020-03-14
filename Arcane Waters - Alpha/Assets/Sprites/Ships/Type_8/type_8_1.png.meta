@@ -62,6 +62,66 @@ TextureImporter:
   - first:
       213: -7066302703748969449
     second: ship_8_19
+  - first:
+      213: -5378309077247000513
+    second: type_8_1_0
+  - first:
+      213: 4710975157904045756
+    second: type_8_1_1
+  - first:
+      213: 3509943409512425310
+    second: type_8_1_2
+  - first:
+      213: -1582253750088338932
+    second: type_8_1_3
+  - first:
+      213: -8086114295128971471
+    second: type_8_1_4
+  - first:
+      213: -6163210428911502871
+    second: type_8_1_5
+  - first:
+      213: 5470747564945270368
+    second: type_8_1_6
+  - first:
+      213: -6001337634270681747
+    second: type_8_1_7
+  - first:
+      213: -6564322922046462837
+    second: type_8_1_8
+  - first:
+      213: 7238584941929458585
+    second: type_8_1_9
+  - first:
+      213: -1625118280329783574
+    second: type_8_1_10
+  - first:
+      213: -6009849826268062907
+    second: type_8_1_11
+  - first:
+      213: -3882696738632010531
+    second: type_8_1_12
+  - first:
+      213: 5967259849040072942
+    second: type_8_1_13
+  - first:
+      213: -6134278829476335803
+    second: type_8_1_14
+  - first:
+      213: 3307182730302979011
+    second: type_8_1_15
+  - first:
+      213: -7392311126163371358
+    second: type_8_1_16
+  - first:
+      213: -9164025809692053604
+    second: type_8_1_17
+  - first:
+      213: 3891549725233338680
+    second: type_8_1_18
+  - first:
+      213: 6251058355934791952
+    second: type_8_1_19
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -146,7 +206,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ship_8_0
+      name: type_8_1_0
       rect:
         serializedVersion: 2
         x: 0
@@ -160,14 +220,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 60b7f53108a847f4899ca799ea2f721d
-      internalID: -3040656918543940320
+      spriteID: 5dadc0744a3027242927895ce179c20b
+      internalID: -5378309077247000513
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_8_1
+      name: type_8_1_1
       rect:
         serializedVersion: 2
         x: 128
@@ -181,14 +241,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 03758f0b23150894287ea22fe02ba88f
-      internalID: -729545608447407103
+      spriteID: f23750357b54c17439992d3a9d9cf9ca
+      internalID: 4710975157904045756
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_8_2
+      name: type_8_1_2
       rect:
         serializedVersion: 2
         x: 256
@@ -202,14 +262,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 65f7a0f1f22a1be4883bca8d99dbdef2
-      internalID: 3667006204637869537
+      spriteID: a7cb6c3f14f988446b748dcad418a2cb
+      internalID: 3509943409512425310
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_8_3
+      name: type_8_1_3
       rect:
         serializedVersion: 2
         x: 384
@@ -223,14 +283,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1be81b2c62d9d004a941bcd16a661349
-      internalID: 3648332483201836590
+      spriteID: d96069f4e2165d9429e5fbe8d2a08460
+      internalID: -1582253750088338932
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_8_4
+      name: type_8_1_4
       rect:
         serializedVersion: 2
         x: 0
@@ -244,14 +304,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7deb818bf0f2c4b40bb32ea984f31cb2
-      internalID: 3648156210134048020
+      spriteID: 1bf41853883c7754cad95feb948a5a7d
+      internalID: -8086114295128971471
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_8_5
+      name: type_8_1_5
       rect:
         serializedVersion: 2
         x: 128
@@ -265,14 +325,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2eb174d3d03cdf940953295a6f0c09d8
-      internalID: 1142333019500429384
+      spriteID: a8f85be9030ebf1419482aaa86015884
+      internalID: -6163210428911502871
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_8_6
+      name: type_8_1_6
       rect:
         serializedVersion: 2
         x: 256
@@ -286,14 +346,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d5ac09512c772f44488addd446788c1b
-      internalID: -3026850069905990488
+      spriteID: 8ebd6656188e9f245bb1140be094eb24
+      internalID: 5470747564945270368
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_8_7
+      name: type_8_1_7
       rect:
         serializedVersion: 2
         x: 384
@@ -307,14 +367,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fd33cc30427c124478af39ea092aa920
-      internalID: -7948195291360314896
+      spriteID: b138243f37a28f84f9a97ef575c93f2d
+      internalID: -6001337634270681747
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_8_8
+      name: type_8_1_8
       rect:
         serializedVersion: 2
         x: 0
@@ -328,14 +388,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cba2fc065bf5abf4a9545186dc216003
-      internalID: 8273162718500309707
+      spriteID: ff1acb3a61f5a60439a7a318051814cc
+      internalID: -6564322922046462837
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_8_9
+      name: type_8_1_9
       rect:
         serializedVersion: 2
         x: 128
@@ -349,14 +409,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 85304c60fbc0b094285cf8bdca7e8936
-      internalID: -2512275828273211921
+      spriteID: dc8ac37eb003c2945a69263b689042bb
+      internalID: 7238584941929458585
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_8_10
+      name: type_8_1_10
       rect:
         serializedVersion: 2
         x: 256
@@ -370,14 +430,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 82c47e6b84ebd5a47a2ec63af1db3cb6
-      internalID: 2588968918092965601
+      spriteID: 9f5c8b25ff8477548ac94d86a7aac538
+      internalID: -1625118280329783574
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_8_11
+      name: type_8_1_11
       rect:
         serializedVersion: 2
         x: 384
@@ -391,14 +451,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 184c45361dab0254da0b3e6d798f4fad
-      internalID: -4094655412172606387
+      spriteID: 85142c5e3eca4dd4bb970a77716afca8
+      internalID: -6009849826268062907
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_8_12
+      name: type_8_1_12
       rect:
         serializedVersion: 2
         x: 0
@@ -412,14 +472,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: df26c7708c618c243b93736fbe01abab
-      internalID: -1985179500560578987
+      spriteID: 41972909b6b4c5c46a0f2ca94b9d617e
+      internalID: -3882696738632010531
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_8_13
+      name: type_8_1_13
       rect:
         serializedVersion: 2
         x: 128
@@ -433,14 +493,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8142c29289d3f9d4e9bcd62e72f565a4
-      internalID: 6043614483814419677
+      spriteID: fc98ab475bb9a6447968982814765c07
+      internalID: 5967259849040072942
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_8_14
+      name: type_8_1_14
       rect:
         serializedVersion: 2
         x: 256
@@ -454,14 +514,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d92441f29c3fc1b4d80da44b8617b1de
-      internalID: 7556448757095556863
+      spriteID: 9c76e690182eba942af726f0057c15bc
+      internalID: -6134278829476335803
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_8_15
+      name: type_8_1_15
       rect:
         serializedVersion: 2
         x: 384
@@ -475,14 +535,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b1ae32d832272f24f934869da9ea7bc2
-      internalID: -6601233382539570498
+      spriteID: 6e14887b291fb674791fe82fb1a0f3cc
+      internalID: 3307182730302979011
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_8_16
+      name: type_8_1_16
       rect:
         serializedVersion: 2
         x: 0
@@ -496,14 +556,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 93323577858171d4db248852ba07f4e7
-      internalID: 7338959247606188992
+      spriteID: d19493e029408614fbf690e3da2561e2
+      internalID: -7392311126163371358
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_8_17
+      name: type_8_1_17
       rect:
         serializedVersion: 2
         x: 128
@@ -517,14 +577,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 238cb1d0f988711498155bea2933a8bd
-      internalID: 3667936352544322919
+      spriteID: b1f78a67fedd2014cbda20ee3e8e0731
+      internalID: -9164025809692053604
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_8_18
+      name: type_8_1_18
       rect:
         serializedVersion: 2
         x: 256
@@ -538,14 +598,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 54e2a88a58c3ac64bb5d56761c09de97
-      internalID: -2520298148856357524
+      spriteID: c819f2fa6cb592c4d8a77f557b98d224
+      internalID: 3891549725233338680
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ship_8_19
+      name: type_8_1_19
       rect:
         serializedVersion: 2
         x: 384
@@ -559,8 +619,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c684bef40da4ec946a99f54fd3d5f0de
-      internalID: -7066302703748969449
+      spriteID: ae0d11e2552749741b199e126585f61b
+      internalID: 6251058355934791952
       vertices: []
       indices: 
       edges: []

@@ -33,6 +33,8 @@ namespace MapCreationTool
             exportedProject.biome = Biome.Type.Forest;
          }
 
+         area.biome = exportedProject.biome;
+
          if (exportedProject.editorType == EditorType.Sea) {
             area.isSea = true;
          }
@@ -121,6 +123,7 @@ namespace MapCreationTool
       static void instantiatePrefabs (MapInfo mapInfo, ExportedProject001 project, Transform prefabParent, Transform npcParent, Area area) {
          List<ExportedPrefab001> npcData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> enemyData = new List<ExportedPrefab001>();
+         List<ExportedPrefab001> treasureSiteData = new List<ExportedPrefab001>();
 
          int unrecognizedPrefabs = 0;
          int cropSpotCounter = 0;
@@ -141,7 +144,12 @@ namespace MapCreationTool
                if (prefab.d != null) {
                   enemyData.Add(prefab);
                }
-            } else {
+            } else if (original.GetComponent<TreasureSite>() != null) {
+               if (prefab.d != null) {
+                  treasureSiteData.Add(prefab);
+               }
+            }
+            else {
                Transform parent = original.GetComponent<NPC>() ? npcParent : prefabParent;
                Vector3 targetLocalPos = new Vector3(prefab.x, prefab.y, 0) * 0.16f + Vector3.back * 10;
 
@@ -153,7 +161,7 @@ namespace MapCreationTool
 
                foreach (IBiomable biomable in pref.GetComponentsInChildren<IBiomable>()) {
                   biomable.setBiome(project.biome);
-               }
+               }               
 
                foreach (ZSnap snap in pref.GetComponentsInChildren<ZSnap>()) {
                   snap.snapZ();
@@ -170,7 +178,7 @@ namespace MapCreationTool
             Utilities.warning($"Could not recognize { unrecognizedPrefabs } prefabs of map { mapInfo.mapName }");
          }
 
-         area.registerNPCAndEnemyData(npcData, enemyData);
+         area.registerNetworkPrefabData(npcData, enemyData, treasureSiteData);
       }
 
       static List<TilemapLayer> instantiateTilemaps (MapInfo mapInfo, ExportedProject001 project, Transform tilemapParent, Transform collisionTilemapParent) {

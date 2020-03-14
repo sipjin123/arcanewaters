@@ -87,7 +87,7 @@ public class GemStoreManager : MonoBehaviour {
    protected void createShipSkinBoxes () {
       // Define the skins we want to show up in the store
       List<Ship.SkinType> skinTypes = new List<Ship.SkinType>() {
-         Ship.SkinType.Caravel_Fancy
+         Ship.SkinType.None
       };
 
       // TESTING

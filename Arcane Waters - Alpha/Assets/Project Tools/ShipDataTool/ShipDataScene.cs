@@ -47,9 +47,9 @@ public class ShipDataScene : MonoBehaviour {
       ShipData shipData = new ShipData();
       shipData.shipName = "Undefined";
       shipData.shipType = Ship.Type.None;
-      shipData.mastType = Ship.MastType.Caravel_1;
-      shipData.sailType = Ship.SailType.Caravel_1;
-      shipData.skinType = Ship.SkinType.Barge_Dragon;
+      shipData.mastType = Ship.MastType.Type_1;
+      shipData.sailType = Ship.SailType.Type_1;
+      shipData.skinType = Ship.SkinType.None;
 
       ShipDataTemplate template = GenericEntryTemplate.createGenericTemplate(shipTemplatePrefab.gameObject, shipToolManager, shipTemplateParent.transform).GetComponent<ShipDataTemplate>();
       template.updateItemDisplay(shipData, false);

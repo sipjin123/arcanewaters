@@ -6,7 +6,8 @@ using DigitalRuby.LightningBolt;
 using Mirror;
 using System;
 
-public class SeaEntity : NetEntity {
+public class SeaEntity : NetEntity
+{
    #region Public Variables
 
    // The amount of damage we do
@@ -90,7 +91,7 @@ public class SeaEntity : NetEntity {
 
          if (this is SeaMonsterEntity) {
             SeaMonsterEntity monsterEntity = GetComponent<SeaMonsterEntity>();
-            if(monsterEntity.seaMonsterData.roleType == RoleType.Minion) {
+            if (monsterEntity.seaMonsterData.roleType == RoleType.Minion) {
                monsterEntity.corpseHolder.SetActive(true);
                spritesContainer.SetActive(false);
                return;
@@ -292,7 +293,7 @@ public class SeaEntity : NetEntity {
          } else if (attackType == Attack.Type.Venom) {
             // If worm attack, calls slime collision effect
             ExplosionManager.createSlimeExplosion(pos);
-         } else if (attackType == Attack.Type.Ice) { 
+         } else if (attackType == Attack.Type.Ice) {
             // TODO: Add ice effect logic here
          } else {
             ShipAbilityData shipData = ShipAbilityManager.self.getAbility(attackType);
@@ -358,7 +359,7 @@ public class SeaEntity : NetEntity {
       SeaEntity sourceEntity = SeaManager.self.getEntity(attackerID);
       noteAttacker(sourceEntity);
 
-      switch(attackType) {
+      switch (attackType) {
          case Attack.Type.Boulder:
             // Apply the status effect
             ExplosionManager.createRockExplosion(location);
@@ -393,7 +394,7 @@ public class SeaEntity : NetEntity {
       return timeSinceAttack > this.reloadDelay;
    }
 
-   public int getDamageForShot(Attack.Type attackType, float distanceModifier) {
+   public int getDamageForShot (Attack.Type attackType, float distanceModifier) {
       return (int) (this.damage * Attack.getDamageModifier(attackType) * distanceModifier);
    }
 
@@ -403,15 +404,10 @@ public class SeaEntity : NetEntity {
          yield return null;
       }
 
-      // Set the new sprite
-      if (this is ShipEntity) {
-         ShipEntity ship = (ShipEntity) this;
-         ship.spritesContainer.GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture(Ship.getSkinPath(ship.shipType, ship.skinType));
-         ship.ripplesContainer.GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture(Ship.getRipplesPath(ship.shipType));
-      }
+      updateSprites();
 
       // Recolor our flags based on our Nation
-      ColorKey colorKey = new ColorKey(Ship.Type.Brigantine, Layer.Flags);
+      ColorKey colorKey = new ColorKey(Ship.Type.Type_1, Layer.Flags);
       spritesContainer.GetComponent<RecoloredSprite>().recolor(colorKey, Nation.getColor1(nationType), Nation.getColor2(nationType));
 
       if (!Util.isEmpty(this.entityName)) {
@@ -502,7 +498,7 @@ public class SeaEntity : NetEntity {
 
       _projectileSched.Add(newSched);
    }
-   
+
    [Server]
    protected void serverFireProjectile (Vector2 spot, Attack.Type attackType, Vector2 spawnPosition, float delay) {
       // Creates the projectile and the target circle
@@ -600,7 +596,7 @@ public class SeaEntity : NetEntity {
 
                      if (attackType == Attack.Type.Shock_Ball) {
                         chainLightning(targetEntity.transform.position, targetEntity.userId);
-                     } 
+                     }
                   } else {
                      targetEntity.Rpc_ShowExplosion(targetEntity.transform.position, damage, Attack.Type.None);
                   }
@@ -783,6 +779,8 @@ public class SeaEntity : NetEntity {
       // Destroy the venom projectile after a couple seconds
       Destroy(venomObject, NetworkedVenomProjectile.LIFETIME);
    }
+
+   protected virtual void updateSprites () { }
 
    #region Private Variables
 

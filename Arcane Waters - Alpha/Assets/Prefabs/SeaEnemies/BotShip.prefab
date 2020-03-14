@@ -74,12 +74,13 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300010, guid: d115c28f25a517a4480f76bbf071695f, type: 3}
+  m_Sprite: {fileID: 8106666463214275111, guid: 7b6ec5be4aaf27847b0701a95054d3ea,
+    type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 1
-  m_Size: {x: 0.32, y: 0.32}
+  m_Size: {x: 1.28, y: 1.28}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -128,7 +129,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b839a4fd7938f334ea1ab971883af132, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  newTexture: {fileID: 2800000, guid: d115c28f25a517a4480f76bbf071695f, type: 3}
+  newTexture: {fileID: 2800000, guid: 7b6ec5be4aaf27847b0701a95054d3ea, type: 3}
 --- !u!114 &2813122444238123029
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -254,8 +255,14 @@ MonoBehaviour:
   accountId: 0
   userId: 0
   instanceId: 0
-  areaType: 0
+  areaKey: 
   gender: 1
+  bodyType: 0
+  eyesType: 0
+  hairType: 0
+  eyesColor1: 0
+  hairColor1: 0
+  hairColor2: 0
   entityName: 
   nationType: 0
   currentHealth: 100
@@ -279,6 +286,7 @@ MonoBehaviour:
   faction: 0
   guildId: 0
   battleId: 0
+  voyageGroupId: -1
   isAboutToWarpOnServer: 0
   interactingAnimation: 0
   damage: 25
@@ -297,6 +305,7 @@ MonoBehaviour:
   colliderList:
   - {fileID: 58256050713667648}
   - {fileID: 6938392427603369774}
+  currentImpactMagnitude: 0
   shipType: 101
   skinType: 0
   speed: 100
@@ -437,8 +446,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverOnly: 0
-  localPlayerAuthority: 0
-  m_AssetId: 3ed5a65d96ea5e34b8a058ca729b95d4
+  m_AssetId: 
   m_SceneId: 0
 --- !u!114 &20651762200388567
 MonoBehaviour:
@@ -488,6 +496,7 @@ MonoBehaviour:
   isSmoothingAuthorityChanges: 0
   whenToUpdateTransform: 1
   sendRate: 30
+  networkChannel: 1
   childObjectToSync: {fileID: 0}
   setVelocityInsteadOfPositionOnNonOwners: 0
   maxPositionDifferenceForVelocitySyncing: 10
@@ -566,12 +575,13 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300010, guid: fcda7eb244e27ca4f9d2dd1fd2a2cb84, type: 3}
+  m_Sprite: {fileID: -6519797044500898686, guid: 3045212b0933e4b46a5e185bf3ac115a,
+    type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 0.3529412}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 1
-  m_Size: {x: 0.32, y: 0.32}
+  m_Size: {x: 1.28, y: 1.28}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -621,7 +631,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b839a4fd7938f334ea1ab971883af132, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  newTexture: {fileID: 2800000, guid: fcda7eb244e27ca4f9d2dd1fd2a2cb84, type: 3}
+  newTexture: {fileID: 2800000, guid: 3045212b0933e4b46a5e185bf3ac115a, type: 3}
 --- !u!1 &1470143744152997659
 GameObject:
   m_ObjectHideFlags: 0
@@ -795,8 +805,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 21300000, guid: 1c57834278b364a4f83762efe5b6e45b, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
@@ -870,8 +878,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 21300000, guid: 359454147669bc941a2916eba4276f1e, type: 3}
   m_Type: 3
   m_PreserveAspect: 1
@@ -1058,8 +1064,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 21300000, guid: 77235554a33c85943bf94429402c289c, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
@@ -1262,8 +1266,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 21300000, guid: 1108d52a03ed1b94ca6f3e637bbfa2d1, type: 3}
   m_Type: 3
   m_PreserveAspect: 1
@@ -1407,8 +1409,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 21300000, guid: dcb9de9cfc9c7b24295eb007d9e4c659, type: 3}
   m_Type: 3
   m_PreserveAspect: 1
@@ -1513,8 +1513,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 21300000, guid: f8a0238c1fda2e844b655143485f1ff7, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
@@ -1638,8 +1636,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 21300000, guid: fb9e8180052b70a47a757b479970adbf, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
@@ -1849,8 +1845,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: 212a7a47fc07116499d8e2fe669a5944, type: 3}
     m_FontSize: 10
@@ -1979,8 +1973,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 21300000, guid: 7c736385e93358f43ab5feaafa47687e, type: 3}
   m_Type: 0
   m_PreserveAspect: 0

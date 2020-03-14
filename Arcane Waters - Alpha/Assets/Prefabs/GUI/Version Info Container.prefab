@@ -145,7 +145,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Version info: 252222525252525252525'
+  m_text: v 252222525252525252525
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: f05e9c7d6fe58044a84b191658c875d5, type: 2}
   m_sharedMaterial: {fileID: 21451269468267556, guid: f05e9c7d6fe58044a84b191658c875d5,
@@ -155,8 +155,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 3003121663
+  m_fontColor: {r: 1, g: 1, b: 1, a: 0.69803923}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -174,8 +174,8 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 20
-  m_fontSizeBase: 20
+  m_fontSize: 15
+  m_fontSizeBase: 15
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 10.5
@@ -215,10 +215,10 @@ MonoBehaviour:
   m_margin: {x: -0.46887207, y: 23.954845, z: 2.6419678, w: 23.509468}
   m_textInfo:
     textComponent: {fileID: 2744266323319798056}
-    characterCount: 35
+    characterCount: 23
     spriteCount: 0
-    spaceCount: 2
-    wordCount: 3
+    spaceCount: 1
+    wordCount: 2
     linkCount: 0
     lineCount: 1
     pageCount: 1
@@ -251,4 +251,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _text: {fileID: 2744266323319798056}
-  _versionInfo: {fileID: 11400000, guid: 392f32a6382fe2445a12069f0584f71c, type: 2}
