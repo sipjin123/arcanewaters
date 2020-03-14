@@ -11,6 +11,7 @@ public class ServerMessageManager : MonoBehaviour {
 
    [ServerOnly]
    public static void On_LogInUserMessage (NetworkConnection conn, LogInUserMessage logInUserMessage) {
+      int selectedUserId = logInUserMessage.selectedUserId;
 
       // Determine the minimum client version for the client's platform
       int minClientGameVersion;
@@ -29,18 +30,6 @@ public class ServerMessageManager : MonoBehaviour {
          sendError(ErrorMessage.Type.ClientOutdated, conn.connectionId);
          return;
       }
-
-      if (!EquipmentXMLManager.self.loadedAllEquipment) {
-         // If the host is a client, make sure to wait for the equipment xml manager to load first so the character screen will show the proper equipment (Applicable for Hosts)
-         EquipmentXMLManager.self.finishedDataSetup.AddListener(() => finalizeSetup(conn, logInUserMessage));
-      } else {
-         // If Equipment xml has finished initializing, finish the setup for login (Applicable for Dedicated Clients)
-         finalizeSetup(conn, logInUserMessage);
-      }
-   }
-
-   private static void finalizeSetup (NetworkConnection conn, LogInUserMessage logInUserMessage) {
-      int selectedUserId = logInUserMessage.selectedUserId;
 
       // Grab the user info from the database for the relevant account ID
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {

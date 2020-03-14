@@ -18,9 +18,6 @@ public class DB_Main : DB_MainStub
 {
    #region Public Variables
 
-   // Determines if the local server is being used
-   public static bool isLocalServer = false;
-
    public static string RemoteServer
    {
       get { return _remoteServer; }
@@ -2266,7 +2263,7 @@ public class DB_Main : DB_MainStub
    public static new int insertCrop (CropInfo cropInfo) {
       int cropId = 0;
       string unixString = "FROM_UNIXTIME(@creationTime)";
-      if (isLocalServer) {
+      if (_connectionString.Contains("127.0.0.1")) {
          // Local server fails to process query because it cannot accept null
          unixString = "IFNULL(FROM_UNIXTIME(@creationTime), FROM_UNIXTIME(1))";
       }
