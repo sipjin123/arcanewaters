@@ -11,11 +11,15 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
    // The Type of Enemy
    public enum Type {
       None = 0,
-      Plant = 100, Golem = 101, Slime = 102, GolemBoss = 103,
+      Plant = 100, Golem = 101, Slime = 102, Golem_Boss = 103,
       Coralbow = 200, Entarcher = 201, Flower = 202, Muckspirit = 203, Treeman = 204,
       Lizard = 205, Shroom = 206, Wisp = 207, Lizard_Armored = 208, Lizard_Shaman = 209, Lizard_Wizard = 210,
       Lizard_Sword = 211, PlayerBattler = 305
    }
+
+   // The Type of animation the Enemy is associated with
+   [SyncVar]
+   public Anim.Group animGroupType;
 
    // The Type of Enemy
    [SyncVar]
@@ -69,6 +73,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       // Update our sprite
       string enemySpriteName = System.Enum.GetName(typeof(Enemy.Type), (int) this.enemyType).ToLower();
       bodyAnim.GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture("Enemies/LandMonsters/" + enemySpriteName);
+      bodyAnim.group = animGroupType;
 
       // Choose a random desired position every few seconds
       if (isServer) {
@@ -103,8 +108,8 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
          return;
       }
 
-      // If we're in a battle, don't move
-      if (isInBattle()) {
+      // If we're in a battle, don't move / Boss entities dont move
+      if (isInBattle() || isBoss()) {
          return;
       }
 

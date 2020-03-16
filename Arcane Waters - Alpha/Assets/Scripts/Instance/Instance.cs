@@ -102,6 +102,12 @@ public class Instance : NetworkBehaviour
                      Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab, npcParent);
                      enemy.enemyType = (Enemy.Type)Enemy.fetchReceivedData(dataField.d);
 
+                     BattlerData battleData = MonsterManager.self.getMonster(enemy.enemyType);
+                     if (battleData != null) {
+                        enemy.isBossType = battleData.isBossType;
+                        enemy.animGroupType = battleData.animGroup;
+                     }
+
                      InstanceManager.self.addEnemyToInstance(enemy, this);
 
                      enemy.transform.localPosition = targetLocalPos;

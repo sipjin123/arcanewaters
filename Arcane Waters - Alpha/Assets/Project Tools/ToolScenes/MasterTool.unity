@@ -12214,6 +12214,20 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: c3db39217553f2241b23603ff9fa50d1, type: 3}
     sprites:
     - {fileID: 21300000, guid: c3db39217553f2241b23603ff9fa50d1, type: 3}
+  - imageName: Border Design v1
+    imagePath: Assets/Sprites/Battle Boards/Border Design v1.png
+    imagePathWithoutExtension: Assets/Sprites/Battle Boards/Border Design v1
+    texture2D: {fileID: 2800000, guid: 94ae49d314e9d7f428c3ae17995a0f8f, type: 3}
+    sprite: {fileID: 21300000, guid: 94ae49d314e9d7f428c3ae17995a0f8f, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 94ae49d314e9d7f428c3ae17995a0f8f, type: 3}
+  - imageName: Border Design v2
+    imagePath: Assets/Sprites/Battle Boards/Border Design v2.png
+    imagePathWithoutExtension: Assets/Sprites/Battle Boards/Border Design v2
+    texture2D: {fileID: 2800000, guid: a437682e2bf0b354f95954916dad2d8e, type: 3}
+    sprite: {fileID: 21300000, guid: a437682e2bf0b354f95954916dad2d8e, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: a437682e2bf0b354f95954916dad2d8e, type: 3}
   - imageName: boss_horror
     imagePath: Assets/Sprites/Enemies/SeaMonsters/boss_horror.png
     imagePathWithoutExtension: Assets/Sprites/Enemies/SeaMonsters/boss_horror
@@ -20018,8 +20032,8 @@ MonoBehaviour:
     - {fileID: 21300076, guid: 2cb5e2c7ea804fd42988619ab67168bb, type: 3}
     - {fileID: 21300078, guid: 2cb5e2c7ea804fd42988619ab67168bb, type: 3}
   - imageName: golem_boss
-    imagePath: Assets/Sprites/Enemies/golem_boss.png
-    imagePathWithoutExtension: Assets/Sprites/Enemies/golem_boss
+    imagePath: Assets/Sprites/Enemies/LandMonsters/golem_boss.png
+    imagePathWithoutExtension: Assets/Sprites/Enemies/LandMonsters/golem_boss
     texture2D: {fileID: 2800000, guid: c93d708c2a3526e418e61d8a1e08244e, type: 3}
     sprite: {fileID: 21300000, guid: c93d708c2a3526e418e61d8a1e08244e, type: 3}
     sprites:
@@ -31505,33 +31519,6 @@ MonoBehaviour:
     - {fileID: 8809630216217834186, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
     - {fileID: 3373107828176518912, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
     - {fileID: -1131966330283553626, guid: 440b10a5db4dc764890ea7f60b7f0e0c, type: 3}
-  - imageName: type_4_moving
-    imagePath: Assets/Sprites/Ships/Type_4/type_4_moving.png
-    imagePathWithoutExtension: Assets/Sprites/Ships/Type_4/type_4_moving
-    texture2D: {fileID: 2800000, guid: 1063404876563294cbd488bfe885d20e, type: 3}
-    sprite: {fileID: -5556105365460711022, guid: 1063404876563294cbd488bfe885d20e,
-      type: 3}
-    sprites:
-    - {fileID: -5556105365460711022, guid: 1063404876563294cbd488bfe885d20e, type: 3}
-    - {fileID: 6779643130589524203, guid: 1063404876563294cbd488bfe885d20e, type: 3}
-    - {fileID: 8337616546355532426, guid: 1063404876563294cbd488bfe885d20e, type: 3}
-    - {fileID: 7306257670535055226, guid: 1063404876563294cbd488bfe885d20e, type: 3}
-    - {fileID: 4899280712433964971, guid: 1063404876563294cbd488bfe885d20e, type: 3}
-    - {fileID: -941103580330020988, guid: 1063404876563294cbd488bfe885d20e, type: 3}
-    - {fileID: 652145441279884645, guid: 1063404876563294cbd488bfe885d20e, type: 3}
-    - {fileID: 3720500779869761631, guid: 1063404876563294cbd488bfe885d20e, type: 3}
-    - {fileID: -7114158661621052024, guid: 1063404876563294cbd488bfe885d20e, type: 3}
-    - {fileID: -5073867626599125534, guid: 1063404876563294cbd488bfe885d20e, type: 3}
-    - {fileID: 3458287040612438968, guid: 1063404876563294cbd488bfe885d20e, type: 3}
-    - {fileID: 6827116868932511339, guid: 1063404876563294cbd488bfe885d20e, type: 3}
-    - {fileID: 702023150288707903, guid: 1063404876563294cbd488bfe885d20e, type: 3}
-    - {fileID: 2836954163252897555, guid: 1063404876563294cbd488bfe885d20e, type: 3}
-    - {fileID: 4979887177249142864, guid: 1063404876563294cbd488bfe885d20e, type: 3}
-    - {fileID: 6163458785697359732, guid: 1063404876563294cbd488bfe885d20e, type: 3}
-    - {fileID: -4529449382793049869, guid: 1063404876563294cbd488bfe885d20e, type: 3}
-    - {fileID: 854946555104383588, guid: 1063404876563294cbd488bfe885d20e, type: 3}
-    - {fileID: -7139358632799885775, guid: 1063404876563294cbd488bfe885d20e, type: 3}
-    - {fileID: 1724643311219563368, guid: 1063404876563294cbd488bfe885d20e, type: 3}
   - imageName: type_4_ripples
     imagePath: Assets/Sprites/Ships/Type_4/type_4_ripples.png
     imagePathWithoutExtension: Assets/Sprites/Ships/Type_4/type_4_ripples

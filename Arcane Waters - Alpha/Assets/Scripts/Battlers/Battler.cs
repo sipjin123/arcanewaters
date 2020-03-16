@@ -185,7 +185,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    public WeaponManager weaponManager;
 
    // Holds the reference to the battler bar
-   public BattleBars battlerBar;
+   public BattleBars selectedBattleBar, minionBattleBar, bossBattleBar;
 
    // Base select/deselect battlers events. Hidden from inspector to avoid untracked events.
    [HideInInspector] public UnityEvent onBattlerSelect = new UnityEvent();
@@ -219,6 +219,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // Determines if this battler is a boss
    [SyncVar]
    public bool isBossType;
+
+   // Caches the sizes of the monsters in pixel for offset purposes
+   public const float largeMonsterSize = 170;
+   public const float largeMonsterOffset = .25f;
 
    #endregion
 
@@ -338,6 +342,18 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             if (fetchSprite != null) {
                mainSpriteRenderer.sprite = fetchSprite;
             }
+            selectedBattleBar = minionBattleBar;
+
+            // Offset sprite for large monsters
+            if (fetchSprite.rect.height >= largeMonsterSize) {
+               Vector3 localPos = mainSpriteRenderer.transform.localPosition;
+               mainSpriteRenderer.transform.localPosition = new Vector3(localPos.x, largeMonsterOffset, localPos.z);
+               selectedBattleBar = bossBattleBar;
+
+               // Enlarge the click box of a boss type enemy
+               _clickableBox.GetComponent<BoxCollider2D>().size = new Vector2(1, .5f);
+            }
+            selectedBattleBar.gameObject.SetActive(true);
 
             setBattlerAbilities(new List<BasicAbilityData>(_alteredBattlerData.battlerAbilities.basicAbilityDataList), battlerType);
 
@@ -533,7 +549,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       if (battlerType.Equals(BattlerType.PlayerControlled)) {
          BattleUIManager.self.usernameText.gameObject.SetActive(isMouseHovering());
       } else {
-         battlerBar.nameText.gameObject.SetActive(isMouseHovering());
+         selectedBattleBar.nameText.gameObject.SetActive(isMouseHovering());
       }
 
       // Any time out sprite changes, we need to regenerate our outline
