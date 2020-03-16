@@ -23,7 +23,7 @@ namespace MapCreationTool
                selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
                   name = customData.name,
                   toolTip = customData.toolTip,
-                  options = new string[] { "North", "NorthEast", "East", "SouthEast", "South", "SouthWest", "West", "NorthWest" }
+                  options = SelectOption.formOptions("North", "NorthEast", "East", "SouthEast", "South", "SouthWest", "West", "NorthWest")
                };
             } else if (customData.type == CustomFieldType.NPC && NPCManager.instance.npcCount > 0) {
                Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
@@ -34,17 +34,10 @@ namespace MapCreationTool
                };
             } else if (customData.type == CustomFieldType.ShopPanelType && NPCManager.instance.npcCount > 0) {
                Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
-               List<string> optionList = new List<string>();
-
-               optionList.Add(Panel.Type.None.ToString());
-               optionList.Add(Panel.Type.Adventure.ToString());
-               optionList.Add(Panel.Type.Shipyard.ToString());
-               optionList.Add(Panel.Type.Merchant.ToString());
-
                selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
                   name = customData.name,
                   toolTip = customData.toolTip,
-                  options = optionList.ToArray()
+                  options = SelectOption.formOptions(Panel.Type.None.ToString(), Panel.Type.Adventure.ToString(), Panel.Type.Shipyard.ToString(), Panel.Type.Merchant.ToString())
                };
             } else if (customData.type == CustomFieldType.ShopName && ShopManager.instance.shopEntryCount > 0 && NPCManager.instance.npcCount > 0) {
                Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
@@ -72,7 +65,7 @@ namespace MapCreationTool
                selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
                   name = customData.name,
                   toolTip = customData.toolTip,
-                  options = GenericActionTrigger.actions.Keys.ToArray()
+                  options = SelectOption.formOptions(GenericActionTrigger.actions.Keys.ToArray())
                };
             }
          }
@@ -93,7 +86,7 @@ namespace MapCreationTool
          public string name;
          public int defaultOption;
          public string toolTip;
-         public string[] options;
+         public SelectOption[] options;
       }
 
       [Serializable]

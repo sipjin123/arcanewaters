@@ -40,8 +40,8 @@ namespace MapCreationTool
          return npcCount == 0 ? null : ImageManager.getTexture(npcs[0].spritePath);
       }
 
-      public string[] formSelectionOptions () {
-         return npcs.Select(n => n.npcId + ": " + n.name).ToArray();
+      public SelectOption[] formSelectionOptions () {
+         return npcs.Select(n => new SelectOption(n.npcId.ToString(), n.name)).ToArray();
       }
 
       public int npcCount

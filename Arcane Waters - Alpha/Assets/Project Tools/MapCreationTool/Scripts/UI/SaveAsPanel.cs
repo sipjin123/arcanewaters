@@ -50,7 +50,6 @@ namespace MapCreationTool
             }
 
             MapVersion mapVersion = new MapVersion {
-               mapName = inputField.text,
                version = 0,
                createdAt = DateTime.UtcNow,
                updatedAt = DateTime.UtcNow,
@@ -61,7 +60,7 @@ namespace MapCreationTool
                   createdAt = DateTime.UtcNow,
                   creatorID = MasterToolAccountManager.self.currentAccountID
                },
-               spawns = DrawBoard.instance.formSpawnList(inputField.text, 0)
+               spawns = DrawBoard.instance.formSpawnList(null, 0)
             };
 
             // Make sure all spawns have unique names
@@ -85,7 +84,7 @@ namespace MapCreationTool
                      errorText.text = dbError;
                   } else {
                      DrawBoard.changeLoadedVersion(mapVersion);
-                     Overlord.instance.addSpawns(mapVersion.spawns);
+                     Overlord.loadAllRemoteData();
                      hide();
                   }
                });

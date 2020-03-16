@@ -267,7 +267,7 @@ namespace MapCreationTool
                      foreach (var kv in pdd.dataFields)
                         setPrefabData(newPref, kv.name, kv.defaultValue, false);
                      foreach (var kv in pdd.selectDataFields)
-                        setPrefabData(newPref, kv.name, kv.options[kv.defaultOption], false);
+                        setPrefabData(newPref, kv.name, kv.options[kv.defaultOption].value, false);
                   }
                }
             }
@@ -301,6 +301,14 @@ namespace MapCreationTool
          undoChange.selectionToRemove.add(change.selectionToAdd.prefabs);
          undoChange.selectionToAdd.add(change.selectionToRemove.tiles);
          undoChange.selectionToAdd.add(change.selectionToRemove.prefabs);
+
+         foreach (PlacedPrefab prefab in change.selectionToAdd.prefabs) {
+            prefab.placedInstance.GetComponent<MapEditorPrefab>()?.setSelected(true);
+         }
+
+         foreach (PlacedPrefab prefab in change.selectionToRemove.prefabs) {
+            prefab.placedInstance.GetComponent<MapEditorPrefab>()?.setSelected(false);
+         }
 
          tileSelectionLayer.setTiles(
             change.selectionToRemove.tiles.ToArray(),
@@ -600,9 +608,9 @@ namespace MapCreationTool
          return Serializer.serializeExport(layers, placedPrefabs, Tools.biome, Tools.editorType, config, palette.formCollisionDictionary(), origin, size);
       }
 
-      public List<MapSpawn> formSpawnList (string mapName, int mapVersion) {
+      public List<MapSpawn> formSpawnList (int? mapId, int mapVersion) {
          return GetComponentsInChildren<SpawnMapEditor>().Select(s => new MapSpawn {
-            mapName = mapName,
+            mapId = mapId ?? -1,
             mapVersion = mapVersion,
             name = s.spawnName,
             posX = s.transform.position.x * 0.16f,

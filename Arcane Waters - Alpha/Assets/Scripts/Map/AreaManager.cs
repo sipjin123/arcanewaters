@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using MapCreationTool.Serialization;
 
 public class AreaManager : MonoBehaviour
 {
@@ -33,6 +34,21 @@ public class AreaManager : MonoBehaviour
       foreach (string areaKey in liveMaps.Keys) {
          _areaKeysFromDatabase.Add(areaKey);
       }
+   }
+
+   public void storeAreaIdsToNames () {
+      foreach (Map map in DB_Main.getMaps()) {
+         _areaIdToName.Add(map.id, map.name);
+      }
+      Debug.Log(_areaIdToName.Count);
+   }
+
+   public string getAreaName (int areaId) {
+      if (_areaIdToName.TryGetValue(areaId, out string areaName)) {
+         return areaName;
+      }
+
+      return areaId.ToString();
    }
 
    public Area getArea (string areaKey) {
@@ -84,6 +100,9 @@ public class AreaManager : MonoBehaviour
 
    // A set of all Area Keys from the database
    protected HashSet<string> _areaKeysFromDatabase = new HashSet<string>();
+
+   // Map ID to map name dictionary, ideally would be removed once maps are tracked everywhere by their ID
+   protected Dictionary<int, string> _areaIdToName = new Dictionary<int, string>();
 
    #endregion
 }

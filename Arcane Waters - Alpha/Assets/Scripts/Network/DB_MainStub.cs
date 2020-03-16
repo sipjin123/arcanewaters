@@ -174,11 +174,11 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
-   public static void deleteMap (string name) {
+   public static void deleteMap (int id) {
 
    }
 
-   public static void deleteMapVersion (string name, int version) {
+   public static void deleteMapVersion (MapVersion version) {
 
    }
 

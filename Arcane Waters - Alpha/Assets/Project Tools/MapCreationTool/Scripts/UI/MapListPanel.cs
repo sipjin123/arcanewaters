@@ -92,13 +92,13 @@ namespace MapCreationTool
       public void deleteMapConfirm (Map map) {
          clearEverything();
          setLoadingText();
-         if (DrawBoard.loadedVersion != null && DrawBoard.loadedVersion.mapName.CompareTo(map.name) == 0) {
+         if (DrawBoard.loadedVersion != null && DrawBoard.loadedVersion.mapId == map.id) {
             DrawBoard.changeLoadedVersion(null);
          }
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             string error = null;
             try {
-               DB_Main.deleteMap(map.name);
+               DB_Main.deleteMap(map.id);
             } catch (Exception ex) {
                error = ex.Message;
             }

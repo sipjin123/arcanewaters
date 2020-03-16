@@ -16,10 +16,11 @@ public class House : MonoBehaviour, IMapEditorDataReceiver
       foreach (DataField field in dataFields) {
          switch (field.k.ToLower()) {
             case DataField.HOUSE_TARGET_MAP_KEY:
-               if (string.IsNullOrWhiteSpace(field.v)) {
-                  continue;
+               if (int.TryParse(field.v, out int id)) {
+                  warp.areaTarget = AreaManager.self.getAreaName(id);
+               } else {
+                  warp.areaTarget = field.v;
                }
-               warp.areaTarget = field.v.Trim(' ');
                warp.gameObject.SetActive(true);
                break;
             case DataField.HOUSE_TARGET_SPAWN_KEY:

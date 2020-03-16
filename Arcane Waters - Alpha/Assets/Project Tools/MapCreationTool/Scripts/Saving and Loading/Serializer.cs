@@ -458,7 +458,7 @@ namespace MapCreationTool.Serialization
             biome = dt.biome,
             size = dt.size,
             editorType = dt.editorType
-         };
+         }.fixPrefabFields();
       }
 
       private static DeserializedProject deserialize002 (string data, bool forEditor) {
@@ -512,9 +512,8 @@ namespace MapCreationTool.Serialization
             biome = dt.biome,
             size = dt.size,
             editorType = dt.editorType
-         };
+         }.fixPrefabFields();
       }
-
 
       private static int extractVersion (string data) {
          Regex rx = new Regex("\"[0-9].[0-9].[0-9]\"");
@@ -595,6 +594,15 @@ namespace MapCreationTool.Serialization
       public ExportedPrefab001[] prefabs;
       public ExportedLayer001[] layers;
       public ExportedGravityEffector[] gravityEffectors;
+
+      public ExportedProject001 fixPrefabFields () {
+         foreach (ExportedPrefab001 prefab in prefabs) {
+            foreach (DataField field in prefab.d) {
+               field.fixField(false);
+            }
+         }
+         return this;
+      }
    }
 
    [Serializable]
@@ -639,6 +647,15 @@ namespace MapCreationTool.Serialization
       public Biome.Type biome;
       public EditorType editorType;
       public Vector2Int size;
+
+      public DeserializedProject fixPrefabFields () {
+         foreach (DeserializedPrefab prefab in prefabs) {
+            foreach (DataField field in prefab.dataFields) {
+               field.fixField(true);
+            }
+         }
+         return this;
+      }
 
       public class DeserializedPrefab
       {
@@ -760,5 +777,27 @@ namespace MapCreationTool.Serialization
 
       public string k; // Key
       public string v; // Value
+
+      public void fixField (bool forEditor) {
+         switch (k) {
+            case NPC_DATA_KEY:
+            case LAND_ENEMY_DATA_KEY:
+               string[] values = v.Split(':');
+               if (values.Length == 2) {
+                  if (int.TryParse(values[0], out int nv)) {
+                     v = nv.ToString();
+                  }
+               }
+               break;
+            case WARP_TARGET_MAP_KEY:
+               if (forEditor && !int.TryParse(v, out int mapId)) {
+                  Map map = Overlord.remoteMaps.maps.Values.FirstOrDefault(m => m.name.CompareTo(v) == 0);
+                  if (map != null) {
+                     v = map.id.ToString();
+                  }
+               }
+               break;
+         }
+      }
    }
 }

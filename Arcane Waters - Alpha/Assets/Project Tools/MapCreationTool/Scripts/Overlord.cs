@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using MapCreationTool.Serialization;
@@ -35,11 +36,14 @@ namespace MapCreationTool
       [SerializeField]
       private Keybindings.Keybinding[] defaultKeybindings = new Keybindings.Keybinding[0];
 
-      public Dictionary<string, List<string>> mapSpawns { get; private set; }
+      // Remote data
+      public static RemoteMaps remoteMaps { get; private set; }
+      public static RemoteSpawns remoteSpawns { get; private set; }
 
       private void Awake () {
          instance = this;
-         mapSpawns = new Dictionary<string, List<string>>();
+
+         initializeRemoteDatas();
 
          Tools.setDefaultValues();
          Undo.clear();
@@ -62,10 +66,13 @@ namespace MapCreationTool
          }
       }
 
-      private void Start () {
+      private IEnumerator Start () {
          Settings.setDefaults();
          Settings.load();
-         fetchSpawns();
+
+         yield return new WaitUntil(() => ImageManager.self != null);
+
+         loadAllRemoteData();
       }
 
       private void OnEnable () {
@@ -78,9 +85,9 @@ namespace MapCreationTool
 
          Tools.EditorTypeChanged += editorTypeChanged;
 
-         ShopManager.OnLoaded += onLoaded;
-         NPCManager.OnLoaded += onLoaded;
-         MonsterManager.OnLoaded += onLoaded;
+         ShopManager.OnLoaded += onRemoteDataLoaded;
+         NPCManager.OnLoaded += onRemoteDataLoaded;
+         MonsterManager.OnLoaded += onRemoteDataLoaded;
       }
 
       private void OnDisable () {
@@ -92,9 +99,9 @@ namespace MapCreationTool
          Tools.AnythingChanged -= ensurePreviewCleared;
 
          Tools.EditorTypeChanged -= editorTypeChanged;
-         ShopManager.OnLoaded -= onLoaded;
-         NPCManager.OnLoaded -= onLoaded;
-         MonsterManager.OnLoaded -= onLoaded;
+         ShopManager.OnLoaded -= onRemoteDataLoaded;
+         NPCManager.OnLoaded -= onRemoteDataLoaded;
+         MonsterManager.OnLoaded -= onRemoteDataLoaded;
       }
 
       private Keybindings.Keybinding[] formDefaultKeybindings (Keybindings.Keybinding[] defined) {
@@ -119,31 +126,19 @@ namespace MapCreationTool
          return result.ToArray();
       }
 
-      private void fetchSpawns () {
-         UnityThreading.Task task = UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            string dbError = null;
-            List<MapSpawn> spawns = null;
-            try {
-               spawns = DB_Main.getMapSpawns();
-            } catch (Exception ex) {
-               dbError = ex.Message;
-            }
-
-            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               if (dbError != null) {
-                  UI.errorDialog.display(dbError);
-               } else {
-                  setSpawns(spawns);
-               }
-            });
-         });
-
-         UI.loadingPanel.display("Loading spawns", task);
+      private void initializeRemoteDatas () {
+         remoteMaps = new RemoteMaps { OnLoaded = onRemoteDataLoaded };
+         remoteSpawns = new RemoteSpawns { OnLoaded = onRemoteDataLoaded };
       }
 
-      private void onLoaded () {
+      public static void loadAllRemoteData () {
+         remoteSpawns.load();
+         remoteMaps.load();
+      }
+
+      private void onRemoteDataLoaded () {
          // Check if all managers are loaded
-         if (ShopManager.instance.loaded && NPCManager.instance.loaded && MonsterManager.instance.loaded) {
+         if (ShopManager.instance.loaded && NPCManager.instance.loaded && MonsterManager.instance.loaded && remoteMaps.loaded && remoteSpawns.loaded) {
             Destroy(loadCover);
             palette.populatePalette(currentPaletteData[Tools.biome], Tools.biome);
          }
@@ -253,23 +248,6 @@ namespace MapCreationTool
 
          palette.populatePalette(currentPalette[to], to);
          drawBoard.changeBiome(currentPalette[from], currentPalette[to]);
-      }
-
-      public void setSpawns (List<MapSpawn> spawns) {
-         mapSpawns = new Dictionary<string, List<string>>();
-         addSpawns(spawns);
-      }
-
-      public void addSpawns (List<MapSpawn> spawns) {
-         foreach (MapSpawn spawn in spawns) {
-            if (!mapSpawns.ContainsKey(spawn.mapName)) {
-               mapSpawns.Add(spawn.mapName, new List<string> { spawn.name });
-            } else {
-               if (!mapSpawns[spawn.mapName].Contains(spawn.name)) {
-                  mapSpawns[spawn.mapName].Add(spawn.name);
-               }
-            }
-         }
       }
 
       /// <summary>

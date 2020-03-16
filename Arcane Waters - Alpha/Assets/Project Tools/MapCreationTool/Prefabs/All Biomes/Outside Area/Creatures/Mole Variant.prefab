@@ -35,8 +35,10 @@ MonoBehaviour:
     defaultOption: 1
     toolTip: In Which Direction Will the Mole Do His Running And Burrowing Animation
     options:
-    - left
-    - right
+    - displayText: Left
+      value: left
+    - displayText: Right
+      value: right
   customDataFields: []
 --- !u!114 &4455125325234428822
 MonoBehaviour:

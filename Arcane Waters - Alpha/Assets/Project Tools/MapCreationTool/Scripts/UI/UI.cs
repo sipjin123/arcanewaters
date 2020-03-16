@@ -156,7 +156,7 @@ namespace MapCreationTool
             loadedMapText.text = "New map";
          } else {
             newVersionButton.interactable = true;
-            loadedMapText.text = $"Name: {mapVersion.mapName}, version: {mapVersion.version}";
+            loadedMapText.text = $"Name: {mapVersion.map.name}, version: {mapVersion.version}";
          }
       }
 
@@ -290,14 +290,14 @@ namespace MapCreationTool
             saveButton.interactable = false;
             try {
                MapVersion mapVersion = new MapVersion {
-                  mapName = DrawBoard.loadedVersion.mapName,
+                  mapId = DrawBoard.loadedVersion.map.id,
                   version = DrawBoard.loadedVersion.version,
                   createdAt = DrawBoard.loadedVersion.createdAt,
                   updatedAt = DateTime.UtcNow,
                   editorData = DrawBoard.instance.formSerializedData(),
                   gameData = DrawBoard.instance.formExportData(),
                   map = DrawBoard.loadedVersion.map,
-                  spawns = DrawBoard.instance.formSpawnList(DrawBoard.loadedVersion.mapName, DrawBoard.loadedVersion.version)
+                  spawns = DrawBoard.instance.formSpawnList(DrawBoard.loadedVersion.mapId, DrawBoard.loadedVersion.version)
                };
 
                // Make sure all spawns have unique names
@@ -318,7 +318,7 @@ namespace MapCreationTool
                         errorDialog.display(dbError);
                      } else {
                         DrawBoard.changeLoadedVersion(mapVersion);
-                        overlord.addSpawns(mapVersion.spawns);
+                        Overlord.loadAllRemoteData();
                      }
                      saveButton.interactable = true;
                   });
@@ -361,14 +361,14 @@ namespace MapCreationTool
 
          try {
             MapVersion mapVersion = new MapVersion {
-               mapName = DrawBoard.loadedVersion.mapName,
+               mapId = DrawBoard.loadedVersion.map.id,
                version = -1,
                createdAt = DateTime.UtcNow,
                updatedAt = DateTime.UtcNow,
                editorData = DrawBoard.instance.formSerializedData(),
                gameData = DrawBoard.instance.formExportData(),
                map = DrawBoard.loadedVersion.map,
-               spawns = DrawBoard.instance.formSpawnList(DrawBoard.loadedVersion.mapName, DrawBoard.loadedVersion.version)
+               spawns = DrawBoard.instance.formSpawnList(DrawBoard.loadedVersion.mapId, DrawBoard.loadedVersion.version)
             };
 
             // Make sure all spawns have unique names
@@ -390,7 +390,7 @@ namespace MapCreationTool
                      errorDialog.display(dbError);
                   } else {
                      DrawBoard.changeLoadedVersion(createdVersion);
-                     overlord.addSpawns(createdVersion.spawns);
+                     Overlord.loadAllRemoteData();
                   }
                });
             });

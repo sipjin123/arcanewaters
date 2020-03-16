@@ -15,10 +15,12 @@ namespace MapCreationTool
 
       public void dataFieldChanged (string key, string value) {
          if (key.CompareTo(DataField.NPC_DATA_KEY) == 0) {
-            Texture2D npcTexture = NPCManager.instance.getTexture(int.Parse(value.Split(':')[0]));
+            if (int.TryParse(value, out int npcId)) {
+               Texture2D npcTexture = NPCManager.instance.getTexture(npcId);
 
-            if (npcTexture != null) {
-               spriteSwapper.newTexture = npcTexture;
+               if (npcTexture != null) {
+                  spriteSwapper.newTexture = npcTexture;
+               }
             }
          }
       }

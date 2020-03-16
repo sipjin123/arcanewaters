@@ -55,12 +55,18 @@ namespace MapCreationTool
          return seaMonsterCount == 0 ? null : ImageManager.getTexture(seaMonsters[0].seaMonsterData.defaultSpritePath);
       }
 
-      public string[] formLandMonsterSelectionOptions () {
-         return landMonsters.Select(n => (int) n.battler.enemyType + ": " + n.battler.enemyName).ToArray();
+      public SelectOption[] formLandMonsterSelectionOptions () {
+         return landMonsters.Select(n => new SelectOption(
+            ((int) n.battler.enemyType).ToString(),
+            n.battler.enemyType + ": " + n.battler.enemyName)
+         ).ToArray();
       }
 
-      public string[] formSeaMonsterSelectionOptions () {
-         return seaMonsters.Select(n => (int) n.seaMonsterData.seaMonsterType + ": " + n.seaMonsterData.monsterName).ToArray();
+      public SelectOption[] formSeaMonsterSelectionOptions () {
+         return seaMonsters.Select(n => new SelectOption(
+            ((int) n.seaMonsterData.seaMonsterType).ToString(),
+            (int) n.seaMonsterData.seaMonsterType + ": " + n.seaMonsterData.monsterName)
+         ).ToArray();
       }
 
       public int seaMonsterCount

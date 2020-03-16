@@ -25,7 +25,15 @@ namespace MapCreationTool
             height = value.CompareTo(string.Empty) == 0 ? 1 : Mathf.Clamp(float.Parse(value), 1, 100);
             updateBoundsSize();
          } else if (key.CompareTo(DataField.WARP_TARGET_MAP_KEY) == 0) {
-            targetMap = value;
+            if (int.TryParse(value, out int mapId)) {
+               if (!Overlord.remoteMaps.maps.ContainsKey(mapId)) {
+                  targetMap = "Unrecognized";
+               } else {
+                  targetMap = Overlord.remoteMaps.maps[mapId].name;
+               }
+            } else {
+               targetMap = "Unrecognized";
+            }
             updateText();
          } else if (key.CompareTo(DataField.WARP_TARGET_SPAWN_KEY) == 0) {
             targetSpawn = value;

@@ -28,8 +28,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.01, y: 0.01, z: 1}
   m_Children:
-  - {fileID: 4524795289972190113}
   - {fileID: 4414640565516566978}
+  - {fileID: 4524795289972190113}
   m_Father: {fileID: 9069481738844407281}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -212,9 +212,12 @@ MonoBehaviour:
     defaultOption: 0
     toolTip: How Should The Player Interact With The Trigger To Trigger The Action
     options:
-    - Enter
-    - Exit
-    - Stay
+    - displayText: Enter
+      value: Enter
+    - displayText: Exit
+      value: Exit
+    - displayText: Stay
+      value: Stay
   customDataFields:
   - name: action name
     toolTip: Name of The Action To Trigger
@@ -546,7 +549,7 @@ RectTransform:
   - {fileID: 4138678396578625547}
   - {fileID: 8202490203838887318}
   m_Father: {fileID: 4398167692879404220}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -663,7 +666,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4398167692879404220}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}

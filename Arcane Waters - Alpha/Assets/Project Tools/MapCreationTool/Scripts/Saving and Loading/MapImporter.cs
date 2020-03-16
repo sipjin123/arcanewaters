@@ -26,7 +26,7 @@ namespace MapCreationTool
          area.areaKey = areaKey;
          area.version = mapInfo.version;
 
-         ExportedProject001 exportedProject = JsonUtility.FromJson<ExportedProject001>(mapInfo.gameData);
+         ExportedProject001 exportedProject = JsonUtility.FromJson<ExportedProject001>(mapInfo.gameData).fixPrefabFields();
 
          if (exportedProject.biome == Biome.Type.None) {
             D.warning("Invalid biome type NONE in map data. Setting to 'Forest'.");
@@ -148,8 +148,7 @@ namespace MapCreationTool
                if (prefab.d != null) {
                   treasureSiteData.Add(prefab);
                }
-            }
-            else {
+            } else {
                Transform parent = original.GetComponent<NPC>() ? npcParent : prefabParent;
                Vector3 targetLocalPos = new Vector3(prefab.x, prefab.y, 0) * 0.16f + Vector3.back * 10;
 
@@ -161,7 +160,7 @@ namespace MapCreationTool
 
                foreach (IBiomable biomable in pref.GetComponentsInChildren<IBiomable>()) {
                   biomable.setBiome(project.biome);
-               }               
+               }
 
                foreach (ZSnap snap in pref.GetComponentsInChildren<ZSnap>()) {
                   snap.snapZ();
@@ -244,20 +243,21 @@ namespace MapCreationTool
       public static Direction? parseDirection (string data) {
          switch (data.Trim(' ')) {
             case "":
-               return Direction.North;
             case "North":
-               return Direction.NorthEast;
+               return Direction.North;
             case "NorthEast":
-               return Direction.East;
+               return Direction.NorthEast;
             case "East":
-               return Direction.SouthEast;
+               return Direction.East;
             case "SouthEast":
-               return Direction.South;
+               return Direction.SouthEast;
             case "South":
-               return Direction.SouthWest;
+               return Direction.South;
             case "SouthWest":
-               return Direction.West;
+               return Direction.SouthWest;
             case "West":
+               return Direction.West;
+            case "NorthWest":
                return Direction.NorthWest;
             default:
                Debug.LogWarning($"Unable to parse direction. Data:{data}");

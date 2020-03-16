@@ -91,6 +91,7 @@ namespace MapCreationTool
          if (data.title.CompareTo("Warp") == 0 || data.title.CompareTo("House") == 0) {
             // target map
             Field mf = Instantiate(dropdownFieldPref, transform);
+            mf.setFieldProperties(Overlord.remoteMaps.formMapsSelectOptions());
             mf.fieldName.text = "target map";
             mf.ValueChanged += (value) => valueChanged("target map", value);
             mf.toolTipMessage = "Target Map to Warp Into";
@@ -98,6 +99,7 @@ namespace MapCreationTool
 
             // target spawn
             Field sf = Instantiate(dropdownFieldPref, transform);
+            sf.setFieldProperties(Overlord.remoteSpawns.formSpawnsSelectOptions(-1));
             sf.fieldName.text = "target spawn";
             sf.ValueChanged += (value) => valueChanged("target spawn", value);
             sf.toolTipMessage = "In the Selected 'target map', Which Spawn to Warp into";
@@ -133,14 +135,14 @@ namespace MapCreationTool
          }
 
          if (titleText.text.CompareTo("Warp") == 0 || data.title.CompareTo("House") == 0) {
-            fields["target map"].setFieldProperties(Enumerable.Repeat("", 1).Union(Overlord.instance.mapSpawns.Keys).ToArray());
+            fields["target map"].setFieldProperties(Overlord.remoteMaps.formMapsSelectOptions());
             fields["target map"].setValue(placedPrefab.getData("target map"));
-            string mapValue = fields["target map"].valueDropdown.options[fields["target map"].valueDropdown.value].text;
+            string mapValue = fields["target map"].value;
 
-            if (Overlord.instance.mapSpawns.ContainsKey(mapValue)) {
-               fields["target spawn"].setFieldProperties(Enumerable.Repeat("", 1).Union(Overlord.instance.mapSpawns[mapValue]).ToArray());
+            if (int.TryParse(mapValue, out int mapId)) {
+               fields["target spawn"].setFieldProperties(Overlord.remoteSpawns.formSpawnsSelectOptions(mapId));
             } else {
-               fields["target spawn"].setFieldProperties(new string[] { "" });
+               fields["target spawn"].setFieldProperties(new SelectOption("-1", "").toArray());
             }
 
             fields["target spawn"].setValue(placedPrefab.getData("target spawn"));
@@ -156,13 +158,13 @@ namespace MapCreationTool
 
          if (titleText.text.CompareTo("Warp") == 0 || dataDef.title.CompareTo("House") == 0) {
             if (key.CompareTo("target map") == 0) {
-               if (Overlord.instance.mapSpawns.ContainsKey(value)) {
-                  fields["target spawn"].setFieldProperties(Enumerable.Repeat("", 1).Union(Overlord.instance.mapSpawns[value]).ToArray());
+               if (int.TryParse(value, out int mapId)) {
+                  fields["target spawn"].setFieldProperties(Overlord.remoteSpawns.formSpawnsSelectOptions(mapId));
                } else {
-                  fields["target spawn"].setFieldProperties(new string[] { "" });
+                  fields["target spawn"].setFieldProperties(new SelectOption("-1", "").toArray());
                }
 
-               fields["target spawn"].setValue("");
+               fields["target spawn"].setValue("-1");
             }
          }
       }

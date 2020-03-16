@@ -2,7 +2,8 @@
 using MapCreationTool;
 using MapCreationTool.Serialization;
 
-public class Warp : MonoBehaviour, IMapEditorDataReceiver {
+public class Warp : MonoBehaviour, IMapEditorDataReceiver
+{
    #region Public Variables
 
    // The area for this warp
@@ -21,7 +22,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver {
 
    #endregion
 
-   void Awake() {
+   void Awake () {
       _collider = GetComponent<BoxCollider2D>();
    }
 
@@ -49,7 +50,11 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver {
       foreach (DataField field in dataFields) {
          switch (field.k.ToLower()) {
             case DataField.WARP_TARGET_MAP_KEY:
-               areaTarget = field.v.Trim(' ');
+               if (int.TryParse(field.v, out int id)) {
+                  areaTarget = AreaManager.self.getAreaName(id);
+               } else {
+                  areaTarget = field.v;
+               }
                break;
             case DataField.WARP_TARGET_SPAWN_KEY:
                spawnTarget = field.v.Trim(' ');
@@ -72,7 +77,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver {
       }
    }
 
-   public void setTreasureSite(TreasureSite treasureSite) {
+   public void setTreasureSite (TreasureSite treasureSite) {
       _treasureSite = treasureSite;
    }
 

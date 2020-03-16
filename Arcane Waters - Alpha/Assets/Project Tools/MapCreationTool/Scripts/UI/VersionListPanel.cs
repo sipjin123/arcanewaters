@@ -77,7 +77,7 @@ namespace MapCreationTool
       public void openMapVersion (MapVersion mapVersion) {
          UI.yesNoDialog.display(
             "Opening a map",
-            $"Are you sure you want to open map {mapVersion.mapName}?\nAll unsaved progress will be permanently lost.",
+            $"Are you sure you want to open map {mapVersion.map.name}?\nAll unsaved progress will be permanently lost.",
              () => openMapConfirm(mapVersion),
              null);
       }
@@ -88,10 +88,8 @@ namespace MapCreationTool
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             string dbError = null;
             string editorData = null;
-            List<MapSpawn> spawns = null;
             try {
                editorData = DB_Main.getMapVersionEditorData(mapVersion);
-               spawns = DB_Main.getMapSpawns();
             } catch (Exception ex) {
                dbError = ex.Message;
             }
@@ -100,14 +98,14 @@ namespace MapCreationTool
                if (dbError != null) {
                   loadingText.text = "";
                   errorText.text = dbError;
-               } else if (editorData == null || spawns == null) {
+               } else if (editorData == null) {
                   loadingText.text = "";
                   errorText.text = $"Could not find map {name} in the database";
                } else {
                   try {
                      mapVersion.editorData = editorData;
                      Overlord.instance.applyData(mapVersion);
-                     Overlord.instance.setSpawns(spawns);
+                     Overlord.loadAllRemoteData();
                      hide();
                      UI.mapList.close();
                   } catch (Exception ex) {
@@ -130,7 +128,7 @@ namespace MapCreationTool
          }
          UI.yesNoDialog.display(
             "Publishing a map",
-            $"Are you sure you want to publish version {mapVersion.version} of map {mapVersion.mapName}?\nA published version will <b>immediately</b> become available for the users.",
+            $"Are you sure you want to publish version {mapVersion.version} of map {mapVersion.map.name}?\nA published version will <b>immediately</b> become available for the users.",
              () => publishVersionConfirm(mapVersion),
              null);
       }
@@ -171,7 +169,7 @@ namespace MapCreationTool
 
          UI.yesNoDialog.display(
             "Deleting a map version",
-            $"Are you sure you want to delete map {version.mapName} version {version.version}?",
+            $"Are you sure you want to delete map {version.map.name} version {version.version}?",
             () => deleteMapVersionConfirm(version), null);
       }
 
@@ -184,7 +182,7 @@ namespace MapCreationTool
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             string error = null;
             try {
-               DB_Main.deleteMapVersion(version.mapName, version.version);
+               DB_Main.deleteMapVersion(version);
             } catch (Exception ex) {
                error = ex.Message;
             }

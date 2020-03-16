@@ -17,6 +17,7 @@ namespace MapCreationTool
 
       private RectTransform rectT;
       private UIToolTip toolTip;
+      private SelectOption[] options = new SelectOption[0];
 
       public string toolTipMessage
       {
@@ -68,9 +69,11 @@ namespace MapCreationTool
          }
       }
 
-      public void setFieldProperties (string[] options) {
+      public void setFieldProperties (SelectOption[] options) {
+         this.options = options;
+
          valueDropdown.options.Clear();
-         valueDropdown.options.AddRange(options.Select(o => new Dropdown.OptionData { text = o }));
+         valueDropdown.options.AddRange(options.Select(o => new Dropdown.OptionData { text = o.displayText }));
       }
 
       public void setValue (string value) {
@@ -82,10 +85,30 @@ namespace MapCreationTool
          }
          if (valueDropdown != null) {
             int index = -1;
-            for (int i = 0; i < valueDropdown.options.Count; i++)
-               if (valueDropdown.options[i].text.CompareTo(value) == 0)
+            for (int i = 0; i < options.Length; i++)
+               if (options[i].value.CompareTo(value) == 0)
                   index = i;
             valueDropdown.SetValueWithoutNotify(index);
+         }
+      }
+
+      public string value
+      {
+         get
+         {
+            if (valueInput != null && valueInput.gameObject.activeSelf) {
+               return valueInput.text;
+            }
+
+            if (valueToggle != null && valueToggle.gameObject.activeSelf) {
+               return valueToggle.isOn.ToString();
+            }
+
+            if (valueDropdown != null) {
+               return valueDropdown.value >= 0 ? options[valueDropdown.value].value : "";
+            }
+
+            return "";
          }
       }
 
@@ -94,7 +117,7 @@ namespace MapCreationTool
       }
 
       private void dropdownValueChanged (int value) {
-         ValueChanged?.Invoke(valueDropdown.options[value].text);
+         ValueChanged?.Invoke(options[value].value);
       }
 
       private void toggleValueChanged (bool value) {
