@@ -366,6 +366,7 @@ public class BattleManager : MonoBehaviour {
       Battler battler = Instantiate(enemyPrefab);
       battler.biomeType = battle.biomeType;
       battler.enemyType = overrideType;
+      battler.isBossType = data.isBossType;
       battler.name = data.enemyName;
 
       // Set starting stats

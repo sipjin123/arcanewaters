@@ -111,6 +111,9 @@ public class PrefabsManager : MonoBehaviour {
    // A prefab we can use for showing that the requirements are not enough
    public GameObject insufficientPrefab;
 
+   // The Prefab we use for creating crop bounce effect for harvesting
+   public GameObject cropBouncePrefab;
+
    [Header("Generic Prefabs")]
    // A prefab we use for creating a figure eight route
    public Route figureEightRoutePrefab;

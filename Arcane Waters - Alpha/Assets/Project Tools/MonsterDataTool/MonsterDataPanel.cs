@@ -122,6 +122,9 @@ public class MonsterDataPanel : MonoBehaviour
    // Toggler to determine if this sql data is active in the database
    public Toggle xml_toggler;
 
+   // Toggler to determine if this enemy is a boss
+   public Toggle isBossToggler;
+
    // Error Panel
    public GameObject errorPanel;
    public Button closeErrorPanel;
@@ -129,6 +132,9 @@ public class MonsterDataPanel : MonoBehaviour
    // Anim group altering
    public Slider animGroupSlider;
    public Text animGroupText;
+
+   // Variables that will be hidden if the enemy is a boss type
+   public GameObject[] nonBossTypeVariables;
 
    #endregion
 
@@ -260,6 +266,7 @@ public class MonsterDataPanel : MonoBehaviour
 
    public void loadData (BattlerData newBattleData, int xml_id, bool isActive) {
       xml_toggler.isOn = isActive;
+      isBossToggler.isOn = newBattleData.isBossType;
       currentXmlId = xml_id;
       startingName = newBattleData.enemyName;
       monsterTypeText.text = ((Enemy.Type) newBattleData.enemyType).ToString();
@@ -339,6 +346,7 @@ public class MonsterDataPanel : MonoBehaviour
       newBattData.enemyType = (Enemy.Type) Enum.Parse(typeof(Enemy.Type), monsterTypeText.text);
       newBattData.animGroup = (Anim.Group) Enum.Parse(typeof(Anim.Group), animGroupText.text);
       newBattData.imagePath = avatarIconPath;
+      newBattData.isBossType = isBossToggler.isOn;
 
       newBattData.baseHealth = int.Parse(_baseHealth.text);
       newBattData.baseDefense = int.Parse(_baseDefense.text);

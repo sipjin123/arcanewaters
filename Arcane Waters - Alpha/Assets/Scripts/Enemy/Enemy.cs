@@ -29,6 +29,10 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
    [SyncVar]
    public bool isDefeated;
 
+   // Determines if this battler is a boss
+   [SyncVar]
+   public bool isBossType;
+
    // Our body animator
    public SimpleAnimation bodyAnim;
 
@@ -190,7 +194,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
    }
 
    public bool isBoss () {
-      return this.enemyType.ToString().Contains("Boss");
+      return isBossType;
    }
 
    public void assignBattleId (int newBattleId, NetEntity aggressor) {

@@ -25,6 +25,9 @@ public class FarmingTrigger : MonoBehaviour {
    // The particle sprite fading speed
    public static float fadeSpeed = 1.5f;
 
+   // The direction where the crop spawn effect will be moving towards
+   public Direction cropSpawnEffectDirection;
+
    #endregion
 
    public void interactFarming () {
@@ -52,12 +55,16 @@ public class FarmingTrigger : MonoBehaviour {
       if (m_AnimatorClipInfo[0].clip.name.ToLower().Contains("interact")) {
          // Handle the angle of the cone shaped collider
          float currentAngle = 0;
+         cropSpawnEffectDirection = Direction.North;
          if (bodyEntity.facing == Direction.East || bodyEntity.facing == Direction.SouthEast || bodyEntity.facing == Direction.NorthEast) {
-            currentAngle = -90;
+            currentAngle = -90; 
+            cropSpawnEffectDirection = Direction.East;
          } else if (bodyEntity.facing == Direction.West || bodyEntity.facing == Direction.SouthWest || bodyEntity.facing == Direction.NorthWest) {
             currentAngle = 90;
+            cropSpawnEffectDirection = Direction.West;
          } else if (bodyEntity.facing == Direction.South) {
             currentAngle = 180;
+            cropSpawnEffectDirection = Direction.South;
          }
          transform.localEulerAngles = new Vector3(0, 0, currentAngle);
 
@@ -89,7 +96,15 @@ public class FarmingTrigger : MonoBehaviour {
 
                // Create dirt particle when colliding with crop spots with crops using a pitchfork
                if (currentActionType == Weapon.ActionType.HarvestCrop && cropSpot.crop != null) {
+                  if (cropSpot.crop.isMaxLevel())
                   ExplosionManager.createFarmingParticle(currentActionType, hit.collider.transform.position, fadeSpeed, 4, false);
+                  GameObject cropBounce = Instantiate(PrefabsManager.self.cropBouncePrefab);
+                  cropBounce.transform.position = hit.collider.transform.position;
+
+                  if (cropSpawnEffectDirection == Direction.East) {
+                     cropBounce.transform.localScale = new Vector3(-1, 1, 1);
+                  }
+                  cropBounce.GetComponent<Animator>().speed = Random.Range(.8f, 1.2f);
                }
             }
          }

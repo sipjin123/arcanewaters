@@ -216,6 +216,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // Determines if the abilities have been initialized
    public bool battlerAbilitiesInitialized = false;
 
+   // Determines if this battler is a boss
+   [SyncVar]
+   public bool isBossType;
+
    #endregion
 
    private void Awake () {
