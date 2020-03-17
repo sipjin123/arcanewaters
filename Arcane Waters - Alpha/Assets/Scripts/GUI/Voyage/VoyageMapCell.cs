@@ -147,7 +147,7 @@ public class VoyageMapCell : MonoBehaviour {
    }
 
    private string getBiomeName () {
-      return Area.getBiome(_voyage.areaKey).ToString().ToLower();
+      return _voyage.biomeType.ToString().ToLower();
    }
 
    #region Private Variables

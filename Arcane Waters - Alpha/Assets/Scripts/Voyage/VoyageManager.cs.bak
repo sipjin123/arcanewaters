@@ -9,6 +9,10 @@ public class VoyageManager : MonoBehaviour {
 
    #region Public Variables
 
+   // The area and spawn the user is warped to when leaving a voyage group
+   public static string RETURN_AREA_KEY = "Starting Town New Houses";
+   public static string RETURN_SPAWN_KEY = "new dock";
+
    // Self
    public static VoyageManager self;
 
@@ -20,7 +24,7 @@ public class VoyageManager : MonoBehaviour {
       // Hardcoded data for testing purposes
       //store(new Voyage("Starting Sea Map", Voyage.Difficulty.Easy, true));
       //store(new Voyage("Starting Sea Map", Voyage.Difficulty.Medium, false));
-      store(new Voyage("Snow Sea Map Lite", Voyage.Difficulty.Hard, true, Biome.Type.Forest));      
+      store(new Voyage("Starting Sea Map", Voyage.Difficulty.Hard, true, Biome.Type.Forest));
    }
 
    public void Start () {

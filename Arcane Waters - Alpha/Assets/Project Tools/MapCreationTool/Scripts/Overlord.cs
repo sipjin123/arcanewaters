@@ -190,6 +190,11 @@ namespace MapCreationTool
                   Tools.changeTool(ToolType.Selection);
                }
             }
+            if (Settings.keybindings.getAction(Keybindings.Command.MoveTool)) {
+               if (Tools.toolType != ToolType.Move) {
+                  Tools.changeTool(ToolType.Move);
+               }
+            }
          }
       }
 

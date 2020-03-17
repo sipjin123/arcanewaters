@@ -1114,6 +1114,35 @@ public class DB_Main : DB_MainStub
       }
    }
 
+   public static new MapVersion getLatestMapVersionEditor (Map map) {
+      string cmdText = "SELECT version, createdAt, updatedAt, editorData " +
+         "FROM map_versions_v2 WHERE mapId = @id AND version = (SELECT max(version) FROM map_versions_v2 WHERE mapId = @id);";
+
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+         conn.Open();
+         cmd.Prepare();
+
+         cmd.Parameters.AddWithValue("@id", map.id);
+
+         using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+            if (!dataReader.HasRows) {
+               return null;
+            } else {
+               dataReader.Read();
+               return new MapVersion {
+                  mapId = map.id,
+                  version = dataReader.GetInt32("version"),
+                  createdAt = dataReader.GetDateTime("createdAt"),
+                  updatedAt = dataReader.GetDateTime("updatedAt"),
+                  editorData = dataReader.GetString("editorData"),
+                  map = map
+               };
+            }
+         }
+      }
+   }
+
    public static new List<MapSpawn> getMapSpawns () {
       List<MapSpawn> result = new List<MapSpawn>();
 
@@ -1160,6 +1189,8 @@ public class DB_Main : DB_MainStub
             cmd.ExecuteNonQuery();
 
             long mapId = cmd.LastInsertedId;
+            mapVersion.mapId = (int) mapId;
+            mapVersion.map.id = (int) mapId;
 
             // Insert entry to map versions
             cmd.CommandText = "INSERT INTO map_versions_v2(mapId, version, createdAt, updatedAt, editorData, gameData) " +
@@ -1191,6 +1222,21 @@ public class DB_Main : DB_MainStub
             transaction.Rollback();
             throw e;
          }
+      }
+   }
+
+   public static new void renameMap (int mapId, string newName) {
+      string cmdText = "UPDATE maps_v2 SET name = @name WHERE id = @mapId;";
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+         conn.Open();
+         cmd.Prepare();
+
+         cmd.Parameters.AddWithValue("@mapId", mapId);
+         cmd.Parameters.AddWithValue("@name", newName);
+
+         // Execute the command
+         cmd.ExecuteNonQuery();
       }
    }
 

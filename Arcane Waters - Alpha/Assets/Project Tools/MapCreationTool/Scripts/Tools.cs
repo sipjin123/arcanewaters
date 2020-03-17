@@ -90,6 +90,9 @@ namespace MapCreationTool
 
 
       public static void changeTool (ToolType tool, bool registerUndo = true) {
+         if (tool == ToolType.Move) {
+            UI.errorDialog.displayNotImplemented();
+         }
          ToolType oldTool = toolType;
          toolType = tool;
 

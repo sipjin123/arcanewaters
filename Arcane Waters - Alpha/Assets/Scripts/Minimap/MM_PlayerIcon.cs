@@ -30,10 +30,21 @@ public class MM_PlayerIcon : ClientMonoBehaviour {
 
       // Keep the icon in the right position
       Area currentArea = AreaManager.self.getArea(Global.player.areaKey);
+
+      // Physical map size is in range [-5, 5], we need to transform it to minimap space which is [-64, 64]
+      const float worldToMapSpaceTransform = 64f / 5f;
       if (currentArea != null) {
-         Vector3 relativePosition = Global.player.transform.position - currentArea.transform.position;
-         relativePosition *= 12f;
-         relativePosition += new Vector3(-64f, -64f);
+         float minimapSpriteWidth = Minimap.self.backgroundImage.sprite.textureRect.width;
+
+         // Scale transformation based on current map size
+         float relativePositionScale = (minimapSpriteWidth / 64f);
+         Vector3 relativePosition = Global.player.transform.localPosition * worldToMapSpaceTransform / relativePositionScale;
+
+         // For 64x64 map, there is no minimap translation
+         float minimapTranslationScale = (minimapSpriteWidth - 64.0f) / 64.0f;
+
+         // It is more suited for Minimap class but to avoid race condition and ensure correct calling sequence, it is used here
+         Minimap.self.backgroundImage.rectTransform.localPosition = new Vector2(-relativePosition.x * minimapTranslationScale, -relativePosition.y * minimapTranslationScale);
          Util.setLocalXY(this.transform, relativePosition);
 
          // Rotate the player arrow based on our facing direction

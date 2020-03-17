@@ -331,6 +331,62 @@ namespace MapCreationTool
          return change;
       }
 
+      public static BoardChange calculateMoveChange (Vector3 from, Vector3 to, IEnumerable<Layer> layers, List<PlacedPrefab> prefabs, Selection selection) {
+         bool disabled = true;
+         if (disabled) {
+            return new BoardChange();
+         }
+         BoardChange result = new BoardChange();
+         BoundsInt boundsInt = getBoardBoundsInt();
+         Bounds boundsFloat = getPrefabBounds();
+
+         Vector3Int fromCell = DrawBoard.worldToCell(from);
+         Vector3Int toCell = DrawBoard.worldToCell(to);
+         if (fromCell != toCell) {
+            Vector3Int cellTransition = toCell - fromCell;
+            foreach (Layer layer in layers) {
+               HashSet<Vector3Int> arrivingTiles = new HashSet<Vector3Int>(selection.tiles.Where(t => layer.hasTile(t)).Select(t => t + cellTransition));
+               foreach (Vector3Int tilePos in selection.tiles) {
+                  TileBase tile = layer.getTile(tilePos);
+                  if (tile != null) {
+                     Vector3Int targetPos = tilePos + cellTransition;
+                     if (!(targetPos.x < boundsInt.min.x || targetPos.x > boundsInt.max.x || targetPos.y < boundsInt.min.y || targetPos.y > boundsInt.max.y)) {
+                        result.tileChanges.Add(new TileChange(tile, tilePos + cellTransition, layer));
+                     }
+                     if (!arrivingTiles.Contains(tilePos)) {
+                        result.tileChanges.Add(new TileChange(null, tilePos, layer));
+                     }
+                  }
+
+                  result.selectionToRemove.add(tilePos);
+                  result.selectionToAdd.add(tilePos + cellTransition);
+               }
+            }
+         }
+
+         if (from != to) {
+            Vector3 transition = to - from;
+            foreach (PlacedPrefab prefab in selection.prefabs) {
+               Vector3 targetPos = prefab.placedInstance.transform.position + transition;
+               if (targetPos.x < boundsFloat.min.x || targetPos.x > boundsFloat.max.x || targetPos.y < boundsFloat.min.y || targetPos.y > boundsFloat.max.y) {
+                  result.prefabChanges.Add(new PrefabChange {
+                     prefabToDestroy = prefab.original,
+                     positionToDestroy = prefab.placedInstance.transform.position
+                  });
+                  result.selectionToRemove.add(prefab);
+               } else {
+                  result.prefabChanges.Add(new PrefabChange {
+                     prefabToTranslate = prefab.original,
+                     positionToPlace = prefab.placedInstance.transform.position,
+                     translation = transition
+                  });
+               }
+            }
+         }
+
+         return result;
+      }
+
       public static IEnumerable<Vector3Int> getRectTilePositions (Vector3Int p1, Vector3Int p2) {
          BoundsInt bounds = getBoardBoundsInt();
 
@@ -1858,6 +1914,9 @@ namespace MapCreationTool
 
       public Vector3 positionToDestroy { get; set; }
       public GameObject prefabToDestroy { get; set; }
+
+      public GameObject prefabToTranslate { get; set; }
+      public Vector3 translation { get; set; }
 
       public Dictionary<string, string> dataToSet { get; set; }
    }

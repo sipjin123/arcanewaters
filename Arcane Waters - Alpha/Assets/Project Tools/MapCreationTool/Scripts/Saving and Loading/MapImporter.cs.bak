@@ -26,15 +26,15 @@ namespace MapCreationTool
          area.areaKey = areaKey;
          area.version = mapInfo.version;
 
-         ExportedProject001 exportedProject = JsonUtility.FromJson<ExportedProject001>(mapInfo.gameData).fixPrefabFields();
+         ExportedProject001 exportedProject = JsonUtility.FromJson<ExportedProject001>(mapInfo.gameData);
 
          if (exportedProject.biome == Biome.Type.None) {
             D.warning("Invalid biome type NONE in map data. Setting to 'Forest'.");
             exportedProject.biome = Biome.Type.Forest;
          }
 
-         area.biome = exportedProject.biome;
-
+         area.biomeType = exportedProject.biome;
+         
          if (exportedProject.editorType == EditorType.Sea) {
             area.isSea = true;
          } else if (exportedProject.editorType == EditorType.Interior) {
@@ -125,10 +125,8 @@ namespace MapCreationTool
       static void instantiatePrefabs (MapInfo mapInfo, ExportedProject001 project, Transform prefabParent, Transform npcParent, Area area) {
          List<ExportedPrefab001> npcData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> enemyData = new List<ExportedPrefab001>();
-         List<ExportedPrefab001> treasureSiteData = new List<ExportedPrefab001>();
 
          int unrecognizedPrefabs = 0;
-         int cropSpotCounter = 0;
 
          foreach (var prefab in project.prefabs) {
             GameObject original = AssetSerializationMaps.tryGetPrefabGame(prefab.i, project.biome);
@@ -137,18 +135,9 @@ namespace MapCreationTool
                continue;
             }
 
-            if (original.GetComponent<CropSpot>() != null) {
-               cropSpotCounter++;
-               original.GetComponent<CropSpot>().cropNumber = cropSpotCounter;
-            }
-
             if (original.GetComponent<Enemy>() != null) {
                if (prefab.d != null) {
                   enemyData.Add(prefab);
-               }
-            } else if (original.GetComponent<TreasureSite>() != null) {
-               if (prefab.d != null) {
-                  treasureSiteData.Add(prefab);
                }
             } else {
                Transform parent = original.GetComponent<NPC>() ? npcParent : prefabParent;
@@ -179,7 +168,7 @@ namespace MapCreationTool
             Utilities.warning($"Could not recognize { unrecognizedPrefabs } prefabs of map { mapInfo.mapName }");
          }
 
-         area.registerNetworkPrefabData(npcData, enemyData, treasureSiteData);
+         area.registerNPCAndEnemyData(npcData, enemyData);
       }
 
       static List<TilemapLayer> instantiateTilemaps (MapInfo mapInfo, ExportedProject001 project, Transform tilemapParent, Transform collisionTilemapParent) {
@@ -245,21 +234,20 @@ namespace MapCreationTool
       public static Direction? parseDirection (string data) {
          switch (data.Trim(' ')) {
             case "":
-            case "North":
                return Direction.North;
-            case "NorthEast":
+            case "North":
                return Direction.NorthEast;
-            case "East":
+            case "NorthEast":
                return Direction.East;
-            case "SouthEast":
+            case "East":
                return Direction.SouthEast;
-            case "South":
+            case "SouthEast":
                return Direction.South;
-            case "SouthWest":
+            case "South":
                return Direction.SouthWest;
-            case "West":
+            case "SouthWest":
                return Direction.West;
-            case "NorthWest":
+            case "West":
                return Direction.NorthWest;
             default:
                Debug.LogWarning($"Unable to parse direction. Data:{data}");

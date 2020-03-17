@@ -8019,7 +8019,7 @@ MonoBehaviour:
     - layer: water
       sublayer: 2
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: water
       sublayer: 0
       cluster: 0

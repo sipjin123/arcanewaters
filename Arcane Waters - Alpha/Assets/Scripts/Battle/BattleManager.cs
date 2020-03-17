@@ -60,7 +60,7 @@ public class BattleManager : MonoBehaviour {
       Battle battle = Instantiate(battlePrefab);
 
       // Look up the Battle Board for this Area's tile type
-      Biome.Type biomeType = Area.getBiome(area.areaKey);
+      Biome.Type biomeType = area.biome;
       BattleBoard battleBoard = getBattleBoard(biomeType);
       BackgroundGameManager.self.setSpritesToRandomBoard(battleBoard);
       battleBoard.gameObject.SetActive(true);
@@ -99,7 +99,7 @@ public class BattleManager : MonoBehaviour {
       Battle battle = Instantiate(battlePrefab);
 
       // Look up the Battle Board for this Area's tile type
-      Biome.Type biomeType = Area.getBiome(area.areaKey);
+      Biome.Type biomeType = area.biome;
       BattleBoard battleBoard = getBattleBoard(biomeType);
       BackgroundGameManager.self.setSpritesToRandomBoard(battleBoard);
       battleBoard.gameObject.SetActive(true);

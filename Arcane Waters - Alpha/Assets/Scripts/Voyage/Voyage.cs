@@ -20,6 +20,9 @@ public class Voyage
    // The voyage difficulty
    public Difficulty difficulty = Difficulty.None;
 
+   // The voyage biome type
+   public Biome.Type biomeType = Biome.Type.None;
+
    // Gets set to true when the voyage is PvP - Otherwise, the voyage is PvE
    public bool isPvP = false;
 
@@ -29,10 +32,11 @@ public class Voyage
 
    }
 
-   public Voyage(string areaKey, Difficulty difficulty, bool isPvP) {
+   public Voyage(string areaKey, Difficulty difficulty, bool isPvP, Biome.Type biomeType) {
       this.areaKey = areaKey;
       this.difficulty = difficulty;
       this.isPvP = isPvP;
+      this.biomeType = biomeType;
    }
 
    public static int getMaxGroupSize (Difficulty voyageDifficulty) {

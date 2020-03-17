@@ -175,6 +175,12 @@ namespace MapCreationTool
                innerIndex.Set(6, 5);
          }
 
+         if (innerIndex.x == -1 && outerIndex.y == 4) {
+            if ((outerIndex.x == 0 && sur.left == 0) || (outerIndex.x == 4 && sur.right == 0)) {
+               outerIndex.y = 6;
+            }
+         }
+
          if (innerIndex.x != -1)
             return innerTiles[innerIndex.x, innerIndex.y];
          else if (outerIndex.x != -1 && outerTiles[outerIndex.x, outerIndex.y] != null)

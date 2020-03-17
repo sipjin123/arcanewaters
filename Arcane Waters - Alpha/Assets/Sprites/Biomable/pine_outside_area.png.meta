@@ -107,6 +107,12 @@ TextureImporter:
   - first:
       213: 5555833726499615064
     second: pine_outside_area_34
+  - first:
+      213: -2407427260354243073
+    second: pine_outside_area_35
+  - first:
+      213: -2281382376189335558
+    second: pine_outside_area_36
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -1063,7 +1069,7 @@ TextureImporter:
         width: 16
         height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1071,6 +1077,48 @@ TextureImporter:
       bones: []
       spriteID: 55e87b7910289754695e59f081204265
       internalID: 5555833726499615064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pine_outside_area_35
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 256
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 89eb70e3b4b39a147a1ddf59098b59c3
+      internalID: -2407427260354243073
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pine_outside_area_36
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 240
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e54b2ea8b59aa8c4d956a0984680e981
+      internalID: -2281382376189335558
       vertices: []
       indices: 
       edges: []

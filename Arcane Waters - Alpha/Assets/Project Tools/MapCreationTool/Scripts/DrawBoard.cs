@@ -289,6 +289,19 @@ namespace MapCreationTool
                   Destroy(prefabToDestroy.placedInstance);
                   placedPrefabs.Remove(prefabToDestroy);
                }
+            } else if (pc.prefabToTranslate != null) {
+               PlacedPrefab toTranslate = placedPrefabs.FirstOrDefault(p =>
+                   p.original == pc.prefabToTranslate &&
+                   (Vector2) p.placedInstance.transform.position == (Vector2) pc.positionToPlace);
+
+               if (toTranslate != null) {
+                  undoChange.prefabChanges.Add(new PrefabChange {
+                     prefabToTranslate = toTranslate.original,
+                     translation = -pc.translation
+                  });
+
+                  toTranslate.placedInstance.transform.position += pc.translation;
+               }
             }
          }
 
@@ -303,11 +316,15 @@ namespace MapCreationTool
          undoChange.selectionToAdd.add(change.selectionToRemove.prefabs);
 
          foreach (PlacedPrefab prefab in change.selectionToAdd.prefabs) {
-            prefab.placedInstance.GetComponent<MapEditorPrefab>()?.setSelected(true);
+            if (prefab.placedInstance != null) {
+               prefab.placedInstance.GetComponent<MapEditorPrefab>()?.setSelected(true);
+            }
          }
 
          foreach (PlacedPrefab prefab in change.selectionToRemove.prefabs) {
-            prefab.placedInstance.GetComponent<MapEditorPrefab>()?.setSelected(false);
+            if (prefab.placedInstance != null) {
+               prefab.placedInstance.GetComponent<MapEditorPrefab>()?.setSelected(false);
+            }
          }
 
          tileSelectionLayer.setTiles(
@@ -498,6 +515,10 @@ namespace MapCreationTool
                      result.add(BoardChange.calculateFillChanges(tile, layers, pointerWorldPosition));
                }
             }
+         } else if (Tools.toolType == ToolType.Move && draggingFrom != null) {
+            if (!currentSelection.empty) {
+               result.add(BoardChange.calculateMoveChange(draggingFrom.Value, pointerWorldPosition, getLayersEnumerator(), placedPrefabs, currentSelection));
+            }
          }
          return result;
       }
@@ -667,6 +688,10 @@ namespace MapCreationTool
                change = getSelectionBoardChange(draggingFrom.Value, worldPos, add, rem, selectTiles, selectPrefabs);
             } else {
                change = getSelectionBoardChange(worldPos, worldPos, add, rem, false, selectPrefabs);
+            }
+         } else if (Tools.toolType == ToolType.Move) {
+            if (draggingFrom != null) {
+               change = BoardChange.calculateMoveChange(draggingFrom.Value, worldPos, getLayersEnumerator(), placedPrefabs, currentSelection);
             }
          }
 
@@ -900,7 +925,7 @@ namespace MapCreationTool
 
       public void pointerBeginDrag (PointerEventData data) {
          if (data.button == PointerEventData.InputButton.Left) {
-            if ((Tools.tileGroup != null && Tools.tileGroup.type == TileGroupType.Rect) || Tools.toolType == ToolType.Selection) {
+            if ((Tools.tileGroup != null && Tools.tileGroup.type == TileGroupType.Rect) || Tools.toolType == ToolType.Selection || Tools.toolType == ToolType.Move) {
                draggingFrom = data.pointerPressRaycast.worldPosition;
             }
          }
@@ -931,7 +956,7 @@ namespace MapCreationTool
 
       private void drag (PointerEventData data) {
          if (data.button == PointerEventData.InputButton.Left) {
-            if (Tools.tileGroup == null || Tools.tileGroup.type != TileGroupType.Rect) {
+            if ((Tools.tileGroup == null || Tools.tileGroup.type != TileGroupType.Rect) && Tools.toolType != ToolType.Move) {
                changeBoard(getPotentialBoardChange(data.pointerCurrentRaycast.worldPosition, true), isDrag: true);
             }
          } else {

@@ -6,8 +6,7 @@ using Mirror;
 using Cinemachine;
 using Smooth;
 
-public class NetEntity : NetworkBehaviour
-{
+public class NetEntity : NetworkBehaviour {
    #region Public Variables
 
    // The amount of time that must pass between movement changes
@@ -148,6 +147,9 @@ public class NetEntity : NetworkBehaviour
    // Determines if the player is animating an interact clip
    public bool interactingAnimation = false;
 
+   // Wether the player is climbing
+   public bool isClimbing = false;
+
    #endregion
 
    protected virtual void Awake () {
@@ -241,6 +243,8 @@ public class NetEntity : NetworkBehaviour
             animator.SetBool("isMoving", moving);
             animator.SetInteger("facing", (int) this.facing);
             animator.SetBool("inBattle", battling);
+            animator.SetBool("isClimbing", isClimbing);
+            animator.SetFloat("climbingSpeedMultiplier", moving ? 1 : 0);
 
             if (this is BodyEntity) {
                animator.SetInteger("fallDirection", (int) this.fallDirection);
@@ -549,7 +553,7 @@ public class NetEntity : NetworkBehaviour
 
    protected void handleInstantMoveMode () {
       // Get a list of the directions we're allowed to move (sometimes includes diagonal directions)
-      List<Direction> availableDirections = DirectionUtil.getAvailableDirections(true);
+      List<Direction> availableDirections = DirectionUtil.getAvailableDirections(true, isClimbing);
 
       // Check if we're pressing the keys for any of the directions, and if so, add an appropriate force
       foreach (Direction direction in availableDirections) {

@@ -158,11 +158,19 @@ public class DB_MainStub : MonoBehaviour
       return null;
    }
 
+   public static MapVersion getLatestMapVersionEditor (Map map) {
+      return null;
+   }
+
    public static List<MapSpawn> getMapSpawns () {
       return new List<MapSpawn>();
    }
 
    public static void createMap (MapVersion mapVersion) {
+
+   }
+
+   public static void renameMap (int mapId, string newName) {
 
    }
 

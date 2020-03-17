@@ -27,7 +27,15 @@ namespace MapCreationTool
 
       public void dataFieldChanged (string key, string value) {
          if (key.CompareTo(DataField.HOUSE_TARGET_MAP_KEY) == 0) {
-            targetMap = value;
+            if (int.TryParse(value, out int mapId)) {
+               if (!Overlord.remoteMaps.maps.ContainsKey(mapId)) {
+                  targetMap = "Unrecognized";
+               } else {
+                  targetMap = Overlord.remoteMaps.maps[mapId].name;
+               }
+            } else {
+               targetMap = "Unrecognized";
+            }
             rewriteText();
          } else if (key.CompareTo(DataField.HOUSE_TARGET_SPAWN_KEY) == 0) {
             targetSpawn = value;

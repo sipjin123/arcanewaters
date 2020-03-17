@@ -19,11 +19,15 @@ namespace MapCreationTool
 
       public void dataFieldChanged (string key, string value) {
          if (key.CompareTo(DataField.GENERIC_ACTION_TRIGGER_WIDTH_KEY) == 0) {
-            width = value.CompareTo(string.Empty) == 0 ? 1 : Mathf.Clamp(float.Parse(value), 1, 100);
-            updateBoundsSize();
+            if (float.TryParse(value, out float w)) {
+               width = Mathf.Clamp(w, 0.1f, 100);
+               updateBoundsSize();
+            }
          } else if (key.CompareTo(DataField.GENERIC_ACTION_TRIGGER_HEIGHT_KEY) == 0) {
-            height = value.CompareTo(string.Empty) == 0 ? 1 : Mathf.Clamp(float.Parse(value), 1, 100);
-            updateBoundsSize();
+            if (float.TryParse(value, out float h)) {
+               height = Mathf.Clamp(h, 0.1f, 100);
+               updateBoundsSize();
+            }
          } else if (key.CompareTo(DataField.GENERIC_ACTION_TRIGGER_INTERACTION_TYPE) == 0) {
             interactionType = MapImporter.parseInteractionType(value);
             updateText();

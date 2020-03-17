@@ -464,37 +464,8 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
    }
 
    protected void updateTradeGossip () {
-      // Get our current Biome
-      Biome.Type currentBiome = Area.getBiome(this.areaKey);
-
-      // Set up a list that will contain possible offer
-      List<CropOffer> possibleOffers = new List<CropOffer>();
-
-      // Cycle over all of the offers
-      foreach (CropOffer offer in ShopManager.self.getAllOffers()) {
-         Biome.Type offerBiome = Area.getBiome(offer.areaKey);
-
-         // We only care about the merchant shops
-         if (!Area.isMerchantShop(offer.areaKey)) {
-            continue;
-         }
-
-         // Skip offers in our current biome
-         if (offerBiome == currentBiome) {
-            continue;
-         }
-
-         // Skip offers that aren't rare enough
-         if ((int) offer.rarity <= (int) Rarity.Type.Common) {
-            continue;
-         }
-
-         // Add it to the list
-         possibleOffers.Add(offer);
-      }
-
-      // Set our gossip
-      tradeGossip = getTradeGossip(possibleOffers);
+      // TODO System is going to be removed soon
+      tradeGossip = "I haven't heard anything recently.";      
    }
 
    protected string getTradeGossip (List<CropOffer> offers) {
@@ -505,7 +476,12 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
       // Pick a random offer
       CropOffer offer = offers.ChooseRandom();
 
-      Biome.Type biome = Area.getBiome(offer.areaKey);
+      Area area = GetComponentInParent<Area>();
+      if (!area) {
+         D.error("Couldn't get trade gossip - area not found");
+         return "I haven't heard anything recently.";
+      }
+      Biome.Type biome = area.biome;
       string tradeGossip = string.Format("I heard that there's a merchant over in {0} that was {1} looking for {2}.",
          Biome.getName(biome), "really", IconUtil.getCrop(offer.cropType));
 

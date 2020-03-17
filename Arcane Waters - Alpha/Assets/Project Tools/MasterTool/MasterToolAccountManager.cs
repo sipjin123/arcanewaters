@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.SceneManagement;
+using MapCreationTool.Serialization;
 
 public class MasterToolAccountManager : MonoBehaviour {
    #region Public Variables
@@ -153,6 +154,21 @@ public class MasterToolAccountManager : MonoBehaviour {
       }
 
       return false;
+   }
+
+   public static bool canAlterResource (int resourceCreatorID, out string errorMessage) {
+      if (!canAlterData()) {
+         errorMessage = "Your account type has no permissions to alter data";
+         return false;
+      }
+
+      if (PERMISSION_LEVEL != AdminManager.Type.Admin && resourceCreatorID != self.currentAccountID) {
+         errorMessage = "You are not the creator of this resource";
+         return false;
+      }
+
+      errorMessage = null;
+      return true;
    }
 
    #region Private Variables

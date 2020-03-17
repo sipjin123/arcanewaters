@@ -69,7 +69,7 @@ public class ShopManager : MonoBehaviour {
       }
 
       // Generate items for each of the areas
-      foreach (string areaKey in Area.getAllAreaKeys()) {
+      foreach (string areaKey in AreaManager.self.getAreaKeys()) {
          Biome.Type biomeType = Area.getBiome(areaKey);
 
          // Clear out the previous list
@@ -235,7 +235,7 @@ public class ShopManager : MonoBehaviour {
       lastCropRegenTime = DateTime.UtcNow;
 
       // Generate offers for each of the areas
-      foreach (string areaKey in Area.getAllAreaKeys()) {
+      foreach (string areaKey in AreaManager.self.getAreaKeys()) {
          Biome.Type biomeType = Area.getBiome(areaKey);
 
          // Clear out the previous list

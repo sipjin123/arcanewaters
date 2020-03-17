@@ -405,7 +405,11 @@ public class DirectionUtil {
       return false;
    }
 
-   public static List<Direction> getAvailableDirections (bool includeDiagonals) {
+   public static List<Direction> getAvailableDirections (bool includeDiagonals, bool onlyVertical = false) {
+      if (onlyVertical) {
+         return new List<Direction>() { Direction.North, Direction.South };
+      }
+
       if (includeDiagonals) {
          return new List<Direction>() {
             Direction.NorthEast, Direction.SouthEast, Direction.SouthWest, Direction.NorthWest,
@@ -417,7 +421,7 @@ public class DirectionUtil {
    }
 
    public static float getAngle (Direction direction) {
-      return 360f - (((int)direction * 45f) - 45f);
+      return 360f - (((int) direction * 45f) - 45f);
    }
 
    public static Direction getFacingDirection (bool hasDiagonals, Direction selectedDirection) {
