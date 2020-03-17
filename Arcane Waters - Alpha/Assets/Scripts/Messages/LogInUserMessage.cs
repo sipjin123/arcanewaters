@@ -22,7 +22,10 @@ public class LogInUserMessage : MessageBase {
    public int selectedUserId;
 
    // The client platform
-   public RuntimePlatform clientPlatform;   
+   public RuntimePlatform clientPlatform;
+
+   // Determines if the game mode is single player
+   public bool isSinglePlayer;
 
    #endregion
 
@@ -32,12 +35,13 @@ public class LogInUserMessage : MessageBase {
       this.netId = netId;
    }
 
-   public LogInUserMessage (uint netId, string accountName, string accountPassword, int clientGameVersion, int selectedUserId, RuntimePlatform clientPlatform) {
+   public LogInUserMessage (uint netId, string accountName, string accountPassword, int clientGameVersion, int selectedUserId, RuntimePlatform clientPlatform, bool isSinglePlayer) {
       this.netId = netId;
       this.selectedUserId = selectedUserId;
       this.accountName = accountName;
       this.clientGameVersion = clientGameVersion;
       this.accountPassword = accountPassword;
       this.clientPlatform = clientPlatform;
+      this.isSinglePlayer = isSinglePlayer;
    }
 }

@@ -29,6 +29,9 @@ public class QuickLaunchPanel : MonoBehaviour {
    // Our Server Mode toggle
    public Toggle serverToggle;
 
+   // Our Game is in single player mode
+   public Toggle singlePlayerToggle;
+
    // Some keys we use to store login credentials
    public static string ACCOUNT_KEY = "quick_launch_account";
    public static string PASSWORD_KEY = "quick_launch_password";

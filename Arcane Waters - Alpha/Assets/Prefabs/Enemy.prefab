@@ -261,6 +261,7 @@ MonoBehaviour:
   nameText: {fileID: 0}
   sortPoint: {fileID: 0}
   facing: 3
+  isSinglePlayer: 0
   hasDiagonals: 0
   fallDirection: 0
   adminFlag: 0
@@ -272,6 +273,7 @@ MonoBehaviour:
   voyageGroupId: -1
   isAboutToWarpOnServer: 0
   interactingAnimation: 0
+  isClimbing: 0
   animGroupType: 0
   enemyType: 205
   targetUserId: 0
@@ -828,7 +830,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8847889717240705775
 Transform:
   m_ObjectHideFlags: 0

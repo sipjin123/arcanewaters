@@ -28,7 +28,12 @@ public class ServerNetwork : MonoBehaviour {
       InvokeRepeating("checkPhotonConnection", 10f, 5f);
    }
 
-   public Server findBestServerForConnectingPlayer (string areaKey, string username, int userId, string address) {
+   public Server findBestServerForConnectingPlayer (string areaKey, string username, int userId, string address, bool isSinglePlayer) {
+      // Always return the current server if single player
+      if (isSinglePlayer) {
+         return server;
+      }
+
       // Check if there's an open area already on one of the servers
       foreach (Server server in servers) {
          List<string> openAreas = new List<string>(server.openAreas);

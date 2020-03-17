@@ -105,11 +105,6 @@ public class TreasureChest : NetworkBehaviour {
       // Figure out whether our outline should be showing
       handleSpriteOutline();
 
-      // Allow pressing keyboard to open the chest
-      if (InputManager.isActionKeyPressed() && !hasBeenOpened() && _isGlobalPlayerNearby) {
-         sendOpenRequest();
-      }
-
       // Always hide the Open button and shine effect for chests that have been opened
       if (hasBeenOpened()) {
          openButtonContainer.SetActive(false);

@@ -21,11 +21,11 @@ public class InstanceManager : MonoBehaviour {
 
    public Instance addPlayerToInstance (NetEntity player, string areaKey) {
       // First, look for an open instance
-      Instance instance = getOpenInstance(areaKey);
+      Instance instance = getOpenInstance(areaKey, player.isSinglePlayer);
 
       // If there isn't one, we'll have to make it
       if (instance == null) {
-         instance = createNewInstance(areaKey, Biome.Type.None);
+         instance = createNewInstance(areaKey, Biome.Type.None, player.isSinglePlayer);
       }
 
       // Set the player's instance ID
@@ -65,7 +65,7 @@ public class InstanceManager : MonoBehaviour {
       return null;
    }
 
-   public Instance createNewInstance (string areaKey, Biome.Type biomeType) {
+   public Instance createNewInstance (string areaKey, Biome.Type biomeType, bool isSinglePlayer) {
       Instance instance = Instantiate(instancePrefab, this.transform);
       instance.id = _id++;
       instance.areaKey = areaKey;
@@ -74,6 +74,8 @@ public class InstanceManager : MonoBehaviour {
       instance.serverAddress = MyNetworkManager.self.networkAddress;
       instance.serverPort = MyNetworkManager.self.telepathy.port;
       instance.mapSeed = Random.Range(0, 1000000);
+
+      instance.updateMaxPlayerCount(isSinglePlayer);
 
       // Keep track of it
       _instances.Add(instance.id, instance);
@@ -95,10 +97,12 @@ public class InstanceManager : MonoBehaviour {
       return instance;
    }
 
-   public Instance getOpenInstance (string areaKey) {
-      foreach (Instance instance in _instances.Values) {
-         if (instance.areaKey == areaKey && instance.getPlayerCount() < instance.getMaxPlayers()) {
-            return instance;
+   public Instance getOpenInstance (string areaKey, bool isSinglePlayer) {
+      if (!isSinglePlayer) {
+         foreach (Instance instance in _instances.Values) {
+            if (instance.areaKey == areaKey && instance.getPlayerCount() < instance.getMaxPlayers()) {
+               return instance;
+            }
          }
       }
 

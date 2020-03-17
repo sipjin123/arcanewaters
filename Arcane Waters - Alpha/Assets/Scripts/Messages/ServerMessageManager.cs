@@ -54,6 +54,7 @@ public class ServerMessageManager : MonoBehaviour {
             users = DB_Main.getUsersForAccount(accountId, selectedUserId);
             armorList = DB_Main.getArmorForAccount(accountId, selectedUserId);
             weaponList = DB_Main.getWeaponsForAccount(accountId, selectedUserId);
+            DB_Main.updateAccountMode(accountId, logInUserMessage.isSinglePlayer);
          }
 
          // Back to the Unity thread

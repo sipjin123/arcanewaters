@@ -210,7 +210,7 @@ public class MyNetworkManager : NetworkManager {
             string previousAreaKey = userInfo.areaKey;
 
             // Check if we need to redirect to a different server
-            Server bestServer = ServerNetwork.self.findBestServerForConnectingPlayer(previousAreaKey, userInfo.username, userInfo.userId, conn.address);
+            Server bestServer = ServerNetwork.self.findBestServerForConnectingPlayer(previousAreaKey, userInfo.username, userInfo.userId, conn.address, userObjects.isSinglePlayer);
             if (bestServer != null && !bestServer.view.isMine) {
                // Send a Redirect message to the client
                RedirectMessage redirectMessage = new RedirectMessage(Global.netId, bestServer.ipAddress, bestServer.port);
@@ -239,6 +239,7 @@ public class MyNetworkManager : NetworkManager {
             GameObject prefab = targetArea?.isSea == true ? PrefabsManager.self.playerShipPrefab : PrefabsManager.self.playerBodyPrefab;
             GameObject playerObject = Instantiate(prefab, playerCreationPos, Quaternion.identity);
             NetEntity player = playerObject.GetComponent<NetEntity>();
+            player.isSinglePlayer = userObjects.isSinglePlayer;
             player.areaKey = previousAreaKey;
             player.userId = userInfo.userId;
             player.accountId = userInfo.accountId;

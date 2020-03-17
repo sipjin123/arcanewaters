@@ -10,6 +10,7 @@ public class UserObjects {
    // The various objects that we want to look up all at the same time during the login process
    public int accountId;
    public string accountEmail;
+   public bool isSinglePlayer;
    public long accountCreationTime;
    public UserInfo userInfo;
    public ShipInfo shipInfo;

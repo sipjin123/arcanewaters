@@ -2970,6 +2970,7 @@ public class DB_Main : DB_MainStub
                   // If we found a valid account ID, we can go ahead and read in the other various objects
                   if (userObjects.accountId != 0) {
                      userObjects.accountEmail = DataUtil.getString(dataReader, "accEmail");
+                     userObjects.isSinglePlayer = DataUtil.getInt(dataReader, "isSinglePlayer") == 1 ? true : false;
                      userObjects.accountCreationTime = dataReader.GetDateTime("accCreationTime").ToBinary();
                      userObjects.userInfo = new UserInfo(dataReader);
                      userObjects.shipInfo = new ShipInfo(dataReader);
@@ -5690,7 +5691,7 @@ public class DB_Main : DB_MainStub
    */
    public static int createAccount (string accountName, string accountPassword, string accountEmail, int validated) {
       int accountId = 0;
-
+      
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
@@ -5712,6 +5713,23 @@ public class DB_Main : DB_MainStub
       }
 
       return accountId;
+   }
+   
+   public static new void updateAccountMode (int accoundId, bool isSinglePlayer) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("UPDATE accounts SET isSinglePlayer=@isSinglePlayer WHERE accId=@accId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@accId", accoundId);
+            cmd.Parameters.AddWithValue("@isSinglePlayer", isSinglePlayer ? 1 : 0);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
    }
 
    /*

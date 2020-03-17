@@ -107,6 +107,10 @@ public class NetEntity : NetworkBehaviour {
    [SyncVar]
    public Direction facing = Direction.East;
 
+   // Determines if this user is in single player mode
+   [SyncVar]
+   public bool isSinglePlayer;
+
    // Whether or not this Entity has sprites for diagonal directions
    public bool hasDiagonals;
 
@@ -841,7 +845,7 @@ public class NetEntity : NetworkBehaviour {
    [Server]
    public void spawnInNewMap (string newArea, Vector2 newLocalPosition, Direction newFacingDirection) {
       // Check which server we're likely to redirect to
-      Server bestServer = ServerNetwork.self.findBestServerForConnectingPlayer(newArea, this.entityName, this.userId, this.connectionToClient.address);
+      Server bestServer = ServerNetwork.self.findBestServerForConnectingPlayer(newArea, this.entityName, this.userId, this.connectionToClient.address, isSinglePlayer);
 
       // Now that we know the target server, redirect them there
       spawnOnSpecificServer(bestServer, newArea, newLocalPosition, newFacingDirection);

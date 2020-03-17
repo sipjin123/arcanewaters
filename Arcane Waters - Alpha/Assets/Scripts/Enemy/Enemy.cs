@@ -97,11 +97,6 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
          handleAnimations();
       }
 
-      // Allow pressing keyboard to do the same thing as a click
-      if (InputManager.isActionKeyPressed() && !isDefeated && !Global.isInBattle() && isPlayerClose()) {
-         clientClickedMe();
-      }
-
       // Some enemies should stop blocking player movement after they die
       if (isDefeated) {
          _body.mass = 9999;

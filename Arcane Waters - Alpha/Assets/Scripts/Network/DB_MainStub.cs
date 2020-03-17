@@ -12,6 +12,10 @@ public class DB_MainStub : MonoBehaviour
 
    #endregion
 
+   public static void updateAccountMode (int accoundId, bool isSinglePlayer) {
+
+   }
+
    public static void updateCropsXML (string rawData, int xmlId, int cropsType, bool isEnabled, string cropsName) {
    }
 

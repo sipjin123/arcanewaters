@@ -94,6 +94,7 @@ GameObject:
   - component: {fileID: 50508316903542424}
   - component: {fileID: 114041420384177890}
   - component: {fileID: 5575320467910960297}
+  - component: {fileID: -2957490368052524374}
   m_Layer: 0
   m_Name: Offline NPC
   m_TagString: Untagged
@@ -234,6 +235,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   newTexture: {fileID: 2800000, guid: 6f1b3c7c7b4a5864591d983eba46eb98, type: 3}
+--- !u!61 &-2957490368052524374
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1322722724978774}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 0.85, y: 0.85}
+    newSize: {x: 0.85, y: 0.85}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 0.85, y: 0.85}
+  m_EdgeRadius: 0
 --- !u!1 &1500841596590262
 GameObject:
   m_ObjectHideFlags: 0

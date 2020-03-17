@@ -789,7 +789,11 @@ public class BattleManager : MonoBehaviour {
                   // Registers the gold earned for achievement recording
                   AchievementManager.registerUserAchievement(participant.player.userId, ActionType.EarnGold, goldWon);
 
-                  participant.player.rpc.spawnBattlerMonsterChest(participant.player.instanceId, chestPos, battlerEnemyID);
+                  if (!battler.isBossType) {
+                     participant.player.rpc.spawnBattlerMonsterChest(participant.player.instanceId, chestPos, battlerEnemyID);
+                  } else {
+                     // TODO: Add reward logic here for boss enemies
+                  }
                }
             }
          } else {

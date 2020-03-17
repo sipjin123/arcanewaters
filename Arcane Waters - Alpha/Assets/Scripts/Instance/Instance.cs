@@ -55,11 +55,7 @@ public class Instance : NetworkBehaviour
    }
 
    private void Start () {
-      // Check if we've specified a max player count on the command line
-      if (CommandCodes.get(CommandCodes.Type.MAX_INSTANCE_PLAYERS)) {
-         _maxPlayerCount = Util.getCommandLineInt(CommandCodes.Type.MAX_INSTANCE_PLAYERS + "");
-         D.log("Setting max players-per-instance to: " + _maxPlayerCount);
-      }
+      updateMaxPlayerCount();
 
       // We only spawn Bots on the Server
       Area area = AreaManager.self.getArea(this.areaKey);
@@ -158,6 +154,18 @@ public class Instance : NetworkBehaviour
       }
 
       return _maxPlayerCount;
+   }
+
+   public void updateMaxPlayerCount (bool isSinglePlayer = false) {
+      if (isSinglePlayer) {
+         _maxPlayerCount = 1;
+      } else {
+         // Check if we've specified a max player count on the command line
+         if (CommandCodes.get(CommandCodes.Type.MAX_INSTANCE_PLAYERS)) {
+            _maxPlayerCount = Util.getCommandLineInt(CommandCodes.Type.MAX_INSTANCE_PLAYERS + "");
+            D.log("Setting max players-per-instance to: " + _maxPlayerCount);
+         }
+      }
    }
 
    public void removeEntityFromInstance (NetworkBehaviour entity) {

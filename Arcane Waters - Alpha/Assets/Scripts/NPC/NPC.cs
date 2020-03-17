@@ -163,11 +163,6 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
       // Only show our outline when the mouse is over us
       handleSpriteOutline();
 
-      // Allow pressing keyboard to interact
-      if (InputManager.isActionKeyPressed() && Global.player != null && isCloseToGlobalPlayer()) {
-         clientClickedMe();
-      }
-
       if (autoMove) {
          // Figure out the direction we want to face
          Vector2 direction = moveTarget - (Vector2) this.transform.position;
