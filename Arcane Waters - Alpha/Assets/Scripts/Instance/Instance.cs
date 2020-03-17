@@ -106,6 +106,7 @@ public class Instance : NetworkBehaviour
                      if (battleData != null) {
                         enemy.isBossType = battleData.isBossType;
                         enemy.animGroupType = battleData.animGroup;
+                        enemy.facing = Direction.South;
                      }
 
                      InstanceManager.self.addEnemyToInstance(enemy, this);

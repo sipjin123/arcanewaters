@@ -202,6 +202,7 @@ Transform:
   - {fileID: 4000010911147736}
   - {fileID: 2458702907767545251}
   - {fileID: 1440717159211790124}
+  - {fileID: 8847889717240705775}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -218,9 +219,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverOnly: 0
-  localPlayerAuthority: 0
   m_AssetId: 
-  m_SceneId: 4166705278
+  m_SceneId: 0
 --- !u!114 &114000012734016052
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -238,8 +238,14 @@ MonoBehaviour:
   accountId: 0
   userId: 0
   instanceId: 0
-  areaType: 0
+  areaKey: 
   gender: 1
+  bodyType: 0
+  eyesType: 0
+  hairType: 0
+  eyesColor1: 0
+  hairColor1: 0
+  hairColor2: 0
   entityName: Enemy
   nationType: 0
   currentHealth: 1000
@@ -263,14 +269,18 @@ MonoBehaviour:
   faction: 0
   guildId: 0
   battleId: 0
+  voyageGroupId: -1
   isAboutToWarpOnServer: 0
   interactingAnimation: 0
+  animGroupType: 0
   enemyType: 205
   targetUserId: 0
   isDefeated: 0
+  isBossType: 0
   bodyAnim: {fileID: 5845733378842891813}
   desiredPosition: {x: 0, y: 0}
   circleCollider: {fileID: 58000012360398758}
+  bossCollider: {fileID: 6484027093327965980}
 --- !u!50 &50000013307885518
 Rigidbody2D:
   serializedVersion: 4
@@ -385,6 +395,7 @@ MonoBehaviour:
   isSmoothingAuthorityChanges: 0
   whenToUpdateTransform: 1
   sendRate: 30
+  networkChannel: 1
   childObjectToSync: {fileID: 0}
   setVelocityInsteadOfPositionOnNonOwners: 0
   maxPositionDifferenceForVelocitySyncing: 10
@@ -645,8 +656,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 21300000, guid: 7c736385e93358f43ab5feaafa47687e, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
@@ -711,8 +720,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-    m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!114 &875847765926238135
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -805,3 +812,60 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &6484027093327965980
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8847889717240705775}
+  - component: {fileID: 8830834044695427596}
+  m_Layer: 2
+  m_Name: BossCollider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8847889717240705775
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6484027093327965980}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.182, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4000012745727500}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &8830834044695427596
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6484027093327965980}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 0.5}
+  m_EdgeRadius: 0

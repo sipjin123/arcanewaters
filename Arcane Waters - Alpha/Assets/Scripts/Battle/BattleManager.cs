@@ -419,7 +419,7 @@ public class BattleManager : MonoBehaviour {
       }
 
       // If it's a boss, we always have just 1
-      if (enemy.isBoss()) {
+      if (enemy.isBossType) {
          return 1;
       }
 

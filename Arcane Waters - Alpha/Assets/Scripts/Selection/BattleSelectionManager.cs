@@ -90,7 +90,7 @@ public class BattleSelectionManager : MonoBehaviour {
                      allySelection.SetActive(true);
                   } else {
                      if (selectedBattler.isBossType) {
-                        enemySelection.transform.localScale = new Vector3(2, 2, 1);
+                        enemySelection.transform.localScale = new Vector3(1.4f, 1.4f, 1);
                      } else {
                         enemySelection.transform.localScale = new Vector3(1, 1, 1);
                      }

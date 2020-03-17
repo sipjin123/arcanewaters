@@ -96,15 +96,16 @@ public class FarmingTrigger : MonoBehaviour {
 
                // Create dirt particle when colliding with crop spots with crops using a pitchfork
                if (currentActionType == Weapon.ActionType.HarvestCrop && cropSpot.crop != null) {
-                  if (cropSpot.crop.isMaxLevel())
                   ExplosionManager.createFarmingParticle(currentActionType, hit.collider.transform.position, fadeSpeed, 4, false);
-                  GameObject cropBounce = Instantiate(PrefabsManager.self.cropBouncePrefab);
-                  cropBounce.transform.position = hit.collider.transform.position;
+                  if (cropSpot.crop.isMaxLevel()) {
+                     GameObject cropBounce = Instantiate(PrefabsManager.self.cropBouncePrefab);
+                     cropBounce.transform.position = hit.collider.transform.position;
 
-                  if (cropSpawnEffectDirection == Direction.East) {
-                     cropBounce.transform.localScale = new Vector3(-1, 1, 1);
+                     if (cropSpawnEffectDirection == Direction.East) {
+                        cropBounce.transform.localScale = new Vector3(-1, 1, 1);
+                     }
+                     cropBounce.GetComponent<Animator>().speed = Random.Range(.8f, 1.2f);
                   }
-                  cropBounce.GetComponent<Animator>().speed = Random.Range(.8f, 1.2f);
                }
             }
          }

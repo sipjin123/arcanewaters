@@ -216,13 +216,16 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // Determines if the abilities have been initialized
    public bool battlerAbilitiesInitialized = false;
 
+   // The location where the ui will snap to upon selection
+   public Transform targetUISnapLocation;
+
    // Determines if this battler is a boss
    [SyncVar]
    public bool isBossType;
 
    // Caches the sizes of the monsters in pixel for offset purposes
-   public const float largeMonsterSize = 170;
-   public const float largeMonsterOffset = .25f;
+   public const float LARGE_MONSTER_SIZE = 170;
+   public const float LARGE_MONSTER_OFFSET = .25f;
 
    #endregion
 
@@ -345,13 +348,13 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             selectedBattleBar = minionBattleBar;
 
             // Offset sprite for large monsters
-            if (fetchSprite.rect.height >= largeMonsterSize) {
+            if (fetchSprite.rect.height >= LARGE_MONSTER_SIZE) {
                Vector3 localPos = mainSpriteRenderer.transform.localPosition;
-               mainSpriteRenderer.transform.localPosition = new Vector3(localPos.x, largeMonsterOffset, localPos.z);
+               mainSpriteRenderer.transform.localPosition = new Vector3(localPos.x, LARGE_MONSTER_OFFSET, localPos.z);
                selectedBattleBar = bossBattleBar;
 
                // Enlarge the click box of a boss type enemy
-               _clickableBox.GetComponent<BoxCollider2D>().size = new Vector2(1, .5f);
+               _clickableBox.GetComponent<BoxCollider2D>().size = new Vector2(1, 1);
             }
             selectedBattleBar.gameObject.SetActive(true);
 
@@ -929,25 +932,27 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                yield break;
             }
 
-            // Mark the source battler as jumping
-            sourceBattler.isJumping = true;
+            if (isMovable()) {
+               // Mark the source battler as jumping
+               sourceBattler.isJumping = true;
 
-            // Play an appropriate jump sound
-            sourceBattler.playJumpSound();
+               // Play an appropriate jump sound
+               sourceBattler.playJumpSound();
 
-            // Smoothly jump into position
-            sourceBattler.playAnim(Anim.Type.Jump_East);
-            Vector2 targetPosition = targetBattler.getMeleeStandPosition();
-            float startTime = Time.time;
-            while (Time.time - startTime < jumpDuration) {
-               float timePassed = Time.time - startTime;
-               Vector2 newPos = Vector2.Lerp(startPos, targetPosition, (timePassed / jumpDuration));
-               sourceBattler.transform.position = new Vector3(newPos.x, newPos.y, sourceBattler.transform.position.z);
-               yield return 0;
+               // Smoothly jump into position
+               sourceBattler.playAnim(Anim.Type.Jump_East);
+               Vector2 targetPosition = targetBattler.getMeleeStandPosition();
+               float startTime = Time.time;
+               while (Time.time - startTime < jumpDuration) {
+                  float timePassed = Time.time - startTime;
+                  Vector2 newPos = Vector2.Lerp(startPos, targetPosition, (timePassed / jumpDuration));
+                  sourceBattler.transform.position = new Vector3(newPos.x, newPos.y, sourceBattler.transform.position.z);
+                  yield return 0;
+               }
+
+               // Make sure we're exactly in position now that the jump is over
+               sourceBattler.transform.position = new Vector3(targetPosition.x, targetPosition.y, sourceBattler.transform.position.z);
             }
-
-            // Make sure we're exactly in position now that the jump is over
-            sourceBattler.transform.position = new Vector3(targetPosition.x, targetPosition.y, sourceBattler.transform.position.z);
 
             // Pause for a moment after reaching our destination
             yield return new WaitForSeconds(PAUSE_LENGTH);
@@ -995,21 +1000,23 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             yield return new WaitForSeconds(POST_CONTACT_LENGTH);
 
-            // Now jump back to where we started from
-            sourceBattler.playAnim(Anim.Type.Jump_East);
-            startTime = Time.time;
-            while (Time.time - startTime < jumpDuration) {
-               float timePassed = Time.time - startTime;
-               Vector2 newPos = Vector2.Lerp(targetBattler.getMeleeStandPosition(), startPos, (timePassed / jumpDuration));
-               sourceBattler.transform.position = new Vector3(newPos.x, newPos.y, sourceBattler.transform.position.z);
-               yield return 0;
+            if (isMovable()) {
+               // Now jump back to where we started from
+               sourceBattler.playAnim(Anim.Type.Jump_East);
+               float startTime = Time.time;
+               while (Time.time - startTime < jumpDuration) {
+                  float timePassed = Time.time - startTime;
+                  Vector2 newPos = Vector2.Lerp(targetBattler.getMeleeStandPosition(), startPos, (timePassed / jumpDuration));
+                  sourceBattler.transform.position = new Vector3(newPos.x, newPos.y, sourceBattler.transform.position.z);
+                  yield return 0;
+               }
+
+               // Make sure we're exactly in position now that the jump is over
+               sourceBattler.transform.position = new Vector3(startPos.x, startPos.y, sourceBattler.transform.position.z);
+
+               // Wait for a moment after we reach our jump destination
+               yield return new WaitForSeconds(PAUSE_LENGTH);
             }
-
-            // Make sure we're exactly in position now that the jump is over
-            sourceBattler.transform.position = new Vector3(startPos.x, startPos.y, sourceBattler.transform.position.z);
-
-            // Wait for a moment after we reach our jump destination
-            yield return new WaitForSeconds(PAUSE_LENGTH);
 
             // Switch back to our battle stance
             sourceBattler.playAnim(Anim.Type.Battle_East);
@@ -1095,7 +1102,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             targetBattler.StartCoroutine(targetBattler.animateHit(sourceBattler, action));
 
             // If this magic ability has knockup, then start it now
-            if (abilityDataReference.hasKnockup) {
+            if (abilityDataReference.hasKnockup && targetBattler.isMovable()) {
                targetBattler.StartCoroutine(targetBattler.animateKnockup());
                yield return new WaitForSeconds(KNOCKUP_LENGTH);
             } else if (abilityDataReference.hasShake) {
@@ -1202,7 +1209,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             targetBattler.StartCoroutine(targetBattler.animateHit(sourceBattler, action));
 
             // If this magic ability has knockup, then start it now
-            if (abilityDataReference.hasKnockup) {
+            if (abilityDataReference.hasKnockup && targetBattler.isMovable()) {
                targetBattler.StartCoroutine(targetBattler.animateKnockup());
                yield return new WaitForSeconds(KNOCKUP_LENGTH);
             } else if (abilityDataReference.hasShake) {
@@ -1630,6 +1637,14 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    public bool isMonster () {
       // Monsters have negative user IDs
       return (userId < 0);
+   }
+
+   public bool isMovable () {
+      if (isBossType) {
+         return false;
+      }
+
+      return true;
    }
 
    private void setElementalWeakness () {

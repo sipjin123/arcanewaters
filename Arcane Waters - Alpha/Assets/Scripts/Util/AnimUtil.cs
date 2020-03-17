@@ -219,6 +219,8 @@ public class AnimUtil : MonoBehaviour {
 
          case Anim.Group.Golem_Boss:
             switch (animType) {
+               case Anim.Type.Idle_South:
+                  return new AnimInfo(animType, 33, 36);
                case Anim.Type.Idle_East:
                   return new AnimInfo(animType, 0, 3);
                case Anim.Type.Battle_East:
@@ -228,7 +230,7 @@ public class AnimUtil : MonoBehaviour {
                case Anim.Type.Attack_East:
                   return new AnimInfo(animType, 4, 11);
                case Anim.Type.Death_East:
-                  return new AnimInfo(animType, 25, 32);
+                  return new AnimInfo(animType, 15, 32);
                case Anim.Type.Hurt_East:
                   return new AnimInfo(animType, 25, 27);
             }

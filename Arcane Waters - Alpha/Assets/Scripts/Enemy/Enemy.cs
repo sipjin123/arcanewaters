@@ -47,6 +47,9 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
    // A convenient reference to our collider
    public CircleCollider2D circleCollider;
 
+   // A collider that toggles On if the unit is a boss (to avoid player rendering over a boss)
+   public GameObject bossCollider;
+
    #endregion
 
    protected override void Awake () {
@@ -75,6 +78,11 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       bodyAnim.GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture("Enemies/LandMonsters/" + enemySpriteName);
       bodyAnim.group = animGroupType;
 
+      if (isBossType) {
+         GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
+         bossCollider.SetActive(true);
+      }
+
       // Choose a random desired position every few seconds
       if (isServer) {
          InvokeRepeating("chooseRandomDesiredPosition", 3f, 3f);
@@ -85,7 +93,9 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       base.Update();
 
       // Handle animating the enemy
-      handleAnimations();
+      if (animGroupType != Anim.Group.None) {
+         handleAnimations();
+      }
 
       // Allow pressing keyboard to do the same thing as a click
       if (InputManager.isActionKeyPressed() && !isDefeated && !Global.isInBattle() && isPlayerClose()) {
@@ -109,7 +119,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       }
 
       // If we're in a battle, don't move / Boss entities dont move
-      if (isInBattle() || isBoss()) {
+      if (isInBattle() || isBossType) {
          return;
       }
 
@@ -198,10 +208,6 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       bodyAnim.playAnimation(newAnimType);
    }
 
-   public bool isBoss () {
-      return isBossType;
-   }
-
    public void assignBattleId (int newBattleId, NetEntity aggressor) {
       // Assign the Sync Var
       this.battleId = newBattleId;
@@ -222,7 +228,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       }
 
       // Don't do this while we have a target or we're in a battle
-      if (targetUserId > 0 || isInBattle() || isDefeated || isBoss()) {
+      if (targetUserId > 0 || isInBattle() || isDefeated || isBossType) {
          return;
       }
 
