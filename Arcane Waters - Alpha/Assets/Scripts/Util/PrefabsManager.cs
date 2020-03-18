@@ -235,7 +235,6 @@ public class PrefabsManager : MonoBehaviour {
 
    #region Private Variables
 
-#pragma warning disable 0649
    [Header("VFX Prefabs")]
    // The Prefab we use for creating cannon splashes
    [SerializeField] private GameObject cannonSplashPrefab;
@@ -245,7 +244,6 @@ public class PrefabsManager : MonoBehaviour {
 
    // The Prefab we use for creating cannon smoke
    [SerializeField] private GameObject cannonSmokePrefab;
-#pragma warning restore 0649
 
    #endregion
 }

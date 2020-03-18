@@ -39,19 +39,14 @@ public class BooksToolDataPanel : MonoBehaviour {
       saveButton.onClick.AddListener(() => {
          BookData itemData = getBookData();
          if (itemData != null) {
-            if (itemData.title != startingName) {
-               toolManager.overwriteData(itemData, startingName);
-               gameObject.SetActive(false);
-            } else {
-               toolManager.saveXMLData(itemData);
-               gameObject.SetActive(false);
-            }
+            toolManager.saveBookData(itemData);
+            gameObject.SetActive(false);
          }
       });
 
       cancelButton.onClick.AddListener(() => {
          gameObject.SetActive(false);
-         toolManager.loadXMLData();
+         toolManager.loadBooksList();
       });
 
       previewButton.onClick.AddListener(() => {

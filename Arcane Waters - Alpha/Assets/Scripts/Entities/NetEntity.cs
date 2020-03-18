@@ -247,11 +247,11 @@ public class NetEntity : NetworkBehaviour {
             animator.SetBool("isMoving", moving);
             animator.SetInteger("facing", (int) this.facing);
             animator.SetBool("inBattle", battling);
-            animator.SetBool("isClimbing", isClimbing);
-            animator.SetFloat("climbingSpeedMultiplier", moving ? 1 : 0);
 
             if (this is BodyEntity) {
                animator.SetInteger("fallDirection", (int) this.fallDirection);
+               animator.SetBool("isClimbing", isClimbing);
+               animator.SetFloat("climbingSpeedMultiplier", moving ? 1 : 0);
             }
          }
 

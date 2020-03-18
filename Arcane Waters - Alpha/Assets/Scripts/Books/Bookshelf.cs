@@ -8,8 +8,8 @@ using System;
 public class Bookshelf : MonoBehaviour {
    #region Public Variables
 
-   // The book data
-   public BookData book;
+   // The book unique ID in the database
+   public int bookId;
 
    #endregion
 
@@ -40,12 +40,8 @@ public class Bookshelf : MonoBehaviour {
          return;
       }
 
-      // Get the book reader panel
-      PanelManager.self.selectedPanel = Panel.Type.BookReader;
-      BookReaderPanel bookPanel = (BookReaderPanel) PanelManager.self.get(Panel.Type.BookReader);
-
-      // Show this book
-      bookPanel.show(book);
+      // Send a request to the server to show the book
+      Global.player.rpc.Cmd_RetrieveBook(bookId);
    }
 
    private void handleSpriteOutline () {
@@ -81,6 +77,9 @@ public class Bookshelf : MonoBehaviour {
 
    // Is the local player near this bookshelf?
    private bool _isGlobalPlayerNearby = false;
+
+   // The book that belongs to this bookshelf
+   private BookData _book;
 
    // Our components
    protected SpriteOutlineHelper _outline;

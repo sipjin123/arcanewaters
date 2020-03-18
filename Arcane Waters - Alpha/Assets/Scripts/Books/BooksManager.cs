@@ -18,7 +18,22 @@ public class BooksManager : MonoBehaviour
       self = this;
    }
 
-   #region Private Variables
+   public BookData getBookData (int bookId) {      
+      return _books.First(x => x.bookId == bookId);
+   }
+
+   private void fetchBook (int bookId) {
+      if (_books == null || _books.Count == 0) {
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            _books = DB_Main.getBooksList();
+         });
+      }
+   }
    
+   #region Private Variables
+
+   // The collection of books in the DB
+   private List<BookData> _books;
+
    #endregion
 }

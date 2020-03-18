@@ -1,8 +1,6 @@
 ﻿using System.Linq;
 using UnityEngine;
 
-#pragma warning disable 0649
-
 public class SpriteOutlineHelper : MonoBehaviour
 {
    #region Public Variables

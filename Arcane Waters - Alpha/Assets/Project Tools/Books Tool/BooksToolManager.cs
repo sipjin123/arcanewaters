@@ -16,68 +16,43 @@ public class BooksToolManager : XmlDataToolManager {
 
    #endregion
 
-   public void saveXMLData (BookData data) {
-      XmlSerializer ser = new XmlSerializer(data.GetType());
-      StringBuilder sb = new StringBuilder();
-      using (XmlWriter writer = XmlWriter.Create(sb)) {
-         ser.Serialize(writer, data);
-      }
-
-      string longString = sb.ToString();
+   public void saveBookData (BookData data) {                 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateBooksXML(longString, data.title);
+         DB_Main.upsertBook(data.content, data.title, data.bookId);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            loadXMLData();
-         });
-      });
-   }
-
-   public void overwriteData (BookData data, string nameToDelete) {
-      XmlSerializer ser = new XmlSerializer(data.GetType());
-      StringBuilder sb = new StringBuilder();
-      using (XmlWriter writer = XmlWriter.Create(sb)) {
-         ser.Serialize(writer, data);
-      }
-
-      string longString = sb.ToString();
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateBooksXML(longString, data.title);
-
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            deleteBookDataFile(new BookData { title = nameToDelete });
+            loadBooksList();
          });
       });
    }
 
    public void deleteBookDataFile (BookData data) {
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.deleteBooksXML(data.title);
+      if (data.bookId > 0) {
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            DB_Main.deleteBookByID(data.bookId);
 
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            loadXMLData();
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               loadBooksList();
+            });
          });
-      });
+      }
    }
 
-   public void loadXMLData () {
-      _bookDataList = new Dictionary<string, BookData>();
+   public void loadBooksList () {
+      _bookDataList = new Dictionary<int, BookData>();
 
       XmlLoadingPanel.self.startLoading();
+
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<string> rawXMLData = DB_Main.getBooksXML();
-         userNameData = DB_Main.getSQLDataByName(editorToolType);
+         List<BookData> books = DB_Main.getBooksList();
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            foreach (string rawText in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(rawText);
-               BookData bookData = Util.xmlLoad<BookData>(newTextAsset);
-
+            foreach (BookData book in books) {
                // Save the book data in the memory cache
-               if (_bookDataList.ContainsKey(bookData.title)) {
-                  Debug.LogWarning("Duplicated ID: " + bookData.title);
+               if (_bookDataList.ContainsKey(book.bookId)) {
+                  Debug.LogWarning("Duplicated ID: " + book.bookId);
                } else {
-                  _bookDataList.Add(bookData.title, bookData);
+                  _bookDataList.Add(book.bookId, book);
                }
             }
             booksToolScene.loadBookData(_bookDataList);
@@ -86,7 +61,7 @@ public class BooksToolManager : XmlDataToolManager {
       });
    }
 
-   public void duplicateXMLData (BookData data) {
+   public void duplicateBookData (BookData data) {
       data.title = MasterToolScene.UNDEFINED;
       XmlSerializer ser = new XmlSerializer(data.GetType());
       StringBuilder sb = new StringBuilder();
@@ -97,10 +72,10 @@ public class BooksToolManager : XmlDataToolManager {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateBooksXML (longString, data.title);
+         DB_Main.upsertBook (longString, data.title, 0);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            loadXMLData();
+            loadBooksList();
          });
       });
    }
@@ -108,7 +83,7 @@ public class BooksToolManager : XmlDataToolManager {
    #region Private Variables
 
    // Holds the list of book data
-   private Dictionary<string, BookData> _bookDataList = new Dictionary<string, BookData>();
+   private Dictionary<int, BookData> _bookDataList = new Dictionary<int, BookData>();
 
    #endregion
 }

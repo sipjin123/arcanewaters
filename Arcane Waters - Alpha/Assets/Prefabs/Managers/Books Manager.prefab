@@ -43,9 +43,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd8d70c99b02e6643b5f3fedb0180ff4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bookImages:
-  - key: holi
-    sprite: {fileID: 6525784191535539376, guid: 97d8916d2e2d8454e901dd84f90837b8,
-      type: 3}
-  - key: theVoid
-    sprite: {fileID: 21300000, guid: a722d3b4b772755488de5a0625882082, type: 3}

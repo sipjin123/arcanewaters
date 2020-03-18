@@ -9,19 +9,6 @@ public class Vines : MonoBehaviour {
 
    #endregion
 
-   private void Awake () {
-      _collider = GetComponent<BoxCollider2D>();
-      SpriteRenderer[] renderers = GetComponentsInChildren<SpriteRenderer>();
-      Bounds bounds = _collider.bounds;
-
-      foreach (SpriteRenderer renderer in renderers) {
-         bounds.Encapsulate(renderer.bounds);
-      }
-
-      _collider.size = bounds.size;
-      _collider.offset = bounds.center;
-   }
-
    private void OnTriggerEnter2D (Collider2D other) {
       BodyEntity player = other.transform.GetComponent<BodyEntity>();
 
@@ -43,9 +30,6 @@ public class Vines : MonoBehaviour {
    }
 
    #region Private Variables
-
-   // The trigger collider
-   private BoxCollider2D _collider;
 
    #endregion
 }

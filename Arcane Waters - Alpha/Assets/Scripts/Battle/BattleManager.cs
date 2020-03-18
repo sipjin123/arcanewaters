@@ -834,9 +834,7 @@ public class BattleManager : MonoBehaviour {
    protected int _spawnCounter = 0;
 
    // All battlers in the game
-#pragma warning disable
    [SerializeField] private List<BattlerData> _allBattlersData;
-#pragma warning restore
 
    #endregion
 }

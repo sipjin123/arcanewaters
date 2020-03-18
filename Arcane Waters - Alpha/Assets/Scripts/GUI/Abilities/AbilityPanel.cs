@@ -245,7 +245,6 @@ public class AbilityPanel : Panel {
 
    #region Private Variables
 
-#pragma warning disable 0649
    // The equipped ability slots
    private List<AbilitySlot> _equippedAbilitySlots = new List<AbilitySlot>();
 
@@ -262,7 +261,6 @@ public class AbilityPanel : Panel {
    // The grabbed ability UI that can be dragged
    [SerializeField]
    private GrabbedAbility _draggableAbility;
-#pragma warning restore 0649 
 
    #endregion
 }

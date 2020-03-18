@@ -116,14 +116,18 @@ public class DB_MainStub : MonoBehaviour
       return new List<XMLPair>();
    }
 
-   public static void updateBooksXML (string rawData, string name) {
+   public static void upsertBook (string content, string title, int bookId) {
    }
 
-   public static void deleteBooksXML (string name) {
+   public static void deleteBookByID (int bookId) {
    }
 
-   public static List<string> getBooksXML () {
-      return new List<string>();
+   public static BookData getBookById (int bookId) {
+      return new BookData();
+   }
+
+   public static List<BookData> getBooksList () {
+      return new List<BookData>();
    }
 
    public static void updateNPCXML (string rawData, int typeIndex) {

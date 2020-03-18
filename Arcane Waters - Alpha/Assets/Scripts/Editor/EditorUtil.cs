@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEditor.SceneManagement;
+using System.Text;
 
 public class EditorUtil : EditorWindow {
    #region Public Variables
@@ -200,6 +201,17 @@ public class EditorUtil : EditorWindow {
       EditorWindow.GetWindow(typeof(TestWindow));
 
       // PreExportMethods.AppendCSC();
+   }
+
+   [MenuItem("Util/Find GUID")]
+   static void findAssetByGUID () {
+      string guid = "a99e757d831d5574cbccda70fe4dbf1e";
+
+      foreach (string assetPath in AssetDatabase.GetAllAssetPaths()) {
+         if (AssetDatabase.AssetPathToGUID(assetPath) == guid) {
+            Debug.Log("The asset with the specified guid is at path: " + assetPath);
+         }
+      }
    }
 
    #region Private Variables

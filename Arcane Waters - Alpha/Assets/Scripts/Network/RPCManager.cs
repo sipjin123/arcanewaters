@@ -3696,6 +3696,31 @@ public class RPCManager : NetworkBehaviour {
       }
    }
 
+   [Command]
+   public void Cmd_RetrieveBook (int bookId) {
+      retrieveBook(bookId);
+   }
+
+   [TargetRpc]
+   private void Target_ShowBook (NetworkConnection conn, string title, string content) {
+      // Get the book reader panel
+      PanelManager.self.selectedPanel = Panel.Type.BookReader;
+      BookReaderPanel bookPanel = (BookReaderPanel) PanelManager.self.get(Panel.Type.BookReader);
+
+      BookData book = new BookData(title, content);
+
+      // Show the book
+      bookPanel.show(book);
+   }
+
+   [Server]
+   private void retrieveBook (int bookId) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         BookData book = DB_Main.getBookById(bookId);
+         Target_ShowBook(netIdentity.connectionToClient, book.title, book.content);
+      });
+   }
+   
    #region Private Variables
 
    // Our associated Player object

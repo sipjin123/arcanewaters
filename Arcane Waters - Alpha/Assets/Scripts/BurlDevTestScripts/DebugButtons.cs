@@ -1,6 +1,4 @@
-﻿#pragma warning disable
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Collections;
 #if IS_SERVER_BUILD
@@ -202,5 +200,3 @@ public static class DebugCustom
       Debug.LogError(B + wat);
    }
 }
-
-#pragma warning restore

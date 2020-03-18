@@ -38,7 +38,7 @@ public class BooksToolScene : MonoBehaviour {
       createBookButton.onClick.AddListener(createBookTemplate);
       mainMenuButton.onClick.AddListener(() => SceneManager.LoadScene(MasterToolScene.masterScene));
 
-      toolManager.loadXMLData();
+      toolManager.loadBooksList();
    }
 
    private void createBookTemplate () {
@@ -58,14 +58,14 @@ public class BooksToolScene : MonoBehaviour {
       });
 
       template.duplicateButton.onClick.AddListener(() => {
-         toolManager.duplicateXMLData(data);
+         toolManager.duplicateBookData(data);
       });
 
       template.setWarning();
       template.gameObject.SetActive(true);
    }
 
-   public void loadBookData (Dictionary<string, BookData> bookDataCollection) {
+   public void loadBookData (Dictionary<int, BookData> bookDataCollection) {
       itemTemplateParent.gameObject.DestroyChildren();
 
       List<BookData> sortedList = bookDataCollection.Values.ToList().OrderBy(w => w.title).ToList();
@@ -87,7 +87,7 @@ public class BooksToolScene : MonoBehaviour {
          });
 
          template.duplicateButton.onClick.AddListener(() => {
-            toolManager.duplicateXMLData(bookData);
+            toolManager.duplicateBookData(bookData);
          });
          
          if (!Util.hasValidEntryName(template.nameText.text)) {

@@ -1736,21 +1736,23 @@ public class DB_Main : DB_MainStub
    }
    #endregion
 
-   #region Books XML Data
-   public static new void updateBooksXML (string rawData, string name) {
+   #region Books Data
+
+   public static new void upsertBook (string bookContent, string name, int bookId) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO books_xml (xml_name, xmlContent, creator_userID) " +
-            "VALUES(@xml_name, @xmlContent, @creator_userID) " +
-            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent", conn)) {
+            "INSERT INTO books (bookId, bookTitle, bookContent, creator_userID) " +
+            "VALUES(NULLIF(@bookId, 0), @bookTitle, @bookContent, @creator_userID) " +
+            "ON DUPLICATE KEY UPDATE bookTitle = @bookTitle, bookContent = @bookContent", conn)) {
 
             conn.Open();
             cmd.Prepare();
 
-            cmd.Parameters.AddWithValue("@xml_name", name);
-            cmd.Parameters.AddWithValue("@xmlContent", rawData);
+            cmd.Parameters.AddWithValue("@bookId", bookId);
+            cmd.Parameters.AddWithValue("@bookTitle", name);
+            cmd.Parameters.AddWithValue("@bookContent", bookContent);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
 
             // Execute the command
@@ -1761,12 +1763,12 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new List<string> getBooksXML () {
-      List<string> rawDataList = new List<string>();
+   public static new List<BookData> getBooksList () {
+      List<BookData> rawDataList = new List<BookData>();
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.books_xml", conn)) {
+            "SELECT * FROM arcane.books", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -1774,23 +1776,48 @@ public class DB_Main : DB_MainStub
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  rawDataList.Add(dataReader.GetString("xmlContent"));
+                  rawDataList.Add(new BookData(dataReader));
                }
             }
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
-      return new List<string>(rawDataList);
+      return new List<BookData>(rawDataList);
    }
 
-   public static new void deleteBooksXML (string name) {
+   public static new BookData getBookById (int bookId) {
+      BookData book = null;
+      try {         
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane.books WHERE bookId = @bookId", conn)) {
+
+            conn.Open();
+            cmd.Parameters.AddWithValue("@bookId", bookId);
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  book = new BookData(dataReader);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return book;
+   }
+
+   public static new void deleteBookByID (int bookId) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM books_xml WHERE xml_name=@xml_name", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM books WHERE bookId=@bookId", conn)) {
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@xml_name", name);
+            cmd.Parameters.AddWithValue("@bookId", bookId);
 
             // Execute the command
             cmd.ExecuteNonQuery();

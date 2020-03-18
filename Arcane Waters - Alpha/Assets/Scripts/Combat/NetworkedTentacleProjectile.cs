@@ -128,7 +128,6 @@ public class NetworkedTentacleProjectile : MonoBehaviour
 
    #region Private Variables
 
-#pragma warning disable 0649
    // Our Start Time
    protected float _startTime;
 
@@ -143,7 +142,6 @@ public class NetworkedTentacleProjectile : MonoBehaviour
 
    // The instance id for this venom projectile
    private int _instanceId;
-#pragma warning restore 0649
 
    #endregion
 }
