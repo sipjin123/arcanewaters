@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System.Xml.Serialization;
 
 public class CropSpot : MonoBehaviour {
    #region Public Variables
@@ -15,6 +16,10 @@ public class CropSpot : MonoBehaviour {
 
    // The number that identifies this spot
    public int cropNumber;
+
+   // The pickable crops
+   [XmlIgnore]
+   public Vector3 cropPickupLocation;
 
    #endregion
 
@@ -45,11 +50,6 @@ public class CropSpot : MonoBehaviour {
       // If the player tried to water this spot holding the watering pot, maybe water something
       if (this.crop != null && (Global.player as PlayerBodyEntity).weaponManager.actionType == Weapon.ActionType.WaterCrop && !this.crop.isMaxLevel() && crop.isReadyForWater()) {
          Global.player.Cmd_WaterCrop(this.cropNumber);
-      }
-
-      // If the player tried to harvest this spot holding the pitchfork, maybe harvest something
-      if (this.crop != null && (Global.player as PlayerBodyEntity).weaponManager.actionType == Weapon.ActionType.HarvestCrop && this.crop.isMaxLevel()) {
-         Global.player.Cmd_HarvestCrop(this.cropNumber);
       }
    }
 

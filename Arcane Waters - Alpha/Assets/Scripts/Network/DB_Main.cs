@@ -2238,6 +2238,74 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
+   #region Companions
+
+   public static new void updateCompanions (int xmlId, int userId, string companionName, int companionLevel, int companionType) {
+      string xmlKey = "xmlId, ";
+      string xmlValue = "@xmlId, ";
+      if (xmlId < 0) {
+         xmlKey = "";
+         xmlValue = "";
+      }
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "INSERT INTO companions ("+ xmlKey + "userId, companionName, companionLevel, companionType) " +
+            "VALUES("+ xmlValue + "@userId, @companionName, @companionLevel, @companionType) " +
+            "ON DUPLICATE KEY UPDATE companionLevel = @companionLevel", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@xmlId", xmlId);
+            cmd.Parameters.AddWithValue("@userId", userId);
+            cmd.Parameters.AddWithValue("@companionName", companionName);
+            cmd.Parameters.AddWithValue("@companionLevel", companionLevel);
+            cmd.Parameters.AddWithValue("@companionType", companionType); 
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<CompanionInfo> getCompanions (int userId) {
+      List<CompanionInfo> newCompanionInfo = new List<CompanionInfo>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane.companions", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@userId", userId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  CompanionInfo companionInfo = new CompanionInfo {
+                     companionId = dataReader.GetInt32("companionId"),
+                     companionName = dataReader.GetString("companionName"),
+                     companionLevel = dataReader.GetInt32("companionLevel"),
+                     companionType = dataReader.GetInt32("companionType"),
+                     equippedSlot = dataReader.GetInt32("equippedSlot"),
+                     iconPath = dataReader.GetString("iconPath"),
+                  };
+                  newCompanionInfo.Add(companionInfo);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return newCompanionInfo;
+   }
+
+   #endregion
+
    public static new List<Item> getRequiredIngredients (int usrId, List<CraftingIngredients.Type> itemList) {
       int itmCategory = (int) Item.Category.CraftingIngredients;
       List<Item> newItemList = new List<Item>();

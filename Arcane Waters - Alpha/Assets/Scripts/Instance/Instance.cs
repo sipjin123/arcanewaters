@@ -55,8 +55,6 @@ public class Instance : NetworkBehaviour
    }
 
    private void Start () {
-      updateMaxPlayerCount();
-
       // We only spawn Bots on the Server
       Area area = AreaManager.self.getArea(this.areaKey);
       if (NetworkServer.active) {

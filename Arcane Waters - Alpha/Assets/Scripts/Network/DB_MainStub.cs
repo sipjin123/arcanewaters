@@ -12,6 +12,14 @@ public class DB_MainStub : MonoBehaviour
 
    #endregion
 
+   public static void updateCompanions (int xmlId, int userId, string companionName, int companionLevel, int companionType) {
+
+   }
+
+   public static List<CompanionInfo> getCompanions (int userId) {
+      return new List<CompanionInfo>();
+   }
+
    public static void updateAccountMode (int accoundId, bool isSinglePlayer) {
 
    }

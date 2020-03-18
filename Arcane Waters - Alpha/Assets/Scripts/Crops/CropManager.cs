@@ -393,17 +393,18 @@ public class CropManager : NetworkBehaviour {
    [TargetRpc]
    public void Target_HarvestCrop (NetworkConnection connection, CropInfo cropInfo) {
       CropSpot cropSpot = CropSpotManager.self.getCropSpot(cropInfo.cropNumber);
+      Vector3 effectSpawnPos = cropSpot.cropPickupLocation;
 
       // Show some effects
-      EffectManager.self.create(Effect.Type.Crop_Harvest, cropSpot.transform.position);
-      EffectManager.self.create(Effect.Type.Crop_Shine, cropSpot.transform.position);
-      EffectManager.self.create(Effect.Type.Crop_Dirt_Large, cropSpot.transform.position);
+      EffectManager.self.create(Effect.Type.Crop_Harvest, effectSpawnPos);
+      EffectManager.self.create(Effect.Type.Crop_Shine, effectSpawnPos);
+      EffectManager.self.create(Effect.Type.Crop_Dirt_Large, effectSpawnPos);
 
       // Play a sound
-      SoundManager.create3dSound("crop_harvest_", cropSpot.transform.position, 5);
+      SoundManager.create3dSound("crop_harvest_", effectSpawnPos, 5);
 
       // Show a floating icon
-      GameObject harvestEffect = Instantiate(cropHarvestEffectPrefab, cropSpot.transform.position + new Vector3(0f, .16f), Quaternion.identity);
+      GameObject harvestEffect = Instantiate(cropHarvestEffectPrefab, effectSpawnPos + new Vector3(0f, .16f), Quaternion.identity);
       harvestEffect.GetComponent<SimpleAnimation>().setNewTexture(ImageManager.getTexture("Crops/" + cropInfo.cropType + "_strip"));
       // GameObject iconCanvas = Instantiate(cropIconCanvasPrefab, cropSpot.transform.position + new Vector3(0f, .16f), Quaternion.identity);
       // iconCanvas.GetComponentInChildren<Image>().sprite = Resources.Load<Sprite>("Crops/" + cropInfo.cropType + "-Full");

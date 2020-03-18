@@ -73,6 +73,10 @@ public class DebugButtons : NetworkBehaviour
             }
          }
 
+         if (GUILayout.Button("Open Recruitment")) {
+            Global.player.rpc.Cmd_RequestCompanionData();
+         }
+
          if (GUILayout.Button("Update Skill")) {
             AbilitySQLData newSQL = new AbilitySQLData();
             newSQL.abilityID = int.Parse( abilityIDData );

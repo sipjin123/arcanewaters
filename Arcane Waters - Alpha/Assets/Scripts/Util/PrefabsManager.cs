@@ -24,6 +24,13 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab for spawning an npc
    public NPC npcPrefab;
 
+   [Header("Harvesting Prefabs")]
+   // The Prefab we use for creating crop bounce effect for harvesting
+   public GameObject cropBouncePrefab;
+
+   // The Prefab we use for creating collectable crops
+   public GameObject cropPickupPrefab;
+
    [Header("Sea Combat Projectiles")]
    // The Prefab we use for creating venom projectiles
    public VenomProjectile venomPrefab;
@@ -110,9 +117,6 @@ public class PrefabsManager : MonoBehaviour {
 
    // A prefab we can use for showing that the requirements are not enough
    public GameObject insufficientPrefab;
-
-   // The Prefab we use for creating crop bounce effect for harvesting
-   public GameObject cropBouncePrefab;
 
    [Header("Generic Prefabs")]
    // A prefab we use for creating a figure eight route

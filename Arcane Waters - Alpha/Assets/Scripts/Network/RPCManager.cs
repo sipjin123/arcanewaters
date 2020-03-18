@@ -230,6 +230,31 @@ public class RPCManager : NetworkBehaviour {
 
    #endregion
 
+   [Command]
+   public void Cmd_RequestCompanionData () {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<CompanionInfo> companionInfoList = DB_Main.getCompanions(_player.userId);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_ReceiveCompanionData(_player.connectionToClient, Util.serialize(companionInfoList));
+         });
+      });
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveCompanionData (NetworkConnection connection, string[] companionDataArray) {
+      // Translate data
+      List<CompanionInfo> companionInfoList = Util.unserialize<CompanionInfo>(companionDataArray);
+      CompanionPanel panel = (CompanionPanel) PanelManager.self.get(Panel.Type.Companion);
+
+      // Pass the data to the panel
+      panel.receiveCompanionData(companionInfoList);
+
+      // Make sure the panel is showing
+      if (!panel.isShowing()) {
+         PanelManager.self.pushPanel(panel.type);
+      }
+   }
+
    [TargetRpc]
    public void Target_ReceiveShopItems (NetworkConnection connection, int gold, string[] itemArray, string greetingText) {
       // TODO: Determine if casting is still necessary
