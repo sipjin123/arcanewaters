@@ -71,7 +71,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2ec41e4c825ce8468660df7bfdfa4b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cropNumber: 0
+  cropSpot: {fileID: 0}
+  spriteRender: {fileID: 2931902825396700473}
 --- !u!1 &9104932305935080927
 GameObject:
   m_ObjectHideFlags: 0

@@ -270,7 +270,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 170bbf366ad4e0d4f8d1d3d54a7afd41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cropSpot: {fileID: 0}
   animatingObj: {fileID: 8383502486879891180}
+  spriteRender: {fileID: 7617172151152349477}
+  cropSpriteList:
+  - cropType: 1
+    sprite: {fileID: 21300000, guid: ca0e874db34a4bd47a158d00a8826219, type: 3}
+  - cropType: 2
+    sprite: {fileID: 21300000, guid: 639320f1e9d40416dbea430024a48739, type: 3}
+  - cropType: 3
+    sprite: {fileID: 21300000, guid: 4dfe69c4ebb97f343a70b6af193fe21f, type: 3}
+  - cropType: 10
+    sprite: {fileID: 21300000, guid: c7a4f573f2107c541b156b13ed2d39e9, type: 3}
+  - cropType: 9
+    sprite: {fileID: 21300000, guid: 3054874fa764df2458dc959a152382b5, type: 3}
+  - cropType: 8
+    sprite: {fileID: 21300000, guid: 81dce58b714487449acf4ea2cabcfd62, type: 3}
+  - cropType: 7
+    sprite: {fileID: 21300000, guid: e5610d6f6a7e1f34dabb3a97ab1f8a31, type: 3}
+  - cropType: 6
+    sprite: {fileID: 21300000, guid: 31d1e2735559c3740ab83548aca64c98, type: 3}
+  - cropType: 5
+    sprite: {fileID: 21300000, guid: 2682eb01f0b09f549874595a4b8deddc, type: 3}
+  - cropType: 4
+    sprite: {fileID: 21300000, guid: 28dedb962c5c85648a6719f690296623, type: 3}
 --- !u!1 &8241236508356351925
 GameObject:
   m_ObjectHideFlags: 0

@@ -15369,6 +15369,34 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: f8a0238c1fda2e844b655143485f1ff7, type: 3}
     sprites:
     - {fileID: 21300000, guid: f8a0238c1fda2e844b655143485f1ff7, type: 3}
+  - imageName: enemy_icon_ring_1
+    imagePath: Assets/Sprites/Icons/Battle/enemy/enemy_icon_ring_1.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Battle/enemy/enemy_icon_ring_1
+    texture2D: {fileID: 2800000, guid: 393bdaa6a8f864a42a3401c0428beee4, type: 3}
+    sprite: {fileID: 21300000, guid: 393bdaa6a8f864a42a3401c0428beee4, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 393bdaa6a8f864a42a3401c0428beee4, type: 3}
+  - imageName: enemy_icon_ring_2
+    imagePath: Assets/Sprites/Icons/Battle/enemy/enemy_icon_ring_2.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Battle/enemy/enemy_icon_ring_2
+    texture2D: {fileID: 2800000, guid: 68656502ee10495439e7730224c1213b, type: 3}
+    sprite: {fileID: 21300000, guid: 68656502ee10495439e7730224c1213b, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 68656502ee10495439e7730224c1213b, type: 3}
+  - imageName: enemy_icon_ring_3
+    imagePath: Assets/Sprites/Icons/Battle/enemy/enemy_icon_ring_3.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Battle/enemy/enemy_icon_ring_3
+    texture2D: {fileID: 2800000, guid: fe58156095df0eb45b1345d5a4d47476, type: 3}
+    sprite: {fileID: 21300000, guid: fe58156095df0eb45b1345d5a4d47476, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: fe58156095df0eb45b1345d5a4d47476, type: 3}
+  - imageName: enemy_icon_ring_4
+    imagePath: Assets/Sprites/Icons/Battle/enemy/enemy_icon_ring_4.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Battle/enemy/enemy_icon_ring_4
+    texture2D: {fileID: 2800000, guid: 04a2fb38e58e98240bc87b0ba7854515, type: 3}
+    sprite: {fileID: 21300000, guid: 04a2fb38e58e98240bc87b0ba7854515, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 04a2fb38e58e98240bc87b0ba7854515, type: 3}
   - imageName: enemy_icon_ring_5
     imagePath: Assets/Sprites/Icons/Battle/enemy/enemy_icon_ring_5.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Battle/enemy/enemy_icon_ring_5
@@ -15376,6 +15404,20 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: c8c14a6e3733ad248adf8454e7ca043d, type: 3}
     sprites:
     - {fileID: 21300000, guid: c8c14a6e3733ad248adf8454e7ca043d, type: 3}
+  - imageName: enemy_icon_ring_6
+    imagePath: Assets/Sprites/Icons/Battle/enemy/enemy_icon_ring_6.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Battle/enemy/enemy_icon_ring_6
+    texture2D: {fileID: 2800000, guid: d559d7e0c6fbdd14698a2b5273488586, type: 3}
+    sprite: {fileID: 21300000, guid: d559d7e0c6fbdd14698a2b5273488586, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: d559d7e0c6fbdd14698a2b5273488586, type: 3}
+  - imageName: enemy_icon_ring_7
+    imagePath: Assets/Sprites/Icons/Battle/enemy/enemy_icon_ring_7.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Battle/enemy/enemy_icon_ring_7
+    texture2D: {fileID: 2800000, guid: d6dc3db3987500c4d8fec3ccc0bd0a9e, type: 3}
+    sprite: {fileID: 21300000, guid: d6dc3db3987500c4d8fec3ccc0bd0a9e, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: d6dc3db3987500c4d8fec3ccc0bd0a9e, type: 3}
   - imageName: enemy_icon_ring_7
     imagePath: Assets/Sprites/Icons/Battle/enemy_icon_ring_7.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Battle/enemy_icon_ring_7
@@ -22702,6 +22744,52 @@ MonoBehaviour:
     - {fileID: 338536299490742652, guid: 744510dd9ef2b9343a4b360d4d6b0e88, type: 3}
     - {fileID: -6604573014406887901, guid: 744510dd9ef2b9343a4b360d4d6b0e88, type: 3}
     - {fileID: -573433619950637807, guid: 744510dd9ef2b9343a4b360d4d6b0e88, type: 3}
+  - imageName: LizardGuy
+    imagePath: Assets/Sprites/NPCs/Bodies/LizardGuy/LizardGuy.png
+    imagePathWithoutExtension: Assets/Sprites/NPCs/Bodies/LizardGuy/LizardGuy
+    texture2D: {fileID: 2800000, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    sprite: {fileID: -9179653722846785706, guid: c64bd8020bc4edd4ea784cb4e807001a,
+      type: 3}
+    sprites:
+    - {fileID: -9179653722846785706, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: 6906325023523400406, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: -716042183101719030, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: -2244073913388981842, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: 5260015323091847400, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: 9127873449253902724, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: -8874412794943529873, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: 4352836356445111896, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: 5299214654185838415, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: 3741103099466205808, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: 7757869154288922168, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: -2339724740295180474, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: -2815093634554945537, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: 6106315896693881761, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: 30275082306254304, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: 7326217002455167819, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: -2160128299325495244, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: -7207178608470076475, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: 3106209496764750887, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: -6401134713810179912, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: 1487626294449736036, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: 5487629428754888760, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: -7663922127729584418, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: -1280432016822110886, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: 2922807150678441287, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: -2596586518873730529, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: 4341278005585831730, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: 1798715713046339717, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: 8232192110950295937, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: -7110184303687130898, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: -5388866303803513161, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: -1587696498737151713, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: -8237818895353320523, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: 3446185890317906002, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: 5891632839486936009, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: -3734455125491770093, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: 8440473577926748508, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: 7092220431059200400, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
+    - {fileID: -3689872278539177290, guid: c64bd8020bc4edd4ea784cb4e807001a, type: 3}
   - imageName: Lock Icon
     imagePath: Assets/Sprites/Character Screens/Lock Icon.png
     imagePathWithoutExtension: Assets/Sprites/Character Screens/Lock Icon
@@ -26977,6 +27065,8 @@ MonoBehaviour:
     - {fileID: 1075751567747138484, guid: 54bc3cf54f57c4d44baa7cefb355ac51, type: 3}
     - {fileID: -667043945629493462, guid: 54bc3cf54f57c4d44baa7cefb355ac51, type: 3}
     - {fileID: 5555833726499615064, guid: 54bc3cf54f57c4d44baa7cefb355ac51, type: 3}
+    - {fileID: -2407427260354243073, guid: 54bc3cf54f57c4d44baa7cefb355ac51, type: 3}
+    - {fileID: -2281382376189335558, guid: 54bc3cf54f57c4d44baa7cefb355ac51, type: 3}
   - imageName: pine_pressed
     imagePath: Assets/Sprites/GUI/Voyages/pine_pressed.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Voyages/pine_pressed
