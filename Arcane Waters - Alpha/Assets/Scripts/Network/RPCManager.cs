@@ -174,13 +174,13 @@ public class RPCManager : NetworkBehaviour {
    public void Target_ReceiveNPCQuestList (NetworkConnection connection, int npcId,
       string npcName, Faction.Type faction, Specialty.Type specialty, int friendshipLevel,
       string greetingText, bool canOfferGift, bool hasTradeGossipDialogue, bool hasGoodbyeDialogue,
-      Quest[] quests) {
+      Quest[] quests, bool isHirable) {
       // Get the NPC panel
       NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
 
       // Pass the data to the panel
       panel.updatePanelWithQuestSelection(npcId, npcName, faction, specialty, friendshipLevel, greetingText,
-         canOfferGift, hasTradeGossipDialogue, hasGoodbyeDialogue, quests);
+         canOfferGift, hasTradeGossipDialogue, hasGoodbyeDialogue, quests, isHirable);
 
       // Make sure the panel is showing
       if (!panel.isShowing()) {
@@ -229,6 +229,40 @@ public class RPCManager : NetworkBehaviour {
    }
 
    #endregion
+
+   [Command]
+   public void Cmd_UpdateCompanionRoster (int companionId, int equipSlot) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.updateCompanionRoster(companionId, _player.userId, equipSlot);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            CompanionPanel panel = (CompanionPanel) PanelManager.self.get(Panel.Type.Companion);
+            panel.canvasBlocker.SetActive(false);
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_HireCompanion (CompanionInfo companionInfo) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Hire the companion and write to sql database
+         DB_Main.updateCompanions(-1, _player.userId, companionInfo.companionName, companionInfo.companionLevel, companionInfo.companionType, companionInfo.equippedSlot, companionInfo.iconPath);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_ReceiveHiringResult(_player.connectionToClient, companionInfo);
+         });
+      });
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveHiringResult (NetworkConnection connection, CompanionInfo companionInfo) {
+      // Disable npc panel
+      NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
+
+      // Close the panel if it is showing
+      if (panel.isShowing()) {
+         PanelManager.self.popPanel();
+      }
+      RewardManager.self.showRecruitmentNotice(companionInfo.companionName, companionInfo.iconPath);
+   }
 
    [Command]
    public void Cmd_RequestCompanionData () {
@@ -1266,12 +1300,13 @@ public class RPCManager : NetworkBehaviour {
             bool canOfferGift = NPCManager.self.canOfferGift(friendshipLevel);
             bool hasTradeGossipDialogue = NPCManager.self.hasTradeGossipDialogue(npcId);
             bool hasGoodbyeDialogue = NPCManager.self.hasGoodbyeDialogue(npcId);
+            bool isHirable = NPCManager.self.isHirable(npcId);
             NPC npc = NPCManager.self.getNPC(npcId);
 
             // Send the data to the client
             Target_ReceiveNPCQuestList(_player.connectionToClient, npcId, npc.getName(), npc.getFaction(), npc.getSpecialty(),
                friendshipLevel, greetingText, canOfferGift, hasTradeGossipDialogue, hasGoodbyeDialogue,
-               questList.ToArray());
+               questList.ToArray(), isHirable);
          });
       });
    }
@@ -2998,27 +3033,62 @@ public class RPCManager : NetworkBehaviour {
    #endregion
 
    [Command]
+   public void Cmd_StartSinglePlayerBattle (uint enemyNetId, Battle.TeamType teamType) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Fetch the list of companions
+         List<CompanionInfo> companionInfoList = DB_Main.getCompanions(_player.userId);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Gather companion data
+            List<Enemy.Type> allyTypeList = new List<Enemy.Type>();
+            List<string> allyNameList = new List<string>();
+            foreach (CompanionInfo companionInfo in companionInfoList) {
+               allyTypeList.Add((Enemy.Type) companionInfo.companionType);
+               allyNameList.Add(companionInfo.companionName);
+            }
+
+            // Gather Enemy Data
+            NetworkIdentity enemyIdent = NetworkIdentity.spawned[enemyNetId];
+            Enemy enemy = enemyIdent.GetComponent<Enemy>();
+            List<Enemy.Type> enemyTypeList = new List<Enemy.Type>();
+            List<string> enemyNameList = new List<string>();
+            enemyTypeList.Add(enemy.enemyType);
+            enemyNameList.Add(enemy.entityName);
+
+            // Continue to process team battle
+            processTeamBattle(enemyTypeList.ToArray(), allyTypeList.ToArray(), enemyNameList.ToArray(), allyNameList.ToArray(), enemyNetId);
+         });
+      });
+   }
+
+   [Command]
    public void Cmd_StartNewTeamBattle (Enemy.Type[] defenderBattlers, Enemy.Type[] attackerBattlers, string[] defendersPlayerNames, string[] attackerPlayerNames) {
       // Checks if the user is an admin  
       if (!_player.isAdmin()) {
          D.warning("You are not at admin! Denying access to team combat simulation");
          return;
       }
+      processTeamBattle(defenderBattlers, attackerBattlers, defendersPlayerNames, attackerPlayerNames, 0, true);
+   }
 
-      // Hard code enemy type spawn for now
-      Enemy.Type enemyToSpawn = Enemy.Type.Lizard;
+   private void processTeamBattle (Enemy.Type[] defenderBattlers, Enemy.Type[] attackerBattlers, string[] defendersPlayerNames, string[] attackerPlayerNames, uint netId, bool createNewEnemy = false) {
+      if (createNewEnemy) {
+         // Hard code enemy type if combat is accessed in team combat panel
+         Enemy.Type enemyToSpawn = Enemy.Type.Lizard;
 
-      // Create an Enemy in this instance
-      Enemy spawnedEnemy = Instantiate(PrefabsManager.self.enemyPrefab);
-      spawnedEnemy.enemyType = enemyToSpawn;
+         // Create an Enemy in this instance
+         Enemy spawnedEnemy = Instantiate(PrefabsManager.self.enemyPrefab);
+         spawnedEnemy.enemyType = enemyToSpawn;
 
-      // Add it to the Instance
-      Instance newInstance = InstanceManager.self.getInstance(_player.instanceId);
-      InstanceManager.self.addEnemyToInstance(spawnedEnemy, newInstance);
+         // Add it to the Instance
+         Instance newInstance = InstanceManager.self.getInstance(_player.instanceId);
+         InstanceManager.self.addEnemyToInstance(spawnedEnemy, newInstance);
 
-      spawnedEnemy.transform.position = _player.transform.position;
-      spawnedEnemy.desiredPosition = spawnedEnemy.transform.position;
-      NetworkServer.Spawn(spawnedEnemy.gameObject);
+         spawnedEnemy.transform.position = _player.transform.position;
+         spawnedEnemy.desiredPosition = spawnedEnemy.transform.position;
+         NetworkServer.Spawn(spawnedEnemy.gameObject);
+
+         netId = spawnedEnemy.netId;
+      }
 
       // We need a Player Body object to proceed
       if (!(_player is PlayerBodyEntity)) {
@@ -3034,7 +3104,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Get references to the Player and Enemy objects
       PlayerBodyEntity localBattler = (PlayerBodyEntity) _player;
-      NetworkIdentity enemyIdent = NetworkIdentity.spawned[spawnedEnemy.netId];
+      NetworkIdentity enemyIdent = NetworkIdentity.spawned[netId];
       Enemy enemy = enemyIdent.GetComponent<Enemy>();
       Instance instance = InstanceManager.self.getInstance(localBattler.instanceId);
 
@@ -3132,7 +3202,7 @@ public class RPCManager : NetworkBehaviour {
                // Only invite other players, host should not receive this invite
                if (inviteeBattlers.userId != localBattler.userId) {
                   Battle.TeamType teamType = new List<string>(attackerPlayerNames).Find(_ => _ == inviteeBattlers.entityName) != null ? Battle.TeamType.Attackers : Battle.TeamType.Defenders;
-                  inviteeBattlers.rpc.Target_InvitePlayerToCombat(inviteeBattlers.connectionToClient, spawnedEnemy.netId, teamType);
+                  inviteeBattlers.rpc.Target_InvitePlayerToCombat(inviteeBattlers.connectionToClient, netId, teamType);
                }
             }
          });
@@ -3231,6 +3301,8 @@ public class RPCManager : NetworkBehaviour {
          });
       });
    }
+
+   #region Abilities
 
    [Command]
    public void Cmd_UpdateAbility (int abilityID, int equipSlot) {
@@ -3338,6 +3410,10 @@ public class RPCManager : NetworkBehaviour {
       BattleUIManager.self.SetupAbilityUI(attackAbilityDataList.OrderBy(_ => _.equipSlotIndex).ToArray());
    }
 
+   #endregion
+
+   #region Basic Info Fetching
+
    [TargetRpc]
    public void Target_ReceiveBackgroundInfo (NetworkConnection connection, string[] rawBGData) {
       List<BackgroundContentData> backgroundContentList = Util.unserialize<BackgroundContentData>(rawBGData); 
@@ -3367,6 +3443,8 @@ public class RPCManager : NetworkBehaviour {
       PlayerFactionData factionData = JsonUtility.FromJson<PlayerFactionData>(rawFactionData);
       FactionManager.self.addFactionInfo(factionData);
    }
+
+   #endregion
 
    [Command]
    public void Cmd_ProcessMonsterData (Enemy.Type[] enemyTypes) {

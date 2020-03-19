@@ -2240,7 +2240,31 @@ public class DB_Main : DB_MainStub
 
    #region Companions
 
-   public static new void updateCompanions (int xmlId, int userId, string companionName, int companionLevel, int companionType) {
+   public static new void updateCompanionRoster (int xmlId, int userId, int slot) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "INSERT INTO companions (companionId, userId) " +
+            "VALUES(@companionId, @userId) " +
+            "ON DUPLICATE KEY UPDATE equippedSlot = @equippedSlot", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@companionId", xmlId);
+            cmd.Parameters.AddWithValue("@userId", userId);
+            cmd.Parameters.AddWithValue("@equippedSlot", slot);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void updateCompanions (int xmlId, int userId, string companionName, int companionLevel, int companionType, int equippedSlot, string iconPath) {
       string xmlKey = "xmlId, ";
       string xmlValue = "@xmlId, ";
       if (xmlId < 0) {
@@ -2252,9 +2276,9 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO companions ("+ xmlKey + "userId, companionName, companionLevel, companionType) " +
-            "VALUES("+ xmlValue + "@userId, @companionName, @companionLevel, @companionType) " +
-            "ON DUPLICATE KEY UPDATE companionLevel = @companionLevel", conn)) {
+            "INSERT INTO companions ("+ xmlKey + "userId, companionName, companionLevel, companionType, equippedSlot, iconPath) " +
+            "VALUES("+ xmlValue + "@userId, @companionName, @companionLevel, @companionType, @equippedSlot, @iconPath) " +
+            "ON DUPLICATE KEY UPDATE companionLevel = @companionLevel, equippedSlot = @equippedSlot", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -2263,7 +2287,9 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@userId", userId);
             cmd.Parameters.AddWithValue("@companionName", companionName);
             cmd.Parameters.AddWithValue("@companionLevel", companionLevel);
-            cmd.Parameters.AddWithValue("@companionType", companionType); 
+            cmd.Parameters.AddWithValue("@companionType", companionType);
+            cmd.Parameters.AddWithValue("@equippedSlot", equippedSlot);
+            cmd.Parameters.AddWithValue("@iconPath", iconPath);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -2278,7 +2304,7 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.companions", conn)) {
+            "SELECT * FROM arcane.companions where userId = @userId", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@userId", userId);

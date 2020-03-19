@@ -24,6 +24,16 @@ public class RewardScreen : Panel
       });
    }
 
+   public void setRecruitmentData (string recruitmentName, string iconPath) {
+      // Disable all the rows
+      disableAll();
+
+      text.text = "You have recruited:";
+      rewardRows[0].gameObject.SetActive(true);
+      rewardRows[0].rewardName.text = recruitmentName;
+      rewardRows[0].setDisplayRow(recruitmentName, iconPath);
+   }
+
    public void setItemData (Item item) {
       // Get the casted item
       Item castedItem = item.getCastItem();

@@ -102,6 +102,7 @@ public class FarmingTrigger : MonoBehaviour {
 
                      GameObject cropBounce = Instantiate(PrefabsManager.self.cropBouncePrefab);
                      cropBounce.GetComponent<CropHarvest>().cropSpot = cropSpot;
+                     cropBounce.GetComponent<CropHarvest>().setSprite(cropSpot.crop.cropType);
                      cropBounce.transform.position = hit.collider.transform.position;
 
                      if (cropSpawnEffectDirection == Direction.East) {

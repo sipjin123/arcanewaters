@@ -76,6 +76,12 @@ public class NPCPanel : Panel {
    // The default texture if there is an issue with sql texture loading
    public Texture2D defaultTexture;
 
+   // A notife that is enabled if the npc is hirable
+   public GameObject isHirableNotification;
+
+   // Sends a command to hire the npc as a companion
+   public Button hireButton;
+
    // Self
    public static NPCPanel self;
 
@@ -104,7 +110,7 @@ public class NPCPanel : Panel {
 
    public void updatePanelWithQuestSelection (int npcId, string npcName, Faction.Type faction, Specialty.Type specialty,
       int friendshipLevel, string greetingText, bool canOfferGift, bool hasTradeGossipDialogue, bool hasGoodbyeDialogue,
-      Quest[] quests) {
+      Quest[] quests, bool isHirable) {
       // Show the correct section
       configurePanelForMode(Mode.QuestList);
 
@@ -116,6 +122,21 @@ public class NPCPanel : Panel {
 
       // Clear out the old clickable options
       clearDialogueOptions();
+
+      isHirableNotification.SetActive(isHirable);
+      hireButton.onClick.RemoveAllListeners();
+      hireButton.onClick.AddListener(() => {
+         // TODO: Update this feature for a more dynamic approach, proposed approach is using web requests
+         CompanionInfo newInfo = new CompanionInfo {
+            companionName = "LizardWarrior",
+            companionType = 211,
+            companionLevel = 1,
+            equippedSlot = 0,
+            companionId = -1,
+            iconPath = "Assets/Sprites/Faces/lizard_sword_1.png"
+         };
+         Global.player.rpc.Cmd_HireCompanion(newInfo);
+      });
 
       // Create a clickable text row for each quest in the list
       foreach (Quest quest in quests) {

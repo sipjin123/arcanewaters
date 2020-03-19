@@ -57,6 +57,9 @@ public class NPCEditScreen : MonoBehaviour
    // Holds the info of the quests
    public GameObject questInfo;
 
+   // If the npc is recruitable
+   public Toggle isHirableToggle;
+
    // Holds the info of the gifts
    public GameObject giftInfo;
 
@@ -244,6 +247,7 @@ public class NPCEditScreen : MonoBehaviour
       giftLiked.text = npcData.giftLikedText;
       giftNotLiked.text = npcData.giftNotLikedText;
       npcID.text = npcData.npcId.ToString();
+      isHirableToggle.isOn = npcData.isHirable;
 
       // Clear all the rows
       questRowsContainer.DestroyChildren();
@@ -327,7 +331,7 @@ public class NPCEditScreen : MonoBehaviour
          greetingCasualFriend.text, greetingCloseFriend.text, greetingBestFriend.text, giftOfferText.text,
          giftLiked.text, giftNotLiked.text, npcName.text, (Faction.Type) faction.value,
          (Specialty.Type) specialty.value, hasTradeGossip.isOn, hasGoodbye.isOn, _lastUsedQuestId,
-         questList, newGiftDataList, npcIconPath, npcSpritePath);
+         questList, newGiftDataList, npcIconPath, npcSpritePath, isHirableToggle.isOn);
 
       if (startingID != int.Parse(npcID.text)) {
          // Delete overwritten npc

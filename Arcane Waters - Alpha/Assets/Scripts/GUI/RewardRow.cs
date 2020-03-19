@@ -38,6 +38,18 @@ public class RewardRow : MonoBehaviour {
       rewardName.text = castedItem.getName();
    }
 
+   public void setDisplayRow (string name, string iconPath) {
+      itemCellContainer.DestroyChildren();
+      rewardName.text = name;
+
+      ItemCell cell = Instantiate(itemCellPrefab, itemCellContainer.transform, false);
+      Sprite newSprite = ImageManager.getSprite(iconPath);
+      cell.icon.sprite = newSprite;
+      cell.itemCountText.gameObject.SetActive(false);
+      cell.iconShadow.sprite = newSprite; 
+      cell.tooltip.text = name;
+   }
+
    #region Private Variables
 
    #endregion

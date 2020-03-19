@@ -161,8 +161,12 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
          PanelManager.self.noticeScreen.show("You need to equip a weapon to attack this enemy!");
          return;
       }
-      
-      Global.player.rpc.Cmd_StartNewBattle(this.netId, Battle.TeamType.Attackers);
+
+      if (Global.player.isSinglePlayer) {
+         Global.player.rpc.Cmd_StartSinglePlayerBattle(this.netId, Battle.TeamType.Attackers);
+      } else {
+         Global.player.rpc.Cmd_StartNewBattle(this.netId, Battle.TeamType.Attackers);
+      }
    }
 
    public bool isPlayerClose () {

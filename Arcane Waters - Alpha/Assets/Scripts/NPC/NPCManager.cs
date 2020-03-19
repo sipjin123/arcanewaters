@@ -290,6 +290,14 @@ public class NPCManager : MonoBehaviour {
       }
    }
 
+   public bool isHirable (int npcId) {
+      if (_npcData.ContainsKey(npcId)) {
+         return _npcData[npcId].isHirable;
+      } else {
+         return true;
+      }
+   }
+
    #region Private Variables
 
    // Keeps track of the NPCs, based on their id

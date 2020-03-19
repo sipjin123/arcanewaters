@@ -67,6 +67,13 @@ public class RewardManager : MonoBehaviour {
       PanelManager.self.pushPanel(Panel.Type.Reward);
    }
 
+   public void showRecruitmentNotice (string recruitedName, string recruitedIconPath) {
+      // Calls the panel and injects the info of the recruited npc
+      RewardScreen rewardPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
+      rewardPanel.setRecruitmentData(recruitedName, recruitedIconPath);
+      PanelManager.self.pushPanel(Panel.Type.Reward);
+   }
+
    public void showItemInRewardPanel (Item loot) {
       // Calls the panel and injects the List of items
       RewardScreen rewardPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);

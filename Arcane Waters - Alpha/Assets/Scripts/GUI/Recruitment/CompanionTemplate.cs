@@ -27,10 +27,29 @@ public class CompanionTemplate : MonoBehaviour, IPointerDownHandler
    // The icon path of this template
    public string iconPath;
 
+   // The id of the companion
+   public int companionId;
+
+   // The Id of the companion type
+   public int companionTypeId;
+
    #endregion
 
    public void OnPointerDown (PointerEventData eventData) {
       CompanionPanel.self.tryGrabTemplate(this);
+   }
+
+   public void setRawData (CompanionInfo info) {
+      this.companionType.text = ((Enemy.Type)info.companionType).ToString();
+      this.companionLevel.text = info.companionLevel.ToString();
+      this.companionName.text = info.companionName;
+      this.companionTypeId = info.companionType;
+      Sprite iconSprite = ImageManager.getSprite(info.iconPath);
+      if (iconSprite) {
+         this.companionIcon.sprite = iconSprite;
+      }
+      this.iconPath = info.iconPath;
+      this.companionId = info.companionId;
    }
 
    public void setData (CompanionTemplate copiedTemplate) {
@@ -41,6 +60,8 @@ public class CompanionTemplate : MonoBehaviour, IPointerDownHandler
          this.companionName.text = string.Empty;
          this.companionIcon.sprite = ImageManager.self.blankSprite;
          this.iconPath = string.Empty;
+         this.companionId = -1;
+         this.companionTypeId = 0;
       } else {
          isOccupied = true;
          this.companionType.text = copiedTemplate.companionType.text;
@@ -48,6 +69,8 @@ public class CompanionTemplate : MonoBehaviour, IPointerDownHandler
          this.companionName.text = copiedTemplate.companionName.text;
          this.companionIcon.sprite = copiedTemplate.companionIcon.sprite;
          this.iconPath = copiedTemplate.iconPath;
+         this.companionId = copiedTemplate.companionId;
+         this.companionTypeId = copiedTemplate.companionTypeId;
       }
    }
 
@@ -55,9 +78,10 @@ public class CompanionTemplate : MonoBehaviour, IPointerDownHandler
       return new CompanionInfo {
          companionLevel = int.Parse(companionLevel.text),
          companionName = companionName.text,
-         companionType = int.Parse(companionType.text),
+         companionType = companionTypeId,
          equippedSlot = equipmentSlot,
-         iconPath = iconPath
+         iconPath = iconPath,
+         companionId = companionId,
       };
    }
 

@@ -10,6 +10,9 @@ public class CropPickup : MonoBehaviour {
    // The crop spot associated with this pickable crop
    public CropSpot cropSpot;
 
+   // The sprite renderer reference
+   public SpriteRenderer spriteRender;
+
    #endregion
 
    private void OnTriggerEnter2D (Collider2D collision) {
