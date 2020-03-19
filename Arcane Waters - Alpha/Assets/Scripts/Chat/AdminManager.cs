@@ -43,8 +43,8 @@ public class AdminManager : NetworkBehaviour
    protected static string NPC = "test_npc";
    protected static string GET_ITEM = "get_item";
    protected static string GET_ALL_ITEMS = "get_all_items";
-   protected static string SCHEDULE_SERVER_RESTART = "schedule_server_restart";
-   protected static string CANCEL_SERVER_RESTART = "cancel_server_restart";
+   protected static string SCHEDULE_SERVER_RESTART = "restart";
+   protected static string CANCEL_SERVER_RESTART = "cancel";
 
    #endregion
 
@@ -304,15 +304,8 @@ public class AdminManager : NetworkBehaviour
    }
 
    protected void requestWarp (string parameters) {
-      string partialAreaKey = parameters;
-
-      if (string.IsNullOrEmpty(parameters)) {
-         ChatManager.self.addChat("Not a valid warp command", ChatInfo.Type.Error);
-         return;
-      }
-
       // Send the request to the server
-      Cmd_Warp(partialAreaKey);
+      Cmd_Warp(parameters);
    }
 
    protected void requestGetItem (string parameters) {
@@ -473,7 +466,6 @@ public class AdminManager : NetworkBehaviour
       });
    }
 
-   // Ken
    protected void requestScheduleServerRestart (string parameters) {
       string[] list = parameters.Split(' ');
       int buildVersion = 0;
@@ -503,7 +495,6 @@ public class AdminManager : NetworkBehaviour
       // Send the request to the server
       Cmd_ScheduleServerRestart(delayMinutes, buildVersion);
    }
-   //*Ken
 
    [Command]
    protected void Cmd_CreateTestUsers (int count) {
@@ -624,15 +615,13 @@ public class AdminManager : NetworkBehaviour
          return;
       }
 
-      // request to schedule a restart. - use ButlerClient.
-      //ButlerClient.ScheduleServerRestart(delay, version, success=>{
-      // the schedule
-      //});
+      DateTime timePoint = DateTime.Now + TimeSpan.FromMinutes(delay);
+      long ticks = timePoint.Ticks;
 
-      var timePoint = DateTime.Now + TimeSpan.FromMinutes(delay);
-      var ticks = timePoint.Ticks;
-      DB_Main.updateDeploySchedule(ticks, build);
-
+      // To the database thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.updateDeploySchedule(ticks, build);
+      });
    }
 
    [Command]
@@ -660,15 +649,23 @@ public class AdminManager : NetworkBehaviour
       // Get all the area keys
       List<string> areaKeys = AreaManager.self.getAreaKeys();
 
-      // Try to select area keys whose beginning match exactly with the user input
-      List<string> exactMatchKeys = areaKeys.Where(s => s.StartsWith(partialAreaKey, StringComparison.CurrentCultureIgnoreCase)).ToList();
-      if (exactMatchKeys.Count > 0) {
-         // If there are matchs, use that sub-list instead
-         areaKeys = exactMatchKeys;
-      }
+      string closestAreaKey;
 
-      // Get the area key closest to the given partial key
-      string closestAreaKey = areaKeys.OrderBy(s => Util.compare(s, partialAreaKey)).First();
+      // If no partialAreaKey passed as parameter, then choosing random area to warp
+      if (string.IsNullOrEmpty(partialAreaKey)) {
+         closestAreaKey = areaKeys[UnityEngine.Random.Range(0, areaKeys.Count())];
+      }
+      else {
+         // Try to select area keys whose beginning match exactly with the user input
+         List<string> exactMatchKeys = areaKeys.Where(s => s.StartsWith(partialAreaKey, StringComparison.CurrentCultureIgnoreCase)).ToList();
+         if (exactMatchKeys.Count > 0) {
+            // If there are matchs, use that sub-list instead
+            areaKeys = exactMatchKeys;
+         }
+
+         // Get the area key closest to the given partial key
+         closestAreaKey = areaKeys.OrderBy(s => Util.compare(s, partialAreaKey)).First();
+      }
 
       // Get the default spawn for the destination area
       Vector2 spawnLocalPos = SpawnManager.self.getDefaultSpawnLocalPosition(closestAreaKey);
@@ -737,10 +734,7 @@ public class AdminManager : NetworkBehaviour
    }
 
    protected void warpRandomly () {
-      List<SpawnID> allSpawnKeys = SpawnManager.get().getAllSpawnKeys();
-      SpawnID spawnKey = allSpawnKeys[UnityEngine.Random.Range(0, allSpawnKeys.Count)];
-
-      handleAdminCommandString("warp " + spawnKey.areaKey);
+      handleAdminCommandString("warp");
    }
 
    [Command]

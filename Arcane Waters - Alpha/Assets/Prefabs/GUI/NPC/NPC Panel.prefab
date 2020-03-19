@@ -3737,7 +3737,7 @@ MonoBehaviour:
   friendshipIncreaseAnimator: {fileID: 6253400576480371520}
   disabledClickableRowColor: {r: 0.6037736, g: 0.6037736, b: 0.6037736, a: 1}
   defaultTexture: {fileID: 0}
-  isHirableNotification: {fileID: 3401357035093156617}
+  isHireableNotification: {fileID: 3401357035093156617}
   hireButton: {fileID: 3930325811735929132}
 --- !u!225 &6926330036749201930
 CanvasGroup:

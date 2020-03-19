@@ -5109,7 +5109,7 @@ public class DB_Main : DB_MainStub
    public static new DeployScheduleInfo getDeploySchedule () {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * deploy_schedule WHERE id=1", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM deploy_schedule WHERE id=1", conn)) {
             conn.Open();
             cmd.Prepare();
 

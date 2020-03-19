@@ -146,6 +146,168 @@ TextureImporter:
   - first:
       213: 21300094
     second: Sword_Rune_Back_47
+  - first:
+      213: -6697149266420752820
+    second: weapon_16_back_0
+  - first:
+      213: -1259118930985501885
+    second: weapon_16_back_1
+  - first:
+      213: 543588274022154654
+    second: weapon_16_back_2
+  - first:
+      213: -8795868787096312709
+    second: weapon_16_back_3
+  - first:
+      213: -324539775566344565
+    second: weapon_16_back_4
+  - first:
+      213: -8928726235752654493
+    second: weapon_16_back_5
+  - first:
+      213: -2679361446106545694
+    second: weapon_16_back_6
+  - first:
+      213: -4603781375405753219
+    second: weapon_16_back_7
+  - first:
+      213: -9013186950770385971
+    second: weapon_16_back_8
+  - first:
+      213: -8093621053084450295
+    second: weapon_16_back_9
+  - first:
+      213: 7738746894641261959
+    second: weapon_16_back_10
+  - first:
+      213: -7084002114617474801
+    second: weapon_16_back_11
+  - first:
+      213: 7302119283109052698
+    second: weapon_16_back_12
+  - first:
+      213: 1863170566717607632
+    second: weapon_16_back_13
+  - first:
+      213: -1507462961752833181
+    second: weapon_16_back_14
+  - first:
+      213: 7770913904247536903
+    second: weapon_16_back_15
+  - first:
+      213: 5115856745887653958
+    second: weapon_16_back_16
+  - first:
+      213: 8118368253390381327
+    second: weapon_16_back_17
+  - first:
+      213: 1206018061066754209
+    second: weapon_16_back_18
+  - first:
+      213: 5452153226625634642
+    second: weapon_16_back_19
+  - first:
+      213: -8298317153205898881
+    second: weapon_16_back_20
+  - first:
+      213: 3013996032779043299
+    second: weapon_16_back_21
+  - first:
+      213: -539827654797246583
+    second: weapon_16_back_22
+  - first:
+      213: 7021321594836322704
+    second: weapon_16_back_23
+  - first:
+      213: 368207301686697417
+    second: weapon_16_back_24
+  - first:
+      213: -99708352769626856
+    second: weapon_16_back_25
+  - first:
+      213: 4448020170679608559
+    second: weapon_16_back_26
+  - first:
+      213: -5899782293389482594
+    second: weapon_16_back_27
+  - first:
+      213: 7458721104934185169
+    second: weapon_16_back_28
+  - first:
+      213: -7920534436413736626
+    second: weapon_16_back_29
+  - first:
+      213: -7757983591960784884
+    second: weapon_16_back_30
+  - first:
+      213: -5474256515893820236
+    second: weapon_16_back_31
+  - first:
+      213: -2858620329619424827
+    second: weapon_16_back_32
+  - first:
+      213: 3170036731083083311
+    second: weapon_16_back_33
+  - first:
+      213: -3387508552990193871
+    second: weapon_16_back_34
+  - first:
+      213: -2595354847082314421
+    second: weapon_16_back_35
+  - first:
+      213: 8911567823753439791
+    second: weapon_16_back_36
+  - first:
+      213: 771128868921841350
+    second: weapon_16_back_37
+  - first:
+      213: -4108075025237125972
+    second: weapon_16_back_38
+  - first:
+      213: 1630092053916253189
+    second: weapon_16_back_39
+  - first:
+      213: -5857596494775340173
+    second: weapon_16_back_40
+  - first:
+      213: -6767228871592651211
+    second: weapon_16_back_41
+  - first:
+      213: 5815444692174548702
+    second: weapon_16_back_42
+  - first:
+      213: -5114946531746943315
+    second: weapon_16_back_43
+  - first:
+      213: 6131969279708699028
+    second: weapon_16_back_44
+  - first:
+      213: 6661445246213553655
+    second: weapon_16_back_45
+  - first:
+      213: -8126485896423031419
+    second: weapon_16_back_46
+  - first:
+      213: 7898939977396037750
+    second: weapon_16_back_47
+  - first:
+      213: -2119148592067461307
+    second: weapon_16_back_48
+  - first:
+      213: 3139671331142922694
+    second: weapon_16_back_49
+  - first:
+      213: -8278258204141855364
+    second: weapon_16_back_50
+  - first:
+      213: 3217152847382857503
+    second: weapon_16_back_51
+  - first:
+      213: 5774221469249449636
+    second: weapon_16_back_52
+  - first:
+      213: -622678877603825524
+    second: weapon_16_back_53
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -213,7 +375,7 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
     maxTextureSize: 2048
@@ -225,12 +387,12 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Sword_Rune_Back_0
+      name: weapon_16_back_0
       rect:
         serializedVersion: 2
         x: 0
@@ -242,16 +404,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 02305410000000000800000000000000
-      internalID: 21300000
+      spriteID: e2f3b4f95411559489f3f5f63ce7fdf5
+      internalID: -6697149266420752820
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_1
+      name: weapon_16_back_1
       rect:
         serializedVersion: 2
         x: 85
@@ -263,16 +425,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 22305410000000000800000000000000
-      internalID: 21300002
+      spriteID: 0cb151b328522a84aba101ec3ed6b6fe
+      internalID: -1259118930985501885
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_2
+      name: weapon_16_back_2
       rect:
         serializedVersion: 2
         x: 170
@@ -284,16 +446,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 42305410000000000800000000000000
-      internalID: 21300004
+      spriteID: a944e16a3907e694589873c02e620d25
+      internalID: 543588274022154654
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_3
+      name: weapon_16_back_3
       rect:
         serializedVersion: 2
         x: 255
@@ -305,16 +467,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 62305410000000000800000000000000
-      internalID: 21300006
+      spriteID: d0497d7748a3d524ea3639d218406b5e
+      internalID: -8795868787096312709
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_4
+      name: weapon_16_back_4
       rect:
         serializedVersion: 2
         x: 340
@@ -326,16 +488,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 82305410000000000800000000000000
-      internalID: 21300008
+      spriteID: 73005eaa97a0a5d4eb2c8406385fb563
+      internalID: -324539775566344565
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_5
+      name: weapon_16_back_5
       rect:
         serializedVersion: 2
         x: 425
@@ -347,16 +509,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a2305410000000000800000000000000
-      internalID: 21300010
+      spriteID: 9696ea8d0e90e9b428f77a32cd6ddde1
+      internalID: -8928726235752654493
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_6
+      name: weapon_16_back_6
       rect:
         serializedVersion: 2
         x: 510
@@ -368,16 +530,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c2305410000000000800000000000000
-      internalID: 21300012
+      spriteID: 874e3f0aac43f8c4e87a571c5e9ee621
+      internalID: -2679361446106545694
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_7
+      name: weapon_16_back_7
       rect:
         serializedVersion: 2
         x: 595
@@ -389,16 +551,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e2305410000000000800000000000000
-      internalID: 21300014
+      spriteID: 55f60c7600c4ef046a54fc4dd5dd966e
+      internalID: -4603781375405753219
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_8
+      name: weapon_16_back_8
       rect:
         serializedVersion: 2
         x: 680
@@ -410,16 +572,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 03305410000000000800000000000000
-      internalID: 21300016
+      spriteID: 2e641331494b3b148b73d1b6d99d63b5
+      internalID: -9013186950770385971
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_9
+      name: weapon_16_back_9
       rect:
         serializedVersion: 2
         x: 765
@@ -431,16 +593,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 23305410000000000800000000000000
-      internalID: 21300018
+      spriteID: 690f4e64e5bd52b46b95a3caa67d3f50
+      internalID: -8093621053084450295
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_10
+      name: weapon_16_back_10
       rect:
         serializedVersion: 2
         x: 850
@@ -452,16 +614,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 43305410000000000800000000000000
-      internalID: 21300020
+      spriteID: 121dd9b0f8e2c5f40aaa8b2ace73717f
+      internalID: 7738746894641261959
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_11
+      name: weapon_16_back_11
       rect:
         serializedVersion: 2
         x: 935
@@ -473,16 +635,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 63305410000000000800000000000000
-      internalID: 21300022
+      spriteID: 20de9da6b679d204ab14828435435396
+      internalID: -7084002114617474801
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_12
+      name: weapon_16_back_12
       rect:
         serializedVersion: 2
         x: 0
@@ -494,16 +656,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 83305410000000000800000000000000
-      internalID: 21300024
+      spriteID: a7598c6423fc6f64a80d53cc4570ca38
+      internalID: 7302119283109052698
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_13
+      name: weapon_16_back_13
       rect:
         serializedVersion: 2
         x: 85
@@ -515,16 +677,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a3305410000000000800000000000000
-      internalID: 21300026
+      spriteID: c76f478bb1d45b141827398302a5a2a8
+      internalID: 1863170566717607632
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_14
+      name: weapon_16_back_14
       rect:
         serializedVersion: 2
         x: 170
@@ -536,16 +698,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c3305410000000000800000000000000
-      internalID: 21300028
+      spriteID: eefe56f74b2fd5143aaa648663754271
+      internalID: -1507462961752833181
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_15
+      name: weapon_16_back_15
       rect:
         serializedVersion: 2
         x: 255
@@ -557,16 +719,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e3305410000000000800000000000000
-      internalID: 21300030
+      spriteID: f0ed160b68877ca4d99c3c67989eac46
+      internalID: 7770913904247536903
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_16
+      name: weapon_16_back_16
       rect:
         serializedVersion: 2
         x: 340
@@ -578,16 +740,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 04305410000000000800000000000000
-      internalID: 21300032
+      spriteID: 34e17766600a85d46bcc4563e1272f5b
+      internalID: 5115856745887653958
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_17
+      name: weapon_16_back_17
       rect:
         serializedVersion: 2
         x: 425
@@ -599,16 +761,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 24305410000000000800000000000000
-      internalID: 21300034
+      spriteID: d05af8364f8bbf14685045ab4ba1ea16
+      internalID: 8118368253390381327
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_18
+      name: weapon_16_back_18
       rect:
         serializedVersion: 2
         x: 510
@@ -620,16 +782,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 44305410000000000800000000000000
-      internalID: 21300036
+      spriteID: 1ecc90c0b10802646a44dd4a3a05b531
+      internalID: 1206018061066754209
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_19
+      name: weapon_16_back_19
       rect:
         serializedVersion: 2
         x: 595
@@ -641,16 +803,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 64305410000000000800000000000000
-      internalID: 21300038
+      spriteID: d9068d722ac72cd40b77fd28d5141dd4
+      internalID: 5452153226625634642
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_20
+      name: weapon_16_back_20
       rect:
         serializedVersion: 2
         x: 680
@@ -662,16 +824,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 84305410000000000800000000000000
-      internalID: 21300040
+      spriteID: d13b0c094ab442141b1c820d211fb3ec
+      internalID: -8298317153205898881
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_21
+      name: weapon_16_back_21
       rect:
         serializedVersion: 2
         x: 765
@@ -683,16 +845,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a4305410000000000800000000000000
-      internalID: 21300042
+      spriteID: 0cc8fae4eb7de2940b8fd9b71aff9dbb
+      internalID: 3013996032779043299
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_22
+      name: weapon_16_back_22
       rect:
         serializedVersion: 2
         x: 850
@@ -704,16 +866,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c4305410000000000800000000000000
-      internalID: 21300044
+      spriteID: d9fea33ec63199f4b969fae997c1432b
+      internalID: -539827654797246583
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_23
+      name: weapon_16_back_23
       rect:
         serializedVersion: 2
         x: 935
@@ -725,16 +887,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e4305410000000000800000000000000
-      internalID: 21300046
+      spriteID: f0810a1027b760f4ea0ef15a38190f5f
+      internalID: 7021321594836322704
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_24
+      name: weapon_16_back_24
       rect:
         serializedVersion: 2
         x: 0
@@ -746,16 +908,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 05305410000000000800000000000000
-      internalID: 21300048
+      spriteID: 2375f2f81899c8d4fa0afa34b4a83119
+      internalID: 368207301686697417
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_25
+      name: weapon_16_back_25
       rect:
         serializedVersion: 2
         x: 85
@@ -767,16 +929,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 25305410000000000800000000000000
-      internalID: 21300050
+      spriteID: 1e802bde3594603408739465b2c67734
+      internalID: -99708352769626856
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_26
+      name: weapon_16_back_26
       rect:
         serializedVersion: 2
         x: 170
@@ -788,16 +950,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 45305410000000000800000000000000
-      internalID: 21300052
+      spriteID: e8c535b0261858742b3ef07b84e3a693
+      internalID: 4448020170679608559
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_27
+      name: weapon_16_back_27
       rect:
         serializedVersion: 2
         x: 255
@@ -809,16 +971,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 65305410000000000800000000000000
-      internalID: 21300054
+      spriteID: dcb6d1fd7c3a29243842ad08a2f973d0
+      internalID: -5899782293389482594
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_28
+      name: weapon_16_back_28
       rect:
         serializedVersion: 2
         x: 340
@@ -830,16 +992,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 85305410000000000800000000000000
-      internalID: 21300056
+      spriteID: 73b7304fe67f55d4ab3652cff4bc2377
+      internalID: 7458721104934185169
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_29
+      name: weapon_16_back_29
       rect:
         serializedVersion: 2
         x: 425
@@ -851,16 +1013,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a5305410000000000800000000000000
-      internalID: 21300058
+      spriteID: c258c579149455846b30798b792793e0
+      internalID: -7920534436413736626
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_30
+      name: weapon_16_back_30
       rect:
         serializedVersion: 2
         x: 510
@@ -872,16 +1034,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c5305410000000000800000000000000
-      internalID: 21300060
+      spriteID: b4e79edeb58b2d544b67996eded516e6
+      internalID: -7757983591960784884
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_31
+      name: weapon_16_back_31
       rect:
         serializedVersion: 2
         x: 595
@@ -893,16 +1055,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e5305410000000000800000000000000
-      internalID: 21300062
+      spriteID: c0fe62ba2d5a2204381ace8ca36fda21
+      internalID: -5474256515893820236
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_32
+      name: weapon_16_back_32
       rect:
         serializedVersion: 2
         x: 680
@@ -914,16 +1076,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 06305410000000000800000000000000
-      internalID: 21300064
+      spriteID: 7d5d78b53a22dd44c8f7ae2da659d1d4
+      internalID: -2858620329619424827
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_33
+      name: weapon_16_back_33
       rect:
         serializedVersion: 2
         x: 765
@@ -935,16 +1097,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 26305410000000000800000000000000
-      internalID: 21300066
+      spriteID: 5e18ccf83221a4748819c4115c0c0da6
+      internalID: 3170036731083083311
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_34
+      name: weapon_16_back_34
       rect:
         serializedVersion: 2
         x: 850
@@ -956,16 +1118,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 46305410000000000800000000000000
-      internalID: 21300068
+      spriteID: d1c94cbeadf37814795a5af23c75f82e
+      internalID: -3387508552990193871
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_35
+      name: weapon_16_back_35
       rect:
         serializedVersion: 2
         x: 935
@@ -977,16 +1139,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 66305410000000000800000000000000
-      internalID: 21300070
+      spriteID: 24f2378f65db1bc479a0b6d22151297e
+      internalID: -2595354847082314421
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_36
+      name: weapon_16_back_36
       rect:
         serializedVersion: 2
         x: 0
@@ -998,16 +1160,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 86305410000000000800000000000000
-      internalID: 21300072
+      spriteID: 92366c0f389a86244a8f4d70f613dc1e
+      internalID: 8911567823753439791
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_37
+      name: weapon_16_back_37
       rect:
         serializedVersion: 2
         x: 85
@@ -1019,16 +1181,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a6305410000000000800000000000000
-      internalID: 21300074
+      spriteID: 4ffbd13aa1c6ab740ac2dec1cf1cf549
+      internalID: 771128868921841350
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_38
+      name: weapon_16_back_38
       rect:
         serializedVersion: 2
         x: 170
@@ -1040,16 +1202,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c6305410000000000800000000000000
-      internalID: 21300076
+      spriteID: 6c9b8291915acc04485da6127f85fb6d
+      internalID: -4108075025237125972
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_39
+      name: weapon_16_back_39
       rect:
         serializedVersion: 2
         x: 255
@@ -1061,16 +1223,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e6305410000000000800000000000000
-      internalID: 21300078
+      spriteID: db6d8c0b212746244addb35c6cde0adc
+      internalID: 1630092053916253189
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_40
+      name: weapon_16_back_40
       rect:
         serializedVersion: 2
         x: 340
@@ -1082,16 +1244,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 07305410000000000800000000000000
-      internalID: 21300080
+      spriteID: d6bf01ebf545eaf4aa8b1d85a51c7aab
+      internalID: -5857596494775340173
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_41
+      name: weapon_16_back_41
       rect:
         serializedVersion: 2
         x: 425
@@ -1103,16 +1265,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 27305410000000000800000000000000
-      internalID: 21300082
+      spriteID: 311359a67d77bda44ac94f6ffea34cd4
+      internalID: -6767228871592651211
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_42
+      name: weapon_16_back_42
       rect:
         serializedVersion: 2
         x: 510
@@ -1124,16 +1286,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 47305410000000000800000000000000
-      internalID: 21300084
+      spriteID: 05a93f103029af643a45deb9359dda15
+      internalID: 5815444692174548702
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_43
+      name: weapon_16_back_43
       rect:
         serializedVersion: 2
         x: 595
@@ -1145,16 +1307,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 67305410000000000800000000000000
-      internalID: 21300086
+      spriteID: a84df19d35c994f48902fec7d86d2581
+      internalID: -5114946531746943315
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_44
+      name: weapon_16_back_44
       rect:
         serializedVersion: 2
         x: 680
@@ -1166,16 +1328,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 87305410000000000800000000000000
-      internalID: 21300088
+      spriteID: af84755870c4956439455d8fba906429
+      internalID: 6131969279708699028
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_45
+      name: weapon_16_back_45
       rect:
         serializedVersion: 2
         x: 765
@@ -1187,16 +1349,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a7305410000000000800000000000000
-      internalID: 21300090
+      spriteID: ec940285372210042b034b4b640ee71c
+      internalID: 6661445246213553655
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_46
+      name: weapon_16_back_46
       rect:
         serializedVersion: 2
         x: 850
@@ -1208,16 +1370,16 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c7305410000000000800000000000000
-      internalID: 21300092
+      spriteID: 45cc9eb48bd5e654195ced696eb5189e
+      internalID: -8126485896423031419
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sword_Rune_Back_47
+      name: weapon_16_back_47
       rect:
         serializedVersion: 2
         x: 935
@@ -1229,10 +1391,136 @@ TextureImporter:
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e7305410000000000800000000000000
-      internalID: 21300094
+      spriteID: 89e0e5fc5b57da04f8659a7f446feec9
+      internalID: 7898939977396037750
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weapon_16_back_48
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1eac6de10e963034cb5ed55bb92deb39
+      internalID: -2119148592067461307
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weapon_16_back_49
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c6d823f5fae5197428d898f11916b5c4
+      internalID: 3139671331142922694
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weapon_16_back_50
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b13b2e0351c35be449014beb8b7f73ab
+      internalID: -8278258204141855364
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weapon_16_back_51
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c88e69dfe75a97946a07402b635e5cfa
+      internalID: 3217152847382857503
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weapon_16_back_52
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e5a2ab2976f8ac5449669e7ec60f809a
+      internalID: 5774221469249449636
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: weapon_16_back_53
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6723245bc7a59e54fa1579ce45ca0c82
+      internalID: -622678877603825524
       vertices: []
       indices: 
       edges: []
@@ -1240,7 +1528,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 8e318060e6a355840ac7f649537403be
     internalID: 0
     vertices: []
     indices: 

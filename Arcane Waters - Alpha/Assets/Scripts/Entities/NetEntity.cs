@@ -315,7 +315,7 @@ public class NetEntity : NetworkBehaviour {
    protected virtual void OnDestroy () {
       Vector3 localPos = this.transform.localPosition;
 
-      if (isLocalPlayer && !TitleScreen.self.isShowing() && Application.platform != RuntimePlatform.OSXPlayer) {
+      if (isLocalPlayer && !TitleScreen.self.isShowing()) {
          CircleFader.self.doCircleFade();
       }
 

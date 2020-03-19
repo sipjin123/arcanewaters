@@ -289,6 +289,7 @@ MonoBehaviour:
   voyageGroupId: -1
   isAboutToWarpOnServer: 0
   interactingAnimation: 0
+  isClimbing: 0
   damage: 25
   reloadDelay: 1
   attackCounter: 0
@@ -706,7 +707,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.34, y: 0.34}
+  m_Size: {x: 1.3, y: 1.3}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 0
@@ -2024,7 +2025,7 @@ RectTransform:
   m_GameObject: {fileID: 9011142604507473640}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.005, y: 0.005, z: 0.01}
+  m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
   m_Children:
   - {fileID: 3189226116438506810}
   m_Father: {fileID: 4900218821786150}
@@ -2032,7 +2033,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0.13}
+  m_AnchoredPosition: {x: 0, y: 0.26}
   m_SizeDelta: {x: 32, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &2280559991767576832

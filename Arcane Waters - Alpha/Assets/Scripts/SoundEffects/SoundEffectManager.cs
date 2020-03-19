@@ -82,8 +82,8 @@ public class SoundEffectManager : MonoBehaviour
       AudioClip foundClip = _projectAudioClips.Find(iClip => iClip.name.Equals(effect.clipName));
       if (foundClip != null) {
          effect.clip = foundClip;
-      } else {
-         Debug.LogWarning("Found a SoundEffect from the DB that didn't have an associated AudioClip in the project.\nPlease fix this in the SoundEffectTool.");
+      } else if (!string.IsNullOrEmpty(effect.clipName)) {
+         D.log("SoundEffect '" + effect.name + "' has an invalid AudioClip link: '" + effect.clipName + "'");
       }
    }
 

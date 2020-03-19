@@ -4,30 +4,38 @@ using UnityEngine;
 
 public class RestartManager : MonoBehaviour
 {
-    private void Awake()
-    {
-        InvokeRepeating("checkPendingServerRestarts",0.0f,60.0f);
-    }
+   private void Awake () {
+      // Continually check if a Restart has been scheduled in the database
+      InvokeRepeating("checkPendingServerRestarts", 0.0f, 60.0f);
+   }
 
-    private void checkPendingServerRestarts()
-    {
-        try
-        {
-            if (!NetworkServer.active) return;
+   private void checkPendingServerRestarts () {
+      try {
+         // We only do this check on the server
+         if (!NetworkServer.active) {
+            return;
+         }
 
-            var info = DB_Main.getDeploySchedule();
+         // Background thread to check the database
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            DeployScheduleInfo info = DB_Main.getDeploySchedule();
 
-            if (info == null) return;
+            // Back to the Unity thread to handle the database info
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               if (info == null) {
+                  return;
+               }
 
-            var timePoint = DateTime.FromBinary(info.DateAsTicks);
+               // Figure out when the restart is scheduled to take place
+               DateTime timePoint = DateTime.FromBinary(info.DateAsTicks);
 
-            ServerNetwork.self.server.SendGlobalChat(0, $"The Game Server will restart at: {timePoint.ToShortTimeString()} {timePoint.ToShortTimeString()}",
-                                                     info.DateAsTicks, "", 0);
-        }
-        catch (Exception ex)
-        {
-            Debug.Log("RestartManager: Couldn't check for pending server restarts.");
-        }
-    }
-    
+               // Send a message to all players about the pending Restart
+               ServerNetwork.self.server.SendGlobalChat(0, $"The Game Server will restart at: {timePoint.ToShortTimeString()} {timePoint.ToShortTimeString()}",
+                  DateTime.UtcNow.ToBinary(), "Server", 0);
+            });
+         });
+      } catch (Exception ex) {
+         D.warning("RestartManager: Couldn't check for pending server restarts: " + ex);
+      }
+   }
 }
