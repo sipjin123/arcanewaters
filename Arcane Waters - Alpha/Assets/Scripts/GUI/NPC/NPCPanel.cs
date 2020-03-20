@@ -76,8 +76,8 @@ public class NPCPanel : Panel {
    // The default texture if there is an issue with sql texture loading
    public Texture2D defaultTexture;
 
-   // A notife that is enabled if the npc is hirable
-   public GameObject isHirableNotification;
+   // A notife that is enabled if the npc is hireable
+   public GameObject isHireableNotification;
 
    // Sends a command to hire the npc as a companion
    public Button hireButton;
@@ -110,7 +110,7 @@ public class NPCPanel : Panel {
 
    public void updatePanelWithQuestSelection (int npcId, string npcName, Faction.Type faction, Specialty.Type specialty,
       int friendshipLevel, string greetingText, bool canOfferGift, bool hasTradeGossipDialogue, bool hasGoodbyeDialogue,
-      Quest[] quests, bool isHirable) {
+      Quest[] quests, bool isHireable) {
       // Show the correct section
       configurePanelForMode(Mode.QuestList);
 
@@ -123,7 +123,7 @@ public class NPCPanel : Panel {
       // Clear out the old clickable options
       clearDialogueOptions();
 
-      isHirableNotification.SetActive(isHirable);
+      isHireableNotification.SetActive(isHireable);
       hireButton.onClick.RemoveAllListeners();
       hireButton.onClick.AddListener(() => {
          // TODO: Update this feature for a more dynamic approach, proposed approach is using web requests

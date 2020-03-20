@@ -162,11 +162,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
          return;
       }
 
-      if (Global.player.isSinglePlayer) {
-         Global.player.rpc.Cmd_StartSinglePlayerBattle(this.netId, Battle.TeamType.Attackers);
-      } else {
-         Global.player.rpc.Cmd_StartNewBattle(this.netId, Battle.TeamType.Attackers);
-      }
+      Global.player.rpc.Cmd_StartNewBattle(this.netId, Battle.TeamType.Attackers);
    }
 
    public bool isPlayerClose () {

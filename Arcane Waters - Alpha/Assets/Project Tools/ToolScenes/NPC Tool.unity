@@ -5251,7 +5251,7 @@ MonoBehaviour:
   currentQuestModified: {fileID: 0}
   scrollbar: {fileID: 733154047}
   questInfo: {fileID: 1872060565}
-  isHirableToggle: {fileID: 2124807021}
+  isHireableToggle: {fileID: 2124807021}
   giftInfo: {fileID: 438023456289845746}
   giftNode: {fileID: 1583764078}
   itemTypeSelectionPanel: {fileID: 71635499}

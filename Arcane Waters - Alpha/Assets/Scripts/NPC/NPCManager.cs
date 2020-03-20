@@ -290,9 +290,9 @@ public class NPCManager : MonoBehaviour {
       }
    }
 
-   public bool isHirable (int npcId) {
+   public bool isHireable (int npcId) {
       if (_npcData.ContainsKey(npcId)) {
-         return _npcData[npcId].isHirable;
+         return _npcData[npcId].isHireable;
       } else {
          return true;
       }

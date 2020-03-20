@@ -174,13 +174,13 @@ public class RPCManager : NetworkBehaviour {
    public void Target_ReceiveNPCQuestList (NetworkConnection connection, int npcId,
       string npcName, Faction.Type faction, Specialty.Type specialty, int friendshipLevel,
       string greetingText, bool canOfferGift, bool hasTradeGossipDialogue, bool hasGoodbyeDialogue,
-      Quest[] quests, bool isHirable) {
+      Quest[] quests, bool isHireable) {
       // Get the NPC panel
       NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
 
       // Pass the data to the panel
       panel.updatePanelWithQuestSelection(npcId, npcName, faction, specialty, friendshipLevel, greetingText,
-         canOfferGift, hasTradeGossipDialogue, hasGoodbyeDialogue, quests, isHirable);
+         canOfferGift, hasTradeGossipDialogue, hasGoodbyeDialogue, quests, isHireable);
 
       // Make sure the panel is showing
       if (!panel.isShowing()) {
@@ -235,10 +235,15 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.updateCompanionRoster(companionId, _player.userId, equipSlot);
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            CompanionPanel panel = (CompanionPanel) PanelManager.self.get(Panel.Type.Companion);
-            panel.canvasBlocker.SetActive(false);
+            Target_ReceiveCompanionUpdate(_player.connectionToClient);
          });
       });
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveCompanionUpdate (NetworkConnection connection) {
+      CompanionPanel panel = (CompanionPanel) PanelManager.self.get(Panel.Type.Companion);
+      panel.canvasBlocker.SetActive(false);
    }
 
    [Command]
@@ -1300,13 +1305,13 @@ public class RPCManager : NetworkBehaviour {
             bool canOfferGift = NPCManager.self.canOfferGift(friendshipLevel);
             bool hasTradeGossipDialogue = NPCManager.self.hasTradeGossipDialogue(npcId);
             bool hasGoodbyeDialogue = NPCManager.self.hasGoodbyeDialogue(npcId);
-            bool isHirable = NPCManager.self.isHirable(npcId);
+            bool isHireable = NPCManager.self.isHireable(npcId);
             NPC npc = NPCManager.self.getNPC(npcId);
 
             // Send the data to the client
             Target_ReceiveNPCQuestList(_player.connectionToClient, npcId, npc.getName(), npc.getFaction(), npc.getSpecialty(),
                friendshipLevel, greetingText, canOfferGift, hasTradeGossipDialogue, hasGoodbyeDialogue,
-               questList.ToArray(), isHirable);
+               questList.ToArray(), isHireable);
          });
       });
    }
@@ -3033,34 +3038,6 @@ public class RPCManager : NetworkBehaviour {
    #endregion
 
    [Command]
-   public void Cmd_StartSinglePlayerBattle (uint enemyNetId, Battle.TeamType teamType) {
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Fetch the list of companions
-         List<CompanionInfo> companionInfoList = DB_Main.getCompanions(_player.userId);
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Gather companion data
-            List<Enemy.Type> allyTypeList = new List<Enemy.Type>();
-            List<string> allyNameList = new List<string>();
-            foreach (CompanionInfo companionInfo in companionInfoList) {
-               allyTypeList.Add((Enemy.Type) companionInfo.companionType);
-               allyNameList.Add(companionInfo.companionName);
-            }
-
-            // Gather Enemy Data
-            NetworkIdentity enemyIdent = NetworkIdentity.spawned[enemyNetId];
-            Enemy enemy = enemyIdent.GetComponent<Enemy>();
-            List<Enemy.Type> enemyTypeList = new List<Enemy.Type>();
-            List<string> enemyNameList = new List<string>();
-            enemyTypeList.Add(enemy.enemyType);
-            enemyNameList.Add(enemy.entityName);
-
-            // Continue to process team battle
-            processTeamBattle(enemyTypeList.ToArray(), allyTypeList.ToArray(), enemyNameList.ToArray(), allyNameList.ToArray(), enemyNetId);
-         });
-      });
-   }
-
-   [Command]
    public void Cmd_StartNewTeamBattle (Enemy.Type[] defenderBattlers, Enemy.Type[] attackerBattlers, string[] defendersPlayerNames, string[] attackerPlayerNames) {
       // Checks if the user is an admin  
       if (!_player.isAdmin()) {
@@ -3227,79 +3204,106 @@ public class RPCManager : NetworkBehaviour {
          return;
       }
 
-      // Make sure we're not already in a Battle
-      if (BattleManager.self.isInBattle(_player.userId)) {
-         D.warning("Can't start new Battle for player that's already in a Battle: " + _player.userId);
-         return;
-      }
+      if (!_player.isSinglePlayer) {
+         // Make sure we're not already in a Battle
+         if (BattleManager.self.isInBattle(_player.userId)) {
+            D.warning("Can't start new Battle for player that's already in a Battle: " + _player.userId);
+            return;
+         }
 
-      // Get references to the Player and Enemy objects
-      PlayerBodyEntity playerBody = (PlayerBodyEntity) _player;
-      NetworkIdentity enemyIdent = NetworkIdentity.spawned[enemyNetId];
-      Enemy enemy = enemyIdent.GetComponent<Enemy>();
-      Instance instance = InstanceManager.self.getInstance(playerBody.instanceId);
+         // Get references to the Player and Enemy objects
+         PlayerBodyEntity playerBody = (PlayerBodyEntity) _player;
+         NetworkIdentity enemyIdent = NetworkIdentity.spawned[enemyNetId];
+         Enemy enemy = enemyIdent.GetComponent<Enemy>();
+         Instance instance = InstanceManager.self.getInstance(playerBody.instanceId);
 
-      // Look up the player's Area
-      Area area = AreaManager.self.getArea(_player.areaKey);
+         // Look up the player's Area
+         Area area = AreaManager.self.getArea(_player.areaKey);
 
-      // Enter the background thread to determine if the user has at least one ability equipped
-      bool hasAbilityEquipped = false;
+         // Enter the background thread to determine if the user has at least one ability equipped
+         bool hasAbilityEquipped = false;
 
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Retrieve the skill list from database
-         List<AbilitySQLData> abilityDataList = DB_Main.getAllAbilities(playerBody.userId);
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            // Retrieve the skill list from database
+            List<AbilitySQLData> abilityDataList = DB_Main.getAllAbilities(playerBody.userId);
 
-         // Determine if at least one ability is equipped
-         hasAbilityEquipped = abilityDataList.Exists(_ => _.equipSlotIndex != -1);
+            // Determine if at least one ability is equipped
+            hasAbilityEquipped = abilityDataList.Exists(_ => _.equipSlotIndex != -1);
 
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
 
-            // If no ability is equipped, send an error to the client
-            if (!hasAbilityEquipped) {
-               ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, "You must equip at least one ability!");
-               return;
-            }
+               // If no ability is equipped, send an error to the client
+               if (!hasAbilityEquipped) {
+                  ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, "You must equip at least one ability!");
+                  return;
+               }
 
-            // Get or create the Battle instance
-            Battle battle = (enemy.battleId > 0) ? BattleManager.self.getBattle(enemy.battleId) : BattleManager.self.createBattle(area, instance, enemy, playerBody);
+               // Get or create the Battle instance
+               Battle battle = (enemy.battleId > 0) ? BattleManager.self.getBattle(enemy.battleId) : BattleManager.self.createBattle(area, instance, enemy, playerBody);
 
-            // If the Battle is full, we can't proceed
-            if (!battle.hasRoomLeft(Battle.TeamType.Attackers)) {
-               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "The battle is already full!");
-               return;
-            }
+               // If the Battle is full, we can't proceed
+               if (!battle.hasRoomLeft(Battle.TeamType.Attackers)) {
+                  ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "The battle is already full!");
+                  return;
+               }
 
-            // Add the player to the Battle
-            BattleManager.self.addPlayerToBattle(battle, playerBody, teamType);
+               // Add the player to the Battle
+               BattleManager.self.addPlayerToBattle(battle, playerBody, teamType);
 
-            // Host Battler Should know their own ability
-            setupAbilitiesForPlayers(new List<PlayerBodyEntity>() { playerBody });
+               // Host Battler Should know their own ability
+               setupAbilitiesForPlayers(new List<PlayerBodyEntity>() { playerBody });
 
-            // Send Battle Bg data
-            int bgXmlID = battle.battleBoard.xmlID;
-            BackgroundContentData fetchedBGData = BackgroundGameManager.self.backgroundContentList.Find(_ => _.xmlId == bgXmlID);
-            Target_ReceiveBackgroundInfo(playerBody.connectionToClient, Util.serialize(new List<BackgroundContentData>() { fetchedBGData }));
+               // Send Battle Bg data
+               int bgXmlID = battle.battleBoard.xmlID;
+               BackgroundContentData fetchedBGData = BackgroundGameManager.self.backgroundContentList.Find(_ => _.xmlId == bgXmlID);
+               Target_ReceiveBackgroundInfo(playerBody.connectionToClient, Util.serialize(new List<BackgroundContentData>() { fetchedBGData }));
 
-            // Provides the client with the info of the Equipped Abilities
-            Target_UpdateBattleAbilityUI(playerBody.connectionToClient, Util.serialize(abilityDataList.FindAll(_ => _.equipSlotIndex >= 0)));
+               // Provides the client with the info of the Equipped Abilities
+               Target_UpdateBattleAbilityUI(playerBody.connectionToClient, Util.serialize(abilityDataList.FindAll(_ => _.equipSlotIndex >= 0)));
 
-            // Send class info to client
-            PlayerClassData currentClassData = ClassManager.self.getClassData(playerBody.classType);
-            Target_ReceiveClassInfo(playerBody.connectionToClient, JsonUtility.ToJson(currentClassData));
+               // Send class info to client
+               PlayerClassData currentClassData = ClassManager.self.getClassData(playerBody.classType);
+               Target_ReceiveClassInfo(playerBody.connectionToClient, JsonUtility.ToJson(currentClassData));
 
-            // Send faction info to client
-            PlayerFactionData currentFactionData = FactionManager.self.getFactionData(playerBody.faction);
-            Target_ReceiveFactionInfo(playerBody.connectionToClient, JsonUtility.ToJson(currentFactionData));
+               // Send faction info to client
+               PlayerFactionData currentFactionData = FactionManager.self.getFactionData(playerBody.faction);
+               Target_ReceiveFactionInfo(playerBody.connectionToClient, JsonUtility.ToJson(currentFactionData));
 
-            // Send specialty info to client
-            PlayerSpecialtyData currentSpecialtyData = SpecialtyManager.self.getSpecialtyData(playerBody.specialty);
-            Target_ReceiveSpecialtyInfo(playerBody.connectionToClient, JsonUtility.ToJson(currentSpecialtyData));
+               // Send specialty info to client
+               PlayerSpecialtyData currentSpecialtyData = SpecialtyManager.self.getSpecialtyData(playerBody.specialty);
+               Target_ReceiveSpecialtyInfo(playerBody.connectionToClient, JsonUtility.ToJson(currentSpecialtyData));
 
-            // Send SoundEffects to the Client
-            List<SoundEffect> currentSoundEffects = SoundEffectManager.self.getAllSoundEffects();
-            Target_ReceiveSoundEffects(playerBody.connectionToClient, Util.serialize(currentSoundEffects));
+               // Send SoundEffects to the Client
+               List<SoundEffect> currentSoundEffects = SoundEffectManager.self.getAllSoundEffects();
+               Target_ReceiveSoundEffects(playerBody.connectionToClient, Util.serialize(currentSoundEffects));
+            });
          });
-      });
+      } else {
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            // Fetch the list of companions
+            List<CompanionInfo> companionInfoList = DB_Main.getCompanions(_player.userId);
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               // Gather companion data
+               List<Enemy.Type> allyTypeList = new List<Enemy.Type>();
+               List<string> allyNameList = new List<string>();
+               foreach (CompanionInfo companionInfo in companionInfoList) {
+                  allyTypeList.Add((Enemy.Type) companionInfo.companionType);
+                  allyNameList.Add(companionInfo.companionName);
+               }
+
+               // Gather Enemy Data
+               NetworkIdentity enemyIdent = NetworkIdentity.spawned[enemyNetId];
+               Enemy enemy = enemyIdent.GetComponent<Enemy>();
+               List<Enemy.Type> enemyTypeList = new List<Enemy.Type>();
+               List<string> enemyNameList = new List<string>();
+               enemyTypeList.Add(enemy.enemyType);
+               enemyNameList.Add(enemy.entityName);
+
+               // Continue to process team battle
+               processTeamBattle(enemyTypeList.ToArray(), allyTypeList.ToArray(), enemyNameList.ToArray(), allyNameList.ToArray(), enemyNetId);
+            });
+         });
+      }
    }
 
    #region Abilities
