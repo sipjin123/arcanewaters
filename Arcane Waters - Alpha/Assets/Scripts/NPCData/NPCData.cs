@@ -19,6 +19,9 @@ public class NPCData
    // Determines if this npc can be a companion
    public bool isHireable = false;
 
+   // The battler id associated with the npc
+   public int battlerId = 0;
+
    // The faction of the NPC
    [XmlIgnore]
    public Faction.Type faction = Faction.Type.None;
@@ -90,7 +93,7 @@ public class NPCData
       string greetingTextCasualFriend, string greetingTextCloseFriend, string greetingTextBestFriend,
       string giftOfferNPCText, string giftLikedText, string giftNotLikedText, string name,
       Faction.Type faction, Specialty.Type specialty, bool hasTradeGossipDialogue, bool hasGoodbyeDialogue,
-      int lastUsedQuestId, List<Quest> quests, List<NPCGiftData> gifts, string iconPath, string spritePath, bool isHireable) {
+      int lastUsedQuestId, List<Quest> quests, List<NPCGiftData> gifts, string iconPath, string spritePath, bool isHireable, int battlerId) {
       this.npcId = npcId;
       this.greetingTextStranger = greetingTextStranger;
       this.greetingTextAcquaintance = greetingTextAcquaintance;
@@ -111,6 +114,7 @@ public class NPCData
       this.iconPath = iconPath;
       this.spritePath = spritePath;
       this.isHireable = isHireable;
+      this.battlerId = battlerId;
    }
 
    #region Private Variables

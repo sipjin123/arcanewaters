@@ -110,7 +110,7 @@ public class NPCPanel : Panel {
 
    public void updatePanelWithQuestSelection (int npcId, string npcName, Faction.Type faction, Specialty.Type specialty,
       int friendshipLevel, string greetingText, bool canOfferGift, bool hasTradeGossipDialogue, bool hasGoodbyeDialogue,
-      Quest[] quests, bool isHireable) {
+      Quest[] quests, bool isHireable, int battlerId) {
       // Show the correct section
       configurePanelForMode(Mode.QuestList);
 
@@ -126,16 +126,7 @@ public class NPCPanel : Panel {
       isHireableNotification.SetActive(isHireable);
       hireButton.onClick.RemoveAllListeners();
       hireButton.onClick.AddListener(() => {
-         // TODO: Update this feature for a more dynamic approach, proposed approach is using web requests
-         CompanionInfo newInfo = new CompanionInfo {
-            companionName = "LizardWarrior",
-            companionType = 211,
-            companionLevel = 1,
-            equippedSlot = 0,
-            companionId = -1,
-            iconPath = "Assets/Sprites/Faces/lizard_sword_1.png"
-         };
-         Global.player.rpc.Cmd_HireCompanion(newInfo);
+         Global.player.rpc.Cmd_HireCompanion(battlerId);
       });
 
       // Create a clickable text row for each quest in the list

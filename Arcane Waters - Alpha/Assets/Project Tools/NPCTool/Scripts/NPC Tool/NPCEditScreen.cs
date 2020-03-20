@@ -150,6 +150,12 @@ public class NPCEditScreen : MonoBehaviour
    // Save Button
    public Button saveButton;
 
+   // Battler type selection
+   public Button selectBattlertype;
+   public Text selectedBattlertype;
+   public Text selectedBattlerIndex;
+   public GameObject selectedBattlerGroup;
+
    // Enum to determine the current item category
    public enum ItemSelectionType
    {
@@ -189,6 +195,18 @@ public class NPCEditScreen : MonoBehaviour
       if (!MasterToolAccountManager.canAlterData()) {
          saveButton.gameObject.SetActive(false);
       }
+
+      selectBattlertype.onClick.AddListener(() => {
+         toggleBattlerDataSelectionPanel();
+      });
+
+      isHireableToggle.onValueChanged.AddListener(isOn => {
+         selectedBattlerGroup.SetActive(isOn);
+         if (!isOn) {
+            selectedBattlerIndex.text = "0";
+            selectedBattlertype.text = "None";
+         }
+      });
    }
 
    public void convertFaction () {
@@ -248,6 +266,12 @@ public class NPCEditScreen : MonoBehaviour
       giftNotLiked.text = npcData.giftNotLikedText;
       npcID.text = npcData.npcId.ToString();
       isHireableToggle.isOn = npcData.isHireable;
+      selectedBattlerIndex.text = npcData.battlerId.ToString();
+      if (NPCToolManager.instance.battlerList.ContainsKey(npcData.battlerId)) {
+         selectedBattlertype.text = NPCToolManager.instance.battlerList[npcData.battlerId].enemyName;
+      } else {
+         selectedBattlertype.text = "None";
+      }
 
       // Clear all the rows
       questRowsContainer.DestroyChildren();
@@ -331,7 +355,7 @@ public class NPCEditScreen : MonoBehaviour
          greetingCasualFriend.text, greetingCloseFriend.text, greetingBestFriend.text, giftOfferText.text,
          giftLiked.text, giftNotLiked.text, npcName.text, (Faction.Type) faction.value,
          (Specialty.Type) specialty.value, hasTradeGossip.isOn, hasGoodbye.isOn, _lastUsedQuestId,
-         questList, newGiftDataList, npcIconPath, npcSpritePath, isHireableToggle.isOn);
+         questList, newGiftDataList, npcIconPath, npcSpritePath, isHireableToggle.isOn, int.Parse(selectedBattlerIndex.text));
 
       if (startingID != int.Parse(npcID.text)) {
          // Delete overwritten npc
@@ -368,6 +392,25 @@ public class NPCEditScreen : MonoBehaviour
             }
       }
       updateTypeOptions(selectionType);
+   }
+
+   public void toggleBattlerDataSelectionPanel () {
+      itemTypeSelectionPanel.SetActive(true);
+      itemCategoryParent.gameObject.DestroyChildren();
+      itemTypeParent.gameObject.DestroyChildren();
+
+      foreach (KeyValuePair<int, BattlerData> battlerData in NPCToolManager.instance.battlerList) {
+         GameObject template = Instantiate(itemCategoryPrefab, itemTypeParent);
+         ItemCategoryTemplate actionTemplate = template.GetComponent<ItemCategoryTemplate>();
+         actionTemplate.itemCategoryText.text = battlerData.Value.enemyName;
+         actionTemplate.itemIndexText.text = battlerData.Key.ToString();
+
+         actionTemplate.selectButton.onClick.AddListener(() => {
+            selectedBattlertype.text = battlerData.Value.enemyName;
+            selectedBattlerIndex.text = battlerData.Key.ToString();
+            confirmSelectionButton.onClick.Invoke();
+         });
+      }
    }
 
    public void toggleActionSelectionPanel () {

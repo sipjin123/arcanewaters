@@ -82,6 +82,13 @@ public class NPCSelectionScreen : MonoBehaviour
             Sprite sourceSprite = imgData.sprite;
             npcEditScreen.avatarSpriteList.Add(imgData.imagePath, sourceSprite);
          }
+
+         string battlerSpritePath = "Assets/Sprites/Enemies/LandMonsters/";
+         List<ImageManager.ImageData> battlerSpriteFiles = ImageManager.getSpritesInDirectory(battlerSpritePath);
+         foreach (ImageManager.ImageData imgData in battlerSpriteFiles) {
+            Sprite sourceSprite = imgData.sprite;
+            npcEditScreen.avatarSpriteList.Add(imgData.imagePath, sourceSprite);
+         }
       }
 
       if (!MasterToolAccountManager.canAlterData()) {

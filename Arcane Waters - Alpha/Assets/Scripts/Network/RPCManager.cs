@@ -174,13 +174,13 @@ public class RPCManager : NetworkBehaviour {
    public void Target_ReceiveNPCQuestList (NetworkConnection connection, int npcId,
       string npcName, Faction.Type faction, Specialty.Type specialty, int friendshipLevel,
       string greetingText, bool canOfferGift, bool hasTradeGossipDialogue, bool hasGoodbyeDialogue,
-      Quest[] quests, bool isHireable) {
+      Quest[] quests, bool isHireable, int battlerId) {
       // Get the NPC panel
       NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
 
       // Pass the data to the panel
       panel.updatePanelWithQuestSelection(npcId, npcName, faction, specialty, friendshipLevel, greetingText,
-         canOfferGift, hasTradeGossipDialogue, hasGoodbyeDialogue, quests, isHireable);
+         canOfferGift, hasTradeGossipDialogue, hasGoodbyeDialogue, quests, isHireable, battlerId);
 
       // Make sure the panel is showing
       if (!panel.isShowing()) {
@@ -247,7 +247,17 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_HireCompanion (CompanionInfo companionInfo) {
+   public void Cmd_HireCompanion (int battlerId) {
+      BattlerData battlerData = MonsterManager.self.getBattler(battlerId);
+
+      CompanionInfo companionInfo = new CompanionInfo {
+         companionName = battlerData.enemyName,
+         companionType = (int) battlerData.enemyType,
+         companionLevel = 1,
+         equippedSlot = 0,
+         companionId = -1,
+         iconPath = battlerData.imagePath
+      };
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Hire the companion and write to sql database
          DB_Main.updateCompanions(-1, _player.userId, companionInfo.companionName, companionInfo.companionLevel, companionInfo.companionType, companionInfo.equippedSlot, companionInfo.iconPath);
@@ -1306,12 +1316,13 @@ public class RPCManager : NetworkBehaviour {
             bool hasTradeGossipDialogue = NPCManager.self.hasTradeGossipDialogue(npcId);
             bool hasGoodbyeDialogue = NPCManager.self.hasGoodbyeDialogue(npcId);
             bool isHireable = NPCManager.self.isHireable(npcId);
+            int battlerId = NPCManager.self.getNPCData(npcId).battlerId;
             NPC npc = NPCManager.self.getNPC(npcId);
 
             // Send the data to the client
             Target_ReceiveNPCQuestList(_player.connectionToClient, npcId, npc.getName(), npc.getFaction(), npc.getSpecialty(),
                friendshipLevel, greetingText, canOfferGift, hasTradeGossipDialogue, hasGoodbyeDialogue,
-               questList.ToArray(), isHireable);
+               questList.ToArray(), isHireable, battlerId);
          });
       });
    }
@@ -3287,8 +3298,10 @@ public class RPCManager : NetworkBehaviour {
                List<Enemy.Type> allyTypeList = new List<Enemy.Type>();
                List<string> allyNameList = new List<string>();
                foreach (CompanionInfo companionInfo in companionInfoList) {
-                  allyTypeList.Add((Enemy.Type) companionInfo.companionType);
-                  allyNameList.Add(companionInfo.companionName);
+                  if (companionInfo.equippedSlot > 0) {
+                     allyTypeList.Add((Enemy.Type) companionInfo.companionType);
+                     allyNameList.Add(companionInfo.companionName);
+                  }
                }
 
                // Gather Enemy Data
@@ -3455,7 +3468,7 @@ public class RPCManager : NetworkBehaviour {
       List<BattlerData> battlerDataList = new List<BattlerData>();
 
       foreach (Enemy.Type enemyType in enemyTypes) {
-         BattlerData battData = MonsterManager.self.requestBattler(enemyType);
+         BattlerData battData = MonsterManager.self.getBattler(enemyType);
          if (battData != null) {
             battData.battlerAbilities.basicAbilityRawData = Util.serialize(new List<BasicAbilityData>(battData.battlerAbilities.basicAbilityDataList));
             battData.battlerAbilities.attackAbilityRawData = Util.serialize(new List<AttackAbilityData>(battData.battlerAbilities.attackAbilityDataList));

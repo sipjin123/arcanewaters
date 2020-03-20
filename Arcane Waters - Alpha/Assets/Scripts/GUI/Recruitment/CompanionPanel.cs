@@ -113,8 +113,13 @@ public class CompanionPanel : Panel {
    }
 
    public void receiveCompanionData (List<CompanionInfo> companionInfo) {
+      availableCompanionsHolder.gameObject.DestroyChildren();
       foreach (CompanionInfo companion in companionInfo.FindAll(_ => _.equippedSlot < 1)) {
          createTemplate(availableCompanionsHolder, companion);
+      }
+
+      foreach (CompanionTemplate equippedTemplates in equippedCompanionsSlot) {
+         equippedTemplates.setData(null);
       }
 
       foreach (CompanionInfo companion in companionInfo.FindAll(_ => _.equippedSlot > 0)) {

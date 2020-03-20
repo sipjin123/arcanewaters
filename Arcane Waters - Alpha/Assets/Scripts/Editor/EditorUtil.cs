@@ -11,6 +11,23 @@ public class EditorUtil : EditorWindow {
 
    #endregion
 
+   [MenuItem("Util/Set As Local Server")]
+   public static void SetLocalServer () {
+      DB_Main.setServer("127.0.0.1");
+      Debug.Log("Set as Local Server");
+   }
+
+   [MenuItem("Util/Set As Remote Server")]
+   public static void SetRemoteServer () {
+      DB_Main.setServer(DB_Main.RemoteServer);
+      Debug.Log("Set as Remote Server");
+   }
+
+   [MenuItem("Util/Clear Prefs")]
+   public static void ClearPrefs () {
+      PlayerPrefs.DeleteAll();
+   }
+
    [MenuItem("Util/Launch: Main Scene (Ctrl+J) %j")]
    public static void PlayMainScene () {
       if (EditorApplication.isPlaying == true) {

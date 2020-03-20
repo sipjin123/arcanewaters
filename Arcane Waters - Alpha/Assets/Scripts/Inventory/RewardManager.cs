@@ -51,7 +51,7 @@ public class RewardManager : MonoBehaviour {
 
    public void initLandMonsterLootList () {
       _landMonsterLootList = new List<EnemyLootLibrary>();
-      foreach (BattlerData monsterData in MonsterManager.self.monsterDataList) {
+      foreach (BattlerData monsterData in MonsterManager.self.getMonsterDataList()) {
          EnemyLootLibrary newLibrary = new EnemyLootLibrary();
          newLibrary.enemyType = monsterData.enemyType;
          newLibrary.dropTypes = monsterData.battlerLootData;

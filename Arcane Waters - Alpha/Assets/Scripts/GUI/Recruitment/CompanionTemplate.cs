@@ -33,6 +33,9 @@ public class CompanionTemplate : MonoBehaviour, IPointerDownHandler
    // The Id of the companion type
    public int companionTypeId;
 
+   // Contents that should be disabled if the template is empty
+   public GameObject[] disabledContents;
+
    #endregion
 
    public void OnPointerDown (PointerEventData eventData) {
@@ -50,6 +53,10 @@ public class CompanionTemplate : MonoBehaviour, IPointerDownHandler
       }
       this.iconPath = info.iconPath;
       this.companionId = info.companionId;
+
+      foreach (GameObject obj in disabledContents) {
+         obj.SetActive(true);
+      }
    }
 
    public void setData (CompanionTemplate copiedTemplate) {
@@ -62,6 +69,10 @@ public class CompanionTemplate : MonoBehaviour, IPointerDownHandler
          this.iconPath = string.Empty;
          this.companionId = -1;
          this.companionTypeId = 0;
+
+         foreach (GameObject obj in disabledContents) {
+            obj.SetActive(false);
+         }
       } else {
          isOccupied = true;
          this.companionType.text = copiedTemplate.companionType.text;
@@ -71,6 +82,10 @@ public class CompanionTemplate : MonoBehaviour, IPointerDownHandler
          this.iconPath = copiedTemplate.iconPath;
          this.companionId = copiedTemplate.companionId;
          this.companionTypeId = copiedTemplate.companionTypeId;
+
+         foreach (GameObject obj in disabledContents) {
+            obj.SetActive(true);
+         }
       }
    }
 

@@ -19,6 +19,12 @@ public class BattleSelectionManager : MonoBehaviour {
    // Sprites that is determined by the selected battler if is an ally or enemy
    public GameObject enemySelection, allySelection;
 
+   // Sprite Render used for the enemy
+   public SpriteRenderer currentEnemySprite;
+
+   // Sprites that are swapped depending on the size of the enemy
+   public Sprite smallEnemyTarget, largeEnemyTarget;
+
    #endregion
 
    void Awake () {
@@ -89,6 +95,7 @@ public class BattleSelectionManager : MonoBehaviour {
                      enemySelection.SetActive(false);
                      allySelection.SetActive(true);
                   } else {
+                     currentEnemySprite.sprite = selectedBattler.isBossType ? largeEnemyTarget : smallEnemyTarget;
                      enemySelection.SetActive(true);
                      allySelection.SetActive(false);
                   }

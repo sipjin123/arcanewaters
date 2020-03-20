@@ -300,7 +300,7 @@ public class MyNetworkManager : NetworkManager {
 
    private void sendMonsterData (NetEntity player) {
       List<BattlerData> newEnemyList = new List<BattlerData>();
-      foreach (BattlerData entity in MonsterManager.self.getAllMonsterData()) {
+      foreach (BattlerData entity in MonsterManager.self.getMonsterDataList()) {
          BattlerData fetchedData = MonsterManager.self.getCopyOfMonster(entity.enemyType);
 
          if (fetchedData == null) {
@@ -324,7 +324,7 @@ public class MyNetworkManager : NetworkManager {
             npcData.greetingTextCasualFriend, npcData.greetingTextCloseFriend, npcData.greetingTextBestFriend, npcData.giftOfferNPCText,
             npcData.giftLikedText, npcData.giftNotLikedText, npcData.name, npcData.faction, npcData.specialty,
             npcData.hasTradeGossipDialogue, npcData.hasGoodbyeDialogue, npcData.lastUsedQuestId, new List<Quest>(), new List<NPCGiftData>(),
-            npcData.iconPath, npcData.spritePath, npcData.isHireable);
+            npcData.iconPath, npcData.spritePath, npcData.isHireable, npcData.battlerId);
 
          newNPCDataList.Add(newNPCData);
       }

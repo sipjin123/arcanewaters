@@ -79,7 +79,6 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       bodyAnim.group = animGroupType;
 
       if (isBossType) {
-         GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
          bossCollider.SetActive(true);
       }
 

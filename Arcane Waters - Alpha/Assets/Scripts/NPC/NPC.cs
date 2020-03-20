@@ -23,7 +23,7 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
       Stripes = 21, Vest = 22, Dog = 23, Lizard = 24, 
       
       ExplorerGuy = 25, DesertGuy = 26, TopKnot = 27, SnowGirl = 28, SkullHat = 29,
-      ShamanGirl = 30, Pyromancer = 31, MushroomDruid = 32, LizardGuy = 33
+      ShamanGirl = 30, Pyromancer = 31, MushroomDruid = 32, Lizard_Shaman = 33, Lizard_Armored = 34, Golem = 35,
    }
 
    // The Type of NPC this is

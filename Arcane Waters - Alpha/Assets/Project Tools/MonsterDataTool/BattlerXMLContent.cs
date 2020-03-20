@@ -1,4 +1,7 @@
-﻿public class BattlerXMLContent
+﻿using System;
+
+[Serializable]
+public class BattlerXMLContent
 {
    // Id of the xml entry
    public int xmlId;

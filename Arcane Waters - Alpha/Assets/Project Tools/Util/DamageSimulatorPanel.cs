@@ -89,7 +89,7 @@ public class DamageSimulatorPanel : MonoBehaviour {
    }
 
    private void processEnemyAttack () {
-      BattlerData fetchedMonsterData = MonsterManager.self.getAllMonsterData().Find(_ => _.enemyType.ToString() == monsterText.text);
+      BattlerData fetchedMonsterData = MonsterManager.self.getMonsterDataList().Find(_ => _.enemyType.ToString() == monsterText.text);
       int level = int.Parse(enemyLevel.text);
       float baseAttack = fetchedMonsterData.baseDamage + (fetchedMonsterData.damagePerLevel * level);
       baseEnemyAtkText.text = baseAttack.ToString();
@@ -165,7 +165,7 @@ public class DamageSimulatorPanel : MonoBehaviour {
    }
 
    private void processEnemyDefense () {
-      BattlerData fetchedMonsterData = MonsterManager.self.getAllMonsterData().Find(_ => _.enemyType.ToString() == monsterText.text);
+      BattlerData fetchedMonsterData = MonsterManager.self.getMonsterDataList().Find(_ => _.enemyType.ToString() == monsterText.text);
       int level = int.Parse(enemyLevel.text);
       float baseDef = fetchedMonsterData.baseDefense + (fetchedMonsterData.defensePerLevel * level);
       baseEnemyDefText.text = baseDef.ToString();
@@ -283,7 +283,7 @@ public class DamageSimulatorPanel : MonoBehaviour {
 
    private void processPlayerOutputDamage () {
       AttackAbilityData fetchedAbility = AbilityManager.self.allGameAbilities.Find(_ => _.itemName == abilityText.text) as AttackAbilityData;
-      BattlerData battleData = MonsterManager.self.getMonster(Enemy.Type.PlayerBattler);
+      BattlerData battleData = MonsterManager.self.getBattler(Enemy.Type.PlayerBattler);
       int level = int.Parse(playerLevel.text);
 
       baseDamage = battleData.baseDamage;
@@ -318,7 +318,7 @@ public class DamageSimulatorPanel : MonoBehaviour {
    }
 
    private void processPlayerOutputDefense () {
-      BattlerData battleData = MonsterManager.self.getMonster(Enemy.Type.PlayerBattler);
+      BattlerData battleData = MonsterManager.self.getBattler(Enemy.Type.PlayerBattler);
       int level = int.Parse(playerLevel.text);
 
       baseDefense = battleData.baseDefense;

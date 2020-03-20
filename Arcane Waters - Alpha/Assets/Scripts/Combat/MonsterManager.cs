@@ -21,9 +21,6 @@ public class MonsterManager : MonoBehaviour {
    // Direct reference to battleManager
    public BattleManager battleManager;
 
-   // Request access to monster data list
-   public List<BattlerData> monsterDataList { get { return _monsterDataDict.Values.ToList(); } }
-
    // Determined if data setup is finished
    public bool isInitialized;
 
@@ -33,16 +30,8 @@ public class MonsterManager : MonoBehaviour {
       self = this;
    }
 
-   public BattlerData requestBattler (Enemy.Type enemyType) {
-      if (_monsterDataDict.ContainsKey(enemyType)) {
-         return _monsterDataDict[enemyType];
-      }
-
-      return null;
-   }
-
    public void translateRawDataToBattlerData (Enemy.Type enemyType, BattlerData mainData) {
-      BattlerData rawData = _monsterDataDict[enemyType];
+      BattlerData rawData = _monsterDataList.Find(_=>_.battler.enemyType == enemyType).battler;
       if(rawData == null) {
          return;
       }
@@ -83,17 +72,26 @@ public class MonsterManager : MonoBehaviour {
       mainData.preMagicLength = rawData.preMagicLength;
    }
 
-   public BattlerData getMonster (Enemy.Type enemyType) {
-      if (!_monsterDataDict.ContainsKey(enemyType)) {
+   public BattlerData getBattler (Enemy.Type enemyType) {
+      if (!_monsterDataList.Exists(_=>_.battler.enemyType == enemyType)) {
          D.warning("Enemy type is not registered: " + enemyType);
          return null;
       }
 
-      return _monsterDataDict[enemyType];
+      return _monsterDataList.Find(_=>_.battler.enemyType == enemyType).battler;
+   }
+
+   public BattlerData getBattler (int battlerId) {
+      if (!_monsterDataList.Exists(_=>_.xmlId == battlerId)) {
+         D.warning("Enemy type is not registered: " + battlerId);
+         return null;
+      }
+
+      return _monsterDataList.Find(_=>_.xmlId == battlerId).battler;
    }
 
    public BattlerData getCopyOfMonster (Enemy.Type enemyType) {
-      BattlerData newBattlerData = BattlerData.CreateInstance(_monsterDataDict[enemyType]);
+      BattlerData newBattlerData = BattlerData.CreateInstance(_monsterDataList.Find(_=>_.battler.enemyType == enemyType).battler);
       newBattlerData.battlerAbilities = AbilityDataRecord.CreateInstance(newBattlerData.battlerAbilities);
       return newBattlerData;
    }
@@ -101,33 +99,30 @@ public class MonsterManager : MonoBehaviour {
    public void receiveListFromServer (BattlerData[] battlerDataList) {
       if (!isInitialized) {
          foreach (BattlerData battlerData in battlerDataList) {
-            if (!_monsterDataDict.ContainsKey(battlerData.enemyType)) {
-               _monsterDataDict.Add(battlerData.enemyType, battlerData);
+            if (!_monsterDataList.Exists(_=>_.battler.enemyType == battlerData.enemyType)) {
+               BattlerXMLContent newContent = new BattlerXMLContent {
+                  battler = battlerData,
+                  xmlId = -1,
+                  isEnabled = true
+               };
+               _monsterDataList.Add(newContent);
             } else {
-               _monsterDataDict[battlerData.enemyType] = battlerData;
+               _monsterDataList.Find(_=>_.battler.enemyType == battlerData.enemyType).battler = battlerData;
             }
          }
       }
    }
 
-   public List<BattlerData> getAllMonsterData () {
-      List<BattlerData> monsterList = new List<BattlerData>();
-      foreach (KeyValuePair<Enemy.Type, BattlerData> item in _monsterDataDict) {
-         monsterList.Add(item.Value);
-      }
-      return monsterList;
-   }
-
    public List<int> getAllEnemyTypes () {
       List<int> typeList = new List<int>();
-      foreach (KeyValuePair<Enemy.Type, BattlerData> item in _monsterDataDict) {
-         typeList.Add((int)item.Key);
+      foreach (BattlerXMLContent content in _monsterDataList) {
+         typeList.Add((int) content.battler.enemyType);
       }
       return typeList;
    }
 
    public void initializeLandMonsterDataCache () {
-      _monsterDataDict = new Dictionary<Enemy.Type, BattlerData>();
+      _monsterDataList = new List<BattlerXMLContent>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<XMLPair> rawXMLData = DB_Main.getLandMonsterXML();
@@ -136,7 +131,6 @@ public class MonsterManager : MonoBehaviour {
             foreach (XMLPair xmlPair in rawXMLData) {
                TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                BattlerData monsterData = Util.xmlLoad<BattlerData>(newTextAsset);
-               Enemy.Type enemyType = (Enemy.Type) monsterData.enemyType;
 
                if (monsterData.battlerAbilities.basicAbilityDataList != null) {
                   foreach (BasicAbilityData basicAbility in monsterData.battlerAbilities.basicAbilityDataList) {
@@ -145,8 +139,13 @@ public class MonsterManager : MonoBehaviour {
                }
 
                // Save the monster data in the memory cache
-               if (!_monsterDataDict.ContainsKey(enemyType) && xmlPair.isEnabled) {
-                  _monsterDataDict.Add(enemyType, monsterData);
+               if (xmlPair.isEnabled) {
+                  BattlerXMLContent newXmlContent = new BattlerXMLContent { 
+                     battler = monsterData, 
+                     xmlId = xmlPair.xmlId, 
+                     isEnabled = true
+                  };
+                  _monsterDataList.Add(newXmlContent);
                }
 
                if (battleManager != null) {
@@ -159,10 +158,19 @@ public class MonsterManager : MonoBehaviour {
       });
    }
 
+   public List<BattlerData> getMonsterDataList() {
+      List<BattlerData> battlerDataList = new List<BattlerData>();
+      foreach (BattlerXMLContent content in _monsterDataList) {
+         battlerDataList.Add(content.battler);
+      }
+      return battlerDataList;
+   }
+
    #region Private Variables
 
    // The cached monster data 
-   private Dictionary<Enemy.Type, BattlerData> _monsterDataDict = new Dictionary<Enemy.Type, BattlerData>();
+   [SerializeField]
+   private List<BattlerXMLContent> _monsterDataList = new List<BattlerXMLContent>();
 
    #endregion
 }

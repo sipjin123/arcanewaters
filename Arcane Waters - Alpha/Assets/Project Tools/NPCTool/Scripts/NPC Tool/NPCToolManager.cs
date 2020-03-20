@@ -32,6 +32,9 @@ public class NPCToolManager : XmlDataToolManager {
    // Determines if achievement data is loaded
    public bool hasLoadedAchievements;
 
+   // List of monster battler that can be associated with the npc's
+   public Dictionary<int, BattlerData> battlerList;
+
    #endregion
 
    public void Awake () {
@@ -63,7 +66,22 @@ public class NPCToolManager : XmlDataToolManager {
       });
 
       fetchRecipe();
+      initializeMonsterData();
       EquipmentXMLManager.self.initializeDataCache();
+   }
+
+   public void initializeMonsterData () {
+      battlerList = new Dictionary<int, BattlerData>();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<XMLPair> monsterDataPair = DB_Main.getLandMonsterXML();
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (XMLPair pair in monsterDataPair) {
+               TextAsset newTextAsset = new TextAsset(pair.rawXmlData);
+               BattlerData battleData = Util.xmlLoad<BattlerData>(newTextAsset);
+               battlerList.Add(pair.xmlId, battleData);
+            }
+         });
+      });
    }
 
    public void loadAllDataFiles () {
@@ -109,7 +127,7 @@ public class NPCToolManager : XmlDataToolManager {
       // Create an empty npc
       NPCData npcData = new NPCData(npcId, "", "", "", "", "", "", "", "", "NPC", Faction.Type.Neutral,
          Specialty.Type.Adventurer, true, true, -1, new List<Quest>() { },
-         new List<NPCGiftData>() { }, "", "", false);
+         new List<NPCGiftData>() { }, "", "", false, 0);
 
       // Add the data to the dictionary
       _npcData.Add(npcData.npcId, npcData);

@@ -96,7 +96,7 @@ public class Instance : NetworkBehaviour
                      Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab, npcParent);
                      enemy.enemyType = (Enemy.Type)Enemy.fetchReceivedData(dataField.d);
 
-                     BattlerData battleData = MonsterManager.self.getMonster(enemy.enemyType);
+                     BattlerData battleData = MonsterManager.self.getBattler(enemy.enemyType);
                      if (battleData != null) {
                         enemy.isBossType = battleData.isBossType;
                         enemy.animGroupType = battleData.animGroup;
