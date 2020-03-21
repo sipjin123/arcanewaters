@@ -9,6 +9,7 @@ namespace MapCreationTool.Serialization
       public DateTime createdAt { get; set; }
       public int creatorID { get; set; }
       public int? publishedVersion { get; set; }
+      public EditorType editorType { get; set; }
 
       public string creatorName { get; set; }
    }

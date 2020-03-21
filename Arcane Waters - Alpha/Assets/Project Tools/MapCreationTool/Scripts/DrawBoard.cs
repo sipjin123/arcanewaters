@@ -127,11 +127,13 @@ namespace MapCreationTool
       private void boardSizeChanged (Vector2Int from, Vector2Int to) {
          changeBoard(BoardChange.calculateClearAllChange(layers, placedPrefabs, currentSelection));
          setBoardSize(to);
+         changeLoadedVersion(null);
       }
 
       private void editorTypeChanged (EditorType from, EditorType to) {
          changeBoard(BoardChange.calculateClearAllChange(layers, placedPrefabs, currentSelection));
          setUpLayers(to);
+         changeLoadedVersion(null);
       }
 
       private void toolChanged (ToolType from, ToolType to) {

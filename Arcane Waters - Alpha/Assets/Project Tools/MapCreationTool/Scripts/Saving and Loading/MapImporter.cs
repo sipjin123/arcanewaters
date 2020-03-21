@@ -48,6 +48,10 @@ namespace MapCreationTool
             addGravityEffectors(result, exportedProject.gravityEffectors);
          }
 
+         if (exportedProject.vineColliders != null) {
+            addVineColliders(result, exportedProject.vineColliders);
+         }
+
          Bounds bounds = calculateBounds(exportedProject);
 
          setCameraBounds(result, bounds);
@@ -76,6 +80,21 @@ namespace MapCreationTool
             areaEffector.forceMagnitude = 15;
             areaEffector.forceVariation = 0;
             areaEffector.forceTarget = EffectorSelection2D.Rigidbody;
+         }
+      }
+
+      static void addVineColliders (MapTemplate map, ExportedVineCollider[] vineColliders) {
+         foreach (ExportedVineCollider vineCollider in vineColliders) {
+            GameObject vine = new GameObject("Vine Trigger");
+            vine.transform.parent = map.effectorContainer;
+            vine.transform.localPosition = vineCollider.position;
+            vine.transform.localScale = Vector3.one;
+
+            vine.AddComponent<Vines>();
+
+            BoxCollider2D collider = vine.AddComponent<BoxCollider2D>();
+            collider.isTrigger = true;
+            collider.size = vineCollider.size;
          }
       }
 
@@ -191,11 +210,11 @@ namespace MapCreationTool
             // Create the tilemap gameobject
             var tilemap = UnityEngine.Object.Instantiate(AssetSerializationMaps.tilemapTemplate, tilemapParent);
             tilemap.transform.localPosition = new Vector3(0, 0, layer.z);
-            tilemap.gameObject.name = "Layer " + layer.z;
+            tilemap.gameObject.name = layer.name + " " + layer.sublayer;
 
             var colTilemap = UnityEngine.Object.Instantiate(AssetSerializationMaps.collisionTilemapTemplate, collisionTilemapParent);
             colTilemap.transform.localPosition = Vector3.zero;
-            colTilemap.gameObject.name = "Layer " + layer.z;
+            colTilemap.gameObject.name = layer.name + " " + layer.sublayer;
 
             // Add all the tiles
             Vector3Int[] positions = layer.tiles.Select(t => new Vector3Int(t.x, t.y, 0)).ToArray();

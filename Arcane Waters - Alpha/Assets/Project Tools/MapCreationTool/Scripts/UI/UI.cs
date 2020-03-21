@@ -302,6 +302,8 @@ namespace MapCreationTool
                   spawns = DrawBoard.instance.formSpawnList(DrawBoard.loadedVersion.mapId, DrawBoard.loadedVersion.version)
                };
 
+               mapVersion.map.editorType = Tools.editorType;
+
                // Make sure all spawns have unique names
                if (mapVersion.spawns.Count > 0 && mapVersion.spawns.GroupBy(s => s.name).Max(g => g.Count()) > 1) {
                   throw new Exception("Not all spawn names are unique");

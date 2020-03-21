@@ -1180,12 +1180,13 @@ public class DB_Main : DB_MainStub
 
          try {
             // Insert entry to maps
-            cmd.CommandText = "INSERT INTO maps_v2(name, createdAt, creatorUserId, publishedVersion) " +
-               "VALUES(@name, @createdAt, @creatorID, @publishedVersion);";
+            cmd.CommandText = "INSERT INTO maps_v2(name, createdAt, creatorUserId, publishedVersion, editorType) " +
+               "VALUES(@name, @createdAt, @creatorID, @publishedVersion, @editorType);";
             cmd.Parameters.AddWithValue("@name", mapVersion.map.name);
             cmd.Parameters.AddWithValue("@createdAt", mapVersion.map.createdAt);
             cmd.Parameters.AddWithValue("@creatorID", mapVersion.map.creatorID);
             cmd.Parameters.AddWithValue("@publishedVersion", mapVersion.map.publishedVersion);
+            cmd.Parameters.AddWithValue("@editorType", (int) mapVersion.map.editorType);
             cmd.ExecuteNonQuery();
 
             long mapId = cmd.LastInsertedId;
@@ -1313,6 +1314,12 @@ public class DB_Main : DB_MainStub
          cmd.Connection = conn;
 
          try {
+            // Update editor type
+            cmd.Parameters.AddWithValue("@mapId", mapVersion.mapId);
+            cmd.Parameters.AddWithValue("@editorType", (int) mapVersion.map.editorType);
+            cmd.CommandText = "UPDATE maps_v2 SET editorType = @editorType WHERE id = @mapId;";
+            cmd.ExecuteNonQuery();
+
             // Update entry in map versions
             cmd.CommandText = "UPDATE map_versions_v2 SET " +
                "createdAt = @createdAt, " +

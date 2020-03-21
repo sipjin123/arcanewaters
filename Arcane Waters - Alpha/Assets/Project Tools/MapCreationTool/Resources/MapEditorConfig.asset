@@ -94,6 +94,14 @@ MonoBehaviour:
     index: 22
     zOffset: 0
     layerType: 0
+  - layer: bridge
+    index: 54
+    zOffset: 0
+    layerType: 0
+  - layer: vine
+    index: 16
+    zOffset: 0
+    layerType: 0
   seaLayerIndexes:
   - layer: ground
     index: 0

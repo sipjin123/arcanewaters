@@ -154,6 +154,7 @@ namespace MapCreationTool.Serialization
             biome = biome,
             layers = formExportedLayers(midExportLayers, editorSize, tilesBelowSpiderWebEffectors(prefabs)).ToArray(),
             gravityEffectors = formGravityEffectors(midExportLayers, editorSize, editorType),
+            vineColliders = formVineColliders(midExportLayers, editorSize),
             editorType = editorType,
             prefabs = prefabsSerialized,
          };
@@ -244,7 +245,8 @@ namespace MapCreationTool.Serialization
                name = midLayer.layer,
                z = midLayer.z,
                tiles = exportedTiles.ToArray(),
-               type = midLayer.type
+               type = midLayer.type,
+               sublayer = midLayer.subLayer
             });
          }
 
@@ -361,6 +363,73 @@ namespace MapCreationTool.Serialization
          }
 
          return effectors.ToArray();
+      }
+
+      private static ExportedVineCollider[] formVineColliders (List<MidExportLayer> midLayers, Vector2Int editorSize) {
+         List<ExportedVineCollider> vines = new List<ExportedVineCollider>();
+         // Find out which tiles have to be effected
+         bool[,] matrix = new bool[editorSize.x, editorSize.y];
+
+         for (int i = 0; i < editorSize.x; i++) {
+            for (int j = 0; j < editorSize.y; j++) {
+               foreach (MidExportLayer layer in midLayers) {
+                  if (layer.tileMatrix[i, j] != null) {
+                     if (layer.layer.CompareTo("vine") == 0) {
+                        matrix[i, j] = true;
+                        break;
+                     }
+                  }
+               }
+            }
+         }
+
+         bool[,] used = new bool[editorSize.x, editorSize.y];
+
+         for (int i = 0; i < editorSize.x; i++) {
+            for (int j = 0; j < editorSize.y; j++) {
+               if (!matrix[i, j] || used[i, j]) {
+                  continue;
+               }
+
+               Vector2Int size = new Vector2Int(1, 1);
+               used[i, j] = true;
+
+               // Get the height of effected clump
+               while (j + size.y < editorSize.y && matrix[i, j + size.y] && !used[i, j + size.y]) {
+                  used[i, j + size.y] = true;
+                  size.y++;
+               }
+
+               // Extend the effected clump horizontally
+               while (i + size.x < editorSize.x) {
+                  bool hasColumn = true;
+                  // Check if next column is full
+                  for (int h = 0; h < size.y; h++) {
+                     if (!matrix[i + size.x, j + h] || used[i + size.x, j + h]) {
+                        hasColumn = false;
+                        break;
+                     }
+                  }
+
+                  if (!hasColumn) {
+                     break;
+                  }
+
+                  // If next column is full, extend and mark as used
+                  for (int h = 0; h < size.y; h++) {
+                     used[i + size.x, j + h] = true;
+                  }
+                  size.x++;
+               }
+
+               vines.Add(new ExportedVineCollider {
+                  position = new Vector2(i, j) + (Vector2) size * 0.5f - (Vector2) editorSize * 0.5f,
+                  size = size
+               });
+            }
+         }
+
+         return vines.ToArray();
       }
 
       private static TileIndexWithCollision[,] getTilesWithCollisions (
@@ -594,6 +663,8 @@ namespace MapCreationTool.Serialization
       public ExportedPrefab001[] prefabs;
       public ExportedLayer001[] layers;
       public ExportedGravityEffector[] gravityEffectors;
+      public ExportedVineCollider[] vineColliders;
+
 
       public ExportedProject001 fixPrefabFields () {
          foreach (ExportedPrefab001 prefab in prefabs) {
@@ -618,6 +689,7 @@ namespace MapCreationTool.Serialization
    public class ExportedLayer001
    {
       public string name;
+      public int sublayer = 0;
       public float z;
       public ExportedTile001[] tiles;
       public LayerType type;
@@ -635,6 +707,13 @@ namespace MapCreationTool.Serialization
 
    [Serializable]
    public class ExportedGravityEffector
+   {
+      public Vector2 position;
+      public Vector2 size;
+   }
+
+   [Serializable]
+   public class ExportedVineCollider
    {
       public Vector2 position;
       public Vector2 size;

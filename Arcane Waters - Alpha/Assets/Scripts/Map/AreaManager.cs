@@ -29,10 +29,12 @@ public class AreaManager : MonoBehaviour
    }
 
    public void storeAreaKeys () {
-      Dictionary<string, MapInfo> liveMaps = DB_Main.getLiveMaps();
+      List<Map> maps = DB_Main.getMaps();
 
-      foreach (string areaKey in liveMaps.Keys) {
-         _areaKeysFromDatabase.Add(areaKey);
+      foreach (Map map in maps) {
+         if (map.publishedVersion != null) {
+            _areaKeysFromDatabase.Add(map.name);
+         }
       }
    }
 

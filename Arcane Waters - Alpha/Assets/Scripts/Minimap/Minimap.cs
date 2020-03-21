@@ -524,14 +524,15 @@ public class Minimap : ClientMonoBehaviour {
             _minimapsPath = preset._minimapsPath;
 
             // Locate the tilemaps within the area
-            foreach (Tilemap tilemap in area.GetComponentsInChildren<Tilemap>(true)) {
+            foreach (TilemapLayer tilemapLayer in area.getTilemapLayers()) {
+               Tilemap tilemap = tilemapLayer.tilemap;
                foreach (var layer in _tileLayer) {
                   // Create a variable texture we can write to
                   Texture2D map = null;
 
                   bool flipflop = true;
 
-                  if (tilemap.name.EndsWith(layer.Name)) {
+                  if (string.Compare(tilemapLayer.name, layer.Name, true) == 0) {
                      map = new Texture2D(layerSizeX, layerSizeY);
                      MakeTextureTransparent(map);
 

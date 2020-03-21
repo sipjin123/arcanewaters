@@ -58,7 +58,8 @@ namespace MapCreationTool
                map = new Map {
                   name = inputField.text,
                   createdAt = DateTime.UtcNow,
-                  creatorID = MasterToolAccountManager.self.currentAccountID
+                  creatorID = MasterToolAccountManager.self.currentAccountID,
+                  editorType = Tools.editorType
                },
                spawns = DrawBoard.instance.formSpawnList(null, 0)
             };

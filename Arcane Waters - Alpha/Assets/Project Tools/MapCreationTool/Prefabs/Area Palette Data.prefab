@@ -11841,14 +11841,14 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: prop
+    - layer: vine
       sublayer: 0
       cluster: 0
-      collisionType: 0
-    - layer: prop
+      collisionType: 3
+    - layer: vine
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 3
     - layer: prop
       sublayer: 0
       cluster: 0
@@ -12709,11 +12709,11 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: prop
+    - layer: bridge
       sublayer: 1
       cluster: 0
       collisionType: 0
-    - layer: prop
+    - layer: bridge
       sublayer: 1
       cluster: 0
       collisionType: 0
@@ -12925,15 +12925,15 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: prop
+    - layer: bridge
       sublayer: 0
       cluster: 0
       collisionType: 2
-    - layer: prop
+    - layer: bridge
       sublayer: 0
       cluster: 0
       collisionType: 2
-    - layer: prop
+    - layer: bridge
       sublayer: 0
       cluster: 0
       collisionType: 2
@@ -13141,15 +13141,15 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: prop
+    - layer: bridge
       sublayer: 0
       cluster: 0
       collisionType: 2
-    - layer: prop
+    - layer: bridge
       sublayer: 0
       cluster: 0
       collisionType: 2
-    - layer: prop
+    - layer: bridge
       sublayer: 0
       cluster: 0
       collisionType: 2
@@ -13161,11 +13161,11 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: prop
+    - layer: bridge
       sublayer: 0
       cluster: 0
       collisionType: 2
-    - layer: prop
+    - layer: bridge
       sublayer: 0
       cluster: 0
       collisionType: 2
@@ -13357,11 +13357,11 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: prop
+    - layer: bridge
       sublayer: 1
       cluster: 0
       collisionType: 0
-    - layer: prop
+    - layer: bridge
       sublayer: 1
       cluster: 0
       collisionType: 0
@@ -13373,15 +13373,15 @@ MonoBehaviour:
       sublayer: 0
       cluster: 1
       collisionType: 0
-    - layer: detail
+    - layer: bridge
       sublayer: 0
       cluster: 1
       collisionType: 0
-    - layer: prop
+    - layer: bridge
       sublayer: 0
       cluster: 0
       collisionType: 2
-    - layer: prop
+    - layer: bridge
       sublayer: 0
       cluster: 0
       collisionType: 2
@@ -13593,11 +13593,11 @@ MonoBehaviour:
       sublayer: 0
       cluster: 1
       collisionType: 0
-    - layer: prop
+    - layer: bridge
       sublayer: 0
       cluster: 0
       collisionType: 2
-    - layer: prop
+    - layer: bridge
       sublayer: 0
       cluster: 0
       collisionType: 2
@@ -13797,11 +13797,11 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: prop
+    - layer: bridge
       sublayer: 1
       cluster: 0
       collisionType: 0
-    - layer: prop
+    - layer: bridge
       sublayer: 1
       cluster: 0
       collisionType: 0
@@ -19066,7 +19066,7 @@ Tilemap:
       - {fileID: 21300218, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300220, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300222, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 17, y: 9, z: 0}

@@ -263,6 +263,11 @@ public class NetEntity : NetworkBehaviour {
             }
          }
 
+         if (this is BodyEntity && _previousBodySprite != getBodyRenderer().sprite) {
+            _previousBodySprite = getBodyRenderer().sprite;
+            _lastBodySpriteChangetime = Time.time;
+         }
+
          _movedLastFrame = moving;
       }
 
@@ -406,6 +411,12 @@ public class NetEntity : NetworkBehaviour {
          modifier = 0f;
       } else if (StatusManager.self.hasStatus(this.userId, Status.Type.Slow)) {
          modifier = .5f;
+      } else if (isClimbing) {
+         if (Time.time - _lastBodySpriteChangetime <= .5f) {
+            modifier = 0;
+         } else {
+            modifier = .3f;
+         }
       }
 
       return baseSpeed * modifier;
@@ -971,6 +982,12 @@ public class NetEntity : NetworkBehaviour {
 
    // Did the Entity move last frame?
    private bool _movedLastFrame;
+
+   // The sprite used for the body in the previous frame
+   private Sprite _previousBodySprite;
+
+   // The time at which the body last changed sprites
+   private float _lastBodySpriteChangetime;
 
    #endregion
 }

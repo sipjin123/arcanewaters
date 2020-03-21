@@ -24,10 +24,10 @@ MonoBehaviour:
   - Town
   - Farm
   - Treasure Site
-  mapTypes: 
+  mapKeys: []
   biome: pine
   _tileLayer:
-  - Name: Base Ground Layer
+  - Name: Ground
     color: {r: 0.30588236, g: 0.5882353, b: 0.41176474, a: 1}
     description: 
     isSubLayer: 0
@@ -79,7 +79,7 @@ MonoBehaviour:
     horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
     useOutline: 0
     outlineColor: {r: 0, g: 0, b: 0, a: 0}
-  - Name: Mountains
+  - Name: Mountain
     color: {r: 0.25882354, g: 0.3921569, b: 0.40784317, a: 1}
     description: 
     isSubLayer: 0
@@ -235,7 +235,7 @@ MonoBehaviour:
     horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
     useOutline: 0
     outlineColor: {r: 0, g: 0, b: 0, a: 0}
-  - Name: Shrubs
+  - Name: Shrub
     color: {r: 0.16078432, g: 0.43921572, b: 0.43137258, a: 1}
     description: 
     isSubLayer: 0
@@ -261,7 +261,7 @@ MonoBehaviour:
     horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
     useOutline: 0
     outlineColor: {r: 0, g: 0, b: 0, a: 0}
-  - Name: Farm Dirt
+  - Name: Soil
     color: {r: 0.34117648, g: 0.49411768, b: 0.40784317, a: 1}
     description: 
     isSubLayer: 0
@@ -409,7 +409,7 @@ MonoBehaviour:
     horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
     useOutline: 0
     outlineColor: {r: 0, g: 0, b: 0, a: 0}
-  - Name: Stairs
+  - Name: Stair
     color: {r: 0.6, g: 0.36078432, b: 0.29803923, a: 1}
     description: 
     isSubLayer: 1
@@ -479,7 +479,7 @@ MonoBehaviour:
     horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
     useOutline: 1
     outlineColor: {r: 0, g: 0, b: 0, a: 1}
-  - Name: Stairs
+  - Name: Stair
     color: {r: 0.6, g: 0.36078432, b: 0.29803923, a: 1}
     description: Fix bridge on stairs layer
     isSubLayer: 1
