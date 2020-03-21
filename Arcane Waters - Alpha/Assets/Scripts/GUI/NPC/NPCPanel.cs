@@ -110,7 +110,7 @@ public class NPCPanel : Panel {
 
    public void updatePanelWithQuestSelection (int npcId, string npcName, Faction.Type faction, Specialty.Type specialty,
       int friendshipLevel, string greetingText, bool canOfferGift, bool hasTradeGossipDialogue, bool hasGoodbyeDialogue,
-      Quest[] quests, bool isHireable, int battlerId) {
+      Quest[] quests, bool isHireable, int landMonsterId) {
       // Show the correct section
       configurePanelForMode(Mode.QuestList);
 
@@ -126,7 +126,7 @@ public class NPCPanel : Panel {
       isHireableNotification.SetActive(isHireable);
       hireButton.onClick.RemoveAllListeners();
       hireButton.onClick.AddListener(() => {
-         Global.player.rpc.Cmd_HireCompanion(battlerId);
+         Global.player.rpc.Cmd_HireCompanion(landMonsterId);
       });
 
       // Create a clickable text row for each quest in the list

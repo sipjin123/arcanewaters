@@ -266,9 +266,9 @@ public class NPCEditScreen : MonoBehaviour
       giftNotLiked.text = npcData.giftNotLikedText;
       npcID.text = npcData.npcId.ToString();
       isHireableToggle.isOn = npcData.isHireable;
-      selectedBattlerIndex.text = npcData.battlerId.ToString();
-      if (NPCToolManager.instance.battlerList.ContainsKey(npcData.battlerId)) {
-         selectedBattlertype.text = NPCToolManager.instance.battlerList[npcData.battlerId].enemyName;
+      selectedBattlerIndex.text = npcData.landMonsterId.ToString();
+      if (NPCToolManager.instance.battlerList.ContainsKey(npcData.landMonsterId)) {
+         selectedBattlertype.text = NPCToolManager.instance.battlerList[npcData.landMonsterId].enemyName;
       } else {
          selectedBattlertype.text = "None";
       }
