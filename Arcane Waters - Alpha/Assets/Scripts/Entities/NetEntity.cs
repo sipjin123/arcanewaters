@@ -151,9 +151,6 @@ public class NetEntity : NetworkBehaviour {
    // Determines if the player is animating an interact clip
    public bool interactingAnimation = false;
 
-   // Wether the player is climbing
-   public bool isClimbing = false;
-
    #endregion
 
    protected virtual void Awake () {
@@ -250,7 +247,7 @@ public class NetEntity : NetworkBehaviour {
 
             if (this is BodyEntity) {
                animator.SetInteger("fallDirection", (int) this.fallDirection);
-               animator.SetBool("isClimbing", isClimbing);
+               animator.SetBool("isClimbing", _isClimbing);
                animator.SetFloat("climbingSpeedMultiplier", moving ? 1 : 0);
             }
          }
@@ -411,11 +408,11 @@ public class NetEntity : NetworkBehaviour {
          modifier = 0f;
       } else if (StatusManager.self.hasStatus(this.userId, Status.Type.Slow)) {
          modifier = .5f;
-      } else if (isClimbing) {
-         if (Time.time - _lastBodySpriteChangetime <= .5f) {
+      } else if (_isClimbing) {
+         if (Time.time - _lastBodySpriteChangetime <= .2f) {
             modifier = 0;
          } else {
-            modifier = .3f;
+            modifier = .5f;
          }
       }
 
@@ -521,6 +518,11 @@ public class NetEntity : NetworkBehaviour {
       return getVelocity().magnitude > .01f;
    }
 
+   public void setClimbing (bool isClimbing) {
+      _isClimbing = isClimbing;
+      getBodyRenderer().material.SetFloat("_Cutoff", _isClimbing ? HIDDEN_SHADOW_ALPHACUTOFF : VISIBLE_SHADOW_ALPHACUTOFF);
+   }
+
    public bool isMouseOver () {
       return MouseManager.self.isHoveringOver(_clickableBox);
    }
@@ -568,7 +570,7 @@ public class NetEntity : NetworkBehaviour {
 
    protected void handleInstantMoveMode () {
       // Get a list of the directions we're allowed to move (sometimes includes diagonal directions)
-      List<Direction> availableDirections = DirectionUtil.getAvailableDirections(true, isClimbing);
+      List<Direction> availableDirections = DirectionUtil.getAvailableDirections(true, _isClimbing);
 
       // Check if we're pressing the keys for any of the directions, and if so, add an appropriate force
       foreach (Direction direction in availableDirections) {
@@ -988,6 +990,15 @@ public class NetEntity : NetworkBehaviour {
 
    // The time at which the body last changed sprites
    private float _lastBodySpriteChangetime;
+
+   // Wether the player is climbing
+   private bool _isClimbing = false;
+
+   // The alpha cutoff value when we want to show the shadow
+   private const float VISIBLE_SHADOW_ALPHACUTOFF = 0;
+
+   // The alpha cutoff value when we want to hide the shadow
+   private const float HIDDEN_SHADOW_ALPHACUTOFF = 0.5f;
 
    #endregion
 }

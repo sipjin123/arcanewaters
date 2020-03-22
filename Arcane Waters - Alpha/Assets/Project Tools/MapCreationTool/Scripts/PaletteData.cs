@@ -95,23 +95,16 @@ namespace MapCreationTool.PaletteTilesData
       }
    }
 
-   public class NineSliceInOutGroup : TileGroup
-   {
-      public TileData[,] innerTiles { get; set; }
-      public TileData[,] outerTiles { get; set; }
-
-      public override Vector2Int brushSize => new Vector2Int(2, 2);
-      public NineSliceInOutGroup () {
-         type = TileGroupType.NineSliceInOut;
-      }
-   }
-
    public class PrefabGroup : TileGroup
    {
       public GameObject refPref { get; set; }
 
       public PrefabGroup () {
          type = TileGroupType.Prefab;
+      }
+
+      public virtual GameObject getPrefab () {
+         return refPref;
       }
    }
 
@@ -122,81 +115,10 @@ namespace MapCreationTool.PaletteTilesData
       public TreePrefabGroup () {
          type = TileGroupType.TreePrefab;
       }
-   }
 
-
-   public class NineFourGroup : TileGroup
-   {
-      public TileData[,] mainTiles { get; set; }
-      public TileData[,] cornerTiles { get; set; }
-      public string layer { get; set; }
-      public bool singleLayer { get; set; }
-      public bool invertedCorners { get; set; }
-
-      public override Vector2Int brushSize => new Vector2Int(2, 2);
-
-      public NineFourGroup () {
-         type = TileGroupType.NineFour;
+      public override GameObject getPrefab () {
+         return Tools.burrowedTrees ? burrowedPref : refPref;
       }
-
-      public override bool contains (TileBase tile) {
-         for (int i = 0; i < mainTiles.GetLength(0); i++)
-            for (int j = 0; j < mainTiles.GetLength(1); j++)
-               if (mainTiles[i, j] != null && mainTiles[i, j].tile == tile)
-                  return true;
-
-         for (int i = 0; i < cornerTiles.GetLength(0); i++)
-            for (int j = 0; j < cornerTiles.GetLength(1); j++)
-               if (cornerTiles[i, j] != null && cornerTiles[i, j].tile == tile)
-                  return true;
-
-         return false;
-      }
-   }
-
-   public class WallGroup : TileGroup
-   {
-      public TileData[,] allTiles { get; set; }
-      public string layer { get; set; }
-
-      public override Vector2Int brushSize => new Vector2Int(1, 2);
-
-      public WallGroup () {
-         type = TileGroupType.Wall;
-      }
-
-      public override bool contains (TileBase tile) {
-         for (int i = 0; i < allTiles.GetLength(0); i++)
-            for (int j = 0; j < allTiles.GetLength(1); j++)
-               if (allTiles[i, j] != null && allTiles[i, j].tile == tile)
-                  return true;
-
-         return false;
-      }
-   }
-
-   public class NineGroup : TileGroup
-   {
-      public string layer { get; set; }
-      public int subLayer { get; set; }
-
-      public override Vector2Int brushSize => new Vector2Int(2, 2);
-
-      public NineGroup () {
-         type = TileGroupType.Nine;
-      }
-   }
-
-   public class DockGroup : TileGroup
-   {
-      public string layer { get; set; }
-      public int subLayer { get; set; }
-
-      public DockGroup () {
-         type = TileGroupType.Dock;
-      }
-
-      public override Vector2Int brushSize => new Vector2Int(2, 2);
    }
 
    public class TileData

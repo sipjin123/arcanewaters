@@ -984,7 +984,7 @@ public class DB_Main : DB_MainStub
    public static new List<Map> getMaps () {
       List<Map> result = new List<Map>();
 
-      string cmdText = "SELECT id, name, createdAt, creatorUserId, publishedVersion, accName " +
+      string cmdText = "SELECT id, name, createdAt, creatorUserId, publishedVersion, sourceMapId, notes, accName " +
          "FROM maps_v2 " +
             "LEFT JOIN accounts ON maps_v2.creatorUserId = accId " +
          "ORDER BY name;";
@@ -1004,7 +1004,11 @@ public class DB_Main : DB_MainStub
                      ? (int?) null
                      : dataReader.GetInt32("publishedVersion"),
                   creatorID = dataReader.GetInt32("creatorUserId"),
-                  creatorName = dataReader.GetString("accName")
+                  creatorName = dataReader.GetString("accName"),
+                  sourceMapId = dataReader.IsDBNull(dataReader.GetOrdinal("sourceMapId"))
+                     ? (int?) null
+                     : dataReader.GetInt32("sourceMapId"),
+                  notes = dataReader.GetString("notes")
                });
             }
          }
@@ -1180,13 +1184,14 @@ public class DB_Main : DB_MainStub
 
          try {
             // Insert entry to maps
-            cmd.CommandText = "INSERT INTO maps_v2(name, createdAt, creatorUserId, publishedVersion, editorType) " +
-               "VALUES(@name, @createdAt, @creatorID, @publishedVersion, @editorType);";
+            cmd.CommandText = "INSERT INTO maps_v2(name, createdAt, creatorUserId, publishedVersion, editorType, biome) " +
+               "VALUES(@name, @createdAt, @creatorID, @publishedVersion, @editorType, @biome);";
             cmd.Parameters.AddWithValue("@name", mapVersion.map.name);
             cmd.Parameters.AddWithValue("@createdAt", mapVersion.map.createdAt);
             cmd.Parameters.AddWithValue("@creatorID", mapVersion.map.creatorID);
             cmd.Parameters.AddWithValue("@publishedVersion", mapVersion.map.publishedVersion);
             cmd.Parameters.AddWithValue("@editorType", (int) mapVersion.map.editorType);
+            cmd.Parameters.AddWithValue("@biome", (int) mapVersion.map.biome);
             cmd.ExecuteNonQuery();
 
             long mapId = cmd.LastInsertedId;
@@ -1226,15 +1231,19 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new void renameMap (int mapId, string newName) {
-      string cmdText = "UPDATE maps_v2 SET name = @name WHERE id = @mapId;";
+   public static new void updateMapDetails (Map map) {
+      string cmdText = "UPDATE maps_v2 " +
+         "SET name = @name, sourceMapId = @sourceId, notes = @notes " +
+         "WHERE id = @mapId;";
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          conn.Open();
          cmd.Prepare();
 
-         cmd.Parameters.AddWithValue("@mapId", mapId);
-         cmd.Parameters.AddWithValue("@name", newName);
+         cmd.Parameters.AddWithValue("@mapId", map.id);
+         cmd.Parameters.AddWithValue("@name", map.name);
+         cmd.Parameters.AddWithValue("@sourceId", map.sourceMapId);
+         cmd.Parameters.AddWithValue("@notes", map.notes);
 
          // Execute the command
          cmd.ExecuteNonQuery();
@@ -1314,10 +1323,11 @@ public class DB_Main : DB_MainStub
          cmd.Connection = conn;
 
          try {
-            // Update editor type
+            // Update editor type and biome
             cmd.Parameters.AddWithValue("@mapId", mapVersion.mapId);
             cmd.Parameters.AddWithValue("@editorType", (int) mapVersion.map.editorType);
-            cmd.CommandText = "UPDATE maps_v2 SET editorType = @editorType WHERE id = @mapId;";
+            cmd.Parameters.AddWithValue("@biome", (int) mapVersion.map.biome);
+            cmd.CommandText = "UPDATE maps_v2 SET editorType = @editorType, biome = @biome WHERE id = @mapId;";
             cmd.ExecuteNonQuery();
 
             // Update entry in map versions

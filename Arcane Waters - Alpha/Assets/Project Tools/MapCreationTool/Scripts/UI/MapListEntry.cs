@@ -20,12 +20,12 @@ namespace MapCreationTool
       [SerializeField]
       private Button versionsButton = null;
       [SerializeField]
-      private Button renameButton = null;
+      private Button detailsButton = null;
       [SerializeField]
       private Button deleteButton = null;
 
       public Map target { get; private set; }
-      public void set (Map map, Action onLatestVersion, Action onVersionListClick, Action onRename, Action onDelete) {
+      public void set (Map map, Action onLatestVersion, Action onVersionListClick, Action onDetails, Action onDelete) {
          target = map;
 
          nameText.text = map.name;
@@ -39,8 +39,8 @@ namespace MapCreationTool
          deleteButton.onClick.RemoveAllListeners();
          deleteButton.onClick.AddListener(() => onDelete());
 
-         renameButton.onClick.RemoveAllListeners();
-         renameButton.onClick.AddListener(() => onRename());
+         detailsButton.onClick.RemoveAllListeners();
+         detailsButton.onClick.AddListener(() => onDetails());
 
          latestVersionButton.onClick.RemoveAllListeners();
          latestVersionButton.onClick.AddListener(() => onLatestVersion());

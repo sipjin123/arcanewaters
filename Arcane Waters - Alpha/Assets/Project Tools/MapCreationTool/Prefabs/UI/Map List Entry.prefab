@@ -64,7 +64,7 @@ MonoBehaviour:
   creatorText: {fileID: 4955543759973523459}
   latestVersionButton: {fileID: 3533793217963009022}
   versionsButton: {fileID: 8811730782673813131}
-  renameButton: {fileID: 866431687112241944}
+  detailsButton: {fileID: 866431687112241944}
   deleteButton: {fileID: 213059753477697862}
 --- !u!222 &6248002349354231550
 CanvasRenderer:
@@ -716,7 +716,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: RENAME
+  m_Text: DETAILS
 --- !u!1 &5274646115824361721
 GameObject:
   m_ObjectHideFlags: 0
@@ -808,7 +808,7 @@ GameObject:
   - component: {fileID: 866431687112241944}
   - component: {fileID: 3128643288128076777}
   m_Layer: 5
-  m_Name: Rename Button
+  m_Name: Details Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -925,7 +925,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ab5876efb848244f8f1bc29d6b73a28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  message: Rename Map
+  message: Edit Details of Map
 --- !u!1 &5855864482399438013
 GameObject:
   m_ObjectHideFlags: 0

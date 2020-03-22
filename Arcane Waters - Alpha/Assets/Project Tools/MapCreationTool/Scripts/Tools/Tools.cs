@@ -7,6 +7,7 @@ namespace MapCreationTool
    public class Tools
    {
       public const int MaxFloodFillTileCount = 65536;
+      public const int MAX_BOARD_SIZE = 256;
 
       public static event Action<ToolType, ToolType> ToolChanged;
       public static event Action<int, int> MountainLayerChanged;
@@ -207,11 +208,14 @@ namespace MapCreationTool
          tileGroup = group;
 
          TileGroupChanged?.Invoke(oldgroup, tileGroup);
-         AnythingChanged?.Invoke();
 
          ToolType oldTool = toolType;
-         if (tileGroup != null && toolType == ToolType.Eraser)
+         if (tileGroup != null && toolType == ToolType.Eraser) {
             toolType = ToolType.Brush;
+            ToolChanged.Invoke(oldTool, toolType);
+         }
+
+         AnythingChanged?.Invoke();
 
          if (registerUndo) {
             Undo.register(

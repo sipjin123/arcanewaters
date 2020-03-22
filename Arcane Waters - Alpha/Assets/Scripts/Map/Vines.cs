@@ -16,7 +16,7 @@ public class Vines : MonoBehaviour {
          return;
       }
 
-      player.isClimbing = true;
+      player.setClimbing(true);
    }
 
    private void OnTriggerExit2D (Collider2D other) {
@@ -26,7 +26,7 @@ public class Vines : MonoBehaviour {
          return;
       }
 
-      player.isClimbing = false;
+      player.setClimbing(false);
    }
 
    #region Private Variables

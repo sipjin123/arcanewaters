@@ -316,7 +316,11 @@ namespace MapCreationTool
       }
 
       public TileBase getTile (int x, int y) {
-         return getTile(new Vector3Int(x, y, 0));
+         (int x, int y) index = (x - origin.x, y - origin.y);
+         if (index.x < 0 || index.x >= size.x || index.y < 0 || index.y >= size.y)
+            return null;
+
+         return tileMatrix[index.x, index.y];
       }
       public void setTile (int x, int y, TileBase tile) {
          setTile(new Vector3Int(x, y, 0), tile);

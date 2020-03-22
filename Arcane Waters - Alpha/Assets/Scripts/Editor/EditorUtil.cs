@@ -13,14 +13,18 @@ public class EditorUtil : EditorWindow {
 
    [MenuItem("Util/Set As Local Server")]
    public static void SetLocalServer () {
+      #if IS_SERVER_BUILD
       DB_Main.setServer("127.0.0.1");
       Debug.Log("Set as Local Server");
+      #endif
    }
 
    [MenuItem("Util/Set As Remote Server")]
    public static void SetRemoteServer () {
+      #if IS_SERVER_BUILD
       DB_Main.setServer(DB_Main.RemoteServer);
       Debug.Log("Set as Remote Server");
+      #endif
    }
 
    [MenuItem("Util/Clear Prefs")]
@@ -231,7 +235,7 @@ public class EditorUtil : EditorWindow {
       }
    }
 
-   #region Private Variables
+#region Private Variables
 
-   #endregion
+#endregion
 }

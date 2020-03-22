@@ -190,7 +190,7 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
-   public static void renameMap (int mapId, string newName) {
+   public static void updateMapDetails (Map map) {
 
    }
 

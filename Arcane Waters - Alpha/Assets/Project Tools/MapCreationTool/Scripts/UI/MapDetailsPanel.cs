@@ -1,18 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using MapCreationTool.Serialization;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace MapCreationTool
 {
-   public class MapRenamePanel : UIPanel
+   public class MapDetailsPanel : UIPanel
    {
       [SerializeField]
-      private Text label = null;
+      private Text topLabel = null;
       [SerializeField]
-      private InputField inputField = null;
+      private InputField nameInput = null;
+      [SerializeField]
+      private Dropdown sourceMapDropdown = null;
+      [SerializeField]
+      private InputField notesInput = null;
 
       private Map targetMap;
+      private (int? id, string displayText)[] sourceOptions;
 
       public void open (Map map) {
          if (!MasterToolAccountManager.canAlterResource(map.creatorID, out string errorMessage)) {
@@ -21,23 +28,42 @@ namespace MapCreationTool
          }
 
          targetMap = map;
-         inputField.text = map.name;
-         label.text = $"Enter a new <b>unique</b> name for the map { targetMap.name }";
+
+         sourceOptions = Enumerable.Repeat(((int?) null, "None"), 1).Union(Overlord.remoteMaps.maps.Select(m => ((int?) m.Value.id, m.Value.name))).ToArray();
+
+         nameInput.text = map.name;
+         notesInput.text = map.notes;
+         sourceMapDropdown.options = sourceOptions.Select(o => new Dropdown.OptionData { text = o.displayText }).ToList();
+
+         sourceMapDropdown.value = 0;
+         for (int i = 0; i < sourceOptions.Length; i++) {
+            if (sourceOptions[i].id == map.sourceMapId) {
+               sourceMapDropdown.value = i;
+               break;
+            }
+         }
+
+         topLabel.text = $"Editing details of map { targetMap.name }";
          show();
       }
 
       public void confirm () {
          try {
-            string newName = inputField.text;
+            Map newMap = new Map {
+               id = targetMap.id,
+               name = nameInput.text,
+               notes = notesInput.text,
+               sourceMapId = sourceOptions[sourceMapDropdown.value].id
+            };
 
-            if (string.IsNullOrWhiteSpace(newName)) {
+            if (string.IsNullOrWhiteSpace(newMap.name)) {
                throw new Exception("Name cannot be empty");
             }
 
             UnityThreading.Task task = UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                string dbError = null;
                try {
-                  DB_Main.renameMap(targetMap.id, newName);
+                  DB_Main.updateMapDetails(newMap);
                } catch (Exception ex) {
                   dbError = ex.Message;
                }
@@ -48,7 +74,9 @@ namespace MapCreationTool
                   } else {
                      if (DrawBoard.loadedVersion != null && DrawBoard.loadedVersion.mapId == targetMap.id) {
                         MapVersion version = DrawBoard.loadedVersion;
-                        version.map.name = newName;
+                        version.map.name = newMap.name;
+                        version.map.sourceMapId = newMap.sourceMapId;
+                        version.map.notes = newMap.notes;
                         DrawBoard.changeLoadedVersion(version);
                      }
                      Overlord.loadAllRemoteData();
@@ -59,7 +87,7 @@ namespace MapCreationTool
 
             });
 
-            UI.loadingPanel.display("Renaming a map", task);
+            UI.loadingPanel.display("Updating map details", task);
          } catch (Exception ex) {
             UI.errorDialog.display(ex.ToString());
          }

@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 using UnityEngine.Tilemaps;
 
 namespace MapCreationTool
@@ -7,11 +10,16 @@ namespace MapCreationTool
    {
       public TileBase[,] innerTiles { get; set; }
       public TileBase[,] outerTiles { get; set; }
+      public HashSet<TileBase> containsSet { get; set; }
       public string layer { get; set; }
 
       public override Vector2Int brushSize => new Vector2Int(5, 6);
       public MountainGroup () {
          type = TileGroupType.Mountain;
+      }
+
+      public override bool contains (TileBase tile) {
+         return containsSet.Contains(tile);
       }
 
       public TileBase pickTile (bool[,] adj, SidesInt sur, int x, int y) {

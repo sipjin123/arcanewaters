@@ -217,7 +217,7 @@ namespace MapCreationTool
                } else if (t.GetComponent<NineFourGroupConfig>()) {
                   result.Add(formSpecialGroup(group, tileMatrix, t.GetComponent<NineFourGroupConfig>(), biome));
                } else if (t.GetComponent<MountainGroupConfig>()) {
-                  result.Add(formSpecialGroup(group, t.GetComponent<MountainGroupConfig>(), biome));
+                  result.Add(formSpecialGroup(group, tileMatrix, t.GetComponent<MountainGroupConfig>(), biome));
                } else if (t.GetComponent<NineGroupConfig>()) {
                   result.Add(formSpecialGroup(group, t.GetComponent<NineGroupConfig>(), biome));
                } else if (t.GetComponent<DockGroupConfig>()) {
@@ -342,16 +342,34 @@ namespace MapCreationTool
          return newGroup;
       }
 
-      private MountainGroup formSpecialGroup (BiomedTileGroup from, MountainGroupConfig config, Biome.Type biome) {
+      private MountainGroup formSpecialGroup (BiomedTileGroup from, BiomedTileData[,] tileMatrix, MountainGroupConfig config, Biome.Type biome) {
          var outerTilemap = config.biomeTileMaps.outerTilemap;
          var innerTilemap = config.biomeTileMaps.innerTilemap;
+
+         BoundsInt bounds = config.allTileBounds;
+         bounds.position += Vector3Int.RoundToInt(config.transform.position);
 
          MountainGroup newGroup = new MountainGroup {
             tiles = extractBiome(from.tiles, biome),
             start = from.start,
             innerTiles = new TileBase[config.innerSize.x, config.innerSize.y],
-            outerTiles = new TileBase[config.outerSize.x, config.outerSize.y]
+            outerTiles = new TileBase[config.outerSize.x, config.outerSize.y],
+            containsSet = new HashSet<TileBase>()
          };
+
+         newGroup.containsSet.Add(AssetSerializationMaps.transparentTileBase);
+
+         for (int i = 0; i < bounds.size.x; i++) {
+            for (int j = 0; j < bounds.size.y; j++) {
+               Vector2Int index = new Vector2Int(bounds.position.x + i, bounds.position.y + j);
+               if (tileMatrix[index.x, index.y] != null) {
+                  TileBase tile = tileMatrix[index.x, index.y].tile[biome];
+                  if (!newGroup.containsSet.Contains(tile)) {
+                     newGroup.containsSet.Add(tile);
+                  }
+               }
+            }
+         }
 
          for (int i = 0; i < config.innerSize.x; i++) {
             for (int j = 0; j < config.innerSize.y; j++) {

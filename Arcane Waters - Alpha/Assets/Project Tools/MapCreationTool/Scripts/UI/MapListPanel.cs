@@ -52,7 +52,7 @@ namespace MapCreationTool
                } else {
                   foreach (Map map in maps) {
                      MapListEntry entry = Instantiate(entryPref, entryParent);
-                     entry.set(map, () => openLatestVersion(map), () => UI.versionListPanel.open(map), () => UI.renamePanel.open(map), () => deleteMap(map));
+                     entry.set(map, () => openLatestVersion(map), () => UI.versionListPanel.open(map), () => UI.mapDetailsPanel.open(map), () => deleteMap(map));
                      entry.gameObject.SetActive(
                         !showOnlyMyMaps ||
                         entry.target.creatorID == MasterToolAccountManager.self.currentAccountID);
@@ -143,6 +143,7 @@ namespace MapCreationTool
                } else {
                   open();
                }
+               Overlord.loadAllRemoteData();
             });
          });
 

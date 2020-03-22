@@ -62,7 +62,7 @@ namespace MapCreationTool
       public static LoadingPanel loadingPanel { get; private set; }
       public static VersionListPanel versionListPanel { get; private set; }
       public static SettingsPanel settingsPanel { get; private set; }
-      public static MapRenamePanel renamePanel { get; private set; }
+      public static MapDetailsPanel mapDetailsPanel { get; private set; }
 
       private static UIPanel[] uiPanels;
 
@@ -135,7 +135,7 @@ namespace MapCreationTool
          loadingPanel = GetComponentInChildren<LoadingPanel>();
          versionListPanel = GetComponentInChildren<VersionListPanel>();
          settingsPanel = GetComponentInChildren<SettingsPanel>();
-         renamePanel = GetComponentInChildren<MapRenamePanel>();
+         mapDetailsPanel = GetComponentInChildren<MapDetailsPanel>();
 
          uiPanels = GetComponentsInChildren<UIPanel>();
 
@@ -303,6 +303,7 @@ namespace MapCreationTool
                };
 
                mapVersion.map.editorType = Tools.editorType;
+               mapVersion.map.biome = Tools.biome;
 
                // Make sure all spawns have unique names
                if (mapVersion.spawns.Count > 0 && mapVersion.spawns.GroupBy(s => s.name).Max(g => g.Count()) > 1) {
