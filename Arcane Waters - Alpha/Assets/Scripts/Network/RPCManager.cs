@@ -3768,10 +3768,13 @@ public class RPCManager : NetworkBehaviour {
    private void retrieveBook (int bookId) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          BookData book = DB_Main.getBookById(bookId);
-         Target_ShowBook(netIdentity.connectionToClient, book.title, book.content);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_ShowBook(netIdentity.connectionToClient, book.title, book.content);
+         });
       });
    }
-   
+
    #region Private Variables
 
    // Our associated Player object

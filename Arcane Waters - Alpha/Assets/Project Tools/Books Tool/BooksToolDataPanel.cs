@@ -1,11 +1,9 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
-using Mirror;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
-public class BooksToolDataPanel : MonoBehaviour {
+public class BooksToolDataPanel : MonoBehaviour
+{
    #region Public Variables
 
    // Reference to the tool manager
@@ -16,7 +14,7 @@ public class BooksToolDataPanel : MonoBehaviour {
 
    // The book reader panel for preview
    public BookReaderPanel readerPanel;
-   
+
    // Buttons for saving and canceling
    public Button saveButton, cancelButton;
 
@@ -62,6 +60,7 @@ public class BooksToolDataPanel : MonoBehaviour {
 
       _bookTitle.text = bookData.title;
       _bookContent.text = bookData.content;
+      _currentBookId = bookData.bookId.ToString();
    }
 
    private BookData getBookData () {
@@ -69,6 +68,7 @@ public class BooksToolDataPanel : MonoBehaviour {
 
       bookData.title = _bookTitle.text;
       bookData.content = _bookContent.text;
+      bookData.bookId = int.Parse(_currentBookId);
 
       return bookData;
    }
@@ -83,6 +83,9 @@ public class BooksToolDataPanel : MonoBehaviour {
    // Content of the book
    [SerializeField]
    private InputField _bookContent;
+
+   // The current book ID
+   private string _currentBookId;
 
 #pragma warning restore 0649
    #endregion

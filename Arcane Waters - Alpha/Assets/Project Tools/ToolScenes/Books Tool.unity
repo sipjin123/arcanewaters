@@ -1382,7 +1382,6 @@ GameObject:
   - component: {fileID: 631334682}
   - component: {fileID: 631334681}
   - component: {fileID: 631334680}
-  - component: {fileID: 631334679}
   - component: {fileID: 631334683}
   m_Layer: 5
   m_Name: DataScene
@@ -1413,27 +1412,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -500, y: -60}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &631334679
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 631334677}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 575e22a709e150f47a7a320f5c2a6a0d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  achievementTemplatePrefab: {fileID: 0}
-  toolManager: {fileID: 0}
-  itemTemplateParent: {fileID: 194914747}
-  achievementDataPanel: {fileID: 0}
-  emptySprite: {fileID: 21300000, guid: bbb4cb08a2e7d9f46b4b0d93fbaa469b, type: 3}
-  createButton: {fileID: 4008196868902166279}
-  mainMenuButton: {fileID: 4008196867478641991}
-  showDetails: {fileID: 699827927}
-  isShowingDetails: 0
 --- !u!225 &631334680
 CanvasGroup:
   m_ObjectHideFlags: 0
