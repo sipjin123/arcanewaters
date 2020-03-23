@@ -1,124 +1,241 @@
 fileFormatVersion: 2
-guid: 6256e12368c1ce543a56b2184d804389
+guid: 37862f3f08520e947ab870ef2285695f
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -6454524826689010524
-    second: zishgar_captain_0
+      213: -6897973784648601193
+    second: zishgar_champion_0
   - first:
-      213: -5328524242210068344
-    second: zishgar_captain_1
+      213: 8294305985740047378
+    second: zishgar_champion_1
   - first:
-      213: 3595581679878284138
-    second: zishgar_captain_2
+      213: -6090231243144394427
+    second: zishgar_champion_2
   - first:
-      213: 5680755075141630941
-    second: zishgar_captain_3
+      213: -2794470622416435943
+    second: zishgar_champion_3
   - first:
-      213: -784204915688538513
-    second: zishgar_captain_4
+      213: 74388839732640867
+    second: zishgar_champion_4
   - first:
-      213: 5811714126296920259
-    second: zishgar_captain_5
+      213: -4060703553189642883
+    second: zishgar_champion_5
   - first:
-      213: 8149213002928044707
-    second: zishgar_captain_6
+      213: 2929629527163448365
+    second: zishgar_champion_6
   - first:
-      213: -3960591595222721710
-    second: zishgar_captain_7
+      213: -5714944761464468137
+    second: zishgar_champion_7
   - first:
-      213: 386968724815896779
-    second: zishgar_captain_8
+      213: 8506537574070665270
+    second: zishgar_champion_8
   - first:
-      213: 6995405351524330402
-    second: zishgar_captain_9
+      213: 3600298749888859380
+    second: zishgar_champion_9
   - first:
-      213: 3805197186866999018
-    second: zishgar_captain_10
+      213: -8119129510862808670
+    second: zishgar_champion_10
   - first:
-      213: 5069198752783266688
-    second: zishgar_captain_11
+      213: -2144828618082401069
+    second: zishgar_champion_11
   - first:
-      213: -3003880687774078688
-    second: zishgar_captain_12
+      213: 3916769789428096917
+    second: zishgar_champion_12
   - first:
-      213: 5469091907889999620
-    second: zishgar_captain_13
+      213: 8503350858305161135
+    second: zishgar_champion_13
   - first:
-      213: 157941300874567959
-    second: zishgar_captain_14
+      213: 5975556526191545730
+    second: zishgar_champion_14
   - first:
-      213: -1402276763997561041
-    second: zishgar_captain_15
+      213: -203347396294895290
+    second: zishgar_champion_15
   - first:
-      213: 6699297369641432439
-    second: zishgar_captain_16
+      213: 6241443487520158448
+    second: zishgar_champion_16
   - first:
-      213: 8796392020285630760
-    second: zishgar_captain_17
+      213: 1780640527944195647
+    second: zishgar_champion_17
   - first:
-      213: -2389660609844138257
-    second: zishgar_captain_18
+      213: 7882133831334139817
+    second: zishgar_champion_18
   - first:
-      213: 5251903582295138625
-    second: zishgar_captain_19
+      213: -3005835875279503634
+    second: zishgar_champion_19
   - first:
-      213: 4993612919551756101
-    second: zishgar_captain_20
+      213: -8053273172562863887
+    second: zishgar_champion_20
   - first:
-      213: 4110943192199660617
-    second: zishgar_captain_21
+      213: 2231495809424792376
+    second: zishgar_champion_21
   - first:
-      213: -4252495964107967368
-    second: zishgar_captain_22
+      213: -7211194409553661521
+    second: zishgar_champion_22
   - first:
-      213: -5791855260944839729
-    second: zishgar_captain_23
+      213: 8364859797001717848
+    second: zishgar_champion_23
   - first:
-      213: -8966737736373446189
-    second: zishgar_captain_24
+      213: -6959482777739418593
+    second: zishgar_champion_24
   - first:
-      213: -2750027164309524983
-    second: zishgar_captain_25
+      213: -1827745996070416703
+    second: zishgar_champion_25
   - first:
-      213: 801647338833893382
-    second: zishgar_captain_26
+      213: 4299438047744106247
+    second: zishgar_champion_26
   - first:
-      213: 5834060457922108313
-    second: zishgar_captain_27
+      213: 3780004491329637870
+    second: zishgar_champion_27
   - first:
-      213: 4774449619774449927
-    second: zishgar_captain_28
+      213: -8860163305872760153
+    second: zishgar_champion_28
   - first:
-      213: -253471634339630946
-    second: zishgar_captain_29
+      213: 5365406901344571821
+    second: zishgar_champion_29
   - first:
-      213: 3356731550186616709
-    second: zishgar_captain_30
+      213: -1367570803772042260
+    second: zishgar_champion_30
   - first:
-      213: -7275382098069333653
-    second: zishgar_captain_31
+      213: 4556110638572754699
+    second: zishgar_champion_31
   - first:
-      213: -9041751790477979446
-    second: zishgar_captain_32
+      213: -8578817447662449588
+    second: zishgar_champion_32
   - first:
-      213: -1694030771077088042
-    second: zishgar_captain_33
+      213: 3235626125238538684
+    second: zishgar_champion_33
   - first:
-      213: 3784942052307731577
-    second: zishgar_captain_34
+      213: -1599523178799501588
+    second: zishgar_champion_34
   - first:
-      213: -3296989694621755264
-    second: zishgar_captain_35
+      213: -6064802577180653469
+    second: zishgar_champion_35
   - first:
-      213: 4397398835657869501
-    second: zishgar_captain_36
+      213: 8528642649963004689
+    second: zishgar_champion_36
   - first:
-      213: -1873923284820502996
-    second: zishgar_captain_37
+      213: -5640820346135545830
+    second: zishgar_champion_37
   - first:
-      213: 1771055973192955259
-    second: zishgar_captain_38
+      213: 3072766191423768205
+    second: zishgar_champion_38
+  - first:
+      213: -8163185950243282607
+    second: lizard_champion_0
+  - first:
+      213: -3158191513803548855
+    second: lizard_champion_1
+  - first:
+      213: -3794892645674101110
+    second: lizard_champion_2
+  - first:
+      213: -1309407040335746196
+    second: lizard_champion_3
+  - first:
+      213: 2477538050288443294
+    second: lizard_champion_4
+  - first:
+      213: 3870651243675905345
+    second: lizard_champion_5
+  - first:
+      213: 1813843373312451911
+    second: lizard_champion_6
+  - first:
+      213: -202572391463308091
+    second: lizard_champion_7
+  - first:
+      213: 6979997275151605201
+    second: lizard_champion_8
+  - first:
+      213: 5889586475157103543
+    second: lizard_champion_9
+  - first:
+      213: 5842033846431693382
+    second: lizard_champion_10
+  - first:
+      213: 1040660200203434895
+    second: lizard_champion_11
+  - first:
+      213: -2898772370862570922
+    second: lizard_champion_12
+  - first:
+      213: -96485627060027924
+    second: lizard_champion_13
+  - first:
+      213: -244108613382798108
+    second: lizard_champion_14
+  - first:
+      213: -1519088224523491368
+    second: lizard_champion_15
+  - first:
+      213: -7641055764590850234
+    second: lizard_champion_16
+  - first:
+      213: -7627798999936991012
+    second: lizard_champion_17
+  - first:
+      213: -1618958823542672726
+    second: lizard_champion_18
+  - first:
+      213: 8153030673009865420
+    second: lizard_champion_19
+  - first:
+      213: 6374369785904892315
+    second: lizard_champion_20
+  - first:
+      213: -1743803084162524800
+    second: lizard_champion_21
+  - first:
+      213: -20451164479079358
+    second: lizard_champion_22
+  - first:
+      213: -4412483046976422010
+    second: lizard_champion_23
+  - first:
+      213: 2679505557127583993
+    second: lizard_champion_24
+  - first:
+      213: -2621465583874317948
+    second: lizard_champion_25
+  - first:
+      213: -6859838139073140601
+    second: lizard_champion_26
+  - first:
+      213: 884661446435932052
+    second: lizard_champion_27
+  - first:
+      213: 8117122369162387116
+    second: lizard_champion_28
+  - first:
+      213: 218623711323727601
+    second: lizard_champion_29
+  - first:
+      213: 6272272251433461183
+    second: lizard_champion_30
+  - first:
+      213: -620337078496010796
+    second: lizard_champion_31
+  - first:
+      213: -8909501876945496174
+    second: lizard_champion_32
+  - first:
+      213: -12618558945191886
+    second: lizard_champion_33
+  - first:
+      213: 2076956483112458150
+    second: lizard_champion_34
+  - first:
+      213: 4889878254872568085
+    second: lizard_champion_35
+  - first:
+      213: -1805811829560542317
+    second: lizard_champion_36
+  - first:
+      213: 875019208636885254
+    second: lizard_champion_37
+  - first:
+      213: -3889708490833466486
+    second: lizard_champion_38
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -203,7 +320,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: zishgar_captain_0
+      name: lizard_champion_0
       rect:
         serializedVersion: 2
         x: 0
@@ -217,14 +334,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 94f5d500d5bc6d74a82a750855d392a0
-      internalID: -6454524826689010524
+      spriteID: a430f95fef8d2214d85c2b9864d99aba
+      internalID: -8163185950243282607
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_1
+      name: lizard_champion_1
       rect:
         serializedVersion: 2
         x: 85
@@ -238,14 +355,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: dc5fb2f12a5ede3489b24f5d7920efe5
-      internalID: -5328524242210068344
+      spriteID: 20132f9368ddbe347a63cfd938595605
+      internalID: -3158191513803548855
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_2
+      name: lizard_champion_2
       rect:
         serializedVersion: 2
         x: 170
@@ -259,14 +376,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8549dd9b5ee7fb74bab4c4f1ac0d85fb
-      internalID: 3595581679878284138
+      spriteID: 721c6cfbf64f6cc4c971aafee7556d10
+      internalID: -3794892645674101110
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_3
+      name: lizard_champion_3
       rect:
         serializedVersion: 2
         x: 255
@@ -280,14 +397,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e2bfc80e045efb148bd7b15498d07309
-      internalID: 5680755075141630941
+      spriteID: 3170f4ba9486b5e4e8708424a2d789de
+      internalID: -1309407040335746196
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_4
+      name: lizard_champion_4
       rect:
         serializedVersion: 2
         x: 340
@@ -301,14 +418,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b9717a66bb116a441b5aab9425918464
-      internalID: -784204915688538513
+      spriteID: 643aeb6f271dfeb498a1607130c09256
+      internalID: 2477538050288443294
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_5
+      name: lizard_champion_5
       rect:
         serializedVersion: 2
         x: 425
@@ -322,14 +439,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d681608d8a966e14b9d8caac514c5c11
-      internalID: 5811714126296920259
+      spriteID: 505f5e979e1937c4894cc016c036e90d
+      internalID: 3870651243675905345
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_6
+      name: lizard_champion_6
       rect:
         serializedVersion: 2
         x: 510
@@ -343,14 +460,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 80de5afb84a41594594e646e0113c087
-      internalID: 8149213002928044707
+      spriteID: 0eaf461907ee44343b218683808ba4d2
+      internalID: 1813843373312451911
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_7
+      name: lizard_champion_7
       rect:
         serializedVersion: 2
         x: 595
@@ -364,14 +481,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2bf9410df92f93f41a79817094bd08a4
-      internalID: -3960591595222721710
+      spriteID: c8c4ec8137dcaa6499c3c65424b73fe5
+      internalID: -202572391463308091
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_8
+      name: lizard_champion_8
       rect:
         serializedVersion: 2
         x: 680
@@ -385,14 +502,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 314779cd5a824234bb64b3524216238d
-      internalID: 386968724815896779
+      spriteID: 99deb865baee54d4e9cb38137e4276b0
+      internalID: 6979997275151605201
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_9
+      name: lizard_champion_9
       rect:
         serializedVersion: 2
         x: 765
@@ -406,14 +523,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: daa009354b658624fb8e9c9fc42692ab
-      internalID: 6995405351524330402
+      spriteID: 32b42d8f309854f4aa2f05311b8dadb9
+      internalID: 5889586475157103543
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_10
+      name: lizard_champion_10
       rect:
         serializedVersion: 2
         x: 850
@@ -427,14 +544,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f8670b93afadf2546be87d1f314bf4f3
-      internalID: 3805197186866999018
+      spriteID: f03c33e25e41f614fa04465e83b568fe
+      internalID: 5842033846431693382
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_11
+      name: lizard_champion_11
       rect:
         serializedVersion: 2
         x: 935
@@ -448,14 +565,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2afda247a48e52a4e942571c44eb3afa
-      internalID: 5069198752783266688
+      spriteID: 9f1dd66ed93ede64d9e23c3e2da7e640
+      internalID: 1040660200203434895
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_12
+      name: lizard_champion_12
       rect:
         serializedVersion: 2
         x: 0
@@ -469,14 +586,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e541e4598ca747445a2e4288c5f3c904
-      internalID: -3003880687774078688
+      spriteID: 86be95b976c47434ba44f8c703a9b7d7
+      internalID: -2898772370862570922
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_13
+      name: lizard_champion_13
       rect:
         serializedVersion: 2
         x: 85
@@ -490,14 +607,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e2f6b89a7c320d245b858c5b809cc226
-      internalID: 5469091907889999620
+      spriteID: 7d260aa9e61e4a64e8c8fb97549519d1
+      internalID: -96485627060027924
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_14
+      name: lizard_champion_14
       rect:
         serializedVersion: 2
         x: 170
@@ -511,14 +628,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 310bfbe6bd47d43489b9280bd1a8bc85
-      internalID: 157941300874567959
+      spriteID: d514d364eb71e1b409293535b3aeb059
+      internalID: -244108613382798108
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_15
+      name: lizard_champion_15
       rect:
         serializedVersion: 2
         x: 255
@@ -532,14 +649,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4544433a8bfcf9242a26ab6237077c85
-      internalID: -1402276763997561041
+      spriteID: 1687f323b8387bc4086a48717390576f
+      internalID: -1519088224523491368
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_16
+      name: lizard_champion_16
       rect:
         serializedVersion: 2
         x: 340
@@ -553,14 +670,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c2a306c429899fa4dbad564f66d0b708
-      internalID: 6699297369641432439
+      spriteID: 5beb20e33c1381547b22421b61a69b47
+      internalID: -7641055764590850234
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_17
+      name: lizard_champion_17
       rect:
         serializedVersion: 2
         x: 425
@@ -574,14 +691,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 99092cb883751de478a552361d9a2f56
-      internalID: 8796392020285630760
+      spriteID: 9b991fec964bbcb4591f7b7cb947deb3
+      internalID: -7627798999936991012
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_18
+      name: lizard_champion_18
       rect:
         serializedVersion: 2
         x: 510
@@ -595,14 +712,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 88bf26430f5e2394186e3cd8389169a4
-      internalID: -2389660609844138257
+      spriteID: 8d45d3a1475662d4187c9f79d4551734
+      internalID: -1618958823542672726
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_19
+      name: lizard_champion_19
       rect:
         serializedVersion: 2
         x: 595
@@ -616,14 +733,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6e3a18840f7e48e4780cb44dc37d7b33
-      internalID: 5251903582295138625
+      spriteID: 8de69909370c6424c9e63292582d4c79
+      internalID: 8153030673009865420
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_20
+      name: lizard_champion_20
       rect:
         serializedVersion: 2
         x: 680
@@ -637,14 +754,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 735dc917b2b4c2e4a99eb91816eb429a
-      internalID: 4993612919551756101
+      spriteID: 2f9b74d1859f1a0469edd37acce09493
+      internalID: 6374369785904892315
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_21
+      name: lizard_champion_21
       rect:
         serializedVersion: 2
         x: 765
@@ -658,14 +775,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 07e67835c2d1aad42ab0b7a25dd2a0e5
-      internalID: 4110943192199660617
+      spriteID: 96b391da9b4040c469bc9a525d6a2ba0
+      internalID: -1743803084162524800
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_22
+      name: lizard_champion_22
       rect:
         serializedVersion: 2
         x: 850
@@ -679,14 +796,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 32411819721b7b2448c30e0af3acccea
-      internalID: -4252495964107967368
+      spriteID: 27e64b04066e3e04fb7c2ad847fe893f
+      internalID: -20451164479079358
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_23
+      name: lizard_champion_23
       rect:
         serializedVersion: 2
         x: 935
@@ -700,14 +817,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a0bd62f0cc5dfc84c89cf69fa2fcaf47
-      internalID: -5791855260944839729
+      spriteID: 237af90bb998f7a4f98c7584fa2a127f
+      internalID: -4412483046976422010
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_24
+      name: lizard_champion_24
       rect:
         serializedVersion: 2
         x: 0
@@ -721,14 +838,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0d2f5000368c92c408bceab02871a2d6
-      internalID: -8966737736373446189
+      spriteID: 57082975aba1fa244bb44908504aa7dc
+      internalID: 2679505557127583993
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_25
+      name: lizard_champion_25
       rect:
         serializedVersion: 2
         x: 85
@@ -742,14 +859,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: eaec1ad6288bb2547a75f4522849dfe3
-      internalID: -2750027164309524983
+      spriteID: 890cde652ed058d4a938c05d6d4f3b74
+      internalID: -2621465583874317948
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_26
+      name: lizard_champion_26
       rect:
         serializedVersion: 2
         x: 170
@@ -763,14 +880,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7db43a03a8b17e347bb87b99840f7fa0
-      internalID: 801647338833893382
+      spriteID: 1b947204fd47c5344982754266d4adc7
+      internalID: -6859838139073140601
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_27
+      name: lizard_champion_27
       rect:
         serializedVersion: 2
         x: 255
@@ -784,14 +901,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9f8c9b68724e3a24a82813023b92abba
-      internalID: 5834060457922108313
+      spriteID: ede2753b3c45e2b43b4c74ef892b8e4d
+      internalID: 884661446435932052
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_28
+      name: lizard_champion_28
       rect:
         serializedVersion: 2
         x: 340
@@ -805,14 +922,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6f3ac8814f4ba3b428e846faa9c6aaeb
-      internalID: 4774449619774449927
+      spriteID: c11fa64466729d44b8e56e4a22686f0b
+      internalID: 8117122369162387116
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_29
+      name: lizard_champion_29
       rect:
         serializedVersion: 2
         x: 425
@@ -826,14 +943,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4d7526304e0f6ac4a9a7e383ab3a78f0
-      internalID: -253471634339630946
+      spriteID: bef8e91f83ef35f4784fa58c598ad2af
+      internalID: 218623711323727601
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_30
+      name: lizard_champion_30
       rect:
         serializedVersion: 2
         x: 510
@@ -847,14 +964,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: edf176479f7c24648a444807c4b49179
-      internalID: 3356731550186616709
+      spriteID: dc919eb5c21351046b7af66b2cf9b080
+      internalID: 6272272251433461183
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_31
+      name: lizard_champion_31
       rect:
         serializedVersion: 2
         x: 595
@@ -868,14 +985,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c6724deaa288fa349a17800e4776eeb1
-      internalID: -7275382098069333653
+      spriteID: 023cbfe30d53ef742bfc833c58e2337b
+      internalID: -620337078496010796
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_32
+      name: lizard_champion_32
       rect:
         serializedVersion: 2
         x: 0
@@ -889,14 +1006,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 864dd9cbadd397745bca3423b22864cb
-      internalID: -9041751790477979446
+      spriteID: a96ef811d147cdb40b6e464c4e62d375
+      internalID: -8909501876945496174
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_33
+      name: lizard_champion_33
       rect:
         serializedVersion: 2
         x: 0
@@ -910,14 +1027,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 09d87d91b1e44404da3fbf62408faf7f
-      internalID: -1694030771077088042
+      spriteID: 5719616199a7c274d89cb67e70b7b5ce
+      internalID: -12618558945191886
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_34
+      name: lizard_champion_34
       rect:
         serializedVersion: 2
         x: 85
@@ -931,14 +1048,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f821f05414af4e94e98510f1d016a43f
-      internalID: 3784942052307731577
+      spriteID: 4922625e028973d449c979aeddcb1a8d
+      internalID: 2076956483112458150
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_35
+      name: lizard_champion_35
       rect:
         serializedVersion: 2
         x: 170
@@ -952,14 +1069,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f6fe775b25103004683b4e923215eef7
-      internalID: -3296989694621755264
+      spriteID: fcf0c87fcb8b69d4f8471a84fa414662
+      internalID: 4889878254872568085
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_36
+      name: lizard_champion_36
       rect:
         serializedVersion: 2
         x: 255
@@ -973,14 +1090,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 19a49d7971fea3a4aa02ff17c005caaa
-      internalID: 4397398835657869501
+      spriteID: a3a9f8296585d6545afbfa56882ae637
+      internalID: -1805811829560542317
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_37
+      name: lizard_champion_37
       rect:
         serializedVersion: 2
         x: 340
@@ -994,14 +1111,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b561faa1ab1cc0045950c30a0f724421
-      internalID: -1873923284820502996
+      spriteID: facd36af2d0d3ab4285ca39381439424
+      internalID: 875019208636885254
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: zishgar_captain_38
+      name: lizard_champion_38
       rect:
         serializedVersion: 2
         x: 425
@@ -1015,8 +1132,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a22860e1f41c13b44a6c4d943cb12fa8
-      internalID: 1771055973192955259
+      spriteID: 7e4f412b9b8b25046827ef51bf17eae6
+      internalID: -3889708490833466486
       vertices: []
       indices: 
       edges: []

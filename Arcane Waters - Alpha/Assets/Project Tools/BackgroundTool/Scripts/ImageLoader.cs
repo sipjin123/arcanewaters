@@ -169,14 +169,14 @@ namespace BackgroundTool
             foreach (ImageManager.ImageData imgData in spriteIconFiles) {
                GameObject prefab = Instantiate(emptySprite, spriteParent);
 
-               float spriteHeigh = imgData.sprite.bounds.size.y;
+               float spriteHeight = imgData.sprite.bounds.size.y;
 
                if (imgData.imageName.ToLower().Contains("tree")) {
                   prefab.transform.localScale = new Vector3(.5f, .5f, 1);
-                  spriteHeigh /= 2;
+                  spriteHeight /= 2;
                }
 
-               float newYValue = -(previousBounds + spriteHeigh + spacing);
+               float newYValue = -(previousBounds + spriteHeight + spacing);
                float spriteWidth = imgData.sprite.bounds.size.x;
 
                if (spriteWidth > 6) {
