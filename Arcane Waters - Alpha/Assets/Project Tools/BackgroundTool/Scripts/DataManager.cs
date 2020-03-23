@@ -212,6 +212,12 @@ namespace BackgroundTool
          XmlLoadingPanel.self.finishLoading();
       }
 
+      public Biome.Type selectedBiome () {
+         int biomeIndex = biomeDropdown.value;
+         Biome.Type selectedBiomeType = (Biome.Type) Enum.Parse(typeof(Biome.Type), biomeDropdown.options[biomeIndex].text);
+         return selectedBiomeType;
+      }
+
       #region Private Variables
 
       #endregion

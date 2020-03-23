@@ -24,6 +24,9 @@ namespace BackgroundTool
       // Determines the content category of the selection
       public BGContentCategory contentCategory;
 
+      // The biome type of the sprite
+      public Biome.Type biomeType;
+
       #endregion
 
       public void OnMouseDown () {

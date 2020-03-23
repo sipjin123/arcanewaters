@@ -12,21 +12,27 @@ namespace BackgroundTool
    {
       #region Public Variables
 
+      // Reference to the datamanager
+      public DataManager dataManager;
+
+      // Reference to the image manipulator
+      public ImageManipulator imageManipulator;
+
       // Main Directory for the image selection
-      public static string MAIN_DIRECTORY = "Assets/Sprites/BackgroundEntities";
+      public static string MAIN_DIRECTORY = "Assets/Sprites/BackgroundEntities/";
 
       // Sub Directories for the image selection
-      public static string SKIESANDGROUND_ELEMENTS_DIRECTORY = "/SkiesAndGround/";
-      public static string BACKGROUND_ELEMENTS_DIRECTORY = "/BackgroundElements/";
-      public static string MIDGROUND_ELEMENTS_DIRECTORY = "/MidgroundElements/";
-      public static string FOREGROUND_ELEMENTS_DIRECTORY = "/ForegroundElements/";
-      public static string FUNCTIONAL_ELEMENTS_DIRECTORY = "/FunctionalElements/";
-      public static string GROUND_ELEMENTS_DIRECTORY = "/GroundElements/";
-      public static string PLACEHOLDER_ELEMENTS_DIRECTORY = "/PlaceHolderElements/";
-      public static string MIDGROUND_INTERACTIVE_ELEMENTS_DIRECTORY = "/MidgroundInteractiveElements/";
-      public static string BACKGROUND_ANIMATED_ELEMENTS_DIRECTORY = "/BackgroundAnimatedElements/";
-      public static string MIDGROUND_ANIMATED_ELEMENTS_DIRECTORY = "/MidgroundAnimatedElements/";
-      public static string FOREGROUND_ANIMATED_ELEMENTS_DIRECTORY = "/ForegroundAnimatedElements/";
+      public static string SKIESANDGROUND_ELEMENTS_DIRECTORY = "SkiesAndGround/";
+      public static string BACKGROUND_ELEMENTS_DIRECTORY = "BackgroundElements/";
+      public static string MIDGROUND_ELEMENTS_DIRECTORY = "MidgroundElements/";
+      public static string FOREGROUND_ELEMENTS_DIRECTORY = "ForegroundElements/";
+      public static string FUNCTIONAL_ELEMENTS_DIRECTORY = "FunctionalElements/";
+      public static string GROUND_ELEMENTS_DIRECTORY = "GroundElements/";
+      public static string PLACEHOLDER_ELEMENTS_DIRECTORY = "PlaceHolderElements/";
+      public static string MIDGROUND_INTERACTIVE_ELEMENTS_DIRECTORY = "MidgroundInteractiveElements/";
+      public static string BACKGROUND_ANIMATED_ELEMENTS_DIRECTORY = "BackgroundAnimatedElements/";
+      public static string MIDGROUND_ANIMATED_ELEMENTS_DIRECTORY = "MidgroundAnimatedElements/";
+      public static string FOREGROUND_ANIMATED_ELEMENTS_DIRECTORY = "ForegroundAnimatedElements/";
 
       // Spacing between sprite selections
       public static float spacing = .25f;
@@ -49,6 +55,12 @@ namespace BackgroundTool
 
       // Self
       public static ImageLoader self;
+
+      // The selected category
+      public BGContentCategory selectedContentCategory;
+
+      // The selected layer
+      public BGLayer selectedBGLayer;
 
       public enum BGContentDirectory
       {
@@ -98,6 +110,9 @@ namespace BackgroundTool
 
          // Determines the content category
          public BGContentCategory contentCategory;
+
+         // The biome type of the sprite
+         public Biome.Type biomeType;
       }
 
       #endregion
@@ -105,33 +120,47 @@ namespace BackgroundTool
       private void Start () {
          self = this;
 
-         buttonDirectories = new List<ButtonDirectory>();
-         foreach (BGContentDirectory contentType in Enum.GetValues(typeof(BGContentDirectory))) {
-            if (contentType != BGContentDirectory.None) {
-               ButtonDirectory newButtonDirectory = new ButtonDirectory();
+         dataManager.biomeDropdown.onValueChanged.AddListener(_ => {
+            Biome.Type selectedBiomeType = dataManager.selectedBiome();
+            directoryButtonParent.gameObject.DestroyChildren();
+            buttonDirectories = new List<ButtonDirectory>();
 
-               Button newButton = Instantiate(directoryButtonPrefab.gameObject, directoryButtonParent).GetComponent<Button>();
-               newButton.GetComponentInChildren<Text>().text = contentType.ToString();
-               newButton.gameObject.SetActive(true);
+            foreach (BGContentDirectory contentType in Enum.GetValues(typeof(BGContentDirectory))) {
+               if (contentType != BGContentDirectory.None) {
+                  ButtonDirectory newButtonDirectory = new ButtonDirectory();
 
-               newButtonDirectory.button = newButton;
-               SpriteSelectionContent newContent = translateEnumDirectory(contentType);
-               newButtonDirectory.directory = newContent.spritePath;
-               newButton.onClick.AddListener(() => {
-                  if (cachedButton != null) {
-                     cachedButton.image.color = Color.white;
+                  Button newButton = Instantiate(directoryButtonPrefab.gameObject, directoryButtonParent).GetComponent<Button>();
+                  newButton.GetComponentInChildren<Text>().text = contentType.ToString();
+                  newButton.gameObject.SetActive(true);
+
+                  newButtonDirectory.button = newButton;
+                  SpriteSelectionContent newContent = translateEnumDirectory(selectedBiomeType, contentType);
+                  newButtonDirectory.directory = newContent.spritePath;
+                  newButton.onClick.AddListener(() => {
+                     if (cachedButton != null) {
+                        cachedButton.image.color = Color.white;
+                     }
+                     selectedContentCategory = newContent.contentCategory;
+                     selectedBGLayer = newContent.layerType;
+
+                     cachedButton = newButton;
+                     cachedButton.image.color = Color.red;
+                     setSpriteSelection(newButtonDirectory.directory, newContent.layerType, newContent.contentCategory, newContent.biomeType);
+                  });
+
+                  if (selectedContentCategory == newContent.contentCategory && selectedBGLayer == newContent.layerType) {
+                     newButton.onClick.Invoke();
                   }
-                  cachedButton = newButton;
-                  cachedButton.image.color = Color.red;
-                  setSpriteSelection(newButtonDirectory.directory, newContent.layerType, newContent.contentCategory);
-               });
 
-               buttonDirectories.Add(newButtonDirectory);
+                  buttonDirectories.Add(newButtonDirectory);
+               }
             }
-         }
+
+            imageManipulator.replaceSpriteBiome(selectedBiomeType);
+         });
       }
 
-      private void setSpriteSelection (string buttonDirectory, BGLayer layerType, BGContentCategory contentCategory) {
+      private void setSpriteSelection (string buttonDirectory, BGLayer layerType, BGContentCategory contentCategory, Biome.Type biomeType) {
          spriteParent.gameObject.DestroyChildren();
 
          if (buttonDirectory != "") {
@@ -140,11 +169,14 @@ namespace BackgroundTool
             foreach (ImageManager.ImageData imgData in spriteIconFiles) {
                GameObject prefab = Instantiate(emptySprite, spriteParent);
 
+               float spriteHeigh = imgData.sprite.bounds.size.y;
+
                if (imgData.imageName.ToLower().Contains("tree")) {
                   prefab.transform.localScale = new Vector3(.5f, .5f, 1);
+                  spriteHeigh /= 2;
                }
 
-               float newYValue = previousBounds;
+               float newYValue = -(previousBounds + spriteHeigh + spacing);
                float spriteWidth = imgData.sprite.bounds.size.x;
 
                if (spriteWidth > 6) {
@@ -155,25 +187,29 @@ namespace BackgroundTool
                   prefab.transform.localPosition = new Vector3(0, newYValue, 0);
                }
 
-               previousBounds = newYValue - spacing - imgData.sprite.bounds.size.y;
+               previousBounds = Mathf.Abs(newYValue);
 
                SpriteSelectionTemplate spriteTemplate = prefab.GetComponent<SpriteSelectionTemplate>();
                spriteTemplate.spriteIcon.sprite = imgData.sprite;
                spriteTemplate.spritePath = imgData.imagePath;
                spriteTemplate.layerType = layerType;
                spriteTemplate.contentCategory = contentCategory;
+               spriteTemplate.biomeType = biomeType;
                spriteTemplate.gameObject.AddComponent<BoxCollider2D>();
                prefab.SetActive(true);
             }
          }
       }
 
-      private SpriteSelectionContent translateEnumDirectory (BGContentDirectory contentType) {
+      private SpriteSelectionContent translateEnumDirectory (Biome.Type biomeType, BGContentDirectory contentType) {
          string newPath = "";
          string extendedPath = "";
          BGLayer layerType = BGLayer.None;
          BGContentCategory newContentCategory = BGContentCategory.None;
          newPath = MAIN_DIRECTORY;
+         if (contentType != BGContentDirectory.FunctionalElements && contentType != BGContentDirectory.Placeholders) {
+            newPath += biomeType + " Elements/";
+         } 
 
          switch (contentType) {
             case BGContentDirectory.SkiesAndGround:
@@ -231,7 +267,7 @@ namespace BackgroundTool
                break;
          }
          newPath += extendedPath;
-         return new SpriteSelectionContent { layerType = layerType, spritePath = newPath, contentCategory = newContentCategory };
+         return new SpriteSelectionContent { layerType = layerType, spritePath = newPath, contentCategory = newContentCategory, biomeType = biomeType };
       }
 
       #region Private Variables

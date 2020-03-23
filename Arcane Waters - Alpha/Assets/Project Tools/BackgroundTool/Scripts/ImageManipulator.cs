@@ -165,6 +165,7 @@ namespace BackgroundTool
          foreach (SpriteSelectionTemplate spriteTemp in spriteTempGroup) {
             SpriteTemplate spawnedSprite = createInstance(spriteTemp.spriteIcon.sprite, spriteTemp.spritePath, false, spriteTemp.contentCategory).GetComponent<SpriteTemplate>();
             spawnedSprite.spriteData.layerIndex = (int) spriteTemp.layerType;
+            spawnedSprite.spriteData.biomeType = spriteTemp.biomeType;
             spawnedSprite.spriteRender.sortingOrder = (int) spriteTemp.layerType;
             spawnedSprite.transform.position = spriteTemp.transform.position;
             
@@ -253,6 +254,7 @@ namespace BackgroundTool
 
                spawnedSprite.transform.position = draggable.cachedSpriteTemplate.transform.position;
                spawnedSprite.spriteData.layerIndex = draggable.cachedSpriteTemplate.spriteData.layerIndex;
+               spawnedSprite.spriteData.biomeType = draggable.cachedSpriteTemplate.spriteData.biomeType;
                spawnedSprite.spriteRender.sortingOrder = Mathf.Abs(spawnedSprite.spriteData.layerIndex);
 
                // Compute z axis offset
@@ -383,6 +385,22 @@ namespace BackgroundTool
          return zOffset;
       }
 
+      public void replaceSpriteBiome (Biome.Type currentBiome) {
+         // Data cache replacement
+         foreach (SpriteTemplateData spriteData in spriteTemplateDataList) {
+            if (spriteData.biomeType != currentBiome) {
+               spriteData.spritePath = spriteData.spritePath.Replace(spriteData.biomeType.ToString(), currentBiome.ToString());
+               spriteData.biomeType = currentBiome;
+            }
+         }
+
+         // Actual sprite replacement
+         foreach (Transform children in contentHolder) {
+            SpriteTemplate spriteTemp = children.GetComponent<SpriteTemplate>();
+            spriteTemp.spriteRender.sprite = ImageManager.getSprite(spriteTemp.spriteData.spritePath);
+         }
+      }
+
       #region Sprite Generation
 
       public GameObject createInstance (Sprite spriteContent, string newSpritePath, bool selectImmediately, BGContentCategory category, SpriteTemplateData newSpritedata = null) {
@@ -412,11 +430,13 @@ namespace BackgroundTool
          spriteTemplate.gameObject.AddComponent<BoxCollider2D>();
 
          if (spriteData == null) {
+            spriteTemplate.spriteData.biomeType = Biome.Type.None;
             spriteTemplate.spriteData.layerIndex = (int) BGLayer.Foreground;
             spriteTemplate.spriteData.zAxisOffset = 0;
             spriteTemplate.spriteData.isLocked = false;
             spriteTemplate.spriteData.spritePath = spritePath;
          } else {
+            spriteTemplate.spriteData.biomeType = spriteData.biomeType;
             spriteTemplate.spriteData.isLocked = spriteData.isLocked;
             spriteTemplate.spriteData.layerIndex = spriteData.layerIndex;
             spriteTemplate.spriteData.zAxisOffset = spriteData.zAxisOffset;

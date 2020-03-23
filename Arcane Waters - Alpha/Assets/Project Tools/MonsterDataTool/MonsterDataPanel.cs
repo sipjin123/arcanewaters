@@ -674,10 +674,12 @@ public class MonsterDataPanel : MonoBehaviour
       if (buffAbilityDataList != null) {
          foreach (BuffAbilityData referenceAbility in buffAbilityDataList) {
             BuffAbilityData ability = monsterToolManager.buffAbilityList.Find(_ => _.itemName == referenceAbility.itemName);
-            BattleItemData battleItemData = BattleItemData.CreateInstance(ability.itemID, ability.itemName, ability.itemDescription, ability.elementType, ability.hitSoundEffectId, ability.hitSpritesPath, ability.battleItemType, ability.classRequirement, ability.itemIconPath, ability.levelRequirement);
-            BasicAbilityData basicData = BasicAbilityData.CreateInstance(battleItemData, ability.abilityCost, ability.castSpritesPath, ability.castSoundEffectId, ability.allowedStances, ability.abilityType, ability.abilityCooldown, ability.apChange, ability.FXTimePerFrame);
-            BuffAbilityData buffAbility = BuffAbilityData.CreateInstance(basicData, ability.duration, ability.buffType, ability.buffActionType, ability.iconPath, ability.value, ability.bonusStatType);
-            finalizeBuffTemplate(buffAbility);
+            if (ability != null) {
+               BattleItemData battleItemData = BattleItemData.CreateInstance(ability.itemID, ability.itemName, ability.itemDescription, ability.elementType, ability.hitSoundEffectId, ability.hitSpritesPath, ability.battleItemType, ability.classRequirement, ability.itemIconPath, ability.levelRequirement);
+               BasicAbilityData basicData = BasicAbilityData.CreateInstance(battleItemData, ability.abilityCost, ability.castSpritesPath, ability.castSoundEffectId, ability.allowedStances, ability.abilityType, ability.abilityCooldown, ability.apChange, ability.FXTimePerFrame);
+               BuffAbilityData buffAbility = BuffAbilityData.CreateInstance(basicData, ability.duration, ability.buffType, ability.buffActionType, ability.iconPath, ability.value, ability.bonusStatType);
+               finalizeBuffTemplate(buffAbility);
+            }
          }
       }
    }

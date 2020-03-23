@@ -87,22 +87,23 @@ public class AbilityPanel : Panel {
       foreach (AbilitySQLData ability in abilityList) {
          // Get the base data for the ability
          BasicAbilityData basicAbilityData = AbilityManager.getAbility(ability.abilityID, ability.abilityType);
+         if (basicAbilityData != null) {
+            // Builds the ability description
+            StringBuilder builder = new StringBuilder();
+            builder.Append(basicAbilityData.itemDescription);
+            string description = builder.ToString();
 
-         // Builds the ability description
-         StringBuilder builder = new StringBuilder();
-         builder.Append(basicAbilityData.itemDescription);
-         string description = builder.ToString();
-
-         // Determine if the ability is equipped
-         if (ability.equipSlotIndex >= 0 && ability.equipSlotIndex < AbilityManager.MAX_EQUIPPED_ABILITIES) {
-            // Initialize the equipped ability slot
-            _equippedAbilitySlots[ability.equipSlotIndex].setSlotForAbilityData(ability.abilityID, basicAbilityData, description);
-         } else {
-            // Instantiate an ability row
-            AbilityRow abilityRow = Instantiate(abilityRowPrefab, abilityRowsContainer.transform, false);
-            abilityRow.setRowForAbilityData(basicAbilityData, description);
-         }
-         cachedAbilityList.Add(basicAbilityData);
+            // Determine if the ability is equipped
+            if (ability.equipSlotIndex >= 0 && ability.equipSlotIndex < AbilityManager.MAX_EQUIPPED_ABILITIES) {
+               // Initialize the equipped ability slot
+               _equippedAbilitySlots[ability.equipSlotIndex].setSlotForAbilityData(ability.abilityID, basicAbilityData, description);
+            } else {
+               // Instantiate an ability row
+               AbilityRow abilityRow = Instantiate(abilityRowPrefab, abilityRowsContainer.transform, false);
+               abilityRow.setRowForAbilityData(basicAbilityData, description);
+            }
+            cachedAbilityList.Add(basicAbilityData);
+         } 
       }
    }
 

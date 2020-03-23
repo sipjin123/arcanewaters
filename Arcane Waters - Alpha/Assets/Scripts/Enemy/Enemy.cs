@@ -14,7 +14,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       Plant = 100, Golem = 101, Slime = 102, Golem_Boss = 103,
       Coralbow = 200, Entarcher = 201, Flower = 202, Muckspirit = 203, Treeman = 204,
       Lizard = 205, Shroom = 206, Wisp = 207, Lizard_Armored = 208, Lizard_Shaman = 209, Lizard_Wizard = 210,
-      Lizard_Sword = 211, PlayerBattler = 305
+      Lizard_Sword = 211, Zishgar_Captain = 212, Zishgar_Champion = 213, PlayerBattler = 305
    }
 
    // The Type of animation the Enemy is associated with
@@ -74,8 +74,10 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       _startPos = this.transform.position;
 
       // Update our sprite
-      string enemySpriteName = System.Enum.GetName(typeof(Enemy.Type), (int) this.enemyType).ToLower();
-      bodyAnim.GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture("Enemies/LandMonsters/" + enemySpriteName);
+      if (this.enemyType != Type.None) {
+         string enemySpriteName = System.Enum.GetName(typeof(Enemy.Type), (int) this.enemyType).ToLower();
+         bodyAnim.GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture("Enemies/LandMonsters/" + enemySpriteName);
+      }
       bodyAnim.group = animGroupType;
 
       if (isBossType) {

@@ -60,7 +60,7 @@ public class NPCManager : MonoBehaviour {
       foreach (NPCData data in dataList) {
          // Save the NPC data in the memory cache
          if (_npcData.ContainsKey(data.npcId)) {
-            D.log("Key already exists: " + data.npcId);
+            _npcData[data.npcId] = data;
          } else {
             _npcData.Add(data.npcId, data);
          }

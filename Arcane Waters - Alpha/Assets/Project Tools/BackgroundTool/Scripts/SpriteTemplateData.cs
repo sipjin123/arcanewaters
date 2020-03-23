@@ -28,5 +28,8 @@ namespace BackgroundTool
 
       // Determines the content category of the sprite if it is a bg sprite etc
       public BGContentCategory contentCategory;
+
+      // The biome type of the sprite
+      public Biome.Type biomeType;
    }
 }
