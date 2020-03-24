@@ -72,7 +72,7 @@ public class BackgroundGameManager : MonoBehaviour {
       yield return new WaitForSeconds(1);
 
       BackgroundContentData primaryBGData = backgroundContentList[0];
-      BattleBoard board = BattleManager.self.getBattleBoard(primaryBGData.biomeType);
+      BattleBoard board = BattleManager.self.battleBoard;
       setSpritesToClientBoard(primaryBGData.xmlId, board);
       board.gameObject.SetActive(true);
    }

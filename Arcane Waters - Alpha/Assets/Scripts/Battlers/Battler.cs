@@ -269,7 +269,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       BattleManager.self.storeBattler(this);
 
       // Look up the Battle Board that contains this Battler
-      BattleBoard battleBoard = BattleManager.self.getBattleBoard(this.biomeType);
+      BattleBoard battleBoard = BattleManager.self.battleBoard;
 
       // The client needs to look up and assign the Battle Spot
       BattleSpot battleSpot = battleBoard.getSpot(teamType, this.boardPosition);
@@ -302,7 +302,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    public void upateBattleSpots () {
       // Look up the Battle Board that contains this Battler
-      BattleBoard battleBoard = BattleManager.self.getBattleBoard(this.biomeType);
+      BattleBoard battleBoard = BattleManager.self.battleBoard;
 
       // The client needs to look up and assign the Battle Spot
       BattleSpot battleSpot = battleBoard.getSpot(teamType, this.boardPosition);

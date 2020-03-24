@@ -31,6 +31,9 @@ public class BattleManager : MonoBehaviour {
    // The base battler behaviour that will be initialized depending on the type and data that the Scriptable Object includes
    public Battler baseBattlerPrefab;
 
+   // The reference to the only battleboard 
+   public BattleBoard battleBoard;
+
    // Self
    public static BattleManager self;
 
@@ -61,7 +64,7 @@ public class BattleManager : MonoBehaviour {
 
       // Look up the Battle Board for this Area's tile type
       Biome.Type biomeType = area.biome;
-      BattleBoard battleBoard = getBattleBoard(biomeType);
+      battleBoard.biomeType = biomeType;
       BackgroundGameManager.self.setSpritesToRandomBoard(battleBoard);
       battleBoard.gameObject.SetActive(true);
 
@@ -100,7 +103,7 @@ public class BattleManager : MonoBehaviour {
 
       // Look up the Battle Board for this Area's tile type
       Biome.Type biomeType = area.biome;
-      BattleBoard battleBoard = getBattleBoard(biomeType);
+      battleBoard.biomeType = biomeType;
       BackgroundGameManager.self.setSpritesToRandomBoard(battleBoard);
       battleBoard.gameObject.SetActive(true);
 
@@ -180,14 +183,6 @@ public class BattleManager : MonoBehaviour {
       return getBattler(Global.player.userId);
    }
 
-   public BattleBoard getBattleBoard (Biome.Type biomeType) {
-      if (_boards.ContainsKey(biomeType) == false) {
-         return _boards[Biome.Type.Forest];
-      }
-
-      return _boards[biomeType];
-   }
-   
    public void addPlayerToBattle (Battle battle, PlayerBodyEntity player, Battle.TeamType teamType) {
       // Maintain a Mapping of which players are in which Battles
       _activeBattles[player.userId] = battle;

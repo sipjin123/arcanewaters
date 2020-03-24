@@ -25,6 +25,12 @@ public class PrefabsManager : MonoBehaviour {
    public NPC npcPrefab;
 
    [Header("Harvesting Prefabs")]
+   // The Prefab we use for creating ore drop effect for mining
+   public GameObject oreDropPrefab;
+
+   // The Prefab we use for creating collectable ore
+   public GameObject orePickupPrefab;
+
    // The Prefab we use for creating crop bounce effect for harvesting
    public GameObject cropBouncePrefab;
 

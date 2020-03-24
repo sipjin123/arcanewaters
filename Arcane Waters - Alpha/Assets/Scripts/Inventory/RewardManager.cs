@@ -20,6 +20,10 @@ public class RewardManager : MonoBehaviour {
       self = this;
    }
 
+   public OreLootLibrary getOreLoot (OreNode.Type oreType) {
+      return oreLootList.Find(_ => _.oreType == oreType);
+   }
+
    public SeaMonsterLootLibrary fetchSeaMonsterLootData (SeaMonsterEntity.Type seaMonsterType) {
       SeaMonsterLootLibrary newLootLibrary = _seaMonsterLootList.Find(_ => _.enemyType == seaMonsterType);
       if (newLootLibrary == null) {

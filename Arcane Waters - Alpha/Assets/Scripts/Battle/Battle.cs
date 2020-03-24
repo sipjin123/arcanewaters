@@ -47,7 +47,7 @@ public class Battle : NetworkBehaviour {
       BattleManager.self.storeBattle(this);
 
       // Keep track of the Battle Board we're using
-      this.battleBoard = BattleManager.self.getBattleBoard(this.biomeType);
+      this.battleBoard = BattleManager.self.battleBoard;
 
       // Set battle end UI events
       onBattleEnded.AddListener(BattleUIManager.self.disableBattleUI);

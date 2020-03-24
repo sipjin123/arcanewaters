@@ -26,13 +26,6 @@ public class GenericLootData : ScriptableObject {
 
    public List<LootInfo> requestLootList() {
       List<LootInfo> newLootList = new List<LootInfo>();
-
-      // If there are no item that passed their chance ratio, an optional default value can be set
-      if (newLootList.Count == 0 || defaultLoot != CraftingIngredients.Type.None) {
-         newLootList.Add(new LootInfo { lootType = new Item { category = Item.Category.None, itemTypeId = 0 }, quantity = 1 });
-         return newLootList;
-      }
-
       int randomizedLootCount = UnityEngine.Random.Range(minQuantity, maxQuantity);
       int lastIndex = lootList.Count - 1;
       float maxRange = 100.00f;
@@ -47,6 +40,12 @@ public class GenericLootData : ScriptableObject {
                break;
             }
          }
+      }
+
+      if (newLootList.Count < 1) {
+         Item defaultItem = new Item { category = Item.Category.CraftingIngredients, count = 1, itemTypeId = (int) defaultLoot };
+         LootInfo defaultLootInfo = new LootInfo { chanceRatio = 100, lootType = defaultItem, quantity = 1 };
+         newLootList.Add(defaultLootInfo);
       }
 
       return newLootList;

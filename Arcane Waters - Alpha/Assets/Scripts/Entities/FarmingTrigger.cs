@@ -28,6 +28,9 @@ public class FarmingTrigger : MonoBehaviour {
    // The direction where the crop spawn effect will be moving towards
    public Direction cropSpawnEffectDirection;
 
+   // Animator Key for direction
+   public const string FACING_KEY = "facing";
+
    #endregion
 
    public void interactFarming () {
@@ -101,13 +104,18 @@ public class FarmingTrigger : MonoBehaviour {
                      cropSpot.crop.gameObject.SetActive(false);
 
                      GameObject cropBounce = Instantiate(PrefabsManager.self.cropBouncePrefab);
-                     cropBounce.GetComponent<CropHarvest>().cropSpot = cropSpot;
-                     cropBounce.GetComponent<CropHarvest>().setSprite(cropSpot.crop.cropType);
+                     CropHarvest cropHarvest = cropBounce.GetComponent<CropHarvest>();
+                     cropHarvest.cropSpot = cropSpot;
+                     cropHarvest.setSprite(cropSpot.crop.cropType);
                      cropBounce.transform.position = hit.collider.transform.position;
 
                      if (cropSpawnEffectDirection == Direction.East) {
                         cropBounce.transform.localScale = new Vector3(-1, 1, 1);
                      }
+                     else if (cropSpawnEffectDirection == Direction.North || cropSpawnEffectDirection == Direction.South) {
+                        cropHarvest.animator.SetFloat(FACING_KEY, (float) cropSpawnEffectDirection);
+                     }
+
                      cropBounce.GetComponent<Animator>().speed = Random.Range(.8f, 1.2f);
                   }
                }

@@ -25,6 +25,10 @@ public class OreNode : NetworkBehaviour
    [SyncVar]
    public int instanceId;
 
+   // The world position of this node
+   [SyncVar]
+   public Vector2 syncPosition;
+
    // Our sprite renderer
    public SpriteRenderer spriteRenderer;
 
@@ -38,6 +42,9 @@ public class OreNode : NetworkBehaviour
    // List of arrows that indicate where the player is facing
    public List<DirectionalArrow> directionalArrow;
 
+   // The position where the particle effect should spawn
+   public Vector3 pickupPosition;
+
    #endregion
 
    public void Awake () {
@@ -49,6 +56,9 @@ public class OreNode : NetworkBehaviour
    private void Start () {
       // Load the sprites based on our type
       oreSprites = ImageManager.getSprites("Mining/" + this.oreType);
+      spriteRenderer.enabled = true;
+
+      transform.position = syncPosition;
 
       // We don't need to do anything more when we're running in batch mode
       if (Application.isBatchMode) {
@@ -66,11 +76,6 @@ public class OreNode : NetworkBehaviour
    public void Update () {
       // Figure out whether our outline should be showing
       handleSpriteOutline();
-
-      // Allow pressing keyboard to mine the ore node
-      if (InputManager.isActionKeyPressed() && !hasBeenMined() && isGlobalPlayerNearby()) {
-         tryToMineNodeOnClient();
-      }
    }
 
    public void tryToMineNodeOnClient () {
@@ -78,19 +83,12 @@ public class OreNode : NetworkBehaviour
          return;
       }
 
-      // The player has to be close enough
-      if (!isGlobalPlayerNearby()) {
-         Instantiate(PrefabsManager.self.tooFarPrefab, this.transform.position + new Vector3(0f, .24f), Quaternion.identity);
-         return;
-      }
-
       // Increment our current sprite index
       spriteRenderer.sprite = oreSprites[getNextSpriteIndex()];
+   }
 
-      // If we finished mining the node, send a message to the server
-      if (spriteRenderer.sprite == oreSprites.Last()) {
-         Global.player.rpc.Cmd_MineNode(this.id);
-      }
+   public bool finishedMining () {
+      return spriteRenderer.sprite == oreSprites.Last();
    }
 
    public void handleSpriteOutline () {

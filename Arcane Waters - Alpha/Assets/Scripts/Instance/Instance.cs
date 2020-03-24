@@ -127,6 +127,36 @@ public class Instance : NetworkBehaviour
                   NetworkServer.Spawn(site.gameObject);
                }
             }
+
+            if (area.oreDataFields.Count > 0) {
+               Transform oreParent = Instantiate(new GameObject(), area.transform).transform;
+               foreach (ExportedPrefab001 dataField in area.oreDataFields) {
+                  Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
+                  int oreId = 0;
+                  OreNode.Type oreType = OreNode.Type.None;
+
+                  foreach (DataField field in dataField.d) {
+                     if (field.k.CompareTo(DataField.ORE_SPOT_DATA_KEY) == 0) {
+                        // Get ID from ore data field
+                        if (int.TryParse(field.v, out int id)) {
+                           oreId = id;
+                        }
+                     }
+                     if (field.k.CompareTo(DataField.ORE_TYPE_DATA_KEY) == 0) {
+                        // Get ore type from ore data field
+                        if (int.TryParse(field.v, out int type)) {
+                           oreType = (OreNode.Type) type;
+                        }
+                     }
+                  }
+
+                  // Create the ore node locally and through the network
+                  OreNode newOreNode = OreManager.self.createOreNode(this, targetLocalPos, oreType, oreParent);
+
+                  // Make sure the position is synced
+                  newOreNode.syncPosition = newOreNode.transform.position;
+               }
+            }
          }
       }
 

@@ -144,6 +144,7 @@ namespace MapCreationTool
       static void instantiatePrefabs (MapInfo mapInfo, ExportedProject001 project, Transform prefabParent, Transform npcParent, Area area) {
          List<ExportedPrefab001> npcData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> enemyData = new List<ExportedPrefab001>();
+         List<ExportedPrefab001> oreData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> treasureSiteData = new List<ExportedPrefab001>();
 
          int unrecognizedPrefabs = 0;
@@ -168,6 +169,10 @@ namespace MapCreationTool
             } else if (original.GetComponent<TreasureSite>() != null) {
                if (prefab.d != null) {
                   treasureSiteData.Add(prefab);
+               }
+            } else if (original.GetComponent<OreSpot>() != null) {
+               if (prefab.d != null) {
+                  oreData.Add(prefab);
                }
             } else {
                Transform parent = original.GetComponent<NPC>() ? npcParent : prefabParent;
@@ -198,7 +203,7 @@ namespace MapCreationTool
             Utilities.warning($"Could not recognize { unrecognizedPrefabs } prefabs of map { mapInfo.mapName }");
          }
 
-         area.registerNetworkPrefabData(npcData, enemyData, treasureSiteData);
+         area.registerNetworkPrefabData(npcData, enemyData, oreData, treasureSiteData);
       }
 
       static List<TilemapLayer> instantiateTilemaps (MapInfo mapInfo, ExportedProject001 project, Transform tilemapParent, Transform collisionTilemapParent) {

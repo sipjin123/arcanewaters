@@ -12,6 +12,9 @@ public class PlayerBodyEntity : BodyEntity
    // The farming trigger component used for detecting crops
    public FarmingTrigger farmingTrigger;
 
+   // The mining trigger component used for interacting with ores
+   public MiningTrigger miningTrigger;
+
    // Max collision check around the player
    public static int MAX_COLLISION_COUNT = 32;
 
@@ -102,6 +105,7 @@ public class PlayerBodyEntity : BodyEntity
             }
 
             farmingTrigger.interactFarming();
+            miningTrigger.interactOres();
          }
       }
    }

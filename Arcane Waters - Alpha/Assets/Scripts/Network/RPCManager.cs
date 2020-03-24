@@ -2815,7 +2815,8 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_ReceiveItemList (NetworkConnection connection, Item[] itemList) {
-      RewardManager.self.showItemsInRewardPanel(itemList.ToList());
+      // TODO: Handle how clients will be notified of the ore collection
+      //RewardManager.self.showItemsInRewardPanel(itemList.ToList());
    }
 
    [TargetRpc]
@@ -2828,6 +2829,16 @@ public class RPCManager : NetworkBehaviour {
    [TargetRpc]
    public void Target_UpdateInventory (NetworkConnection connection) {
       ((InventoryPanel) PanelManager.self.get(Panel.Type.Inventory)).refreshPanel();
+   }
+
+   [TargetRpc]
+   public void Target_CollectOre (NetworkConnection connection, int oreId) {
+      Vector3 position = OreManager.self.getOreNode(oreId).pickupPosition;
+
+      // TODO: Create sprite effects for ore collect
+      EffectManager.self.create(Effect.Type.Crop_Harvest, position);
+      EffectManager.self.create(Effect.Type.Crop_Shine, position);
+      EffectManager.self.create(Effect.Type.Crop_Dirt_Large, position);
    }
 
    [Command]
@@ -2856,7 +2867,8 @@ public class RPCManager : NetworkBehaviour {
       oreNode.userIds.Add(_player.userId);
 
       // Gathers the item rewards from the scriptable object
-      List<LootInfo> lootInfoList = RewardManager.self.oreLootList.Find(_ => _.oreType == oreNode.oreType).dropTypes.requestLootList();
+      OreLootLibrary oreLootLibrary = RewardManager.self.getOreLoot(oreNode.oreType);
+      List<LootInfo> lootInfoList = oreLootLibrary.dropTypes.requestLootList();
 
       // Build the list of rewarded items
       List<Item> rewardedItems = new List<Item>();
@@ -2882,6 +2894,9 @@ public class RPCManager : NetworkBehaviour {
 
             // Let them know they gained experience
             _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Miner, 0);
+
+            // Let them know they gained experience
+            _player.rpc.Target_CollectOre(_player.connectionToClient, nodeId);
          });
       });
    }
