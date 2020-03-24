@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8383502486879891180}
   m_Layer: 0
-  m_Name: FruitHolder
+  m_Name: OreHolder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -24,7 +24,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3516207202787237879}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0.002, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3414692602761118938}
@@ -180,7 +180,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: c7a4f573f2107c541b156b13ed2d39e9, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e970c317a274c1445af1d30e97c8634c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -202,9 +202,9 @@ GameObject:
   - component: {fileID: 9104236099875786169}
   - component: {fileID: 187208201465036672}
   - component: {fileID: 445031322965764264}
-  - component: {fileID: 6099098092906213967}
+  - component: {fileID: -5386464732063465403}
   m_Layer: 0
-  m_Name: HarvestCropAnim
+  m_Name: OreDropAnim
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -236,7 +236,7 @@ Animator:
   m_GameObject: {fileID: 7313691144369806118}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 2b32ae9587dc25545862a32cdadd23dd, type: 2}
+  m_Controller: {fileID: 9100000, guid: 96ad710019920ec479de5e7cf0f551c7, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -258,7 +258,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   delay: 1
---- !u!114 &6099098092906213967
+--- !u!114 &-5386464732063465403
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -267,33 +267,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 7313691144369806118}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 170bbf366ad4e0d4f8d1d3d54a7afd41, type: 3}
+  m_Script: {fileID: 11500000, guid: 83ab46477ae26be4a9797beb019819fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cropSpot: {fileID: 0}
   animatingObj: {fileID: 8383502486879891180}
   spriteRender: {fileID: 7617172151152349477}
-  cropSpriteList:
-  - cropType: 1
-    sprite: {fileID: 21300000, guid: ca0e874db34a4bd47a158d00a8826219, type: 3}
-  - cropType: 2
-    sprite: {fileID: 21300000, guid: 639320f1e9d40416dbea430024a48739, type: 3}
-  - cropType: 3
-    sprite: {fileID: 21300000, guid: 4dfe69c4ebb97f343a70b6af193fe21f, type: 3}
-  - cropType: 10
-    sprite: {fileID: 21300000, guid: c7a4f573f2107c541b156b13ed2d39e9, type: 3}
-  - cropType: 9
-    sprite: {fileID: 21300000, guid: 3054874fa764df2458dc959a152382b5, type: 3}
-  - cropType: 8
-    sprite: {fileID: 21300000, guid: 81dce58b714487449acf4ea2cabcfd62, type: 3}
-  - cropType: 7
-    sprite: {fileID: 21300000, guid: e5610d6f6a7e1f34dabb3a97ab1f8a31, type: 3}
-  - cropType: 6
-    sprite: {fileID: 21300000, guid: 31d1e2735559c3740ab83548aca64c98, type: 3}
-  - cropType: 5
-    sprite: {fileID: 21300000, guid: 2682eb01f0b09f549874595a4b8deddc, type: 3}
-  - cropType: 4
-    sprite: {fileID: 21300000, guid: 28dedb962c5c85648a6719f690296623, type: 3}
+  oreSpriteList:
+  - oreType: 1
+    sprite: {fileID: 21300000, guid: e970c317a274c1445af1d30e97c8634c, type: 3}
+  - oreType: 2
+    sprite: {fileID: 21300000, guid: 9d28f62732c80e84686c8fa9de1bd19e, type: 3}
+  - oreType: 3
+    sprite: {fileID: 21300000, guid: 7c716d0867ef3cc418c41d5dd1dda20b, type: 3}
   animator: {fileID: 187208201465036672}
 --- !u!1 &8241236508356351925
 GameObject:

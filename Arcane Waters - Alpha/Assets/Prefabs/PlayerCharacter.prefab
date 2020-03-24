@@ -1771,6 +1771,7 @@ MonoBehaviour:
   nameText: {fileID: 114946966666783888}
   sortPoint: {fileID: 1896635536754660}
   facing: 3
+  isSinglePlayer: 0
   hasDiagonals: 0
   fallDirection: 0
   adminFlag: 0
@@ -1785,6 +1786,7 @@ MonoBehaviour:
   armorManager: {fileID: 114737132631157730}
   weaponManager: {fileID: 114313576142768070}
   farmingTrigger: {fileID: 4476756568812448969}
+  miningTrigger: {fileID: 541427491548626559}
 --- !u!58 &58574232978621698
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -7420,8 +7422,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1497313367445100641}
   - component: {fileID: 4476756568812448969}
+  - component: {fileID: 541427491548626559}
   m_Layer: 9
-  m_Name: FarmingCollisions
+  m_Name: Mining_Farming_Trigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7466,6 +7469,23 @@ MonoBehaviour:
   - {fileID: 7358148920078571285}
   - {fileID: 7504897712973258018}
   animator: {fileID: 95463498748125442}
+  cropSpawnEffectDirection: 0
+--- !u!114 &541427491548626559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2303740727528456134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23a56ef010132cb42b9dd495bb5d7137, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 95463498748125442}
+  bodyEntity: {fileID: 114566659995724206}
+  arcCollider: {fileID: 6044580327817217326}
+  oreSpawnEffectDirection: 0
 --- !u!1 &4244924497257453005
 GameObject:
   m_ObjectHideFlags: 0

@@ -144,7 +144,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: Ore Spot
-  dataFields: []
+  dataFields:
+  - name: ore id
+    defaultValue: 0
+    toolTip: 
+    type: 0
+  - name: ore type
+    defaultValue: 0
+    toolTip: 
+    type: 0
   selectDataFields: []
   customDataFields: []
 --- !u!114 &5493752059222098882
