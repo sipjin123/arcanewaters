@@ -29,6 +29,10 @@ public class OreNode : NetworkBehaviour
    [SyncVar]
    public Vector2 syncedPosition;
 
+   // The number of times this ore node is interacted
+   [SyncVar]
+   public int interactCount;
+
    // Our sprite renderer
    public SpriteRenderer spriteRenderer;
 
@@ -42,8 +46,11 @@ public class OreNode : NetworkBehaviour
    // List of arrows that indicate where the player is facing
    public List<DirectionalArrow> directionalArrow;
 
-   // The position where the particle effect should spawn
-   public Vector3 pickupPosition;
+   // Reference to the ore pickup object
+   public OrePickup orePickup;
+
+   // The total interact count for each ore node
+   public static int MAX_INTERACT_COUNT = 2;
 
    #endregion
 
@@ -71,6 +78,12 @@ public class OreNode : NetworkBehaviour
       } else {
          spriteRenderer.sprite = oreSprites.First();
       }
+
+      OreManager.self.registerOreNode(this.id, this);
+   }
+
+   public void updateSprite (int spriteId) {
+      spriteRenderer.sprite = oreSprites[spriteId];
    }
 
    public void Update () {
@@ -88,7 +101,7 @@ public class OreNode : NetworkBehaviour
    }
 
    public bool finishedMining () {
-      return spriteRenderer.sprite == oreSprites.Last();
+      return interactCount >= MAX_INTERACT_COUNT;
    }
 
    public void handleSpriteOutline () {
@@ -126,38 +139,6 @@ public class OreNode : NetworkBehaviour
 
       // We're at the last index of our ore sprites
       return oreSprites.Length - 1;
-   }
-
-   private void setArrowDirection(Direction direction) {
-      disableArrows();
-      directionalArrow.Find(_ => _.direction == direction).gameObj.SetActive(true);
-   }
-
-   private void disableArrows() {
-      for (int i = 0; i < directionalArrow.Count; i++) {
-         directionalArrow[i].gameObj.SetActive(false);
-      }
-   }
-
-   private void OnTriggerStay2D (Collider2D collision) {
-      if (collision.GetComponent<PlayerObserverManager>() != null) {
-         if(Global.player == collision.GetComponent<NetEntity>()) {
-            Vector2 pos = Global.player.transform.position;
-            if (pos.x < transform.position.x) {
-               setArrowDirection(Direction.West);
-            } else {
-               setArrowDirection(Direction.East);
-            }
-         }
-      }
-   }
-
-   private void OnTriggerExit2D (Collider2D collision) {
-      if (collision.GetComponent<PlayerObserverManager>() != null) {
-         if (Global.player == collision.GetComponent<NetEntity>()) {
-            disableArrows();
-         }
-      }
    }
 
    #region Private Variables

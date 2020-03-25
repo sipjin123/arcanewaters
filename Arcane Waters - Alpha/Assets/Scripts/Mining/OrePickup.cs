@@ -17,9 +17,7 @@ public class OrePickup : MonoBehaviour {
 
    private void OnTriggerEnter2D (Collider2D collision) {
       if (collision.GetComponent<PlayerBodyEntity>() != null && collision.GetComponent<PlayerBodyEntity>() == Global.player) {
-         oreNode.pickupPosition = transform.position;
          Global.player.rpc.Cmd_MineNode(oreNode.id);
-         Destroy(gameObject);
       }
    }
 

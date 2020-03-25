@@ -2430,7 +2430,7 @@ public class RPCManager : NetworkBehaviour {
             AchievementManager.registerUserAchievement(_player.userId, ActionType.Craft);
 
             // Let them know they gained experience
-            _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Crafter, 0);
+            _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Crafter, 0, true);
 
             // Update the available ingredients for the displayed blueprint
             Target_RefreshCraftingPanel(_player.connectionToClient);
@@ -2815,8 +2815,7 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_ReceiveItemList (NetworkConnection connection, Item[] itemList) {
-      // TODO: Handle how clients will be notified of the ore collection
-      //RewardManager.self.showItemsInRewardPanel(itemList.ToList());
+      RewardManager.self.showItemsInRewardPanel(itemList.ToList());
    }
 
    [TargetRpc]
@@ -2831,14 +2830,55 @@ public class RPCManager : NetworkBehaviour {
       ((InventoryPanel) PanelManager.self.get(Panel.Type.Inventory)).refreshPanel();
    }
 
-   [TargetRpc]
-   public void Target_CollectOre (NetworkConnection connection, int oreId) {
-      Vector3 position = OreManager.self.getOreNode(oreId).pickupPosition;
+   [ClientRpc]
+   public void Rpc_CollectOre (int oreId) {
+      OreNode oreNode = OreManager.self.getOreNode(oreId);
+      if (oreNode.orePickup != null) {
+         Vector3 position = oreNode.orePickup.transform.position;
 
-      // TODO: Create sprite effects for ore collect
-      EffectManager.self.create(Effect.Type.Crop_Harvest, position);
-      EffectManager.self.create(Effect.Type.Crop_Shine, position);
-      EffectManager.self.create(Effect.Type.Crop_Dirt_Large, position);
+         // TODO: Create sprite effects for ore collect
+         EffectManager.self.create(Effect.Type.Crop_Harvest, position);
+         EffectManager.self.create(Effect.Type.Crop_Shine, position);
+         EffectManager.self.create(Effect.Type.Crop_Dirt_Large, position);
+
+         Destroy(oreNode.orePickup.gameObject);
+      }
+   }
+
+   [Command]
+   public void Cmd_InteractOre (int oreId, Direction direction) {
+      OreNode oreNode = OreManager.self.getOreNode(oreId);
+      oreNode.interactCount++;
+      Rpc_MineOre(oreId, oreNode.interactCount);
+
+      if (oreNode.finishedMining()) {
+         float randomSpeed = UnityEngine.Random.Range(.8f, 1.2f);
+         Rpc_SpawnMineEffect(oreId, oreNode.transform.position, direction, randomSpeed);
+      }
+   }
+
+   [ClientRpc]
+   public void Rpc_MineOre (int oreId, int interactCount) {
+      OreNode oreNode = OreManager.self.getOreNode(oreId);
+      oreNode.updateSprite(interactCount);
+      ExplosionManager.createMiningParticle(oreNode.transform.position);
+   }
+
+   [ClientRpc]
+   public void Rpc_SpawnMineEffect (int oreId, Vector3 position, Direction direction, float randomSpeed) {
+      OreNode oreNode = OreManager.self.getOreNode(oreId);
+      GameObject oreBounce = Instantiate(PrefabsManager.self.oreDropPrefab);
+      OreMineEffect oreMine = oreBounce.GetComponent<OreMineEffect>();
+      oreBounce.transform.position = position;
+
+      if (direction == Direction.East) {
+         oreBounce.transform.localScale = new Vector3(-1, 1, 1);
+      } else if (direction == Direction.North || direction == Direction.South) {
+         oreMine.animator.SetFloat(MiningTrigger.FACING_KEY, (float) direction);
+      }
+
+      oreMine.animator.speed = randomSpeed;
+      oreMine.oreNode = oreNode;
    }
 
    [Command]
@@ -2878,27 +2918,59 @@ public class RPCManager : NetworkBehaviour {
          rewardedItems.Add(item);
       }
 
-      // Grant the rewards to the user
-      giveItemRewardsToPlayer(_player.userId, rewardedItems, true);
-
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Add the mining xp
          int xp = 10;
          DB_Main.addJobXP(_player.userId, Jobs.Type.Miner, _player.faction, xp);
          Jobs newJobXP = DB_Main.getJobXP(_player.userId);
 
+         // Gather voyage group info
+         int voyageGroup = DB_Main.getVoyageGroupForMember(_player.userId);
+         List<int> voyageGroupMemberIds = DB_Main.getVoyageGroupMembers(voyageGroup);
+
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Registers the Ore mining success action to the achievement database for recording
             AchievementManager.registerUserAchievement(_player.userId, ActionType.MineOre);
             AchievementManager.registerUserAchievement(_player.userId, ActionType.OreGain, lootInfoList.Count);
 
-            // Let them know they gained experience
-            _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Miner, 0);
+            // Determine how many active members are there in the voyage group and split the reward
+            int totalActiveMembers = 0;
+            foreach (int id in voyageGroupMemberIds) {
+               BodyEntity entity = BodyManager.self.getBody(id);
+               if (entity!= null) {
+                  totalActiveMembers++;
+               }
+            }
+
+            // Give reward to each member
+            foreach (int id in voyageGroupMemberIds) {
+               BodyEntity entity = BodyManager.self.getBody(id);
+               if (entity != null) {
+                  // Grant the rewards to the user without showing reward panel
+                  giveItemRewardsToPlayer(id, rewardedItems, false);
+
+                  // Provide exp to the user
+                  entity.Target_GainedXP(entity.connectionToClient, xp / totalActiveMembers, newJobXP, Jobs.Type.Miner, 0, false);
+
+                  // Show exp floating icon to all group members
+                  entity.rpc.Rpc_GainedXP(xp / totalActiveMembers, newJobXP, Jobs.Type.Miner);
+               }
+            }
 
             // Let them know they gained experience
-            _player.rpc.Target_CollectOre(_player.connectionToClient, nodeId);
+            Rpc_CollectOre(nodeId);
          });
       });
+   }
+
+   [ClientRpc]
+   public void Rpc_GainedXP (int xpGained, Jobs jobs, Jobs.Type jobType) {
+      Vector3 pos = this.transform.position + new Vector3(0f, .32f);
+
+      // Show a message that they gained some XP
+      GameObject xpCanvas = Instantiate(PrefabsManager.self.xpGainPrefab);
+      xpCanvas.transform.position = pos;
+      xpCanvas.GetComponentInChildren<Text>().text = "+" + xpGained + " " + jobType + " XP";
    }
 
    [Server]

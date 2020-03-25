@@ -71,29 +71,15 @@ public class MiningTrigger : MonoBehaviour
          RaycastHit2D[] rayHits = new RaycastHit2D[10];
          int hitNum = currentCollider.Cast(new Vector2(0, 0), rayHits);
          foreach (RaycastHit2D hit in rayHits) {
-            if (hit.collider != null && hit.collider.GetComponent<OreNode>() != null) {
-               OreNode oreNode = hit.collider.GetComponent<OreNode>();
-               if (!oreNode.hasBeenMined() && !oreIdsInteracted.Exists(_=>_ == oreNode.id) && !oreNode.finishedMining()) {
-                  oreNode.tryToMineNodeOnClient();
-                  oreIdsInteracted.Add(oreNode.id);
-
-                  if (oreNode.finishedMining()) {
-                     ExplosionManager.createMiningParticle(hit.collider.transform.position);
-
-                     GameObject oreBounce = Instantiate(PrefabsManager.self.oreDropPrefab);
-                     OreMineEffect oreMine = oreBounce.GetComponent<OreMineEffect>();
-                     oreBounce.transform.position = hit.collider.transform.position;
-
-                     if (oreSpawnEffectDirection == Direction.East) {
-                        oreBounce.transform.localScale = new Vector3(-1, 1, 1);
-                     } else if (oreSpawnEffectDirection == Direction.North || oreSpawnEffectDirection == Direction.South) {
-                        oreMine.animator.SetFloat(FACING_KEY, (float) oreSpawnEffectDirection);
-                     }
-                     oreMine.animator.speed = Random.Range(.8f, 1.2f);
-                     oreMine.oreNode = oreNode;
+            if (hit.collider != null) { 
+               if (hit.collider.GetComponent<OreNode>() != null) {
+                  OreNode oreNode = hit.collider.GetComponent<OreNode>();
+                  if (!oreNode.hasBeenMined() && !oreIdsInteracted.Exists(_ => _ == oreNode.id) && !oreNode.finishedMining()) {
+                     bodyEntity.rpc.Cmd_InteractOre(oreNode.id, oreSpawnEffectDirection);
+                     oreIdsInteracted.Add(oreNode.id);
                   }
                }
-            }
+            } 
          }
       }
 

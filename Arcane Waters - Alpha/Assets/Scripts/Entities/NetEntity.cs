@@ -678,7 +678,7 @@ public class NetEntity : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_GainedXP (NetworkConnection conn, int xpGained, Jobs jobs, Jobs.Type jobType, int cropNumber) {
+   public void Target_GainedXP (NetworkConnection conn, int xpGained, Jobs jobs, Jobs.Type jobType, int cropNumber, bool showFloatingXp) {
       Vector3 pos = this.transform.position + new Vector3(0f, .32f);
 
       // If it happened at a crop spot, show the XP gain there
@@ -686,10 +686,12 @@ public class NetEntity : NetworkBehaviour {
          pos = CropSpotManager.self.getCropSpot(cropNumber).transform.position + new Vector3(0f, .32f);
       }
 
-      // Show a message that they gained some XP
-      GameObject xpCanvas = Instantiate(PrefabsManager.self.xpGainPrefab);
-      xpCanvas.transform.position = pos;
-      xpCanvas.GetComponentInChildren<Text>().text = "+" + xpGained + " " + jobType + " XP";
+      if (showFloatingXp) {
+         // Show a message that they gained some XP
+         GameObject xpCanvas = Instantiate(PrefabsManager.self.xpGainPrefab);
+         xpCanvas.transform.position = pos;
+         xpCanvas.GetComponentInChildren<Text>().text = "+" + xpGained + " " + jobType + " XP";
+      }
 
       // Show some types of gain in chat
       if (jobType == Jobs.Type.Trader || jobType == Jobs.Type.Miner || jobType == Jobs.Type.Crafter) {

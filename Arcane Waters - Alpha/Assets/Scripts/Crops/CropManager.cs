@@ -121,7 +121,7 @@ public class CropManager : NetworkBehaviour {
                this.Target_ReceiveCrop(_player.connectionToClient, cropInfo, false);
 
                // Let them know they gained experience
-               _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Farmer, cropNumber);
+               _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Farmer, cropNumber, true);
             } 
          });
       });
@@ -184,7 +184,7 @@ public class CropManager : NetworkBehaviour {
             this.Target_ReceiveCrop(_player.connectionToClient, cropToWater, true);
 
             // Let them know they gained experience
-            _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Farmer, cropNumber);
+            _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Farmer, cropNumber, true);
          });
       });
    }
@@ -246,7 +246,7 @@ public class CropManager : NetworkBehaviour {
             _player.Target_ReceiveSiloInfo(_player.connectionToClient, siloInfo.ToArray());
 
             // Let them know they gained experience
-            _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Farmer, cropNumber);
+            _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Farmer, cropNumber, true);
          });
       });
    }
@@ -324,7 +324,7 @@ public class CropManager : NetworkBehaviour {
             int totalXP = (int) (baseXP * xpModifier);
             DB_Main.addJobXP(_player.userId, Jobs.Type.Trader, _player.faction, totalXP);
             Jobs jobs = DB_Main.getJobXP(_player.userId);
-            _player.Target_GainedXP(_player.connectionToClient, totalXP, jobs, Jobs.Type.Trader, 0);
+            _player.Target_GainedXP(_player.connectionToClient, totalXP, jobs, Jobs.Type.Trader, 0, true);
 
             // Find the flagship id
             int flagshipId = DB_Main.getUserInfo(_player.userId).flagshipId;

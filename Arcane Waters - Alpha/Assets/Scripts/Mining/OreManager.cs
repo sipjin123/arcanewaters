@@ -65,6 +65,12 @@ public class OreManager : MonoBehaviour
       return oreNode;
    }
 
+   public void registerOreNode (int id, OreNode node) {
+      if (!_oreNodes.ContainsKey(id)) {
+         _oreNodes.Add(id, node);
+      } 
+   }
+
    public OreNode getOreNode (int id) {
       return _oreNodes[id];
    }
