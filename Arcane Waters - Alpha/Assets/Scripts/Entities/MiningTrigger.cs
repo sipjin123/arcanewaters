@@ -81,7 +81,7 @@ public class MiningTrigger : MonoBehaviour
                      ExplosionManager.createMiningParticle(hit.collider.transform.position);
 
                      GameObject oreBounce = Instantiate(PrefabsManager.self.oreDropPrefab);
-                     OreMine oreMine = oreBounce.GetComponent<OreMine>();
+                     OreMineEffect oreMine = oreBounce.GetComponent<OreMineEffect>();
                      oreBounce.transform.position = hit.collider.transform.position;
 
                      if (oreSpawnEffectDirection == Direction.East) {

@@ -20,6 +20,15 @@ public class CharacterListMessage : MessageBase {
    public int[] armorColors1;
    public int[] armorColors2;
 
+   // The equipment xml Id's of the starting armor
+   public int[] equipmentIds;
+
+   // The sprite Id's of the starting armor
+   public int[] spriteIds;
+
+   // The material types of the starting armor
+   public MaterialType[] materialTypes;
+
    #endregion
 
    public CharacterListMessage () { }
@@ -28,12 +37,15 @@ public class CharacterListMessage : MessageBase {
       this.netId = netId;
    }
 
-   public CharacterListMessage (uint netId, UserInfo[] userArray, Item[] armorArray, Item[] weaponArray, int[] armorColors1, int[] armorColors2) {
+   public CharacterListMessage (uint netId, UserInfo[] userArray, Item[] armorArray, Item[] weaponArray, int[] armorColors1, int[] armorColors2, int[] equipmentIds, int[] spriteIds, MaterialType[] materialTypes) {
       this.netId = netId;
       this.userArray = userArray;
       this.armorArray = armorArray;
       this.weaponArray = weaponArray;
       this.armorColors1 = armorColors1;
       this.armorColors2 = armorColors2;
+      this.equipmentIds = equipmentIds;
+      this.spriteIds = spriteIds;
+      this.materialTypes = materialTypes;
    }
 }

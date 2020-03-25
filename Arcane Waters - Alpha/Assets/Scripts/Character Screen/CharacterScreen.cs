@@ -24,6 +24,21 @@ public class CharacterScreen : MonoBehaviour {
    // Self
    public static CharacterScreen self;
 
+   // List of armor data
+   public List<StartingArmorData> startingArmorData;
+
+   public class StartingArmorData
+   {
+      // The sql id 
+      public int equipmentId;
+      
+      // The sprite index 
+      public int spriteId;
+
+      // The material type
+      public MaterialType materialType;
+   }
+
    #endregion
 
    void Awake () {
@@ -36,6 +51,11 @@ public class CharacterScreen : MonoBehaviour {
       foreach (CharacterSpot spot in GetComponentsInChildren<CharacterSpot>()) {
          _spots[spot.number] = spot;
       }
+   }
+
+   public StartingArmorData getStartingArmor (int index) {
+      StartingArmorData armorData = startingArmorData.Find(_ => _.equipmentId == index);
+      return armorData;
    }
 
    public bool isShowing () {
@@ -52,7 +72,18 @@ public class CharacterScreen : MonoBehaviour {
       return false;
    }
 
-   public void initializeScreen (UserInfo[] userArray, Item[] armorArray, Item[] weaponArray, int[] armorColors1, int[] armorColors2) {
+   public void initializeScreen (UserInfo[] userArray, Item[] armorArray, Item[] weaponArray, int[] armorColors1, int[] armorColors2, int[] equipmentIds, int[] spriteIds, MaterialType[] materialTypes) {
+      // Cache the starting armor info
+      startingArmorData = new List<StartingArmorData>();
+      for (int i = 0; i < spriteIds.Length; i++) {
+         StartingArmorData newData = new StartingArmorData {
+            equipmentId = equipmentIds[i],
+            materialType = materialTypes[i],
+            spriteId = spriteIds[i]
+         };
+         startingArmorData.Add(newData);
+      }
+
       // Store the data we receive for later reference
       _userArray = userArray;
 
@@ -87,7 +118,7 @@ public class CharacterScreen : MonoBehaviour {
             OfflineCharacter offlineChar = Instantiate(offlineCharacterPrefab, spot.transform.position, Quaternion.identity);
             offlineChar.setDataAndLayers(userArray[i], weaponArray[i], armorArray[i], (ColorType) armorColors1[i], (ColorType) armorColors2[i]);
             spot.assignCharacter(offlineChar);
-         }
+         } 
       }
 
       // Sometimes we just want to auto-select a character when debugging

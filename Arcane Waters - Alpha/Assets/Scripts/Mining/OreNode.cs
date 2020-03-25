@@ -27,7 +27,7 @@ public class OreNode : NetworkBehaviour
 
    // The world position of this node
    [SyncVar]
-   public Vector2 syncPosition;
+   public Vector2 syncedPosition;
 
    // Our sprite renderer
    public SpriteRenderer spriteRenderer;
@@ -58,7 +58,7 @@ public class OreNode : NetworkBehaviour
       oreSprites = ImageManager.getSprites("Mining/" + this.oreType);
       spriteRenderer.enabled = true;
 
-      transform.position = syncPosition;
+      transform.position = syncedPosition;
 
       // We don't need to do anything more when we're running in batch mode
       if (Application.isBatchMode) {

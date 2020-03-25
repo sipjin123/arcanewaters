@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System.Linq;
 
 public class CharacterCreationPanel : ClientMonoBehaviour {
    #region Public Variables
@@ -80,7 +81,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour {
 
       // Send the creation request to the server
       NetworkClient.Send(new CreateUserMessage(Global.netId,
-         _char.getUserInfo(), _char.armor.getType(), _char.armor.getColor1(), _char.armor.getColor2()));
+         _char.getUserInfo(), _char.armor.equipmentId, _char.armor.getColor1(), _char.armor.getColor2()));
    }
 
    public void cancelCreating () {
@@ -165,6 +166,12 @@ public class CharacterCreationPanel : ClientMonoBehaviour {
 
    public void changeArmor (int offset) {
       List<int> list = new List<int>() { 1, 2, 3 };
+      if (CharacterScreen.self.startingArmorData.Count > 0) {
+         list.Clear();
+         foreach (CharacterScreen.StartingArmorData armorData in CharacterScreen.self.startingArmorData) {
+            list.Add(armorData.spriteId);
+         }
+      }
 
       // Adjust the index
       int currentIndex = list.IndexOf(_char.armor.getType());
@@ -176,8 +183,18 @@ public class CharacterCreationPanel : ClientMonoBehaviour {
 
       // Update the Info and apply it to the character
       Armor armor = _char.getArmor();
-      armor.itemTypeId = list[currentIndex];
-      _char.setArmor(armor.itemTypeId, armor.color1, armor.color2);
+
+      if (CharacterScreen.self.startingArmorData.Count > 0) {
+         CharacterScreen.StartingArmorData armorData = CharacterScreen.self.startingArmorData[currentIndex];
+
+         int armorSpriteId = armorData.spriteId;
+         MaterialType armorMaterialType = armorData.materialType;
+         _char.armor.equipmentId = armorData.equipmentId;
+         _char.setArmor(armorSpriteId, armor.color1, armor.color2, armorMaterialType);
+      } else {
+         armor.itemTypeId = list[currentIndex];
+         _char.setArmor(armor.itemTypeId, armor.color1, armor.color2);
+      }
    }
 
    public void changeClass (int offset) {

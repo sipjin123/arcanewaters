@@ -110,8 +110,22 @@ public class ServerMessageManager : MonoBehaviour {
                   weaponItemList.Add(weapon);
                }
 
+               // Get the info of the starter armors
+               List<int> startingEquipmentIds = new List<int>();
+               List<int> startingSpriteIds = new List<int>();
+               List<MaterialType> startingMaterialTypes = new List<MaterialType>();
+
+               if (armorList.Count < 1) {
+                  for (int i = 1; i < 4; i++) {
+                     ArmorStatData startArmorData = EquipmentXMLManager.self.getArmorData(i);
+                     startingEquipmentIds.Add(startArmorData.equipmentID);
+                     startingSpriteIds.Add(startArmorData.armorType);
+                     startingMaterialTypes.Add(startArmorData.materialType);
+                  }
+               }
+
                // If there was an account ID but not user ID, send the info on all of their characters for display on the Character screen
-               CharacterListMessage msg = new CharacterListMessage(Global.netId, users.ToArray(), amorItemList.ToArray(), weaponItemList.ToArray(), armorColors1, armorColors2);
+               CharacterListMessage msg = new CharacterListMessage(Global.netId, users.ToArray(), amorItemList.ToArray(), weaponItemList.ToArray(), armorColors1, armorColors2, startingEquipmentIds.ToArray(), startingSpriteIds.ToArray(), startingMaterialTypes.ToArray());
                conn.Send(msg);
             } else {
                sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 
-public class OreMine : MonoBehaviour {
+public class OreMineEffect : MonoBehaviour {
    #region Public Variables
 
    // The ore being animated

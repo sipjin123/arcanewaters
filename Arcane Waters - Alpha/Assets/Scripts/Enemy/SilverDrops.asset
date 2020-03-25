@@ -13,12 +13,19 @@ MonoBehaviour:
   m_Name: SilverDrops
   m_EditorClassIdentifier: 
   lootList:
-  - lootType: 2
-    quantity: 1
-    chanceRatio: 100
-  - lootType: 4
-    quantity: 1
-    chanceRatio: 100
+  - lootType:
+      category: 6
+      id: 0
+      itemTypeId: 2
+      color1: 0
+      color2: 0
+      data: 
+      count: 1
+      itemName: 
+      itemDescription: 
+      iconPath: 
+    quantity: 0
+    chanceRatio: 0
   defaultLoot: 2
   minQuantity: 2
   maxQuantity: 3

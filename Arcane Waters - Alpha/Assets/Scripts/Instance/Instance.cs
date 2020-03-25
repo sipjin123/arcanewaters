@@ -154,7 +154,7 @@ public class Instance : NetworkBehaviour
                   OreNode newOreNode = OreManager.self.createOreNode(this, targetLocalPos, oreType, oreParent);
 
                   // Make sure the position is synced
-                  newOreNode.syncPosition = newOreNode.transform.position;
+                  newOreNode.syncedPosition = newOreNode.transform.position;
                }
             }
          }

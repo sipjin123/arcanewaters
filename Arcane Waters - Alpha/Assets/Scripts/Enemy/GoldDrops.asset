@@ -12,7 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02da0f708a5bcdf40bd3646c523222ce, type: 3}
   m_Name: GoldDrops
   m_EditorClassIdentifier: 
-  lootList: []
+  lootList:
+  - lootType:
+      category: 6
+      id: 0
+      itemTypeId: 1
+      color1: 0
+      color2: 0
+      data: 
+      count: 1
+      itemName: 
+      itemDescription: 
+      iconPath: 
+    quantity: 0
+    chanceRatio: 0
   defaultLoot: 1
   minQuantity: 1
   maxQuantity: 1

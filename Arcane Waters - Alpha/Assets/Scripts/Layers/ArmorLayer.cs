@@ -7,6 +7,9 @@ using Mirror;
 public class ArmorLayer : SpriteLayer {
    #region Public Variables
 
+   // The equipment id of the armor
+   public int equipmentId = 0;
+
    #endregion
 
    public void setType (Gender.Type gender, int newType, bool immediate = false) {

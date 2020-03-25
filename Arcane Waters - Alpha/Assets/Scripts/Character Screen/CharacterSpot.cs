@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System.Linq;
 
 public class CharacterSpot : ClientMonoBehaviour {
    #region Public Variables
@@ -89,10 +90,10 @@ public class CharacterSpot : ClientMonoBehaviour {
       Weapon weapon = new Weapon();
       weapon.itemTypeId = 0;
       Armor armor = new Armor();
-      armor.itemTypeId = 0;
+      armor.itemTypeId = CharacterScreen.self.startingArmorData[0].equipmentId;
       armor.color1 = ColorType.Brown;
       armor.color2 = ColorType.Black;
-      armor.materialType = MaterialType.Material_G_B;
+      armor.materialType = CharacterScreen.self.startingArmorData[0].materialType;
 
       offlineChar.setDataAndLayers(userInfo, weapon, armor, armor.color1, armor.color2);
 
