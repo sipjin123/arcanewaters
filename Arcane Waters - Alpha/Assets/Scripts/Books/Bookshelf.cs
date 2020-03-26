@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System;
+using MapCreationTool.Serialization;
 
-public class Bookshelf : MonoBehaviour {
+public class Bookshelf : MonoBehaviour, IMapEditorDataReceiver {
    #region Public Variables
 
    // The book unique ID in the database
@@ -69,6 +70,15 @@ public class Bookshelf : MonoBehaviour {
       }
    }
 
+   public void receiveData (DataField[] dataFields) {
+      foreach (DataField field in dataFields) {
+         if (field.k.CompareTo(DataField.BOOK_ID_KEY) == 0) {
+            if (int.TryParse(field.v, out int id)) {
+               bookId = id;
+            }
+         }
+      }
+   }
 
    #region Private Variables
 

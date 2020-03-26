@@ -74,7 +74,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.18, y: 0.34}
+  m_Size: {x: 0.18, y: 0.18}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 0
@@ -93,6 +93,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: Box
+  canInheritPosition: 0
+  canControlPosition: 1
   dataFields: []
   selectDataFields: []
   customDataFields: []
@@ -134,15 +136,30 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2780080374582526831, guid: 0bc808fed1457d84c86e0b4477a4aac1,
+        type: 3}
+      propertyPath: isActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5668770284191497096, guid: 0bc808fed1457d84c86e0b4477a4aac1,
         type: 3}
       propertyPath: m_Offset.y
-      value: -0.080488026
+      value: 0.0010467917
       objectReference: {fileID: 0}
     - target: {fileID: 5668770284191497096, guid: 0bc808fed1457d84c86e0b4477a4aac1,
         type: 3}
       propertyPath: m_Size.y
-      value: 0.15854982
+      value: 0.15761799
+      objectReference: {fileID: 0}
+    - target: {fileID: 5668770284191497096, guid: 0bc808fed1457d84c86e0b4477a4aac1,
+        type: 3}
+      propertyPath: m_Offset.x
+      value: 0.0004658997
+      objectReference: {fileID: 0}
+    - target: {fileID: 5668770284191497096, guid: 0bc808fed1457d84c86e0b4477a4aac1,
+        type: 3}
+      propertyPath: m_Size.x
+      value: 0.161432
       objectReference: {fileID: 0}
     - target: {fileID: 7853915804205103427, guid: 0bc808fed1457d84c86e0b4477a4aac1,
         type: 3}

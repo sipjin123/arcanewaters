@@ -7,7 +7,8 @@ using MapCreationTool;
 using MapCreationTool.Serialization;
 using UnityEngine.Networking;
 
-public class MapManager : MonoBehaviour {
+public class MapManager : MonoBehaviour
+{
    #region Public Variables
 
    // Convenient self reference
@@ -38,13 +39,20 @@ public class MapManager : MonoBehaviour {
       AreaManager.self.storeArea(area);
       area.vcam.VirtualCameraGameObject.SetActive(false);
 
+      // Only remove old maps on the Clients
+      if (!Mirror.NetworkServer.active && _lastMap != null && _lastMap.areaKey != areaKey) {
+         AreaManager.self.removeArea(_lastMap.areaKey);
+         Destroy(_lastMap.gameObject);
+      }
+      _lastMap = area;
+
       // Send signal to player to update virtual camera after area is created
       if (Global.player != null) {
          Global.player.updatePlayerCamera();
       }
    }
 
-   public Vector3 getNextMapPosition() {
+   public Vector3 getNextMapPosition () {
       // Every time the server creates a new map, we move the map offset
       _mapOffset.x += 200f;
 
@@ -74,6 +82,9 @@ public class MapManager : MonoBehaviour {
 
    // The current map offset being used by the server
    protected Vector3 _mapOffset = new Vector3(500f, 500f);
+
+   // The the last visited Map by the Client
+   private Area _lastMap;
 
    #endregion
 }

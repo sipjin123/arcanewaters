@@ -39,6 +39,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: Candle Wall
+  canInheritPosition: 0
+  canControlPosition: 0
   dataFields: []
   selectDataFields: []
   customDataFields: []
@@ -242,6 +244,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Candle Wall Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 8362162878863823058, guid: 6420f7d94ed93f744b0ee288e81fb10c,
+        type: 3}
+      propertyPath: isActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6420f7d94ed93f744b0ee288e81fb10c, type: 3}

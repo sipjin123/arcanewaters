@@ -93,6 +93,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: Chair
+  canInheritPosition: 0
+  canControlPosition: 0
   dataFields: []
   selectDataFields: []
   customDataFields: []
@@ -231,6 +233,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Size.y
       value: 0.19028759
+      objectReference: {fileID: 0}
+    - target: {fileID: 3422777832017436295, guid: 4f5103ca1044dcc4ca1c36c36f95160f,
+        type: 3}
+      propertyPath: isActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4f5103ca1044dcc4ca1c36c36f95160f, type: 3}

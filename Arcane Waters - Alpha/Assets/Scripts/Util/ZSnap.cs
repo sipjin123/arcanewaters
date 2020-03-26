@@ -8,6 +8,9 @@ public class ZSnap : MonoBehaviour {
    // The amount of vertical offset to apply for this object
    public float offsetZ;
 
+   // Offset that is inherited from another object
+   public float inheritedOffsetZ;
+
    // Whether or not this object should ZSnap inside of Update()
    public bool isActive = false;
 
@@ -23,6 +26,12 @@ public class ZSnap : MonoBehaviour {
          return;
       }
 
+      initialize();
+
+      snapZ();
+   }
+
+   public void initialize () {
       if (sortPoint != null) {
          // Set the offset, factoring in the scale of the gameobject
          offsetZ = sortPoint.transform.localPosition.y * transform.localScale.y;
@@ -42,8 +51,6 @@ public class ZSnap : MonoBehaviour {
             _colliderY = GetComponent<PolygonCollider2D>().offset.y;
          }
       }*/
-
-      snapZ();
    }
 
    /// <summary>
@@ -52,7 +59,7 @@ public class ZSnap : MonoBehaviour {
    /// </summary>
    public void roundoutPosition () {
       this.transform.position = new Vector2(
-         Util.Truncate(this.transform.position.x), 
+         Util.Truncate(this.transform.position.x),
          Util.Truncate(this.transform.position.y));
    }
 
@@ -68,16 +75,21 @@ public class ZSnap : MonoBehaviour {
    }
 
    public void snapZ () {
-      // Initialize our new Z position to a truncated version of the Y position
-      float newZ = transform.position.y;
-      newZ = Util.TruncateTo100ths(newZ);
-
-      // Adjust our Z position based on our collider's Y position
       transform.position = new Vector3(
           transform.position.x,
           transform.position.y,
-          (newZ + _colliderY + offsetZ) / 100f
+          getZ(true)
       );
+   }
+
+   public float getZ (bool useInheritance) {
+      // Initialize  Z position to a truncated version of the Y position
+      float newZ = transform.position.y;
+      newZ = Util.TruncateTo100ths(newZ);
+
+      // Adjust Z position based on our collider's Y position
+      float inherited = useInheritance ? inheritedOffsetZ : 0;
+      return (newZ + _colliderY + offsetZ + inherited) / 100f;
    }
 
    #region Private Variables

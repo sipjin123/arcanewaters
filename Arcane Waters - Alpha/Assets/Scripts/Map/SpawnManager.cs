@@ -35,7 +35,10 @@ public partial class SpawnManager : MonoBehaviour {
 
    public void store (string areaKey, string spawnKey, Spawn spawn) {
       if (_spawns.ContainsKey(new SpawnID(areaKey, spawnKey))) {
-         D.warning($"Storing multiple spawns of the same type: areaKey = { areaKey }, spawnKey = { spawnKey }");
+         D.SHOW_LOGS_IN_CHAT = false;
+         D.log($"Attempting to store multiple spawns of the same type: areaKey = { areaKey }, spawnKey = { spawnKey }. Ignoring it.");
+         D.SHOW_LOGS_IN_CHAT = true;
+         return;
       }
 
       _spawnIDList.Add(new SpawnID(areaKey, spawnKey));

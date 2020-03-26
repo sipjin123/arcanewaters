@@ -28,21 +28,25 @@ public class AreaManager : MonoBehaviour
       InvokeRepeating("toggleAreaCollidersForPerformanceImprovement", 0f, .25f);
    }
 
-   public void storeAreaKeys () {
+   public void storeAreaInfo () {
+      // Read the map data
       List<Map> maps = DB_Main.getMaps();
 
       foreach (Map map in maps) {
          if (map.publishedVersion != null) {
-            _areaKeysFromDatabase.Add(map.name);
-         }
-      }
-   }
+            // Store the map data
+            _areaKeyToMapInfo.Add(map.name, map);
 
-   public void storeAreaIdsToNames () {
-      foreach (Map map in DB_Main.getMaps()) {
+            // Store the sea maps area keys
+            if (map.editorType == MapCreationTool.EditorType.Sea) {
+               _seaAreaKeys.Add(map.name);
+            }
+         }
+
+         // Store the area id to names dictionary
          _areaIdToName.Add(map.id, map.name);
+         Debug.Log(_areaIdToName.Count);
       }
-      Debug.Log(_areaIdToName.Count);
    }
 
    public string getAreaName (int areaId) {
@@ -51,6 +55,15 @@ public class AreaManager : MonoBehaviour
       }
 
       return areaId.ToString();
+   }
+
+   public Biome.Type getAreaBiome(string areaKey) {
+      Map map;
+      if (_areaKeyToMapInfo.TryGetValue(areaKey, out map)) {
+         return map.biome;
+      }
+
+      return Biome.Type.None;
    }
 
    public Area getArea (string areaKey) {
@@ -69,7 +82,11 @@ public class AreaManager : MonoBehaviour
    }
 
    public List<string> getAreaKeys () {
-      return new List<string>(_areaKeysFromDatabase);
+      return new List<string>(_areaKeyToMapInfo.Keys);
+   }
+
+   public List<string> getSeaAreaKeys () {
+      return _seaAreaKeys;
    }
 
    public void storeArea (Area area) {
@@ -83,6 +100,12 @@ public class AreaManager : MonoBehaviour
       foreach (Enemy_Spawner spawner in area.GetComponentsInChildren<Enemy_Spawner>()) {
          EnemyManager.self.storeSpawner(spawner, area.areaKey);
       }
+   }
+
+   public void removeArea (string areaKey) {
+      _areas.Remove(areaKey);
+
+      EnemyManager.self.removeSpawners(areaKey);
    }
 
    protected void toggleAreaCollidersForPerformanceImprovement () {
@@ -100,11 +123,14 @@ public class AreaManager : MonoBehaviour
    // The Areas we know about
    protected Dictionary<string, Area> _areas = new Dictionary<string, Area>();
 
-   // A set of all Area Keys from the database
-   protected HashSet<string> _areaKeysFromDatabase = new HashSet<string>();
+   // The data of all areas accessible with the areaKey
+   protected Dictionary<string, Map> _areaKeyToMapInfo = new Dictionary<string, Map>();
 
    // Map ID to map name dictionary, ideally would be removed once maps are tracked everywhere by their ID
    protected Dictionary<int, string> _areaIdToName = new Dictionary<int, string>();
+
+   // The list of areas that are sea maps
+   protected List<string> _seaAreaKeys = new List<string>();
 
    #endregion
 }

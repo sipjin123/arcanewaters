@@ -100,29 +100,13 @@ public class VoyagePanel : Panel
    }
 
    public void OnStartButtonClickedOn () {
-      if (VoyageGroupPanel.self.isShowing()) {
-         // Associate a new function with the confirmation button
-         PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
-         PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => confirmStartVoyage());
-
-         // Show a confirmation panel
-         PanelManager.self.confirmScreen.show("You will automatically leave your current voyage group. Are you sure?");
-      } else {
-         confirmStartVoyage();
-      }
-   }
-
-   public void confirmStartVoyage () {
-      // Hide the confirm panel
-      PanelManager.self.confirmScreen.hide();
-
       // Join a group with the selected mode
       switch (_selectedVoyageMode) {
          case Voyage.Mode.Quickmatch:
-            Global.player.rpc.Cmd_AddUserToQuickmatchVoyageGroup(_selectedVoyage.areaKey);
+            Global.player.rpc.Cmd_AddUserToQuickmatchVoyageGroup(_selectedVoyage.voyageId);
             break;
          case Voyage.Mode.Private:
-            Global.player.rpc.Cmd_CreatePrivateVoyageGroup(_selectedVoyage.areaKey);
+            Global.player.rpc.Cmd_CreatePrivateVoyageGroup(_selectedVoyage.voyageId);
             break;
          default:
             break;

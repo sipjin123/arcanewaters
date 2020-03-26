@@ -20,7 +20,7 @@ public class CropHarvest : MonoBehaviour {
    // The list of crops and their associated sprites
    public List<CropSprite> cropSpriteList;
 
-   // The animator reference
+   // Animator component
    public Animator animator;
 
    #endregion

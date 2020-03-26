@@ -19,7 +19,7 @@ namespace MapCreationTool
       private InputField notesInput = null;
 
       private Map targetMap;
-      private (int? id, string displayText)[] sourceOptions;
+      private (int id, string displayText)[] sourceOptions;
 
       public void open (Map map) {
          if (!MasterToolAccountManager.canAlterResource(map.creatorID, out string errorMessage)) {
@@ -29,7 +29,7 @@ namespace MapCreationTool
 
          targetMap = map;
 
-         sourceOptions = Enumerable.Repeat(((int?) null, "None"), 1).Union(Overlord.remoteMaps.maps.Select(m => ((int?) m.Value.id, m.Value.name))).ToArray();
+         sourceOptions = Enumerable.Repeat((0, "None"), 1).Union(Overlord.remoteMaps.maps.Select(m => (m.Value.id, m.Value.name))).ToArray();
 
          nameInput.text = map.name;
          notesInput.text = map.notes;

@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: Stool
+  canInheritPosition: 0
+  canControlPosition: 1
   dataFields: []
   selectDataFields: []
   customDataFields: []
@@ -134,6 +136,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3519744276131446487, guid: d615a891746b62b42a9178a520b88e6b,
+        type: 3}
+      propertyPath: isActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4547367626372011125, guid: d615a891746b62b42a9178a520b88e6b,
         type: 3}
       propertyPath: m_LocalPosition.x

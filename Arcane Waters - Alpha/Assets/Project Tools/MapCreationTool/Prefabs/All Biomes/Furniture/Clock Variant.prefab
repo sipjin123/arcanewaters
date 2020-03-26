@@ -93,6 +93,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: Clock
+  canInheritPosition: 0
+  canControlPosition: 1
   dataFields: []
   selectDataFields: []
   customDataFields: []
@@ -213,6 +215,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Size.y
       value: 0.4739586
+      objectReference: {fileID: 0}
+    - target: {fileID: 6255790322949146146, guid: de332937a01ace3448613aa9f39ca474,
+        type: 3}
+      propertyPath: isActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 1697448446967937901, guid: de332937a01ace3448613aa9f39ca474, type: 3}

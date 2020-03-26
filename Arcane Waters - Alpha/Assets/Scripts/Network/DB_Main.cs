@@ -984,7 +984,7 @@ public class DB_Main : DB_MainStub
    public static new List<Map> getMaps () {
       List<Map> result = new List<Map>();
 
-      string cmdText = "SELECT id, name, createdAt, creatorUserId, publishedVersion, sourceMapId, notes, accName " +
+      string cmdText = "SELECT id, name, createdAt, creatorUserId, publishedVersion, sourceMapId, notes, editorType, biome, accName " +
          "FROM maps_v2 " +
             "LEFT JOIN accounts ON maps_v2.creatorUserId = accId " +
          "ORDER BY name;";
@@ -1005,10 +1005,10 @@ public class DB_Main : DB_MainStub
                      : dataReader.GetInt32("publishedVersion"),
                   creatorID = dataReader.GetInt32("creatorUserId"),
                   creatorName = dataReader.GetString("accName"),
-                  sourceMapId = dataReader.IsDBNull(dataReader.GetOrdinal("sourceMapId"))
-                     ? (int?) null
-                     : dataReader.GetInt32("sourceMapId"),
-                  notes = dataReader.GetString("notes")
+                  sourceMapId = dataReader.GetInt32("sourceMapId"),
+                  notes = dataReader.GetString("notes"),
+                  editorType = (EditorType) dataReader.GetInt32("editorType"),
+                  biome = (Biome.Type) dataReader.GetInt32("biome")
                });
             }
          }
@@ -4626,6 +4626,8 @@ public class DB_Main : DB_MainStub
       return shipList;
    }
 
+   #region Trade History
+
    public static new void addToTradeHistory (int userId, TradeHistoryInfo tradeInfo) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -4724,6 +4726,10 @@ public class DB_Main : DB_MainStub
          D.error("MySQL Error: " + e.ToString());
       }
    }
+
+   #endregion
+
+   #region Leader Boards
 
    public static new List<LeaderBoardInfo> calculateLeaderBoard (Jobs.Type jobType, Faction.Type boardFaction,
       LeaderBoardsManager.Period period, DateTime startDate, DateTime endDate) {
@@ -4929,6 +4935,10 @@ public class DB_Main : DB_MainStub
       }
    }
 
+   #endregion
+
+   #region Friendship
+
    public static new void createFriendship (int userId, int friendUserId, Friendship.Status friendshipStatus, DateTime lastContactDate) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -5075,34 +5085,7 @@ public class DB_Main : DB_MainStub
       return friendCount;
    }
 
-   public static new int createMail (MailInfo mailInfo) {
-      int mailId = -1;
-
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO mails(recipientUsrId, senderUsrId, receptionDate, isRead, mailSubject, message) " +
-            "VALUES (@recipientUsrId, @senderUsrId, @receptionDate, @isRead, @mailSubject, @message)", conn)) {
-
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@recipientUsrId", mailInfo.recipientUserId);
-            cmd.Parameters.AddWithValue("@senderUsrId", mailInfo.senderUserId);
-            cmd.Parameters.AddWithValue("@receptionDate", DateTime.FromBinary(mailInfo.receptionDate));
-            cmd.Parameters.AddWithValue("@isRead", mailInfo.isRead);
-            cmd.Parameters.AddWithValue("@mailSubject", mailInfo.mailSubject);
-            cmd.Parameters.AddWithValue("@message", mailInfo.message);
-
-            // Execute the command
-            cmd.ExecuteNonQuery();
-            mailId = (int) cmd.LastInsertedId;
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-
-      return mailId;
-   }
+   #endregion
 
    public static new bool updateDeploySchedule (long scheduleDateAsTicks, int buildVersion) {
       try {
@@ -5170,6 +5153,37 @@ public class DB_Main : DB_MainStub
          D.error("MySQL Error: " + e.ToString());
          return false;
       }
+   }
+
+   #region Mail
+
+   public static new int createMail (MailInfo mailInfo) {
+      int mailId = -1;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO mails(recipientUsrId, senderUsrId, receptionDate, isRead, mailSubject, message) " +
+            "VALUES (@recipientUsrId, @senderUsrId, @receptionDate, @isRead, @mailSubject, @message)", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@recipientUsrId", mailInfo.recipientUserId);
+            cmd.Parameters.AddWithValue("@senderUsrId", mailInfo.senderUserId);
+            cmd.Parameters.AddWithValue("@receptionDate", DateTime.FromBinary(mailInfo.receptionDate));
+            cmd.Parameters.AddWithValue("@isRead", mailInfo.isRead);
+            cmd.Parameters.AddWithValue("@mailSubject", mailInfo.mailSubject);
+            cmd.Parameters.AddWithValue("@message", mailInfo.message);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+            mailId = (int) cmd.LastInsertedId;
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return mailId;
    }
 
    public static new void updateMailReadStatus (int mailId, bool isRead) {
@@ -5289,6 +5303,10 @@ public class DB_Main : DB_MainStub
       return mailCount;
    }
 
+   #endregion
+
+   #region Minimum Version
+
    public static new int getMinimumClientGameVersionForWindows () {
       int minVersion = 0;
 
@@ -5404,18 +5422,52 @@ public class DB_Main : DB_MainStub
       return minVersion;
    }
 
+   #endregion
+
+   #region Voyages
+
+   public static new int getNewVoyageId () {
+      int newVoyageId = 0;
+
+      // Increment the last voyage id and select the new value
+      StringBuilder query = new StringBuilder();
+      query.Append("BEGIN;");
+      query.Append("UPDATE voyages SET lastVoyageId = lastVoyageId + 1;");
+      query.Append("SELECT lastVoyageId FROM voyages;");
+      query.Append("COMMIT;");
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(query.ToString(), conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  newVoyageId = dataReader.GetInt32("lastVoyageId");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return newVoyageId;
+   }
+
    public static new int createVoyageGroup (VoyageGroupInfo groupInfo) {
       int groupId = -1;
 
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO voyage_groups (areaKey, creationDate, isQuickmatchEnabled, isPrivate) VALUES " +
-            "(@areaKey, @creationDate, @isQuickmatchEnabled, @isPrivate)", conn)) {
+            "INSERT INTO voyage_groups (voyageId, creationDate, isQuickmatchEnabled, isPrivate) VALUES " +
+            "(@voyageId, @creationDate, @isQuickmatchEnabled, @isPrivate)", conn)) {
 
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@areaKey", groupInfo.areaKey);
+            cmd.Parameters.AddWithValue("@voyageId", groupInfo.voyageId);
             cmd.Parameters.AddWithValue("@creationDate", DateTime.FromBinary(groupInfo.creationDate));
             cmd.Parameters.AddWithValue("@isQuickmatchEnabled", groupInfo.isQuickmatchEnabled);
             cmd.Parameters.AddWithValue("@isPrivate", groupInfo.isPrivate);
@@ -5458,6 +5510,59 @@ public class DB_Main : DB_MainStub
       return groupInfo;
    }
 
+   public static new int getGroupCountInVoyage (int voyageId) {
+      int groupCount = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT COUNT(*) AS groupCount FROM voyage_groups WHERE voyageId = @voyageId", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@voyageId", voyageId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  groupCount = dataReader.GetInt32("groupCount");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return groupCount;
+   }
+
+   public static new Dictionary<int, int> getGroupCountInAllVoyages () {
+      Dictionary<int, int> voyageToGroupCount = new Dictionary<int, int>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT voyageId, COUNT(*) AS groupCount FROM voyage_groups GROUP BY voyageId", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  int voyageId = dataReader.GetInt32("voyageId");
+                  int groupCount = dataReader.GetInt32("groupCount");
+                  voyageToGroupCount.Add(voyageId, groupCount);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return voyageToGroupCount;
+   }
+
    public static new void updateVoyageGroupQuickmatchStatus (int groupId, bool isQuickmatchEnabled) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -5495,7 +5600,7 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new VoyageGroupInfo getBestVoyageGroupForQuickmatch (string areaKey) {
+   public static new VoyageGroupInfo getBestVoyageGroupForQuickmatch (int voyageId) {
       VoyageGroupInfo groupInfo = null;
 
       try {
@@ -5503,11 +5608,11 @@ public class DB_Main : DB_MainStub
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT *, COUNT(*) AS memberCount FROM voyage_groups " +
             "JOIN voyage_group_members ON voyage_groups.groupId = voyage_group_members.groupId " +
-            "WHERE areaKey = @areaKey AND isQuickmatchEnabled = 1 " +
+            "WHERE voyageId = @voyageId AND isQuickmatchEnabled = 1 " +
             "GROUP BY voyage_groups.groupId ORDER BY creationDate LIMIT 1", conn)) {
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@areaKey", areaKey);
+            cmd.Parameters.AddWithValue("@voyageId", voyageId);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -5622,6 +5727,8 @@ public class DB_Main : DB_MainStub
       }
    }
 
+   #endregion
+
    public static new void readTest () {
       try {
          using (MySqlConnection conn = getConnection())
@@ -5725,8 +5832,7 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "DROP TABLE IF EXISTS xml_templates;" +
-            "CREATE TABLE xml_templates(xml_id INTEGER PRIMARY KEY AUTO_INCREMENT, xml_name VARCHAR(50), xml_content TEXT)", conn)) {
+            "DROP TABLE IF EXISTS xml_templates", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.ExecuteNonQuery();

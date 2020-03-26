@@ -95,7 +95,10 @@ MonoBehaviour:
   title: Bookcase
   dataFields: []
   selectDataFields: []
-  customDataFields: []
+  customDataFields:
+  - name: book id
+    toolTip: The book that can be read in this bookcase
+    type: 7
 --- !u!114 &-1721215801130250132
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -227,7 +230,8 @@ PrefabInstance:
       propertyPath: m_Size.y
       value: 0.4325302
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4720056912659020891, guid: 571eca005b0c93f44ba998ead419430d, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 571eca005b0c93f44ba998ead419430d, type: 3}
 --- !u!1 &7945933527689811815 stripped
 GameObject:

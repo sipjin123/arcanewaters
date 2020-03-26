@@ -9,8 +9,6 @@ namespace MapCreationTool
 {
    public class MapImporter
    {
-      public const string DataFileExtension = "arcane";
-
       /// <summary>
       /// Creates an instance of a map from the serialized map data
       /// </summary>
@@ -44,12 +42,8 @@ namespace MapCreationTool
          result.area.setTilemapLayers(instantiateTilemaps(mapInfo, exportedProject, result.tilemapParent, result.collisionTilemapParent));
          instantiatePrefabs(mapInfo, exportedProject, result.prefabParent, result.npcParent, result.area);
 
-         if (exportedProject.gravityEffectors != null) {
-            addGravityEffectors(result, exportedProject.gravityEffectors);
-         }
-
-         if (exportedProject.vineColliders != null) {
-            addVineColliders(result, exportedProject.vineColliders);
+         if (exportedProject.specialTileChunks != null) {
+            addSpecialTileChunks(result, exportedProject.specialTileChunks);
          }
 
          Bounds bounds = calculateBounds(exportedProject);
@@ -63,38 +57,28 @@ namespace MapCreationTool
          return area;
       }
 
-      static void addGravityEffectors (MapTemplate map, ExportedGravityEffector[] effectors) {
-         foreach (ExportedGravityEffector exportedEffector in effectors) {
-            GameObject effector = new GameObject("Gravity Effector");
-            effector.transform.parent = map.effectorContainer;
-            effector.transform.localPosition = exportedEffector.position;
-            effector.transform.localScale = Vector3.one;
-
-            BoxCollider2D collider = effector.AddComponent<BoxCollider2D>();
-            collider.isTrigger = true;
-            collider.usedByEffector = true;
-            collider.size = exportedEffector.size;
-
-            AreaEffector2D areaEffector = effector.AddComponent<AreaEffector2D>();
-            areaEffector.forceAngle = 270;
-            areaEffector.forceMagnitude = 15;
-            areaEffector.forceVariation = 0;
-            areaEffector.forceTarget = EffectorSelection2D.Rigidbody;
-         }
-      }
-
-      static void addVineColliders (MapTemplate map, ExportedVineCollider[] vineColliders) {
-         foreach (ExportedVineCollider vineCollider in vineColliders) {
-            GameObject vine = new GameObject("Vine Trigger");
-            vine.transform.parent = map.effectorContainer;
-            vine.transform.localPosition = vineCollider.position;
-            vine.transform.localScale = Vector3.one;
-
-            vine.AddComponent<Vines>();
-
-            BoxCollider2D collider = vine.AddComponent<BoxCollider2D>();
-            collider.isTrigger = true;
-            collider.size = vineCollider.size;
+      static void addSpecialTileChunks (MapTemplate map, SpecialTileChunk[] chunks) {
+         foreach (SpecialTileChunk chunk in chunks) {
+            switch (chunk.type) {
+               case SpecialTileChunk.Type.Stair:
+                  GameObject stairs = UnityEngine.Object.Instantiate(AssetSerializationMaps.stairsEffector, map.effectorContainer);
+                  stairs.transform.localPosition = chunk.position;
+                  stairs.transform.localScale = Vector3.one;
+                  stairs.GetComponent<BoxCollider2D>().size = chunk.size;
+                  break;
+               case SpecialTileChunk.Type.Vine:
+                  Vines vines = UnityEngine.Object.Instantiate(AssetSerializationMaps.vinesTrigger, map.effectorContainer);
+                  vines.transform.localPosition = chunk.position - Vector2.up * 0.4f;
+                  vines.transform.localScale = Vector3.one;
+                  vines.GetComponent<BoxCollider2D>().size = chunk.size - new Vector2(0.6f, 0.9f);
+                  break;
+               case SpecialTileChunk.Type.Waterfall:
+                  GameObject waterfall = UnityEngine.Object.Instantiate(AssetSerializationMaps.waterfallEfector, map.effectorContainer);
+                  waterfall.transform.localPosition = chunk.position;
+                  waterfall.transform.localScale = Vector3.one;
+                  waterfall.GetComponent<BoxCollider2D>().size = chunk.size;
+                  break;
+            }
          }
       }
 
@@ -189,6 +173,7 @@ namespace MapCreationTool
                }
 
                foreach (ZSnap snap in pref.GetComponentsInChildren<ZSnap>()) {
+                  snap.inheritedOffsetZ = prefab.iz;
                   snap.snapZ();
                }
 

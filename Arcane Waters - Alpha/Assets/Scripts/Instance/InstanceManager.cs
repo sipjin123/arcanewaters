@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System;
 
 public class InstanceManager : MonoBehaviour {
    #region Public Variables
@@ -25,7 +26,7 @@ public class InstanceManager : MonoBehaviour {
 
       // If there isn't one, we'll have to make it
       if (instance == null) {
-         instance = createNewInstance(areaKey, Biome.Type.None, player.isSinglePlayer);
+         instance = createNewInstance(areaKey, player.isSinglePlayer);
       }
 
       // Set the player's instance ID
@@ -34,7 +35,7 @@ public class InstanceManager : MonoBehaviour {
       // Add the player to the list
       instance.entities.Add(player);
 
-      // If we just hit the max, we need to recheck which areas are open
+      // If we just hit the max number of players, we need to recheck which areas are open
       if (instance.getPlayerCount() >= instance.getMaxPlayers()) {
          recalculateOpenAreas();
       }
@@ -65,15 +66,24 @@ public class InstanceManager : MonoBehaviour {
       return null;
    }
 
-   public Instance createNewInstance (string areaKey, Biome.Type biomeType, bool isSinglePlayer) {
+   public Instance createNewInstance (string areaKey, bool isSinglePlayer) {
+      return createNewInstance(areaKey, isSinglePlayer, false, 0, false, Voyage.Difficulty.None);
+   }
+
+   public Instance createNewInstance (string areaKey, bool isSinglePlayer, bool isVoyage, int voyageId, bool isPvP,
+      Voyage.Difficulty difficulty) {
       Instance instance = Instantiate(instancePrefab, this.transform);
       instance.id = _id++;
       instance.areaKey = areaKey;
-      instance.biomeType = biomeType;
       instance.numberInArea = getInstanceCount(areaKey) + 1;
       instance.serverAddress = MyNetworkManager.self.networkAddress;
       instance.serverPort = MyNetworkManager.self.telepathy.port;
-      instance.mapSeed = Random.Range(0, 1000000);
+      instance.mapSeed = UnityEngine.Random.Range(0, 1000000);
+      instance.creationDate = DateTime.UtcNow.ToBinary();
+      instance.isVoyage = isVoyage;
+      instance.voyageId = voyageId;
+      instance.isPvP = isPvP;
+      instance.difficulty = difficulty;
 
       instance.updateMaxPlayerCount(isSinglePlayer);
 
@@ -163,6 +173,18 @@ public class InstanceManager : MonoBehaviour {
       return areaArray;
    }
 
+   public List<Instance> getVoyageInstances () {
+      List<Instance> voyages = new List<Instance>();
+
+      foreach (Instance instance in _instances.Values) {
+         if (instance.isVoyage) {
+            voyages.Add(instance);
+         }
+      }
+
+      return voyages;
+   }
+
    public int getInstanceCount (string areaKey) {
       int count = 0;
 
@@ -211,6 +233,11 @@ public class InstanceManager : MonoBehaviour {
       // Destroy any bot entities
       foreach (NetworkBehaviour entity in instance.entities) {
          NetworkServer.Destroy(entity.gameObject);
+      }
+
+      // Destroy any treasure site
+      foreach (NetworkBehaviour treasureSite in instance.treasureSites) {
+         NetworkServer.Destroy(treasureSite.gameObject);
       }
 
       // Remove it from our internal mapping

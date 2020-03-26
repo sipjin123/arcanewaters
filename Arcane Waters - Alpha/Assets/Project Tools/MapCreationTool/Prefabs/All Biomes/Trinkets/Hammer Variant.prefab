@@ -1,5 +1,21 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!58 &4187712756659346775
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5649798440303732876}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.08
 --- !u!114 &934447017589803549
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -44,25 +60,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: Hammer
+  canInheritPosition: 1
+  canControlPosition: 0
   dataFields: []
   selectDataFields: []
   customDataFields: []
---- !u!58 &4187712756659346775
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5649798440303732876}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  serializedVersion: 2
-  m_Radius: 0.08
 --- !u!1 &4028513671918458510
 GameObject:
   m_ObjectHideFlags: 0
@@ -214,6 +216,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.y
       value: 6.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 3397652243083895789, guid: 140da15c6a6d4cd40a011c11e87e14c6,
+        type: 3}
+      propertyPath: isActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7076830771912146571, guid: 140da15c6a6d4cd40a011c11e87e14c6,
         type: 3}

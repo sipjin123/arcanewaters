@@ -29,6 +29,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: Table
+  canInheritPosition: 0
+  canControlPosition: 1
   dataFields: []
   selectDataFields: []
   customDataFields: []
@@ -224,6 +226,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5833168585432024454, guid: 39e78c5bb084eb942bc03354dd5bdad0,
+        type: 3}
+      propertyPath: isActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5279056754995727997, guid: 39e78c5bb084eb942bc03354dd5bdad0, type: 3}

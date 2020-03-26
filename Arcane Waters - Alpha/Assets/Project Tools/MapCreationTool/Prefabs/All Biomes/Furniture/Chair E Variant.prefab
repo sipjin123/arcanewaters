@@ -124,6 +124,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: Chair
+  canInheritPosition: 0
+  canControlPosition: 1
   dataFields: []
   selectDataFields: []
   customDataFields: []
@@ -208,6 +210,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Chair E Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 138263571236388217, guid: fa47db2d7a390fc4c81aec97d67b7ff5,
+        type: 3}
+      propertyPath: isActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fa47db2d7a390fc4c81aec97d67b7ff5, type: 3}

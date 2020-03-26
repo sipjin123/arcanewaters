@@ -28,6 +28,14 @@ public class EnemyManager : MonoBehaviour {
       _spawners[areaKey] = list;
    }
 
+   public void removeSpawners (string areaKey) {
+      List<Enemy_Spawner> list;
+      if (_spawners.TryGetValue(areaKey, out list)) {
+         list.Clear();
+         _spawners[areaKey] = list;
+      }
+   }
+
    public void spawnEnemiesOnServerForInstance (Instance instance) {
       // If we don't have any spawners defined for this Area, then we're done
       if (!_spawners.ContainsKey(instance.areaKey)) {

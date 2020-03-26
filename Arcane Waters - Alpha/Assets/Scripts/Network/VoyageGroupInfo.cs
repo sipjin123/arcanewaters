@@ -16,8 +16,8 @@ public class VoyageGroupInfo
    // The group ID
    public int groupId;
 
-   // The area key
-   public string areaKey;
+   // The voyage ID
+   public int voyageId;
 
    // The date at which the group was created
    public long creationDate;
@@ -39,7 +39,7 @@ public class VoyageGroupInfo
 
    public VoyageGroupInfo (MySqlDataReader dataReader) {
       this.groupId = DataUtil.getInt(dataReader, "groupId");
-      this.areaKey = DataUtil.getString(dataReader, "areaKey");
+      this.voyageId = DataUtil.getInt(dataReader, "voyageId");
       this.creationDate = DataUtil.getDateTime(dataReader, "creationDate").ToBinary();
       this.isQuickmatchEnabled = DataUtil.getBoolean(dataReader, "isQuickMatchEnabled");
       this.isPrivate = DataUtil.getBoolean(dataReader, "isPrivate");
@@ -48,10 +48,10 @@ public class VoyageGroupInfo
 
 #endif
 
-   public VoyageGroupInfo (int groupId, string areaKey, DateTime creationDate, bool isQuickmatchEnabled,
+   public VoyageGroupInfo (int groupId, int voyageId, DateTime creationDate, bool isQuickmatchEnabled,
       bool isPrivate, int memberCount) {
       this.groupId = groupId;
-      this.areaKey = areaKey;
+      this.voyageId = voyageId;
       this.creationDate = creationDate.ToBinary();
       this.isQuickmatchEnabled = isQuickmatchEnabled;
       this.isPrivate = isPrivate;

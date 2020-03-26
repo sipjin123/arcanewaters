@@ -9,6 +9,8 @@ namespace MapCreationTool
    public class PrefabDataDefinition : MonoBehaviour
    {
       public string title = "";
+      public bool canInheritPosition = false;
+      public bool canControlPosition = false;
       public DataField[] dataFields = new DataField[0];
       public SelectDataField[] selectDataFields = new SelectDataField[0];
       public CustomDataField[] customDataFields = new CustomDataField[0];
@@ -23,7 +25,8 @@ namespace MapCreationTool
                selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
                   name = customData.name,
                   toolTip = customData.toolTip,
-                  options = SelectOption.formOptions("North", "NorthEast", "East", "SouthEast", "South", "SouthWest", "West", "NorthWest")
+                  options = SelectOption.formOptions("North", "NorthEast", "East", "SouthEast", "South", "SouthWest", "West", "NorthWest"),
+                  defaultOption = 4
                };
             } else if (customData.type == CustomFieldType.NPC && NPCManager.instance.npcCount > 0) {
                Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
@@ -59,6 +62,13 @@ namespace MapCreationTool
                   name = customData.name,
                   toolTip = customData.toolTip,
                   options = MonsterManager.instance.formSeaMonsterSelectionOptions()
+               };
+            } else if (customData.type == CustomFieldType.Book && BooksManager.instance.booksCount > 0) {
+               Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
+               selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
+                  name = customData.name,
+                  toolTip = customData.toolTip,
+                  options = BooksManager.instance.formSelectionOptions()
                };
             } else if (customData.type == CustomFieldType.ActionName) {
                Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
@@ -113,7 +123,8 @@ namespace MapCreationTool
          ShopName,
          LandMonster,
          SeaMonster,
-         ActionName
+         ActionName,
+         Book
       }
    }
 }

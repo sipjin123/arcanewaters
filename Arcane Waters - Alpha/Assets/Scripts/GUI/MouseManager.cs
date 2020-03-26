@@ -5,7 +5,8 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
 
-public class MouseManager : ClientMonoBehaviour {
+public class MouseManager : ClientMonoBehaviour
+{
    #region Public Variables
 
    // Various mouse settings
@@ -68,11 +69,12 @@ public class MouseManager : ClientMonoBehaviour {
                }
             }
 
-            // Otherwise, check if we're  hoving over a selectable or toggle
+            // Otherwise, check if we're  hoving over a selectable, toggle or slider
             Selectable selectable = result.gameObject.GetComponent<Selectable>();
             Toggle toggle = result.gameObject.GetComponentInParent<Toggle>();
+            Slider slider = result.gameObject.GetComponentInParent<Slider>();
 
-            if (selectable != null || toggle != null) {
+            if (selectable != null || toggle != null || slider != null) {
                return true;
             }
          }
@@ -86,7 +88,7 @@ public class MouseManager : ClientMonoBehaviour {
          pointerId = -1,
       };
       pointerData.position = Input.mousePosition;
-      
+
       List<RaycastResult> results = new List<RaycastResult>();
       EventSystem.current.RaycastAll(pointerData, results);
 

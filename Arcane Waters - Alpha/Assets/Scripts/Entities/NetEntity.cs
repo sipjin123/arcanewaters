@@ -867,6 +867,18 @@ public class NetEntity : NetworkBehaviour {
    }
 
    [Server]
+   public void spawnInNewMap (int voyageId, string newArea, Direction newFacingDirection) {
+      // Find the server hosting the voyage
+      Server voyageServer = ServerNetwork.self.getServerHostingVoyage(voyageId);
+
+      // Get the default spawn of the area
+      Vector2 spawnLocalPosition = SpawnManager.self.getDefaultSpawnLocalPosition(newArea);
+
+      // Now that we know the target server, redirect them there
+      spawnOnSpecificServer(voyageServer, newArea, spawnLocalPosition, newFacingDirection);
+   }
+
+   [Server]
    public void spawnOnSpecificServer (Server newServer, string newArea, Vector2 newLocalPosition, Direction newFacingDirection) {
       GameObject entityObject = this.gameObject;
 

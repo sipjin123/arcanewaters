@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.Tilemaps;
 using ProceduralMap;
 using Mirror;
+using System;
 
 public class VoyageMapCell : MonoBehaviour {
    #region Public Variables
@@ -18,11 +19,11 @@ public class VoyageMapCell : MonoBehaviour {
    // The map name
    public Text mapNameText;
 
-   // The PvP-PvE plaque image
-   public Image pvpPvePlaque;
+   // The stats plaque image
+   public Image statsPlaqueImage;
 
-   // The player count plaque image
-   public Image playerCountPlaque;
+   // The PvP-PvE mode image
+   public Image pvpPveModeImage;
 
    // The PvP-PvE text
    public Text pvpPveText;
@@ -30,16 +31,32 @@ public class VoyageMapCell : MonoBehaviour {
    // The player count text
    public Text playerCountText;
 
+   // The time since the voyage started
+   public Text timeText;
+
+   // The treasure site count text
+   public Text treasureSiteCountText;
+
    // The PvP-PvE text outline
    public Outline pvpPveOutline;
 
    // The player count text outline
    public Outline playerCountOutline;
 
-   // The colors for the plaque text outline
+   // The time text outline
+   public Outline timeOutline;
+
+   // The treasure site count outline
+   public Outline treasureSiteCountOutline;
+
+   // The colors for the outlines
    public Color bronzeOutlineColor;
    public Color silverOutlineColor;
    public Color goldOutlineColor;
+
+   // The icons for PvP and PvE modes
+   public Sprite pvpIcon;
+   public Sprite pveIcon;
 
    #endregion
 
@@ -53,36 +70,52 @@ public class VoyageMapCell : MonoBehaviour {
       mapNameText.text = Area.getName(voyage.areaKey);
 
       // Set the plaque images
-      pvpPvePlaque.sprite = ImageManager.getSprite(SEA_MAP_PATH + "plaque_" + getFrameName());
-      playerCountPlaque.sprite = ImageManager.getSprite(SEA_MAP_PATH + "count_plaque_" + getFrameName());
+      statsPlaqueImage.sprite = ImageManager.getSprite(SEA_MAP_PATH + "plaque_" + getFrameName());
 
       // Set the PvP-PvE label
-      if (voyage.isPvP) {
-         pvpPveText.text = "PvP";
+      pvpPveText.text = voyage.isPvP ? "PvP" : "PvE";
+      pvpPveModeImage.sprite = voyage.isPvP ? pvpIcon : pveIcon;
+
+      // Set the player count
+      playerCountText.text = (voyage.groupCount * Voyage.getMaxGroupSize(voyage.difficulty)) + "/" +
+         Voyage.getMaxGroupsPerInstance(voyage.difficulty) * Voyage.getMaxGroupSize(voyage.difficulty);
+
+      // Set the treasure site count
+      if (voyage.treasureSiteCount == 0) {
+         // If the number of sites is 0, the area has not yet been instantiated on the server
+         treasureSiteCountText.text = "?/?";
       } else {
-         pvpPveText.text = "PvE";
+         treasureSiteCountText.text = (voyage.treasureSiteCount - voyage.capturedTreasureSiteCount).ToString() + "/" + voyage.treasureSiteCount;
       }
 
-      // Set the player count label
-      playerCountText.text = Voyage.getMaxGroupSize(voyage.difficulty).ToString();
+      // Set the time since the voyage started
+      timeText.text = TimeSpan.FromTicks(voyage.timeSinceStart).ToString(@"mm\:ss");
 
       // Set the plaque labels outline color
       switch (voyage.difficulty) {
          case Voyage.Difficulty.Easy:
             playerCountOutline.effectColor = bronzeOutlineColor;
             pvpPveOutline.effectColor = bronzeOutlineColor;
+            treasureSiteCountOutline.effectColor = bronzeOutlineColor;
+            timeOutline.effectColor = bronzeOutlineColor;
             break;
          case Voyage.Difficulty.Medium:
             playerCountOutline.effectColor = silverOutlineColor;
             pvpPveOutline.effectColor = silverOutlineColor;
+            treasureSiteCountOutline.effectColor = silverOutlineColor;
+            timeOutline.effectColor = silverOutlineColor;
             break;
          case Voyage.Difficulty.Hard:
             playerCountOutline.effectColor = goldOutlineColor;
             pvpPveOutline.effectColor = goldOutlineColor;
+            treasureSiteCountOutline.effectColor = goldOutlineColor;
+            timeOutline.effectColor = goldOutlineColor;
             break;
          default:
             playerCountOutline.effectColor = Color.white;
             pvpPveOutline.effectColor = Color.white;
+            treasureSiteCountOutline.effectColor = Color.white;
+            timeOutline.effectColor = Color.white;
             break;
       }
    }
@@ -146,8 +179,8 @@ public class VoyageMapCell : MonoBehaviour {
       return "";
    }
 
-   private string getBiomeName () {
-      return _voyage.biomeType.ToString().ToLower();
+   private string getBiomeName () {      
+      return _voyage.biome.ToString().ToLower();
    }
 
    #region Private Variables

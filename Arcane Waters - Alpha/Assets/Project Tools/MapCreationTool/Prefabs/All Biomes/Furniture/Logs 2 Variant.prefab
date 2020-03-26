@@ -93,6 +93,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: Logs
+  canInheritPosition: 0
+  canControlPosition: 0
   dataFields: []
   selectDataFields: []
   customDataFields: []
@@ -198,6 +200,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.y
       value: 6.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 5315049234400165464, guid: 5ba3848d9ec640c469a7e08824167bab,
+        type: 3}
+      propertyPath: isActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7625422093937872267, guid: 5ba3848d9ec640c469a7e08824167bab,
         type: 3}

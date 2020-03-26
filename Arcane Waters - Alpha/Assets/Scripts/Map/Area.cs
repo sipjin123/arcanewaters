@@ -191,8 +191,7 @@ public class Area : MonoBehaviour
    }
 
    public static Biome.Type getBiome (string areaKey) {
-      Area returnArea = AreaManager.self.getArea(areaKey);
-      return returnArea ? returnArea.biome : Biome.Type.None;
+      return AreaManager.self.getAreaBiome(areaKey);
    }
 
    public static SoundManager.Type getBackgroundMusic (string areaKey) {

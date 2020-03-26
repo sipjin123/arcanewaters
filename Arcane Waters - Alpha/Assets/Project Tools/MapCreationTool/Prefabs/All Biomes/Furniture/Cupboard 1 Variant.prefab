@@ -124,6 +124,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: Cupboard
+  canInheritPosition: 0
+  canControlPosition: 1
   dataFields: []
   selectDataFields: []
   customDataFields: []
@@ -213,6 +215,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Size.y
       value: 0.31902546
+      objectReference: {fileID: 0}
+    - target: {fileID: 5594233185860831783, guid: cfec7762e391d3a40a6193517560f7ca,
+        type: 3}
+      propertyPath: isActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cfec7762e391d3a40a6193517560f7ca, type: 3}

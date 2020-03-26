@@ -774,12 +774,23 @@ public class DB_MainStub : MonoBehaviour
    public static int getMinimumToolsVersionForMac () {
       return 0;
    }
+   public static int getNewVoyageId () {
+      return 0;
+   }
 
    public static int createVoyageGroup (VoyageGroupInfo groupInfo) {
       return 0;
    }
 
    public static VoyageGroupInfo getVoyageGroup (int groupId) {
+      return null;
+   }
+
+   public static int getGroupCountInVoyage (int voyageId) {
+      return 0;
+   }
+
+   public static Dictionary<int, int> getGroupCountInAllVoyages () {
       return null;
    }
 
@@ -791,7 +802,7 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
-   public static VoyageGroupInfo getBestVoyageGroupForQuickmatch (string areaKey) {
+   public static VoyageGroupInfo getBestVoyageGroupForQuickmatch (int voyageId) {
       return null;
    }
 

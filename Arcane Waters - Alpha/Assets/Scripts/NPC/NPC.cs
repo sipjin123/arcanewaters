@@ -137,7 +137,9 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
          // Set npc name and specialty
          _npcName = npcData.name;
          _specialty = npcData.specialty;
-         nameText.text = _npcName;
+         if (nameText != null) {
+            nameText.text = _npcName;
+         }
          try {
             GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture(npcData.spritePath);
          } catch {
@@ -261,7 +263,9 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
    protected int getId () {
       // Blocks the ID generation for Debug scenes, uses the custom ID setup for the npc instead
       if (isDebug) {
-         nameText.text = "ID: [" + this.npcId + "]\n" + this.getName();
+         if (nameText != null) {
+            nameText.text = "ID: [" + this.npcId + "]\n" + this.getName();
+         }
          return this.npcId;
       }
 

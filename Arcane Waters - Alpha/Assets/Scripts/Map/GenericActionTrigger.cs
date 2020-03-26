@@ -18,7 +18,8 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
    // The list of actions that can be defined and triggered
    public static Dictionary<string, Action<NetEntity>> actions = new Dictionary<string, Action<NetEntity>> {
       { "test debug1", testDebugLog },
-      { "test debug2", (e) => testDebugLog(e, "Other test log") }
+      { "test debug2", (e) => testDebugLog(e, "Other test log") },
+      { "Voyage Panel", showVoyagePanel }
    };
 
    // The type of interaction that is needed to trigger the action
@@ -35,6 +36,10 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
 
    private static void testDebugLog (NetEntity entity, string message) {
       Debug.Log(message);
+   }
+
+   private static void showVoyagePanel (NetEntity entity) {
+      VoyageManager.self.showVoyagePanel(entity);
    }
 
    private void Awake () {

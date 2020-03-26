@@ -26,6 +26,9 @@ public class OptionsPanel : Panel, IPointerClickHandler {
    // The fullscreen toggle
    public Toggle fullscreenToggle;
 
+   // Log Out Button
+   public Button logoutButton;
+
    // Self
    public static OptionsPanel self;
 
@@ -45,6 +48,9 @@ public class OptionsPanel : Panel, IPointerClickHandler {
 
       initializeResolutionsDropdown();
       initializeFullScreenToggle();
+
+      musicSlider.value = SoundManager.musicVolume;
+      effectsSlider.value = SoundManager.effectsVolume;
    }
 
    private void initializeFullScreenToggle () {
@@ -58,6 +64,12 @@ public class OptionsPanel : Panel, IPointerClickHandler {
 
    private void setResolution (int resolutionIndex) {
       ScreenSettingsManager.setResolution(Screen.resolutions[resolutionIndex].width, Screen.resolutions[resolutionIndex].height);
+   }
+
+   public override void show () {
+      base.show();
+
+      logoutButton.gameObject.SetActive(NetworkServer.active || NetworkClient.active);
    }
 
    private void initializeResolutionsDropdown () {

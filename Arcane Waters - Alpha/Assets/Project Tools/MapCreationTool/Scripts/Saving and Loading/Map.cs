@@ -9,7 +9,7 @@ namespace MapCreationTool.Serialization
       public DateTime createdAt { get; set; }
       public int creatorID { get; set; }
       public int? publishedVersion { get; set; }
-      public int? sourceMapId { get; set; }
+      public int sourceMapId { get; set; }
       public string notes { get; set; }
       public EditorType editorType { get; set; }
       public Biome.Type biome { get; set; }

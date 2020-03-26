@@ -31,6 +31,10 @@ public class TreasureSite : NetworkBehaviour
    [SyncVar]
    public float capturePoints = 0f;
 
+   // The difficulty of the voyage where this site is
+   [SyncVar]
+   public Voyage.Difficulty difficulty = Voyage.Difficulty.None;
+
    // The sprite renderer component
    public SpriteRenderer spriteRenderer;
 
@@ -45,9 +49,6 @@ public class TreasureSite : NetworkBehaviour
    public void Start () {
       // Make the site a child of the Area
       StartCoroutine(CO_SetAreaParent());
-
-      // Get the voyage info
-      _voyage = VoyageManager.self.getVoyage(areaKey);
 
       // By default, hide the capture circle
       captureCircleRenderer.enabled = false;
@@ -87,7 +88,7 @@ public class TreasureSite : NetworkBehaviour
             int shipCount = _capturingShips.Count;
 
             // Get the maximum number of ships per group for this voyage difficulty
-            int maxShipCount = Voyage.getMaxGroupSize(_voyage.difficulty);
+            int maxShipCount = Voyage.getMaxGroupSize(difficulty);
 
             // Calculate the capture speed
             float captureDuration = Mathf.Lerp(CAPTURE_MAX_DURATION, CAPTURE_MIN_DURATION, ((float) shipCount) / maxShipCount);
@@ -225,9 +226,6 @@ public class TreasureSite : NetworkBehaviour
 
    // The list of ships currently capturing the site
    private HashSet<ShipEntity> _capturingShips = new HashSet<ShipEntity>();
-
-   // The voyage associated with this area and treasure site
-   private Voyage _voyage = null;
 
    #endregion
 }

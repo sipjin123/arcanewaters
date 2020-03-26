@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: Rack
+  canInheritPosition: 0
+  canControlPosition: 0
   dataFields: []
   selectDataFields: []
   customDataFields: []
@@ -148,6 +150,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Size.y
       value: 0.317422
+      objectReference: {fileID: 0}
+    - target: {fileID: 5064184176810401714, guid: 926390346b6d5ed4fb8540ce84e17a87,
+        type: 3}
+      propertyPath: isActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6345708963715676638, guid: 926390346b6d5ed4fb8540ce84e17a87,
         type: 3}

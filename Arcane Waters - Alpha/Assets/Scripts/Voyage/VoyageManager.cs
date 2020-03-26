@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System.Linq;
+using System;
 
 public class VoyageManager : MonoBehaviour {
 
@@ -16,38 +17,15 @@ public class VoyageManager : MonoBehaviour {
 
    void Awake () {
       self = this;
-
-      // Hardcoded data for testing purposes
-      //store(new Voyage("Starting Sea Map", Voyage.Difficulty.Easy, true));
-      //store(new Voyage("Starting Sea Map", Voyage.Difficulty.Medium, false));
-      store(new Voyage("Snow Sea Map Lite", Voyage.Difficulty.Hard, true, Biome.Type.Forest));      
    }
 
    public void Start () {
       InvokeRepeating("updateVoyageGroupMembers", 0f, 2f);
    }
 
-   public void store (Voyage voyage) {
-      _allVoyages.Add(voyage.areaKey, voyage);
-   }
-
-   public Voyage getVoyage (string areaKey) {
-      if (_allVoyages.ContainsKey(areaKey)) {
-         return _allVoyages[areaKey];
-      } else {
-         D.error("No voyage is defined for area " + areaKey);
-         return null;
-      }
-   }
-
-   public List<Voyage> getAllVoyages () {
-      List<Voyage> voyageList = new List<Voyage>(_allVoyages.Values);
-      return voyageList;
-   }
-
    public bool isVoyageArea (string areaKey) {
-      foreach(Voyage voyage in _allVoyages.Values) {
-         if (string.Equals(voyage.areaKey, areaKey)) {
+      foreach (string aKey in AreaManager.self.getSeaAreaKeys()) {
+         if (aKey.Equals(areaKey)) {
             return true;
          }
       }
@@ -56,6 +34,57 @@ public class VoyageManager : MonoBehaviour {
 
    public static bool isInVoyage (NetEntity entity) {
       return entity != null && entity.voyageGroupId != -1;
+   }
+
+   public static bool isVoyageOpenToNewGroups (Voyage voyage, int groupCount) {
+      // Calculate the time left until the voyage closes to new groups
+      DateTime voyageCreationDate = DateTime.FromBinary(voyage.creationDate);
+      TimeSpan timeLeft = voyageCreationDate.AddSeconds(Voyage.INSTANCE_OPEN_DURATION).Subtract(DateTime.UtcNow);
+
+      // Check that the voyage is still in the open phase
+      if (timeLeft.TotalSeconds <= 0) {
+         return false;
+      } else {
+         // Check if the maximum number of groups has been reached
+         if (groupCount >= Voyage.getMaxGroupsPerInstance(voyage.difficulty)) {
+            return false;
+         } else {
+            return true;
+         }
+      }
+   }
+
+   public void showVoyagePanel (NetEntity entity) {
+      if (!Global.player.isClient || entity == null || !entity.isLocalPlayer) {
+         return;
+      }
+
+      // Check if the player is in a voyage group
+      if (isInVoyage(entity)) {
+         // Associate a new function with the confirmation button
+         PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
+         PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => confirmWarpToVoyageMap());
+
+         // Show a confirmation panel
+         PanelManager.self.confirmScreen.show("Do you want to warp to your current voyage?");
+      } else {
+         // Get the voyages panel
+         PanelManager.self.selectedPanel = Panel.Type.Voyage;
+         VoyagePanel panel = (VoyagePanel) PanelManager.self.get(Panel.Type.Voyage);
+
+         // If the panel is not showing, send a request to the server to get the panel data
+         if (!panel.isShowing()) {
+            panel.displayVoyagesSelection();
+         }
+      }
+   }
+
+   public void confirmWarpToVoyageMap () {
+      // Hide the confirm panel
+      PanelManager.self.confirmScreen.hide();
+
+      // Warp the player to its voyage
+      Global.player.rpc.Cmd_WarpToCurrentVoyageMap();
    }
 
    public void handleInviteCommand (string inputString) {
@@ -165,9 +194,6 @@ public class VoyageManager : MonoBehaviour {
    }
 
    #region Private Variables
-
-   // Keeps track of the voyages, accessible by areaKey
-   private Dictionary<string, Voyage> _allVoyages = new Dictionary<string, Voyage>();
 
    // Keeps track of the group members visible by this client
    private List<int> _visibleGroupMembers = new List<int>();

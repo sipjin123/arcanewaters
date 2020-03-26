@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System.Linq;
 
 public class ServerNetwork : MonoBehaviour {
    #region Public Variables
@@ -43,17 +44,10 @@ public class ServerNetwork : MonoBehaviour {
       }
 
       // Find the server with the least people
-      int leastPlayers = int.MaxValue;
-      Server bestServer = null;
-      foreach (Server server in servers) {
-         if (server.playerCount < leastPlayers) {
-            bestServer = server;
-            leastPlayers = server.playerCount;
-            string logMsg = string.Format("Found best server {0}:{1} with player count {2} for {3} ({4})",
-               bestServer.ipAddress, bestServer.port, bestServer.playerCount, username, address);
-            D.debug(logMsg);
-         }
-      }
+      Server bestServer = getServerWithLeastPlayers();
+      string logMsg = string.Format("Found best server {0}:{1} with player count {2} for {3} ({4})",
+         bestServer.ipAddress, bestServer.port, bestServer.playerCount, username, address);
+      D.debug(logMsg);
 
       // If this player is claimed by a server, we have to return to that server
       foreach (Server server in servers) {
@@ -68,6 +62,19 @@ public class ServerNetwork : MonoBehaviour {
       }
 
       return bestServer;
+   }
+
+   public Server getServerHostingVoyage (int voyageId) {
+      // Search the voyage in all the servers we know about
+      foreach (Server server in servers) {
+         foreach (Voyage voyage in server.voyages) {
+            if (voyage.voyageId == voyageId) {
+               return server;
+            }
+         }
+      }
+
+      return null;
    }
 
    public void removeServer (Server server) {
@@ -120,6 +127,20 @@ public class ServerNetwork : MonoBehaviour {
       return null;
    }
 
+   public Server getServerWithLeastPlayers () {
+      int leastPlayers = int.MaxValue;
+      Server bestServer = null;
+
+      foreach (Server server in servers) {
+         if (server.playerCount < leastPlayers) {
+            bestServer = server;
+            leastPlayers = server.playerCount;
+         }
+      }
+
+      return bestServer;
+   }
+
    public bool isUserOnline (int userId) {
       bool isOnline = false;
 
@@ -140,6 +161,32 @@ public class ServerNetwork : MonoBehaviour {
          }
       }
       return null;
+   }
+
+   public Voyage getVoyage (int voyageId) {
+      // Search the voyage in all the servers we know about
+      foreach (Server server in servers) {
+         foreach (Voyage voyage in server.voyages) {
+            if (voyage.voyageId == voyageId) {
+               return voyage;
+            }
+         }
+      }
+
+      return null;
+   }
+
+   public List<Voyage> getAllVoyages () {
+      List<Voyage> voyages = new List<Voyage>();
+
+      // Get all the voyages we know about in all the servers we know about
+      foreach (Server server in servers) {
+         foreach (Voyage voyage in server.voyages) {
+            voyages.Add(voyage);
+         }
+      }
+
+      return voyages;
    }
 
    protected IEnumerator CO_checkPhotonConnection () {

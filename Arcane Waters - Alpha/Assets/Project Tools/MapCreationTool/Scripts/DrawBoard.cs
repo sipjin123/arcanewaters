@@ -334,6 +334,8 @@ namespace MapCreationTool
             change.selectionToAdd.tiles.ToArray(),
             Enumerable.Repeat<TileBase>(selectedTileHighlight, change.selectionToAdd.tiles.Count).ToArray());
 
+         recalculateInheritedSorting();
+
          if (registerUndo && !undoChange.empty)
             Undo.register(
                 performUndoRedo,
@@ -375,8 +377,10 @@ namespace MapCreationTool
          var instance = Instantiate(original, position, Quaternion.identity, prefabLayer);
          instance.name = original.name;
 
-         if (instance.GetComponent<ZSnap>())
-            instance.GetComponent<ZSnap>().roundoutPosition();
+         ZSnap snap = instance.GetComponent<ZSnap>();
+         if (snap != null) {
+            snap.initialize();
+         }
 
          foreach (IBiomable biomable in instance.GetComponentsInChildren<IBiomable>()) {
             biomable.setBiome(Tools.biome);
@@ -629,6 +633,8 @@ namespace MapCreationTool
                });
             }
          }
+
+         recalculateInheritedSorting();
       }
 
       public void ensurePreviewCleared () {
@@ -804,6 +810,39 @@ namespace MapCreationTool
             }
 
             brushOutline.color = Color.green;
+         }
+      }
+
+      private void recalculateInheritedSorting () {
+         (PrefabDataDefinition data, Collider2D col, ZSnap snap)[] prefs = placedPrefabs.Union(preview.prefabs)
+            .Select(p => (p.placedInstance.GetComponent<PrefabDataDefinition>(), p.placedInstance.GetComponent<Collider2D>(), p.placedInstance.GetComponent<ZSnap>()))
+            .Where(p => p.Item1 != null && p.Item2 != null && p.Item3 != null)
+            .Where(p => p.Item1.canInheritPosition || p.Item1.canControlPosition)
+            .ToArray();
+
+         foreach (var pref in prefs) {
+            if (pref.data.canInheritPosition) {
+               float minZ = float.MaxValue;
+               Vector2 origin = pref.snap.sortPoint == null ? pref.snap.transform.position : pref.snap.sortPoint.transform.position;
+               (PrefabDataDefinition data, Collider2D col, ZSnap snap) bestController = (null, null, null);
+               foreach (var controller in prefs) {
+                  if (controller.data.canControlPosition && controller.col.OverlapPoint(origin) && controller.data.transform.position.z < minZ) {
+                     minZ = controller.data.transform.position.z;
+                     bestController = controller;
+                  }
+               }
+
+               if (bestController.data == null) {
+                  pref.snap.inheritedOffsetZ = 0;
+                  continue;
+               }
+
+               Vector2 bestOrigin = bestController.snap.sortPoint == null ? bestController.snap.transform.position : bestController.snap.sortPoint.transform.position;
+               float diff = origin.y - bestOrigin.y;
+               float maxDiff = (bestController.col.bounds.max.y - bestOrigin.y);
+
+               pref.snap.inheritedOffsetZ = -diff - 0.1f - maxDiff * 0.2f + Mathf.Lerp(0, maxDiff * 0.2f, Mathf.InverseLerp(0, maxDiff, diff));
+            }
          }
       }
 

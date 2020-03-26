@@ -130,8 +130,7 @@ public class MyNetworkManager : NetworkManager {
       MessageManager.registerServerHandlers();
 
       // Look up and store all of the area keys and spawn positions from the database
-      AreaManager.self.storeAreaKeys();
-      AreaManager.self.storeAreaIdsToNames();
+      AreaManager.self.storeAreaInfo();
       SpawnManager.self.storeSpawnPositions();
 
       // Start up Photon so the servers can talk to each other

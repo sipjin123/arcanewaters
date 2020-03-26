@@ -199,7 +199,7 @@ namespace MapCreationTool
       }
 
       public void applyData (MapVersion mapVersion) {
-         var dt = Serializer.deserialize(mapVersion.editorData, true);
+         var dt = Serializer.deserializeForEditor(mapVersion.editorData);
 
          Tools.changeBiome(dt.biome);
          Tools.changeEditorType(dt.editorType);
@@ -214,7 +214,7 @@ namespace MapCreationTool
       }
 
       public void applyFileData (string data) {
-         var dt = Serializer.deserialize(data, true);
+         var dt = Serializer.deserializeForEditor(data);
 
          Tools.changeBiome(dt.biome);
          Tools.changeEditorType(dt.editorType);
