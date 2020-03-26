@@ -27,12 +27,6 @@ public class TeamCombatPanel : Panel
    // Type of enemies that are existing in xml
    public List<Enemy.Type> availableEnemyTypes;
 
-   // Type of enemies attacking and defending
-   public List<Enemy.Type> leftBattlers, rightBattlers;
-
-   // List of players invited to battle
-   public List<string> leftBattlerNames, rightBattlerNames;
-
    // Launches the team battler system
    public Button launchBattler;
 
@@ -63,32 +57,49 @@ public class TeamCombatPanel : Panel
 
       launchBattler.onClick.AddListener(() => {
          if (leftBattlerParent.childCount > 0) {
-            leftBattlers = new List<Enemy.Type>();
-            leftBattlerNames = new List<string>();
+            List<BattlerInfo> leftBattlersInfo = new List<BattlerInfo>();
             foreach (Transform template in leftBattlerParent) {
                BattlerTemplate battlerTemplate = template.GetComponent<BattlerTemplate>();
                Enemy.Type battlerType = battlerTemplate.battlerDataCache.enemyType;
-
                if (battlerType != Enemy.Type.PlayerBattler) {
-                  leftBattlers.Add(battlerType);
+                  BattlerInfo newInfo = new BattlerInfo {
+                     enemyType = battlerType,
+                     battlerName = battlerType.ToString(),
+                     battlerType = BattlerType.AIEnemyControlled
+                  };
+                  leftBattlersInfo.Add(newInfo);
                } else {
-                  leftBattlerNames.Add(battlerTemplate.userNameText.text);
+                  BattlerInfo newInfo = new BattlerInfo {
+                     enemyType = Enemy.Type.PlayerBattler,
+                     battlerName = battlerTemplate.userNameText.text,
+                     battlerType = BattlerType.PlayerControlled
+                  };
+                  leftBattlersInfo.Add(newInfo);
                }
             }
 
-            rightBattlers = new List<Enemy.Type>();
-            rightBattlerNames = new List<string>();
+            List<BattlerInfo> rightBattlersInfo = new List<BattlerInfo>();
             foreach (Transform template in rightBattlerParent) {
                BattlerTemplate battlerTemplate = template.GetComponent<BattlerTemplate>();
                Enemy.Type battlerType = battlerTemplate.battlerDataCache.enemyType;
 
                if (battlerType != Enemy.Type.PlayerBattler) {
-                  rightBattlers.Add(battlerType);
+                  BattlerInfo newInfo = new BattlerInfo { 
+                     enemyType = battlerType,
+                     battlerName = battlerType.ToString(),
+                     battlerType = BattlerType.AIEnemyControlled
+                  };
+                  rightBattlersInfo.Add(newInfo);
                } else {
-                  rightBattlerNames.Add(battlerTemplate.userNameText.text);
+                  BattlerInfo newInfo = new BattlerInfo {
+                     enemyType = Enemy.Type.PlayerBattler,
+                     battlerName = battlerTemplate.userNameText.text,
+                     battlerType = BattlerType.PlayerControlled
+                  };
+                  rightBattlersInfo.Add(newInfo);
                }
             }
-            Global.player.rpc.Cmd_StartNewTeamBattle(leftBattlers.ToArray(), rightBattlers.ToArray(), leftBattlerNames.ToArray(), rightBattlerNames.ToArray());
+            Global.player.rpc.Cmd_StartNewTeamBattle(leftBattlersInfo.ToArray(), rightBattlersInfo.ToArray());
 
             PanelManager.self.popPanel();
          }

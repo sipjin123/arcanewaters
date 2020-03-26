@@ -45,9 +45,13 @@ public class ServerNetwork : MonoBehaviour {
 
       // Find the server with the least people
       Server bestServer = getServerWithLeastPlayers();
-      string logMsg = string.Format("Found best server {0}:{1} with player count {2} for {3} ({4})",
-         bestServer.ipAddress, bestServer.port, bestServer.playerCount, username, address);
-      D.debug(logMsg);
+      try {
+         string logMsg = string.Format("Found best server {0}:{1} with player count {2} for {3} ({4})",
+            bestServer.ipAddress, bestServer.port, bestServer.playerCount, username, address);
+         D.debug(logMsg);
+      } catch {
+         D.debug("Found best server but cannot get details");
+      }
 
       // If this player is claimed by a server, we have to return to that server
       foreach (Server server in servers) {

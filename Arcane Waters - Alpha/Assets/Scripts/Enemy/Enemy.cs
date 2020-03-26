@@ -82,6 +82,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
 
       if (isBossType) {
          bossCollider.SetActive(true);
+         GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
       }
 
       // Choose a random desired position every few seconds

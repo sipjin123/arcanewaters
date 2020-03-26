@@ -46,8 +46,8 @@ public class OreNode : NetworkBehaviour
    // List of arrows that indicate where the player is facing
    public List<DirectionalArrow> directionalArrow;
 
-   // Reference to the ore pickup object
-   public OrePickup orePickup;
+   // Reference to the ore pickup objects
+   public Dictionary<int, OrePickup> orePickupCollection = new Dictionary<int, OrePickup>();
 
    // The total interact count for each ore node
    public static int MAX_INTERACT_COUNT = 2;

@@ -91,13 +91,13 @@ public class BattleManager : MonoBehaviour {
       // Spawn an appropriate number of enemies based on the number of players in the instance
       for (int i = 0; i < getEnemyCount(enemy, playersInInstance); i++) {
          enemyTypes.Add(enemy.enemyType);
-         this.addEnemyToBattle(battle, enemy, Battle.TeamType.Defenders, playerBody);
+         this.addEnemyToBattle(battle, enemy, Battle.TeamType.Defenders, playerBody, -1);
       }
 
       return battle;
    }
 
-   public Battle createTeamBattle (Area area, Instance instance, Enemy enemy, Enemy.Type[] attackersData, PlayerBodyEntity playerBody, Enemy.Type[] defendersData) {
+   public Battle createTeamBattle (Area area, Instance instance, Enemy enemy, BattlerInfo[] attackersData, PlayerBodyEntity playerBody, BattlerInfo[] defendersData) {
       // We need to make a new one
       Battle battle = Instantiate(battlePrefab);
 
@@ -128,16 +128,20 @@ public class BattleManager : MonoBehaviour {
       HashSet<Enemy.Type> enemyTypes = new HashSet<Enemy.Type>();
 
       // Spawn an appropriate number of enemies based on the number of players in the instance
-      foreach (Enemy.Type enemyType in defendersData) {
-         enemy.enemyType = enemyType;
-         enemyTypes.Add(enemyType);
-         this.addEnemyToBattle(battle, enemy, Battle.TeamType.Defenders, playerBody);
+      foreach (BattlerInfo battleInfo in defendersData) {
+         if (battleInfo.enemyType != Enemy.Type.PlayerBattler) {
+            enemy.enemyType = battleInfo.enemyType;
+            enemyTypes.Add(battleInfo.enemyType);
+            this.addEnemyToBattle(battle, enemy, Battle.TeamType.Defenders, playerBody, battleInfo.companionId);
+         }
       }
 
-      foreach (Enemy.Type enemyType in attackersData) {
-         enemy.enemyType = enemyType;
-         enemyTypes.Add(enemyType);
-         this.addEnemyToBattle(battle, enemy, Battle.TeamType.Attackers, playerBody);
+      foreach (BattlerInfo battleInfo in attackersData) {
+         if (battleInfo.enemyType != Enemy.Type.PlayerBattler) {
+            enemy.enemyType = battleInfo.enemyType;
+            enemyTypes.Add(battleInfo.enemyType);
+            this.addEnemyToBattle(battle, enemy, Battle.TeamType.Attackers, playerBody, battleInfo.companionId);
+         }
       }
 
       return battle;
@@ -211,9 +215,9 @@ public class BattleManager : MonoBehaviour {
       rebuildObservers(battler, battle);
    }
    
-   public void addEnemyToBattle (Battle battle, Enemy enemy, Battle.TeamType teamType, PlayerBodyEntity aggressor) {
+   public void addEnemyToBattle (Battle battle, Enemy enemy, Battle.TeamType teamType, PlayerBodyEntity aggressor, int companionId) {
       // Create a Battler for this Enemy
-      Battler battler = createBattlerForEnemy(battle, enemy, teamType);
+      Battler battler = createBattlerForEnemy(battle, enemy, teamType, companionId);
       self.storeBattler(battler);
 
       // Add the Battler to the Battle
@@ -345,7 +349,7 @@ public class BattleManager : MonoBehaviour {
       return battler;
    }
 
-   private Battler createBattlerForEnemy (Battle battle, Enemy enemy, Battle.TeamType teamType) {
+   private Battler createBattlerForEnemy (Battle battle, Enemy enemy, Battle.TeamType teamType, int companionId) {
       Enemy.Type overrideType = enemy.enemyType;//Enemy.Type.Lizard;
       Battler enemyPrefab = prefabTypes.Find(_ => _.enemyType == Enemy.Type.Lizard).enemyPrefab;
 
@@ -363,6 +367,7 @@ public class BattleManager : MonoBehaviour {
       battler.enemyType = overrideType;
       battler.isBossType = data.isBossType;
       battler.name = data.enemyName;
+      battler.companionId = companionId;
 
       // Set starting stats
       battler.health = battler.getStartingHealth(overrideType);
@@ -788,6 +793,11 @@ public class BattleManager : MonoBehaviour {
                      participant.player.rpc.spawnBattlerMonsterChest(participant.player.instanceId, chestPos, battlerEnemyID);
                   } else {
                      // TODO: Add reward logic here for boss enemies
+                  }
+               } else if (participant.isMonster() && participant.isAttacker()) {
+                  // Reward each companion with battle exp
+                  if (participant.companionId > 0) {
+                     getPlayerBattler().player.rpc.Cmd_UpdateCompanionExp(participant.companionId, xpWon);
                   }
                }
             }

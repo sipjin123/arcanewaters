@@ -12,7 +12,10 @@ public class DB_MainStub : MonoBehaviour
 
    #endregion
 
-   public static void updateCompanions (int xmlId, int userId, string companionName, int companionLevel, int companionType, int equippedSlot, string iconPath) {
+   public static void updateCompanionExp (int xmlId, int userId, int exp) {
+   }
+
+   public static void updateCompanions (int xmlId, int userId, string companionName, int companionLevel, int companionType, int equippedSlot, string iconPath, int companionExp) {
 
    }
 

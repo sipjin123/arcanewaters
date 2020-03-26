@@ -29,23 +29,27 @@ public class AreaManager : MonoBehaviour
    }
 
    public void storeAreaInfo () {
-      // Read the map data
-      List<Map> maps = DB_Main.getMaps();
+      try {
+         // Read the map data
+         List<Map> maps = DB_Main.getMaps();
 
-      foreach (Map map in maps) {
-         if (map.publishedVersion != null) {
-            // Store the map data
-            _areaKeyToMapInfo.Add(map.name, map);
+         foreach (Map map in maps) {
+            if (map.publishedVersion != null) {
+               // Store the map data
+               _areaKeyToMapInfo.Add(map.name, map);
 
-            // Store the sea maps area keys
-            if (map.editorType == MapCreationTool.EditorType.Sea) {
-               _seaAreaKeys.Add(map.name);
+               // Store the sea maps area keys
+               if (map.editorType == MapCreationTool.EditorType.Sea) {
+                  _seaAreaKeys.Add(map.name);
+               }
             }
-         }
 
-         // Store the area id to names dictionary
-         _areaIdToName.Add(map.id, map.name);
-         Debug.Log(_areaIdToName.Count);
+            // Store the area id to names dictionary
+            _areaIdToName.Add(map.id, map.name);
+            //Debug.Log(_areaIdToName.Count);
+         }
+      } catch {
+         D.log("Error in storing area");
       }
    }
 

@@ -96,6 +96,10 @@ public class Instance : NetworkBehaviour
       return count;
    }
 
+   public List<NetworkBehaviour> getEntities () { 
+      return entities;
+   }
+
    public int getMaxPlayers () {
       if (Area.FARM.Equals(areaKey) || Area.HOUSE.Equals(areaKey)) {
          return 1;

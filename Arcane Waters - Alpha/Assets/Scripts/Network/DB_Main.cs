@@ -2257,6 +2257,28 @@ public class DB_Main : DB_MainStub
 
    #region Companions
 
+   public static new void updateCompanionExp (int xmlId, int userId, int exp) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "UPDATE companions SET companionExp = companionExp + @companionExp WHERE companionId=@companionId and userId=@userId", conn)) {
+            
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@companionId", xmlId);
+            cmd.Parameters.AddWithValue("@userId", userId);
+            cmd.Parameters.AddWithValue("@companionExp", exp);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
    public static new void updateCompanionRoster (int xmlId, int userId, int slot) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -2281,7 +2303,7 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new void updateCompanions (int xmlId, int userId, string companionName, int companionLevel, int companionType, int equippedSlot, string iconPath) {
+   public static new void updateCompanions (int xmlId, int userId, string companionName, int companionLevel, int companionType, int equippedSlot, string iconPath, int companionExp) {
       string xmlKey = "xmlId, ";
       string xmlValue = "@xmlId, ";
       if (xmlId < 0) {
@@ -2293,8 +2315,8 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO companions ("+ xmlKey + "userId, companionName, companionLevel, companionType, equippedSlot, iconPath) " +
-            "VALUES("+ xmlValue + "@userId, @companionName, @companionLevel, @companionType, @equippedSlot, @iconPath) " +
+            "INSERT INTO companions ("+ xmlKey + "userId, companionName, companionLevel, companionType, equippedSlot, iconPath, companionExp) " +
+            "VALUES("+ xmlValue + "@userId, @companionName, @companionLevel, @companionType, @equippedSlot, @iconPath, @companionExp) " +
             "ON DUPLICATE KEY UPDATE companionLevel = @companionLevel, equippedSlot = @equippedSlot", conn)) {
 
             conn.Open();
@@ -2307,6 +2329,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@companionType", companionType);
             cmd.Parameters.AddWithValue("@equippedSlot", equippedSlot);
             cmd.Parameters.AddWithValue("@iconPath", iconPath);
+            cmd.Parameters.AddWithValue("@companionExp", companionExp);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -2336,6 +2359,7 @@ public class DB_Main : DB_MainStub
                      companionType = dataReader.GetInt32("companionType"),
                      equippedSlot = dataReader.GetInt32("equippedSlot"),
                      iconPath = dataReader.GetString("iconPath"),
+                     companionExp = dataReader.GetInt32("companionExp")
                   };
                   newCompanionInfo.Add(companionInfo);
                }

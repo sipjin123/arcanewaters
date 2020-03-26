@@ -118,6 +118,9 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab we use for showing XP gains
    public GameObject xpGainPrefab;
 
+   // The prefab we use for showing item received
+   public GameObject itemReceivePrefab;
+
    // The prefab we use for showing level gains
    public GameObject levelGainPrefab;
 

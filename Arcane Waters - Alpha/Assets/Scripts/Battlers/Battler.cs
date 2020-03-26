@@ -55,6 +55,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    [SyncVar]
    public int userId;
 
+   // The companion id if is a companion of the player
+   [SyncVar]
+   public int companionId = -1;
+
    // The battle ID that this Battler is in
    [SyncVar]
    public int battleId;

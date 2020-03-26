@@ -8,6 +8,7 @@ using Crosstales.BWF.Manager;
 using System;
 using System.Text;
 using BackgroundTool;
+using Random = UnityEngine.Random;
 
 public class RPCManager : NetworkBehaviour {
    #region Public Variables
@@ -231,6 +232,13 @@ public class RPCManager : NetworkBehaviour {
    #endregion
 
    [Command]
+   public void Cmd_UpdateCompanionExp (int companionId, int exp) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.updateCompanionExp(companionId, _player.userId, exp);
+      });
+   }
+
+   [Command]
    public void Cmd_UpdateCompanionRoster (int companionId, int equipSlot) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.updateCompanionRoster(companionId, _player.userId, equipSlot);
@@ -256,11 +264,12 @@ public class RPCManager : NetworkBehaviour {
          companionLevel = 1,
          equippedSlot = 0,
          companionId = -1,
+         companionExp = 0,
          iconPath = battlerData.imagePath
       };
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Hire the companion and write to sql database
-         DB_Main.updateCompanions(-1, _player.userId, companionInfo.companionName, companionInfo.companionLevel, companionInfo.companionType, companionInfo.equippedSlot, companionInfo.iconPath);
+         DB_Main.updateCompanions(-1, _player.userId, companionInfo.companionName, companionInfo.companionLevel, companionInfo.companionType, companionInfo.equippedSlot, companionInfo.iconPath, companionInfo.companionExp);
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             Target_ReceiveHiringResult(_player.connectionToClient, companionInfo);
          });
@@ -2931,29 +2940,39 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [ClientRpc]
-   public void Rpc_CollectOre (int oreId) {
+   public void Rpc_CollectOre (int oreId, int effectId) {
       OreNode oreNode = OreManager.self.getOreNode(oreId);
-      if (oreNode.orePickup != null) {
-         Vector3 position = oreNode.orePickup.transform.position;
+      if (oreNode.orePickupCollection.Count > 0) {
+         if (oreNode.orePickupCollection.ContainsKey(effectId)) {
+            Vector3 position = oreNode.orePickupCollection[effectId].transform.position;
 
-         // TODO: Create sprite effects for ore collect
-         EffectManager.self.create(Effect.Type.Crop_Harvest, position);
-         EffectManager.self.create(Effect.Type.Crop_Shine, position);
-         EffectManager.self.create(Effect.Type.Crop_Dirt_Large, position);
+            // TODO: Create sprite effects for ore collect
+            EffectManager.self.create(Effect.Type.Crop_Harvest, position);
+            EffectManager.self.create(Effect.Type.Crop_Shine, position);
+            EffectManager.self.create(Effect.Type.Crop_Dirt_Large, position);
 
-         Destroy(oreNode.orePickup.gameObject);
+            Destroy(oreNode.orePickupCollection[effectId].gameObject);
+            oreNode.orePickupCollection.Remove(effectId);
+         }
       }
    }
 
    [Command]
    public void Cmd_InteractOre (int oreId, Direction direction) {
       OreNode oreNode = OreManager.self.getOreNode(oreId);
-      oreNode.interactCount++;
-      Rpc_MineOre(oreId, oreNode.interactCount);
+      if (!oreNode.finishedMining()) {
+         oreNode.interactCount++;
+         Rpc_MineOre(oreId, oreNode.interactCount);
 
-      if (oreNode.finishedMining()) {
-         float randomSpeed = UnityEngine.Random.Range(.8f, 1.2f);
-         Rpc_SpawnMineEffect(oreId, oreNode.transform.position, direction, randomSpeed);
+         if (oreNode.finishedMining()) {
+            int randomCount = Random.Range(1, 3);
+
+            for (int i = 0; i < randomCount; i++) {
+               float randomSpeed = Random.Range(.8f, 1.2f);
+               float angleOffset = Random.Range(-25, 25);
+               Rpc_SpawnMineEffect(oreId, oreNode.transform.position, direction, angleOffset, randomSpeed, i);
+            }
+         }
       }
    }
 
@@ -2965,11 +2984,14 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [ClientRpc]
-   public void Rpc_SpawnMineEffect (int oreId, Vector3 position, Direction direction, float randomSpeed) {
+   public void Rpc_SpawnMineEffect (int oreId, Vector3 position, Direction direction, float angleOffset,float randomSpeed, int id) {
       OreNode oreNode = OreManager.self.getOreNode(oreId);
       GameObject oreBounce = Instantiate(PrefabsManager.self.oreDropPrefab);
       OreMineEffect oreMine = oreBounce.GetComponent<OreMineEffect>();
+      oreMine.oreEffectId = id;
       oreBounce.transform.position = position;
+      Vector3 currentAngle = oreBounce.transform.localEulerAngles;
+      oreBounce.transform.localEulerAngles = new Vector3(currentAngle.x, currentAngle.y, currentAngle.z + angleOffset);
 
       if (direction == Direction.East) {
          oreBounce.transform.localScale = new Vector3(-1, 1, 1);
@@ -2982,7 +3004,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_MineNode (int nodeId) {
+   public void Cmd_MineNode (int nodeId, int oreEffectId) {
       OreNode oreNode = OreManager.self.getOreNode(nodeId);
 
       // Make sure we found the Node
@@ -2997,12 +3019,6 @@ public class RPCManager : NetworkBehaviour {
          return;
       }
 
-      // Make sure they didn't already open it
-      if (oreNode.userIds.Contains(_player.userId)) {
-         D.warning("Player already mined this ore node!");
-         return;
-      }
-
       // Add the user ID to the list
       oreNode.userIds.Add(_player.userId);
 
@@ -3014,6 +3030,10 @@ public class RPCManager : NetworkBehaviour {
       List<Item> rewardedItems = new List<Item>();
       foreach (LootInfo lootInfo in lootInfoList) {
          Item item = new Item { category = lootInfo.lootType.category, itemTypeId = lootInfo.lootType.itemTypeId };
+         if (item.category == Item.Category.CraftingIngredients) {
+            item.itemName = item.getCastItem().getName();
+            item.iconPath = item.getCastItem().getIconPath();
+         }
          item.count = lootInfo.quantity;
          rewardedItems.Add(item);
       }
@@ -3025,54 +3045,55 @@ public class RPCManager : NetworkBehaviour {
          Jobs newJobXP = DB_Main.getJobXP(_player.userId);
 
          // Gather voyage group info
-         int voyageGroup = DB_Main.getVoyageGroupForMember(_player.userId);
-         List<int> voyageGroupMemberIds = DB_Main.getVoyageGroupMembers(voyageGroup);
+         List<NetworkBehaviour> networkBehaviorList = InstanceManager.self.getInstance(_player.instanceId).getEntities();
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Registers the Ore mining success action to the achievement database for recording
             AchievementManager.registerUserAchievement(_player.userId, ActionType.MineOre);
             AchievementManager.registerUserAchievement(_player.userId, ActionType.OreGain, lootInfoList.Count);
 
-            // Determine how many active members are there in the voyage group and split the reward
-            int totalActiveMembers = 0;
-            foreach (int id in voyageGroupMemberIds) {
-               BodyEntity entity = BodyManager.self.getBody(id);
-               if (entity!= null) {
-                  totalActiveMembers++;
+            if (networkBehaviorList.Count > 0) {
+               // Give reward to each member
+               foreach (NetworkBehaviour networkBehavior in networkBehaviorList) {
+                  if (networkBehavior is NetEntity) {
+                     NetEntity entity = (NetEntity) networkBehavior;
+                     if (entity.voyageGroupId == _player.voyageGroupId) {
+                        // Grant the rewards to the user without showing reward panel
+                        giveItemRewardsToPlayer(entity.userId, rewardedItems, false);
+
+                        entity.rpc.Target_GainedItem(entity.connectionToClient, rewardedItems[0].iconPath, rewardedItems[0].itemName);
+
+                        // Provide exp to the user
+                        entity.Target_GainedXP(entity.connectionToClient, xp, newJobXP, Jobs.Type.Miner, 0, true);
+                     }
+                  }
                }
-            }
+            } else {
+               // Grant the rewards to the user without showing reward panel
+               giveItemRewardsToPlayer(_player.userId, rewardedItems, false);
 
-            // Give reward to each member
-            foreach (int id in voyageGroupMemberIds) {
-               BodyEntity entity = BodyManager.self.getBody(id);
-               if (entity != null) {
-                  // Grant the rewards to the user without showing reward panel
-                  giveItemRewardsToPlayer(id, rewardedItems, false);
+               _player.rpc.Target_GainedItem(_player.connectionToClient, rewardedItems[0].iconPath, rewardedItems[0].itemName);
 
-                  // Provide exp to the user
-                  entity.Target_GainedXP(entity.connectionToClient, xp / totalActiveMembers, newJobXP, Jobs.Type.Miner, 0, false);
-
-                  // Show exp floating icon to all group members
-                  entity.rpc.Rpc_GainedXP(xp / totalActiveMembers, newJobXP, Jobs.Type.Miner);
-               }
+               // Provide exp to the user
+               _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Miner, 0, true);
             }
 
             // Let them know they gained experience
-            Rpc_CollectOre(nodeId);
+            Rpc_CollectOre(nodeId, oreEffectId);
          });
       });
    }
 
-   [ClientRpc]
-   public void Rpc_GainedXP (int xpGained, Jobs jobs, Jobs.Type jobType) {
+   [TargetRpc]
+   public void Target_GainedItem (NetworkConnection conn, string itemIconPath, string itemName) {
       Vector3 pos = this.transform.position + new Vector3(0f, .32f);
 
       // Show a message that they gained some XP
-      GameObject xpCanvas = Instantiate(PrefabsManager.self.xpGainPrefab);
+      GameObject xpCanvas = Instantiate(PrefabsManager.self.itemReceivePrefab);
       xpCanvas.transform.position = pos;
-      xpCanvas.GetComponentInChildren<Text>().text = "+" + xpGained + " " + jobType + " XP";
+      xpCanvas.GetComponentInChildren<Text>().text = "Received:\n" + itemName;
+      xpCanvas.GetComponentInChildren<Image>().sprite = ImageManager.getSprite(itemIconPath);
    }
-
    [Server]
    private void giveItemRewardsToPlayer (int userID, List<Item> rewardList, bool showPanel) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -3236,16 +3257,16 @@ public class RPCManager : NetworkBehaviour {
    #endregion
 
    [Command]
-   public void Cmd_StartNewTeamBattle (Enemy.Type[] defenderBattlers, Enemy.Type[] attackerBattlers, string[] defendersPlayerNames, string[] attackerPlayerNames) {
+   public void Cmd_StartNewTeamBattle (BattlerInfo[] defenders, BattlerInfo[] attackers) {
       // Checks if the user is an admin  
       if (!_player.isAdmin()) {
          D.warning("You are not at admin! Denying access to team combat simulation");
          return;
       }
-      processTeamBattle(defenderBattlers, attackerBattlers, defendersPlayerNames, attackerPlayerNames, 0, true);
+      processTeamBattle(defenders, attackers, 0, true);
    }
 
-   private void processTeamBattle (Enemy.Type[] defenderBattlers, Enemy.Type[] attackerBattlers, string[] defendersPlayerNames, string[] attackerPlayerNames, uint netId, bool createNewEnemy = false) {
+   private void processTeamBattle (BattlerInfo[] defenders, BattlerInfo[] attackers, uint netId, bool createNewEnemy = false) {
       if (createNewEnemy) {
          // Hard code enemy type if combat is accessed in team combat panel
          Enemy.Type enemyToSpawn = Enemy.Type.Lizard;
@@ -3299,31 +3320,35 @@ public class RPCManager : NetworkBehaviour {
          List<AbilitySQLData> abilityDataList = DB_Main.getAllAbilities(localBattler.userId);
 
          // Cache Attackers Info
-         foreach (string playerName in attackerPlayerNames) {
+         foreach (BattlerInfo battlerInfo in attackers) {
             // Since the body manager has the collection of user net entities, it will search for the body entity with the user name provided
-            BodyEntity rawEntity = BodyManager.self.getBodyWithName(playerName);
+            if (battlerInfo.enemyType == Enemy.Type.PlayerBattler) {
+               BodyEntity rawEntity = BodyManager.self.getBodyWithName(battlerInfo.battlerName);
 
-            if (rawEntity != null) {
-               PlayerBodyEntity bodyEntity = (PlayerBodyEntity) rawEntity;
-               if (bodyEntity != null) {
-                  bodyEntities.Add(bodyEntity);
-               } else {
-                  D.warning("Server cant find this ID: " + rawEntity.userId);
+               if (rawEntity != null) {
+                  PlayerBodyEntity bodyEntity = (PlayerBodyEntity) rawEntity;
+                  if (bodyEntity != null) {
+                     bodyEntities.Add(bodyEntity);
+                  } else {
+                     D.warning("Server cant find this ID: " + rawEntity.userId);
+                  }
                }
             }
          }
 
          // Cache Defenders Info
-         foreach (string playerName in defendersPlayerNames) {
+         foreach (BattlerInfo battlerInfo in defenders) {
             // Since the body manager has the collection of user net entities, it will search for the body entity with the user name provided
-            BodyEntity rawEntity = BodyManager.self.getBodyWithName(playerName);
+            if (battlerInfo.enemyType == Enemy.Type.PlayerBattler) {
+               BodyEntity rawEntity = BodyManager.self.getBodyWithName(battlerInfo.battlerName);
 
-            if (rawEntity != null) {
-               PlayerBodyEntity bodyEntity = (PlayerBodyEntity) rawEntity;
-               if (bodyEntity != null) {
-                  bodyEntities.Add(bodyEntity);
-               } else {
-                  D.warning("Server cant find this ID: " + rawEntity.userId);
+               if (rawEntity != null) {
+                  PlayerBodyEntity bodyEntity = (PlayerBodyEntity) rawEntity;
+                  if (bodyEntity != null) {
+                     bodyEntities.Add(bodyEntity);
+                  } else {
+                     D.warning("Server cant find this ID: " + rawEntity.userId);
+                  }
                }
             }
          }
@@ -3339,7 +3364,7 @@ public class RPCManager : NetworkBehaviour {
             }
 
             // Get or create the Battle instance
-            Battle battle = (enemy.battleId > 0) ? BattleManager.self.getBattle(enemy.battleId) : BattleManager.self.createTeamBattle(area, instance, enemy, attackerBattlers, localBattler, defenderBattlers);
+            Battle battle = (enemy.battleId > 0) ? BattleManager.self.getBattle(enemy.battleId) : BattleManager.self.createTeamBattle(area, instance, enemy, attackers, localBattler, defenders);
 
             // If the Battle is full, we can't proceed
             if (!battle.hasRoomLeft(Battle.TeamType.Attackers)) {
@@ -3380,7 +3405,7 @@ public class RPCManager : NetworkBehaviour {
             foreach (PlayerBodyEntity inviteeBattlers in bodyEntities) {
                // Only invite other players, host should not receive this invite
                if (inviteeBattlers.userId != localBattler.userId) {
-                  Battle.TeamType teamType = new List<string>(attackerPlayerNames).Find(_ => _ == inviteeBattlers.entityName) != null ? Battle.TeamType.Attackers : Battle.TeamType.Defenders;
+                  Battle.TeamType teamType = attackers.ToList().Find(_ => _.battlerName == inviteeBattlers.entityName) != null ? Battle.TeamType.Attackers : Battle.TeamType.Defenders;
                   inviteeBattlers.rpc.Target_InvitePlayerToCombat(inviteeBattlers.connectionToClient, netId, teamType);
                }
             }
@@ -3399,29 +3424,37 @@ public class RPCManager : NetworkBehaviour {
       // Gather Enemy Data
       NetworkIdentity enemyIdent = NetworkIdentity.spawned[enemyNetId];
       Enemy enemy = enemyIdent.GetComponent<Enemy>();
-      List<Enemy.Type> enemyTypeList = new List<Enemy.Type>();
-      List<string> enemyNameList = new List<string>();
-      enemyTypeList.Add(enemy.enemyType);
-      enemyNameList.Add(enemy.entityName);
+
+      BattlerData enemyData = MonsterManager.self.getBattler(enemy.enemyType);
+      List<BattlerInfo> battlerInfoList = new List<BattlerInfo>();
+      battlerInfoList.Add(new BattlerInfo { 
+         battlerName = enemyData.enemyName,
+         enemyType = enemy.enemyType,
+         battlerType = BattlerType.AIEnemyControlled
+      });
 
       if (!_player.isSinglePlayer) {
-         processTeamBattle(enemyTypeList.ToArray(), new Enemy.Type[0], enemyNameList.ToArray(), new string[0], enemyNetId);
+         processTeamBattle(battlerInfoList.ToArray(), new BattlerInfo[0], enemyNetId);
       } else {
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             // Fetch the list of companions
             List<CompanionInfo> companionInfoList = DB_Main.getCompanions(_player.userId);
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                // Gather companion data
-               List<Enemy.Type> allyTypeList = new List<Enemy.Type>();
-               List<string> allyNameList = new List<string>();
+               List<BattlerInfo> allyInfoList = new List<BattlerInfo>();
                foreach (CompanionInfo companionInfo in companionInfoList) {
                   if (companionInfo.equippedSlot > 0) {
-                     allyTypeList.Add((Enemy.Type) companionInfo.companionType);
-                     allyNameList.Add(companionInfo.companionName);
+                     allyInfoList.Add(new BattlerInfo { 
+                        enemyType = (Enemy.Type) companionInfo.companionType,
+                        battlerName = companionInfo.companionName,
+                        battlerType = BattlerType.AIEnemyControlled,
+                        companionId = companionInfo.companionId
+                     });
                   }
                }
+
                // Continue to process team battle
-               processTeamBattle(enemyTypeList.ToArray(), allyTypeList.ToArray(), enemyNameList.ToArray(), allyNameList.ToArray(), enemyNetId);
+               processTeamBattle(battlerInfoList.ToArray(), allyInfoList.ToArray(), enemyNetId);
             });
          });
       }

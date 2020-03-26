@@ -23,6 +23,9 @@ public class OreMineEffect : MonoBehaviour {
    // The ore node reference
    public OreNode oreNode;
 
+   // The id of the mine effect
+   public int oreEffectId;
+
    #endregion
 
    public void setSprite (OreNode.Type oreType) {
@@ -39,7 +42,8 @@ public class OreMineEffect : MonoBehaviour {
       OrePickup orePickup = spawnedObj.GetComponent<OrePickup>();
       orePickup.spriteRender.sprite = spriteRender.sprite;
       orePickup.oreNode = oreNode;
-      oreNode.orePickup = orePickup;
+      orePickup.oreEffectId = oreEffectId;
+      oreNode.orePickupCollection.Add(oreEffectId, orePickup);
 
       spawnedObj.transform.position = animatingObj.position;
       spawnedObj.transform.rotation = animatingObj.rotation;

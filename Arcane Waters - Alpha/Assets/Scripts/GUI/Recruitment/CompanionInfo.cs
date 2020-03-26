@@ -17,6 +17,9 @@ public class CompanionInfo {
    // The level of the companion
    public int companionLevel;
 
+   // The experience of the companion
+   public int companionExp;
+
    // Determines if the companion slot in the players roster
    public int equippedSlot;
 

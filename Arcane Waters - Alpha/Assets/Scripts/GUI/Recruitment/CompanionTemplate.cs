@@ -36,6 +36,9 @@ public class CompanionTemplate : MonoBehaviour, IPointerDownHandler
    // Contents that should be disabled if the template is empty
    public GameObject[] disabledContents;
 
+   // The exp of the companion
+   public int cachedExp;
+
    #endregion
 
    public void OnPointerDown (PointerEventData eventData) {
@@ -43,8 +46,11 @@ public class CompanionTemplate : MonoBehaviour, IPointerDownHandler
    }
 
    public void setRawData (CompanionInfo info) {
+      cachedExp = info.companionExp;
+      int calculatedLevel = LevelUtil.levelForXp(info.companionExp);
+
       this.companionType.text = ((Enemy.Type)info.companionType).ToString();
-      this.companionLevel.text = info.companionLevel.ToString();
+      this.companionLevel.text = calculatedLevel.ToString();
       this.companionName.text = info.companionName;
       this.companionTypeId = info.companionType;
       Sprite iconSprite = ImageManager.getSprite(info.iconPath);
@@ -69,12 +75,14 @@ public class CompanionTemplate : MonoBehaviour, IPointerDownHandler
          this.iconPath = string.Empty;
          this.companionId = -1;
          this.companionTypeId = 0;
+         this.cachedExp = 0;
 
          foreach (GameObject obj in disabledContents) {
             obj.SetActive(false);
          }
       } else {
          isOccupied = true;
+         this.cachedExp = copiedTemplate.cachedExp;
          this.companionType.text = copiedTemplate.companionType.text;
          this.companionLevel.text = copiedTemplate.companionLevel.text;
          this.companionName.text = copiedTemplate.companionName.text;
@@ -97,6 +105,7 @@ public class CompanionTemplate : MonoBehaviour, IPointerDownHandler
          equippedSlot = equipmentSlot,
          iconPath = iconPath,
          companionId = companionId,
+         companionExp = cachedExp
       };
    }
 
