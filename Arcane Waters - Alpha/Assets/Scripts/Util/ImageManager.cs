@@ -42,9 +42,6 @@ public class ImageManager : ClientMonoBehaviour {
    // Self
    public static ImageManager self;
 
-   // Throws a default npc avatar sprite
-   public const string DEFAULT_NPC_PATH = "Assets/Sprites/NPCs/Bodies/Headband/headband_1.png";
-
    #endregion
 
    protected override void Awake () {

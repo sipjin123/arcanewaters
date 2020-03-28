@@ -30,6 +30,11 @@ public class CropManager : NetworkBehaviour {
    public void createCrop (CropInfo cropInfo, bool justGrew, bool showEffects) {
       CropSpot cropSpot = CropSpotManager.self.getCropSpot(cropInfo.cropNumber);
 
+      if (cropSpot == null) {
+         D.warning("Crop is missing");
+         return;
+      }
+
       // If there was already a Crop here, delete it
       if (cropSpot.crop != null) {
          Destroy(cropSpot.crop.gameObject);

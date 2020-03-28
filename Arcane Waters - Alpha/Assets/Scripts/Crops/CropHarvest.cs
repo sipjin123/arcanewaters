@@ -42,6 +42,7 @@ public class CropHarvest : MonoBehaviour {
       spawnedObj.transform.rotation = animatingObj.rotation;
       spawnedObj.transform.localScale = new Vector3(transform.localScale.x, 1, 1);
       gameObject.SetActive(false);
+      Destroy(this.gameObject);
    }
 
    #region Private Variables

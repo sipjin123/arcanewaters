@@ -89,6 +89,29 @@ public class DirectionUtil {
       return Direction.North;
    }
 
+   public static Direction getDirectionFromPoint (Vector2 startPoint, Vector2 endPoint) {
+      float xValue = endPoint.x - startPoint.x;
+      float yValue = endPoint.y - startPoint.y;
+
+      Direction direction = Direction.North;
+      bool isHorizontal = Mathf.Abs(xValue) > Mathf.Abs(yValue);
+      if (isHorizontal) {
+         if (endPoint.x > startPoint.x) {
+            direction = Direction.East;
+         } else {
+            direction = Direction.West;
+         }
+      } else {
+         if (endPoint.y > startPoint.y) {
+            direction = Direction.North;
+         } else {
+            direction = Direction.South;
+         }
+      }
+
+      return direction;
+   }
+
    public static Direction getDirectionForInput (short x, short y) {
       if (x == 0 && y == 1) {
          return Direction.North;

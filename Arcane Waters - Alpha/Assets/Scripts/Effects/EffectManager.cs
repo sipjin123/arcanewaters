@@ -182,28 +182,25 @@ public class EffectManager : MonoBehaviour {
          }
       }
 
+      // Process ability effects, skip if the ability effect was intentionally not assigned
       CombatEffect effectInstance = self.createCombatEffect(hitSprites.ToArray(), targetPos, ability.FXTimePerFrame);
-
-      if (effectInstance == null) {
-         Debug.LogWarning("Ability didn't have any effect sprites assigned");
-         return;
-      }
-
-      // Instantiate and play the effect at that position
-      effectInstance.transform.position = new Vector3(
-          targetPos.x,
-          targetPos.y,
-          target.transform.position.z - .001f
-      );
-      effectInstance.transform.SetParent(self.transform, false);
-
-      // Flip the X scale for the defenders
-      if (!target.isAttacker()) {
-         effectInstance.transform.localScale = new Vector3(
-             effectInstance.transform.localScale.x * -1f,
-             effectInstance.transform.localScale.y,
-             effectInstance.transform.localScale.z
+      if (effectInstance != null) {
+         // Instantiate and play the effect at that position
+         effectInstance.transform.position = new Vector3(
+             targetPos.x,
+             targetPos.y,
+             target.transform.position.z - .001f
          );
+         effectInstance.transform.SetParent(self.transform, false);
+
+         // Flip the X scale for the defenders
+         if (!target.isAttacker()) {
+            effectInstance.transform.localScale = new Vector3(
+                effectInstance.transform.localScale.x * -1f,
+                effectInstance.transform.localScale.y,
+                effectInstance.transform.localScale.z
+            );
+         }
       }
    }
 
@@ -223,28 +220,25 @@ public class EffectManager : MonoBehaviour {
             castSprites.Add(sprite);
          }
       }
-      
+
+      // Process ability effects, skip if the ability effect was intentionally not assigned
       CombatEffect effectInstance = self.createCombatEffect(castSprites.ToArray(), targetPos, ability.FXTimePerFrame);
+      if (effectInstance) {
+         effectInstance.transform.position = new Vector3(
+            targetPos.x,
+            targetPos.y,
+            source.transform.position.z - .001F
+            );
+         effectInstance.transform.SetParent(self.transform, false);
 
-      if (effectInstance == null) {
-         Debug.LogWarning("Ability didn't have any effect sprites assigned");
-         return;
-      }
-
-      effectInstance.transform.position = new Vector3(
-         targetPos.x,
-         targetPos.y,
-         source.transform.position.z - .001F
-         );
-      effectInstance.transform.SetParent(self.transform, false);
-
-      // Flip the X scale for the defenders
-      if (!source.isAttacker()) {
-         effectInstance.transform.localScale = new Vector3(
-             effectInstance.transform.localScale.x * -1f,
-             effectInstance.transform.localScale.y,
-             effectInstance.transform.localScale.z
-         );
+         // Flip the X scale for the defenders
+         if (!source.isAttacker()) {
+            effectInstance.transform.localScale = new Vector3(
+                effectInstance.transform.localScale.x * -1f,
+                effectInstance.transform.localScale.y,
+                effectInstance.transform.localScale.z
+            );
+         }
       }
    }
    public static void spawnProjectile (Battler source, AttackAction action, Vector2 sourcePos, Vector2 targetPos, float projectileSpeed, string projectileSpritePath, float scale) {

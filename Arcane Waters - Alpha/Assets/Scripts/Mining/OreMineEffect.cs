@@ -26,7 +26,21 @@ public class OreMineEffect : MonoBehaviour {
    // The id of the mine effect
    public int oreEffectId;
 
+   // The user who interacted this ore
+   public int ownerId;
+
+   // The voyage group that owns this crop
+   public int voyageGroupId;
+
    #endregion
+
+   public void initData (int ownerId, int voyageGroupId, int oreEffectId, OreNode oreNode, float randomSpeed) {
+      this.ownerId = ownerId;
+      this.voyageGroupId = voyageGroupId;
+      this.oreEffectId = oreEffectId;
+      this.oreNode = oreNode;
+      animator.speed = randomSpeed;
+   }
 
    public void setSprite (OreNode.Type oreType) {
       OreSprite cropSprite = oreSpriteList.Find(_ => _.oreType == oreType);
@@ -40,15 +54,14 @@ public class OreMineEffect : MonoBehaviour {
    public void endAnim () {
       GameObject spawnedObj = Instantiate(PrefabsManager.self.orePickupPrefab);
       OrePickup orePickup = spawnedObj.GetComponent<OrePickup>();
-      orePickup.spriteRender.sprite = spriteRender.sprite;
-      orePickup.oreNode = oreNode;
-      orePickup.oreEffectId = oreEffectId;
+      orePickup.initData(ownerId, voyageGroupId, oreEffectId, oreNode, spriteRender.sprite);
       oreNode.orePickupCollection.Add(oreEffectId, orePickup);
 
       spawnedObj.transform.position = animatingObj.position;
       spawnedObj.transform.rotation = animatingObj.rotation;
       spawnedObj.transform.localScale = new Vector3(transform.localScale.x, 1, 1);
       gameObject.SetActive(false);
+      Destroy(this.gameObject);
    }
 
    #region Private Variables

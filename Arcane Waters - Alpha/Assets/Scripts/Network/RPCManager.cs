@@ -231,8 +231,8 @@ public class RPCManager : NetworkBehaviour {
 
    #endregion
 
-   [Command]
-   public void Cmd_UpdateCompanionExp (int companionId, int exp) {
+   [Server]
+   public void updateCompanionExp (int companionId, int exp) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.updateCompanionExp(companionId, _player.userId, exp);
       });
@@ -2958,7 +2958,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_InteractOre (int oreId, Direction direction) {
+   public void Cmd_InteractOre (int oreId, Vector2 startingPosition, Vector2 endPosition) {
       OreNode oreNode = OreManager.self.getOreNode(oreId);
       if (!oreNode.finishedMining()) {
          oreNode.interactCount++;
@@ -2970,7 +2970,7 @@ public class RPCManager : NetworkBehaviour {
             for (int i = 0; i < randomCount; i++) {
                float randomSpeed = Random.Range(.8f, 1.2f);
                float angleOffset = Random.Range(-25, 25);
-               Rpc_SpawnMineEffect(oreId, oreNode.transform.position, direction, angleOffset, randomSpeed, i);
+               Rpc_SpawnMineEffect(oreId, oreNode.transform.position, DirectionUtil.getDirectionFromPoint(startingPosition, endPosition), angleOffset, randomSpeed, i, _player.userId, _player.voyageGroupId);
             }
          }
       }
@@ -2984,27 +2984,30 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [ClientRpc]
-   public void Rpc_SpawnMineEffect (int oreId, Vector3 position, Direction direction, float angleOffset,float randomSpeed, int id) {
+   public void Rpc_SpawnMineEffect (int oreId, Vector3 position, Direction direction, float angleOffset,float randomSpeed, int effectId, int ownerId, int voyageGroupId) {
+      // Create object
       OreNode oreNode = OreManager.self.getOreNode(oreId);
       GameObject oreBounce = Instantiate(PrefabsManager.self.oreDropPrefab);
       OreMineEffect oreMine = oreBounce.GetComponent<OreMineEffect>();
-      oreMine.oreEffectId = id;
+      
+      // Modify object transform
       oreBounce.transform.position = position;
       Vector3 currentAngle = oreBounce.transform.localEulerAngles;
       oreBounce.transform.localEulerAngles = new Vector3(currentAngle.x, currentAngle.y, currentAngle.z + angleOffset);
-
+     
+      // Modify object direction
       if (direction == Direction.East) {
          oreBounce.transform.localScale = new Vector3(-1, 1, 1);
       } else if (direction == Direction.North || direction == Direction.South) {
          oreMine.animator.SetFloat(MiningTrigger.FACING_KEY, (float) direction);
       }
 
-      oreMine.animator.speed = randomSpeed;
-      oreMine.oreNode = oreNode;
+      // Data setup
+      oreMine.initData(ownerId, voyageGroupId, effectId, oreNode, randomSpeed);
    }
 
    [Command]
-   public void Cmd_MineNode (int nodeId, int oreEffectId) {
+   public void Cmd_MineNode (int nodeId, int oreEffectId, int ownerId, int voyageGroupId) {
       OreNode oreNode = OreManager.self.getOreNode(nodeId);
 
       // Make sure we found the Node
@@ -3016,6 +3019,13 @@ public class RPCManager : NetworkBehaviour {
       // Make sure the user is in the right instance
       if (_player.instanceId != oreNode.instanceId) {
          D.warning("Player trying to open ore node from a different instance!");
+         return;
+      }
+
+      // If the user has no voyage group check the owner id, if it has a voyage group check the owner group id of the ore
+      if ((voyageGroupId < 0 && _player.userId != ownerId) || (voyageGroupId >= 0 && _player.voyageGroupId != voyageGroupId)) {
+         string message = "This does not belong to you!";
+         _player.Target_FloatingMessage(_player.connectionToClient, message);
          return;
       }
 
@@ -3052,8 +3062,17 @@ public class RPCManager : NetworkBehaviour {
             AchievementManager.registerUserAchievement(_player.userId, ActionType.MineOre);
             AchievementManager.registerUserAchievement(_player.userId, ActionType.OreGain, lootInfoList.Count);
 
-            if (networkBehaviorList.Count > 0) {
-               // Give reward to each member
+            if (_player.voyageGroupId < 0) {
+               // If any player does not belong to any group, reward them directly
+               giveItemRewardsToPlayer(_player.userId, rewardedItems, false);
+
+               // Provide item data reward to the player
+               _player.Target_GainedItem(_player.connectionToClient, rewardedItems[0].iconPath, rewardedItems[0].itemName, Jobs.Type.None, 0, rewardedItems[0].count);
+
+               // Provide exp to the user
+               _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Miner, 0, false);
+            } else {
+               // Give reward to each member if the user is in a voyage group
                foreach (NetworkBehaviour networkBehavior in networkBehaviorList) {
                   if (networkBehavior is NetEntity) {
                      NetEntity entity = (NetEntity) networkBehavior;
@@ -3061,21 +3080,14 @@ public class RPCManager : NetworkBehaviour {
                         // Grant the rewards to the user without showing reward panel
                         giveItemRewardsToPlayer(entity.userId, rewardedItems, false);
 
-                        entity.rpc.Target_GainedItem(entity.connectionToClient, rewardedItems[0].iconPath, rewardedItems[0].itemName);
+                        // Provide item data reward to the player
+                        entity.Target_GainedItem(entity.connectionToClient, rewardedItems[0].iconPath, rewardedItems[0].itemName, Jobs.Type.Miner, xp, rewardedItems[0].count);
 
                         // Provide exp to the user
-                        entity.Target_GainedXP(entity.connectionToClient, xp, newJobXP, Jobs.Type.Miner, 0, true);
+                        entity.Target_GainedXP(entity.connectionToClient, xp, newJobXP, Jobs.Type.Miner, 0, false);
                      }
                   }
                }
-            } else {
-               // Grant the rewards to the user without showing reward panel
-               giveItemRewardsToPlayer(_player.userId, rewardedItems, false);
-
-               _player.rpc.Target_GainedItem(_player.connectionToClient, rewardedItems[0].iconPath, rewardedItems[0].itemName);
-
-               // Provide exp to the user
-               _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Miner, 0, true);
             }
 
             // Let them know they gained experience
@@ -3084,16 +3096,6 @@ public class RPCManager : NetworkBehaviour {
       });
    }
 
-   [TargetRpc]
-   public void Target_GainedItem (NetworkConnection conn, string itemIconPath, string itemName) {
-      Vector3 pos = this.transform.position + new Vector3(0f, .32f);
-
-      // Show a message that they gained some XP
-      GameObject xpCanvas = Instantiate(PrefabsManager.self.itemReceivePrefab);
-      xpCanvas.transform.position = pos;
-      xpCanvas.GetComponentInChildren<Text>().text = "Received:\n" + itemName;
-      xpCanvas.GetComponentInChildren<Image>().sprite = ImageManager.getSprite(itemIconPath);
-   }
    [Server]
    private void giveItemRewardsToPlayer (int userID, List<Item> rewardList, bool showPanel) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -3430,7 +3432,8 @@ public class RPCManager : NetworkBehaviour {
       battlerInfoList.Add(new BattlerInfo { 
          battlerName = enemyData.enemyName,
          enemyType = enemy.enemyType,
-         battlerType = BattlerType.AIEnemyControlled
+         battlerType = BattlerType.AIEnemyControlled,
+         battlerXp = enemy.XP
       });
 
       if (!_player.isSinglePlayer) {
@@ -3448,7 +3451,8 @@ public class RPCManager : NetworkBehaviour {
                         enemyType = (Enemy.Type) companionInfo.companionType,
                         battlerName = companionInfo.companionName,
                         battlerType = BattlerType.AIEnemyControlled,
-                        companionId = companionInfo.companionId
+                        companionId = companionInfo.companionId,
+                        battlerXp = companionInfo.companionExp
                      });
                   }
                }

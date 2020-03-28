@@ -109,6 +109,7 @@ public class FarmingTrigger : MonoBehaviour {
                      cropHarvest.setSprite(cropSpot.crop.cropType);
                      cropBounce.transform.position = hit.collider.transform.position;
 
+                     cropSpawnEffectDirection = DirectionUtil.getDirectionFromPoint(transform.position, cropSpot.transform.position);
                      if (cropSpawnEffectDirection == Direction.East) {
                         cropBounce.transform.localScale = new Vector3(-1, 1, 1);
                      }

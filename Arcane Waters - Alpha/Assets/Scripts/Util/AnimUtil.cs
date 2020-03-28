@@ -236,6 +236,28 @@ public class AnimUtil : MonoBehaviour {
             }
             break;
 
+         case Anim.Group.Lizard_Boss:
+            switch (animType) {
+               case Anim.Type.Idle_South:
+                  return new AnimInfo(animType, 8, 11);
+               case Anim.Type.Idle_East:
+                  return new AnimInfo(animType, 0, 3);
+               case Anim.Type.Idle_North:
+                  return new AnimInfo(animType, 4, 7);
+               case Anim.Type.Battle_East:
+                  return new AnimInfo(animType, 0, 3);
+
+               case Anim.Type.Jump_East:
+                  return new AnimInfo(animType, 12, 15);
+               case Anim.Type.Attack_East:
+                  return new AnimInfo(animType, 16, 23);
+               case Anim.Type.Hurt_East:
+                  return new AnimInfo(animType, 24, 24);
+               case Anim.Type.Death_East:
+                  return new AnimInfo(animType, 25, 31);
+            }
+            break;
+
          case Anim.Group.SeaMonster:
             switch (animType) {
                case Anim.Type.Idle_East:

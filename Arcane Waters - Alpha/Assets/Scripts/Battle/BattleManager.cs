@@ -58,45 +58,6 @@ public class BattleManager : MonoBehaviour {
       InvokeRepeating("tickBattles", 0f, TICK_INTERVAL);
    }
 
-   public Battle createBattle (Area area, Instance instance, Enemy enemy, PlayerBodyEntity playerBody) {
-      // We need to make a new one
-      Battle battle = Instantiate(battlePrefab);
-
-      // Look up the Battle Board for this Area's tile type
-      Biome.Type biomeType = area.biome;
-      battleBoard.biomeType = biomeType;
-      BackgroundGameManager.self.setSpritesToRandomBoard(battleBoard);
-      battleBoard.gameObject.SetActive(true);
-
-      // Set up our initial data and position
-      battle.battleId = _id++;
-      battle.area = area;
-      battle.biomeType = biomeType;
-      battle.battleBoard = battleBoard;
-      battle.transform.SetParent(this.transform);
-      Util.setXY(battle.transform, battleBoard.transform.position);
-
-      // Actually spawn the Battle as a Network object now
-      NetworkServer.Spawn(battle.gameObject);
-
-      // Keep track of the Battles we create
-      _battles[battle.battleId] = battle;
-
-      // Check how many players are in the Instance
-      int playersInInstance = instance.getPlayerCount();
-
-      // Hashset for enemy types in the battle sequence
-      HashSet<Enemy.Type> enemyTypes = new HashSet<Enemy.Type>();
-
-      // Spawn an appropriate number of enemies based on the number of players in the instance
-      for (int i = 0; i < getEnemyCount(enemy, playersInInstance); i++) {
-         enemyTypes.Add(enemy.enemyType);
-         this.addEnemyToBattle(battle, enemy, Battle.TeamType.Defenders, playerBody, -1);
-      }
-
-      return battle;
-   }
-
    public Battle createTeamBattle (Area area, Instance instance, Enemy enemy, BattlerInfo[] attackersData, PlayerBodyEntity playerBody, BattlerInfo[] defendersData) {
       // We need to make a new one
       Battle battle = Instantiate(battlePrefab);
@@ -128,19 +89,19 @@ public class BattleManager : MonoBehaviour {
       HashSet<Enemy.Type> enemyTypes = new HashSet<Enemy.Type>();
 
       // Spawn an appropriate number of enemies based on the number of players in the instance
-      foreach (BattlerInfo battleInfo in defendersData) {
-         if (battleInfo.enemyType != Enemy.Type.PlayerBattler) {
-            enemy.enemyType = battleInfo.enemyType;
-            enemyTypes.Add(battleInfo.enemyType);
-            this.addEnemyToBattle(battle, enemy, Battle.TeamType.Defenders, playerBody, battleInfo.companionId);
+      foreach (BattlerInfo battlerInfo in defendersData) {
+         if (battlerInfo.enemyType != Enemy.Type.PlayerBattler) {
+            enemy.enemyType = battlerInfo.enemyType;
+            enemyTypes.Add(battlerInfo.enemyType);
+            this.addEnemyToBattle(battle, enemy, Battle.TeamType.Defenders, playerBody, battlerInfo.companionId, battlerInfo.battlerXp);
          }
       }
 
-      foreach (BattlerInfo battleInfo in attackersData) {
-         if (battleInfo.enemyType != Enemy.Type.PlayerBattler) {
-            enemy.enemyType = battleInfo.enemyType;
-            enemyTypes.Add(battleInfo.enemyType);
-            this.addEnemyToBattle(battle, enemy, Battle.TeamType.Attackers, playerBody, battleInfo.companionId);
+      foreach (BattlerInfo battlerInfo in attackersData) {
+         if (battlerInfo.enemyType != Enemy.Type.PlayerBattler) {
+            enemy.enemyType = battlerInfo.enemyType;
+            enemyTypes.Add(battlerInfo.enemyType);
+            this.addEnemyToBattle(battle, enemy, Battle.TeamType.Attackers, playerBody, battlerInfo.companionId, battlerInfo.battlerXp);
          }
       }
 
@@ -215,9 +176,9 @@ public class BattleManager : MonoBehaviour {
       rebuildObservers(battler, battle);
    }
    
-   public void addEnemyToBattle (Battle battle, Enemy enemy, Battle.TeamType teamType, PlayerBodyEntity aggressor, int companionId) {
+   public void addEnemyToBattle (Battle battle, Enemy enemy, Battle.TeamType teamType, PlayerBodyEntity aggressor, int companionId, int battlerXp) {
       // Create a Battler for this Enemy
-      Battler battler = createBattlerForEnemy(battle, enemy, teamType, companionId);
+      Battler battler = createBattlerForEnemy(battle, enemy, teamType, companionId, battlerXp);
       self.storeBattler(battler);
 
       // Add the Battler to the Battle
@@ -334,14 +295,15 @@ public class BattleManager : MonoBehaviour {
       NetworkServer.Spawn(battler.gameObject);
 
       // Copy the Armor Info
-      battler.armorManager.updateArmorSyncVars(player.armorManager.getArmor());
+      ArmorStatData armorStatData = EquipmentXMLManager.self.getArmorData(player.armorManager.armorType);
+      battler.armorManager.updateArmorSyncVars(ArmorStatData.translateDataToArmor(armorStatData));
       battler.armorManager.armorType = player.armorManager.armorType;
       battler.armorManager.color1 = player.armorManager.color1;
       battler.armorManager.color2 = player.armorManager.color2;
 
       // Copy the Weapon Info
       WeaponStatData weaponStatData = EquipmentXMLManager.self.getWeaponData(player.weaponManager.weaponType);
-      battler.weaponManager.updateWeaponSyncVars(player.weaponManager.getWeapon());
+      battler.weaponManager.updateWeaponSyncVars(WeaponStatData.translateDataToWeapon(weaponStatData));
       battler.weaponManager.weaponType = player.weaponManager.weaponType;
       battler.weaponManager.color1 = player.weaponManager.color1;
       battler.weaponManager.color2 = player.weaponManager.color2;
@@ -349,7 +311,7 @@ public class BattleManager : MonoBehaviour {
       return battler;
    }
 
-   private Battler createBattlerForEnemy (Battle battle, Enemy enemy, Battle.TeamType teamType, int companionId) {
+   private Battler createBattlerForEnemy (Battle battle, Enemy enemy, Battle.TeamType teamType, int companionId, int battlerXp) {
       Enemy.Type overrideType = enemy.enemyType;//Enemy.Type.Lizard;
       Battler enemyPrefab = prefabTypes.Find(_ => _.enemyType == Enemy.Type.Lizard).enemyPrefab;
 
@@ -368,6 +330,7 @@ public class BattleManager : MonoBehaviour {
       battler.isBossType = data.isBossType;
       battler.name = data.enemyName;
       battler.companionId = companionId;
+      battler.XP = battlerXp;
 
       // Set starting stats
       battler.health = battler.getStartingHealth(overrideType);
@@ -771,8 +734,15 @@ public class BattleManager : MonoBehaviour {
             if (battler.player is PlayerBodyEntity) {
                PlayerBodyEntity body = (PlayerBodyEntity) battler.player;
                body.XP += xpWon;
+
+               foreach (Battler companionBattlers in winningBattlers) {
+                  if (companionBattlers.isMonster() && companionBattlers.companionId > 0) {
+                     // Reward each companion with battle exp
+                     body.rpc.updateCompanionExp(companionBattlers.companionId, xpWon);
+                  }
+               }
             }
-         }
+         } 
       }
 
       // Process monster type reward
@@ -794,12 +764,7 @@ public class BattleManager : MonoBehaviour {
                   } else {
                      // TODO: Add reward logic here for boss enemies
                   }
-               } else if (participant.isMonster() && participant.isAttacker()) {
-                  // Reward each companion with battle exp
-                  if (participant.companionId > 0) {
-                     getPlayerBattler().player.rpc.Cmd_UpdateCompanionExp(participant.companionId, xpWon);
-                  }
-               }
+               } 
             }
          } else {
             if (battler.player is PlayerBodyEntity) {

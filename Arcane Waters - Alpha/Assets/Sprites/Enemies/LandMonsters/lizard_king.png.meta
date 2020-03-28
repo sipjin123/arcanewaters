@@ -1,0 +1,871 @@
+fileFormatVersion: 2
+guid: 98fac97479d660e42bfaf70172597d33
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 9088812885219920179
+    second: lizard_king_0
+  - first:
+      213: 2100087346763157101
+    second: lizard_king_1
+  - first:
+      213: -6367923672057742062
+    second: lizard_king_2
+  - first:
+      213: 3646519407030398377
+    second: lizard_king_3
+  - first:
+      213: -3561244577071913895
+    second: lizard_king_4
+  - first:
+      213: 9149503732198726552
+    second: lizard_king_5
+  - first:
+      213: -8181912543818831003
+    second: lizard_king_6
+  - first:
+      213: -8374937441666935491
+    second: lizard_king_7
+  - first:
+      213: -7132363728791525836
+    second: lizard_king_8
+  - first:
+      213: -614175480354685381
+    second: lizard_king_9
+  - first:
+      213: 7612349016442543469
+    second: lizard_king_10
+  - first:
+      213: 7733637879055606435
+    second: lizard_king_11
+  - first:
+      213: -3372297296480391376
+    second: lizard_king_12
+  - first:
+      213: -2984956409861155998
+    second: lizard_king_13
+  - first:
+      213: -3591742691830163122
+    second: lizard_king_14
+  - first:
+      213: 8745842285659124853
+    second: lizard_king_15
+  - first:
+      213: 8817429673890365081
+    second: lizard_king_16
+  - first:
+      213: -5820465722338548081
+    second: lizard_king_17
+  - first:
+      213: 797621029323081362
+    second: lizard_king_18
+  - first:
+      213: 1952301026629796568
+    second: lizard_king_19
+  - first:
+      213: 2664139136214641734
+    second: lizard_king_20
+  - first:
+      213: 6266472044970016017
+    second: lizard_king_21
+  - first:
+      213: 8691835232286170873
+    second: lizard_king_22
+  - first:
+      213: -6746560144461037656
+    second: lizard_king_23
+  - first:
+      213: -9024253769024899504
+    second: lizard_king_24
+  - first:
+      213: 3037453904448040774
+    second: lizard_king_25
+  - first:
+      213: 161668753224251290
+    second: lizard_king_26
+  - first:
+      213: -7822989190135241153
+    second: lizard_king_27
+  - first:
+      213: -8769438898327843086
+    second: lizard_king_28
+  - first:
+      213: 2519911217373876341
+    second: lizard_king_29
+  - first:
+      213: 1554233698543214850
+    second: lizard_king_30
+  - first:
+      213: -4478657495880667467
+    second: lizard_king_31
+  externalObjects: {}
+  serializedVersion: 10
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 1
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: -1
+    mipBias: -100
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: lizard_king_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 576
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5ae848e90a39fce42a75b99b44041aec
+      internalID: 9088812885219920179
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lizard_king_1
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 576
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b7212aaa5f6a3904a948a637b756f834
+      internalID: 2100087346763157101
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lizard_king_2
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 576
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b51315b0d37bdbc4eae6ba2932e81d78
+      internalID: -6367923672057742062
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lizard_king_3
+      rect:
+        serializedVersion: 2
+        x: 432
+        y: 576
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4c9d84d8e30577d4d8945c4011b9802d
+      internalID: 3646519407030398377
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lizard_king_4
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 576
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bc85da2eeb926dd409214a2653e09f04
+      internalID: -3561244577071913895
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lizard_king_5
+      rect:
+        serializedVersion: 2
+        x: 720
+        y: 576
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 68b863b9286f30f4980ffa02f7d50571
+      internalID: 9149503732198726552
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lizard_king_6
+      rect:
+        serializedVersion: 2
+        x: 864
+        y: 576
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 21e48398bdae5c542a98985b2e07b094
+      internalID: -8181912543818831003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lizard_king_7
+      rect:
+        serializedVersion: 2
+        x: 1008
+        y: 576
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 287ae5cb84816f04b9c81bba8a34ff41
+      internalID: -8374937441666935491
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lizard_king_8
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 576
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 78d765fde35efaa4bb95820d3808c2c6
+      internalID: -7132363728791525836
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lizard_king_9
+      rect:
+        serializedVersion: 2
+        x: 1296
+        y: 576
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b3d787f322817794d84f48cddaea2ec3
+      internalID: -614175480354685381
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lizard_king_10
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 576
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7fccf81259ca28941a6545b8587c9280
+      internalID: 7612349016442543469
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lizard_king_11
+      rect:
+        serializedVersion: 2
+        x: 1584
+        y: 576
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5faebb8a2c0685145abad174268ee442
+      internalID: 7733637879055606435
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lizard_king_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 432
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 658d5302cadb1564fb1880dc21c49047
+      internalID: -3372297296480391376
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lizard_king_13
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 432
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 08d0f8d35a58e524eb4a4d4097676e95
+      internalID: -2984956409861155998
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lizard_king_14
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 432
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ff4e06ab4b72fdf41b98b040f7d0850d
+      internalID: -3591742691830163122
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lizard_king_15
+      rect:
+        serializedVersion: 2
+        x: 432
+        y: 432
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f27ddaafe27fa46428d314417d08c451
+      internalID: 8745842285659124853
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lizard_king_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 288
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 810d6211f189b204c9079a72e407a92c
+      internalID: 8817429673890365081
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lizard_king_17
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 288
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 62bd1213ac856484b91d2188ee9140a7
+      internalID: -5820465722338548081
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lizard_king_18
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 288
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4fa6bb4227f931545b767d2436d09817
+      internalID: 797621029323081362
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lizard_king_19
+      rect:
+        serializedVersion: 2
+        x: 432
+        y: 288
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fe13ab6a795dc8f40b80126a93f180e3
+      internalID: 1952301026629796568
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lizard_king_20
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 288
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1c802503427caff4283f08fb6846f989
+      internalID: 2664139136214641734
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lizard_king_21
+      rect:
+        serializedVersion: 2
+        x: 720
+        y: 288
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a5b1bce5b260cab4281da0d4137ef90f
+      internalID: 6266472044970016017
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lizard_king_22
+      rect:
+        serializedVersion: 2
+        x: 864
+        y: 288
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a1bc08eec68947f4abbb08b484426052
+      internalID: 8691835232286170873
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lizard_king_23
+      rect:
+        serializedVersion: 2
+        x: 1008
+        y: 288
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f6b34dc3ab2ab7b46844875c7a0166df
+      internalID: -6746560144461037656
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lizard_king_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 144
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b4c62e37aa7e99042b0e3f0f35f038e5
+      internalID: -9024253769024899504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lizard_king_25
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0d294bf5930fcc47bde69f351a90fae
+      internalID: 3037453904448040774
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lizard_king_26
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 0
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e702672786c620043bc26820f8a60dfb
+      internalID: 161668753224251290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lizard_king_27
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 0
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9876ea14ffc42f34896d4f10778ff703
+      internalID: -7822989190135241153
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lizard_king_28
+      rect:
+        serializedVersion: 2
+        x: 432
+        y: 0
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 29ce1ef3171590041bf27217ceab5461
+      internalID: -8769438898327843086
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lizard_king_29
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 0
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b5c3ed970dbcd0344b868e46d874b3e1
+      internalID: 2519911217373876341
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lizard_king_30
+      rect:
+        serializedVersion: 2
+        x: 720
+        y: 0
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 76df3f10ed4a81b4dba8778b1fc987bc
+      internalID: 1554233698543214850
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lizard_king_31
+      rect:
+        serializedVersion: 2
+        x: 864
+        y: 0
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a4ca7fd3c0e01146b6f0b1be4c07916
+      internalID: -4478657495880667467
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

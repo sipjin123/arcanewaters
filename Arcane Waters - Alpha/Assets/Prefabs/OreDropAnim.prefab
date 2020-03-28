@@ -201,7 +201,6 @@ GameObject:
   m_Component:
   - component: {fileID: 9104236099875786169}
   - component: {fileID: 187208201465036672}
-  - component: {fileID: 445031322965764264}
   - component: {fileID: -5386464732063465403}
   m_Layer: 0
   m_Name: OreDropAnim
@@ -245,19 +244,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &445031322965764264
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7313691144369806118}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ba859c178d8c124db767c6511e87792, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  delay: 1
 --- !u!114 &-5386464732063465403
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -280,6 +266,8 @@ MonoBehaviour:
   - oreType: 3
     sprite: {fileID: 21300000, guid: 7c716d0867ef3cc418c41d5dd1dda20b, type: 3}
   animator: {fileID: 187208201465036672}
+  oreNode: {fileID: 0}
+  oreEffectId: 0
 --- !u!1 &8241236508356351925
 GameObject:
   m_ObjectHideFlags: 0

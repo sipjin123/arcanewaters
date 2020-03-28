@@ -37,7 +37,8 @@ public class Anim : MonoBehaviour {
       Tentacle = 6,
       Horror = 7,
       PlayerShip = 8,
-      Golem_Boss = 9
+      Golem_Boss = 9,
+      Lizard_Boss = 10
    }
       
    #endregion

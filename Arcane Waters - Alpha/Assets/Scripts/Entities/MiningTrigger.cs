@@ -75,7 +75,7 @@ public class MiningTrigger : MonoBehaviour
                if (hit.collider.GetComponent<OreNode>() != null) {
                   OreNode oreNode = hit.collider.GetComponent<OreNode>();
                   if (!oreNode.hasBeenMined() && !oreIdsInteracted.Exists(_ => _ == oreNode.id) && !oreNode.finishedMining()) {
-                     bodyEntity.rpc.Cmd_InteractOre(oreNode.id, oreSpawnEffectDirection);
+                     bodyEntity.rpc.Cmd_InteractOre(oreNode.id, transform.position, oreNode.transform.position);
                      oreIdsInteracted.Add(oreNode.id);
                   }
                }

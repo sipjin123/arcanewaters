@@ -16087,6 +16087,17 @@ MonoBehaviour:
     - {fileID: 4377687128210035387, guid: 7e79985f48b9c114da9f682e7e22254c, type: 3}
     - {fileID: -276337308559582253, guid: 7e79985f48b9c114da9f682e7e22254c, type: 3}
     - {fileID: 7497616825008798744, guid: 7e79985f48b9c114da9f682e7e22254c, type: 3}
+  - imageName: Forest_MidGround_Section_2
+    imagePath: Assets/Sprites/BackgroundEntities/Forest Elements/ForegroundAnimatedElements/Forest_MidGround_Section_2.png
+    imagePathWithoutExtension: Assets/Sprites/BackgroundEntities/Forest Elements/ForegroundAnimatedElements/Forest_MidGround_Section_2
+    texture2D: {fileID: 2800000, guid: 7418d9a3fb29abf4f80f0610390e3383, type: 3}
+    sprite: {fileID: -2458508521908304334, guid: 7418d9a3fb29abf4f80f0610390e3383,
+      type: 3}
+    sprites:
+    - {fileID: -2458508521908304334, guid: 7418d9a3fb29abf4f80f0610390e3383, type: 3}
+    - {fileID: -575861994272249868, guid: 7418d9a3fb29abf4f80f0610390e3383, type: 3}
+    - {fileID: -3264664332806879669, guid: 7418d9a3fb29abf4f80f0610390e3383, type: 3}
+    - {fileID: 8724626053106081954, guid: 7418d9a3fb29abf4f80f0610390e3383, type: 3}
   - imageName: forest_outside_area
     imagePath: Assets/Sprites/Biomable/forest_outside_area.png
     imagePathWithoutExtension: Assets/Sprites/Biomable/forest_outside_area
@@ -19536,6 +19547,98 @@ MonoBehaviour:
     - {fileID: 2834140308207693007, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
     - {fileID: 3675051380793540478, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
     - {fileID: 1953535441026555113, guid: adcf4307078545e44a29d8f63d1d0b3b, type: 3}
+  - imageName: lizard_captain
+    imagePath: Assets/Sprites/Enemies/LandMonsters/lizard_captain.png
+    imagePathWithoutExtension: Assets/Sprites/Enemies/LandMonsters/lizard_captain
+    texture2D: {fileID: 2800000, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    sprite: {fileID: 6617541633180842383, guid: 6256e12368c1ce543a56b2184d804389,
+      type: 3}
+    sprites:
+    - {fileID: 6617541633180842383, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: 4943301900581372539, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: 8490038556565206545, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: 5343240260696914850, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: -8599374446391055585, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: 4492749289490614020, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: -6811782705925276424, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: -8305412001459356576, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: 132893221931511973, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: 3345175338355070020, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: 4025335349828084206, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: 896508518321845877, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: -3494062833560946850, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: 1455686817791463487, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: -2517028701716518244, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: 4117032468035340500, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: -1509186419181534328, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: -6516538907149373660, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: 8223265343683490948, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: -5784062205336037467, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: 2165594827818333755, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: 8209917584610897959, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: 804002446162658062, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: 3875060639041299740, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: 5743043281279399359, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: -3294917427229886618, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: -266787448450841355, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: -1355918620101858711, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: 7775125059309897027, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: 1367258623288604985, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: 7216959183515426507, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: -5778930083164938304, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: -59666452460263841, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: -1348742098074071968, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: 4615651230049490986, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: 3404697807068773735, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: 2660710073727592344, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: 9030403127302766216, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+    - {fileID: -6218137092201651593, guid: 6256e12368c1ce543a56b2184d804389, type: 3}
+  - imageName: lizard_champion
+    imagePath: Assets/Sprites/Enemies/LandMonsters/lizard_champion.png
+    imagePathWithoutExtension: Assets/Sprites/Enemies/LandMonsters/lizard_champion
+    texture2D: {fileID: 2800000, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    sprite: {fileID: -8163185950243282607, guid: 37862f3f08520e947ab870ef2285695f,
+      type: 3}
+    sprites:
+    - {fileID: -8163185950243282607, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: -3158191513803548855, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: -3794892645674101110, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: -1309407040335746196, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: 2477538050288443294, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: 3870651243675905345, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: 1813843373312451911, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: -202572391463308091, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: 6979997275151605201, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: 5889586475157103543, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: 5842033846431693382, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: 1040660200203434895, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: -2898772370862570922, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: -96485627060027924, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: -244108613382798108, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: -1519088224523491368, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: -7641055764590850234, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: -7627798999936991012, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: -1618958823542672726, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: 8153030673009865420, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: 6374369785904892315, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: -1743803084162524800, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: -20451164479079358, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: -4412483046976422010, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: 2679505557127583993, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: -2621465583874317948, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: -6859838139073140601, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: 884661446435932052, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: 8117122369162387116, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: 218623711323727601, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: 6272272251433461183, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: -620337078496010796, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: -8909501876945496174, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: -12618558945191886, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: 2076956483112458150, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: 4889878254872568085, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: -1805811829560542317, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: 875019208636885254, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
+    - {fileID: -3889708490833466486, guid: 37862f3f08520e947ab870ef2285695f, type: 3}
   - imageName: lizard_king
     imagePath: Assets/Sprites/Animals/lizard_king.png
     imagePathWithoutExtension: Assets/Sprites/Animals/lizard_king
@@ -23441,9 +23544,12 @@ MonoBehaviour:
     imagePath: Assets/Sprites/Mining/none.png
     imagePathWithoutExtension: Assets/Sprites/Mining/none
     texture2D: {fileID: 2800000, guid: 68dccfd031897f848b755664eb1bc621, type: 3}
-    sprite: {fileID: 21300000, guid: 68dccfd031897f848b755664eb1bc621, type: 3}
+    sprite: {fileID: -4298056599330406823, guid: 68dccfd031897f848b755664eb1bc621,
+      type: 3}
     sprites:
-    - {fileID: 21300000, guid: 68dccfd031897f848b755664eb1bc621, type: 3}
+    - {fileID: -4298056599330406823, guid: 68dccfd031897f848b755664eb1bc621, type: 3}
+    - {fileID: -7726701164042642054, guid: 68dccfd031897f848b755664eb1bc621, type: 3}
+    - {fileID: 3671970615031245810, guid: 68dccfd031897f848b755664eb1bc621, type: 3}
   - imageName: None
     imagePath: Assets/Sprites/Cargo/None.png
     imagePathWithoutExtension: Assets/Sprites/Cargo/None
@@ -24310,6 +24416,27 @@ MonoBehaviour:
     - {fileID: -4353565466694851436, guid: e71640a23dd9cd749926884a03effa63, type: 3}
     - {fileID: -8029492634906290094, guid: e71640a23dd9cd749926884a03effa63, type: 3}
     - {fileID: -8733252555552521123, guid: e71640a23dd9cd749926884a03effa63, type: 3}
+  - imageName: Pine_Bluffs_1
+    imagePath: Assets/Sprites/BackgroundEntities/Pine Elements/BackgroundElements/Pine_Bluffs_1.png
+    imagePathWithoutExtension: Assets/Sprites/BackgroundEntities/Pine Elements/BackgroundElements/Pine_Bluffs_1
+    texture2D: {fileID: 2800000, guid: ff0459a05f5aec8428354c74685c827e, type: 3}
+    sprite: {fileID: 21300000, guid: ff0459a05f5aec8428354c74685c827e, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: ff0459a05f5aec8428354c74685c827e, type: 3}
+  - imageName: Pine_Bluffs_2
+    imagePath: Assets/Sprites/BackgroundEntities/Pine Elements/BackgroundElements/Pine_Bluffs_2.png
+    imagePathWithoutExtension: Assets/Sprites/BackgroundEntities/Pine Elements/BackgroundElements/Pine_Bluffs_2
+    texture2D: {fileID: 2800000, guid: 7bbae9072a1c1984db9dc6fac3c2f3ad, type: 3}
+    sprite: {fileID: 21300000, guid: 7bbae9072a1c1984db9dc6fac3c2f3ad, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 7bbae9072a1c1984db9dc6fac3c2f3ad, type: 3}
+  - imageName: Pine_Bluffs_3
+    imagePath: Assets/Sprites/BackgroundEntities/Pine Elements/BackgroundElements/Pine_Bluffs_3.png
+    imagePathWithoutExtension: Assets/Sprites/BackgroundEntities/Pine Elements/BackgroundElements/Pine_Bluffs_3
+    texture2D: {fileID: 2800000, guid: 3613903aa1b7ad94281369e25d82ecb1, type: 3}
+    sprite: {fileID: 21300000, guid: 3613903aa1b7ad94281369e25d82ecb1, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 3613903aa1b7ad94281369e25d82ecb1, type: 3}
   - imageName: Pine_Clouds_Lower
     imagePath: Assets/Sprites/BackgroundEntities/Pine Elements/SkiesAndGround/Pine_Clouds_Lower.png
     imagePathWithoutExtension: Assets/Sprites/BackgroundEntities/Pine Elements/SkiesAndGround/Pine_Clouds_Lower
@@ -24624,6 +24751,17 @@ MonoBehaviour:
     - {fileID: -3694510675119044643, guid: 2fcd62a774508c9469423e0165cac953, type: 3}
     - {fileID: 1184676168448919468, guid: 2fcd62a774508c9469423e0165cac953, type: 3}
     - {fileID: -6588918052294719149, guid: 2fcd62a774508c9469423e0165cac953, type: 3}
+  - imageName: Pine_MidGround_Section_2
+    imagePath: Assets/Sprites/BackgroundEntities/Pine Elements/ForegroundAnimatedElements/Pine_MidGround_Section_2.png
+    imagePathWithoutExtension: Assets/Sprites/BackgroundEntities/Pine Elements/ForegroundAnimatedElements/Pine_MidGround_Section_2
+    texture2D: {fileID: 2800000, guid: cabc355e079fa9a4ab99d13906249674, type: 3}
+    sprite: {fileID: -5370707072151121085, guid: cabc355e079fa9a4ab99d13906249674,
+      type: 3}
+    sprites:
+    - {fileID: -5370707072151121085, guid: cabc355e079fa9a4ab99d13906249674, type: 3}
+    - {fileID: 5247422245107977563, guid: cabc355e079fa9a4ab99d13906249674, type: 3}
+    - {fileID: 1840930622273707237, guid: cabc355e079fa9a4ab99d13906249674, type: 3}
+    - {fileID: -5138441825097620313, guid: cabc355e079fa9a4ab99d13906249674, type: 3}
   - imageName: pine_outside_area
     imagePath: Assets/Sprites/Biomable/pine_outside_area.png
     imagePathWithoutExtension: Assets/Sprites/Biomable/pine_outside_area

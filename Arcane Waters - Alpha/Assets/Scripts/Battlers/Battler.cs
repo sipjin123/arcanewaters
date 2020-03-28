@@ -228,7 +228,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    public bool isBossType;
 
    // Caches the sizes of the monsters in pixel for offset purposes
-   public const float LARGE_MONSTER_SIZE = 170;
+   public const float LARGE_MONSTER_SIZE = 140;
    public const float LARGE_MONSTER_OFFSET = .25f;
 
    #endregion
@@ -1524,10 +1524,13 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    public float getDefense (Element element) {
-      int level = LevelUtil.levelForXp(getBattlerData().currentXP);
+      int level = LevelUtil.levelForXp(XP);
+
+      // Get the battler data
+      BattlerData battlerData = getBattlerData();
 
       // Calculate our defense based on our base and gain per level
-      float defense = getBattlerData().baseDefense + (getBattlerData().defensePerLevel * level);
+      float defense = battlerData.baseDefense + (battlerData.defensePerLevel * level);
 
       // Add our armor's defense value, if we have any
       if (armorManager.hasArmor()) {
@@ -1538,23 +1541,23 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       switch (element) {
          case Element.Physical:
             defense += bonusPhysicalDefense;
-            elementalMultiplier = getBattlerData().baseDefenseMultiplierSet.physicalDefenseMultiplier;
+            elementalMultiplier = battlerData.baseDefenseMultiplierSet.physicalDefenseMultiplier + (battlerData.perLevelDefenseMultiplierSet.physicalDefenseMultiplierPerLevel * level);
             break;
          case Element.Fire:
             defense += bonusFireDefense;
-            elementalMultiplier = getBattlerData().baseDefenseMultiplierSet.fireDefenseMultiplier;
+            elementalMultiplier = battlerData.baseDefenseMultiplierSet.fireDefenseMultiplier + (battlerData.perLevelDefenseMultiplierSet.fireDefenseMultiplierPerLevel * level);
             break;
          case Element.Earth:
             defense += bonusEarthDefense;
-            elementalMultiplier = getBattlerData().baseDefenseMultiplierSet.earthDefenseMultiplier;
+            elementalMultiplier = battlerData.baseDefenseMultiplierSet.earthDefenseMultiplier + (battlerData.perLevelDefenseMultiplierSet.earthDefenseMultiplierPerLevel * level);
             break;
          case Element.Air:
             defense += bonusAirDefense;
-            elementalMultiplier = getBattlerData().baseDefenseMultiplierSet.airDefenseMultiplier;
+            elementalMultiplier = battlerData.baseDefenseMultiplierSet.airDefenseMultiplier + (battlerData.perLevelDefenseMultiplierSet.airDefenseMultiplierPerLevel * level);
             break;
          case Element.Water:
             defense += bonusWaterDefense;
-            elementalMultiplier = getBattlerData().baseDefenseMultiplierSet.waterDefenseMultiplier;
+            elementalMultiplier = battlerData.baseDefenseMultiplierSet.waterDefenseMultiplier + (battlerData.perLevelDefenseMultiplierSet.waterDefenseMultiplierPerLevel * level);
             break;
       }
       defense *= Mathf.Abs(elementalMultiplier);
@@ -1569,8 +1572,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    public float getDamage (Element element) {
       int level = LevelUtil.levelForXp(XP);
 
+      // Get the battler data
+      BattlerData battlerData = getBattlerData();
+
       // Calculate our offense based on our base and gain per level
-      float damage = getBattlerData().baseDamage + (getBattlerData().damagePerLevel * level);
+      float damage = battlerData.baseDamage + (battlerData.damagePerLevel * level);
 
       // Add our weapon's damage value, if we have a weapon
       if (weaponManager.hasWeapon()) {
@@ -1581,23 +1587,23 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       switch (element) {
          case Element.Physical:
             damage += bonusPhysicalAttack;
-            multiplier = getBattlerData().baseDamageMultiplierSet.physicalAttackMultiplier;
+            multiplier = battlerData.baseDamageMultiplierSet.physicalAttackMultiplier + (battlerData.perLevelDamageMultiplierSet.physicalAttackMultiplierPerLevel * level);
             break;
          case Element.Fire:
             damage += bonusFireAttack;
-            multiplier = getBattlerData().baseDamageMultiplierSet.fireAttackMultiplier;
+            multiplier = battlerData.baseDamageMultiplierSet.fireAttackMultiplier + (battlerData.perLevelDamageMultiplierSet.fireAttackMultiplierPerLevel * level);
             break;
          case Element.Earth:
             damage += bonusEarthAttack;
-            multiplier = getBattlerData().baseDamageMultiplierSet.earthAttackMultiplier;
+            multiplier = battlerData.baseDamageMultiplierSet.earthAttackMultiplier + (battlerData.perLevelDamageMultiplierSet.earthAttackMultiplierPerLevel * level);
             break;
          case Element.Air:
             damage += bonusAirAttack;
-            multiplier = getBattlerData().baseDamageMultiplierSet.airAttackMultiplier;
+            multiplier = battlerData.baseDamageMultiplierSet.airAttackMultiplier + (battlerData.perLevelDamageMultiplierSet.airAttackMultiplierPerLevel * level);
             break;
          case Element.Water:
             damage += bonusWaterAttack;
-            multiplier = getBattlerData().baseDamageMultiplierSet.waterAttackMultiplier;
+            multiplier = battlerData.baseDamageMultiplierSet.waterAttackMultiplier + (battlerData.perLevelDamageMultiplierSet.waterAttackMultiplierPerLevel * level);
             break;
       }
       damage *= multiplier;

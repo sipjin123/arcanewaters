@@ -14,4 +14,7 @@ public class BattlerInfo
 
    // The companion id if is a companion of the player
    public int companionId = -1;
+
+   // The total experience points of the battler
+   public int battlerXp = 0;
 }

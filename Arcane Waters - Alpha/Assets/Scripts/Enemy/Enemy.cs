@@ -11,7 +11,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
    // The Type of Enemy
    public enum Type {
       None = 0,
-      Plant = 100, Golem = 101, Slime = 102, Golem_Boss = 103,
+      Plant = 100, Golem = 101, Slime = 102, Golem_Boss = 103, Lizard_King = 104,
       Coralbow = 200, Entarcher = 201, Flower = 202, Muckspirit = 203, Treeman = 204,
       Lizard = 205, Shroom = 206, Wisp = 207, Lizard_Armored = 208, Lizard_Shaman = 209, Lizard_Wizard = 210,
       Lizard_Sword = 211, Lizard_Captain = 212, Lizard_Champion = 213, PlayerBattler = 305

@@ -22,6 +22,12 @@ public class NPCManager : MonoBehaviour {
    // List of npc data for editor reviewing
    public List<NPCData> npcList = new List<NPCData>();
 
+   // The default npc face sprite
+   public Sprite defaultNpcFaceSprite;
+
+   // The default npc body sprite
+   public Sprite defaultNpcBodySprite;
+
    #endregion
 
    public void Awake () {

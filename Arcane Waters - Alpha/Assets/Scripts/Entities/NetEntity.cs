@@ -758,6 +758,29 @@ public class NetEntity : NetworkBehaviour {
       VoyageManager.self.receiveVoyageInvitation(voyageGroupId, inviterName);
    }
 
+   [TargetRpc]
+   public void Target_GainedItem (NetworkConnection conn, string itemIconPath, string itemName, Jobs.Type jobType, float jobExp, int itemCount) {
+      Vector3 pos = this.transform.position + new Vector3(0f, .32f);
+
+      // Show a message that they gained some XP along with the item they received
+      GameObject gainItemCanvas = Instantiate(PrefabsManager.self.itemReceivedPrefab);
+      gainItemCanvas.transform.position = pos;
+      if (jobType != Jobs.Type.None) {
+         gainItemCanvas.GetComponentInChildren<Text>().text = "+ " + itemCount + " " + itemName + "\n" + "+ " + jobExp + " " + jobType + " XP";
+      } else {
+         gainItemCanvas.GetComponentInChildren<Text>().text = "+ " + itemCount + " " + itemName;
+      }
+      gainItemCanvas.GetComponentInChildren<Image>().sprite = ImageManager.getSprite(itemIconPath);
+   }
+
+   [TargetRpc]
+   public void Target_FloatingMessage (NetworkConnection conn, string message) {
+      Vector3 pos = this.transform.position + new Vector3(0f, .32f);
+      GameObject messageCanvas = Instantiate(PrefabsManager.self.warningTextPrefab);
+      messageCanvas.transform.position = pos;
+      messageCanvas.GetComponentInChildren<Text>().text = message;
+   }
+
    [Command]
    public void Cmd_PlantCrop (Crop.Type cropType, int cropNumber) {
       // We have to holding the seed bag

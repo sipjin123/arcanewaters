@@ -82,6 +82,10 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
       if (this.gameObject.HasComponent<SpriteRenderer>()) {
          _renderers.Add(GetComponent<SpriteRenderer>());
       }
+
+      if (nameText != null) {
+         gameObject.name = "NPC_" + nameText.text;
+      }
    }
 
    void Start () {
@@ -144,7 +148,7 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
             GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture(npcData.spritePath);
          } catch {
             D.log("Cant get Sprite for NPC: " + this.npcId);
-            GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture(ImageManager.DEFAULT_NPC_PATH);
+            GetComponent<SpriteSwap>().newTexture = NPCManager.self.defaultNpcBodySprite.texture;
          }
       } else {
          D.log("Cant get Data for NPC: " + this.npcId);
@@ -152,7 +156,7 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
 
       if (GetComponent<SpriteSwap>().newTexture.name.Contains("empty")) {
          D.log("Invalid NPC Path, please complete details in NPC Editor");
-         GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture(ImageManager.DEFAULT_NPC_PATH);
+         GetComponent<SpriteSwap>().newTexture = NPCManager.self.defaultNpcBodySprite.texture;
       }
    }
 
