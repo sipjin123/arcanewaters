@@ -9,6 +9,9 @@ public class TilemapLayer
    // The tilemap component of the layer
    public Tilemap tilemap;
 
+   // The full name of the layer containing number of layer
+   public string fullName;
+
    // The name of the layer
    public string name;
 

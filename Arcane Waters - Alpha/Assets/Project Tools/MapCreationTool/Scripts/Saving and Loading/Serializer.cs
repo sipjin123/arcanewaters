@@ -190,7 +190,7 @@ namespace MapCreationTool.Serialization
 
                bool hasWater = false;
                for (int k = midLayers.Count - 1; k >= 0; k--) {
-                  if (midLayers[k].layer.CompareTo("water") == 0 && midLayers[k].tileMatrix[i, j] != null) {
+                  if (Layer.isWater(midLayers[k].layer) && midLayers[k].tileMatrix[i, j] != null) {
                      hasWater = true;
                   }
                }
@@ -288,15 +288,143 @@ namespace MapCreationTool.Serialization
       }
 
       private static SpecialTileChunk[] formSpecialTileChunks (List<MidExportLayer> midLayers, Vector2Int editorSize, EditorType editorType) {
-         Func<string, int, bool> stairInclude = (layer, sublayer) => layer.CompareTo("stair") == 0;
-         Func<string, int, bool> waterfallInclude = (layer, sublayer) => layer.CompareTo("water") == 0 && sublayer == 4 && editorType == EditorType.Area;
-         Func<string, int, bool> vineInclude = (layer, sublayer) => layer.CompareTo("vine") == 0;
+         Func<string, int, bool> stairInclude = (layer, sublayer) => Layer.isStair(layer);
+         Func<string, int, bool> waterfallInclude = (layer, sublayer) => Layer.isWater(layer) && sublayer == 4 && editorType == EditorType.Area;
+         Func<string, int, bool> vineInclude = (layer, sublayer) => Layer.isVine(layer);
 
          IEnumerable<SpecialTileChunk> stairs = formSquareChunks(midLayers, editorSize, SpecialTileChunk.Type.Stair, stairInclude);
          IEnumerable<SpecialTileChunk> waterfalls = formSquareChunks(midLayers, editorSize, SpecialTileChunk.Type.Waterfall, waterfallInclude);
          IEnumerable<SpecialTileChunk> vines = formSquareChunks(midLayers, editorSize, SpecialTileChunk.Type.Vine, vineInclude);
+         IEnumerable<SpecialTileChunk> currents = formWaterCurrentChunks(midLayers, editorSize);
 
-         return stairs.Union(waterfalls).Union(vines).ToArray();
+         return stairs.Union(waterfalls).Union(vines).Union(currents).ToArray();
+      }
+
+      private static IEnumerable<SpecialTileChunk> formWaterCurrentChunks (List<MidExportLayer> midLayers, Vector2Int editorSize) {
+         bool[,] matrix = new bool[editorSize.x, editorSize.y];
+         List<(int, int)> currentIndexes = new List<(int, int)>();
+
+         // Find all current and waterfall tiles and set them in the matrix
+         for (int i = 0; i < editorSize.x; i++) {
+            for (int j = 0; j < editorSize.y; j++) {
+               foreach (MidExportLayer layer in midLayers) {
+                  if (layer.tileMatrix[i, j] != null) {
+                     if (Layer.isWater(layer.layer) && (layer.subLayer == 4 || layer.subLayer == 5)) {
+                        matrix[i, j] = true;
+                        currentIndexes.Add((i, j));
+                        break;
+                     }
+                  }
+               }
+            }
+         }
+
+         // Take all current and waterfall tiles and expand outwards in the matrix
+         int expandBy = 2;
+         foreach ((int x, int y) index in currentIndexes) {
+            for (int i = index.x - expandBy; i <= index.x + expandBy; i++) {
+               for (int j = index.y - expandBy; j <= index.y + expandBy; j++) {
+                  if (i < 0 || j < 0 || i >= editorSize.x || j >= editorSize.y) {
+                     continue;
+                  }
+                  if (Mathf.Sqrt(Mathf.Pow(index.x - i, 2) + Mathf.Pow(index.y - j, 2)) > expandBy) {
+                     continue;
+                  }
+                  for (int k = midLayers.Count - 1; k >= 0; k--) {
+                     if (midLayers[k].tileMatrix[i, j] != null) {
+                        if (Layer.isWater(midLayers[k].layer)) {
+                           matrix[i, j] = true;
+                        }
+                        break;
+                     }
+                  }
+               }
+            }
+         }
+
+         // Remove any current tiles, that have only 1 neighbour current tile, thus smoothing the area
+         for (int i = 0; i < editorSize.x; i++) {
+            for (int j = 0; j < editorSize.y; j++) {
+               if (getNeightbourCount(matrix, (i, j)) < 2) {
+                  matrix[i, j] = false;
+               }
+            }
+         }
+
+         GameObject colContainer = new GameObject("TEMP_WATER_CURRENT_COLLIDER_CONTAINER");
+         colContainer.transform.position = Vector3.zero;
+         Rigidbody2D rb = colContainer.AddComponent<Rigidbody2D>();
+         rb.bodyType = RigidbodyType2D.Static;
+         CompositeCollider2D comp = colContainer.AddComponent<CompositeCollider2D>();
+         comp.generationType = CompositeCollider2D.GenerationType.Manual;
+
+         for (int i = 0; i < editorSize.x; i++) {
+            for (int j = 0; j < editorSize.y; j++) {
+               if (matrix[i, j]) {
+                  GameObject colOb = new GameObject("Cell");
+                  colOb.transform.parent = colContainer.transform;
+                  colOb.transform.localPosition = Vector3.zero;
+                  // Add either a box or a triangle, based on neighbour count
+                  if (getNeightbourCount(matrix, (i, j)) == 2) {
+                     PolygonCollider2D poly = colOb.AddComponent<PolygonCollider2D>();
+                     poly.usedByComposite = true;
+
+                     SidesInt sur = BrushStroke.surroundingCount(matrix, (i, j), SidesInt.uniform(1));
+                     // Bot left corner of cell
+                     Vector2 bl = new Vector2(i - editorSize.x * 0.5f, j - editorSize.y * 0.5f);
+                     if (sur.left == 0 && sur.top == 0) {
+                        poly.points = new Vector2[] { bl, bl + new Vector2(1, 1), bl + new Vector2(1, 0) };
+                     } else if (sur.top == 0 && sur.right == 0) {
+                        poly.points = new Vector2[] { bl, bl + new Vector2(0, 1), bl + new Vector2(1, 0) };
+                     } else if (sur.right == 0 && sur.bot == 0) {
+                        poly.points = new Vector2[] { bl, bl + new Vector2(0, 1), bl + new Vector2(1, 1) };
+                     } else if (sur.bot == 0 && sur.left == 0) {
+                        poly.points = new Vector2[] { bl + new Vector2(0, 1), bl + new Vector2(1, 1), bl + new Vector2(1, 0) };
+                     }
+                  } else {
+                     BoxCollider2D box = colOb.AddComponent<BoxCollider2D>();
+                     box.offset = new Vector2(i - editorSize.x * 0.5f + 0.5f, j - editorSize.y * 0.5f + 0.5f);
+                     box.usedByComposite = true;
+                  }
+               }
+            }
+         }
+
+         comp.GenerateGeometry();
+
+         PointPath[] paths = new PointPath[comp.pathCount];
+         for (int i = 0; i < comp.pathCount; i++) {
+            Vector2[] points = new Vector2[comp.GetPathPointCount(i)];
+            comp.GetPath(i, points);
+            paths[i] = new PointPath { points = points };
+         }
+
+         UnityEngine.Object.Destroy(colContainer);
+
+         yield return new SpecialTileChunk {
+            type = SpecialTileChunk.Type.Current,
+            position = Vector2.zero,
+            paths = paths
+         };
+      }
+
+      private static int getNeightbourCount (bool[,] m, (int x, int y) index) {
+         int nh = 0;
+
+         if (index.x > 0 && m[index.x - 1, index.y]) {
+            nh++;
+         }
+         if (index.y > 0 && m[index.x, index.y - 1]) {
+            nh++;
+         }
+         if (index.x < m.GetLength(0) - 1 && m[index.x + 1, index.y]) {
+            nh++;
+         }
+         if (index.y < m.GetLength(1) - 1 && m[index.x, index.y + 1]) {
+            nh++;
+         }
+
+         return nh;
       }
 
       private static IEnumerable<SpecialTileChunk> formSquareChunks (List<MidExportLayer> midLayers, Vector2Int editorSize, SpecialTileChunk.Type type, Func<string, int, bool> include) {
@@ -573,13 +701,21 @@ namespace MapCreationTool.Serialization
       public Type type;
       public Vector2 position;
       public Vector2 size;
+      public PointPath[] paths;
 
       public enum Type
       {
          Stair = 1,
          Vine = 2,
-         Waterfall = 3
+         Waterfall = 3,
+         Current = 4
       }
+   }
+
+   [Serializable]
+   public class PointPath
+   {
+      public Vector2[] points;
    }
 
    public class DeserializedProject
@@ -702,7 +838,7 @@ namespace MapCreationTool.Serialization
       public const string GENERIC_ACTION_TRIGGER_HEIGHT_KEY = "height";
 
       public const string BOOK_ID_KEY = "book id";
-      
+
       public const string LEDGE_WIDTH_KEY = "width";
       public const string LEDGE_HEIGHT_KEY = "height";
 

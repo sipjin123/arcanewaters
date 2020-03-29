@@ -113,6 +113,7 @@ public class EditorUtil : EditorWindow {
 
       // Save the changes in the scene
       EditorUtility.SetDirty(imageManager);
+      PrefabUtility.ApplyPrefabInstance(imageManager.gameObject, InteractionMode.UserAction);
       AssetDatabase.SaveAssets();
       AssetDatabase.Refresh();
    }

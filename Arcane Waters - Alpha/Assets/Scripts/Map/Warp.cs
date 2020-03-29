@@ -36,7 +36,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
       // If a player entered this warp on the server, move them
       if (player.isServer && player.connectionToClient != null) {
          // If this warp is controlled by a treasure site, verify that the player is allowed to use it
-         if (_treasureSite != null && !(VoyageManager.isInVoyage(player) && _treasureSite.voyageGroupId == player.voyageGroupId)) {
+         if (_treasureSite != null && !(VoyageManager.isInVoyage(player) && _treasureSite.isCaptured() && _treasureSite.voyageGroupId == player.voyageGroupId)) {
             return;
          }
 

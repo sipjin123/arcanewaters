@@ -260,6 +260,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 7542255104584888265}
 --- !u!1 &1019066867111484
@@ -569,6 +570,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 7542293928723157179}
 --- !u!1 &1026470666839714
@@ -734,6 +736,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 1
   sortPoint: {fileID: 7541652238023233987}
 --- !u!114 &4434420235107721433
@@ -7731,6 +7734,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 7541728537486677987}
 --- !u!1 &1043694646445420
@@ -7910,6 +7914,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 7542136945950032577}
 --- !u!1 &1058676366366274
@@ -8193,6 +8198,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 7542136736438483651}
 --- !u!1 &1062824359220964
@@ -8345,6 +8351,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 1
   sortPoint: {fileID: 7541764596206731457}
 --- !u!1 &1087007745329284
@@ -8665,6 +8672,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 7542393304324874415}
 --- !u!1 &1104492816526408
@@ -8750,6 +8758,7 @@ MonoBehaviour:
     type: 3}
   crop: {fileID: 0}
   cropNumber: 6
+  cropPickupLocation: {x: 0, y: 0, z: 0}
 --- !u!58 &58697032070137860
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -8864,6 +8873,7 @@ MonoBehaviour:
     type: 3}
   crop: {fileID: 0}
   cropNumber: 21
+  cropPickupLocation: {x: 0, y: 0, z: 0}
 --- !u!58 &58306802506699066
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -9056,6 +9066,7 @@ MonoBehaviour:
     type: 3}
   crop: {fileID: 0}
   cropNumber: 10
+  cropPickupLocation: {x: 0, y: 0, z: 0}
 --- !u!58 &58194591259686030
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -9284,6 +9295,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 1
   sortPoint: {fileID: 7542389288529070241}
 --- !u!1 &1144698088287062
@@ -9449,6 +9461,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 1
   sortPoint: {fileID: 7541946904891282039}
 --- !u!1 &1145580398662906
@@ -9500,6 +9513,7 @@ MonoBehaviour:
     type: 3}
   crop: {fileID: 0}
   cropNumber: 2
+  cropPickupLocation: {x: 0, y: 0, z: 0}
 --- !u!58 &58087127726554284
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -9871,6 +9885,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 1
   sortPoint: {fileID: 7542513175543139333}
 --- !u!1 &1156602312708148
@@ -10050,6 +10065,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 7541843445228978791}
 --- !u!1 &1178746688640644
@@ -10215,6 +10231,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 1
   sortPoint: {fileID: 7541893207438082277}
 --- !u!1 &1199757894592478
@@ -10244,7 +10261,7 @@ Transform:
   m_GameObject: {fileID: 1199757894592478}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.758, y: 0.85, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4527583430927386}
   m_RootOrder: 12
@@ -10431,7 +10448,7 @@ Transform:
   m_GameObject: {fileID: 1208349057452368}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.365, y: 1.386, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4500428819776596}
   m_RootOrder: 10
@@ -20163,7 +20180,7 @@ Tilemap:
       - {fileID: 21300152, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300158, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300164, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 61, y: -52, z: 0}
@@ -20961,7 +20978,7 @@ Tilemap:
       - {fileID: 21300126, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300132, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300138, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 19, y: -44, z: 0}
@@ -23039,7 +23056,7 @@ Tilemap:
       - {fileID: 21300176, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300182, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300188, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 30, y: -3, z: 0}
@@ -23159,7 +23176,7 @@ Tilemap:
       - {fileID: 21300126, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300132, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300138, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 25, y: -1, z: 0}
@@ -23199,7 +23216,7 @@ Tilemap:
       - {fileID: 21300128, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300134, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300140, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 29, y: -1, z: 0}
@@ -23219,7 +23236,7 @@ Tilemap:
       - {fileID: 21300130, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300136, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300142, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 62, y: -1, z: 0}
@@ -23508,7 +23525,7 @@ Transform:
   m_GameObject: {fileID: 1215162832056072}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.607, y: 1.571, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4500428819776596}
   m_RootOrder: 11
@@ -23769,6 +23786,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 1
   sortPoint: {fileID: 7542501568561997737}
 --- !u!1 &1223413352769964
@@ -23945,6 +23963,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 7541649733704427019}
 --- !u!1 &1245462517416934
@@ -24074,6 +24093,7 @@ MonoBehaviour:
     type: 3}
   crop: {fileID: 0}
   cropNumber: 3
+  cropPickupLocation: {x: 0, y: 0, z: 0}
 --- !u!58 &58923162429329610
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -30278,6 +30298,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 7542437811036258689}
 --- !u!1 &1271928125533018
@@ -30329,6 +30350,7 @@ MonoBehaviour:
     type: 3}
   crop: {fileID: 0}
   cropNumber: 5
+  cropPickupLocation: {x: 0, y: 0, z: 0}
 --- !u!58 &58182405576438104
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -30524,6 +30546,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 7541798602213393755}
 --- !u!1 &1288832900076552
@@ -30654,6 +30677,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 7541662698618524197}
 --- !u!1 &1298335612952014
@@ -35340,6 +35364,7 @@ MonoBehaviour:
     type: 3}
   crop: {fileID: 0}
   cropNumber: 11
+  cropPickupLocation: {x: 0, y: 0, z: 0}
 --- !u!58 &58167724712973258
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -35597,6 +35622,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 7542496699421908863}
 --- !u!1 &1319146754062392
@@ -35760,6 +35786,7 @@ MonoBehaviour:
     type: 3}
   crop: {fileID: 0}
   cropNumber: 13
+  cropPickupLocation: {x: 0, y: 0, z: 0}
 --- !u!58 &58312190769081162
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -36284,6 +36311,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 1
   sortPoint: {fileID: 7542081862076053029}
 --- !u!1 &1403310255516794
@@ -36386,6 +36414,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 7542423087014066607}
 --- !u!60 &60640544353351898
@@ -36448,7 +36477,7 @@ Transform:
   m_GameObject: {fileID: 1404084148716030}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.02, y: 1.525, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4500428819776596}
   m_RootOrder: 9
@@ -36621,6 +36650,7 @@ MonoBehaviour:
     type: 3}
   crop: {fileID: 0}
   cropNumber: 24
+  cropPickupLocation: {x: 0, y: 0, z: 0}
 --- !u!58 &58339225608604138
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -36713,7 +36743,7 @@ Transform:
   m_GameObject: {fileID: 1408643037444558}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.349, y: -0.561, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4500428819776596}
   m_RootOrder: 6
@@ -36953,6 +36983,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 1
   sortPoint: {fileID: 7542049031131005129}
 --- !u!1 &1418919874633798
@@ -37308,6 +37339,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 1
   sortPoint: {fileID: 7541764776509428705}
 --- !u!1 &1431212347281918
@@ -37359,6 +37391,7 @@ MonoBehaviour:
     type: 3}
   crop: {fileID: 0}
   cropNumber: 1
+  cropPickupLocation: {x: 0, y: 0, z: 0}
 --- !u!58 &58298205336783318
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -41196,6 +41229,7 @@ MonoBehaviour:
     type: 3}
   crop: {fileID: 0}
   cropNumber: 18
+  cropPickupLocation: {x: 0, y: 0, z: 0}
 --- !u!58 &58827488494755260
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -41742,6 +41776,7 @@ MonoBehaviour:
     type: 3}
   crop: {fileID: 0}
   cropNumber: 16
+  cropPickupLocation: {x: 0, y: 0, z: 0}
 --- !u!58 &58192489783694672
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -42211,6 +42246,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 7541654934695764349}
 --- !u!1 &1488350605043832
@@ -42341,6 +42377,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 7542126699196896845}
 --- !u!1 &1499224670496480
@@ -42515,6 +42552,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 7541809361589499491}
 --- !u!1 &1502278553969154
@@ -42544,7 +42582,7 @@ Transform:
   m_GameObject: {fileID: 1502278553969154}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.288, y: 1.078, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4500428819776596}
   m_RootOrder: 8
@@ -42749,6 +42787,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 7542121760255859761}
 --- !u!1 &1507377782996602
@@ -42879,6 +42918,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 7542057975910905659}
 --- !u!1 &1510704998312344
@@ -46083,6 +46123,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 1
   sortPoint: {fileID: 7541728251494094401}
 --- !u!1 &1526559805708678
@@ -46556,6 +46597,7 @@ MonoBehaviour:
     type: 3}
   crop: {fileID: 0}
   cropNumber: 4
+  cropPickupLocation: {x: 0, y: 0, z: 0}
 --- !u!58 &58010505206734102
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -46784,6 +46826,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 1
   sortPoint: {fileID: 7542440296355480045}
 --- !u!1 &1545585504110862
@@ -48126,6 +48169,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 1
   sortPoint: {fileID: 7541926659697063315}
 --- !u!1 &1597087844434646
@@ -56304,6 +56348,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 7542434218566033455}
 --- !u!1 &1637064097402518
@@ -56476,6 +56521,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 5
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 0}
 --- !u!61 &61733685857938530
@@ -58322,6 +58368,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 7542018160796798363}
 --- !u!1 &1710531046446492
@@ -58579,6 +58626,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 7541946361185214517}
 --- !u!1 &1721536536505022
@@ -59393,6 +59441,7 @@ MonoBehaviour:
     type: 3}
   crop: {fileID: 0}
   cropNumber: 17
+  cropPickupLocation: {x: 0, y: 0, z: 0}
 --- !u!58 &58226547880659020
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -59507,6 +59556,7 @@ MonoBehaviour:
     type: 3}
   crop: {fileID: 0}
   cropNumber: 20
+  cropPickupLocation: {x: 0, y: 0, z: 0}
 --- !u!58 &58008955800913470
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -59782,6 +59832,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 1
   sortPoint: {fileID: 7542390046333930061}
 --- !u!1 &1733983178206680
@@ -62978,6 +63029,7 @@ MonoBehaviour:
     type: 3}
   crop: {fileID: 0}
   cropNumber: 9
+  cropPickupLocation: {x: 0, y: 0, z: 0}
 --- !u!58 &58034848639584662
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -63423,7 +63475,7 @@ Transform:
   m_GameObject: {fileID: 1769664105134184}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.185, y: 0.96, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4500428819776596}
   m_RootOrder: 7
@@ -63596,6 +63648,7 @@ MonoBehaviour:
     type: 3}
   crop: {fileID: 0}
   cropNumber: 19
+  cropPickupLocation: {x: 0, y: 0, z: 0}
 --- !u!58 &58778115424395300
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -63688,7 +63741,7 @@ Transform:
   m_GameObject: {fileID: 1774184146919330}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.267, y: 0.297, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4500428819776596}
   m_RootOrder: 3
@@ -63963,7 +64016,7 @@ Transform:
   m_GameObject: {fileID: 1784751522990234}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.17000008, y: -0.5499997, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4500428819776596}
   m_RootOrder: 0
@@ -64089,6 +64142,7 @@ MonoBehaviour:
     type: 3}
   crop: {fileID: 0}
   cropNumber: 14
+  cropPickupLocation: {x: 0, y: 0, z: 0}
 --- !u!58 &58366234434804820
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -64291,7 +64345,7 @@ Transform:
   m_GameObject: {fileID: 1795780868444094}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.21, y: 0.59, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4500428819776596}
   m_RootOrder: 4
@@ -64496,6 +64550,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 7542186282456362359}
 --- !u!1 &1798121862239904
@@ -66277,7 +66332,7 @@ Transform:
   m_GameObject: {fileID: 1802050616291546}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.354, y: -0.247, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4500428819776596}
   m_RootOrder: 2
@@ -66593,6 +66648,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 7542053354960515155}
 --- !u!1 &1827002378838878
@@ -66622,7 +66678,7 @@ Transform:
   m_GameObject: {fileID: 1827002378838878}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.092, y: -0.391, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4500428819776596}
   m_RootOrder: 1
@@ -67323,6 +67379,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 1202667707328382}
 --- !u!58 &58246922952223440
@@ -67504,6 +67561,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 7541632103225156749}
 --- !u!1 &1857561714448256
@@ -108119,6 +108177,7 @@ MonoBehaviour:
     type: 3}
   crop: {fileID: 0}
   cropNumber: 15
+  cropPickupLocation: {x: 0, y: 0, z: 0}
 --- !u!58 &58065772080668880
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -108337,6 +108396,7 @@ MonoBehaviour:
     type: 3}
   crop: {fileID: 0}
   cropNumber: 7
+  cropPickupLocation: {x: 0, y: 0, z: 0}
 --- !u!58 &58844960957401440
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -108530,6 +108590,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 7541637823868592119}
 --- !u!1 &1893693758199740
@@ -108581,6 +108642,7 @@ MonoBehaviour:
     type: 3}
   crop: {fileID: 0}
   cropNumber: 8
+  cropPickupLocation: {x: 0, y: 0, z: 0}
 --- !u!58 &58458902326479116
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -108867,6 +108929,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 7541865438943857769}
 --- !u!1 &1922745075050404
@@ -109076,6 +109139,7 @@ MonoBehaviour:
     type: 3}
   crop: {fileID: 0}
   cropNumber: 23
+  cropPickupLocation: {x: 0, y: 0, z: 0}
 --- !u!58 &58644639454597506
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -111537,9 +111601,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   areaKey: Farm
   townAreaKey: 
+  biome: 0
   cameraBounds: {fileID: 60859815272457760}
   vcam: {fileID: 114324235253040420}
   isSea: 0
+  waterZ: 0
+  isInterior: 0
+  version: 0
+  npcDatafields: []
+  enemyDatafields: []
+  treasureSiteDataFields: []
+  oreDataFields: []
+  loadedNPCDataList: []
 --- !u!1 &1949092624024022
 GameObject:
   m_ObjectHideFlags: 0
@@ -111703,6 +111776,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 1
   sortPoint: {fileID: 7542434750213495323}
 --- !u!1 &1951908788693060
@@ -111920,6 +111994,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 1
   sortPoint: {fileID: 7541723104856913689}
 --- !u!1 &1969875789287622
@@ -112085,6 +112160,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 1
   sortPoint: {fileID: 7542153585711453445}
 --- !u!1 &1975633771288992
@@ -112136,6 +112212,7 @@ MonoBehaviour:
     type: 3}
   crop: {fileID: 0}
   cropNumber: 22
+  cropPickupLocation: {x: 0, y: 0, z: 0}
 --- !u!58 &58967121540849650
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -112250,6 +112327,7 @@ MonoBehaviour:
     type: 3}
   crop: {fileID: 0}
   cropNumber: 12
+  cropPickupLocation: {x: 0, y: 0, z: 0}
 --- !u!58 &58419253551876620
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -112342,7 +112420,7 @@ Transform:
   m_GameObject: {fileID: 1990317939592278}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.026, y: 0.77, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4500428819776596}
   m_RootOrder: 5
@@ -112717,6 +112795,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 7541936924478830179}
 --- !u!1 &4131777950212149014
@@ -112808,7 +112887,7 @@ Transform:
   m_GameObject: {fileID: 7541436840119456783}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.24, y: 1.243, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4377821851091164}
   m_RootOrder: 5
@@ -113682,7 +113761,7 @@ Transform:
   m_GameObject: {fileID: 7541711574943109047}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.658, y: 0.586, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4527583430927386}
   m_RootOrder: 6
@@ -113936,7 +114015,7 @@ Transform:
   m_GameObject: {fileID: 7541787108962011131}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.376, y: 0.241, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4527583430927386}
   m_RootOrder: 3
@@ -114040,7 +114119,7 @@ Transform:
   m_GameObject: {fileID: 7541794133192511683}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.524, y: -0.113, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4527583430927386}
   m_RootOrder: 0
@@ -114174,7 +114253,7 @@ Transform:
   m_GameObject: {fileID: 7541800105653984907}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.105, y: -0.181, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4377821851091164}
   m_RootOrder: 0
@@ -114422,7 +114501,7 @@ Transform:
   m_GameObject: {fileID: 7541839772978887431}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.208, y: 0.048, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4377821851091164}
   m_RootOrder: 1
@@ -115090,7 +115169,7 @@ Transform:
   m_GameObject: {fileID: 7541988131877434893}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.325, y: 0.912, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4527583430927386}
   m_RootOrder: 7
@@ -115608,7 +115687,7 @@ Transform:
   m_GameObject: {fileID: 7542050475056627093}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.174, y: -0.006, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4527583430927386}
   m_RootOrder: 1
@@ -115772,7 +115851,7 @@ Transform:
   m_GameObject: {fileID: 7542074339526113883}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.729, y: 0.773, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4527583430927386}
   m_RootOrder: 8
@@ -115906,7 +115985,7 @@ Transform:
   m_GameObject: {fileID: 7542111569361866917}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.076, y: 0.086, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4527583430927386}
   m_RootOrder: 2
@@ -116548,7 +116627,7 @@ Transform:
   m_GameObject: {fileID: 7542165538426523537}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.094, y: 0.975, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4377821851091164}
   m_RootOrder: 4
@@ -116652,7 +116731,7 @@ Transform:
   m_GameObject: {fileID: 7542167943294227179}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.076, y: 0.145, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4377821851091164}
   m_RootOrder: 2
@@ -117198,7 +117277,7 @@ Transform:
   m_GameObject: {fileID: 7542238521446983903}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.059, y: 1.371, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4377821851091164}
   m_RootOrder: 6
@@ -117526,7 +117605,7 @@ Transform:
   m_GameObject: {fileID: 7542262701380180391}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.568, y: 1.219, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4527583430927386}
   m_RootOrder: 9
@@ -117630,7 +117709,7 @@ Transform:
   m_GameObject: {fileID: 7542283462174279741}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.613, y: 0.034, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4527583430927386}
   m_RootOrder: 4
@@ -117992,7 +118071,7 @@ Transform:
   m_GameObject: {fileID: 7542341947291029769}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.44, y: 1.017, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4527583430927386}
   m_RootOrder: 10
@@ -118096,7 +118175,7 @@ Transform:
   m_GameObject: {fileID: 7542357923321857995}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.181, y: 0.799, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4527583430927386}
   m_RootOrder: 5
@@ -118400,7 +118479,7 @@ Transform:
   m_GameObject: {fileID: 7542433971254051921}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.113, y: 0.885, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4377821851091164}
   m_RootOrder: 3
@@ -118845,7 +118924,7 @@ Transform:
   m_GameObject: {fileID: 7542499679621605379}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.549, y: 1.248, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_Children: []
   m_Father: {fileID: 4527583430927386}
   m_RootOrder: 11

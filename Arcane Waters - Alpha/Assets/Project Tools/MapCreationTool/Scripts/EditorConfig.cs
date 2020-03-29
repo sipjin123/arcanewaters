@@ -2,6 +2,8 @@
 using UnityEngine.Tilemaps;
 using System.Linq;
 using System;
+using UnityEngine.Assertions;
+using System.Collections.Generic;
 
 namespace MapCreationTool
 {
@@ -15,6 +17,10 @@ namespace MapCreationTool
       public LayerConfig[] areaLayerIndexes;
       public LayerConfig[] seaLayerIndexes;
       public LayerConfig[] interiorLayerIndexes;
+
+      public MinimapGeneration.MinimapGeneratorPreset[] areaPresets;
+      public MinimapGeneration.MinimapGeneratorPreset[] seaPresets;
+      public MinimapGeneration.MinimapGeneratorPreset[] interiorPresets;
 
       public string[] areaLayerNames
       {
@@ -76,6 +82,92 @@ namespace MapCreationTool
          public int index;
          public float zOffset;
          public LayerType layerType = LayerType.Regular;
+      }
+
+      public void testConfigCorrectness () {
+         testPresetsCount();
+         testEmptyPresets();
+         testDuplicatePresets();
+         testMissingLayersInPresets();
+      }
+
+      private void testPresetsCount () {
+         // Test biome counts
+         int biomeCount = Biome.getAllTypes().Count;
+         Assert.IsTrue(areaPresets.Length == biomeCount, "Please provide area presets for all biomes. Missing " + (biomeCount - areaPresets.Length).ToString() + " biome presets");
+         Assert.IsTrue(seaPresets.Length == biomeCount, "Please provide sea presets for all biomes. Missing " + (biomeCount - areaPresets.Length).ToString() + " biome presets");
+         Assert.IsTrue(interiorPresets.Length == biomeCount, "Please provide interior presets for all biomes. Missing " + (biomeCount - areaPresets.Length).ToString() + " biome presets");
+      }
+
+      private void testEmptyPresets () {
+         // Test for empty biomes
+         for (int i = 0; i < areaPresets.Length; i++) {
+            Assert.IsTrue(areaPresets[i], "Area preset #" + i.ToString() + " is empty. Please provide correct preset");
+         }
+         for (int i = 0; i < seaPresets.Length; i++) {
+            Assert.IsTrue(seaPresets[i], "Sea preset #" + i.ToString() + " is empty. Please provide correct preset");
+         }
+         for (int i = 0; i < interiorPresets.Length; i++) {
+            Assert.IsNotNull(interiorPresets[i], "Interior preset #" + i.ToString() + " is empty. Please provide correct preset");
+         }
+      }
+
+      private void testDuplicatePresets () {
+         // Test that all presets provided are different
+         for (int i = 0; i < areaPresets.Length; i++) {
+            for (int j = i + 1; j < areaPresets.Length; j++) {
+               Assert.IsFalse(areaPresets[i] == areaPresets[j], "Area preset #" + i.ToString() + " is same as area preset #" + j.ToString() + ". Please provide unique presets");
+            }
+         }
+         for (int i = 0; i < seaPresets.Length; i++) {
+            for (int j = i + 1; j < seaPresets.Length; j++) {
+               Assert.IsFalse(seaPresets[i] == seaPresets[j], "Sea preset #" + i.ToString() + " is same as sea preset #" + j.ToString() + ". Please provide unique presets");
+            }
+         }
+         for (int i = 0; i < interiorPresets.Length; i++) {
+            for (int j = i + 1; j < interiorPresets.Length; j++) {
+               Assert.IsFalse(interiorPresets[i] == interiorPresets[j], "Interior preset #" + i.ToString() + " is same as interior preset #" + j.ToString() + ". Please provide unique presets");
+            }
+         }
+      }
+
+      private void testMissingLayersInPresets () {
+         testMissingLayersInPresets(areaPresets, areaLayerIndexes);
+         testMissingLayersInPresets(seaPresets, seaLayerIndexes);
+         testMissingLayersInPresets(interiorPresets, interiorLayerIndexes);
+      }
+
+      private void testMissingLayersInPresets (MinimapGeneration.MinimapGeneratorPreset[] presets, LayerConfig[] layerIndexes) {
+         List<string> missingLayerNames = new List<string>();
+         // Check if all layers were provided by presets
+         for (int i = 0; i < presets.Length; i++) {
+            foreach (LayerConfig layerConfig in layerIndexes) {
+               bool isLayerCorrect = false;
+               foreach (MinimapGeneration.TileLayer layer in presets[i]._tileLayer) {
+                  if (layer.Name == layerConfig.layer) {
+                     isLayerCorrect = true;
+                     break;
+                  }
+               }
+
+               if (isLayerCorrect) {
+                  continue;
+               } else {
+                  missingLayerNames.Add(layerConfig.layer);
+               }
+            }
+
+            if (missingLayerNames.Count > 0) {
+               string missingLayersSingleString = "";
+               for (int s = 0; s < missingLayerNames.Count; s++) {
+                  missingLayersSingleString += missingLayerNames[s];
+                  if (s < missingLayerNames.Count - 1) {
+                     missingLayersSingleString += ", ";
+                  }
+               }
+               Assert.IsTrue(false, "Preset: " + presets[i].name + " is missing layers: " + missingLayersSingleString);
+            }
+         }
       }
    }
 }

@@ -418,7 +418,7 @@ namespace MapCreationTool
             if (group.tiles[i.x, i.y] != null) {
                Layer layer = null;
 
-               if (group.tiles[i.x, i.y].layer == PaletteData.MountainLayer)
+               if (Layer.isMountain(group.tiles[i.x, i.y].layer))
                   layer = layers[group.tiles[i.x, i.y].layer].subLayers[Tools.mountainLayer];
                else if (layers.TryGetValue(group.tiles[i.x, i.y].layer, out Layer outlayer))
                   layer = outlayer.subLayers[group.tiles[i.x, i.y].subLayer];
@@ -557,7 +557,7 @@ namespace MapCreationTool
                NineSliceInOutGroup nsg = group as NineSliceInOutGroup;
                return layer(nsg.tiles[0, 0].layer, nsg.tiles[0, 0].subLayer);
             case TileGroupType.Mountain:
-               return layer(PaletteData.MountainLayer, Tools.mountainLayer);
+               return layer(Layer.MOUNTAIN_KEY, Tools.mountainLayer);
             case TileGroupType.Dock:
                DockGroup dg = group as DockGroup;
                return layer(dg.layer, dg.subLayer);
@@ -565,7 +565,7 @@ namespace MapCreationTool
                WallGroup wg = group as WallGroup;
                return layer(wg.layer, 0);
             case TileGroupType.SeaMountain:
-               return layer(PaletteData.MountainLayer, Tools.mountainLayer);
+               return layer(Layer.MOUNTAIN_KEY, Tools.mountainLayer);
             case TileGroupType.River:
                RiverGroup rg = group as RiverGroup;
                return layer(rg.layer, rg.subLayer);

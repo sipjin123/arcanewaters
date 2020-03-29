@@ -78,6 +78,16 @@ namespace MapCreationTool
                   waterfall.transform.localScale = Vector3.one;
                   waterfall.GetComponent<BoxCollider2D>().size = chunk.size;
                   break;
+               case SpecialTileChunk.Type.Current:
+                  GameObject current = UnityEngine.Object.Instantiate(AssetSerializationMaps.currentEffector, map.effectorContainer);
+                  current.transform.localPosition = chunk.position;
+                  current.transform.localScale = Vector3.one;
+                  PolygonCollider2D poly = current.GetComponentInChildren<PolygonCollider2D>();
+                  poly.pathCount = chunk.paths.Length;
+                  for (int i = 0; i < chunk.paths.Length; i++) {
+                     poly.SetPath(i, chunk.paths[i].points);
+                  }
+                  break;
             }
          }
       }
@@ -229,6 +239,7 @@ namespace MapCreationTool
 
             result.Add(new TilemapLayer {
                tilemap = tilemap,
+               fullName = layer.name + " " + layer.sublayer ?? "",
                name = layer.name ?? "",
                type = layer.type
             });

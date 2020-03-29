@@ -65,6 +65,9 @@ public class Minimap : ClientMonoBehaviour {
    // Image we're using for the map background
    public Image backgroundImage;
 
+   // Map config that should be consistent with minimap generators
+   public MapCreationTool.EditorConfig mapEditorConfig;
+
    // Minimap generator presets (scriptable objects) for sea random maps
    [Header("Random sea prefabs")]
    public MinimapGeneratorPreset seaDesertPreset;
@@ -74,15 +77,23 @@ public class Minimap : ClientMonoBehaviour {
    public MinimapGeneratorPreset seaForestPreset;
    public MinimapGeneratorPreset seaMushroomPreset;
 
-   // Minimap generator presets (scriptable objects) for static maps
-   [Header("Static map prefabs")]
+   // Minimap generator presets (scriptable objects) for area maps
+   [Header("Area map prefabs")]
    public MinimapGeneratorPreset baseDesertPreset;
    public MinimapGeneratorPreset basePinePreset;
    public MinimapGeneratorPreset baseSnowPreset;
    public MinimapGeneratorPreset baseLavaPreset;
    public MinimapGeneratorPreset baseForestPreset;
    public MinimapGeneratorPreset baseMushroomPreset;
-   public MinimapGeneratorPreset interiorPreset;
+
+   // Minimap generator presets (scriptable objects) for interior maps
+   [Header("Interior map prefabs")]
+   public MinimapGeneratorPreset interiorDesertPreset;
+   public MinimapGeneratorPreset interiorPinePreset;
+   public MinimapGeneratorPreset interiorSnowPreset;
+   public MinimapGeneratorPreset interiorLavaPreset;
+   public MinimapGeneratorPreset interiorForestPreset;
+   public MinimapGeneratorPreset interiorMushroomPreset;
 
    // Self
    public static Minimap self;
@@ -93,6 +104,7 @@ public class Minimap : ClientMonoBehaviour {
       base.Awake();
 
       self = this;
+      mapEditorConfig.testConfigCorrectness();
    }
 
    static void createStaticMinimaps () {
@@ -362,7 +374,22 @@ public class Minimap : ClientMonoBehaviour {
       if (area.isSea) {
          return lookUpSeaPreset(biomeType);
       } else if (area.isInterior) {
-         return interiorPreset;
+         switch (biomeType) {
+            case Biome.Type.Forest:
+               return interiorForestPreset;
+            case Biome.Type.Desert:
+               return interiorDesertPreset;
+            case Biome.Type.Pine:
+               return interiorPinePreset;
+            case Biome.Type.Snow:
+               return interiorSnowPreset;
+            case Biome.Type.Lava:
+               return interiorLavaPreset;
+            case Biome.Type.Mushroom:
+               return interiorMushroomPreset;
+         }
+         D.error("Couldn't match biome type to given interior map area!");
+         return interiorForestPreset;
       } else {
          switch (biomeType) {
             case Biome.Type.Forest:
@@ -523,17 +550,26 @@ public class Minimap : ClientMonoBehaviour {
             _textureSize = preset._textureSize;
             _minimapsPath = preset._minimapsPath;
 
-            // Locate the tilemaps within the area
-            foreach (TilemapLayer tilemapLayer in area.getTilemapLayers()) {
-               Tilemap tilemap = tilemapLayer.tilemap;
-               foreach (var layer in _tileLayer) {
+            // Iterate over preset first to allow layers reordering
+            foreach (var layer in _tileLayer) {
+               // Locate the tilemaps within the area
+               foreach (TilemapLayer tilemapLayer in area.getTilemapLayers()) {
+                  Tilemap tilemap = tilemapLayer.tilemap;
+                  if (tilemap.gameObject.activeSelf == false) {
+                     continue;
+                  }
                   // Create a variable texture we can write to
                   Texture2D map = null;
+                  Texture2D borderOnlyMap = null;
 
                   bool flipflop = true;
 
-                  if (string.Compare(tilemapLayer.name, layer.Name, true) == 0) {
+                  if (string.Compare(layer.useFullName ? tilemapLayer.fullName : tilemapLayer.name, layer.Name, true) == 0) {                     
                      map = new Texture2D(layerSizeX, layerSizeY);
+                     if (layer.isOnlyBorder) {
+                        borderOnlyMap = new Texture2D(layerSizeX, layerSizeY);
+                        MakeTextureTransparent(borderOnlyMap);
+                     }
                      MakeTextureTransparent(map);
 
                      int layerOriginDiffX = tilemap.origin.x - layerOriginX;
@@ -856,44 +892,105 @@ public class Minimap : ClientMonoBehaviour {
                            for (int x = 0; x < map.width; x++) {
                               if (map.GetPixel(x, y).a > 0) {
                                  // TODO: verify if work in all maps
-                                 //set border color
+                                 // Set border color
                                  if (layer.useBorder) {
                                     if (map.GetPixel(x + 1, y).a <= 0 || map.GetPixel(x - 1, y).a <= 0 || map.GetPixel(x, y + 1).a <= 0 || map.GetPixel(x, y - 1).a <= 0) {
-                                       map.SetPixel(x, y, layer.borderColor);
+                                       if (!(map.GetPixel(x, y + 1).a <= 0 && map.GetPixel(x, y - 1).a <= 0)) { //XOR for 1px width
+                                          if (!(map.GetPixel(x + 1, y).a <= 0 && map.GetPixel(x - 1, y).a <= 0)) { //XOR for 1px height
+                                             // Write only to border
+                                             if (layer.isOnlyBorder) {
+                                                borderOnlyMap.SetPixel(x, y, layer.borderColor);
+                                             } else {
+                                                map.SetPixel(x, y, layer.borderColor);
+                                             }
+                                          }
+                                       }
                                     }
                                  }
 
-                                 //set top down color
+                                 // Set top down color
                                  if (layer.useTopDownBorder) {
                                     if (map.GetPixel(x, y + 1).a <= 0 || map.GetPixel(x, y - 1).a <= 0) {
-                                       map.SetPixel(x, y, layer.topDownBorderColor);
+                                       if (!(map.GetPixel(x, y + 1).a <= 0 && map.GetPixel(x, y - 1).a <= 0)) { //XOR for 1px width
+                                          // Write only to border
+                                          if (layer.isOnlyBorder) {
+                                             borderOnlyMap.SetPixel(x, y, layer.topDownBorderColor);
+                                          } else {
+                                             map.SetPixel(x, y, layer.topDownBorderColor);
+                                          }
+                                       }
                                     }
                                  }
 
-                                 //set lateral border color
+                                 // Set lateral border color
                                  if (layer.useLateralBorder) {
                                     if (map.GetPixel(x + 1, y).a <= 0 || map.GetPixel(x - 1, y).a <= 0) {
-                                       map.SetPixel(x, y, layer.lateralColor);
+                                       if (!(map.GetPixel(x + 1, y).a <= 0 && map.GetPixel(x - 1, y).a <= 0)) { //XOR for 1px height
+                                          // Write only to border
+                                          if (layer.isOnlyBorder) {
+                                             borderOnlyMap.SetPixel(x, y, layer.lateralColor);
+                                          } else {
+                                             map.SetPixel(x, y, layer.lateralColor);
+                                          }
+                                       }
                                     }
                                  }
 
-                                 //set top border color
+                                 // Set top border color
                                  if (layer.useTopBorder) {
                                     if (map.GetPixel(x, y + 1).a <= 0) {
-                                       map.SetPixel(x, y, layer.topBorderColor);
+                                       if (!(map.GetPixel(x, y + 1).a <= 0 && map.GetPixel(x, y - 1).a <= 0)) { //XOR for 1px width
+                                          for (int px = 0; px < ((layer.topPixelCount != 0) ? layer.topPixelCount : 1) && y + px < map.height; px++) {
+                                             // Write only to border
+                                             if (layer.isOnlyBorder) {
+                                                borderOnlyMap.SetPixel(x, y + px, layer.topBorderColor);
+                                             } else {
+                                                map.SetPixel(x, y + px, layer.topBorderColor);
+                                             }
+                                          }
+                                       }
                                     }
                                  }
 
-                                 //set down border color
+                                 // Set down border color
                                  if (layer.useDownBorder) {
                                     if (map.GetPixel(x, y - 1).a <= 0 && y - 1 >= 0) {
-                                       map.SetPixel(x, y, layer.downBorderColor);
+                                       if (!(map.GetPixel(x, y + 1).a <= 0 && map.GetPixel(x, y - 1).a <= 0)) { //XOR for 1px width
+                                          for (int px = 0; px < ((layer.downPixelCount != 0) ? layer.downPixelCount : 1) && y - px >= 0; px++) {
+                                             // Write only to border
+                                             if (layer.isOnlyBorder) {
+                                                borderOnlyMap.SetPixel(x, y - px, layer.downBorderColor);
+                                             } else {
+                                                map.SetPixel(x, y - px, layer.downBorderColor);
+                                             }
+                                          }
+                                       }
+                                    }
+                                 }
+
+                                 // Set down border color - second layer
+                                 if (layer.useAnotherDownBorder) {
+                                    if (map.GetPixel(x, y - 1).a <= 0 && y - 1 >= 0) {
+                                       if (!(map.GetPixel(x, y + 1).a <= 0 && map.GetPixel(x, y - 1).a <= 0)) { //XOR for 1px width
+                                          for (int px = 0; px < ((layer.anotherDownPixelCount != 0) ? layer.anotherDownPixelCount : 1) && y - px >= 0; px++) {
+                                             // Write only to border
+                                             if (layer.isOnlyBorder) {
+                                                borderOnlyMap.SetPixel(x, y - px, layer.anotherDownBorderColor);
+                                             } else {
+                                                map.SetPixel(x, y - px, layer.anotherDownBorderColor);
+                                             }
+                                          }
+                                       }
                                     }
                                  }
 
                               }
                            }
                         }
+                     }
+
+                     if (map && borderOnlyMap) {
+                        map = borderOnlyMap;
                      }
 
                      //create outline

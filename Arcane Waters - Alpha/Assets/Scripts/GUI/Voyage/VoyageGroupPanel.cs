@@ -48,6 +48,9 @@ public class VoyageGroupPanel : ClientMonoBehaviour
 
       // Hide the x button
       xButton.gameObject.SetActive(false);
+
+      // Clear out any info
+      memberContainer.DestroyChildren();
    }
 
    public void Update () {

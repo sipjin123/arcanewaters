@@ -15,17 +15,20 @@ public class TreasureSite : NetworkBehaviour
    // The seconds for the site to lose all its capture points when no ship is capturing it
    public static float CAPTURE_RESET_DURATION = 60;
 
+   // The status of the site
+   public enum Status { Idle = 0, Captured = 1, Capturing = 2, Blocked = 3, Stealing = 4, Resetting = 5 }
+
    // The key of the area this site is in
    [SyncVar]
    public string areaKey;
 
-   // The voyage group that has captured this site
+   // The voyage group that has ownership of this site, and has captured or is capturing it
    [SyncVar]
    public int voyageGroupId = -1;
 
-   // The voyage group currently capturing the site
+   // The voyage group currently in range of the site, either capturing or stealing it
    [SyncVar]
-   public int capturingVoyageGroupId = -1;
+   public int inRangeVoyageGroupId = -1;
 
    // The percentage of capture
    [SyncVar]
@@ -35,31 +38,32 @@ public class TreasureSite : NetworkBehaviour
    [SyncVar]
    public Voyage.Difficulty difficulty = Voyage.Difficulty.None;
 
-   // The sprite renderer component
-   public SpriteRenderer spriteRenderer;
+   // The status of the site
+   [SyncVar]
+   public Status status = Status.Idle;
 
-   // The collider, which will detect capturing ships
-   public CircleCollider2D captureCollider;
-
-   // The renderer of the capture circle
-   public MeshRenderer captureCircleRenderer;
+   // The capture circle
+   public TreasureSiteCaptureCircle captureCircle;
 
    #endregion
+
+   public void Awake () {
+      _spriteRenderer = GetComponent<SpriteRenderer>();
+      _captureCollider = GetComponent<CircleCollider2D>();
+      _animator = GetComponent<Animator>();
+   }
 
    public void Start () {
       // Make the site a child of the Area
       StartCoroutine(CO_SetAreaParent());
-
-      // By default, hide the capture circle
-      captureCircleRenderer.enabled = false;
    }
 
    public void Update () {
       if (isCaptured()) {
-         // Hide the capture circle if the site has been captured
-         captureCircleRenderer.enabled = false;
+         // Play the captured animation
+         _animator.SetBool("captured", true);
       }
-
+      
       if (!isServer || isCaptured()) {
          return;
       }
@@ -84,6 +88,9 @@ public class TreasureSite : NetworkBehaviour
 
          // If all the ships belong to the same group
          if (sameGroup) {
+            // Set the id of the group in range
+            inRangeVoyageGroupId = groupInRange;
+
             // Get the number of ships in range
             int shipCount = _capturingShips.Count;
 
@@ -95,32 +102,48 @@ public class TreasureSite : NetworkBehaviour
             float captureSpeed = 1f / captureDuration;
 
             // Check if the site was already being captured by the same group
-            if (capturingVoyageGroupId == groupInRange) {
+            if (groupInRange == voyageGroupId) {
+               // Update the status
+               status = Status.Capturing;
+
                // Increase the capture points
                capturePoints += captureSpeed * Time.deltaTime;
 
                // If the points reached the maximum, assign the site to the voyage group
                if (capturePoints >= 1) {
                   capturePoints = 1;
-                  voyageGroupId = groupInRange;
+                  status = Status.Captured;
                }
             }
             // If the site was being captured by another group
             else {
+               // Set the status
+               status = Status.Stealing;
+
                // Reduce the capture points
                capturePoints -= captureSpeed * Time.deltaTime;
 
-               // If the points reached 0, then assign the site to the group in range
+               // If the points reached 0, change the ownership and start capturing
                if (capturePoints <= 0) {
-                  capturingVoyageGroupId = groupInRange;
                   capturePoints = -capturePoints;
+                  voyageGroupId = groupInRange;
+                  status = Status.Capturing;
                }
             }
+         }
+         // If the ships in range belong to different groups
+         else {
+            status = Status.Blocked;
+            inRangeVoyageGroupId = -1;
          }
       }
       // If no ship is in range
       else {
          if (capturePoints > 0) {
+            // Set the status
+            status = Status.Resetting;
+            inRangeVoyageGroupId = -1;
+
             // Slowly reduce the capture points
             float captureSpeed = 1f / CAPTURE_RESET_DURATION;
             capturePoints -= captureSpeed * Time.deltaTime;
@@ -132,16 +155,6 @@ public class TreasureSite : NetworkBehaviour
    }
 
    public void OnTriggerEnter2D (Collider2D other) {
-      if (isClient && !isCaptured()) {
-         // Determine if the colliding object is a player
-         PlayerShipEntity player = other.transform.GetComponent<PlayerShipEntity>();
-         
-         if (player != null && player.isLocalPlayer && VoyageManager.isInVoyage(player)) {
-            // Enable the capture circle visualization
-            captureCircleRenderer.enabled = true;
-         }
-      }
-
       if (isServer) {
          // Determine if the colliding object is a ship
          ShipEntity ship = other.transform.GetComponent<ShipEntity>();
@@ -153,16 +166,6 @@ public class TreasureSite : NetworkBehaviour
    }
 
    public void OnTriggerExit2D (Collider2D other) {
-      if (isClient && !isCaptured()) {
-         // Determine if the colliding object is a player
-         PlayerShipEntity player = other.transform.GetComponent<PlayerShipEntity>();
-
-         if (player != null && player.isLocalPlayer) {
-            // Disable the capture circle visualization
-            captureCircleRenderer.enabled = false;
-         }
-      }
-
       if (isServer) {
          // Determine if the colliding object is a ship
          ShipEntity ship = other.transform.GetComponent<ShipEntity>();
@@ -175,11 +178,15 @@ public class TreasureSite : NetworkBehaviour
 
    public void setBiome (Biome.Type biomeType) {
       string spriteName = "site_" + biomeType.ToString().ToLower() + "-new";
-      spriteRenderer.sprite = ImageManager.getSprite("Assets/Sprites/Treasure Sites/" + spriteName);
+      _spriteRenderer.sprite = ImageManager.getSprite("Assets/Sprites/Treasure Sites/" + spriteName);
    }
    
    public bool isCaptured () {
-      return voyageGroupId != -1;
+      return status == Status.Captured;
+   }
+
+   public float getCaptureRadius() {
+      return _captureCollider.radius;
    }
 
    private IEnumerator CO_SetAreaParent () {
@@ -193,12 +200,8 @@ public class TreasureSite : NetworkBehaviour
       Area area = AreaManager.self.getArea(areaKey);
       this.transform.SetParent(area.transform, false);
 
-      // Set the z position of the capture circle, above the sea and below the land
-      Util.setZ(captureCircleRenderer.transform, area.waterZ - 0.01f);
-
-      // Set the parameters in the capture circle shader
-      captureCircleRenderer.material.SetVector("_Position", captureCircleRenderer.transform.position);
-      captureCircleRenderer.material.SetFloat("_Radius", captureCollider.radius);
+      // Initialize the capture circle
+      captureCircle.initialize(area.waterZ - 0.01f);
 
       if (isServer) {
          // Get all the nearby colliders
@@ -226,6 +229,15 @@ public class TreasureSite : NetworkBehaviour
 
    // The list of ships currently capturing the site
    private HashSet<ShipEntity> _capturingShips = new HashSet<ShipEntity>();
+
+   // The sprite renderer component
+   private SpriteRenderer _spriteRenderer;
+
+   // The collider, which will detect capturing ships
+   private CircleCollider2D _captureCollider;
+
+   // The animator component
+   private Animator _animator;
 
    #endregion
 }

@@ -68,7 +68,7 @@ public class TreasureSiteBars : MonoBehaviour
             captureBarImage.fillAmount = _treasureSite.capturePoints;
 
             // Set the correct bar color
-            if (_treasureSite.capturingVoyageGroupId == Global.player.voyageGroupId) {
+            if (_treasureSite.voyageGroupId == Global.player.voyageGroupId) {
                captureBarImage.color = alliedCaptureBarColor;
             } else {
                captureBarImage.color = enemyCaptureBarColor;

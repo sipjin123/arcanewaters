@@ -13,6 +13,12 @@ namespace MinimapGeneration
       [Multiline()]
       public string description;
 
+      [Header("Only border")]
+      public bool isOnlyBorder;
+
+      [Header("Full name")]
+      public bool useFullName;
+
       [Header("Sub Layer")]
       public bool isSubLayer;
 
@@ -27,9 +33,17 @@ namespace MinimapGeneration
       [Header("Top Border")]
       public bool useTopBorder;
       public Color topBorderColor;
+      public int topPixelCount;
+
       [Header("Down Border")]
       public bool useDownBorder;
       public Color downBorderColor;
+      public int downPixelCount;
+
+      [Header("Another Down Border")]
+      public bool useAnotherDownBorder;
+      public Color anotherDownBorderColor;
+      public int anotherDownPixelCount;
 
       [Header("Top Down Border")]
       public bool useTopDownBorder;

@@ -22,6 +22,7 @@ namespace MapCreationTool
       public GameObject _stairsEffector;
       public GameObject _waterfallEfector;
       public Vines _vinesTrigger;
+      public GameObject _currentEffector;
 
       private void OnValidate () {
          loadLocal();
@@ -40,6 +41,7 @@ namespace MapCreationTool
             stairsEffector = _stairsEffector;
             waterfallEfector = _waterfallEfector;
             vinesTrigger = _vinesTrigger;
+            currentEffector = _currentEffector;
 
             foreach (BiomeMapsDefinition definition in mapsDefinitions) {
                BiomeMaps bm = new BiomeMaps();
@@ -183,6 +185,7 @@ namespace MapCreationTool
       public static GameObject stairsEffector { get; private set; }
       public static GameObject waterfallEfector { get; private set; }
       public static Vines vinesTrigger { get; private set; }
+      public static GameObject currentEffector { get; private set; }
 
       public class BiomeMaps
       {

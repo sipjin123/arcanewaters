@@ -6,9 +6,6 @@ namespace MapCreationTool.PaletteTilesData
 {
    public class PaletteData
    {
-      public const string PathLayer = "path";
-      public const string WaterLayer = "water";
-      public const string MountainLayer = "mountain";
       public TileGroup[,] tileGroups { get; set; }
       public List<PrefabGroup> prefabGroups { get; set; }
       public Biome.Type? type { get; set; }

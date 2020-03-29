@@ -86,6 +86,8 @@ public class Area : MonoBehaviour
          _tilemapLayers = GetComponentsInChildren<Tilemap>(true)
             .Select(t => new TilemapLayer {
                tilemap = t,
+               // There is no way to recover name here, therefore ignore layer to indicate error
+               fullName = t.gameObject.name + " DEGENERATED",
                name = t.gameObject.name,
                type = MapCreationTool.LayerType.Regular
             }).ToList();

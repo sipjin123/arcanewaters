@@ -7,6 +7,12 @@ namespace MapCreationTool
 {
    public class Layer
    {
+      public const string PATH_KEY = "path";
+      public const string WATER_KEY = "water";
+      public const string MOUNTAIN_KEY = "mountain";
+      public const string VINE_KEY = "vine";
+      public const string STAIR_KEY = "stair";
+
       public Layer[] subLayers { get; private set; }
 
       private Tilemap tilemap;
@@ -324,6 +330,26 @@ namespace MapCreationTool
       }
       public void setTile (int x, int y, TileBase tile) {
          setTile(new Vector3Int(x, y, 0), tile);
+      }
+
+      public static bool isVine (string layer) {
+         return layer.CompareTo(VINE_KEY) == 0;
+      }
+
+      public static bool isMountain (string layer) {
+         return layer.CompareTo(MOUNTAIN_KEY) == 0;
+      }
+
+      public static bool isWater (string layer) {
+         return layer.CompareTo(WATER_KEY) == 0;
+      }
+
+      public static bool isPath (string layer) {
+         return layer.CompareTo(PATH_KEY) == 0;
+      }
+
+      public static bool isStair (string layer) {
+         return layer.CompareTo(STAIR_KEY) == 0;
       }
    }
 }
