@@ -54,7 +54,7 @@ public class CraftingManager : MonoBehaviour {
                   _craftingData.Add(keyName, craftingData);
                   craftingDataList.Add(craftingData);
                } else {
-                  D.debug("Key already exists: " + keyName);
+                  D.editorLog("Key already exists: " + keyName, Color.red);
                }
             }
          });

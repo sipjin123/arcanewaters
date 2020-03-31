@@ -156,6 +156,12 @@ public class AnimUtil : MonoBehaviour {
                case Anim.Type.Attack_East:
                   return new AnimInfo(animType, 24, 31);
 
+               case Anim.Type.Ready_Attack:
+                  return new AnimInfo(animType, 24, 26);
+
+               case Anim.Type.Finish_Attack:
+                  return new AnimInfo(animType, 27, 31);
+
                case Anim.Type.Hurt_East:
                   return new AnimInfo(animType, 32, 32);
 

@@ -19,7 +19,7 @@ public class OrePickup : MonoBehaviour {
    // The user who interacted this ore
    public int ownerId;
 
-   // The voyage group that owns this crop
+   // The voyage group that owns this ore
    public int voyageGroupId;
 
    #endregion

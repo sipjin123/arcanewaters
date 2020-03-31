@@ -260,6 +260,8 @@ public class ClientMessageManager : MonoBehaviour {
    }
 
    public static void On_CharacterList (NetworkConnection conn, CharacterListMessage msg) {
+      XmlVersionManagerClient.self.initializeClient();
+
       // Activate the Character screen camera
       Util.activateVirtualCamera(CharacterScreen.self.virtualCam);
 

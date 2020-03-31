@@ -736,7 +736,7 @@ public class BattleManager : MonoBehaviour {
                body.XP += xpWon;
 
                foreach (Battler companionBattlers in winningBattlers) {
-                  if (companionBattlers.isMonster() && companionBattlers.companionId > 0) {
+                  if (companionBattlers.companionId > 0) {
                      // Reward each companion with battle exp
                      body.rpc.updateCompanionExp(companionBattlers.companionId, xpWon);
                   }

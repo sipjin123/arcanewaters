@@ -152,20 +152,20 @@ public class AbilityDataRecord
    public static AbilityDataRecord CreateInstance (AbilityDataRecord record) {
       AbilityDataRecord newRecord = new AbilityDataRecord();
 
-      List<AttackAbilityData> attackList = new List<AttackAbilityData>();
-      List<BuffAbilityData> buffList = new List<BuffAbilityData>();
-      List<BasicAbilityData> basicList = new List<BasicAbilityData>();
+      List<int> attackList = new List<int>();
+      List<int> buffList = new List<int>();
+      List<int> basicList = new List<int>();
 
-      foreach (AttackAbilityData attackData in record.attackAbilityDataList) {
-         attackList.Add(attackData);
-         basicList.Add(attackData);
+      foreach (int attackDataId in record.attackAbilityDataList) {
+         attackList.Add(attackDataId);
+         basicList.Add(attackDataId);
       }
-      foreach (BuffAbilityData buffData in record.buffAbilityDataList) {
-         buffList.Add(buffData);
-         basicList.Add(buffData);
+      foreach (int buffDataId in record.buffAbilityDataList) {
+         buffList.Add(buffDataId);
+         basicList.Add(buffDataId);
       }
-      foreach (BasicAbilityData basicData in record.buffAbilityDataList) {
-         basicList.Add(basicData);
+      foreach (int basicDataId in record.buffAbilityDataList) {
+         basicList.Add(basicDataId);
       }
 
       newRecord.attackAbilityDataList = attackList.ToArray();
@@ -176,14 +176,11 @@ public class AbilityDataRecord
    }
 
    // Generic Skills1
-   public BasicAbilityData[] basicAbilityDataList = new BasicAbilityData[0];
-   public string[] basicAbilityRawData;
+   public int[] basicAbilityDataList = new int[0];
 
    // Offensive Skills
-   public AttackAbilityData[] attackAbilityDataList = new AttackAbilityData[0];
-   public string[] attackAbilityRawData;
+   public int[] attackAbilityDataList = new int[0];
 
    // Support Skills
-   public BuffAbilityData[] buffAbilityDataList = new BuffAbilityData[0];
-   public string[] buffAbilityRawData;
+   public int[] buffAbilityDataList = new int[0];
 }

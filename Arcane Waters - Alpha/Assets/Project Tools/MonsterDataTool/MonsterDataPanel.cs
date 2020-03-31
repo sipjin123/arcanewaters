@@ -393,16 +393,16 @@ public class MonsterDataPanel : MonoBehaviour
 
       newBattData.enemyName = _name.text;
 
-      List<BasicAbilityData> basicAbilityList = new List<BasicAbilityData>();
-      List<AttackAbilityData> attackAbilityList = new List<AttackAbilityData>();
-      List<BuffAbilityData> buffAbilityList = new List<BuffAbilityData>();
+      List<int> basicAbilityList = new List<int>();
+      List<int> attackAbilityList = new List<int>();
+      List<int> buffAbilityList = new List<int>();
       foreach (MonsterSkillTemplate skillTemplate in monsterSkillTemplateList) {
          if (skillTemplate.abilityTypeEnum == AbilityType.Standard) {
-            attackAbilityList.Add(skillTemplate.getAttackData());
-            basicAbilityList.Add(skillTemplate.getAttackData());
+            attackAbilityList.Add(skillTemplate.getAttackData().itemID);
+            basicAbilityList.Add(skillTemplate.getAttackData().itemID);
          } else if (skillTemplate.abilityTypeEnum == AbilityType.BuffDebuff) {
-            buffAbilityList.Add(skillTemplate.getBuffData());
-            basicAbilityList.Add(skillTemplate.getBuffData());
+            buffAbilityList.Add(skillTemplate.getBuffData().itemID);
+            basicAbilityList.Add(skillTemplate.getBuffData().itemID);
          }
       }
       newBattData.battlerAbilities = new AbilityDataRecord {
@@ -657,7 +657,21 @@ public class MonsterDataPanel : MonoBehaviour
       AbilityDataRecord dataRecord = battlerData.battlerAbilities;
 
       if (dataRecord != null) {
-         loadSkill(dataRecord.attackAbilityDataList, dataRecord.buffAbilityDataList);
+         List<AttackAbilityData> attackAbilityData = new List<AttackAbilityData>();
+         List<BuffAbilityData> buffAbilityData = new List<BuffAbilityData>();
+         foreach (int abilityId in dataRecord.attackAbilityDataList) {
+            AttackAbilityData attackData = monsterToolManager.attackAbilityList.Find(_ => _.itemID == abilityId);
+            if (attackData != null) {
+               attackAbilityData.Add(attackData);
+            }
+         }
+         foreach (int abilityId in dataRecord.buffAbilityDataList) {
+            BuffAbilityData buffData = monsterToolManager.buffAbilityList.Find(_ => _.itemID == abilityId);
+            if (buffData != null) {
+               buffAbilityData.Add(buffData);
+            }
+         }
+         loadSkill(attackAbilityData.ToArray(), buffAbilityData.ToArray());
       }
    }
 

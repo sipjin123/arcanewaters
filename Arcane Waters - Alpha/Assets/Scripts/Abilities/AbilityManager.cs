@@ -35,9 +35,9 @@ public class AbilityManager : MonoBehaviour
       self = this;
    }
 
-   public void initializeDefaultAbilities () {
+   public void initializeAbilities () {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<AbilityXMLContent> abilityContentList = DB_Main.getDefaultAbilities();
+         List<AbilityXMLContent> abilityContentList = DB_Main.getBattleAbilityXML();
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (AbilityXMLContent abilityXML in abilityContentList) {
@@ -46,20 +46,36 @@ public class AbilityManager : MonoBehaviour
 
                switch (abilityType) {
                   case AbilityType.Standard:
-                     AttackAbilityData attackAbilityData = Util.xmlLoad<AttackAbilityData>(newTextAsset);
-                     addNewAbility(attackAbilityData);
+                     try {
+                        AttackAbilityData attackAbilityData = Util.xmlLoad<AttackAbilityData>(newTextAsset);
+                        addNewAbility(attackAbilityData);
+                     } catch {
+                        D.editorLog("Error converting attack ability: " + abilityXML.abilityId, Color.red);
+                     }
                      break;
                   case AbilityType.Stance:
-                     AttackAbilityData stancebilityData = Util.xmlLoad<AttackAbilityData>(newTextAsset);
-                     addNewAbility(stancebilityData);
+                     try {
+                        AttackAbilityData stancebilityData = Util.xmlLoad<AttackAbilityData>(newTextAsset);
+                        addNewAbility(stancebilityData);
+                     } catch {
+                        D.editorLog("Error converting stance ability: " + abilityXML.abilityId, Color.red);
+                     }
                      break;
                   case AbilityType.BuffDebuff:
-                     BuffAbilityData buffAbilityData = Util.xmlLoad<BuffAbilityData>(newTextAsset);
-                     addNewAbility(buffAbilityData);
+                     try {
+                        BuffAbilityData buffAbilityData = Util.xmlLoad<BuffAbilityData>(newTextAsset);
+                        addNewAbility(buffAbilityData);
+                     } catch {
+                        D.editorLog("Error converting buff ability: " + abilityXML.abilityId, Color.red);
+                     }
                      break;
                   default:
-                     BasicAbilityData abilityData = Util.xmlLoad<BasicAbilityData>(newTextAsset);
-                     addNewAbility(abilityData);
+                     try {
+                        BasicAbilityData abilityData = Util.xmlLoad<BasicAbilityData>(newTextAsset);
+                        addNewAbility(abilityData);
+                     } catch {
+                        D.editorLog("Error converting basic ability: " + abilityXML.abilityId, Color.red);
+                     }
                      break;
                }
             }
@@ -81,20 +97,15 @@ public class AbilityManager : MonoBehaviour
       }
    }
 
-   public void addNewAbilities (BasicAbilityData[] abilities) {
-      foreach (BasicAbilityData ability in abilities) {
-         // Only add abilities that are not existing yet in the ability manager
-         if (!_allGameAbilities.Exists(_ => _.itemName == ability.itemName)) {
-            if (ability.abilityType == AbilityType.Standard) {
-               AttackAbilityData newInstance = AttackAbilityData.CreateInstance((AttackAbilityData) ability);
-               _attackAbilities.Add(newInstance);
-               _allGameAbilities.Add(newInstance);
-            } else if (ability.abilityType == AbilityType.BuffDebuff) {
-               BuffAbilityData newInstance = BuffAbilityData.CreateInstance((BuffAbilityData) ability);
-               _buffAbilities.Add(newInstance);
-               _allGameAbilities.Add(newInstance);
-            }
-         }
+   public void receiveAbilitiesFromZipData (AttackAbilityData[] attackAbilities, BuffAbilityData[] buffAbilities) {
+      _attackAbilities = new List<AttackAbilityData>(attackAbilities);
+      _buffAbilities = new List<BuffAbilityData>(buffAbilities);
+
+      foreach (AttackAbilityData attackData in _attackAbilities) {
+         _allGameAbilities.Add(attackData);
+      }
+      foreach (BuffAbilityData buffData in _buffAbilities) {
+         _allGameAbilities.Add(buffData);
       }
    }
 
@@ -116,8 +127,15 @@ public class AbilityManager : MonoBehaviour
          sourceBattler.animatingUntil = action.actionEndTime;
          targetBattler.animatingUntil = action.actionEndTime;
 
+         float animationLength = .6f;
+
          // Get the ability object for this action
          AttackAbilityData abilityData = sourceBattler.getAttackAbilities()[action.abilityInventoryIndex];
+         if (abilityData != null) {
+            animationLength = abilityData.getTotalAnimLength(sourceBattler, targetBattler);
+         } else {
+            D.editorLog("Issue getting ability data: " + action.abilityInventoryIndex + " - " + action.abilityGlobalID);
+         }
 
          switch (action.battleActionType) {
             case BattleActionType.Attack: 
@@ -125,7 +143,7 @@ public class AbilityManager : MonoBehaviour
                actionToExecute = attackAction;
 
                // Check how long we need to wait before displaying this action
-               timeToWait = actionToExecute.actionEndTime - Util.netTime() - abilityData.getTotalAnimLength(sourceBattler, targetBattler);
+               timeToWait = actionToExecute.actionEndTime - Util.netTime() - animationLength ;
 
                StartCoroutine(sourceBattler.attackDisplay(timeToWait, action, isFirst));
                break;

@@ -171,10 +171,11 @@ public class MyNetworkManager : NetworkManager {
       MonsterManager.self.initializeLandMonsterDataCache();
       ShipAbilityManager.self.initializDataCache();
       ShopXMLManager.self.initializDataCache();
-      AbilityManager.self.initializeDefaultAbilities();
+      AbilityManager.self.initializeAbilities();
       BackgroundGameManager.self.initializeDataCache();
       EquipmentXMLManager.self.initializeDataCache();
       SoundEffectManager.self.initializeDataCache();
+      XmlVersionManagerServer.self.initializeServerData();
    }
 
    public override void OnStopServer () {
@@ -279,38 +280,13 @@ public class MyNetworkManager : NetworkManager {
             // Sends ship ability data to the client
             player.rpc.Target_ReceiveAllShipAbilityInfo(player.connectionToClient, Util.serialize(ShipAbilityManager.self.shipAbilityDataList));
 
-            // Seamonster data to the client
-            player.rpc.Target_ReceiveAllSeaMonsterInfo(player.connectionToClient, Util.serialize(SeaMonsterManager.self.seaMonsterDataList));
-
-            // Ability data to the client
-            player.rpc.Target_ReceiveAbilities(player.connectionToClient, Util.serialize(AbilityManager.self.allAttackbilities), Util.serialize(AbilityManager.self.allBuffAbilities));
-
             // Gives the user admin features if it has an admin flag
             player.rpc.Target_GrantAdminAccess(player.connectionToClient, player.isAdmin());
-
-            // Sends monster data to client
-            sendMonsterData(player);
 
             // Give the player local authority so that movement feels instantaneous
             player.netIdent.AssignClientAuthority(conn);
          });
       });
-   }
-
-   private void sendMonsterData (NetEntity player) {
-      List<BattlerData> newEnemyList = new List<BattlerData>();
-      foreach (BattlerData entity in MonsterManager.self.getMonsterDataList()) {
-         BattlerData fetchedData = MonsterManager.self.getCopyOfMonster(entity.enemyType);
-
-         if (fetchedData == null) {
-            Debug.LogError("Null data!");
-            return;
-         }
-         newEnemyList.Add(fetchedData);
-      }
-
-      // Send Landmonster data to the client
-      player.rpc.Target_ReceiveMonsterData(player.connectionToClient, Util.serialize(newEnemyList));
    }
 
    public string[] serializedNPCData (List<NPCData> referenceNPCData) {

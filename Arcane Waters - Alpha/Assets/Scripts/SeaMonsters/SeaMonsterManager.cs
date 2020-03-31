@@ -96,7 +96,7 @@ public class SeaMonsterManager : MonoBehaviour {
       return _seaMonsterData[enemyType];
    }
 
-   public void receiveListFromServer (SeaMonsterEntityData[] seamonsterDataList) {
+   public void receiveListFromZipData (SeaMonsterEntityData[] seamonsterDataList) {
       if (!hasInitialized) {
          hasInitialized = true;
          seaMonsterDataList = new List<SeaMonsterEntityData>();

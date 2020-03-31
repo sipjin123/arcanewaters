@@ -96,7 +96,7 @@ public class MonsterManager : MonoBehaviour {
       return newBattlerData;
    }
 
-   public void receiveListFromServer (BattlerData[] battlerDataList) {
+   public void receiveListFromZipData (BattlerData[] battlerDataList) {
       if (!isInitialized) {
          foreach (BattlerData battlerData in battlerDataList) {
             if (!_monsterDataList.Exists(_=>_.battler.enemyType == battlerData.enemyType)) {
@@ -129,27 +129,25 @@ public class MonsterManager : MonoBehaviour {
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (XMLPair xmlPair in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
-               BattlerData monsterData = Util.xmlLoad<BattlerData>(newTextAsset);
+               try {
+                  TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
+                  BattlerData monsterData = Util.xmlLoad<BattlerData>(newTextAsset);
 
-               if (monsterData.battlerAbilities.basicAbilityDataList != null) {
-                  foreach (BasicAbilityData basicAbility in monsterData.battlerAbilities.basicAbilityDataList) {
-                     abilityManager.addNewAbility(basicAbility);
+                  // Save the monster data in the memory cache
+                  if (xmlPair.isEnabled) {
+                     BattlerXMLContent newXmlContent = new BattlerXMLContent {
+                        battler = monsterData,
+                        xmlId = xmlPair.xmlId,
+                        isEnabled = true
+                     };
+                     _monsterDataList.Add(newXmlContent);
                   }
-               }
 
-               // Save the monster data in the memory cache
-               if (xmlPair.isEnabled) {
-                  BattlerXMLContent newXmlContent = new BattlerXMLContent { 
-                     battler = monsterData, 
-                     xmlId = xmlPair.xmlId, 
-                     isEnabled = true
-                  };
-                  _monsterDataList.Add(newXmlContent);
-               }
-
-               if (battleManager != null) {
-                  battleManager.registerBattler(monsterData);
+                  if (battleManager != null) {
+                     battleManager.registerBattler(monsterData);
+                  }
+               } catch {
+                  D.editorLog("Failed to process this data: " + xmlPair.xmlId, Color.red);
                }
             }
             isInitialized = true;

@@ -362,7 +362,17 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             }
             selectedBattleBar.gameObject.SetActive(true);
 
-            setBattlerAbilities(new List<BasicAbilityData>(_alteredBattlerData.battlerAbilities.basicAbilityDataList), battlerType);
+            List<BasicAbilityData> basicAbilityDataList = new List<BasicAbilityData>();
+            foreach (int id in _alteredBattlerData.battlerAbilities.attackAbilityDataList) {
+               AttackAbilityData attackData = AbilityManager.getAttackAbility(id);
+               basicAbilityDataList.Add(attackData);
+            }
+            foreach (int id in _alteredBattlerData.battlerAbilities.buffAbilityDataList) {
+               BuffAbilityData buffData = AbilityManager.getBuffAbility(id);
+               basicAbilityDataList.Add(buffData);
+            }
+
+            setBattlerAbilities(basicAbilityDataList, battlerType);
 
             // Extra cooldown time for AI controlled battlers, so they do not attack instantly
             this.cooldownEndTime = Util.netTime() + 5f;
