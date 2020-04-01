@@ -39,7 +39,8 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
       switch (abilityOrigin) {
          case AbilityOrigin.Enemy:
-            BattleUIManager.self.onAbilityHover.Invoke(BattleManager.self.getPlayerBattler().getBasicAbilities()[abilityIndex]);
+            BasicAbilityData fetchedAbilityData = AbilityManager.getAbility(BattleManager.self.getPlayerBattler().basicAbilityIDList[abilityIndex], AbilityType.Undefined);
+            BattleUIManager.self.onAbilityHover.Invoke(fetchedAbilityData);
             BattleUIManager.self.setTooltipFrame((int) abilityOrigin);
 
             frameRectTransform = BattleUIManager.self.tooltipWindow;

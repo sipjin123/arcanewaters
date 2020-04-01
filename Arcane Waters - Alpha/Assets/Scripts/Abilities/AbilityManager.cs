@@ -206,6 +206,9 @@ public class AbilityManager : MonoBehaviour
          case AbilityType.BuffDebuff:
             returnAbility = self._buffAbilities.Find(_ => _.itemID == abilityGlobalID);
             return returnAbility;
+         case AbilityType.Undefined:
+            returnAbility = self._allGameAbilities.Find(_ => _.itemID == abilityGlobalID);
+            return returnAbility;
          default:
             returnAbility = self._allGameAbilities.Find(_ => _.itemID == abilityGlobalID);
             if (returnAbility == null) {

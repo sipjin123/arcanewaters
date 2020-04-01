@@ -588,11 +588,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             _battlerBasicAbilities.Add(item);
 
             // Sync ID's for Player battlers
-            if (battlerType == BattlerType.PlayerControlled) {
+            if (battlerType == BattlerType.PlayerControlled && NetworkServer.active) {
                basicAbilityIDList.Add(item.itemID);
             }
-            battlerAbilitiesInitialized = true;
          }
+         battlerAbilitiesInitialized = true;
       } else {
          Debug.LogError("There is no ability");
       }

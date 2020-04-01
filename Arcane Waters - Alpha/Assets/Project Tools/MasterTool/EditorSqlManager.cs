@@ -71,7 +71,7 @@ public class EditorSQLManager
          case EditorToolType.Crafting:
             return "crafting_xml_v2";
          case EditorToolType.LandMonster:
-            return "land_monster_xml_v2";
+            return "land_monster_xml_v3";
          case EditorToolType.NPC:
             return "npc_xml";
          case EditorToolType.PlayerClass:

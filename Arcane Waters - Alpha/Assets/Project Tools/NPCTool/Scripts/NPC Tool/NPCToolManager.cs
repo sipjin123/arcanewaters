@@ -78,7 +78,11 @@ public class NPCToolManager : XmlDataToolManager {
             foreach (XMLPair pair in monsterDataPair) {
                TextAsset newTextAsset = new TextAsset(pair.rawXmlData);
                BattlerData battleData = Util.xmlLoad<BattlerData>(newTextAsset);
-               battlerList.Add(pair.xmlId, battleData);
+               if (!battlerList.ContainsKey(pair.xmlId)) {
+                  battlerList.Add(pair.xmlId, battleData);
+               } else {
+                  D.editorLog("This id is duplicated: " + pair.xmlId, Color.red);
+               }
             }
          });
       });

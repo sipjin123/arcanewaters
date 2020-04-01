@@ -3506,9 +3506,6 @@ public class RPCManager : NetworkBehaviour {
 
    [Server]
    public void setupAbilitiesForPlayers (List<PlayerBodyEntity> playerEntities) {
-      List<int> attackAbilityIdList = new List<int>();
-      List<int> buffAbilityIdList = new List<int>();
-
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          foreach (PlayerBodyEntity entity in playerEntities) {
             // Retrieves skill list from database
@@ -3527,14 +3524,6 @@ public class RPCManager : NetworkBehaviour {
                   // Set server data
                   List<BasicAbilityData> basicAbilityList = getAbilityRecord(equippedAbilityDataList.ToArray());
                   battler.setBattlerAbilities(basicAbilityList, BattlerType.PlayerControlled);
-
-                  foreach (BasicAbilityData abilityData in basicAbilityList.FindAll(_ => _.abilityType == AbilityType.Standard)) {
-                     attackAbilityIdList.Add(abilityData.itemID);
-                  }
-                  foreach (BasicAbilityData abilityData in basicAbilityList.FindAll(_ => _.abilityType == AbilityType.BuffDebuff)) {
-                     buffAbilityIdList.Add(abilityData.itemID);
-                  }
-                  entity.rpc.Target_ReceiveAbilities(entity.connectionToClient, attackAbilityIdList.ToArray(), buffAbilityIdList.ToArray());
                }
             });
          }
@@ -3621,16 +3610,6 @@ public class RPCManager : NetworkBehaviour {
    public void Target_ReceiveFactionInfo (NetworkConnection connection, string rawFactionData) {
       PlayerFactionData factionData = JsonUtility.FromJson<PlayerFactionData>(rawFactionData);
       FactionManager.self.addFactionInfo(factionData);
-   }
-
-   #endregion
-
-   #region Skills and Abilities
-
-   [TargetRpc]
-   public void Target_ReceiveAbilities (NetworkConnection connection, int[] attackAbilityIds, int[] buffAbilityIds) {
-      // TODO: Check if it is still necessary to send equipped skills to clients
-      D.editorLog("Clients received abilities: "+attackAbilityIds.Length +" - "+buffAbilityIds.Length, Color.blue);
    }
 
    #endregion

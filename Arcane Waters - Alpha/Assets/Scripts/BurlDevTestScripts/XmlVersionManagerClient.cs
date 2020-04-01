@@ -21,7 +21,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
    public static string XML_VERSION_GET = "getXmlVersion.php";
    public static string XML_ZIP_GET = "downloadZip.php?id=";
 
-   // Path of the streaming filess
+   // Path of the streaming files
    public static string ZIP_PATH = Application.streamingAssetsPath + "/XmlZip/XmlContent.zip";
    public static string TEXT_PATH = Application.streamingAssetsPath + "/XmlTexts/";
 
@@ -35,6 +35,9 @@ public class XmlVersionManagerClient : MonoBehaviour {
    // Blocks the character panel while loading data
    public GameObject loadBlocker;
 
+   // Resets the cached xml version
+   public bool resetXmlPrefs;
+
    #endregion
 
    private void Awake () {
@@ -42,6 +45,9 @@ public class XmlVersionManagerClient : MonoBehaviour {
    }
 
    public void initializeClient () {
+      if (resetXmlPrefs) {
+         PlayerPrefs.SetInt(XML_VERSION, 0);
+      }
       loadBlocker.SetActive(true);
       StartCoroutine(CO_ProcessClientData());
    }
@@ -100,7 +106,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
             string directoryName = Path.GetDirectoryName(theEntry.Name);
             string fileName = Path.GetFileName(theEntry.Name);
 
-            // create directory
+            // Create directory
             if (directoryName.Length > 0) {
                Directory.CreateDirectory(directoryName);
             }
@@ -147,7 +153,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
          case EditorToolType.BattlerAbility:
             string path = TEXT_PATH + "abilities.txt";
 
-            //Read the text from directly from the txt file
+            // Read the text from directly from the txt file
             StreamReader reader = new StreamReader(path);
             string abilityContent = reader.ReadToEnd();
             reader.Close();
@@ -165,11 +171,12 @@ public class XmlVersionManagerClient : MonoBehaviour {
                // Extract the segregated data and assign to the xml managers
                if (xmlSubGroup.Length == 3) {
                   int abilityId = int.Parse(xmlSubGroup[0]);
-                  int abilityType = int.Parse(xmlSubGroup[1]);
-                  if (abilityType == 1 || abilityType == 3) {
+                  AbilityType abilityType = (AbilityType) int.Parse(xmlSubGroup[1]);
+                  
+                  if (abilityType == AbilityType.Standard || abilityType == AbilityType.Stance) {
                      AttackAbilityData attackAbility = Util.xmlLoad<AttackAbilityData>(xmlSubGroup[2]);
                      attackAbilityList.Add(attackAbility);
-                  } else if (abilityType == 2) {
+                  } else if (abilityType == AbilityType.BuffDebuff) {
                      BuffAbilityData buffAbility = Util.xmlLoad<BuffAbilityData>(xmlSubGroup[2]);
                      buffAbilityList.Add(buffAbility);
                   }
@@ -180,7 +187,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
          case EditorToolType.LandMonster:
             path = TEXT_PATH + "land_monsters.txt";
 
-            //Read the text from directly from the txt file
+            // Read the text from directly from the txt file
             reader = new StreamReader(path);
             string monsterContent = reader.ReadToEnd();
             reader.Close();
