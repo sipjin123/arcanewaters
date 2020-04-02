@@ -32,7 +32,11 @@ public class EditorSQLManager
       Tutorial = 15,
       SoundEffects = 16,
       Crops = 17,
-      Books = 18
+      Books = 18,
+      Background = 19,
+      Equipment_Weapon = 20,
+      Equipment_Armor = 21,
+      Equipment_Helm = 22,
    }
 
    public static string getSQLTableByName (EditorToolType editorType, int subType = 0) {

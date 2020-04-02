@@ -30,6 +30,8 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_ReceiveEquipmentData (NetworkConnection connection, string[] rawData, EquipmentToolManager.EquipmentType equipType) {
+      // TODO: Check if this is still necessary
+      /*
       switch (equipType) {
          case EquipmentToolManager.EquipmentType.Weapon:
             WeaponStatData[] weaponDataList = Util.unserialize<WeaponStatData>(rawData).ToArray();
@@ -43,25 +45,27 @@ public class RPCManager : NetworkBehaviour {
             HelmStatData[] helmDataList = Util.unserialize<HelmStatData>(rawData).ToArray();
             EquipmentXMLManager.self.receiveHelmDataFromServer(new List<HelmStatData>(helmDataList));
             break;
-      }
+      }*/
    }
 
    [TargetRpc]
    public void Target_ReceiveAllShipInfo (NetworkConnection connection, string[] rawShipInfo) {
+      // TODO: Check if this is still needed
       // Deserialize data
-      ShipData[] shipDataList = Util.unserialize<ShipData>(rawShipInfo).ToArray();
+      //ShipData[] shipDataList = Util.unserialize<ShipData>(rawShipInfo).ToArray();
 
       // Cache to ship data manager 
-      ShipDataManager.self.receiveShipDataFromServer(new List<ShipData>(shipDataList));
+      //ShipDataManager.self.receiveShipDataFromServer(new List<ShipData>(shipDataList));
    }
 
    [TargetRpc]
    public void Target_ReceiveAllShipAbilityInfo (NetworkConnection connection, string[] rawShipAbilityInfo) {
+      // TODO: Check if this is still needed
       // Deserialize data
-      ShipAbilityData[] shipDataList = Util.unserialize<ShipAbilityData>(rawShipAbilityInfo).ToArray();
+      //ShipAbilityPair[] shipDataList = Util.unserialize<ShipAbilityPair>(rawShipAbilityInfo).ToArray();
 
       // Cache to ship data manager 
-      ShipAbilityManager.self.receiveDataFromServer(shipDataList);
+      //ShipAbilityManager.self.receiveDataFromServer(shipDataList);
    }
 
    [TargetRpc]
@@ -2241,8 +2245,9 @@ public class RPCManager : NetworkBehaviour {
             // Show a popup panel for the player
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.ShipBought, _player);
 
+            // TODO: Check if this is still necessary
             // Make sure their gold display gets updated
-            getShipsForArea(ShopManager.DEFAULT_SHOP_NAME);
+            //getShipsForArea(ShopManager.DEFAULT_SHOP_NAME);
          });
       });
    }
@@ -3590,26 +3595,30 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_ReceiveClassInfo (NetworkConnection connection, string rawClassData) {
-      PlayerClassData classData = JsonUtility.FromJson<PlayerClassData>(rawClassData);
-      ClassManager.self.addClassInfo(classData);
+      // TODO: Check if this is still needed
+      //PlayerClassData classData = JsonUtility.FromJson<PlayerClassData>(rawClassData);
+      //ClassManager.self.addClassInfo(classData);
    }
 
    [TargetRpc]
    public void Target_ReceiveJobInfo (NetworkConnection connection, string[] rawData) {
-      List<PlayerJobData> jobData = Util.unserialize<PlayerJobData>(rawData);
-      JobManager.self.receiveDataFromServer(jobData);
+      // TODO: Check if this is still needed
+      //List<PlayerJobData> jobData = Util.unserialize<PlayerJobData>(rawData);
+      //JobManager.self.receiveDataFromServer(jobData);
    }
 
    [TargetRpc]
    public void Target_ReceiveSpecialtyInfo (NetworkConnection connection, string rawSpecialtyData) {
-      PlayerSpecialtyData specialtyData = JsonUtility.FromJson<PlayerSpecialtyData>(rawSpecialtyData);
-      SpecialtyManager.self.addSpecialtyInfo(specialtyData);
+      // TODO: Check if this is still needed
+      //PlayerSpecialtyData specialtyData = JsonUtility.FromJson<PlayerSpecialtyData>(rawSpecialtyData);
+      //SpecialtyManager.self.addSpecialtyInfo(specialtyData);
    }
 
    [TargetRpc]
    public void Target_ReceiveFactionInfo (NetworkConnection connection, string rawFactionData) {
-      PlayerFactionData factionData = JsonUtility.FromJson<PlayerFactionData>(rawFactionData);
-      FactionManager.self.addFactionInfo(factionData);
+      // TODO: Check if this is still needed
+      //PlayerFactionData factionData = JsonUtility.FromJson<PlayerFactionData>(rawFactionData);
+      //FactionManager.self.addFactionInfo(factionData);
    }
 
    #endregion

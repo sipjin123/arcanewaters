@@ -331,9 +331,9 @@ public class EquipmentToolManager : XmlDataToolManager {
             }
 
             EquipmentXMLManager.self.resetAllData();
-            EquipmentXMLManager.self.receiveWeaponDataFromServer(weaponStatDataList);
-            EquipmentXMLManager.self.receiveArmorDataFromServer(armorStatDataList);
-            EquipmentXMLManager.self.receiveHelmDataFromServer(helmStatDataList);
+            EquipmentXMLManager.self.receiveWeaponDataFromZipData(weaponStatDataList);
+            EquipmentXMLManager.self.receiveArmorDataFromZipData(armorStatDataList);
+            EquipmentXMLManager.self.receiveHelmFromZipData(helmStatDataList);
          }
 
          XmlLoadingPanel.self.finishLoading();

@@ -51,6 +51,19 @@ public class CropsDataManager : MonoBehaviour {
       });
    }
 
+   public void receiveCropsFromZipData (List<CropsData> newCropDataList) {
+      foreach (CropsData cropData in newCropDataList) {
+         Crop.Type cropType = (Crop.Type) cropData.cropsType;
+         // Save the Crop data in the memory cache
+         if (!_cropDataCollection.ContainsKey(cropType)) {
+            _cropDataCollection.Add(cropType, cropData);
+            cropDataList.Add(cropData);
+         } else {
+            D.warning("Key already exists: " + cropType);
+         }
+      }
+   }
+
    #region Private Variables
 
    // The data collection of crops data

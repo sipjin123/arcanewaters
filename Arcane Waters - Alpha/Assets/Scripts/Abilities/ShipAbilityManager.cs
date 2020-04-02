@@ -53,13 +53,17 @@ public class ShipAbilityManager : MonoBehaviour {
       }
    }
 
-   public void receiveDataFromServer (ShipAbilityData[] dataCollection) {
+   public void receiveDataFromZipData (ShipAbilityPair[] dataCollection) {
       if (!hasInitialized) {
-         shipAbilityDataList = new List<ShipAbilityData>();
-         foreach (ShipAbilityData data in dataCollection) {
-            if (!_shipAbilityData.ContainsKey(data.abilityName)) {
-               _shipAbilityData.Add(data.abilityName, data);
-               this.shipAbilityDataList.Add(data);
+         shipAbilityDataList = new List<ShipAbilityPair>();
+         foreach (ShipAbilityPair data in dataCollection) {
+            if (!_shipAbilityData.ContainsKey(data.abilityId)) {
+               _shipAbilityData.Add(data.abilityId, data.shipAbilityData);
+               this.shipAbilityDataList.Add(new ShipAbilityPair { 
+                  abilityName = data.abilityName,
+                  abilityId = data.abilityId,
+                  shipAbilityData = data.shipAbilityData
+               });
             }
          }
          finishedDataSetup.Invoke();

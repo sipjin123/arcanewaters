@@ -353,8 +353,12 @@ public class ShopManager : MonoBehaviour {
       }
 
       foreach (int itemId in _itemsByShopName[shopName]) {
-         Item item = _items[itemId];
-         list.Add(item);
+         if (_items.ContainsKey(itemId)) {
+            Item item = _items[itemId];
+            list.Add(item);
+         } else {
+            D.editorLog("Does not contain: " + itemId, Color.red);
+         }
       }
 
       return list;

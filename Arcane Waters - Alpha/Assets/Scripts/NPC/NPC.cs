@@ -256,7 +256,7 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
                MerchantScreen merchantPanel = (MerchantScreen) PanelManager.self.get(_shopTrigger.panelType);
                merchantPanel.shopName = _shopName;
                break;
-         }
+         } 
          PanelManager.self.pushIfNotShowing(_shopTrigger.panelType);
       } else {
          // Send a request to the server to get the npc panel info
@@ -494,11 +494,12 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
    public void receiveData (DataField[] dataFields) {
       string shopName = "";
       string panelName = "None";
+      int id = 0;
       foreach (DataField field in dataFields) {
          if (field.k.CompareTo(DataField.NPC_DATA_KEY) == 0) {
             // Get ID from npc data field
             // Field arrives in format <npc id>: <npc name>
-            int id = int.Parse(field.v.Split(':')[0]);
+            id = int.Parse(field.v.Split(':')[0]);
             isDebug = true;
             npcId = id;
 
@@ -522,6 +523,7 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
       }
 
       if (panelName != "None") {
+         D.editorLog("This npc is a shop npc: " + id + " - " + shopName, Color.cyan);
          _shopTrigger = gameObject.AddComponent<ShopTrigger>();
          _shopName = shopName;
          _shopTrigger.panelType = (Panel.Type) Enum.Parse(typeof(Panel.Type), panelName);

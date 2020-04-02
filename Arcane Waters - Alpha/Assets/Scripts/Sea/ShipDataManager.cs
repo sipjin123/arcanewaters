@@ -65,7 +65,7 @@ public class ShipDataManager : MonoBehaviour {
       }
    }
 
-   public void receiveShipDataFromServer (List<ShipData> shipDataList) {
+   public void receiveShipDataFromZipData (List<ShipData> shipDataList) {
       foreach (ShipData shipData in shipDataList) {
          if (!_shipData.ContainsKey(shipData.shipType)) {
             _shipData.Add(shipData.shipType, shipData);

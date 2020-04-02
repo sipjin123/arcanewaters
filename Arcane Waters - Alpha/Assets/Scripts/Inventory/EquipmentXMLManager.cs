@@ -133,7 +133,7 @@ public class EquipmentXMLManager : MonoBehaviour {
       finishedLoading();
    }
 
-   public void receiveWeaponDataFromServer (List<WeaponStatData> statData) {
+   public void receiveWeaponDataFromZipData (List<WeaponStatData> statData) {
       foreach (WeaponStatData rawData in statData) {
          int uniqueID = rawData.weaponType;
          // Save the data in the memory cache
@@ -145,7 +145,7 @@ public class EquipmentXMLManager : MonoBehaviour {
       finishedLoading();
    }
 
-   public void receiveArmorDataFromServer (List<ArmorStatData> statData) {
+   public void receiveArmorDataFromZipData (List<ArmorStatData> statData) {
       foreach (ArmorStatData rawData in statData) {
          int uniqueID = rawData.armorType;
          // Save the data in the memory cache
@@ -157,7 +157,7 @@ public class EquipmentXMLManager : MonoBehaviour {
       finishedLoading();
    }
 
-   public void receiveHelmDataFromServer (List<HelmStatData> statData) {
+   public void receiveHelmFromZipData (List<HelmStatData> statData) {
       foreach (HelmStatData rawData in statData) {
          Helm.Type uniqueID = rawData.helmType;
          // Save the data in the memory cache
