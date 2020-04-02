@@ -8,6 +8,9 @@ public class ShipAbilityTemplate : GenericEntryTemplate
 {
    #region Public Variables
 
+   // The database id
+   public int xmlId;
+
    #endregion
 
    private void OnEnable () {

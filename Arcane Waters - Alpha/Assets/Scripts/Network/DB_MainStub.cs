@@ -64,14 +64,14 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
-   public static void updateShipAbilityXML (string rawData, string shipAbilityName) {
+   public static void updateShipAbilityXML (string rawData, string shipAbilityName, int xmlId) {
    }
 
-   public static List<string> getShipAbilityXML () {
-      return new List<string>();
+   public static List<XMLPair> getShipAbilityXML () {
+      return new List<XMLPair>();
    }
 
-   public static void deleteShipAbilityXML (string shipAbilityName) {
+   public static void deleteShipAbilityXML (int xmlId) {
    }
 
    public static void updateTutorialXML (string rawData, string name, int order) {

@@ -20,7 +20,7 @@ public class ShipDataToolManager : XmlDataToolManager {
    public const string FOLDER_PATH = "ShipStats";
 
    // List of abilities
-   public List<string> shipSkillList = new List<string>();
+   public List<ShipAbilityPair> shipSkillList = new List<ShipAbilityPair>();
 
    #endregion
 
@@ -81,18 +81,21 @@ public class ShipDataToolManager : XmlDataToolManager {
    public void loadXMLData () {
       XmlLoadingPanel.self.startLoading();
       _shipDataList = new List<ShipXMLContent>();
-      shipSkillList = new List<string>();
+      shipSkillList = new List<ShipAbilityPair>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<XMLPair> rawXMLData = DB_Main.getShipXML();
-         List<string> rawShipAbilityXMLData = DB_Main.getShipAbilityXML();
+         List<XMLPair> rawShipAbilityXMLData = DB_Main.getShipAbilityXML();
          userIdData = DB_Main.getSQLDataByID(editorToolType);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            foreach (string shipAbilityText in rawShipAbilityXMLData) {
-               TextAsset newTextAsset = new TextAsset(shipAbilityText);
+            foreach (XMLPair shipAbilityText in rawShipAbilityXMLData) {
+               TextAsset newTextAsset = new TextAsset(shipAbilityText.rawXmlData);
                ShipAbilityData shipAbility = Util.xmlLoad<ShipAbilityData>(newTextAsset);
-               shipSkillList.Add(shipAbility.abilityName);
+               shipSkillList.Add(new ShipAbilityPair { 
+                  abilityName = shipAbility.abilityName,
+                  abilityId = shipAbilityText.xmlId
+               });
             }
 
             foreach (XMLPair xmlPair in rawXMLData) {

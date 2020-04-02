@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System;
+using System.Xml.Serialization;
 
 [Serializable]
 public class ShipData
@@ -59,5 +60,19 @@ public class ShipData
    public bool isSkillRandom;
 
    // List of ship ability names
-   public List<string> shipAbilities = new List<string>();
+   public List<ShipAbilityPair> shipAbilities = new List<ShipAbilityPair>();
+}
+
+[Serializable]
+public class ShipAbilityPair
+{
+   // Id of the ability
+   public int abilityId;
+
+   // Name of the ability
+   public string abilityName;
+
+   // The ship data
+   [XmlIgnore]
+   public ShipAbilityData shipAbilityData;
 }

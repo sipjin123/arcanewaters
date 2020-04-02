@@ -80,11 +80,11 @@ public class ShipyardScreen : Panel {
          row.transform.SetParent(rowsContainer.transform, false);
 
          row.skillPrefabHolder.DestroyChildren();
-         foreach (string abilityName in shipInfo.shipAbilities.ShipAbilities) {
+         foreach (int abilityId in shipInfo.shipAbilities.ShipAbilities) {
             ShipUISkillTemplate template = Instantiate(row.skillPrefab, row.skillPrefabHolder.transform).GetComponent<ShipUISkillTemplate>();
-            template.skillName.text = abilityName;
+            template.skillName.text = ShipAbilityManager.self.getAbility(abilityId).abilityName; 
 
-            string iconPath = ShipAbilityManager.self.getAbility(abilityName).skillIconPath;
+            string iconPath = ShipAbilityManager.self.getAbility(abilityId).skillIconPath;
             template.skillIcon.sprite = ImageManager.getSprite(iconPath);
          }
 

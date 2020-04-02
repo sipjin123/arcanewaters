@@ -16,9 +16,12 @@ public class ShipSkillTemplate : MonoBehaviour {
    // Name of the skill to add
    public Text skillNameText;
 
+   // ID of the skill to add
+   public Text skillIdText;
+
    #endregion
 
    #region Private Variables
-      
+
    #endregion
 }

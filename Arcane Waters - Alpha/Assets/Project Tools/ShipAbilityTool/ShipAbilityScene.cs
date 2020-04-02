@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.SceneManagement;
+using static ShipAbilityToolManager;
 
 public class ShipAbilityScene : MonoBehaviour {
    #region Public Variables
@@ -49,14 +50,15 @@ public class ShipAbilityScene : MonoBehaviour {
       shipAbilityData.abilityName = "Undefined";
 
       ShipAbilityTemplate template = GenericEntryTemplate.createGenericTemplate(itemTemplatePrefab.gameObject, toolManager, itemTemplateParent.transform).GetComponent<ShipAbilityTemplate>();
+      template.xmlId = -1;
       template.editButton.onClick.AddListener(() => {
-         shipAbilityPanel.loadData(shipAbilityData);
+         shipAbilityPanel.loadData(shipAbilityData, template.xmlId);
          shipAbilityPanel.gameObject.SetActive(true);
       });
 
       template.deleteButton.onClick.AddListener(() => {
          Destroy(template.gameObject, .5f);
-         toolManager.deleteDataFile(shipAbilityData);
+         toolManager.deleteDataFile(template.xmlId);
       });
 
       template.duplicateButton.onClick.AddListener(() => {
@@ -74,29 +76,30 @@ public class ShipAbilityScene : MonoBehaviour {
       template.gameObject.SetActive(true);
    }
 
-   public void loadData (Dictionary<string, ShipAbilityData> data) {
+   public void loadData (Dictionary<int, ShipAbilityGroup> data) {
       itemTemplateParent.gameObject.DestroyChildren();
 
       // Create a row for each template
-      foreach (ShipAbilityData shipData in data.Values) {
+      foreach (ShipAbilityGroup shipAbilityGroup in data.Values) {
          ShipAbilityTemplate template = GenericEntryTemplate.createGenericTemplate(itemTemplatePrefab.gameObject, toolManager, itemTemplateParent.transform).GetComponent<ShipAbilityTemplate>();
-         template.nameText.text = shipData.abilityName;
+         template.xmlId = shipAbilityGroup.xmlId;
+         template.nameText.text = shipAbilityGroup.shipAbility.abilityName;
          template.editButton.onClick.AddListener(() => {
-            shipAbilityPanel.loadData(shipData);
+            shipAbilityPanel.loadData(shipAbilityGroup.shipAbility, template.xmlId);
             shipAbilityPanel.gameObject.SetActive(true);
          });
 
          template.deleteButton.onClick.AddListener(() => {
             Destroy(template.gameObject, .5f);
-            toolManager.deleteDataFile(shipData);
+            toolManager.deleteDataFile(template.xmlId);
          });
 
          template.duplicateButton.onClick.AddListener(() => {
-            toolManager.duplicateXMLData(shipData);
+            toolManager.duplicateXMLData(shipAbilityGroup.shipAbility);
          });
 
          try {
-            Sprite iconSprite = ImageManager.getSprite(shipData.skillIconPath);
+            Sprite iconSprite = ImageManager.getSprite(shipAbilityGroup.shipAbility.skillIconPath);
             template.itemIcon.sprite = iconSprite;
          } catch {
             template.itemIcon.sprite = emptySprite;

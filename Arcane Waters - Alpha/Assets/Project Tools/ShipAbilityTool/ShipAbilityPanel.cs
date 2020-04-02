@@ -23,11 +23,11 @@ public class ShipAbilityPanel : MonoBehaviour {
    // Test SFX Buttons
    public Button testHitSFXButton, testCastSFXButton;
 
-   // Starting Name
-   public string startingName;
-
    // List for toggle able tabs
    public List<TogglerClass> togglerList;
+
+   // The current xml id
+   public int currentXmlId;
 
    #endregion
 
@@ -43,10 +43,7 @@ public class ShipAbilityPanel : MonoBehaviour {
       saveButton.onClick.AddListener(() => {
          ShipAbilityData itemData = getShipAbilityData();
          if (itemData != null) {
-            if (itemData.abilityName != startingName) {
-               toolManager.deleteDataFile(new ShipAbilityData { abilityName = startingName });
-            }
-            toolManager.saveXMLData(itemData);
+            toolManager.saveXMLData(currentXmlId, itemData);
             gameObject.SetActive(false);
          }
       });
@@ -116,8 +113,8 @@ public class ShipAbilityPanel : MonoBehaviour {
       });
    }
 
-   public void loadData (ShipAbilityData shipAbilityData) {
-      startingName = shipAbilityData.abilityName;
+   public void loadData (ShipAbilityData shipAbilityData, int xmlId) {
+      currentXmlId = xmlId;
       _abilityName.text = shipAbilityData.abilityName;
       _abilityDescription.text = shipAbilityData.abilityDescription;
 

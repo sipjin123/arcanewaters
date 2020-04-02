@@ -677,20 +677,29 @@ public class DB_Main : DB_MainStub
 
    #region Ship Ability XML Data
 
-   public static new void updateShipAbilityXML (string rawData, string shipAbilityName) {
+   public static new void updateShipAbilityXML (string rawData, string shipAbilityName, int xmlId) {
+      string xml_id_key = "xml_id, ";
+      string xml_id_value = "@xml_id, ";
+
+      if (xmlId < 0) {
+         xml_id_key = "";
+         xml_id_value = "";
+      }
+      
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO ship_ability_xml (xml_name, xmlContent, creator_userID, lastUserUpdate) " +
-            "VALUES(@xml_name, @xmlContent, @creator_userID, NOW()) " +
-            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, lastUserUpdate = NOW()", conn)) {
+            "INSERT INTO ship_ability_xml (" + xml_id_key + "xml_name, xmlContent, creator_userID, lastUserUpdate) " +
+            "VALUES(" + xml_id_value + "@xml_name, @xmlContent, @creator_userID, NOW()) " +
+            "ON DUPLICATE KEY UPDATE xml_name = @xml_name, xmlContent = @xmlContent, lastUserUpdate = NOW()", conn)) {
 
             conn.Open();
             cmd.Prepare();
 
             cmd.Parameters.AddWithValue("@xml_name", shipAbilityName);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
+            cmd.Parameters.AddWithValue("@xml_id", xmlId);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
 
             // Execute the command
@@ -701,8 +710,8 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new List<string> getShipAbilityXML () {
-      List<string> rawDataList = new List<string>();
+   public static new List<XMLPair> getShipAbilityXML () {
+      List<XMLPair> rawDataList = new List<XMLPair>();
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
@@ -714,23 +723,29 @@ public class DB_Main : DB_MainStub
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  rawDataList.Add(dataReader.GetString("xmlContent"));
+                  XMLPair xmlPair = new XMLPair {
+                     rawXmlData = dataReader.GetString("xmlContent"),
+                     xmlId = dataReader.GetInt32("xml_id"),
+                     isEnabled = true,
+                     xmlOwnerId = dataReader.GetInt32("creator_userID"),
+                  };
+                  rawDataList.Add(xmlPair);
                }
             }
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
-      return new List<string>(rawDataList);
+      return rawDataList;
    }
 
-   public static new void deleteShipAbilityXML (string shipAbilityName) {
+   public static new void deleteShipAbilityXML (int xmlId) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM ship_ability_xml WHERE xml_name=@xml_name", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM ship_ability_xml WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@xml_name", shipAbilityName);
+            cmd.Parameters.AddWithValue("@xml_id", xmlId);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -3476,7 +3491,7 @@ public class DB_Main : DB_MainStub
       ShipInfo shipInfo = new ShipInfo(0, userId, shipType, Ship.SkinType.None, Ship.MastType.Type_1, Ship.SailType.Type_1, shipType + "",
             ColorType.HullBrown, ColorType.HullBrown, ColorType.SailWhite, ColorType.SailWhite, 100, 100, 20,
             80, 80, 15, 100, 90, 10, Rarity.Type.Common, new ShipAbilityInfo(false));
-      shipInfo.shipAbilities.ShipAbilities = new string[] { ShipAbilityInfo.DEFAULT_ABILITY };
+      shipInfo.shipAbilities.ShipAbilities = new int[] { ShipAbilityInfo.DEFAULT_ABILITY };
 
       System.Xml.Serialization.XmlSerializer ser = new System.Xml.Serialization.XmlSerializer(shipInfo.shipAbilities.GetType());
       var sb = new StringBuilder();

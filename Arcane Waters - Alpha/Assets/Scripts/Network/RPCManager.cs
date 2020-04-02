@@ -708,7 +708,7 @@ public class RPCManager : NetworkBehaviour {
          ShipInfo shipInfo = DB_Main.getShipInfo(shipID);
          if (shipInfo.shipAbilityXML == null || shipInfo.shipAbilityXML == "") {
             D.error("XML Data does not exist for Ship ID: " + shipID + " Creating new Data with Default Ability: " + ShipAbilityInfo.DEFAULT_ABILITY);
-            string[] shipArray = new string[] { ShipAbilityInfo.DEFAULT_ABILITY };
+            int[] shipArray = new int[] { ShipAbilityInfo.DEFAULT_ABILITY };
 
             shipInfo.shipAbilities = new ShipAbilityInfo { ShipAbilities = shipArray };
 
@@ -730,8 +730,8 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_SetShipAbilities (NetworkConnection connection, string[] rawAbilityData) {
-      CannonPanel.self.setAbilityTab(rawAbilityData);
+   public void Target_SetShipAbilities (NetworkConnection connection, int[] abilityIds) {
+      CannonPanel.self.setAbilityTab(abilityIds);
    }
 
    [TargetRpc]

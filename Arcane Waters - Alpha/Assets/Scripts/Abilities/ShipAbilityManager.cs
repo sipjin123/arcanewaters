@@ -15,7 +15,7 @@ public class ShipAbilityManager : MonoBehaviour {
    public bool hasInitialized;
 
    // Holds the list of the xml translated data
-   public List<ShipAbilityData> shipAbilityDataList;
+   public List<ShipAbilityPair> shipAbilityDataList;
 
    // Determines if data setup is done
    public UnityEvent finishedDataSetup = new UnityEvent();
@@ -28,18 +28,22 @@ public class ShipAbilityManager : MonoBehaviour {
 
    public void initializDataCache () {
       if (!hasInitialized) {
-         shipAbilityDataList = new List<ShipAbilityData>();
+         shipAbilityDataList = new List<ShipAbilityPair>();
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            List<string> rawXMLData = DB_Main.getShipAbilityXML();
+            List<XMLPair> rawXMLData = DB_Main.getShipAbilityXML();
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               foreach (string rawText in rawXMLData) {
-                  TextAsset newTextAsset = new TextAsset(rawText);
+               foreach (XMLPair rawData in rawXMLData) {
+                  TextAsset newTextAsset = new TextAsset(rawData.rawXmlData);
                   ShipAbilityData shipAbilityData = Util.xmlLoad<ShipAbilityData>(newTextAsset);
 
-                  if (!_shipAbilityData.ContainsKey(shipAbilityData.abilityName)) {
-                     _shipAbilityData.Add(shipAbilityData.abilityName, shipAbilityData);
-                     shipAbilityDataList.Add(shipAbilityData);
+                  if (!_shipAbilityData.ContainsKey(rawData.xmlId)) {
+                     _shipAbilityData.Add(rawData.xmlId, shipAbilityData);
+                     shipAbilityDataList.Add(new ShipAbilityPair { 
+                        abilityId = rawData.xmlId,
+                        abilityName = shipAbilityData.abilityName,
+                        shipAbilityData = shipAbilityData
+                     });
                   }
                }
                finishedDataSetup.Invoke();
@@ -63,24 +67,24 @@ public class ShipAbilityManager : MonoBehaviour {
       }
    }
 
-   public ShipAbilityData getAbility (string name) {
-      return _shipAbilityData[name];
+   public ShipAbilityData getAbility (int id) {
+      return _shipAbilityData[id];
    }
 
    public ShipAbilityData getAbility (Attack.Type attackType) {
-      return shipAbilityDataList.Find(_ => _.selectedAttackType == attackType);
+      return shipAbilityDataList.Find(_ => _.shipAbilityData.selectedAttackType == attackType).shipAbilityData;
    }
 
-   public static List<string> getRandomAbilities (int abilityCount) {
-      List<string> totalAbilityList = new List<string>();
-      foreach (ShipAbilityData ability in self.shipAbilityDataList) {
-         totalAbilityList.Add(ability.abilityName);
+   public static List<int> getRandomAbilities (int abilityCount) {
+      List<int> totalAbilityList = new List<int>();
+      foreach (ShipAbilityPair ability in self.shipAbilityDataList) {
+         totalAbilityList.Add(ability.abilityId);
       }
 
-      List<string> randomAbilityList = new List<string>();
+      List<int> randomAbilityList = new List<int>();
       if (totalAbilityList.Count > 0) {
          while (randomAbilityList.Count < abilityCount) {
-            string newAbility = totalAbilityList.ChooseRandom();
+            int newAbility = totalAbilityList.ChooseRandom();
             randomAbilityList.Add(newAbility);
             totalAbilityList.Remove(totalAbilityList.Find(_=>_ == newAbility));
          }
@@ -94,7 +98,7 @@ public class ShipAbilityManager : MonoBehaviour {
    #region Private Variables
 
    // The cached data 
-   private Dictionary<string, ShipAbilityData> _shipAbilityData = new Dictionary<string, ShipAbilityData>();
+   private Dictionary<int, ShipAbilityData> _shipAbilityData = new Dictionary<int, ShipAbilityData>();
 
    #endregion
 }

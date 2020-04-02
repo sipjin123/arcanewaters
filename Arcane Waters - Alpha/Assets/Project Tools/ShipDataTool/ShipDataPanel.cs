@@ -72,15 +72,17 @@ public class ShipDataPanel : MonoBehaviour {
          skillSelectionPanel.SetActive(true);
 
          skillOptionHolder.gameObject.DestroyChildren();
-         foreach (string skillOption in shipToolManager.shipSkillList) {
-            if (!existingInInventory(skillOption)) {
+         foreach (ShipAbilityPair skillOption in shipToolManager.shipSkillList) {
+            if (!existingInInventory(skillOption.abilityId)) {
                ShipSkillTemplate skillOptionTemp = Instantiate(skillTemplate, skillOptionHolder.transform);
-               skillOptionTemp.skillNameText.text = skillOption;
+               skillOptionTemp.skillNameText.text = skillOption.abilityName;
+               skillOptionTemp.skillIdText.text = skillOption.abilityId.ToString();
 
                skillOptionTemp.selectButton.onClick.AddListener(() => {
                   skillSelectionPanel.SetActive(false);
                   ShipSkillTemplate skillTemp = Instantiate(skillTemplate, skillTemplateHolder.transform);
-                  skillTemp.skillNameText.text = skillOption;
+                  skillTemp.skillNameText.text = skillOption.abilityName;
+                  skillTemp.skillIdText.text = skillOption.abilityId.ToString();
                   skillTemp.deleteButton.onClick.AddListener(() => {
                      Destroy(skillTemp.gameObject);
                   });
@@ -151,9 +153,14 @@ public class ShipDataPanel : MonoBehaviour {
       newShipData.spritePath = _spritePath.text;
       newShipData.rippleSpritePath = _ripplePath.text;
 
-      newShipData.shipAbilities = new List<string>();
+      newShipData.shipAbilities = new List<ShipAbilityPair>();
       foreach (Transform abilityTemplate in skillTemplateHolder.transform) {
-         newShipData.shipAbilities.Add(abilityTemplate.GetComponent<ShipSkillTemplate>().skillNameText.text);
+         int skillId = int.Parse(abilityTemplate.GetComponent<ShipSkillTemplate>().skillIdText.text);
+         string skillName = abilityTemplate.GetComponent<ShipSkillTemplate>().skillNameText.text;
+         newShipData.shipAbilities.Add(new ShipAbilityPair { 
+            abilityId = skillId,
+            abilityName = skillName
+         });
       }
 
       return newShipData;
@@ -201,21 +208,23 @@ public class ShipDataPanel : MonoBehaviour {
       }
 
       skillTemplateHolder.gameObject.DestroyChildren();
-      foreach (string skill in loadedShipData.shipAbilities) {
+      foreach (ShipAbilityPair skill in loadedShipData.shipAbilities) {
          ShipSkillTemplate skillTemp = Instantiate(skillTemplate.gameObject, skillTemplateHolder).GetComponent<ShipSkillTemplate>();
-         skillTemp.skillNameText.text = skill;
-         skillTemplate.deleteButton.onClick.AddListener(() => {
+         skillTemp.skillNameText.text = skill.abilityName;
+         skillTemp.skillIdText.text = skill.abilityId.ToString();
+         skillTemp.deleteButton.onClick.AddListener(() => {
             Destroy(skillTemp.gameObject);
          });
       }
    }
 
-   private bool existingInInventory (string name) {
-      List<string> cachedAbilityList = new List<string>();
-      foreach (Transform child in skillTemplateHolder) {
-         cachedAbilityList.Add(child.GetComponent<ShipSkillTemplate>().skillNameText.text);
+   private bool existingInInventory (int id) {
+      List<int> cachedAbilityList = new List<int>();
+      foreach (Transform child in skillTemplateHolder) { 
+         int skillId = int.Parse(child.GetComponent<ShipSkillTemplate>().skillIdText.text);
+         cachedAbilityList.Add(skillId);
       }
-      return cachedAbilityList.Find(_ => _ == name) != null;
+      return cachedAbilityList.Exists(_ => _ == id);
    }
 
    #region Private Variables
