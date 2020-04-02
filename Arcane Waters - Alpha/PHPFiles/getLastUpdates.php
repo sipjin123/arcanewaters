@@ -40,7 +40,7 @@
 	fetchData("player_specialty_xml", $mysqli);
 	fetchData("sea_monster_xml_v2", $mysqli);
 	
-	fetchData("ship_ability_xml", $mysqli);
+	fetchData("ship_ability_xml_v2", $mysqli);
 	fetchData("ship_xml_v2", $mysqli);
 	fetchData("shop_xml", $mysqli);
 	fetchData("tutorial_xml", $mysqli);

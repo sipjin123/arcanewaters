@@ -1,0 +1,890 @@
+1[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>Armored Adventurer</achievementName>
+  <actionType>ArmorBuy</actionType>
+  <achievementDescription>You just bought your first armor adventurer! Now you're ready for adventure!</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>ArmorBuy01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+2[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>Bestie Horder</achievementName>
+  <actionType>NPCBestFriend</actionType>
+  <achievementDescription>You bestfriend horder! This is good make more friends and you'll enjoy staying!</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>NPCBestFriend01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+3[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>Bloody Captain</achievementName>
+  <actionType>SinkedShips</actionType>
+  <achievementDescription>You wow you're a bloody captain! You just sinked 50 ships!</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>SinkedShips01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+4[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>Buffman</achievementName>
+  <actionType>UseStatsBuff</actionType>
+  <achievementDescription>Hold there buffman! Take it easy you might get overdose!</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>UseStatsBuff01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+5[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>Cold Never Bothered Me</achievementName>
+  <actionType>Frozen</actionType>
+  <achievementDescription>So the cold really never bothered you? Wow.</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>Frozen01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+6[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>CombatDie02</achievementName>
+  <actionType>CombatDie</actionType>
+  <achievementDescription>CombatDie02</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>CombatDie02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+7[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>Courier Master</achievementName>
+  <actionType>QuestDelivery</actionType>
+  <achievementDescription>You just delivered your 50th quest. You are now considered a Courier Master!</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>QuestDelivery01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+8[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>Crafted Steel Armor</achievementName>
+  <actionType>Craft</actionType>
+  <achievementDescription>You made your very first Steel Armor! Put up there warrior!</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>Craft01</achievementUniqueID>
+  <itemType>3</itemType>
+  <itemCategory>2</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+9[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>Crafted Steel Sword</achievementName>
+  <actionType>Craft</actionType>
+  <achievementDescription>Grats! You crafted your very first steel sword!</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>Craft02</achievementUniqueID>
+  <itemType>1</itemType>
+  <itemCategory>1</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+10[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>Farmer Water</achievementName>
+  <actionType>WaterCrop</actionType>
+  <achievementDescription>Watered 100 Crop</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>WaterCrop01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+11[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>First Bestie</achievementName>
+  <actionType>NPCBestFriend</actionType>
+  <achievementDescription>NICE! That's what I'm talking about! You just made your very first best friend!</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>NPCBestFriend02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+12[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>First Pots</achievementName>
+  <actionType>UsePotion</actionType>
+  <achievementDescription>Nice! You just had your first potion!</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>UsePotion01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+13[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>First Time Buff</achievementName>
+  <actionType>UseStatsBuff</actionType>
+  <achievementDescription>Do you feel the rush?! Yeah that's the stuff!</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>UseStatsBuff02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+14[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>First Time Gatherer</achievementName>
+  <actionType>GatherItem</actionType>
+  <achievementDescription>You just gathered an item for the first time!</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>GatherItem01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+15[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>Friend or Foe</achievementName>
+  <actionType>HitPlayerWithCannon</actionType>
+  <achievementDescription>You sure are making foes than friends eh?</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>HitPlayerWithCannon01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+16[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>Friendly Cannoneer</achievementName>
+  <actionType>HitPlayerWithCannon</actionType>
+  <achievementDescription>Oh is that how you say hi?</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>HitPlayerWithCannon02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+17[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>Got Kissed by Ivy</achievementName>
+  <actionType>Poisoned</actionType>
+  <achievementDescription>You just experienced your first poined. Let's make sure you won't die okay?</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>Poisoned01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+18[space]<?xml version="1.0" encoding="utf-16"?><AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><achievementName>Just Casual</achievementName><actionType>NPCCasualFriend</actionType><achievementDescription>Just casual? You should try more! You can do better than 5 casual friends.</achievementDescription><count>1</count><achievementUniqueID>NPCCasualFriend01</achievementUniqueID><itemType>0</itemType><itemCategory>0</itemCategory><iconPath /><tier>1</tier></AchievementData>[next]
+19[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>Kissed by Olaf</achievementName>
+  <actionType>Frozen</actionType>
+  <achievementDescription>Oh did olaf just kissed you? Don't be too confident, you might get froze bite!</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>Frozen02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+20[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>Land Hero</achievementName>
+  <actionType>KillLandMonster</actionType>
+  <achievementDescription>You have killed 500 monster in total! You truely are our savior.</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>KillLandMonster1</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+21[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>Mega Lootbag</achievementName>
+  <actionType>OpenedLootBag</actionType>
+  <achievementDescription>You have served Arcane well, heres a reward</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>OpenedLootBag01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+22[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>Mini Miner</achievementName>
+  <actionType>MineOre</actionType>
+  <achievementDescription>First time miner</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>MineOre01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+23[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>Mr. Venom</achievementName>
+  <actionType>Poisoned</actionType>
+  <achievementDescription>You sure loved getting poisoned aren't cha?</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>Poisoned02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+24[space]<?xml version="1.0" encoding="utf-16"?><AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><achievementName>Never Give Up Captain!</achievementName><actionType>ShipDie</actionType><achievementDescription>Your ship may have been sunk 50 times but it will make you stronger every time!</achievementDescription><count>1</count><achievementUniqueID>ShipDie01</achievementUniqueID><itemType>0</itemType><itemCategory>0</itemCategory><iconPath /><tier>1</tier></AchievementData>[next]
+25[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>New Bloods</achievementName>
+  <actionType>SinkedShips</actionType>
+  <achievementDescription>Oh no! You just sinked the ship of your first foe!</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>SinkedShips02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+26[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>Number of death 13</achievementName>
+  <actionType>CombatDie</actionType>
+  <achievementDescription>Oh no no no, the number of bad luck.</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>CombatDie</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+27[space]<?xml version="1.0"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>OreGain1</achievementName>
+  <actionType>OreGain</actionType>
+  <achievementDescription>Gain ore once</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>OreGain1</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath>Assets/Sprites/Icons/Battle/enemy/icon_enemy_potion.png</iconPath>
+  <tier>1</tier>
+</AchievementData>[next]
+28[space]<?xml version="1.0"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>OreGain5</achievementName>
+  <actionType>OreGain</actionType>
+  <achievementDescription>Gain ore once</achievementDescription>
+  <count>5</count>
+  <achievementUniqueID>OreGain15</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath>Assets/Sprites/Icons/Battle/enemy/icon_enemy_mystical_hover.png</iconPath>
+  <tier>2</tier>
+</AchievementData>[next]
+29[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>Penny Looter</achievementName>
+  <actionType>EarnGold</actionType>
+  <achievementDescription>Your first gold! Wow! How does it feel to earn your own money?</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>EarnGold01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+30[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>Richie Rich</achievementName>
+  <actionType>EarnGold</actionType>
+  <achievementDescription>You earned your first 500 gold, so rich!</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>EarnGold02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+31[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>Rising Crop Merchant</achievementName>
+  <actionType>SellCrop</actionType>
+  <achievementDescription>You just sold your first crop.</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>SellCrop01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+32[space]<?xml version="1.0" encoding="utf-16"?><AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><achievementName>RumpleRum</achievementName><actionType>LootGainTotal</actionType><achievementDescription>LootGainTotal01</achievementDescription><count>1</count><achievementUniqueID>LootGainTotal01</achievementUniqueID><itemType>3</itemType><itemCategory>3</itemCategory><iconPath>Assets/Sprites/Icons/Battle/Buffs/buff_elixir.png</iconPath><tier>1</tier></AchievementData>[next]
+33[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>Safe Head</achievementName>
+  <actionType>HeadgearBuy</actionType>
+  <achievementDescription>You just bought your first headgear be safe!</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>HeadgearBuy01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+34[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>Santa Claus</achievementName>
+  <actionType>NPCGift</actionType>
+  <achievementDescription>You're so generous! You're like Santa Claus!!!</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>NPCGift01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+35[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>Sea Cannon</achievementName>
+  <actionType>CannonHits</actionType>
+  <achievementDescription>You just made 50 hits on Sea! Are you starting to make foes or being a hero?</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>CannonHits01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+36[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>Sea Hero</achievementName>
+  <actionType>KillSeaMonster</actionType>
+  <achievementDescription>We can now sail the sea without worry</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>KillSeaMonster01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+37[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>Ship Purchase</achievementName>
+  <actionType>BuyShip</actionType>
+  <achievementDescription>Buying ships 2 times</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>BuyShip02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath>Assets/Sprites/Icons/ship_speed.png</iconPath>
+  <tier>2</tier>
+</AchievementData>[next]
+38[space]<?xml version="1.0" encoding="utf-16"?><AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><achievementName>So Close</achievementName><actionType>NPCCloseFriend</actionType><achievementDescription>Oh wow! You just made your first close friend! Perhaps soon to be best friend?</achievementDescription><count>1</count><achievementUniqueID>NPCCloseFriend01</achievementUniqueID><itemType>0</itemType><itemCategory>0</itemCategory><iconPath /><tier>1</tier></AchievementData>[next]
+39[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>So Shocking</achievementName>
+  <actionType>Electrocuted</actionType>
+  <achievementDescription>Really? 50 times?! </achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>Electrocuted01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+40[space]<?xml version="1.0" encoding="utf-16"?><AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><achievementName>Starting adventurer</achievementName><actionType>OpenedLootBag</actionType><achievementDescription>You have opened 50 lootbag! Here's something to help you with your journey!</achievementDescription><count>2</count><achievementUniqueID>OpenedLootBag02</achievementUniqueID><itemType>0</itemType><itemCategory>0</itemCategory><iconPath /><tier>2</tier></AchievementData>[next]
+41[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>Starting merchant</achievementName>
+  <actionType>SellItem</actionType>
+  <achievementDescription>Oh hello traveler! You have sold a total of 50 items!</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>SellItem01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+42[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>Starting Sea</achievementName>
+  <actionType>KillSeaMonster</actionType>
+  <achievementDescription>We can now sail the sea at ease. Thank you warrior!</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>KillSeaMonster02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+43[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The 500 merchant</achievementName>
+  <actionType>SellItem</actionType>
+  <achievementDescription>You richman! You have sold a total of 500 times!</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>SellItem02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+44[space]<?xml version="1.0" encoding="utf-16"?><AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><achievementName>The Acquaintance</achievementName><actionType>NPCAcquaintance</actionType><achievementDescription>You are now acquainted to one of the villager. You are now one of us!</achievementDescription><count>1</count><achievementUniqueID>NPCAcquaintance01</achievementUniqueID><itemType>0</itemType><itemCategory>0</itemCategory><iconPath /><tier>1</tier></AchievementData>[next]
+45[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The Bouncing Adventurer</achievementName>
+  <actionType>JumpOnBouncePad</actionType>
+  <achievementDescription>You sure love to bounce!</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>JumpOnBouncePad01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+46[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The Buffer</achievementName>
+  <actionType>BuffSkillUse</actionType>
+  <achievementDescription>You sure love to use your buff skill huh?</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>BuffSkillUse01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+47[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The Casual</achievementName>
+  <actionType>NPCCasualFriend</actionType>
+  <achievementDescription>You just made your very first casual friend! Get out and meet more people!</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>NPCCasualFriend02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+48[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The Chester</achievementName>
+  <actionType>OpenTreasureChest</actionType>
+  <achievementDescription>You just opened your very first treasure chest!</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>OpenTreasureChest01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+49[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The Circle of Friends</achievementName>
+  <actionType>NPCCloseFriend</actionType>
+  <achievementDescription>Wow, your circle of friends is growing.</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>NPCCloseFriend02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+50[space]<?xml version="1.0" encoding="utf-16"?><AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><achievementName>The Courier</achievementName><actionType>QuestDelivery</actionType><achievementDescription>You just delivered your 10th quest! You may now consider yourself as a Courier.</achievementDescription><count>2</count><achievementUniqueID>QuestDelivery02</achievementUniqueID><itemType>0</itemType><itemCategory>0</itemCategory><iconPath /><tier>2</tier></AchievementData>[next]
+51[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The Enterpreneur Farmer</achievementName>
+  <actionType>SellCrop</actionType>
+  <achievementDescription>You just sold your 100th crop.</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>SellCrop02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+52[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The First Planter</achievementName>
+  <actionType>PlantCrop</actionType>
+  <achievementDescription>Planted first plant ever!</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>PlantCrop01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+53[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The Gifter</achievementName>
+  <actionType>NPCGift</actionType>
+  <achievementDescription>You're so generous you just gifted 20 times to NPC!</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>NPCGift02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+54[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The Gossip</achievementName>
+  <actionType>TalkToNPC</actionType>
+  <achievementDescription>Hello there adventurer! You have talked to total of 20 villagers!</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>TalkToNPC01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+55[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The Hatter</achievementName>
+  <actionType>HeadgearBuy</actionType>
+  <achievementDescription>You just bought your 50th headgear!</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>HeadgearBuy02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+56[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The land monster slayer</achievementName>
+  <actionType>KillLandMonster</actionType>
+  <achievementDescription>You're the Land's Heroes of men!</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>KillLandMonster02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+57[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The Liter</achievementName>
+  <actionType>TrashItem</actionType>
+  <achievementDescription>Oh you did not! Why you trash!? Have you tried recycling?</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>TrashItem01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+58[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The Master Farmer</achievementName>
+  <actionType>HarvestCrop</actionType>
+  <achievementDescription>Hearvested 100 Crops</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>HarvestCrop01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+59[space]<?xml version="1.0" encoding="utf-16"?><AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><achievementName>The First of Combat</achievementName><actionType>EnterCombat</actionType><achievementDescription>You sure love to combat huh? </achievementDescription><count>1</count><achievementUniqueID>EnterCombat01</achievementUniqueID><itemType>0</itemType><itemCategory>0</itemCategory><iconPath /><tier>1</tier></AchievementData>[next]
+60[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The Master Offender</achievementName>
+  <actionType>OffensiveSkillUse</actionType>
+  <achievementDescription>You sure love to hurt people with your skills eh?</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>OffensiveSkillUse01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+61[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The Master Planter</achievementName>
+  <actionType>PlantCrop</actionType>
+  <achievementDescription>You love nature so much that you planted your 100th plant.</achievementDescription>
+  <count>100</count>
+  <achievementUniqueID>PlantCrop02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+62[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The Mine Master</achievementName>
+  <actionType>MineOre</actionType>
+  <achievementDescription>You sure love to mine!</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>MineOre02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+63[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The Newb Bouncer</achievementName>
+  <actionType>JumpOnBouncePad</actionType>
+  <achievementDescription>Nice you just experienced your first Jump Pad! How was it?</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>JumpOnBouncePad02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+64[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The Newb Buffer</achievementName>
+  <actionType>BuffSkillUse</actionType>
+  <achievementDescription>Oh nice! You just used your Buff Skill!</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>BuffSkillUse02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+65[space]<?xml version="1.0" encoding="utf-16"?><AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><achievementName>The Newb Combater</achievementName><actionType>EnterCombat</actionType><achievementDescription>100 times really?</achievementDescription><count>2</count><achievementUniqueID>EnterCombat02</achievementUniqueID><itemType>0</itemType><itemCategory>0</itemCategory><iconPath /><tier>2</tier></AchievementData>[next]
+66[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The Newb Farmer</achievementName>
+  <actionType>HarvestCrop</actionType>
+  <achievementDescription>You just harvested your first crop!</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>HarvestCrop02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+67[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The Newb Offender</achievementName>
+  <actionType>OffensiveSkillUse</actionType>
+  <achievementDescription>Oh just wow! You just used your first offensive skill!</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>OffensiveSkillUse02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+68[space]<?xml version="1.0" encoding="utf-16"?><AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><achievementName>The Newbie Adventurer</achievementName><actionType>LevelUp</actionType><achievementDescription>You reached level 5! We officially welcome you to the warriors community!</achievementDescription><count>1</count><achievementUniqueID>LevelUp01</achievementUniqueID><itemType>0</itemType><itemCategory>0</itemCategory><iconPath /><tier>1</tier></AchievementData>[next]
+69[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The Newbie Captain</achievementName>
+  <actionType>BuyShip</actionType>
+  <achievementDescription>Congratulations adventurer! You just bought your very first ship!</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>BuyShip01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+70[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The Novice Warrior</achievementName>
+  <actionType>WeaponBuy</actionType>
+  <achievementDescription>Oh hello there warrior! You just bought your very first weapon!</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>WeaponBuy01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+71[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The Protected Hero</achievementName>
+  <actionType>ArmorBuy</actionType>
+  <achievementDescription>You just bought your 50th armor! Go now and be safe!</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>ArmorBuy02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+72[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The Quest Master</achievementName>
+  <actionType>QuestComplete</actionType>
+  <achievementDescription>You have finished 1 Quests. You are now a Quest Master.</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>QuestComplete01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+73[space]<?xml version="1.0" encoding="utf-16"?><AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><achievementName>The Rising Quester</achievementName><actionType>QuestComplete</actionType><achievementDescription>You completed a total of 20 quests. Continue and help Arcane solve its mystery.</achievementDescription><count>2</count><achievementUniqueID>QuestComplete02</achievementUniqueID><itemType>0</itemType><itemCategory>0</itemCategory><iconPath /><tier>2</tier></AchievementData>[next]
+74[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The Sea Warrior</achievementName>
+  <actionType>CannonHits</actionType>
+  <achievementDescription>You just made 100 cannon hits! You sure are a couragous warrior!</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>CannonHits02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+75[space]<?xml version="1.0" encoding="utf-16"?><AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><achievementName>The Senior</achievementName><actionType>LevelUp</actionType><achievementDescription>You reached the max level 99. You are now a senior warrior of Arcane Waters.</achievementDescription><count>2</count><achievementUniqueID>LevelUp05</achievementUniqueID><itemType>0</itemType><itemCategory>0</itemCategory><iconPath /><tier>2</tier></AchievementData>[next]
+76[space]<?xml version="1.0" encoding="utf-16"?><AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><achievementName>The shookt Adventurer</achievementName><actionType>Electrocuted</actionType><achievementDescription>You got electrocuted for the first time! Don't worry this won't be your last!</achievementDescription><count>2</count><achievementUniqueID>Electrocuted02</achievementUniqueID><itemType>0</itemType><itemCategory>0</itemCategory><iconPath /><tier>2</tier></AchievementData>[next]
+77[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The Shookt Newb</achievementName>
+  <actionType>ShipDie</actionType>
+  <achievementDescription>You just experienced sinking for the first time!</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>ShipDie02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+78[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The Shop a holic</achievementName>
+  <actionType>BuyItem</actionType>
+  <achievementDescription>You shopper! You just bought 250 times!</achievementDescription>
+  <count>1</count>
+  <achievementUniqueID>BuyItem01</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>1</tier>
+</AchievementData>[next]
+79[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The shopper</achievementName>
+  <actionType>BuyItem</actionType>
+  <achievementDescription>You have bought 50 times already? You shopper!</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>BuyItem02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+80[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The Trasher</achievementName>
+  <actionType>TrashItem</actionType>
+  <achievementDescription>You just wasted 50 items. Seriously don't you know how to recycle?</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>TrashItem02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+81[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The Treasure Hunter</achievementName>
+  <actionType>OpenTreasureChest</actionType>
+  <achievementDescription>Oh wow! You just opened 500 treasure chest. You're the master of Treasure chest!</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>OpenTreasureChest02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+82[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The very Lucky Looter</achievementName>
+  <actionType>LootGainTotal</actionType>
+  <achievementDescription>LootGainTotal02</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>LootGainTotal02</achievementUniqueID>
+  <itemType>8</itemType>
+  <itemCategory>5</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+83[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The Weapon Buyer</achievementName>
+  <actionType>WeaponBuy</actionType>
+  <achievementDescription>You sure love to kill don't cha?</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>WeaponBuy02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+84[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>The Witch</achievementName>
+  <actionType>UsePotion</actionType>
+  <achievementDescription>Are you a witch? Why do you love potions that much!</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>UsePotion02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+85[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>Very Acquainted</achievementName>
+  <actionType>NPCAcquaintance</actionType>
+  <achievementDescription>You have acquainted with 20 villagers. Why not move to the next level?</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>NPCAcquaintance02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+86[space]<?xml version="1.0" encoding="utf-8"?>
+<AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <achievementName>Water Boy</achievementName>
+  <actionType>WaterCrop</actionType>
+  <achievementDescription>First crop to water</achievementDescription>
+  <count>2</count>
+  <achievementUniqueID>WaterCrop02</achievementUniqueID>
+  <itemType>0</itemType>
+  <itemCategory>0</itemCategory>
+  <iconPath />
+  <tier>2</tier>
+</AchievementData>[next]
+87[space]<?xml version="1.0" encoding="utf-16"?><AchievementData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><achievementName>Welcome Villager</achievementName><actionType>TalkToNPC</actionType><achievementDescription>Oh hello! You finally talk to one of the villagers!</achievementDescription><count>2</count><achievementUniqueID>TalkToNPC02</achievementUniqueID><itemType>0</itemType><itemCategory>0</itemCategory><iconPath /><tier>2</tier></AchievementData>[next]
