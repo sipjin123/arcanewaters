@@ -21,7 +21,7 @@ public class ZSnap : MonoBehaviour {
 
    void Start () {
       // Disable this component for better performance when we're running in batchmode
-      if (Application.isBatchMode) {
+      if (Util.isBatch()) {
          this.enabled = false;
          return;
       }

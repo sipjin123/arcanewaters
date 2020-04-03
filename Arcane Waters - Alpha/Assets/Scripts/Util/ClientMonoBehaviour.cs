@@ -11,7 +11,7 @@ public class ClientMonoBehaviour : MonoBehaviour {
 
    protected virtual void Awake () {
       // We don't want to waste time on Client scripts in Batch Mode
-      if (Application.isBatchMode) {
+      if (Util.isBatch()) {
          this.enabled = false;
       }
    }

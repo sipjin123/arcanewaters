@@ -239,6 +239,24 @@ TextureImporter:
   - first:
       213: 5783185040800073049
     second: mushroom_interior_78
+  - first:
+      213: -4330698377028322040
+    second: mushroom_interior_79
+  - first:
+      213: -6339050920072803438
+    second: mushroom_interior_80
+  - first:
+      213: 1809866937595192411
+    second: mushroom_interior_81
+  - first:
+      213: 5591834760488528623
+    second: mushroom_interior_82
+  - first:
+      213: -5682601141662191695
+    second: mushroom_interior_83
+  - first:
+      213: 7248339583346545757
+    second: mushroom_interior_84
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -2001,6 +2019,132 @@ TextureImporter:
       bones: []
       spriteID: ee5077db54332044488059ef26b7d457
       internalID: 5783185040800073049
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mushroom_interior_79
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f942357ad3f90547919e3fe99f8584e
+      internalID: -4330698377028322040
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mushroom_interior_80
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2234617c9be65bc4e8e5a44616686d76
+      internalID: -6339050920072803438
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mushroom_interior_81
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 384
+        width: 48
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8b5e2274700314a45a361b0fb80fc5cb
+      internalID: 1809866937595192411
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mushroom_interior_82
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 30d502e5ac907974a8a5426fb8024562
+      internalID: 5591834760488528623
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mushroom_interior_83
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 320
+        width: 16
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 87fe5e867e5ab4a4dab12984d4015ad0
+      internalID: -5682601141662191695
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mushroom_interior_84
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 368
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 256ef73c5f256f04fbda99e7598ed23f
+      internalID: 7248339583346545757
       vertices: []
       indices: 
       edges: []

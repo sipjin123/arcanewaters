@@ -15,7 +15,7 @@ public class PanelTrigger : MonoBehaviour {
 
    protected virtual void Awake () {
       // We don't want to waste time on Client scripts when the server is running in Batch Mode
-      if (Application.isBatchMode) {
+      if (Util.isBatch()) {
          this.enabled = false;
       }
    }

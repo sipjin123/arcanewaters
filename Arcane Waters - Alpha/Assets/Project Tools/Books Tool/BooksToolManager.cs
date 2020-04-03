@@ -62,17 +62,8 @@ public class BooksToolManager : XmlDataToolManager {
    }
 
    public void duplicateBookData (BookData data) {
-      data.title = MasterToolScene.UNDEFINED;
-      XmlSerializer ser = new XmlSerializer(data.GetType());
-      StringBuilder sb = new StringBuilder();
-
-      using (XmlWriter writer = XmlWriter.Create(sb)) {
-         ser.Serialize(writer, data);
-      }
-
-      string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.upsertBook (longString, data.title, 0);
+         DB_Main.upsertBook (data.content, "[Duplicated]" + data.title, 0);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadBooksList();

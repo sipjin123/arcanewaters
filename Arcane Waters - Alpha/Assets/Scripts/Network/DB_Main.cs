@@ -1820,7 +1820,7 @@ public class DB_Main : DB_MainStub
 
    public static new BookData getBookById (int bookId) {
       BookData book = null;
-      try {         
+      try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM arcane.books WHERE bookId = @bookId", conn)) {
@@ -1850,6 +1850,126 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@bookId", bookId);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   #endregion
+
+   #region Discoveries Data
+
+   public static new void duplicateDiscovery (DiscoveryData data) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "INSERT INTO discoveries_v2 (discoveryName, discoveryDescription, sourceImageUrl, rarity, creator_userID) " +
+            "VALUES(@discoveryName, @discoveryDescription, @sourceImageUrl, @rarity, @creator_userID) ", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@discoveryName", data.name);
+            cmd.Parameters.AddWithValue("@discoveryDescription", data.description);
+            cmd.Parameters.AddWithValue("@sourceImageUrl", data.spriteUrl);
+            cmd.Parameters.AddWithValue("@rarity", data.rarity);
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void upsertDiscovery (DiscoveryData data) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "INSERT INTO arcane.discoveries_v2 (discoveryId, discoveryName, discoveryDescription, sourceImageUrl, rarity, creator_userID) " +
+            "VALUES(NULLIF(@discoveryId, 0), @discoveryName, @discoveryDescription, @sourceImageUrl, @rarity, @creator_userID) " +
+            "ON DUPLICATE KEY UPDATE discoveryName = @discoveryName, discoveryDescription = @discoveryDescription, sourceImageUrl = @sourceImageUrl, rarity = @rarity", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@discoveryId", data.discoveryId);
+            cmd.Parameters.AddWithValue("@discoveryName", data.name);
+            cmd.Parameters.AddWithValue("@discoveryDescription", data.description);
+            cmd.Parameters.AddWithValue("@sourceImageUrl", data.spriteUrl);
+            cmd.Parameters.AddWithValue("@rarity", data.rarity);
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<DiscoveryData> getDiscoveriesList () {
+      List<DiscoveryData> rawDataList = new List<DiscoveryData>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane.discoveries_v2", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  rawDataList.Add(new DiscoveryData(dataReader));
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return new List<DiscoveryData>(rawDataList);
+   }
+
+   public static new DiscoveryData getDiscoveryById (int discoveryId) {
+      DiscoveryData discovery = null;
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane.discoveries_v2 WHERE discoveryId = @discoveryId", conn)) {
+
+            conn.Open();
+            cmd.Parameters.AddWithValue("@discoveryId", discoveryId);
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  discovery = new DiscoveryData(dataReader);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return discovery;
+   }
+
+   public static new void deleteDiscoveryById (int discoveryId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM discoveries_v2 WHERE discoveryId = @discoveryId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@discoveryId", discoveryId);
 
             // Execute the command
             cmd.ExecuteNonQuery();

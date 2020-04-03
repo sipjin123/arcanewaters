@@ -19,7 +19,13 @@ public class BiomableTree : MonoBehaviour, IBiomable
             for (int i = 0; i < col.pathCount; i++) {
                col.SetPath(i, new List<Vector2>());
             }
-            col.pathCount = renderer.sprite.GetPhysicsShapeCount();
+
+            if (renderer.sprite == null) { 
+               col.pathCount = 0;
+            }
+            else { 
+               col.pathCount = renderer.sprite.GetPhysicsShapeCount();
+            }
 
             List<Vector2> path = new List<Vector2>();
             for (int i = 0; i < col.pathCount; i++) {

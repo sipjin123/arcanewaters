@@ -68,7 +68,7 @@ public class OreNode : NetworkBehaviour
       transform.position = syncedPosition;
 
       // We don't need to do anything more when we're running in batch mode
-      if (Application.isBatchMode) {
+      if (Util.isBatch()) {
          return;
       }
 

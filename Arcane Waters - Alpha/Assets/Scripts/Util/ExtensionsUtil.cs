@@ -223,6 +223,14 @@ public static class ExtensionsUtil {
       }
    }
 
+   public static Vector3 ToFloatVector (this Vector3Int source) {
+      return new Vector3(source.x, source.y, source.z);
+   }
+
+   public static Vector3 ToVector3 (this Vector2 source) {
+      return new Vector3(source.x, source.y, 0.0f);
+   }
+
    #region Private Variables
 
    // An instance of Random for generating random numbers

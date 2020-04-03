@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,9 +17,6 @@ public class BookReaderPanel : Panel
 
    // The image used for the turning page animation
    public Image turnPageAnimationGameObject;
-
-   // A default book (for testing purposes)
-   public BookData defaultBook;
 
    // The arrow to navigate back
    public Image leftArrow;
@@ -41,9 +40,13 @@ public class BookReaderPanel : Panel
 
          if (_pages.Count > 1) {
             rightPage.setUpPage(_pages[1]);
+            _lastPage = 1;
+            rightArrow.gameObject.SetActive(true);
+         } else {
+            // The book has a single page
+            _lastPage = 0;
+            rightArrow.gameObject.SetActive(false);
          }
-
-         _lastPage = 1;
       }
 
       // Disable the left arrow since we can't go back
@@ -52,15 +55,16 @@ public class BookReaderPanel : Panel
       // Force disabling the turning page animation game object just in case it got enabled
       turnPageAnimationGameObject.gameObject.SetActive(false);
 
+      showPages();
+
       base.show();
    }
 
    public void show (BookData book) {
-      setBook(book);
-      show();
+      setBookAndShow(book);
    }
 
-   public void setBook (BookData book) {
+   public void setBookAndShow (BookData book) {
       // Reset values from the previous book
 
       // -1 is the value before opening the book
@@ -85,12 +89,15 @@ public class BookReaderPanel : Panel
 
       // Create the content for each page
       int pageNumber = 1;
+
       while (_currentBookContent.Length > 0) {
          PageImageData image;
          string text = getNextPage(out image);
          _pages.Add(new PageContent(text, image, pageNumber));
          pageNumber++;
       }
+
+      show();
    }
 
    private void cleanBookContent () {
@@ -123,6 +130,8 @@ public class BookReaderPanel : Panel
       _currentBook = null;
       _pages.Clear();
       _contentImages.Clear();
+      _lastPage = -1;
+      _lastContentIndex = 0;
    }
 
    public void setNextPages () {
@@ -177,42 +186,14 @@ public class BookReaderPanel : Panel
    }
 
    private string getNextPage (out PageImageData image) {
-      string pageContent = "";
-
-      // Update the layout values that will be used for calculations
-      leftPage.updateLayoutValues();
-
-      // Calculate the max number of lines that can fit in the page
-      int maxLines = 0;
-
-      bool containsImage = rangeContainsImage(_lastContentIndex, _lastContentIndex + leftPage.maxCharactersFullPage);
-
-      // Determine how much space can be used by text depending on the image size
-      if (containsImage) {
-         image = _contentImages[_nextImageIndex];
-
-         // Since there's an image, the text container will be smaller
-         leftPage.textContainerFullHeight -= image.height;
-
-         _nextImageIndex++;
-      } else {
-         image = null;
-      }
-
-      // Calculate the maximum number of lines based on the height of the container
-      maxLines = Mathf.FloorToInt(leftPage.textContainerFullHeight / leftPage.textLineHeight);
-
-      // Calculate the max number of characters that can fit in a page
-      int maxCharacters = maxLines * leftPage.maxCharactersPerLine;
-
-      pageContent = _currentBookContent.Substring(0, Mathf.Min(maxCharacters, _currentBookContent.Length));
+      string pageContent = getVisibleText(_currentBookContent, out image);
 
       // If this is not the last page
       if (pageContent.Length < _currentBookContent.Length) {
          // Take spaces in mind so words don't get split between pages
          int length = pageContent.LastIndexOf(' ') + 1;
          pageContent = _currentBookContent.Substring(0, length);
-      }
+      } 
 
       // Remove used substring from the total _currentBookContent
       _currentBookContent = _currentBookContent.Remove(0, pageContent.Length);
@@ -220,6 +201,58 @@ public class BookReaderPanel : Panel
       _lastContentIndex += pageContent.Length;
 
       return pageContent;
+   }
+
+   private string getVisibleText (string content, out PageImageData image) {
+      TextGenerator gen = new TextGenerator();
+      TextGenerationSettings settings = getTextGenerationSettings(leftPage.getRectTransform().rect.size);
+
+      gen.Populate(content, settings);
+
+      string visibleText = content.Substring(0, gen.characterCountVisible);
+      bool hasImage = rangeContainsImage(_lastContentIndex, _lastContentIndex + gen.characterCountVisible);
+      
+      if (hasImage) {
+         image = _contentImages[_nextImageIndex];
+         Vector2 size = leftPage.getRectTransform().rect.size;
+         size.y -= image.height;
+         visibleText = getVisibleTextMaxSize(content, size);
+
+         _nextImageIndex++;
+      } else {
+         image = null;
+      }
+
+      return visibleText;
+   }
+
+   private string getVisibleTextMaxSize (string content, Vector2 maxSize) {
+      TextGenerator gen = new TextGenerator();
+      TextGenerationSettings settings = getTextGenerationSettings(maxSize);
+
+      gen.Populate(content, settings);
+
+      return content.Substring(0, gen.characterCountVisible);
+   }
+
+   private TextGenerationSettings getTextGenerationSettings (Vector2 boxSize) {
+      TextGenerationSettings settings = new TextGenerationSettings();
+      UnityEngine.TextCore.FaceInfo faceInfo = leftPage.text.font.faceInfo;
+      
+      settings.font = leftPage.text.font.sourceFontFile;
+      settings.fontSize = Mathf.RoundToInt(leftPage.text.fontSize);
+      settings.generateOutOfBounds = false;
+      settings.generationExtents = boxSize;
+      settings.horizontalOverflow = HorizontalWrapMode.Wrap;
+      settings.verticalOverflow = VerticalWrapMode.Truncate;
+      settings.resizeTextForBestFit = false;
+      settings.scaleFactor = 1;
+      settings.textAnchor = TextAnchor.UpperLeft;
+      settings.pivot = new Vector2(0.5f, 0.5f);
+      settings.fontStyle = FontStyle.Normal;
+      settings.lineSpacing = 1.02f;
+
+      return settings;
    }
 
    private bool rangeContainsImage (int min, int max) {

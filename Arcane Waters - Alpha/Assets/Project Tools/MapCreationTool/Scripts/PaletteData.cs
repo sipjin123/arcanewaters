@@ -9,6 +9,7 @@ namespace MapCreationTool.PaletteTilesData
       public TileGroup[,] tileGroups { get; set; }
       public List<PrefabGroup> prefabGroups { get; set; }
       public Biome.Type? type { get; set; }
+      public Dictionary<TileBase, int> tileToRugType { get; set; }
 
       public TileData getTile (int x, int y) {
          TileGroup group = getGroup(x, y);

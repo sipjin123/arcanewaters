@@ -9,6 +9,8 @@ namespace MapCreationTool
 {
    public class Palette : MonoBehaviour
    {
+      public static Palette instance { get; private set; }
+
       [SerializeField]
       private AnimationCurve zoomSpeed = null;
 
@@ -21,7 +23,7 @@ namespace MapCreationTool
       private SpriteRenderer selectionMarker = null;
       private List<GameObject> prefabs = new List<GameObject>();
 
-      private PaletteData paletteData;
+      public PaletteData paletteData { get; private set; }
 
       private bool pointerHovering = false;
       private Rect camBounds = Rect.zero;
@@ -32,6 +34,10 @@ namespace MapCreationTool
       private Vector2 paletteSize;
 
       private void Awake () {
+         if (instance == null) {
+            instance = this;
+         }
+
          tilemap = GetComponentInChildren<Tilemap>();
          eventCanvas = GetComponentInChildren<Canvas>().GetComponent<RectTransform>();
          paletteCamera = GetComponentInChildren<Camera>();

@@ -46,7 +46,7 @@ public class SpeechManager : MonoBehaviour {
       SpeechBubble speechInstance = null;
 
       // No need to bother with this in batch mode
-      if (Application.isBatchMode) {
+      if (Util.isBatch()) {
          return;
       }
 

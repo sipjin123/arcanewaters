@@ -20,9 +20,21 @@ public class InstanceManager : MonoBehaviour {
       self = this;
    }
 
-   public Instance addPlayerToInstance (NetEntity player, string areaKey) {
-      // First, look for an open instance
-      Instance instance = getOpenInstance(areaKey, player.isSinglePlayer);
+   public Instance addPlayerToInstance (NetEntity player, string areaKey, int voyageId) {
+      Instance instance = null;
+
+      // If the player is warping to a voyage instance, search for it
+      if (voyageId != -1) {
+         instance = getVoyageInstance(voyageId);
+         if (instance == null) {
+            D.error("Could not find the voyage instance for voyage id " + voyageId);
+         }
+      }
+      
+      if (instance == null) {
+         // Look for an open instance
+         instance = getOpenInstance(areaKey, player.isSinglePlayer);
+      }
 
       // If there isn't one, we'll have to make it
       if (instance == null) {
@@ -53,6 +65,11 @@ public class InstanceManager : MonoBehaviour {
       enemy.instanceId = instance.id;
    }
 
+   public void addNPCToInstance (NPC npc, Instance instance) {
+      instance.entities.Add(npc);
+      npc.instanceId = instance.id;
+   }
+
    public void addSeaMonsterToInstance (SeaMonsterEntity seaMonster, Instance instance) {
       instance.entities.Add(seaMonster);
       seaMonster.instanceId = instance.id;
@@ -67,7 +84,7 @@ public class InstanceManager : MonoBehaviour {
    }
 
    public Instance createNewInstance (string areaKey, bool isSinglePlayer) {
-      return createNewInstance(areaKey, isSinglePlayer, false, 0, false, Voyage.Difficulty.None);
+      return createNewInstance(areaKey, isSinglePlayer, false, -1, false, Voyage.Difficulty.None);
    }
 
    public Instance createNewInstance (string areaKey, bool isSinglePlayer, bool isVoyage, int voyageId, bool isPvP,
@@ -98,6 +115,9 @@ public class InstanceManager : MonoBehaviour {
          TreasureManager.self.createTreasureForInstance(instance);
          OreManager.self.createOreNodesForInstance(instance);
       }
+
+      // Create the discoveries that could exist in this instance
+      DiscoveryManager.self.createDiscoveriesForInstance(instance);
 
       // Create any Enemies that exist in this Instance
       EnemyManager.self.spawnEnemiesOnServerForInstance(instance);
@@ -153,6 +173,13 @@ public class InstanceManager : MonoBehaviour {
             }
          }
 
+         // Update the treasure sites observer lists
+         foreach (NetworkBehaviour treasureSite in instance.treasureSites) {
+            if (treasureSite != null) {
+               treasureSite.netIdentity.RebuildObservers(false);
+            }
+         }
+
          // We also need the Instance object to be viewable by the new player
          instance.netIdent.RebuildObservers(false);
       }
@@ -183,6 +210,16 @@ public class InstanceManager : MonoBehaviour {
       }
 
       return voyages;
+   }
+
+   public Instance getVoyageInstance (int voyageId) {
+      foreach (Instance instance in _instances.Values) {
+         if (instance.isVoyage && instance.voyageId == voyageId) {
+            return instance;
+         }
+      }
+
+      return null;
    }
 
    public int getInstanceCount (string areaKey) {
@@ -236,7 +273,10 @@ public class InstanceManager : MonoBehaviour {
       }
 
       // Destroy any treasure site
-      foreach (NetworkBehaviour treasureSite in instance.treasureSites) {
+      foreach (TreasureSite treasureSite in instance.treasureSites) {
+         // Remove the link between the treasure site and its warp
+         treasureSite.freeAssociatedWarp();
+
          NetworkServer.Destroy(treasureSite.gameObject);
       }
 

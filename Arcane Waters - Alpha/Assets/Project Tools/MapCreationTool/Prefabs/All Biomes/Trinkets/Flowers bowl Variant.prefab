@@ -80,22 +80,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!58 &262237279823469412
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7103487924087932308}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  serializedVersion: 2
-  m_Radius: 0.09
 --- !u!114 &3099794002183516502
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -152,6 +136,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3591515444999941409, guid: a1ebe8dfb8d81f04185d5d451a4caa8f,
+        type: 3}
+      propertyPath: m_Offset.y
+      value: -0.0008281517
+      objectReference: {fileID: 0}
+    - target: {fileID: 3591515444999941409, guid: a1ebe8dfb8d81f04185d5d451a4caa8f,
+        type: 3}
+      propertyPath: m_Radius
+      value: 0.07917185
+      objectReference: {fileID: 0}
     - target: {fileID: 4277152292244217403, guid: a1ebe8dfb8d81f04185d5d451a4caa8f,
         type: 3}
       propertyPath: m_LocalPosition.x

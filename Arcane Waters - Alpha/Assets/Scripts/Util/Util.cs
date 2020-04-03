@@ -267,6 +267,28 @@ public class Util : MonoBehaviour {
       return Direction.East;
    }
 
+   public static Vector2 getDirectionFromFacing(Direction facing) {
+      switch (facing) {
+         case Direction.North:
+            return Vector2.up;
+         case Direction.NorthEast:
+            return Vector2.up + Vector2.right;
+         case Direction.East:
+            return Vector2.right;
+         case Direction.SouthEast:
+            return Vector2.right + Vector2.down;
+         case Direction.South:
+            return Vector2.down;
+         case Direction.SouthWest:
+            return Vector2.down + Vector2.left;
+         case Direction.West:
+            return Vector2.left;
+         case Direction.NorthWest:
+            return Vector2.left + Vector2.up;
+      }
+      return Vector2.right;
+   }
+
    public static T clamp<T> (T value, T min, T max)
           where T : System.IComparable<T> {
       T result = value;
@@ -388,6 +410,16 @@ public class Util : MonoBehaviour {
       #endif
 
       return isServerBuild;
+   }
+
+   public static bool isForceServerLocalWithAutoDbconfig () {
+      // return true; // Debug usage only
+      return false;
+   }
+
+   public static bool isBatch () {
+      // return true; // Debug usage only to simulate batch mode logic
+      return Application.isBatchMode;
    }
 
    public static bool isBatchServer () {

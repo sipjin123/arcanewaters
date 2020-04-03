@@ -91,7 +91,7 @@ public class NetworkedCannonBall : MonoBehaviour {
 
    private void OnDestroy () {
       // Don't need to handle any of these effects in Batch Mode
-      if (Application.isBatchMode) {
+      if (Util.isBatch()) {
          return;
       }
 

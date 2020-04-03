@@ -51,7 +51,7 @@ public class ExplosionManager : ClientMonoBehaviour {
    }
 
    public static void createRockExplosion (Vector2 position, int particleCount = 12, float minForce = 60f, float maxForce = 90f) {
-      if (Application.isBatchMode) {
+      if (Util.isBatch()) {
          return;
       }
 
@@ -81,7 +81,7 @@ public class ExplosionManager : ClientMonoBehaviour {
    }
 
    public static void createFarmingParticle (Weapon.ActionType actionType, Vector2 position, float fadeSpeed, int particleCount = 12, bool hasTorque = true, float minForce = 60f, float maxForce = 90f) {
-      if (Application.isBatchMode) {
+      if (Util.isBatch()) {
          return;
       }
       ExplosionParticle selectedPrefab = self.seedScatterParticlePrefab;
@@ -112,7 +112,7 @@ public class ExplosionManager : ClientMonoBehaviour {
    }
 
    public static void createSlimeExplosion (Vector2 position, int particleCount = 12, float minForce = 60f, float maxForce = 90f) {
-      if (Application.isBatchMode) {
+      if (Util.isBatch()) {
          return;
       }
 

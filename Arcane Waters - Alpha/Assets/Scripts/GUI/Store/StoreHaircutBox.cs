@@ -17,7 +17,7 @@ public class StoreHaircutBox : StoreItemBox {
    #endregion
 
    public void OnEnable () {
-      if (this.imageIcon == null || Application.isBatchMode) {
+      if (this.imageIcon == null || Util.isBatch()) {
          return;
       }
 

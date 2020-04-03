@@ -80,6 +80,10 @@ public class MyNetworkManager : NetworkManager {
          }
       }
 
+      if (Util.isForceServerLocalWithAutoDbconfig()) {
+         this.serverOverride = ServerType.Localhost;
+      }
+
       if (serverOverride != ServerType.None) {
          this.networkAddress = Global.getAddress(serverOverride);
       }
@@ -202,15 +206,23 @@ public class MyNetworkManager : NetworkManager {
          UserInfo userInfo = userObjects.userInfo;
          ShipInfo shipInfo = userObjects.shipInfo;
 
-         // Get the current voyage group the user is member of
+         // Get the current voyage group the user is member of, if any
          int voyageGroupId = DB_Main.getVoyageGroupForMember(authenticatedUserId);
+
+         // Get the voyage id, if any
+         int voyageId = -1;
+         if (voyageGroupId != -1) {
+            VoyageGroupInfo voyageGroupInfo = DB_Main.getVoyageGroup(voyageGroupId);
+            voyageId = voyageGroupInfo.voyageId;
+         }
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             string previousAreaKey = userInfo.areaKey;
 
             // Check if we need to redirect to a different server
-            Server bestServer = ServerNetwork.self.findBestServerForConnectingPlayer(previousAreaKey, userInfo.username, userInfo.userId, conn.address, userObjects.isSinglePlayer);
+            Server bestServer = ServerNetwork.self.findBestServerForConnectingPlayer(previousAreaKey, userInfo.username, userInfo.userId,
+               conn.address, userObjects.isSinglePlayer, voyageId);
             if (bestServer != null && !bestServer.view.isMine) {
                // Send a Redirect message to the client
                RedirectMessage redirectMessage = new RedirectMessage(Global.netId, bestServer.ipAddress, bestServer.port);
@@ -247,7 +259,7 @@ public class MyNetworkManager : NetworkManager {
             player.desiredAngle = DirectionUtil.getAngle(player.facing);
             player.XP = userInfo.XP;
             player.voyageGroupId = voyageGroupId;
-            InstanceManager.self.addPlayerToInstance(player, previousAreaKey);
+            InstanceManager.self.addPlayerToInstance(player, previousAreaKey, voyageId);
             NetworkServer.AddPlayerForConnection(conn, player.gameObject);
 
             player.setDataFromUserInfo(userInfo, userObjects.armor, userObjects.weapon, shipInfo);

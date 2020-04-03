@@ -12,6 +12,7 @@ namespace MapCreationTool
       public const string MOUNTAIN_KEY = "mountain";
       public const string VINE_KEY = "vine";
       public const string STAIR_KEY = "stair";
+      public const string RUG_KEY = "rug";
 
       public Layer[] subLayers { get; private set; }
 
@@ -350,6 +351,10 @@ namespace MapCreationTool
 
       public static bool isStair (string layer) {
          return layer.CompareTo(STAIR_KEY) == 0;
+      }
+
+      public static bool isRug (string layer) {
+         return layer.CompareTo(RUG_KEY) == 0;
       }
    }
 }

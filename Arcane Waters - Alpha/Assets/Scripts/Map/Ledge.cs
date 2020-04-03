@@ -16,7 +16,7 @@ public class Ledge : MonoBehaviour, IMapEditorDataReceiver {
 
    private void Start () {
       // The server doesn't need to both with this
-      if (Application.isBatchMode) {
+      if (Util.isBatch()) {
          this.gameObject.SetActive(false);
       }
    }

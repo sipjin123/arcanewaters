@@ -63,7 +63,7 @@ public class SimpleAnimation : ClientMonoBehaviour {
    }
 
    private void Start () {
-      if (!Application.isBatchMode) {
+      if (!Util.isBatch()) {
          // Load our sprites
          reloadSprites(getCurrentTexture());
 
@@ -74,7 +74,7 @@ public class SimpleAnimation : ClientMonoBehaviour {
    }
 
    private void Update () {
-      if (!Application.isBatchMode) {
+      if (!Util.isBatch()) {
          Texture2D currentTexture = getCurrentTexture();
 
          // If the Texture associated with our sprites has changed, we need to reload

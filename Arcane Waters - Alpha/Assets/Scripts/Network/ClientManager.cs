@@ -43,7 +43,7 @@ public class ClientManager : MonoBehaviour {
          MyNetworkManager.self.StartServer();
       }
 
-      if (CommandCodes.get(CommandCodes.Type.AUTO_PRODUCTION)) {
+      if (CommandCodes.get(CommandCodes.Type.AUTO_DBCONFIG) || Util.isForceServerLocalWithAutoDbconfig()) {
          DB_Main.setServerFromConfig();
          MyNetworkManager.self.StartServer();
       }

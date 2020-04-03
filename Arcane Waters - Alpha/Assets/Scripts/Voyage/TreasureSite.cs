@@ -18,6 +18,10 @@ public class TreasureSite : NetworkBehaviour
    // The status of the site
    public enum Status { Idle = 0, Captured = 1, Capturing = 2, Blocked = 3, Stealing = 4, Resetting = 5 }
 
+   // The id of the Instance that this site is in
+   [SyncVar]
+   public int instanceId;
+
    // The key of the area this site is in
    [SyncVar]
    public string areaKey;
@@ -158,7 +162,7 @@ public class TreasureSite : NetworkBehaviour
       if (isServer) {
          // Determine if the colliding object is a ship
          ShipEntity ship = other.transform.GetComponent<ShipEntity>();
-         if (ship != null && VoyageManager.isInVoyage(ship)) {
+         if (ship != null && ship.instanceId == instanceId && VoyageManager.isInVoyage(ship)) {
             // Add the ship to the list of capturing ships
             _capturingShips.Add(ship);
          }
@@ -189,6 +193,10 @@ public class TreasureSite : NetworkBehaviour
       return _captureCollider.radius;
    }
 
+   public void freeAssociatedWarp () {
+      _warp.removeTreasureSite(instanceId);
+   }
+
    private IEnumerator CO_SetAreaParent () {
       Vector3 initialPosition = transform.position;
 
@@ -197,11 +205,9 @@ public class TreasureSite : NetworkBehaviour
          yield return 0;
       }
 
+      // Set the site as a child of the area
       Area area = AreaManager.self.getArea(areaKey);
       this.transform.SetParent(area.transform, false);
-
-      // Initialize the capture circle
-      captureCircle.initialize(area.waterZ - 0.01f);
 
       if (isServer) {
          // Get all the nearby colliders
@@ -213,7 +219,8 @@ public class TreasureSite : NetworkBehaviour
             Warp warp = c.gameObject.GetComponent<Warp>();
             if (warp != null) {
                // Set this treasure site as controller of the warp
-               warp.setTreasureSite(this);
+               warp.setTreasureSite(instanceId, this);
+               _warp = warp;
                found = true;
                break;
             }
@@ -238,6 +245,9 @@ public class TreasureSite : NetworkBehaviour
 
    // The animator component
    private Animator _animator;
+
+   // The associated warp
+   private Warp _warp = null;
 
    #endregion
 }

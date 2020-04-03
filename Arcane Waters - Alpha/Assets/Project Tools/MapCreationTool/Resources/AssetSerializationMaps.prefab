@@ -61363,7 +61363,7 @@ Tilemap:
       - {fileID: 21300514, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300520, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300526, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 25, y: 17, z: 0}
@@ -61778,7 +61778,7 @@ Tilemap:
       - {fileID: 21300176, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300182, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300188, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 24, y: 27, z: 0}
@@ -61868,7 +61868,7 @@ Tilemap:
       - {fileID: 21300130, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300136, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300142, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 25, y: 29, z: 0}
@@ -125450,13 +125450,13 @@ MonoBehaviour:
       - {fileID: 241867156212524382, guid: a45ce2b8611bde9409d96b749df2de8e, type: 3}
       - {fileID: 8291326201182810260, guid: 2bb9df6b914e47143946a2ab6b2f5eb0, type: 3}
       - {fileID: 5548315350627049789, guid: 417d0d86b37a93e48a526da6f9771f67, type: 3}
-      - {fileID: 6278626336270281305, guid: 59355a0ccb733e74e9ff3da951c5df2b, type: 3}
+      - {fileID: 3151399029352092155, guid: 3d167aa05beb1b64aa00ef3c8d48f37f, type: 3}
       fromIndexPrefabs:
       - {fileID: 1961926123676996, guid: 1b3459d4a187fe942992708ae21ae748, type: 3}
       - {fileID: 6512568615480877693, guid: ae9b490f18e903c49836fadf1d6790e0, type: 3}
       - {fileID: 707201633651165828, guid: 325e0070886ff4a4585d50c50dbefc00, type: 3}
       - {fileID: 3729740426784677943, guid: dd657f4eabdb1004e8c8a4a2fb46191d, type: 3}
-      - {fileID: 2488558947172901078, guid: ab9b7df235cffb647993e17858e0b87e, type: 3}
+      - {fileID: 3151399029352092155, guid: 3d167aa05beb1b64aa00ef3c8d48f37f, type: 3}
     - title: trees
       index: 0
       toIndexPrefabs:
@@ -125533,6 +125533,20 @@ MonoBehaviour:
       - {fileID: 108759477860025634, guid: 933167305c37a9f4fa0c12f6e14245ea, type: 3}
       - {fileID: 7076830771912146571, guid: 140da15c6a6d4cd40a011c11e87e14c6, type: 3}
       - {fileID: 7336252453091285406, guid: 8ae64a0b233f22a4da5999592859fe8e, type: 3}
+    - title: walls
+      index: 7
+      toIndexPrefabs:
+      - {fileID: 2200160776590865132, guid: b62087c7b84998b40aeec56c2e45c84b, type: 3}
+      - {fileID: 4559830177542894232, guid: e87575a7c9c81ed46b763ef68f645c2a, type: 3}
+      - {fileID: 5445654464662453962, guid: b6628d94560806f48860aad9a07ce21e, type: 3}
+      - {fileID: 76074656626252040, guid: 6955a1169c4432f42b03480de3a7909a, type: 3}
+      - {fileID: 4171416207122235531, guid: f9c3392a62de2d145a1f7bd35b135fdc, type: 3}
+      fromIndexPrefabs:
+      - {fileID: 2552185998368091273, guid: ace2402964050064bac9dd8a02c206e5, type: 3}
+      - {fileID: 5591303594746746857, guid: 6ff92aacfcbca694f956d2d943f861f6, type: 3}
+      - {fileID: 5019673684332351615, guid: 38960ebba03eb9b4284ce6f96ee1c027, type: 3}
+      - {fileID: 6337366108801359487, guid: 679c9ec0f4ec7fb4187a5527956d6ba7, type: 3}
+      - {fileID: 4325334719935699170, guid: 5f3c37bd64404ff409398ee6c2a380e5, type: 3}
   transparentTile: {fileID: 11400000, guid: 6770d82dbc34c894eb30ee1fd5b3b937, type: 2}
   layerZMultiplier: -0.01
   sublayerZMultiplier: -0.0001
@@ -125550,4 +125564,6 @@ MonoBehaviour:
   _vinesTrigger: {fileID: 4046942476264638210, guid: 00e6245d90330ac4186c24711c442c09,
     type: 3}
   _currentEffector: {fileID: 5513906868627842321, guid: ddfa10cae4bcba041b18a62df3c7da33,
+    type: 3}
+  _deletedPrefabMarker: {fileID: 3151399029352092155, guid: 3d167aa05beb1b64aa00ef3c8d48f37f,
     type: 3}

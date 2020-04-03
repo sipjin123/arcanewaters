@@ -7,6 +7,7 @@ namespace MapCreationTool
    {
       public string layer { get; set; }
       public int subLayer { get; set; }
+      public int rugType { get; set; }
 
       public RectTileGroup () {
          type = TileGroupType.Rect;

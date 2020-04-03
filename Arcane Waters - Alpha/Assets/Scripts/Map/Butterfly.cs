@@ -91,7 +91,7 @@ public class Butterfly : MonoBehaviour {
    }
 
    public void FixedUpdate () {
-      if (Application.isBatchMode) {
+      if (Util.isBatch()) {
          return;
       }
 

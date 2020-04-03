@@ -37,7 +37,9 @@ public class BooksToolScene : MonoBehaviour {
 
       createBookButton.onClick.AddListener(createBookTemplate);
       mainMenuButton.onClick.AddListener(() => SceneManager.LoadScene(MasterToolScene.masterScene));
+   }
 
+   private void Start () {
       toolManager.loadBooksList();
    }
 

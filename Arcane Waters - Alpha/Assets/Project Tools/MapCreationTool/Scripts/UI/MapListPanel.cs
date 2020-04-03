@@ -20,6 +20,9 @@ namespace MapCreationTool
 
       private bool showOnlyMyMaps = true;
 
+      private List<Map> loadedMaps;
+      private HashSet<int> expandedMaps = new HashSet<int>();
+
       private void clearEverything () {
          foreach (MapListEntry entry in entries) {
             Destroy(entry.gameObject);
@@ -33,36 +36,63 @@ namespace MapCreationTool
          loadList();
 
          showMyMapsToggle.SetIsOnWithoutNotify(showOnlyMyMaps);
-         showMyMapsChanged();
       }
 
       private void loadList () {
          UnityThreading.Task task = UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            List<Map> maps = null;
+            loadedMaps = null;
             string error = "";
             try {
-               maps = DB_Main.getMaps();
+               loadedMaps = DB_Main.getMaps();
             } catch (Exception ex) {
                error = ex.Message;
             }
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               if (maps == null) {
+               if (loadedMaps == null) {
                   UI.errorDialog.display(error);
                } else {
-                  foreach (Map map in maps) {
-                     MapListEntry entry = Instantiate(entryPref, entryParent);
-                     entry.set(map, () => openLatestVersion(map), () => UI.versionListPanel.open(map), () => UI.mapDetailsPanel.open(map), () => deleteMap(map));
-                     entry.gameObject.SetActive(
-                        !showOnlyMyMaps ||
-                        entry.target.creatorID == MasterToolAccountManager.self.currentAccountID);
-                     entries.Add(entry);
-                  }
+                  updateShowedMaps();
                }
             });
          });
 
          UI.loadingPanel.display("Loading maps", task);
+      }
+
+      private void updateShowedMaps () {
+         clearEverything();
+
+         if (loadedMaps == null) return;
+
+         IEnumerable<Map> maps = showOnlyMyMaps
+            ? loadedMaps.Where(m => m.creatorID == MasterToolAccountManager.self.currentAccountID)
+            : loadedMaps;
+
+         IEnumerable<Map> groupRoots = maps.Where(m => !(!maps.Any(other => other.sourceMapId == m.id) && maps.Any(other => other.id == m.sourceMapId)));
+
+         var groups = groupRoots.Select(gr => new KeyValuePair<Map, IEnumerable<Map>>(gr,
+            maps.Where(m => m.sourceMapId == gr.id && m.sourceMapId != m.id && !maps.Any(other => other.sourceMapId == m.id))));
+
+         foreach (var group in groups) {
+            MapListEntry entry = Instantiate(entryPref, entryParent);
+            entry.set(group.Key, null);
+            entries.Add(entry);
+            bool expandable = group.Value.Count() > 0;
+            bool expanded = expandedMaps.Contains(group.Key.id);
+            entry.setExpandable(expandable, false);
+            if (expandable) {
+               entry.setExpanded(expanded);
+            }
+
+            foreach (Map child in group.Value) {
+               MapListEntry cEntry = Instantiate(entryPref, entryParent);
+               cEntry.set(child, group.Key.id);
+               entries.Add(cEntry);
+               cEntry.setExpandable(false, true);
+               cEntry.gameObject.SetActive(expanded);
+            }
+         }
       }
 
       public void openLatestVersion (Map map) {
@@ -150,13 +180,26 @@ namespace MapCreationTool
          UI.loadingPanel.display("Deleting a Map", task);
       }
 
+      public void toggleExpandMap (Map map) {
+         if (expandedMaps.Contains(map.id)) {
+            expandedMaps.Remove(map.id);
+         } else {
+            expandedMaps.Add(map.id);
+         }
+
+         bool expand = expandedMaps.Contains(map.id);
+         entries.FirstOrDefault(e => e.target.id == map.id)?.setExpanded(expand);
+
+         foreach (MapListEntry entry in entries) {
+            if (entry.childOf != null && entry.childOf.Value == map.id) {
+               entry.gameObject.SetActive(expand);
+            }
+         }
+      }
+
       public void showMyMapsChanged () {
          showOnlyMyMaps = showMyMapsToggle.isOn;
-         foreach (MapListEntry entry in entries) {
-            entry.gameObject.SetActive(
-               !showOnlyMyMaps ||
-               entry.target.creatorID == MasterToolAccountManager.self.currentAccountID);
-         }
+         updateShowedMaps();
       }
 
       public void close () {

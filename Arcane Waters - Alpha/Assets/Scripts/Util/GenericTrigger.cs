@@ -21,7 +21,7 @@ public class GenericTrigger : MonoBehaviour {
 
    protected virtual void Awake () {
       // We don't want to waste time on Client scripts when the server is running in Batch Mode
-      if (isClientSideOnly && Application.isBatchMode) {
+      if (isClientSideOnly && Util.isBatch()) {
          this.enabled = false;
       }
    }

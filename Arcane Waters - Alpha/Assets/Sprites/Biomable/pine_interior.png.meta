@@ -239,6 +239,24 @@ TextureImporter:
   - first:
       213: 4877719988107713646
     second: pine_interior_78
+  - first:
+      213: 7019035153532624279
+    second: pine_interior_79
+  - first:
+      213: 700681222757628107
+    second: pine_interior_80
+  - first:
+      213: -7584236058923163916
+    second: pine_interior_81
+  - first:
+      213: 6932509524478704892
+    second: pine_interior_82
+  - first:
+      213: -5608636692059733442
+    second: pine_interior_83
+  - first:
+      213: -4880345965355932653
+    second: pine_interior_84
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -2001,6 +2019,132 @@ TextureImporter:
       bones: []
       spriteID: 00cc96040cbb70b4aa09f01281f0d9b0
       internalID: 4877719988107713646
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pine_interior_79
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 644706f324b6980439721de294133f80
+      internalID: 7019035153532624279
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pine_interior_80
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ddf130438bb1d6d4fb847cb2ac86cdf3
+      internalID: 700681222757628107
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pine_interior_81
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 384
+        width: 48
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7c535e03a204a5044aa0d89a6b47967c
+      internalID: -7584236058923163916
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pine_interior_82
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a26cdb9239ad05341be37a8ad9e043c6
+      internalID: 6932509524478704892
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pine_interior_83
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 320
+        width: 16
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e9dc6b690fc646f4cb7ab09fa77d2ce1
+      internalID: -5608636692059733442
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pine_interior_84
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 368
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 81c5dea1ef626dd4cabccd0d3f6818f9
+      internalID: -4880345965355932653
       vertices: []
       indices: 
       edges: []

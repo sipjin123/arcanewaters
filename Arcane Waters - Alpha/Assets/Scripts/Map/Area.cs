@@ -7,6 +7,7 @@ using UnityEngine.Tilemaps;
 using System;
 using MapCreationTool.Serialization;
 using System.Linq;
+using AStar;
 
 public class Area : MonoBehaviour
 {
@@ -31,6 +32,9 @@ public class Area : MonoBehaviour
 
    // The Virtual Camera for this Area
    public Cinemachine.CinemachineVirtualCamera vcam;
+
+   // The AStarGrid for the Area
+   public AStarGrid pathfindingGrid;
 
    // Whether this area is a sea area
    public bool isSea = false;
@@ -131,6 +135,8 @@ public class Area : MonoBehaviour
          // Otherwise, the town area is the area itself
          townAreaKey = areaKey;
       }
+
+      pathfindingGrid.displayGrid(transform.position, areaKey);
 
       // Store it in the Area Manager
       AreaManager.self.storeArea(this);

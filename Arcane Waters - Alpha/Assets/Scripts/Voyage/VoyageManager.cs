@@ -24,12 +24,7 @@ public class VoyageManager : MonoBehaviour {
    }
 
    public bool isVoyageArea (string areaKey) {
-      foreach (string aKey in AreaManager.self.getSeaAreaKeys()) {
-         if (aKey.Equals(areaKey)) {
-            return true;
-         }
-      }
-      return false;
+      return AreaManager.self.getSeaAreaKeys().Contains(areaKey);
    }
 
    public static bool isInVoyage (NetEntity entity) {
@@ -55,7 +50,7 @@ public class VoyageManager : MonoBehaviour {
    }
 
    public void showVoyagePanel (NetEntity entity) {
-      if (!Global.player.isClient || entity == null || !entity.isLocalPlayer) {
+      if (Global.player == null || !Global.player.isClient || entity == null || !entity.isLocalPlayer) {
          return;
       }
 

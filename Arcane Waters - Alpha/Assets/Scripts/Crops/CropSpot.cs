@@ -28,7 +28,7 @@ public class CropSpot : MonoBehaviour {
       _renderer = GetComponent<SpriteRenderer>();
 
       // When running the server, we don't need to do anything else
-      if (Application.isBatchMode) {
+      if (Util.isBatch()) {
          this.gameObject.SetActive(false);
       }
 

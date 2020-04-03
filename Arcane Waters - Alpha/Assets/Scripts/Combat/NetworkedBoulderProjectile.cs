@@ -120,7 +120,7 @@ public class NetworkedBoulderProjectile : MonoBehaviour
       callCollision(Util.hasLandTile(this.transform.position), circleCollider.transform.position);
 
       // Don't need to handle any of these effects in Batch Mode
-      if (Application.isBatchMode) {
+      if (Util.isBatch()) {
          return;
       }   
       

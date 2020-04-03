@@ -12,9 +12,11 @@ GameObject:
   - component: {fileID: 3680879611364507877}
   - component: {fileID: 160612078751424100}
   - component: {fileID: 3996784563512412993}
+  - component: {fileID: 2352071071801583250}
   - component: {fileID: 2440619335860885179}
   - component: {fileID: 7924207350990887012}
   - component: {fileID: 3261320227793016746}
+  - component: {fileID: 3056615793314515918}
   m_Layer: 0
   m_Name: Seagull
   m_TagString: Untagged
@@ -29,7 +31,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2488558947172901078}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 44.883, y: -18.74, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -127,6 +129,21 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &2352071071801583250
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2488558947172901078}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serverOnly: 0
+  m_AssetId: 
+  m_SceneId: 0
 --- !u!114 &2440619335860885179
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -139,16 +156,51 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 476489752f4f4a147a522b0823efee26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  npcType: 0
-  autoMove: 1
+  syncMode: 0
+  syncInterval: 0.1
+  accountId: 0
+  userId: 0
+  instanceId: 0
+  areaKey: 
+  gender: 1
+  bodyType: 0
+  eyesType: 0
+  hairType: 0
+  eyesColor1: 0
+  hairColor1: 0
+  hairColor2: 0
+  entityName: Seagull
+  nationType: 0
+  currentHealth: 1000
+  maxHealth: 1000
+  XP: 0
+  desiredAngle: 0
+  netIdent: {fileID: 0}
+  rpc: {fileID: 0}
+  cropManager: {fileID: 0}
+  admin: {fileID: 0}
+  groundChecker: {fileID: 0}
+  waterChecker: {fileID: 0}
+  nameText: {fileID: 0}
+  sortPoint: {fileID: 0}
+  facing: 5
+  isSinglePlayer: 0
+  hasDiagonals: 0
+  fallDirection: 0
+  adminFlag: 0
+  classType: 0
+  specialty: 0
+  faction: 0
+  guildId: 0
+  battleId: 0
+  voyageGroupId: -1
+  isAboutToWarpOnServer: 0
+  interactingAnimation: 0
+  npcType: 17
   moveTarget: {x: 0, y: 0}
   moveSpeed: 8
-  facing: 5
-  hasDiagonals: 0
   npcId: 0
-  areaKey: 
   tradeGossip: 
-  nameText: {fileID: 0}
   isDebug: 0
 --- !u!114 &7924207350990887012
 MonoBehaviour:
@@ -178,6 +230,61 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   newTexture: {fileID: 2800000, guid: d353135706f59694685a3eacfe24d31e, type: 3}
+--- !u!114 &3056615793314515918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2488558947172901078}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad225009ad414e1428332cab226f38fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  interpolationBackTime: 0.1
+  extrapolationMode: 1
+  useExtrapolationTimeLimit: 1
+  extrapolationTimeLimit: 5
+  useExtrapolationDistanceLimit: 0
+  extrapolationDistanceLimit: 20
+  sendPositionThreshold: 0
+  sendRotationThreshold: 0
+  sendScaleThreshold: 0
+  sendVelocityThreshold: 0
+  sendAngularVelocityThreshold: 0
+  receivedPositionThreshold: 0
+  receivedRotationThreshold: 0
+  snapPositionThreshold: 0
+  snapRotationThreshold: 0
+  snapScaleThreshold: 0
+  positionLerpSpeed: 0.85
+  rotationLerpSpeed: 0.85
+  scaleLerpSpeed: 0.85
+  timeCorrectionSpeed: 0.1
+  snapTimeThreshold: 3
+  syncPosition: 1
+  syncRotation: 7
+  syncScale: 7
+  syncVelocity: 1
+  syncAngularVelocity: 7
+  isPositionCompressed: 0
+  isRotationCompressed: 0
+  isScaleCompressed: 0
+  isVelocityCompressed: 0
+  isAngularVelocityCompressed: 0
+  isSmoothingAuthorityChanges: 0
+  whenToUpdateTransform: 1
+  sendRate: 30
+  networkChannel: 1
+  childObjectToSync: {fileID: 0}
+  setVelocityInsteadOfPositionOnNonOwners: 0
+  maxPositionDifferenceForVelocitySyncing: 10
+  useLocalTransformOnly: 0
+  ownerChangeIndicator: 1
+  receivedStatesCounter: 0
 --- !u!1 &6281822005366028720
 GameObject:
   m_ObjectHideFlags: 0

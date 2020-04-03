@@ -13,7 +13,6 @@ namespace MapCreationTool
       public static event Action<int, int> MountainLayerChanged;
       public static event Action<bool, bool> BurrowedTreesChanged;
       public static event Action<Biome.Type, Biome.Type> BiomeChanged;
-      public static event Action<EraserLayerMode, EraserLayerMode> EraserLayerModeChanged;
       public static event Action<TileGroup, TileGroup> TileGroupChanged;
       public static event Action<FillBounds, FillBounds> FillBoundsChanged;
       public static event Action<EditorType, EditorType> EditorTypeChanged;
@@ -27,7 +26,6 @@ namespace MapCreationTool
       public static int mountainLayer { get; private set; }
       public static bool burrowedTrees { get; private set; }
       public static Biome.Type biome { get; private set; }
-      public static EraserLayerMode eraserLayerMode { get; private set; }
       public static FillBounds fillBounds { get; private set; }
       public static EditorType editorType { get; private set; }
       public static SelectionTarget selectionTarget { get; private set; }
@@ -59,7 +57,6 @@ namespace MapCreationTool
          mountainLayer = 4;
          burrowedTrees = false;
          biome = Biome.Type.Forest;
-         eraserLayerMode = EraserLayerMode.Top;
          editorType = EditorType.Area;
          boardSize = new Vector2Int(64, 64);
          snapToGrid = false;
@@ -79,8 +76,6 @@ namespace MapCreationTool
          if (data.biome != null) {
             changeBiome(data.biome.Value, false);
          }
-
-         eraserLayerMode = data.eraserLayerMode ?? eraserLayerMode;
 
          if (data.hasTileGroup) {
             tileGroup = data.tileGroup;
@@ -154,20 +149,6 @@ namespace MapCreationTool
                 performUndoRedo,
                 new ToolUndoRedoData { biome = old },
                 new ToolUndoRedoData { biome = Tools.biome });
-         }
-      }
-
-      public static void changeEraserLayerMode (EraserLayerMode mode, bool registerUndo = true) {
-         EraserLayerMode old = eraserLayerMode;
-         eraserLayerMode = mode;
-         EraserLayerModeChanged?.Invoke(old, eraserLayerMode);
-         AnythingChanged?.Invoke();
-
-         if (registerUndo) {
-            Undo.register(
-                performUndoRedo,
-                new ToolUndoRedoData { eraserLayerMode = old },
-                new ToolUndoRedoData { eraserLayerMode = eraserLayerMode });
          }
       }
 
@@ -276,12 +257,6 @@ namespace MapCreationTool
       Fill = 2,
       Selection = 3,
       Move = 4
-   }
-
-   public enum EraserLayerMode
-   {
-      Top = 0,
-      All = 1
    }
 
    public enum FillBounds

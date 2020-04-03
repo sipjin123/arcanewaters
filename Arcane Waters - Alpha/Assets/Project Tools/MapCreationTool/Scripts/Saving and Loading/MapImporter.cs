@@ -88,6 +88,18 @@ namespace MapCreationTool
                      poly.SetPath(i, chunk.paths[i].points);
                   }
                   break;
+               case SpecialTileChunk.Type.Rug1:
+               case SpecialTileChunk.Type.Rug2:
+               case SpecialTileChunk.Type.Rug3:
+               case SpecialTileChunk.Type.Rug4:
+                  GameObject rug = new GameObject("Rug Marker");
+                  rug.transform.parent = map.rugMarkerParent;
+                  RugMarker marker = rug.AddComponent<RugMarker>();
+                  marker.type = (int) chunk.type - 4;
+                  marker.center = new Vector2(chunk.position.x * 0.16f, chunk.position.y * 0.16f);
+                  marker.size = new Vector2(chunk.size.x * 0.16f, chunk.size.y * 0.16f);
+                  rug.transform.localPosition = marker.center;
+                  break;
             }
          }
       }
@@ -168,6 +180,10 @@ namespace MapCreationTool
                if (prefab.d != null) {
                   oreData.Add(prefab);
                }
+            } else if (original.GetComponent<NPC>() != null) {
+               if (prefab.d != null) {
+                  npcData.Add(prefab);
+               }
             } else {
                Transform parent = original.GetComponent<NPC>() ? npcParent : prefabParent;
                Vector3 targetLocalPos = new Vector3(prefab.x, prefab.y, 0) * 0.16f + Vector3.back * 10;
@@ -185,6 +201,13 @@ namespace MapCreationTool
                foreach (ZSnap snap in pref.GetComponentsInChildren<ZSnap>()) {
                   snap.inheritedOffsetZ = prefab.iz;
                   snap.snapZ();
+
+                  // Remove colliders if the prefab is placed on something
+                  if (snap.inheritedOffsetZ != 0) {
+                     foreach (Collider2D col in pref.GetComponents<Collider2D>()) {
+                        UnityEngine.Object.Destroy(col);
+                     }
+                  }
                }
 
                IMapEditorDataReceiver receiver = pref.GetComponent<IMapEditorDataReceiver>();

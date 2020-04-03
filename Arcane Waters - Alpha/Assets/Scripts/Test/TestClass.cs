@@ -30,7 +30,7 @@ public class TestClass : NetworkBehaviour {
       testParam += 3;
 
       // Some comment
-      if (Application.isBatchMode) {
+      if (Util.isBatch()) {
          return -1;
       }
 

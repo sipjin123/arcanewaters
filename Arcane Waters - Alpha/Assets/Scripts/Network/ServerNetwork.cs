@@ -29,9 +29,19 @@ public class ServerNetwork : MonoBehaviour {
       InvokeRepeating("checkPhotonConnection", 10f, 5f);
    }
 
-   public Server findBestServerForConnectingPlayer (string areaKey, string username, int userId, string address, bool isSinglePlayer) {
+   public Server findBestServerForConnectingPlayer (string areaKey, string username, int userId, string address,
+      bool isSinglePlayer, int voyageId) {
       // Always return the current server if single player
       if (isSinglePlayer) {
+         return server;
+      }
+
+      // If the player is in a voyage group and warping to a voyage area, get the unique server hosting it
+      if (voyageId != -1 && VoyageManager.self.isVoyageArea(areaKey)) {
+         Server server = getServerHostingVoyage(voyageId);
+         if (server == null) {
+            D.error("Couldn't find the server hosting the voyage " + voyageId);
+         }
          return server;
       }
 
@@ -133,16 +143,24 @@ public class ServerNetwork : MonoBehaviour {
 
    public Server getServerWithLeastPlayers () {
       int leastPlayers = int.MaxValue;
-      Server bestServer = null;
+      List<Server> bestServers = new List<Server>();
 
       foreach (Server server in servers) {
-         if (server.playerCount < leastPlayers) {
-            bestServer = server;
+         if (server.playerCount == leastPlayers) {
+            bestServers.Add(server);
+         } else if (server.playerCount < leastPlayers) {
+            bestServers.Clear();
+            bestServers.Add(server);
             leastPlayers = server.playerCount;
          }
       }
 
-      return bestServer;
+      if (bestServers.Count  == 0) {
+         return null;
+      } else {
+         // If many servers have the same lowest number of players, randomly choose one
+         return bestServers[Random.Range(0, bestServers.Count)];
+      }
    }
 
    public bool isUserOnline (int userId) {

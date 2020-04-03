@@ -239,6 +239,24 @@ TextureImporter:
   - first:
       213: 5946258462974464176
     second: snow_interior_78
+  - first:
+      213: 4288559792545115015
+    second: snow_interior_79
+  - first:
+      213: 7124254478970702624
+    second: snow_interior_80
+  - first:
+      213: 2164454924161326767
+    second: snow_interior_81
+  - first:
+      213: 4965195748702139450
+    second: snow_interior_82
+  - first:
+      213: 6011371674115001157
+    second: snow_interior_83
+  - first:
+      213: -5144847094617001974
+    second: snow_interior_84
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -2001,6 +2019,132 @@ TextureImporter:
       bones: []
       spriteID: f35b3d7397dcf0b4aa6d76a0b82c6749
       internalID: 5946258462974464176
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: snow_interior_79
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f98ffd7931c10fb4381160013ba55c36
+      internalID: 4288559792545115015
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: snow_interior_80
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8bdb1ecb966c2fe4bb8234515e4a5eda
+      internalID: 7124254478970702624
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: snow_interior_81
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 384
+        width: 48
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 53305f093270c8541ae6572b1f6307b3
+      internalID: 2164454924161326767
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: snow_interior_82
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ba6b5ee28efc796448fe58bf354109c8
+      internalID: 4965195748702139450
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: snow_interior_83
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 320
+        width: 16
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 095c51cd43a7271449f5af79fa072dd2
+      internalID: 6011371674115001157
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: snow_interior_84
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 368
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 588cba69ea9b1224c8edb7c56c627c04
+      internalID: -5144847094617001974
       vertices: []
       indices: 
       edges: []

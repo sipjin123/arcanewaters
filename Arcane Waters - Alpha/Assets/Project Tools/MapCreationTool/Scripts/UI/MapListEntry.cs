@@ -7,6 +7,10 @@ namespace MapCreationTool
 {
    public class MapListEntry : MonoBehaviour
    {
+      private const string DOWN_TRIANGLE = "▼";
+      private const string LEFT_TRIANGLE = "▶";
+      private const string BULLET = "◆";
+
       [SerializeField]
       private Text nameText = null;
       [SerializeField]
@@ -23,10 +27,16 @@ namespace MapCreationTool
       private Button detailsButton = null;
       [SerializeField]
       private Button deleteButton = null;
+      [SerializeField]
+      private Button arrowButton = null;
 
       public Map target { get; private set; }
-      public void set (Map map, Action onLatestVersion, Action onVersionListClick, Action onDetails, Action onDelete) {
+
+      public int? childOf { get; private set; }
+
+      public void set (Map map, int? childOf) {
          target = map;
+         this.childOf = childOf;
 
          nameText.text = map.name;
          createdAtText.text = map.createdAt.ToLocalTime().ToShortDateString();
@@ -34,16 +44,35 @@ namespace MapCreationTool
          creatorText.text = map.creatorName;
 
          versionsButton.onClick.RemoveAllListeners();
-         versionsButton.onClick.AddListener(() => onVersionListClick());
+         versionsButton.onClick.AddListener(() => UI.versionListPanel.open(map));
 
          deleteButton.onClick.RemoveAllListeners();
-         deleteButton.onClick.AddListener(() => onDelete());
+         deleteButton.onClick.AddListener(() => UI.mapList.deleteMap(map));
 
          detailsButton.onClick.RemoveAllListeners();
-         detailsButton.onClick.AddListener(() => onDetails());
+         detailsButton.onClick.AddListener(() => UI.mapDetailsPanel.open(map));
 
          latestVersionButton.onClick.RemoveAllListeners();
-         latestVersionButton.onClick.AddListener(() => onLatestVersion());
+         latestVersionButton.onClick.AddListener(() => UI.mapList.openLatestVersion(map));
+
+         arrowButton.onClick.RemoveAllListeners();
+         arrowButton.onClick.AddListener(() => UI.mapList.toggleExpandMap(map));
+      }
+
+      public void setExpandable (bool expandable, bool child) {
+         if (child) {
+            arrowButton.interactable = false;
+            arrowButton.GetComponentInChildren<Text>().text = "";
+            nameText.text = nameText.text.Replace(BULLET + "   ", "");
+            nameText.text = BULLET + "   " + nameText.text;
+         } else {
+            arrowButton.interactable = expandable;
+            arrowButton.GetComponentInChildren<Text>().text = expandable ? LEFT_TRIANGLE : "";
+         }
+      }
+
+      public void setExpanded (bool expanded) {
+         arrowButton.GetComponentInChildren<Text>(true).text = expanded ? DOWN_TRIANGLE : LEFT_TRIANGLE;
       }
    }
 }

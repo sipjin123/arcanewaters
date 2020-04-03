@@ -21,23 +21,22 @@ public class TreasureSiteCaptureCircle : MonoBehaviour
    // The radius multiplier, set by the animator
    public float radiusMultiplier = 1f;
 
+   // The actual circle
+   public GameObject circle;
+
    #endregion
 
    public void Awake () {
       _animator = GetComponent<Animator>();
-      _renderer = GetComponent<MeshRenderer>();
       _treasureSite = GetComponentInParent<TreasureSite>();
-      _circleMaterial = _renderer.material;
+      _circleMaterial = circle.GetComponent<MeshRenderer>().material;
 
       // Hide the icon by default
       hide();
    }
 
-   public void initialize(float z) {
-      // Set the z position of the capture circle, above the sea and below the land
-      Util.setZ(transform, z);
-
-      _circleMaterial.SetVector("_Position", transform.position);
+   public void Start () {
+      setZ();
       _circleMaterial.SetFloat("_Radius", _treasureSite.getCaptureRadius() * radiusMultiplier);
    }
 
@@ -56,6 +55,9 @@ public class TreasureSiteCaptureCircle : MonoBehaviour
       
       // Show the circle
       show();
+
+      // Set the z position
+      setZ();
 
       // If the site is captured, play the capture animation
       _animator.SetBool("captured", _treasureSite.isCaptured());
@@ -98,16 +100,27 @@ public class TreasureSiteCaptureCircle : MonoBehaviour
    }
 
    public void show () {
-      if (!_renderer.enabled) {
-         _renderer.enabled = true;
+      if (!circle.activeSelf) {
+         circle.SetActive(true);
          _animator.SetBool("visible", true);
       }
    }
 
    public void hide () {
-      if (_renderer.enabled) {
-         _renderer.enabled = false;
+      if (circle.activeSelf) {
+         circle.SetActive(false);
          _animator.SetBool("visible", false);
+      }
+   }
+
+   private void setZ () {
+      // Get the area
+      Area area = AreaManager.self.getArea(_treasureSite.areaKey);
+
+      // Set the z position of the capture circle, above the sea and below the land
+      if (area != null && transform.position.z != (area.waterZ - 0.01f)) {
+         Util.setZ(transform, area.waterZ - 0.01f);
+         _circleMaterial.SetVector("_Position", transform.position);
       }
    }
 
@@ -118,9 +131,6 @@ public class TreasureSiteCaptureCircle : MonoBehaviour
 
    // The animator component
    private Animator _animator;
-
-   // The mesh renderer component
-   private MeshRenderer _renderer;
 
    // The material that draws the circle
    private Material _circleMaterial;

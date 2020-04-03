@@ -130,7 +130,6 @@ namespace MapCreationTool.UndoSystem
       public bool? burrowedTrees { get; set; }
       public bool? individualTiles { get; set; }
       public Biome.Type? biome { get; set; }
-      public EraserLayerMode? eraserLayerMode { get; set; }
       public FillBounds? fillBounds { get; set; }
       public bool? snapToGrid { get; set; }
       public SelectionTarget? selectionTarget { get; set; }

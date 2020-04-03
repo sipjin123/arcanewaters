@@ -72,7 +72,8 @@ namespace MapCreationTool
             PaletteData palette = new PaletteData {
                tileGroups = new TileGroup[tiles.GetLength(0), tiles.GetLength(1)],
                prefabGroups = groups.Select(g => g as PrefabGroup).Where(g => g != null).ToList(),
-               type = biome
+               type = biome,
+               tileToRugType = formRugTypeDictionary(groups)
             };
 
             // Set tiles for the palette
@@ -249,7 +250,8 @@ namespace MapCreationTool
       private RectTileGroup formSpecialGroup (BiomedTileGroup from, BiomedTileData[,] tileMatrix, RectGroupConfig config, Biome.Type biome) {
          RectTileGroup newGroup = new RectTileGroup {
             tiles = extractBiome(from.tiles, biome),
-            start = from.start
+            start = from.start,
+            rugType = config.rugType
          };
          newGroup.layer = newGroup.tiles[1, 1].layer;
          newGroup.subLayer = newGroup.tiles[1, 1].subLayer;
@@ -561,6 +563,29 @@ namespace MapCreationTool
 
             if (i == 999) {
                throw new System.Exception("Never ending cycle detected!");
+            }
+         }
+
+         return result;
+      }
+
+      private Dictionary<TileBase, int> formRugTypeDictionary (IEnumerable<TileGroup> tileGroups) {
+         Dictionary<TileBase, int> result = new Dictionary<TileBase, int>();
+
+         IEnumerable<RectTileGroup> rugGroups = tileGroups
+            .Where(g => g.type == TileGroupType.Rect)
+            .Select(g => g as RectTileGroup)
+            .Where(r => r.rugType != 0);
+
+         foreach (RectTileGroup rectGroup in rugGroups) {
+            for (int i = 0; i < rectGroup.size.x; i++) {
+               for (int j = 0; j < rectGroup.size.y; j++) {
+                  if (rectGroup.tiles[i, j] != null) {
+                     if (!result.ContainsKey(rectGroup.tiles[i, j].tile)) {
+                        result.Add(rectGroup.tiles[i, j].tile, rectGroup.rugType);
+                     }
+                  }
+               }
             }
          }
 

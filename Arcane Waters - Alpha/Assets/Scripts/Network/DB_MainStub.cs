@@ -145,6 +145,26 @@ public class DB_MainStub : MonoBehaviour
       return new List<BookData>();
    }
 
+   public static void duplicateDiscovery (DiscoveryData data) {
+
+   }
+
+   public static void upsertDiscovery (DiscoveryData data) {
+
+   }
+
+   public static DiscoveryData getDiscoveryById (int discoveryId) {
+      return new DiscoveryData();
+   }
+
+   public static void deleteDiscoveryById (int discoveryId) {
+
+   }
+
+   public static List<DiscoveryData> getDiscoveriesList () {
+      return new List<DiscoveryData>();
+   }
+
    public static void updateNPCXML (string rawData, int typeIndex) {
 
    }

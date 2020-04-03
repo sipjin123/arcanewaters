@@ -32,6 +32,7 @@ public class MasterToolScene : MonoBehaviour {
    public const string soundEffectScene = "Sound Effects Tool";
    public const string booksToolScene = "Books Tool";
    public const string cropsDataScene = "CropsDataTool";
+   public const string discoveriesToolScene = "Discoveries Tool";
 
    // Loading delay before fetching XML Data
    public static float loadDelay = 2;
@@ -67,6 +68,7 @@ public class MasterToolScene : MonoBehaviour {
       clickSoundEffectScene,
       clickBooksToolScene,
       clickCropsDataScene,
+      clickDiscoveriesToolScene,
       exitButton;
 
    #endregion
@@ -135,9 +137,12 @@ public class MasterToolScene : MonoBehaviour {
       });
       clickBooksToolScene.onClick.AddListener(() => {
          SceneManager.LoadScene(booksToolScene);
-      }); 
+      });
       clickCropsDataScene.onClick.AddListener(() => {
          SceneManager.LoadScene(cropsDataScene);
+      });
+      clickDiscoveriesToolScene.onClick.AddListener(() => {
+         SceneManager.LoadScene(discoveriesToolScene);
       });
 
       if (MasterToolAccountManager.self == null) {

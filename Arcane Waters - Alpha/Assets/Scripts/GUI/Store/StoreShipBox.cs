@@ -15,7 +15,7 @@ public class StoreShipBox : StoreItemBox {
    public override void Start () {
       base.Start();
 
-      if (Application.isBatchMode) {
+      if (Util.isBatch()) {
          return;
       }
 

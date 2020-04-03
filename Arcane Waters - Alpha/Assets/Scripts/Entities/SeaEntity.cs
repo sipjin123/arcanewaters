@@ -65,7 +65,7 @@ public class SeaEntity : NetEntity
       }
 
       // Set our sprite sheets according to our types
-      if (!Application.isBatchMode) {
+      if (!Util.isBatch()) {
          StartCoroutine(CO_UpdateAllSprites());
       }
    }
@@ -101,7 +101,7 @@ public class SeaEntity : NetEntity
          Util.setLocalY(spritesContainer.transform, spritesContainer.transform.localPosition.y - .03f * Time.smoothDeltaTime);
 
          // Fade the sprites out
-         if (!Application.isBatchMode) {
+         if (!Util.isBatch()) {
             foreach (SpriteRenderer renderer in _renderers) {
                if (renderer.enabled) {
                   float newAlpha = Mathf.Lerp(1f, 0f, spritesContainer.transform.localPosition.y * -10f);

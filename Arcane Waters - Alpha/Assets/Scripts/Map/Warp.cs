@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using MapCreationTool;
 using MapCreationTool.Serialization;
+using System.Collections.Generic;
 
 public class Warp : MonoBehaviour, IMapEditorDataReceiver
 {
@@ -35,9 +36,13 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
 
       // If a player entered this warp on the server, move them
       if (player.isServer && player.connectionToClient != null) {
-         // If this warp is controlled by a treasure site, verify that the player is allowed to use it
-         if (_treasureSite != null && !(VoyageManager.isInVoyage(player) && _treasureSite.isCaptured() && _treasureSite.voyageGroupId == player.voyageGroupId)) {
-            return;
+         // Check if a treasure site is controlling the warp in this instance
+         TreasureSite site;
+         if (_treasureSites.TryGetValue(player.instanceId, out site)) {
+            // Verify that the player is allowed to use the warp
+            if (site != null && !(VoyageManager.isInVoyage(player) && site.isCaptured() && site.voyageGroupId == player.voyageGroupId)) {
+               return;
+            }
          }
 
          SpawnID spawnID = new SpawnID(areaTarget, spawnTarget);
@@ -77,8 +82,12 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
       }
    }
 
-   public void setTreasureSite (TreasureSite treasureSite) {
-      _treasureSite = treasureSite;
+   public void setTreasureSite (int instanceId, TreasureSite treasureSite) {
+      _treasureSites.Add(instanceId, treasureSite);
+   }
+
+   public void removeTreasureSite(int instanceId) {
+      _treasureSites.Remove(instanceId);
    }
 
    #region Private Variables
@@ -86,8 +95,8 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
    // The the collider, which will trigger the warp to activate
    protected BoxCollider2D _collider;
 
-   // The associated treasure site, if any
-   protected TreasureSite _treasureSite = null;
+   // The associated treasure site for each instance id, if any
+   protected Dictionary<int, TreasureSite> _treasureSites = new Dictionary<int, TreasureSite>();
 
    #endregion
 }

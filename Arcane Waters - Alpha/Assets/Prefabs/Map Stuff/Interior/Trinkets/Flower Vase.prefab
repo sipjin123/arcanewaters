@@ -42,6 +42,7 @@ GameObject:
   - component: {fileID: 6998619974485199940}
   - component: {fileID: 8986243314040832196}
   - component: {fileID: 4025615011734124501}
+  - component: {fileID: 7362401889182030374}
   m_Layer: 0
   m_Name: Flower Vase
   m_TagString: Untagged
@@ -144,3 +145,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   includeChildren: 0
   currentBiome: 1
+--- !u!58 &7362401889182030374
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9127000515645991890}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: -0.10756934}
+  serializedVersion: 2
+  m_Radius: 0.035282016

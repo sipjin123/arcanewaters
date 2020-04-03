@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
@@ -82,7 +83,7 @@ public class BooksToolDataPanel : MonoBehaviour
 
    // Content of the book
    [SerializeField]
-   private InputField _bookContent;
+   private TMP_InputField _bookContent;
 
    // The current book ID
    private string _currentBookId;

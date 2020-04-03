@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System;
+using TMPro;
 
 public class BooksToolImageSelector : MonoBehaviour {
    
@@ -16,7 +17,7 @@ public class BooksToolImageSelector : MonoBehaviour {
    public BookListImageTemplate listImageTemplate;
 
    // The input field used for the content
-   public InputField bookContentInputField;
+   public TMP_InputField bookContentInputField;
 
    // The input field to determine the height of the image
    public InputField imageHeightField;
@@ -24,7 +25,10 @@ public class BooksToolImageSelector : MonoBehaviour {
    #endregion
 
    public void initialize () {
-      foreach (ImageManager.ImageData image in ImageManager.self.imageDataList) {
+      // Get the images in the "Book Images" folder
+      List<ImageManager.ImageData> images = ImageManager.getSpritesInDirectory(BOOKS_IMAGES_PATH);
+
+      foreach (ImageManager.ImageData image in images) {
          BookListImageTemplate template = Instantiate(listImageTemplate);
          template.initialize(image.imageName, image.sprite);
          template.transform.SetParent(imagesContainer, false);
@@ -47,6 +51,9 @@ public class BooksToolImageSelector : MonoBehaviour {
 
    // We keep track of the last position of the caret in the content to know where to add images
    private int _lastCaretPosition = -1;
+
+   // The path for images meant to be used in books
+   private const string BOOKS_IMAGES_PATH = "Assets/Sprites/BookImages";
 
    #endregion
 }

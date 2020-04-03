@@ -239,6 +239,24 @@ TextureImporter:
   - first:
       213: -4618312170293333192
     second: desert_interior_78
+  - first:
+      213: 4423301856504031647
+    second: desert_interior_79
+  - first:
+      213: 5609867320834750469
+    second: desert_interior_80
+  - first:
+      213: -8012885906351756752
+    second: desert_interior_81
+  - first:
+      213: 8482565624392076336
+    second: desert_interior_82
+  - first:
+      213: 6979758230439372898
+    second: desert_interior_83
+  - first:
+      213: 4683639975084115552
+    second: desert_interior_84
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -2001,6 +2019,132 @@ TextureImporter:
       bones: []
       spriteID: a51aaffcd398fe04b82c28099a60d6db
       internalID: -4618312170293333192
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: desert_interior_79
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 11fd5a3fc83c65743af40db2baa59aa7
+      internalID: 4423301856504031647
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: desert_interior_80
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ea9610649d4519d49986c14f1708b670
+      internalID: 5609867320834750469
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: desert_interior_81
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 384
+        width: 48
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 420a6fc68d25e8d44af6910cd1bd7d23
+      internalID: -8012885906351756752
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: desert_interior_82
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c3c1b2ccda234ce4bb67884a56679599
+      internalID: 8482565624392076336
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: desert_interior_83
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 320
+        width: 16
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d2365f653e3d2b946ab885115bddf2b1
+      internalID: 6979758230439372898
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: desert_interior_84
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 368
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a9a1c2e60d85b5f448ef68eb5c941bc6
+      internalID: 4683639975084115552
       vertices: []
       indices: 
       edges: []

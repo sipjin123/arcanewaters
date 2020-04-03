@@ -18,6 +18,19 @@ MonoBehaviour:
   dataFields: []
   selectDataFields: []
   customDataFields: []
+--- !u!114 &-782973158277369237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4909897455689794183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c85e043511dae404196a3a80dcf221f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  offset: 1.5
 --- !u!114 &6970419543317320670
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -38,7 +51,7 @@ MonoBehaviour:
   invertBlur: 0
   alphaThreshold: 0.05
   buffer: 0
-  includeChildren: 0
+  includeChildren: 1
   childLayers:
     serializedVersion: 2
     m_Bits: 1
@@ -144,12 +157,12 @@ PrefabInstance:
     - target: {fileID: 4236490625857413329, guid: 8c9061a24ab66ca4e8b02213efe29356,
         type: 3}
       propertyPath: m_Offset.y
-      value: 0.00416559
+      value: 0.24407858
       objectReference: {fileID: 0}
     - target: {fileID: 4236490625857413329, guid: 8c9061a24ab66ca4e8b02213efe29356,
         type: 3}
       propertyPath: m_Size.y
-      value: 0.1635915
+      value: 0.64341736
       objectReference: {fileID: 0}
     - target: {fileID: 4701624095610960725, guid: 8c9061a24ab66ca4e8b02213efe29356,
         type: 3}
@@ -215,6 +228,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.y
       value: 6.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 7340284950623885045, guid: 8c9061a24ab66ca4e8b02213efe29356,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8953369135155473566, guid: 8c9061a24ab66ca4e8b02213efe29356,
         type: 3}

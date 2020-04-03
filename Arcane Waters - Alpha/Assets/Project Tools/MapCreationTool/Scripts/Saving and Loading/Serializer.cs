@@ -288,16 +288,26 @@ namespace MapCreationTool.Serialization
       }
 
       private static SpecialTileChunk[] formSpecialTileChunks (List<MidExportLayer> midLayers, Vector2Int editorSize, EditorType editorType) {
-         Func<string, int, bool> stairInclude = (layer, sublayer) => Layer.isStair(layer);
-         Func<string, int, bool> waterfallInclude = (layer, sublayer) => Layer.isWater(layer) && sublayer == 4 && editorType == EditorType.Area;
-         Func<string, int, bool> vineInclude = (layer, sublayer) => Layer.isVine(layer);
+         Func<string, int, TileBase, bool> stairInclude = (layer, sublayer, tile) => Layer.isStair(layer);
+         Func<string, int, TileBase, bool> waterfallInclude = (layer, sublayer, tile) => Layer.isWater(layer) && sublayer == 4 && editorType == EditorType.Area;
+         Func<string, int, TileBase, bool> vineInclude = (layer, sublayer, tile) => Layer.isVine(layer);
 
          IEnumerable<SpecialTileChunk> stairs = formSquareChunks(midLayers, editorSize, SpecialTileChunk.Type.Stair, stairInclude);
          IEnumerable<SpecialTileChunk> waterfalls = formSquareChunks(midLayers, editorSize, SpecialTileChunk.Type.Waterfall, waterfallInclude);
          IEnumerable<SpecialTileChunk> vines = formSquareChunks(midLayers, editorSize, SpecialTileChunk.Type.Vine, vineInclude);
          IEnumerable<SpecialTileChunk> currents = formWaterCurrentChunks(midLayers, editorSize);
 
-         return stairs.Union(waterfalls).Union(vines).Union(currents).ToArray();
+         Dictionary<TileBase, int> tileToRug = Palette.instance.paletteData.tileToRugType;
+
+         IEnumerable<SpecialTileChunk> rugs = Enumerable.Range(1, 4).SelectMany(type => {
+            return formSquareChunks(
+               midLayers,
+               editorSize,
+               (SpecialTileChunk.Type) (type + 4),
+               (layer, sublayer, tile) => Layer.isRug(layer) && tileToRug.ContainsKey(tile) && tileToRug[tile] == type);
+         });
+
+         return stairs.Union(waterfalls).Union(vines).Union(currents).Union(rugs).ToArray();
       }
 
       private static IEnumerable<SpecialTileChunk> formWaterCurrentChunks (List<MidExportLayer> midLayers, Vector2Int editorSize) {
@@ -427,7 +437,7 @@ namespace MapCreationTool.Serialization
          return nh;
       }
 
-      private static IEnumerable<SpecialTileChunk> formSquareChunks (List<MidExportLayer> midLayers, Vector2Int editorSize, SpecialTileChunk.Type type, Func<string, int, bool> include) {
+      private static IEnumerable<SpecialTileChunk> formSquareChunks (List<MidExportLayer> midLayers, Vector2Int editorSize, SpecialTileChunk.Type type, Func<string, int, TileBase, bool> include) {
          // Find out which tiles have to be included
          bool[,] matrix = new bool[editorSize.x, editorSize.y];
 
@@ -435,7 +445,7 @@ namespace MapCreationTool.Serialization
             for (int j = 0; j < editorSize.y; j++) {
                foreach (MidExportLayer layer in midLayers) {
                   if (layer.tileMatrix[i, j] != null) {
-                     if (include(layer.layer, layer.subLayer)) {
+                     if (include(layer.layer, layer.subLayer, layer.tileMatrix[i, j].tileBase)) {
                         matrix[i, j] = true;
                         break;
                      }
@@ -492,32 +502,33 @@ namespace MapCreationTool.Serialization
          }
       }
 
-      private static TileIndexWithCollision[,] getTilesWithCollisions (
+      private static TileWithCollision[,] getTilesWithCollisions (
          Layer layer,
          Func<TileBase, Vector2Int> tileToIndex,
          Dictionary<TileBase, TileCollisionType> tileToCollision,
          Vector2Int editorOrigin,
          Vector2Int editorSize) {
-         TileIndexWithCollision[,] tiles = new TileIndexWithCollision[editorSize.x, editorSize.y];
+         TileWithCollision[,] tiles = new TileWithCollision[editorSize.x, editorSize.y];
 
          for (int i = 0; i < layer.size.x; i++) {
             for (int j = 0; j < layer.size.y; j++) {
                Vector3Int pos = new Vector3Int(i + layer.origin.x, j + layer.origin.y, 0);
-               TileBase tile = layer.getTile(pos);
-               if (tile != null) {
-                  Vector2Int index = tileToIndex(tile);
+               TileBase tileBase = layer.getTile(pos);
+               if (tileBase != null) {
+                  Vector2Int index = tileToIndex(tileBase);
 
                   TileCollisionType col = TileCollisionType.Disabled;
-                  if (tileToCollision.TryGetValue(tile, out TileCollisionType foundCol))
+                  if (tileToCollision.TryGetValue(tileBase, out TileCollisionType foundCol))
                      col = foundCol;
 
-                  tiles[pos.x - editorOrigin.x, pos.y - editorOrigin.y] = new TileIndexWithCollision {
+                  tiles[pos.x - editorOrigin.x, pos.y - editorOrigin.y] = new TileWithCollision {
                      tile = new ExportedTile001 {
                         i = index.x,
                         j = index.y,
                         x = pos.x,
                         y = pos.y
                      },
+                     tileBase = tileBase,
                      collisionType = col
                   };
                }
@@ -548,11 +559,14 @@ namespace MapCreationTool.Serialization
          Func<int, GameObject> indexToPrefab = (index) => { return AssetSerializationMaps.getPrefab(index, dt.biome, forEditor); };
 
          foreach (var pref in dt.prefabs) {
-            prefabs.Add(new DeserializedProject.DeserializedPrefab {
-               position = new Vector3(pref.x, pref.y, 0),
-               prefab = indexToPrefab(pref.i),
-               dataFields = pref.data
-            });
+            GameObject original = indexToPrefab(pref.i);
+            if (original != AssetSerializationMaps.deletedPrefabMarker) {
+               prefabs.Add(new DeserializedProject.DeserializedPrefab {
+                  position = new Vector3(pref.x, pref.y, 0),
+                  prefab = original,
+                  dataFields = pref.data
+               });
+            }
          }
 
          foreach (var layer in dt.layers) {
@@ -630,16 +644,17 @@ namespace MapCreationTool.Serialization
          public float z { get; set; }
          public string layer { get; set; }
          public int subLayer { get; set; }
-         public TileIndexWithCollision[,] tileMatrix { get; set; }
+         public TileWithCollision[,] tileMatrix { get; set; }
          public LayerType type { get; set; }
       }
 
       /// <summary>
       /// Used in the middle of map export process
       /// </summary>
-      private class TileIndexWithCollision
+      private class TileWithCollision
       {
          public ExportedTile001 tile { get; set; }
+         public TileBase tileBase { get; set; }
          public TileCollisionType collisionType { get; set; }
       }
    }
@@ -708,7 +723,11 @@ namespace MapCreationTool.Serialization
          Stair = 1,
          Vine = 2,
          Waterfall = 3,
-         Current = 4
+         Current = 4,
+         Rug1 = 5,
+         Rug2 = 6,
+         Rug3 = 7,
+         Rug4 = 8
       }
    }
 
@@ -841,6 +860,9 @@ namespace MapCreationTool.Serialization
 
       public const string LEDGE_WIDTH_KEY = "width";
       public const string LEDGE_HEIGHT_KEY = "height";
+
+      public const string DISCOVERY_SPAWN_CHANCE = "spawn chance";
+      public const string POSSIBLE_DISCOVERY = "possible discovery";
 
       public string k; // Key
       public string v; // Value

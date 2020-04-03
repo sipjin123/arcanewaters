@@ -50,7 +50,7 @@ public class ChatPanel : MonoBehaviour {
       self = this;
 
       // Disable this panel when the server is running in batch mode
-      if (Application.isBatchMode) {
+      if (Util.isBatch()) {
          this.gameObject.SetActive(false);
       }
    }

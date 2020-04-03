@@ -37,7 +37,7 @@ public class SpriteAnimation : ClientMonoBehaviour
    }
 
    private void Start () {
-      if (!Application.isBatchMode) {
+      if (!Util.isBatch()) {
          // Routinely change our sprite
          if (sprites.Length > 0) {
             InvokeRepeating("changeSprite", initialDelay, frameDuration);

@@ -28,7 +28,7 @@ public class Server : Photon.PunBehaviour {
    public HashSet<int> connectedUserIds = new HashSet<int>();
 
    // The list of active voyage instances on this server
-   public Voyage[] voyages = new Voyage[0];
+   public List<Voyage> voyages = new List<Voyage>();
 
    #endregion
 
@@ -59,7 +59,7 @@ public class Server : Photon.PunBehaviour {
       InvokeRepeating("updateVoyageInfo", 5.5f, 5f);
 
       // Regularly check that there are enough voyage instances open
-      InvokeRepeating("createVoyageInstanceIfNeeded", 10f, 60f);
+      InvokeRepeating("createVoyageInstanceIfNeeded", 10f, 10f);
    }
 
    private void Update () {
@@ -84,7 +84,7 @@ public class Server : Photon.PunBehaviour {
          connectedUserIds.CopyTo(connectedUserIdsArray);
          stream.SendNext(connectedUserIdsArray);
 
-         stream.SendNext(voyages);
+         stream.SendNext(Util.serialize(voyages));
       } else {
          // Someone else's object, receive data 
          id = (int) stream.ReceiveNext();
@@ -98,7 +98,8 @@ public class Server : Photon.PunBehaviour {
          foreach (int userId in connectedUserIdsArray) {
             connectedUserIds.Add(userId);
          }
-         this.voyages = (Voyage[]) stream.ReceiveNext();
+
+         this.voyages = Util.unserialize<Voyage>((string[]) stream.ReceiveNext());
       }
    }
 
@@ -137,7 +138,7 @@ public class Server : Photon.PunBehaviour {
             allVoyages.Add(voyage);
          }
 
-         voyages = allVoyages.ToArray();
+         voyages = allVoyages;
       }
    }
 
@@ -175,7 +176,7 @@ public class Server : Photon.PunBehaviour {
             if (openVoyagesCount < Voyage.OPEN_VOYAGE_INSTANCES) {
                // Find the server with the least people
                Server bestServer = ServerNetwork.self.getServerWithLeastPlayers();
-            
+               
                // Create a new voyage instance on the chosen server
                bestServer.photonView.RPC("CreateVoyageInstance", bestServer.view.owner);
             }
@@ -211,6 +212,11 @@ public class Server : Photon.PunBehaviour {
    public void CreateVoyageInstance () {
       // Get the list of sea maps area keys
       List<string> seaMaps = AreaManager.self.getSeaAreaKeys();
+      
+      // If there are no available areas, do nothing
+      if (seaMaps.Count == 0) {
+         return;
+      }
 
       // Get the voyage instances in all known servers
       List<Voyage> allVoyages = ServerNetwork.self.getAllVoyages();
@@ -220,30 +226,10 @@ public class Server : Photon.PunBehaviour {
          // Get a new voyage id
          int voyageId = DB_Main.getNewVoyageId();
 
-         // Select the areas that are not instantiated in any server
-         List<string> availableVoyageAreas = new List<string>();
-         foreach (string aKey in seaMaps) {
-            bool inUse = false;
-            foreach (Voyage activeVoyage in allVoyages) {
-               if (aKey.Equals(activeVoyage.areaKey)) {
-                  inUse = true;
-                  break;
-               }
-            }
-            if (!inUse) {
-               availableVoyageAreas.Add(aKey);
-            }
-         }
-
          // Back to Unity Thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // If there are no available areas, do nothing
-            if (availableVoyageAreas.Count == 0) {
-               return;
-            }
-
             // Randomize the voyage parameters
-            string areaKey = availableVoyageAreas[Random.Range(0, availableVoyageAreas.Count)];
+            string areaKey = seaMaps[Random.Range(0, seaMaps.Count)];
             Voyage.Difficulty difficulty = Util.randomEnumStartAt<Voyage.Difficulty>(1);
             bool isPvP = Random.Range(0, 2) == 0;
 

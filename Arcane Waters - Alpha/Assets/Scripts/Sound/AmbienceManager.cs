@@ -20,7 +20,7 @@ public class AmbienceManager : ClientMonoBehaviour {
 
    protected void Start () {
       // No need for this in batch mode
-      if (Application.isBatchMode) {
+      if (Util.isBatch()) {
          this.gameObject.SetActive(false);
       }
    }

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8443234236066400386}
   - component: {fileID: 544176840794351189}
   - component: {fileID: 907092443688425805}
+  - component: {fileID: 4151457290335833442}
   m_Layer: 0
   m_Name: Bowl
   m_TagString: Untagged
@@ -113,6 +114,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   includeChildren: 0
   currentBiome: 1
+--- !u!58 &4151457290335833442
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6873932994852960450}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: -0.033884764}
+  serializedVersion: 2
+  m_Radius: 0.04597974
 --- !u!1 &7598213428385545646
 GameObject:
   m_ObjectHideFlags: 0

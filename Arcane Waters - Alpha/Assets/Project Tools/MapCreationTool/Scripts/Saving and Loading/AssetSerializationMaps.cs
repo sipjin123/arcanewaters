@@ -23,6 +23,7 @@ namespace MapCreationTool
       public GameObject _waterfallEfector;
       public Vines _vinesTrigger;
       public GameObject _currentEffector;
+      public GameObject _deletedPrefabMarker;
 
       private void OnValidate () {
          loadLocal();
@@ -42,6 +43,7 @@ namespace MapCreationTool
             waterfallEfector = _waterfallEfector;
             vinesTrigger = _vinesTrigger;
             currentEffector = _currentEffector;
+            deletedPrefabMarker = _deletedPrefabMarker;
 
             foreach (BiomeMapsDefinition definition in mapsDefinitions) {
                BiomeMaps bm = new BiomeMaps();
@@ -186,6 +188,7 @@ namespace MapCreationTool
       public static GameObject waterfallEfector { get; private set; }
       public static Vines vinesTrigger { get; private set; }
       public static GameObject currentEffector { get; private set; }
+      public static GameObject deletedPrefabMarker { get; private set; }
 
       public class BiomeMaps
       {

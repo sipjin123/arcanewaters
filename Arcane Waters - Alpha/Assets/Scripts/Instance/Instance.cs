@@ -212,12 +212,13 @@ public class Instance : NetworkBehaviour
                }
             } else {
                if (area.enemyDatafields.Count > 0) {
-                  Transform npcParent = Instantiate(new GameObject(), area.transform).transform;
+                  Transform enemyParent = Instantiate(new GameObject(), area.transform).transform;
+                  enemyParent.name = "Enemies";
                   foreach (ExportedPrefab001 dataField in area.enemyDatafields) {
                      Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;
 
                      // Add it to the Instance
-                     Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab, npcParent);
+                     Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab, enemyParent);
                      enemy.enemyType = (Enemy.Type) Enemy.fetchReceivedData(dataField.d);
 
                      BattlerData battleData = MonsterManager.self.getBattler(enemy.enemyType);
@@ -235,6 +236,32 @@ public class Instance : NetworkBehaviour
                      NetworkServer.Spawn(enemy.gameObject);
                   }
                }
+
+               if (area.npcDatafields.Count > 0) {
+                  Transform npcParent = Instantiate(new GameObject(), area.transform).transform;
+                  npcParent.name = "NPCs";
+                  foreach (ExportedPrefab001 dataField in area.npcDatafields) {
+                     Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;
+
+                     NPC npc = Instantiate(PrefabsManager.self.npcPrefab, npcParent.position + targetLocalPos, Quaternion.identity, npcParent);
+                     npc.areaKey = area.areaKey;
+
+                     // Make sure npc has correct data
+                     IMapEditorDataReceiver receiver = npc.GetComponent<IMapEditorDataReceiver>();
+                     if (receiver != null && dataField.d != null) {
+                        receiver.receiveData(dataField.d);
+                     }
+                     npc.npcType = (NPC.Type) NPC.fetchDataFieldID(dataField.d);
+
+                     InstanceManager.self.addNPCToInstance(npc, this);
+
+                     foreach (ZSnap snap in npc.GetComponentsInChildren<ZSnap>()) {
+                        snap.snapZ();
+                     }
+
+                     NetworkServer.Spawn(npc.gameObject);
+                  }
+               }
             }
 
             if (area.treasureSiteDataFields.Count > 0) {
@@ -243,6 +270,7 @@ public class Instance : NetworkBehaviour
 
                   // Instantiate the treasure site
                   TreasureSite site = Instantiate(PrefabsManager.self.treasureSitePrefab, transform);
+                  site.instanceId = this.id;
                   site.areaKey = area.areaKey;
                   site.setBiome(area.biome);
                   site.difficulty = difficulty;

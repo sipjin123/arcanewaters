@@ -7,21 +7,25 @@ using UnityEngine.EventSystems;
 using MapCreationTool.Serialization;
 using System;
 using Random = UnityEngine.Random;
+using AStar;
 
-public class NPC : MonoBehaviour, IMapEditorDataReceiver {
+public class NPC : NetEntity, IMapEditorDataReceiver
+{
    #region Public Variables
 
    // How close we have to be in order to talk to the NPC
    public static float TALK_DISTANCE = .65f;
 
    // The Types of different NPCs
-   public enum Type { None = 0,
+   public enum Type
+   {
+      None = 0,
       Blackbeard = 1, Blacksmith = 2, Fatty = 3, Feather = 4, Fisherman = 5,
       Gardener = 6, Glasses = 7, Gramps = 8, Hammer = 9, Headband = 10,
       ItemShop = 11, Mapper = 12, Monocle = 13, Parrot = 14, Patch = 15,
       Pegleg = 16, Seagull = 17, Shipyard = 18, Shroom = 19, Skullhat = 20,
-      Stripes = 21, Vest = 22, Dog = 23, Lizard = 24, 
-      
+      Stripes = 21, Vest = 22, Dog = 23, Lizard = 24,
+
       ExplorerGuy = 25, DesertGuy = 26, TopKnot = 27, SnowGirl = 28, SkullHat = 29,
       ShamanGirl = 30, Pyromancer = 31, MushroomDruid = 32, Lizard_Shaman = 33, Lizard_Armored = 34, Golem = 35,
    }
@@ -29,51 +33,26 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
    // The Type of NPC this is
    public Type npcType;
 
-   // Whether we want to auto move around
-   public bool autoMove = true;
-
-   // The position we want to move to
-   public Vector2 moveTarget;
-
    // The speed that we move at
    public float moveSpeed = 3f;
-
-   // The direction we're facing
-   public Direction facing = Direction.South;
-
-   // Whether or not we have diagonal sprites
-   public bool hasDiagonals = false;
 
    // The unique id assigned to this npc
    public int npcId;
 
-   // The area that this NPC is in
-   public string areaKey;
-
    // The current trade gossip for this NPC, changes over time
    public string tradeGossip;
-
-   // Our name text
-   public Text nameText;
 
    // Determines if this npc is spawned at debug mode
    public bool isDebug = false;
 
    #endregion
 
-   private void Awake () {
-      // Figure out our area id
-      Area area = GetComponentInParent<Area>();
-      this.areaKey = area.areaKey;
+   protected override void Awake () {
+      base.Awake();
 
       // Look up components
-      _body = GetComponent<Rigidbody2D>();
-      _startPosition = this.transform.position;
-      _animators.AddRange(GetComponentsInChildren<Animator>());
-      _renderers.AddRange(GetComponentsInChildren<SpriteRenderer>());
+      _startPosition = transform.position;
       _graphicRaycaster = GetComponentInChildren<GraphicRaycaster>();
-      _outline = GetComponent<SpriteOutline>();
-      _clickableBox = GetComponentInChildren<ClickableBox>();
       _shopTrigger = GetComponent<ShopTrigger>();
 
       if (this.gameObject.HasComponent<Animator>()) {
@@ -88,18 +67,20 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
       }
    }
 
-   void Start () {
+   protected override void Start () {
+      base.Start();
+
       // Faction and Type are prerequisites for generating NPC ID
       // NPC ID is a requirement to gather xml data
 
       // Figure out our Type from our sprite
-      this.npcType = getTypeFromSprite();
+      npcType = getTypeFromSprite();
 
       // Get faction from type
-      _faction = getFactionFromType(this.npcType);
+      _faction = getFactionFromType(npcType);
 
       // ID is the first data to be initialized
-      this.npcId = getId();
+      npcId = getId();
 
       // Initially hides name ui for npc name
       Util.setAlpha(nameText, 0f);
@@ -107,11 +88,8 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
       // Keep track of the NPC in the Manager
       NPCManager.self.storeNPC(this);
 
-      // Default
-      this.moveTarget = _startPosition;
-
       foreach (Animator animator in _animators) {
-         animator.SetInteger("facing", (int) this.facing);
+         animator.SetInteger("facing", (int) facing);
       }
 
       // Add some move targets
@@ -121,7 +99,20 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
       _moveTargets.Add(_startPosition + new Vector2(0f, -.3f));
 
       // Continually pick new move targets
-      InvokeRepeating("pickMoveTarget", 0f, 6f + Random.Range(-1f, 1f));
+      if (isServer) {
+         _gridReference = AreaManager.self.getArea(areaKey).pathfindingGrid;
+         if (_gridReference == null) {
+            D.error("There has to be an AStarGrid Script attached to the MapTemplate Prefab");
+         }
+
+         _pathfindingReference = GetComponent<Pathfinding>();
+         if (_pathfindingReference == null) {
+            D.error("There has to be a Pathfinding Script attached to the NPC Prefab");
+         }
+         _pathfindingReference.gridReference = _gridReference;
+
+         StartCoroutine(generateNewWaypoints(6f + Random.Range(-1f, 1f)));
+      }
 
       // Update our various text responses
       InvokeRepeating("updateTradeGossip", 0f, 60 * 60);
@@ -133,8 +124,8 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
       }
    }
 
-   public void initData() {
-      NPCData npcData = NPCManager.self.getNPCData(this.npcId);
+   public void initData () {
+      NPCData npcData = NPCManager.self.getNPCData(npcId);
 
       // Sprite path insert here
       if (npcData != null) {
@@ -151,7 +142,7 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
             GetComponent<SpriteSwap>().newTexture = NPCManager.self.defaultNpcBodySprite.texture;
          }
       } else {
-         D.log("Cant get Data for NPC: " + this.npcId);
+         D.log("Cant get Data for NPC: " + npcId);
       }
 
       if (GetComponent<SpriteSwap>().newTexture.name.Contains("empty")) {
@@ -160,7 +151,9 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
       }
    }
 
-   private void Update () {
+   protected override void Update () {
+      base.Update();
+
       // Disable our clickable canvas while a panel is showing
       if (_graphicRaycaster != null) {
          _graphicRaycaster.gameObject.SetActive(!PanelManager.self.hasPanelInStack());
@@ -169,27 +162,32 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
       // Only show our outline when the mouse is over us
       handleSpriteOutline();
 
-      if (autoMove) {
+      if (isServer) {
+         Vector2 direction;
+         if (_waypointList.Count > 0) {
+            direction = (Vector2) _waypointList[0].transform.position - (Vector2) transform.position;
+         } else {
+            direction = Util.getDirectionFromFacing(facing);
+         }
          // Figure out the direction we want to face
-         Vector2 direction = moveTarget - (Vector2) this.transform.position;
 
          // If this NPC is talking to this client's player, then face them
          if (isTalkingToGlobalPlayer()) {
-            direction = Global.player.transform.position - this.transform.position;
+            direction = Global.player.transform.position - transform.position;
          }
 
          // Calculate an angle for that direction
          float angle = Util.angle(direction);
 
          // Set our facing direction based on that angle
-         this.facing = this.hasDiagonals ? Util.getFacingWithDiagonals(angle) : Util.getFacing(angle);
+         facing = hasDiagonals ? Util.getFacingWithDiagonals(angle) : Util.getFacing(angle);
 
          // Pass our angle and velocity on to the Animator
          foreach (Animator animator in _animators) {
             animator.SetFloat("velocityX", _body.velocity.x);
             animator.SetFloat("velocityY", _body.velocity.y);
             animator.SetBool("isMoving", _body.velocity.magnitude > .01f);
-            animator.SetInteger("facing", (int) this.facing);
+            animator.SetInteger("facing", (int) facing);
          }
       }
 
@@ -206,7 +204,7 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
       }
 
       // Check if we're showing a West sprite
-      bool isFacingWest = this.facing == Direction.West || this.facing == Direction.NorthWest || this.facing == Direction.SouthWest;
+      bool isFacingWest = facing == Direction.West || facing == Direction.NorthWest || facing == Direction.SouthWest;
 
       // Flip our sprite renderer if we're going west
       foreach (SpriteRenderer renderer in _renderers) {
@@ -214,20 +212,27 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
       }
    }
 
-   private void FixedUpdate () {
+   protected override void FixedUpdate () {
+      base.FixedUpdate();
+
       // If we're talking to the player, don't move
       if (isTalkingToGlobalPlayer()) {
          return;
       }
 
-      // If we're close to our move target, we don't need to do anything
-      if (Vector2.Distance(this.transform.position, moveTarget) < .1f) {
-         return;
-      }
+      if (_waypointList.Count > 0) {
+         // Move towards our current waypoint
+         Vector2 waypointDirection = _waypointList[0].transform.position - transform.position;
+         _body.AddForce(waypointDirection.normalized * moveSpeed);
+         _lastMoveChangeTime = Time.time;
 
-      // Figure out the direction of our movement
-      Vector2 direction = moveTarget - (Vector2)this.transform.position;
-      _body.AddForce(direction.normalized * moveSpeed);
+         // Clears a node as the unit passes by
+         float distanceToWaypoint = Vector2.Distance(_waypointList[0].transform.position, transform.position);
+         if (distanceToWaypoint < .1f) {
+            Destroy(_waypointList[0].gameObject);
+            _waypointList.RemoveAt(0);
+         }
+      }
    }
 
    public void clientClickedMe () {
@@ -236,8 +241,8 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
       }
 
       // Only works when the player is close enough
-      if (Vector2.Distance(this.transform.position, Global.player.transform.position) > TALK_DISTANCE) {
-         Instantiate(PrefabsManager.self.tooFarPrefab, this.transform.position + new Vector3(0f, .24f), Quaternion.identity);
+      if (Vector2.Distance(transform.position, Global.player.transform.position) > TALK_DISTANCE) {
+         Instantiate(PrefabsManager.self.tooFarPrefab, transform.position + new Vector3(0f, .24f), Quaternion.identity);
          return;
       }
 
@@ -274,7 +279,7 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
       }
 
       // We can make a unique id based on our area and NPC type
-      int id = (Area.getAreaId(this.areaKey) * 100) + (int) this.npcType;
+      int id = (Area.getAreaId(areaKey) * 100) + (int) npcType;
 
       return id;
    }
@@ -284,16 +289,42 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
          return false;
       }
 
-      return (Vector2.Distance(Global.player.transform.position, this.transform.position) < TALK_DISTANCE);
-   }
-    
-   public bool isTalkingToGlobalPlayer () {
-      return (PanelManager.self.get(Panel.Type.NPC_Panel).isShowing() && isCloseToGlobalPlayer());
+      return Vector2.Distance(Global.player.transform.position, transform.position) < TALK_DISTANCE;
    }
 
-   protected void pickMoveTarget () {
-      if (autoMove) {
-         this.moveTarget = _moveTargets.ChooseRandom();
+   public bool isTalkingToGlobalPlayer () {
+      return PanelManager.self.get(Panel.Type.NPC_Panel).isShowing() && isCloseToGlobalPlayer();
+   }
+
+   [Server]
+   protected IEnumerator generateNewWaypoints (float moveAgainDelay) {
+      // Initial delay
+      float waitTime = 1.0f;
+      while (true) {
+         yield return new WaitForSeconds(waitTime);
+
+         if (_waypointList.Count > 0) {
+            // There's still points left of the old path, wait 1 second and check again if there's no more waypoints
+            waitTime = 1.0f;
+            continue;
+         }
+
+         List<ANode> gridPath = _pathfindingReference.findPathNowInit(transform.position, _moveTargets.ChooseRandom());
+         if (gridPath == null || gridPath.Count <= 0) {
+            // Invalid Path, attempt again after 1 second
+            waitTime = 1.0f;
+            continue;
+         }
+
+         // We have a new path, set to normal delay
+         waitTime = moveAgainDelay;
+
+         // Register Route
+         foreach (ANode node in gridPath) {
+            Waypoint newWaypointPath = Instantiate(PrefabsManager.self.waypointPrefab);
+            newWaypointPath.transform.position = node.vPosition;
+            _waypointList.Add(newWaypointPath);
+         }
       }
    }
 
@@ -376,7 +407,7 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
    }
 
    protected Specialty.Type getRandomSpecialty () {
-      Area area = this.GetComponentInParent<Area>();
+      Area area = GetComponentInParent<Area>();
       List<Specialty.Type> specialties = getPossibleSpecialties(getFaction());
       int randomIndex = (Area.getAreaId(areaKey) * 50) + (int) npcType;
       randomIndex %= specialties.Count;
@@ -422,13 +453,6 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
       return false;
    }
 
-   protected void handleSpriteOutline () {
-      if (_outline != null) {
-         _outline.color = isEnemy() ? Color.red : Color.white;
-         _outline.setVisibility(MouseManager.self.isHoveringOver(_clickableBox));
-      }
-   }
-
    protected Type getTypeFromSprite () {
       string spriteName = GetComponent<SpriteRenderer>().sprite.name;
 
@@ -437,7 +461,7 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
       if (swapper != null) {
          spriteName = swapper.newTexture.name;
       }
-      
+
       string[] split = spriteName.Split('_');
       spriteName = split[0];
       try {
@@ -462,13 +486,13 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
    }
 
    protected string getRandomName () {
-      Area area = this.GetComponentInParent<Area>();
-      return NameManager.self.getRandomName(getGender(this.npcType), area.areaKey, this.npcType);
+      Area area = GetComponentInParent<Area>();
+      return NameManager.self.getRandomName(getGender(npcType), area.areaKey, npcType);
    }
 
    protected void updateTradeGossip () {
       // TODO System is going to be removed soon
-      tradeGossip = "I haven't heard anything recently.";      
+      tradeGossip = "I haven't heard anything recently.";
    }
 
    protected string getTradeGossip (List<CropOffer> offers) {
@@ -511,7 +535,7 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
                }
             }
             Area area = GetComponentInParent<Area>();
-            this.areaKey = area.areaKey;
+            areaKey = area.areaKey;
             NPCManager.self.storeNPC(this);
          } else if (field.k.CompareTo(DataField.NPC_SHOP_NAME_KEY) == 0) {
             // Get Shop Name (if any)
@@ -547,29 +571,14 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
    // Our start position
    protected Vector2 _startPosition;
 
-   // Our Rigid body
-   protected Rigidbody2D _body;
-
    // The available positions to move to
    protected List<Vector2> _moveTargets = new List<Vector2>();
-
-   // Our Animators
-   protected List<Animator> _animators = new List<Animator>();
-
-   // Our renderers
-   protected List<SpriteRenderer> _renderers = new List<SpriteRenderer>();
 
    // Gets set to true while the player is nearby
    protected bool _isNearPlayer = false;
 
    // The Raycaster for our clickable canvas
    protected GraphicRaycaster _graphicRaycaster;
-
-   // Our outline
-   protected SpriteOutline _outline;
-
-   // Our clickable box
-   protected ClickableBox _clickableBox;
 
    // Our Shop Trigger (if any)
    protected ShopTrigger _shopTrigger;
@@ -585,6 +594,15 @@ public class NPC : MonoBehaviour, IMapEditorDataReceiver {
 
    // Shop Name (if any)
    protected string _shopName = ShopManager.DEFAULT_SHOP_NAME;
+
+   // The AStarGrid Reference fetched from the Main Scene
+   protected AStarGrid _gridReference;
+
+   // The Pathfinding Reference fetched from the Main Scene
+   protected Pathfinding _pathfindingReference;
+
+   // The current waypoint List
+   protected List<Waypoint> _waypointList = new List<Waypoint>();
 
    #endregion
 }

@@ -82,6 +82,8 @@ namespace MinimapGeneration
       public Sprite spriteIcon;
 
       public Vector2Int offset;
+      [Tooltip("Uses only gameobjects from prefab hierarchy")]
+      public bool usePrefab;
       [Tooltip("put the icon where has Area Effector 2D, will ignore sublayer")]
       public bool useAreaEffector2D;
       [Tooltip("put the icon where has Collider 2D, will ignore sublayer")]
@@ -92,5 +94,10 @@ namespace MinimapGeneration
       [Tooltip("it is just checked if have something written")]
       public string[] subLayerSpriteSuffixNames;
       public Sprite[] subLayerSprites;
+
+      [Tooltip("Create object only in limited grid to avoid too much icons near each other")]
+      public bool limitSpawnCount;
+      public Vector2Int spawnGridSize;
+      public int minDistanceManhattan;
    }
 }

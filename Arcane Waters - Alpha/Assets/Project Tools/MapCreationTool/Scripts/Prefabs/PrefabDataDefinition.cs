@@ -19,7 +19,7 @@ namespace MapCreationTool
       /// Turns all custom fields into regular data fields
       /// </summary>
       public void restructureCustomFields () {
-         foreach (var customData in customDataFields) {
+         foreach (CustomDataField customData in customDataFields) {
             if (customData.type == CustomFieldType.Direction) {
                Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
                selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
@@ -77,6 +77,13 @@ namespace MapCreationTool
                   toolTip = customData.toolTip,
                   options = SelectOption.formOptions(GenericActionTrigger.actions.Keys.ToArray())
                };
+            } else if (customData.type == CustomFieldType.Discovery && MapEditorDiscoveriesManager.instance.discoveriesCount > 0) {
+               Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
+               selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
+                  name = customData.name,
+                  toolTip = customData.toolTip,
+                  options = MapEditorDiscoveriesManager.instance.formSelectionOptions()
+               };
             }
          }
       }
@@ -124,7 +131,8 @@ namespace MapCreationTool
          LandMonster,
          SeaMonster,
          ActionName,
-         Book
+         Book,
+         Discovery
       }
    }
 }

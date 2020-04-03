@@ -703,7 +703,6 @@ Transform:
   - {fileID: 4095862387622107445}
   - {fileID: 3312366904059734228}
   - {fileID: 2044129818849976533}
-  - {fileID: 7085660421097113948}
   m_Father: {fileID: 6003827098852396580}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1321,50 +1320,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefab: {fileID: 1811325571479324519, guid: 0221eb820441d2d48a0c50ca948b17e0, type: 3}
---- !u!1 &4558026764543624670
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7085660421097113948}
-  - component: {fileID: 4257209418678514080}
-  m_Layer: 0
-  m_Name: seagull
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7085660421097113948
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4558026764543624670}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 13, y: 53, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 3719976920741877196}
-  m_RootOrder: 42
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4257209418678514080
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4558026764543624670}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d14a3bae45cba31478d29685e1dea398, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  prefab: {fileID: 6278626336270281305, guid: 59355a0ccb733e74e9ff3da951c5df2b, type: 3}
 --- !u!1 &4915478050266930319
 GameObject:
   m_ObjectHideFlags: 0
@@ -13119,11 +13074,11 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 2
+      cluster: 0
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 2
+      cluster: 0
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -13335,11 +13290,11 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 2
+      cluster: 0
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 2
+      cluster: 0
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -18941,7 +18896,7 @@ Tilemap:
       - {fileID: 21300174, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300180, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300186, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 13, y: 8, z: 0}
@@ -19021,7 +18976,7 @@ Tilemap:
       - {fileID: 21300150, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300156, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300162, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 13, y: 9, z: 0}
@@ -19101,7 +19056,7 @@ Tilemap:
       - {fileID: 21300126, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300132, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300138, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 13, y: 10, z: 0}
@@ -19181,7 +19136,7 @@ Tilemap:
       - {fileID: 21300530, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300532, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300534, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 12, y: 11, z: 0}

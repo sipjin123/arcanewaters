@@ -127,7 +127,7 @@ public class SoundManager : MonoBehaviour {
 
    public void Start () {
       // Disable some stuff in Batch Mode
-      if (Application.isBatchMode) {
+      if (Util.isBatch()) {
          musicOn = false;
          effectsOn = false;
          return;
@@ -153,7 +153,7 @@ public class SoundManager : MonoBehaviour {
    }
 
    void OnDestroy () {
-      if (Application.isBatchMode) {
+      if (Util.isBatch()) {
          return;
       }
 
@@ -418,6 +418,10 @@ public class SoundManager : MonoBehaviour {
    }
 
    public static void setBackgroundMusic (Type type) {
+      if (Util.isBatch()) {
+         return;
+      }
+
       // If we're already playing that music, there's nothing to do
       if (_currentMusicType == type) {
          return;
@@ -434,6 +438,10 @@ public class SoundManager : MonoBehaviour {
    }
 
    public static void create3dSound (string audioClipName, Vector3 position, int countToChooseFrom = 0) {
+      if (Util.isBatch()) {
+         return;
+      }
+
       AudioSource audioSource = Instantiate(PrefabsManager.self.sound3dPrefab, position, Quaternion.identity);
       audioSource.transform.SetParent(self.transform, true);
       string path = "Sound/Effects/" + audioClipName;

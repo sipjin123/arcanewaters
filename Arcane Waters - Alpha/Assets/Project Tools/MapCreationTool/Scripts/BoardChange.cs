@@ -44,8 +44,6 @@ namespace MapCreationTool
             DrawBoard.size.x - 1, DrawBoard.size.y - 1, 0);
       }
 
-
-
       public static BoardChange calculateClearAllChange (Dictionary<string, Layer> layers, List<PlacedPrefab> prefabs, Selection currentSelection) {
          BoardChange result = new BoardChange();
 
@@ -116,56 +114,6 @@ namespace MapCreationTool
                positionToPlace = prefab.position,
                prefabToPlace = prefab.prefab
             });
-         }
-
-         return result;
-      }
-
-      public static BoardChange calculateEraserChange (
-          IEnumerable<Layer> layers,
-          List<PlacedPrefab> prefabs,
-          EraserLayerMode eraserMode,
-          Vector3 worldPos,
-          Layer deleteOnlyFrom) {
-         BoardChange result = new BoardChange();
-
-         List<PlacedPrefab> overlapPrefs = new List<PlacedPrefab>();
-         foreach (PlacedPrefab placedPrefab in prefabs) {
-            bool active = placedPrefab.placedInstance.activeSelf;
-            placedPrefab.placedInstance.SetActive(true);
-            foreach (Collider2D col in placedPrefab.placedInstance.GetComponentsInChildren<Collider2D>(true)) {
-               if (col.OverlapPoint(worldPos)) {
-                  overlapPrefs.Add(placedPrefab);
-                  break;
-               }
-            }
-            placedPrefab.placedInstance.SetActive(active);
-         }
-
-         if (overlapPrefs.Count > 0) {
-            if (eraserMode == EraserLayerMode.Top) {
-               float minZ = overlapPrefs.Min(pp => pp.placedInstance.transform.position.z);
-               var prefabToDestroy = overlapPrefs.First(p => p.placedInstance.transform.position.z == minZ);
-
-               result.prefabChanges.Add(new PrefabChange {
-                  prefabToDestroy = prefabToDestroy.original,
-                  positionToDestroy = prefabToDestroy.placedInstance.transform.position
-               });
-               return result;
-            } else if (eraserMode == EraserLayerMode.All) {
-               result.prefabChanges.AddRange(overlapPrefs.Select(p => new PrefabChange {
-                  prefabToDestroy = p.original,
-                  positionToDestroy = p.placedInstance.transform.position
-               }));
-            }
-         }
-
-         foreach (Layer layer in layers.Reverse()) {
-            if (layer.hasTile(DrawBoard.worldToCell(worldPos)) && layer == deleteOnlyFrom) {
-               result.tileChanges.Add(new TileChange(null, DrawBoard.worldToCell(worldPos), layer));
-               if (eraserMode == EraserLayerMode.Top)
-                  return result;
-            }
          }
 
          return result;

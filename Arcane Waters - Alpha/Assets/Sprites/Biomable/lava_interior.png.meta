@@ -239,6 +239,24 @@ TextureImporter:
   - first:
       213: -1012141012829043309
     second: lava_interior_78
+  - first:
+      213: 2208636440315608607
+    second: lava_interior_79
+  - first:
+      213: 6985872807538481727
+    second: lava_interior_80
+  - first:
+      213: 8611133312250565248
+    second: lava_interior_81
+  - first:
+      213: 6051295784432208137
+    second: lava_interior_82
+  - first:
+      213: 1852862282109107615
+    second: lava_interior_83
+  - first:
+      213: -1444828736855995393
+    second: lava_interior_84
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -2001,6 +2019,132 @@ TextureImporter:
       bones: []
       spriteID: b7e7cbc7818d8254c86dc2bb637450f3
       internalID: -1012141012829043309
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lava_interior_79
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e0c2f9e8ce28c9040888adba24a62945
+      internalID: 2208636440315608607
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lava_interior_80
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: daadf426dfbdd2646b24c382e7eb89f8
+      internalID: 6985872807538481727
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lava_interior_81
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 384
+        width: 48
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 75a9b8423f834ad428fcde0334db6749
+      internalID: 8611133312250565248
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lava_interior_82
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 80d7910754e863b48a8c0186eca47674
+      internalID: 6051295784432208137
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lava_interior_83
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 320
+        width: 16
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 91058ea0b6475c248bd19e6e97a017b4
+      internalID: 1852862282109107615
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lava_interior_84
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 368
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ceb1f1652cf4c48468666c357ddc3a0d
+      internalID: -1444828736855995393
       vertices: []
       indices: 
       edges: []

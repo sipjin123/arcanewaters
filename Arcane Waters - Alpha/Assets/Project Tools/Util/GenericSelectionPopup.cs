@@ -6,7 +6,8 @@ using Mirror;
 using System;
 using UnityEngine.Events;
 
-public class GenericSelectionPopup : MonoBehaviour {
+public class GenericSelectionPopup : MonoBehaviour
+{
    #region Public Variables
 
    // Parent of the template
@@ -53,7 +54,8 @@ public class GenericSelectionPopup : MonoBehaviour {
    public Dictionary<string, Sprite> cannonSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> shopIconSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> cropIconSpriteList = new Dictionary<string, Sprite>();
-   
+   public Dictionary<string, Sprite> discoveriesSpriteList = new Dictionary<string, Sprite>();
+
    public enum selectionType
    {
       None = 0,
@@ -96,7 +98,8 @@ public class GenericSelectionPopup : MonoBehaviour {
       CropType = 37,
       ArmorTypeSprites = 38,
       WeaponActionType = 39,
-      CropsIcon = 40
+      CropsIcon = 40,
+      DiscoverySprites = 41
    }
 
    #endregion
@@ -104,7 +107,6 @@ public class GenericSelectionPopup : MonoBehaviour {
    private void Start () {
       initializeSpriteDictionary();
       confirmButton.onClick.AddListener(() => {
-
       });
       exitButton.onClick.AddListener(() => {
          closePopup();
@@ -117,13 +119,13 @@ public class GenericSelectionPopup : MonoBehaviour {
 
       string armorSpritePath = "Assets/Sprites/Icons/Armor/";
       setupSpriteContent(armorSpriteList, armorSpritePath);
-    
+
       string weaponSpritePath = "Assets/Sprites/Icons/Weapons/";
       setupSpriteContent(weaponSpriteList, weaponSpritePath);
-    
+
       string genericspritePath = "Assets/Sprites/Icons/";
       setupSpriteContent(genericIconSpriteList, genericspritePath);
-   
+
       string spritePath = "Assets/Sprites/Ships/";
       setupSpriteContent(shipIconSpriteList, spritePath);
 
@@ -165,6 +167,9 @@ public class GenericSelectionPopup : MonoBehaviour {
 
       string cropIconPath = "Assets/Sprites/Crops/";
       setupSpriteContent(cropIconSpriteList, cropIconPath);
+
+      string discoverySpritesPath = "Assets/Sprites/Discoveries/";
+      setupSpriteContent(discoveriesSpriteList, discoverySpritesPath);
    }
 
    private void setupSpriteContent (Dictionary<string, Sprite> spriteCollection, string spritePath) {
@@ -284,6 +289,12 @@ public class GenericSelectionPopup : MonoBehaviour {
          }
       } else if (popupType == selectionType.CropsIcon) {
          foreach (KeyValuePair<string, Sprite> sourceSprite in cropIconSpriteList) {
+            string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
+            Sprite icon = ImageManager.getSprite(sourceSprite.Key);
+            createImageTemplate(sourceSprite.Key, shortName, icon, imageIcon, textUI);
+         }
+      } else if (popupType == selectionType.DiscoverySprites) {
+         foreach (KeyValuePair<string, Sprite> sourceSprite in discoveriesSpriteList) {
             string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
             Sprite icon = ImageManager.getSprite(sourceSprite.Key);
             createImageTemplate(sourceSprite.Key, shortName, icon, imageIcon, textUI);
@@ -548,7 +559,7 @@ public class GenericSelectionPopup : MonoBehaviour {
    }
 
    public void toggleAudioSelection (AudioClip clip, Text textUsed) {
-      selectionPanel.SetActive(true); 
+      selectionPanel.SetActive(true);
       templateParent.DestroyChildren();
 
       foreach (AudioClipManager.AudioClipData sourceClip in AudioClipManager.self.audioDataList) {
@@ -571,7 +582,7 @@ public class GenericSelectionPopup : MonoBehaviour {
       }
    }
 
-   private void closePopup() {
+   private void closePopup () {
       selectionPanel.SetActive(false);
    }
 
@@ -632,7 +643,7 @@ public class GenericSelectionPopup : MonoBehaviour {
    }
 
    #region Private Variables
-      
+
    #endregion
 }
 
@@ -651,7 +662,7 @@ public class TogglerClass
    public void initListeners () {
       buttonToggle.onClick.AddListener(() => {
          gameObjToHide.SetActive(!gameObjToHide.activeSelf);
-         dropDownIcon.SetActive(!gameObjToHide.activeSelf); 
+         dropDownIcon.SetActive(!gameObjToHide.activeSelf);
       });
    }
 }

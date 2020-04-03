@@ -541,6 +541,9 @@ public class Minimap : ClientMonoBehaviour {
       int layerOriginY = -layerSizeY / 2;
 
       if (area) {
+         HashSet<string> createdPrefabIconsPerGrid = new HashSet<string>();
+         Dictionary<string, List<Vector2Int>> createdPrefabIcons = new Dictionary<string, List<Vector2Int>>();
+         Transform[] prefabs = area.gameObject.transform.Find("Prefabs") ? area.gameObject.transform.Find("Prefabs").GetComponentsInChildren<Transform>() : new Transform[0];
          AreaEffector2D[] areaEffectors2D = area.GetComponentsInChildren<AreaEffector2D>();
          Collider2D[] colliders2D = area.GetComponentsInChildren<Collider2D>();
          MinimapGeneratorPreset preset = chooseBaseMapPreset(area);
@@ -895,8 +898,8 @@ public class Minimap : ClientMonoBehaviour {
                                  // Set border color
                                  if (layer.useBorder) {
                                     if (map.GetPixel(x + 1, y).a <= 0 || map.GetPixel(x - 1, y).a <= 0 || map.GetPixel(x, y + 1).a <= 0 || map.GetPixel(x, y - 1).a <= 0) {
-                                       if (!(map.GetPixel(x, y + 1).a <= 0 && map.GetPixel(x, y - 1).a <= 0)) { //XOR for 1px width
-                                          if (!(map.GetPixel(x + 1, y).a <= 0 && map.GetPixel(x - 1, y).a <= 0)) { //XOR for 1px height
+                                       if (!(map.GetPixel(x, y + 1).a <= 0 && map.GetPixel(x, y - 1).a <= 0)) { // XOR for 1px width
+                                          if (!(map.GetPixel(x + 1, y).a <= 0 && map.GetPixel(x - 1, y).a <= 0)) { // XOR for 1px height
                                              // Write only to border
                                              if (layer.isOnlyBorder) {
                                                 borderOnlyMap.SetPixel(x, y, layer.borderColor);
@@ -911,7 +914,7 @@ public class Minimap : ClientMonoBehaviour {
                                  // Set top down color
                                  if (layer.useTopDownBorder) {
                                     if (map.GetPixel(x, y + 1).a <= 0 || map.GetPixel(x, y - 1).a <= 0) {
-                                       if (!(map.GetPixel(x, y + 1).a <= 0 && map.GetPixel(x, y - 1).a <= 0)) { //XOR for 1px width
+                                       if (!(map.GetPixel(x, y + 1).a <= 0 && map.GetPixel(x, y - 1).a <= 0)) { // XOR for 1px width
                                           // Write only to border
                                           if (layer.isOnlyBorder) {
                                              borderOnlyMap.SetPixel(x, y, layer.topDownBorderColor);
@@ -925,7 +928,7 @@ public class Minimap : ClientMonoBehaviour {
                                  // Set lateral border color
                                  if (layer.useLateralBorder) {
                                     if (map.GetPixel(x + 1, y).a <= 0 || map.GetPixel(x - 1, y).a <= 0) {
-                                       if (!(map.GetPixel(x + 1, y).a <= 0 && map.GetPixel(x - 1, y).a <= 0)) { //XOR for 1px height
+                                       if (!(map.GetPixel(x + 1, y).a <= 0 && map.GetPixel(x - 1, y).a <= 0)) { // XOR for 1px height
                                           // Write only to border
                                           if (layer.isOnlyBorder) {
                                              borderOnlyMap.SetPixel(x, y, layer.lateralColor);
@@ -939,7 +942,7 @@ public class Minimap : ClientMonoBehaviour {
                                  // Set top border color
                                  if (layer.useTopBorder) {
                                     if (map.GetPixel(x, y + 1).a <= 0) {
-                                       if (!(map.GetPixel(x, y + 1).a <= 0 && map.GetPixel(x, y - 1).a <= 0)) { //XOR for 1px width
+                                       if (!(map.GetPixel(x, y + 1).a <= 0 && map.GetPixel(x, y - 1).a <= 0)) { // XOR for 1px width
                                           for (int px = 0; px < ((layer.topPixelCount != 0) ? layer.topPixelCount : 1) && y + px < map.height; px++) {
                                              // Write only to border
                                              if (layer.isOnlyBorder) {
@@ -955,7 +958,7 @@ public class Minimap : ClientMonoBehaviour {
                                  // Set down border color
                                  if (layer.useDownBorder) {
                                     if (map.GetPixel(x, y - 1).a <= 0 && y - 1 >= 0) {
-                                       if (!(map.GetPixel(x, y + 1).a <= 0 && map.GetPixel(x, y - 1).a <= 0)) { //XOR for 1px width
+                                       if (!(map.GetPixel(x, y + 1).a <= 0 && map.GetPixel(x, y - 1).a <= 0)) { // XOR for 1px width
                                           for (int px = 0; px < ((layer.downPixelCount != 0) ? layer.downPixelCount : 1) && y - px >= 0; px++) {
                                              // Write only to border
                                              if (layer.isOnlyBorder) {
@@ -971,7 +974,7 @@ public class Minimap : ClientMonoBehaviour {
                                  // Set down border color - second layer
                                  if (layer.useAnotherDownBorder) {
                                     if (map.GetPixel(x, y - 1).a <= 0 && y - 1 >= 0) {
-                                       if (!(map.GetPixel(x, y + 1).a <= 0 && map.GetPixel(x, y - 1).a <= 0)) { //XOR for 1px width
+                                       if (!(map.GetPixel(x, y + 1).a <= 0 && map.GetPixel(x, y - 1).a <= 0)) { // XOR for 1px width
                                           for (int px = 0; px < ((layer.anotherDownPixelCount != 0) ? layer.anotherDownPixelCount : 1) && y - px >= 0; px++) {
                                              // Write only to border
                                              if (layer.isOnlyBorder) {
@@ -1195,6 +1198,66 @@ public class Minimap : ClientMonoBehaviour {
                            map.Apply();
                            textureList.Add(map);
 
+                        }
+                     }
+                  }
+               } else if (icon.usePrefab) {
+                  foreach (var pref in prefabs) {
+                     if (pref.name.StartsWith(icon.iconLayerName)) {
+                        Texture2D map = new Texture2D(layerSizeX, layerSizeY);
+                        MakeTextureTransparent(map);
+
+                        GridLayout gridLayout = area.GetComponentInChildren<GridLayout>();
+                        Vector2Int collider2DCellPosition = new Vector2Int(gridLayout.WorldToCell(pref.transform.position).x, -gridLayout.WorldToCell(pref.transform.position).y);
+
+                        var sprite = icon.spriteIcon;
+
+                        if (sprite) {
+                           var pixels = sprite.texture.GetPixels((int) sprite.textureRect.x,
+                                 (int) sprite.textureRect.y,
+                                 (int) sprite.textureRect.width,
+                                 (int) sprite.textureRect.height);
+
+                           int xSetPixel = Mathf.Clamp(collider2DCellPosition.x + icon.offset.x - (-layerSizeX / 2), 0, map.width - (int) sprite.textureRect.width);
+                           int ySetPixel = Mathf.Clamp(layerSizeY + icon.offset.y - (collider2DCellPosition.y - (-layerSizeY / 2)), 0, map.height - (int) sprite.textureRect.height);
+                           bool saveResult = true;
+
+                           if (icon.limitSpawnCount) {
+                              // Check if icon already exist in grid
+                              string gridKey = icon.iconLayerName + "grid_" + (xSetPixel / icon.spawnGridSize.x) + "_" + (ySetPixel / icon.spawnGridSize.y);
+                              if (!createdPrefabIconsPerGrid.Contains(gridKey)) {
+                                 // Check if distance between icons of given type is correct
+                                 if (createdPrefabIcons.ContainsKey(icon.iconLayerName) && icon.minDistanceManhattan > 0) {
+                                    foreach (var pos in createdPrefabIcons[icon.iconLayerName]) {
+                                       if (Math.Abs(xSetPixel - pos.x) + Math.Abs(ySetPixel - pos.y) < icon.minDistanceManhattan) {
+                                          saveResult = false;
+                                          break;
+                                       }
+                                    }
+                                 }
+                              } else {
+                                 saveResult = false;
+                              }
+
+                              // Save grid dictionary entry earlier to avoid recreating string
+                              if (saveResult) {
+                                 createdPrefabIconsPerGrid.Add(gridKey);
+                              }
+                           }
+
+                           if (saveResult) {
+                              if (icon.limitSpawnCount) {
+                                 if (!createdPrefabIcons.ContainsKey(icon.iconLayerName)) {
+                                    createdPrefabIcons.Add(icon.iconLayerName, new List<Vector2Int>());
+                                 }
+                                 createdPrefabIcons[icon.iconLayerName].Add(new Vector2Int(xSetPixel, ySetPixel));                                 
+                              }
+
+                              map.SetPixels(xSetPixel, ySetPixel, (int) sprite.rect.width, (int) sprite.rect.height, pixels);
+
+                              map.Apply();
+                              textureList.Add(map);
+                           }
                         }
                      }
                   }

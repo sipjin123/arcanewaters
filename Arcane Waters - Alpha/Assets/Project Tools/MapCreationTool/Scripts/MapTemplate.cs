@@ -13,6 +13,7 @@ namespace MapCreationTool
       public Transform effectorContainer;
       public PolygonCollider2D camBounds;
       public CinemachineConfiner confiner;
+      public Transform rugMarkerParent;
    }
 }
 
