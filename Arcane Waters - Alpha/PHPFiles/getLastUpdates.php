@@ -14,6 +14,12 @@
 		}
 	}
 
+	/* make sure that the folder exists */
+	if(!is_dir("xml_files")) {
+		$path = 'xml_files';
+		mkdir($path, null, true);
+	} 
+
 	/* check connection */
 	if (mysqli_connect_errno()) {
 		printf("Connect failed: %s\n", mysqli_connect_error());
@@ -42,7 +48,7 @@
 	
 	fetchData("ship_ability_xml_v2", $mysqli);
 	fetchData("ship_xml_v2", $mysqli);
-	fetchData("shop_xml", $mysqli);
+	fetchData("shop_xml_v2", $mysqli);
 	fetchData("tutorial_xml", $mysqli);
 	fetchData("usable_item_xml", $mysqli);
 		
