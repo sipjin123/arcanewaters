@@ -22,18 +22,15 @@ public class XmlVersionManagerServer : MonoBehaviour {
    public static string WEB_DIRECTORY = "http://localhost/";
 
    // The sub directories
-   public static string ABILITIES_POST = "setXml_Abilities.php?version=";
+   public static string ABILITIES_POST = "setXml_Abilities_v2.php?version=";
    public static string ZIP_POST = "setXml_Zip.php?version=";
    public static string XML_VERSION_GET = "getXmlVersion.php";
    public static string LAST_UPDATED_GET = "getLastUpdates.php";
 
-   public static string XML_PAIR_GET = "setXml_TypePair.php?tableName=";
+   public static string XML_PAIR_GET = "setXml_TypePair_v2.php?tableName=";
    public static string TEXT_FILE_NAME = "textFileName=";
 
    // TABLES (Can be changed)
-   public static string ACHIEVEMENTS_TABLE = "achievement_xml_v2";
-   public static string BACKGROUND_TABLE = "background_xml_v2";
-   public static string CRAFTING_TABLE = "crafting_xml_v2";
    public static string CROPS_TABLE = "crops_xml_v1";
 
    public static string ARMOR_TABLE = "equipment_armor_xml_v3";
@@ -49,14 +46,11 @@ public class XmlVersionManagerServer : MonoBehaviour {
    public static string SEA_MONSTER_TABLE = "sea_monster_xml_v2";
 
    public static string SHIP_TABLE = "ship_xml_v2";
-   public static string SHOP_TABLE = "shop_xml";
+   public static string SHOP_TABLE = "shop_xml_v2";
    public static string TUTORIAL_TABLE = "tutorial_xml";
    public static string SHIP_ABILITY_TABLE = "ship_ability_xml_v2";
 
    // TEXT FILE NAMES (Do not Modify)
-   public static string ACHIEVEMENTS_FILE = "achievements";
-   public static string BACKGROUND_FILE = "backgrounds";
-   public static string CRAFTING_FILE = "crafting_ingredients";
    public static string CROPS_FILE = "crops";
    public static string ABILITIES_FILE = "abilities";
 
@@ -81,6 +75,9 @@ public class XmlVersionManagerServer : MonoBehaviour {
    public int targetProgress;
    public int currentProgress;
 
+   // Stops the server from initializing
+   public bool forceDisable;
+
    #endregion
 
    private void Awake () {
@@ -88,10 +85,17 @@ public class XmlVersionManagerServer : MonoBehaviour {
    }
 
    public void initializeServerData () {
-      StartCoroutine(CO_GetXmlData());
+      #if !UNITY_EDITOR
+         forceDisable = false;
+      #endif
+      if (!forceDisable) {
+         StartCoroutine(CO_GetXmlData());
+      }
    }
 
    private IEnumerator CO_GetXmlData () {
+      D.editorLog("Preparing to Process Files...", Color.cyan);
+      yield return new WaitForSeconds(5);
       UnityWebRequest www = UnityWebRequest.Get(WEB_DIRECTORY + LAST_UPDATED_GET);
       yield return www.SendWebRequest();
       if (www.isNetworkError || www.isHttpError) {
@@ -104,6 +108,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
          string splitter = "[next]";
          string[] xmlGroup = rawData.Split(new string[] { splitter }, StringSplitOptions.None);
 
+         int index = 1;
          bool shouldZipNewFiles = false; 
          foreach (string subgroup in xmlGroup) {
             string subSplitter = "[space]";
@@ -136,12 +141,13 @@ public class XmlVersionManagerServer : MonoBehaviour {
                   if (serverDate > savedDate) {
                      shouldZipNewFiles = true;
                      PlayerPrefs.SetString(xmlTableName, serverDate.ToString());
-                     D.editorLog("Server updated recently updates", Color.blue);
+                     D.editorLog("Server updated recently updates: " + (index + "/" + (xmlGroup.Length -1)), Color.blue);
                   } else {
-                     D.editorLog("NO updates", Color.blue);
+                     D.editorLog("NO updates: " + (index + "/" + (xmlGroup.Length -1)), Color.blue);
                   }
                }
             }
+            index++;
          }
 
          // Get the latest version
@@ -152,8 +158,12 @@ public class XmlVersionManagerServer : MonoBehaviour {
             D.warning(www.error);
          } else {
             rawData = www.downloadHandler.text;
-            databaseVersion = int.Parse(rawData);
-            newServerVersion = databaseVersion + 1;
+            try {
+               databaseVersion = int.Parse(rawData);
+               newServerVersion = databaseVersion + 1;
+            } catch {
+               D.editorLog("Failed to parse version: " + rawData, Color.red);
+            }
          }
 
          string serverMessage = "";
@@ -161,9 +171,6 @@ public class XmlVersionManagerServer : MonoBehaviour {
             serverMessage = "Version is valid: Writing data to server, new version from: " + databaseVersion + " to " + newServerVersion;
             targetProgress = 0;
             currentProgress = 0;
-            StartCoroutine(CO_PostXmlData(EditorToolType.Achievement));
-            StartCoroutine(CO_PostXmlData(EditorToolType.Background));
-            StartCoroutine(CO_PostXmlData(EditorToolType.Crafting));
             StartCoroutine(CO_PostXmlData(EditorToolType.Crops));
             StartCoroutine(CO_PostXmlData(EditorToolType.BattlerAbility));
 
@@ -181,7 +188,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
 
             // TODO: Convert these tables into using xml_id as primary key
             //StartCoroutine(CO_PostXmlData(EditorToolType.Tutorial));
-            //StartCoroutine(CO_PostXmlData(EditorToolType.Shop));
+            StartCoroutine(CO_PostXmlData(EditorToolType.Shop));
             StartCoroutine(CO_PostXmlData(EditorToolType.Ship));
             StartCoroutine(CO_PostXmlData(EditorToolType.ShipAbility));
          } else {
@@ -205,22 +212,13 @@ public class XmlVersionManagerServer : MonoBehaviour {
             // Set xml data for abilities
             www = UnityWebRequest.Get(WEB_DIRECTORY + ABILITIES_POST + newServerVersion);
             break;
-         case EditorToolType.Achievement:
-            www = UnityWebRequest.Get(WEB_DIRECTORY + XML_PAIR_GET + ACHIEVEMENTS_TABLE + "&" + TEXT_FILE_NAME + ACHIEVEMENTS_FILE);
-            break;
          case EditorToolType.LandMonster:
             www = UnityWebRequest.Get(WEB_DIRECTORY + XML_PAIR_GET + LAND_MONSTER_TABLE + "&" + TEXT_FILE_NAME + LAND_MONSTER_FILE);
             break;
          case EditorToolType.SeaMonster:
             www = UnityWebRequest.Get(WEB_DIRECTORY + XML_PAIR_GET + SEA_MONSTER_TABLE + "&" + TEXT_FILE_NAME + SEA_MONSTER_FILE);
             break;
-         case EditorToolType.Background:
-            www = UnityWebRequest.Get(WEB_DIRECTORY + XML_PAIR_GET + BACKGROUND_TABLE + "&" + TEXT_FILE_NAME + BACKGROUND_FILE);
-            break;
 
-         case EditorToolType.Crafting:
-            www = UnityWebRequest.Get(WEB_DIRECTORY + XML_PAIR_GET + CRAFTING_TABLE + "&" + TEXT_FILE_NAME + CRAFTING_FILE);
-            break;
          case EditorToolType.Crops:
             www = UnityWebRequest.Get(WEB_DIRECTORY + XML_PAIR_GET + CROPS_TABLE + "&" + TEXT_FILE_NAME + CROPS_FILE);
             break;

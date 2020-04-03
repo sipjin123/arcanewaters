@@ -45,9 +45,9 @@ public class EditorSQLManager
          case EditorToolType.BattlerAbility:
             return "ability_xml_v2";
          case EditorToolType.ShipAbility:
-            return "ship_ability_xml";
+            return "ship_ability_xml_v2";
          case EditorToolType.Shop:
-            return "shop_xml";
+            return "shop_xml_v2";
          case EditorToolType.Tutorial:
             return "tutorial_xml";
          case EditorToolType.Books:

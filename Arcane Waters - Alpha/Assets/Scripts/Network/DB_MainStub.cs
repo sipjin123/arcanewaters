@@ -237,15 +237,15 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
-   public static void updateShopXML (string rawData, string shopName) {
+   public static void updateShopXML (string rawData, string shopName, int xmlId) {
 
    }
 
-   public static List<string> getShopXML () {
-      return new List<string>();
+   public static List<XMLPair> getShopXML () {
+      return new List<XMLPair>();
    }
 
-   public static void deleteShopXML (string shopName) {
+   public static void deleteShopXML (int xmlId) {
 
    }
 

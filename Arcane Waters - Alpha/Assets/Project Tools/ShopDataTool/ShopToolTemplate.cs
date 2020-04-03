@@ -7,6 +7,9 @@ using Mirror;
 public class ShopToolTemplate : GenericEntryTemplate {
    #region Public Variable
 
+   // The xml id of the data
+   public int xmlId;
+
    #endregion
 
    private void OnEnable () {

@@ -8,7 +8,7 @@ using static EditorSQLManager;
 using ICSharpCode.SharpZipLib.Zip;
 using System.IO;
 using System;
-using BackgroundTool;
+using static ShopDataToolManager;
 
 public class XmlVersionManagerClient : MonoBehaviour {
    #region Public Variables
@@ -144,10 +144,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
       D.log("Initializing Text Extraction");
       targetProgress = 0;
       currentProgress = 0;
-      StartCoroutine(CO_ExtractXmlData(EditorToolType.Achievement));
       StartCoroutine(CO_ExtractXmlData(EditorToolType.Crops));
-      StartCoroutine(CO_ExtractXmlData(EditorToolType.Crafting));
-      StartCoroutine(CO_ExtractXmlData(EditorToolType.Background));
       StartCoroutine(CO_ExtractXmlData(EditorToolType.BattlerAbility));
 
       StartCoroutine(CO_ExtractXmlData(EditorToolType.Equipment_Armor));
@@ -162,13 +159,14 @@ public class XmlVersionManagerClient : MonoBehaviour {
       StartCoroutine(CO_ExtractXmlData(EditorToolType.PlayerJob));
       StartCoroutine(CO_ExtractXmlData(EditorToolType.SeaMonster));
 
+      StartCoroutine(CO_ExtractXmlData(EditorToolType.Shop));
       StartCoroutine(CO_ExtractXmlData(EditorToolType.Ship));
       StartCoroutine(CO_ExtractXmlData(EditorToolType.ShipAbility));
    }
 
    private IEnumerator CO_ExtractXmlData (EditorToolType xmlType) {
       targetProgress++;
-      yield return new WaitForSeconds(.1f);
+      yield return new WaitForSeconds(.25f);
 
       string content = "";
       string path = "";
@@ -176,17 +174,8 @@ public class XmlVersionManagerClient : MonoBehaviour {
          case EditorToolType.BattlerAbility:
             path = TEXT_PATH + XmlVersionManagerServer.ABILITIES_FILE + ".txt";
             break;
-         case EditorToolType.Achievement:
-            path = TEXT_PATH + XmlVersionManagerServer.ACHIEVEMENTS_FILE + ".txt";
-            break;
          case EditorToolType.Crops:
             path = TEXT_PATH + XmlVersionManagerServer.CROPS_FILE + ".txt";
-            break;
-         case EditorToolType.Crafting:
-            path = TEXT_PATH + XmlVersionManagerServer.CRAFTING_FILE + ".txt";
-            break;
-         case EditorToolType.Background:
-            path = TEXT_PATH + XmlVersionManagerServer.BACKGROUND_FILE + ".txt";
             break;
 
          case EditorToolType.Equipment_Armor:
@@ -227,16 +216,23 @@ public class XmlVersionManagerClient : MonoBehaviour {
          case EditorToolType.ShipAbility:
             path = TEXT_PATH + XmlVersionManagerServer.SHIP_ABILITY_FILE + ".txt";
             break;
+         case EditorToolType.Shop:
+            path = TEXT_PATH + XmlVersionManagerServer.SHOP_FILE + ".txt";
+            break;
       }
 
       // Read the text from directly from the txt file
-      StreamReader reader = new StreamReader(path);
-      content = reader.ReadToEnd();
-      reader.Close();
+      try {
+         StreamReader reader = new StreamReader(path);
+         content = reader.ReadToEnd();
+         reader.Close();
 
-      assignDataToManagers(xmlType, content);
-      currentProgress++;
-      checkTextExtractionProgress();
+         assignDataToManagers(xmlType, content);
+         currentProgress++;
+         checkTextExtractionProgress();
+      } catch {
+         D.editorLog("Failed to read: " + xmlType + " - " + path, Color.red);
+      }
    }
 
    private void assignDataToManagers (EditorToolType xmlType, string content) {
@@ -246,31 +242,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
       string message = "";
 
       switch (xmlType) {
-         #region Group 1 (Achievement/Crafting/Crops/Abilities/Background)
-         case EditorToolType.Achievement:
-            foreach (string subGroup in xmlGroup) {
-               string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
-
-               // Extract the segregated data and assign to the xml manager
-               if (xmlSubGroup.Length == 2) {
-                  int dataId = int.Parse(xmlSubGroup[0]);
-                  AchievementData actualData = Util.xmlLoad<AchievementData>(xmlSubGroup[1]);
-                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
-               }
-            }
-            break;
-         case EditorToolType.Crafting:
-            foreach (string subGroup in xmlGroup) {
-               string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
-
-               // Extract the segregated data and assign to the xml manager
-               if (xmlSubGroup.Length == 2) {
-                  int dataId = int.Parse(xmlSubGroup[0]);
-                  CraftableItemRequirements actualData = Util.xmlLoad<CraftableItemRequirements>(xmlSubGroup[1]);
-                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
-               }
-            }
-            break;
+         #region Group 1 (Crops/Abilities)
          case EditorToolType.Crops:
             List<CropsData> cropData = new List<CropsData>();
             foreach (string subGroup in xmlGroup) {
@@ -285,18 +257,6 @@ public class XmlVersionManagerClient : MonoBehaviour {
                }
             }
             CropsDataManager.self.receiveCropsFromZipData(cropData);
-            break;
-         case EditorToolType.Background:
-            foreach (string subGroup in xmlGroup) {
-               string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
-
-               // Extract the segregated data and assign to the xml manager
-               if (xmlSubGroup.Length == 2) {
-                  int dataId = int.Parse(xmlSubGroup[0]);
-                  BackgroundContentData actualData = Util.xmlLoad<BackgroundContentData>(xmlSubGroup[1]);
-                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
-               }
-            }
             break;
          case EditorToolType.BattlerAbility:
             List<AttackAbilityData> attackAbilityList = new List<AttackAbilityData>();
@@ -373,6 +333,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
             EquipmentXMLManager.self.receiveHelmFromZipData(helmList);
             break;
          case EditorToolType.NPC:
+            List<NPCData> npcList = new List<NPCData>();
             foreach (string subGroup in xmlGroup) {
                string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
 
@@ -380,9 +341,11 @@ public class XmlVersionManagerClient : MonoBehaviour {
                if (xmlSubGroup.Length == 2) {
                   int dataId = int.Parse(xmlSubGroup[0]);
                   NPCData actualData = Util.xmlLoad<NPCData>(xmlSubGroup[1]);
+                  npcList.Add(actualData);
                   message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
                }
             }
+            NPCManager.self.initializeNPCClientData(npcList.ToArray());
             break;
          case EditorToolType.LandMonster:
             List<BattlerData> battlerDataList = new List<BattlerData>();
@@ -507,6 +470,25 @@ public class XmlVersionManagerClient : MonoBehaviour {
                }
             }
             ShipAbilityManager.self.receiveDataFromZipData(shipAbilityList.ToArray());
+            break;
+         case EditorToolType.Shop:
+            List<ShopDataGroup> shopDataList = new List<ShopDataGroup>();
+            foreach (string subGroup in xmlGroup) {
+               string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
+
+               // Extract the segregated data and assign to the xml manager
+               if (xmlSubGroup.Length == 2) {
+                  int dataId = int.Parse(xmlSubGroup[0]);
+                  ShopData actualData = Util.xmlLoad<ShopData>(xmlSubGroup[1]);
+                  actualData.shopId = dataId;
+                  shopDataList.Add(new ShopDataGroup { 
+                     shopData = actualData,
+                     xmlId = dataId
+                  });
+                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
+               }
+            }
+            ShopXMLManager.self.receiveDataFromZipData(shopDataList.ToArray());
             break;
             #endregion
       }

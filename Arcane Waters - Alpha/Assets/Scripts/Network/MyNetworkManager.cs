@@ -277,20 +277,12 @@ public class MyNetworkManager : NetworkManager {
             // Server provides clients with info of the npc
             List<NPCData> referenceNPCData = NPCManager.self.getNPCDataInArea(previousAreaKey);
 
+            // TODO: Check if this is still necessary
             // Sends npc data of the area to the client
-            player.rpc.Target_ReceiveNPCsForCurrentArea(player.connectionToClient, serializedNPCData(referenceNPCData));
+            // player.rpc.Target_ReceiveNPCsForCurrentArea(player.connectionToClient, serializedNPCData(referenceNPCData));
 
             // Send any extra info as targeted RPCs
             player.cropManager.sendSiloInfo();
-
-            // Send job info to client
-            player.rpc.Target_ReceiveJobInfo (player.connectionToClient, Util.serialize(JobManager.self.jobDataList));
-
-            // Sends ship data to the client
-            player.rpc.Target_ReceiveAllShipInfo(player.connectionToClient, Util.serialize(ShipDataManager.self.shipDataList));
-
-            // Sends ship ability data to the client
-            player.rpc.Target_ReceiveAllShipAbilityInfo(player.connectionToClient, Util.serialize(ShipAbilityManager.self.shipAbilityDataList));
 
             // Gives the user admin features if it has an admin flag
             player.rpc.Target_GrantAdminAccess(player.connectionToClient, player.isAdmin());

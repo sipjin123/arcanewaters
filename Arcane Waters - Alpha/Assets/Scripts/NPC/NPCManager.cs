@@ -68,6 +68,7 @@ public class NPCManager : MonoBehaviour {
          if (_npcData.ContainsKey(data.npcId)) {
             _npcData[data.npcId] = data;
          } else {
+            npcList.Add(data);
             _npcData.Add(data.npcId, data);
          }
 

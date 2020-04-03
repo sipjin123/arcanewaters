@@ -20,55 +20,6 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_ReceiveNPCsForCurrentArea (NetworkConnection connection, string[] npcDataRaw) {
-      // Deserialize data
-      NPCData[] npcDataList = Util.unserialize<NPCData>(npcDataRaw).ToArray();
-
-      // Cache to npc manager 
-      NPCManager.self.initializeNPCClientData(npcDataList);
-   }
-
-   [TargetRpc]
-   public void Target_ReceiveEquipmentData (NetworkConnection connection, string[] rawData, EquipmentToolManager.EquipmentType equipType) {
-      // TODO: Check if this is still necessary
-      /*
-      switch (equipType) {
-         case EquipmentToolManager.EquipmentType.Weapon:
-            WeaponStatData[] weaponDataList = Util.unserialize<WeaponStatData>(rawData).ToArray();
-            EquipmentXMLManager.self.receiveWeaponDataFromServer(new List<WeaponStatData>(weaponDataList));
-            break;
-         case EquipmentToolManager.EquipmentType.Armor:
-            ArmorStatData[] armorDataList = Util.unserialize<ArmorStatData>(rawData).ToArray();
-            EquipmentXMLManager.self.receiveArmorDataFromServer(new List<ArmorStatData>(armorDataList));
-            break;
-         case EquipmentToolManager.EquipmentType.Helm:
-            HelmStatData[] helmDataList = Util.unserialize<HelmStatData>(rawData).ToArray();
-            EquipmentXMLManager.self.receiveHelmDataFromServer(new List<HelmStatData>(helmDataList));
-            break;
-      }*/
-   }
-
-   [TargetRpc]
-   public void Target_ReceiveAllShipInfo (NetworkConnection connection, string[] rawShipInfo) {
-      // TODO: Check if this is still needed
-      // Deserialize data
-      //ShipData[] shipDataList = Util.unserialize<ShipData>(rawShipInfo).ToArray();
-
-      // Cache to ship data manager 
-      //ShipDataManager.self.receiveShipDataFromServer(new List<ShipData>(shipDataList));
-   }
-
-   [TargetRpc]
-   public void Target_ReceiveAllShipAbilityInfo (NetworkConnection connection, string[] rawShipAbilityInfo) {
-      // TODO: Check if this is still needed
-      // Deserialize data
-      //ShipAbilityPair[] shipDataList = Util.unserialize<ShipAbilityPair>(rawShipAbilityInfo).ToArray();
-
-      // Cache to ship data manager 
-      //ShipAbilityManager.self.receiveDataFromServer(shipDataList);
-   }
-
-   [TargetRpc]
    public void Target_GrantAdminAccess (NetworkConnection connection, bool isEnabled) {
       OptionsPanel panel = (OptionsPanel) PanelManager.self.get(Panel.Type.Options);
       panel.enableAdminButtons(isEnabled);
@@ -3384,18 +3335,6 @@ public class RPCManager : NetworkBehaviour {
             BackgroundContentData fetchedBGData = BackgroundGameManager.self.backgroundContentList.Find(_ => _.xmlId == bgXmlID);
             Target_ReceiveBackgroundInfo(_player.connectionToClient, Util.serialize(new List<BackgroundContentData>() { fetchedBGData }));
 
-            // Send class info to client
-            PlayerClassData currentClassData = ClassManager.self.getClassData(localBattler.classType);
-            Target_ReceiveClassInfo(_player.connectionToClient, JsonUtility.ToJson(currentClassData));
-
-            // Send faction info to client
-            PlayerFactionData currentFactionData = FactionManager.self.getFactionData(localBattler.faction);
-            Target_ReceiveFactionInfo(_player.connectionToClient, JsonUtility.ToJson(currentFactionData));
-
-            // Send specialty info to client
-            PlayerSpecialtyData currentSpecialtyData = SpecialtyManager.self.getSpecialtyData(localBattler.specialty);
-            Target_ReceiveSpecialtyInfo(_player.connectionToClient, JsonUtility.ToJson(currentSpecialtyData));
-
             // Send SoundEffects to the Client
             List<SoundEffect> currentSoundEffects = SoundEffectManager.self.getAllSoundEffects();
             Target_ReceiveSoundEffects(_player.connectionToClient, Util.serialize(currentSoundEffects));
@@ -3591,34 +3530,6 @@ public class RPCManager : NetworkBehaviour {
    public void Target_ReceiveBackgroundInfo (NetworkConnection connection, string[] rawBGData) {
       List<BackgroundContentData> backgroundContentList = Util.unserialize<BackgroundContentData>(rawBGData); 
       BackgroundGameManager.self.receiveNewContent(backgroundContentList.ToArray());
-   }
-
-   [TargetRpc]
-   public void Target_ReceiveClassInfo (NetworkConnection connection, string rawClassData) {
-      // TODO: Check if this is still needed
-      //PlayerClassData classData = JsonUtility.FromJson<PlayerClassData>(rawClassData);
-      //ClassManager.self.addClassInfo(classData);
-   }
-
-   [TargetRpc]
-   public void Target_ReceiveJobInfo (NetworkConnection connection, string[] rawData) {
-      // TODO: Check if this is still needed
-      //List<PlayerJobData> jobData = Util.unserialize<PlayerJobData>(rawData);
-      //JobManager.self.receiveDataFromServer(jobData);
-   }
-
-   [TargetRpc]
-   public void Target_ReceiveSpecialtyInfo (NetworkConnection connection, string rawSpecialtyData) {
-      // TODO: Check if this is still needed
-      //PlayerSpecialtyData specialtyData = JsonUtility.FromJson<PlayerSpecialtyData>(rawSpecialtyData);
-      //SpecialtyManager.self.addSpecialtyInfo(specialtyData);
-   }
-
-   [TargetRpc]
-   public void Target_ReceiveFactionInfo (NetworkConnection connection, string rawFactionData) {
-      // TODO: Check if this is still needed
-      //PlayerFactionData factionData = JsonUtility.FromJson<PlayerFactionData>(rawFactionData);
-      //FactionManager.self.addFactionInfo(factionData);
    }
 
    #endregion

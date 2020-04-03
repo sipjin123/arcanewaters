@@ -117,7 +117,9 @@ public class InstanceManager : MonoBehaviour {
       }
 
       // Create the discoveries that could exist in this instance
-      DiscoveryManager.self.createDiscoveriesForInstance(instance);
+      if (DiscoveryManager.self != null) {
+         DiscoveryManager.self.createDiscoveriesForInstance(instance);
+      }
 
       // Create any Enemies that exist in this Instance
       EnemyManager.self.spawnEnemiesOnServerForInstance(instance);

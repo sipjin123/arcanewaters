@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.SceneManagement;
+using static ShopDataToolManager;
 
 public class ShopToolScene : MonoBehaviour {
    #region Public Variables
@@ -50,14 +51,16 @@ public class ShopToolScene : MonoBehaviour {
 
       ShopToolTemplate template = GenericEntryTemplate.createGenericTemplate(shopTemplatePrefab.gameObject, toolManager, templateParent.transform).GetComponent<ShopToolTemplate>();
       template.nameText.text = shopData.shopName;
+      template.xmlId = -1;
+
       template.editButton.onClick.AddListener(() => {
-         shopPanel.loadData(shopData);
+         shopPanel.loadData(shopData, template.xmlId);
          shopPanel.gameObject.SetActive(true);
       });
 
       template.deleteButton.onClick.AddListener(() => {
          Destroy(template.gameObject, .5f);
-         toolManager.deleteDataFile(shopData);
+         toolManager.deleteDataFile(template.xmlId);
       });
 
       template.duplicateButton.onClick.AddListener(() => {
@@ -69,30 +72,31 @@ public class ShopToolScene : MonoBehaviour {
       template.gameObject.SetActive(true);
    }
 
-   public void loadShopData (Dictionary<string, ShopData> data) {
+   public void loadShopData (Dictionary<int, ShopDataGroup> data) {
       templateParent.gameObject.DestroyChildren();
 
       // Create a row for each monster element
-      foreach (ShopData shopData in data.Values) {
+      foreach (ShopDataGroup shopGroup in data.Values) {
          ShopToolTemplate template = GenericEntryTemplate.createGenericTemplate(shopTemplatePrefab.gameObject, toolManager, templateParent.transform).GetComponent<ShopToolTemplate>();
-         template.nameText.text = shopData.shopName;
+         template.nameText.text = shopGroup.shopData.shopName;
+         template.xmlId = shopGroup.xmlId;
 
          template.editButton.onClick.AddListener(() => {
-            shopPanel.loadData(shopData);
+            shopPanel.loadData(shopGroup.shopData, shopGroup.xmlId);
             shopPanel.gameObject.SetActive(true);
          });
 
          template.deleteButton.onClick.AddListener(() => {
             Destroy(template.gameObject, .5f);
-            toolManager.deleteDataFile(shopData);
+            toolManager.deleteDataFile(template.xmlId);
          });
 
          template.duplicateButton.onClick.AddListener(() => {
-            toolManager.duplicateXMLData(shopData);
+            toolManager.duplicateXMLData(shopGroup.shopData);
          });
 
          try {
-            Sprite shipSprite = ImageManager.getSpritesInDirectory(shopData.shopIconPath)[0].sprites[0];
+            Sprite shipSprite = ImageManager.getSpritesInDirectory(shopGroup.shopData.shopIconPath)[0].sprites[0];
             template.itemIcon.sprite = shipSprite;
          } catch {
             template.itemIcon.sprite = emptySprite;

@@ -1,6 +1,10 @@
-﻿public class ShopData {
+﻿using System;
+
+[Serializable]
+public class ShopData {
    // Basic info of the shop data
    public string shopName;
+   public int shopId;
    public string shopIconPath = "";
    public string shopGreetingText = "No Greeting Text Setup";
    public string areaAttachment = "";
@@ -8,6 +12,7 @@
    public ShopItemData[] shopItems = new ShopItemData[0];
 }
 
+[Serializable]
 public class ShopItemData {
    // Name of the item
    public string itemName;

@@ -13,9 +13,6 @@ public class ShopToolPanel : MonoBehaviour
    // Buttons for saving and canceling
    public Button saveButton, cancelButton;
 
-   // Caches the initial type incase it is changed
-   public string startingName;
-
    // Shop Prefab
    public ShopDataItemTemplate shopItemPrefab;
 
@@ -46,6 +43,9 @@ public class ShopToolPanel : MonoBehaviour
    // Event for item selection update
    public UnityEvent updateItemTypeEvent = new UnityEvent();
 
+   // The current xml id being modified
+   public int currentXmlId;
+
    #endregion
 
    private void Awake () {
@@ -55,13 +55,8 @@ public class ShopToolPanel : MonoBehaviour
 
       saveButton.onClick.AddListener(() => {
          ShopData newShipData = getShopData();
-
-         if (newShipData.shopName != startingName) {
-            toolManager.deleteDataFile(new ShopData { shopName = startingName });
-         }
-
          if (newShipData != null) {
-            toolManager.saveXMLData(newShipData);
+            toolManager.saveXMLData(newShipData, currentXmlId);
             gameObject.SetActive(false);
          }
       });
@@ -158,11 +153,11 @@ public class ShopToolPanel : MonoBehaviour
       });
    }
 
-   public void loadData (ShopData data) {
+   public void loadData (ShopData data, int xmlId) {
       _shopName.text = data.shopName;
       _shopDescription.text = data.shopGreetingText;
       _areaKiller.text = data.areaAttachment;
-      startingName = data.shopName;
+      currentXmlId = xmlId;
 
       _shopIconPath.text = data.shopIconPath;
       if (data.shopIconPath != "") {

@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.Events;
+using System.Linq;
+using static ShopDataToolManager;
 
 public class ShopXMLManager : MonoBehaviour {
    #region Public Variables
@@ -30,15 +32,15 @@ public class ShopXMLManager : MonoBehaviour {
       if (!hasInitialized) {
          shopDataList = new List<ShopData>();
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            List<string> rawXMLData = DB_Main.getShopXML();
+            List<XMLPair> rawXMLData = DB_Main.getShopXML();
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               foreach (string rawText in rawXMLData) {
-                  TextAsset newTextAsset = new TextAsset(rawText);
+               foreach (XMLPair xmlPair in rawXMLData) {
+                  TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                   ShopData shopData = Util.xmlLoad<ShopData>(newTextAsset);
-
-                  if (!_shopData.ContainsKey(shopData.shopName)) {
-                     _shopData.Add(shopData.shopName, shopData);
+                  shopData.shopId = xmlPair.xmlId;
+                  if (!_shopData.ContainsKey(xmlPair.xmlId)) {
+                     _shopData.Add(xmlPair.xmlId, shopData);
                      shopDataList.Add(shopData);
                   }
                }
@@ -49,13 +51,13 @@ public class ShopXMLManager : MonoBehaviour {
       }
    }
 
-   public void receiveDataFromServer (ShopData[] dataCollection) {
+   public void receiveDataFromZipData (ShopDataGroup[] dataCollection) {
       if (!hasInitialized) {
          shopDataList = new List<ShopData>();
-         foreach (ShopData data in dataCollection) {
-            if (!_shopData.ContainsKey(data.shopName)) {
-               _shopData.Add(data.shopName, data);
-               shopDataList.Add(data);
+         foreach (ShopDataGroup shopDataGroup in dataCollection) {
+            if (!_shopData.ContainsKey(shopDataGroup.xmlId)) {
+               _shopData.Add(shopDataGroup.xmlId, shopDataGroup.shopData);
+               shopDataList.Add(shopDataGroup.shopData);
             }
          }
          hasInitialized = true;
@@ -64,7 +66,11 @@ public class ShopXMLManager : MonoBehaviour {
    }
 
    public ShopData getShopDataByName (string name) {
-      return _shopData[name];
+      return _shopData.Values.ToList().Find(_=>_.shopName == name);
+   }
+
+   public ShopData getShopDataById (int shopId) {
+      return _shopData[shopId];
    }
 
    public ShopData getShopDataByArea (string area) {
@@ -78,7 +84,7 @@ public class ShopXMLManager : MonoBehaviour {
    #region Private Variables
 
    // The cached data 
-   private Dictionary<string, ShopData> _shopData = new Dictionary<string, ShopData>();
+   private Dictionary<int, ShopData> _shopData = new Dictionary<int, ShopData>();
 
    #endregion
 }

@@ -690,7 +690,7 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO ship_ability_xml (" + xml_id_key + "xml_name, xmlContent, creator_userID, lastUserUpdate) " +
+            "INSERT INTO ship_ability_xml_v2 (" + xml_id_key + "xml_name, xmlContent, creator_userID, lastUserUpdate) " +
             "VALUES(" + xml_id_value + "@xml_name, @xmlContent, @creator_userID, NOW()) " +
             "ON DUPLICATE KEY UPDATE xml_name = @xml_name, xmlContent = @xmlContent, lastUserUpdate = NOW()", conn)) {
 
@@ -715,7 +715,7 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.ship_ability_xml", conn)) {
+            "SELECT * FROM arcane.ship_ability_xml_v2", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -742,7 +742,7 @@ public class DB_Main : DB_MainStub
    public static new void deleteShipAbilityXML (int xmlId) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM ship_ability_xml WHERE xml_id=@xml_id", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM ship_ability_xml_v2 WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_id", xmlId);
@@ -1469,18 +1469,28 @@ public class DB_Main : DB_MainStub
 
    #region Shop XML Data
 
-   public static new void updateShopXML (string rawData, string shopName) {
+   public static new void updateShopXML (string rawData, string shopName, int xmlId) {
+      string xml_id_key = "xml_id, ";
+      string xml_id_value = "@xml_id, ";
+
+      // If this is a newly created data, let sql table auto generate id
+      if (xmlId < 0) {
+         xml_id_key = "";
+         xml_id_value = "";
+      }
+
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO shop_xml (xml_name, xmlContent, creator_userID, lastUserUpdate) " +
-            "VALUES(@xml_name, @xmlContent, @creator_userID, NOW()) " +
-            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, lastUserUpdate = NOW()", conn)) {
+            "INSERT INTO shop_xml_v2 (" + xml_id_key + "xml_name, xmlContent, creator_userID, lastUserUpdate) " +
+            "VALUES(" + xml_id_value + "@xml_name, @xmlContent, @creator_userID, NOW()) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, xml_name = @xml_name, lastUserUpdate = NOW()", conn)) {
 
             conn.Open();
             cmd.Prepare();
 
+            cmd.Parameters.AddWithValue("@xml_id", xmlId);
             cmd.Parameters.AddWithValue("@xml_name", shopName);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
@@ -1493,12 +1503,12 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new List<string> getShopXML () {
-      List<string> rawDataList = new List<string>();
+   public static new List<XMLPair> getShopXML () {
+      List<XMLPair> rawDataList = new List<XMLPair>();
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.shop_xml", conn)) {
+            "SELECT * FROM arcane.shop_xml_v2", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -1506,23 +1516,29 @@ public class DB_Main : DB_MainStub
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  rawDataList.Add(dataReader.GetString("xmlContent"));
+                  XMLPair newPair = new XMLPair {
+                     isEnabled = true,
+                     rawXmlData = dataReader.GetString("xmlContent"),
+                     xmlId = dataReader.GetInt32("xml_id"),
+                     xmlOwnerId = dataReader.GetInt32("creator_userID")
+                  };
+                  rawDataList.Add(newPair);
                }
             }
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
-      return new List<string>(rawDataList);
+      return rawDataList;
    }
 
-   public static new void deleteShopXML (string shopName) {
+   public static new void deleteShopXML (int xmlId) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM shop_xml WHERE xml_name=@xml_name", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM shop_xml_v2 WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@xml_name", shopName);
+            cmd.Parameters.AddWithValue("@xml_id", xmlId);
 
             // Execute the command
             cmd.ExecuteNonQuery();

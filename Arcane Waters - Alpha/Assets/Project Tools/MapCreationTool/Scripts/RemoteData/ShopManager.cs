@@ -19,7 +19,7 @@ namespace MapCreationTool
       public static ShopManager instance { get; private set; }
 
       // Shop data cache
-      public Dictionary<string, ShopData> shopDataCollection { get; private set; }
+      public Dictionary<int, ShopData> shopDataCollection { get; private set; }
 
       // Finished loading
       public bool loaded { get; private set; }
@@ -41,10 +41,10 @@ namespace MapCreationTool
       }
 
       private void loadAllShop () {
-         shopDataCollection = new Dictionary<string, ShopData>();
+         shopDataCollection = new Dictionary<int, ShopData>();
 
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            List<string> rawXMLData = DB_Main.getShopXML();
+            List<XMLPair> rawXMLData = DB_Main.getShopXML();
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                setData(rawXMLData);
@@ -52,19 +52,20 @@ namespace MapCreationTool
          });
       }
 
-      private void setData (List<string> rawXMLData) {
+      private void setData (List<XMLPair> xmlPairGroup) {
          try {
-            foreach (string rawText in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(rawText);
+            foreach (XMLPair xmlPair in xmlPairGroup) {
+               TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                ShopData shopData = Util.xmlLoad<ShopData>(newTextAsset);
+               shopData.shopId = xmlPair.xmlId;
                if (shopData == null) {
                   Utilities.warning($"Failed to load shopData");
                   continue;
                }
 
                // Save the Shop data in the memory cache
-               if (!shopDataCollection.ContainsKey(shopData.shopName)) {
-                  shopDataCollection.Add(shopData.shopName, shopData);
+               if (!shopDataCollection.ContainsKey(xmlPair.xmlId)) {
+                  shopDataCollection.Add(xmlPair.xmlId, shopData);
                }
             }
 
