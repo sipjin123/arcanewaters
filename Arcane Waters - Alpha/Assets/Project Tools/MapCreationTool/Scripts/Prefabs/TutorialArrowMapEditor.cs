@@ -23,9 +23,9 @@ namespace MapCreationTool
          text.text = "Step ID: -";
       }
 
-      public void dataFieldChanged (string key, string value) {
-         if (key.CompareTo(DataField.TUTORIAL_ITEM_STEP_ID_KEY) == 0) {
-            text.text = "Step ID: " + value;
+      public void dataFieldChanged (DataField field) {
+         if (field.k.CompareTo(DataField.TUTORIAL_ITEM_STEP_ID_KEY) == 0) {
+            text.text = "Step ID: " + field.v;
          }
       }
 

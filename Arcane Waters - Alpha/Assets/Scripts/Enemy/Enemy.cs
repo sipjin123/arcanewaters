@@ -262,7 +262,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       foreach (DataField field in dataFields) {
          if (field.k.CompareTo(DataField.LAND_ENEMY_DATA_KEY) == 0) {
             // Get ID from npc data field
-            if (int.TryParse(field.v, out int id)) {
+            if (field.tryGetIntValue(out int id)) {
                return id;
             }
          }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using MapCreationTool.Serialization;
 using MapCreationTool.UndoSystem;
@@ -41,6 +42,8 @@ namespace MapCreationTool
       public static RemoteSpawns remoteSpawns { get; private set; }
 
       private void Awake () {
+         CultureInfo.CurrentCulture = new CultureInfo("en-US", false);
+
          instance = this;
 
          initializeRemoteDatas();

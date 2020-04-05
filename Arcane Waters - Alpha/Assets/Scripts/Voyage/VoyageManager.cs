@@ -20,7 +20,78 @@ public class VoyageManager : MonoBehaviour {
    }
 
    public void Start () {
+      // Update the members of the voyage group, if any
       InvokeRepeating("updateVoyageGroupMembers", 0f, 2f);
+   }
+
+   public void regenerateVoyageInstances () {
+      // At server startup, for dev builds, make all the sea maps accessible by creating one voyage for each
+#if !CLOUD_BUILD
+      StartCoroutine(CO_CreateInitialVoyages());
+#endif
+
+      // Regularly check that there are enough voyage instances open and create more
+      InvokeRepeating("createVoyageInstanceIfNeeded", 20f, 10f);
+   }
+
+   public void createVoyageInstance () {
+      // Get the list of sea maps area keys
+      List<string> seaMaps = AreaManager.self.getSeaAreaKeys();
+
+      // If there are no available areas, do nothing
+      if (seaMaps.Count == 0) {
+         return;
+      }
+
+      // Randomly choose an area
+      string areaKey = seaMaps[UnityEngine.Random.Range(0, seaMaps.Count)];
+
+      // Create the instance
+      createVoyageInstance(areaKey);
+   }
+
+   public void createVoyageInstance (string areaKey) {
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Get a new voyage id
+         int voyageId = DB_Main.getNewVoyageId();
+
+         // Back to Unity Thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Randomize the voyage parameters
+            Voyage.Difficulty difficulty = Util.randomEnumStartAt<Voyage.Difficulty>(1);
+            bool isPvP = UnityEngine.Random.Range(0, 2) == 0;
+
+            // Create the area instance
+            InstanceManager.self.createNewInstance(areaKey, false, true, voyageId, isPvP, difficulty);
+         });
+      });
+   }
+
+   public Voyage getVoyage (int voyageId) {
+      // Search the voyage in all the servers we know about
+      foreach (Server server in ServerNetwork.self.servers) {
+         foreach (Voyage voyage in server.voyages) {
+            if (voyage.voyageId == voyageId) {
+               return voyage;
+            }
+         }
+      }
+
+      return null;
+   }
+
+   public List<Voyage> getAllVoyages () {
+      List<Voyage> voyages = new List<Voyage>();
+
+      // Get all the voyages we know about in all the servers we know about
+      foreach (Server server in ServerNetwork.self.servers) {
+         foreach (Voyage voyage in server.voyages) {
+            voyages.Add(voyage);
+         }
+      }
+
+      return voyages;
    }
 
    public bool isVoyageArea (string areaKey) {
@@ -186,6 +257,82 @@ public class VoyageManager : MonoBehaviour {
 
       // Save this list for future comparisons
       _visibleGroupMembers = visibleGroupMembers;
+   }
+
+   protected void createVoyageInstanceIfNeeded () {
+      // Get our server
+      Server server = ServerNetwork.self.server;
+
+      // Check that our server is the main server
+      if (server == null || server.port != 7777) {
+         return;
+      }
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Get the group count in each active voyage
+         Dictionary<int, int> voyageToGroupCount = DB_Main.getGroupCountInAllVoyages();
+
+         // Back to Unity Thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Get the voyage instances in all known servers
+            List<Voyage> allVoyages = getAllVoyages();
+
+            // Count the number of voyages that are still open to new groups
+            int openVoyagesCount = 0;
+            foreach (Voyage voyage in allVoyages) {
+               // Get the number of groups in the voyage instance
+               int groupCount;
+               if (!voyageToGroupCount.TryGetValue(voyage.voyageId, out groupCount)) {
+                  // If the number of groups could not be found, set it to zero
+                  groupCount = 0;
+               }
+
+               if (isVoyageOpenToNewGroups(voyage, groupCount)) {
+                  openVoyagesCount++;
+               }
+            }
+
+            // If there are missing voyages, create a new one
+            if (openVoyagesCount < Voyage.OPEN_VOYAGE_INSTANCES) {
+               // Find the server with the least people
+               Server bestServer = ServerNetwork.self.getServerWithLeastPlayers();
+
+               // Create a new voyage instance on the chosen server
+               bestServer.photonView.RPC("CreateVoyageInstance", bestServer.view.owner);
+            }
+         });
+      });
+   }
+
+   private IEnumerator CO_CreateInitialVoyages () {
+      // Wait until our server is defined
+      while (ServerNetwork.self.server == null) {
+         yield return null;
+      }
+
+      // Wait until our server port is initialized
+      while (ServerNetwork.self.server.port == 0) {
+         yield return null;
+      }
+
+      // Get our server
+      Server server = ServerNetwork.self.server;
+
+      // Check that our server is the main server
+      if (server.port == 7777) {
+         // Get the list of sea maps area keys
+         List<string> seaMaps = AreaManager.self.getSeaAreaKeys();
+
+         // Create a voyage instance for each available sea map
+         foreach (string areaKey in seaMaps) {
+            // Find the server with the least people
+            Server bestServer = ServerNetwork.self.getServerWithLeastPlayers();
+
+            // Create a new voyage instance on the chosen server
+            bestServer.photonView.RPC("CreateVoyageInstance", bestServer.view.owner, areaKey);
+         }
+      }
    }
 
    #region Private Variables

@@ -95,7 +95,7 @@ public class TutorialItem : ClientMonoBehaviour, IMapEditorDataReceiver {
       foreach (DataField field in dataFields) {
          switch (field.k.ToLower()) {
             case DataField.TUTORIAL_ITEM_STEP_ID_KEY:
-               tutorialStepForThisItem = int.Parse(field.v.Trim(' '));
+               tutorialStepForThisItem = field.intValue;
                GetComponent<TutorialLocation>().tutorialStepType = tutorialStepForThisItem;
                break;
             default:

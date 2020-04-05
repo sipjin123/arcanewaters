@@ -25,9 +25,6 @@ public class Instance : NetworkBehaviour
    // The list of Entities in this instance (server only)
    public List<NetworkBehaviour> entities = new List<NetworkBehaviour>();
 
-   // The list of treasure sites in this instance (server only)
-   public List<TreasureSite> treasureSites = new List<TreasureSite>();
-
    // For debugging in the Editor
    [SyncVar]
    public int entityCount;
@@ -131,8 +128,8 @@ public class Instance : NetworkBehaviour
    public int getCapturedTreasureSitesCount () {
       int count = 0;
 
-      foreach (TreasureSite site in treasureSites) {
-         if (site.isCaptured()) {
+      foreach (NetworkBehaviour entity in entities) {
+         if (entity != null && entity is TreasureSite && ((TreasureSite)entity).isCaptured()) {
             count++;
          }
       }
@@ -141,7 +138,15 @@ public class Instance : NetworkBehaviour
    }
 
    public int getTreasureSitesCount () {
-      return treasureSites.Count;
+      int count = 0;
+
+      foreach (NetworkBehaviour entity in entities) {
+         if (entity != null && entity is TreasureSite) {
+            count++;
+         }
+      }
+
+      return count;
    }
 
    protected void checkIfInstanceIsEmpty () {
@@ -183,84 +188,55 @@ public class Instance : NetworkBehaviour
 
       if (NetworkServer.active) {
          if (area != null) {
-            if (area.enemyDatafields.Count == 0 && area.npcDatafields.Count == 0) {
-               List<BotSpot> spots = BotManager.self.getSpots(area.areaKey);
+            if (area.enemyDatafields.Count > 0) {
+               Transform enemyParent = Instantiate(new GameObject(), area.transform).transform;
+               enemyParent.name = "Enemies";
+               foreach (ExportedPrefab001 dataField in area.enemyDatafields) {
+                  Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;
 
-               foreach (BotSpot spot in spots) {
-                  Vector2 spawnPosition = spot.transform.position;
+                  // Add it to the Instance
+                  Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab, enemyParent);
+                  enemy.enemyType = (Enemy.Type) Enemy.fetchReceivedData(dataField.d);
 
-                  // Figure out which waypoint is the closest
-                  if (spot.route != null) {
-                     spawnPosition = spot.route.getClosest(spawnPosition).transform.position;
+                  BattlerData battleData = MonsterManager.self.getBattler(enemy.enemyType);
+                  if (battleData != null) {
+                     enemy.isBossType = battleData.isBossType;
+                     enemy.animGroupType = battleData.animGroup;
+                     enemy.facing = Direction.South;
                   }
 
-                  BotShipEntity bot = Instantiate(spot.prefab, spawnPosition, Quaternion.identity);
-                  bot.instanceId = this.id;
-                  bot.areaKey = area.areaKey;
-                  bot.npcType = spot.npcType;
-                  bot.faction = NPC.getFactionFromType(bot.npcType);
-                  bot.route = spot.route;
-                  bot.nationType = spot.nationType;
-                  bot.maxForceOverride = spot.maxForceOverride;
-                  bot.speed = Ship.getBaseSpeed(Ship.Type.Type_1);
-                  bot.attackRangeModifier = Ship.getBaseAttackRange(Ship.Type.Type_1);
-                  bot.entityName = "Bot";
-                  this.entities.Add(bot);
+                  InstanceManager.self.addEnemyToInstance(enemy, this);
 
-                  // Spawn the bot on the Clients
-                  NetworkServer.Spawn(bot.gameObject);
+                  enemy.transform.localPosition = targetLocalPos;
+                  enemy.desiredPosition = targetLocalPos;
+
+                  NetworkServer.Spawn(enemy.gameObject);
                }
-            } else {
-               if (area.enemyDatafields.Count > 0) {
-                  Transform enemyParent = Instantiate(new GameObject(), area.transform).transform;
-                  enemyParent.name = "Enemies";
-                  foreach (ExportedPrefab001 dataField in area.enemyDatafields) {
-                     Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;
+            }
 
-                     // Add it to the Instance
-                     Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab, enemyParent);
-                     enemy.enemyType = (Enemy.Type) Enemy.fetchReceivedData(dataField.d);
+            if (area.npcDatafields.Count > 0) {
+               Transform npcParent = Instantiate(new GameObject(), area.transform).transform;
+               npcParent.name = "NPCs";
+               foreach (ExportedPrefab001 dataField in area.npcDatafields) {
+                  Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;
 
-                     BattlerData battleData = MonsterManager.self.getBattler(enemy.enemyType);
-                     if (battleData != null) {
-                        enemy.isBossType = battleData.isBossType;
-                        enemy.animGroupType = battleData.animGroup;
-                        enemy.facing = Direction.South;
-                     }
+                  NPC npc = Instantiate(PrefabsManager.self.npcPrefab, npcParent.position + targetLocalPos, Quaternion.identity, npcParent);
+                  npc.areaKey = area.areaKey;
 
-                     InstanceManager.self.addEnemyToInstance(enemy, this);
-
-                     enemy.transform.localPosition = targetLocalPos;
-                     enemy.desiredPosition = targetLocalPos;
-
-                     NetworkServer.Spawn(enemy.gameObject);
+                  // Make sure npc has correct data
+                  IMapEditorDataReceiver receiver = npc.GetComponent<IMapEditorDataReceiver>();
+                  if (receiver != null && dataField.d != null) {
+                     receiver.receiveData(dataField.d);
                   }
-               }
+                  npc.npcType = (NPC.Type) NPC.fetchDataFieldID(dataField.d);
 
-               if (area.npcDatafields.Count > 0) {
-                  Transform npcParent = Instantiate(new GameObject(), area.transform).transform;
-                  npcParent.name = "NPCs";
-                  foreach (ExportedPrefab001 dataField in area.npcDatafields) {
-                     Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;
+                  InstanceManager.self.addNPCToInstance(npc, this);
 
-                     NPC npc = Instantiate(PrefabsManager.self.npcPrefab, npcParent.position + targetLocalPos, Quaternion.identity, npcParent);
-                     npc.areaKey = area.areaKey;
-
-                     // Make sure npc has correct data
-                     IMapEditorDataReceiver receiver = npc.GetComponent<IMapEditorDataReceiver>();
-                     if (receiver != null && dataField.d != null) {
-                        receiver.receiveData(dataField.d);
-                     }
-                     npc.npcType = (NPC.Type) NPC.fetchDataFieldID(dataField.d);
-
-                     InstanceManager.self.addNPCToInstance(npc, this);
-
-                     foreach (ZSnap snap in npc.GetComponentsInChildren<ZSnap>()) {
-                        snap.snapZ();
-                     }
-
-                     NetworkServer.Spawn(npc.gameObject);
+                  foreach (ZSnap snap in npc.GetComponentsInChildren<ZSnap>()) {
+                     snap.snapZ();
                   }
+
+                  NetworkServer.Spawn(npc.gameObject);
                }
             }
 
@@ -276,8 +252,8 @@ public class Instance : NetworkBehaviour
                   site.difficulty = difficulty;
                   site.transform.localPosition = targetLocalPos;
 
-                  // Keep a reference to the treasure site
-                  treasureSites.Add(site);
+                  // Keep a track of the entity
+                  InstanceManager.self.addTreasureSiteToInstance(site, this);
 
                   // Spawn the site on the clients
                   NetworkServer.Spawn(site.gameObject);
@@ -294,13 +270,13 @@ public class Instance : NetworkBehaviour
                   foreach (DataField field in dataField.d) {
                      if (field.k.CompareTo(DataField.ORE_SPOT_DATA_KEY) == 0) {
                         // Get ID from ore data field
-                        if (int.TryParse(field.v, out int id)) {
+                        if (field.tryGetIntValue(out int id)) {
                            oreId = id;
                         }
                      }
                      if (field.k.CompareTo(DataField.ORE_TYPE_DATA_KEY) == 0) {
                         // Get ore type from ore data field
-                        if (int.TryParse(field.v, out int type)) {
+                        if (field.tryGetIntValue(out int type)) {
                            oreType = (OreNode.Type) type;
                         }
                      }
@@ -313,6 +289,35 @@ public class Instance : NetworkBehaviour
                   newOreNode.syncedPosition = newOreNode.transform.position;
                }
             }
+
+            if (area.shipDataFields.Count > 0) {
+               Transform shipParent = Instantiate(new GameObject(), area.transform).transform;
+               shipParent.name = "Ships";
+               foreach (ExportedPrefab001 dataField in area.shipDataFields) {
+                  Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;
+
+                  BotShipEntity botShip = Instantiate(PrefabsManager.self.botShipPrefab, shipParent.position + targetLocalPos, Quaternion.identity, shipParent);
+
+                  // Make sure ship has correct data
+                  IMapEditorDataReceiver receiver = botShip.GetComponent<IMapEditorDataReceiver>();
+                  if (receiver != null && dataField.d != null) {
+                     receiver.receiveData(dataField.d);
+                  }
+
+                  botShip.faction = Faction.Type.Pirates;
+
+                  InstanceManager.self.addBotShipToInstance(botShip, this);
+
+                  foreach (ZSnap snap in botShip.GetComponentsInChildren<ZSnap>()) {
+                     snap.snapZ();
+                  }
+
+                  NetworkServer.Spawn(botShip.gameObject);
+               }
+            }
+
+            // Create the discoveries that could exist in this instance
+            DiscoveryManager.self.createDiscoveriesForInstance(this);
          }
       }
    }

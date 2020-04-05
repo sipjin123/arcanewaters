@@ -36,7 +36,7 @@ public class PingPanel : ClientMonoBehaviour {
       int ping = getPing();
 
       // Check if we're connected to the network
-      bool isConnected = NetworkManager.singleton != null && NetworkManager.singleton.client != null;
+      bool isConnected = NetworkManager.singleton != null && NetworkClient.active;
 
       // Check if we're on one of the intro screens
       bool isShowingIntroScreens = TitleScreen.self.isShowing() || CharacterScreen.self.isShowing();
@@ -56,7 +56,7 @@ public class PingPanel : ClientMonoBehaviour {
 
    public int getPing () {
       // Check if we're connected to the network
-      bool isConnected = NetworkManager.singleton != null && NetworkManager.singleton.client != null;
+      bool isConnected = NetworkManager.singleton != null && NetworkClient.active;
 
       // Calculate our ping when we're connected
       int ping = isConnected ? (int) (NetworkTime.rtt * 1000) : 0;

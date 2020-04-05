@@ -52,7 +52,9 @@ namespace MapCreationTool
                //Map prefabs
                foreach (var group in definition.prefabGroups) {
                   for (int i = 0; i < group.toIndexPrefabs.Length; i++) {
-                     bm.prefabToIndex.Add(group.toIndexPrefabs[i], group.index * PrefabGroupSlots + i);
+                     if (!bm.prefabToIndex.ContainsKey(group.toIndexPrefabs[i]) || group.toIndexPrefabs[i] != deletedPrefabMarker) {
+                        bm.prefabToIndex.Add(group.toIndexPrefabs[i], group.index * PrefabGroupSlots + i);
+                     }
                      bm.indexToEditorPrefab.Add(group.index * PrefabGroupSlots + i, group.toIndexPrefabs[i]);
                   }
 
@@ -93,7 +95,9 @@ namespace MapCreationTool
 
             foreach (var group in allBiomesDefinition.prefabGroups) {
                for (int i = 0; i < group.toIndexPrefabs.Length; i++) {
-                  allBiomes.prefabToIndex.Add(group.toIndexPrefabs[i], group.index * PrefabGroupSlots + i);
+                  if (!allBiomes.prefabToIndex.ContainsKey(group.toIndexPrefabs[i]) || group.toIndexPrefabs[i] != deletedPrefabMarker) {
+                     allBiomes.prefabToIndex.Add(group.toIndexPrefabs[i], group.index * PrefabGroupSlots + i);
+                  }
                   allBiomes.indexToEditorPrefab.Add(group.index * PrefabGroupSlots + i, group.toIndexPrefabs[i]);
                }
 

@@ -50,19 +50,21 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
       foreach (DataField field in dataFields) {
          switch (field.k.ToLower()) {
             case DataField.GENERIC_ACTION_TRIGGER_INTERACTION_TYPE:
-               interactionType = MapImporter.parseInteractionType(field.v);
+               if(field.tryGetInteractionTypeValue(out InteractionType value)) {
+                  interactionType = value;
+               }
                break;
             case DataField.GENERIC_ACTION_TRIGGER_ACTION_NAME:
                actionName = field.v.Trim(' ');
                break;
             case DataField.GENERIC_ACTION_TRIGGER_WIDTH_KEY:
-               _collider.size = new Vector2(float.Parse(field.v), _collider.size.y);
+               _collider.size = new Vector2(field.floatValue, _collider.size.y);
                break;
             case DataField.GENERIC_ACTION_TRIGGER_HEIGHT_KEY:
-               _collider.size = new Vector2(_collider.size.x, float.Parse(field.v));
+               _collider.size = new Vector2(_collider.size.x, field.floatValue);
                break;
             default:
-               Debug.LogWarning($"Unrecognized data field key: {field.k}");
+               Debug.LogWarning($"Unrecognized data field key: { field.k }");
                break;
          }
       }

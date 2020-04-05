@@ -47,10 +47,10 @@ public class Spawn : MonoBehaviour, IMapEditorDataReceiver {
                SpawnManager.get().store(_areaKey, spawnKey, this);
                break;
             case DataField.SPAWN_WIDTH_KEY:
-               _spawnBox.size = new Vector2(float.Parse(field.v), _spawnBox.size.y);
+               _spawnBox.size = new Vector2(field.floatValue, _spawnBox.size.y);
                break;
             case DataField.SPAWN_HEIGHT_KEY:
-               _spawnBox.size = new Vector2(_spawnBox.size.x, float.Parse(field.v));
+               _spawnBox.size = new Vector2(_spawnBox.size.x, field.floatValue);
                break;
             default:
                Debug.LogWarning($"Unrecognized data field key: {field.k}");

@@ -155,6 +155,9 @@ public class MyNetworkManager : NetworkManager {
       // Create the initial map that everyone starts in
       MapManager.self.createMapOnServer(Area.STARTING_TOWN);
 
+      // Regularly check that there are enough voyage instances open and create more
+      VoyageManager.self.regenerateVoyageInstances();
+
       // Make note that we started up a server
       wasServerStarted = true;
    }

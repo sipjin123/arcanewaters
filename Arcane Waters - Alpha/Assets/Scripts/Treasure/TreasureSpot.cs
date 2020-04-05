@@ -17,8 +17,9 @@ public class TreasureSpot : MonoBehaviour, IMapEditorDataReceiver
    public void receiveData (DataField[] dataFields) {
       foreach (DataField field in dataFields) {
          if (field.k.CompareTo(DataField.TREASURE_SPOT_SPAWN_CHANCE_KEY) == 0) {
-            if (float.TryParse(field.v, out float chance)) {
+            if (field.tryGetFloatValue(out float chance)) {
                spawnChance = Mathf.Clamp(chance, 0, 1);
+               Debug.Log("parsed chance " + chance);
             }
          }
       }

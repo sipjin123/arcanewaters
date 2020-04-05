@@ -22,6 +22,10 @@ namespace MapCreationTool
 
       #endregion
 
+      private void Awake () {
+         instance = this;
+      }
+
       private void Start () {
          fetchDiscoveries();
       }
@@ -33,6 +37,7 @@ namespace MapCreationTool
       private void fetchDiscoveries () {
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             _discoveries = DB_Main.getDiscoveriesList();
+            idToDiscovery = _discoveries.ToDictionary(d => d.discoveryId, d => d);
          });
       }
 

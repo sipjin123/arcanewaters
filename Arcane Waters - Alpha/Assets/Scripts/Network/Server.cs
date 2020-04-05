@@ -55,11 +55,8 @@ public class Server : Photon.PunBehaviour {
       // Update the online users
       InvokeRepeating("checkOnlineUsers", 5.5f, 5f);
 
-      // Update the voyage statuses
+      // Update the status of the voyages hosted by our server
       InvokeRepeating("updateVoyageInfo", 5.5f, 5f);
-
-      // Regularly check that there are enough voyage instances open
-      InvokeRepeating("createVoyageInstanceIfNeeded", 10f, 10f);
    }
 
    private void Update () {
@@ -142,48 +139,6 @@ public class Server : Photon.PunBehaviour {
       }
    }
 
-   protected void createVoyageInstanceIfNeeded () {
-      if (view == null || !view.isMine || port != 7777) {
-         return;
-      }
-
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Get the group count in each active voyage
-         Dictionary<int, int> voyageToGroupCount = DB_Main.getGroupCountInAllVoyages();
-
-         // Back to Unity Thread
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Get the voyage instances in all known servers
-            List<Voyage> allVoyages = ServerNetwork.self.getAllVoyages();
-
-            // Count the number of voyages that are still open to new groups
-            int openVoyagesCount = 0;
-            foreach (Voyage voyage in allVoyages) {
-               // Get the number of groups in the voyage instance
-               int groupCount;
-               if (!voyageToGroupCount.TryGetValue(voyage.voyageId, out groupCount)) {
-                  // If the number of groups could not be found, set it to zero
-                  groupCount = 0;
-               }
-
-               if (VoyageManager.isVoyageOpenToNewGroups(voyage, groupCount)) {
-                  openVoyagesCount++;
-               }
-            }
-
-            // If there are missing voyages, create a new one
-            if (openVoyagesCount < Voyage.OPEN_VOYAGE_INSTANCES) {
-               // Find the server with the least people
-               Server bestServer = ServerNetwork.self.getServerWithLeastPlayers();
-               
-               // Create a new voyage instance on the chosen server
-               bestServer.photonView.RPC("CreateVoyageInstance", bestServer.view.owner);
-            }
-         });
-      });
-   }
-
    [PunRPC]
    void ServerMessage (string message) {
       D.log("Server message: " + message);
@@ -210,33 +165,12 @@ public class Server : Photon.PunBehaviour {
 
    [PunRPC]
    public void CreateVoyageInstance () {
-      // Get the list of sea maps area keys
-      List<string> seaMaps = AreaManager.self.getSeaAreaKeys();
-      
-      // If there are no available areas, do nothing
-      if (seaMaps.Count == 0) {
-         return;
-      }
+      VoyageManager.self.createVoyageInstance();
+   }
 
-      // Get the voyage instances in all known servers
-      List<Voyage> allVoyages = ServerNetwork.self.getAllVoyages();
-
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Get a new voyage id
-         int voyageId = DB_Main.getNewVoyageId();
-
-         // Back to Unity Thread
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Randomize the voyage parameters
-            string areaKey = seaMaps[Random.Range(0, seaMaps.Count)];
-            Voyage.Difficulty difficulty = Util.randomEnumStartAt<Voyage.Difficulty>(1);
-            bool isPvP = Random.Range(0, 2) == 0;
-
-            // Create the area instance
-            InstanceManager.self.createNewInstance(areaKey, false, true, voyageId, isPvP, difficulty);
-         });
-      });
+   [PunRPC]
+   public void CreateVoyageInstance (string areaKey) {
+      VoyageManager.self.createVoyageInstance(areaKey);
    }
 
    #region Private Variables

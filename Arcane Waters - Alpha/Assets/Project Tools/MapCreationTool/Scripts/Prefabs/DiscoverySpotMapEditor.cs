@@ -22,16 +22,34 @@ namespace MapCreationTool
 
       public override void setSelected (bool selected) {
          base.setSelected(selected);
-         canvas.enabled = selected;
+         canvas.gameObject.SetActive(selected || selected);
       }
 
-      public void dataFieldChanged (string key, string value) {
-         key = key.ToLower();
+      public override void setHovered (bool hovered) {
+         base.setHovered(hovered);
+         canvas.gameObject.SetActive(hovered || selected);
+      }
+
+      public override void createdForPreview () {
+         transform.localScale = new Vector3(6.25f, 6.25f, 1f);
+      }
+
+      public override void placedInEditor () {
+         transform.localScale = new Vector3(6.25f, 6.25f, 1f);
+         canvas.gameObject.SetActive(false);
+      }
+
+      public override void createdInPalette () {
+         canvas.gameObject.SetActive(false);
+      }
+
+      public void dataFieldChanged (DataField field) {
+         string key = field.k.ToLower();
 
          if (key == DataField.POSSIBLE_DISCOVERY) {
-            _renderer.sprite = ImageManager.getSprite(MapEditorDiscoveriesManager.instance.idToDiscovery[int.Parse(value)].spriteUrl);
+            _renderer.sprite = ImageManager.getSprite(MapEditorDiscoveriesManager.instance.idToDiscovery[field.intValue].spriteUrl);
          } else if (key == DataField.DISCOVERY_SPAWN_CHANCE) {
-            _chanceText.text = $"{Mathf.RoundToInt(float.Parse(value) * 100)}%";
+            _chanceText.text = $"{Mathf.RoundToInt(field.floatValue * 100)}%";
          }
       }
 

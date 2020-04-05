@@ -1,7 +1,9 @@
-﻿namespace MapCreationTool
+﻿using MapCreationTool.Serialization;
+
+namespace MapCreationTool
 {
    public interface IPrefabDataListener
    {
-      void dataFieldChanged (string key, string value);
+      void dataFieldChanged (DataField field);
    }
 }

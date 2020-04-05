@@ -60,23 +60,18 @@ public class Area : MonoBehaviour
    // Ore spots to be loaded by the server
    public List<ExportedPrefab001> oreDataFields = new List<ExportedPrefab001>();
 
-   // Cached info of the npc data list
-   public List<NPCData> loadedNPCDataList = new List<NPCData>();
+   // Ships to be loaded by the server
+   public List<ExportedPrefab001> shipDataFields = new List<ExportedPrefab001>();
 
    #endregion
 
    public void registerNetworkPrefabData (List<ExportedPrefab001> npcDatafields, List<ExportedPrefab001> enemyDatafields,
-      List<ExportedPrefab001> oreDataFields, List<ExportedPrefab001> treasureSiteDataFields) {
+      List<ExportedPrefab001> oreDataFields, List<ExportedPrefab001> treasureSiteDataFields, List<ExportedPrefab001> shipDataFields) {
       this.npcDatafields = npcDatafields;
       this.enemyDatafields = enemyDatafields;
       this.oreDataFields = oreDataFields;
       this.treasureSiteDataFields = treasureSiteDataFields;
-
-      foreach (ExportedPrefab001 exportedPrefab in npcDatafields) {
-         int npcID = NPC.fetchDataFieldID(exportedPrefab.d);
-         NPCData npcData = NPCManager.self.getNPCData(npcID);
-         loadedNPCDataList.Add(npcData);
-      }
+      this.shipDataFields = shipDataFields;
    }
 
    private void Start () {

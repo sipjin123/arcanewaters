@@ -13,9 +13,9 @@ namespace MapCreationTool
          outline = GetComponentInChildren<SpriteOutline>();
       }
 
-      public void dataFieldChanged (string key, string value) {
-         if (key.CompareTo(DataField.NPC_DATA_KEY) == 0) {
-            if (int.TryParse(value, out int npcId)) {
+      public void dataFieldChanged (DataField field) {
+         if (field.k.CompareTo(DataField.NPC_DATA_KEY) == 0) {
+            if (field.tryGetIntValue(out int npcId)) {
                Texture2D npcTexture = NPCManager.instance.getTexture(npcId);
 
                if (npcTexture != null) {

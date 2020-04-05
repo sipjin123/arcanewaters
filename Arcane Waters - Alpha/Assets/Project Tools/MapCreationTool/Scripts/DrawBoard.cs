@@ -349,7 +349,7 @@ namespace MapCreationTool
 
          var listener = prefab.placedInstance.GetComponent<IPrefabDataListener>();
          if (listener != null)
-            listener.dataFieldChanged(key, value);
+            listener.dataFieldChanged(new DataField { k = key, v = value });
 
          PrefabDataChanged(prefab);
       }

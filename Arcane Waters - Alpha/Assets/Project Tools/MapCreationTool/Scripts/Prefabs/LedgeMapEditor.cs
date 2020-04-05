@@ -16,14 +16,14 @@ namespace MapCreationTool
          height = 1;
       }
 
-      public void dataFieldChanged (string key, string value) {
-         if (key.CompareTo(DataField.LEDGE_WIDTH_KEY) == 0) {
-            if (int.TryParse(value, out int w)) {
+      public void dataFieldChanged (DataField field) {
+         if (field.k.CompareTo(DataField.LEDGE_WIDTH_KEY) == 0) {
+            if (field.tryGetIntValue(out int w)) {
                width = Mathf.Clamp(w, 1, 100);
                updateBoundsSize();
             }
-         } else if (key.CompareTo(DataField.LEDGE_HEIGHT_KEY) == 0) {
-            if (int.TryParse(value, out int h)) {
+         } else if (field.k.CompareTo(DataField.LEDGE_HEIGHT_KEY) == 0) {
+            if (field.tryGetIntValue(out int h)) {
                height = Mathf.Clamp(h, 1, 100);
                updateBoundsSize();
             }

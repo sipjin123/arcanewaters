@@ -185,32 +185,6 @@ public class ServerNetwork : MonoBehaviour {
       return null;
    }
 
-   public Voyage getVoyage (int voyageId) {
-      // Search the voyage in all the servers we know about
-      foreach (Server server in servers) {
-         foreach (Voyage voyage in server.voyages) {
-            if (voyage.voyageId == voyageId) {
-               return voyage;
-            }
-         }
-      }
-
-      return null;
-   }
-
-   public List<Voyage> getAllVoyages () {
-      List<Voyage> voyages = new List<Voyage>();
-
-      // Get all the voyages we know about in all the servers we know about
-      foreach (Server server in servers) {
-         foreach (Voyage voyage in server.voyages) {
-            voyages.Add(voyage);
-         }
-      }
-
-      return voyages;
-   }
-
    protected IEnumerator CO_checkPhotonConnection () {
       // If we're not running a server, or already in a Photon room, we're done
       if (!NetworkServer.active || PhotonNetwork.room != null) {

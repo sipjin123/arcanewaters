@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace MapCreationTool.Serialization
 {
@@ -817,6 +818,8 @@ namespace MapCreationTool.Serialization
    [Serializable]
    public class DataField
    {
+      public static CultureInfo US_CULTURE => CultureInfo.CreateSpecificCulture("en-US");
+
       // For prefabs, the serializable data is saved as key-value pairs
       // Below are they keys for the defined key-value pairs
       public const string WARP_TARGET_MAP_KEY = "target map";
@@ -864,8 +867,86 @@ namespace MapCreationTool.Serialization
       public const string DISCOVERY_SPAWN_CHANCE = "spawn chance";
       public const string POSSIBLE_DISCOVERY = "possible discovery";
 
+      public const string SHIP_DATA_KEY = "ship data";
+
       public string k; // Key
       public string v; // Value
+
+      public float floatValue
+      {
+         get { return float.Parse(v, US_CULTURE); }
+      }
+
+      public bool tryGetFloatValue (out float value) {
+         if (float.TryParse(v, NumberStyles.Float, US_CULTURE, out float val)) {
+            value = val;
+            return true;
+         }
+         value = 0;
+         return false;
+      }
+
+      public int intValue
+      {
+         get { return int.Parse(v, US_CULTURE); }
+      }
+
+      public bool tryGetIntValue (out int value) {
+         if (int.TryParse(v, NumberStyles.Integer, US_CULTURE, out int val)) {
+            value = val;
+            return true;
+         }
+         value = 0;
+         return false;
+      }
+
+      public bool tryGetDirectionValue (out Direction value) {
+         switch (v.Trim(' ')) {
+            case "North":
+               value = Direction.North;
+               return true;
+            case "NorthEast":
+               value = Direction.NorthEast;
+               return true;
+            case "East":
+               value = Direction.East;
+               return true;
+            case "SouthEast":
+               value = Direction.SouthEast;
+               return true;
+            case "South":
+               value = Direction.South;
+               return true;
+            case "SouthWest":
+               value = Direction.SouthWest;
+               return true;
+            case "West":
+               value = Direction.West;
+               return true;
+            case "NorthWest":
+               value = Direction.NorthWest;
+               return true;
+         }
+
+         value = Direction.North;
+         return false;
+      }
+
+      public bool tryGetInteractionTypeValue (out GenericActionTrigger.InteractionType value) {
+         switch (v.Trim(' ')) {
+            case "Enter":
+               value = GenericActionTrigger.InteractionType.Enter;
+               return true;
+            case "Exit":
+               value = GenericActionTrigger.InteractionType.Exit;
+               return true;
+            case "Stay":
+               value = GenericActionTrigger.InteractionType.Stay;
+               return true;
+         }
+         value = GenericActionTrigger.InteractionType.Enter;
+         return false;
+      }
 
       public void fixField (bool forEditor) {
          switch (k) {
@@ -879,7 +960,7 @@ namespace MapCreationTool.Serialization
                }
                break;
             case WARP_TARGET_MAP_KEY:
-               if (forEditor && !int.TryParse(v, out int mapId)) {
+               if (forEditor && !tryGetIntValue(out int mapId)) {
                   Map map = Overlord.remoteMaps.maps.Values.FirstOrDefault(m => m.name.CompareTo(v) == 0);
                   if (map != null) {
                      v = map.id.ToString();

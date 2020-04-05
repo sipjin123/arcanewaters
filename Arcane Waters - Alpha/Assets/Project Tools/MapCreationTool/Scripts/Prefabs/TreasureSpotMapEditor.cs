@@ -23,9 +23,9 @@ namespace MapCreationTool
          }
       }
 
-      public void dataFieldChanged (string key, string value) {
-         if (key.CompareTo(DataField.TREASURE_SPOT_SPAWN_CHANCE_KEY) == 0) {
-            if (float.TryParse(value, out float chance)) {
+      public void dataFieldChanged (DataField field) {
+         if (field.k.CompareTo(DataField.TREASURE_SPOT_SPAWN_CHANCE_KEY) == 0) {
+            if (field.tryGetFloatValue(out float chance)) {
                text.text = Mathf.Round(100f * Mathf.Clamp(chance, 0, 1)) + "%";
             }
          }

@@ -61363,7 +61363,7 @@ Tilemap:
       - {fileID: 21300514, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300520, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300526, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 25, y: 17, z: 0}
@@ -61798,7 +61798,7 @@ Tilemap:
       - {fileID: 21300242, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300244, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300246, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 22, y: 28, z: 0}
@@ -61878,7 +61878,7 @@ Tilemap:
       - {fileID: 21300194, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300196, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300198, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 26, y: 29, z: 0}
@@ -125330,6 +125330,8 @@ MonoBehaviour:
       - {fileID: 454647585215041753, guid: 3b7cbae73dddf624bb187b39862567d1, type: 3}
       - {fileID: 1811325571479324519, guid: 0221eb820441d2d48a0c50ca948b17e0, type: 3}
       - {fileID: 1990003373193892874, guid: 5409a6037aad532479af49d927b43384, type: 3}
+      - {fileID: 7563978654119275295, guid: 0eeba3a44f7d3b24eaccb4e85e9cfbad, type: 3}
+      - {fileID: 7200437652960591971, guid: 21f7dcaee92075e4c828ff54ffbf305e, type: 3}
       fromIndexPrefabs:
       - {fileID: 1322722724978774, guid: f8f35b9f6cbe1fb4d88c39af030bddd4, type: 3}
       - {fileID: 6524891404889324934, guid: 598e4fd7105a2944f84be41bdffc57fc, type: 3}
@@ -125359,6 +125361,8 @@ MonoBehaviour:
       - {fileID: 5350016239835025903, guid: 1da2b6e69555ff94cb2f333f5207e9e4, type: 3}
       - {fileID: 4211660781053854453, guid: adbfe661461073d4f8343fe6a7c94fa2, type: 3}
       - {fileID: 2798402947196704090, guid: 272e4219c5da61b449d24fc19effad19, type: 3}
+      - {fileID: 7763125932836907775, guid: ff3dbee01ee899841be5ab1d5332d54b, type: 3}
+      - {fileID: 1505246131218474, guid: 3ed5a65d96ea5e34b8a058ca729b95d4, type: 3}
     - title: furniture
       index: 4
       toIndexPrefabs:

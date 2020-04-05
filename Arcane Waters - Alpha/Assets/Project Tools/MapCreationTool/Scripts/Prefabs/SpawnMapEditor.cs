@@ -16,19 +16,19 @@ namespace MapCreationTool
       private float width = 1f;
       private float height = 1f;
 
-      public void dataFieldChanged (string key, string value) {
-         if (key.CompareTo(DataField.SPAWN_WIDTH_KEY) == 0) {
-            if (float.TryParse(value, out float w)) {
+      public void dataFieldChanged (DataField field) {
+         if (field.k.CompareTo(DataField.SPAWN_WIDTH_KEY) == 0) {
+            if (field.tryGetFloatValue(out float w)) {
                width = Mathf.Clamp(w, 0.1f, 100);
                updateBoundsSize();
             }
-         } else if (key.CompareTo(DataField.SPAWN_HEIGHT_KEY) == 0) {
-            if (float.TryParse(value, out float h)) {
+         } else if (field.k.CompareTo(DataField.SPAWN_HEIGHT_KEY) == 0) {
+            if (field.tryGetFloatValue(out float h)) {
                height = Mathf.Clamp(h, 0.1f, 100);
                updateBoundsSize();
             }
-         } else if (key.CompareTo(DataField.SPAWN_NAME_KEY) == 0) {
-            spawnName = value;
+         } else if (field.k.CompareTo(DataField.SPAWN_NAME_KEY) == 0) {
+            spawnName = field.v;
             updateText();
          }
       }

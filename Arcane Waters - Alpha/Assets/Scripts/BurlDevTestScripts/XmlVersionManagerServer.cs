@@ -19,7 +19,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
    public int newServerVersion;
 
    // The server directory
-   public static string WEB_DIRECTORY = "http://localhost/";
+   public static string WEB_DIRECTORY = "http://arcanewaters.com/";//;"http://localhost/";
 
    // The sub directories
    public static string ABILITIES_POST = "setXml_Abilities_v2.php?version=";

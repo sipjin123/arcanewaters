@@ -70,9 +70,19 @@ public class InstanceManager : MonoBehaviour {
       npc.instanceId = instance.id;
    }
 
+   public void addBotShipToInstance (BotShipEntity botShip, Instance instance) {
+      instance.entities.Add(botShip);
+      botShip.instanceId = instance.id;
+   }
+
    public void addSeaMonsterToInstance (SeaMonsterEntity seaMonster, Instance instance) {
       instance.entities.Add(seaMonster);
       seaMonster.instanceId = instance.id;
+   }
+
+   public void addTreasureSiteToInstance (TreasureSite treasureSite, Instance instance) {
+      instance.entities.Add(treasureSite);
+      treasureSite.instanceId = instance.id;
    }
 
    public Instance getInstance (int instanceId) {
@@ -109,20 +119,6 @@ public class InstanceManager : MonoBehaviour {
 
       // Note the open Areas on this server
       recalculateOpenAreas();
-
-      // Create any treasure and ore we might want in the instance
-      if (Area.isTreasureSite(areaKey)) {
-         TreasureManager.self.createTreasureForInstance(instance);
-         OreManager.self.createOreNodesForInstance(instance);
-      }
-
-      // Create the discoveries that could exist in this instance
-      if (DiscoveryManager.self != null) {
-         DiscoveryManager.self.createDiscoveriesForInstance(instance);
-      }
-
-      // Create any Enemies that exist in this Instance
-      EnemyManager.self.spawnEnemiesOnServerForInstance(instance);
 
       // Spawn the network object on the Clients
       NetworkServer.Spawn(instance.gameObject);
@@ -172,13 +168,6 @@ public class InstanceManager : MonoBehaviour {
          foreach (NetworkBehaviour instanceEntity in instance.entities) {
             if (instanceEntity != null) {
                instanceEntity.netIdentity.RebuildObservers(false);
-            }
-         }
-
-         // Update the treasure sites observer lists
-         foreach (NetworkBehaviour treasureSite in instance.treasureSites) {
-            if (treasureSite != null) {
-               treasureSite.netIdentity.RebuildObservers(false);
             }
          }
 
@@ -272,14 +261,6 @@ public class InstanceManager : MonoBehaviour {
       // Destroy any bot entities
       foreach (NetworkBehaviour entity in instance.entities) {
          NetworkServer.Destroy(entity.gameObject);
-      }
-
-      // Destroy any treasure site
-      foreach (TreasureSite treasureSite in instance.treasureSites) {
-         // Remove the link between the treasure site and its warp
-         treasureSite.freeAssociatedWarp();
-
-         NetworkServer.Destroy(treasureSite.gameObject);
       }
 
       // Remove it from our internal mapping

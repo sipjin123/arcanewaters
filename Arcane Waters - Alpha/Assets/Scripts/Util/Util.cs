@@ -18,21 +18,6 @@ using System.Text;
 using System.Xml;
 
 public class Util : MonoBehaviour {
-   public static NetEntity getPlayer () {
-      if (NetworkClient.connection != null) {
-         NetworkIdentity playerController = NetworkClient.connection.playerController;
-         if (playerController != null && playerController.gameObject != null) {
-            NetEntity entity = playerController.gameObject.GetComponent<NetEntity>();
-
-            if (entity != null) {
-               return entity;
-            }
-         }
-      }
-
-      return null;
-   }
-
    public static Sprite getRawSpriteIcon(Item.Category category, int itemType) {
       if (category != Item.Category.None && itemType != 0) {
          string castItem = new Item { category = category, itemTypeId = itemType }.getCastItem().getIconPath();
@@ -53,21 +38,6 @@ public class Util : MonoBehaviour {
       } catch {
          return sprite;
       }
-   }
-
-   public static int getMyUserId () {
-      if (NetworkClient.connection != null) {
-         NetworkIdentity controller = NetworkClient.connection.playerController;
-         if (controller != null && controller.gameObject != null) {
-            NetEntity entity = controller.gameObject.GetComponent<NetEntity>();
-
-            if (entity != null) {
-               return entity.userId;
-            }
-         }
-      }
-
-      return -1;
    }
 
    public static bool hasValidEntryName (string entryName) {

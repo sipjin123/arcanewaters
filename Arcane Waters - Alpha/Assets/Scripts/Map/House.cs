@@ -16,7 +16,7 @@ public class House : MonoBehaviour, IMapEditorDataReceiver
       foreach (DataField field in dataFields) {
          switch (field.k.ToLower()) {
             case DataField.HOUSE_TARGET_MAP_KEY:
-               if (int.TryParse(field.v, out int id)) {
+               if (field.tryGetIntValue(out int id)) {
                   warp.areaTarget = AreaManager.self.getAreaName(id);
                } else {
                   warp.areaTarget = field.v;

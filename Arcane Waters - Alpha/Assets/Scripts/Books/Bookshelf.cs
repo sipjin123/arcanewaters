@@ -73,7 +73,7 @@ public class Bookshelf : MonoBehaviour, IMapEditorDataReceiver {
    public void receiveData (DataField[] dataFields) {
       foreach (DataField field in dataFields) {
          if (field.k.CompareTo(DataField.BOOK_ID_KEY) == 0) {
-            if (int.TryParse(field.v, out int id)) {
+            if (field.tryGetIntValue(out int id)) {
                bookId = id;
             }
          }

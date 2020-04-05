@@ -152,6 +152,7 @@ namespace MapCreationTool
          List<ExportedPrefab001> enemyData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> oreData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> treasureSiteData = new List<ExportedPrefab001>();
+         List<ExportedPrefab001> shipData = new List<ExportedPrefab001>();
 
          int unrecognizedPrefabs = 0;
          int cropSpotCounter = 0;
@@ -184,15 +185,18 @@ namespace MapCreationTool
                if (prefab.d != null) {
                   npcData.Add(prefab);
                }
+            } else if (original.GetComponent<ShipEntity>() != null) {
+               if (prefab.d != null) {
+                  shipData.Add(prefab);
+               }
             } else {
-               Transform parent = original.GetComponent<NPC>() ? npcParent : prefabParent;
                Vector3 targetLocalPos = new Vector3(prefab.x, prefab.y, 0) * 0.16f + Vector3.back * 10;
 
                var pref = UnityEngine.Object.Instantiate(
                   original,
-                  parent.TransformPoint(targetLocalPos),
+                  prefabParent.TransformPoint(targetLocalPos),
                   Quaternion.identity,
-                  parent);
+                  prefabParent);
 
                foreach (IBiomable biomable in pref.GetComponentsInChildren<IBiomable>()) {
                   biomable.setBiome(project.biome);
@@ -221,7 +225,7 @@ namespace MapCreationTool
             Utilities.warning($"Could not recognize { unrecognizedPrefabs } prefabs of map { mapInfo.mapName }");
          }
 
-         area.registerNetworkPrefabData(npcData, enemyData, oreData, treasureSiteData);
+         area.registerNetworkPrefabData(npcData, enemyData, oreData, treasureSiteData, shipData);
       }
 
       static List<TilemapLayer> instantiateTilemaps (MapInfo mapInfo, ExportedProject001 project, Transform tilemapParent, Transform collisionTilemapParent) {
@@ -283,45 +287,6 @@ namespace MapCreationTool
          }
 
          return result;
-      }
-
-      public static Direction? parseDirection (string data) {
-         switch (data.Trim(' ')) {
-            case "":
-            case "North":
-               return Direction.North;
-            case "NorthEast":
-               return Direction.NorthEast;
-            case "East":
-               return Direction.East;
-            case "SouthEast":
-               return Direction.SouthEast;
-            case "South":
-               return Direction.South;
-            case "SouthWest":
-               return Direction.SouthWest;
-            case "West":
-               return Direction.West;
-            case "NorthWest":
-               return Direction.NorthWest;
-            default:
-               Debug.LogWarning($"Unable to parse direction. Data:{data}");
-               return null;
-         }
-      }
-
-      public static GenericActionTrigger.InteractionType parseInteractionType (string data) {
-         switch (data.Trim(' ')) {
-            case "Enter":
-               return GenericActionTrigger.InteractionType.Enter;
-            case "Exit":
-               return GenericActionTrigger.InteractionType.Exit;
-            case "Stay":
-               return GenericActionTrigger.InteractionType.Stay;
-            default:
-               Debug.LogWarning($"Unable to parse direction. Data:{data}");
-               return GenericActionTrigger.InteractionType.Enter;
-         }
       }
 
       static void ensureSerializationMapsLoaded () {

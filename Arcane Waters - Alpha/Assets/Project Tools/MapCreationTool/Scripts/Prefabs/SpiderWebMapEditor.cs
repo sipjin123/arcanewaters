@@ -16,9 +16,9 @@ namespace MapCreationTool
          rect = GetComponentInChildren<Canvas>(true).GetComponent<RectTransform>();
       }
 
-      public void dataFieldChanged (string key, string value) {
-         if (key.CompareTo(DataField.SPIDER_WEB_HEIGHT_KEY) == 0) {
-            if (float.TryParse(value, out float h)) {
+      public void dataFieldChanged (DataField field) {
+         if (field.k.CompareTo(DataField.SPIDER_WEB_HEIGHT_KEY) == 0) {
+            if (field.tryGetFloatValue(out float h)) {
                height = h;
             }
          }

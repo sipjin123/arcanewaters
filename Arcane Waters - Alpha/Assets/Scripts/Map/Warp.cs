@@ -55,7 +55,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
       foreach (DataField field in dataFields) {
          switch (field.k.ToLower()) {
             case DataField.WARP_TARGET_MAP_KEY:
-               if (int.TryParse(field.v, out int id)) {
+               if (field.tryGetIntValue(out int id)) {
                   areaTarget = AreaManager.self.getAreaName(id);
                } else {
                   areaTarget = field.v;
@@ -65,15 +65,15 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
                spawnTarget = field.v.Trim(' ');
                break;
             case DataField.WARP_WIDTH_KEY:
-               _collider.size = new Vector2(float.Parse(field.v), _collider.size.y);
+               _collider.size = new Vector2(field.floatValue, _collider.size.y);
                break;
             case DataField.WARP_HEIGHT_KEY:
-               _collider.size = new Vector2(_collider.size.x, float.Parse(field.v));
+               _collider.size = new Vector2(_collider.size.x, field.floatValue);
                break;
             case DataField.WARP_ARRIVE_FACING_KEY:
-               Direction? dir = MapImporter.parseDirection(field.v);
-               if (dir != null)
-                  newFacingDirection = dir.Value;
+               if (field.tryGetDirectionValue(out Direction dir)) {
+                  newFacingDirection = dir;
+               }
                break;
             default:
                Debug.LogWarning($"Unrecognized data field key: {field.k}");

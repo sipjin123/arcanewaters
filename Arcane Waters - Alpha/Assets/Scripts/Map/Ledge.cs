@@ -48,12 +48,12 @@ public class Ledge : MonoBehaviour, IMapEditorDataReceiver {
       foreach (DataField field in dataFields) {
          switch (field.k.ToLower()) {
             case DataField.LEDGE_WIDTH_KEY:
-               if (int.TryParse(field.v, out int width)) {
+               if (field.tryGetIntValue(out int width)) {
                   w = width;
                }
                break;
             case DataField.LEDGE_HEIGHT_KEY:
-               if (int.TryParse(field.v, out int height)) {
+               if (field.tryGetIntValue(out int height)) {
                   h = height;
                }
                break;

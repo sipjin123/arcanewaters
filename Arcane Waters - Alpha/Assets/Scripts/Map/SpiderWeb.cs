@@ -16,7 +16,7 @@ public class SpiderWeb : MonoBehaviour, IMapEditorDataReceiver
    public void receiveData (DataField[] dataFields) {
       foreach (DataField field in dataFields) {
          if (field.k.CompareTo(DataField.SPIDER_WEB_HEIGHT_KEY) == 0) {
-            float height = float.Parse(field.v);
+            float height = field.floatValue;
             oneWayCollider.offset = new Vector2(oneWayCollider.offset.x, 0.15f + height * 0.08f);
             oneWayCollider.size = new Vector2(oneWayCollider.size.x, height * 0.16f);
 

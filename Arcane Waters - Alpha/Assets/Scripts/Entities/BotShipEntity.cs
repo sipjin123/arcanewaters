@@ -3,44 +3,53 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using MapCreationTool.Serialization;
+using AStar;
 
-public class BotShipEntity : ShipEntity {
+public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
+{
    #region Public Variables
-
-   // The Type of NPC that is sailing this ship
-   [SyncVar]
-   public NPC.Type npcType;
-
-   // The Name of the NPC that is sailing this ship
-   [SyncVar]
-   public string npcName;
-
-   // The Route that this Bot should follow
-   public Route route;
-
-   // The current waypoint
-   public Waypoint waypoint;
 
    // A custom max force that we can optionally specify
    public float maxForceOverride = 0f;
 
-   // When set to true, we pick random waypoints
-   public bool autoMove = false;
+   // Determines if this ship is spawned at debug mode
+   public bool isDebug = false;
 
    #endregion
 
    protected override void Start () {
       base.Start();
 
-      // Note our spawn position
-      _spawnPos = this.transform.position;
-
       // Set our name
       this.nameText.text = "[" + getNameForFaction() + "]";
-      NPC.setNameColor(nameText, npcType);
 
-      // Sometimes we want to generate random waypoints
-      InvokeRepeating("handleAutoMove", 1f, 2f);
+      // Add some move targets
+      _moveTargets.Add(transform.position);
+      _moveTargets.Add(transform.position + new Vector2(-1.0f, 0f).ToVector3());
+      _moveTargets.Add(transform.position + new Vector2(1.0f, 0f).ToVector3());
+      _moveTargets.Add(transform.position + new Vector2(0f, -1.0f).ToVector3());
+      _moveTargets.Add(transform.position + new Vector2(0f, 1.0f).ToVector3());
+      _moveTargets.Add(transform.position + new Vector2(-1.0f, -1.0f).ToVector3());
+      _moveTargets.Add(transform.position + new Vector2(-1.0f, 1.0f).ToVector3());
+      _moveTargets.Add(transform.position + new Vector2(1.0f, -1.0f).ToVector3());
+      _moveTargets.Add(transform.position + new Vector2(1.0f, 1.0f).ToVector3());
+
+      // Continually pick new move targets
+      if (isServer) {
+         _gridReference = AreaManager.self.getArea(areaKey).pathfindingGrid;
+         if (_gridReference == null) {
+            D.error("There has to be an AStarGrid Script attached to the MapTemplate Prefab");
+         }
+
+         _pathfindingReference = GetComponent<Pathfinding>();
+         if (_pathfindingReference == null) {
+            D.error("There has to be a Pathfinding Script attached to the NPC Prefab");
+         }
+         _pathfindingReference.gridReference = _gridReference;
+
+         StartCoroutine(generateNewWaypoints(6f + Random.Range(-1f, 1f)));
+      }
 
       // Check if we can shoot at any of our attackers
       InvokeRepeating("checkForAttackers", 1f, .5f);
@@ -71,33 +80,19 @@ public class BotShipEntity : ShipEntity {
          return;
       }
 
-      // If we've been assigned a Route, get our waypoint from that
-      if (route != null) {
-         List<Waypoint> waypoints = route.getWaypoints();
+      if (_waypointList.Count > 0) {
+         // Move towards our current waypoint
+         Vector2 waypointDirection = _waypointList[0].transform.position - transform.position;
+         _body.AddForce(waypointDirection.normalized * getMoveSpeed());
+         _lastMoveChangeTime = Time.time;
 
-         // If we haven't picked a waypoint yet, start with the first one
-         if (waypoint == null) {
-            waypoint = route.getClosest(this.transform.position);
-         }
-
-         // Check if we're close enough to update our waypoint
-         if (Vector2.Distance(this.transform.position, waypoint.transform.position) < .16f) {
-            int index = waypoints.IndexOf(waypoint);
-            index++;
-            index %= waypoints.Count;
-            this.waypoint = waypoints[index];
+         // Clears a node as the unit passes by
+         float distanceToWaypoint = Vector2.Distance(_waypointList[0].transform.position, transform.position);
+         if (distanceToWaypoint < .1f) {
+            Destroy(_waypointList[0].gameObject);
+            _waypointList.RemoveAt(0);
          }
       }
-
-      // If we don't have a waypoint, we're done
-      if (this.waypoint == null || Vector2.Distance(this.transform.position, waypoint.transform.position) < .08f) {
-         return;
-      }
-
-      // Move towards our current waypoint
-      Vector2 waypointDirection = this.waypoint.transform.position - this.transform.position;
-      waypointDirection = waypointDirection.normalized;
-      _body.AddForce(waypointDirection.normalized * getMoveSpeed());
 
       // Update our facing direction
       Direction newFacingDirection = DirectionUtil.getDirectionForVelocity(_body.velocity);
@@ -125,21 +120,36 @@ public class BotShipEntity : ShipEntity {
       }
    }
 
-   protected void handleAutoMove () {
-      if (!autoMove || !isServer) {
-         return;
-      }
+   [Server]
+   protected IEnumerator generateNewWaypoints (float moveAgainDelay) {
+      // Initial delay
+      float waitTime = 1.0f;
+      while (true) {
+         yield return new WaitForSeconds(waitTime);
 
-      // Remove our current waypoint
-      if (this.waypoint != null) {
-         Destroy(this.waypoint.gameObject);
-      }
+         if (_waypointList.Count > 0) {
+            // There's still points left of the old path, wait 1 second and check again if there's no more waypoints
+            waitTime = 1.0f;
+            continue;
+         }
 
-      // Pick a new spot around our spawn position
-      Vector2 newSpot = _spawnPos + new Vector2(Random.Range(-.5f, .5f), Random.Range(-.5f, .5f));
-      Waypoint newWaypoint = Instantiate(PrefabsManager.self.waypointPrefab);
-      newWaypoint.transform.position = newSpot;
-      this.waypoint = newWaypoint;
+         List<ANode> gridPath = _pathfindingReference.findPathNowInit(transform.position, _moveTargets.ChooseRandom());
+         if (gridPath == null || gridPath.Count <= 0) {
+            // Invalid Path, attempt again after 1 second
+            waitTime = 1.0f;
+            continue;
+         }
+
+         // We have a new path, set to normal delay
+         waitTime = moveAgainDelay;
+
+         // Register Route
+         foreach (ANode node in gridPath) {
+            Waypoint newWaypointPath = Instantiate(PrefabsManager.self.waypointPrefab);
+            newWaypointPath.transform.position = node.vPosition;
+            _waypointList.Add(newWaypointPath);
+         }
+      }
    }
 
    protected void checkForAttackers () {
@@ -170,10 +180,59 @@ public class BotShipEntity : ShipEntity {
       }
    }
 
+   public static int fetchDataFieldID (DataField[] dataFields) {
+      foreach (DataField field in dataFields) {
+         if (field.k.CompareTo(DataField.SHIP_DATA_KEY) == 0) {
+            // Get Type from ship data field
+            if (int.TryParse(field.v, out int shipId)) {
+               return shipId;
+            }
+         }
+      }
+      return 0;
+   }
+
+   public void receiveData (DataField[] dataFields) {
+      foreach (DataField field in dataFields) {
+         if (field.k.CompareTo(DataField.SHIP_DATA_KEY) == 0) {
+            // Get ID from ship data field
+            // Field arrives in format <ship type>: <ship name>
+            int type = int.Parse(field.v.Split(':')[0]);
+            isDebug = true;
+
+            ShipData shipData = ShipDataManager.self.getShipData((Ship.Type) type);
+            shipType = shipData.shipType;
+            if (shipData != null) {
+               string spritePath = shipData.spritePath;
+               if (spritePath != "") {
+                  spritesContainer.GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture(spritePath);
+               }
+            }
+            Area area = GetComponentInParent<Area>();
+            areaKey = area.areaKey;
+            //ShipDataManager.self.storeShip(this);
+
+            speed = Ship.getBaseSpeed(shipType);
+            attackRangeModifier = Ship.getBaseAttackRange(shipType);
+
+            // extract Route
+         }
+      }
+   }
+
    #region Private Variables
 
-   // The position we spawned at
-   protected Vector2 _spawnPos;
+   // The available positions to move to
+   protected List<Vector2> _moveTargets = new List<Vector2>();
+
+   // The AStarGrid Reference fetched from the Main Scene
+   protected AStarGrid _gridReference;
+
+   // The Pathfinding Reference fetched from the Main Scene
+   protected Pathfinding _pathfindingReference;
+
+   // The current waypoint List
+   protected List<Waypoint> _waypointList = new List<Waypoint>();
 
    #endregion
 }

@@ -43,9 +43,9 @@ public class DiscoverySpot : NetworkBehaviour, IMapEditorDataReceiver
 
       foreach (DataField field in dataFields) {
          if (field.k == DataField.DISCOVERY_SPAWN_CHANCE) {
-            spawnChance = float.Parse(field.v);
+            spawnChance = field.floatValue;
          } else if (field.k == DataField.POSSIBLE_DISCOVERY) {
-            int id = int.Parse(field.v);
+            int id = field.intValue;
 
             // When ID is 0, it's because it wasn't assigned in the MapEditor
             if (id > 0) {

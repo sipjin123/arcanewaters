@@ -558,7 +558,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       foreach (DataField field in dataFields) {
          if (field.k.CompareTo(DataField.NPC_DATA_KEY) == 0) {
             // Get ID from npc data field
-            if (int.TryParse(field.v, out int npcId)) {
+            if (field.tryGetIntValue(out int npcId)) {
                return npcId;
             }
          }

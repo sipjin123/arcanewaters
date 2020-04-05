@@ -193,8 +193,11 @@ public class TreasureSite : NetworkBehaviour
       return _captureCollider.radius;
    }
 
-   public void freeAssociatedWarp () {
-      _warp.removeTreasureSite(instanceId);
+   public void OnDestroy () {
+      // Remove the link between the treasure site and its warp
+      if (_warp != null) {
+         _warp.removeTreasureSite(instanceId);
+      }
    }
 
    private IEnumerator CO_SetAreaParent () {

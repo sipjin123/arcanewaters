@@ -2427,7 +2427,7 @@ public class RPCManager : NetworkBehaviour {
          // Back to Unity Thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Get the voyage instances in all known servers
-            List<Voyage> allVoyages = ServerNetwork.self.getAllVoyages();
+            List<Voyage> allVoyages = VoyageManager.self.getAllVoyages();
 
             // Select the voyages that are open to new groups
             List<Voyage> allOpenVoyages = new List<Voyage>();
@@ -2470,7 +2470,7 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Retrieve the voyage data
-      Voyage voyage = ServerNetwork.self.getVoyage(voyageId);
+      Voyage voyage = VoyageManager.self.getVoyage(voyageId);
 
       if (voyage == null) {
          sendError("This voyage is not available anymore!");
@@ -2539,7 +2539,7 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Retrieve the voyage data
-      Voyage voyage = ServerNetwork.self.getVoyage(voyageId);
+      Voyage voyage = VoyageManager.self.getVoyage(voyageId);
 
       if (voyage == null) {
          sendError("This voyage is not available anymore!");
@@ -2610,7 +2610,7 @@ public class RPCManager : NetworkBehaviour {
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Retrieve the voyage data
-            Voyage voyage = ServerNetwork.self.getVoyage(groupInfo.voyageId);
+            Voyage voyage = VoyageManager.self.getVoyage(groupInfo.voyageId);
 
             if (voyage == null) {
                D.error(string.Format("Could not find the voyage {0} for user {1}.", voyageGroupId, Global.player.userId));
@@ -2674,7 +2674,7 @@ public class RPCManager : NetworkBehaviour {
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Retrieve the voyage data
-            Voyage voyage = ServerNetwork.self.getVoyage(voyageGroup.voyageId);
+            Voyage voyage = VoyageManager.self.getVoyage(voyageGroup.voyageId);
 
             if (voyage == null) {
                D.error(string.Format("Could not retrieve the voyage data for group id {0} and voyage id {1}", voyageGroup.groupId, voyageGroup.voyageId));
@@ -2726,7 +2726,7 @@ public class RPCManager : NetworkBehaviour {
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Retrieve the voyage data
-            Voyage voyage = ServerNetwork.self.getVoyage(voyageGroup.voyageId);
+            Voyage voyage = VoyageManager.self.getVoyage(voyageGroup.voyageId);
 
             if (voyage == null) {
                D.error(string.Format("Could not retrieve the voyage data for group id {0} and voyage id {1}", voyageGroup.groupId, voyageGroup.voyageId));
@@ -3108,13 +3108,12 @@ public class RPCManager : NetworkBehaviour {
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
       bot.areaKey = _player.areaKey;
-      bot.npcType = NPC.Type.Blackbeard;
-      bot.faction = NPC.getFactionFromType(bot.npcType);
-      bot.route = null;
-      bot.autoMove = true;
+      bot.faction = Faction.Type.Pirates;
       bot.nationType = Nation.Type.Pirate;
-      bot.speed = Ship.getBaseSpeed(Ship.Type.Type_1);
-      bot.attackRangeModifier = Ship.getBaseAttackRange(Ship.Type.Type_1);
+      Array shipTypes = Enum.GetValues(typeof(Ship.Type));
+      bot.shipType = (Ship.Type)shipTypes.GetValue(Random.Range(0, shipTypes.Length));
+      bot.speed = Ship.getBaseSpeed(bot.shipType);
+      bot.attackRangeModifier = Ship.getBaseAttackRange(bot.shipType);
       bot.entityName = "Pirate";
 
       // Set up the movement route

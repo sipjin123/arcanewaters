@@ -16,11 +16,11 @@ namespace MapCreationTool
          outline = GetComponentInChildren<SpriteOutline>();
       }
 
-      public void dataFieldChanged (string key, string value) {
-         if (key.CompareTo(isSea ? DataField.SEA_ENEMY_DATA_KEY : DataField.LAND_ENEMY_DATA_KEY) == 0) {
+      public void dataFieldChanged (DataField field) {
+         if (field.k.CompareTo(isSea ? DataField.SEA_ENEMY_DATA_KEY : DataField.LAND_ENEMY_DATA_KEY) == 0) {
             Texture2D texture = isSea
-               ? MonsterManager.instance.getSeaMonsterTexture(int.Parse(value.Split(':')[0]))
-               : MonsterManager.instance.getLandMonsterTexture(int.Parse(value.Split(':')[0]));
+               ? MonsterManager.instance.getSeaMonsterTexture(int.Parse(field.v.Split(':')[0]))
+               : MonsterManager.instance.getLandMonsterTexture(int.Parse(field.v.Split(':')[0]));
 
             if (texture != null) {
                ren.sprite = ImageManager.getSprites(texture)[0];
