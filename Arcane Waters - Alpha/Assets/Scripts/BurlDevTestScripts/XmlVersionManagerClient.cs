@@ -42,6 +42,9 @@ public class XmlVersionManagerClient : MonoBehaviour {
    // The space key for the xml content
    public static string SPACE_KEY = "[space]";
 
+   // Logs the progress of the file setup
+   public bool logProgress;
+
    #endregion
 
    private void Awake () {
@@ -492,7 +495,10 @@ public class XmlVersionManagerClient : MonoBehaviour {
             break;
             #endregion
       }
-      D.editorLog(message, Color.cyan);
+
+      if (logProgress) {
+         D.editorLog(message, Color.cyan);
+      }
    }
 
    private void checkTextExtractionProgress () {

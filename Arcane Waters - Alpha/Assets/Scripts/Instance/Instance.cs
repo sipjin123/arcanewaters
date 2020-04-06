@@ -228,7 +228,7 @@ public class Instance : NetworkBehaviour
                   if (receiver != null && dataField.d != null) {
                      receiver.receiveData(dataField.d);
                   }
-                  npc.npcType = (NPC.Type) NPC.fetchDataFieldID(dataField.d);
+                  npc.npcId = NPC.fetchDataFieldID(dataField.d);
 
                   InstanceManager.self.addNPCToInstance(npc, this);
 

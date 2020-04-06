@@ -26,16 +26,18 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       Pegleg = 16, Seagull = 17, Shipyard = 18, Shroom = 19, Skullhat = 20,
       Stripes = 21, Vest = 22, Dog = 23, Lizard = 24,
 
-      ExplorerGuy = 25, DesertGuy = 26, TopKnot = 27, SnowGirl = 28, SkullHat = 29,
-      ShamanGirl = 30, Pyromancer = 31, MushroomDruid = 32, Lizard_Shaman = 33, Lizard_Armored = 34, Golem = 35,
+      ExplorerGuy = 25, DesertGuy = 26, Topknot = 27, Snowgirl = 28, SkullHat = 29,
+      ShamanGirl = 30, Pyromancer = 31, Mushroomdruid = 32, Lizard_Shaman = 33, Lizard_Armored = 34, Golem = 35,
    }
 
+   [SyncVar]
    // The Type of NPC this is
    public Type npcType;
 
    // The speed that we move at
    public float moveSpeed = 3f;
 
+   [SyncVar]
    // The unique id assigned to this npc
    public int npcId;
 
@@ -44,6 +46,9 @@ public class NPC : NetEntity, IMapEditorDataReceiver
 
    // Determines if this npc is spawned at debug mode
    public bool isDebug = false;
+
+   // Determines if this npc is a shop npc
+   public bool isShopNpc;
 
    #endregion
 
@@ -70,23 +75,8 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    protected override void Start () {
       base.Start();
 
-      // Faction and Type are prerequisites for generating NPC ID
-      // NPC ID is a requirement to gather xml data
-
-      // Figure out our Type from our sprite
-      npcType = getTypeFromSprite();
-
-      // Get faction from type
-      _faction = getFactionFromType(npcType);
-
-      // ID is the first data to be initialized
-      npcId = getId();
-
       // Initially hides name ui for npc name
       Util.setAlpha(nameText, 0f);
-
-      // Keep track of the NPC in the Manager
-      NPCManager.self.storeNPC(this);
 
       foreach (Animator animator in _animators) {
          animator.SetInteger("facing", (int) facing);
@@ -111,11 +101,40 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          }
          _pathfindingReference.gridReference = _gridReference;
 
-         StartCoroutine(generateNewWaypoints(6f + Random.Range(-1f, 1f)));
+         if (!isShopNpc) {
+            StartCoroutine(generateNewWaypoints(6f + Random.Range(-1f, 1f)));
+         } else {
+            facing = Direction.South;
+         }
+
+         // Faction and Type are prerequisites for generating NPC ID
+         // NPC ID is a requirement to gather xml data
+
+         // Figure out our Type from our sprite
+         npcType = getTypeFromSprite();
+      } else {
+         string spriteAddress = "Assets/Sprites/NPCs/Bodies/" + this.npcType + "/"; 
+         List<ImageManager.ImageData> newSprites = ImageManager.getSpritesInDirectory(spriteAddress);
+         if (newSprites.Count > 0) {
+            GetComponent<SpriteRenderer>().sprite = newSprites[0].sprites[0];
+
+            // If we have a sprite swapper, we want to check that instead
+            Texture2D newTexture = newSprites[0].texture2D;
+            if (newTexture) {
+               SpriteSwap swapper = GetComponent<SpriteSwap>();
+               swapper.newTexture = newTexture;
+            }
+         }
       }
+
+      // Get faction from type
+      _faction = getFactionFromType(npcType);
 
       // Update our various text responses
       InvokeRepeating("updateTradeGossip", 0f, 60 * 60);
+
+      // Keep track of the NPC in the Manager
+      NPCManager.self.storeNPC(this);
 
       // Set the name
       if (nameText != null) {
@@ -191,18 +210,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          }
       }
 
-      // Fade our floating name in and out (but this seems to be really performance intensive for some reason)
-      /*if (nameText != null) {
-         float currentAlpha = Mathf.Clamp(nameText.color.a, 0f, 1f);
-         Util.setAlpha(nameText, _isNearPlayer ? currentAlpha + Time.deltaTime * 3f : currentAlpha - Time.deltaTime * 3f);
-      }*/
-      // Temporarily Sets alpha instantly, fade in fade out to be updated
-      if (MouseManager.self.isHoveringOver(_clickableBox)) {
-         Util.setAlpha(nameText, 1);
-      } else {
-         Util.setAlpha(nameText, 0);
-      }
-
       // Check if we're showing a West sprite
       bool isFacingWest = facing == Direction.West || facing == Direction.NorthWest || facing == Direction.SouthWest;
 
@@ -267,21 +274,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          // Send a request to the server to get the npc panel info
          Global.player.rpc.Cmd_RequestNPCQuestSelectionListFromServer(npcId);
       }
-   }
-
-   protected int getId () {
-      // Blocks the ID generation for Debug scenes, uses the custom ID setup for the npc instead
-      if (isDebug) {
-         if (nameText != null) {
-            nameText.text = "ID: [" + this.npcId + "]\n" + this.getName();
-         }
-         return this.npcId;
-      }
-
-      // We can make a unique id based on our area and NPC type
-      int id = (Area.getAreaId(areaKey) * 100) + (int) npcType;
-
-      return id;
    }
 
    public bool isCloseToGlobalPlayer () {
@@ -465,12 +457,11 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       string[] split = spriteName.Split('_');
       spriteName = split[0];
       try {
-         Type npcType = (Type) System.Enum.Parse(typeof(Type), spriteName, true);
+         return npcType = (Type) Enum.Parse(typeof(Type), spriteName, true);
       } catch {
          Debug.LogWarning("Invalid Enum Type: " + spriteName);
          return Type.Blackbeard;
       }
-      return npcType;
    }
 
    public string getName () {
@@ -551,6 +542,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          _shopTrigger = gameObject.AddComponent<ShopTrigger>();
          _shopName = shopName;
          _shopTrigger.panelType = (Panel.Type) Enum.Parse(typeof(Panel.Type), panelName);
+         isShopNpc = true;
       }
    }
 
