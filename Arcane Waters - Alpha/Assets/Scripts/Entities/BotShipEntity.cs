@@ -48,7 +48,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          }
          _pathfindingReference.gridReference = _gridReference;
 
-         StartCoroutine(generateNewWaypoints(6f + Random.Range(-1f, 1f)));
+         StartCoroutine(CO_generateNewWaypoints(6f + Random.Range(-1f, 1f)));
       }
 
       // Check if we can shoot at any of our attackers
@@ -121,7 +121,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    }
 
    [Server]
-   protected IEnumerator generateNewWaypoints (float moveAgainDelay) {
+   protected IEnumerator CO_generateNewWaypoints (float moveAgainDelay) {
       // Initial delay
       float waitTime = 1.0f;
       while (true) {

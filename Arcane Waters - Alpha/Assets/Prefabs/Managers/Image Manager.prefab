@@ -9808,6 +9808,52 @@ MonoBehaviour:
     sprites:
     - {fileID: 21300000, guid: 260e695607a72784ea9a26c51021d6d2, type: 3}
   - imageName: golem
+    imagePath: Assets/Sprites/NPCs/Bodies/Golem/golem.png
+    imagePathWithoutExtension: Assets/Sprites/NPCs/Bodies/Golem/golem
+    texture2D: {fileID: 2800000, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    sprite: {fileID: 21300000, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300002, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300004, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300006, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300008, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300010, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300012, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300014, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300016, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300018, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300020, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300022, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300024, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300026, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300028, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300030, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300032, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300034, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300036, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300038, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300040, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300042, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300044, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300046, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300048, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300050, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300052, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300054, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300056, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300058, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300060, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300062, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300064, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300066, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300068, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300070, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300072, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300074, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300076, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+    - {fileID: 21300078, guid: 572af7b3894924d4c98cd70de01c57fd, type: 3}
+  - imageName: golem
     imagePath: Assets/Sprites/Enemies/LandMonsters/golem.png
     imagePathWithoutExtension: Assets/Sprites/Enemies/LandMonsters/golem
     texture2D: {fileID: 2800000, guid: 2cb5e2c7ea804fd42988619ab67168bb, type: 3}
@@ -12650,6 +12696,51 @@ MonoBehaviour:
     - {fileID: 21300072, guid: fae0a1192a8e3de48be6182ab6ed055a, type: 3}
     - {fileID: 5094016138803606139, guid: fae0a1192a8e3de48be6182ab6ed055a, type: 3}
     - {fileID: -1103053666131149229, guid: fae0a1192a8e3de48be6182ab6ed055a, type: 3}
+  - imageName: lizard
+    imagePath: Assets/Sprites/NPCs/Bodies/Lizard/lizard.png
+    imagePathWithoutExtension: Assets/Sprites/NPCs/Bodies/Lizard/lizard
+    texture2D: {fileID: 2800000, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    sprite: {fileID: 21300000, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300002, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300004, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300006, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300008, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300010, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300012, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300014, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300016, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300018, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300020, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300022, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300024, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300026, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300028, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300030, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300032, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300034, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300036, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300038, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300040, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300042, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300044, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300046, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300048, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300050, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300052, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300054, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300056, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300058, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300060, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300062, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300064, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300066, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300068, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300070, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 21300072, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: 5094016138803606139, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
+    - {fileID: -1103053666131149229, guid: 7ee7e5d73a744374895eae6207a9f051, type: 3}
   - imageName: lizard_armored
     imagePath: Assets/Sprites/Enemies/LandMonsters/lizard_armored.png
     imagePathWithoutExtension: Assets/Sprites/Enemies/LandMonsters/lizard_armored

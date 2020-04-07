@@ -296,7 +296,7 @@ namespace MapCreationTool.Serialization
          IEnumerable<SpecialTileChunk> stairs = formSquareChunks(midLayers, editorSize, SpecialTileChunk.Type.Stair, stairInclude);
          IEnumerable<SpecialTileChunk> waterfalls = formSquareChunks(midLayers, editorSize, SpecialTileChunk.Type.Waterfall, waterfallInclude);
          IEnumerable<SpecialTileChunk> vines = formSquareChunks(midLayers, editorSize, SpecialTileChunk.Type.Vine, vineInclude);
-         IEnumerable<SpecialTileChunk> currents = formWaterCurrentChunks(midLayers, editorSize);
+         IEnumerable<SpecialTileChunk> currents = formWaterCurrentChunks(midLayers, editorSize, editorType);
 
          Dictionary<TileBase, int> tileToRug = Palette.instance.paletteData.tileToRugType;
 
@@ -311,7 +311,11 @@ namespace MapCreationTool.Serialization
          return stairs.Union(waterfalls).Union(vines).Union(currents).Union(rugs).ToArray();
       }
 
-      private static IEnumerable<SpecialTileChunk> formWaterCurrentChunks (List<MidExportLayer> midLayers, Vector2Int editorSize) {
+      private static IEnumerable<SpecialTileChunk> formWaterCurrentChunks (List<MidExportLayer> midLayers, Vector2Int editorSize, EditorType editorType) {
+         if (editorType != EditorType.Area) {
+            yield break;
+         }
+
          bool[,] matrix = new bool[editorSize.x, editorSize.y];
          List<(int, int)> currentIndexes = new List<(int, int)>();
 
