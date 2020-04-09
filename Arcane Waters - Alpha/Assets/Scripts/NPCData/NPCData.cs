@@ -69,6 +69,9 @@ public class NPCData
    // The last used quest id, used when creating new quests
    public int lastUsedQuestId;
 
+   // The achievement id that is required to hire this companion
+   public int achievementIdHiringRequirement = -1;
+
    // The list of quests
    [XmlArray("Quests"), XmlArrayItem("Quest")]
    public List<Quest> quests;
@@ -93,7 +96,7 @@ public class NPCData
       string greetingTextCasualFriend, string greetingTextCloseFriend, string greetingTextBestFriend,
       string giftOfferNPCText, string giftLikedText, string giftNotLikedText, string name,
       Faction.Type faction, Specialty.Type specialty, bool hasTradeGossipDialogue, bool hasGoodbyeDialogue,
-      int lastUsedQuestId, List<Quest> quests, List<NPCGiftData> gifts, string iconPath, string spritePath, bool isHireable, int landMonsterId) {
+      int lastUsedQuestId, List<Quest> quests, List<NPCGiftData> gifts, string iconPath, string spritePath, bool isHireable, int landMonsterId, int achievementIdHiringRequirement) {
       this.npcId = npcId;
       this.greetingTextStranger = greetingTextStranger;
       this.greetingTextAcquaintance = greetingTextAcquaintance;
@@ -115,6 +118,7 @@ public class NPCData
       this.spritePath = spritePath;
       this.isHireable = isHireable;
       this.landMonsterId = landMonsterId;
+      this.achievementIdHiringRequirement = achievementIdHiringRequirement;
    }
 
    #region Private Variables

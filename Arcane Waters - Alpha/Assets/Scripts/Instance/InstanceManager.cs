@@ -63,11 +63,13 @@ public class InstanceManager : MonoBehaviour {
    public void addEnemyToInstance (Enemy enemy, Instance instance) {
       instance.entities.Add(enemy);
       enemy.instanceId = instance.id;
+      instance.enemyCount++;
    }
 
    public void addNPCToInstance (NPC npc, Instance instance) {
       instance.entities.Add(npc);
       npc.instanceId = instance.id;
+      instance.npcCount++;
    }
 
    public void addBotShipToInstance (BotShipEntity botShip, Instance instance) {
@@ -115,7 +117,7 @@ public class InstanceManager : MonoBehaviour {
       instance.updateMaxPlayerCount(isSinglePlayer);
 
       // Keep track of it
-      _instances.Add(instance.id, instance);
+      _instances.Add(instance.id, instance); 
 
       // Note the open Areas on this server
       recalculateOpenAreas();
@@ -129,6 +131,18 @@ public class InstanceManager : MonoBehaviour {
       if (!isSinglePlayer) {
          foreach (Instance instance in _instances.Values) {
             if (instance.areaKey == areaKey && instance.getPlayerCount() < instance.getMaxPlayers()) {
+               int enemyCount = 0;
+               int npcCount = 0;
+               foreach (NetworkBehaviour netBehavior in instance.entities) {
+                  if (netBehavior is Enemy) {
+                     enemyCount++;
+                  }
+
+                  if (netBehavior is NPC) {
+                     npcCount++;
+                  }
+               }
+
                return instance;
             }
          }

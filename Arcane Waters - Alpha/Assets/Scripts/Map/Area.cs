@@ -63,15 +63,22 @@ public class Area : MonoBehaviour
    // Ships to be loaded by the server
    public List<ExportedPrefab001> shipDataFields = new List<ExportedPrefab001>();
 
+   // Ships to be loaded by the server
+   public List<ExportedPrefab001> secretsDataFields = new List<ExportedPrefab001>();
+
+   // Networked entity parents
+   public Transform npcParent, enemyParent, oreNodeParent, secretsParent;
+
    #endregion
 
    public void registerNetworkPrefabData (List<ExportedPrefab001> npcDatafields, List<ExportedPrefab001> enemyDatafields,
-      List<ExportedPrefab001> oreDataFields, List<ExportedPrefab001> treasureSiteDataFields, List<ExportedPrefab001> shipDataFields) {
+      List<ExportedPrefab001> oreDataFields, List<ExportedPrefab001> treasureSiteDataFields, List<ExportedPrefab001> shipDataFields, List<ExportedPrefab001> secretsDataFields) {
       this.npcDatafields = npcDatafields;
       this.enemyDatafields = enemyDatafields;
       this.oreDataFields = oreDataFields;
       this.treasureSiteDataFields = treasureSiteDataFields;
       this.shipDataFields = shipDataFields;
+      this.secretsDataFields = secretsDataFields;
    }
 
    private void Start () {

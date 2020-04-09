@@ -33,6 +33,10 @@ public class OreNode : NetworkBehaviour
    [SyncVar]
    public int interactCount;
 
+   // The area key assigned to this ore
+   [SyncVar]
+   public string areaKey;
+
    // Our sprite renderer
    public SpriteRenderer spriteRenderer;
 
@@ -80,6 +84,9 @@ public class OreNode : NetworkBehaviour
       }
 
       OreManager.self.registerOreNode(this.id, this);
+      if (AreaManager.self.getArea(areaKey) != null) {
+         transform.SetParent(AreaManager.self.getArea(areaKey).oreNodeParent);
+      }
    }
 
    public void updateSprite (int spriteId) {

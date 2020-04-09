@@ -40,6 +40,7 @@ public class OreManager : MonoBehaviour
    public OreNode createOreNode (Instance instance, Vector3 spot, OreNode.Type oreType, Transform parent) {
       // Instantiate a new Ore Node
       OreNode oreNode = Instantiate(oreNodePrefab, parent);
+      oreNode.areaKey = instance.areaKey;
 
       // Set local position
       oreNode.transform.localPosition = spot;
@@ -52,6 +53,11 @@ public class OreManager : MonoBehaviour
 
       // Note which instance the ore node is in
       oreNode.instanceId = instance.id;
+
+      if (_oreNodes.ContainsKey(oreNode.id)) {
+         _oreNodes.Remove(oreNode.id);
+         D.editorLog("Ore node id has been integrated already: " + oreNode.id, Color.red);
+      }
 
       // Keep track of the ore nodes that we've created
       _oreNodes.Add(oreNode.id, oreNode);

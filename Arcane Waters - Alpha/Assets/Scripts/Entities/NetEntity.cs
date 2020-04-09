@@ -887,6 +887,8 @@ public class NetEntity : NetworkBehaviour {
 
       // Now that we know the target server, redirect them there
       spawnOnSpecificServer(bestServer, newArea, newLocalPosition, newFacingDirection);
+
+      SecretsGameManager.self.checkIfUserIsInSecret(this.userId);
    }
 
    [Server]

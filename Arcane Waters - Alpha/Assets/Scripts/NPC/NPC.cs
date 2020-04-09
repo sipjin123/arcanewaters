@@ -106,25 +106,8 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          } else {
             facing = Direction.South;
          }
-
-         // Faction and Type are prerequisites for generating NPC ID
-         // NPC ID is a requirement to gather xml data
-
-         // Figure out our Type from our sprite
-         npcType = getTypeFromSprite();
       } else {
-         string spriteAddress = "Assets/Sprites/NPCs/Bodies/" + this.npcType + "/"; 
-         List<ImageManager.ImageData> newSprites = ImageManager.getSpritesInDirectory(spriteAddress);
-         if (newSprites.Count > 0) {
-            GetComponent<SpriteRenderer>().sprite = newSprites[0].sprites[0];
-
-            // If we have a sprite swapper, we want to check that instead
-            Texture2D newTexture = newSprites[0].texture2D;
-            if (newTexture) {
-               SpriteSwap swapper = GetComponent<SpriteSwap>();
-               swapper.newTexture = newTexture;
-            }
-         }
+         setupClientSideSprites();
       }
 
       // Get faction from type
@@ -140,6 +123,25 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       if (nameText != null) {
          // nameText.text = "[" + npcType + "]";
          // setNameColor(nameText, npcType);
+      }
+
+      if (AreaManager.self.getArea(areaKey) != null) {
+         transform.SetParent(AreaManager.self.getArea(areaKey).npcParent);
+      }
+   }
+
+   private void setupClientSideSprites () {
+      string spriteAddress = "Assets/Sprites/NPCs/Bodies/" + this.npcType + "/";
+      List<ImageManager.ImageData> newSprites = ImageManager.getSpritesInDirectory(spriteAddress);
+      if (newSprites.Count > 0) {
+         GetComponent<SpriteRenderer>().sprite = newSprites[0].sprites[0];
+
+         // If we have a sprite swapper, we want to check that instead
+         Texture2D newTexture = newSprites[0].texture2D;
+         if (newTexture) {
+            SpriteSwap swapper = GetComponent<SpriteSwap>();
+            swapper.newTexture = newTexture;
+         }
       }
    }
 
@@ -445,7 +447,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       return false;
    }
 
-   protected Type getTypeFromSprite () {
+   public Type getTypeFromSprite () {
       string spriteName = GetComponent<SpriteRenderer>().sprite.name;
 
       // If we have a sprite swapper, we want to check that instead
@@ -527,6 +529,10 @@ public class NPC : NetEntity, IMapEditorDataReceiver
             }
             Area area = GetComponentInParent<Area>();
             areaKey = area.areaKey;
+
+            // Figure out our Type from our sprite
+            npcType = getTypeFromSprite();
+
             NPCManager.self.storeNPC(this);
          } else if (field.k.CompareTo(DataField.NPC_SHOP_NAME_KEY) == 0) {
             // Get Shop Name (if any)

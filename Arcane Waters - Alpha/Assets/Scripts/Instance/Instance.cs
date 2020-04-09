@@ -6,6 +6,7 @@ using Mirror;
 using MapCreationTool.Serialization;
 using System;
 
+[Serializable]
 public class Instance : NetworkBehaviour
 {
    #region Public Variables
@@ -28,6 +29,14 @@ public class Instance : NetworkBehaviour
    // For debugging in the Editor
    [SyncVar]
    public int entityCount;
+
+   // For the number of enemies in the instance
+   [SyncVar]
+   public int enemyCount;
+
+   // For the number of npc in the instance
+   [SyncVar]
+   public int npcCount;
 
    // The number assigned to this instance based on the area type
    [SyncVar]
@@ -188,15 +197,14 @@ public class Instance : NetworkBehaviour
 
       if (NetworkServer.active) {
          if (area != null) {
-            if (area.enemyDatafields.Count > 0) {
-               Transform enemyParent = Instantiate(new GameObject(), area.transform).transform;
-               enemyParent.name = "Enemies";
+            if (area.enemyDatafields.Count > 0 && enemyCount < 1) {
                foreach (ExportedPrefab001 dataField in area.enemyDatafields) {
                   Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;
 
                   // Add it to the Instance
-                  Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab, enemyParent);
+                  Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab, AreaManager.self.getArea(areaKey).enemyParent);
                   enemy.enemyType = (Enemy.Type) Enemy.fetchReceivedData(dataField.d);
+                  enemy.areaKey = area.areaKey;
 
                   BattlerData battleData = MonsterManager.self.getBattler(enemy.enemyType);
                   if (battleData != null) {
@@ -214,21 +222,21 @@ public class Instance : NetworkBehaviour
                }
             }
 
-            if (area.npcDatafields.Count > 0) {
-               Transform npcParent = Instantiate(new GameObject(), area.transform).transform;
-               npcParent.name = "NPCs";
+            if (area.npcDatafields.Count > 0 && npcCount < 1) {
                foreach (ExportedPrefab001 dataField in area.npcDatafields) {
                   Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;
+                  int npcId = NPC.fetchDataFieldID(dataField.d);
+                  Transform npcParent = AreaManager.self.getArea(areaKey).npcParent;
 
-                  NPC npc = Instantiate(PrefabsManager.self.npcPrefab, npcParent.position + targetLocalPos, Quaternion.identity, npcParent);
+                  NPC npc = Instantiate(PrefabsManager.self.npcPrefab, npcParent);
                   npc.areaKey = area.areaKey;
+                  npc.npcId = npcId;
 
                   // Make sure npc has correct data
                   IMapEditorDataReceiver receiver = npc.GetComponent<IMapEditorDataReceiver>();
                   if (receiver != null && dataField.d != null) {
                      receiver.receiveData(dataField.d);
                   }
-                  npc.npcId = NPC.fetchDataFieldID(dataField.d);
 
                   InstanceManager.self.addNPCToInstance(npc, this);
 
@@ -236,9 +244,10 @@ public class Instance : NetworkBehaviour
                      snap.snapZ();
                   }
 
+                  npc.transform.position = npcParent.position + targetLocalPos;
                   NetworkServer.Spawn(npc.gameObject);
                }
-            }
+            } 
 
             if (area.treasureSiteDataFields.Count > 0) {
                foreach (ExportedPrefab001 dataField in area.treasureSiteDataFields) {
@@ -261,7 +270,7 @@ public class Instance : NetworkBehaviour
             }
 
             if (area.oreDataFields.Count > 0) {
-               Transform oreParent = Instantiate(new GameObject(), area.transform).transform;
+               Transform oreParent = AreaManager.self.getArea(areaKey).oreNodeParent;
                foreach (ExportedPrefab001 dataField in area.oreDataFields) {
                   Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
                   int oreId = 0;
@@ -287,6 +296,26 @@ public class Instance : NetworkBehaviour
 
                   // Make sure the position is synced
                   newOreNode.syncedPosition = newOreNode.transform.position;
+               }
+            }
+
+            if (area.secretsDataFields.Count > 0) {
+               Transform secretsParent = AreaManager.self.getArea(areaKey).secretsParent;
+               foreach (ExportedPrefab001 dataField in area.secretsDataFields) {
+                  Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
+
+                  SecretsNode secretObjNode = Instantiate(PrefabsManager.self.secretsPrefab, secretsParent);
+                  secretObjNode.areaKey = area.areaKey;
+                  secretObjNode.receiveData(dataField.d);
+
+                  secretObjNode.syncedPosition = secretsParent.position + targetLocalPos;
+                  secretObjNode.transform.position = secretsParent.position + targetLocalPos;
+
+                  // The Instance needs to keep track of all Networked objects inside
+                  secretObjNode.instanceId = id;
+                  entities.Add(secretObjNode);
+
+                  NetworkServer.Spawn(secretObjNode.gameObject);
                }
             }
 

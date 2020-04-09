@@ -62,6 +62,8 @@ public class PlayerObserverManager : NetworkBehaviour {
          _instanceId = ((TreasureChest) _entity).instanceId;
       } else if (_entity is OreNode) {
          _instanceId = ((OreNode) _entity).instanceId;
+      } else if (_entity is SecretsNode) {
+         _instanceId = ((SecretsNode) _entity).instanceId;
       }
 
       return _instanceId;

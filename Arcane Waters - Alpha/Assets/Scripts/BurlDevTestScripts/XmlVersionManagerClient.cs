@@ -43,7 +43,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
    public static string SPACE_KEY = "[space]";
 
    // Logs the progress of the file setup
-   public bool logProgress;
+   public bool includeProgressInEditorLog;
 
    #endregion
 
@@ -496,13 +496,16 @@ public class XmlVersionManagerClient : MonoBehaviour {
             #endregion
       }
 
-      if (logProgress) {
+      if (includeProgressInEditorLog) {
          D.editorLog(message, Color.cyan);
       }
    }
 
    private void checkTextExtractionProgress () {
-      D.log("Progress is: " + currentProgress + " / " + targetProgress);
+      if (includeProgressInEditorLog) {
+         D.log("Progress is: " + currentProgress + " / " + targetProgress);
+      }
+
       if (currentProgress >= targetProgress) {
          D.log("Finished assigning Xml Data");
          loadBlocker.SetActive(false);

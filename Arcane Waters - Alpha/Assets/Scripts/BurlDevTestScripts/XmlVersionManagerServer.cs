@@ -76,7 +76,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
    public int currentProgress;
 
    // Logs the progress of the file setup
-   public bool logProgress;
+   public bool includeProgressInEditorLog;
 
    // Stops the server from initializing
    public bool forceDisable;
@@ -88,9 +88,6 @@ public class XmlVersionManagerServer : MonoBehaviour {
    }
 
    public void initializeServerData () {
-      #if !UNITY_EDITOR
-         forceDisable = false;
-      #endif
       if (!forceDisable) {
          StartCoroutine(CO_GetXmlData());
       }
@@ -140,18 +137,16 @@ public class XmlVersionManagerServer : MonoBehaviour {
                      D.editorLog("Failed to convert: " + newGroup[1], Color.red);
                   }
 
-                  if (logProgress) {
+                  if (includeProgressInEditorLog) {
                      D.editorLog(xmlTableName + "  There are saved files: Old:" + savedDate + " - New: " + serverDate, Color.cyan);
                   }
 
                   if (serverDate > savedDate) {
                      shouldZipNewFiles = true;
                      PlayerPrefs.SetString(xmlTableName, serverDate.ToString());
-                     if (logProgress) {
-                        D.editorLog("Server updated recently updates: " + (index + "/" + (xmlGroup.Length - 1)), Color.blue);
-                     }
+                     D.editorLog("Server updated recently updates: " + (index + "/" + (xmlGroup.Length - 1)), Color.blue);
                   } else {
-                     if (logProgress) {
+                     if (includeProgressInEditorLog) {
                         D.editorLog("NO updates: " + (index + "/" + (xmlGroup.Length - 1)), Color.blue);
                      }
                   }
@@ -280,7 +275,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
       }
       currentProgress++;
 
-      if (logProgress) {
+      if (includeProgressInEditorLog) {
          try {
             D.log(resultMessage + " (" + currentProgress + "/" + targetProgress + ")");
          } catch {
@@ -305,12 +300,10 @@ public class XmlVersionManagerServer : MonoBehaviour {
       } else {
          // Grab the map data from the request
          string rawData = www.downloadHandler.text;
-         if (logProgress) {
-            try {
-               D.log(rawData);
-            } catch {
-               D.editorLog(rawData, Color.cyan);
-            }
+         try {
+            D.log(rawData);
+         } catch {
+            D.editorLog(rawData, Color.cyan);
          }
       }
    }

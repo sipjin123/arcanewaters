@@ -89,6 +89,10 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       if (isServer) {
          InvokeRepeating("chooseRandomDesiredPosition", 3f, 3f);
       }
+
+      if (AreaManager.self.getArea(areaKey) != null) {
+         transform.SetParent(AreaManager.self.getArea(areaKey).enemyParent);
+      }
    }
 
    protected override void Update () {
