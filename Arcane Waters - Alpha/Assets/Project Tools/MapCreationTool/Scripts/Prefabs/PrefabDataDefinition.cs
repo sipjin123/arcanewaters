@@ -91,6 +91,27 @@ namespace MapCreationTool
                   toolTip = customData.toolTip,
                   options = MapEditorDiscoveriesManager.instance.formSelectionOptions()
                };
+            } else if (customData.type == CustomFieldType.SecretType) {
+               Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
+               selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
+                  name = customData.name,
+                  toolTip = customData.toolTip,
+                  options = SecretsMapManager.instance.formSelectionOptions()
+               };
+            } else if (customData.type == CustomFieldType.SecretStartSprite) {
+               Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
+               selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
+                  name = customData.name,
+                  toolTip = customData.toolTip,
+                  options = SecretsMapManager.instance.formInitialSprite()
+               };
+            } else if (customData.type == CustomFieldType.SecretInteractSprite) {
+               Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
+               selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
+                  name = customData.name,
+                  toolTip = customData.toolTip,
+                  options = SecretsMapManager.instance.formInitialSprite()
+               };
             }
          }
       }
@@ -140,6 +161,9 @@ namespace MapCreationTool
          ActionName,
          Book,
          Discovery,
+         SecretType,
+         SecretStartSprite,
+         SecretInteractSprite,
          Ship
       }
    }

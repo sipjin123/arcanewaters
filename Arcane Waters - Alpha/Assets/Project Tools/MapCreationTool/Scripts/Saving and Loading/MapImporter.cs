@@ -153,6 +153,7 @@ namespace MapCreationTool
          List<ExportedPrefab001> oreData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> treasureSiteData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> shipData = new List<ExportedPrefab001>();
+         List<ExportedPrefab001> secretsData = new List<ExportedPrefab001>();
 
          int unrecognizedPrefabs = 0;
          int cropSpotCounter = 0;
@@ -188,6 +189,10 @@ namespace MapCreationTool
             } else if (original.GetComponent<ShipEntity>() != null) {
                if (prefab.d != null) {
                   shipData.Add(prefab);
+               }
+            } else if (original.GetComponent<SecretsNode>() != null) {
+               if (prefab.d != null) {
+                  secretsData.Add(prefab);
                }
             } else {
                Vector3 targetLocalPos = new Vector3(prefab.x, prefab.y, 0) * 0.16f + Vector3.back * 10;
@@ -225,7 +230,7 @@ namespace MapCreationTool
             Utilities.warning($"Could not recognize { unrecognizedPrefabs } prefabs of map { mapInfo.mapName }");
          }
 
-         area.registerNetworkPrefabData(npcData, enemyData, oreData, treasureSiteData, shipData);
+         area.registerNetworkPrefabData(npcData, enemyData, oreData, treasureSiteData, shipData, secretsData);
       }
 
       static List<TilemapLayer> instantiateTilemaps (MapInfo mapInfo, ExportedProject001 project, Transform tilemapParent, Transform collisionTilemapParent) {

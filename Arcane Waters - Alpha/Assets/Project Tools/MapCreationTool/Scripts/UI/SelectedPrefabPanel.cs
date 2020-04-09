@@ -88,7 +88,7 @@ namespace MapCreationTool
       private void setLayout (PrefabDataDefinition data) {
          titleText.text = data.title;
          // Custom logic for warps
-         if (data.title.CompareTo("Warp") == 0 || data.title.CompareTo("House") == 0) {
+         if (data.title.CompareTo("Warp") == 0 || data.title.CompareTo("House") == 0 || data.title.CompareTo("Secret") == 0) {
             // target map
             Field mf = Instantiate(dropdownFieldPref, transform);
             mf.setFieldProperties(Overlord.remoteMaps.formMapsSelectOptions());
@@ -134,7 +134,7 @@ namespace MapCreationTool
             f.Value.setValue(placedPrefab.getData(f.Key));
          }
 
-         if (titleText.text.CompareTo("Warp") == 0 || data.title.CompareTo("House") == 0) {
+         if (titleText.text.CompareTo("Warp") == 0 || data.title.CompareTo("House") == 0 || data.title.CompareTo("Secret") == 0) {
             fields["target map"].setFieldProperties(Overlord.remoteMaps.formMapsSelectOptions());
             fields["target map"].setValue(placedPrefab.getData("target map"));
             string mapValue = fields["target map"].value;

@@ -150,6 +150,11 @@ public class NPCEditScreen : MonoBehaviour
    // Save Button
    public Button saveButton;
 
+   // Achievement requirement info for hiring a companion
+   public Button achievementRequirementHireButton;
+   public Text achievementRequirementHireID;
+   public Text achievmentRequirementHireName;
+
    // Battler type selection
    public Button selectBattlertype;
    public Text selectedBattlertype;
@@ -182,6 +187,9 @@ public class NPCEditScreen : MonoBehaviour
          itemTypeSelectionPanel.SetActive(false);
       });
 
+      achievementRequirementHireButton.onClick.AddListener(() => {
+         toggleActionSelectionPanel(true);
+      });
       changeAvatarButton.onClick.AddListener(() => {
          showIconSelector();
       });
@@ -267,6 +275,13 @@ public class NPCEditScreen : MonoBehaviour
       npcID.text = npcData.npcId.ToString();
       isHireableToggle.isOn = npcData.isHireable;
       selectedBattlerIndex.text = npcData.landMonsterId.ToString();
+      achievementRequirementHireID.text = npcData.achievementIdHiringRequirement.ToString();
+      if (NPCToolManager.instance.achievementCollection.ContainsKey(npcData.achievementIdHiringRequirement)) {
+         achievmentRequirementHireName.text = NPCToolManager.instance.achievementCollection[npcData.achievementIdHiringRequirement].achievementName;
+      } else {
+         achievmentRequirementHireName.text = "None";
+      }
+
       if (NPCToolManager.instance.battlerList.ContainsKey(npcData.landMonsterId)) {
          selectedBattlertype.text = NPCToolManager.instance.battlerList[npcData.landMonsterId].enemyName;
       } else {
@@ -355,7 +370,7 @@ public class NPCEditScreen : MonoBehaviour
          greetingCasualFriend.text, greetingCloseFriend.text, greetingBestFriend.text, giftOfferText.text,
          giftLiked.text, giftNotLiked.text, npcName.text, (Faction.Type) faction.value,
          (Specialty.Type) specialty.value, hasTradeGossip.isOn, hasGoodbye.isOn, _lastUsedQuestId,
-         questList, newGiftDataList, npcIconPath, npcSpritePath, isHireableToggle.isOn, int.Parse(selectedBattlerIndex.text));
+         questList, newGiftDataList, npcIconPath, npcSpritePath, isHireableToggle.isOn, int.Parse(selectedBattlerIndex.text), int.Parse(achievementRequirementHireID.text));
 
       if (startingID != int.Parse(npcID.text)) {
          // Delete overwritten npc
@@ -413,7 +428,7 @@ public class NPCEditScreen : MonoBehaviour
       }
    }
 
-   public void toggleActionSelectionPanel () {
+   public void toggleActionSelectionPanel (bool useForCompanionSetup = false) {
       itemTypeSelectionPanel.SetActive(true);
       itemCategoryParent.gameObject.DestroyChildren();
       itemTypeParent.gameObject.DestroyChildren();
@@ -425,9 +440,15 @@ public class NPCEditScreen : MonoBehaviour
          actionTemplate.itemIndexText.text = achievementData.Key.ToString();
 
          actionTemplate.selectButton.onClick.AddListener(() => {
-            currentQuestModified.currentQuestNode.cachedRequiredActionRow.actionTypeIndex = achievementData.Key;
-            currentQuestModified.currentQuestNode.cachedRequiredActionRow.actionTypeLabel.text = achievementData.Value.achievementName;
-            confirmSelectionButton.onClick.Invoke();
+            if (useForCompanionSetup) {
+               achievementRequirementHireID.text = achievementData.Key.ToString();
+               achievmentRequirementHireName.text = achievementData.Value.achievementName;
+               itemTypeSelectionPanel.SetActive(false);
+            } else {
+               currentQuestModified.currentQuestNode.cachedRequiredActionRow.actionTypeIndex = achievementData.Key;
+               currentQuestModified.currentQuestNode.cachedRequiredActionRow.actionTypeLabel.text = achievementData.Value.achievementName;
+               confirmSelectionButton.onClick.Invoke();
+            }
          });
       }
    }

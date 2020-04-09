@@ -45,6 +45,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -230,6 +231,7 @@ GameObject:
   - component: {fileID: 5575320467910960297}
   - component: {fileID: 1047664258830659363}
   - component: {fileID: 6476091006602398589}
+  - component: {fileID: -4727712256386644933}
   m_Layer: 0
   m_Name: NPC
   m_TagString: Untagged
@@ -270,9 +272,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
 --- !u!212 &212902151906284916
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -287,6 +289,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -445,6 +448,7 @@ MonoBehaviour:
   npcId: 0
   tradeGossip: 
   isDebug: 0
+  isShopNpc: 0
 --- !u!114 &114041420384177890
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -458,6 +462,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 1
   sortPoint: {fileID: 1500841596590262}
 --- !u!114 &6365375267159312614
@@ -574,6 +579,20 @@ MonoBehaviour:
   gridReference: {fileID: 0}
   startPosition: {fileID: 6256489830027022391}
   targetPosition: {fileID: 119449345769090026}
+--- !u!114 &-4727712256386644933
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1322722724978774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7b30fc1a8890e042ae5319745cb2d13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
 --- !u!1 &1500841596590262
 GameObject:
   m_ObjectHideFlags: 0
@@ -1006,6 +1025,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

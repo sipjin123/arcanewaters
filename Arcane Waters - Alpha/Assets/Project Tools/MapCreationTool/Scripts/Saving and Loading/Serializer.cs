@@ -850,6 +850,10 @@ namespace MapCreationTool.Serialization
 
       public const string TUTORIAL_ITEM_STEP_ID_KEY = "step id";
 
+      public const string SECRETS_TYPE_ID = "secret type";
+      public const string SECRETS_START_SPRITE = "secret start sprite";
+      public const string SECRETS_INTERACT_SPRITE = "secret interact sprite";
+
       public const string NPC_DATA_KEY = "npc data";
       public const string NPC_SHOP_NAME_KEY = "shop name";
       public const string NPC_PANEL_TYPE_KEY = "panel type";

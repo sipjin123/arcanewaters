@@ -347,6 +347,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 5e64d69e88382ec4bb4ccb045891f5e1, type: 3}
     sprites:
     - {fileID: 21300000, guid: 5e64d69e88382ec4bb4ccb045891f5e1, type: 3}
+  - imageName: anvil 1
+    imagePath: Assets/Sprites/Secrets/anvil 1.png
+    imagePathWithoutExtension: Assets/Sprites/Secrets/anvil 1
+    texture2D: {fileID: 2800000, guid: ca03ec24818bf544ba9bc8186b676be8, type: 3}
+    sprite: {fileID: 21300000, guid: ca03ec24818bf544ba9bc8186b676be8, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: ca03ec24818bf544ba9bc8186b676be8, type: 3}
   - imageName: Apples
     imagePath: Assets/Sprites/Cargo/Apples.png
     imagePathWithoutExtension: Assets/Sprites/Cargo/Apples
@@ -4425,6 +4432,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 208e700436689a24eb5878e4864c8ebc, type: 3}
     sprites:
     - {fileID: 21300000, guid: 208e700436689a24eb5878e4864c8ebc, type: 3}
+  - imageName: dresser 1
+    imagePath: Assets/Sprites/Secrets/dresser 1.png
+    imagePathWithoutExtension: Assets/Sprites/Secrets/dresser 1
+    texture2D: {fileID: 2800000, guid: 7479069902b698e4083ba26a715d39fb, type: 3}
+    sprite: {fileID: 21300000, guid: 7479069902b698e4083ba26a715d39fb, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 7479069902b698e4083ba26a715d39fb, type: 3}
   - imageName: dresser_open
     imagePath: Assets/Sprites/Furniture/dresser_open.png
     imagePathWithoutExtension: Assets/Sprites/Furniture/dresser_open
@@ -4432,6 +4446,18 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: da6f033ecc269f9428c79f44fa2669b7, type: 3}
     sprites:
     - {fileID: 21300000, guid: da6f033ecc269f9428c79f44fa2669b7, type: 3}
+  - imageName: dresser_open 1
+    imagePath: Assets/Sprites/Secrets/dresser_open 1.png
+    imagePathWithoutExtension: Assets/Sprites/Secrets/dresser_open 1
+    texture2D: {fileID: 2800000, guid: 9ebd9ba58463c764780ff3dc0ef3a8ea, type: 3}
+    sprite: {fileID: 670707692688299835, guid: 9ebd9ba58463c764780ff3dc0ef3a8ea, type: 3}
+    sprites:
+    - {fileID: 670707692688299835, guid: 9ebd9ba58463c764780ff3dc0ef3a8ea, type: 3}
+    - {fileID: -1873806968354122575, guid: 9ebd9ba58463c764780ff3dc0ef3a8ea, type: 3}
+    - {fileID: -4896173872563681062, guid: 9ebd9ba58463c764780ff3dc0ef3a8ea, type: 3}
+    - {fileID: -6536929365723060119, guid: 9ebd9ba58463c764780ff3dc0ef3a8ea, type: 3}
+    - {fileID: 7744361854726596387, guid: 9ebd9ba58463c764780ff3dc0ef3a8ea, type: 3}
+    - {fileID: -1903714075290974759, guid: 9ebd9ba58463c764780ff3dc0ef3a8ea, type: 3}
   - imageName: Drop_Down_Cliff
     imagePath: Assets/Sprites/Map/Drop_Down_Cliff.png
     imagePathWithoutExtension: Assets/Sprites/Map/Drop_Down_Cliff
@@ -4662,6 +4688,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: fbb6ce02c3095d64dbb1baeae476e8d0, type: 3}
     sprites:
     - {fileID: 21300000, guid: fbb6ce02c3095d64dbb1baeae476e8d0, type: 3}
+  - imageName: end_table 1
+    imagePath: Assets/Sprites/Secrets/end_table 1.png
+    imagePathWithoutExtension: Assets/Sprites/Secrets/end_table 1
+    texture2D: {fileID: 2800000, guid: 5db3ad2ab80361b41b2170f37869f432, type: 3}
+    sprite: {fileID: 21300000, guid: 5db3ad2ab80361b41b2170f37869f432, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 5db3ad2ab80361b41b2170f37869f432, type: 3}
   - imageName: enemy
     imagePath: Assets/Sprites/Icons/Status/enemy.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Status/enemy
@@ -9798,8 +9831,8 @@ MonoBehaviour:
     sprite: {fileID: 3564856121727798196, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f,
       type: 3}
     sprites:
-    - {fileID: 6120081450217617434, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
     - {fileID: 3564856121727798196, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
+    - {fileID: 6120081450217617434, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
   - imageName: gold_icon
     imagePath: Assets/Sprites/Icons/gold_icon.png
     imagePathWithoutExtension: Assets/Sprites/Icons/gold_icon
@@ -22593,6 +22626,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 60b706aa1b4e2bc4e930b39c22d5aafa, type: 3}
     sprites:
     - {fileID: 21300000, guid: 60b706aa1b4e2bc4e930b39c22d5aafa, type: 3}
+  - imageName: totem 1
+    imagePath: Assets/Sprites/Secrets/totem 1.png
+    imagePathWithoutExtension: Assets/Sprites/Secrets/totem 1
+    texture2D: {fileID: 2800000, guid: cbeeaf797d33644488e529062d78e61b, type: 3}
+    sprite: {fileID: 21300000, guid: cbeeaf797d33644488e529062d78e61b, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: cbeeaf797d33644488e529062d78e61b, type: 3}
   - imageName: trade_button
     imagePath: Assets/Sprites/GUI/Bottom Buttons/trade_button.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Bottom Buttons/trade_button
