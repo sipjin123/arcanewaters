@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using MapCreationTool.Serialization;
 
-public class SecretsNode : NetworkBehaviour {
+public class SecretEntrance : NetworkBehaviour {
    #region Public Variables
 
    // The id of this node
@@ -51,14 +51,19 @@ public class SecretsNode : NetworkBehaviour {
    [SyncVar]
    public string initSpritePath, interactSpritePath;
 
-   // Max players that can enter the secret room
-   public static int MAX_PLAYERS = 2;
-
    // The reference to the simple animation
    public SimpleAnimation simpleAnim;
 
    // Determines if the object is interacted
+   [SyncVar]
    public bool isInteracted = false;
+
+   // The max players that can enter the area
+   [SyncVar]
+   public int maxPlayers;
+
+   // The warp associated with this secret entrance
+   public Warp warp;
 
    #endregion
 
@@ -75,11 +80,27 @@ public class SecretsNode : NetworkBehaviour {
       
       initSprite = ImageManager.getSprite(initSpritePath);
       interactSprite = ImageManager.getSprites(interactSpritePath)[0];
-      spriteRenderer.sprite = initSprite;
+      if (!isInteracted) {
+         spriteRenderer.sprite = initSprite;
+      } else {
+         int spriteLength = ImageManager.getSprites(interactSpritePath).Length;
+         spriteRenderer.sprite = ImageManager.getSprites(interactSpritePath)[spriteLength - 1];
+      }
 
       spriteRenderer.enabled = true;
       _outline.Regenerate();
       _outline.transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = true;
+
+      warp.areaTarget = areaTarget;
+      warp.spawnTarget = spawnTarget;
+      warp.newFacingDirection = newFacingDirection;
+      warp.warpEvent.AddListener(player => {
+         D.editorLog("Warped player: " + player.userId, Color.green);
+         userIds.Add(player.userId);
+
+         // Keep track of the user's location while in the secrets room
+         SecretsManager.self.enterUserToSecret(player.userId, areaTarget, player.instanceId, this);
+      });
 
       transform.position = syncedPosition;
       if (AreaManager.self.getArea(areaKey) != null) {
@@ -145,14 +166,14 @@ public class SecretsNode : NetworkBehaviour {
       if (collision.GetComponent<PlayerBodyEntity>() != null) {
          PlayerBodyEntity entity = collision.GetComponent<PlayerBodyEntity>();
          if (entity.isServer && entity.connectionToClient != null) {
-            if (!userIds.Contains(entity.userId) && userIds.Count < MAX_PLAYERS) {
+            if (!userIds.Contains(entity.userId) && userIds.Count < maxPlayers) {
                completeInteraction(entity);
             } else {
                if (userIds.Contains(entity.userId)) {
                   D.editorLog("Already interacted", Color.red);
                }
 
-               if (userIds.Count >= MAX_PLAYERS) {
+               if (userIds.Count >= maxPlayers) {
                   D.editorLog("Reached max players", Color.red);
                }
             }
@@ -162,14 +183,14 @@ public class SecretsNode : NetworkBehaviour {
 
    public void tryToInteract () {
       if (Global.player != null) {
-         if (!userIds.Contains(Global.player.userId) && userIds.Count < MAX_PLAYERS) {
+         if (!userIds.Contains(Global.player.userId) && userIds.Count < maxPlayers) {
             completeInteraction((PlayerBodyEntity) Global.player);
          } else {
             if (userIds.Contains(Global.player.userId)) {
                D.editorLog("Already interacted", Color.red);
             }
 
-            if (userIds.Count >= MAX_PLAYERS) {
+            if (userIds.Count >= maxPlayers) {
                D.editorLog("Reached max players", Color.red);
             }
          }
@@ -183,8 +204,8 @@ public class SecretsNode : NetworkBehaviour {
          simpleAnim.enabled = true;
          simpleAnim.resetAnimation();
          Rpc_InteractAnimation();
+         StartCoroutine(CO_ProcessInteraction(player));
       }
-      StartCoroutine(CO_ProcessInteraction(player));
    }
 
    [ClientRpc]
@@ -197,26 +218,7 @@ public class SecretsNode : NetworkBehaviour {
    private IEnumerator CO_ProcessInteraction (PlayerBodyEntity player) {
       yield return new WaitForSeconds(1.5f);
       spriteRenderer.transform.position = interactPosition.position;
-      warpToSecret(player);
-      isInteracted = false;
-   }
-
-   private void warpToSecret (PlayerBodyEntity newPlayer) {
-      PlayerBodyEntity player = newPlayer;
-
-      if (player == null || areaTarget.Length < 1 || spawnTarget.Length < 1) {
-         return;
-      }
-
-      // If a player entered this warp on the server, move them
-      SpawnID spawnID = new SpawnID(areaTarget, spawnTarget);
-      Vector2 localPos = SpawnManager.self.getSpawnLocalPosition(spawnID);
-
-      player.spawnInNewMap(areaTarget, localPos, newFacingDirection);
-      userIds.Add(player.userId);
-
-      // Keep track of the user's location while in the secrets room
-      SecretsGameManager.self.enterUserToSecret(player.userId, areaTarget, player.instanceId, this);
+      warp.gameObject.SetActive(true);
    }
 
    #region Private Variables

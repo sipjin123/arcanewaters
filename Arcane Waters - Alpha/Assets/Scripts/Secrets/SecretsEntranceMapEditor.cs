@@ -6,13 +6,13 @@ using Mirror;
 using MapCreationTool.Serialization;
 using MapCreationTool;
 
-public class SecretsNodeMapEditor : MapEditorPrefab, IPrefabDataListener, IHighlightable {
+public class SecretsEntranceMapEditor : MapEditorPrefab, IPrefabDataListener, IHighlightable {
    #region Public Variables
 
    [SerializeField]
    private SpriteRenderer highlight = null;
 
-   private SecretsNode secretsNode;
+   private SecretEntrance secretsNode;
    private Text text;
    public Text warpText;
 
@@ -22,7 +22,7 @@ public class SecretsNodeMapEditor : MapEditorPrefab, IPrefabDataListener, IHighl
    #endregion
 
    private void Awake () {
-      secretsNode = GetComponent<SecretsNode>();
+      secretsNode = GetComponent<SecretEntrance>();
       secretsNode.transform.localScale = new Vector3(2, 2, 2);
       text = GetComponentInChildren<Text>();
       text.text = "Secrets ID: -";

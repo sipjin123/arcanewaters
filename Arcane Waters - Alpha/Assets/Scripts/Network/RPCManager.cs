@@ -1233,7 +1233,7 @@ public class RPCManager : NetworkBehaviour {
 
          // Retrieve the status of all running and completed quests
          List<QuestStatusInfo> questStatuses = DB_Main.getQuestStatuses(npcId, _player.userId);
-         List<AchievementData> achievementDataList = DB_Main.getAchievementDataList(_player.userId);
+         List<AchievementData> playerAchievements = DB_Main.getAchievementDataList(_player.userId);
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -1273,6 +1273,18 @@ public class RPCManager : NetworkBehaviour {
             bool isHireable = NPCManager.self.isHireable(npcId);
             int landMonsterId = NPCManager.self.getNPCData(npcId).landMonsterId;
             NPC npc = NPCManager.self.getNPC(npcId);
+
+            // Check if the player has completed the achievement requirement to hire this companion
+            if (isHireable) {
+               int hiringIdRequirement = NPCManager.self.getNPCData(npcId).achievementIdHiringRequirement;
+               AchievementData achievementData = AchievementManager.self.getAchievementData(hiringIdRequirement);
+               if (playerAchievements.Exists(_ => _.actionType == achievementData.actionType && _.tier == achievementData.tier)) {
+                  D.editorLog("The user has attained the achievement: " + achievementData.achievementName, Color.blue);
+               } else {
+                  isHireable = false;
+                  D.editorLog("The user has yet to attain the achievement: " + achievementData.achievementName, Color.red);
+               }
+            }
 
             // Send the data to the client
             Target_ReceiveNPCQuestList(_player.connectionToClient, npcId, npc.getName(), npc.getFaction(), npc.getSpecialty(),

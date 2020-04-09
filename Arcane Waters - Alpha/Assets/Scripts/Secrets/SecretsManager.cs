@@ -5,17 +5,14 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 
-public class SecretsGameManager : MonoBehaviour {
+public class SecretsManager : MonoBehaviour {
    #region Public Variables
 
    // Self
-   public static SecretsGameManager self;
+   public static SecretsManager self;
 
    // The list of secrets data registered
    public List<SecretsData> secretsDataList = new List<SecretsData>();
-
-   // List of user id's inside secret areas
-   public List<int> usersInSecretAreas = new List<int>();
 
    #endregion
 
@@ -23,13 +20,12 @@ public class SecretsGameManager : MonoBehaviour {
       self = this;
    }
 
-   public void enterUserToSecret (int userId, string areaName, int instanceId, SecretsNode secretNode) {
+   public void enterUserToSecret (int userId, string areaName, int instanceId, SecretEntrance secretNode) {
       if (secretsDataList.Exists(_=>_.instanceId == instanceId && _.areaName == areaName)) {
          D.editorLog("This secret area exists, adding player: " + userId, Color.green);
          
          SecretsData existingData = secretsDataList.Find(_ => _.instanceId == instanceId && _.areaName == areaName);
          existingData.userIdList.Add(userId);
-         usersInSecretAreas.Add(userId);
       } else {
          D.editorLog("This secret does not exists, creating new and adding player player: " + userId, Color.green);
          SecretsData newData = new SecretsData {
@@ -38,14 +34,14 @@ public class SecretsGameManager : MonoBehaviour {
             userIdList = new List<int>(),
             secretNode = secretNode,
          };
-         usersInSecretAreas.Add(userId);
          newData.userIdList.Add(userId);
          secretsDataList.Add(newData);
       }
    }
 
    public void checkIfUserIsInSecret (int userId) {
-      if (usersInSecretAreas.Exists(_=>_ == userId)) {
+      // Checks if the user exists in any of the secret area
+      if (secretsDataList.Exists(_=>_.userIdList.Exists(q=>q == userId))) {
          // Gathers all secret areas in an instance
          List<SecretsData> allSecretAreas = secretsDataList.FindAll(_ => _.userIdList.Exists(q=>q == userId));
 
@@ -53,9 +49,10 @@ public class SecretsGameManager : MonoBehaviour {
          foreach (SecretsData secretArea in allSecretAreas) {
             if (secretArea.userIdList.Exists(_=>_ == userId)) {
                D.editorLog("The user exists in the area: " + secretArea.areaName + " - " + userId, Color.green);
+
+               // Remove the user from the secret area registry so they can enter the area again
                secretArea.secretNode.userIds.Remove(userId);
                secretArea.userIdList.Remove(userId);
-               usersInSecretAreas.Remove(userId);
             }
          }
       } else {
@@ -81,5 +78,5 @@ public class SecretsData
    public int instanceId;
 
    // The secret node
-   public SecretsNode secretNode;
+   public SecretEntrance secretNode;
 }

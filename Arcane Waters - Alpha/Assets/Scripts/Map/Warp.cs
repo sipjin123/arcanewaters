@@ -2,6 +2,7 @@
 using MapCreationTool;
 using MapCreationTool.Serialization;
 using System.Collections.Generic;
+using UnityEngine.Events;
 
 public class Warp : MonoBehaviour, IMapEditorDataReceiver
 {
@@ -20,6 +21,9 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
    public const int GET_DRESSED_QUEST_INDEX = 1;
    public const int HEAD_TO_DOCKS_QUEST_INDEX = 8;
    public const int ENTER_TREASURE_SITE_QUEST_INDEX = 14;
+
+   // The warp event that can be observed by external classes
+   public WarpEvent warpEvent = new WarpEvent();
 
    #endregion
 
@@ -48,6 +52,8 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
          SpawnID spawnID = new SpawnID(areaTarget, spawnTarget);
          Vector2 localPos = SpawnManager.self.getSpawnLocalPosition(spawnID);
          player.spawnInNewMap(areaTarget, localPos, newFacingDirection);
+
+         warpEvent.Invoke(player);
       }
    }
 

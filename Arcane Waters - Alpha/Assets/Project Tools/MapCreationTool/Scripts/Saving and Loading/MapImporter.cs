@@ -190,7 +190,7 @@ namespace MapCreationTool
                if (prefab.d != null) {
                   shipData.Add(prefab);
                }
-            } else if (original.GetComponent<SecretsNode>() != null) {
+            } else if (original.GetComponent<SecretEntrance>() != null) {
                if (prefab.d != null) {
                   secretsData.Add(prefab);
                }

@@ -299,17 +299,18 @@ public class Instance : NetworkBehaviour
                }
             }
 
-            if (area.secretsDataFields.Count > 0) {
+            if (area.secretsEntranceDataFields.Count > 0) {
                Transform secretsParent = AreaManager.self.getArea(areaKey).secretsParent;
-               foreach (ExportedPrefab001 dataField in area.secretsDataFields) {
+               foreach (ExportedPrefab001 dataField in area.secretsEntranceDataFields) {
                   Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
 
-                  SecretsNode secretObjNode = Instantiate(PrefabsManager.self.secretsPrefab, secretsParent);
+                  SecretEntrance secretObjNode = Instantiate(PrefabsManager.self.secretEntrancePrefab, secretsParent);
                   secretObjNode.areaKey = area.areaKey;
+                  secretObjNode.maxPlayers = getMaxPlayers();
                   secretObjNode.receiveData(dataField.d);
+                  secretObjNode.transform.localPosition = targetLocalPos;
 
-                  secretObjNode.syncedPosition = secretsParent.position + targetLocalPos;
-                  secretObjNode.transform.position = secretsParent.position + targetLocalPos;
+                  secretObjNode.syncedPosition = secretObjNode.transform.position;
 
                   // The Instance needs to keep track of all Networked objects inside
                   secretObjNode.instanceId = id;

@@ -131,18 +131,6 @@ public class InstanceManager : MonoBehaviour {
       if (!isSinglePlayer) {
          foreach (Instance instance in _instances.Values) {
             if (instance.areaKey == areaKey && instance.getPlayerCount() < instance.getMaxPlayers()) {
-               int enemyCount = 0;
-               int npcCount = 0;
-               foreach (NetworkBehaviour netBehavior in instance.entities) {
-                  if (netBehavior is Enemy) {
-                     enemyCount++;
-                  }
-
-                  if (netBehavior is NPC) {
-                     npcCount++;
-                  }
-               }
-
                return instance;
             }
          }
