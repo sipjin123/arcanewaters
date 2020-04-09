@@ -54,6 +54,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
 
    protected override void Awake () {
       base.Awake();
+      _currentPath = new List<ANode>();
 
       // Look up components
       _startPosition = transform.position;
@@ -185,9 +186,14 @@ public class NPC : NetEntity, IMapEditorDataReceiver
 
       if (isServer) {
          Vector2 direction;
-         if (_currentPath.Count > 0) {
-            direction = (Vector2) _currentPath[0].vPosition - (Vector2) transform.position;
-         } else {
+         try {
+            if (_currentPath.Count > 0) {
+               direction = (Vector2) _currentPath[0].vPosition - (Vector2) transform.position;
+            } else {
+               direction = Util.getDirectionFromFacing(facing);
+            }
+         } catch {
+            D.editorLog("Something went wrong with the path finding", Color.red);
             direction = Util.getDirectionFromFacing(facing);
          }
          // Figure out the direction we want to face
@@ -229,6 +235,10 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          return;
       }
 
+      if (_currentPath == null) {
+         _currentPath = new List<ANode>();
+         D.editorLog("Path is null here, something went wrong", Color.red);
+      }
       if (_currentPath.Count > 0) {
          // Move towards our current waypoint
          Vector2 waypointDirection = _currentPath[0].vPosition - transform.position;
@@ -295,6 +305,11 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       float waitTime = 1.0f;
       while (true) {
          yield return new WaitForSeconds(waitTime);
+
+         if (_currentPath == null) {
+            _currentPath = new List<ANode>();
+            D.editorLog("Path is null here, something went wrong", Color.red);
+         }
 
          if (_currentPath.Count > 0) {
             // There's still points left of the old path, wait 1 second and check again if there's no more waypoints
@@ -592,7 +607,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    protected Pathfinding _pathfindingReference;
 
    // The current waypoint path
-   protected List<ANode> _currentPath;
+   protected List<ANode> _currentPath = new List<ANode>();
 
    #endregion
 }
