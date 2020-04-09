@@ -52,9 +52,9 @@ namespace MapCreationTool
             add = true;
 
          if (add) {
-            DrawBoard.instance.setPrefabsSelectionModifyPreview(addPrefab(position));
+            DrawBoard.instance.setPrefabsModifyPreview(addPrefab(position));
          } else {
-            DrawBoard.instance.setPrefabsSelectionModifyPreview(removePrefab(position));
+            DrawBoard.instance.setPrefabsModifyPreview(removePrefab(position));
          }
       }
 
@@ -64,7 +64,7 @@ namespace MapCreationTool
          bool add = Settings.keybindings.getAction(Keybindings.Command.SelectionAdd);
          bool rem = Settings.keybindings.getAction(Keybindings.Command.SelectionRemove);
 
-         DrawBoard.instance.setTilesSelectionModifyPreview(modifyTiles(from, to, add, rem));
+         DrawBoard.instance.setTilesModifyPreview(modifyTiles(from, to, add, rem));
       }
 
       private void drag (Vector3 from, Vector3 to) {
@@ -73,7 +73,7 @@ namespace MapCreationTool
          bool add = Settings.keybindings.getAction(Keybindings.Command.SelectionAdd);
          bool rem = Settings.keybindings.getAction(Keybindings.Command.SelectionRemove);
 
-         DrawBoard.instance.setPrefabsSelectionModifyPreview(modifyPrefabs(from, to, add, rem));
+         DrawBoard.instance.setPrefabsModifyPreview(modifyPrefabs(from, to, add, rem));
       }
 
       private void endDrag (Vector3 from, Vector3 to) {
@@ -93,8 +93,8 @@ namespace MapCreationTool
          }
 
          DrawBoard.instance.changeBoard(change);
-         DrawBoard.instance.setTilesSelectionModifyPreview(null);
-         DrawBoard.instance.setPrefabsSelectionModifyPreview(null);
+         DrawBoard.instance.setTilesModifyPreview(null);
+         DrawBoard.instance.setPrefabsModifyPreview(null);
       }
 
       private void pointerExit (Vector3 position) {
@@ -102,8 +102,8 @@ namespace MapCreationTool
       }
 
       protected override void cancelAction () {
-         DrawBoard.instance.setTilesSelectionModifyPreview(null);
-         DrawBoard.instance.setTilesSelectionModifyPreview(null);
+         DrawBoard.instance.setTilesModifyPreview(null);
+         DrawBoard.instance.setTilesModifyPreview(null);
       }
 
       private BoardChange modifyTiles (Vector3Int p1, Vector3Int p2, bool add, bool rem) {

@@ -16,34 +16,28 @@ namespace MapCreationTool
       }
 
       private void OnEnable () {
-         Tools.ToolChanged += onToolChanged;
+         Tools.AnythingChanged += checkToolChanged;
       }
 
       private void OnDisable () {
-         Tools.ToolChanged -= onToolChanged;
+         Tools.AnythingChanged -= checkToolChanged;
       }
 
-      private void onToolChanged (ToolType from, ToolType to) {
-         if (active && from == toolType) {
+      private void checkToolChanged () {
+         if (active && Tools.toolType != toolType) {
             active = false;
             unregisterUIEvents();
             cancelAction();
-         } else if (!active && to == toolType) {
+         } else if (!active && Tools.toolType == toolType) {
             active = true;
             registerUIEvents();
          }
       }
 
-      protected virtual void registerUIEvents () {
+      protected virtual void registerUIEvents () { }
 
-      }
+      protected virtual void unregisterUIEvents () { }
 
-      protected virtual void unregisterUIEvents () {
-
-      }
-
-      protected virtual void cancelAction () {
-
-      }
+      protected virtual void cancelAction () { }
    }
 }

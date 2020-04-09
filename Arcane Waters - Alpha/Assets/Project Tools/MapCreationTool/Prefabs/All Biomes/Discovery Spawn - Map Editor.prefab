@@ -203,6 +203,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -227,8 +228,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -8325244900926124654, guid: 81f7f2631d6c480439fbebbb13d19d87,
-    type: 3}
+  m_Sprite: {fileID: 21300000, guid: 1668c53b18d254393912286cf4e33a6b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -261,7 +261,13 @@ MonoBehaviour:
     type: 1
   selectDataFields: []
   customDataFields:
-  - name: possible discovery
+  - name: possible discovery 1
+    toolTip: One of the discoveries that could be spawned in this spot
+    type: 8
+  - name: possible discovery 2
+    toolTip: One of the discoveries that could be spawned in this spot
+    type: 8
+  - name: possible discovery 3
     toolTip: One of the discoveries that could be spawned in this spot
     type: 8
 --- !u!114 &7389063324670619871
@@ -386,6 +392,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

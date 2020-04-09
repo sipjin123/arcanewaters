@@ -102,7 +102,7 @@ namespace MapCreationTool
 
          (int x, int y) startPos = (position.x, position.y);
 
-         Layer[] sublayersToCheck = layers.Values.SelectMany(v => v.subLayers).Where(l => l.tileCount > 0).ToArray();
+         Layer[] sublayersToCheck = DrawBoard.instance.nonEmptySublayers().ToArray();
          Layer placementLayer = layers[tile.layer].subLayers[tile.subLayer];
 
          if (sublayersToCheck.Any(l => l.hasTile(startPos.x, startPos.y)))

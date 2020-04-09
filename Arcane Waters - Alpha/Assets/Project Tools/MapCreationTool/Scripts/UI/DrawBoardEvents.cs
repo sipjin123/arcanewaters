@@ -17,6 +17,7 @@ namespace MapCreationTool
       public static event Action<Vector3> PointerExit;
       public static event Action<Vector3> BeginDrag;
       public static event Action<Vector3, Vector3> Drag;
+      public static event Action<Vector3> DragSecondary;
       // Only invoked when the cell position of the pointer changes
       public static event Action<Vector3Int, Vector3Int> DragCell;
       public static event Action<Vector3, Vector3> EndDrag;
@@ -25,7 +26,7 @@ namespace MapCreationTool
       public static event Action<Vector3> PointerHoverMove;
       public static event Action<Vector3, float> PointerScroll;
 
-      private static Vector3? draggingFrom = null;
+      public static Vector3? draggingFrom { get; private set; }
       private static Vector3Int? draggingFromCell = null;
       private static Vector3? lastHoverPosition = null;
       private static Vector3Int? lastHoverPositionCell = null;
@@ -132,6 +133,11 @@ namespace MapCreationTool
                   DragCell?.Invoke(draggingFromCell.Value, cellPos);
                }
             }
+         } else {
+            Vector3 curPos = MainCamera.stwp(data.position);
+            Vector3 prevPos = MainCamera.stwp(data.position - data.delta);
+
+            DragSecondary?.Invoke(curPos - prevPos);
          }
       }
 

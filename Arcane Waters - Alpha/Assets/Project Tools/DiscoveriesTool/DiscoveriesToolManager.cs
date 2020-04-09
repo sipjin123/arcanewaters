@@ -45,7 +45,7 @@ public class DiscoveriesToolManager : XmlDataToolManager
                // Save the discovery data in the memory cache
                if (_discoveriesDataList.ContainsKey(discovery.discoveryId)) {
                   Debug.LogWarning("Duplicated ID: " + discovery.discoveryId);
-               } else {
+               } else if (discovery.discoveryId != 0) {
                   _discoveriesDataList.Add(discovery.discoveryId, discovery);
                }
             }

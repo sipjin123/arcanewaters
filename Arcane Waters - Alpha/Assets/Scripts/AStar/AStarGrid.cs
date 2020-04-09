@@ -21,7 +21,7 @@ namespace AStar
       public List<ANode> nodeList;
 
       // The completed path that the red line will be drawn along
-      public List<ANode> finalPath;
+      public List<ANode> pathToDraw;
 
       // The number of tiles in the grid
       public Vector2Int gridTiles;
@@ -161,22 +161,16 @@ namespace AStar
          // Snaps the position into the local grid
          a_vWorldPos -= transform.position;
 
-         // Since the grid is visually centered, we also need to pull the position into the local array space
-         Vector3 scaledGridSize = gridBounds.size.ToFloatVector();
-         scaledGridSize.Scale(cellSize.ToVector3());
-         scaledGridSize *= 0.5f;
-
-         // Reverse the Y component to align with how the grid is visually downward structured(top -> bottom)
-         scaledGridSize.y *= -1.0f;
-
-         a_vWorldPos += scaledGridSize;
-
          // Now snap the position into a cell
          int cellIndexX = Mathf.FloorToInt(a_vWorldPos.x / cellSize.x);
-         int cellIndexY = Mathf.CeilToInt(a_vWorldPos.y / cellSize.y);
+         int cellIndexY = Mathf.FloorToInt(a_vWorldPos.y / cellSize.y);
 
          // Reverse the y index to correspond to the array
          cellIndexY *= -1;
+
+         // Put the cell coordinates into the local grid coords
+         cellIndexX += gridBounds.size.x / 2;
+         cellIndexY += gridBounds.size.y / 2;
 
          // If the snapped cell coordinates are within the grid bounds, return node
          if (cellIndexX >= 0 && cellIndexX < gridBounds.size.x && cellIndexY >= 0 && cellIndexY < gridBounds.size.y) {
@@ -185,7 +179,7 @@ namespace AStar
          return null;
       }
 
-      private void OnDrawGizmosSelected () {
+      public void OnDrawGizmosSelected () {
          if (!showGizmo) {
             return;
          }
@@ -205,9 +199,9 @@ namespace AStar
                Gizmos.color = gizmoColor;
 
                // If the final path is not empty
-               if (finalPath != null) {
+               if (pathToDraw != null) {
                   // If the current node is in the final path
-                  if (finalPath.Contains(n)) {
+                  if (pathToDraw.Contains(n)) {
                      Gizmos.color = Color.red;
                      float sizex = .1f;
                      Gizmos.DrawWireSphere(n.vPosition, sizex);

@@ -13,6 +13,7 @@ namespace MapCreationTool
       public List<PrefabChange> prefabChanges { get; set; }
       public Selection selectionToAdd { get; set; }
       public Selection selectionToRemove { get; set; }
+      public bool isSelectionChange { get; set; }
 
       public BoardChange () {
          tileChanges = new List<TileChange>();
@@ -35,13 +36,6 @@ namespace MapCreationTool
          selectionToAdd.add(change.selectionToAdd.prefabs);
          selectionToRemove.add(change.selectionToRemove.tiles);
          selectionToRemove.add(change.selectionToRemove.prefabs);
-      }
-
-      private static BoundsInt getBoardBoundsInt () {
-         // We decrease the size by 1 because we want the 'max' vector to be inclusive
-         return new BoundsInt(
-            DrawBoard.origin.x, DrawBoard.origin.y, 0,
-            DrawBoard.size.x - 1, DrawBoard.size.y - 1, 0);
       }
 
       public static BoardChange calculateClearAllChange (Dictionary<string, Layer> layers, List<PlacedPrefab> prefabs, Selection currentSelection) {
@@ -91,7 +85,7 @@ namespace MapCreationTool
 
       public static BoardChange calculateDeserializedDataChange (DeserializedProject data, Dictionary<string, Layer> layers, List<PlacedPrefab> prefabs, Selection currentSelection) {
          BoardChange result = calculateClearAllChange(layers, prefabs, currentSelection);
-         BoundsInt boundsInt = getBoardBoundsInt();
+         BoundsInt boundsInt = DrawBoard.getBoardBoundsInt();
          Bounds boundsFloat = DrawBoard.getPrefabBounds();
 
          foreach (var tile in data.tiles) {
@@ -119,64 +113,8 @@ namespace MapCreationTool
          return result;
       }
 
-      public static BoardChange calculateMoveChange (Vector3 from, Vector3 to, IEnumerable<Layer> layers, List<PlacedPrefab> prefabs, Selection selection) {
-         bool disabled = true;
-         if (disabled) {
-            return new BoardChange();
-         }
-         BoardChange result = new BoardChange();
-         BoundsInt boundsInt = getBoardBoundsInt();
-         Bounds boundsFloat = DrawBoard.getPrefabBounds();
-
-         Vector3Int fromCell = DrawBoard.worldToCell(from);
-         Vector3Int toCell = DrawBoard.worldToCell(to);
-         if (fromCell != toCell) {
-            Vector3Int cellTransition = toCell - fromCell;
-            foreach (Layer layer in layers) {
-               HashSet<Vector3Int> arrivingTiles = new HashSet<Vector3Int>(selection.tiles.Where(t => layer.hasTile(t)).Select(t => t + cellTransition));
-               foreach (Vector3Int tilePos in selection.tiles) {
-                  TileBase tile = layer.getTile(tilePos);
-                  if (tile != null) {
-                     Vector3Int targetPos = tilePos + cellTransition;
-                     if (!(targetPos.x < boundsInt.min.x || targetPos.x > boundsInt.max.x || targetPos.y < boundsInt.min.y || targetPos.y > boundsInt.max.y)) {
-                        result.tileChanges.Add(new TileChange(tile, tilePos + cellTransition, layer));
-                     }
-                     if (!arrivingTiles.Contains(tilePos)) {
-                        result.tileChanges.Add(new TileChange(null, tilePos, layer));
-                     }
-                  }
-
-                  result.selectionToRemove.add(tilePos);
-                  result.selectionToAdd.add(tilePos + cellTransition);
-               }
-            }
-         }
-
-         if (from != to) {
-            Vector3 transition = to - from;
-            foreach (PlacedPrefab prefab in selection.prefabs) {
-               Vector3 targetPos = prefab.placedInstance.transform.position + transition;
-               if (targetPos.x < boundsFloat.min.x || targetPos.x > boundsFloat.max.x || targetPos.y < boundsFloat.min.y || targetPos.y > boundsFloat.max.y) {
-                  result.prefabChanges.Add(new PrefabChange {
-                     prefabToDestroy = prefab.original,
-                     positionToDestroy = prefab.placedInstance.transform.position
-                  });
-                  result.selectionToRemove.add(prefab);
-               } else {
-                  result.prefabChanges.Add(new PrefabChange {
-                     prefabToTranslate = prefab.original,
-                     positionToPlace = prefab.placedInstance.transform.position,
-                     translation = transition
-                  });
-               }
-            }
-         }
-
-         return result;
-      }
-
       public static IEnumerable<Vector3Int> getRectTilePositions (Vector3Int p1, Vector3Int p2) {
-         BoundsInt bounds = getBoardBoundsInt();
+         BoundsInt bounds = DrawBoard.getBoardBoundsInt();
 
          // Clamp points inside board bounds
          p1.Set(Math.Max(p1.x, bounds.min.x), Math.Max(p1.y, bounds.min.y), 0);
@@ -231,9 +169,7 @@ namespace MapCreationTool
 
       public Vector3 positionToDestroy { get; set; }
       public GameObject prefabToDestroy { get; set; }
-
-      public GameObject prefabToTranslate { get; set; }
-      public Vector3 translation { get; set; }
+      public bool select { get; set; }
 
       public Dictionary<string, string> dataToSet { get; set; }
    }

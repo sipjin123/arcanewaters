@@ -217,7 +217,6 @@ public class Instance : NetworkBehaviour
 
                   enemy.transform.localPosition = targetLocalPos;
                   enemy.desiredPosition = targetLocalPos;
-
                   NetworkServer.Spawn(enemy.gameObject);
                }
             }

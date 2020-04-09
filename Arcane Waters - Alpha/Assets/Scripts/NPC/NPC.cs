@@ -185,8 +185,8 @@ public class NPC : NetEntity, IMapEditorDataReceiver
 
       if (isServer) {
          Vector2 direction;
-         if (_waypointList.Count > 0) {
-            direction = (Vector2) _waypointList[0].transform.position - (Vector2) transform.position;
+         if (_currentPath.Count > 0) {
+            direction = (Vector2) _currentPath[0].vPosition - (Vector2) transform.position;
          } else {
             direction = Util.getDirectionFromFacing(facing);
          }
@@ -229,17 +229,16 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          return;
       }
 
-      if (_waypointList.Count > 0) {
+      if (_currentPath.Count > 0) {
          // Move towards our current waypoint
-         Vector2 waypointDirection = _waypointList[0].transform.position - transform.position;
+         Vector2 waypointDirection = _currentPath[0].vPosition - transform.position;
          _body.AddForce(waypointDirection.normalized * moveSpeed);
          _lastMoveChangeTime = Time.time;
 
          // Clears a node as the unit passes by
-         float distanceToWaypoint = Vector2.Distance(_waypointList[0].transform.position, transform.position);
+         float distanceToWaypoint = Vector2.Distance(_currentPath[0].vPosition, transform.position);
          if (distanceToWaypoint < .1f) {
-            Destroy(_waypointList[0].gameObject);
-            _waypointList.RemoveAt(0);
+            _currentPath.RemoveAt(0);
          }
       }
    }
@@ -297,14 +296,14 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       while (true) {
          yield return new WaitForSeconds(waitTime);
 
-         if (_waypointList.Count > 0) {
+         if (_currentPath.Count > 0) {
             // There's still points left of the old path, wait 1 second and check again if there's no more waypoints
             waitTime = 1.0f;
             continue;
          }
 
-         List<ANode> gridPath = _pathfindingReference.findPathNowInit(transform.position, _moveTargets.ChooseRandom());
-         if (gridPath == null || gridPath.Count <= 0) {
+         _currentPath = _pathfindingReference.findPathNowInit(transform.position, _moveTargets.ChooseRandom());
+         if (_currentPath == null || _currentPath.Count <= 0) {
             // Invalid Path, attempt again after 1 second
             waitTime = 1.0f;
             continue;
@@ -312,13 +311,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
 
          // We have a new path, set to normal delay
          waitTime = moveAgainDelay;
-
-         // Register Route
-         foreach (ANode node in gridPath) {
-            Waypoint newWaypointPath = Instantiate(PrefabsManager.self.waypointPrefab);
-            newWaypointPath.transform.position = node.vPosition;
-            _waypointList.Add(newWaypointPath);
-         }
       }
    }
 
@@ -599,8 +591,8 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    // The Pathfinding Reference fetched from the Main Scene
    protected Pathfinding _pathfindingReference;
 
-   // The current waypoint List
-   protected List<Waypoint> _waypointList = new List<Waypoint>();
+   // The current waypoint path
+   protected List<ANode> _currentPath;
 
    #endregion
 }

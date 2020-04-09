@@ -50,6 +50,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -317,6 +318,8 @@ MonoBehaviour:
   rarity: 1
   maxForceOverride: 0
   isDebug: 0
+  secondsPatrolingUntilChoosingNewTreasureSite: 30
+  secondsBetweenFindingPatrolRoutes: 5
 --- !u!50 &50644847342071564
 Rigidbody2D:
   serializedVersion: 4
@@ -445,9 +448,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
 --- !u!114 &20651762200388567
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -516,8 +519,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridReference: {fileID: 0}
-  startPosition: {fileID: 5483907137863896081}
-  targetPosition: {fileID: 6579722015832997622}
+  currentPath: []
 --- !u!1 &1658159506029436
 GameObject:
   m_ObjectHideFlags: 0
@@ -566,6 +568,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -692,6 +695,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

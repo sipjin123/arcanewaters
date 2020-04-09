@@ -35,7 +35,9 @@ public class DiscoveriesToolScene : MonoBehaviour
 
       createDiscoveryButton.onClick.AddListener(createEmptyDiscovery);
       mainMenuButton.onClick.AddListener(() => SceneManager.LoadScene(MasterToolScene.masterScene));
+   }
 
+   private void Start () {
       toolManager.loadDiscoveriesList();
    }
 
@@ -71,6 +73,11 @@ public class DiscoveriesToolScene : MonoBehaviour
 
       // Create a row for each discovery element
       foreach (DiscoveryData discovery in sortedList) {
+         // Ignore "undefined" discovery when creating the list
+         if (discovery.discoveryId == 0) {
+            continue;
+         }
+
          DiscoveriesToolTemplate template = GenericEntryTemplate.createGenericTemplate(discoveryTemplate.gameObject, toolManager, itemTemplateParent.transform) as DiscoveriesToolTemplate;
 
          template.itemIcon.sprite = ImageManager.getSprite(discovery.spriteUrl);

@@ -30,12 +30,7 @@ namespace MapCreationTool
          canvas.gameObject.SetActive(hovered || selected);
       }
 
-      public override void createdForPreview () {
-         transform.localScale = new Vector3(6.25f, 6.25f, 1f);
-      }
-
       public override void placedInEditor () {
-         transform.localScale = new Vector3(6.25f, 6.25f, 1f);
          canvas.gameObject.SetActive(false);
       }
 
@@ -46,9 +41,7 @@ namespace MapCreationTool
       public void dataFieldChanged (DataField field) {
          string key = field.k.ToLower();
 
-         if (key == DataField.POSSIBLE_DISCOVERY) {
-            _renderer.sprite = ImageManager.getSprite(MapEditorDiscoveriesManager.instance.idToDiscovery[field.intValue].spriteUrl);
-         } else if (key == DataField.DISCOVERY_SPAWN_CHANCE) {
+         if (key == DataField.DISCOVERY_SPAWN_CHANCE) {
             _chanceText.text = $"{Mathf.RoundToInt(field.floatValue * 100)}%";
          }
       }

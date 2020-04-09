@@ -11,24 +11,16 @@ namespace AStar
       // For referencing the grid class
       public AStarGrid gridReference;
 
-      // Starting position to pathfind from
-      public Transform startPosition;
-
-      // Starting position to pathfind to
-      public Transform targetPosition;
-
       #endregion
 
       public List<ANode> findPathNowInit (Vector3 pos, Vector3 endPos) {
-         startPosition.transform.position = pos;
-         targetPosition.transform.position = endPos;
+         _startPosition = pos;
+         _targetPosition = endPos;
 
-         findPath(startPosition.position, targetPosition.position);
-
-         return gridReference.finalPath;
+         return findPath(_startPosition, _targetPosition);
       }
 
-      private void findPath (Vector3 a_StartPos, Vector3 a_TargetPos) {
+      private List<ANode> findPath (Vector3 a_StartPos, Vector3 a_TargetPos) {
          // Gets the node closest to the starting position
          ANode startNode = gridReference.nodeFromWorldPoint(a_StartPos);
 
@@ -36,7 +28,7 @@ namespace AStar
          ANode targetNode = gridReference.nodeFromWorldPoint(a_TargetPos);
 
          if (startNode == null || targetNode == null) {
-            return;
+            return null;
          }
 
          // List of nodes for the open list
@@ -70,7 +62,7 @@ namespace AStar
             // If the current node is the same as the target node
             if (currentNode == targetNode) {
                // Then Calculate the final path
-               getFinalPath(startNode, targetNode);
+               return getFinalPath(startNode, targetNode);
             }
 
             // Loop through each neighbor of the current node
@@ -103,9 +95,12 @@ namespace AStar
                }
             }
          }
+
+         // If we didn't find a path
+         return null;
       }
 
-      private void getFinalPath (ANode a_StartingNode, ANode a_EndNode) {
+      private List<ANode> getFinalPath (ANode a_StartingNode, ANode a_EndNode) {
          // List to hold the path sequentially 
          List<ANode> FinalPath = new List<ANode>();
 
@@ -124,8 +119,7 @@ namespace AStar
          // Reverse the path to get the correct order
          FinalPath.Reverse();
 
-         // Set the final path
-         gridReference.finalPath = FinalPath;
+         return FinalPath;
       }
 
       private int getManhattenDistance (ANode a_nodeA, ANode a_nodeB) {
@@ -135,5 +129,15 @@ namespace AStar
 
          return ix + iy;
       }
+
+      #region Private Variables
+
+      // Position to pathfind from
+      private Vector3 _startPosition;
+
+      // Position to pathfind to
+      private Vector3 _targetPosition;
+
+      #endregion
    }
 }

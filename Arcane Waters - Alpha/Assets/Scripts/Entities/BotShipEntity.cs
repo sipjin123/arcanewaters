@@ -6,6 +6,10 @@ using Mirror;
 using MapCreationTool.Serialization;
 using AStar;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 {
    #region Public Variables
@@ -16,24 +20,22 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    // Determines if this ship is spawned at debug mode
    public bool isDebug = false;
 
+   // The seconds to patrol the current TreasureSite before choosing another one
+   public float secondsPatrolingUntilChoosingNewTreasureSite;
+
+   // The seconds spent idling between finding patrol routes
+   public float secondsBetweenFindingPatrolRoutes;
+
+   // The seconds spent idling between finding attack routes
+   public float secondsBetweenFindingAttackRoutes;
+
    #endregion
 
    protected override void Start () {
       base.Start();
 
       // Set our name
-      this.nameText.text = "[" + getNameForFaction() + "]";
-
-      // Add some move targets
-      _moveTargets.Add(transform.position);
-      _moveTargets.Add(transform.position + new Vector2(-1.0f, 0f).ToVector3());
-      _moveTargets.Add(transform.position + new Vector2(1.0f, 0f).ToVector3());
-      _moveTargets.Add(transform.position + new Vector2(0f, -1.0f).ToVector3());
-      _moveTargets.Add(transform.position + new Vector2(0f, 1.0f).ToVector3());
-      _moveTargets.Add(transform.position + new Vector2(-1.0f, -1.0f).ToVector3());
-      _moveTargets.Add(transform.position + new Vector2(-1.0f, 1.0f).ToVector3());
-      _moveTargets.Add(transform.position + new Vector2(1.0f, -1.0f).ToVector3());
-      _moveTargets.Add(transform.position + new Vector2(1.0f, 1.0f).ToVector3());
+      nameText.text = "[" + getNameForFaction() + "]";
 
       // Continually pick new move targets
       if (isServer) {
@@ -48,7 +50,19 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          }
          _pathfindingReference.gridReference = _gridReference;
 
-         StartCoroutine(CO_generateNewWaypoints(6f + Random.Range(-1f, 1f)));
+         // Add some move targets
+         _moveTargetOffsets.Add(new Vector2(-1.0f, 0f).ToVector3());
+         _moveTargetOffsets.Add(new Vector2(1.0f, 0f).ToVector3());
+         _moveTargetOffsets.Add(new Vector2(0f, -1.0f).ToVector3());
+         _moveTargetOffsets.Add(new Vector2(0f, 1.0f).ToVector3());
+         _moveTargetOffsets.Add(new Vector2(-1.0f, -1.0f).ToVector3());
+         _moveTargetOffsets.Add(new Vector2(-1.0f, 1.0f).ToVector3());
+         _moveTargetOffsets.Add(new Vector2(1.0f, -1.0f).ToVector3());
+         _moveTargetOffsets.Add(new Vector2(1.0f, 1.0f).ToVector3());
+
+         _treasureSitesInArea = new List<TreasureSite>(AreaManager.self.getArea(areaKey).GetComponentsInChildren<TreasureSite>());
+
+         _currentSite = _treasureSitesInArea[Random.Range(0, _treasureSitesInArea.Count)];
       }
 
       // Check if we can shoot at any of our attackers
@@ -63,7 +77,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          InstanceManager.self.removeEntityFromInstance(this);
 
          // Destroy the object
-         NetworkServer.Destroy(this.gameObject);
+         NetworkServer.Destroy(gameObject);
       }
    }
 
@@ -75,37 +89,49 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          return;
       }
 
-      // Only change our movement if enough time has passed
-      if (Time.time - _lastMoveChangeTime < MOVE_CHANGE_INTERVAL) {
-         return;
+      bool attacking = _attackers != null && _attackers.Count > 0;
+
+      List<ANode> currentPath;
+      if (attacking) {
+         currentPath = _currentAttackingPath;
+      } else {
+         currentPath = _currentPatrolPath;
       }
 
-      if (_waypointList.Count > 0) {
+      if (currentPath != null && currentPath.Count > 0) {
          // Move towards our current waypoint
-         Vector2 waypointDirection = _waypointList[0].transform.position - transform.position;
-         _body.AddForce(waypointDirection.normalized * getMoveSpeed());
-         _lastMoveChangeTime = Time.time;
+         Vector2 waypointDirection = currentPath[0].vPosition - transform.position;
+         // Only change our movement if enough time has passed
+         float moveTime = Time.time - _lastMoveChangeTime;
+         if (moveTime >= MOVE_CHANGE_INTERVAL) {
+            _body.AddForce(waypointDirection.normalized * getMoveSpeed());
+            _lastMoveChangeTime = Time.time;
+         }
 
          // Clears a node as the unit passes by
-         float distanceToWaypoint = Vector2.Distance(_waypointList[0].transform.position, transform.position);
+         float distanceToWaypoint = Vector2.Distance(currentPath[0].vPosition, transform.position);
          if (distanceToWaypoint < .1f) {
-            Destroy(_waypointList[0].gameObject);
-            _waypointList.RemoveAt(0);
+            currentPath.RemoveAt(0);
+         }
+      } else {
+         if (attacking) {
+            generateNewAttackWaypoints();
+         } else {
+            generateNewPatrolWaypoints();
          }
       }
 
       // Update our facing direction
-      Direction newFacingDirection = DirectionUtil.getDirectionForVelocity(_body.velocity);
-      if (newFacingDirection != this.facing) {
-         this.facing = newFacingDirection;
+      if (_body.velocity.magnitude > 0.0f) {
+         Direction newFacingDirection = DirectionUtil.getDirectionForVelocity(_body.velocity);
+         if (newFacingDirection != facing) {
+            facing = newFacingDirection;
+         }
       }
-
-      // Make note of the time
-      _lastMoveChangeTime = Time.time;
    }
 
    protected string getNameForFaction () {
-      switch (this.faction) {
+      switch (faction) {
          case Faction.Type.Pirates:
             return "Pirate";
          case Faction.Type.Privateers:
@@ -121,34 +147,72 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    }
 
    [Server]
-   protected IEnumerator CO_generateNewWaypoints (float moveAgainDelay) {
-      // Initial delay
-      float waitTime = 1.0f;
-      while (true) {
-         yield return new WaitForSeconds(waitTime);
+   private void generateNewPatrolWaypoints () {
+      switch (_patrolingWaypointState) {
+         case WaypointState.FINDING_PATH:
+            _currentPatrolPath = _pathfindingReference.findPathNowInit(transform.position, _currentSite.transform.position + _moveTargetOffsets.ChooseRandom().ToVector3());
+            if (_currentPatrolPath != null && _currentPatrolPath.Count > 0) {
+               _patrolingWaypointState = WaypointState.MOVING_TO;
+            }
+            break;
 
-         if (_waypointList.Count > 0) {
-            // There's still points left of the old path, wait 1 second and check again if there's no more waypoints
-            waitTime = 1.0f;
-            continue;
-         }
+         case WaypointState.MOVING_TO:
+            if (_currentPatrolPath.Count <= 0) {
+               _patrolingWaypointState = WaypointState.PATROLING;
+               _secondsPatroling = 0.0f;
+               _secondsBetweenPatrolRoutes = 0.0f;
+            }
 
-         List<ANode> gridPath = _pathfindingReference.findPathNowInit(transform.position, _moveTargets.ChooseRandom());
-         if (gridPath == null || gridPath.Count <= 0) {
-            // Invalid Path, attempt again after 1 second
-            waitTime = 1.0f;
-            continue;
-         }
+            break;
 
-         // We have a new path, set to normal delay
-         waitTime = moveAgainDelay;
+         case WaypointState.PATROLING:
+            _secondsPatroling += Time.fixedDeltaTime;
+            _secondsBetweenPatrolRoutes += Time.fixedDeltaTime;
 
-         // Register Route
-         foreach (ANode node in gridPath) {
-            Waypoint newWaypointPath = Instantiate(PrefabsManager.self.waypointPrefab);
-            newWaypointPath.transform.position = node.vPosition;
-            _waypointList.Add(newWaypointPath);
-         }
+            if (_secondsPatroling >= secondsPatrolingUntilChoosingNewTreasureSite) {
+               _currentSite = _treasureSitesInArea[Random.Range(0, _treasureSitesInArea.Count)];
+               _patrolingWaypointState = WaypointState.FINDING_PATH;
+            } else if (_secondsBetweenPatrolRoutes >= secondsBetweenFindingPatrolRoutes) {
+               _secondsBetweenPatrolRoutes = 0.0f;
+
+               _currentPatrolPath = _pathfindingReference.findPathNowInit(transform.position, _currentSite.transform.position + _moveTargetOffsets.ChooseRandom().ToVector3());
+            }
+            break;
+      }
+   }
+
+   [Server]
+   private void generateNewAttackWaypoints () {
+      if (_lastAttacker == null) {
+         return;
+      }
+
+      switch (_attackingWaypointState) {
+         case WaypointState.FINDING_PATH:
+            _currentAttackingPath = _pathfindingReference.findPathNowInit(transform.position, _lastAttacker.transform.position + _moveTargetOffsets.ChooseRandom().ToVector3());
+            if (_currentAttackingPath != null && _currentAttackingPath.Count > 0) {
+               _attackingWaypointState = WaypointState.MOVING_TO;
+            }
+            break;
+
+         case WaypointState.MOVING_TO:
+            if (_currentAttackingPath.Count <= 0) {
+               _attackingWaypointState = WaypointState.PATROLING;
+               _secondsBetweenAttackRoutes = 0.0f;
+            }
+
+            break;
+
+         case WaypointState.PATROLING:
+            _secondsBetweenAttackRoutes += Time.fixedDeltaTime;
+
+            if (_secondsBetweenAttackRoutes >= secondsBetweenFindingAttackRoutes) {
+               _secondsBetweenAttackRoutes = 0.0f;
+
+               _attackingWaypointState = WaypointState.FINDING_PATH;
+               _currentAttackingPath = _pathfindingReference.findPathNowInit(transform.position, _lastAttacker.transform.position + _moveTargetOffsets.ChooseRandom().ToVector3());
+            }
+            break;
       }
    }
 
@@ -167,6 +231,8 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          if (attacker == null || attacker.isDead()) {
             continue;
          }
+
+         _lastAttacker = attacker;
 
          // Check where the attacker currently is
          Vector2 spot = attacker.transform.position;
@@ -220,10 +286,25 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       }
    }
 
+#if UNITY_EDITOR
+   private void OnDrawGizmosSelected () {
+      // Only force draw the grid Gizmos when the NPC is selected and not the Grid itself
+      // (or they will double draw as is the parent/child relationship in terms of gizmos)
+      if (!Selection.Contains(_gridReference.gameObject)) {
+         if (_attackers != null && _attackers.Count > 0) {
+            _gridReference.pathToDraw = _currentAttackingPath;
+         } else {
+            _gridReference.pathToDraw = _currentPatrolPath;
+         }
+         _gridReference.OnDrawGizmosSelected();
+      }
+   }
+#endif
+
    #region Private Variables
 
    // The available positions to move to
-   protected List<Vector2> _moveTargets = new List<Vector2>();
+   protected List<Vector2> _moveTargetOffsets = new List<Vector2>();
 
    // The AStarGrid Reference fetched from the Main Scene
    protected AStarGrid _gridReference;
@@ -231,8 +312,42 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    // The Pathfinding Reference fetched from the Main Scene
    protected Pathfinding _pathfindingReference;
 
-   // The current waypoint List
-   protected List<Waypoint> _waypointList = new List<Waypoint>();
+   // How many seconds have passed since we've started patrolling the current TreasureSite
+   private float _secondsPatroling;
+
+   // How many seconds have passed since we last stopped on a patrol route
+   private float _secondsBetweenPatrolRoutes;
+
+   // How many seconds have passed since we last stopped on an attack route
+   private float _secondsBetweenAttackRoutes;
+
+   private enum WaypointState
+   {
+      FINDING_PATH = 1,
+      MOVING_TO = 2,
+      PATROLING = 3,
+   }
+
+   // In what state the Patrol Waypoint traversing is in
+   private WaypointState _patrolingWaypointState = WaypointState.FINDING_PATH;
+
+   // In what state the Attack Waypoint traversing is in
+   private WaypointState _attackingWaypointState = WaypointState.FINDING_PATH;
+
+   // The TreasureSite Objects that are present in the area
+   private List<TreasureSite> _treasureSitesInArea;
+
+   // The current targeted TreasureSite
+   private TreasureSite _currentSite;
+
+   // The current path to the patrol destination
+   private List<ANode> _currentPatrolPath;
+
+   // The current path when attacking something
+   private List<ANode> _currentAttackingPath;
+
+   // The last attecker to have damaged our vessel
+   private SeaEntity _lastAttacker;
 
    #endregion
 }
