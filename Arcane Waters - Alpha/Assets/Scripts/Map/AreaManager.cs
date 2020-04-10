@@ -62,12 +62,31 @@ public class AreaManager : MonoBehaviour
    }
 
    public Biome.Type getAreaBiome(string areaKey) {
-      Map map;
-      if (_areaKeyToMapInfo.TryGetValue(areaKey, out map)) {
+      if (hasArea(areaKey)) {
+         return getArea(areaKey).biome;
+      } else if (_areaKeyToMapInfo.TryGetValue(areaKey, out Map map)) {
          return map.biome;
+      } else {
+         return Biome.Type.None;
       }
+   }
 
-      return Biome.Type.None;
+   public int getAreaVersion (string areaKey) {
+      if (hasArea(areaKey)) {
+         return getArea(areaKey).version;
+      } else if (_areaKeyToMapInfo.TryGetValue(areaKey, out Map map)) {
+         return map.publishedVersion ?? 0;
+      } else {
+         return 0;
+      }
+   }
+
+   public bool isSeaArea (string areaKey) {
+      if (hasArea(areaKey)) {
+         return getArea(areaKey).isSea;
+      } else {
+         return _seaAreaKeys.Contains(areaKey);
+      }
    }
 
    public Area getArea (string areaKey) {

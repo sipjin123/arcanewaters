@@ -94,7 +94,7 @@ public class CircleFader : ClientMonoBehaviour {
    }
 
    protected bool hasCameraChanged () {
-      if (Global.player == null) {
+      if (Global.player == null || !AreaManager.self.hasArea(Global.player.areaKey)) {
          return false;
       }
 

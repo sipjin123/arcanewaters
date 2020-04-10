@@ -19,6 +19,7 @@ namespace MapCreationTool
       public MapTemplate _mapTemplate;
       public Tilemap _tilemapTemplate;
       public Tilemap _collisionTilemapTemplate;
+      public MapChunk _collisionTilemapChunkTemplate;
       public GameObject _stairsEffector;
       public GameObject _waterfallEfector;
       public Vines _vinesTrigger;
@@ -39,6 +40,7 @@ namespace MapCreationTool
             tilemapTemplate = _tilemapTemplate;
             mapTemplate = _mapTemplate;
             collisionTilemapTemplate = _collisionTilemapTemplate;
+            collisionTilemapChunkTemplate = _collisionTilemapChunkTemplate;
             stairsEffector = _stairsEffector;
             waterfallEfector = _waterfallEfector;
             vinesTrigger = _vinesTrigger;
@@ -188,6 +190,7 @@ namespace MapCreationTool
       public static MapTemplate mapTemplate { get; private set; }
       public static Tilemap tilemapTemplate { get; private set; }
       public static Tilemap collisionTilemapTemplate { get; private set; }
+      public static MapChunk collisionTilemapChunkTemplate { get; private set; }
       public static GameObject stairsEffector { get; private set; }
       public static GameObject waterfallEfector { get; private set; }
       public static Vines vinesTrigger { get; private set; }

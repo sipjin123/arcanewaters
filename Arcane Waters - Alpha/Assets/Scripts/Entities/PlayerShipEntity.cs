@@ -79,8 +79,8 @@ public class PlayerShipEntity : ShipEntity {
          isNextShotDefined = false;
       }
 
-      // Ignore any input if a panel is opened or the player is writing in chat
-      if (PanelManager.self.hasPanelInStack() || ChatPanel.self.inputField.isFocused) {
+      // Check if input is allowed
+      if (!Util.isGeneralInputAllowed()) {
          return;
       }
 

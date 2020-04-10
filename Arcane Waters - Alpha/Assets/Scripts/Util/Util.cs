@@ -800,7 +800,11 @@ public class Util : MonoBehaviour {
    }
 
    public static bool isGeneralInputAllowed () {
-      return !(ChatPanel.self.inputField.isFocused || ((MailPanel) PanelManager.self.get(Panel.Type.Mail)).isWritingMail());
+      return !(PanelManager.self.hasPanelInStack() ||
+         ChatPanel.self.inputField.isFocused ||
+         ((MailPanel) PanelManager.self.get(Panel.Type.Mail)).isWritingMail() ||
+         Global.player == null ||
+         !AreaManager.self.hasArea(Global.player.areaKey));
    }
    
    // Loads an XML text asset and deserializes it into an object

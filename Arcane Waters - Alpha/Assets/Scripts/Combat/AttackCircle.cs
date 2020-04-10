@@ -38,6 +38,25 @@ public class AttackCircle : MonoBehaviour {
       // Initialize the color of the sprite
       imageRenderer.color = new Color(color.r, color.g, color.b, alpha);
 
+      // Set the z position
+      setZ();
+   }
+
+   void Update () {
+      // Set the z position
+      setZ();
+
+      // Update the alpha of the sprite
+      imageRenderer.color = new Color(color.r, color.g, color.b, alpha);
+
+      // If we've been alive long enough, destroy ourself
+      if (TimeManager.self.getSyncedTime() > this.endTime) {
+         Destroy(this.gameObject);
+         return;
+      }
+   }
+
+   private void setZ () {
       if (Global.player != null) {
          // Get the current area
          Area area = AreaManager.self.getArea(Global.player.areaKey);
@@ -46,17 +65,6 @@ public class AttackCircle : MonoBehaviour {
          if (area != null) {
             GetComponent<FixedZ>().newZ = area.waterZ - 0.01f;
          }
-      }
-   }
-
-   void Update () {
-      // Update the alpha of the sprite
-      imageRenderer.color = new Color(color.r, color.g, color.b, alpha);
-
-      // If we've been alive long enough, destroy ourself
-      if (TimeManager.self.getSyncedTime() > this.endTime) {
-         Destroy(this.gameObject);
-         return;
       }
    }
 

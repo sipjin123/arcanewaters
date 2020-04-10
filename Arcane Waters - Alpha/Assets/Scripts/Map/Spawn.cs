@@ -39,6 +39,12 @@ public class Spawn : MonoBehaviour, IMapEditorDataReceiver {
       return _areaKey;
    }
 
+   public void OnDestroy () {
+      if (SpawnManager.get() != null) {
+         SpawnManager.get().remove(_areaKey, spawnKey);
+      }
+   }
+
    public void receiveData (DataField[] dataFields) {
       foreach (DataField field in dataFields) {
          switch (field.k.ToLower()) {

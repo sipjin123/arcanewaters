@@ -6,10 +6,16 @@ using Mirror;
 using MapCreationTool;
 using MapCreationTool.Serialization;
 using UnityEngine.Networking;
+using UnityEngine.Tilemaps;
+using System.Linq;
+using System;
 
 public class MapManager : MonoBehaviour
 {
    #region Public Variables
+
+   // The size of the squared chunk of tilemap colliders
+   public static int TILEMAP_COLLIDERS_CHUNK_SIZE = 32;
 
    // Convenient self reference
    public static MapManager self;
@@ -20,27 +26,149 @@ public class MapManager : MonoBehaviour
       self = this;
    }
 
-   public void createMapOnServer (string areaKey) {
-      MapInfo mapInfo = DB_Main.getMapInfo(areaKey);
-      createLiveMap(areaKey, mapInfo, getNextMapPosition());
+   public void createLiveMap (string areaKey) {
+      // Spawn the Area using the map data
+      createLiveMap(areaKey, null, getNextMapPosition());
    }
 
-   public void createLiveMap (string areaKey, MapInfo mapInfo, Vector3 mapPosition) {
-      D.debug($"Preparing to create live map {areaKey} at {mapPosition} with version {mapInfo.version}");
+   public void createLiveMap (string areaKey, string mapData, int latestVersion, Vector3 mapPosition) {
+      // Build the map info from the input data
+      MapInfo mapInfo = new MapInfo(areaKey, mapData, latestVersion);
 
+      // Spawn the Area using the map data
+      createLiveMap(areaKey, mapInfo, mapPosition);
+   }
+
+   protected void createLiveMap (string areaKey, MapInfo mapInfo, Vector3 mapPosition) {
       // If the area already exists, don't create it again
       if (AreaManager.self.hasArea(areaKey)) {
          D.warning($"Area {areaKey} already exists!");
          return;
       }
 
-      // Instantiate the map using the map data
-      Area area = MapImporter.instantiateMapData(mapInfo, areaKey, mapPosition);
+      // If the area is under creation, don't create it again
+      if (isAreaUnderCreation(areaKey)) {
+         return;
+      }
+      
+      // Save the area as under creation
+      _areasUnderCreation.Add(areaKey, mapPosition);
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Read the map data
+         if (mapInfo == null) {
+            mapInfo = DB_Main.getMapInfo(areaKey);
+         }
+
+         // Deserialize the map
+         ExportedProject001 exportedProject = MapImporter.deserializeMapData(mapInfo);
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            D.debug($"Preparing to create live map {areaKey} at {mapPosition} with version {mapInfo.version}");
+
+            StartCoroutine(CO_InstantiateMapData(mapInfo, exportedProject, areaKey, mapPosition));
+         });
+      });
+   }
+
+   private IEnumerator CO_InstantiateMapData (MapInfo mapInfo, ExportedProject001 exportedProject, string areaKey, Vector3 mapPosition) {
+      MapImporter.ensureSerializationMapsLoaded();
+
+      MapTemplate result = Instantiate(AssetSerializationMaps.mapTemplate, mapPosition, Quaternion.identity);
+      result.name = areaKey;
+
+      if (exportedProject.biome == Biome.Type.None) {
+         D.warning("Invalid biome type NONE in map data. Setting to 'Forest'.");
+         exportedProject.biome = Biome.Type.Forest;
+      }
+
+      // Create the area
+      Area area = result.area;
+
+      // Calculate the map bounds
+      Bounds bounds = MapImporter.calculateBounds(exportedProject);
+      yield return null;
+
+      List<TilemapLayer> tilemaps = new List<TilemapLayer>();
+      int unrecognizedTiles = 0;
+
+      // Create one layer per frame
+      foreach (ExportedLayer001 layer in exportedProject.layers) {
+         MapImporter.instantiateTilemapLayer(tilemaps, mapInfo, layer, result.tilemapParent,
+            result.collisionTilemapParent, exportedProject.biome, ref unrecognizedTiles);
+         yield return null;
+      }
+
+      if (unrecognizedTiles > 0) {
+         Utilities.warning($"Could not recognize { unrecognizedTiles } tiles of map { mapInfo.mapName }");
+      }
+
+      // Prepate the list of tilemap colliders
+      List<MapChunk> mapColliderChunks = new List<MapChunk>();
+
+      // Create the tilemap colliders in chunks
+      for (int i = (int) bounds.min.x; i < bounds.max.x; i += TILEMAP_COLLIDERS_CHUNK_SIZE) {
+         for (int j = (int) bounds.min.y; j < bounds.max.y; j += TILEMAP_COLLIDERS_CHUNK_SIZE) {
+            // Calculate the chunk rect
+            int xMax = Mathf.Clamp(i + TILEMAP_COLLIDERS_CHUNK_SIZE, 0, (int) bounds.max.x);
+            int yMax = Mathf.Clamp(j + TILEMAP_COLLIDERS_CHUNK_SIZE, 0, (int) bounds.max.y);
+            RectInt rect = new RectInt(i, j, TILEMAP_COLLIDERS_CHUNK_SIZE, TILEMAP_COLLIDERS_CHUNK_SIZE);
+
+            // Instantiate the colliders
+            mapColliderChunks.Add(MapImporter.instantiateTilemapColliderChunk(exportedProject, result.collisionTilemapParent,
+               exportedProject.biome, rect));
+
+            yield return null;
+         }
+      }
+
+      result.area.setTilemapLayers(tilemaps);
+      result.area.setColliderChunks(mapColliderChunks);
+
+      MapImporter.instantiatePrefabs(mapInfo, exportedProject, result.prefabParent, result.npcParent, result.area);
+      yield return null;
+
+      if (exportedProject.specialTileChunks != null) {
+         MapImporter.addSpecialTileChunks(result, exportedProject.specialTileChunks);
+         yield return null;
+      }
+
+      MapImporter.setCameraBounds(result, bounds);
+      MapImporter.addEdgeColliders(result, bounds);
+      yield return null;
+
+      // Destroy the template component
+      Destroy(result);
+
+      // Initialize the area
+      area.areaKey = areaKey;
+      area.version = mapInfo.version;
+      area.biome = exportedProject.biome;
+
+      if (exportedProject.editorType == EditorType.Sea) {
+         area.isSea = true;
+      } else if (exportedProject.editorType == EditorType.Interior) {
+         area.isInterior = true;
+      }
+
+      area.initialize();
+
+      onAreaCreationIsFinished(area);
+   }
+
+   public void onAreaCreationIsFinished (Area area) {
+      // Remove the area from being under creation
+      _areasUnderCreation.Remove(area.areaKey);
+
+      // Set the area as available
       AreaManager.self.storeArea(area);
+
       area.vcam.VirtualCameraGameObject.SetActive(false);
 
       // Only remove old maps on the Clients
-      if (!Mirror.NetworkServer.active && _lastMap != null && _lastMap.areaKey != areaKey) {
+      if (!Mirror.NetworkServer.active && _lastMap != null && _lastMap.areaKey != area.areaKey) {
          AreaManager.self.removeArea(_lastMap.areaKey);
          Destroy(_lastMap.gameObject);
       }
@@ -59,6 +187,17 @@ public class MapManager : MonoBehaviour
       return _mapOffset;
    }
 
+   public bool isAreaUnderCreation (string areaKey) {
+      return _areasUnderCreation.ContainsKey(areaKey);
+   }
+
+   public Vector2 getAreaUnderCreationPosition (string areaKey) {
+      if (_areasUnderCreation.TryGetValue(areaKey, out Vector2 position)) {
+         return position;
+      }
+      return new Vector2();
+   }
+
    public IEnumerator CO_DownloadAndCreateMap (string areaKey, int version, Vector3 mapPosition) {
       // Request the map from the web
       UnityWebRequest www = UnityWebRequest.Get("http://arcanewaters.com/maps.php?mapName=" + areaKey);
@@ -74,7 +213,7 @@ public class MapManager : MonoBehaviour
          MapCache.storeMapData(areaKey, version, mapData);
 
          // Spawn the Area using the map data
-         createLiveMap(areaKey, new MapInfo(areaKey, mapData, version), mapPosition);
+         createLiveMap(areaKey, mapData, version, mapPosition);
       }
    }
 
@@ -85,6 +224,9 @@ public class MapManager : MonoBehaviour
 
    // The the last visited Map by the Client
    private Area _lastMap;
+
+   // The list of areas under creation and their position
+   private Dictionary<string, Vector2> _areasUnderCreation = new Dictionary<string, Vector2>();
 
    #endregion
 }

@@ -145,7 +145,6 @@ public class Minimap : ClientMonoBehaviour {
       }
       Area area = AreaManager.self.getArea(Global.player.areaKey);
       if (area == null) {
-         Debug.LogWarning("Area has not yet loaded: " + area);
          return;
       }
 

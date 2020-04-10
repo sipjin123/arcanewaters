@@ -65,35 +65,34 @@ namespace AStar
          float halfGridSizeX = gridTiles.x * cellSize.x * 0.5f;
          float halfGridSizeY = gridTiles.y * cellSize.y * 0.5f;
 
-         // Extract the Collider Tilemaps only and not the visual tilemaps
-         TilemapCollider2D[] tilemapColliders = area.GetComponentsInChildren<TilemapCollider2D>(true);
-         Tilemap[] tilemaps = new Tilemap[tilemapColliders.Length];
-         for (int collider = 0; collider < tilemapColliders.Length; ++collider) {
-            tilemaps[collider] = tilemapColliders[collider].GetComponent<Tilemap>();
-         }
-
          List<ANode> nodeList = new List<ANode>();
          for (int col = 0; col < gridTiles.x; col++) {
             for (int row = 0; row < gridTiles.y; row++) {
                Vector3 alteredPos = new Vector3(-halfGridSizeX + grid.transform.position.x + col * cellSize.x + cellSize.x * 0.5f, halfGridSizeY + gridYPosition - row * cellSize.y - cellSize.y * 0.5f, pos.z);
                Vector3Int cellPos = grid.WorldToCell(alteredPos);
 
-               bool isWall = false;
-               foreach (Tilemap tilemap in tilemaps) {
-                  TileBase tile = tilemap.GetTile(cellPos);
-                  if (tile == null) {
-                     continue;
-                  }
+               // Get the map chunk at this grid position
+               MapChunk chunk = area.getColliderChunkAtCell(cellPos);
 
-                  foreach (string collisionName in COLLIDING_TILEMAPS) {
-                     if (tilemap.name.StartsWith(collisionName)) {
-                        isWall = true;
+               // Iterate over the tilemap list of the chunk
+               bool isWall = false;
+               if (chunk != null) {
+                  foreach (Tilemap tilemap in chunk.getTilemaps()) {
+                     TileBase tile = tilemap.GetTile(cellPos);
+                     if (tile == null) {
+                        continue;
+                     }
+
+                     foreach (string collisionName in COLLIDING_TILEMAPS) {
+                        if (tilemap.name.StartsWith(collisionName)) {
+                           isWall = true;
+                           break;
+                        }
+                     }
+
+                     if (isWall) {
                         break;
                      }
-                  }
-
-                  if (isWall) {
-                     break;
                   }
                }
 

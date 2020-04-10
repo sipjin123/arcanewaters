@@ -710,8 +710,7 @@ public class RPCManager : NetworkBehaviour {
       if (MapCache.hasMap(areaKey, latestVersion)) {
          D.debug($"Found cached map data for {areaKey} and version {latestVersion}, using that.");
          string mapData = MapCache.getMapData(areaKey, latestVersion);
-         MapManager.self.createLiveMap(areaKey, new MapInfo(areaKey, mapData, latestVersion), mapPosition);
-
+         MapManager.self.createLiveMap(areaKey, mapData, latestVersion, mapPosition);
          return;
       }
 
@@ -2822,8 +2821,9 @@ public class RPCManager : NetworkBehaviour {
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // If the player is in a voyage area, warp him to the starting town
             if (VoyageManager.self.isVoyageArea(_player.areaKey)) {
-               Spawn spawn = SpawnManager.self.getSpawn(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
-               _player.spawnInNewMap(Area.STARTING_TOWN, spawn, Direction.South);
+               SpawnID spawnID = new SpawnID(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
+               Vector2 localPos = SpawnManager.self.getSpawnLocalPosition(spawnID);
+               _player.spawnInNewMap(Area.STARTING_TOWN, localPos, Direction.South);
             }
          });
       });

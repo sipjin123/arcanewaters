@@ -43,6 +43,12 @@ public partial class SpawnManager : MonoBehaviour {
       _spawns[new SpawnID(areaKey, spawnKey)] = spawn;
    }
 
+   public void remove (string areaKey, string spawnKey) {
+      SpawnID spawnId = new SpawnID(areaKey, spawnKey);
+      _spawns.Remove(spawnId);
+      _spawnIDList.Remove(spawnId);
+   }
+
    public Spawn getSpawn (string areaKey, string spawnKey) {
       SpawnID spawnID = new SpawnID(areaKey, spawnKey);
       if (_spawns.ContainsKey(spawnID)) {

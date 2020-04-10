@@ -81,7 +81,7 @@ public class Area : MonoBehaviour
       this.secretsEntranceDataFields = secretsEntranceDataFields;
    }
 
-   private void Start () {
+   public void initialize () {
       // Regenerate any tilemap colliders
       foreach (CompositeCollider2D compositeCollider in GetComponentsInChildren<CompositeCollider2D>()) {
          compositeCollider.GenerateGeometry();
@@ -99,17 +99,11 @@ public class Area : MonoBehaviour
             }).ToList();
       }
 
-      // Store all of our tilemap colliders
-      _tilemapColliders = new List<TilemapCollider2D>(GetComponentsInChildren<TilemapCollider2D>());
-
       // Make note of the initial states
-      foreach (TilemapCollider2D collider in _tilemapColliders) {
-         _initialStates[collider] = collider.enabled;
-      }
-
-      // Check if area is a sea area
-      if (!isSea) {
-         isSea = areaKey.StartsWith("Ocean") || areaKey.StartsWith("Sea");
+      foreach (MapChunk chunk in _colliderChunks) {
+         foreach (TilemapCollider2D collider in chunk.getTilemapColliders()) {
+            _initialStates[collider] = collider.enabled;
+         }
       }
 
       // Retrieve the z coordinate of the water tilemap
@@ -138,7 +132,7 @@ public class Area : MonoBehaviour
          townAreaKey = areaKey;
       }
 
-      pathfindingGrid.displayGrid(transform.position, areaKey);
+      pathfindingGrid.displayGrid(transform.position, this);
 
       // Store it in the Area Manager
       AreaManager.self.storeArea(this);
@@ -170,6 +164,19 @@ public class Area : MonoBehaviour
 
    public void setTilemapLayers (List<TilemapLayer> layers) {
       _tilemapLayers = layers;
+   }
+
+   public MapChunk getColliderChunkAtCell (Vector3Int cellPos) {
+      foreach (MapChunk chunk in _colliderChunks) {
+         if (chunk.contains(cellPos)) {
+            return chunk;
+         }
+      }
+      return null;
+   }
+
+   public void setColliderChunks (List<MapChunk> chunks) {
+      _colliderChunks = chunks;
    }
 
    public static string getName (string areaKey) {
@@ -270,13 +277,15 @@ public class Area : MonoBehaviour
    }
 
    public void setColliders (bool newState) {
-      foreach (TilemapCollider2D collider in _tilemapColliders) {
-         // If the collider was initially disabled, don't change it
-         if (_initialStates[collider] == false) {
-            continue;
-         }
+      foreach (MapChunk chunk in _colliderChunks) {
+         foreach (TilemapCollider2D collider in chunk.getTilemapColliders()) {
+            // If the collider was initially disabled, don't change it
+            if (_initialStates[collider] == false) {
+               continue;
+            }
 
-         collider.enabled = newState;
+            collider.enabled = newState;
+         }
       }
    }
 
@@ -285,8 +294,8 @@ public class Area : MonoBehaviour
    // Stores the Tilemaps for this area
    protected List<TilemapLayer> _tilemapLayers = new List<TilemapLayer>();
 
-   // The Tilemap Colliders for this area
-   protected List<TilemapCollider2D> _tilemapColliders = new List<TilemapCollider2D>();
+   // The list of map collider chunks
+   protected List<MapChunk> _colliderChunks = new List<MapChunk>();
 
    // The initial enable/disable state of the tilemap colliders
    protected Dictionary<TilemapCollider2D, bool> _initialStates = new Dictionary<TilemapCollider2D, bool>();

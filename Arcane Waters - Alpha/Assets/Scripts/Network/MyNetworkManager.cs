@@ -7,6 +7,7 @@ using System.Xml.Serialization;
 using System.Text;
 using System.Xml;
 using MapCreationTool;
+using MapCreationTool.Serialization;
 using BackgroundTool;
 
 public class MyNetworkManager : NetworkManager {
@@ -153,7 +154,7 @@ public class MyNetworkManager : NetworkManager {
       GameVersionManager.self.scheduleMinimumGameVersionUpdate();
 
       // Create the initial map that everyone starts in
-      MapManager.self.createMapOnServer(Area.STARTING_TOWN);
+      MapManager.self.createLiveMap(Area.STARTING_TOWN);
 
       // Regularly check that there are enough voyage instances open and create more
       VoyageManager.self.regenerateVoyageInstances();
@@ -234,24 +235,26 @@ public class MyNetworkManager : NetworkManager {
                return;
             }
 
-            // If we don't have the requested area, we need to create it now
-            if (!AreaManager.self.hasArea(previousAreaKey)) {
+            // Verify if the area exists and get its position
+            Vector2 mapPosition;
+            if (AreaManager.self.hasArea(previousAreaKey)) {
+               // If the area already exists
+               mapPosition = AreaManager.self.getArea(previousAreaKey).transform.position;
+            } else if (MapManager.self.isAreaUnderCreation(previousAreaKey)) {
+               // If the area is under creation
+               mapPosition = MapManager.self.getAreaUnderCreationPosition(previousAreaKey);
+            } else {
+               // If we don't have the requested area, we need to create it now
                D.debug($"Server does not have Area {previousAreaKey}, creating it now.");
-               MapManager.self.createMapOnServer(previousAreaKey);
-            }
-
-            // If we don't have the requested area, we default to the starting area
-            if (!AreaManager.self.hasArea(previousAreaKey)) {
-               D.log($"Server still does not have Area {previousAreaKey}, so defaulting player to {Area.STARTING_TOWN}");
-               previousAreaKey = Area.STARTING_TOWN;
-            }
+               MapManager.self.createLiveMap(previousAreaKey);
+               mapPosition = MapManager.self.getAreaUnderCreationPosition(previousAreaKey);
+            } 
 
             // Note where we're going to create the player
-            Area targetArea = AreaManager.self.getArea(previousAreaKey);
-            Vector3 playerCreationPos = (Vector2) targetArea.transform.position + userInfo.localPos;
+            Vector3 playerCreationPos = mapPosition + userInfo.localPos;
 
             // Create the Player object
-            GameObject prefab = targetArea?.isSea == true ? PrefabsManager.self.playerShipPrefab : PrefabsManager.self.playerBodyPrefab;
+            GameObject prefab = AreaManager.self.isSeaArea(previousAreaKey) == true ? PrefabsManager.self.playerShipPrefab : PrefabsManager.self.playerBodyPrefab;
             GameObject playerObject = Instantiate(prefab, playerCreationPos, Quaternion.identity);
             NetEntity player = playerObject.GetComponent<NetEntity>();
             player.isSinglePlayer = userObjects.isSinglePlayer;
@@ -275,7 +278,7 @@ public class MyNetworkManager : NetworkManager {
             InstanceManager.self.rebuildInstanceObservers(player, instance);
 
             // Tell the player information about the Area we're going to send them to
-            player.rpc.Target_ReceiveAreaInfo(player.connectionToClient, targetArea.areaKey, targetArea.version, targetArea.transform.position);
+            player.rpc.Target_ReceiveAreaInfo(player.connectionToClient, previousAreaKey, AreaManager.self.getAreaVersion(previousAreaKey), mapPosition);
 
             // Server provides clients with info of the npc
             List<NPCData> referenceNPCData = NPCManager.self.getNPCDataInArea(previousAreaKey);

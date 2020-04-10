@@ -294,8 +294,8 @@ public class NetEntity : NetworkBehaviour {
    }
 
    protected virtual void FixedUpdate () {
-      // We can only control movement for our own player, when chat isn't focused, and we're not falling down or dead
-      if (!isLocalPlayer || ChatPanel.self.inputField.isFocused || isFalling() || isDead() || PanelManager.self.hasPanelInStack()) {
+      // We can only control movement for our own player, when chat isn't focused, we're not falling down or dead and the area has been loaded
+      if (!isLocalPlayer || ChatPanel.self.inputField.isFocused || isFalling() || isDead() || PanelManager.self.hasPanelInStack() || !AreaManager.self.hasArea(areaKey)) {
          return;
       }
 
