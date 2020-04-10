@@ -58,10 +58,6 @@ public class SecretEntrance : NetworkBehaviour {
    [SyncVar]
    public bool isInteracted = false;
 
-   // The max players that can enter the area
-   [SyncVar]
-   public int maxPlayers;
-
    // The warp associated with this secret entrance
    public Warp warp;
 
@@ -166,15 +162,11 @@ public class SecretEntrance : NetworkBehaviour {
       if (collision.GetComponent<PlayerBodyEntity>() != null) {
          PlayerBodyEntity entity = collision.GetComponent<PlayerBodyEntity>();
          if (entity.isServer && entity.connectionToClient != null) {
-            if (!userIds.Contains(entity.userId) && userIds.Count < maxPlayers) {
+            if (!userIds.Contains(entity.userId)) {
                completeInteraction(entity);
             } else {
                if (userIds.Contains(entity.userId)) {
                   D.editorLog("Already interacted", Color.red);
-               }
-
-               if (userIds.Count >= maxPlayers) {
-                  D.editorLog("Reached max players", Color.red);
                }
             }
          }
@@ -183,15 +175,11 @@ public class SecretEntrance : NetworkBehaviour {
 
    public void tryToInteract () {
       if (Global.player != null) {
-         if (!userIds.Contains(Global.player.userId) && userIds.Count < maxPlayers) {
+         if (!userIds.Contains(Global.player.userId)) {
             completeInteraction((PlayerBodyEntity) Global.player);
          } else {
             if (userIds.Contains(Global.player.userId)) {
                D.editorLog("Already interacted", Color.red);
-            }
-
-            if (userIds.Count >= maxPlayers) {
-               D.editorLog("Reached max players", Color.red);
             }
          }
       }

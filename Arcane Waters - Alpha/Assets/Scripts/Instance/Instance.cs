@@ -305,7 +305,6 @@ public class Instance : NetworkBehaviour
 
                   SecretEntrance secretObjNode = Instantiate(PrefabsManager.self.secretEntrancePrefab, secretsParent);
                   secretObjNode.areaKey = area.areaKey;
-                  secretObjNode.maxPlayers = getMaxPlayers();
                   secretObjNode.receiveData(dataField.d);
                   secretObjNode.transform.localPosition = targetLocalPos;
 

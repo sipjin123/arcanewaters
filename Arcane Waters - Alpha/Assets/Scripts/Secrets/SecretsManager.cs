@@ -20,7 +20,7 @@ public class SecretsManager : MonoBehaviour {
       self = this;
    }
 
-   public void enterUserToSecret (int userId, string areaName, int instanceId, SecretEntrance secretNode) {
+   public void enterUserToSecret (int userId, string areaName, int instanceId, SecretEntrance secretArea) {
       if (secretsDataList.Exists(_=>_.instanceId == instanceId && _.areaName == areaName)) {
          D.editorLog("This secret area exists, adding player: " + userId, Color.green);
          
@@ -32,7 +32,7 @@ public class SecretsManager : MonoBehaviour {
             instanceId = instanceId,
             areaName = areaName,
             userIdList = new List<int>(),
-            secretNode = secretNode,
+            secretArea = secretArea,
          };
          newData.userIdList.Add(userId);
          secretsDataList.Add(newData);
@@ -51,7 +51,7 @@ public class SecretsManager : MonoBehaviour {
                D.editorLog("The user exists in the area: " + secretArea.areaName + " - " + userId, Color.green);
 
                // Remove the user from the secret area registry so they can enter the area again
-               secretArea.secretNode.userIds.Remove(userId);
+               secretArea.secretArea.userIds.Remove(userId);
                secretArea.userIdList.Remove(userId);
             }
          }
@@ -78,5 +78,5 @@ public class SecretsData
    public int instanceId;
 
    // The secret node
-   public SecretEntrance secretNode;
+   public SecretEntrance secretArea;
 }
