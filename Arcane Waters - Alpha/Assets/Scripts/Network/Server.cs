@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class Server : Photon.PunBehaviour {
+public class Server : MonoBehaviour {//Photon.PunBehaviour {
    #region Public Variables
 
    // A test ID
@@ -20,7 +20,7 @@ public class Server : Photon.PunBehaviour {
 
    // Our Photon view
    public PhotonView view;
-
+    
    // A listing of open area types on this server
    public string[] openAreas = new string[0];
 
@@ -100,18 +100,21 @@ public class Server : Photon.PunBehaviour {
       }
    }
 
+   /*
    public override void OnConnectionFail (DisconnectCause cause) {
       base.OnConnectionFail(cause);
 
       D.log("Server " + port + " connection failed: " + cause);
       PhotonNetwork.Destroy(this.gameObject);
-   }
+   }*/
 
    void OnDestroy () {
       ServerNetwork.self.removeServer(this);
    }
 
    protected void checkOnlineUsers () {
+      D.editorLog("Server must update players ");
+      /*
       // Rebuilds the list of online users connected to this server
       if (this.photonView.isMine) {
          connectedUserIds.Clear();
@@ -122,9 +125,12 @@ public class Server : Photon.PunBehaviour {
             }
          }
       }
+      */
    }
 
    protected void updateVoyageInfo () {
+      D.editorLog("Server must update voyages ");
+      /*
       // Rebuilds the list of voyage instances and their status held in this server
       if (this.photonView.isMine) {
          List<Voyage> allVoyages = new List<Voyage>();
@@ -136,7 +142,7 @@ public class Server : Photon.PunBehaviour {
          }
 
          voyages = allVoyages;
-      }
+      }*/
    }
 
    [PunRPC]

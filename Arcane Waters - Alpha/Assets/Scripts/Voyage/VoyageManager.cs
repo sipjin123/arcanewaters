@@ -297,9 +297,9 @@ public class VoyageManager : MonoBehaviour {
             if (openVoyagesCount < Voyage.OPEN_VOYAGE_INSTANCES) {
                // Find the server with the least people
                Server bestServer = ServerNetwork.self.getServerWithLeastPlayers();
-
+               D.editorLog("Best server must create voyage intance", Color.green);
                // Create a new voyage instance on the chosen server
-               bestServer.photonView.RPC("CreateVoyageInstance", bestServer.view.owner);
+               //bestServer.photonView.RPC("CreateVoyageInstance", bestServer.view.owner);
             }
          });
       });
@@ -329,8 +329,9 @@ public class VoyageManager : MonoBehaviour {
             // Find the server with the least people
             Server bestServer = ServerNetwork.self.getServerWithLeastPlayers();
 
+            D.editorLog("Best server must create voyage intance", Color.green);
             // Create a new voyage instance on the chosen server
-            bestServer.photonView.RPC("CreateVoyageInstance", bestServer.view.owner, areaKey);
+            //bestServer.photonView.RPC("CreateVoyageInstance", bestServer.view.owner, areaKey);
          }
       }
    }

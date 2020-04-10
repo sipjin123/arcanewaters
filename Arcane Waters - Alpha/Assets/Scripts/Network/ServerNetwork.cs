@@ -65,10 +65,12 @@ public class ServerNetwork : MonoBehaviour {
 
       // If this player is claimed by a server, we have to return to that server
       foreach (Server server in servers) {
-         if (server.photonView.owner.CustomProperties.ContainsKey(PLAYER_CLAIM + userId)) {
-            bestServer = server;
+
+         D.editorLog("Server must select best server here", Color.green);
+         //if (server.photonView.owner.CustomProperties.ContainsKey(PLAYER_CLAIM + userId)) {
+         //   bestServer = server;
             break;
-         }
+         //}
       }
 
       if (bestServer == null) {
@@ -99,7 +101,8 @@ public class ServerNetwork : MonoBehaviour {
    }
 
    public void sendGlobalMessage (ChatInfo chatInfo) {
-      server.photonView.RPC("SendGlobalChat", PhotonTargets.All, chatInfo.chatId, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.senderId);
+      D.editorLog("Server must send global message", Color.green);
+      //server.photonView.RPC("SendGlobalChat", PhotonTargets.All, chatInfo.chatId, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.senderId);
    }
 
    protected void checkPhotonConnection () {
