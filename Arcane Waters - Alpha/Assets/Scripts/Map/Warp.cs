@@ -70,12 +70,6 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
             case DataField.WARP_TARGET_SPAWN_KEY:
                spawnTarget = field.v.Trim(' ');
                break;
-            case DataField.WARP_WIDTH_KEY:
-               _collider.size = new Vector2(field.floatValue, _collider.size.y);
-               break;
-            case DataField.WARP_HEIGHT_KEY:
-               _collider.size = new Vector2(_collider.size.x, field.floatValue);
-               break;
             case DataField.WARP_ARRIVE_FACING_KEY:
                if (field.tryGetDirectionValue(out Direction dir)) {
                   newFacingDirection = dir;
@@ -86,13 +80,46 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
                break;
          }
       }
+
+      updateArrow();
+   }
+
+   /// <summary>
+   /// Updates the arrow color and direction, based on this area type and target area type
+   /// </summary>
+   public void updateArrow () {
+      string thisArea = transform.GetComponentInParent<Area>()?.areaKey;
+      EditorType? thisType = thisArea == null ? null : AreaManager.self.getAreaEditorType(thisArea);
+
+      string dir = newFacingDirection.ToString().ToLower();
+      string color = "unrecognized";
+
+      if (thisType != null) {
+         if (thisType == EditorType.Sea) {
+            color = "blue";
+         } else {
+            color = "gold";
+         }
+      }
+
+      string spriteName = $"warp_{color}_{dir}";
+
+      Sprite arrowSprite = ImageManager.getSprite("Map/Warp Arrows/" + spriteName);
+      if (arrowSprite != null) {
+         SpriteRenderer ren = GetComponentInChildren<SpriteRenderer>();
+         if (ren != null) {
+            ren.sprite = arrowSprite;
+         }
+      } else {
+         D.warning("Could not find sprite for warp arrow. Target sprite name: " + spriteName);
+      }
    }
 
    public void setTreasureSite (int instanceId, TreasureSite treasureSite) {
       _treasureSites.Add(instanceId, treasureSite);
    }
 
-   public void removeTreasureSite(int instanceId) {
+   public void removeTreasureSite (int instanceId) {
       _treasureSites.Remove(instanceId);
    }
 

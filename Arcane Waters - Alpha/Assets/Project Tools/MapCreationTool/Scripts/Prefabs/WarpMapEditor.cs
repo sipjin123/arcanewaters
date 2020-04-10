@@ -10,25 +10,19 @@ namespace MapCreationTool
       private RectTransform boundsRect = null;
       [SerializeField]
       private Text text = null;
+      [SerializeField]
+      private SpriteRenderer arrowRen = null;
 
       private string targetMap = "";
       private string targetSpawn = "";
 
-      private float width = 1f;
-      private float height = 1f;
+      private float width = 3f;
+      private float height = 3f;
+
+      private Direction arriveFacing = Direction.North;
 
       public void dataFieldChanged (DataField field) {
-         if (field.k.CompareTo(DataField.WARP_WIDTH_KEY) == 0) {
-            if (field.tryGetFloatValue(out float w)) {
-               width = Mathf.Clamp(w, 0.1f, 100);
-               updateBoundsSize();
-            }
-         } else if (field.k.CompareTo(DataField.WARP_HEIGHT_KEY) == 0) {
-            if (field.tryGetFloatValue(out float h)) {
-               height = Mathf.Clamp(h, 0.1f, 100);
-               updateBoundsSize();
-            }
-         } else if (field.k.CompareTo(DataField.WARP_TARGET_MAP_KEY) == 0) {
+         if (field.k.CompareTo(DataField.WARP_TARGET_MAP_KEY) == 0) {
             if (field.tryGetIntValue(out int mapId)) {
                if (!Overlord.remoteMaps.maps.ContainsKey(mapId)) {
                   targetMap = "Unrecognized";
@@ -42,7 +36,28 @@ namespace MapCreationTool
          } else if (field.k.CompareTo(DataField.WARP_TARGET_SPAWN_KEY) == 0) {
             targetSpawn = field.v;
             updateText();
+         } else if (field.k.CompareTo(DataField.WARP_ARRIVE_FACING_KEY) == 0) {
+            if (field.tryGetDirectionValue(out Direction dir)) {
+               arriveFacing = dir;
+            }
          }
+
+         Sprite sprite = getArrowSprite(Tools.editorType, arriveFacing);
+         if (sprite != null) {
+            arrowRen.sprite = sprite;
+         }
+      }
+
+      public static Sprite getArrowSprite (EditorType editorType, Direction arriveFacing) {
+         string dir = arriveFacing.ToString().ToLower();
+         string color = "gold";
+         if (editorType == EditorType.Sea) {
+            color = "blue";
+         }
+
+         string spriteName = $"warp_{color}_{dir}";
+
+         return ImageManager.getSprite("Map/Warp Arrows/" + spriteName);
       }
 
       public override void createdInPalette () {

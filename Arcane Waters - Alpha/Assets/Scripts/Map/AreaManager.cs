@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using MapCreationTool.Serialization;
+using MapCreationTool;
 
 public class AreaManager : MonoBehaviour
 {
@@ -87,6 +88,13 @@ public class AreaManager : MonoBehaviour
       } else {
          return _seaAreaKeys.Contains(areaKey);
       }
+   }
+
+   public EditorType? getAreaEditorType (string areaKey) {
+      if (_areaKeyToMapInfo.TryGetValue(areaKey, out Map map)) {
+         return map.editorType;
+      }
+      return null;
    }
 
    public Area getArea (string areaKey) {

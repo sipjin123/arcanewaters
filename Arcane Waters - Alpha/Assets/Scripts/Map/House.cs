@@ -35,6 +35,8 @@ public class House : MonoBehaviour, IMapEditorDataReceiver
                break;
          }
       }
+
+      warp.updateArrow();
    }
 
    #region Private Variables

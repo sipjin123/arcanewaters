@@ -9852,8 +9852,8 @@ MonoBehaviour:
     sprite: {fileID: 3564856121727798196, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f,
       type: 3}
     sprites:
-    - {fileID: 6120081450217617434, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
     - {fileID: 3564856121727798196, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
+    - {fileID: 6120081450217617434, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
   - imageName: gold_icon
     imagePath: Assets/Sprites/Icons/gold_icon.png
     imagePathWithoutExtension: Assets/Sprites/Icons/gold_icon
@@ -23765,6 +23765,110 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 1531ddbf90c0f4845a221c983ee1d134, type: 3}
     sprites:
     - {fileID: 21300000, guid: 1531ddbf90c0f4845a221c983ee1d134, type: 3}
+  - imageName: warp_blue_east
+    imagePath: Assets/Sprites/Map/Warp Arrows/warp_blue_east.png
+    imagePathWithoutExtension: Assets/Sprites/Map/Warp Arrows/warp_blue_east
+    texture2D: {fileID: 2800000, guid: 32726afa33be5fb488e6bfe051bc6e35, type: 3}
+    sprite: {fileID: -653917525326507578, guid: 32726afa33be5fb488e6bfe051bc6e35,
+      type: 3}
+    sprites:
+    - {fileID: -653917525326507578, guid: 32726afa33be5fb488e6bfe051bc6e35, type: 3}
+    - {fileID: 9217267222270444178, guid: 32726afa33be5fb488e6bfe051bc6e35, type: 3}
+    - {fileID: 8725590348676145022, guid: 32726afa33be5fb488e6bfe051bc6e35, type: 3}
+    - {fileID: 3307859643104798221, guid: 32726afa33be5fb488e6bfe051bc6e35, type: 3}
+    - {fileID: -2119853792402241449, guid: 32726afa33be5fb488e6bfe051bc6e35, type: 3}
+    - {fileID: -7350821622715234917, guid: 32726afa33be5fb488e6bfe051bc6e35, type: 3}
+  - imageName: warp_blue_north
+    imagePath: Assets/Sprites/Map/Warp Arrows/warp_blue_north.png
+    imagePathWithoutExtension: Assets/Sprites/Map/Warp Arrows/warp_blue_north
+    texture2D: {fileID: 2800000, guid: 83fee2ffd65887d4db773e704e700242, type: 3}
+    sprite: {fileID: -9068868433721822131, guid: 83fee2ffd65887d4db773e704e700242,
+      type: 3}
+    sprites:
+    - {fileID: -9068868433721822131, guid: 83fee2ffd65887d4db773e704e700242, type: 3}
+    - {fileID: -6807544221445533396, guid: 83fee2ffd65887d4db773e704e700242, type: 3}
+    - {fileID: 6569925172840834698, guid: 83fee2ffd65887d4db773e704e700242, type: 3}
+    - {fileID: -1209558839604546653, guid: 83fee2ffd65887d4db773e704e700242, type: 3}
+    - {fileID: 7278796942166551181, guid: 83fee2ffd65887d4db773e704e700242, type: 3}
+    - {fileID: 4110602481474687782, guid: 83fee2ffd65887d4db773e704e700242, type: 3}
+  - imageName: warp_blue_south
+    imagePath: Assets/Sprites/Map/Warp Arrows/warp_blue_south.png
+    imagePathWithoutExtension: Assets/Sprites/Map/Warp Arrows/warp_blue_south
+    texture2D: {fileID: 2800000, guid: cd413ff6ac1456a438b5b446fde9af2d, type: 3}
+    sprite: {fileID: 4538287657747535571, guid: cd413ff6ac1456a438b5b446fde9af2d,
+      type: 3}
+    sprites:
+    - {fileID: 4538287657747535571, guid: cd413ff6ac1456a438b5b446fde9af2d, type: 3}
+    - {fileID: -649060575167649255, guid: cd413ff6ac1456a438b5b446fde9af2d, type: 3}
+    - {fileID: 3941301834347850164, guid: cd413ff6ac1456a438b5b446fde9af2d, type: 3}
+    - {fileID: 1709015257626586066, guid: cd413ff6ac1456a438b5b446fde9af2d, type: 3}
+    - {fileID: -5963093393027691473, guid: cd413ff6ac1456a438b5b446fde9af2d, type: 3}
+    - {fileID: 4063151986885047567, guid: cd413ff6ac1456a438b5b446fde9af2d, type: 3}
+  - imageName: warp_blue_west
+    imagePath: Assets/Sprites/Map/Warp Arrows/warp_blue_west.png
+    imagePathWithoutExtension: Assets/Sprites/Map/Warp Arrows/warp_blue_west
+    texture2D: {fileID: 2800000, guid: 428d780535918dd4e83384321dc792e7, type: 3}
+    sprite: {fileID: 2282469405631255969, guid: 428d780535918dd4e83384321dc792e7,
+      type: 3}
+    sprites:
+    - {fileID: 2282469405631255969, guid: 428d780535918dd4e83384321dc792e7, type: 3}
+    - {fileID: 8356549933926305583, guid: 428d780535918dd4e83384321dc792e7, type: 3}
+    - {fileID: -8039020426955232439, guid: 428d780535918dd4e83384321dc792e7, type: 3}
+    - {fileID: 7827032072116131817, guid: 428d780535918dd4e83384321dc792e7, type: 3}
+    - {fileID: 4543351260909760670, guid: 428d780535918dd4e83384321dc792e7, type: 3}
+    - {fileID: -7817639092399129183, guid: 428d780535918dd4e83384321dc792e7, type: 3}
+  - imageName: warp_gold_east
+    imagePath: Assets/Sprites/Map/Warp Arrows/warp_gold_east.png
+    imagePathWithoutExtension: Assets/Sprites/Map/Warp Arrows/warp_gold_east
+    texture2D: {fileID: 2800000, guid: e11148d06f275d5458a9932d93868323, type: 3}
+    sprite: {fileID: -3925167737418363914, guid: e11148d06f275d5458a9932d93868323,
+      type: 3}
+    sprites:
+    - {fileID: -3925167737418363914, guid: e11148d06f275d5458a9932d93868323, type: 3}
+    - {fileID: 4755273697035083434, guid: e11148d06f275d5458a9932d93868323, type: 3}
+    - {fileID: 365993545321335746, guid: e11148d06f275d5458a9932d93868323, type: 3}
+    - {fileID: -1889611425796451348, guid: e11148d06f275d5458a9932d93868323, type: 3}
+    - {fileID: 8513860876083818007, guid: e11148d06f275d5458a9932d93868323, type: 3}
+    - {fileID: 2407141071419205308, guid: e11148d06f275d5458a9932d93868323, type: 3}
+  - imageName: warp_gold_north
+    imagePath: Assets/Sprites/Map/Warp Arrows/warp_gold_north.png
+    imagePathWithoutExtension: Assets/Sprites/Map/Warp Arrows/warp_gold_north
+    texture2D: {fileID: 2800000, guid: 0ed179a4e0ed34f43bfa2675bc218aa3, type: 3}
+    sprite: {fileID: 2516951533569710653, guid: 0ed179a4e0ed34f43bfa2675bc218aa3,
+      type: 3}
+    sprites:
+    - {fileID: 2516951533569710653, guid: 0ed179a4e0ed34f43bfa2675bc218aa3, type: 3}
+    - {fileID: -121832474942963604, guid: 0ed179a4e0ed34f43bfa2675bc218aa3, type: 3}
+    - {fileID: -8789440611254711308, guid: 0ed179a4e0ed34f43bfa2675bc218aa3, type: 3}
+    - {fileID: -7656967522110238308, guid: 0ed179a4e0ed34f43bfa2675bc218aa3, type: 3}
+    - {fileID: 7141568200178772215, guid: 0ed179a4e0ed34f43bfa2675bc218aa3, type: 3}
+    - {fileID: -2427288885696067799, guid: 0ed179a4e0ed34f43bfa2675bc218aa3, type: 3}
+  - imageName: warp_gold_south
+    imagePath: Assets/Sprites/Map/Warp Arrows/warp_gold_south.png
+    imagePathWithoutExtension: Assets/Sprites/Map/Warp Arrows/warp_gold_south
+    texture2D: {fileID: 2800000, guid: ef6a0fa708f481e488d99b3a2bc119db, type: 3}
+    sprite: {fileID: -3090401022833343898, guid: ef6a0fa708f481e488d99b3a2bc119db,
+      type: 3}
+    sprites:
+    - {fileID: -3090401022833343898, guid: ef6a0fa708f481e488d99b3a2bc119db, type: 3}
+    - {fileID: -2440037947509037617, guid: ef6a0fa708f481e488d99b3a2bc119db, type: 3}
+    - {fileID: 8310383726343827305, guid: ef6a0fa708f481e488d99b3a2bc119db, type: 3}
+    - {fileID: 2186854378122279040, guid: ef6a0fa708f481e488d99b3a2bc119db, type: 3}
+    - {fileID: 3141043797649805299, guid: ef6a0fa708f481e488d99b3a2bc119db, type: 3}
+    - {fileID: -1673900029707850372, guid: ef6a0fa708f481e488d99b3a2bc119db, type: 3}
+  - imageName: warp_gold_west
+    imagePath: Assets/Sprites/Map/Warp Arrows/warp_gold_west.png
+    imagePathWithoutExtension: Assets/Sprites/Map/Warp Arrows/warp_gold_west
+    texture2D: {fileID: 2800000, guid: 8a2151c3aec9c49499415084a3c13e83, type: 3}
+    sprite: {fileID: 8960679386115532231, guid: 8a2151c3aec9c49499415084a3c13e83,
+      type: 3}
+    sprites:
+    - {fileID: 8960679386115532231, guid: 8a2151c3aec9c49499415084a3c13e83, type: 3}
+    - {fileID: 5925340789141041449, guid: 8a2151c3aec9c49499415084a3c13e83, type: 3}
+    - {fileID: -3643526222583712747, guid: 8a2151c3aec9c49499415084a3c13e83, type: 3}
+    - {fileID: -655194421447171966, guid: 8a2151c3aec9c49499415084a3c13e83, type: 3}
+    - {fileID: -8531305863334101855, guid: 8a2151c3aec9c49499415084a3c13e83, type: 3}
+    - {fileID: 4079763058071746949, guid: 8a2151c3aec9c49499415084a3c13e83, type: 3}
   - imageName: water
     imagePath: Assets/Sprites/Cargo/water.png
     imagePathWithoutExtension: Assets/Sprites/Cargo/water

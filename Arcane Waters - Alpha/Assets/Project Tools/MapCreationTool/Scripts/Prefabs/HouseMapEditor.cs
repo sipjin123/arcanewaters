@@ -8,6 +8,7 @@ namespace MapCreationTool
    {
       private SpriteOutline outline;
       private Text text;
+      private SpriteRenderer arrowRen;
 
       private string targetMap = "";
       private string targetSpawn = "";
@@ -15,6 +16,7 @@ namespace MapCreationTool
       private void Awake () {
          outline = GetComponent<SpriteOutline>();
          text = GetComponentInChildren<Text>();
+         arrowRen = transform.Find("Arrow").GetComponent<SpriteRenderer>();
       }
 
       public override void createdForPreview () {
@@ -40,6 +42,11 @@ namespace MapCreationTool
          } else if (field.k.CompareTo(DataField.HOUSE_TARGET_SPAWN_KEY) == 0) {
             targetSpawn = field.v;
             rewriteText();
+         }
+
+         Sprite sprite = WarpMapEditor.getArrowSprite(Tools.editorType, Direction.North);
+         if (sprite != null) {
+            arrowRen.sprite = sprite;
          }
       }
 
