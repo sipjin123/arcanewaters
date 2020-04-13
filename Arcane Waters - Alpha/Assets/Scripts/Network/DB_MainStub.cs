@@ -12,6 +12,17 @@ public class DB_MainStub : MonoBehaviour
 
    #endregion
 
+   public static List<ServerSqlData> getServerUpdateTime () {
+      return new List<ServerSqlData>();
+   }
+
+   public static List<ServerSqlData> getServerContent (List<ServerSqlData> serverDataList) {
+      return new List<ServerSqlData>();
+   }
+
+   public static void setServerContent (ServerSqlData serverSqlData) {
+   }
+
    public static void updateCompanionExp (int xmlId, int userId, int exp) {
    }
 

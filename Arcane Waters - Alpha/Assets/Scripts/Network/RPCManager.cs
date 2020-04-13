@@ -2709,7 +2709,7 @@ public class RPCManager : NetworkBehaviour {
 
             // Send the invitation
 
-            D.editorLog("Invitee server must hnadle group invite voyage", Color.green);
+            D.editorLog("Invitee server must handle group invite voyage", Color.green);
             //inviteeServer.photonView.RPC("HandleVoyageGroupInvite", inviteeServer.view.owner, voyageGroup.groupId, _player.entityName, inviteeInfo.userId);
 
             // Write in the inviter chat that the invitation has been sent

@@ -25,6 +25,96 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
+   #region Server Communications
+
+   public static new List<ServerSqlData> getServerUpdateTime () {
+      List<ServerSqlData> rawDataList = new List<ServerSqlData>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT svrPort, srvAddress, svrDeviceName, updateTime FROM arcane.server_status", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  ServerSqlData newEntry = new ServerSqlData(dataReader);
+                  rawDataList.Add(newEntry);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return rawDataList;
+   }
+
+   public static new List<ServerSqlData> getServerContent (List<ServerSqlData> serverDataList) {
+      List<ServerSqlData> rawDataList = new List<ServerSqlData>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT openAreas, voyages, connectedUserIds, openAreas FROM arcane.server_status WHERE (svrDeviceName=@svrDeviceName and srvAddress=@srvAddress and svrPort=@svrPort)", conn)) {
+
+            conn.Open();
+            foreach (ServerSqlData serverData in serverDataList) {
+               cmd.Parameters.Clear();
+               cmd.Parameters.AddWithValue("@svrDeviceName", serverData.deviceName);
+               cmd.Parameters.AddWithValue("@svrPort", serverData.port);
+               cmd.Parameters.AddWithValue("@srvAddress", serverData.ip);
+               cmd.Prepare();
+
+               // Create a data reader and Execute the command
+               using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+                  while (dataReader.Read()) {
+                     ServerSqlData newEntry = new ServerSqlData();
+                     newEntry.updateServerData(dataReader, serverData);
+                     rawDataList.Add(newEntry);
+                  }
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return rawDataList;
+   }
+
+   public static new void setServerContent (ServerSqlData serverSqlData) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO server_status (svrPort, svrDeviceName, srvAddress, updateTime, connectedUserIds, openAreas, voyages, globalMessage) " +
+            "VALUES(@svrPort, @svrDeviceName, @srvAddress, @updateTime, @connectedUserIds,@openAreas, @voyages, @globalMessage) " +
+            "ON DUPLICATE KEY UPDATE openAreas = @openAreas, voyages = @voyages, connectedUserIds = @connectedUserIds, globalMessage = @globalMessage, updateTime = @updateTime", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@svrPort", serverSqlData.port);
+            cmd.Parameters.AddWithValue("@svrDeviceName", serverSqlData.deviceName);
+            cmd.Parameters.AddWithValue("@srvAddress", serverSqlData.ip);
+
+            cmd.Parameters.AddWithValue("@updateTime", serverSqlData.latestUpdate);
+            cmd.Parameters.AddWithValue("@globalMessage", "test");
+
+            cmd.Parameters.AddWithValue("@openAreas", serverSqlData.getOpenAreas());
+            cmd.Parameters.AddWithValue("@voyages", serverSqlData.getRawVoyage());
+            cmd.Parameters.AddWithValue("@connectedUserIds", serverSqlData.getConnectedUsers());
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   #endregion
+
    #region Abilities
 
    public static new void updateAbilitiesData (int userID, AbilitySQLData abilityData) {
