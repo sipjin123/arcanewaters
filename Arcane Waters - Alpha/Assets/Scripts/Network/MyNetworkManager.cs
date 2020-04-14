@@ -227,7 +227,7 @@ public class MyNetworkManager : NetworkManager {
             // Check if we need to redirect to a different server
             Server bestServer = ServerNetwork.self.findBestServerForConnectingPlayer(previousAreaKey, userInfo.username, userInfo.userId,
                conn.address, userObjects.isSinglePlayer, voyageId);
-            if (bestServer != null && !bestServer.view.isMine) {
+            if (bestServer != null && !bestServer.isLocalServer) {
                // Send a Redirect message to the client
                RedirectMessage redirectMessage = new RedirectMessage(Global.netId, bestServer.ipAddress, bestServer.port);
                conn.Send(redirectMessage);

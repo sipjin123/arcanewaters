@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 
+[Serializable]
 public class ChatInfo {
    #region Public Variables
 

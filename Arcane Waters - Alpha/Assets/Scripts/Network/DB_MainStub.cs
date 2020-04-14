@@ -478,7 +478,7 @@ public class DB_MainStub : MonoBehaviour
       return 0;
    }
 
-   public static List<ChatInfo> getChat (ChatInfo.Type chatType, int minutes) {
+   public static List<ChatInfo> getChat (ChatInfo.Type chatType, int seconds, bool hasInterval, int limit) {
       return new List<ChatInfo>();
    }
 

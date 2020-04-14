@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 459979971}
   - component: {fileID: 459979970}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: Server
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -150,8 +150,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65dec48b736c5f64a9c2aed584daeeb0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  port: 7777
-  serverDataList: []
+  myDeviceName: Sever_tralala
+  ourIp: 127.0.0.1
+  ourPort: 7777
+  serverPrefab: {fileID: 114492173628040236, guid: 6e1031bf6f6972743b49318ae91300be,
+    type: 3}
   ourServerData:
     deviceName: 
     port: 0
@@ -159,10 +162,13 @@ MonoBehaviour:
     voyageList: []
     connectedUserIds: 
     openAreas: []
+    voyageInvites: []
+  chatInfoList: []
+  serverDataList: []
   forceLocalDB: 1
   manualSync: 0
-  hasInitData: 0
-  myDeviceName: 
+  autoStart: 1
+  overrideDeviceName: 1
 --- !u!4 &459979971
 Transform:
   m_ObjectHideFlags: 0

@@ -58,7 +58,7 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT openAreas, voyages, connectedUserIds, openAreas FROM arcane.server_status WHERE (svrDeviceName=@svrDeviceName and srvAddress=@srvAddress and svrPort=@svrPort)", conn)) {
+            "SELECT openAreas, voyages, connectedUserIds, voyageInvites, updateTime, openAreas FROM arcane.server_status WHERE (svrDeviceName=@svrDeviceName and srvAddress=@srvAddress and svrPort=@svrPort)", conn)) {
 
             conn.Open();
             foreach (ServerSqlData serverData in serverDataList) {
@@ -88,9 +88,9 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO server_status (svrPort, svrDeviceName, srvAddress, updateTime, connectedUserIds, openAreas, voyages, globalMessage) " +
-            "VALUES(@svrPort, @svrDeviceName, @srvAddress, @updateTime, @connectedUserIds,@openAreas, @voyages, @globalMessage) " +
-            "ON DUPLICATE KEY UPDATE openAreas = @openAreas, voyages = @voyages, connectedUserIds = @connectedUserIds, globalMessage = @globalMessage, updateTime = @updateTime", conn)) {
+            "INSERT INTO server_status (svrPort, svrDeviceName, srvAddress, updateTime, connectedUserIds, openAreas, voyages, voyageInvites, globalMessage) " +
+            "VALUES(@svrPort, @svrDeviceName, @srvAddress, @updateTime, @connectedUserIds,@openAreas, @voyages, @voyageInvites, @globalMessage) " +
+            "ON DUPLICATE KEY UPDATE openAreas = @openAreas, voyages = @voyages, connectedUserIds = @connectedUserIds, voyageInvites = @voyageInvites, globalMessage = @globalMessage, updateTime = @updateTime", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -103,6 +103,7 @@ public class DB_Main : DB_MainStub
 
             cmd.Parameters.AddWithValue("@openAreas", serverSqlData.getOpenAreas());
             cmd.Parameters.AddWithValue("@voyages", serverSqlData.getRawVoyage());
+            cmd.Parameters.AddWithValue("@voyageInvites", serverSqlData.getRawVoyageInvites());
             cmd.Parameters.AddWithValue("@connectedUserIds", serverSqlData.getConnectedUsers());
 
             // Execute the command
@@ -3243,13 +3244,22 @@ public class DB_Main : DB_MainStub
       return chatId;
    }
 
-   public static new List<ChatInfo> getChat (ChatInfo.Type chatType, int seconds) {
+   public static new List<ChatInfo> getChat (ChatInfo.Type chatType, int seconds, bool hasInterval = true, int limit = 0) {
+      string secondsInterval = "AND time > NOW() - INTERVAL " + seconds + " SECOND";
+      if (!hasInterval) {
+         secondsInterval = "";
+      }
+      string limitValue = " limit " + limit;
+      if (limit < 1) {
+         limitValue = "";
+      }
+
       List<ChatInfo> list = new List<ChatInfo>();
 
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM chat_log JOIN users USING (usrId) WHERE chatType=@chatType AND time > NOW() - INTERVAL " + seconds + " SECOND ORDER BY chtId DESC", conn)) {
+            "SELECT * FROM chat_log JOIN users USING (usrId) WHERE chatType=@chatType "+ secondsInterval + " ORDER BY chtId DESC" + limitValue, conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@chatType", chatType);

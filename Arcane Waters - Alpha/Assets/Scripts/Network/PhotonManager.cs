@@ -47,8 +47,13 @@ public class PhotonManager : Photon.PunBehaviour {
    public override void OnJoinedRoom () {
       D.debug("Joined room: " + PhotonNetwork.room);
 
+      D.editorLog("Created the photon server here", Color.green);
+
+      ServerWebRequests.self.initializeServers();
+      // TODO: Check if alternative logic is working properly
+      /*
       GameObject server = PhotonNetwork.Instantiate("Server", Vector3.zero, Quaternion.identity, 0);
-      server.name = "Server";
+      server.name = "Server";*/
    }
 
    protected string getServerRoomName () {

@@ -9,30 +9,57 @@ using System.Xml.Serialization;
 using System.Text;
 using System.Xml;
 using Random = UnityEngine.Random;
+using System.Linq;
 
 public class ServerWebRequests : MonoBehaviour
 {
    #region Public Variables
 
-   // Our server port
-   public int ourPort;
-
-   // Server data of all servers
-   public List<ServerSqlData> serverDataList = new List<ServerSqlData>();
-
-   // Cached info of our local server data
-   public ServerSqlData ourServerData = new ServerSqlData();
+   // Self
+   public static ServerWebRequests self;
 
    // The device name of our server
    public string myDeviceName;
 
+   // Our server ip
+   public string ourIp;
+
+   // Our server port
+   public int ourPort;
+
+   // The prefab to spawn
+   public Server serverPrefab;
+
+   // Cached info of our local server data
+   public ServerSqlData ourServerData = new ServerSqlData();
+
+   // The chat list existing in the database
+   public List<ChatInfo> chatInfoList = new List<ChatInfo>();
+
+   // Server data of all servers
+   public List<ServerSqlData> serverDataList = new List<ServerSqlData>();
+
    // Editor Flags
    public bool forceLocalDB;
    public bool manualSync;
+   public bool autoStart;
+   public bool overrideDeviceName;
 
+   Vector2 scrollPosition;
    #endregion
 
    private void Awake () {
+      self = this;
+   }
+
+   private void Start () {
+      if (autoStart) {
+         initializeServers();
+      }
+   }
+
+   public void initializeServers () {
+      initializeLocalServer();
       if (forceLocalDB) {
          DB_Main.setServer("127.0.0.1");
       }
@@ -42,9 +69,107 @@ public class ServerWebRequests : MonoBehaviour
       }
    }
 
+   private void addNewServer (ServerSqlData serverData, bool isLocal) {
+      serverDataList.Add(serverData);
+      Server server = Instantiate(serverPrefab, Vector3.zero, Quaternion.identity); //PhotonNetwork.Instantiate("Server", Vector3.zero, Quaternion.identity, 0);
+      server.gameObject.name = "Server_" + serverData.deviceName;
+
+      server.deviceName = serverData.deviceName;
+      server.ipAddress = serverData.ip;
+      server.port = serverData.port;
+
+      server.voyages = serverData.voyageList;
+      server.openAreas = serverData.openAreas.ToArray();
+      if (serverData.connectedUserIds.Count < 1) {
+         server.connectedUserIds = new HashSet<int>();
+      } else {
+         server.connectedUserIds = new HashSet<int>(serverData.connectedUserIds);
+      }
+
+      if (ServerNetwork.self!= null) {
+         if (isLocal) {
+            ServerNetwork.self.server = server;
+            ServerNetwork.self.server.setAsLocalServer();
+         } else {
+            ServerNetwork.self.serverList.Add(server);
+            ServerNetwork.self.servers.Add(server);
+         }
+      }
+   }
+
+   private void initializeLocalServer () {
+      if (!overrideDeviceName) {
+         myDeviceName = SystemInfo.deviceName;
+      }
+
+      ServerSqlData newSqlData = new ServerSqlData {
+         ip = ourIp,
+         port = ourPort,
+         deviceName = myDeviceName
+      };
+
+      // If server is ours and just initialized, clear data
+      updateSpecificServer(newSqlData, false);
+
+      // Keep reference to self
+      ourServerData = newSqlData;
+
+      addNewServer(newSqlData, true);
+   }
+
    private void OnGUI () {
       GUILayout.BeginHorizontal();
       {
+         scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUILayout.Width(600), GUILayout.Height(300));
+         GUILayout.BeginHorizontal();
+         {
+            foreach (ServerSqlData server in serverDataList) {
+               GUILayout.BeginVertical();
+               if (GUILayout.Button("Update Server: " + server.deviceName)) {
+                  updateSpecificServer(server, true);
+               }
+               GUILayout.Space(20);
+               foreach (int ids in server.connectedUserIds) {
+                  GUILayout.Box("User: " + ids);
+               }
+               GUILayout.Space(20);
+               foreach (Voyage voyages in server.voyageList) {
+                  GUILayout.Box("Voyages: " + voyages.voyageId);
+               }
+               GUILayout.EndVertical();
+            }
+         }
+         GUILayout.EndHorizontal();
+         GUILayout.EndScrollView();
+      }
+      GUILayout.EndHorizontal();
+
+      GUILayout.BeginHorizontal();
+      {
+         GUILayout.BeginVertical();
+         {
+            if (GUILayout.Button("Update local server")) {
+               D.editorLog("Updating current server data", Color.green);
+               updateSpecificServer(ourServerData, true);
+            }
+            if (GUILayout.Button("Create a voyage")) {
+               createLocalVoyage();
+            }
+            if (GUILayout.Button("Create a user")) {
+               createLocalPlayers();
+            }
+            if (GUILayout.Button("Create an area")) {
+               createOpenArea();
+            }
+            if (GUILayout.Button("Create an invite")) {
+               if (ourServerData.connectedUserIds.Count > 0 && ourServerData.voyageList.Count > 0) {
+                  createLocalInvite();
+               } else {
+                  D.editorLog("No players or voyage for invite", Color.red);
+               }
+            }
+         }
+         GUILayout.EndVertical();
          GUILayout.BeginVertical();
          {
             if (GUILayout.Button("Manual Check Updates")) {
@@ -56,24 +181,11 @@ public class ServerWebRequests : MonoBehaviour
             if (GUILayout.Button("Generate a new random server")) {
                createRandomServer();
             }
-            if (GUILayout.Button("Update local server")) {
-               D.editorLog("Updating current server data", Color.green);
-               updateSpecificServer(ourServerData, true);
-            }
             if (GUILayout.Button("Update a Random Server")) {
                updateAnyRandomServer();
             }
             if (GUILayout.Button("Clear Server Data")) {
                serverDataList.Clear();
-            }
-         }
-         GUILayout.EndVertical();
-         GUILayout.BeginVertical();
-         {
-            foreach (ServerSqlData server in serverDataList) {
-               if (GUILayout.Button("Update Server: " + server.deviceName)) {
-                  updateSpecificServer(server, true);
-               }
             }
          }
          GUILayout.EndVertical();
@@ -129,16 +241,21 @@ public class ServerWebRequests : MonoBehaviour
       });
    }
 
-   private void updateSpecificServer (ServerSqlData serverData, bool generateRandomData) {
-      if (generateRandomData) {
-         serverData.voyageList = generateRandomVoyage();
-         serverData.connectedUserIds = generateRandomUserIds();
-         serverData.openAreas = generateRandomArea().ToArray();
-      } else {
-         serverData.voyageList = new List<Voyage>();
-         serverData.connectedUserIds = new List<int>();
-         serverData.openAreas = new string[0];
+   private void updateSpecificServer (ServerSqlData serverData, bool generateRandomData, bool retainData = false) {
+      if (!retainData) {
+         if (generateRandomData) {
+            serverData.voyageList = generateRandomVoyage();
+            serverData.connectedUserIds = generateRandomUserIds();
+            serverData.openAreas = generateRandomArea();
+            serverData.voyageInvites = generateVoyageInviteForServer(serverData);
+         } else {
+            serverData.voyageList = new List<Voyage>();
+            serverData.connectedUserIds = new List<int>();
+            serverData.openAreas = new List<string>();
+            serverData.voyageInvites = new List<VoyageInviteData>();
+         }
       }
+
       serverData.latestUpdate = DateTime.UtcNow;
       D.editorLog("Updating any random server data: " + serverData.deviceName + " - " + serverData.port, Color.green);
 
@@ -151,46 +268,41 @@ public class ServerWebRequests : MonoBehaviour
    }
 
    private void checkServerUpdates () {
-      myDeviceName = SystemInfo.deviceName;
       List<ServerSqlData> serversToUpdate = new List<ServerSqlData>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Fetch all server update info
          List<ServerSqlData> serverListUpdateTime = DB_Main.getServerUpdateTime();
+         chatInfoList = DB_Main.getChat(ChatInfo.Type.Global, 0, false, 20);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (ServerSqlData newSqlData in serverListUpdateTime) {
                if (newSqlData.deviceName == myDeviceName) {
-                  ServerSqlData existingSqlData = serverDataList.Find(_ => _.deviceName == newSqlData.deviceName && _.port == newSqlData.port);
-                  if (existingSqlData == null) {
-                     // If server is ours and just initialized, clear data
-                     updateSpecificServer(newSqlData, false);
-                     serverDataList.Add(newSqlData);
-                     ourServerData = newSqlData;
-
-                     D.editorLog("Server is initializing local", Color.green);
-                  } else {
+                  ServerSqlData existingSqlData = serverDataList.Find(_ => _.deviceName == newSqlData.deviceName && _.port == newSqlData.port && _.ip == newSqlData.ip);
+                  if (existingSqlData != null) {
                      // Update our data to make sure we are in sync with the database
-                     if (newSqlData.latestUpdate > existingSqlData.latestUpdate) {
-                        D.editorLog("Server is fetching modified local server data", Color.green);
-                        serversToUpdate.Add(newSqlData);
+                     TimeSpan updateSpan = (existingSqlData.latestUpdate - newSqlData.latestUpdate);
+                     if (updateSpan.TotalSeconds > 1) {
+                        D.editorLog("Server is not sync! Resent Server data: " + existingSqlData.latestUpdate + " - " + newSqlData.latestUpdate, Color.green);
+                        updateSpecificServer(ourServerData, false, true);
                      }
-                  }
+                  } 
                } else {
                   string currentKey = newSqlData.port + "_" + newSqlData.deviceName;
 
-                  ServerSqlData existingSqlData = serverDataList.Find(_ => _.deviceName == newSqlData.deviceName && _.port == newSqlData.port);
+                  ServerSqlData existingSqlData = serverDataList.Find(_ => _.deviceName == newSqlData.deviceName && _.port == newSqlData.port && _.ip == newSqlData.ip);
                   if (existingSqlData != null) {
                      // Update the server data if it was modified
-                     if (existingSqlData.latestUpdate < newSqlData.latestUpdate) {
+                     if (newSqlData.latestUpdate > existingSqlData.latestUpdate) {
                         D.editorLog("The server: " + newSqlData.deviceName + " has updated its data from: " + existingSqlData.latestUpdate + " to " + newSqlData.latestUpdate, Color.green);
                         serversToUpdate.Add(existingSqlData);
                      } 
                   } else {
                      // Add server data if non existent to server data list
                      D.editorLog("This server is New, Caching now: " + newSqlData.port + "_" + newSqlData.deviceName + " === " + DateTime.Parse(PlayerPrefs.GetString(currentKey, DateTime.UtcNow.ToString())), Color.green);
-                     serverDataList.Add(newSqlData);
+                   
                      serversToUpdate.Add(newSqlData);
+                     addNewServer(newSqlData, false);
                   }
                }
             }
@@ -206,21 +318,27 @@ public class ServerWebRequests : MonoBehaviour
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (ServerSqlData newSqlData in serverListContent) {
-               ServerSqlData existingData = serverDataList.Find(_ => _.deviceName == newSqlData.deviceName && _.port == newSqlData.port);
+               ServerSqlData existingData = serverDataList.Find(_ => _.deviceName == newSqlData.deviceName && _.port == newSqlData.port && _.ip == newSqlData.ip);
                if (existingData != null) {
                   // Assign the content of the recently updated servers
                   existingData.voyageList = newSqlData.voyageList;
                   existingData.connectedUserIds = newSqlData.connectedUserIds;
                   existingData.openAreas = newSqlData.openAreas;
+                  existingData.voyageInvites = newSqlData.voyageInvites;
+                  if (existingData.latestUpdate != newSqlData.latestUpdate) {
+                     D.editorLog("Overwriting dates from: " + existingData.latestUpdate, Color.yellow);
+                     D.editorLog("Overwriting dates to: " + newSqlData.latestUpdate, Color.yellow);
+                  }
                   existingData.latestUpdate = newSqlData.latestUpdate;
+                  overwriteServerData(newSqlData);
 
                   // Keep our local cache to self updated
-                  if (existingData.deviceName == myDeviceName && existingData.port == ourPort) {
+                  if (existingData.deviceName == myDeviceName && existingData.port == ourPort && existingData.ip == ourIp) {
                      ourServerData = existingData;
                   }
                } else {
                   // Fail safe code, assign the missing data incase it is missing
-                  if (newSqlData.deviceName == myDeviceName && newSqlData.port == ourPort) {
+                  if (newSqlData.deviceName == myDeviceName && newSqlData.port == ourPort && existingData.ip == ourIp) {
                      ourServerData = newSqlData;
                   }
                   serverDataList.Add(newSqlData);
@@ -228,6 +346,26 @@ public class ServerWebRequests : MonoBehaviour
             }
          });
       });
+   }
+
+   private void overwriteServerData (ServerSqlData newSqlData) {
+      if (ServerNetwork.self != null) {
+         Server existingServer = ServerNetwork.self.servers.ToList().Find(_ => _.deviceName == newSqlData.deviceName && _.ipAddress == newSqlData.ip && _.port == newSqlData.port);
+         if (existingServer != null) {
+            existingServer.openAreas = newSqlData.openAreas.ToArray();
+            existingServer.voyages = newSqlData.voyageList;
+            existingServer.connectedUserIds = new HashSet<int>(newSqlData.connectedUserIds);
+            D.editorLog("Successful Update! " + newSqlData.deviceName, Color.green);
+         } else {
+            StartCoroutine(CO_ResetServerData(newSqlData));
+            D.editorLog("Missing server, it is not existing yet: " + newSqlData.deviceName + " - " + newSqlData.ip, Color.green);
+         }
+      }
+   }
+
+   private IEnumerator CO_ResetServerData (ServerSqlData newSqlData) {
+      yield return new WaitForSeconds(.25f);
+      overwriteServerData(newSqlData);
    }
 
    private ServerSqlData createRandomData () {
@@ -243,10 +381,68 @@ public class ServerWebRequests : MonoBehaviour
       newData.latestUpdate = DateTime.UtcNow;
 
       newData.voyageList = generateRandomVoyage();
-      newData.openAreas = generateRandomArea().ToArray();
+      newData.openAreas = generateRandomArea();
       newData.connectedUserIds = generateRandomUserIds();
+      newData.voyageInvites = generateVoyageInviteForServer(newData);
 
       return newData;
+   }
+
+   private void createLocalVoyage () {
+      string voyageName = "voyage_" + Random.Range(1, 1000);
+      int biomeCount = Enum.GetValues(typeof(Biome.Type)).Length;
+
+      Voyage newVoyage = new Voyage {
+         areaKey = voyageName,
+         biome = (Biome.Type) Random.Range(1, biomeCount - 1),
+         voyageId = Random.Range(1, 1000)
+      };
+
+      ourServerData.voyageList.Add(newVoyage);
+      if (ServerNetwork.self != null) {
+         ServerNetwork.self.server.voyages = ourServerData.voyageList;
+      }
+      updateSpecificServer(ourServerData, false, true);
+   }
+
+   private void createLocalPlayers () {
+      int newUserId = Random.Range(1, 1000);
+      ourServerData.connectedUserIds.Add(newUserId);
+      if (ServerNetwork.self != null) {
+         ServerNetwork.self.server.connectedUserIds.Add(newUserId);
+      }
+      updateSpecificServer(ourServerData, false, true);
+   }
+
+   private void createOpenArea () {
+      string newArea = "area_" + Random.Range(1, 1000);
+      ourServerData.openAreas.Add(newArea);
+      if (ServerNetwork.self != null) {
+         ServerNetwork.self.server.openAreas = ourServerData.openAreas.ToArray();
+      }
+      updateSpecificServer(ourServerData, false, true);
+   }
+
+   private void createLocalInvite () {
+      ourServerData.voyageInvites = generateVoyageInviteForServer(ourServerData);
+      updateSpecificServer(ourServerData, false, true);
+   }
+
+   private List<VoyageInviteData> generateVoyageInviteForServer (ServerSqlData serverSelected) {
+      List<VoyageInviteData> newInviteList = new List<VoyageInviteData>();
+      int inviteeId = serverSelected.connectedUserIds[0];
+      string inviterName = "Player_";
+      for (int i = 0; i < 5; i++) {
+         inviterName += _alphabets[Random.Range(1, _alphabets.Length)];
+      }
+      int groupId = serverSelected.voyageList[0].voyageId;
+
+      newInviteList.Add(new VoyageInviteData { 
+         inviteeId = inviteeId,
+         inviterName = inviterName,
+         voyageGroupId = groupId
+      });
+      return newInviteList;
    }
 
    private List<Voyage> generateRandomVoyage () {
