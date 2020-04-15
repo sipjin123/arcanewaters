@@ -20,6 +20,22 @@ public class DB_MainStub : MonoBehaviour
       return new List<ServerSqlData>();
    }
 
+   public static void setServerVoyageCreation (PendingVoyageCreation voyageCreation, DateTime dateTime, int id) {
+
+   }
+
+   public static List<PendingVoyageCreation> getPendingVoyageCreations () {
+      return new List<PendingVoyageCreation>();
+   }
+
+   public static ChatInfo getLatestChatInfo () {
+      return new ChatInfo();
+   }
+
+   public static void removeServerVoyageCreation (int id) {
+
+   }
+
    public static void setServerContent (ServerSqlData serverSqlData) {
    }
 
@@ -478,7 +494,7 @@ public class DB_MainStub : MonoBehaviour
       return 0;
    }
 
-   public static List<ChatInfo> getChat (ChatInfo.Type chatType, int seconds, bool hasInterval, int limit) {
+   public static List<ChatInfo> getChat (ChatInfo.Type chatType, int seconds, bool hasInterval = true, int limit = 0) {
       return new List<ChatInfo>();
    }
 

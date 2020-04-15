@@ -193,13 +193,12 @@ public class Server : MonoBehaviour {//Photon.PunBehaviour {
       }
    }
 
-   [PunRPC]
    public void CreateVoyageInstance () {
       VoyageManager.self.createVoyageInstance();
    }
 
-   [PunRPC]
    public void CreateVoyageInstance (string areaKey) {
+      D.editorLog("Creating new voyage: " + areaKey, Color.green);
       VoyageManager.self.createVoyageInstance(areaKey);
    }
 

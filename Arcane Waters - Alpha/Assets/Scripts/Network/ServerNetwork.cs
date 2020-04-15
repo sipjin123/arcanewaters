@@ -189,6 +189,9 @@ public class ServerNetwork : MonoBehaviour {
    }
 
    protected IEnumerator CO_checkPhotonConnection () {
+      D.editorLog("Checking Deprecated Photon Room is null", Color.green);
+      yield return new WaitForSeconds(.1f);
+      /*
       // If we're not running a server, or already in a Photon room, we're done
       if (!NetworkServer.active || PhotonNetwork.room != null) {
          yield break;
@@ -203,7 +206,7 @@ public class ServerNetwork : MonoBehaviour {
          PhotonNetwork.Disconnect();
          yield return new WaitForSeconds(3f);
          MyNetworkManager.self.connectToPhotonMaster();
-      }
+      }*/
    }
 
    #region Private Variables

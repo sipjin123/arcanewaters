@@ -48,6 +48,10 @@ public class ChatInfo {
 
    #endregion
 
+   public ChatInfo () {
+
+   }
+
    public ChatInfo (int chatId, string text, DateTime chatTime, Type messageType, string sender = "", int senderId = 0) {
       this.chatId = chatId;
       this.text = text;

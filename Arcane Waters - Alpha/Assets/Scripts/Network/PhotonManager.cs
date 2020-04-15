@@ -20,16 +20,20 @@ public class PhotonManager : Photon.PunBehaviour {
    }
 
    public override void OnConnectedToMaster () {
+      D.editorLog("OnConnectedToMaster", Color.magenta);
+      /*
       Debug.Log("Connected to Master!"); 
 
       if (MyNetworkManager.self.telepathy.port == 7777) {
          createServerRoom();
       } else {
          PhotonNetwork.JoinRoom(getServerRoomName());
-      }
+      }*/
    }
 
    public void createServerRoom () {
+      D.editorLog("createServerRoom", Color.magenta);
+      /*
       RoomOptions newRoomOptions = new RoomOptions();
       newRoomOptions.IsVisible = true;
       newRoomOptions.IsOpen = true;
@@ -37,7 +41,7 @@ public class PhotonManager : Photon.PunBehaviour {
       newRoomOptions.CustomRoomProperties = new ExitGames.Client.Photon.Hashtable();
       newRoomOptions.CustomRoomProperties.Add("s", "for example level name");
       newRoomOptions.CustomRoomPropertiesForLobby = new string[] { "s" }; // makes level name accessible in a room list in the lobby
-      PhotonNetwork.CreateRoom(getServerRoomName(), newRoomOptions, null);
+      PhotonNetwork.CreateRoom(getServerRoomName(), newRoomOptions, null);*/
    }
 
    public override void OnCreatedRoom () {
@@ -45,11 +49,13 @@ public class PhotonManager : Photon.PunBehaviour {
    }
 
    public override void OnJoinedRoom () {
+      D.editorLog("OnJoinedRoom", Color.magenta);
+      /*
       D.debug("Joined room: " + PhotonNetwork.room);
 
       D.editorLog("Created the photon server here", Color.green);
 
-      ServerWebRequests.self.initializeServers();
+      ServerWebRequests.self.initializeServers();*/
       // TODO: Check if alternative logic is working properly
       /*
       GameObject server = PhotonNetwork.Instantiate("Server", Vector3.zero, Quaternion.identity, 0);

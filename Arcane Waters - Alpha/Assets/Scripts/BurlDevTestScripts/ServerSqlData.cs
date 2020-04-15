@@ -63,6 +63,16 @@ public class ServerSqlData {
       return sb.ToString();
    }
 
+   public static string getRawPendingVoyageCreation (List<PendingVoyageCreation> voyageCreationList) {
+      XmlSerializer ser = new XmlSerializer(voyageCreationList.GetType());
+      StringBuilder sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, voyageCreationList);
+      }
+
+      return sb.ToString();
+   }
+
    public string getConnectedUsers () {
       XmlSerializer ser = new XmlSerializer(connectedUserIds.GetType());
       StringBuilder sb = new StringBuilder();
@@ -89,7 +99,12 @@ public class ServerSqlData {
       string[] openAreas = Util.xmlLoad<string[]>(DataUtil.getString(dataReader, "openAreas"));
       List<Voyage> voyages = Util.xmlLoad<List<Voyage>>(DataUtil.getString(dataReader, "voyages"));
       List<int> connectedUsers = Util.xmlLoad<List<int>>(DataUtil.getString(dataReader, "connectedUserIds"));
-      List<VoyageInviteData> voyageInvites = Util.xmlLoad<List<VoyageInviteData>>(DataUtil.getString(dataReader, "voyageInvites"));
+      List<VoyageInviteData> voyageInvites = new List<VoyageInviteData>();
+      if (DataUtil.getString(dataReader, "voyageInvites").Length > 1) {
+         voyageInvites = Util.xmlLoad<List<VoyageInviteData>>(DataUtil.getString(dataReader, "voyageInvites"));
+      } else {
+         voyageInvites = new List<VoyageInviteData>();
+      }
 
       this.latestUpdate = DateTime.Parse(DataUtil.getString(dataReader, "updateTime"));
 
@@ -117,7 +132,40 @@ public class VoyageInviteData {
    // The voyage group id of the invite
    public int voyageGroupId;
 
+   // The status of the invite
+   public InviteStatus inviteStatus;
+
    public VoyageInviteData () {
 
    }
+}
+
+[Serializable]
+public class PendingVoyageCreation {
+   // Determines if the creation is still pending
+   public bool isPending = false;
+
+   // The area key of the voyage
+   public string areaKey;
+
+   // The name of the server
+   public string serverName = "";
+
+   // The Ip of the server
+   public string serverIp = "";
+
+   // The port of the server
+   public int serverPort;
+
+   // The update time of the entry
+   public DateTime updateTime;
+
+   // The xml id of this entry
+   public int id;
+}
+
+public enum InviteStatus {
+   Pending = 0,
+   Accepted = 1,
+   Declinded = 2,
 }

@@ -114,6 +114,115 @@ public class DB_Main : DB_MainStub
       }
    }
 
+   public static new List<PendingVoyageCreation> getPendingVoyageCreations () {
+      List<PendingVoyageCreation> newVoyageList = new List<PendingVoyageCreation>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane.pending_voyage_creation where isPending = 1", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  PendingVoyageCreation voyageData = new PendingVoyageCreation {
+                     areaKey = dataReader.GetString("areaKey"),
+                     serverIp = dataReader.GetString("srvAddress"),
+                     serverName = dataReader.GetString("svrDeviceName"),
+                     isPending = dataReader.GetInt32("isPending") == 0 ? false : true,
+                     serverPort = dataReader.GetInt32("svrPort"),
+                     updateTime = DateTime.Parse(dataReader.GetString("updateTime")),
+                     id = dataReader.GetInt32("id"),
+                  };
+                  newVoyageList.Add(voyageData);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return newVoyageList;
+   }
+
+   public static new void setServerVoyageCreation (PendingVoyageCreation voyageCreation, DateTime dateTime, int id) {
+      string idKey = "id, ";
+      string idValue = "@id, ";
+      if (id < 1) {
+         idKey = "";
+         idValue = "";
+      }
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO pending_voyage_creation ("+ idKey + "svrPort, svrDeviceName, srvAddress, updateTime, areaKey, isPending) " +
+            "VALUES("+ idValue + "@svrPort, @svrDeviceName, @srvAddress, @updateTime, @areaKey, @isPending)" +
+            "ON DUPLICATE KEY UPDATE updateTime = @updateTime, isPending = @isPending", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@id", id);
+            cmd.Parameters.AddWithValue("@svrPort", voyageCreation.serverPort);
+            cmd.Parameters.AddWithValue("@svrDeviceName", voyageCreation.serverName);
+            cmd.Parameters.AddWithValue("@srvAddress", voyageCreation.serverIp);
+
+            cmd.Parameters.AddWithValue("@updateTime", dateTime);
+            cmd.Parameters.AddWithValue("@isPending", voyageCreation.isPending == true ? 1 : 0); 
+            cmd.Parameters.AddWithValue("@areaKey", voyageCreation.areaKey);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void removeServerVoyageCreation (int id) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "DELETE FROM pending_voyage_creation WHERE id=@id", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@id", id);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new ChatInfo getLatestChatInfo () {
+      ChatInfo latestChatInfo = new ChatInfo();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT chtId, time FROM arcane.chat_log order by time desc limit 1", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@chatType", 12);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  int chatId = dataReader.GetInt32("chtId");
+                  DateTime time = dataReader.GetDateTime("time");
+                  ChatInfo info = new ChatInfo(chatId, "", time, ChatInfo.Type.Global);
+                  latestChatInfo = info;
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return latestChatInfo;
+   } 
+
    #endregion
 
    #region Abilities

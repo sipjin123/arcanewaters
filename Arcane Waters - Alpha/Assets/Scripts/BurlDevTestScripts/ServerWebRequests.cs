@@ -39,11 +39,18 @@ public class ServerWebRequests : MonoBehaviour
    // Server data of all servers
    public List<ServerSqlData> serverDataList = new List<ServerSqlData>();
 
+   // List of voyages to be created
+   public List<PendingVoyageCreation> pendingVoyageCreations = new List<PendingVoyageCreation>();
+
+   // The latest chat info
+   public ChatInfo latestChatinfo = new ChatInfo();
+
    // Editor Flags
    public bool forceLocalDB;
    public bool manualSync;
    public bool autoStart;
    public bool overrideDeviceName;
+   public bool toggleGUI;
 
    Vector2 scrollPosition;
    #endregion
@@ -118,9 +125,16 @@ public class ServerWebRequests : MonoBehaviour
    }
 
    private void OnGUI () {
+      if (GUI.Button(new Rect(Screen.width - 100, 0, 100, 30), "OpenGUI")) {
+         toggleGUI = !toggleGUI;
+      }
+      if (!toggleGUI) {
+         return;
+      }
+
       GUILayout.BeginHorizontal();
       {
-         scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUILayout.Width(600), GUILayout.Height(300));
+         scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUILayout.Width(1000), GUILayout.Height(400));
          GUILayout.BeginHorizontal();
          {
             foreach (ServerSqlData server in serverDataList) {
@@ -128,6 +142,14 @@ public class ServerWebRequests : MonoBehaviour
                if (GUILayout.Button("Update Server: " + server.deviceName)) {
                   updateSpecificServer(server, true);
                }
+
+               foreach (VoyageInviteData voyageInvite in server.voyageInvites) {
+                  if (GUILayout.Button("Accept Voyage: " + voyageInvite.voyageGroupId + " - " + voyageInvite.inviteeId +" - "+voyageInvite.inviteStatus)) {
+                     voyageInvite.inviteStatus = InviteStatus.Accepted;
+                     updateSpecificServer(server, false, true);
+                  }
+               }
+               
                GUILayout.Space(20);
                foreach (int ids in server.connectedUserIds) {
                   GUILayout.Box("User: " + ids);
@@ -189,6 +211,16 @@ public class ServerWebRequests : MonoBehaviour
             }
          }
          GUILayout.EndVertical();
+
+         GUILayout.BeginVertical();
+         {
+            foreach (PendingVoyageCreation pendingVoyage in pendingVoyageCreations) {
+               if (GUILayout.Button("Confirm pending voyage : " + pendingVoyage.id + " - " + pendingVoyage.areaKey)) {
+                  confirmVoyageCreation(pendingVoyage);
+               }
+            }
+         }
+         GUILayout.EndVertical();
       }
       GUILayout.EndHorizontal();
    }
@@ -221,26 +253,6 @@ public class ServerWebRequests : MonoBehaviour
       }
    }
 
-   private void updateAnyRandomServer () {
-      List<ServerSqlData> newestList = new List<ServerSqlData>(serverDataList);
-      ServerSqlData ourServerContent = newestList.Find(_ => _.deviceName == ourServerData.deviceName);
-      newestList.Remove(ourServerContent);
-
-      ServerSqlData randomServer = newestList[Random.Range(0, newestList.Count)];
-      updateSpecificServer(randomServer, true);
-   }
-
-   private void createRandomServer () {
-      D.editorLog("Creating a random server", Color.green);
-      ServerSqlData sqlData = createRandomData();
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.setServerContent(sqlData);
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            D.editorLog("Server was set: " + sqlData.deviceName, Color.blue);
-         });
-      });
-   }
-
    private void updateSpecificServer (ServerSqlData serverData, bool generateRandomData, bool retainData = false) {
       if (!retainData) {
          if (generateRandomData) {
@@ -255,6 +267,7 @@ public class ServerWebRequests : MonoBehaviour
             serverData.voyageInvites = new List<VoyageInviteData>();
          }
       }
+      serverData.voyageInvites = new List<VoyageInviteData>(serverData.voyageInvites).FindAll(_ => _.inviteStatus == InviteStatus.Pending);
 
       serverData.latestUpdate = DateTime.UtcNow;
       D.editorLog("Updating any random server data: " + serverData.deviceName + " - " + serverData.port, Color.green);
@@ -266,6 +279,25 @@ public class ServerWebRequests : MonoBehaviour
          });
       });
    }
+   
+   private void processChatList () {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         chatInfoList = DB_Main.getChat(ChatInfo.Type.Global, 0, false, 20);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            List<ChatInfo> chatList = chatInfoList.OrderByDescending(_ => _.chatTime).ToList();
+            latestChatinfo = chatList[0];
+         });
+      });
+   }
+
+   private void processVoyageCreation (string areaKey, int id) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.removeServerVoyageCreation(id);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            ServerNetwork.self.server.CreateVoyageInstance(areaKey);
+         });
+      });
+   }
 
    private void checkServerUpdates () {
       List<ServerSqlData> serversToUpdate = new List<ServerSqlData>();
@@ -273,9 +305,27 @@ public class ServerWebRequests : MonoBehaviour
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Fetch all server update info
          List<ServerSqlData> serverListUpdateTime = DB_Main.getServerUpdateTime();
-         chatInfoList = DB_Main.getChat(ChatInfo.Type.Global, 0, false, 20);
+         pendingVoyageCreations = DB_Main.getPendingVoyageCreations();
+         ChatInfo latestChatInfo = DB_Main.getLatestChatInfo();
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (PendingVoyageCreation voyageCreations in pendingVoyageCreations) {
+               if (ServerNetwork.self != null) {
+                  if (voyageCreations.serverName == myDeviceName && voyageCreations.serverPort == ourPort && voyageCreations.serverIp == ourIp) {
+                     processVoyageCreation(voyageCreations.areaKey, voyageCreations.id);
+                  }
+               }
+            }
+
+            if (latestChatinfo.chatId != 0) {
+               List<ChatInfo> chatList = chatInfoList.OrderByDescending(_ => _.chatTime).ToList();
+               if (latestChatInfo.chatTime > chatList[0].chatTime) {
+                  processChatList();
+               }
+            } else {
+               processChatList();
+            }
+
             foreach (ServerSqlData newSqlData in serverListUpdateTime) {
                if (newSqlData.deviceName == myDeviceName) {
                   ServerSqlData existingSqlData = serverDataList.Find(_ => _.deviceName == newSqlData.deviceName && _.port == newSqlData.port && _.ip == newSqlData.ip);
@@ -285,7 +335,7 @@ public class ServerWebRequests : MonoBehaviour
                      if (updateSpan.TotalSeconds > 1) {
                         D.editorLog("Server is not sync! Resent Server data: " + existingSqlData.latestUpdate + " - " + newSqlData.latestUpdate, Color.green);
                         updateSpecificServer(ourServerData, false, true);
-                     }
+                     } 
                   } 
                } else {
                   string currentKey = newSqlData.port + "_" + newSqlData.deviceName;
@@ -325,6 +375,7 @@ public class ServerWebRequests : MonoBehaviour
                   existingData.connectedUserIds = newSqlData.connectedUserIds;
                   existingData.openAreas = newSqlData.openAreas;
                   existingData.voyageInvites = newSqlData.voyageInvites;
+
                   if (existingData.latestUpdate != newSqlData.latestUpdate) {
                      D.editorLog("Overwriting dates from: " + existingData.latestUpdate, Color.yellow);
                      D.editorLog("Overwriting dates to: " + newSqlData.latestUpdate, Color.yellow);
@@ -364,8 +415,48 @@ public class ServerWebRequests : MonoBehaviour
    }
 
    private IEnumerator CO_ResetServerData (ServerSqlData newSqlData) {
-      yield return new WaitForSeconds(.25f);
+      yield return new WaitForSeconds(.1f);
       overwriteServerData(newSqlData);
+   }
+
+   public void requestCreateVoyage (List<PendingVoyageCreation> voyageList) {
+      foreach (PendingVoyageCreation voyageEntry in voyageList) {
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            ServerSqlData serverData = serverDataList.Find(_ => _.deviceName == voyageEntry.serverName && _.ip == voyageEntry.serverIp && _.port == voyageEntry.serverPort);
+            if (serverData != null) {
+               DB_Main.setServerVoyageCreation(voyageEntry, voyageEntry.updateTime, voyageEntry.id);
+            } else {
+               D.editorLog("Non existing!", Color.yellow);
+            }
+         });
+      }
+   }
+
+   public void confirmVoyageCreation (PendingVoyageCreation voyageEntry) {
+      voyageEntry.isPending = false;
+      DB_Main.removeServerVoyageCreation(voyageEntry.id);
+   }
+
+   #region Simulator Functions
+
+   private void updateAnyRandomServer () {
+      List<ServerSqlData> newestList = new List<ServerSqlData>(serverDataList);
+      ServerSqlData ourServerContent = newestList.Find(_ => _.deviceName == ourServerData.deviceName);
+      newestList.Remove(ourServerContent);
+
+      ServerSqlData randomServer = newestList[Random.Range(0, newestList.Count)];
+      updateSpecificServer(randomServer, true);
+   }
+
+   private void createRandomServer () {
+      D.editorLog("Creating a random server", Color.green);
+      ServerSqlData sqlData = createRandomData();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.setServerContent(sqlData);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            D.editorLog("Server was set: " + sqlData.deviceName, Color.blue);
+         });
+      });
    }
 
    private ServerSqlData createRandomData () {
@@ -485,6 +576,8 @@ public class ServerWebRequests : MonoBehaviour
 
       return userIdList;
    }
+
+   #endregion
 
    #region Private Variables
 
