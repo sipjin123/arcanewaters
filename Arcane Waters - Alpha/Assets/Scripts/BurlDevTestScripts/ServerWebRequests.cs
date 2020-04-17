@@ -19,7 +19,7 @@ public class ServerWebRequests : MonoBehaviour
    public static ServerWebRequests self;
 
    // The device name of our server
-   public string myDeviceName;
+   public string ourDeviceName;
 
    // Our server ip
    public string ourIp;
@@ -42,6 +42,9 @@ public class ServerWebRequests : MonoBehaviour
    // List of voyages to be created
    public List<PendingVoyageCreation> pendingVoyageCreations = new List<PendingVoyageCreation>();
 
+   // List of voyage invitations
+   public List<VoyageInviteData> pendingVoyageInvites = new List<VoyageInviteData>();
+
    // The latest chat info
    public ChatInfo latestChatinfo = new ChatInfo();
 
@@ -52,7 +55,12 @@ public class ServerWebRequests : MonoBehaviour
    public bool overrideDeviceName;
    public bool toggleGUI;
 
-   Vector2 scrollPosition;
+   // Determines if the voyages have been initialized
+   public bool hasInitiatedVoyage;
+
+   // The servers that needs updating
+   public List<ServerSqlData> serversToUpdate = new List<ServerSqlData>();
+
    #endregion
 
    private void Awake () {
@@ -76,6 +84,45 @@ public class ServerWebRequests : MonoBehaviour
       }
    }
 
+   private void pingLocalServer () {
+      List<ServerSqlData> fetchedServerData = new List<ServerSqlData>();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Frequently send to the database to confirm that this server is active
+         ourServerData.lastPingTime = DateTime.UtcNow;
+         DB_Main.sendServerPing(ourServerData);
+
+         // Fetch the ping of the other servers
+         foreach (ServerSqlData serverData in serverDataList) {
+            if (!isOurServer(serverData)) {
+               ServerSqlData newServerData = DB_Main.getLatestServerPing(serverData);
+               fetchedServerData.Add(newServerData);
+            }
+         }
+         
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            foreach (ServerSqlData serverData in fetchedServerData) {
+               // Check if the other servers are active recently
+               TimeSpan pingInterval = DateTime.UtcNow - serverData.lastPingTime;
+               if (pingInterval.TotalSeconds > 10) {
+                  D.editorLog("Removing Server Entry due to inactivity: " + serverData.deviceName + " Time Delay: " + pingInterval.TotalSeconds, Color.red);
+
+                  // Remove the server data entry from the list
+                  ServerSqlData selectedServerData = serverDataList.Find(_ => _.deviceName == serverData.deviceName && _.port == serverData.port && _.ip == serverData.ip);
+                  if (selectedServerData != null) {
+                     serverDataList.Remove(selectedServerData);
+                  }
+
+                  // Remove the server entry from the list
+                  Server selectedServer = ServerNetwork.self.servers.ToList().Find(_ => _.deviceName == serverData.deviceName && _.port == serverData.port && _.ipAddress == serverData.ip);
+                  if (selectedServer != null) {
+                     ServerNetwork.self.removeServer(selectedServer);
+                  }
+               }
+            }
+         });
+      });
+   }
+
    private void addNewServer (ServerSqlData serverData, bool isLocal) {
       serverDataList.Add(serverData);
       Server server = Instantiate(serverPrefab, Vector3.zero, Quaternion.identity); //PhotonNetwork.Instantiate("Server", Vector3.zero, Quaternion.identity, 0);
@@ -87,10 +134,17 @@ public class ServerWebRequests : MonoBehaviour
 
       server.voyages = serverData.voyageList;
       server.openAreas = serverData.openAreas.ToArray();
+
+      // Setup the user ids
       if (serverData.connectedUserIds.Count < 1) {
          server.connectedUserIds = new HashSet<int>();
       } else {
          server.connectedUserIds = new HashSet<int>(serverData.connectedUserIds);
+      }
+      if (serverData.claimedUserIds.Count < 1) {
+         server.claimedUserIds = new HashSet<int>();
+      } else {
+         server.claimedUserIds = new HashSet<int>(serverData.claimedUserIds);
       }
 
       if (ServerNetwork.self!= null) {
@@ -106,13 +160,13 @@ public class ServerWebRequests : MonoBehaviour
 
    private void initializeLocalServer () {
       if (!overrideDeviceName) {
-         myDeviceName = SystemInfo.deviceName;
+         ourDeviceName = SystemInfo.deviceName;
       }
 
       ServerSqlData newSqlData = new ServerSqlData {
          ip = ourIp,
          port = ourPort,
-         deviceName = myDeviceName
+         deviceName = ourDeviceName
       };
 
       // If server is ours and just initialized, clear data
@@ -121,20 +175,53 @@ public class ServerWebRequests : MonoBehaviour
       // Keep reference to self
       ourServerData = newSqlData;
 
+      InvokeRepeating("pingLocalServer", 1, 1);
+
       addNewServer(newSqlData, true);
    }
+
+   #region Simulator Updates and UI
 
    private void OnGUI () {
       if (GUI.Button(new Rect(Screen.width - 100, 0, 100, 30), "OpenGUI")) {
          toggleGUI = !toggleGUI;
       }
+      
+      if (GUI.Button(new Rect(Screen.width - 400, 0, 200, 30), "Override Best Server: " + ServerNetwork.self.overrideBestServerConnection)) {
+         ServerNetwork.self.overrideBestServerConnection = !ServerNetwork.self.overrideBestServerConnection;
+      }
+      if (ServerNetwork.self.overrideBestServerConnection) {
+         string svName = "None";
+         try {
+            svName = ServerNetwork.self.servers.ToList()[ServerNetwork.self.overrideConnectServerIndex].deviceName;
+         } catch {
+
+         }
+         if (GUI.Button(new Rect(Screen.width - 400, 30, 200, 30), ServerNetwork.self.overrideConnectServerIndex + ": Set sv to 0: " + svName)) {
+            ServerNetwork.self.overrideConnectServerIndex = 0;
+         }
+         if (GUI.Button(new Rect(Screen.width - 400, 60, 200, 30), ServerNetwork.self.overrideConnectServerIndex + ": Set sv to 1: " + svName)) {
+            ServerNetwork.self.overrideConnectServerIndex = 1;
+         }
+      }
+
+      GUI.Box(new Rect(Screen.width - 200, 30, 200, 30), "Port is: " + ourPort);
+      GUI.Box(new Rect(Screen.width - 200, 60, 200, 30), "Name is: " + ourDeviceName);
+      if (GUI.Button(new Rect(Screen.width - 250, 90, 250, 30), "Override Name: " + ourDeviceName +" : "+overrideDeviceName)) {
+         overrideDeviceName = !overrideDeviceName;
+      }
+      if (GUI.Button(new Rect(Screen.width - 200, 120, 200, 30), "Send Glboal Msg")) {
+         ServerNetwork.self.server.SendGlobalChat(_globalMessage, 0);
+      }
+      _globalMessage = GUI.TextField(new Rect(Screen.width - 400, 120, 200, 60), _globalMessage);
+
       if (!toggleGUI) {
          return;
       }
 
       GUILayout.BeginHorizontal();
       {
-         scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUILayout.Width(1000), GUILayout.Height(400));
+         _scrollPosition = GUILayout.BeginScrollView(_scrollPosition, GUILayout.Width(800), GUILayout.Height(400));
          GUILayout.BeginHorizontal();
          {
             foreach (ServerSqlData server in serverDataList) {
@@ -143,13 +230,6 @@ public class ServerWebRequests : MonoBehaviour
                   updateSpecificServer(server, true);
                }
 
-               foreach (VoyageInviteData voyageInvite in server.voyageInvites) {
-                  if (GUILayout.Button("Accept Voyage: " + voyageInvite.voyageGroupId + " - " + voyageInvite.inviteeId +" - "+voyageInvite.inviteStatus)) {
-                     voyageInvite.inviteStatus = InviteStatus.Accepted;
-                     updateSpecificServer(server, false, true);
-                  }
-               }
-               
                GUILayout.Space(20);
                foreach (int ids in server.connectedUserIds) {
                   GUILayout.Box("User: " + ids);
@@ -183,12 +263,25 @@ public class ServerWebRequests : MonoBehaviour
             if (GUILayout.Button("Create an area")) {
                createOpenArea();
             }
+            GUILayout.Space(10);
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("InviterId: ");
+            _inviterId = GUILayout.TextField(_inviterId);
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("InviteeId: ");
+            _inviteeId = GUILayout.TextField(_inviteeId);
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Voyage: ");
+            _voyageGroupId = GUILayout.TextField(_voyageGroupId);
+            GUILayout.EndHorizontal();
+
             if (GUILayout.Button("Create an invite")) {
-               if (ourServerData.connectedUserIds.Count > 0 && ourServerData.voyageList.Count > 0) {
-                  createLocalInvite();
-               } else {
-                  D.editorLog("No players or voyage for invite", Color.red);
-               }
+               processVoyageInvite();
             }
          }
          GUILayout.EndVertical();
@@ -214,6 +307,17 @@ public class ServerWebRequests : MonoBehaviour
 
          GUILayout.BeginVertical();
          {
+            GUILayout.Box("Pending Invites are: ");
+            GUILayout.Space(5);
+            foreach (VoyageInviteData pendingVoyage in pendingVoyageInvites) {
+               GUILayout.Box("Confirm pending voyage : " + pendingVoyage.inviterId + " -> " + pendingVoyage.inviteeId + " {} " + pendingVoyage.voyageGroupId); 
+            }
+         }
+         GUILayout.EndVertical();
+         GUILayout.BeginVertical();
+         {
+            GUILayout.Box("Pending Creations are: ");
+            GUILayout.Space(5);
             foreach (PendingVoyageCreation pendingVoyage in pendingVoyageCreations) {
                if (GUILayout.Button("Confirm pending voyage : " + pendingVoyage.id + " - " + pendingVoyage.areaKey)) {
                   confirmVoyageCreation(pendingVoyage);
@@ -225,32 +329,34 @@ public class ServerWebRequests : MonoBehaviour
       GUILayout.EndHorizontal();
    }
 
-   private void Update () {
-      if (Input.GetKeyDown(KeyCode.Alpha1)) {
-         checkServerUpdates();
+   #endregion
+
+   private void processVoyageInvite () {
+      int inviterId = int.Parse(_inviterId);
+      int inviteeId = int.Parse(_inviteeId);
+      int voyageId = int.Parse(_voyageGroupId);
+      string inviterName = "UnNamed";
+      try {
+         inviterName = BodyManager.self.getBody(inviterId).entityName;
+      } catch {
       }
 
-      if (Input.GetKeyDown(KeyCode.Alpha2)) {
-         getServerContent(serverDataList);
-      }
+      foreach (Server server in ServerNetwork.self.servers) {
+         bool containsUser = server.connectedUserIds.ToList().Contains(inviteeId);
 
-      if (Input.GetKeyDown(KeyCode.Alpha3)) {
-         createRandomServer();
+         VoyageInviteData newVoyageInvite = new VoyageInviteData(server, inviterId, inviterName, inviteeId, voyageId, InviteStatus.Pending, DateTime.UtcNow);
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            DB_Main.createVoyageInvite(newVoyageInvite);
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               D.editorLog("Server Created the invite", Color.green);
+            });
+         });
+         break;
       }
+   }
 
-      if (Input.GetKeyDown(KeyCode.Alpha4)) {
-         D.editorLog("Updating current server data", Color.green);
-         updateSpecificServer(ourServerData, true);
-      }
-      if (Input.GetKeyDown(KeyCode.Alpha5)) {
-         updateAnyRandomServer();
-      }
-      if (Input.GetKeyDown(KeyCode.Escape)) {
-         serverDataList.Clear();
-      }
-      if (Input.GetKeyDown(KeyCode.O)) {
-         DB_Main.setServer("127.0.0.1");
-      }
+   public bool isOurServer (ServerSqlData serverData) {
+      return (serverData.deviceName == ourDeviceName && serverData.ip == ourIp && serverData.port == ourPort);
    }
 
    private void updateSpecificServer (ServerSqlData serverData, bool generateRandomData, bool retainData = false) {
@@ -259,23 +365,20 @@ public class ServerWebRequests : MonoBehaviour
             serverData.voyageList = generateRandomVoyage();
             serverData.connectedUserIds = generateRandomUserIds();
             serverData.openAreas = generateRandomArea();
-            serverData.voyageInvites = generateVoyageInviteForServer(serverData);
          } else {
             serverData.voyageList = new List<Voyage>();
             serverData.connectedUserIds = new List<int>();
             serverData.openAreas = new List<string>();
-            serverData.voyageInvites = new List<VoyageInviteData>();
          }
       }
-      serverData.voyageInvites = new List<VoyageInviteData>(serverData.voyageInvites).FindAll(_ => _.inviteStatus == InviteStatus.Pending);
-
       serverData.latestUpdate = DateTime.UtcNow;
+      serverData.lastPingTime = serverData.latestUpdate;
       D.editorLog("Updating any random server data: " + serverData.deviceName + " - " + serverData.port, Color.green);
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.setServerContent(serverData);
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            D.editorLog("Server was updated: " + serverData.deviceName + " -- " + System.DateTime.UtcNow.ToBinary(), Color.blue);
+            D.editorLog("Server was updated: " + serverData.deviceName + " -- " + serverData.port, Color.blue);
          });
       });
    }
@@ -294,24 +397,26 @@ public class ServerWebRequests : MonoBehaviour
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.removeServerVoyageCreation(id);
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            D.editorLog("Server should create voyage instance: " + areaKey, Color.green);
             ServerNetwork.self.server.CreateVoyageInstance(areaKey);
          });
       });
    }
 
    private void checkServerUpdates () {
-      List<ServerSqlData> serversToUpdate = new List<ServerSqlData>();
+      serversToUpdate = new List<ServerSqlData>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Fetch all server update info
          List<ServerSqlData> serverListUpdateTime = DB_Main.getServerUpdateTime();
          pendingVoyageCreations = DB_Main.getPendingVoyageCreations();
          ChatInfo latestChatInfo = DB_Main.getLatestChatInfo();
+         pendingVoyageInvites = DB_Main.getAllVoyageInvites();
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (PendingVoyageCreation voyageCreations in pendingVoyageCreations) {
                if (ServerNetwork.self != null) {
-                  if (voyageCreations.serverName == myDeviceName && voyageCreations.serverPort == ourPort && voyageCreations.serverIp == ourIp) {
+                  if (voyageCreations.serverName == ourDeviceName && voyageCreations.serverPort == ourPort && voyageCreations.serverIp == ourIp) {
                      processVoyageCreation(voyageCreations.areaKey, voyageCreations.id);
                   }
                }
@@ -327,7 +432,7 @@ public class ServerWebRequests : MonoBehaviour
             }
 
             foreach (ServerSqlData newSqlData in serverListUpdateTime) {
-               if (newSqlData.deviceName == myDeviceName) {
+               if (newSqlData.deviceName == ourDeviceName) {
                   ServerSqlData existingSqlData = serverDataList.Find(_ => _.deviceName == newSqlData.deviceName && _.port == newSqlData.port && _.ip == newSqlData.ip);
                   if (existingSqlData != null) {
                      // Update our data to make sure we are in sync with the database
@@ -338,8 +443,6 @@ public class ServerWebRequests : MonoBehaviour
                      } 
                   } 
                } else {
-                  string currentKey = newSqlData.port + "_" + newSqlData.deviceName;
-
                   ServerSqlData existingSqlData = serverDataList.Find(_ => _.deviceName == newSqlData.deviceName && _.port == newSqlData.port && _.ip == newSqlData.ip);
                   if (existingSqlData != null) {
                      // Update the server data if it was modified
@@ -348,15 +451,31 @@ public class ServerWebRequests : MonoBehaviour
                         serversToUpdate.Add(existingSqlData);
                      } 
                   } else {
-                     // Add server data if non existent to server data list
-                     D.editorLog("This server is New, Caching now: " + newSqlData.port + "_" + newSqlData.deviceName + " === " + DateTime.Parse(PlayerPrefs.GetString(currentKey, DateTime.UtcNow.ToString())), Color.green);
-                   
-                     serversToUpdate.Add(newSqlData);
-                     addNewServer(newSqlData, false);
+                     processNewEntry(newSqlData);
                   }
                }
             }
             getServerContent(serversToUpdate);
+         });
+      });
+   }
+
+   private void processNewEntry (ServerSqlData newSqlData) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         ServerSqlData pingedServerData = DB_Main.getLatestServerPing(newSqlData);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            TimeSpan timeSpan = DateTime.UtcNow - pingedServerData.lastPingTime;
+            // Will acknowledge server is active if the database entry was updated in less than 10 seconds
+            if (timeSpan.TotalSeconds < 10) {
+               // Add server data if not yet existing in server data list
+               D.editorLog("This server is New, Caching now: " + newSqlData.port + "_" + newSqlData.deviceName, Color.green);
+               serversToUpdate.Add(newSqlData);
+               addNewServer(newSqlData, false);
+            } else {
+               // Handle response Error for server inactivity
+               //D.editorLog("Will not add this server (" + newSqlData.deviceName + ") it seems to be NOT active : Total Seconds gap is: " + ((int) timeSpan.TotalSeconds) + " Minutes is: " + ((int) timeSpan.TotalMinutes), Color.red);
+            }
          });
       });
    }
@@ -374,7 +493,6 @@ public class ServerWebRequests : MonoBehaviour
                   existingData.voyageList = newSqlData.voyageList;
                   existingData.connectedUserIds = newSqlData.connectedUserIds;
                   existingData.openAreas = newSqlData.openAreas;
-                  existingData.voyageInvites = newSqlData.voyageInvites;
 
                   if (existingData.latestUpdate != newSqlData.latestUpdate) {
                      D.editorLog("Overwriting dates from: " + existingData.latestUpdate, Color.yellow);
@@ -384,12 +502,12 @@ public class ServerWebRequests : MonoBehaviour
                   overwriteServerData(newSqlData);
 
                   // Keep our local cache to self updated
-                  if (existingData.deviceName == myDeviceName && existingData.port == ourPort && existingData.ip == ourIp) {
+                  if (existingData.deviceName == ourDeviceName && existingData.port == ourPort && existingData.ip == ourIp) {
                      ourServerData = existingData;
                   }
                } else {
                   // Fail safe code, assign the missing data incase it is missing
-                  if (newSqlData.deviceName == myDeviceName && newSqlData.port == ourPort && existingData.ip == ourIp) {
+                  if (newSqlData.deviceName == ourDeviceName && newSqlData.port == ourPort && existingData.ip == ourIp) {
                      ourServerData = newSqlData;
                   }
                   serverDataList.Add(newSqlData);
@@ -406,7 +524,14 @@ public class ServerWebRequests : MonoBehaviour
             existingServer.openAreas = newSqlData.openAreas.ToArray();
             existingServer.voyages = newSqlData.voyageList;
             existingServer.connectedUserIds = new HashSet<int>(newSqlData.connectedUserIds);
+            existingServer.claimedUserIds = new HashSet<int>(newSqlData.claimedUserIds);
             D.editorLog("Successful Update! " + newSqlData.deviceName, Color.green);
+
+            if (!hasInitiatedVoyage) {
+               // Regularly check that there are enough voyage instances open and create more
+               VoyageManager.self.regenerateVoyageInstances();
+               hasInitiatedVoyage = true;
+            }
          } else {
             StartCoroutine(CO_ResetServerData(newSqlData));
             D.editorLog("Missing server, it is not existing yet: " + newSqlData.deviceName + " - " + newSqlData.ip, Color.green);
@@ -434,7 +559,9 @@ public class ServerWebRequests : MonoBehaviour
 
    public void confirmVoyageCreation (PendingVoyageCreation voyageEntry) {
       voyageEntry.isPending = false;
-      DB_Main.removeServerVoyageCreation(voyageEntry.id);
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.removeServerVoyageCreation(voyageEntry.id);
+      });
    }
 
    #region Simulator Functions
@@ -474,7 +601,6 @@ public class ServerWebRequests : MonoBehaviour
       newData.voyageList = generateRandomVoyage();
       newData.openAreas = generateRandomArea();
       newData.connectedUserIds = generateRandomUserIds();
-      newData.voyageInvites = generateVoyageInviteForServer(newData);
 
       return newData;
    }
@@ -500,6 +626,8 @@ public class ServerWebRequests : MonoBehaviour
       int newUserId = Random.Range(1, 1000);
       ourServerData.connectedUserIds.Add(newUserId);
       if (ServerNetwork.self != null) {
+         D.editorLog("Creater local user at: Local Server");
+         ourServerData.connectedUserIds.Add(newUserId);
          ServerNetwork.self.server.connectedUserIds.Add(newUserId);
       }
       updateSpecificServer(ourServerData, false, true);
@@ -514,9 +642,16 @@ public class ServerWebRequests : MonoBehaviour
       updateSpecificServer(ourServerData, false, true);
    }
 
-   private void createLocalInvite () {
-      ourServerData.voyageInvites = generateVoyageInviteForServer(ourServerData);
-      updateSpecificServer(ourServerData, false, true);
+   public void createInvite (Server server, int groupId, int inviterId, string inviterName, int inviteeId) {
+      D.editorLog("The server who owns this user is: " + server.deviceName + " - " + server.port, Color.green);
+      VoyageInviteData newVoyageInvite = new VoyageInviteData(server, inviterId, inviterName, inviteeId, groupId, InviteStatus.Pending, DateTime.UtcNow);
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.createVoyageInvite(newVoyageInvite);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+
+         });
+      });
    }
 
    private List<VoyageInviteData> generateVoyageInviteForServer (ServerSqlData serverSelected) {
@@ -528,11 +663,7 @@ public class ServerWebRequests : MonoBehaviour
       }
       int groupId = serverSelected.voyageList[0].voyageId;
 
-      newInviteList.Add(new VoyageInviteData { 
-         inviteeId = inviteeId,
-         inviterName = inviterName,
-         voyageGroupId = groupId
-      });
+      newInviteList.Add(new VoyageInviteData(ServerNetwork.self.server, 0, inviterName, inviteeId, groupId, InviteStatus.Pending, DateTime.UtcNow)); 
       return newInviteList;
    }
 
@@ -581,7 +712,19 @@ public class ServerWebRequests : MonoBehaviour
 
    #region Private Variables
 
+   // Randomized character source
    private string _alphabets = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+   // GUI scroll position
+   private Vector2 _scrollPosition;
+
+   // The message to be sent to all players for simulation purposes
+   private string _globalMessage;
+
+   // Invitation parameters for simulation
+   private string _inviterId;
+   private string _inviteeId;
+   private string _voyageGroupId;
 
    #endregion
 }

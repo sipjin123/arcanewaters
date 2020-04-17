@@ -297,10 +297,22 @@ public class VoyageManager : MonoBehaviour {
             if (openVoyagesCount < Voyage.OPEN_VOYAGE_INSTANCES) {
                // Find the server with the least people
                Server bestServer = ServerNetwork.self.getServerWithLeastPlayers();
-               D.editorLog("Best server must create voyage intance: "+bestServer.deviceName, Color.yellow);
+               D.editorLog("Best server must create voyage intance: " + bestServer.deviceName, Color.yellow);
                // Create a new voyage instance on the chosen server
                //bestServer.photonView.RPC("CreateVoyageInstance", bestServer.view.owner);
                //ServerWebRequests.self.requestCreateVoyage(bestServer.deviceName, bestServer.ipAddress, bestServer.port);
+               List<PendingVoyageCreation> voyageList = new List<PendingVoyageCreation>();
+               PendingVoyageCreation newVoyage = new PendingVoyageCreation {
+                  serverName = bestServer.deviceName,
+                  serverIp = bestServer.ipAddress,
+                  id = -1,
+                  isPending = true,
+                  serverPort = bestServer.port,
+                  updateTime = DateTime.UtcNow,
+                  areaKey = ""
+               };
+               voyageList.Add(newVoyage);
+               ServerWebRequests.self.requestCreateVoyage(voyageList);
             }
          });
       });
@@ -330,17 +342,20 @@ public class VoyageManager : MonoBehaviour {
          foreach (string areaKey in seaMaps) {
             // Find the server with the least people
             Server bestServer = ServerNetwork.self.getServerWithLeastPlayers();
-
-            // Create a new voyage instance on the chosen server
-            pendingVoyageList.Add(new PendingVoyageCreation { 
-               id = -1,
-               areaKey = areaKey,
-               isPending = true,
-               serverIp = bestServer.ipAddress,
-               serverName = bestServer.deviceName,
-               serverPort = bestServer.port,
-               updateTime = DateTime.UtcNow
-            });
+            if (bestServer != null) {
+               // Create a new voyage instance on the chosen server
+               pendingVoyageList.Add(new PendingVoyageCreation {
+                  id = -1,
+                  areaKey = areaKey,
+                  isPending = true,
+                  serverIp = bestServer.ipAddress,
+                  serverName = bestServer.deviceName,
+                  serverPort = bestServer.port,
+                  updateTime = DateTime.UtcNow
+               });
+            } else {
+               D.editorLog("Could not find best server!", Color.red);
+            }
          }
          ServerWebRequests.self.requestCreateVoyage(pendingVoyageList);
       }

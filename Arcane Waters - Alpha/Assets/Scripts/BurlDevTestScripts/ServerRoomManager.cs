@@ -12,6 +12,10 @@ public class ServerRoomManager : MonoBehaviour {
 
    #endregion
 
+   private void Awake () {
+      self = this;
+   }
+
    public void initializeServer () {
       Debug.Log("Connected to Master!");
       ServerWebRequests.self.initializeServers();

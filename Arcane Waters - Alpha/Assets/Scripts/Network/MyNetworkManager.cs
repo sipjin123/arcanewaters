@@ -131,6 +131,9 @@ public class MyNetworkManager : NetworkManager {
    public override void OnStartServer () {
       D.debug("Server started on port: " + MyNetworkManager.getCurrentPort() + " with Cloud Build version: " + Util.getGameVersion());
 
+      // Initializes the server
+      ServerRoomManager.self.initializeServer();
+
       // We have to register handlers to be able to send and receive messages
       MessageManager.registerServerHandlers();
 
@@ -155,9 +158,6 @@ public class MyNetworkManager : NetworkManager {
 
       // Create the initial map that everyone starts in
       MapManager.self.createLiveMap(Area.STARTING_TOWN);
-
-      // Regularly check that there are enough voyage instances open and create more
-      VoyageManager.self.regenerateVoyageInstances();
 
       // Make note that we started up a server
       wasServerStarted = true;
@@ -227,13 +227,15 @@ public class MyNetworkManager : NetworkManager {
             // Check if we need to redirect to a different server
             Server bestServer = ServerNetwork.self.findBestServerForConnectingPlayer(previousAreaKey, userInfo.username, userInfo.userId,
                conn.address, userObjects.isSinglePlayer, voyageId);
-            if (bestServer != null && !bestServer.isLocalServer) {
+            if (bestServer != null && bestServer.port != ServerWebRequests.self.ourPort && bestServer.deviceName != ServerWebRequests.self.ourDeviceName) {
+               D.editorLog("Best server is Not the Local Server: (" + bestServer.deviceName + "), now Redirecting", Color.yellow);
                // Send a Redirect message to the client
                RedirectMessage redirectMessage = new RedirectMessage(Global.netId, bestServer.ipAddress, bestServer.port);
                conn.Send(redirectMessage);
 
                return;
             }
+            D.editorLog("Creating player from this Server! " + ServerWebRequests.self.ourDeviceName + " - " + ServerWebRequests.self.ourPort, Color.green);
 
             // Verify if the area exists and get its position
             Vector2 mapPosition;

@@ -2708,8 +2708,9 @@ public class RPCManager : NetworkBehaviour {
             }
 
             // Send the invitation
-
             D.editorLog("Invitee server must handle group invite voyage", Color.green);
+            ServerWebRequests.self.createInvite(inviteeServer, voyageGroup.groupId, _player.userId, _player.entityName, inviteeInfo.userId);
+            // TODO: Confirm Voyage invite creation
             //inviteeServer.photonView.RPC("HandleVoyageGroupInvite", inviteeServer.view.owner, voyageGroup.groupId, _player.entityName, inviteeInfo.userId);
 
             // Write in the inviter chat that the invitation has been sent

@@ -27,6 +27,124 @@ public class DB_Main : DB_MainStub
 
    #region Server Communications
 
+   public static new void createVoyageInvite (VoyageInviteData inviteData) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO pending_voyage_invites (svrPort, svrDeviceName, srvAddress, inviterId, inviterName, inviteeId, creationTime, inviteStatus, voyageGroupId) " +
+            "VALUES(@svrPort, @svrDeviceName, @srvAddress, @inviterId, @inviterName, @inviteeId, @creationTime, @inviteStatus, @voyageGroupId)", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@svrPort", inviteData.serverPort);
+            cmd.Parameters.AddWithValue("@svrDeviceName", inviteData.serverName);
+            cmd.Parameters.AddWithValue("@srvAddress", inviteData.serverIp);
+            
+            cmd.Parameters.AddWithValue("@inviterId", inviteData.inviterId);
+            cmd.Parameters.AddWithValue("@inviterName", inviteData.inviterName);
+            cmd.Parameters.AddWithValue("@inviteeId", inviteData.inviteeId);
+
+            cmd.Parameters.AddWithValue("@voyageGroupId", inviteData.voyageGroupId);
+            cmd.Parameters.AddWithValue("@creationTime", inviteData.creationTime);
+            cmd.Parameters.AddWithValue("@inviteStatus", (int) inviteData.inviteStatus);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<VoyageInviteData> getAllVoyageInvites () {
+      List<VoyageInviteData> rawDataList = new List<VoyageInviteData>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane.pending_voyage_invites", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  VoyageInviteData voyageInvite = new VoyageInviteData(dataReader);
+                  rawDataList.Add(voyageInvite);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return rawDataList;
+   }
+
+   public static new void sendServerPing (ServerSqlData serverSqlData) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO server_status (svrPort, svrDeviceName, srvAddress, lastPingTime) " +
+            "VALUES(@svrPort, @svrDeviceName, @srvAddress, @lastPingTime) " +
+            "ON DUPLICATE KEY UPDATE lastPingTime = @lastPingTime", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@svrPort", serverSqlData.port);
+            cmd.Parameters.AddWithValue("@svrDeviceName", serverSqlData.deviceName);
+            cmd.Parameters.AddWithValue("@srvAddress", serverSqlData.ip);
+
+            cmd.Parameters.AddWithValue("@lastPingTime", serverSqlData.lastPingTime);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new ServerSqlData getLatestServerPing (ServerSqlData currentServerData) {
+      ServerSqlData newServerEntry = new ServerSqlData();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT svrPort, srvAddress, svrDeviceName, lastPingTime FROM arcane.server_status where (svrDeviceName = @svrDeviceName and svrPort = @svrPort and srvAddress = @srvAddress)", conn)) {
+            
+            conn.Open();
+            cmd.Parameters.AddWithValue("@svrDeviceName", currentServerData.deviceName);
+            cmd.Parameters.AddWithValue("@svrPort", currentServerData.port);
+            cmd.Parameters.AddWithValue("@srvAddress", currentServerData.ip);
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  DateTime fetchedDateTime = DateTime.UtcNow;
+                  try {
+                     fetchedDateTime = DateTime.Parse(DataUtil.getString(dataReader, "lastPingTime"));
+                  } catch {
+                     fetchedDateTime = DateTime.UtcNow.AddMinutes(-1);
+                  }
+
+                  ServerSqlData newEntry = new ServerSqlData {
+                     port = DataUtil.getInt(dataReader, "svrPort"),
+                     ip = DataUtil.getString(dataReader, "srvAddress"),
+                     deviceName = DataUtil.getString(dataReader, "svrDeviceName"),
+                     lastPingTime = fetchedDateTime
+                  };
+                  newServerEntry = newEntry;
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return newServerEntry;
+   }
+
    public static new List<ServerSqlData> getServerUpdateTime () {
       List<ServerSqlData> rawDataList = new List<ServerSqlData>();
 
@@ -58,7 +176,7 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT openAreas, voyages, connectedUserIds, voyageInvites, updateTime, openAreas FROM arcane.server_status WHERE (svrDeviceName=@svrDeviceName and srvAddress=@srvAddress and svrPort=@svrPort)", conn)) {
+            "SELECT openAreas, voyages, connectedUserIds, updateTime, claimedUserIds, openAreas FROM arcane.server_status WHERE (svrDeviceName=@svrDeviceName and srvAddress=@srvAddress and svrPort=@svrPort)", conn)) {
 
             conn.Open();
             foreach (ServerSqlData serverData in serverDataList) {
@@ -88,9 +206,9 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO server_status (svrPort, svrDeviceName, srvAddress, updateTime, connectedUserIds, openAreas, voyages, voyageInvites, globalMessage) " +
-            "VALUES(@svrPort, @svrDeviceName, @srvAddress, @updateTime, @connectedUserIds,@openAreas, @voyages, @voyageInvites, @globalMessage) " +
-            "ON DUPLICATE KEY UPDATE openAreas = @openAreas, voyages = @voyages, connectedUserIds = @connectedUserIds, voyageInvites = @voyageInvites, globalMessage = @globalMessage, updateTime = @updateTime", conn)) {
+            "INSERT INTO server_status (svrPort, svrDeviceName, srvAddress, updateTime, connectedUserIds, openAreas, voyages, globalMessage, claimedUserIds, lastPingTime) " +
+            "VALUES(@svrPort, @svrDeviceName, @srvAddress, @updateTime, @connectedUserIds,@openAreas, @voyages, @globalMessage, @claimedUserIds, lastPingTime) " +
+            "ON DUPLICATE KEY UPDATE openAreas = @openAreas, voyages = @voyages, connectedUserIds = @connectedUserIds, globalMessage = @globalMessage, claimedUserIds = @claimedUserIds, updateTime = @updateTime, lastPingTime = @lastPingTime", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -99,12 +217,13 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@srvAddress", serverSqlData.ip);
 
             cmd.Parameters.AddWithValue("@updateTime", serverSqlData.latestUpdate);
+            cmd.Parameters.AddWithValue("@lastPingTime", serverSqlData.lastPingTime); 
             cmd.Parameters.AddWithValue("@globalMessage", "test");
-
+            
             cmd.Parameters.AddWithValue("@openAreas", serverSqlData.getOpenAreas());
             cmd.Parameters.AddWithValue("@voyages", serverSqlData.getRawVoyage());
-            cmd.Parameters.AddWithValue("@voyageInvites", serverSqlData.getRawVoyageInvites());
             cmd.Parameters.AddWithValue("@connectedUserIds", serverSqlData.getConnectedUsers());
+            cmd.Parameters.AddWithValue("@claimedUserIds", serverSqlData.getClaimedUsers());
 
             // Execute the command
             cmd.ExecuteNonQuery();

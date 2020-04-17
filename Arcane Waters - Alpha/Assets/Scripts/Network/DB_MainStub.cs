@@ -12,6 +12,22 @@ public class DB_MainStub : MonoBehaviour
 
    #endregion
 
+   public static void createVoyageInvite (VoyageInviteData inviteData) {
+
+   }
+
+   public static List<VoyageInviteData> getAllVoyageInvites () {
+      return new List<VoyageInviteData>();
+   }
+
+   public static void sendServerPing (ServerSqlData serverData) {
+
+   }
+
+   public static ServerSqlData getLatestServerPing (ServerSqlData currentServerData) {
+      return new ServerSqlData();
+   }
+
    public static List<ServerSqlData> getServerUpdateTime () {
       return new List<ServerSqlData>();
    }

@@ -21,33 +21,26 @@ public class ServerSqlData {
    // The latest update time of the server data
    public DateTime latestUpdate;
 
+   // The last time the server sent a ping to the database
+   public DateTime lastPingTime;
+
    // The list of active voyage instances on this server
    public List<Voyage> voyageList = new List<Voyage>();
 
    // Keeps track of the users connected to this server
    public List<int> connectedUserIds = new List<int>();
 
+   // Keeps track of the users claimed by this server
+   public List<int> claimedUserIds = new List<int>();
+
    // A listing of open area types on this server
    public List<string> openAreas = new List<string>();
-
-   // The list of voyage invites
-   public List<VoyageInviteData> voyageInvites = new List<VoyageInviteData>();
 
    public string getRawVoyage () {
       XmlSerializer ser = new XmlSerializer(voyageList.GetType());
       StringBuilder sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {
          ser.Serialize(writer, voyageList);
-      }
-
-      return sb.ToString();
-   }
-
-   public string getRawVoyageInvites () {
-      XmlSerializer ser = new XmlSerializer(voyageInvites.GetType());
-      StringBuilder sb = new StringBuilder();
-      using (var writer = XmlWriter.Create(sb)) {
-         ser.Serialize(writer, voyageInvites);
       }
 
       return sb.ToString();
@@ -83,6 +76,16 @@ public class ServerSqlData {
       return sb.ToString();
    }
 
+   public string getClaimedUsers () {
+      XmlSerializer ser = new XmlSerializer(claimedUserIds.GetType());
+      StringBuilder sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, claimedUserIds);
+      }
+
+      return sb.ToString();
+   }
+
    public ServerSqlData () {
    }
 
@@ -99,19 +102,14 @@ public class ServerSqlData {
       string[] openAreas = Util.xmlLoad<string[]>(DataUtil.getString(dataReader, "openAreas"));
       List<Voyage> voyages = Util.xmlLoad<List<Voyage>>(DataUtil.getString(dataReader, "voyages"));
       List<int> connectedUsers = Util.xmlLoad<List<int>>(DataUtil.getString(dataReader, "connectedUserIds"));
-      List<VoyageInviteData> voyageInvites = new List<VoyageInviteData>();
-      if (DataUtil.getString(dataReader, "voyageInvites").Length > 1) {
-         voyageInvites = Util.xmlLoad<List<VoyageInviteData>>(DataUtil.getString(dataReader, "voyageInvites"));
-      } else {
-         voyageInvites = new List<VoyageInviteData>();
-      }
-
+      List<int> claimedUserIds = Util.xmlLoad<List<int>>(DataUtil.getString(dataReader, "claimedUserIds"));
+     
       this.latestUpdate = DateTime.Parse(DataUtil.getString(dataReader, "updateTime"));
 
       this.openAreas = new List<string>(openAreas);
       this.voyageList = voyages;
       this.connectedUserIds = connectedUsers;
-      this.voyageInvites = voyageInvites;
+      this.claimedUserIds = claimedUserIds;
 
       this.port = currentServerData.port;
       this.ip = currentServerData.ip;
@@ -123,6 +121,9 @@ public class ServerSqlData {
 
 [Serializable]
 public class VoyageInviteData {
+   // The id of the player who sent the invite
+   public int inviterId;
+
    // Name of the player inviting 
    public string inviterName;
 
@@ -135,9 +136,47 @@ public class VoyageInviteData {
    // The status of the invite
    public InviteStatus inviteStatus;
 
-   public VoyageInviteData () {
+   // The date this invite was created
+   public DateTime creationTime;
 
+   // The server info
+   public string serverName;
+   public int serverPort;
+   public string serverIp;
+
+   public VoyageInviteData (Server targetServer, int inviterId, string inviterName, int inviteeId, int voyageGroupId, InviteStatus inviteStatus, DateTime creationTime) {
+      this.serverName = targetServer.deviceName;
+      this.serverPort = targetServer.port;
+      this.serverIp = targetServer.ipAddress;
+      if (targetServer.ipAddress == "localhost") {
+         serverIp = "127.0.0.1";
+      }
+
+      this.inviterId = inviterId;
+      this.inviterName = inviterName;
+      this.inviteeId = inviteeId;
+      this.voyageGroupId = voyageGroupId;
+      this.inviteStatus = inviteStatus;
+      this.creationTime = creationTime;
    }
+   
+   #if IS_SERVER_BUILD
+
+   public VoyageInviteData (MySql.Data.MySqlClient.MySqlDataReader dataReader) {
+      this.inviterId = DataUtil.getInt(dataReader, "inviterId");
+      this.inviterName = DataUtil.getString(dataReader, "inviterName");
+      this.inviteeId = DataUtil.getInt(dataReader, "inviteeId");
+
+      this.voyageGroupId = DataUtil.getInt(dataReader, "voyageGroupId");
+      this.inviteStatus = (InviteStatus) DataUtil.getInt(dataReader, "inviteStatus");
+      this.creationTime = DateTime.Parse(DataUtil.getString(dataReader, "creationTime"));
+
+      this.serverName = DataUtil.getString(dataReader, "svrDeviceName");
+      this.serverPort = DataUtil.getInt(dataReader, "svrPort");
+      this.serverIp = DataUtil.getString(dataReader, "srvAddress");
+   }
+
+   #endif
 }
 
 [Serializable]
@@ -167,5 +206,5 @@ public class PendingVoyageCreation {
 public enum InviteStatus {
    Pending = 0,
    Accepted = 1,
-   Declinded = 2,
+   Declined = 2,
 }

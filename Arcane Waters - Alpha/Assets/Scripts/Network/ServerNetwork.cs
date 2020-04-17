@@ -8,29 +8,39 @@ using System.Linq;
 public class ServerNetwork : MonoBehaviour {
    #region Public Variables
 
+   // TODO: Confirm Claim Functionality Replacement
    // String constants to store details about this specific server in our Photon custom properties
-   public static string PLAYER_CLAIM = "player_claim-";
+   //public static string PLAYER_CLAIM = "player_claim-";
 
    // The Server object we have control of
    public Server server;
 
    // The Servers we know about
    public HashSet<Server> servers = new HashSet<Server>();
+   public List<Server> serverList = new List<Server>();
 
    // Self
    public static ServerNetwork self;
+
+   // Determines if the best server selection should be overridden for simulation purposes
+   public bool overrideBestServerConnection = false;
+
+   // The server index to connect to for simulation purposes
+   public int overrideConnectServerIndex = 0;
 
    #endregion
 
    void Awake () {
       self = this;
-
-      // Routinely check if we need to reconnect to Photon
-      InvokeRepeating("checkPhotonConnection", 10f, 5f);
    }
 
    public Server findBestServerForConnectingPlayer (string areaKey, string username, int userId, string address,
       bool isSinglePlayer, int voyageId) {
+      if (overrideBestServerConnection) {
+         D.editorLog("Overwrite index is: " + overrideConnectServerIndex + " : " + servers.ToList().Count, Color.green);
+         return servers.ToList()[overrideConnectServerIndex];
+      }
+
       // Always return the current server if single player
       if (isSinglePlayer) {
          return server;
@@ -65,15 +75,15 @@ public class ServerNetwork : MonoBehaviour {
 
       // If this player is claimed by a server, we have to return to that server
       foreach (Server server in servers) {
-
-         D.editorLog("Server must select best server here", Color.green);
-         //if (server.photonView.owner.CustomProperties.ContainsKey(PLAYER_CLAIM + userId)) {
-         //   bestServer = server;
+         if (server.claimedUserIds.Contains(userId)) {
+            D.editorLog("Server has claimed this player: "+userId, Color.green);
+            bestServer = server;
             break;
-         //}
+         }
       }
 
       if (bestServer == null) {
+         D.editorLog("Couldn't find a good server to connect to, server count:", Color.red);
          D.log("Couldn't find a good server to connect to, server count: " + servers.Count);
       }
 
@@ -97,6 +107,7 @@ public class ServerNetwork : MonoBehaviour {
       if (servers.Contains(server)) {
          D.debug("Removing server: " + server.port);
          servers.Remove(server);
+         serverList.Remove(server);
       }
    }
 
@@ -105,21 +116,25 @@ public class ServerNetwork : MonoBehaviour {
       //server.photonView.RPC("SendGlobalChat", PhotonTargets.All, chatInfo.chatId, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.senderId);
    }
 
-   protected void checkPhotonConnection () {
-      StartCoroutine(CO_checkPhotonConnection());
-   }
-
    public void claimPlayer (int userId) {
+      server.claimedUserIds.Add(userId);
+      // TODO: Confirm Claim Functionality Replacement
+      /*
       string keyValue = PLAYER_CLAIM + userId;
 
       // Store it into the custom properties
       ExitGames.Client.Photon.Hashtable customProps = new ExitGames.Client.Photon.Hashtable() {
          { keyValue, true }
       };
-      PhotonNetwork.player.SetCustomProperties(customProps);
+      PhotonNetwork.player.SetCustomProperties(customProps);*/
    }
 
    public void releaseClaim (int userId) {
+      if (server.claimedUserIds.Contains(userId)) {
+         server.claimedUserIds.Remove(userId);
+      }
+      // TODO: Confirm Claim Functionality Replacement
+      /*
       string keyValue = PLAYER_CLAIM + userId;
 
       // If there isn't an existing claim, then we don't have to do anything
@@ -131,7 +146,7 @@ public class ServerNetwork : MonoBehaviour {
       ExitGames.Client.Photon.Hashtable customProps = new ExitGames.Client.Photon.Hashtable() {
          { keyValue, null }
       };
-      PhotonNetwork.player.SetCustomProperties(customProps);
+      PhotonNetwork.player.SetCustomProperties(customProps);*/
    }
 
    public Server getServer (string ipAddress, int port) {
@@ -186,27 +201,6 @@ public class ServerNetwork : MonoBehaviour {
          }
       }
       return null;
-   }
-
-   protected IEnumerator CO_checkPhotonConnection () {
-      D.editorLog("Checking Deprecated Photon Room is null", Color.green);
-      yield return new WaitForSeconds(.1f);
-      /*
-      // If we're not running a server, or already in a Photon room, we're done
-      if (!NetworkServer.active || PhotonNetwork.room != null) {
-         yield break;
-      }
-
-      // Wait a few seconds to make sure we're not in the process of connecting
-      yield return new WaitForSeconds(5f);
-
-      if (PhotonNetwork.room == null) {
-         D.log("Not in any Photon room, so reconnecting to Master.");
-
-         PhotonNetwork.Disconnect();
-         yield return new WaitForSeconds(3f);
-         MyNetworkManager.self.connectToPhotonMaster();
-      }*/
    }
 
    #region Private Variables
