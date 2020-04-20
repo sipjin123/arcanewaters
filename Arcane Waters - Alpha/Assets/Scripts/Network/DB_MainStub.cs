@@ -16,6 +16,9 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
+   public static void modifyServerVoyageInvite (int id, InviteStatus status) {
+   }
+
    public static List<VoyageInviteData> getAllVoyageInvites () {
       return new List<VoyageInviteData>();
    }

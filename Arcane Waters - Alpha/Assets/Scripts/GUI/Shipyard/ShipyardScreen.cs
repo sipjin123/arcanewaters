@@ -68,8 +68,12 @@ public class ShipyardScreen : Panel {
       _greetingText = greetingText;
       moneyText.text = gold + "";
 
-      // Start typing out our intro text
-      AutoTyper.SlowlyRevealText(this.greetingText, _greetingText);
+      try {
+         // Start typing out our intro text
+         AutoTyper.SlowlyRevealText(this.greetingText, _greetingText);
+      } catch {
+         D.editorLog("Issue with auto typer", Color.red);
+      }
 
       // Clear out any old info
       rowsContainer.DestroyChildren();

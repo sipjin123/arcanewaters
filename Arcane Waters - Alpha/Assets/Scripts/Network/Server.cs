@@ -90,7 +90,6 @@ public class Server : MonoBehaviour {
       }*/
    }
 
-   [PunRPC]
    public void HandleVoyageGroupInvite (int voyageGroupId, string inviterName, int inviteeUserId) {
       D.editorLog("Handle voyage invites here", Color.green);
       // Find the NetEntity of the invitee

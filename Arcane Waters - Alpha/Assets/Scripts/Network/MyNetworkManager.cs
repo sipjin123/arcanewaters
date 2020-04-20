@@ -227,12 +227,12 @@ public class MyNetworkManager : NetworkManager {
             // Check if we need to redirect to a different server
             Server bestServer = ServerNetwork.self.findBestServerForConnectingPlayer(previousAreaKey, userInfo.username, userInfo.userId,
                conn.address, userObjects.isSinglePlayer, voyageId);
-            if (bestServer != null && bestServer.port != ServerWebRequests.self.ourPort && bestServer.deviceName != ServerWebRequests.self.ourDeviceName) {
+            if (bestServer != null && bestServer.port != ServerWebRequests.self.ourPort) {
                D.editorLog("Best server is Not the Local Server: (" + bestServer.deviceName + "), now Redirecting", Color.yellow);
                // Send a Redirect message to the client
                RedirectMessage redirectMessage = new RedirectMessage(Global.netId, bestServer.ipAddress, bestServer.port);
                conn.Send(redirectMessage);
-
+               
                return;
             }
             D.editorLog("Creating player from this Server! " + ServerWebRequests.self.ourDeviceName + " - " + ServerWebRequests.self.ourPort, Color.green);
@@ -269,6 +269,7 @@ public class MyNetworkManager : NetworkManager {
             player.voyageGroupId = voyageGroupId;
             InstanceManager.self.addPlayerToInstance(player, previousAreaKey, voyageId);
             NetworkServer.AddPlayerForConnection(conn, player.gameObject);
+            ServerNetwork.self.addPlayer(player.userId, bestServer);
 
             player.setDataFromUserInfo(userInfo, userObjects.armor, userObjects.weapon, shipInfo);
 

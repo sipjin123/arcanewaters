@@ -298,6 +298,25 @@ public class DB_Main : DB_MainStub
       }
    }
 
+   public static new void modifyServerVoyageInvite (int id, InviteStatus status) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "UPDATE pending_voyage_invites SET inviteStatus = @inviteStatus WHERE id=@id", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@id", id);
+            cmd.Parameters.AddWithValue("@inviteStatus", (int)status);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
    public static new void removeServerVoyageCreation (int id) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -3477,6 +3496,12 @@ public class DB_Main : DB_MainStub
       if (!hasInterval) {
          secondsInterval = "";
       }
+
+      string joinUserTable = "JOIN users USING (usrId)";
+      if (chatType == ChatInfo.Type.Global) {
+         joinUserTable = "";
+      }
+
       string limitValue = " limit " + limit;
       if (limit < 1) {
          limitValue = "";
@@ -3487,7 +3512,7 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM chat_log JOIN users USING (usrId) WHERE chatType=@chatType "+ secondsInterval + " ORDER BY chtId DESC" + limitValue, conn)) {
+            "SELECT * FROM chat_log " + joinUserTable + " WHERE chatType=@chatType "+ secondsInterval + " ORDER BY chtId DESC" + limitValue, conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@chatType", chatType);
@@ -3497,13 +3522,23 @@ public class DB_Main : DB_MainStub
                while (dataReader.Read()) {
                   string message = dataReader.GetString("message");
                   int chatId = dataReader.GetInt32("chtId");
-                  int userId = dataReader.GetInt32("usrId");
-                  string senderName = dataReader.GetString("usrName");
-                  int senderGuild = dataReader.GetInt32("gldId");
                   DateTime time = dataReader.GetDateTime("time");
-                  ChatInfo info = new ChatInfo(chatId, message, time, chatType, senderName, userId);
-                  info.guildId = senderGuild;
-                  list.Add(info);
+
+                  if (chatType != ChatInfo.Type.Global) {
+                     int userId = dataReader.GetInt32("usrId");
+                     string senderName = dataReader.GetString("usrName");
+                     int senderGuild = dataReader.GetInt32("gldId");
+                     ChatInfo info = new ChatInfo(chatId, message, time, chatType, senderName, userId);
+                     info.guildId = senderGuild;
+                     list.Add(info);
+                  } else {
+                     int userId = 0;
+                     string senderName = "Server";
+                     int senderGuild = 0;
+                     ChatInfo info = new ChatInfo(chatId, message, time, chatType, senderName, userId);
+                     info.guildId = senderGuild;
+                     list.Add(info);
+                  }
                }
             }
          }

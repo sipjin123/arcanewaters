@@ -116,37 +116,22 @@ public class ServerNetwork : MonoBehaviour {
       //server.photonView.RPC("SendGlobalChat", PhotonTargets.All, chatInfo.chatId, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.senderId);
    }
 
-   public void claimPlayer (int userId) {
-      server.claimedUserIds.Add(userId);
-      // TODO: Confirm Claim Functionality Replacement
-      /*
-      string keyValue = PLAYER_CLAIM + userId;
+   public void addPlayer (int userId, Server server) {
+      ServerWebRequests.self.addPlayer(userId, server);
+   }
 
-      // Store it into the custom properties
-      ExitGames.Client.Photon.Hashtable customProps = new ExitGames.Client.Photon.Hashtable() {
-         { keyValue, true }
-      };
-      PhotonNetwork.player.SetCustomProperties(customProps);*/
+   public void claimPlayer (int userId) {
+      ServerWebRequests.self.claimPlayer(userId);
+      /*
+      server.claimedUserIds.Add(userId);*/
    }
 
    public void releaseClaim (int userId) {
+      ServerWebRequests.self.releasePlayer(userId);
+      /*
       if (server.claimedUserIds.Contains(userId)) {
          server.claimedUserIds.Remove(userId);
-      }
-      // TODO: Confirm Claim Functionality Replacement
-      /*
-      string keyValue = PLAYER_CLAIM + userId;
-
-      // If there isn't an existing claim, then we don't have to do anything
-      if (!PhotonNetwork.player.CustomProperties.ContainsKey(keyValue)) {
-         return;
-      }
-
-      // Store it as null into the custom properties
-      ExitGames.Client.Photon.Hashtable customProps = new ExitGames.Client.Photon.Hashtable() {
-         { keyValue, null }
-      };
-      PhotonNetwork.player.SetCustomProperties(customProps);*/
+      }*/
    }
 
    public Server getServer (string ipAddress, int port) {

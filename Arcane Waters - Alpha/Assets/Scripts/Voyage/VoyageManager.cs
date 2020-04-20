@@ -172,6 +172,7 @@ public class VoyageManager : MonoBehaviour {
 
       // Store the voyage group id
       _invitationVoyageGroupId = voyageGroupId;
+      _inviterName = inviterName;
 
       // Associate a new function with the accept button
       PanelManager.self.voyageInviteScreen.acceptButton.onClick.RemoveAllListeners();
@@ -179,7 +180,7 @@ public class VoyageManager : MonoBehaviour {
 
       // Associate a new function with the refuse button
       PanelManager.self.voyageInviteScreen.refuseButton.onClick.RemoveAllListeners();
-      PanelManager.self.voyageInviteScreen.refuseButton.onClick.AddListener(() => refuseVoyageInvitation());
+      PanelManager.self.voyageInviteScreen.refuseButton.onClick.AddListener(() => refuseVoyageInvitation(voyageGroupId, inviterName, Global.player.userId));
 
       // Show the voyage invite screen
       PanelManager.self.voyageInviteScreen.activate(inviterName);
@@ -204,16 +205,19 @@ public class VoyageManager : MonoBehaviour {
       PanelManager.self.voyageInviteScreen.deactivate();
 
       // Send the join request to the server
-      Global.player.rpc.Cmd_AddUserToVoyageGroup(_invitationVoyageGroupId);
+      Global.player.rpc.Cmd_AddUserToVoyageGroup(_invitationVoyageGroupId, _inviterName);
 
       // Clear the invitation group id so that we can receive more invitations
       _invitationVoyageGroupId = -1;
    }
 
-   public void refuseVoyageInvitation () {
+   public void refuseVoyageInvitation (int groupId, string inviterName, int inviteeId) {
       if (_invitationVoyageGroupId != -1) {
          // Deactivate the invite panel
          PanelManager.self.voyageInviteScreen.deactivate();
+
+         // Send the decline to the server
+         Global.player.rpc.Cmd_DeclineVoyageInvite(groupId, inviterName, inviteeId);
 
          // Clear the invitation group id so that we can receive more invitations
          _invitationVoyageGroupId = -1;
@@ -369,5 +373,8 @@ public class VoyageManager : MonoBehaviour {
    // The id of the group the player is being invited to, if any
    private int _invitationVoyageGroupId = -1;
 
+   // The name of the voyage inviter
+   private string _inviterName;
+   
    #endregion
 }

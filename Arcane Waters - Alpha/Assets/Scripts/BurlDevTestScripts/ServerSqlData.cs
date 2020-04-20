@@ -36,6 +36,23 @@ public class ServerSqlData {
    // A listing of open area types on this server
    public List<string> openAreas = new List<string>();
 
+   public static ServerSqlData copyData (ServerSqlData sourceData) {
+      ServerSqlData newData = new ServerSqlData();
+      newData.deviceName = sourceData.deviceName;
+      newData.port = sourceData.port;
+      newData.ip = sourceData.ip;
+
+      newData.latestUpdate = sourceData.latestUpdate;
+      newData.lastPingTime = sourceData.lastPingTime;
+
+      newData.voyageList = sourceData.voyageList;
+      newData.connectedUserIds = sourceData.connectedUserIds;
+      newData.claimedUserIds = sourceData.claimedUserIds;
+      newData.openAreas = sourceData.openAreas;
+
+      return newData;
+   }
+
    public string getRawVoyage () {
       XmlSerializer ser = new XmlSerializer(voyageList.GetType());
       StringBuilder sb = new StringBuilder();
@@ -121,6 +138,9 @@ public class ServerSqlData {
 
 [Serializable]
 public class VoyageInviteData {
+   // The voyage entry id in the database
+   public int voyageXmlId;
+
    // The id of the player who sent the invite
    public int inviterId;
 
@@ -163,6 +183,7 @@ public class VoyageInviteData {
    #if IS_SERVER_BUILD
 
    public VoyageInviteData (MySql.Data.MySqlClient.MySqlDataReader dataReader) {
+      this.voyageXmlId = DataUtil.getInt(dataReader, "id");
       this.inviterId = DataUtil.getInt(dataReader, "inviterId");
       this.inviterName = DataUtil.getString(dataReader, "inviterName");
       this.inviteeId = DataUtil.getInt(dataReader, "inviteeId");
@@ -204,7 +225,8 @@ public class PendingVoyageCreation {
 }
 
 public enum InviteStatus {
-   Pending = 0,
-   Accepted = 1,
-   Declined = 2,
+   Created = 0,
+   Pending = 1,
+   Accepted = 2,
+   Declined = 3,
 }

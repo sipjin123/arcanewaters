@@ -138,7 +138,9 @@ public class OptionsPanel : Panel, IPointerClickHandler {
       PanelManager.self.popPanel();
 
       // Hide the voyage group invite panel, if opened
-      VoyageManager.self.refuseVoyageInvitation();
+      // TODO: Confirm this functionality
+      D.editorLog("Confirm voyage decline functionality for logout", Color.red);
+      VoyageManager.self.refuseVoyageInvitation(-1, "", 0);
 
       // Stop any client or server that may have been running
       MyNetworkManager.self.StopHost();

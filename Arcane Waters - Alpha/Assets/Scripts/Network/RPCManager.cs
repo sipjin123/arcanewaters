@@ -359,7 +359,7 @@ public class RPCManager : NetworkBehaviour {
       // Associate a new function with the confirmation button
       PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
       PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => GuildManager.self.acceptInviteOnClient(invite));
-
+      
       // Show a confirmation panel with the user name
       string message = "The player " + invite.senderName + " has invited you to join the guild " + invite.guildName + "!";
       PanelManager.self.confirmScreen.show(message);
@@ -2710,8 +2710,6 @@ public class RPCManager : NetworkBehaviour {
             // Send the invitation
             D.editorLog("Invitee server must handle group invite voyage", Color.green);
             ServerWebRequests.self.createInvite(inviteeServer, voyageGroup.groupId, _player.userId, _player.entityName, inviteeInfo.userId);
-            // TODO: Confirm Voyage invite creation
-            //inviteeServer.photonView.RPC("HandleVoyageGroupInvite", inviteeServer.view.owner, voyageGroup.groupId, _player.entityName, inviteeInfo.userId);
 
             // Write in the inviter chat that the invitation has been sent
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "The voyage invitation has been sent to " + inviteeName);
@@ -2720,7 +2718,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_AddUserToVoyageGroup (int voyageGroupId) {
+   public void Cmd_AddUserToVoyageGroup (int voyageGroupId, string inviterName) {
       if (_player == null) {
          D.warning("No player object found.");
          return;
@@ -2779,10 +2777,20 @@ public class RPCManager : NetworkBehaviour {
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                   // Warp to the voyage area
                   _player.spawnInNewMap(voyage.voyageId, voyage.areaKey, Direction.South);
+
+                  // Mark the voyage invite as Accepted in the database
+                  ServerWebRequests.self.respondVoyageInvite(voyageGroup.groupId, inviterName, _player.userId, InviteStatus.Accepted);
                });
             });
          });
       });
+   }
+
+
+   [Command]
+   public void Cmd_DeclineVoyageInvite (int voyageId, string inviterName, int inviteeId) {
+      // Mark the voyage invite as Declined in the database
+      ServerWebRequests.self.respondVoyageInvite(voyageId, inviterName, inviteeId, InviteStatus.Declined);
    }
 
    [Command]
